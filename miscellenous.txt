@@ -1,0 +1,9 @@
+SELECT * FROM subjects s
+left join expedition_subject es on s.id = es.subject_id
+left join expeditions e on e.id = es.expedition_id
+WHERE s.project_id = 1 and e.project_id = 1
+
+select count(*) as aggregate from `expeditions`
+inner join `expedition_subject` on `expeditions`.`id` = `expedition_subject`.`expedition_id`
+where `expedition_subject`.`subject_id` is null and `project_id` = '1'
+

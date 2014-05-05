@@ -1,0 +1,23 @@
+{
+  "name": "biospex",
+  "version": "0.0.0",
+  "description": "Biospex =======",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rbruhn/Biospex.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rbruhn/Biospex/issues"
+  },
+  "homepage": "https://github.com/rbruhn/Biospex",
+  "devDependencies": {
+    "gulp": "^3.5.6",
+    "gulp-concat": "^2.2.0"
+  }
+}
