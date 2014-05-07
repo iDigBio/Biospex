@@ -34,6 +34,11 @@ class Project extends Eloquent {
     protected $table = 'projects';
 
     /**
+     * Allow soft deletes
+     */
+    protected $softDelete = true;
+
+    /**
      * @var array
      */
     protected $fillable = array(

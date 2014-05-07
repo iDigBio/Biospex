@@ -28,8 +28,20 @@ use Jenssegers\Mongodb\Model as Moloquent;
 
 class Subject extends Moloquent {
 
+    /**
+     * Set connection since extending from Moloquent
+     */
     protected $connection = 'mysql';
+
+    /**
+     * Set primary id of table
+     */
     protected $primaryKey = 'id';
+
+    /**
+     * Allow soft deletes
+     */
+    protected $softDelete = true;
 
     /**
      * @var array

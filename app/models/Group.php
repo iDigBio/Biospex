@@ -35,6 +35,11 @@ class Group extends SentryGroup {
     protected $table = 'groups';
 
     /**
+     * Allow soft deletes
+     */
+    protected $softDelete = true;
+
+    /**
      * Array used by FactoryMuff to create Test objects
      *
      * user_id is owner of the group

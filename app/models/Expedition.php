@@ -33,6 +33,11 @@ class Expedition extends Eloquent {
     protected $table = 'expeditions';
 
     /**
+     * Allow soft deletes
+     */
+    protected $softDelete = true;
+
+    /**
      * Accepted attributes
      *
      * @var array

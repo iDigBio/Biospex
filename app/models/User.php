@@ -35,6 +35,11 @@ class User extends SentryUser {
     protected $table = 'users';
 
     /**
+     * Allow soft deletes
+     */
+    protected $softDelete = true;
+
+    /**
      * Array used by FactoryMuff to create Test objects
      */
     public static $factory = array(

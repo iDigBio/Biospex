@@ -28,10 +28,30 @@ use Jenssegers\Mongodb\Model as Moloquent;
 
 class SubjectDoc extends Moloquent {
 
+    /**
+     * Redefine connection to use mongodb
+     */
     protected $connection = 'mongodb';
+
+    /**
+     * Set collection
+     */
     protected $collection = 'subjectsdocs';
+
+    /**
+     * Set primary key
+     */
     protected $primaryKey = '_id';
+
+    /**
+     * set guarded properties
+     */
     protected $guarded = array('_id');
+
+    /**
+     * Allow soft deletes
+     */
+    protected $softDelete = true;
 
     /**
      * Finds document by unique object id (from media.csv)
