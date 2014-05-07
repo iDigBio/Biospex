@@ -80,10 +80,13 @@ class SubjectImport extends Command {
     protected $extFile;
 
     /**
-     * Create a new Import instance.
+     * Class constructor
      *
-     * @param  ProjectInterface  $project
-     * @return void
+     * @param ImportInterface $import
+     * @param SubjectInterface $subject
+     * @param SubjectDocInterface $subjectdoc
+     * @param Excel $excel
+     * @param Filesystem $filesystem
      */
     public function __construct(
         ImportInterface $import,
@@ -109,7 +112,7 @@ class SubjectImport extends Command {
      *
      * @return void
      */
-/*    public function fire()
+    public function fire()
     {
         $imports = $this->import->all();
 
@@ -124,8 +127,10 @@ class SubjectImport extends Command {
 
             $this->unzip($fileTmp);
 
-            $core = $this->loadCsv('core.txt');
-            $extension = $this->loadCsv('occurence.txt');
+            $this->setFiles();
+
+            $core = $this->loadCsv($this->coreFile);
+            $extension = $this->loadCsv($this->extFile);
 
             $subjects = $this->buildSubjectExtensionArray($core, $extension, $import->project_id);
 
@@ -133,41 +138,12 @@ class SubjectImport extends Command {
 
             $this->destroyTmp();
 
+            $this->import->destroy($import->id);
+
             echo "Subject imports completed" . PHP_EOL;
         }
 
-    }*/
-
-    public function fire()
-    {
-        /** temp for testing */
-        $import = new stdClass();
-        $import->file = 'example.zip';
-
-        $this->makeTmp();
-
-        $file = $this->dataDir . '/' . $import->file;
-        $fileTmp = $this->dataTmp . '/' . $import->file;
-
-        $this->filesystem->move($file, $fileTmp);
-
-        $this->unzip($fileTmp);
-
-        $this->setFiles();
-
-        $core = $this->loadCsv($this->coreFile);
-        $extension = $this->loadCsv($this->coreFile);
-
-        $subjects = $this->buildSubjectExtensionArray($core, $extension, $import->project_id);
-
-        $this->insertDocs($subjects);
-
-        $this->destroyTmp();
-
-        echo "Subject imports completed" . PHP_EOL;
-
     }
-
 
     /**
      * Set core and ext file from meta.xml
@@ -176,8 +152,7 @@ class SubjectImport extends Command {
     {
         $xml = simplexml_load_file($this->dataTmp . '/' . 'meta.xml');
         $this->coreFile = $xml->core->files->location;
-
-        exit;
+        $this->extFile = preg_match('/media/i', $this->coreFile) ? 'occurrence.txt' : 'multimedia.txt';
     }
 
     /**
@@ -211,10 +186,9 @@ class SubjectImport extends Command {
     }
 
     /**
-     * Insert Doc
+     * Insert docs
      *
-     * @param $core
-     * @param $import
+     * @param $subjects
      */
     protected function insertDocs($subjects)
     {
@@ -241,7 +215,7 @@ class SubjectImport extends Command {
      */
     protected function validateDoc($subject)
     {
-        $rules = array('project_id' => 'unique_with:subjects,id');
+        $rules = array('project_id' => 'unique_with:subjectsdocs,id');
         $values = array('project_id' => $subject['project_id'], 'id' => $subject['id']);
 
         $validator = Validator::make($values, $rules);
