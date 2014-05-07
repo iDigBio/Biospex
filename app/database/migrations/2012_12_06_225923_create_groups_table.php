@@ -41,6 +41,7 @@ class CreateGroupsTable extends Migration {
 			$table->string('name');
 			$table->text('permissions')->nullable();
 			$table->timestamps();
+            $table->softDeletes();
 
 			$table->engine = 'InnoDB';
 			$table->unique('name');

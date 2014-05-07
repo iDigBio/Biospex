@@ -39,6 +39,7 @@ class CreateUserGroupsTable extends Migration {
             $table->unsignedInteger('group_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
+            $table->softDeletes();
 
             $table->engine = 'InnoDB';
             $table->primary(array('user_id', 'group_id'));

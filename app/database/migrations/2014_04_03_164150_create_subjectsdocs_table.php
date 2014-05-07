@@ -38,6 +38,7 @@ class CreateSubjectsdocsTable extends Migration {
             $collection->index('id');
             $collection->unique(array('project_id', 'id'));
             $collection->timestamps();
+            $collection->softDeletes();
         });
 	}
 

@@ -41,6 +41,7 @@ class CreateSubjectsTable extends Migration {
             $table->string('object_id');
             $table->unique(array('project_id', 'object_id'));
             $table->timestamps();
+            $table->softDeletes();
 
             $table->engine = 'InnoDB';
         });

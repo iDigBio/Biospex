@@ -64,6 +64,7 @@ class CreateProjectsTable extends Migration {
             $table->timestamp("banner_updated_at")->nullable();
             $table->text('target_fields')->nullable();
 			$table->timestamps();
+            $table->softDeletes();
 
             $table->engine = 'InnoDB';
 		});

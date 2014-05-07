@@ -42,6 +42,7 @@ class CreateExpeditionsTable extends Migration {
             $table->string(('keywords'));
             $table->integer('workflow_id');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->engine = 'InnoDB';
         });
