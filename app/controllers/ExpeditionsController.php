@@ -155,9 +155,26 @@ class ExpeditionsController extends BaseController {
      */
     public function show ($groupId, $projectId, $expeditionId)
     {
+        $project = $this->project->find($projectId);
         $expedition = $this->expedition->find($expeditionId);
 
-        return View::make('expeditions.show', compact('groupId', 'projectId', 'expedition'));
+        return View::make('expeditions.show', compact('groupId', 'project', 'expedition'));
+    }
+
+    /**
+     * Clone an existing expedition
+     *
+     * @param $groupId
+     * @param $projectId
+     * @param $expeditionId
+     */
+    public function duplicate ($groupId, $projectId, $expeditionId)
+    {
+        $group = $this->group->find($groupId);
+        $project = $this->project->find($projectId);
+        $expedition = $this->expedition->find($expeditionId);
+        $subjects = count($expedition->subject);
+        return View::make('expeditions.clone', compact('group', 'project', 'expedition', 'subjects'));
     }
 
     /**
