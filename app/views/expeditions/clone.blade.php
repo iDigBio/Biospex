@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
- 
+
 <h2>{{ $group->name }} : {{ $project->title }}</h2>
 <h4>{{ trans('pages.create') }} {{ trans('expeditions.expedition') }}</h4>
 <div class="well">
@@ -19,7 +19,7 @@
     'role' => 'form'
     )) }}
 
-    @include('partials.expedition-fields')
+    @include('partials.expedition-fields', compact('expedition'))
 
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">

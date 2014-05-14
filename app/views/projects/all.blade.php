@@ -32,10 +32,10 @@
                     <td><a href="{{ URL::route('groups.projects.show', [$project->group_id, $project->id]) }}">{{ $project->title }}</a></td>
                     <td>{{ $project->description }} </td>
                     <td class="nowrap">
-                        <button class="btn btn-default btn-xs" type="button" onClick="location.href='{{ URL::route('groups.projects.show', [$project->group_id, $project->id]) }}'">@lang('buttons.view')</button>
-                        <button class="btn btn-default btn-xs" type="button" onClick="location.href='{{ URL::route('groups.projects.edit', [$project->group_id, $project->id]) }}'">@lang('buttons.edit')</button>
+                        <button class="btn btn-info btn-xs" type="button" onClick="location.href='{{ URL::route('groups.projects.show', [$project->group_id, $project->id]) }}'">@lang('buttons.view')</button>
                         <button class="btn btn-default btn-xs" type="button" onClick="location.href='{{ URL::route('addData', [$project->group_id, $project->id]) }}'">@lang('buttons.data')</button>
-                        <button class="btn btn-default btn-xs" type="button" onClick="location.href='{{ URL::route('duplicate', [$project->group_id, $project->id]) }}'">@lang('buttons.duplicate')</button>
+                        <button class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ URL::route('project-dup', [$project->group_id, $project->id]) }}'">@lang('buttons.duplicate')</button>
+                        <button class="btn btn-warning btn-xs" type="button" onClick="location.href='{{ URL::route('groups.projects.edit', [$project->group_id, $project->id]) }}'">@lang('buttons.edit')</button>
                         <button class="btn btn-default btn-xs btn-danger action_confirm" href="{{ URL::route('groups.projects.destroy', [$project->group_id, $project->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.delete')</button></td>
                     <td></td>
                 </tr>
