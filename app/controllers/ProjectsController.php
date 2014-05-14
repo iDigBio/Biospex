@@ -154,15 +154,28 @@ class ProjectsController extends BaseController {
         return View::make('projects.show', compact('project', 'expeditions'));
 	}
 
+    /**
+     * Create duplicate project
+     *
+     * @param $groupId
+     * @param $projectId
+     */
+    public function duplicate($groupId, $projectId)
+    {
+        $project = $this->project->findWith($projectId, ['group']);
+        $group = $project->group;
+        return View::make('projects.clone', compact('group', 'project'));
+    }
+
 	/**
 	 * Show the form for editing the specified resource.
 	 *
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit($groupId, $id)
+	public function edit($groupId, $projectId)
 	{
-        $project = $this->project->find($id);
+        $project = $this->project->find($projectId);
         return View::make('projects.edit', compact('project'));
 	}
 
