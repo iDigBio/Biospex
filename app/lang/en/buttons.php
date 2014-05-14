@@ -32,6 +32,7 @@ return array(
     'create'            => "Create",
     'data'              => "Data",
     'upload'            => "Upload",
+    'duplicate'         => "Clone",
 
     'login'             => "Login",
     'password-forgot'   => "Forgot Password",
