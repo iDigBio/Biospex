@@ -33,6 +33,7 @@ return array(
     'data'              => "Data",
     'upload'            => "Upload",
     'duplicate'         => "Clone",
+    'export'            => "Export",
 
     'login'             => "Login",
     'password-forgot'   => "Forgot Password",

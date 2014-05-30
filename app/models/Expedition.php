@@ -94,6 +94,14 @@ class Expedition extends Eloquent {
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function workflow()
+    {
+        return $this->belongsTo('WorkFlow');
+    }
+
+    /**
      * Return expeditions by project id
      *
      * @param $projectId

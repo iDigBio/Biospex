@@ -41,7 +41,7 @@ return array(
     'hashtag'                   => "Hashtags",
     'activities'                => "Activities",
     'language-skills'           => "Language Skills Required",
-    'workflow'                  => "Workflow",
+    'workflow'                  => "WorkFlow",
     'file'                      => "File",
     'logo'                      => "Logo",
     'banner'                    => "Banner",

@@ -81,6 +81,7 @@ Route::group(
         // Group/Projects/Expeditions
         Route::resource('groups.projects.expeditions', 'ExpeditionsController');
         Route::get('groups/{groups}/projects/{projects}/expeditions/{expeditions}/duplicate', array('as' => 'expedition-dup', 'uses' => 'ExpeditionsController@duplicate'));
+        Route::get('groups/{groups}/projects/{projects}/expeditions/{expeditions}/export', array('as' => 'export', 'uses' => 'ExpeditionsController@export'));
 
         // Project routes
         /*

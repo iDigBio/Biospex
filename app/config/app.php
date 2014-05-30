@@ -183,7 +183,6 @@ return array(
         'Moloquent'     => 'Jenssegers\Mongodb\Model',
         'Menu'          => 'Menu\Menu',
         'Local'         => 'Mcamara\LaravelLocalization\Facades\LaravelLocalization',
-        'Excel'         => 'Maatwebsite\Excel\Facades\Excel',
         'Carbon'        => 'Carbon\Carbon',
 	),
 

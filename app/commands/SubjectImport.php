@@ -26,10 +26,8 @@
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use Maatwebsite\Excel\Excel;
 use Biospex\Repo\Import\ImportInterface;
-use Biospex\Repo\Subject\SubjectInterface;
-use Biospex\Repo\SubjectDoc\SubjectDocInterface;
+use Biospex\Services\SubjectsImport\SubjectsImport;
 
 class SubjectImport extends Command {
     /**
@@ -60,26 +58,6 @@ class SubjectImport extends Command {
     protected $dataTmp;
 
     /**
-     * Validation rules
-     *
-     * @var Array
-     */
-    protected $rules = array();
-
-    /**
-     * Core file from meta.xml file
-     *
-     * @var
-     */
-    protected $coreFile;
-
-    /**
-     * Extension file from meta.xml file
-     * @var
-     */
-    protected $extFile;
-
-    /**
      * Class constructor
      *
      * @param ImportInterface $import
@@ -90,19 +68,15 @@ class SubjectImport extends Command {
      */
     public function __construct(
         ImportInterface $import,
-        SubjectInterface $subject,
-        SubjectDocInterface $subjectdoc,
-        Excel $excel,
-        Filesystem $filesystem
+        Filesystem $filesystem,
+        SubjectsImport $subjectsImport
     )
     {
         parent::__construct();
 
         $this->import = $import;
-        $this->subject = $subject;
-        $this->subjectdoc = $subjectdoc;
-        $this->excel = $excel;
         $this->filesystem = $filesystem;
+        $this->subjectsImport = $subjectsImport;
         $this->dataDir = Config::get('config.dataDir');
         $this->dataTmp = Config::get('config.dataTmp');
     }
@@ -127,112 +101,24 @@ class SubjectImport extends Command {
 
             $this->unzip($fileTmp);
 
-            $this->setFiles();
+            $this->subjectsImport->setFiles($this->dataTmp . '/' . 'meta.xml');
 
-            $core = $this->loadCsv($this->coreFile);
-            $extension = $this->loadCsv($this->extFile);
+            $multiMediaFile = $this->subjectsImport->getMultiMediaFile();
+            $occurrenceFile = $this->subjectsImport->getOccurrenceFile();
 
-            $subjects = $this->buildSubjectExtensionArray($core, $extension, $import->project_id);
+            $multimedia = $this->subjectsImport->loadCsv("{$this->dataTmp}/$multiMediaFile", 'multimedia');
+            $occurrence = $this->subjectsImport->loadCsv("{$this->dataTmp}/$occurrenceFile", 'occurrence');
 
-            $this->insertDocs($subjects);
+            $subjects = $this->subjectsImport->buildSubjectsArray($multimedia, $occurrence, 2);
+
+            $this->subjectsImport->insertDocs($subjects);
 
             $this->destroyTmp();
 
             $this->import->destroy($import->id);
 
-            echo "Subject imports completed" . PHP_EOL;
         }
 
-    }
-
-    /**
-     * Set core and ext file from meta.xml
-     */
-    protected function setFiles()
-    {
-        $xml = simplexml_load_file($this->dataTmp . '/' . 'meta.xml');
-        $this->coreFile = $xml->core->files->location;
-        $this->extFile = preg_match('/media/i', $this->coreFile) ? 'occurrence.txt' : 'multimedia.txt';
-    }
-
-    /**
-     * Build subject array and insert extension
-     *
-     * @param $core
-     * @param $extension
-     * @param $projectId
-     * @return array
-     */
-    protected function buildSubjectExtensionArray($core, $extension, $projectId)
-    {
-        // Set key to coreid for easy search and join to subjects
-        $instance = array();
-        foreach ($extension as $key => $row)
-        {
-            $instance[$row['coreid']] = $row;
-            unset($extension[$key]);
-        }
-
-        $subjects = array();
-        foreach ($core as $key => $subject)
-        {
-            $subjects[$key] = array_merge(array(
-                'project_id' => $projectId,
-                'extension' => $instance[$subject['id']]
-            ), $subject);
-        }
-
-        return $subjects;
-    }
-
-    /**
-     * Insert docs
-     *
-     * @param $subjects
-     */
-    protected function insertDocs($subjects)
-    {
-        foreach ($subjects as $subject)
-        {
-            if ( ! $this->validateDoc($subject))
-                continue;
-
-            $result = $this->subjectdoc->create($subject);
-
-            $this->subject->create(array(
-                'mongo_id' => $result['_id'],
-                'project_id' => $result['project_id'],
-                'object_id' => $result['id']
-            ));
-        }
-    }
-
-    /**
-     * Validate if subject exists using project_id and id
-     *
-     * @param $subject
-     * @return bool
-     */
-    protected function validateDoc($subject)
-    {
-        $rules = array('project_id' => 'unique_with:subjectsdocs,id');
-        $values = array('project_id' => $subject['project_id'], 'id' => $subject['id']);
-
-        $validator = Validator::make($values, $rules);
-        $validator->getPresenceVerifier()->setConnection('mongodb');
-
-        return $validator->fails() ? false : true;
-    }
-
-    /**
-     * Load csv file
-     *
-     * @param $file
-     * @return array
-     */
-    protected function loadCsv($file)
-    {
-        return $this->excel->load($this->dataTmp . '/' . $file, true)->toArray();
     }
 
     /**

@@ -10,4 +10,5 @@
 |
 */
 Artisan::resolve('SubjectImport');
+Artisan::resolve('NotesFromNatureExport');
 

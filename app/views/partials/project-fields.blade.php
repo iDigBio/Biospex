@@ -130,7 +130,7 @@
     <div class="form-group {{ ($errors->has('workflow')) ? 'has-error' : '' }}">
         {{ Form::label('workflow', trans('forms.workflow'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::select('workflow', array('1' => 'Workflow 1', '2' => 'Workflow 2', '3' => 'Workflow 3', ), array('class' => 'form-control', 'placeholder' => trans('forms.workflow'))) }}
+            {{ Form::select('workflow', array('1' => 'WorkFlow 1', '2' => 'WorkFlow 2', '3' => 'WorkFlow 3', ), array('class' => 'form-control', 'placeholder' => trans('forms.workflow'))) }}
         </div>
         {{ ($errors->has('workflow') ? $errors->first('workflow') : '') }}
     </div>
@@ -314,7 +314,7 @@
     <div class="form-group {{ ($errors->has('workflow')) ? 'has-error' : '' }}">
         {{ Form::label('workflow', trans('forms.workflow'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-4">
-            {{ Form::select('workflow', array(1 => 'Workflow 1', 2 => 'Workflow 2', 3 => 'Workflow 3'), $project->workflow, array('class' => 'form-control')) }}
+            {{ Form::select('workflow', array(1 => 'WorkFlow 1', 2 => 'WorkFlow 2', 3 => 'WorkFlow 3'), $project->workflow, array('class' => 'form-control')) }}
         </div>
         {{ ($errors->has('workflow') ? $errors->first('workflow') : '') }}
     </div>

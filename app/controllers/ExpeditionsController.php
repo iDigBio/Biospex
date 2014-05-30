@@ -29,7 +29,6 @@ use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Repo\Group\GroupInterface;
 use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Subject\SubjectInterface;
-use Carbon\Carbon;
 
 class ExpeditionsController extends BaseController {
 
@@ -215,6 +214,14 @@ class ExpeditionsController extends BaseController {
                 ->withInput()
                 ->withErrors( $this->expeditionForm->errors() );
         }
+    }
+
+    public function export($groupId, $projectId, $expeditionId)
+    {
+        $expedition = $this->expedition->findWith($expeditionId, ['workflow']);
+        $class ='Biospex\Services\Workflow\\' . $expedition->workflow->class_name;
+        $workflow = $class::factory();
+        $workflow->export($expeditionId);
     }
 
     /**

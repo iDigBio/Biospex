@@ -41,6 +41,7 @@ class CreateExpeditionsTable extends Migration {
             $table->text('description');
             $table->string(('keywords'));
             $table->integer('workflow_id');
+            $table->boolean('exported')->default(0);
             $table->timestamps();
             $table->softDeletes();
 
