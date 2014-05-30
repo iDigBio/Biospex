@@ -111,7 +111,6 @@ return array(
         'Menu\MenuServiceProvider',
         'Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider',
         'Cartalyst\Sentry\SentryServiceProvider',
-        'Maatwebsite\Excel\ExcelServiceProvider',
         'Codesleeve\Stapler\StaplerServiceProvider',
         'Felixkiss\UniqueWithValidator\UniqueWithValidatorServiceProvider',
 
