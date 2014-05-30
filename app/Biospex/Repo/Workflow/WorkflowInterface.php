@@ -1,6 +1,6 @@
-<?php
+<?php namespace Biospex\Repo\WorkFlow;
 /**
- * WorkflowRepository.php
+ * WorkFlowInterface.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -24,16 +24,6 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Biospex\Repo\Repository;
-use Workflow;
+use Biospex\Repo\RepositoryInterface;
 
-class WorkflowRepository extends Repository implements SubjectInterface {
-
-    /**
-     * @param Workflow $workflow
-     */
-    public function __construct(Workflow $workflow)
-    {
-        $this->model = $workflow;
-    }
-}
+interface WorkFlowInterface extends RepositoryInterface {}

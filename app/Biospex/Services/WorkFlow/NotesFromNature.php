@@ -1,10 +1,10 @@
-<?php
+<?php namespace Biospex\Services\WorkFlow;
 /**
- * WorkflowInterface.php
+ * NotesFromNature.php
  *
  * @package    Biospex Package
  * @version    1.0
- * @author     Robert Bruhn <79e6ef82@opayq.com>
+ * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
  * @link       http://biospex.org
@@ -23,6 +23,24 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Biospex\Repo\RepositoryInterface;
 
-interface WorkflowInterface extends RepositoryInterface {}
+class NotesFromNature extends WorkFlow
+{
+    public function export($expeditionId)
+    {
+        $pid = $this->backGroundProcess("php artisan nfn:export $expeditionId");
+
+        return $pid;
+    }
+
+
+    public function getStatus()
+    {
+        return;
+    }
+
+    public function getResults()
+    {
+        return;
+    }
+}
