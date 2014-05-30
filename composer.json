@@ -10,7 +10,6 @@
         "vespakoen/menu": "dev-master",
         "mcamara/laravel-localization": "0.13.*",
         "cartalyst/sentry": "2.1.*",
-        "maatwebsite/excel": "dev-master",
         "codesleeve/stapler": "dev-master",
         "felixkiss/uniquewith-validator": "1.0.*"
 	},
@@ -30,9 +29,11 @@
 			"app/models",
 			"app/database/migrations",
 			"app/database/seeds",
-			"app/tests/TestCase.php",
-            "app/src"
-		]
+			"app/tests/TestCase.php"
+		],
+        "psr-4": {
+            "Biospex\\": "app/Biospex"
+        }
 	},
 	"scripts": {
 		"post-install-cmd": [
