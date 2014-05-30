@@ -10,5 +10,3 @@ Thumbs.db
 .gitkeep
 local
 /_ide_helper.php
-/app/config/local/*
-!/app/config/local/.gitkeep
