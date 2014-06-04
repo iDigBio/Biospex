@@ -26,6 +26,7 @@
 
 use Illuminate\Database\Seeder;
 use Biospex\Services\SubjectsImport\SubjectsImport;
+use Biospex\Repo\Meta\MetaInterface;
 
 class SubjectsDocsTableSeeder extends Seeder {
 
@@ -41,9 +42,10 @@ class SubjectsDocsTableSeeder extends Seeder {
      *
      * @param SubjectsImport $subjectsImport
      */
-    public function __construct (SubjectsImport $subjectsImport)
+    public function __construct (SubjectsImport $subjectsImport, MetaInterface $meta)
     {
         $this->subjectsImport = $subjectsImport;
+        $this->meta = $meta;
     }
 
     /**
@@ -57,7 +59,9 @@ class SubjectsDocsTableSeeder extends Seeder {
 
         $this->subjectsImport->deleteDocs();
 
-        $this->subjectsImport->setFiles('app/database/seeds/data/meta.xml');
+        $xml = $this->subjectsImport->setFiles('app/database/seeds/data/meta.xml');
+
+        $meta = $this->meta->create(array('project_id' => $this->projectId, 'xml' => $xml));
 
         $multiMediaFile = $this->subjectsImport->getMultiMediaFile();
         $occurrenceFile = $this->subjectsImport->getOccurrenceFile();
@@ -65,7 +69,7 @@ class SubjectsDocsTableSeeder extends Seeder {
         $multimedia = $this->subjectsImport->loadCsv("app/database/seeds/data/$multiMediaFile", 'multimedia');
         $occurrence = $this->subjectsImport->loadCsv("app/database/seeds/data/$occurrenceFile", 'occurrence');
 
-        $subjects = $this->subjectsImport->buildSubjectsArray($multimedia, $occurrence, $this->projectId);
+        $subjects = $this->subjectsImport->buildSubjectsArray($multimedia, $occurrence, $this->projectId, $meta->id);
 
         $this->subjectsImport->insertDocs($subjects);
     }
