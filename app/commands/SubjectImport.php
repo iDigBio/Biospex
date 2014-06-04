@@ -28,6 +28,7 @@ use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Biospex\Repo\Import\ImportInterface;
 use Biospex\Services\SubjectsImport\SubjectsImport;
+use Biospex\Repo\Meta\MetaInterface;
 
 class SubjectImport extends Command {
     /**
@@ -69,7 +70,8 @@ class SubjectImport extends Command {
     public function __construct(
         ImportInterface $import,
         Filesystem $filesystem,
-        SubjectsImport $subjectsImport
+        SubjectsImport $subjectsImport,
+        MetaInterface $meta
     )
     {
         parent::__construct();
@@ -77,6 +79,7 @@ class SubjectImport extends Command {
         $this->import = $import;
         $this->filesystem = $filesystem;
         $this->subjectsImport = $subjectsImport;
+        $this->meta = $meta;
         $this->dataDir = Config::get('config.dataDir');
         $this->dataTmp = Config::get('config.dataTmp');
     }
@@ -101,7 +104,9 @@ class SubjectImport extends Command {
 
             $this->unzip($fileTmp);
 
-            $this->subjectsImport->setFiles($this->dataTmp . '/' . 'meta.xml');
+            $xml = $this->subjectsImport->setFiles($this->dataTmp . '/' . 'meta.xml');
+
+            $meta = $this->meta->create(array('project_id' => $import->project_id, 'xml' => $xml));
 
             $multiMediaFile = $this->subjectsImport->getMultiMediaFile();
             $occurrenceFile = $this->subjectsImport->getOccurrenceFile();
@@ -109,7 +114,7 @@ class SubjectImport extends Command {
             $multimedia = $this->subjectsImport->loadCsv("{$this->dataTmp}/$multiMediaFile", 'multimedia');
             $occurrence = $this->subjectsImport->loadCsv("{$this->dataTmp}/$occurrenceFile", 'occurrence');
 
-            $subjects = $this->subjectsImport->buildSubjectsArray($multimedia, $occurrence, 2);
+            $subjects = $this->subjectsImport->buildSubjectsArray($multimedia, $occurrence, $import->project_id, $meta->id);
 
             $this->subjectsImport->insertDocs($subjects);
 
