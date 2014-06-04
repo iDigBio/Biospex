@@ -29,6 +29,9 @@ use Project;
 
 class ProjectRepository extends Repository implements ProjectInterface {
 
+    /**
+     * @param Project $project
+     */
     public function __construct(Project $project)
     {
         $this->model = $project;
