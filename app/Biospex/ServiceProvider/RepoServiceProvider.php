@@ -85,6 +85,9 @@ class RepoServiceProvider extends ServiceProvider {
 
         // bind import repository
         $app->bind('Biospex\Repo\Import\ImportInterface', 'Biospex\Repo\Import\ImportRepository');
+
+        // bind meta repository
+        $app->bind('Biospex\Repo\Meta\MetaInterface', 'Biospex\Repo\Meta\MetaRepository');
     }
 
 }
