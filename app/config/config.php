@@ -2,6 +2,14 @@
 
 return array(
 
+    /** Meta.xml file search fields */
+    'metaData' => array(
+        'multimediaFile' => 'multimedia',
+        'occurrenceFile' => 'occurrence',
+        'identifier'     => 'identifier',
+        'imageUrl'       => 'bestQualityAccessURI'
+    ),
+
     /** Default expedition data directories */
     'dataDir' => storage_path() . '/data',
     'dataTmp' => storage_path() . '/data/tmp',
@@ -10,11 +18,11 @@ return array(
     'logo' => '100x100',
     'banner' => '468x60',
 
-	/**
-	 * Default group permissions
-	*/
+    /**
+     * Default group permissions
+     */
 
-	'group_permissions' => array(
+    'group_permissions' => array(
         "project_create" => 1,
         "project_edit" => 1,
         "project_view" => 1,
@@ -27,12 +35,12 @@ return array(
         "expedition_edit" => 1,
         "expedition_view" => 1,
         "expedition_delete" => 1
-		),
+    ),
 
 
-	/**
-	 * Allow/Disallow registration
-	*/
+    /**
+     * Allow/Disallow registration
+     */
 
-	'registration' => true,
+    'registration' => true,
 );
