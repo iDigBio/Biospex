@@ -88,6 +88,7 @@ class SubjectsImport {
         $dom = new \DOMDocument();
         $dom->preserveWhiteSpace = false;
         $dom->load($metaFilePath);
+
         $xpath = new \DOMXpath($dom);
         $xpath->registerNamespace('ns', $dom->documentElement->namespaceURI);
 
@@ -114,7 +115,7 @@ class SubjectsImport {
             //$this->occurrenceIdColName = $xpath->query("descendant::*[@index='0']", $occurrenceQuery)->item(0)->nodeName;
         }
 
-        return;
+        return $dom->saveXML();
     }
 
     /**
@@ -150,9 +151,11 @@ class SubjectsImport {
      *
      * @param $multimedia
      * @param $occurrence
+     * @param $projectId
+     * @param $metaId
      * @return array
      */
-    public function buildSubjectsArray ($multimedia, $occurrence, $projectId)
+    public function buildSubjectsArray ($multimedia, $occurrence, $projectId, $metaId)
     {
         // create new array with occurrence id as key
         $occurrenceInstance = array();
@@ -165,10 +168,13 @@ class SubjectsImport {
         {
             $subjects = array();
             foreach ($multimedia as $key => $subject) {
-                $subjects[$key] = array_merge(array(
-                    'project_id' => $projectId,
-                    'occurrence' => $occurrenceInstance[$subject[$this->multiMediaHeader[0]]]
-                ), $subject);
+                $subjects[$key] = array_merge(
+                    array(
+                        'project_id' => $projectId,
+                        'meta_id' => $metaId,
+                        'occurrence' => $occurrenceInstance[$subject[$this->multiMediaHeader[0]]]
+                    ),
+                    $subject);
             }
         }
         else
@@ -181,6 +187,7 @@ class SubjectsImport {
 
                 $subjects[$key] = array_merge(
                     array('project_id' => $projectId),
+                    array('meta_id' => $metaId),
                     $subject,
                     array('occurrence' => $occurrenceInstance[$occurrenceId])
                 );
