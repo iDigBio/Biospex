@@ -80,6 +80,20 @@ class SubjectsImport {
     protected $multiMediaHeader = array();
 
     /**
+     * Meta xml search criteria from configuration
+     * @var
+     */
+    protected $metaData;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->metaData = Config::get('config.metaData');
+    }
+
+    /**
      * Set Multimedia and Occurrence files from meta.xml
      * Since we do not always know which is the core and which is extension.
      */
@@ -100,17 +114,17 @@ class SubjectsImport {
             $this->mediaIsCore = false;
             $this->occurrenceFile = $coreFile;
 
-            $multiMediaQuery = $xpath->query("//ns:extension[contains(@rowType, 'multimedia')]")->item(0);
+            $multiMediaQuery = $xpath->query("//ns:extension[contains(@rowType, {$this->metaData['multimedia']})]")->item(0);
             $this->multiMediaFile = $multiMediaQuery->nodeValue;
+            $this->multiMediaIdentifierColIndex = $xpath->query("//ns:field[contains(@term, {$this->metaData['identifier']})]")->item(0)->attributes->getNamedItem("index")->nodeValue;
             //$this->multiMediaIdentifierColIndex = $xpath->query("//ns:field[contains(@term, 'identifier')]")->item(0)->nodeName;
-            $this->multiMediaIdentifierColIndex = $xpath->query("//ns:field[contains(@term, 'identifier')]")->item(0)->attributes->getNamedItem("index")->nodeValue;
         }
         elseif (preg_match('/multimedia/', $coreType))
         {
             $this->mediaIsCore = true;
             $this->multiMediaFile = $coreFile;
 
-            $occurrenceQuery = $xpath->query("//ns:extension[contains(@rowType, 'occurrence')]")->item(0);
+            $occurrenceQuery = $xpath->query("//ns:extension[contains(@rowType, {$this->metaData['occurrence']})]")->item(0);
             $this->occurrenceFile = $occurrenceQuery->nodeValue;
             //$this->occurrenceIdColName = $xpath->query("descendant::*[@index='0']", $occurrenceQuery)->item(0)->nodeName;
         }
