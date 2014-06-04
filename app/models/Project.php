@@ -139,6 +139,14 @@ class Project extends Eloquent {
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function meta()
+    {
+        return $this->hasMany('Meta');
+    }
+
+    /**
      * Mutator for target_fields
      *
      * @param $input
