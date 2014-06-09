@@ -241,7 +241,8 @@ class ProjectsController extends BaseController {
 
         try
         {
-            $this->import->create(array('project_id' => $projectId, 'file' => $filename));
+            $user = $this->user->getUser();
+            $this->import->create(array('user_id' => $user->id,'project_id' => $projectId, 'file' => $filename));
         }
         catch(Exception $e)
         {
