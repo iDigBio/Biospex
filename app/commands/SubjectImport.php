@@ -27,8 +27,10 @@
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Biospex\Repo\Import\ImportInterface;
-use Biospex\Services\SubjectsImport\SubjectsImport;
-use Biospex\Repo\Meta\MetaInterface;
+use Biospex\Services\Subject\Subject;
+use Biospex\Repo\User\UserInterface;
+use Biospex\Repo\Project\ProjectInterface;
+use Biospex\Mailer\UserMailer;
 
 class SubjectImport extends Command {
     /**
@@ -70,16 +72,20 @@ class SubjectImport extends Command {
     public function __construct(
         ImportInterface $import,
         Filesystem $filesystem,
-        SubjectsImport $subjectsImport,
-        MetaInterface $meta
+        Subject $subject,
+        UserInterface $user,
+        ProjectInterface $project,
+        UserMailer $mailer
     )
     {
         parent::__construct();
 
         $this->import = $import;
         $this->filesystem = $filesystem;
-        $this->subjectsImport = $subjectsImport;
-        $this->meta = $meta;
+        $this->subject = $subject;
+        $this->user = $user;
+        $this->project = $project;
+        $this->mailer = $mailer;
         $this->dataDir = Config::get('config.dataDir');
         $this->dataTmp = Config::get('config.dataTmp');
     }
@@ -104,19 +110,23 @@ class SubjectImport extends Command {
 
             $this->unzip($fileTmp);
 
-            $xml = $this->subjectsImport->setFiles($this->dataTmp . '/' . 'meta.xml');
+            $xml = $this->subject->loadDom($this->dataTmp . '/' . 'meta.xml');
 
-            $meta = $this->meta->create(array('project_id' => $import->project_id, 'xml' => $xml));
+            $this->subject->setFiles();
 
-            $multiMediaFile = $this->subjectsImport->getMultiMediaFile();
-            $occurrenceFile = $this->subjectsImport->getOccurrenceFile();
+            $multiMediaFile = $this->subject->getMultiMediaFile();
+            $occurrenceFile = $this->subject->getOccurrenceFile();
 
-            $multimedia = $this->subjectsImport->loadCsv("{$this->dataTmp}/$multiMediaFile", 'multimedia');
-            $occurrence = $this->subjectsImport->loadCsv("{$this->dataTmp}/$occurrenceFile", 'occurrence');
+            $multimedia = $this->subject->loadCsv("{$this->dataTmp}/$multiMediaFile", 'multimedia');
+            $occurrence = $this->subject->loadCsv("{$this->dataTmp}/$occurrenceFile", 'occurrence');
 
-            $subjects = $this->subjectsImport->buildSubjectsArray($multimedia, $occurrence, $import->project_id, $meta->id);
+            $meta = $this->subject->saveMeta($xml, $import->project_id);
 
-            $this->subjectsImport->insertDocs($subjects);
+            $subjects = $this->subject->buildSubjectsArray($multimedia, $occurrence, $import->project_id, $meta->id);
+
+            $duplicates = $this->subject->insertDocs($subjects);
+
+            $this->report($import->user_id, $import->project_id, $duplicates);
 
             $this->destroyTmp();
 
@@ -124,6 +134,37 @@ class SubjectImport extends Command {
 
         }
 
+        return;
+
+    }
+
+    /**
+     * Send report for import
+     *
+     * @param $userId
+     * @param $projectId
+     * @param $duplicates
+     */
+    public function report($userId, $projectId, $duplicates)
+    {
+        $user = $this->user->find($userId);
+        $project = $this->project->find($projectId);
+
+        $email = $user->email;
+        $data['projectTitle'] = $project->title;
+        $data['duplicateCount'] = count($duplicates);
+
+        if ( ! empty($duplicates))
+        {
+            $attachment = "{$this->dataTmp}/{$userId}_{$projectId}.csv";
+            $fp = fopen($attachment, 'w');
+            foreach ($duplicates as $fields) {
+                fputcsv($fp, $fields);
+            }
+            fclose($fp);
+        }
+
+        $this->mailer->reportImport($email, $data, $attachment);
     }
 
     /**
