@@ -1,4 +1,4 @@
-<?php namespace Biospex\Services\SubjectsImport;
+<?php namespace Biospex\Services\Subject;
 /**
  * SubjectImport.php
  *
@@ -23,11 +23,25 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Config;
 
-class SubjectsImport {
+use Validator;
+use Config;
+use Biospex\Repo\Meta\MetaInterface;
+use Biospex\Repo\SubjectDoc\SubjectDocInterface;
+
+class Subject {
+
+    /**
+     * Dom document
+     * @var
+     */
+    protected $dom;
+
+    /**
+     * Xpath for dom document
+     * @var
+     */
+    protected $xpath;
 
     /**
      * Multimedia file from XML
@@ -81,31 +95,104 @@ class SubjectsImport {
     protected $multiMediaHeader = array();
 
     /**
+     * Array of duplicate subjects
+     * @var array
+     */
+    protected $duplicateArray = array();
+
+    /**
+     * Constructor
+     * @param MetaInterface $meta
+     */
+    public function __construct(
+        MetaInterface $meta,
+        SubjectDocInterface $subjectdoc
+    )
+    {
+        $this->meta = $meta;
+        $this->subjectdoc = $subjectdoc;
+        $this->metaData = Config::get('config.metaData');
+    }
+
+    /**
+     * Load the dom document, set xpath, and return xml string
+     *
+     * @param $meta
+     * @param bool $string
+     * @return string
+     */
+    public function loadDom($meta, $string = false)
+    {
+        $this->dom = new \DOMDocument();
+        $this->dom->preserveWhiteSpace = false;
+        if ($string)
+        {
+            $this->dom->loadXml($meta);
+        }
+        else
+        {
+            $this->dom->load($meta);
+        }
+
+        $this->xpath = new \DOMXpath($this->dom);
+        $this->xpath->registerNamespace('ns', $this->dom->documentElement->namespaceURI);
+
+        return $this->dom->saveXML();
+    }
+
+    /**
+     * Get dom document attribute by tag
+     *
+     * @param $tag
+     * @param $attribute
+     * @return mixed
+     */
+    public function getDomTagAttribute($tag, $attribute)
+    {
+        return $this->dom->getElementsByTagName($tag)->item(0)->getAttribute($attribute);
+    }
+
+    /**
+     * Get dom document element by tag
+     *
+     * @param $tag
+     * @return mixed
+     */
+    public function getElementByTag($tag)
+    {
+        return $this->dom->getElementsByTagName($tag)->item(0)->nodeValue;
+    }
+
+    /**
+     * Perform query on dom document
+     *
+     * @param $query
+     * @return mixed
+     */
+    public function getXpathQuery($query)
+    {
+        return $this->xpath->query($query)->item(0);
+    }
+
+    /**
      * Set Multimedia and Occurrence files from meta.xml
      * Since we do not always know which is the core and which is extension.
      */
-    public function setFiles ($metaFilePath)
+    public function setFiles ()
     {
-        $metaData = Config::get('config.metaData');
-
-        $dom = new \DOMDocument();
-        $dom->preserveWhiteSpace = false;
-        $dom->load($metaFilePath);
-
-        $xpath = new \DOMXpath($dom);
-        $xpath->registerNamespace('ns', $dom->documentElement->namespaceURI);
-
-        $coreType = $dom->getElementsByTagName('core')->item(0)->getAttribute('rowType');
-        $coreFile = $dom->getElementsByTagName('core')->item(0)->nodeValue;
+        $coreType = $this->getDomTagAttribute('core', 'rowType');
+        $coreFile = $this->getElementByTag('core');
 
         if (preg_match('/occurrence/i', $coreType))
         {
             $this->mediaIsCore = false;
             $this->occurrenceFile = $coreFile;
 
-            $multiMediaQuery = $xpath->query("//ns:extension[contains(@rowType, '{$metaData['multimediaFile']}')]")->item(0);
+            $multiMediaQuery = $this->getXpathQuery("//ns:extension[contains(@rowType, '{$this->metaData['multimediaFile']}')]");
             $this->multiMediaFile = $multiMediaQuery->nodeValue;
-            $this->multiMediaIdentifierColIndex = $xpath->query("//ns:field[contains(@term, '{$metaData['identifier']}')]")->item(0)->attributes->getNamedItem("index")->nodeValue;
+
+            $multiMediaIndexQuery = $this->getXpathQuery("//ns:field[contains(@term, '{$this->metaData['identifier']}')]");
+            $this->multiMediaIdentifierColIndex = $multiMediaIndexQuery->attributes->getNamedItem("index")->nodeValue;
             //$this->multiMediaIdentifierColIndex = $xpath->query("//ns:field[contains(@term, 'identifier')]")->item(0)->nodeName;
         }
         elseif (preg_match('/multimedia/', $coreType))
@@ -113,12 +200,12 @@ class SubjectsImport {
             $this->mediaIsCore = true;
             $this->multiMediaFile = $coreFile;
 
-            $occurrenceQuery = $xpath->query("//ns:extension[contains(@rowType, '{$metaData['occurrenceFile']}')]")->item(0);
+            $occurrenceQuery = $this->getXpathQuery("//ns:extension[contains(@rowType, '{$this->metaData['occurrenceFile']}')]");
             $this->occurrenceFile = $occurrenceQuery->nodeValue;
             //$this->occurrenceIdColName = $xpath->query("descendant::*[@index='0']", $occurrenceQuery)->item(0)->nodeName;
         }
 
-        return $dom->saveXML();
+        return;
     }
 
     /**
@@ -173,8 +260,8 @@ class SubjectsImport {
             foreach ($multimedia as $key => $subject) {
                 $subjects[$key] = array_merge(
                     array(
-                        'project_id' => $projectId,
-                        'meta_id' => $metaId,
+                        'project_id' => (int)$projectId,
+                        'meta_id' => (int)$metaId,
                         'occurrence' => $occurrenceInstance[$subject[$this->multiMediaHeader[0]]]
                     ),
                     $subject);
@@ -189,8 +276,8 @@ class SubjectsImport {
                 unset($subject[$this->multiMediaHeader[$this->multiMediaIdentifierColIndex]]);
 
                 $subjects[$key] = array_merge(
-                    array('project_id' => $projectId),
-                    array('meta_id' => $metaId),
+                    array('project_id' => (int)$projectId),
+                    array('meta_id' => (int)$metaId),
                     $subject,
                     array('occurrence' => $occurrenceInstance[$occurrenceId])
                 );
@@ -209,22 +296,20 @@ class SubjectsImport {
     {
         foreach ($subjects as $subject) {
             if (!$this->validateDoc($subject))
+            {
+                $this->duplicateArray[] = array($subject['id']);
                 continue;
+            }
 
-            DB::connection('mongodb')->collection('subjectsdocs')->insert($subject);
+            $this->subjectdoc->create($subject);
         }
+
+        return $this->duplicateArray;
     }
 
     /**
-     * Delete all subjectDocs
-     */
-    public function deleteDocs()
-    {
-        DB::connection('mongodb')->collection('subjectsdocs')->delete();
-    }
-
-    /**
-     * Validate if subject exists using project_id and id
+     * Validate if subject exists using project_id and id.
+     * Validator->fails() returns true if validation fails.
      *
      * @param $subject
      * @return bool
@@ -240,11 +325,43 @@ class SubjectsImport {
         return $validator->fails() ? false : true;
     }
 
+    /**
+     * Save Meta file and header information
+     * @param $xml
+     * @param $projectId
+     * @return mixed
+     */
+    public function saveMeta($xml, $projectId)
+    {
+        $meta = $this->meta->create(array('project_id' => $projectId, 'xml' => $xml, 'header' => json_encode($this->multiMediaHeader)));
+
+        return $meta;
+    }
+
+    /**
+     * Return meta file data
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function getMeta($id)
+    {
+        return $this->meta->find($id);
+    }
+
+    /**
+     * Return multimedia file
+     * @return mixed
+     */
     public function getMultiMediaFile()
     {
         return $this->multiMediaFile;
     }
 
+    /**
+     * Return occurrence file
+     * @return mixed
+     */
     public function getOccurrenceFile()
     {
         return $this->occurrenceFile;
