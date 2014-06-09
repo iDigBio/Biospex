@@ -74,9 +74,9 @@ Route::group(
 
         // Group/Projects
         Route::resource('groups.projects', 'ProjectsController');
-        Route::get('groups/{group}/projects/{projects}/duplicate', array('as' => 'project-dup', 'uses' => 'ProjectsController@duplicate'));
-        Route::get('groups/{group}/projects/{projects}/data', array('as' => 'addData', 'uses' => 'ProjectsController@data'));
-        Route::post('groups/{group}/projects/{projects}/upload', array('as' => 'dataUpload', 'uses' => 'ProjectsController@upload'));
+        Route::get('groups/{groups}/projects/{projects}/duplicate', array('as' => 'project-dup', 'uses' => 'ProjectsController@duplicate'));
+        Route::get('groups/{groups}/projects/{projects}/data', array('as' => 'addData', 'uses' => 'ProjectsController@data'));
+        Route::post('groups/{groups}/projects/{projects}/upload', array('as' => 'dataUpload', 'uses' => 'ProjectsController@upload'));
 
         // Group/Projects/Expeditions
         Route::resource('groups.projects.expeditions', 'ExpeditionsController');
