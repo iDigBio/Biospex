@@ -93,6 +93,12 @@ class UserMailer extends Mailer {
 		return $this->sendTo($email, $subject, $view, $data );
 	}
 
+    public function reportImport($email, $data, $attachment = null)
+    {
+        $subject = trans('emails.import_complete');
+        $view = 'emails.reportsubject';
 
+        return $this->sendTo($email, $subject, $view, $data, $attachment);
+    }
 
 }
