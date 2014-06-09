@@ -34,7 +34,7 @@ class UserGroupTableSeeder extends Seeder {
     {
         DB::table('users_groups')->truncate();
 
-        $userUser = Sentry::getUserProvider()->findByLogin('user@biospex.org');
+        $userUser = Sentry::getUserProvider()->findByLogin('biospex@gmail.com');
         $adminUser = Sentry::getUserProvider()->findByLogin('admin@biospex.org');
 
         $user = Sentry::getGroupProvider()->findByName('Users');

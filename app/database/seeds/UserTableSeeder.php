@@ -41,7 +41,7 @@ class UserTableSeeder extends Seeder {
         ));
 
         Sentry::getUserProvider()->create(array(
-            'email'    => 'user@biospex.org',
+            'email'    => 'biospex@gmail.com',
             'password' => 'biospex',
             'activated' => 1,
         ));

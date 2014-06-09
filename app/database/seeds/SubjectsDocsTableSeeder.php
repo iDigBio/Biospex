@@ -25,8 +25,7 @@
  */
 
 use Illuminate\Database\Seeder;
-use Biospex\Services\SubjectsImport\SubjectsImport;
-use Biospex\Repo\Meta\MetaInterface;
+use Biospex\Services\Subject\Subject;
 
 class SubjectsDocsTableSeeder extends Seeder {
 
@@ -42,10 +41,9 @@ class SubjectsDocsTableSeeder extends Seeder {
      *
      * @param SubjectsImport $subjectsImport
      */
-    public function __construct (SubjectsImport $subjectsImport, MetaInterface $meta)
+    public function __construct (Subject $subject)
     {
-        $this->subjectsImport = $subjectsImport;
-        $this->meta = $meta;
+        $this->subject = $subject;
     }
 
     /**
@@ -57,20 +55,23 @@ class SubjectsDocsTableSeeder extends Seeder {
     {
         Eloquent::unguard();
 
-        $this->subjectsImport->deleteDocs();
+        DB::table('metas')->truncate();
+        DB::connection('mongodb')->collection('subjectsdocs')->delete();
 
-        $xml = $this->subjectsImport->setFiles('app/database/seeds/data/meta.xml');
+        $xml = $this->subject->loadDom('app/database/seeds/data/meta.xml');
 
-        $meta = $this->meta->create(array('project_id' => $this->projectId, 'xml' => $xml));
+        $this->subject->setFiles();
 
-        $multiMediaFile = $this->subjectsImport->getMultiMediaFile();
-        $occurrenceFile = $this->subjectsImport->getOccurrenceFile();
+        $multiMediaFile = $this->subject->getMultiMediaFile();
+        $occurrenceFile = $this->subject->getOccurrenceFile();
 
-        $multimedia = $this->subjectsImport->loadCsv("app/database/seeds/data/$multiMediaFile", 'multimedia');
-        $occurrence = $this->subjectsImport->loadCsv("app/database/seeds/data/$occurrenceFile", 'occurrence');
+        $multimedia = $this->subject->loadCsv("app/database/seeds/data/$multiMediaFile", 'multimedia');
+        $occurrence = $this->subject->loadCsv("app/database/seeds/data/$occurrenceFile", 'occurrence');
 
-        $subjects = $this->subjectsImport->buildSubjectsArray($multimedia, $occurrence, $this->projectId, $meta->id);
+        $meta = $this->subject->saveMeta($xml, $this->projectId);
 
-        $this->subjectsImport->insertDocs($subjects);
+        $subjects = $this->subject->buildSubjectsArray($multimedia, $occurrence, $this->projectId, $meta->id);
+
+        $this->subject->insertDocs($subjects);
     }
 }
