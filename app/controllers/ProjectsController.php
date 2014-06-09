@@ -237,10 +237,9 @@ class ProjectsController extends BaseController {
         $filename = str_random(8) . '.' . $file->getClientOriginalExtension();
         $directory = Config::get('config.dataDir');
 
-        Input::file('file')->move($directory, $filename);
-
         try
         {
+            Input::file('file')->move($directory, $filename);
             $user = $this->user->getUser();
             $this->import->create(array('user_id' => $user->id,'project_id' => $projectId, 'file' => $filename));
         }
