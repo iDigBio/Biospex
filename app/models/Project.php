@@ -23,6 +23,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+use Illuminate\Support\Facades\Config;
+
 class Project extends Eloquent {
     use Codesleeve\Stapler\Stapler;
 
@@ -144,6 +147,14 @@ class Project extends Eloquent {
     public function meta()
     {
         return $this->hasMany('Meta');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function import()
+    {
+        return $this->hasMany('Import');
     }
 
     /**
