@@ -33,6 +33,7 @@ class Import extends Eloquent {
     protected $table = 'imports';
 
     protected $fillable = array(
+        'user_id',
         'project_id',
         'file'
     );
@@ -41,8 +42,24 @@ class Import extends Eloquent {
      * Array used by FactoryMuff to create Test objects
      */
     public static $factory = array(
+        'user_id' => 'factory|User',
         'project_id' => 'factory|Project',
         'file' => 'string'
     );
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function project()
+    {
+        return $this->belongsTo('Project');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo('User');
+    }
 }
