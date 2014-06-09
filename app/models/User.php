@@ -62,6 +62,14 @@ class User extends SentryUser {
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function import()
+    {
+        return $this->hasMany('Import');
+    }
+
+    /**
      * Used during phpunit tests for setting hash
      */
     public static function boot()
