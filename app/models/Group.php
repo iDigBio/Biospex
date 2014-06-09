@@ -24,6 +24,7 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 use Cartalyst\Sentry\Groups\Eloquent\Group as SentryGroup;
+use Illuminate\Support\Facades\Config;
 
 class Group extends SentryGroup {
 
