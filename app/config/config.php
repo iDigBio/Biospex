@@ -7,7 +7,7 @@ return array(
         'multimediaFile' => 'multimedia',
         'occurrenceFile' => 'occurrence',
         'identifier'     => 'identifier',
-        'imageUrl'       => 'bestQualityAccessURI'
+        'remoteImgUrl' => 'bestQualityAccessURI'
     ),
 
     /** Default expedition data directories */
