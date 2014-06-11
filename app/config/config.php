@@ -2,13 +2,22 @@
 
 return array(
 
+    'imgTypes' => array(
+        'image/jpeg' => '.jpg',
+        'image/png' => '.png',
+        'image/tiff' => '.tiff',
+    ),
+
     /** Meta.xml file search fields */
     'metaData' => array(
         'multimediaFile' => 'multimedia',
         'occurrenceFile' => 'occurrence',
         'identifier'     => 'identifier',
-        'remoteImgUrl' => 'bestQualityAccessURI'
+        'remoteImgUrl'   => 'bestQualityAccessURI'
     ),
+
+    'nfnLrgImageWidth' => 1540,
+    'nfnSmImageWidth'  => 580,
 
     /** Default expedition data directories */
     'dataDir' => storage_path() . '/data',

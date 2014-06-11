@@ -33,7 +33,6 @@ class NotesFromNature extends WorkFlow
         return $pid;
     }
 
-
     public function getStatus()
     {
         return;
