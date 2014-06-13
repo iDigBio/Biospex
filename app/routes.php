@@ -39,6 +39,8 @@ Route::group(
             return View::make('home');
         }));
 
+        Route::get('phpinfo', array('as' => 'phpinfo', 'uses' => 'PhpInfoController@show'));
+
         // Session Routes
         Route::get('login', array('as' => 'login', 'uses' => 'SessionsController@create'));
         Route::get('logout', array('as' => 'logout', 'uses' => 'SessionsController@destroy'));
