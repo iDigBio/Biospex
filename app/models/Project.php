@@ -25,9 +25,11 @@
  */
 
 use Illuminate\Support\Facades\Config;
+use Codesleeve\Stapler\ORM\EloquentTrait;
+use Codesleeve\Stapler\ORM\StaplerableInterface;
 
-class Project extends Eloquent {
-    use Codesleeve\Stapler\Stapler;
+class Project extends Eloquent implements StaplerableInterface{
+    use EloquentTrait;
 
     /**
      * The database table used by the model.
