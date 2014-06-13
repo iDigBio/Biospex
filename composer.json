@@ -10,8 +10,9 @@
         "vespakoen/menu": "dev-master",
         "mcamara/laravel-localization": "0.13.*",
         "cartalyst/sentry": "2.1.*",
-        "codesleeve/stapler": "dev-master",
-        "felixkiss/uniquewith-validator": "1.0.*"
+        "felixkiss/uniquewith-validator": "1.0.*",
+        "codesleeve/laravel-stapler": "1.0.*",
+        "codesleeve/asset-pipeline": "dev-master"
 	},
     "require-dev": {
         "barryvdh/laravel-ide-helper": "1.*",

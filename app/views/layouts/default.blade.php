@@ -8,15 +8,14 @@
     </title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Bootstrap: compiled and minified CSS -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
     @section ('styles')
     @show
-    {{ HTML::style('css/style.css') }}
+    <?= stylesheet_link_tag() ?>
+    <?= javascript_include_tag() ?>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 </head>
 
 <body>
@@ -75,21 +74,5 @@
 </div>
 
 <!-- ./ container -->
-
-<!-- Javascripts
-================================================== -->
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-<script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
-<script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/additional-methods.min.js"></script>
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-<!--[if lt IE 9]>
-<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-<![endif]-->
-@section('scripts')
-@show
-<!-- Thanks to Zizaco for the Restfulizer script.  http://zizaco.net  -->
-{{ HTML::script('js/restfulizer.js') }}
-{{ HTML::script('js/script.js') }}
 </body>
 </html>
