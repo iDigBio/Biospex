@@ -111,8 +111,9 @@ return array(
         'Menu\MenuServiceProvider',
         'Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider',
         'Cartalyst\Sentry\SentryServiceProvider',
-        'Codesleeve\Stapler\StaplerServiceProvider',
         'Felixkiss\UniqueWithValidator\UniqueWithValidatorServiceProvider',
+        'Codesleeve\LaravelStapler\LaravelStaplerServiceProvider',
+        'Codesleeve\AssetPipeline\AssetPipelineServiceProvider',
 
     ),
 
