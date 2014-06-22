@@ -44,6 +44,32 @@ $(document).ready(function() {
         }
     });
 
+    var groups = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        limit: 10,
+        prefetch: {
+            url: '/groups/dropdown',
+            filter: function(list) {
+                return $.map(list, function(group) { return { name: group }; });
+            }
+        }
+    });
+
+    groups.initialize();
+
+    $('.typeahead').typeahead(
+        {
+            hint: true,
+            highlight: true,
+            minLength: 1
+        },
+        {
+        name: 'groups',
+        displayKey: 'name',
+        source: groups.ttAdapter()
+    });
+
     /*
     $('input[name="user"]').change(function(){
         $('input[class="userperm"]:checkbox').prop('checked', this.checked);
@@ -63,7 +89,7 @@ $(document).ready(function() {
     */
 });
 
-
+/*
 $(function () {
     $("#list").jqGrid({
         url: "example.php",
@@ -88,3 +114,4 @@ $(function () {
         autoencode: true
     });
 });
+ */

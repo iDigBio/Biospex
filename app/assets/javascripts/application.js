@@ -14,4 +14,5 @@
 //= require bootstrap
 //= require jquery.1.11.1.validate
 //= require jquery.1.11.1.validate-additional-methods
+//= require typeahead.bundle
 //= require_tree .
