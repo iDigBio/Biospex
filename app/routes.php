@@ -72,6 +72,7 @@ Route::group(
         Route::get('projects/all', 'ProjectsController@all');
 
         // Group Routes
+        Route::get('groups/dropdown', array('as' => 'dropdown', 'uses' => 'GroupsController@dropdown'));
         Route::resource('groups', 'GroupsController');
 
         // Group/Projects
@@ -83,7 +84,7 @@ Route::group(
         // Group/Projects/Expeditions
         Route::resource('groups.projects.expeditions', 'ExpeditionsController');
         Route::get('groups/{groups}/projects/{projects}/expeditions/{expeditions}/duplicate', array('as' => 'expedition-dup', 'uses' => 'ExpeditionsController@duplicate'));
-        Route::get('groups/{groups}/projects/{projects}/expeditions/{expeditions}/export', array('as' => 'export', 'uses' => 'ExpeditionsController@export'));
+        Route::get('groups/{groups}/projects/{projects}/expeditions/{expeditions}/process', array('as' => 'process', 'uses' => 'ExpeditionsController@process'));
 
         // Project routes
         /*
