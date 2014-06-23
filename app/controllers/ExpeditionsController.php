@@ -93,7 +93,9 @@ class ExpeditionsController extends BaseController {
     /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @param $groupId
+     * @param $projectId
+     * @return \Illuminate\View\View
      */
     public function index ($groupId, $projectId)
     {
@@ -109,7 +111,9 @@ class ExpeditionsController extends BaseController {
     /**
      * Show the form for creating a new resource.
      *
-     * @return Response
+     * @param $groupId
+     * @param $projectId
+     * @return \Illuminate\View\View
      */
     public function create ($groupId, $projectId)
     {
@@ -123,22 +127,25 @@ class ExpeditionsController extends BaseController {
     /**
      * Store a newly created resource in storage.
      *
-     * @return Response
+     * @param $groupId
+     * @param $projectId
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store ($groupId, $projectId)
     {
         // Form Processing
         $subjects = $this->subject->getUnassignedSubjects(Input::only('project_id', 'subjects'));
         $input = array_merge(Input::all(), array('subject_ids' => $subjects));
+
         $expedition = $this->expeditionForm->save($input);
 
         if($expedition)
         {
-            // Success!
             Session::flash('success', trans('expeditions.expedition-created'));
             return Redirect::action('ExpeditionsController@show', array($groupId, $projectId, $expedition->id));
-
-        } else {
+        }
+        else
+        {
             Session::flash('error', trans('expeditions.expedition-save-error'));
             return Redirect::action('ExpeditionsController@create', $groupId)
                 ->withInput()
@@ -149,8 +156,10 @@ class ExpeditionsController extends BaseController {
     /**
      * Display the specified resource.
      *
-     * @param  int $id
-     * @return Response
+     * @param $groupId
+     * @param $projectId
+     * @param $expeditionId
+     * @return \Illuminate\View\View
      */
     public function show ($groupId, $projectId, $expeditionId)
     {
@@ -166,6 +175,7 @@ class ExpeditionsController extends BaseController {
      * @param $groupId
      * @param $projectId
      * @param $expeditionId
+     * @return \Illuminate\View\View
      */
     public function duplicate ($groupId, $projectId, $expeditionId)
     {
@@ -179,8 +189,10 @@ class ExpeditionsController extends BaseController {
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int $id
-     * @return Response
+     * @param $groupId
+     * @param $projectId
+     * @param $expeditionId
+     * @return \Illuminate\View\View
      */
     public function edit ($groupId, $projectId, $expeditionId)
     {
@@ -194,8 +206,10 @@ class ExpeditionsController extends BaseController {
     /**
      * Update the specified resource in storage.
      *
-     * @param  int $id
-     * @return Response
+     * @param $groupId
+     * @param $projectId
+     * @param $expeditionId
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update ($groupId, $projectId, $expeditionId)
     {
@@ -216,8 +230,16 @@ class ExpeditionsController extends BaseController {
         }
     }
 
-    public function export($groupId, $projectId, $expeditionId)
+    /**
+     * Start processing expedition
+     *
+     * @param $groupId
+     * @param $projectId
+     * @param $expeditionId
+     */
+    public function process($groupId, $projectId, $expeditionId)
     {
+        die("Temporary display until processing is enabled.");
         $expedition = $this->expedition->findWith($expeditionId, ['workflow']);
         $class ='Biospex\Services\Workflow\\' . $expedition->workflow->class_name;
         $workflow = $class::factory();
@@ -227,8 +249,10 @@ class ExpeditionsController extends BaseController {
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $id
-     * @return Response
+     * @param $groupId
+     * @param $projectId
+     * @param $expeditionId
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy ($groupId, $projectId, $expeditionId)
     {
