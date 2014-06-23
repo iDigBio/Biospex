@@ -42,5 +42,5 @@ return array (
     'file-required'             => "A file upload is required",
     'upload-error'              => "An error occurred uploading the file",
     'upload-success'            => "Upload was successful. Your file will be processed shortly",
-
+    'no-projects'               => "No projects exist for your groups",
 );
