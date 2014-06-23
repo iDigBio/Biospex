@@ -161,14 +161,24 @@ class UsersController extends BaseController {
         $user = $this->user->find($id);
 
         if($user == null || !is_numeric($id))
-        {
-            // @codeCoverageIgnoreStart
             return \App::abort(404);
-            // @codeCoverageIgnoreEnd
-        }
 
         $viewPermissions = Sentry::getUser()->hasAccess('permission_view');
-        return View::make('users.show', compact('user', 'viewPermissions'));
+
+        $userGroups = $user->isSuperUser() ? $this->group->all() : $user->getGroups();
+        foreach ($userGroups as $userGroup)
+        {
+            if ($userGroup->name == 'Users')
+                continue;
+
+            $groups[] = $userGroup;
+            foreach ($userGroup->projects as $project)
+            {
+                $projects[] = $project;
+            }
+        }
+
+        return View::make('users.show', compact('user', 'viewPermissions', 'groups', 'projects'));
     }
 
 	/**
