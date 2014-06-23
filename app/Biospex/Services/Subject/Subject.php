@@ -125,14 +125,10 @@ class Subject {
     {
         $this->dom = new \DOMDocument();
         $this->dom->preserveWhiteSpace = false;
-        if ($string)
-        {
-            $this->dom->loadXml($meta);
-        }
-        else
-        {
-            $this->dom->load($meta);
-        }
+
+        $dom = ($string) ? $this->dom->loadXml($meta) : $this->dom->load($meta);
+        if ( ! $dom)
+            return false;
 
         $this->xpath = new \DOMXpath($this->dom);
         $this->xpath->registerNamespace('ns', $this->dom->documentElement->namespaceURI);
@@ -217,6 +213,7 @@ class Subject {
      */
     public function loadCsv ($filePath, $type)
     {
+        // TODO Use meta.xml fieldsTerminatedBy to determine tab or comma
         $result = array();
         $handle = fopen($filePath, "r");
         if ($handle) {
