@@ -39,11 +39,6 @@ class Project extends Eloquent implements StaplerableInterface{
     protected $table = 'projects';
 
     /**
-     * Allow soft deletes
-     */
-    protected $softDelete = true;
-
-    /**
      * @var array
      */
     protected $fillable = array(
@@ -64,7 +59,6 @@ class Project extends Eloquent implements StaplerableInterface{
         'hashtag',
         'activities',
         'language_skills',
-        'workflow_id',
         'logo',
         'banner',
         'target_fields'
@@ -91,7 +85,6 @@ class Project extends Eloquent implements StaplerableInterface{
         'hashtag' => 'string',
         'activities' => 'string',
         'language_skills' => 'string',
-        'workflow_id' => 'integer',
         'logo' => 'string',
         'banner' => 'string',
         'target_fields' => 'text',
@@ -157,6 +150,14 @@ class Project extends Eloquent implements StaplerableInterface{
     public function import()
     {
         return $this->hasMany('Import');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function workflow()
+    {
+        return $this->belongsToMany('Workflow');
     }
 
     /**

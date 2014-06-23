@@ -24,9 +24,9 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Jenssegers\Mongodb\Model as Moloquent;
+use Jenssegers\Eloquent\Model as Eloquent;
 
-class Subject extends Moloquent {
+class Subject extends Eloquent {
 
     /**
      * Set connection since extending from Moloquent
@@ -37,11 +37,6 @@ class Subject extends Moloquent {
      * Set primary id of table
      */
     protected $primaryKey = 'id';
-
-    /**
-     * Allow soft deletes
-     */
-    protected $softDelete = true;
 
     /**
      * @var array
@@ -59,8 +54,8 @@ class Subject extends Moloquent {
      */
     public function getUnassignedSubjectCount($projectId)
     {
-        return $this->has('expedition','<',1)
-            ->where('project_id',$projectId)
+        return Subject::has('expedition','<', 1)
+            ->where('project_id', $projectId)
             ->count();
     }
 

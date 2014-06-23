@@ -1,10 +1,10 @@
 <?php
 /**
- * Group.php
+ * WorkflowExec.php
  *
  * @package    Biospex Package
  * @version    1.0
- * @author     Robert Bruhn <79e6ef82@opayq.com>
+ * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
  * @link       http://biospex.org
@@ -23,70 +23,43 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Cartalyst\Sentry\Groups\Eloquent\Group as SentryGroup;
-use Illuminate\Support\Facades\Config;
 
-class Group extends SentryGroup {
+class WorkflowManager extends Eloquent {
 
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'groups';
+    protected $table = 'workflow_manager';
 
-    /**
-     * Allow soft deletes
-     */
-    protected $softDelete = true;
-
-    /**
-     * @var array
-     */
     protected $fillable = array(
-        'user_id',
-        'name',
-        'permissions',
+        'expedition_id',
+        'user_id'
     );
 
     /**
      * Array used by FactoryMuff to create Test objects
-     *
-     * user_id is owner of the group
      */
     public static $factory = array(
-        'user_id' => 'factory|User',
-        'name' => 'string',
-        'permissions' => 'call|defaultPermissions',
+        'expedition_id' => 'factory|Expedition',
+        'user_id' => 'factory|User'
     );
 
     /**
-     * Returns owner of the group
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function owner()
+    public function expedition()
     {
-        return $this->belongsTo('User', 'user_id');
+        return $this->belongsTo('Expedition');
     }
 
     /**
-     * Return projects owned by the group
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function projects()
+    public function user()
     {
-        return $this->hasMany('Project');
+        return $this->belongsTo('User');
     }
 
-    /**
-     * Returns default permissions for Factory Muff
-     *
-     * @return array
-     */
-    public static function defaultPermissions()
-    {
-        return Config::get('config.group_permissions');
-    }
 }

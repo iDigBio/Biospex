@@ -24,9 +24,9 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Jenssegers\Mongodb\Model as Moloquent;
+use Jenssegers\Mongodb\Model as Eloquent;
 
-class SubjectDoc extends Moloquent {
+class SubjectDoc extends Eloquent {
 
     /**
      * Redefine connection to use mongodb
@@ -47,11 +47,6 @@ class SubjectDoc extends Moloquent {
      * set guarded properties
      */
     protected $guarded = array('_id');
-
-    /**
-     * Allow soft deletes
-     */
-    protected $softDelete = true;
 
     /**
      * Finds document by unique object id (from media.csv)

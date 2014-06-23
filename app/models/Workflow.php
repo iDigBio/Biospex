@@ -1,6 +1,6 @@
 <?php
 /**
- * WorkFlow.php
+ * Workflow.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -24,7 +24,7 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class WorkFlow extends Eloquent {
+class Workflow extends Eloquent {
 
     /**
      * The database table used by the model.
@@ -45,11 +45,11 @@ class WorkFlow extends Eloquent {
     );
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function expedition()
+    public function project()
     {
-        return $this->hasMany('Expedition');
+        return $this->belongsToMany('Project');
     }
 
 }

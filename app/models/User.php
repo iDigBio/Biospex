@@ -52,21 +52,19 @@ class User extends SentryUser {
     );
 
     /**
-     * Return groups owned by the user
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function ownsGroups()
-    {
-        return $this->hasMany('Group');
-    }
-
-    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function import()
     {
         return $this->hasMany('Import');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function workflowManager()
+    {
+        return $this->hasMany('WorkflowManager');
     }
 
     /**

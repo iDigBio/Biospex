@@ -33,11 +33,6 @@ class Meta extends Eloquent {
      */
     protected $table = 'metas';
 
-    /**
-     * Allow soft deletes
-     */
-    protected $softDelete = true;
-
     protected $fillable = array(
         'project_id',
         'data'

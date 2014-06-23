@@ -33,11 +33,6 @@ class Expedition extends Eloquent {
     protected $table = 'expeditions';
 
     /**
-     * Allow soft deletes
-     */
-    protected $softDelete = true;
-
-    /**
      * Accepted attributes
      *
      * @var array
@@ -47,7 +42,6 @@ class Expedition extends Eloquent {
         'title',
         'description',
         'keywords',
-        'workflow_id'
     );
 
     /**
@@ -58,7 +52,6 @@ class Expedition extends Eloquent {
         'title' => 'string',
         'description' => 'text',
         'keywords' => 'string',
-        'workflow_id' => 'integer'
     );
 
     /**
@@ -96,9 +89,9 @@ class Expedition extends Eloquent {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function workflow()
+    public function workflowManager()
     {
-        return $this->belongsTo('WorkFlow');
+        return $this->hasMany('WorkflowManager');
     }
 
     /**
