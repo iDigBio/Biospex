@@ -9,7 +9,7 @@
 {{-- Content --}}
 @section('content')
 	<h4>@lang('pages.account-profile')</h4>
-	
+
   	<div class="well clearfix">
 	    <div class="col-md-8">
 		    @if ($user->first_name)
@@ -29,18 +29,30 @@
 	</div>
 
 	<h4>@lang('groups.group-memberships'):</h4>
-	<?php $userGroups = $user->getGroups(); ?>
 	<div class="well">
 	    <ul>
-	    	@if (count($userGroups) >= 1)
-		    	@foreach ($userGroups as $group)
-					<li>{{ $group['name'] }}</li>
+	    	@if (count($groups) >= 1)
+		    	@foreach ($groups as $group)
+                    <li><a href="{{ URL::route('groups.show', [$group->id]) }}">{{ $group->name }}</a></li>
 				@endforeach
-			@else 
+			@else
 				<li>@lang('groups.group-no-memberships').</li>
 			@endif
 	    </ul>
 	</div>
+
+    <h4>@lang('projects.projects'):</h4>
+    <div class="well">
+        <ul>
+            @if (count($projects) >= 1)
+            @foreach ($projects as $project)
+            <li><a href="{{ URL::route('groups.projects.show', [$project->group_id, $project->id]) }}">{{ $project->title }}</a></li>
+            @endforeach
+            @else
+            <li>@lang('projects.no-projects').</li>
+            @endif
+        </ul>
+    </div>
 
     @if ($viewPermissions)
     <h4>@lang('pages.permissions-user'):</h4>
