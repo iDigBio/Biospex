@@ -18,10 +18,12 @@
             {{ ($errors->has('name') ? $errors->first('name') : '') }}
         </div>
 
+        {{ Form::hidden('user_id', $user->id) }}
+
         {{ Form::submit(trans('buttons.create'), array('class' => 'btn btn-primary btn-xs')) }}
 
     {{ Form::close() }}
     </div>
-</div>
+</div>1
 
 @stop
