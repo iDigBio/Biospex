@@ -24,8 +24,8 @@
     <div class="col-md-4">
         <p><em>@lang('pages.created'): {{ $expedition->created_at }}</em></p>
         <p><em>@lang('pages.updated'): {{ $expedition->updated_at }}</em></p>
+        <button class="btn btn-success btn-xs" {{ $expedition->exported ? 'disabled="disabled"' : '' }} onClick="location.href='{{ action('process', [$groupId, $project->id, $expedition->id]) }}'">@lang('buttons.process')</button>
         <button class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ URL::route('expedition-dup', [$groupId, $project->id, $expedition->id]) }}'">@lang('buttons.duplicate')</button>
-        <button class="btn btn-default btn-xs" {{ $expedition->exported ? 'disabled="disabled"' : '' }} onClick="location.href='{{ action('export', [$groupId, $project->id, $expedition->id]) }}'">@lang('buttons.export')</button>
         <button class="btn btn-warning btn-xs" onClick="location.href='{{ action('ExpeditionsController@edit', [$groupId, $project->id, $expedition->id]) }}'">@lang('buttons.edit')</button>
         <button class="btn btn-default btn-xs btn-danger action_confirm" href="{{ URL::route('groups.projects.expeditions.destroy', [$groupId, $project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.delete')</button></td>
     </div>
