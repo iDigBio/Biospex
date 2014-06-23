@@ -58,10 +58,11 @@ class GroupRepository extends Repository implements GroupInterface {
 		$result = array();
 		try {
 			    // Create the group
-			    $this->sentry->createGroup(array(
-			        'name'        => e($data['name']),
-			        'permissions' => array(),
-			    ));
+			    $result['group'] = $this->sentry->createGroup(array(
+                    'user_id'     => e($data['user_id']),
+                    'name'        => e($data['name']),
+                    'permissions' => array(),
+                ));
 
 			   	$result['success'] = true;
 	    		$result['message'] = trans('groups.created');
