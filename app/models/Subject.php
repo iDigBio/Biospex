@@ -25,8 +25,12 @@
  */
 
 use Jenssegers\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 class Subject extends Eloquent {
+
+    use SoftDeletingTrait;
+    protected $dates = ['deleted_at'];
 
     /**
      * Set connection since extending from Moloquent

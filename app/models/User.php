@@ -24,8 +24,12 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 use Cartalyst\Sentry\Users\Eloquent\User as SentryUser;
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 class User extends SentryUser {
+
+    use SoftDeletingTrait;
+    protected $dates = ['deleted_at'];
 
     /**
      * The database table used by the model.

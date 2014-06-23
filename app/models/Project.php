@@ -27,9 +27,14 @@
 use Illuminate\Support\Facades\Config;
 use Codesleeve\Stapler\ORM\EloquentTrait;
 use Codesleeve\Stapler\ORM\StaplerableInterface;
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 class Project extends Eloquent implements StaplerableInterface{
+
     use EloquentTrait;
+    use SoftDeletingTrait;
+    protected $dates = ['deleted_at'];
+
 
     /**
      * The database table used by the model.

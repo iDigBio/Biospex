@@ -25,8 +25,12 @@
  */
 use Cartalyst\Sentry\Groups\Eloquent\Group as SentryGroup;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 class Group extends SentryGroup {
+
+    use SoftDeletingTrait;
+    protected $dates = ['deleted_at'];
 
     /**
      * The database table used by the model.

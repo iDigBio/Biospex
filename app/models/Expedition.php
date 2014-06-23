@@ -23,7 +23,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
+
 class Expedition extends Eloquent {
+
+    use SoftDeletingTrait;
+    protected $dates = ['deleted_at'];
 
     /**
      * The database table used by the model.
