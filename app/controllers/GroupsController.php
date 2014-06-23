@@ -81,8 +81,8 @@ class GroupsController extends BaseController {
 	 */
 	public function create()
 	{
-        //Form for creating a new Group
-		return View::make('groups.create');
+        $user = Sentry::getUser();
+		return View::make('groups.create', compact('user'));
 	}
 
 	/**
@@ -97,12 +97,23 @@ class GroupsController extends BaseController {
         
         if( $result['success'] )
         {
-            Event::fire('group.created');
+            $user = Sentry::getUser();
+            // Assign the group to the user
+            if ($user->addGroup($result['group']))
+            {
+                Event::fire('group.created');
 
-            // Success!
-            Session::flash('success', $result['message']);
-            return Redirect::action('GroupsController@index');
-
+                // Success!
+                Session::flash('success', $result['message']);
+                return Redirect::action('GroupsController@index');
+            }
+            else
+            {
+                Session::flash('error', 'groups.useradderror');
+                return Redirect::action('GroupsController@create')
+                    ->withInput()
+                    ->withErrors( $this->groupForm->errors() );
+            }
         } else {
             Session::flash('error', $result['message']);
             return Redirect::action('GroupsController@create')
@@ -203,5 +214,18 @@ class GroupsController extends BaseController {
             return Redirect::action('GroupsController@index');
         }
 	}
+
+    public function dropdown()
+    {
+        $groups = $this->group->all();
+        $unset = array('Admins', 'Users');
+        foreach ($groups as $key => $group)
+        {
+            if (!in_array($group->name, $unset))
+                $data[$key] = $group->name;
+        }
+
+        return json_encode($data);
+    }
 
 }
