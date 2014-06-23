@@ -28,12 +28,15 @@
                 {{ Form::password('password_confirmation', array('class' => 'form-control', 'placeholder' => trans('pages.password-confirm'))) }}
                 {{ ($errors->has('password_confirmation') ?  $errors->first('password_confirmation') : '') }}
             </div>
-            
-            {{ Form::submit(trans('buttons.register'), array('class' => 'btn btn-primary btn-xs')) }}
+
+            <div class="form-group {{ ($errors->has('group')) ? 'has-error' : '' }}">
+                {{ Form::text('group', null, array('id' => 'group', 'class' => 'typeahead form-control', 'placeholder' => 'Group')) }}
+            </div>
+
+        {{ Form::submit(trans('buttons.register'), array('class' => 'btn btn-primary btn-xs')) }}
             
         {{ Form::close() }}
     </div>
 </div>
-
 
 @stop
