@@ -36,7 +36,7 @@ class CreateWorkFlowsTable extends Migration {
         Schema::create('workflows', function(Blueprint $table) {
             $table->increments('id');
             $table->text('title');
-            $table->text('class_name');
+            $table->text('class');
             $table->timestamps();
 
             $table->engine = 'InnoDB';

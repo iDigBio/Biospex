@@ -53,7 +53,6 @@ class CreateProjectsTable extends Migration {
             $table->string('hashtag');
             $table->string('activities');
             $table->string('language_skills');
-            $table->integer('workflow_id');
             $table->string("logo_file_name")->nullable();
             $table->integer("logo_file_size")->nullable();
             $table->string("logo_content_type")->nullable();
