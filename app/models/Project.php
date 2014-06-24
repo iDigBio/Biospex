@@ -123,6 +123,7 @@ class Project extends Eloquent implements StaplerableInterface{
     public function group()
     {
         return $this->belongsTo('Group', 'group_id');
+        //return $this->belongsTo('Group', 'group_id')->whereNull('deleted_at');
     }
 
     /**
