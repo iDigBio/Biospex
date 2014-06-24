@@ -182,7 +182,6 @@ return array(
 		'Validator'     => 'Illuminate\Support\Facades\Validator',
 		'View'          => 'Illuminate\Support\Facades\View',
         'Sentry'        => 'Cartalyst\Sentry\Facades\Laravel\Sentry',
-        'Moloquent'     => 'Jenssegers\Mongodb\Model',
         'Menu'          => 'Menu\Menu',
         'Local'         => 'Mcamara\LaravelLocalization\Facades\LaravelLocalization',
         'Carbon'        => 'Carbon\Carbon',
