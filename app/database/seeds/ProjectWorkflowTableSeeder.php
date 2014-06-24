@@ -1,6 +1,6 @@
 <?php
 /**
- * TruncateSubjectsSeeder.php
+ * ProjectWorkflowTableSeeder.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -23,23 +23,22 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-
-class TruncateSubjects extends Seeder {
+class ProjectWorkflowTableSeeder extends Seeder {
     /**
      * Run the database seeds.
      *
      * @return void
      */
-    public function run ()
+    public function run()
     {
-        Eloquent::unguard();
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        DB::table('expeditions')->truncate();
-        DB::table('expedition_subject')->truncate();
-        DB::table('subjects')->truncate();
-        DB::connection('mongodb')->collection('subjectsdocs')->delete();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        DB::table('project_workflow')->truncate();
+
+        $projects = Project::all();
+
+        foreach ($projects as $project)
+        {
+            $project->workflow()->attach(1);
+        }
     }
+
 }
