@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class WorkflowManager extends Migration {
+class CreateWorkflowManager extends Migration {
 
 	/**
 	 * Run the migrations.
