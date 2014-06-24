@@ -54,7 +54,6 @@ class ProjectsTableSeeder extends Seeder {
             'hashtag' => '#FLDigBlitz',
             'activities' => 'Transcription',
             'language_skills' => 'English and perhaps occasionally Spanish',
-            'workflow_id' => 1,
         ));
 	}
 

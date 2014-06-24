@@ -37,9 +37,9 @@ class WorkFlowsTableSeeder extends Seeder {
 
         DB::table('workflows')->truncate();
 
-        WorkFlow::create(array(
+        Workflow::create(array(
             'title' => "Notes From Nature",
-            'class_name' => "NotesFromNature",
+            'class' => "NotesFromNature",
         ));
     }
 
