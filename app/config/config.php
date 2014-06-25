@@ -2,6 +2,8 @@
 
 return array(
 
+    'adminEmail' => 'biospex@gmail.com',
+
     'imgTypes' => array(
         'image/jpeg' => '.jpg',
         'image/png' => '.png',
