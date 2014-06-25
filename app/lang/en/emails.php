@@ -26,10 +26,13 @@
 return array (
     'subject'                   => "Subject",
     'subjects'                  => "Subjects",
-    'import_complete'           => "Subject Import Complete",
+    'import_complete'           => "Project Data Import Complete",
     'duplicates'                => "Duplicates",
     'explain_duplicates'        => "If duplicates exist, you will find their ids in the attached file.",
-    'import_message'            => "The following subject import has been completed.",
+    'import_message'            => "The following data import has been completed.",
     'thank_you'                 => "Thank you",
-    'signature'                 => "The Biospex Team"
+    'signature'                 => "The Biospex Team",
+    'error'                     => "An error has occurred.",
+    'error_import'              => "An error has occurred during data import.",
+    'error_message'             => "Error Message",
 );
