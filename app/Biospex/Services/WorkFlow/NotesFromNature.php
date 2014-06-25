@@ -26,18 +26,58 @@
 
 class NotesFromNature extends WorkFlow
 {
-    public function export($expeditionId)
+    /**
+     * Constructor
+     */
+    public function __construct()
     {
-        $pid = $this->backGroundProcess("php artisan nfn:export $expeditionId");
-
-        return $pid;
+        parent::__construct();
     }
 
+    /**
+     * Set state for expedition
+     *
+     * @return array
+     */
+    protected function setState()
+    {
+        return $this->state = array(
+            'export'    => 'export',
+            'status'     => 'getStatus',
+            'results'    => 'getResults',
+            'completed'  => 'completed',
+            'analyze'    => 'analyze',
+
+        );
+    }
+
+    public function processState()
+    {
+
+    }
+
+    /**
+     * Export the expedition
+     *
+     * @param $expeditionId
+     * @return string
+     */
+    public function export($expeditionId)
+    {
+
+    }
+
+    /**
+     * Get current status
+     */
     public function getStatus()
     {
         return;
     }
 
+    /**
+     * Get results
+     */
     public function getResults()
     {
         return;

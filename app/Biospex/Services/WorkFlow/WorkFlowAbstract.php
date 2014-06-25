@@ -25,6 +25,25 @@
  */
 
 abstract class WorkFlow {
+
+    /**
+     * @var array
+     */
+    protected $state = array();
+
+    public function __construct()
+    {
+        $this->setState();
+    }
+
+    abstract protected function setState();
+
+    abstract protected function export($expeditionId);
+
+    abstract protected function getStatus();
+
+    abstract protected function getResults();
+
     /**
      * Use PHP 5.3 late static binding feature for child classes
      *
@@ -35,12 +54,6 @@ abstract class WorkFlow {
         $class = get_called_class();
         return new $class;
     }
-
-    abstract function export($expeditionId);
-
-    abstract function getStatus();
-
-    abstract function getResults();
 
     public function backGroundProcess($command, $priority = 0)
     {

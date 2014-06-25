@@ -1,6 +1,6 @@
-<?php namespace Biospex\Mailer;
+<?php namespace Biospex\Repo\WorkflowManger;
 /**
- * Mailer.php
+ * WorkflowMangerInterface.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -23,17 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Mail;
 
-abstract class Mailer {
+use Biospex\Repo\RepositoryInterface;
 
-	public function sendTo($email, $subject, $view, $data = array(), $attachment = '')
-	{
-		Mail::queue($view, $data, function($message) use ($email,$subject,$attachment)
-		{
-			$message->to($email)->subject($subject);
-            if ( ! empty($attachment))
-                $message->attach($attachment);
-		});
-	}
-}
+interface WorkflowMangerInterface extends RepositoryInterface {}

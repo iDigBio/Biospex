@@ -28,6 +28,7 @@ use Validator;
 use Config;
 use Biospex\Repo\Meta\MetaInterface;
 use Biospex\Repo\SubjectDoc\SubjectDocInterface;
+use Biospex\Repo\Subject\SubjectInterface;
 
 class Subject {
 
@@ -101,16 +102,23 @@ class Subject {
     protected $duplicateArray = array();
 
     /**
+     * @var
+     */
+    protected $delimiter;
+
+    /**
      * Constructor
      * @param MetaInterface $meta
      */
     public function __construct(
         MetaInterface $meta,
-        SubjectDocInterface $subjectdoc
+        SubjectDocInterface $subjectdoc,
+        SubjectInterface $subject
     )
     {
         $this->meta = $meta;
         $this->subjectdoc = $subjectdoc;
+        $this->subject = $subject;
         $this->metaData = Config::get('config.metaData');
     }
 
@@ -177,6 +185,7 @@ class Subject {
     public function setFiles ()
     {
         $coreType = $this->getDomTagAttribute('core', 'rowType');
+        $this->delimiter = $this->getDomTagAttribute('core', 'fieldsTerminatedBy');
         $coreFile = $this->getElementByTag('core');
 
         if (preg_match('/occurrence/i', $coreType))
@@ -213,12 +222,14 @@ class Subject {
      */
     public function loadCsv ($filePath, $type)
     {
+        $delimiter = str_replace("\\t", "\t", $this->delimiter);
+
         // TODO Use meta.xml fieldsTerminatedBy to determine tab or comma
         $result = array();
         $handle = fopen($filePath, "r");
         if ($handle) {
             $header = null;
-            while (($row = fgetcsv($handle, 10000, "\t")) !== FALSE) {
+            while (($row = fgetcsv($handle, 10000, $delimiter)) !== FALSE) {
                 if ($header === null) {
                     $this->occurrenceHeader = ($type == 'occurrence') ? $row : $this->occurrenceHeader;
                     $this->multiMediaHeader = ($type == 'multimedia') ? $row : $this->multiMediaHeader;
@@ -298,7 +309,13 @@ class Subject {
                 continue;
             }
 
-            $this->subjectdoc->create($subject);
+            $subjectDoc = $this->subjectdoc->create($subject);
+            $data = array(
+                'mongo_id' => $subjectDoc->_id,
+                'project_id' => $subjectDoc->project_id,
+                'object_id' => $subjectDoc->id,
+            );
+            $this->subject->create($data);
         }
 
         return $this->duplicateArray;
