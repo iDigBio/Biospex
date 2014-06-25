@@ -1,6 +1,6 @@
-<?php namespace Biospex\Repo\WorkflowManger;
+<?php namespace Biospex\Repo\WorkflowManager;
 /**
- * WorkflowMangerInterface.php
+ * WorkflowManagerInterface.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -26,4 +26,4 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface WorkflowMangerInterface extends RepositoryInterface {}
+interface WorkflowManagerInterface extends RepositoryInterface {}

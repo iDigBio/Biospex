@@ -1,6 +1,6 @@
-<?php namespace Biospex\Repo\WorkflowManger;
+<?php namespace Biospex\Repo\WorkflowManager;
 /**
- * WorkflowMangerRepository.php
+ * WorkflowManagerRepository.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -25,14 +25,14 @@
  */
 
 use Biospex\Repo\Repository;
-use WorkflowManger;
+use WorkflowManager;
 
-class WorkflowMangerRepository extends Repository implements WorkflowExecInterface {
+class WorkflowManagerRepository extends Repository implements WorkflowManagerInterface {
 
     /**
-     * @param WorkflowManger $model
+     * @param WorkflowManager $model
      */
-    public function __construct(WorkflowManger $model)
+    public function __construct(WorkflowManager $model)
     {
         $this->model = $model;
     }
