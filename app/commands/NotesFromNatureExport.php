@@ -25,9 +25,11 @@
  */
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Contracts\MessageProviderInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Biospex\Repo\Expedition\ExpeditionInterface;
 use Biospex\Services\Subject\Subject;
+
 
 class NotesFromNatureExport extends Command {
     /**
@@ -100,15 +102,26 @@ class NotesFromNatureExport extends Command {
     protected $metadata = array();
 
     /**
+     * Array to hold subjects and identifiers
+     *
+     * @var
+     */
+    protected $subjectArray;
+
+    protected $messages;
+
+    /**
      * Class constructor
      */
     public function __construct(
         Filesystem $filesystem,
+        MessageProviderInterface $messages,
         ExpeditionInterface $expedition,
         Subject $subject
     )
     {
         $this->filesystem = $filesystem;
+        $this->messages = $messages;
         $this->expedition = $expedition;
         $this->subject = $subject;
         $this->dataDir = Config::get('config.dataDir');
@@ -153,6 +166,12 @@ class NotesFromNatureExport extends Command {
         $expeditionId = $this->argument('expeditionId');
         $expedition = $this->expedition->findWith($expeditionId, ['subject.subjectDoc']);
 
+        if (empty($expedition))
+        {
+            $this->messages->add("error", "Expedition with id $expeditionId cannot be found.");
+            $this->report();
+        }
+
         $title = preg_replace('/[^a-zA-Z0-9]/', '', $expedition->title);
         $this->tmpFileDir = "{$this->dataDir}/$title";
         $this->createDir($this->tmpFileDir);
@@ -165,6 +184,7 @@ class NotesFromNatureExport extends Command {
 
         $this->executeCommand("tar -czf {$this->dataDir}/$title.tar.gz -C {$this->dataDir} $title");
 
+        // TODO create reports and error messaging for export code.
         $this->report();
 
         return;
@@ -180,11 +200,13 @@ class NotesFromNatureExport extends Command {
 
         foreach ($expedition->subject as $subject)
         {
+            $this->subjectArray[$subject->id] = $subject->object_id;
             $remoteImgColumn = $this->getRemoteImgColumn($subject->subjectDoc->meta_id);
 
             if (empty($subject->subjectDoc->{$remoteImgColumn}))
             {
                 $this->missingImgUrl[] = array($subject->object_id);
+                continue;
             }
 
             list($image, $ext) = $this->getImage($subject->subjectDoc->bestQualityAccessURI);
@@ -229,6 +251,7 @@ class NotesFromNatureExport extends Command {
             list($width, $height, $type, $attr) = getimagesize($file->getRealPath()); // $width, $height, $type, $attr
             $info = pathinfo($file->getRealPath()); // $dirname, $basename, $extension, $filename
 
+            $data['identifier'] = $this->subjectArray[$info['filename']];
             $data['original']['path'] = array($info['filename'], ".{$info['extension']}");
             $data['original']['name'] = $info['basename'];
             $data['original']['width'] = $width;
@@ -311,9 +334,17 @@ class NotesFromNatureExport extends Command {
 
         $this->setMetaData($metaId);
 
-        $this->subject->loadDom($this->metaXml, true);
+        if ( ! $this->subject->loadDom($this->metaXml, true))
+        {
+            $this->messages->add("error", "Unable to load dom document using id $metaId.");
+            $this->report();
+        }
 
-        $node = $this->subject->getXpathQuery("//ns:field[contains(@term, '{$this->metaData['remoteImgUrl']}')]");
+        if ( ! $node = $this->subject->getXpathQuery("//ns:field[contains(@term, '{$this->metaData['remoteImgUrl']}')]"))
+        {
+            $this->messages->add("error", "Unable to perform xpath query using id $metaId.");
+            $this->report();
+        }
         $index = $node->attributes->getNamedItem("index")->nodeValue;
 
         $this->remoteImgColumn = $this->metaHeader[$index];
@@ -332,6 +363,11 @@ class NotesFromNatureExport extends Command {
             return;
 
         $meta = $this->subject->getMeta($metaId);
+        if ( ! $meta)
+        {
+            $this->messages->add("error", "Unable to get metadata using id $metaId.");
+            $this->report();
+        }
 
         $this->metaXml = $meta->xml;
         $this->metaHeader = json_decode($meta->header);
@@ -356,10 +392,22 @@ class NotesFromNatureExport extends Command {
     protected function createDir($dir)
     {
         if ( ! $this->filesystem->isDirectory($dir))
-            $this->filesystem->makeDirectory($dir);
+        {
+            if ( ! $this->filesystem->makeDirectory($dir))
+            {
+                $this->messages->add("error", "Unable to create directory.");
+                $this->report();
+            }
+        }
 
         if ( ! $this->filesystem->isWritable($dir))
-            chmod($dir, 0777);
+        {
+            if ( ! chmod($dir, 0777))
+            {
+                $this->messages->add("error", "Unable to make directory writable.");
+                $this->report();
+            }
+        }
     }
 
     /**
@@ -387,6 +435,6 @@ class NotesFromNatureExport extends Command {
      */
     protected function report()
     {
-        dd("Complete");
+        dd($this->messages->getMessageBag());
     }
 }

@@ -31,6 +31,7 @@ use Biospex\Services\Subject\Subject;
 use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Mailer\UserMailer;
+use Illuminate\Support\Contracts\MessageProviderInterface;
 
 class SubjectImport extends Command {
     /**
@@ -61,13 +62,20 @@ class SubjectImport extends Command {
     protected $dataTmp;
 
     /**
-     * Class constructor
+     * @var
+     */
+    protected $importId;
+
+    /**
+     * Constructor
      *
      * @param ImportInterface $import
-     * @param SubjectInterface $subject
-     * @param SubjectDocInterface $subjectdoc
-     * @param Excel $excel
      * @param Filesystem $filesystem
+     * @param Subject $subject
+     * @param UserInterface $user
+     * @param ProjectInterface $project
+     * @param UserMailer $mailer
+     * @param MessageProviderInterface $messages
      */
     public function __construct(
         ImportInterface $import,
@@ -75,7 +83,8 @@ class SubjectImport extends Command {
         Subject $subject,
         UserInterface $user,
         ProjectInterface $project,
-        UserMailer $mailer
+        UserMailer $mailer,
+        MessageProviderInterface $messages
     )
     {
         parent::__construct();
@@ -86,8 +95,10 @@ class SubjectImport extends Command {
         $this->user = $user;
         $this->project = $project;
         $this->mailer = $mailer;
+        $this->messages = $messages;
         $this->dataDir = Config::get('config.dataDir');
         $this->dataTmp = Config::get('config.dataTmp');
+        $this->adminEmail = Config::get('config.adminEmail');
     }
 
     /**
@@ -99,18 +110,30 @@ class SubjectImport extends Command {
     {
         $imports = $this->import->all();
 
+        if (count($imports) == 0)
+            exit;
+
         foreach ($imports as $import)
         {
+            if ($import->error)
+                continue;
+
+            $this->importId = $import->id;
+
             $this->makeTmp();
 
             $file = $this->dataDir . '/' . $import->file;
             $fileTmp = $this->dataTmp . '/' . $import->file;
 
-            $this->filesystem->move($file, $fileTmp);
+            $this->moveFile($file, $fileTmp);
 
             $this->unzip($fileTmp);
 
-            $xml = $this->subject->loadDom($this->dataTmp . '/' . 'meta.xml');
+            if ( ! $xml = $this->subject->loadDom($this->dataTmp . '/' . 'meta.xml'))
+            {
+                $this->messages->add("error", "Unable to load meta.xml to dom.");
+                $this->report();
+            }
 
             $this->subject->setFiles();
 
@@ -126,45 +149,14 @@ class SubjectImport extends Command {
 
             $duplicates = $this->subject->insertDocs($subjects);
 
-            $this->report($import->user_id, $import->project_id, $duplicates);
+            $this->report($duplicates);
 
             $this->destroyTmp();
 
             $this->import->destroy($import->id);
-
         }
 
-        return;
-
-    }
-
-    /**
-     * Send report for import
-     *
-     * @param $userId
-     * @param $projectId
-     * @param $duplicates
-     */
-    public function report($userId, $projectId, $duplicates)
-    {
-        $user = $this->user->find($userId);
-        $project = $this->project->find($projectId);
-
-        $email = $user->email;
-        $data['projectTitle'] = $project->title;
-        $data['duplicateCount'] = count($duplicates);
-
-        if ( ! empty($duplicates))
-        {
-            $attachment = "{$this->dataTmp}/{$userId}_{$projectId}.csv";
-            $fp = fopen($attachment, 'w');
-            foreach ($duplicates as $fields) {
-                fputcsv($fp, $fields);
-            }
-            fclose($fp);
-        }
-
-        $this->mailer->reportImport($email, $data, $attachment);
+        die("Completed\n");
     }
 
     /**
@@ -180,7 +172,22 @@ class SubjectImport extends Command {
             $zip->extractTo($this->dataTmp);
             $zip->close();
         } else {
-            echo 'Failed to extract' . PHP_EOL;
+            $this->messages->add("error", "Unable unzip file.");
+            $this->report();
+        }
+    }
+
+    /**
+     * Move file to tmp directory
+     * @param $file
+     * @param $fileTmp
+     */
+    public function moveFile($file, $fileTmp)
+    {
+        if ( ! $this->filesystem->move($file, $fileTmp))
+        {
+            $this->messages->add("error", "Unable to move file to temp directory.");
+            $this->report();
         }
     }
 
@@ -190,10 +197,24 @@ class SubjectImport extends Command {
     protected function makeTmp()
     {
         if ( ! $this->filesystem->isDirectory($this->dataTmp))
-            $this->filesystem->makeDirectory($this->dataTmp);
+        {
+            if ( ! $this->filesystem->makeDirectory($this->dataTmp))
+            {
+                $this->messages->add("error", "Unable to create temporary directory.");
+                $this->report();
+            }
+        }
 
         if ( ! $this->filesystem->isWritable($this->dataTmp))
-            chmod($this->dataTmp, 0777);
+        {
+            if ( ! chmod($this->dataTmp, 0777))
+            {
+                $this->messages->add("error", "Unable to make temporary directory writable.");
+                $this->report();
+            }
+        }
+
+        return;
     }
 
     /**
@@ -214,5 +235,60 @@ class SubjectImport extends Command {
             }
         }
         rmdir($this->dataTmp);
+    }
+
+    /**
+     * Send report for import
+     *
+     * @param $duplicates
+     */
+    public function report($duplicates = array())
+    {
+        $import = $this->import->find($this->importId);
+        $user = $this->user->find($import->user_id);
+        $project = $this->project->find($import->project_id);
+
+        $emails = array();
+        $attachment = '';
+
+        if ($this->messages->any())
+        {
+            $this->import->update(array('id' => $this->importId, 'error' => 1));
+
+            // error exists
+            $emails[] = $this->adminEmail;
+            $emails[] = $user->email;
+            $subject = trans('emails.error_import');
+            $data = array(
+                'importId' => $this->importId,
+                'projectTitle' => $project->title,
+                'errorMessage' => $this->messages->first('error')
+            );
+            $view = 'emails.reporterror';
+        }
+        else
+        {
+            // no errors but possible duplicates
+            $duplicateCount = count($duplicates);
+            if ($duplicateCount)
+            {
+                $attachment = "{$this->dataTmp}/{$user->id}_{$project->id}.csv";
+                $fp = fopen($attachment, 'w');
+                foreach ($duplicates as $fields) {
+                    fputcsv($fp, $fields);
+                }
+                fclose($fp);
+            }
+            $emails[] = $user->email;
+            $data = array('projectTitle' => $project->title, 'duplicateCount' => $duplicateCount);
+            $subject = trans('emails.import_complete');
+            $view = 'emails.reportsubject';
+        }
+
+        $this->mailer->reportImport($emails, $subject, $view, $data, $attachment);
+
+        if ($this->messages->any())
+            die();
+
     }
 }
