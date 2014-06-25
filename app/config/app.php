@@ -114,7 +114,6 @@ return array(
         'Felixkiss\UniqueWithValidator\UniqueWithValidatorServiceProvider',
         'Codesleeve\LaravelStapler\LaravelStaplerServiceProvider',
         'Codesleeve\AssetPipeline\AssetPipelineServiceProvider',
-        'anlutro\L4SmartErrors\L4SmartErrorsServiceProvider',
 
     ),
 
