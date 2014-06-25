@@ -26,7 +26,7 @@ $app = new Illuminate\Foundation\Application;
 
 $env = $app->detectEnvironment(array(
 	'local' => array('vbdev'),
-    'staging' => array('idiginfo-test'),
+    'develop' => array('idiginfo-test'),
 ));
 
 /*
