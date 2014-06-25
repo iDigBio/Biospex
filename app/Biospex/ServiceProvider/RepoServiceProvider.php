@@ -89,6 +89,9 @@ class RepoServiceProvider extends ServiceProvider {
         // bind meta repository
         $app->bind('Biospex\Repo\Meta\MetaInterface', 'Biospex\Repo\Meta\MetaRepository');
 
+        // bind workflow manager
+        $app->bind('Biospex\Repo\WorkflowManager\WorkflowManagerInterface', 'Biospex\Repo\WorkflowManager\WorkflowManagerRepository');
+
         // bind message bag
         $app->bind('Illuminate\Support\Contracts\MessageProviderInterface', 'Illuminate\Support\MessageBag');
     }
