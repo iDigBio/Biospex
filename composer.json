@@ -12,8 +12,7 @@
         "cartalyst/sentry": "2.1.*",
         "felixkiss/uniquewith-validator": "1.0.*",
         "codesleeve/laravel-stapler": "1.0.*",
-        "codesleeve/asset-pipeline": "dev-master",
-        "anlutro/l4-smart-errors": "2.*"
+        "codesleeve/asset-pipeline": "dev-master"
 	},
     "require-dev": {
         "barryvdh/laravel-ide-helper": "1.*",
