@@ -29,7 +29,7 @@ use Illuminate\Support\Contracts\MessageProviderInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Biospex\Repo\Expedition\ExpeditionInterface;
 
-class WorkFlowManager extends Command {
+class WorkFlowManagerCommand extends Command {
     /**
      * The console command name.
      *
