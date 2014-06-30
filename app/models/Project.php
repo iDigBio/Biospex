@@ -47,6 +47,7 @@ class Project extends Eloquent implements StaplerableInterface{
      * @var array
      */
     protected $fillable = array(
+        'user_id',
         'group_id',
         'title',
         'contact',
@@ -73,6 +74,7 @@ class Project extends Eloquent implements StaplerableInterface{
      * Array used by FactoryMuff to create Test objects
      */
     public static $factory = array(
+        'user_id' => 'factory|User',
         'group_id' => 'factory|Group',
         'title' => 'string',
         'contact' => 'string',
