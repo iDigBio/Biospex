@@ -151,7 +151,6 @@
         {{ ($errors->has('banner') ? $errors->first('banner') : '') }}
     </div>
     <?php
-    $count = is_null(Input::old('targetCount')) ? 0 : Input::old('targetCount');
     $i = 0;
     ?>
     @while ($i <= $count)
@@ -336,7 +335,6 @@
     </div>
 
     <?php
-    $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
     $i = 0;
     ?>
     @while ($i <= $count)

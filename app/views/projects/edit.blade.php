@@ -28,6 +28,7 @@
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             {{ Form::hidden('targetCount', $count, array('id' => 'targetCount')) }}
+            {{ Form::hidden('user_id', $project->user_id) }}
             {{ Form::hidden('group_id', $project->group_id) }}
             {{ Form::hidden('id', $project->id) }}
             {{ Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary btn-xs'))}}

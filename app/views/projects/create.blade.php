@@ -31,6 +31,7 @@
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             {{ Form::hidden('targetCount', 0, array('id' => 'targetCount')) }}
+            {{ Form::hidden('user_id', $user->id) }}
             {{ Form::hidden('group_id', $group->id) }}
             {{ Form::submit(trans('buttons.create'), array('class' => 'btn btn-primary btn-xs'))}}
         </div>
