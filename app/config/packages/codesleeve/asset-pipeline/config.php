@@ -49,7 +49,7 @@ return array(
 		'provider/assets/javascripts',
 		'provider/assets/stylesheets',
 		'provider/assets/images',
-        'provider/assets/fonts'
+        'provider/assets/stylesheets/fonts'
 	),
 
 	/*
