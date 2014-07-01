@@ -10,5 +10,5 @@
 |
 */
 Artisan::resolve('SubjectImport');
-Artisan::resolve('NotesFromNatureExport');
+Artisan::resolve('WorkFlowManagerCommand');
 
