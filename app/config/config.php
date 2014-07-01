@@ -16,9 +16,6 @@ return array(
         'remoteImgUrl'   => 'bestQualityAccessURI'
     ),
 
-    'nfnLrgImageWidth' => 1540,
-    'nfnSmImageWidth'  => 580,
-
     /** Default expedition data directories */
     'dataDir' => storage_path() . '/data',
     'dataTmp' => storage_path() . '/data/tmp',
