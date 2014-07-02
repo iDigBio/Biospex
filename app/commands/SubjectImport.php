@@ -258,7 +258,7 @@ class SubjectImport extends Command {
             // error exists
             $emails[] = $this->adminEmail;
             $emails[] = $user->email;
-            $subject = trans('emails.error_import');
+            $subject = trans('errors.error_import');
             $data = array(
                 'importId' => $this->importId,
                 'projectTitle' => $project->title,
