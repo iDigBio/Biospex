@@ -2,12 +2,6 @@
 
 return array(
 
-    'imgTypes' => array(
-        'image/jpeg' => '.jpg',
-        'image/png' => '.png',
-        'image/tiff' => '.tiff',
-    ),
-
     /** Meta.xml file search fields */
     'metaFile' => array(
         'multimediaFile' => 'multimedia',
