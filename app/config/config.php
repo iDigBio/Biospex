@@ -9,7 +9,7 @@ return array(
     ),
 
     /** Meta.xml file search fields */
-    'metaData' => array(
+    'metaFile' => array(
         'multimediaFile' => 'multimedia',
         'occurrenceFile' => 'occurrence',
         'identifier'     => 'identifier',
