@@ -14,10 +14,10 @@ class CreateWorkflowManager extends Migration {
 	{
         Schema::create('workflow_manager', function(Blueprint $table) {
             $table->increments('id');
+            $table->unsignedInteger('workflow_id');
+            $table->foreign('workflow_id')->references('id')->on('workflows')->onDelete('cascade');
             $table->unsignedInteger('expedition_id');
             $table->foreign('expedition_id')->references('id')->on('expeditions')->onDelete('cascade');
-            $table->unsignedInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
 
             $table->engine = 'InnoDB';
