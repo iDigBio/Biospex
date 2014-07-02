@@ -30,7 +30,7 @@ use Biospex\Repo\Import\ImportInterface;
 use Biospex\Services\Subject\Subject;
 use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Project\ProjectInterface;
-use Biospex\Mailer\UserMailer;
+use Biospex\Mailer\BiospexMailer;
 use Illuminate\Support\Contracts\MessageProviderInterface;
 
 class SubjectImport extends Command {
@@ -74,7 +74,7 @@ class SubjectImport extends Command {
      * @param Subject $subject
      * @param UserInterface $user
      * @param ProjectInterface $project
-     * @param UserMailer $mailer
+     * @param BiospexMailer $mailer
      * @param MessageProviderInterface $messages
      */
     public function __construct(
@@ -83,7 +83,7 @@ class SubjectImport extends Command {
         Subject $subject,
         UserInterface $user,
         ProjectInterface $project,
-        UserMailer $mailer,
+        BiospexMailer $mailer,
         MessageProviderInterface $messages
     )
     {
