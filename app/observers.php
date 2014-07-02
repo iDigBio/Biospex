@@ -38,7 +38,7 @@ Event::listen('user.logout', function()
 }, 10);
 
 // Subscribe to User Mailer events
-Event::subscribe('Biospex\Mailer\UserMailer');
+Event::subscribe('Biospex\Mailer\BiospexMailer');
 
 Event::listen('eloquent.saved: Navigation', function($model)
 {
