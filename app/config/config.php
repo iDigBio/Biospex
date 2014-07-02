@@ -2,6 +2,8 @@
 
 return array(
 
+    'adminEmail' => 'biospex@gmail.com',
+
     /** Meta.xml file search fields */
     'metaFile' => array(
         'multimediaFile' => 'multimedia',
