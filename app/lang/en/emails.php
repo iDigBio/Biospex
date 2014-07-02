@@ -32,7 +32,8 @@ return array (
     'import_message'            => "The following data import has been completed.",
     'thank_you'                 => "Thank you",
     'signature'                 => "The Biospex Team",
-    'error'                     => "An error has occurred.",
+    'error'                     => "An error has occurred during a request.",
     'error_import'              => "An error has occurred during data import.",
     'error_message'             => "Error Message",
+    'error_process'             => "Expedition could not be found during processing."
 );
