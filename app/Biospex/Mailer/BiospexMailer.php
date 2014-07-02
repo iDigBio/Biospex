@@ -1,6 +1,6 @@
 <?php namespace Biospex\Mailer;
 /**
- * UserMailer.php
+ * BiospexMailer.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -25,7 +25,7 @@
  */
 use Config;
 
-class UserMailer extends Mailer {
+class BiospexMailer extends Mailer {
 
 	/**
 	 * Outline all the events this class will be listening for. 
@@ -34,10 +34,10 @@ class UserMailer extends Mailer {
 	 */
 	public function subscribe($events)
 	{
-		$events->listen('user.registered', 	'Biospex\Mailer\UserMailer@welcome', 10);
-		$events->listen('user.resend', 		'Biospex\Mailer\UserMailer@welcome', 10);
-		$events->listen('user.forgot',      'Biospex\Mailer\UserMailer@forgotPassword', 10);
-		$events->listen('user.newpassword', 'Biospex\Mailer\UserMailer@newPassword', 10);
+		$events->listen('user.registered', 	'Biospex\Mailer\BiospexMailer@welcome', 10);
+		$events->listen('user.resend', 		'Biospex\Mailer\BiospexMailer@welcome', 10);
+		$events->listen('user.forgot',      'Biospex\Mailer\BiospexMailer@forgotPassword', 10);
+		$events->listen('user.newpassword', 'Biospex\Mailer\BiospexMailer@newPassword', 10);
 	}
 
 	/**
