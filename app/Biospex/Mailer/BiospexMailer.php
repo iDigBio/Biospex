@@ -93,7 +93,7 @@ class BiospexMailer extends Mailer {
 		return $this->sendTo($email, $subject, $view, $data );
 	}
 
-    public function reportImport($email, $subject, $view, $data, $attachment = '')
+    public function sendReport($email, $subject, $view, $data, $attachment = '')
     {
         return $this->sendTo($email, $subject, $view, $data, $attachment);
     }
