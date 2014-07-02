@@ -1,6 +1,6 @@
 <?php
 /**
- * subjects.php
+ * errors.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -23,13 +23,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-return array (
-    'subject'                   => "Subject",
-    'subjects'                  => "Subjects",
-    'import_complete'           => "Project Data Import Complete",
-    'duplicates'                => "Duplicates",
-    'explain_duplicates'        => "If duplicates exist, you will find their ids in the attached file.",
-    'import_message'            => "The following data import has been completed.",
-    'thank_you'                 => "Thank you",
-    'signature'                 => "The Biospex Team",
+return array(
+    'error'                     => "An error has occurred during a request.",
+    'error_import'              => "An error has occurred during data import.",
+    'error_message'             => "Error Message",
+    'error_process'             => "Expedition could not be found during processing.",
+    'error_create_dir'          => "Unable to create directory.",
+    'error_write_dir'           => "Unable to make directory writable.",
 );
