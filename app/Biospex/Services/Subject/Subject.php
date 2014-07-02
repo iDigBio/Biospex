@@ -1,6 +1,6 @@
 <?php namespace Biospex\Services\Subject;
 /**
- * SubjectImport.php
+ * Subject.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -119,7 +119,7 @@ class Subject {
         $this->meta = $meta;
         $this->subjectdoc = $subjectdoc;
         $this->subject = $subject;
-        $this->metaData = Config::get('config.metaData');
+        $this->metaFile = Config::get('config.metaFile');
     }
 
     /**
@@ -193,10 +193,10 @@ class Subject {
             $this->mediaIsCore = false;
             $this->occurrenceFile = $coreFile;
 
-            $multiMediaQuery = $this->getXpathQuery("//ns:extension[contains(@rowType, '{$this->metaData['multimediaFile']}')]");
+            $multiMediaQuery = $this->getXpathQuery("//ns:extension[contains(@rowType, '{$this->metaFile['multimediaFile']}')]");
             $this->multiMediaFile = $multiMediaQuery->nodeValue;
 
-            $multiMediaIndexQuery = $this->getXpathQuery("//ns:field[contains(@term, '{$this->metaData['identifier']}')]");
+            $multiMediaIndexQuery = $this->getXpathQuery("//ns:field[contains(@term, '{$this->metaFile['identifier']}')]");
             $this->multiMediaIdentifierColIndex = $multiMediaIndexQuery->attributes->getNamedItem("index")->nodeValue;
             //$this->multiMediaIdentifierColIndex = $xpath->query("//ns:field[contains(@term, 'identifier')]")->item(0)->nodeName;
         }
@@ -205,7 +205,7 @@ class Subject {
             $this->mediaIsCore = true;
             $this->multiMediaFile = $coreFile;
 
-            $occurrenceQuery = $this->getXpathQuery("//ns:extension[contains(@rowType, '{$this->metaData['occurrenceFile']}')]");
+            $occurrenceQuery = $this->getXpathQuery("//ns:extension[contains(@rowType, '{$this->metaFile['occurrenceFile']}')]");
             $this->occurrenceFile = $occurrenceQuery->nodeValue;
             //$this->occurrenceIdColName = $xpath->query("descendant::*[@index='0']", $occurrenceQuery)->item(0)->nodeName;
         }
