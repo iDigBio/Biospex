@@ -30,7 +30,6 @@ use Biospex\Repo\User\UserRepository;
 use Biospex\Repo\Session\SentrySession;
 use Biospex\Repo\Permission\PermissionRepository;
 use Permission;
-use User;
 
 class RepoServiceProvider extends ServiceProvider {
 
@@ -91,6 +90,9 @@ class RepoServiceProvider extends ServiceProvider {
 
         // bind workflow manager
         $app->bind('Biospex\Repo\WorkflowManager\WorkflowManagerInterface', 'Biospex\Repo\WorkflowManager\WorkflowManagerRepository');
+
+        // bind workflow repository
+        $app->bind('Biospex\Repo\WorkFlow\WorkFlowInterface', 'Biospex\Repo\WorkFlow\WorkFlowRepository');
 
         // bind message bag
         $app->bind('Illuminate\Support\Contracts\MessageProviderInterface', 'Illuminate\Support\MessageBag');
