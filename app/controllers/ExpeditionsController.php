@@ -29,6 +29,7 @@ use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Repo\Group\GroupInterface;
 use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Subject\SubjectInterface;
+use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
 
 class ExpeditionsController extends BaseController {
 
@@ -71,7 +72,8 @@ class ExpeditionsController extends BaseController {
         ProjectInterface $project,
         GroupInterface $group,
         UserInterface $user,
-        SubjectInterface $subject
+        SubjectInterface $subject,
+        WorkflowManagerInterface $workflowManager
     )
     {
         $this->expedition = $expedition;
@@ -80,6 +82,7 @@ class ExpeditionsController extends BaseController {
         $this->group = $group;
         $this->user = $user;
         $this->subject = $subject;
+        $this->workflowManager = $workflowManager;
 
         // Establish Filters
         $this->beforeFilter('csrf', array('on' => 'post'));
@@ -165,8 +168,9 @@ class ExpeditionsController extends BaseController {
     {
         $project = $this->project->find($projectId);
         $expedition = $this->expedition->find($expeditionId);
+        $workflowManager = $this->workflowManager->getByExpeditionId($expeditionId);
 
-        return View::make('expeditions.show', compact('groupId', 'project', 'expedition'));
+        return View::make('expeditions.show', compact('groupId', 'project', 'expedition', 'workflowManager'));
     }
 
     /**
@@ -239,11 +243,27 @@ class ExpeditionsController extends BaseController {
      */
     public function process($groupId, $projectId, $expeditionId)
     {
-        die("Temporary display until processing is enabled.");
-        $expedition = $this->expedition->findWith($expeditionId, ['workflow']);
-        $class ='Biospex\Services\Workflow\\' . $expedition->workflow->class_name;
-        $workflow = $class::factory();
-        $workflow->export($expeditionId);
+        $project = $this->project->find($projectId);
+
+        try
+        {
+            foreach ($project->workflow as $workflow)
+            {
+                $data = array(
+                    'workflow_id' => $workflow->id,
+                    'expedition_id' => $expeditionId,
+                );
+                $this->workflowManager->create($data);
+            }
+
+            Session::flash('success', trans('expeditions.expedition-process-success'));
+        }
+        catch(Exception $e)
+        {
+            Session::flash('error', trans('expeditions.expedition-process-error'));
+        }
+
+        return Redirect::action('ExpeditionsController@show', array($groupId, $projectId, $expeditionId));
     }
 
     /**
