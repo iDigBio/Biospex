@@ -285,7 +285,7 @@ class SubjectImport extends Command {
             $view = 'emails.reportsubject';
         }
 
-        $this->mailer->reportImport($emails, $subject, $view, $data, $attachment);
+        $this->mailer->sendReport($emails, $subject, $view, $data, $attachment);
 
         if ($this->messages->any())
             die();
