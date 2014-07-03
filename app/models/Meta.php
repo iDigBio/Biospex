@@ -39,7 +39,8 @@ class Meta extends Eloquent {
 
     protected $fillable = array(
         'project_id',
-        'data'
+        'xml',
+        'header'
     );
 
     /**
@@ -47,7 +48,8 @@ class Meta extends Eloquent {
      */
     public static $factory = array(
         'project_id' => 'factory|Project',
-        'data' => 'binary'
+        'xml' => 'binary',
+        'header' => 'binary'
     );
 
     /**
