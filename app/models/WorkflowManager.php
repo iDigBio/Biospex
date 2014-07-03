@@ -34,6 +34,7 @@ class WorkflowManager extends Eloquent {
     protected $table = 'workflow_manager';
 
     protected $fillable = array(
+        'workflow_id',
         'expedition_id',
         'user_id'
     );
@@ -60,6 +61,22 @@ class WorkflowManager extends Eloquent {
     public function user()
     {
         return $this->belongsTo('User');
+    }
+
+    public function scopeExpeditionId($query, $id)
+    {
+        return $query->where('expedition_id', '=', $id);
+    }
+
+    /**
+     * Get workflow process by expedition id
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function getByExpeditionId($id)
+    {
+        return $this->expeditionid($id)->first();
     }
 
 }
