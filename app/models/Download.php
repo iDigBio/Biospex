@@ -33,6 +33,7 @@ class Download extends Eloquent {
     protected $table = 'downloads';
 
     protected $fillable = array(
+        'expedition_id',
         'file',
         'count'
     );
@@ -41,6 +42,7 @@ class Download extends Eloquent {
      * Array used by FactoryMuff to create Test objects
      */
     public static $factory = array(
+        'expedition_id' => 'integer',
         'file' => 'string',
         'count' => 'integer'
     );
