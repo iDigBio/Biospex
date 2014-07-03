@@ -14,6 +14,8 @@ class CreateDownloadsTable extends Migration {
 	{
         Schema::create('downloads', function(Blueprint $table) {
             $table->increments('id');
+            $table->unsignedInteger('expedition_id');
+            $table->foreign('expedition_id')->references('id')->on('expeditions')->onDelete('cascade');
             $table->text('file');
             $table->unsignedInteger('count');
             $table->timestamps();
