@@ -100,6 +100,14 @@ class Expedition extends Eloquent {
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function downloads()
+    {
+        return $this->hasOne('Downloads');
+    }
+
+    /**
      * Return expeditions by project id
      *
      * @param $projectId
