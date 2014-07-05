@@ -19,13 +19,11 @@ class DatabaseSeeder extends Seeder {
         $this->call('UserGroupTableSeeder');
         $this->call('ProjectsTableSeeder');
         $this->call('ExpeditionsTableSeeder');
-
-        /*
+        $this->call('ProjectWorkflowTableSeeder');
+        $this->call('WorkFlowsTableSeeder');
         $this->call('SubjectsDocsTableSeeder');
         $this->call('SubjectsTableSeeder');
         $this->call('ExpeditionSubjectTableSeeder');
-        $this->call('ProjectWorkflowTableSeeder');
-        */
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 	}

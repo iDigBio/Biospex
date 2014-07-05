@@ -39,6 +39,7 @@ class ExpeditionsTableSeeder extends Seeder {
         {
             Expedition::create($expedition);
         }
+
 	}
 
     public function loadData()
