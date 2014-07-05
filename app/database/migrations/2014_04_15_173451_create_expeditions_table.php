@@ -40,7 +40,7 @@ class CreateExpeditionsTable extends Migration {
             $table->string('title');
             $table->text('description');
             $table->string(('keywords'));
-            $table->string('state');
+            $table->tinyInteger('state')->default(0);
             $table->timestamps();
             $table->softDeletes();
 
