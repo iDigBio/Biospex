@@ -24,10 +24,17 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 return array(
-    'error'                     => "An error has occurred during a request.",
+    'error'                     => "Biospex error report.",
     'error_import'              => "An error has occurred during data import.",
-    'error_message'             => "Error Message",
-    'error_process'             => "Expedition could not be found during processing.",
-    'error_create_dir'          => "Unable to create directory.",
-    'error_write_dir'           => "Unable to make directory writable.",
+    'error_message'             => "Error Message:",
+    'error_process'             => "Expedition id :id could not be found during processing.",
+    'error_create_dir'          => "Unable to create directory: :directory",
+    'error_write_dir'           => "Unable to make directory writable: :directory",
+    'error_save_file'           => "Unable to save file: :directory",
+    'error_workflow_manager'    => "An error occurred while processing :class using workflow id :id. Message - :error",
+    'error_xml_meta'            => "Unable to retrieve metadata for meta id :id.",
+    'error_load_dom'            => "Unable to load dom document for meta id :id",
+    'error_xpath'               => "Unable to perform xpath query using meta id :id.",
+
+
 );
