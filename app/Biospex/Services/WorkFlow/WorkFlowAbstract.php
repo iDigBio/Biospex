@@ -23,51 +23,143 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Config;
+use Biospex\Repo\Expedition\ExpeditionInterface;
+use Biospex\Services\Subject\Subject;
+use Biospex\Services\Report\Report;
+use Biospex\Repo\Download\DownloadInterface;
 
 abstract class WorkFlow {
 
     /**
      * @var array
      */
-    protected $state = array();
+    protected $states = array();
 
-    public function __construct()
+    public function __construct(
+        ExpeditionInterface $expedition,
+        Filesystem $filesystem,
+        Subject $subject,
+        Report $report,
+        DownloadInterface $download
+    )
     {
-        $this->setState();
+        $this->expedition = $expedition;
+        $this->filesystem = $filesystem;
+        $this->subject = $subject;
+        $this->report = $report;
+        $this->download = $download;
+
+        $this->dataDir = Config::get('config.dataDir');
+        $this->dataTmp = Config::get('config.dataDir');
+        $this->metaFile = Config::get('config.metaFile');
+
+        $this->prepareStates();
+        $this->setConfig();
     }
 
-    abstract protected function setState();
+    abstract protected function prepareStates();
 
-    abstract protected function export($expeditionId);
+    abstract protected function setConfig();
+
+    abstract public function process($id);
+
+    abstract protected function export();
 
     abstract protected function getStatus();
 
     abstract protected function getResults();
 
     /**
-     * Use PHP 5.3 late static binding feature for child classes
-     *
-     * @return mixed
+     * Create directory
      */
-    public static function factory()
+    protected function createDir($dir)
     {
-        $class = get_called_class();
-        return new $class;
+        if ( ! $this->filesystem->isDirectory($dir))
+        {
+            if ( ! $this->filesystem->makeDirectory($dir))
+            {
+                $this->report->addError(trans('errors.error_create_dir', array('directory' => $dir)));
+                $this->report->reportSimpleError();
+
+                return false;
+            }
+        }
+
+        if ( ! $this->filesystem->isWritable($dir))
+        {
+            if ( ! chmod($dir, 0777))
+            {
+                $this->report->addError(trans('errors.error_write_dir', array('directory' => $dir)));
+                $this->report->reportSimpleError();
+
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    public function backGroundProcess($command, $priority = 0)
+    /**
+     * Save a file to destination path
+     *
+     * @param $path
+     * @param $contents
+     * @return bool
+     */
+    protected function saveFile($path, $contents)
     {
-        if ($priority)
-            $pid = shell_exec("nohup nice -n $priority $command 2> /dev/null & echo $!");
-        else
-            $pid = shell_exec("nohup $command > /dev/null 2> /dev/null & echo $!");
-        return($pid);
+        if ( ! $this->filesystem->put($path, $contents))
+        {
+            $this->report->addError(trans('errors.error_save_file', array('directory' => $path)));
+            $this->report->reportSimpleError();
+
+            return false;
+        }
+
+        return true;
     }
 
-    public function isProcessRunning($pid)
+    /**
+     * Iterate over directory and destroy
+     */
+    protected function destroyDir($dir)
     {
-        exec("ps $pid", $processState);
-        return(count($processState) >= 2);
+        $it = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS);
+        $files = new \RecursiveIteratorIterator($it, \RecursiveIteratorIterator::CHILD_FIRST);
+        foreach($files as $file) {
+            if ($file->getFilename() === '.' || $file->getFilename() === '..') {
+                continue;
+            }
+            if ($file->isDir()){
+                rmdir($file->getRealPath());
+            } else {
+                unlink($file->getRealPath());
+            }
+        }
+        rmdir($dir);
     }
 
+    /**
+     * Exceute shell commands
+     * @param $cmd
+     */
+    protected function executeCommand($cmd)
+    {
+        shell_exec($cmd);
+
+        return;
+    }
+
+    protected function createDownload($expeditionId, $file)
+    {
+        $data = array(
+            'expedition_id' => $expeditionId,
+            'file' => $file
+        );
+
+        $this->download->create($data);
+
+    }
 }
