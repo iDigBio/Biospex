@@ -40,4 +40,6 @@ interface RepositoryInterface {
 
     public function make(array $with = array());
 
+    public function save($record);
+
 }

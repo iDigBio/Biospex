@@ -120,4 +120,9 @@ abstract class Repository {
         return $this->model->with($with);
     }
 
+    public function save($record)
+    {
+        return $record->save();
+    }
+
 }
