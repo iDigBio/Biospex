@@ -261,7 +261,7 @@ class ProjectsController extends BaseController {
         }
 
         Session::flash('success', trans('projects.upload-success'));
-        return Redirect::route('addData', array($groupId, $projectId));
+        return Redirect::route('groups.projects.show', array($groupId, $projectId));
     }
 
 	/**
