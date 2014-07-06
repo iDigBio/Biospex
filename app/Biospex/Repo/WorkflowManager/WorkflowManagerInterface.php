@@ -26,4 +26,13 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface WorkflowManagerInterface extends RepositoryInterface {}
+interface WorkflowManagerInterface extends RepositoryInterface {
+
+    /**
+     * Get workflow process by expedition id
+     * 
+     * @param $id
+     * @return mixed
+     */
+    public function getByExpeditionId($id);
+}

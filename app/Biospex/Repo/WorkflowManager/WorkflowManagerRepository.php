@@ -36,4 +36,15 @@ class WorkflowManagerRepository extends Repository implements WorkflowManagerInt
     {
         $this->model = $model;
     }
+
+    /**
+     * Get workflow process by expedition id
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function getByExpeditionId($id)
+    {
+        return $this->model->getByExpeditionId($id);
+    }
 }
