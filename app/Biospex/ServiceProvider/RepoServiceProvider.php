@@ -94,6 +94,9 @@ class RepoServiceProvider extends ServiceProvider {
         // bind workflow repository
         $app->bind('Biospex\Repo\WorkFlow\WorkFlowInterface', 'Biospex\Repo\WorkFlow\WorkFlowRepository');
 
+        // bind download repository
+        $app->bind('Biospex\Repo\Download\DownloadInterface', 'Biospex\Repo\Download\DownloadRepository');
+
         // bind message bag
         $app->bind('Illuminate\Support\Contracts\MessageProviderInterface', 'Illuminate\Support\MessageBag');
     }
