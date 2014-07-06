@@ -156,7 +156,7 @@ class SubjectImport extends Command {
             $this->import->destroy($import->id);
         }
 
-        die("Completed\n");
+        return;
     }
 
     /**
