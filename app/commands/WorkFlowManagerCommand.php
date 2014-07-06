@@ -24,10 +24,9 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 use Illuminate\Console\Command;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Contracts\MessageProviderInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Biospex\Repo\Expedition\ExpeditionInterface;
+use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
+use Biospex\Repo\WorkFlow\WorkFlowInterface;
+use Biospex\Services\Report\Report;
 
 class WorkFlowManagerCommand extends Command {
     /**
@@ -45,7 +44,8 @@ class WorkFlowManagerCommand extends Command {
     protected $description = "Workflow manager";
 
     /**
-     * @var Illuminate\Support\Contracts\MessageProviderInterface
+     * Illuminate\Support\Contracts\MessageProviderInterface
+     * @var
      */
     protected $messages;
 
@@ -53,28 +53,16 @@ class WorkFlowManagerCommand extends Command {
      * Class constructor
      */
     public function __construct(
-        Filesystem $filesystem,
-        MessageProviderInterface $messages,
-        ExpeditionInterface $expedition
+        WorkflowManagerInterface $manager,
+        WorkFlowInterface $workflow,
+        Report $report
     )
     {
-        $this->filesystem = $filesystem;
-        $this->messages = $messages;
-        $this->expedition = $expedition;
+        $this->manager = $manager;
+        $this->workflow = $workflow;
+        $this->report = $report;
 
         parent::__construct();
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return array(
-            array('expeditionId', InputArgument::REQUIRED, 'Id of expedition being exported'),
-        );
     }
 
     /**
@@ -84,6 +72,34 @@ class WorkFlowManagerCommand extends Command {
      */
     public function fire()
     {
+        $managers = $this->manager->all();
+
+        if (empty($managers))
+            return;
+
+        foreach ($managers as $manager)
+        {
+            $workflow = $this->workflow->find($manager->workflow_id);
+            $classNameSpace ='Biospex\Services\Workflow\\' . $workflow->class;
+            try {
+                $class = App::make($classNameSpace);
+                $class->process($manager->expedition_id);
+
+                //$this->manager->destroy($manager->id);
+            }
+            catch ( Exception $e )
+            {
+                $this->report->addError(trans('errors.error_workflow_manager',
+                    array(
+                        'class' => $workflow->class,
+                        'id' => $manager->workflow_id,
+                        'error' => $e->getMessage()
+                    )));
+                $this->report->reportSimpleError();
+                continue;
+            }
+
+        }
 
     }
 }
