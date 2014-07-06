@@ -27,7 +27,7 @@
 use Biospex\Repo\Repository;
 use Download;
 
-class ImportRepository extends Repository implements DownloadInterface {
+class DownloadRepository extends Repository implements DownloadInterface {
 
     /**
      * @param Import $import
