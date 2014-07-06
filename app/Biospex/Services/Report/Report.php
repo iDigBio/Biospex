@@ -23,22 +23,44 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Contracts\MessageProviderInterface;
 use Biospex\Repo\User\UserInterface;
+use Biospex\Mailer\BiospexMailer;
+//use Illuminate\Foundation\Application as App;
 
 class Report
 {
+    /**
+     * Admin email from Config
+     * @var
+     */
+    protected $adminEmail;
+
     public function __construct(
         MessageProviderInterface $messages,
-        UserInterface $user
+        UserInterface $user,
+        BiospexMailer $mailer
     )
     {
         $this->messages = $messages;
         $this->user = $user;
+        $this->mailer = $mailer;
+        $this->adminEmail = Config::get('config.adminEmail');
     }
 
-    public function reportSimpleError($userId = null)
+    public function addError($error)
     {
+        $this->messages->add('error', $error);
+
+        return;
+    }
+
+    public function reportSimpleError($userId = null, $fatal = false)
+    {
+        if (\App::environment() == 'develop')
+            return;
+
         $emails[] = $this->adminEmail;
 
         if ( ! is_null($userId))
@@ -47,13 +69,57 @@ class Report
             $emails[] = $user->email;
         }
 
-        $subject = trans('emails.error');
+        $subject = trans('errors.error');
         $data = array('errorMessage' => $this->messages->first('error'));
         $view = 'emails.report-simple-error';
 
-        $this->mailer->reportImport($emails, $subject, $view, $data, $attachment);
+        $this->mailer->sendReport($emails, $subject, $view, $data);
 
-        if ($this->messages->any())
+        if ($fatal)
             die();
+
+        return;
+    }
+
+    public function processComplete($record)
+    {
+        if (\App::environment() == 'develop')
+            return;
+
+        $user = $this->user->find($record->project->user_id);
+        $emails[] = $user->email;
+
+        $subject = trans('emails.expedition_complete', array('expedition' => $record->title));
+        $data = array(
+            'completeMessage' => trans('emails.expedition_complete_message',
+                array('expedition' => $record->title))
+        );
+        $view = 'emails.report-process-complete';
+
+        $this->mailer->sendReport($emails, $subject, $view, $data);
+
+        return;
+    }
+
+    public function missingImages($record, $uuids = array(), $urls = array())
+    {
+        if (\App::environment() == 'develop')
+            return;
+
+        $user = $this->user->find($record->project->user_id);
+        $email = $user->email;
+
+        $subject = trans('emails.missing_images_subject');
+        $data = array(
+            'missingImageMessage' => trans('emails.missing_images'),
+            'expeditionTitle' => $record->title,
+            'missingIds' => trans('emails.missing_img_ids'),
+            'missingId' => implode("<br />", $uuids),
+            'missingImageUrls' => trans('emails.missing_img_urls'),
+            'missingUrl' => implode("<br />", $urls)
+        );
+        $view = 'emails.report-missing-images';
+
+        $this->mailer->sendReport($email, $subject, $view, $data);
     }
 }
