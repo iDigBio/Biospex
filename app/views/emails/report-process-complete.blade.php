@@ -4,13 +4,8 @@
     <meta charset="utf-8">
 </head>
 <body>
-<h2>{{ trans('errors.error') }}</h2>
-
 <p>
-<blockquote>
-{{ trans('errors.error_message') }}<br />
-{{{ $errorMessage }}}
-</blockquote>
+{{ $completeMessage }}
 </p>
 <p>{{ trans('emails.thank_you') }}, <br />
     ~{{ trans('emails.signature') }}</p>
