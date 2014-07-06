@@ -81,6 +81,7 @@ return array(
     'expedition-edit'       => "Edit Expedition",
     'expedition-view'       => "View Expedition",
     'expedition-delete'     => "Delete Expedition",
+    'expedition-download'   => "Download",
 
     'permissions'           => "Permissions",
     'permissions-edit'      => "Edit permission",
