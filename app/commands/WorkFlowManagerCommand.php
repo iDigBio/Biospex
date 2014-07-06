@@ -82,7 +82,7 @@ class WorkFlowManagerCommand extends Command {
             $workflow = $this->workflow->find($manager->workflow_id);
             $classNameSpace ='Biospex\Services\Workflow\\' . $workflow->class;
             try {
-                $class = App::make($classNameSpace);
+                //$class = App::make($classNameSpace);
                 $class->process($manager->expedition_id);
 
                 //$this->manager->destroy($manager->id);
