@@ -30,6 +30,7 @@ use Biospex\Repo\Group\GroupInterface;
 use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
+use Biospex\Repo\Download\DownloadInterface;
 
 class ExpeditionsController extends BaseController {
 
@@ -73,7 +74,8 @@ class ExpeditionsController extends BaseController {
         GroupInterface $group,
         UserInterface $user,
         SubjectInterface $subject,
-        WorkflowManagerInterface $workflowManager
+        WorkflowManagerInterface $workflowManager,
+        DownloadInterface $download
     )
     {
         $this->expedition = $expedition;
@@ -83,6 +85,7 @@ class ExpeditionsController extends BaseController {
         $this->user = $user;
         $this->subject = $subject;
         $this->workflowManager = $workflowManager;
+        $this->download = $download;
 
         // Establish Filters
         $this->beforeFilter('csrf', array('on' => 'post'));
@@ -167,10 +170,11 @@ class ExpeditionsController extends BaseController {
     public function show ($groupId, $projectId, $expeditionId)
     {
         $project = $this->project->find($projectId);
-        $expedition = $this->expedition->find($expeditionId);
+        $expedition = $this->expedition->findWith($expeditionId, ['download']);
         $workflowManager = $this->workflowManager->getByExpeditionId($expeditionId);
+        $filepath = isset($expedition->download->file) ? Config::get('config.dataDir') . '/' . $expedition->download->file : null;
 
-        return View::make('expeditions.show', compact('groupId', 'project', 'expedition', 'workflowManager'));
+        return View::make('expeditions.show', compact('groupId', 'project', 'expedition', 'workflowManager', 'filepath'));
     }
 
     /**
@@ -240,6 +244,7 @@ class ExpeditionsController extends BaseController {
      * @param $groupId
      * @param $projectId
      * @param $expeditionId
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function process($groupId, $projectId, $expeditionId)
     {
@@ -264,6 +269,15 @@ class ExpeditionsController extends BaseController {
         }
 
         return Redirect::action('ExpeditionsController@show', array($groupId, $projectId, $expeditionId));
+    }
+
+    public function download($groupId, $projectId, $expeditionId, $downloadId)
+    {
+        $download = $this->download->find($downloadId);
+        $dataDir = Config::get('config.dataDir');
+        $path = "$dataDir/{$download->file}";
+        $headers = array('Content-Type' => 'application/x-compressed');
+        return Response::download($path, $download->file, $headers);
     }
 
     /**
