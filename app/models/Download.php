@@ -52,6 +52,6 @@ class Download extends Eloquent {
      */
     public function expedition()
     {
-        return $this->belongsTo('Expeditions');
+        return $this->belongsTo('Expedition');
     }
 }

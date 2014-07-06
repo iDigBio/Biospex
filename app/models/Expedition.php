@@ -102,9 +102,9 @@ class Expedition extends Eloquent {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function downloads()
+    public function download()
     {
-        return $this->hasOne('Downloads');
+        return $this->hasOne('Download');
     }
 
     /**
