@@ -27,7 +27,6 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Contracts\MessageProviderInterface;
 use Biospex\Repo\User\UserInterface;
 use Biospex\Mailer\BiospexMailer;
-//use Illuminate\Foundation\Application as App;
 
 class Report
 {
