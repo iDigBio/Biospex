@@ -6,11 +6,6 @@
 {{ $expedition->title }}
 @stop
 
-@section('styles')
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
-{{ HTML::style('css/ui.jqgrid.css') }}
-@stop
-
 {{-- Content --}}
 @section('content')
 <h3>{{ trans('projects.project') }}: <a href="{{ URL::route('groups.projects.show', [$groupId, $project->id]) }}">{{ $project->title }}</a></h3>
