@@ -40,9 +40,3 @@
     <div id="pager"></div>
 </div>
 @stop
-
-@section('scripts')
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-{{ HTML::script('js/grid.locale-en.js') }}
-{{ HTML::script('js/jquery.jqGrid.min.js') }}
-@stop
