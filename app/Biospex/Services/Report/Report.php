@@ -28,8 +28,14 @@ use Illuminate\Support\Contracts\MessageProviderInterface;
 use Biospex\Repo\User\UserInterface;
 use Biospex\Mailer\BiospexMailer;
 
-class Report
-{
+class Report {
+    /**
+     * Debug by showing output for different actions
+     *
+     * @var
+     */
+    protected $debug = true;
+
     /**
      * Admin email from Config
      * @var
@@ -57,6 +63,12 @@ class Report
 
     public function reportSimpleError($userId = null, $fatal = false)
     {
+        if ($this->debug)
+        {
+            $this->debug($this->messages->first('error'));
+            return;
+        }
+
         if (\App::environment() == 'develop')
             return;
 
@@ -82,6 +94,12 @@ class Report
 
     public function processComplete($record)
     {
+        if ($this->debug)
+        {
+            $this->debug("Completed {$record->title}" . PHP_EOL);
+            return;
+        }
+
         if (\App::environment() == 'develop')
             return;
 
@@ -102,6 +120,12 @@ class Report
 
     public function missingImages($record, $uuids = array(), $urls = array())
     {
+        if ($this->debug)
+        {
+            $this->debug("Missing images for {$record->title}" . PHP_EOL);
+            return;
+        }
+
         if (\App::environment() == 'develop')
             return;
 
@@ -120,5 +144,12 @@ class Report
         $view = 'emails.report-missing-images';
 
         $this->mailer->sendReport($email, $subject, $view, $data);
+    }
+
+    public function debug($message)
+    {
+        echo $message . PHP_EOL;
+
+        return;
     }
 }
