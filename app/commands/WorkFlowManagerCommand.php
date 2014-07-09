@@ -80,7 +80,7 @@ class WorkFlowManagerCommand extends Command {
         foreach ($managers as $manager)
         {
             $workflow = $this->workflow->find($manager->workflow_id);
-            $classNameSpace ='Biospex\Services\Workflow\\' . $workflow->class;
+            $classNameSpace ='Biospex\Services\WorkFlow\\' . $workflow->class;
             try {
                 $class = App::make($classNameSpace);
                 $class->process($manager->expedition_id);
