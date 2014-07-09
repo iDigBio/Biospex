@@ -106,24 +106,26 @@ class ProjectsController extends BaseController {
         return Redirect::action('ProjectsController@all');
     }
 
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return Response
-	 */
-	public function create($groupId)
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @param $groupId
+     * @return \Illuminate\View\View
+     */
+    public function create($groupId)
 	{
         $user = $this->user->getUser();
         $group = $this->group->find($groupId);
         return View::make('projects.create', compact('user', 'group'));
 	}
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @return Response
-	 */
-	public function store($groupId)
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param $groupId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store($groupId)
 	{
         // Form Processing
         $project = $this->projectForm->save(Input::all());
@@ -142,13 +144,14 @@ class ProjectsController extends BaseController {
         }
 	}
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function show($groupId, $id)
+    /**
+     * Display the specified resource.
+     *
+     * @param $groupId
+     * @param $id
+     * @return \Illuminate\View\View
+     */
+    public function show($groupId, $id)
 	{
         $project = $this->project->find($id);
         $expeditions = $project->expedition;
@@ -161,6 +164,7 @@ class ProjectsController extends BaseController {
      *
      * @param $groupId
      * @param $projectId
+     * @return \Illuminate\View\View
      */
     public function duplicate($groupId, $projectId)
     {
@@ -170,13 +174,14 @@ class ProjectsController extends BaseController {
         return View::make('projects.clone', compact('user', 'group', 'project'));
     }
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($groupId, $projectId)
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param $groupId
+     * @param $projectId
+     * @return \Illuminate\View\View
+     */
+    public function edit($groupId, $projectId)
 	{
         $project = $this->project->find($projectId);
         if (Request::is('*/projects/create'))
@@ -191,13 +196,14 @@ class ProjectsController extends BaseController {
         return View::make('projects.edit', compact('project', 'count'));
 	}
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function update($groupId, $id)
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param $groupId
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update($groupId, $id)
 	{
         // Form Processing
         $project = $this->projectForm->update(Input::all());
@@ -265,13 +271,14 @@ class ProjectsController extends BaseController {
         return Redirect::route('groups.projects.show', array($groupId, $projectId));
     }
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function destroy($groupId, $projectId)
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param $groupId
+     * @param $projectId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy($groupId, $projectId)
 	{
         if ($this->project->destroy($projectId))
         {
