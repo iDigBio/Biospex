@@ -22,7 +22,7 @@
         <button class="btn btn-warning btn-xs" onClick="location.href='{{ action('ProjectsController@edit', array($project->group_id, $project->id)) }}'">@lang('buttons.edit')</button>
         <button class="btn btn-default btn-xs btn-danger action_confirm" href="{{ URL::route('groups.projects.destroy', [$project->group_id, $project->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.delete')</button></td>
     </div>
-    <img src="<?= $project->logo->url('normal') ?>" >
+    <img src="{{ $imgUrl }}" >
 </div>
 
 <h4>{{ trans('pages.expeditions') }}:</h4>
