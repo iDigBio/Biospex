@@ -222,7 +222,7 @@ class NotesFromNature extends WorkFlow
      */
     public function export()
     {
-        $title = bin2hex($this->record->id . preg_replace('/[^a-zA-Z0-9]/', '', $this->record->title));
+        $title = urlencode($this->record->id . preg_replace('/[^a-zA-Z0-9]/', '', $this->record->title));
         dd($title);
         $this->tmpFileDir = "{$this->dataDir}/$title";
 
