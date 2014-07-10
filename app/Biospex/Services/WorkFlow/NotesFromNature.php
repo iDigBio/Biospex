@@ -404,7 +404,8 @@ class NotesFromNature extends WorkFlow
             }
 
             list($width, $height, $type, $attr) = getimagesize($filePath); // $width, $height, $type, $attr
-            $info = pathinfo($file->getRealPath()); // $dirname, $basename, $extension, $filename
+            $info = pathinfo($filePath); // $dirname, $basename, $extension, $filename
+            dd($info);
 
             $data['identifier'] = $this->subjectArray[$info['filename']];
             $data['original']['path'] = array($info['filename'], ".{$info['extension']}");
