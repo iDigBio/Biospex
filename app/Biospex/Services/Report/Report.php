@@ -80,8 +80,14 @@ class Report {
             $emails[] = $user->email;
         }
 
+        $errorMessage = '';
+        $messages = $this->messages->get('error');
+        foreach ($messages as $message)
+        {
+            $errorMessage .= "$message<br />";
+        }
         $subject = trans('errors.error');
-        $data = array('errorMessage' => $this->messages->first('error'));
+        $data = array('errorMessage' => $errorMessage);
         $view = 'emails.report-simple-error';
 
         $this->mailer->sendReport($emails, $subject, $view, $data);
