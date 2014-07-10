@@ -35,6 +35,6 @@ return array(
     'error_xml_meta'            => "Unable to retrieve metadata for meta id :id.",
     'error_load_dom'            => "Unable to load dom document for meta id :id",
     'error_xpath'               => "Unable to perform xpath query using meta id :id.",
-
+    'error_process_file_path'   => "Error: path for file :file does not exist.",
 
 );

@@ -394,7 +394,16 @@ class NotesFromNature extends WorkFlow
 
         $i = 0;
         foreach($files as $file) {
-            list($width, $height, $type, $attr) = getimagesize($file->getRealPath()); // $width, $height, $type, $attr
+            $filePath = $file->getRealPath();
+
+            if ( ! $filePath)
+            {
+                $this->report->addError(trans('error_process_file_path', array('file' => $file)));
+                $this->report->reportSimpleError();
+                continue;
+            }
+
+            list($width, $height, $type, $attr) = getimagesize($filePath); // $width, $height, $type, $attr
             $info = pathinfo($file->getRealPath()); // $dirname, $basename, $extension, $filename
 
             $data['identifier'] = $this->subjectArray[$info['filename']];
