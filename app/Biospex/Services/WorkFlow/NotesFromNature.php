@@ -188,7 +188,11 @@ class NotesFromNature extends WorkFlow
 
         $this->userId = $this->record->project->user_id;
 
-        call_user_func(array($this, $this->states[$this->record->state]));
+        if ( ! call_user_func(array($this, $this->states[$this->record->state])))
+        {
+            $this->destroyDir($this->tmpFileDir);
+            return;
+        }
 
         $this->record->state = $this->record->state+1;
         $this->expedition->save($this->record);
