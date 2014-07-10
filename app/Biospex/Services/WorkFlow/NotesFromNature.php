@@ -392,6 +392,7 @@ class NotesFromNature extends WorkFlow
         $this->metadata['highResWidth'] = $this->largeWidth;
         $this->metadata['lowResWidth'] = $this->smallWidth;
 
+        dd($this->subjectArray);
         $i = 0;
         foreach($files as $file) {
             $filePath = $file->getRealPath();
@@ -405,7 +406,6 @@ class NotesFromNature extends WorkFlow
 
             list($width, $height, $type, $attr) = getimagesize($filePath); // $width, $height, $type, $attr
             $info = pathinfo($filePath); // $dirname, $basename, $extension, $filename
-            dd($info);
 
             $data['identifier'] = $this->subjectArray[$info['filename']];
             $data['original']['path'] = array($info['filename'], ".{$info['extension']}");
