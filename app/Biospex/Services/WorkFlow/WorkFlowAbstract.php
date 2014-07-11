@@ -30,7 +30,7 @@ use Biospex\Services\Subject\Subject;
 use Biospex\Services\Report\Report;
 use Biospex\Repo\Download\DownloadInterface;
 
-abstract class WorkFlow {
+abstract class WorkFlowAbstract {
 
     /**
      * @var array

@@ -24,7 +24,7 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class NotesFromNature extends WorkFlow
+class NotesFromNature extends WorkFlowAbstract
 {
     /**
      * @var array
