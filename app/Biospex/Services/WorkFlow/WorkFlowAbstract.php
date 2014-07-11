@@ -112,12 +112,7 @@ abstract class WorkFlow {
     protected function saveFile($path, $contents)
     {
         if ( ! $this->filesystem->put($path, $contents))
-        {
-            $this->report->addError(trans('errors.error_save_file', array('directory' => $path)));
-            $this->report->reportSimpleError();
-
             return false;
-        }
 
         return true;
     }
@@ -127,19 +122,9 @@ abstract class WorkFlow {
      */
     protected function destroyDir($dir)
     {
-        $it = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS);
-        $files = new \RecursiveIteratorIterator($it, \RecursiveIteratorIterator::CHILD_FIRST);
-        foreach($files as $file) {
-            if ($file->getFilename() === '.' || $file->getFilename() === '..') {
-                continue;
-            }
-            if ($file->isDir()){
-                rmdir($file->getRealPath());
-            } else {
-                unlink($file->getRealPath());
-            }
-        }
-        rmdir($dir);
+        $success = $this->filesystem->deleteDirectory($dir);
+
+        return $success;
     }
 
     /**

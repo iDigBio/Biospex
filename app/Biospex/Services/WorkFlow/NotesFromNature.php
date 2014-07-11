@@ -193,7 +193,10 @@ class NotesFromNature extends WorkFlow
         }
         catch ( Exception $e )
         {
+            $this->report->addError($e->getMessage());
+            $this->report->reportSimpleError();
             $this->destroyDir($this->tmpFileDir);
+
             return;
         }
 
@@ -213,6 +216,9 @@ class NotesFromNature extends WorkFlow
         return;
     }
 
+    /**
+     * Get status
+     */
     public function getStatus()
     {
         return;
@@ -221,7 +227,7 @@ class NotesFromNature extends WorkFlow
     /**
      * Export the expedition
      *
-     * @return string
+     * @throws \RuntimeException
      */
     public function export()
     {
@@ -237,11 +243,10 @@ class NotesFromNature extends WorkFlow
         if ( ! $this->buildImgDir())
             throw new \RuntimeException(trans('errors.error_build_image_dir', array('id' => $this->record->id)));
 
-        if ( ! $this->processImages())
-            return false;
+        $this->processImages();
 
         if ( ! $this->saveFile("{$this->tmpFileDir}/details.js", json_encode($this->metadata, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)))
-            return false;
+            throw new \RuntimeException(trans('errors.error_save_file', array('directory' => "{$this->tmpFileDir}/details.js")));
 
         $this->executeCommand("tar -czf {$this->dataDir}/$title.tar.gz -C {$this->dataDir} $title");
 
@@ -388,11 +393,17 @@ class NotesFromNature extends WorkFlow
 
         $lrgPath = "{$this->tmpFileDir}/large";
         if ( ! $this->createDir($lrgPath))
-            return false;
+            throw new \RuntimeException(trans('errors.error_create_dir', array('directory' => $lrgPath)));
+
+        if ( ! $this->writeDir($lrgPath))
+            throw new \RuntimeException(trans('errors.error_write_dir', array('directory' => $lrgPath)));
 
         $smPath = "{$this->tmpFileDir}/small";
         if ( ! $this->createDir($smPath))
-            return false;
+            throw new \RuntimeException(trans('errors.error_create_dir', array('directory' => $smPath)));
+
+        if ( ! $this->writeDir($smPath))
+            throw new \RuntimeException(trans('errors.error_write_dir', array('directory' => $smPath)));
 
         $this->metadata['sourceDir'] = $this->tmpFileDir;
         $this->metadata['targetDir'] = $this->tmpFileDir;
