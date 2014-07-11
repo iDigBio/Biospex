@@ -21,7 +21,7 @@
                     <th></th>
                     <th>@lang('pages.title')</th>
                     <th>@lang('pages.description')</th>
-                    <th class="nowrap">@lang('projects.project-options')</th>
+                    <th class="nowrap">@lang('projects.project_options')</th>
                     <th><button class="btn btn-primary btn-xs" onClick="location.href='{{ URL::route('groups.projects.create', [$key]) }}'">@lang('buttons.create')</button></th>
                 </tr>
                 </thead>

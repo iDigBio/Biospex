@@ -133,11 +133,11 @@ class ProjectsController extends BaseController {
         if($project)
         {
             // Success!
-            Session::flash('success', trans('projects.project-created'));
+            Session::flash('success', trans('projects.project_created'));
             return Redirect::action('ProjectsController@show', array($project->group_id, $project->id));
 
         } else {
-            Session::flash('error', trans('projects.project-save-error'));
+            Session::flash('error', trans('projects.project_save_error'));
             return Redirect::action('ProjectsController@create', $groupId)
                 ->withInput()
                 ->withErrors($this->projectForm->errors());
@@ -211,11 +211,11 @@ class ProjectsController extends BaseController {
         if($project)
         {
             // Success!
-            Session::flash('success', trans('projects.project-updated'));
+            Session::flash('success', trans('projects.project_updated'));
             return Redirect::action('groups.projects.show', array($groupId, $id));
 
         } else {
-            Session::flash('error', trans('projects.project-save-error'));
+            Session::flash('error', trans('projects.project_save_error'));
             return Redirect::route('groups.projects.edit', array($groupId, $id))
                 ->withInput()
                 ->withErrors( $this->projectForm->errors() );
@@ -248,7 +248,7 @@ class ProjectsController extends BaseController {
 
         if (empty($file))
         {
-            Session::flash('error', trans('projects.file-required'));
+            Session::flash('error', trans('projects.file_required'));
             return Redirect::route('addData', array($groupId, $projectId));
         }
 
@@ -263,11 +263,11 @@ class ProjectsController extends BaseController {
         }
         catch(Exception $e)
         {
-            Session::flash('error', trans('projects.upload-error'));
+            Session::flash('error', trans('projects.upload_error'));
             return Redirect::route('addData', array($groupId, $projectId));
         }
 
-        Session::flash('success', trans('projects.upload-success'));
+        Session::flash('success', trans('projects.upload_success'));
         return Redirect::route('groups.projects.show', array($groupId, $projectId));
     }
 
@@ -282,12 +282,12 @@ class ProjectsController extends BaseController {
 	{
         if ($this->project->destroy($projectId))
         {
-            Session::flash('success', trans('projects.project-destroyed'));
+            Session::flash('success', trans('projects.project_destroyed'));
             return Redirect::action('ProjectsController@all');
         }
         else
         {
-            Session::flash('error', trans('projects.project-destroy-error'));
+            Session::flash('error', trans('projects.project_destroy_error'));
             return Redirect::action('ProjectsController@all');
         }
 	}

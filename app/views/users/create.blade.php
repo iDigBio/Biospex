@@ -12,7 +12,7 @@
     <div class="col-md-4 col-md-offset-4">
         {{ Form::open(array('action' => 'UsersController@store')) }}
 
-            <h2>@lang('pages.register-account')</h2>
+            <h2>@lang('pages.register_account')</h2>
 
             <div class="form-group {{ ($errors->has('email')) ? 'has-error' : '' }}">
                 {{ Form::text('email', null, array('class' => 'form-control', 'placeholder' => trans('pages.email'))) }}
@@ -25,7 +25,7 @@
             </div>
 
             <div class="form-group {{ ($errors->has('password_confirmation')) ? 'has-error' : '' }}">
-                {{ Form::password('password_confirmation', array('class' => 'form-control', 'placeholder' => trans('pages.password-confirm'))) }}
+                {{ Form::password('password_confirmation', array('class' => 'form-control', 'placeholder' => trans('pages.password_confirm'))) }}
                 {{ ($errors->has('password_confirmation') ?  $errors->first('password_confirmation') : '') }}
             </div>
 

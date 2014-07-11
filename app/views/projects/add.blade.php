@@ -3,14 +3,14 @@
 {{-- Web site Title --}}
 @section('title')
 @parent
-{{ trans('projects.add-data') }}
+{{ trans('projects.add_data') }}
 @stop
 
 {{-- Content --}}
 @section('content')
 
 <h2>{{ $project->title }}</h2>
-<h4>{{ trans('projects.add-data') }}</h4>
+<h4>{{ trans('projects.add_data') }}</h4>
 <div class="well">
     {{ Form::open(array(
         'action' => array('dataUpload', $project->group_id, $project->id),

@@ -33,7 +33,7 @@ return array(
 
     'sitename'          => "BIOSPEX",
 
-    'site-description'	=> "Esta es una página de inicio de ejemplo.",
+    'site_description'	=> "Esta es una página de inicio de ejemplo.",
 
     'user'             => "Usuario|Usuarios",
 
@@ -51,7 +51,7 @@ return array(
 
     'password'          => "Contraseña",
 
-    'password-confirm'  => "Confirmar Contraseña",
+    'password_confirm'  => "Confirmar Contraseña",
 
     'rememberme'        => "Recordarme",
 
@@ -59,7 +59,7 @@ return array(
 
     'signin'            => "Ingresar",
 
-    'password-forgot'   => "Olvidé mi contraseña",
+    'password_forgot'   => "Olvidé mi contraseña",
 
     'language'          => "Idioma",
 
@@ -71,35 +71,35 @@ return array(
 
     'fyi'               => "FYI",
 
-    'register-account'  => "Registrar nueva cuenta",
+    'register_account'  => "Registrar nueva cuenta",
 
-    'edit-profile'      => "Editar Perfil",
+    'edit_profile'      => "Editar Perfil",
 
     'you'               => "Su",
 
     'profile'           => "Perfil",
 
-    'first-name'        => "Primer Nombre",
+    'first_name'        => "Primer Nombre",
 
-    'last-name'         => "Apellido",
+    'last_name'         => "Apellido",
 
-    'group-memberships' => "La Pertenencia a Grupos",
+    'group_memberships' => "La Pertenencia a Grupos",
 
-    'group-no-memberships' => "No hay Miembros en el Grupo",
+    'group_no_memberships' => "No hay Miembros en el Grupo",
 
-    'password-change'   => "Cambiar Contraseña",
+    'password_change'   => "Cambiar Contraseña",
 
-    'password-old'      => "Contraseña Anterior",
+    'password_old'      => "Contraseña Anterior",
 
-    'password-new'      => "Nueva Contraseña",
+    'password_new'      => "Nueva Contraseña",
 
-    'password-new-confirm'  => "Confirmar Nueva Contraseña",
+    'password_new_confirm'  => "Confirmar Nueva Contraseña",
 
     'submit-changes'    => "Enviar Cambios",
 
-    'forgot-your-pass' => "¿Olvidaste tu contraseña?",
+    'forgot_your_pass' => "¿Olvidaste tu contraseña?",
 
-    'send-instructions' => "Enviar Instrucciones",
+    'send_instructions' => "Enviar Instrucciones",
 
     'current-users' => "Los usuarios actuales",
 
@@ -119,19 +119,19 @@ return array(
 
     'delete' => "Borrar",
 
-    'resend-activation' => "Reenviar Mensaje de Activación",
+    'resend_activation' => "Reenviar Mensaje de Activación",
 
-    'resend-activation-email' => "Reenviar email de activación",
+    'resend_activation_email' => "Reenviar email de activación",
 
     'resend' => "Reenviar",
 
-    'account-profile' => "Perfil de cuenta",
+    'account_profile' => "Perfil de cuenta",
 
-    'account-created' => "Cuenta Creada",
+    'account_created' => "Cuenta Creada",
 
-    'last-updated' => "Última Actualización",
+    'last_updated' => "Última Actualización",
 
-    'edit-profile' => "Editar Perfil",
+    'edit_profile' => "Editar Perfil",
 
     'user-object' => "Objeto de Usuario",
 

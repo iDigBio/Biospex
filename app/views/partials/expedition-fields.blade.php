@@ -24,7 +24,7 @@
 </div>
 
 <div class="form-group {{ ($errors->has('subjects')) ? 'has-error' : '' }}" for="title">
-    {{ Form::label('subjects', trans('forms.assign-subjects'), array('class' => 'col-sm-2 control-label')) }}
+    {{ Form::label('subjects', trans('forms.assign_subjects'), array('class' => 'col-sm-2 control-label')) }}
     <div class="col-sm-10">
         {{ Form::text('subjects', null, array('class' => 'form-control', 'placeholder' => $subjects . ' ' . trans('forms.unassigned'))) }}
     </div>
@@ -56,7 +56,7 @@
 </div>
 
 <div class="form-group {{ ($errors->has('subjects')) ? 'has-error' : '' }}" for="title">
-    {{ Form::label('subjects', trans('forms.assigned-subjects'), array('class' => 'col-sm-2 control-label')) }}
+    {{ Form::label('subjects', trans('forms.assigned_subjects'), array('class' => 'col-sm-2 control-label')) }}
     <div class="col-sm-10">
         {{ Form::text('subjects', $subjects, array('class' => 'form-control', 'placeholder' => $subjects, 'disabled')) }}
     </div>

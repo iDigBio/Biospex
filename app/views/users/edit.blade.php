@@ -3,7 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
 @parent
-@lang('pages.edit-profile')
+@lang('pages.edit_profile')
 @stop
 
 {{-- Content --}}
@@ -26,18 +26,18 @@
         )) }}
         
         <div class="form-group {{ ($errors->has('firstName')) ? 'has-error' : '' }}" for="firstName">
-            {{ Form::label('edit_firstName', trans('pages.first-name'), array('class' => 'col-sm-2 control-label')) }}
+            {{ Form::label('edit_firstName', trans('pages.first_name'), array('class' => 'col-sm-2 control-label')) }}
             <div class="col-sm-10">
-              {{ Form::text('firstName', $user->first_name, array('class' => 'form-control', 'placeholder' => trans('pages.first-name'), 'id' => 'edit_firstName'))}}
+              {{ Form::text('firstName', $user->first_name, array('class' => 'form-control', 'placeholder' => trans('pages.first_name'), 'id' => 'edit_firstName'))}}
             </div>
             {{ ($errors->has('firstName') ? $errors->first('firstName') : '') }}    			
     	</div>
 
 
         <div class="form-group {{ ($errors->has('lastName')) ? 'has-error' : '' }}" for="lastName">
-            {{ Form::label('edit_lastName', trans('pages.last-name'), array('class' => 'col-sm-2 control-label')) }}
+            {{ Form::label('edit_lastName', trans('pages.last_name'), array('class' => 'col-sm-2 control-label')) }}
             <div class="col-sm-10">
-              {{ Form::text('lastName', $user->last_name, array('class' => 'form-control', 'placeholder' => trans('pages.last-name'), 'id' => 'edit_lastName'))}}
+              {{ Form::text('lastName', $user->last_name, array('class' => 'form-control', 'placeholder' => trans('pages.last_name'), 'id' => 'edit_lastName'))}}
             </div>
             {{ ($errors->has('lastName') ? $errors->first('lastName') : '') }}                
         </div>
@@ -67,7 +67,7 @@
     {{ Form::close()}}
 </div>
 
-<h4>@lang('pages.password-change')</h4>
+<h4>@lang('pages.password_change')</h4>
 <div class="well">
     {{ Form::open(array(
         'action' => array('UsersController@change', $user->id),
@@ -76,18 +76,18 @@
         )) }}
         
         <div class="form-group {{ $errors->has('oldPassword') ? 'has-error' : '' }}">
-        	{{ Form::label('oldPassword', trans('pages.password-old'), array('class' => 'sr-only')) }}
-			{{ Form::password('oldPassword', array('class' => 'form-control', 'placeholder' => trans('pages.password-old'))) }}
+        	{{ Form::label('oldPassword', trans('pages.password_old'), array('class' => 'sr-only')) }}
+			{{ Form::password('oldPassword', array('class' => 'form-control', 'placeholder' => trans('pages.password_old'))) }}
     	</div>
 
         <div class="form-group {{ $errors->has('newPassword') ? 'has-error' : '' }}">
-        	{{ Form::label('newPassword', trans('pages.password-new'), array('class' => 'sr-only')) }}
-            {{ Form::password('newPassword', array('class' => 'form-control', 'placeholder' => trans('pages.password-new'))) }}
+        	{{ Form::label('newPassword', trans('pages.password_new'), array('class' => 'sr-only')) }}
+            {{ Form::password('newPassword', array('class' => 'form-control', 'placeholder' => trans('pages.password_new'))) }}
     	</div>
 
     	<div class="form-group {{ $errors->has('newPassword_confirmation') ? 'has-error' : '' }}">
-        	{{ Form::label('newPassword_confirmation', trans('pages.password-new-confirm'), array('class' => 'sr-only')) }}
-            {{ Form::password('newPassword_confirmation', array('class' => 'form-control', 'placeholder' => trans('pages.password-new-confirm'))) }}
+        	{{ Form::label('newPassword_confirmation', trans('pages.password_new_confirm'), array('class' => 'sr-only')) }}
+            {{ Form::password('newPassword_confirmation', array('class' => 'form-control', 'placeholder' => trans('pages.password_new_confirm'))) }}
     	</div>
 
         {{ Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary btn-xs'))}}

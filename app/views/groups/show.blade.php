@@ -3,7 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
 @parent
-@lang('groups.group-view')
+@lang('groups.group_view')
 @stop
 
 {{-- Content --}}

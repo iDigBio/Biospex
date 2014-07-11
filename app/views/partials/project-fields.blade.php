@@ -16,9 +16,9 @@
     </div>
 
     <div class="form-group {{ ($errors->has('contact_email')) ? 'has-error' : '' }}">
-        {{ Form::label('contact_email', trans('forms.contact-email'), array('class' => 'col-sm-2 control-label')) }}
+        {{ Form::label('contact_email', trans('forms.contact_email'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::text('contact_email', null, array('class' => 'form-control', 'placeholder' => trans('forms.contact-email'))) }}
+            {{ Form::text('contact_email', null, array('class' => 'form-control', 'placeholder' => trans('forms.contact_email'))) }}
         </div>
         {{ ($errors->has('contact_email') ? $errors->first('contact_email') : '') }}
     </div>
@@ -56,9 +56,9 @@
     </div>
 
     <div class="form-group {{ ($errors->has('strategy')) ? 'has-error' : '' }}">
-        {{ Form::label('strategy', trans('forms.strategy-description'), array('class' => 'col-sm-2 control-label')) }}
+        {{ Form::label('strategy', trans('forms.strategy_description'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::textarea('strategy', null, array('class' => 'form-control', 'placeholder' => trans('forms.strategy-description'))) }}
+            {{ Form::textarea('strategy', null, array('class' => 'form-control', 'placeholder' => trans('forms.strategy_description'))) }}
         </div>
         {{ ($errors->has('strategy') ? $errors->first('strategy') : '') }}
     </div>
@@ -72,25 +72,25 @@
     </div>
 
     <div class="form-group {{ ($errors->has('geographic_scope')) ? 'has-error' : '' }}">
-        {{ Form::label('geographic_scope', trans('forms.geographic-scope'), array('class' => 'col-sm-2 control-label')) }}
+        {{ Form::label('geographic_scope', trans('forms.geographic_scope'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::text('geographic_scope', null, array('class' => 'form-control', 'placeholder' => trans('forms.geographic-scope'))) }}
+            {{ Form::text('geographic_scope', null, array('class' => 'form-control', 'placeholder' => trans('forms.geographic_scope'))) }}
         </div>
         {{ ($errors->has('geographic_scope') ? $errors->first('geographic_scope') : '') }}
     </div>
 
     <div class="form-group {{ ($errors->has('taxonomic_scope')) ? 'has-error' : '' }}">
-        {{ Form::label('taxonomic_scope', trans('forms.taxonomic-scope'), array('class' => 'col-sm-2 control-label')) }}
+        {{ Form::label('taxonomic_scope', trans('forms.taxonomic_scope'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::text('taxonomic_scope', null, array('class' => 'form-control', 'placeholder' => trans('forms.taxonomic-scope'))) }}
+            {{ Form::text('taxonomic_scope', null, array('class' => 'form-control', 'placeholder' => trans('forms.taxonomic_scope'))) }}
         </div>
         {{ ($errors->has('taxonomic_scope') ? $errors->first('taxonomic_scope') : '') }}
     </div>
 
     <div class="form-group {{ ($errors->has('temporal_scope')) ? 'has-error' : '' }}">
-        {{ Form::label('temporal_scope', trans('forms.temporal-scope'), array('class' => 'col-sm-2 control-label')) }}
+        {{ Form::label('temporal_scope', trans('forms.temporal_scope'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::text('temporal_scope', null, array('class' => 'form-control', 'placeholder' => trans('forms.temporal-scope'))) }}
+            {{ Form::text('temporal_scope', null, array('class' => 'form-control', 'placeholder' => trans('forms.temporal_scope'))) }}
         </div>
         {{ ($errors->has('temporal_scope') ? $errors->first('temporal_scope') : '') }}
     </div>
@@ -120,9 +120,9 @@
     </div>
 
     <div class="form-group {{ ($errors->has('language_skills')) ? 'has-error' : '' }}">
-        {{ Form::label('language_skills', trans('forms.language-skills'), array('class' => 'col-sm-2 control-label')) }}
+        {{ Form::label('language_skills', trans('forms.language_skills'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::text('language_skills', null, array('class' => 'form-control', 'placeholder' => trans('forms.language-skills'))) }}
+            {{ Form::text('language_skills', null, array('class' => 'form-control', 'placeholder' => trans('forms.language_skills'))) }}
         </div>
         {{ ($errors->has('language_skills') ? $errors->first('language_skills') : '') }}
     </div>
@@ -159,22 +159,22 @@
     <div class="panel panel-default col-sm-10">
         <div class="panel-body">
             <div class="form-group col-sm-10 {{ ($errors->has('target_name')) ? 'has-error' : '' }}">
-                {{ Form::text('target_core['.$i.']', null, array('class' => 'form-control', 'placeholder' => trans('forms.target-core'))) }}
+                {{ Form::text('target_core['.$i.']', null, array('class' => 'form-control', 'placeholder' => trans('forms.target_core'))) }}
             </div>
             <div class="form-group col-sm-10 {{ ($errors->has('target_name')) ? 'has-error' : '' }}">
-                {{ Form::text('target_name['.$i.']', null, array('class' => 'form-control', 'placeholder' => trans('forms.target-name'))) }}
+                {{ Form::text('target_name['.$i.']', null, array('class' => 'form-control', 'placeholder' => trans('forms.target_name'))) }}
             </div>
             <div class="form-group col-sm-10 {{ ($errors->has('target_description')) ? 'has-error' : '' }}">
-                {{ Form::text('target_description['.$i.']', null, array('class' => 'form-control', 'placeholder' => trans('forms.target-description'))) }}
+                {{ Form::text('target_description['.$i.']', null, array('class' => 'form-control', 'placeholder' => trans('forms.target_description'))) }}
             </div>
             <div class="form-group col-sm-10 {{ ($errors->has('target_valid_response')) ? 'has-error' : '' }}">
-                {{ Form::text('target_valid_response['.$i.']', null, array('class' => 'form-control', 'placeholder' => trans('forms.target-valid-response'))) }}
+                {{ Form::text('target_valid_response['.$i.']', null, array('class' => 'form-control', 'placeholder' => trans('forms.target_valid_response'))) }}
             </div>
             <div class="form-group col-sm-10 {{ ($errors->has('target_inference')) ? 'has-error' : '' }}">
-                {{ Form::text('target_inference['.$i.']', null, array('class' => 'form-control', 'placeholder' => trans('forms.target-inference'))) }}
+                {{ Form::text('target_inference['.$i.']', null, array('class' => 'form-control', 'placeholder' => trans('forms.target_inference'))) }}
             </div>
             <div class="form-group col-sm-10 {{ ($errors->has('target_inference_example')) ? 'has-error' : '' }}">
-                {{ Form::text('target_inference_example['.$i.']', null, array('class' => 'form-control', 'placeholder' => trans('forms.target-inference-example'))) }}
+                {{ Form::text('target_inference_example['.$i.']', null, array('class' => 'form-control', 'placeholder' => trans('forms.target_inference_example'))) }}
             </div>
         </div>
     </div>
@@ -199,9 +199,9 @@
     </div>
 
     <div class="form-group {{ ($errors->has('contact_email')) ? 'has-error' : '' }}">
-        {{ Form::label('contact_email', trans('forms.contact-email'), array('class' => 'col-sm-2 control-label')) }}
+        {{ Form::label('contact_email', trans('forms.contact_email'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::text('contact_email', $project->contact_email, array('class' => 'form-control', 'placeholder' => trans('forms.contact-email'))) }}
+            {{ Form::text('contact_email', $project->contact_email, array('class' => 'form-control', 'placeholder' => trans('forms.contact_email'))) }}
         </div>
         {{ ($errors->has('contact_email') ? $errors->first('contact_email') : '') }}
     </div>
@@ -239,9 +239,9 @@
     </div>
 
     <div class="form-group {{ ($errors->has('strategy')) ? 'has-error' : '' }}">
-        {{ Form::label('strategy', trans('forms.strategy-description'), array('class' => 'col-sm-2 control-label')) }}
+        {{ Form::label('strategy', trans('forms.strategy_description'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::textarea('strategy', $project->strategy, array('class' => 'form-control', 'placeholder' => trans('forms.strategy-description'))) }}
+            {{ Form::textarea('strategy', $project->strategy, array('class' => 'form-control', 'placeholder' => trans('forms.strategy_description'))) }}
         </div>
         {{ ($errors->has('strategy') ? $errors->first('strategy') : '') }}
     </div>
@@ -255,25 +255,25 @@
     </div>
 
     <div class="form-group {{ ($errors->has('geographic_scope')) ? 'has-error' : '' }}">
-        {{ Form::label('geographic_scope', trans('forms.geographic-scope'), array('class' => 'col-sm-2 control-label')) }}
+        {{ Form::label('geographic_scope', trans('forms.geographic_scope'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::text('geographic_scope', $project->geographic_scope, array('class' => 'form-control', 'placeholder' => trans('forms.geographic-scope'))) }}
+            {{ Form::text('geographic_scope', $project->geographic_scope, array('class' => 'form-control', 'placeholder' => trans('forms.geographic_scope'))) }}
         </div>
         {{ ($errors->has('geographic_scope') ? $errors->first('geographic_scope') : '') }}
     </div>
 
     <div class="form-group {{ ($errors->has('taxonomic_scope')) ? 'has-error' : '' }}">
-        {{ Form::label('taxonomic_scope', trans('forms.taxonomic-scope'), array('class' => 'col-sm-2 control-label')) }}
+        {{ Form::label('taxonomic_scope', trans('forms.taxonomic_scope'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::text('taxonomic_scope', $project->taxonomic_scope, array('class' => 'form-control', 'placeholder' => trans('forms.taxonomic-scope'))) }}
+            {{ Form::text('taxonomic_scope', $project->taxonomic_scope, array('class' => 'form-control', 'placeholder' => trans('forms.taxonomic_scope'))) }}
         </div>
         {{ ($errors->has('taxonomic_scope') ? $errors->first('taxonomic_scope') : '') }}
     </div>
 
     <div class="form-group {{ ($errors->has('temporal_scope')) ? 'has-error' : '' }}">
-        {{ Form::label('temporal_scope', trans('forms.temporal-scope'), array('class' => 'col-sm-2 control-label')) }}
+        {{ Form::label('temporal_scope', trans('forms.temporal_scope'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::text('temporal_scope', $project->temporal_scope, array('class' => 'form-control', 'placeholder' => trans('forms.temporal-scope'))) }}
+            {{ Form::text('temporal_scope', $project->temporal_scope, array('class' => 'form-control', 'placeholder' => trans('forms.temporal_scope'))) }}
         </div>
         {{ ($errors->has('temporal_scope') ? $errors->first('temporal_scope') : '') }}
     </div>
@@ -303,9 +303,9 @@
     </div>
 
     <div class="form-group {{ ($errors->has('language_skills')) ? 'has-error' : '' }}">
-        {{ Form::label('language_skills', trans('forms.language-skills'), array('class' => 'col-sm-2 control-label')) }}
+        {{ Form::label('language_skills', trans('forms.language_skills'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::text('language_skills', $project->language_skills, array('class' => 'form-control', 'placeholder' => trans('forms.language-skills'))) }}
+            {{ Form::text('language_skills', $project->language_skills, array('class' => 'form-control', 'placeholder' => trans('forms.language_skills'))) }}
         </div>
         {{ ($errors->has('language_skills') ? $errors->first('language_skills') : '') }}
     </div>
@@ -351,22 +351,22 @@
     <div class="panel panel-default col-sm-10">
         <div class="panel-body">
             <div class="form-group col-sm-10 {{ ($errors->has('target_core')) ? 'has-error' : '' }}">
-                {{ Form::text('target_core['.$i.']', $target_core, array('class' => 'form-control', 'placeholder' => trans('forms.target-core'))) }}
+                {{ Form::text('target_core['.$i.']', $target_core, array('class' => 'form-control', 'placeholder' => trans('forms.target_core'))) }}
             </div>
             <div class="form-group col-sm-10 {{ ($errors->has('target_name')) ? 'has-error' : '' }}">
-                {{ Form::text('target_name['.$i.']', $target_name, array('class' => 'form-control', 'placeholder' => trans('forms.target-name'))) }}
+                {{ Form::text('target_name['.$i.']', $target_name, array('class' => 'form-control', 'placeholder' => trans('forms.target_name'))) }}
             </div>
             <div class="form-group col-sm-10 {{ ($errors->has('target_description')) ? 'has-error' : '' }}">
-                {{ Form::text('target_description['.$i.']', $target_description, array('class' => 'form-control', 'placeholder' => trans('forms.target-description'))) }}
+                {{ Form::text('target_description['.$i.']', $target_description, array('class' => 'form-control', 'placeholder' => trans('forms.target_description'))) }}
             </div>
             <div class="form-group col-sm-10 {{ ($errors->has('target_valid_response')) ? 'has-error' : '' }}">
-                {{ Form::text('target_valid_response['.$i.']', $target_valid_response, array('class' => 'form-control', 'placeholder' => trans('forms.target-valid-response'))) }}
+                {{ Form::text('target_valid_response['.$i.']', $target_valid_response, array('class' => 'form-control', 'placeholder' => trans('forms.target_valid_response'))) }}
             </div>
             <div class="form-group col-sm-10 {{ ($errors->has('target_inference')) ? 'has-error' : '' }}">
-                {{ Form::text('target_inference['.$i.']', $target_inference, array('class' => 'form-control', 'placeholder' => trans('forms.target-inference'))) }}
+                {{ Form::text('target_inference['.$i.']', $target_inference, array('class' => 'form-control', 'placeholder' => trans('forms.target_inference'))) }}
             </div>
             <div class="form-group col-sm-10 {{ ($errors->has('target_inference_example')) ? 'has-error' : '' }}">
-                {{ Form::text('target_inference_example['.$i.']', $target_inference_example, array('class' => 'form-control', 'placeholder' => trans('forms.target-inference-example'))) }}
+                {{ Form::text('target_inference_example['.$i.']', $target_inference_example, array('class' => 'form-control', 'placeholder' => trans('forms.target_inference_example'))) }}
             </div>
         </div>
     </div>

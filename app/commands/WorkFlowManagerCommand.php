@@ -93,7 +93,7 @@ class WorkFlowManagerCommand extends Command {
                     array(
                         'class' => $workflow->class,
                         'id' => $manager->workflow_id,
-                        'error' => $e->getTraceAsString()
+                        'error' => $e->getFile() . " - " . $e->getLine() . ": " . $e->getMessage()
                     )));
                 $this->report->reportSimpleError();
                 continue;

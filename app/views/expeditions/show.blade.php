@@ -16,7 +16,7 @@
         <p><strong>@lang('pages.description'):</strong> {{ $expedition->description }} </p>
         <p><strong>@lang('pages.keywords'):</strong> {{ $expedition->keywords }} </p>
         @if ( ! empty($expedition->download) && file_exists($filepath))
-        <p><strong>@lang('pages.expedition-download'):</strong> <a href="{{ URL::route('expeditionDownload', [$groupId, $project->id, $expedition->id, $expedition->download->id]) }}">{{ $expedition->download->file }}</a> </p>
+        <p><strong>@lang('pages.expedition_download'):</strong> <a href="{{ URL::route('expeditionDownload', [$groupId, $project->id, $expedition->id, $expedition->download->id]) }}">{{ $expedition->download->file }}</a> </p>
         @endif
     </div>
     <div class="col-md-4">

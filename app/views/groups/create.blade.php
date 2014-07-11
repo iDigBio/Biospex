@@ -3,7 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
 @parent
-@lang('groups.group-create')
+@lang('groups.group_create')
 @stop
 
 {{-- Content --}}
@@ -11,7 +11,7 @@
 <div class="row">
     <div class="col-md-4 col-md-offset-4">
 	{{ Form::open(array('action' => 'GroupsController@store')) }}
-        <h2>@lang('groups.group-create')</h2>
+        <h2>@lang('groups.group_create')</h2>
     
         <div class="form-group {{ ($errors->has('name')) ? 'has-error' : '' }}">
             {{ Form::text('name', null, array('class' => 'form-control', 'placeholder' => trans('pages.name'))) }}

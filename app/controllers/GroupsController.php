@@ -205,12 +205,12 @@ class GroupsController extends BaseController {
                 'groupId' => $id, 
             ));
 
-			Session::flash('success', trans('groups.group-destroyed'));
+			Session::flash('success', trans('groups.group_destroyed'));
             return Redirect::action('GroupsController@index');
         }
         else 
         {
-        	Session::flash('error', trans('groups.group-destroyed-failed'));
+        	Session::flash('error', trans('groups.group_destroyed_failed'));
             return Redirect::action('GroupsController@index');
         }
 	}

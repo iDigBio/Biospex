@@ -3,7 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
 @parent
-@lang('pages.resend-activation')
+@lang('pages.resend_activation')
 @stop
 
 {{-- Content --}}
@@ -12,7 +12,7 @@
     <div class="col-md-4 col-md-offset-4">
         {{ Form::open(array('action' => 'UsersController@resend', 'method' => 'post')) }}
         	
-            <h2>@lang('pages.resend-activation-email')</h2>
+            <h2>@lang('pages.resend_activation_email')</h2>
     		
             <div class="form-group {{ ($errors->has('email')) ? 'has-error' : '' }}">
                 {{ Form::text('email', null, array('class' => 'form-control', 'placeholder' => trans('pages.email'), 'autofocus')) }}

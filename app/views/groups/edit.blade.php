@@ -3,7 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
 @parent
-@lang('groups.group-edit')
+@lang('groups.group_edit')
 @stop
 
 {{-- Content --}}
@@ -12,7 +12,7 @@
     {{ Form::open(array('action' =>  array('GroupsController@update', $group->id), 'method' => 'put')) }}
     <div class="col-md-4 col-md-offset-4">
 	{{ Form::open(array('action' =>  array('GroupsController@update', $group->id), 'method' => 'put')) }}
-        <h2>@lang('groups.group-edit')</h2>
+        <h2>@lang('groups.group_edit')</h2>
 
         <div class="form-group {{ ($errors->has('name')) ? 'has-error' : '' }}">
             {{ Form::text('name', $group->name, array('class' => 'form-control', 'placeholder' => trans('pages.name'))) }}

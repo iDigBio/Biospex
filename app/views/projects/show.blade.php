@@ -38,7 +38,7 @@
             <th>Incomplete</th>
             <th>Complete</th>
             <th>Percent Complete</th>
-            <th>options</th>
+            <th>Options</th>
         </tr>
         </thead>
         <tbody>

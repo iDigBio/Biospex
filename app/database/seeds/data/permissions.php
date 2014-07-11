@@ -35,114 +35,114 @@ $items = array(
     array(
         'name' => "project_create",
         'group' => "project",
-        'description' => "projects.project-create",
+        'description' => "projects.project_create",
     ),
     array(
         'name' => "project_edit",
         'group' => "project",
-        'description' => "projects.project-edit",
+        'description' => "projects.project_edit",
     ),
     array(
         'name' => "project_view",
         'group' => "project",
-        'description' => "projects.project-view",
+        'description' => "projects.project_view",
     ),
     array(
         'name' => "project_delete",
         'group' => "project",
-        'description' => "projects.project-delete",
+        'description' => "projects.project_delete",
     ),
 
     // expedition
     array(
         'name' => "expedition_create",
         'group' => "expedition",
-        'description' => "pages.expedition-create",
+        'description' => "pages.expedition_create",
     ),
     array(
         'name' => "expedition_edit",
         'group' => "expedition",
-        'description' => "pages.expedition-edit",
+        'description' => "pages.expedition_edit",
     ),
     array(
         'name' => "expedition_view",
         'group' => "expedition",
-        'description' => "pages.expedition-view",
+        'description' => "pages.expedition_view",
     ),
     array(
         'name' => "expedition_delete",
         'group' => "expedition",
-        'description' => "pages.expedition-delete",
+        'description' => "pages.expedition_delete",
     ),
 
     // permissions
     array(
         'name' => "permission_edit",
         'group' => "permission",
-        'description' => "pages.permissions-edit",
+        'description' => "pages.permissions_edit",
     ),
     array(
         'name' => "permission_view",
         'group' => "permission",
-        'description' => "pages.permissions-view",
+        'description' => "pages.permissions_view",
     ),
 
     // user
     array(
         'name' => "user_create",
         'group' => "user",
-        'description' => "pages.user-create",
+        'description' => "pages.user_create",
     ),
     array(
         'name' => "user_edit",
         'group' => "user",
-        'description' => "pages.user-edit",
+        'description' => "pages.user_edit",
     ),
     array(
         'name' => "user_ban",
         'group' => "user",
-        'description' => "pages.user-ban",
+        'description' => "pages.user_ban",
     ),
     array(
         'name' => "user_view",
         'group' => "user",
-        'description' => "pages.user-view",
+        'description' => "pages.user_view",
     ),
     array(
         'name' => "user_delete",
         'group' => "user",
-        'description' => "pages.user-delete",
+        'description' => "pages.user_delete",
     ),
     array(
         'name' => "user_edit_permissions",
         'group' => "user",
-        'description' => "pages.user-edit-permissions",
+        'description' => "pages.user_edit_permissions",
     ),
     array(
         'name' => "user_edit_groups",
         'group' => "user",
-        'description' => "pages.user-edit-groups",
+        'description' => "pages.user_edit_groups",
     ),
 
     // groups
     array(
         'name' => "group_create",
         'group' => "group",
-        'description' => "groups.group-create",
+        'description' => "groups.group_create",
     ),
     array(
         'name' => "group_edit",
         'group' => "group",
-        'description' => "groups.group-edit",
+        'description' => "groups.group_edit",
     ),
     array(
         'name' => "group_view",
         'group' => "group",
-        'description' => "groups.group-view",
+        'description' => "groups.group_view",
     ),
     array(
         'name' => "group_delete",
         'group' => "group",
-        'description' => "groups.group-delete",
+        'description' => "groups.group_delete",
     ),
 );

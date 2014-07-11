@@ -147,7 +147,7 @@ class Report {
             'missingImageUrls' => trans('emails.missing_img_urls'),
             'missingUrl' => implode("<br />", $urls)
         );
-        $view = 'emails.report-missing-images';
+        $view = 'emails.report-missing_images';
 
         $this->mailer->sendReport($email, $subject, $view, $data);
     }

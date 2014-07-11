@@ -188,7 +188,10 @@ class NotesFromNature extends WorkFlow
 
         $this->userId = $this->record->project->user_id;
 
-        if ( ! call_user_func(array($this, $this->states[$this->record->state])))
+        try {
+            call_user_func(array($this, $this->states[$this->record->state]));
+        }
+        catch ( Exception $e )
         {
             $this->destroyDir($this->tmpFileDir);
             return;
@@ -226,10 +229,13 @@ class NotesFromNature extends WorkFlow
         $this->tmpFileDir = "{$this->dataDir}/$title";
 
         if ( ! $this->createDir($this->tmpFileDir))
-            return false;
+            throw new \RuntimeException(trans('errors.error_create_dir', array('directory' => $this->tmpFileDir)));
+
+        if ( ! $this->writeDir($this->tmpFileDir))
+            throw new \RuntimeException(trans('errors.error_write_dir', array('directory' => $this->tmpFileDir)));
 
         if ( ! $this->buildImgDir())
-            return false;
+            throw new \RuntimeException(trans('errors.error_build_image_dir', array('id' => $this->record->id)));
 
         if ( ! $this->processImages())
             return false;

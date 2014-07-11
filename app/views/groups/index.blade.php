@@ -15,8 +15,8 @@
 		<table class="table table-striped table-hover">
 			<thead>
 				<th>@lang('pages.name')</th>
-				<th>@lang('groups.group-options')</th>
-                <th>@lang('projects.project-options')</th>
+				<th>@lang('groups.group_options')</th>
+                <th>@lang('projects.project_options')</th>
 			</thead>
 			<tbody>
             @foreach ($groups as $group)

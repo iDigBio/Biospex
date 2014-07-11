@@ -79,23 +79,24 @@ abstract class WorkFlow {
         if ( ! $this->filesystem->isDirectory($dir))
         {
             if ( ! $this->filesystem->makeDirectory($dir))
-            {
-                $this->report->addError(trans('errors.error_create_dir', array('directory' => $dir)));
-                $this->report->reportSimpleError();
-
                 return false;
-            }
         }
 
+        return true;
+    }
+
+    /**
+     * Make sure directory is writable.
+     *
+     * @param $dir
+     * @return bool
+     */
+    protected function writeDir($dir)
+    {
         if ( ! $this->filesystem->isWritable($dir))
         {
             if ( ! chmod($dir, 0777))
-            {
-                $this->report->addError(trans('errors.error_write_dir', array('directory' => $dir)));
-                $this->report->reportSimpleError();
-
                 return false;
-            }
         }
 
         return true;

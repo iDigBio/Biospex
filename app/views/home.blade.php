@@ -12,7 +12,7 @@
 <div class="jumbotron">
     <div class="container">
         <h1>{{trans('pages.sitename')}}</h1>
-        <p>{{trans('pages.site-description')}}</p>
+        <p>{{trans('pages.site_description')}}</p>
     </div>
 </div>
 

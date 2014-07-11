@@ -36,13 +36,13 @@ return array(
     'process'           => "Process",
 
     'login'             => "Login",
-    'password-forgot'   => "Forgot Password",
+    'password_forgot'   => "Forgot Password",
     'register'          => "Register",
-    'send-instructions' => "Send Instructions",
+    'send_instructions' => "Send Instructions",
     'resend'            => "Resend",
 
-    'target-add'        => "Add Target",
-    'target-remove'     => "Remove Target",
+    'target_add'        => "Add Target",
+    'target_remove'     => "Remove Target",
 
     'suspend'           => "Suspend",
     'unsuspend'         => "Unsuspend",
