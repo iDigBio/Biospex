@@ -3,14 +3,14 @@
 {{-- Web site Title --}}
 @section('title')
 @parent
-{{ trans('pages.create') }} {{ trans('projects.project') }}
+{{ trans('pages.clone') }} {{ trans('projects.project') }}
 @stop
 
 {{-- Content --}}
 @section('content')
 
-<h2>{{ $group->name }}</h2>
-<h4>{{ trans('pages.create') }} {{ trans('projects.project') }}</h4>
+<h4>{{ trans('groups.group') }}: {{ $group->name }}</h4>
+<h3>{{ trans('pages.clone') }} {{ trans('projects.project') }}</h3>
 <div class="well">
     {{ Form::open(array(
     'action' => array('ProjectsController@store', $group->id),
@@ -24,8 +24,8 @@
     @include('partials.project-fields', compact('project'))
 
     <div class="form-group">
-        <button id="add_target" class="btn btn-default" type="button">@lang('buttons.target_add')</button>
-        <button id="remove_target" class="btn btn-default" type="button">@lang('buttons.target_remove')</button>
+        <button id="add_target" class="btn btn-default btn-sm" type="button">@lang('buttons.target_add')</button>
+        <button id="remove_target" class="btn btn-default btn-sm" type="button">@lang('buttons.target_remove')</button>
     </div>
 
     <div class="form-group">

@@ -1,0 +1,78 @@
+body {
+    padding-top: 60px;
+}
+.pointer {
+    cursor: pointer;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+
+
+
+.tt-dropdown-menu {
+    width: 422px;
+    margin-top: 12px;
+    padding: 8px 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.tt-suggestion {
+    padding: 3px 20px;
+    font-size: 18px;
+    line-height: 24px;
+}
+
+.tt-suggestion.tt-cursor {
+    color: #fff;
+    background-color: #0097cf;
+
+}
+
+.tt-suggestion p {
+    margin: 0;
+}
+
+.btn { width: 90px; font-size: 16px; margin-bottom: 5px; }
+.btn-danger { text-shadow: 0px -1px #600; }
+td .btn { width: 60px; font-size: 14px; }
+.btn-sm { font-size: 12px; width: 90px; }
+#splash { background: url(http://www.clientwebstage.com/idigbio/biospex/dev/images/home-map.jpg); height: 300px; width: 100%; padding: 25px 0 0 0; margin: 0; }
+#splash h1 { color: #241d4e !important; font-size: 20px; font-weight: bold; }
+#logo-list { margin-right: 0; padding: 0; }
+#logo-list li {
+    display: inline;
+    padding: 0;
+    width: 80px;
+}
+
+#social-list {
+    float: right;
+    width: 120px;
+}
+
+#social-list li {
+    float: left;
+    list-style: none;
+    width: 40px;
+}
+#footer-home { margin-top: 35px; margin-bottom: 25px; }
+#x { background: url(http://www.clientwebstage.com/idigbio/biospex/dev/images/x.png) right -50px no-repeat; }
+.home h2 { color: #8dc63f; font-size: 18px; font-weight: bold; margin: 45px 0 10px 0; }
+.home label { color: #999; font-weight: normal; display: block;}
+.home input[type="text"], .home input[type="email"] { width: 200px; }
+h2.mailchimp { margin-top: 90px; }
+p a { color: #c00; }
+p a:hover { color: #f00; }
+body.home { padding-top: 40px; }
+

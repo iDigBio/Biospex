@@ -69,6 +69,7 @@ return array(
     'keywords'                  => "Keywords",
 
     'list'                      => "List",
+    'manage'                    => "Manage",
     'create'                    => "Create",
     'edit'                      => "Edit",
     'created'                   => "Created",
