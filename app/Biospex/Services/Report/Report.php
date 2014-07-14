@@ -30,11 +30,19 @@ use Biospex\Mailer\BiospexMailer;
 
 class Report {
     /**
-     * Debug by showing output for different actions
-     *
-     * @var
+     * @var \Illuminate\Support\Contracts\MessageProviderInterface
      */
-    protected $debug = true;
+    protected $messages;
+
+    /**
+     * @var \Biospex\Repo\User\UserInterface
+     */
+    protected $user;
+
+    /**
+     * @var \Biospex\Mailer\BiospexMailer
+     */
+    protected $mailer;
 
     /**
      * Admin email from Config
@@ -42,6 +50,20 @@ class Report {
      */
     protected $adminEmail;
 
+    /**
+     * Debug by showing output for different actions
+     *
+     * @var
+     */
+    protected $debug;
+
+    /**
+     * Constructor
+     *
+     * @param MessageProviderInterface $messages
+     * @param UserInterface $user
+     * @param BiospexMailer $mailer
+     */
     public function __construct(
         MessageProviderInterface $messages,
         UserInterface $user,
@@ -52,6 +74,7 @@ class Report {
         $this->user = $user;
         $this->mailer = $mailer;
         $this->adminEmail = Config::get('config.adminEmail');
+        $this->debug = Config::get('config.debug');
     }
 
     public function addError($error)
