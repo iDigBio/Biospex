@@ -73,6 +73,7 @@ return array(
     'edit'                      => "Edit",
     'created'                   => "Created",
     'updated'                   => "Updated",
+    'clone'                     => "Clone",
 
     'expedition'                => "Expedition",
     'expeditions'               => "Expeditions",
