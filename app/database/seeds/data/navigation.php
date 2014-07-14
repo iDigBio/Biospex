@@ -35,7 +35,7 @@ $items = array(
         'children' => array(
             array(
                 'type' => "topmenu",
-                'name' => "pages.list",
+                'name' => "pages.manage",
                 'url' => "/groups",
                 'permission' => 'group_view',
                 'order' => 2,
