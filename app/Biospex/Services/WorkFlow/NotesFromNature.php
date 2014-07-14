@@ -268,7 +268,7 @@ class NotesFromNature extends WorkFlowAbstract
         $i = 0;
         foreach ($this->record->subject as $subject)
         {
-            $this->subjectArray[$subject->id] = $subject->object_id;
+            $this->subjectArray[$subject->id][] = $subject->object_id;
 
             if ( ! $remoteImgColumn = $this->getRemoteImgColumn($subject->subjectDoc->meta_id))
                 continue;
@@ -388,8 +388,7 @@ class NotesFromNature extends WorkFlowAbstract
     {
         $data = array();
 
-        $it = new \RecursiveDirectoryIterator($this->tmpFileDir, \RecursiveDirectoryIterator::SKIP_DOTS);
-        $files = new \RecursiveIteratorIterator($it, \RecursiveIteratorIterator::CHILD_FIRST);
+        $files = $this->filesystem->files($this->tmpFileDir);
 
         $lrgPath = "{$this->tmpFileDir}/large";
         if ( ! $this->createDir($lrgPath))
@@ -414,15 +413,7 @@ class NotesFromNature extends WorkFlowAbstract
         $this->metadata['lowResWidth'] = $this->smallWidth;
 
         $i = 0;
-        foreach($files as $file) {
-            $filePath = $file->getRealPath();
-
-            if ( ! $filePath)
-            {
-                $this->report->addError(trans('error_process_file_path', array('file' => $file)));
-                $this->report->reportSimpleError();
-                continue;
-            }
+        foreach($files as $filePath) {
 
             list($width, $height, $type, $attr) = getimagesize($filePath); // $width, $height, $type, $attr
             $info = pathinfo($filePath); // $dirname, $basename, $extension, $filename
@@ -440,7 +431,7 @@ class NotesFromNature extends WorkFlowAbstract
             $data['large']['width'] = $this->largeWidth;
             $data['large']['height'] = $lrgHeight;
 
-            $this->convertImage($file->getRealPath(), $this->largeWidth, $lrgHeight, $lrgImgPath);
+            $this->convertImage($filePath, $this->largeWidth, $lrgHeight, $lrgImgPath);
 
 
             $smallHeight = round(($height * $this->smallWidth) / $width);
@@ -450,7 +441,7 @@ class NotesFromNature extends WorkFlowAbstract
             $data['small']['width'] = $this->smallWidth;
             $data['small']['height'] = $smallHeight;
 
-            $this->convertImage($file->getRealPath(), $this->smallWidth, $smallHeight, $smImgPath);
+            $this->convertImage($filePath, $this->smallWidth, $smallHeight, $smImgPath);
 
             $this->metadata['images'][] = $data;
 
