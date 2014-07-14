@@ -36,6 +36,7 @@ return array(
     'useradderror'  => "Error adding user to new group",
 
     'group'                 => "Group",
+    'group_name'            => "Group Name",
     'groups'                => "Groups",
     'group_create'          => "Create group",
     'group_edit'            => "Edit group",
