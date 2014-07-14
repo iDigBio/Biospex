@@ -12,9 +12,10 @@
     {{ Form::open(array('action' =>  array('GroupsController@update', $group->id), 'method' => 'put')) }}
     <div class="col-md-4 col-md-offset-4">
 	{{ Form::open(array('action' =>  array('GroupsController@update', $group->id), 'method' => 'put')) }}
-        <h2>@lang('groups.group_edit')</h2>
+        <h3>{{ trans('groups.group_edit') }}: {{{ $group->name }}}</h3>
 
         <div class="form-group {{ ($errors->has('name')) ? 'has-error' : '' }}">
+            {{ Form::label(trans('groups.group_name')) }}
             {{ Form::text('name', $group->name, array('class' => 'form-control', 'placeholder' => trans('pages.name'))) }}
             {{ ($errors->has('name') ? $errors->first('name') : '') }}
         </div>
