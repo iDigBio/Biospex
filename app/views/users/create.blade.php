@@ -33,7 +33,7 @@
                 {{ Form::text('group', null, array('id' => 'group', 'class' => 'typeahead form-control', 'placeholder' => 'Group')) }}
             </div>
 
-        {{ Form::submit(trans('buttons.register'), array('class' => 'btn btn-primary btn-xs')) }}
+        {{ Form::submit(trans('buttons.register'), array('class' => 'btn btn-primary')) }}
             
         {{ Form::close() }}
     </div>

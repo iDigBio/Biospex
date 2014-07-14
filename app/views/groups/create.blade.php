@@ -20,7 +20,7 @@
 
         {{ Form::hidden('user_id', $user->id) }}
 
-        {{ Form::submit(trans('buttons.create'), array('class' => 'btn btn-primary btn-xs')) }}
+        {{ Form::submit(trans('buttons.create'), array('class' => 'btn btn-primary')) }}
 
     {{ Form::close() }}
     </div>

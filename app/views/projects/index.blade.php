@@ -26,8 +26,8 @@
                     <td><a href="{{ action('ProjectsController@show', array($project->id)) }}">{{ $project->title }}</a></td>
                     <td>{{ $project->description }} </td>
                     <td>
-                        <button class="btn btn-default btn-xs" type="button" onClick="location.href='{{ action('ProjectsController@edit', array($project->id)) }}'">@lang('buttons.edit')</button>
-                        <button class="btn btn-default btn-danger action_confirm btn-xs" href="{{ action('ProjectsController@destroy', array($project->id)) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.delete')</button></td>
+                        <button class="btn btn-default" type="button" onClick="location.href='{{ action('ProjectsController@edit', array($project->id)) }}'">@lang('buttons.edit')</button>
+                        <button class="btn btn-default btn-danger action_confirm" href="{{ action('ProjectsController@destroy', array($project->id)) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.delete')</button></td>
                 </tr>
                 <tr id="{{ $project->id }}" class="collapse out">
                     <td id="expeditions{{ $project->id }}" colspan="4"></td>

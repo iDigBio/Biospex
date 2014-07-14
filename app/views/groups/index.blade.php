@@ -25,14 +25,14 @@
                     <tr>
                         <td><a href="groups/{{ $group->id }}">{{ $group->name }}</a></td>
                         <td>
-                            <button class="btn btn-default btn-xs" {{ ($group->user_id == $user->id || $isSuperUser) ? '' : 'disabled' }} onClick="location.href='{{ action('GroupsController@edit', array($group->id)) }}'">@lang('buttons.edit')</button>
-                            <button class="btn btn-default btn-danger action_confirm btn-xs" {{ ($group->user_id == $user->id  || $isSuperUser) ? '' : 'disabled' }} type="button" data-method="delete" href="{{ URL::action('GroupsController@destroy', array($group->id)) }}">@lang('buttons.delete')</button>
+                            <button class="btn btn-default" {{ ($group->user_id == $user->id || $isSuperUser) ? '' : 'disabled' }} onClick="location.href='{{ action('GroupsController@edit', array($group->id)) }}'">@lang('buttons.edit')</button>
+                            <button class="btn btn-default btn-danger action_confirm" {{ ($group->user_id == $user->id  || $isSuperUser) ? '' : 'disabled' }} type="button" data-method="delete" href="{{ URL::action('GroupsController@destroy', array($group->id)) }}">@lang('buttons.delete')</button>
                          </td>
                         @if (($group->name == 'Admins' || $group->name == 'Users'))
                         <td></td>
                         @else
                         <td>
-                            <button class="btn btn-primary btn-xs" onClick="location.href='{{ URL::route('groups.projects.create', [$group->id]) }}'">@lang('pages.create')</button>
+                            <button class="btn btn-primary" onClick="location.href='{{ URL::route('groups.projects.create', [$group->id]) }}'">@lang('pages.create')</button>
                         </td>
                         @endif
                     </tr>
@@ -41,7 +41,7 @@
 			</tbody>
 		</table> 
 	</div>
-	 <button class="btn btn-primary btn-xs" onClick="location.href='{{ URL::action('GroupsController@create') }}'">@lang('buttons.create')</button>
+	 <button class="btn btn-primary" onClick="location.href='{{ URL::action('GroupsController@create') }}'">@lang('buttons.create')</button>
    </div>
 </div>
 <!--  

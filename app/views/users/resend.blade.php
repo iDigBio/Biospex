@@ -19,7 +19,7 @@
                 {{ ($errors->has('email') ? $errors->first('email') : '') }}
             </div>
 
-            {{ Form::submit(trans('buttons.resend'), array('class' => 'btn btn-primary btn-xs')) }}
+            {{ Form::submit(trans('buttons.resend'), array('class' => 'btn btn-primary')) }}
 
         {{ Form::close() }}
     </div>

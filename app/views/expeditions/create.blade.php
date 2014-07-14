@@ -25,7 +25,7 @@
         <div class="col-sm-offset-2 col-sm-10">
             {{ Form::hidden('group_id', $group->id) }}
             {{ Form::hidden('project_id', $project->id) }}
-            {{ Form::submit(trans('buttons.create'), array('class' => 'btn btn-primary btn-xs'))}}
+            {{ Form::submit(trans('buttons.create'), array('class' => 'btn btn-primary'))}}
         </div>
     </div>
     {{ Form::close()}}

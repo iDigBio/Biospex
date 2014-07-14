@@ -26,8 +26,8 @@
             <label class="checkbox">
                 {{ Form::checkbox('rememberMe', 'rememberMe') }} @lang('pages.rememberme')
             </label>
-            {{ Form::submit(trans('buttons.login'), array('class' => 'btn btn-primary btn-xs'))}}
-            <a class="btn btn-link btn-xs" href="{{ route('forgotPasswordForm') }}">@lang('buttons.password_forgot')</a>
+            {{ Form::submit(trans('buttons.login'), array('class' => 'btn btn-primary'))}}
+            <a class="btn btn-link" href="{{ route('forgotPasswordForm') }}">@lang('buttons.password_forgot')</a>
         {{ Form::close() }}
     </div>
 </div>

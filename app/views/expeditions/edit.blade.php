@@ -26,7 +26,7 @@
             {{ Form::hidden('group_id', $group->id) }}
             {{ Form::hidden('project_id', $project->id) }}
             {{ Form::hidden('id', $expedition->id) }}
-            {{ Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary btn-xs'))}}
+            {{ Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary'))}}
         </div>
     </div>
     {{ Form::close()}}

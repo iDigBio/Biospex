@@ -21,7 +21,7 @@
 
             {{ Form::hidden('id', $id) }}
 
-            {{ Form::submit(trans('buttons.suspend'), array('class' => 'btn btn-primary btn-xs')) }}
+            {{ Form::submit(trans('buttons.suspend'), array('class' => 'btn btn-primary')) }}
             
         {{ Form::close() }}
     </div>

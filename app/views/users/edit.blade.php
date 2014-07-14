@@ -61,7 +61,7 @@
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 {{ Form::hidden('id', $user->id) }}
-                {{ Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary btn-xs'))}}
+                {{ Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary'))}}
             </div>
       </div>
     {{ Form::close()}}
@@ -90,7 +90,7 @@
             {{ Form::password('newPassword_confirmation', array('class' => 'form-control', 'placeholder' => trans('pages.password_new_confirm'))) }}
     	</div>
 
-        {{ Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary btn-xs'))}}
+        {{ Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary'))}}
 	        	
       {{ ($errors->has('oldPassword') ? '<br />' . $errors->first('oldPassword') : '') }}
       {{ ($errors->has('newPassword') ?  '<br />' . $errors->first('newPassword') : '') }}

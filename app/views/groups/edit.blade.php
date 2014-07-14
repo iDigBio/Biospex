@@ -27,7 +27,7 @@
         @endif
 
         {{ Form::hidden('id', $group->id) }}
-        {{ Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary btn-xs')) }}
+        {{ Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary')) }}
 
     {{ Form::close() }}
     </div>

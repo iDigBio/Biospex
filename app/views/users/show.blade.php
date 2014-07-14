@@ -24,7 +24,7 @@
 		<div class="col-md-4">
 			<p><em>@lang('pages.account_created'): {{ $user->created_at }}</em></p>
 			<p><em>@lang('pages.last_updated'): {{ $user->updated_at }}</em></p>
-			<button class="btn btn-primary btn-xs" onClick="location.href='{{ action('UsersController@edit', array($user->id)) }}'">@lang('buttons.edit')</button>
+			<button class="btn btn-primary" onClick="location.href='{{ action('UsersController@edit', array($user->id)) }}'">@lang('buttons.edit')</button>
 		</div>
 	</div>
 

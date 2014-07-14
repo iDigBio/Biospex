@@ -21,8 +21,8 @@
     @include('partials.project-fields', compact('project'))
 
     <div class="form-group">
-        <button id="add_target" class="btn btn-default btn-xs" type="button">@lang('buttons.target_add')</button>
-        <button id="remove_target" class="btn btn-default btn-xs" type="button">@lang('buttons.target_remove')</button>
+        <button id="add_target" class="btn btn-default" type="button">@lang('buttons.target_add')</button>
+        <button id="remove_target" class="btn btn-default" type="button">@lang('buttons.target_remove')</button>
     </div>
 
     <div class="form-group">
@@ -31,7 +31,7 @@
             {{ Form::hidden('user_id', $project->user_id) }}
             {{ Form::hidden('group_id', $project->group_id) }}
             {{ Form::hidden('id', $project->id) }}
-            {{ Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary btn-xs'))}}
+            {{ Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary'))}}
         </div>
     </div>
     {{ Form::close()}}
