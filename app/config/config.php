@@ -4,6 +4,9 @@ return array(
 
     'adminEmail' => 'biospex@gmail.com',
 
+    /** Used in code. Different than application debug in app.php */
+    'debug' => false,
+
     /** Meta.xml file search fields */
     'metaFile' => array(
         'multimediaFile' => 'multimedia',
