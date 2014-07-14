@@ -116,7 +116,8 @@ class ProjectsController extends BaseController {
 	{
         $user = $this->user->getUser();
         $group = $this->group->find($groupId);
-        return View::make('projects.create', compact('user', 'group'));
+        $count = is_null(Input::old('targetCount')) ? 0 : Input::old('targetCount');
+        return View::make('projects.create', compact('user', 'group', 'count'));
 	}
 
     /**
@@ -171,7 +172,8 @@ class ProjectsController extends BaseController {
         $user = $this->user->getUser();
         $project = $this->project->findWith($projectId, ['group']);
         $group = $project->group;
-        return View::make('projects.clone', compact('user', 'group', 'project'));
+        $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
+        return View::make('projects.clone', compact('user', 'group', 'project', 'count'));
     }
 
     /**
@@ -184,14 +186,7 @@ class ProjectsController extends BaseController {
     public function edit($groupId, $projectId)
 	{
         $project = $this->project->find($projectId);
-        if (Request::is('*/projects/create'))
-        {
-            $count = is_null(Input::old('targetCount')) ? 0 : Input::old('targetCount');
-        }
-        else
-        {
-            $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
-        }
+        $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
 
         return View::make('projects.edit', compact('project', 'count'));
 	}
