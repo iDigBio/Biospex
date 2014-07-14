@@ -155,7 +155,7 @@ class ProjectsController extends BaseController {
 	{
         $project = $this->project->find($id);
         $expeditions = $project->expedition;
-        $imgUrl = !empty($project->logo->url) ? $project->logo->url('normal') : asset('assets/biospex_logo.png');
+        $imgUrl = !empty($project->logo->url) ? $project->logo->url('normal') : Config::get('config.defaultImg');
         return View::make('projects.show', compact('project', 'expeditions', 'imgUrl'));
 	}
 

@@ -2,10 +2,14 @@
 
 return array(
 
+    /** Set Admin email */
     'adminEmail' => 'biospex@gmail.com',
 
     /** Used in code. Different than application debug in app.php */
     'debug' => false,
+
+    /** Default project image path */
+    'defaultImg' => 'assets/default.png',
 
     /** Meta.xml file search fields */
     'metaFile' => array(
