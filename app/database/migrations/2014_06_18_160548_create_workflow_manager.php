@@ -19,6 +19,7 @@ class CreateWorkflowManager extends Migration {
             $table->unsignedInteger('expedition_id');
             $table->foreign('expedition_id')->references('id')->on('expeditions')->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->engine = 'InnoDB';
         });
