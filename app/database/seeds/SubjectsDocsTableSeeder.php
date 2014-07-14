@@ -56,6 +56,7 @@ class SubjectsDocsTableSeeder extends Seeder {
         Eloquent::unguard();
 
         DB::table('metas')->truncate();
+        DB::table('subjects')->truncate();
         DB::connection('mongodb')->collection('subjectsdocs')->delete();
 
         $xml = $this->subject->loadDom('app/database/seeds/data/meta.xml');
