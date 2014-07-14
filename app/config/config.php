@@ -11,6 +11,9 @@ return array(
     /** Default project image path */
     'defaultImg' => 'assets/default.png',
 
+    /** Turn on language translation in main menu */
+    'translate' => false,
+
     /** Meta.xml file search fields */
     'metaFile' => array(
         'multimediaFile' => 'multimedia',
