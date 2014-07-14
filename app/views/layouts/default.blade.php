@@ -33,6 +33,7 @@
             <a class="navbar-brand" href="{{ URL::route('home') }}">{{trans('pages.sitename')}}</a>
         </div>
         <div class="collapse navbar-collapse">
+            @if (Config::get('config.translate'))
             <ul class="nav navbar-nav">
                 <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ trans('pages.translate') }} <b class="caret"></b></a>
                     <ul class="dropdown-menu">
@@ -42,6 +43,7 @@
                     </ul>
                 </li>
             </ul>
+            @endif
             {{ $topmenu }}
             <ul class="nav navbar-nav navbar-right">
                 @if (Sentry::check())
