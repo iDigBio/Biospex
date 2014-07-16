@@ -18,8 +18,7 @@
     <![endif]-->
 </head>
 
-<body>
-
+<body class="{{ Route::currentRouteName() }}">
 
 <!-- Navbar -->
 <div class="navbar navbar-inverse navbar-fixed-top">
