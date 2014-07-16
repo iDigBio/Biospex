@@ -47,4 +47,6 @@ return array(
     'group_no_memberships'  => "No Group Memberships",
     'group_destroyed'       => "Group deleted",
     'group_destroyed_fail'  => "Group could not be deleted",
+
+    'group_owner'           => "Owner",
 );

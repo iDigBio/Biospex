@@ -8,27 +8,40 @@
 
 {{-- Content --}}
 @section('content')
-<h4>{{ $group['name'] }} @lang('groups.group')</h4>
+<h4>{{ $group->name }}</h4>
 <div class="well clearfix">
-    <div class="col-md-10">
-        <strong>@lang('users.users'):</strong>
-        <ul>
-            @foreach ($group->users as $user)
-            <li>{{ $user->first_name }} {{ $user->last_name }} {{ $user->email }}</li>
-            @endforeach
-        </ul>
-    </div>
-    <div class="col-md-10">
-        <strong>@lang('projects.projects'):</strong>
-        <ul>
-            @foreach ($group->projects as $project)
-            <li>{{ $project->title }}</li>
-            @endforeach
-        </ul>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover dataTable">
+            <thead>
+            <tr>
+                <th>{{ trans('groups.group_owner') }}</th>
+                <th>{{ trans('users.users') }}</th>
+                <th>{{ trans('projects.projects') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{ HTML::mailto($group->owner->email, $group->owner->first_name.' '.$group->owner->last_name) }}</td>
+                <td>
+                    <ul>
+                        @foreach ($group->users as $user)
+                        <li>{{ HTML::mailto($user->email, $user->first_name.' '.$user->last_name) }}</li>
+                        @endforeach
+                    </ul>
+                </td>
+                <td><ul>
+                        @foreach ($group->projects as $project)
+                        <li>{{ HTML::linkAction('ProjectsController@show', $project->title, [$group->id, $project->id]) }}</li>
+                        @endforeach
+                    </ul>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
     @if ($viewPermissions)
 	<div class="col-md-10">
-	    <strong>@lang('pages.permissions'):</strong>
+	    <strong>{{ trans('pages.permissions') }}:</strong>
 	    <ul>
 	    	@foreach ($group->permissions as $key => $value)
 	    		<li>{{ str_replace('_', ' ', ucfirst($key)) }}</li>
@@ -37,7 +50,7 @@
 	</div>
     @endif
 	<div class="col-md-2">
-		<button class="btn btn-primary" onClick="location.href='{{ action('GroupsController@edit', array($group->id)) }}'">@lang('buttons.edit')</button>
+		<button class="btn btn-warning" onClick="location.href='{{ action('GroupsController@edit', array($group->id)) }}'">@lang('buttons.edit')</button>
 	</div> 
 </div>
 @stop
