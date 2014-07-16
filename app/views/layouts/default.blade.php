@@ -76,7 +76,10 @@
     @yield('content')
     <!-- ./ content -->
 </div>
-
 <!-- ./ container -->
+
+<!-- Footer -->
+@include('layouts/footer')
+<!-- ./ footer -->
 </body>
 </html>
