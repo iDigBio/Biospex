@@ -1,8 +1,5 @@
 <div class="container" id="footer-home">
-    <!-- Notifications -->
-        <!-- ./ notifications -->
-
-    <!-- Content -->
+    <!-- Footer -->
         <ul id="social-list">
 	        <li><a href="http://www.facebook.com/biospex" target="_blank"><img alt="Like iDigBio on Facebook" src="/assets/facebook.png" /></a></li>
 	        <li><a href="https://twitter.com/biospex" target="_blank"><img alt="Follow iDigbio on Twitter" src="/assets/twitter.png" /></a></li>
@@ -18,7 +15,6 @@
         </ul>
         
         
-        <p class="small">iDigBio is funded by a grant from the National Science Foundation's Advancing Digitization of Biodiversity Collections Program (Cooperative Agreement EF-1115210). Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
-</p>
-    <!-- ./ content -->
+        <p class="small">iDigBio is funded by a grant from the National Science Foundation's Advancing Digitization of Biodiversity Collections Program (Cooperative Agreement EF-1115210). Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.</p>
+    <!-- ./ footer -->
 </div>
