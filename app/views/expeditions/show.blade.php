@@ -8,8 +8,8 @@
 
 {{-- Content --}}
 @section('content')
-<h3>{{ trans('projects.project') }}: <a href="{{ URL::route('groups.projects.show', [$groupId, $project->id]) }}">{{ $project->title }}</a></h3>
-<h4>{{ $expedition->title }}</h4>
+<h3>{{ $expedition->title }}</h3>
+<h5><a href="{{ URL::route('groups.projects.show', [$groupId, $project->id]) }}">{{ $project->title }}</a></h5>
 <div class="clearfix">
 <button class="btn btn-success pull-right" {{ isset($workflowManager->id) ? 'disabled="disabled"' : '' }} onClick="location.href='{{ action('process', [$groupId, $project->id, $expedition->id]) }}'">@lang('buttons.process')</button>
 </div>
