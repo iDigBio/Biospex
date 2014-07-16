@@ -8,39 +8,32 @@
 
 {{-- Content --}}
 @section('content')
-<h4>Available Groups</h4>
+<h4>{{ trans('groups.your_groups') }}</h4>
+<p>{{ trans('groups.group_explained') }}</p>
 <div class="row">
-  <div class="col-md-10 col-md-offset-1">
+  <div class="col-md-10">
 	<div class="table-responsive">
 		<table class="table table-striped table-hover">
 			<thead>
 				<th>@lang('pages.name')</th>
 				<th>@lang('groups.group_options')</th>
-                <th>@lang('projects.project_options')</th>
 			</thead>
 			<tbody>
             @foreach ($groups as $group)
-                @if (in_array($group->id, array(1,2)) && ! $isSuperUser)
-                @else
-                    <tr>
-                        <td><a href="groups/{{ $group->id }}">{{ $group->name }}</a></td>
-                        <td>
-                            <button class="btn btn-default" {{ ($group->user_id == $user->id || $isSuperUser) ? '' : 'disabled' }} onClick="location.href='{{ action('GroupsController@edit', array($group->id)) }}'">@lang('buttons.edit')</button>
-                            <button class="btn btn-default btn-danger action_confirm" {{ ($group->user_id == $user->id  || $isSuperUser) ? '' : 'disabled' }} type="button" data-method="delete" href="{{ URL::action('GroupsController@destroy', array($group->id)) }}">@lang('buttons.delete')</button>
-                         </td>
-                        @if (($group->name == 'Admins' || $group->name == 'Users'))
-                        <td></td>
-                        @else
-                        <td>
-                            <button class="btn btn-primary" onClick="location.href='{{ URL::route('groups.projects.create', [$group->id]) }}'">@lang('pages.create')</button>
-                        </td>
-                        @endif
-                    </tr>
-                @endif
+                <tr>
+                    <td>{{ $group->name }}</td>
+                    <td>
+                        <button class="btn btn-default btn-info" type="button" onClick="location.href='{{ URL::action('GroupsController@show', array($group->id)) }}'">@lang('buttons.view')</button>
+                        <button class="btn btn-default btn-warning" {{ ($group->user_id == $user->id || $isSuperUser) ? '' : 'disabled' }} onClick="location.href='{{ action('GroupsController@edit', array($group->id)) }}'">@lang('buttons.edit')</button>
+                        <button class="btn btn-default btn-danger action_confirm" {{ ($group->user_id == $user->id  || $isSuperUser) ? '' : 'disabled' }} type="button" data-method="delete" href="{{ URL::action('GroupsController@destroy', array($group->id)) }}">@lang('buttons.delete')</button>
+                        <button class="btn btn-default btn-primary" type="button" onClick="location.href='{{ URL::action('GroupsController@invite', array($group->id)) }}'">@lang('buttons.invite')</button>
+                     </td>
+                </tr>
 			@endforeach
 			</tbody>
 		</table> 
 	</div>
+     <h4>{{ trans('groups.group_make') }}</h4>
 	 <button class="btn btn-primary" onClick="location.href='{{ URL::action('GroupsController@create') }}'">@lang('buttons.create')</button>
    </div>
 </div>

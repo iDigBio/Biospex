@@ -69,9 +69,15 @@ class GroupsController extends BaseController {
         // Find the user and retrieve groups
         $user = Sentry::getUser();
         $groups = $user->isSuperUser() ? $this->group->all() : $user->getGroups();
-
         $isSuperUser = $user->isSuperUser();
-		return View::make('groups.index', compact('groups', 'user', 'isSuperUser'));
+
+        foreach ($groups as $key => $group)
+        {
+            if (in_array($group->id, array(1,2)) && ! $isSuperUser)
+                unset($groups[$key]);
+        }
+
+		return View::make('groups.index', compact('groups', 'user'));
 	}
 
 	/**
@@ -226,6 +232,11 @@ class GroupsController extends BaseController {
         }
 
         return json_encode($data);
+    }
+
+    public function invite($id)
+    {
+        return "invite page";
     }
 
 }

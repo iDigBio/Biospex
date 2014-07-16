@@ -48,4 +48,7 @@ return array(
     'unsuspend'         => "Unsuspend",
     'ban'               => "Ban",
     'unban'             => "Unban",
+    'invite'            => "Invite",
+    'join'              => "Join",
+
 );

@@ -49,4 +49,9 @@ return array(
     'group_destroyed_fail'  => "Group could not be deleted",
 
     'group_owner'           => "Owner",
+    'your_groups'           => "Your Groups",
+    'group_explained'       => "Groups allow you to share projects with other expedition leaders, so they can manage the data with you. You can invite other users to your groups or keep them private.",
+    'group_make'            => "Make a New Group",
+
+
 );
