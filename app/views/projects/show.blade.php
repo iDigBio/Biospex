@@ -4,7 +4,7 @@
 @section('title')
 @parent
 {{ $project->title }}
-@stop
+@sto
 
 {{-- Content --}}
 @section('content')
@@ -13,6 +13,7 @@
 <div class="well clearfix">
     <div class="col-md-8">
         <p><strong>@lang('pages.description'):</strong> {{ $project->description }} </p>
+        <p>URL: project url</p>
     </div>
     <div class="col-md-4">
         <p><em>@lang('pages.created'): {{ $project->created_at }}</em></p>
@@ -21,6 +22,7 @@
         <button class="btn btn-primary" type="button" onClick="location.href='{{ URL::route('project-dup', [$project->group_id, $project->id]) }}'">@lang('buttons.duplicate')</button>
         <button class="btn btn-warning" onClick="location.href='{{ action('ProjectsController@edit', array($project->group_id, $project->id)) }}'">@lang('buttons.edit')</button>
         <button class="btn btn-default btn-danger action_confirm" href="{{ URL::route('groups.projects.destroy', [$project->group_id, $project->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.delete')</button></td>
+        <button class="btn btn-success" type="button" onClick="">Advertise</button>
     </div>
     <img src="{{ $imgUrl }}" >
 </div>
