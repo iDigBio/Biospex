@@ -64,6 +64,8 @@
 </div>
 <!-- ./ navbar -->
 
+@yield('homepage')
+
 <!-- Container -->
 <div class="container">
     <!-- Notifications -->

@@ -7,7 +7,7 @@
 @stop
 
 {{-- Content --}}
-@section('content')
+@section('homepage')
 
 <div id="splash">
 <!-- Container -->
