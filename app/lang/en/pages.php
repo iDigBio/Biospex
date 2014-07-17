@@ -98,5 +98,6 @@ return array(
 
     'invite_code'               => "Invite Code",
 
+    'project_url'               => "Project Url"
 
 );

@@ -50,5 +50,6 @@ return array(
     'unban'             => "Unban",
     'invite'            => "Invite",
     'join'              => "Join",
+    'advertise'         => "Advertise",
 
 );
