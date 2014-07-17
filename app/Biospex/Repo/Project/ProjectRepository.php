@@ -37,4 +37,8 @@ class ProjectRepository extends Repository implements ProjectInterface {
         $this->model = $project;
     }
 
+    public function findBySlug($slug)
+    {
+        return $this->model->findBySlug($slug);
+    }
 }

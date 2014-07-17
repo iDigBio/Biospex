@@ -26,4 +26,6 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface ProjectInterface extends RepositoryInterface {}
+interface ProjectInterface extends RepositoryInterface {
+    public function findBySlug($slug);
+}
