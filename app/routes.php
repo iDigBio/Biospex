@@ -72,7 +72,7 @@ Route::group(
         Route::get('projects/all', 'ProjectsController@all');
 
         // Group Routes
-        Route::get('groups/dropdown', array('as' => 'dropdown', 'uses' => 'GroupsController@dropdown'));
+        Route::get('groups/{groups}/invite', array('as' => 'invite', 'uses' => 'GroupsController@invite'));
         Route::resource('groups', 'GroupsController');
 
         // Group/Projects
