@@ -87,6 +87,8 @@ Route::group(
         Route::get('groups/{groups}/projects/{projects}/expeditions/{expeditions}/process', array('as' => 'process', 'uses' => 'ExpeditionsController@process'));
         Route::get('groups/{groups}/projects/{projects}/expeditions/{expeditions}/download/{id}', array('as' => 'expeditionDownload', 'uses' => 'ExpeditionsController@download'));
 
+        Route::get('pages/{slug}', 'PagesController@show');
+
         // Project routes
         /*
         GET	/resource	index	resource.index
