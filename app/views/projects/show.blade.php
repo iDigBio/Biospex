@@ -4,7 +4,7 @@
 @section('title')
 @parent
 {{ $project->title }}
-@sto
+@stop
 
 {{-- Content --}}
 @section('content')
@@ -13,16 +13,18 @@
 <div class="well clearfix">
     <div class="col-md-8">
         <p><strong>@lang('pages.description'):</strong> {{ $project->description }} </p>
-        <p>URL: project url</p>
+        <p><strong>@lang('pages.project_url'):</strong> {{ HTML::linkAction('PagesController@show', $project->title, [$project->slug]) }} </p>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-2">
         <p><em>@lang('pages.created'): {{ $project->created_at }}</em></p>
         <p><em>@lang('pages.updated'): {{ $project->updated_at }}</em></p>
+    </div>
+    <div class="col-md-2">
         <button class="btn btn-default" type="button" onClick="location.href='{{ URL::route('addData', [$project->group_id, $project->id]) }}'">@lang('buttons.data')</button>
         <button class="btn btn-primary" type="button" onClick="location.href='{{ URL::route('project-dup', [$project->group_id, $project->id]) }}'">@lang('buttons.duplicate')</button>
-        <button class="btn btn-warning" onClick="location.href='{{ action('ProjectsController@edit', array($project->group_id, $project->id)) }}'">@lang('buttons.edit')</button>
+        <button class="btn btn-warning" onClick="location.href='{{ action('ProjectsController@edit', [$project->group_id, $project->id]) }}'">@lang('buttons.edit')</button>
         <button class="btn btn-default btn-danger action_confirm" href="{{ URL::route('groups.projects.destroy', [$project->group_id, $project->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.delete')</button></td>
-        <button class="btn btn-success" type="button" onClick="">Advertise</button>
+        <button class="btn btn-success" type="button" onClick="location.href='{{ URL::route('advertise', [$project->group_id, $project->id]) }}'">@lang('buttons.advertise')</button>
     </div>
     <img src="{{ $imgUrl }}" >
 </div>

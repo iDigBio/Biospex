@@ -231,6 +231,14 @@ class ProjectsController extends BaseController {
     }
 
     /**
+     * Advertise
+     */
+    public function advertise()
+    {
+
+    }
+
+    /**
      * Upload data file
      *
      * @param $groupId
