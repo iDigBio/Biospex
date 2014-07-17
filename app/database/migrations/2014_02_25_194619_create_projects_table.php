@@ -40,6 +40,7 @@ class CreateProjectsTable extends Migration {
             $table->unsignedInteger('group_id');
             $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
             $table->string('title');
+            $table->string('slug')->index();
             $table->string('contact');
             $table->string('contact_email');
             $table->string('managed');
