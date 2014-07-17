@@ -96,4 +96,7 @@ return array(
 
     'subjects'                  => "Subjects",
 
+    'invite_code'               => "Invite Code",
+
+
 );
