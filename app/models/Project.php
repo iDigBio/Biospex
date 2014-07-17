@@ -180,6 +180,17 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
+     * Get project by slug
+     *
+     * @param $slug
+     * @return \Illuminate\Database\Eloquent\Builder|static
+     */
+    public function getBySlug($slug)
+    {
+        return $this->where('slug', $slug);
+    }
+
+    /**
      * Mutator for target_fields
      *
      * @param $input
