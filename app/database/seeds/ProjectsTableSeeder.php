@@ -42,6 +42,7 @@ class ProjectsTableSeeder extends Seeder {
             'user_id' => $user->id,
             'group_id' => 3,
             'title' => 'Florida Plant Hotspot Digitization Blitz',
+            'slug' => 'florida-plant-hotspot-digitization-blitz',
             'contact' => 'Austin Mast',
             'contact_email' => 'amast@bio.fsu.edu',
             'managed' => 'The Florida State University’s Robert K. Godfrey Herbarium',
