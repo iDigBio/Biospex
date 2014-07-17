@@ -221,19 +221,6 @@ class GroupsController extends BaseController {
         }
 	}
 
-    public function dropdown()
-    {
-        $groups = $this->group->all();
-        $unset = array('Admins', 'Users');
-        foreach ($groups as $key => $group)
-        {
-            if (!in_array($group->name, $unset))
-                $data[$key] = $group->name;
-        }
-
-        return json_encode($data);
-    }
-
     public function invite($id)
     {
         return "invite page";
