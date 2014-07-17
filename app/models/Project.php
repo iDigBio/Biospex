@@ -28,11 +28,20 @@ use Illuminate\Support\Facades\Config;
 use Codesleeve\Stapler\ORM\EloquentTrait;
 use Codesleeve\Stapler\ORM\StaplerableInterface;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
+use Cviebrock\EloquentSluggable\SluggableInterface;
+use Cviebrock\EloquentSluggable\SluggableTrait;
 
-class Project extends Eloquent implements StaplerableInterface{
+class Project extends Eloquent implements StaplerableInterface, SluggableInterface{
 
     use EloquentTrait;
     use SoftDeletingTrait;
+    use SluggableTrait;
+
+    protected $sluggable = array(
+        'build_from' => 'title',
+        'save_to'    => 'slug',
+    );
+
     protected $dates = ['deleted_at'];
 
 
@@ -50,6 +59,7 @@ class Project extends Eloquent implements StaplerableInterface{
         'user_id',
         'group_id',
         'title',
+        'slug',
         'contact',
         'contact_email',
         'managed',
@@ -77,6 +87,7 @@ class Project extends Eloquent implements StaplerableInterface{
         'user_id' => 'factory|User',
         'group_id' => 'factory|Group',
         'title' => 'string',
+        'slug' => 'string',
         'contact' => 'string',
         'contact_email' => 'string',
         'managed' => 'string',
