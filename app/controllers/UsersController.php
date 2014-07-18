@@ -130,6 +130,8 @@ class UsersController extends BaseController {
         // Form Processing
         $result = $this->registerForm->save(Input::all());
 
+        //TODO create process for invitation code. Also check into activation code and listener in emails
+
         if( $result['success'] )
         {
             Event::fire('user.registered', array(
