@@ -62,20 +62,21 @@
     </div>
 </div>
 <!-- ./ navbar -->
+@if (Route::currentRouteName() == 'home')
+    @yield('homepage')
+@else
+    <!-- Container -->
+    <div class="container">
+        <!-- Notifications -->
+        @include('layouts/notifications')
+        <!-- ./ notifications -->
 
-@yield('homepage')
-
-<!-- Container -->
-<div class="container">
-    <!-- Notifications -->
-    @include('layouts/notifications')
-    <!-- ./ notifications -->
-
-    <!-- Content -->
-    @yield('content')
-    <!-- ./ content -->
-</div>
-<!-- ./ container -->
+        <!-- Content -->
+        @yield('content')
+        <!-- ./ content -->
+    </div>
+    <!-- ./ container -->
+@endif
 
 <!-- Footer -->
 @include('layouts/footer')
