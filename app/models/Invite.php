@@ -59,4 +59,14 @@ class Invite extends Eloquent {
         return $this->belongsTo('Group');
     }
 
+    /**
+     * Find invite by code
+     *
+     * @param $code
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function findByCode($code)
+    {
+        return $this->where('code', '=', $code)->get();
+    }
 }

@@ -36,4 +36,15 @@ class InviteRepository extends Repository implements InviteInterface {
         $this->model = $invite;
     }
 
+    /**
+     * Find invite by code
+     *
+     * @param $code
+     * @return mixed
+     */
+    public function findByCode($code)
+    {
+        return $this->model->findByCode($code);
+    }
+
 }
