@@ -1,4 +1,4 @@
-<?php Biospex\Repo\Invite;
+<?php namespace Biospex\Repo\Invite;
 /**
  * InviteInterface.php
  *
