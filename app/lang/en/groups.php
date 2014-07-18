@@ -52,6 +52,15 @@ return array(
     'your_groups'           => "Your Groups",
     'group_explained'       => "Groups allow you to share projects with other expedition leaders, so they can manage the data with you. You can invite other users to your groups or keep them private.",
     'group_make'            => "Make a New Group",
+    'group_invite'          => "Group Invite",
+    'invite_title'          => "Invite others to join the group: :group",
+    'invite_explained'      => "Enter the email address(es) of people you want to invite to this group. BIOSPEX will send them an invitation code and instructions on creating an account if necessary.",
+
+    'invite_code'           => "Invite Code",
+    'group_join'            => "Join a Group",
+    'group_joined'          => "You have successfully joined the group :group",
+    'invite_emails'         => "Email Address(es)",
+    'separate_emails'       => "Separate multiple addresses with a comma",
 
 
 );
