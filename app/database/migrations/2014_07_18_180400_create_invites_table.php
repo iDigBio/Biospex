@@ -19,7 +19,6 @@ class CreateInvitesTable extends Migration {
             $table->string('email');
             $table->string('code')->index();
             $table->timestamps();
-            $table->softDeletes();
 
             $table->engine = 'InnoDB';
         });
@@ -32,7 +31,7 @@ class CreateInvitesTable extends Migration {
      */
     public function down()
     {
-        Schema::drop('imports');
+        Schema::drop('invites');
     }
 
 }
