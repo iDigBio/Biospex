@@ -30,7 +30,7 @@
         </div>
 
         <div class="form-group {{ ($errors->has('invite')) ? 'has-error' : '' }}">
-            {{ Form::text('invite', array('class' => 'form-control', 'placeholder' => trans('pages.invite'))) }}
+            {{ Form::text('invite', null, array('class' => 'form-control', 'placeholder' => trans('pages.invite_code'))) }}
             {{ ($errors->has('invite') ?  $errors->first('invite') : '') }}
         </div>
 
