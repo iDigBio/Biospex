@@ -44,6 +44,8 @@ use Biospex\Form\Project\ProjectForm;
 use Biospex\Form\Project\ProjectFormLaravelValidator;
 use Biospex\Form\Expedition\ExpeditionForm;
 use Biospex\Form\Expedition\ExpeditionFormLaravelValidator;
+use Biospex\Form\Invite\InviteForm;
+use Biospex\Form\Invite\InviteFormLaravelValidator;
 
 class FormServiceProvider extends ServiceProvider {
 
@@ -143,6 +145,15 @@ class FormServiceProvider extends ServiceProvider {
             return new ExpeditionForm(
                 new ExpeditionFormLaravelValidator( $app['validator'] ),
                 $app->make('Biospex\Repo\Expedition\ExpeditionInterface')
+            );
+        });
+
+        // Bind the SendInvite Form
+        $app->bind('Biospex\Form\Invite\InviteForm', function($app)
+        {
+            return new InviteForm(
+                new InviteFormLaravelValidator( $app['validator'] ),
+                $app->make('Biospex\Repo\Invite\InviteInterface')
             );
         });
 
