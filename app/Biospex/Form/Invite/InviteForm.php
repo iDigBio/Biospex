@@ -27,29 +27,11 @@ use Biospex\Form\Form;
 use Biospex\Validation\ValidableInterface;
 use Biospex\Repo\Invite\InviteInterface;
 
-class RegisterForm extends Form{
+class InviteForm extends Form{
 
     public function __construct(ValidableInterface $validator, InviteInterface $invite)
     {
         $this->validator = $validator;
         $this->repo = $invite;
     }
-
-    /**
-     * Validate emails array
-     *
-     * @return boolean
-     */
-    protected function valid(array $input)
-    {
-        $emails = explode(',', $input['emails']);
-        foreach ($emails as $email)
-        {
-            if (!$this->validator->with($email)->passes())
-                return false;
-        }
-
-        return true;
-    }
-
 }

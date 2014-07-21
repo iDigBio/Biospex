@@ -33,7 +33,7 @@ class InviteFormLaravelValidator extends AbstractLaravelValidator {
      * @var Array
      */
     protected $rules = array(
-        'emails' => 'required|min:4|max:32|email',
+        'email' => 'required|min:4|max:32|email',
     );
 
 }
