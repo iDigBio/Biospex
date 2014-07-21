@@ -96,8 +96,6 @@ return array(
 
     'subjects'                  => "Subjects",
 
-    'invite_code'               => "Invite Code",
-
-    'project_url'               => "Project Url"
+    'project_url'               => "Project Url",
 
 );
