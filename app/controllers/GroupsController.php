@@ -27,15 +27,36 @@
 use Biospex\Repo\Group\GroupInterface;
 use Biospex\Form\Group\GroupForm;
 use Biospex\Repo\Permission\PermissionInterface;
+use Biospex\Repo\Invite\InviteInterface;
+use Biospex\Form\Invite\InviteForm;
 
 
 class GroupsController extends BaseController {
 
-	/**
-	 * Member Vars
-	 */
-	protected $group;
-	protected $groupForm;
+    /**
+     * @var Biospex\Repo\Group\GroupInterface
+     */
+    protected $group;
+
+    /**
+     * @var Biospex\Form\Group\GroupForm
+     */
+    protected $groupForm;
+
+    /**
+     * @var Biospex\Repo\Permission\PermissionInterface
+     */
+    protected $permission;
+
+    /**
+     * @var Biospex\Repo\Invite\InviteInterface
+     */
+    protected $invite;
+
+    /**
+     * @var Biospex\Form\Invite\InviteForm
+     */
+    protected $inviteForm;
 
 	/**
 	 * Constructor
@@ -43,12 +64,16 @@ class GroupsController extends BaseController {
 	public function __construct(
         GroupInterface $group,
         GroupForm $groupForm,
-        PermissionInterface $permission
+        PermissionInterface $permission,
+        InviteInterface $invite,
+        InviteForm $inviteForm
     )
 	{
 		$this->group = $group;
 		$this->groupForm = $groupForm;
         $this->permission = $permission;
+        $this->invite = $invite;
+        $this->inviteForm = $inviteForm;
 
 		// Establish Filters
         $this->beforeFilter('csrf', array('on' => 'post'));
@@ -223,7 +248,63 @@ class GroupsController extends BaseController {
 
     public function invite($id)
     {
-        return "invite page";
+        $group = $this->group->find($id);
+        return View::make('groups.invite', compact('group'));
+
+    }
+
+    public function sendInvite($id)
+    {
+        $emails = explode(',', Input::get('emails'));
+        foreach ($emails as $email)
+        {
+            $data = array(
+                'group_id' => $id,
+                'email' => trim($email),
+                'code' => str_random(10)
+            );
+            if (!$result = $this->inviteForm->save($data))
+            {
+                Session::flash('warning', trans('groups.send_invite_error', $email));
+            }
+        }
+
+
+
+            Session::flash('warning', trans('groups.il'));
+            return Redirect::action('GroupsController@index');
+
+        return "Invite by email";
+    }
+
+    /**
+     * Add user to group if invite code exists
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function invited()
+    {
+        $invite = $this->invite->findByCode(Input::get('invite'));
+
+        if ($invite)
+        {
+            $user = Sentry::getUser();
+
+            if ($invite->email == $user->email)
+            {
+                $group = Sentry::findGroupById($invite->group_id);
+                if ($result = $user->addGroup($group))
+                {
+                    $this->invite->destroy($invite->id);
+                    Session::flash('success', trans('groups.group_joined'));
+                    return Redirect::action('GroupsController@index');
+                }
+            }
+        }
+
+
+        Session::flash('warning', trans('groups.invite_fail'));
+        return Redirect::action('GroupsController@index');
     }
 
 }
