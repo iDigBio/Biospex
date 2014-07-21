@@ -35,6 +35,7 @@ class UserGroupTableSeeder extends Seeder {
         DB::table('users_groups')->truncate();
 
         $userUser = Sentry::getUserProvider()->findByLogin('biospex@gmail.com');
+        $newUser = Sentry::getUserProvider()->findByLogin('macadamiatree@gmail.com');
         $adminUser = Sentry::getUserProvider()->findByLogin('admin@biospex.org');
 
         $user = Sentry::getGroupProvider()->findByName('Users');
@@ -46,6 +47,9 @@ class UserGroupTableSeeder extends Seeder {
         $userUser->addGroup($user);
         $userUser->addGroup($herbarium);
         $userUser->addGroup($calbug);
+        $newUser->addGroup($user);
+        $newUser->addGroup($herbarium);
+        $newUser->addGroup($calbug);
         $adminUser->addGroup($adminGroup);
     }
 
