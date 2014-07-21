@@ -39,7 +39,8 @@ class UserForm extends Form {
     /**
      * Test if form validator passes
      *
-     * @return boolean
+     * @param array $input
+     * @return bool
      */
     protected function valid(array $input)
     {
