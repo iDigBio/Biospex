@@ -13,7 +13,7 @@
 <div class="well clearfix">
     {{ Form::open(array('action' => array('GroupsController@sendInvite', $group->id), 'class' => 'form-inline')) }}
     <div class="row">
-        <div class="input-group col-xs-5 {{ ($errors->has('emails')) ? 'has-error' : '' }}">
+        <div class="input-group col-xs-8 {{ ($errors->has('emails')) ? 'has-error' : '' }}">
             {{ Form::text('emails', null, array('class' => 'form-control', 'placeholder' => trans('groups.invite_emails'))) }}
             {{ ($errors->has('emails') ? $errors->first('emails') : '') }}
             <span class="input-group-btn">

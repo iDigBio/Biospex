@@ -40,7 +40,7 @@
     </div>
     <div class="col-md-10">
         {{ Form::open(array(
-            'action' => array('GroupsController@invited', $group->id),
+            'action' => array('GroupsController@invited'),
             'class' => 'form-inline'
         )) }}
         <h4>@lang('groups.group_join')</h4>
