@@ -9,11 +9,12 @@
 {{-- Content --}}
 @section('content')
 <div class="row">
-    @foreach ($groupProjects as $key => $projects)
-    <?php //dd($projects); ?>
     <div class="col-md-10 col-md-offset-1">
-        <h3>{{ trans('groups.group') }}: {{ $groupNames[$key] }}</h3>
-        <h4>{{ trans('projects.projects') }}</h4>
+    <h3>{{ trans('projects.projects') }}</h3>
+    </div>
+    @foreach ($groupProjects as $key => $projects)
+    <div class="col-md-10 col-md-offset-1">
+        <h4>{{ trans('groups.group') }}: {{ $groupNames[$key] }}</h4>
         <div class="table-responsive">
             <table class="table table-striped table-hover">
                 <thead>
