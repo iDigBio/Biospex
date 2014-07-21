@@ -93,8 +93,8 @@ class GroupsController extends BaseController {
 
         // Find the user and retrieve groups
         $user = Sentry::getUser();
-        $groups = $user->isSuperUser() ? $this->group->all() : $user->getGroups();
         $isSuperUser = $user->isSuperUser();
+        $groups = $isSuperUser ? $this->group->all() : $user->getGroups();
 
         foreach ($groups as $key => $group)
         {
@@ -102,7 +102,7 @@ class GroupsController extends BaseController {
                 unset($groups[$key]);
         }
 
-		return View::make('groups.index', compact('groups', 'user'));
+		return View::make('groups.index', compact('groups', 'user', 'isSuperUser'));
 	}
 
 	/**
