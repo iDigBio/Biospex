@@ -28,7 +28,7 @@ $items = array(
     array(
         'name' => 'superuser',
         'group' => 'superuser',
-        'description' => 'pages.superuser',
+        'description' => 'users.superuser',
     ),
 
     // project
@@ -91,37 +91,37 @@ $items = array(
     array(
         'name' => "user_create",
         'group' => "user",
-        'description' => "pages.user_create",
+        'description' => "users.user_create",
     ),
     array(
         'name' => "user_edit",
         'group' => "user",
-        'description' => "pages.user_edit",
+        'description' => "users.user_edit",
     ),
     array(
         'name' => "user_ban",
         'group' => "user",
-        'description' => "pages.user_ban",
+        'description' => "users.user_ban",
     ),
     array(
         'name' => "user_view",
         'group' => "user",
-        'description' => "pages.user_view",
+        'description' => "users.user_view",
     ),
     array(
         'name' => "user_delete",
         'group' => "user",
-        'description' => "pages.user_delete",
+        'description' => "users.user_delete",
     ),
     array(
         'name' => "user_edit_permissions",
         'group' => "user",
-        'description' => "pages.user_edit_permissions",
+        'description' => "users.user_edit_permissions",
     ),
     array(
         'name' => "user_edit_groups",
         'group' => "user",
-        'description' => "pages.user_edit_groups",
+        'description' => "users.user_edit_groups",
     ),
 
     // groups
