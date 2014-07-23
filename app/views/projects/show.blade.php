@@ -13,7 +13,7 @@
 <div class="well clearfix">
     <div class="col-md-8">
         <p><strong>@lang('pages.description'):</strong> {{ $project->description }} </p>
-        <p><strong>@lang('pages.project_url'):</strong> {{ HTML::linkAction('PagesController@show', $project->title, [$project->slug]) }} </p>
+        <p><strong>@lang('pages.project_url'):</strong> {{ HTML::linkAction('HomeController@project', $project->title, [$project->slug]) }} </p>
     </div>
     <div class="col-md-2">
         <p><em>@lang('pages.created'): {{ $project->created_at }}</em></p>

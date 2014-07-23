@@ -1,6 +1,6 @@
 <?php
 /**
- * PagesController.php
+ * HomeController.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -25,25 +25,41 @@
  */
 use Biospex\Repo\Project\ProjectInterface;
 
-class PagesController extends BaseController {
+class HomeController extends BaseController {
+
     /**
      * @var Biospex\Repo\Project\ProjectInterface
      */
     protected $project;
 
     /**
-     * Instantiate a new ProjectsController
+     * Constructor
      */
-    public function __construct(
-        ProjectInterface $project
-    )
+    public function __construct(ProjectInterface $project)
     {
         $this->project = $project;
     }
 
-    public function show($slug)
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Response
+     */
+    public function index()
+    {
+        return View::make('home');
+    }
+
+    /**
+     * Show public project page
+     *
+     * @param $slug
+     * @return \Illuminate\View\View
+     */
+    public function project($slug)
     {
         $project = $this->project->getBySlug($slug);
-        dd($project);
+
+        return View::make('project', compact('project'));
     }
 }

@@ -35,10 +35,6 @@ Route::group(
     ),
     function () {
 
-        Route::get('/', array('as' => 'home', function () {
-            return View::make('home');
-        }));
-
         Route::get('phpinfo', array('as' => 'phpinfo', 'uses' => 'PhpInfoController@show'));
 
         // Session Routes
@@ -90,7 +86,8 @@ Route::group(
         Route::get('groups/{groups}/projects/{projects}/expeditions/{expeditions}/process', array('as' => 'process', 'uses' => 'ExpeditionsController@process'));
         Route::get('groups/{groups}/projects/{projects}/expeditions/{expeditions}/download/{id}', array('as' => 'expeditionDownload', 'uses' => 'ExpeditionsController@download'));
 
-        Route::get('pages/{slug}', 'PagesController@show');
+        Route::get('/', array('as' => 'home', 'uses' => 'HomeController@index'));
+        Route::get('/{slug}', array('as' => 'project', 'uses' => 'HomeController@project'));
 
         // Project routes
         /*
