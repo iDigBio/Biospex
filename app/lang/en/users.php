@@ -60,5 +60,5 @@ return array(
     'user_delete'           => "Delete user",
     'superuser'             => "Super User",
     'user_edit_permissions' => "Edit User Permissions",
-    'user_edit_group'       => "Edit User Groups",
+    'user_edit_groups'      => "Edit User Groups",
 );

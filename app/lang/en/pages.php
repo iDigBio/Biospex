@@ -90,12 +90,15 @@ return array(
     'permissions_user'          => "User Permissions",
     'permissions_no'            => "No user permissions",
 
+    'superuser'                 => "Superuser",
+    'project'                   => "Project",
+    'permission'                => "Permission",
+    'user'                      => "User",
+    'group'                     => "Group",
+
     'navigation'                => "Navigation",
-
     'translate'                 => "Language",
-
     'subjects'                  => "Subjects",
-
     'project_url'               => "Project Url",
 
 );
