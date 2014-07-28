@@ -23,10 +23,15 @@
                     <th>@lang('pages.title')</th>
                     <th>@lang('pages.description')</th>
                     <th class="nowrap">@lang('projects.project_options')</th>
-                    <th><button class="btn btn-primary" onClick="location.href='{{ URL::route('groups.projects.create', [$key]) }}'">@lang('buttons.create')</button></th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
+                <tr>
+                    <td></td>
+                    <td colspan="4">
+                        <button class="btn btn-primary" onClick="location.href='{{ URL::route('groups.projects.create', [$key]) }}'">@lang('buttons.create')</button></td>
+                </tr>
                 @foreach ($projects as $key => $project)
                 <tr>
                     <td><span id="collapse{{ $project->id }}" class="glyphicon glyphicon-folder-close pointer" data-toggle="collapse" data-target="#{{ $project->id }}"></span></td>
