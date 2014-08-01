@@ -23,6 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Biospex\Repo\Invite\Exceptions;
 
 class Invite extends Eloquent {
 
@@ -57,6 +58,30 @@ class Invite extends Eloquent {
     }
 
     /**
+     * Code scope
+     *
+     * @param $query
+     * @param $code
+     * @return mixed
+     */
+    public function scopeCode($query, $code)
+    {
+        return $query->whereCode($code);
+    }
+
+    /**
+     * Email scope
+     *
+     * @param $query
+     * @param $email
+     * @return mixed
+     */
+    public function scopeEmail($query, $email)
+    {
+        return $query->whereCode($email);
+    }
+
+    /**
      * Find invite by code
      *
      * @param $code
@@ -64,6 +89,10 @@ class Invite extends Eloquent {
      */
     public function findByCode($code)
     {
-        return $this->where('code', '=', $code)->first();
+        $result = $this->code($code)->first();
+        if (!$result)
+           throw new InviteNotFoundException("Cannot locate invite code for $code");
+
+        return $result;
     }
 }
