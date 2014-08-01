@@ -18,6 +18,7 @@ class CreateInvitesTable extends Migration {
             $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
             $table->string('email');
             $table->string('code')->index();
+            $table->index(['email', 'code']);
             $table->timestamps();
 
             $table->engine = 'InnoDB';
