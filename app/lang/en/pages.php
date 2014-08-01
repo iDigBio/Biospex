@@ -89,6 +89,7 @@ return array(
     'permissions_view'          => "View permission",
     'permissions_user'          => "User Permissions",
     'permissions_no'            => "No user permissions",
+    'activated'                 => "Activated",
 
     'superuser'                 => "Superuser",
     'project'                   => "Project",

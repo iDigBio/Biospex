@@ -63,6 +63,7 @@ return array(
     'separate_emails'       => "Separate multiple addresses with a comma",
     'invite_fail'           => "Unable to add you to the group :group. Please contact the administration.",
     'send_invite_error'     => "Unable to process email :email for invite.",
+    'invite_not_found'      => "Your invite was unable to be found. Please contact the administration.",
 
 
 
