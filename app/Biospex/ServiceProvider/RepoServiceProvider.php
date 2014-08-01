@@ -29,7 +29,9 @@ use Biospex\Repo\Group\GroupRepository;
 use Biospex\Repo\User\UserRepository;
 use Biospex\Repo\Session\SentrySession;
 use Biospex\Repo\Permission\PermissionRepository;
+use Biospex\Repo\Invite\InviteRepository;
 use Permission;
+use Invite;
 
 class RepoServiceProvider extends ServiceProvider {
 
@@ -52,7 +54,7 @@ class RepoServiceProvider extends ServiceProvider {
         $app->bind('Biospex\Repo\User\UserInterface', function($app)
         {
             return new UserRepository(
-                $app['sentry'], new PermissionRepository(new Permission)
+                $app['sentry'], new PermissionRepository(new Permission), new InviteRepository(new Invite)
             );
         });
 
