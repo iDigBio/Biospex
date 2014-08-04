@@ -117,7 +117,8 @@ class ProjectsController extends BaseController {
         $user = $this->user->getUser();
         $group = $this->group->find($groupId);
         $count = is_null(Input::old('targetCount')) ? 0 : Input::old('targetCount');
-        return View::make('projects.create', compact('user', 'group', 'count'));
+        $create =  Route::currentRouteName() == 'groups.projects.create' ? true : false;
+        return View::make('projects.create', compact('user', 'group', 'count', 'create'));
 	}
 
     /**
@@ -173,7 +174,9 @@ class ProjectsController extends BaseController {
         $project = $this->project->findWith($projectId, ['group']);
         $group = $project->group;
         $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
-        return View::make('projects.clone', compact('user', 'group', 'project', 'count'));
+        $create =  Route::currentRouteName() == 'groups.projects.create' ? true : false;
+
+        return View::make('projects.clone', compact('user', 'group', 'project', 'count', 'create'));
     }
 
     /**
@@ -187,8 +190,9 @@ class ProjectsController extends BaseController {
 	{
         $project = $this->project->find($projectId);
         $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
+        $create =  Route::currentRouteName() == 'groups.projects.create' ? true : false;
 
-        return View::make('projects.edit', compact('project', 'count'));
+        return View::make('projects.edit', compact('project', 'count', 'create'));
 	}
 
     /**
