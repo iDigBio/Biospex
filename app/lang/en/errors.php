@@ -37,5 +37,6 @@ return array(
     'error_xpath'               => "Unable to perform xpath query using meta id :id.",
     'error_process_file_path'   => "Error: path for file :file does not exist.",
     'error_build_image_dir'     => "No images were retrieved during build for Expedition Id :id.",
+    'error_delete_user'         => "Unable to delete user.",
 
 );
