@@ -25,7 +25,7 @@
  */
 
 class Helpers {
-    public static function sessionPush($key, $value) {
+    public static function sessionFlashPush($key, $value) {
         $values = Session::get($key, []);
         $values[] = $value;
         Session::flash($key, $values);
