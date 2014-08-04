@@ -46,5 +46,4 @@ class InviteRepository extends Repository implements InviteInterface {
     {
         return $this->model->findByCode($code);
     }
-
 }
