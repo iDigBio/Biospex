@@ -103,11 +103,14 @@ class UsersController extends BaseController {
 
         if (!$registration)
         {   
-            Session::flash('error', trans('users.inactive_reg'));
+            Session::flash('error', [trans('users.inactive_reg')]);
             return Redirect::route('home');
         }
 
-        return View::make('users.create');
+        $group = $this->group->byName("Users");
+        $register = Request::is('register') ? true : false;
+
+        return View::make('users.create', compact('register', 'group'));
     }
 
     /**
@@ -117,7 +120,11 @@ class UsersController extends BaseController {
 	 */
 	public function create()
 	{
-        return View::make('users.create');
+        $groups = $this->group->groupAsOptions();
+        $group = $this->group->byName("Users");
+        $register = Request::is('users/create') ? false : true;
+
+        return View::make('users.create', compact('register', 'groups', 'group'));
 	}
 
 	/**
@@ -130,8 +137,6 @@ class UsersController extends BaseController {
         // Form Processing
         $result = $this->registerForm->save(Input::all());
 
-        //TODO create process for invitation code. Also check into activation code and listener in emails
-
         if( $result['success'] )
         {
             Event::fire('user.registered', array(
@@ -141,14 +146,12 @@ class UsersController extends BaseController {
             ));
 
             // Success!
-            Session::flash('success', $result['message']);
+            Session::flash('success', [$result['message']]);
             return Redirect::action('users.show', array($result['mailData']['userId']));
 
         } else {
-            Session::flash('error', $result['message']);
-            return Redirect::route('register')
-                ->withInput()
-                ->withErrors( $this->registerForm->errors() );
+            Session::flash('error', [$result['message']]);
+            return Redirect::back()->withInput()->withErrors($this->registerForm->errors());
         }
 	}
 
@@ -167,7 +170,7 @@ class UsersController extends BaseController {
 
         $viewPermissions = Sentry::getUser()->hasAccess('permission_view');
 
-        $userGroups = $user->isSuperUser() ? $this->group->all() : $user->getGroups();
+        $userGroups = Sentry::getUser()->isSuperUser() ? $this->group->all() : $user->getGroups();
         foreach ($userGroups as $userGroup)
         {
             if ($userGroup->name == 'Users')
@@ -209,6 +212,7 @@ class UsersController extends BaseController {
         $userPermissions = $user->permissions;
         $userEditPermissions = Sentry::getUser()->hasAccess('user_edit_permissions');
         $userEditGroups = Sentry::getUser()->hasAccess('user_edit_groups');
+        $superUser = Sentry::getUser()->isSuperUser();
 
         return View::make('users.edit', compact(
                 'user',
@@ -217,7 +221,8 @@ class UsersController extends BaseController {
                 'userGroups',
                 'permissions',
                 'userPermissions',
-                'userEditGroups'
+                'userEditGroups',
+                'superUser'
             )
         );
 	}
@@ -247,11 +252,11 @@ class UsersController extends BaseController {
             ));
 
             // Success!
-            Session::flash('success', $result['message']);
+            Session::flash('success', [$result['message']]);
             return Redirect::action('UsersController@show', array($id));
 
         } else {
-            Session::flash('error', $result['message']);
+            Session::flash('error', [$result['message']]);
             return Redirect::action('UsersController@edit', array($id))
                 ->withInput()
                 ->withErrors( $this->userForm->errors() );
@@ -280,12 +285,12 @@ class UsersController extends BaseController {
                 'userId' => $id, 
             ));
 
-            Session::flash('success', 'User Deleted');
+            Session::flash('success', [trans('users.deleted')]);
             return Redirect::action('UsersController@index');
         }
         else 
         {
-        	Session::flash('error', 'Unable to Delete User');
+        	Session::flash('error', [trans('errors.error_delete_user')]);
             return Redirect::action('UsersController@index');
         }
 	}
@@ -314,11 +319,11 @@ class UsersController extends BaseController {
             ));
 
             // Success!
-            Session::flash('success', $result['message']);
+            Session::flash('success', [$result['message']]);
             return Redirect::route('home');
 
         } else {
-            Session::flash('error', $result['message']);
+            Session::flash('error', [$result['message']]);
             return Redirect::route('home');
         }
 	}
@@ -341,12 +346,12 @@ class UsersController extends BaseController {
 			));
 
             // Success!
-            Session::flash('success', $result['message']);
+            Session::flash('success', [$result['message']]);
             return Redirect::route('home');
         } 
         else 
         {
-            Session::flash('error', $result['message']);
+            Session::flash('error', [$result['message']]);
             return Redirect::route('resendActivationForm')
                 ->withInput()
                 ->withErrors( $this->resendActivationForm->errors() );
@@ -371,12 +376,12 @@ class UsersController extends BaseController {
 			));
 
             // Success!
-            Session::flash('success', $result['message']);
+            Session::flash('success', [$result['message']]);
             return Redirect::route('home');
         } 
         else 
         {
-            Session::flash('error', $result['message']);
+            Session::flash('error', [$result['message']]);
             return Redirect::route('forgotPasswordForm')
                 ->withInput()
                 ->withErrors( $this->forgotPasswordForm->errors() );
@@ -408,11 +413,11 @@ class UsersController extends BaseController {
 			));
 
             // Success!
-            Session::flash('success', $result['message']);
+            Session::flash('success', [$result['message']]);
             return Redirect::route('home');
 
         } else {
-            Session::flash('error', $result['message']);
+            Session::flash('error', [$result['message']]);
             return Redirect::route('home');
         }
 	}
@@ -444,12 +449,12 @@ class UsersController extends BaseController {
             ));
 
             // Success!
-            Session::flash('success', $result['message']);
+            Session::flash('success', [$result['message']]);
             return Redirect::action('UsersController@show', array($id));
         } 
         else 
         {
-            Session::flash('error', $result['message']);
+            Session::flash('error', [$result['message']]);
             return Redirect::action('UsersController@edit', array($id))
                 ->withInput()
                 ->withErrors( $this->changePasswordForm->errors() );
@@ -480,11 +485,11 @@ class UsersController extends BaseController {
             ));
 
             // Success!
-            Session::flash('success', $result['message']);
+            Session::flash('success', [$result['message']]);
             return Redirect::action('UsersController@index');
 
         } else {
-            Session::flash('error', $result['message']);
+            Session::flash('error', [$result['message']]);
             return Redirect::action('UsersController@suspend', array($id))
                 ->withInput()
                 ->withErrors( $this->suspendUserForm->errors() );
@@ -514,11 +519,11 @@ class UsersController extends BaseController {
             ));
 
             // Success!
-            Session::flash('success', $result['message']);
+            Session::flash('success', [$result['message']]);
             return Redirect::action('UsersController@index');
 
         } else {
-            Session::flash('error', $result['message']);
+            Session::flash('error', [$result['message']]);
             return Redirect::action('UsersController@index');
         }
 	}
@@ -546,11 +551,11 @@ class UsersController extends BaseController {
             ));
 
             // Success!
-            Session::flash('success', $result['message']);
+            Session::flash('success', [$result['message']]);
             return Redirect::action('UsersController@index');
 
         } else {
-            Session::flash('error', $result['message']);
+            Session::flash('error', [$result['message']]);
             return Redirect::action('UsersController@index');
         }
 	}
@@ -573,11 +578,11 @@ class UsersController extends BaseController {
             ));
 
             // Success!
-            Session::flash('success', $result['message']);
+            Session::flash('success', [$result['message']]);
             return Redirect::action('UsersController@index');
 
         } else {
-            Session::flash('error', $result['message']);
+            Session::flash('error', [$result['message']]);
             return Redirect::action('UsersController@index');
         }
 	}
