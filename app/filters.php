@@ -139,17 +139,17 @@ Route::filter('hasProjectAccess', function($route, $request, $value)
         if ($user->inGroup($group) && $user->hasAccess(array($value)))
             return;
 
-        Session::flash('error', trans('users.noaccess'));
+        Session::flash('error', [trans('users.noaccess')]);
         return Redirect::intended('/');
     }
     catch (Cartalyst\Sentry\Users\UserNotFoundException $e)
     {
-        Session::flash('error', trans('users.notfound'));
+        Session::flash('error', [trans('users.notfound')]);
         return Redirect::guest('login');
     }
     catch (Cartalyst\Sentry\Groups\GroupNotFoundException $e)
     {
-        Session::flash('error', trans('groups.notfound'));
+        Session::flash('error', [trans('groups.notfound')]);
         return Redirect::guest('login');
     }
 });
@@ -179,17 +179,17 @@ Route::filter('hasGroupAccess', function($route, $request, $value)
                 return;
         }
 
-        Session::flash('error', trans('users.noaccess'));
+        Session::flash('error', [trans('users.noaccess')]);
         return Redirect::intended('/');
     }
     catch (Cartalyst\Sentry\Users\UserNotFoundException $e)
     {
-        Session::flash('error', trans('users.notfound'));
+        Session::flash('error', [trans('users.notfound')]);
         return Redirect::guest('login');
     }
     catch (Cartalyst\Sentry\Groups\GroupNotFoundException $e)
     {
-        Session::flash('error', trans('groups.notfound'));
+        Session::flash('error', [trans('groups.notfound')]);
         return Redirect::guest('login');
     }
 });
@@ -207,19 +207,19 @@ Route::filter('hasUserAccess', function($route, $request, $value)
 
         if (!$user->hasAccess(array($value)))
         {
-            Session::flash('error', trans('users.noaccess'));
+            Session::flash('error', [trans('users.noaccess')]);
             return Redirect::intended('/');
         }
     }
     catch (Cartalyst\Sentry\Users\UserNotFoundException $e)
     {
-        Session::flash('error', trans('users.notfound'));
+        Session::flash('error', [trans('users.notfound')]);
         return Redirect::guest('login');
     }
 
     catch (Cartalyst\Sentry\Groups\GroupNotFoundException $e)
     {
-        Session::flash('error', trans('groups.notfound'));
+        Session::flash('error', [trans('groups.notfound')]);
         return Redirect::guest('login');
     }
 });
