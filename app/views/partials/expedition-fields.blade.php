@@ -1,4 +1,4 @@
-@if (Request::is('*/expeditions/create'))
+@if ($create)
 <div class="form-group {{ ($errors->has('title')) ? 'has-error' : '' }}" for="title">
     {{ Form::label('title', trans('forms.title'), array('class' => 'col-sm-2 control-label')) }}
     <div class="col-sm-10">

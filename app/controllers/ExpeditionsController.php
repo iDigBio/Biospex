@@ -126,8 +126,9 @@ class ExpeditionsController extends BaseController {
         $project = $this->project->find($projectId);
         $group = $project->group;
         $subjects = $this->subject->getUnassignedSubjectCount($projectId);
+        $create = Route::currentRouteName() == 'groups.projects.expeditions.create' ? true : false;
 
-        return View::make('expeditions.create', compact('group', 'project', 'subjects'));
+        return View::make('expeditions.create', compact('group', 'project', 'subjects', 'create'));
     }
 
     /**
@@ -191,7 +192,8 @@ class ExpeditionsController extends BaseController {
         $project = $this->project->find($projectId);
         $expedition = $this->expedition->find($expeditionId);
         $subjects = count($expedition->subject);
-        return View::make('expeditions.clone', compact('group', 'project', 'expedition', 'subjects'));
+        $create = Route::currentRouteName() == 'groups.projects.expeditions.create' ? true : false;
+        return View::make('expeditions.clone', compact('group', 'project', 'expedition', 'subjects', 'create'));
     }
 
     /**
@@ -208,7 +210,8 @@ class ExpeditionsController extends BaseController {
         $project = $this->project->find($projectId);
         $expedition = $this->expedition->find($expeditionId);
         $subjects = count($expedition->subject);
-        return View::make('expeditions.edit', compact('group', 'project', 'expedition', 'subjects'));
+        $create = Route::currentRouteName() == 'groups.projects.expeditions.create' ? true : false;
+        return View::make('expeditions.edit', compact('group', 'project', 'expedition', 'subjects', 'create'));
     }
 
     /**
