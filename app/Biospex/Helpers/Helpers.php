@@ -1,4 +1,4 @@
-<?php
+<?php namespace Biospex\Helpers;
 /**
  * Flash.php
  *
@@ -23,6 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Session;
 
 class Helpers {
     public static function sessionFlashPush($key, $value) {
