@@ -29,4 +29,6 @@ use Biospex\Repo\RepositoryInterface;
 interface InviteInterface extends RepositoryInterface {
     public function findByCode($code);
 
+    public function checkDuplicate($id, $email);
+
 }

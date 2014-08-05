@@ -46,4 +46,16 @@ class InviteRepository extends Repository implements InviteInterface {
     {
         return $this->model->findByCode($code);
     }
+
+    /**
+     * Find duplicate
+     *
+     * @param $id
+     * @param $email
+     * @return mixed
+     */
+    public function checkDuplicate($id, $email)
+    {
+        return $this->model->checkDuplicate($id, $email);
+    }
 }
