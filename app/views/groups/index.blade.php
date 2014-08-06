@@ -23,10 +23,10 @@
                     <tr>
                         <td>{{ $group->name }}</td>
                         <td>
-                            <button class="btn btn-default btn-info" type="button" onClick="location.href='{{ URL::action('GroupsController@show', array($group->id)) }}'">@lang('buttons.view')</button>
+                            <button class="btn btn-default btn-info" type="button" onClick="location.href='{{ URL::action('GroupsController@show', [$group->id]) }}'">@lang('buttons.view')</button>
                             <button class="btn btn-default btn-warning" {{ ($group->user_id == $user->id || $isSuperUser) ? '' : 'disabled' }} onClick="location.href='{{ action('GroupsController@edit', array($group->id)) }}'">@lang('buttons.edit')</button>
                             <button class="btn btn-default btn-danger action_confirm" {{ ($group->user_id == $user->id  || $isSuperUser) ? '' : 'disabled' }} type="button" data-method="delete" href="{{ URL::action('GroupsController@destroy', array($group->id)) }}">@lang('buttons.delete')</button>
-                            <button class="btn btn-default btn-primary" type="button" onClick="location.href='{{ URL::action('GroupsController@invite', array($group->id)) }}'">@lang('buttons.invite')</button>
+                            <button class="btn btn-default btn-primary" type="button" onClick="location.href='{{ URL::action('groups.invites.index', [$group->id]) }}'">@lang('buttons.invite')</button>
                          </td>
                     </tr>
                 @endforeach
