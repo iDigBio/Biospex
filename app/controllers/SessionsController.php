@@ -73,7 +73,7 @@ class SessionsController extends BaseController {
             return Redirect::intended(route('users.show', $result['sessionData']['userId']));
 
         } else {
-            Session::flash('error', [$result['message']]);
+            Session::flash('error', $result['message']);
             return Redirect::route('login')
                 ->withInput()
                 ->withErrors($this->loginForm->errors());
