@@ -57,42 +57,6 @@ class Invite extends Eloquent {
     }
 
     /**
-     * Group id scope
-     *
-     * @param $query
-     * @param $id
-     * @return mixed
-     */
-    public function scopeGroup($query, $id)
-    {
-        return $query->whereGroupId($id);
-    }
-
-    /**
-     * Code scope
-     *
-     * @param $query
-     * @param $code
-     * @return mixed
-     */
-    public function scopeCode($query, $code)
-    {
-        return $query->whereCode($code);
-    }
-
-    /**
-     * Email scope
-     *
-     * @param $query
-     * @param $email
-     * @return mixed
-     */
-    public function scopeEmail($query, $email)
-    {
-        return $query->whereCode($email);
-    }
-
-    /**
      * Find invite by code
      *
      * @param $code
@@ -100,7 +64,7 @@ class Invite extends Eloquent {
      */
     public function findByCode($code)
     {
-        return $this->code($code)->first();
+        return $this->whereCode($code)->first();
     }
 
     /**
@@ -112,6 +76,6 @@ class Invite extends Eloquent {
      */
     public function checkDuplicate($id, $email)
     {
-        return $this->group($id)->email($email)->first();
+        return $this->whereGroupId($id)->whereEmail($email)->first();
     }
 }
