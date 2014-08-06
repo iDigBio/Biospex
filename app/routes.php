@@ -68,9 +68,12 @@ Route::group(
         Route::get('projects/all', 'ProjectsController@all');
 
         // Group Routes
-        Route::get('groups/{groups}/invite', array('as' => 'invite', 'uses' => 'GroupsController@invite'));
-        Route::post('groups/{groups}/invite', array('as' => 'sendInvite', 'uses' => 'GroupsController@sendInvite'));
+        //Route::get('groups/{groups}/invite', array('as' => 'invite', 'uses' => 'GroupsController@invite'));
+        //Route::post('groups/{groups}/invite', array('as' => 'sendInvite', 'uses' => 'GroupsController@sendInvite'));
         Route::resource('groups', 'GroupsController');
+
+        // Group invite routes
+        Route::resource('groups.invites', 'InvitesController');
 
         // Group/Projects
         Route::resource('groups.projects', 'ProjectsController');
