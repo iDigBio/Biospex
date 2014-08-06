@@ -29,7 +29,9 @@ use Biospex\Form\Group\GroupForm;
 use Biospex\Repo\Permission\PermissionInterface;
 use Biospex\Repo\Invite\InviteInterface;
 use Biospex\Form\Invite\InviteForm;
-
+use Biospex\Mailer\BiospexMailer;
+use Biospex\Helpers\Helpers;
+use Cartalyst\Sentry\Users\UserNotFoundException;
 
 class GroupsController extends BaseController {
 
@@ -58,6 +60,11 @@ class GroupsController extends BaseController {
      */
     protected $inviteForm;
 
+    /**
+     * @var Biospex\Mailer\BiospexMailer
+     */
+    protected $mailer;
+
 	/**
 	 * Constructor
 	 */
@@ -66,7 +73,8 @@ class GroupsController extends BaseController {
         GroupForm $groupForm,
         PermissionInterface $permission,
         InviteInterface $invite,
-        InviteForm $inviteForm
+        InviteForm $inviteForm,
+        BiospexMailer $mailer
     )
 	{
 		$this->group = $group;
@@ -74,6 +82,7 @@ class GroupsController extends BaseController {
         $this->permission = $permission;
         $this->invite = $invite;
         $this->inviteForm = $inviteForm;
+        $this->mailer = $mailer;
 
 		// Establish Filters
         $this->beforeFilter('csrf', array('on' => 'post'));
@@ -135,18 +144,18 @@ class GroupsController extends BaseController {
                 Event::fire('group.created');
 
                 // Success!
-                Session::flash('success', $result['message']);
+                Session::flash('success', [$result['message']]);
                 return Redirect::action('GroupsController@index');
             }
             else
             {
-                Session::flash('error', 'groups.useradderror');
+                Session::flash('error', ['groups.useradderror']);
                 return Redirect::action('GroupsController@create')
                     ->withInput()
                     ->withErrors( $this->groupForm->errors() );
             }
         } else {
-            Session::flash('error', $result['message']);
+            Session::flash('error', [$result['message']]);
             return Redirect::action('GroupsController@create')
                 ->withInput()
                 ->withErrors( $this->groupForm->errors() );
@@ -212,11 +221,11 @@ class GroupsController extends BaseController {
             ));
 
             // Success!
-            Session::flash('success', $result['message']);
+            Session::flash('success', [$result['message']]);
             return Redirect::action('GroupsController@index');
 
         } else {
-            Session::flash('error', $result['message']);
+            Session::flash('error', [$result['message']]);
             return Redirect::action('GroupsController@create')
                 ->withInput()
                 ->withErrors( $this->groupForm->errors() );
@@ -236,75 +245,78 @@ class GroupsController extends BaseController {
                 'groupId' => $id, 
             ));
 
-			Session::flash('success', trans('groups.group_destroyed'));
+			Session::flash('success', [trans('groups.group_destroyed')]);
             return Redirect::action('GroupsController@index');
         }
         else 
         {
-        	Session::flash('error', trans('groups.group_destroyed_failed'));
+        	Session::flash('error', [trans('groups.group_destroyed_failed')]);
             return Redirect::action('GroupsController@index');
         }
 	}
 
+    /**
+     * Show invite form
+     *
+     * @param $id
+     * @return \Illuminate\View\View
+     */
     public function invite($id)
     {
         $group = $this->group->find($id);
         return View::make('groups.invite', compact('group'));
-
-    }
-
-    public function sendInvite($id)
-    {
-        $emails = explode(',', Input::get('emails'));
-        foreach ($emails as $email)
-        {
-            $data = array(
-                'group_id' => $id,
-                'email' => trim($email),
-                'code' => str_random(10)
-            );
-            if (!$result = $this->inviteForm->save($data))
-            {
-                Session::flash('warning', trans('groups.send_invite_error', $email));
-            }
-        }
-
-
-
-            Session::flash('warning', trans('groups.il'));
-            return Redirect::action('GroupsController@index');
-
-        return "Invite by email";
     }
 
     /**
-     * Add user to group if invite code exists
+     * Send invites to emails
      *
+     * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function invited()
+    public function sendInvite($id)
     {
-        $invite = $this->invite->findByCode(Input::get('invite'));
+        $group = Sentry::findGroupById($id);
 
-        if ($invite)
+        $emails = explode(',', Input::get('emails'));
+
+        foreach ($emails as $email)
         {
-            $user = Sentry::getUser();
-
-            if ($invite->email == $user->email)
+            if ($duplicate = $this->invite->checkDuplicate($group->id, $email))
             {
-                $group = Sentry::findGroupById($invite->group_id);
-                if ($result = $user->addGroup($group))
+                Helpers::sessionFlashPush('info', trans('groups.invite_duplicate', ['group' => $group->name, 'email' => $email]));
+                continue;
+            }
+
+            try
+            {
+                $user = Sentry::findUserByLogin($email);
+                $user->addGroup($group);
+                Helpers::sessionFlashPush('success', [trans('groups.user_added', $email)]);
+            }
+            catch (UserNotFoundException $e)
+            {
+                $code = str_random(10);
+                $data = array(
+                    'group_id' => $id,
+                    'email' => trim($email),
+                    'code' => $code
+                );
+
+                if (!$result = $this->inviteForm->save($data))
                 {
-                    $this->invite->destroy($invite->id);
-                    Session::flash('success', trans('groups.group_joined'));
-                    return Redirect::action('GroupsController@index');
+                    Helpers::sessionFlashPush('warning', [trans('groups.send_invite_error', $email)]);
+                }
+                else
+                {
+                    $subject = trans('emails.group_invite_subject');
+                    $data = array('group' => $group->name, 'code' => $code);
+                    $view = 'emails.group-invite';
+                    $this->mailer->sendInvite($email, $subject, $view, $data);
+                    Helpers::sessionFlashPush('success', [trans('groups.send_invite_success', $email)]);
                 }
             }
         }
 
-
-        Session::flash('warning', trans('groups.invite_fail'));
-        return Redirect::action('GroupsController@index');
+        return Redirect::action('invite', [$group->id]);
     }
-
 }
