@@ -78,4 +78,15 @@ class Invite extends Eloquent {
     {
         return $this->whereGroupId($id)->whereEmail($email)->first();
     }
+
+    /**
+     * Retrun invites by group id
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function findByGroupId($id)
+    {
+        return $this->whereGoupId($id)->get();
+    }
 }
