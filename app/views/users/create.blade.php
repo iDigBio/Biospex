@@ -3,7 +3,11 @@
 {{-- Web site Title --}}
 @section('title')
 @parent
-@lang('pages.register')
+@if ($register)
+    @lang('pages.register')
+@else
+    @lang('pages.create')
+@endif
 @stop
 
 {{-- Content --}}
@@ -15,7 +19,7 @@
         <h2>@lang('pages.register_account')</h2>
 
         <div class="form-group {{ ($errors->has('email')) ? 'has-error' : '' }}">
-            {{ Form::text('email', null, array('class' => 'form-control', 'placeholder' => trans('pages.email'))) }}
+            {{ Form::text('email', $email, array('class' => 'form-control', 'placeholder' => trans('pages.email'))) }}
             {{ ($errors->has('email') ? $errors->first('email') : '') }}
         </div>
 
@@ -28,11 +32,16 @@
             {{ Form::password('password_confirmation', array('class' => 'form-control', 'placeholder' => trans('pages.password_confirm'))) }}
             {{ ($errors->has('password_confirmation') ?  $errors->first('password_confirmation') : '') }}
         </div>
-
-        <div class="form-group {{ ($errors->has('invite')) ? 'has-error' : '' }}">
-            {{ Form::text('invite', null, array('class' => 'form-control', 'placeholder' => trans('groups.invite_code'))) }}
-            {{ ($errors->has('invite') ?  $errors->first('invite') : '') }}
-        </div>
+        @if ($register)
+            <div class="form-group {{ ($errors->has('invite')) ? 'has-error' : '' }}">
+                {{ Form::text('invite', $code, array('class' => 'form-control', 'placeholder' => trans('groups.invite_code'))) }}
+                {{ ($errors->has('invite') ?  $errors->first('invite') : '') }}
+            </div>
+        @else
+            <div class="form-group">
+                {{ Form::select('group', $groups, Input::old('group')) }}
+            </div>
+        @endif
 
         {{ Form::submit(trans('buttons.register'), array('class' => 'btn btn-primary')) }}
             

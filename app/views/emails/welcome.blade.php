@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 	</head>
 	<body>
-		<h2>Welcome</h2>
+		<h2><h2>{{ trans('emails.welcome') }}</h2></h2>
 
 		<p><b>Account:</b> {{{ $email }}}</p>
 		<p>To activate your account, <a href="{{ URL::action('UsersController@activate', array('id' => $userId, 'code' => urlencode($activationCode))) }}">click here.</a></p>

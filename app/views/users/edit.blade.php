@@ -33,7 +33,6 @@
             {{ ($errors->has('firstName') ? $errors->first('firstName') : '') }}    			
     	</div>
 
-
         <div class="form-group {{ ($errors->has('lastName')) ? 'has-error' : '' }}" for="lastName">
             {{ Form::label('edit_lastName', trans('pages.last_name'), array('class' => 'col-sm-2 control-label')) }}
             <div class="col-sm-10">
@@ -49,6 +48,15 @@
             </div>
             {{ ($errors->has('email') ? $errors->first('email') : '') }}
         </div>
+
+        @if ($superUser)
+        <div class="form-group" for="activated">
+            {{ Form::label('edit_activated', trans('pages.activated'), array('class' => 'col-sm-2 control-label')) }}
+            <div class="checkbox col-sm-10">
+                {{ Form::checkbox('activated', '1', $user->activated, array('class' => 'name')); }}
+            </div>
+        </div>
+        @endif
 
         @if ($userEditGroups)
             @include('partials.editusergroups')
