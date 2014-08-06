@@ -38,19 +38,6 @@
         <h4>{{ trans('groups.group_make') }}</h4>
         <button class="btn btn-primary" onClick="location.href='{{ URL::action('GroupsController@create') }}'">@lang('buttons.create')</button>
     </div>
-    <div class="col-md-10">
-        {{ Form::open(array(
-            'action' => array('GroupsController@invited'),
-            'class' => 'form-inline'
-        )) }}
-        <h4>@lang('groups.group_join')</h4>
-        <div class="{{ ($errors->has('invite')) ? 'has-error' : '' }}">
-            {{ Form::text('invite', null, array('class' => 'form-control', 'placeholder' => trans('groups.invite_code'))) }}
-            {{ ($errors->has('email') ? $errors->first('invite') : '') }}
-            {{ Form::submit(trans('buttons.join'), array('class' => 'btn btn-primary')) }}
-        </div>
-        {{ Form::close() }}
-    </div>
 </div>
 <!--  
 	The delete button uses Resftulizer.js to restfully submit with "Delete".  The "action_confirm" class triggers an optional confirm dialog.
