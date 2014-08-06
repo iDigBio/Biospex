@@ -24,15 +24,16 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Biospex\Repo\User\UserInterface as User;
-use Biospex\Repo\Group\GroupInterface as Group;
+use Biospex\Repo\User\UserInterface;
+use Biospex\Repo\Group\GroupInterface;
 use Biospex\Form\Register\RegisterForm;
 use Biospex\Form\User\UserForm;
 use Biospex\Form\ResendActivation\ResendActivationForm;
 use Biospex\Form\ForgotPassword\ForgotPasswordForm;
 use Biospex\Form\ChangePassword\ChangePasswordForm;
 use Biospex\Form\SuspendUser\SuspendUserForm;
-use Biospex\Repo\Permission\PermissionInterface as Permission;
+use Biospex\Repo\Permission\PermissionInterface;
+use Biospex\Repo\Invite\InviteInterface;
 
 
 class UsersController extends BaseController {
@@ -51,15 +52,17 @@ class UsersController extends BaseController {
 	 * Instantiate a new UsersController
 	 */
 	public function __construct(
-		User $user,
-		Group $group,
+		UserInterface $user,
+		GroupInterface $group,
 		RegisterForm $registerForm, 
 		UserForm $userForm,
 		ResendActivationForm $resendActivationForm,
 		ForgotPasswordForm $forgotPasswordForm,
 		ChangePasswordForm $changePasswordForm,
 		SuspendUserForm $suspendUserForm,
-        Permission $permission)
+        PermissionInterface $permission,
+        InviteInterface $invite
+    )
 	{
 		$this->user = $user;
 		$this->group = $group;
@@ -70,6 +73,7 @@ class UsersController extends BaseController {
 		$this->changePasswordForm = $changePasswordForm;
 		$this->suspendUserForm = $suspendUserForm;
         $this->permission = $permission;
+        $this->invite = $invite;
 
         // Establish Filters
         $this->beforeFilter('csrf', array('on' => 'post'));
@@ -92,12 +96,13 @@ class UsersController extends BaseController {
         return View::make('users.index', compact('users'));
 	}
 
-	/**
+    /**
      * Show the form for creating a new user.
      *
-     * @return Response
+     * @param null $code
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function register()
+    public function register($code = null)
     {
         $registration = Config::get('config.registration');
 
@@ -107,10 +112,18 @@ class UsersController extends BaseController {
             return Redirect::route('home');
         }
 
-        $group = $this->group->byName("Users");
-        $register = Request::is('register') ? true : false;
+        if ( ! empty($code))
+        {
+            if ( ! $invite = $this->invite->findByCode($code))
+                Session::flash('warning', [trans('groups.invite_not_found')]);
+        }
+        $code = isset($invite->code) ? $invite->code : null;
+        $email = isset($invite->email) ? $invite->email : null;
 
-        return View::make('users.create', compact('register', 'group'));
+        $group = $this->group->byName("Users");
+        $register = Route::currentRouteName() == 'register' ? true : false;
+
+        return View::make('users.create', compact('register', 'group', 'code', 'email'));
     }
 
     /**
@@ -122,7 +135,7 @@ class UsersController extends BaseController {
 	{
         $groups = $this->group->groupAsOptions();
         $group = $this->group->byName("Users");
-        $register = Request::is('users/create') ? false : true;
+        $register = Route::currentRouteName() == 'users.create' ? false : true;
 
         return View::make('users.create', compact('register', 'groups', 'group'));
 	}
@@ -388,13 +401,14 @@ class UsersController extends BaseController {
         }
 	}
 
-	/**
-	 * Process a password reset request link
-	 * @param  [type] $id   [description]
-	 * @param  [type] $code [description]
-	 * @return [type]       [description]
-	 */
-	public function reset($id, $code)
+    /**
+     * Process a password reset request link
+     *
+     * @param $id
+     * @param $code
+     * @return \Illuminate\Http\RedirectResponse|void
+     */
+    public function reset($id, $code)
 	{
         if(!is_numeric($id))
         {
