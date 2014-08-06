@@ -155,7 +155,7 @@ class UserRepository extends Repository implements UserInterface {
                 }
                 else
                 {
-                    Session::flash('warning', [trans('errors.invite_email_mismatch')]);
+                    Session::flash('warning', trans('errors.invite_email_mismatch'));
                 }
             }
             elseif ( ! empty($data['group']))
