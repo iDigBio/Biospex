@@ -27,11 +27,6 @@
 use Biospex\Repo\Group\GroupInterface;
 use Biospex\Form\Group\GroupForm;
 use Biospex\Repo\Permission\PermissionInterface;
-use Biospex\Repo\Invite\InviteInterface;
-use Biospex\Form\Invite\InviteForm;
-use Biospex\Mailer\BiospexMailer;
-use Biospex\Helpers\Helpers;
-use Cartalyst\Sentry\Users\UserNotFoundException;
 
 class GroupsController extends BaseController {
 
@@ -50,39 +45,18 @@ class GroupsController extends BaseController {
      */
     protected $permission;
 
-    /**
-     * @var Biospex\Repo\Invite\InviteInterface
-     */
-    protected $invite;
-
-    /**
-     * @var Biospex\Form\Invite\InviteForm
-     */
-    protected $inviteForm;
-
-    /**
-     * @var Biospex\Mailer\BiospexMailer
-     */
-    protected $mailer;
-
 	/**
 	 * Constructor
 	 */
 	public function __construct(
         GroupInterface $group,
         GroupForm $groupForm,
-        PermissionInterface $permission,
-        InviteInterface $invite,
-        InviteForm $inviteForm,
-        BiospexMailer $mailer
+        PermissionInterface $permission
     )
 	{
 		$this->group = $group;
 		$this->groupForm = $groupForm;
         $this->permission = $permission;
-        $this->invite = $invite;
-        $this->inviteForm = $inviteForm;
-        $this->mailer = $mailer;
 
 		// Establish Filters
         $this->beforeFilter('csrf', array('on' => 'post'));
@@ -254,69 +228,4 @@ class GroupsController extends BaseController {
             return Redirect::action('GroupsController@index');
         }
 	}
-
-    /**
-     * Show invite form
-     *
-     * @param $id
-     * @return \Illuminate\View\View
-     */
-    public function invite($id)
-    {
-        $group = $this->group->find($id);
-        return View::make('groups.invite', compact('group'));
-    }
-
-    /**
-     * Send invites to emails
-     *
-     * @param $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function sendInvite($id)
-    {
-        $group = Sentry::findGroupById($id);
-
-        $emails = explode(',', Input::get('emails'));
-
-        foreach ($emails as $email)
-        {
-            if ($duplicate = $this->invite->checkDuplicate($group->id, $email))
-            {
-                Helpers::sessionFlashPush('info', trans('groups.invite_duplicate', ['group' => $group->name, 'email' => $email]));
-                continue;
-            }
-
-            try
-            {
-                $user = Sentry::findUserByLogin($email);
-                $user->addGroup($group);
-                Helpers::sessionFlashPush('success', [trans('groups.user_added', ['email' => $email])]);
-            }
-            catch (UserNotFoundException $e)
-            {
-                $code = str_random(10);
-                $data = array(
-                    'group_id' => $id,
-                    'email' => trim($email),
-                    'code' => $code
-                );
-
-                if (!$result = $this->inviteForm->save($data))
-                {
-                    Helpers::sessionFlashPush('warning', [trans('groups.send_invite_error', ['email' => $email])]);
-                }
-                else
-                {
-                    $subject = trans('emails.group_invite_subject');
-                    $data = array('group' => $group->name, 'code' => $code);
-                    $view = 'emails.group-invite';
-                    $this->mailer->sendInvite($email, $subject, $view, $data);
-                    Helpers::sessionFlashPush('success', [trans('groups.send_invite_success', ['email' > $email])]);
-                }
-            }
-        }
-
-        return Redirect::action('invite', [$group->id]);
-    }
 }
