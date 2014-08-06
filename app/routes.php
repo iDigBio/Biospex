@@ -73,6 +73,7 @@ Route::group(
         Route::resource('groups', 'GroupsController');
 
         // Group invite routes
+        Route::post('groups/{groups}/invites/{invites}/resend', array('as' => 'groups.invites.resend', 'uses' => 'InvitesController@resend'));
         Route::resource('groups.invites', 'InvitesController');
 
         // Group/Projects
