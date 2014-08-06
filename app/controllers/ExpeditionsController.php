@@ -148,12 +148,12 @@ class ExpeditionsController extends BaseController {
 
         if($expedition)
         {
-            Session::flash('success', [trans('expeditions.expedition_created')]);
+            Session::flash('success', trans('expeditions.expedition_created'));
             return Redirect::action('ExpeditionsController@show', array($groupId, $projectId, $expedition->id));
         }
         else
         {
-            Session::flash('error', [trans('expeditions.expedition_save_error')]);
+            Session::flash('error', trans('expeditions.expedition_save_error'));
             return Redirect::action('ExpeditionsController@create', $groupId)
                 ->withInput()
                 ->withErrors($this->expeditionForm->errors());
@@ -230,11 +230,11 @@ class ExpeditionsController extends BaseController {
         if($expedition)
         {
             // Success!
-            Session::flash('success', [trans('expeditions.expedition_updated')]);
+            Session::flash('success', trans('expeditions.expedition_updated'));
             return Redirect::action('groups.projects.expeditions.show', array($groupId, $projectId, $expeditionId));
 
         } else {
-            Session::flash('error', [trans('expeditions.expedition_save_error')]);
+            Session::flash('error', trans('expeditions.expedition_save_error'));
             return Redirect::route('groups.projects.expeditions.edit', array($groupId, $projectId, $expeditionId))
                 ->withInput()
                 ->withErrors( $this->expeditionForm->errors() );
@@ -264,11 +264,11 @@ class ExpeditionsController extends BaseController {
                 $this->workflowManager->create($data);
             }
 
-            Session::flash('success', [trans('expeditions.expedition_process_success')]);
+            Session::flash('success', trans('expeditions.expedition_process_success'));
         }
         catch(Exception $e)
         {
-            Session::flash('error', [trans('expeditions.expedition_process_error')]);
+            Session::flash('error', trans('expeditions.expedition_process_error'));
         }
 
         return Redirect::action('ExpeditionsController@show', array($groupId, $projectId, $expeditionId));
@@ -296,9 +296,9 @@ class ExpeditionsController extends BaseController {
         $result = $this->expedition->destroy($expeditionId);
         if($result)
         {
-            Session::flash('success', [trans('expeditions.expedition_deleted')]);
+            Session::flash('success', trans('expeditions.expedition_deleted'));
         } else {
-            Session::flash('error', [trans('expeditions.expedition_destroy_error')]);
+            Session::flash('error', trans('expeditions.expedition_destroy_error'));
         }
         return Redirect::action('groups.projects.show', array($groupId, $projectId));
     }
