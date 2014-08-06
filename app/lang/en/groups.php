@@ -25,15 +25,15 @@
  */
 return array(
 
-	'created' 		=> "Group Created",
-	'loginreq' 		=> "Login field required",
-	'userexists' 	=> "User already exists",
-	'updated' 		=> "Group has been updated",
-	'updateproblem' => "There was a problem updating the group",
-	'namereq' 		=> "You must provide a group name",
-	'groupexists' 	=> "That group already exists",
-	'notfound' 		=> "Group not found",
-    'useradderror'  => "Error adding user to new group",
+	'created' 		        => "Group Created",
+	'loginreq' 		        => "Login field required",
+	'userexists' 	        => "User already exists",
+	'updated' 		        => "Group has been updated",
+	'updateproblem'         => "There was a problem updating the group",
+	'namereq' 		        => "You must provide a group name",
+	'groupexists' 	        => "That group already exists",
+	'notfound' 		        => "Group not found",
+    'useradderror'          => "Error adding user to new group",
 
     'group'                 => "Group",
     'group_name'            => "Group Name",
@@ -64,6 +64,11 @@ return array(
     'invite_fail'           => "Unable to add you to the group :group. Please contact the administration.",
     'send_invite_error'     => "Unable to process email :email for invite.",
     'invite_not_found'      => "Your invite was unable to be found. Please contact the administration.",
+    'invite_email_mismatch' => "The email entered did not match the invite. contact the administration.",
+    'invite_duplicate'      => "Invite to :group already exists for :email.",
+    'send_invite_success'   => "Invite to :group for :email sent successfully.",
+    'user_added'            => "User with email :email has been added to group.",
+
 
 
 
