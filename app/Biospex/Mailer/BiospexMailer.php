@@ -23,7 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Config;
+
 
 class BiospexMailer extends Mailer {
 
@@ -49,7 +49,7 @@ class BiospexMailer extends Mailer {
 	 */
 	public function welcome($email, $userId, $activationCode)
 	{
-		$subject = Config::get('user.welcome');
+		$subject = trans('users.welcome');
 		$view = 'emails.welcome';
 		$data['userId'] = $userId;
 		$data['activationCode'] = $activationCode;
@@ -67,7 +67,7 @@ class BiospexMailer extends Mailer {
 	 */
 	public function forgotPassword($email, $userId, $resetCode)
 	{
-		$subject = Config::get('users.reset_password');
+		$subject = trans('users.reset_password');
 		$view = 'emails.reset';
 		$data['userId'] = $userId;
 		$data['resetCode'] = $resetCode;
@@ -85,7 +85,7 @@ class BiospexMailer extends Mailer {
 	 */
 	public function newPassword($email, $newPassword)
 	{
-		$subject = Config::get('users.new_password');
+		$subject = trans('users.new_password');
 		$view = 'emails.newpassword';
 		$data['newPassword'] = $newPassword;
 		$data['email'] = $email;
@@ -93,9 +93,32 @@ class BiospexMailer extends Mailer {
 		return $this->sendTo($email, $subject, $view, $data );
 	}
 
+    /**
+     * Send report
+     *
+     * @param $email
+     * @param $subject
+     * @param $view
+     * @param $data
+     * @param string $attachment
+     */
     public function sendReport($email, $subject, $view, $data, $attachment = '')
     {
         return $this->sendTo($email, $subject, $view, $data, $attachment);
+    }
+
+    /**
+     * Send invite
+     *
+     * @param $email
+     * @param $subject
+     * @param $view
+     * @param $data
+     * @param string $attachment
+     */
+    public function sendInvite($email, $subject, $view, $data)
+    {
+        return $this->sendTo($email, $subject, $view, $data);
     }
 
 }
