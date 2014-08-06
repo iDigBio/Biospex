@@ -93,7 +93,7 @@ class SentrySession extends Repository implements SessionInterface {
 			catch (\Cartalyst\Sentry\Users\UserNotActivatedException $e)
 			{
 			    $result['success'] = false;
-			    $url = route('Biospex\resendActivationForm');
+			    $url = route('resendActivationForm');
 			    $result['message'] = trans('sessions.notactive', array('url' => $url));
 			}
 
