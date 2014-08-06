@@ -118,18 +118,18 @@ class GroupsController extends BaseController {
                 Event::fire('group.created');
 
                 // Success!
-                Session::flash('success', [$result['message']]);
+                Session::flash('success', $result['message']);
                 return Redirect::action('GroupsController@index');
             }
             else
             {
-                Session::flash('error', ['groups.useradderror']);
+                Session::flash('error', 'groups.useradderror');
                 return Redirect::action('GroupsController@create')
                     ->withInput()
                     ->withErrors( $this->groupForm->errors() );
             }
         } else {
-            Session::flash('error', [$result['message']]);
+            Session::flash('error', $result['message']);
             return Redirect::action('GroupsController@create')
                 ->withInput()
                 ->withErrors( $this->groupForm->errors() );
@@ -195,11 +195,11 @@ class GroupsController extends BaseController {
             ));
 
             // Success!
-            Session::flash('success', [$result['message']]);
+            Session::flash('success', $result['message']);
             return Redirect::action('GroupsController@index');
 
         } else {
-            Session::flash('error', [$result['message']]);
+            Session::flash('error', $result['message']);
             return Redirect::action('GroupsController@create')
                 ->withInput()
                 ->withErrors( $this->groupForm->errors() );
@@ -219,12 +219,12 @@ class GroupsController extends BaseController {
                 'groupId' => $id, 
             ));
 
-			Session::flash('success', [trans('groups.group_destroyed')]);
+			Session::flash('success', trans('groups.group_destroyed'));
             return Redirect::action('GroupsController@index');
         }
         else 
         {
-        	Session::flash('error', [trans('groups.group_destroyed_failed')]);
+        	Session::flash('error', trans('groups.group_destroyed_failed'));
             return Redirect::action('GroupsController@index');
         }
 	}
