@@ -67,7 +67,13 @@ return array(
     'invite_email_mismatch' => "The email entered did not match the invite. contact the administration.",
     'invite_duplicate'      => "Invite to :group already exists for :email.",
     'send_invite_success'   => "Invite to :group for :email sent successfully.",
+    'send_invite_error'     => "Unable to sent invite to :group for :email.",
     'user_added'            => "User with email :email has been added to group.",
+    'existing_invites'      => "Existing Invites",
+    'email'                 => "Email",
+    'invite_options'        => "Options",
+    'invite_destroyed'      => "Invite deleted",
+    'invite_destroyed_fail' => "Invite could not be deleted",
 
 
 
