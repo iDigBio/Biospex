@@ -20,7 +20,7 @@
         "way/generators": "dev-master",
         "way/laravel-test-helpers": "dev-master",
         "mockery/mockery": "0.9.*@dev",
-        "zizaco/factory-muff": "dev-master",
+        "league/factory-muffin": "~2.0@dev",
         "raveren/kint": "dev-master",
         "barryvdh/laravel-debugbar": "1.*"
     },
