@@ -31,4 +31,6 @@ interface InviteInterface extends RepositoryInterface {
 
     public function checkDuplicate($id, $email);
 
+    public function findByGroupId($id);
+
 }
