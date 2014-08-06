@@ -291,7 +291,7 @@ class GroupsController extends BaseController {
             {
                 $user = Sentry::findUserByLogin($email);
                 $user->addGroup($group);
-                Helpers::sessionFlashPush('success', [trans('groups.user_added', $email)]);
+                Helpers::sessionFlashPush('success', [trans('groups.user_added', ['email' => $email])]);
             }
             catch (UserNotFoundException $e)
             {
@@ -304,7 +304,7 @@ class GroupsController extends BaseController {
 
                 if (!$result = $this->inviteForm->save($data))
                 {
-                    Helpers::sessionFlashPush('warning', [trans('groups.send_invite_error', $email)]);
+                    Helpers::sessionFlashPush('warning', [trans('groups.send_invite_error', ['email' => $email])]);
                 }
                 else
                 {
@@ -312,7 +312,7 @@ class GroupsController extends BaseController {
                     $data = array('group' => $group->name, 'code' => $code);
                     $view = 'emails.group-invite';
                     $this->mailer->sendInvite($email, $subject, $view, $data);
-                    Helpers::sessionFlashPush('success', [trans('groups.send_invite_success', $email)]);
+                    Helpers::sessionFlashPush('success', [trans('groups.send_invite_success', ['email' > $email])]);
                 }
             }
         }
