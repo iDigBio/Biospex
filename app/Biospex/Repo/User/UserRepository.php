@@ -26,7 +26,12 @@
 
 use Biospex\Repo\Repository;
 use Cartalyst\Sentry\Sentry;
-use Biospex\Repo\Permission\PermissionInterface as Permission;
+use Cartalyst\Sentry\Users\UserNotFoundException;
+use Cartalyst\Sentry\Users\LoginRequiredException;
+use Cartalyst\Sentry\Users\UserExistsException;
+use Cartalyst\Sentry\Groups\GroupNotFoundException;
+use Biospex\Repo\Permission\PermissionInterface;
+use Biospex\Repo\Invite\InviteInterface;
 use User;
 
 class UserRepository extends Repository implements UserInterface {
@@ -44,21 +49,20 @@ class UserRepository extends Repository implements UserInterface {
 	/**
 	 * Construct a new User Object
 	 */
-	public function __construct(Sentry $sentry, Permission $permission)
+	public function __construct(Sentry $sentry, PermissionInterface $permission, InviteInterface $invite)
 	{
 		$this->sentry = $sentry;
-
         $this->permission = $permission;
-
+        $this->invite = $invite;
 		$this->throttleProvider = $this->sentry->getThrottleProvider();
-
 		$this->throttleProvider->enable();
 	}
 
     /**
      * Return all the registered users
      *
-     * @return stdObject Collection of users
+     * @param array $columns
+     * @return array|mixed
      */
     public function all($columns = array('*'))
     {
@@ -108,7 +112,7 @@ class UserRepository extends Repository implements UserInterface {
         {
             $user = $this->sentry->findUserById($id);
         }
-        catch (\Cartalyst\Sentry\Users\UserNotFoundException $e)
+        catch (UserNotFoundException $e)
         {
             return false;
         }
@@ -135,6 +139,43 @@ class UserRepository extends Repository implements UserInterface {
 			//Attempt to register the user. 
 			$user = $this->sentry->register(array('email' => e($data['email']), 'password' => e($data['password'])));
 
+            // Add to Users group
+            $usersGroup = $this->sentry->findGroupByName('Users');
+            $user->addGroup($usersGroup);
+
+            // Determine group creation: invite vs admin select vs create user group
+            if (isset($data['invite']))
+            {
+                $invite = $this->invite->findByCode($data['invite']);
+                if ($invite->email == $user->email)
+                {
+                    $group = $this->sentry->findGroupById($invite->group_id);
+                    $user->addGroup($group);
+                    $this->invite->destroy($invite->id);
+                }
+                else
+                {
+                    Session::flash('warning', [trans('errors.invite_email_mismatch')]);
+                }
+            }
+            elseif ( ! empty($data['group']))
+            {
+                $group = $this->sentry->findGroupById($data['group']);
+                $user->addGroup($group);
+            }
+            else
+            {
+                // Create user group based on email
+                $parts = explode("@", $data['email']);
+                $name = preg_replace('/[^a-zA-Z0-9]/', '', $parts[0]);
+                $userGroup = $this->sentry->createGroup(array(
+                    'user_id'     => e($user->id),
+                    'name'        => e($name),
+                    'permissions' => array(),
+                ));
+                $user->addGroup($userGroup);
+            }
+
 			//success!
 	    	$result['success'] = true;
 	    	$result['message'] = trans('users.created');
@@ -142,16 +183,21 @@ class UserRepository extends Repository implements UserInterface {
 			$result['mailData']['userId'] = $user->getId();
 			$result['mailData']['email'] = e($data['email']);
 		}
-		catch (\Cartalyst\Sentry\Users\LoginRequiredException $e)
+		catch (LoginRequiredException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('users.loginreq');
 		}
-		catch (\Cartalyst\Sentry\Users\UserExistsException $e)
+		catch (UserExistsException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('users.exists');
 		}
+        catch (GroupNotFoundException $e)
+        {
+            $result['success'] = false;
+            $result['message'] = trans('groups.notfound');
+        }
 
 		return $result;
 	}
@@ -212,12 +258,12 @@ class UserRepository extends Repository implements UserInterface {
 	    		$result['message'] = trans('users.notupdated');
 		    }
 		}
-		catch (\Cartalyst\Sentry\Users\UserExistsException $e)
+		catch (UserExistsException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('users.exists');
 		}
-		catch (\Cartalyst\Sentry\Users\UserNotFoundException $e)
+		catch (UserNotFoundException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('users.notfound');
@@ -242,7 +288,7 @@ class UserRepository extends Repository implements UserInterface {
 		    // Delete the user
 		    $user->delete();
 		}
-		catch (\Cartalyst\Sentry\Users\UserNotFoundException $e)
+		catch (UserNotFoundException $e)
 		{
 		    return false;
 		}
@@ -278,12 +324,12 @@ class UserRepository extends Repository implements UserInterface {
 	    		$result['message'] = trans('users.notactivated');
 		    }
 		}
-		catch (\Cartalyst\Sentry\Users\UserExistsException $e)
+		catch (UserExistsException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('users.exists');
 		}
-		catch (\Cartalyst\Sentry\Users\UserNotFoundException $e)
+		catch (UserNotFoundException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('users.notfound');
@@ -319,12 +365,12 @@ class UserRepository extends Repository implements UserInterface {
             }
 
 	    }
-	    catch (\Cartalyst\Sentry\Users\UserExistsException $e)
+	    catch (UserExistsException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('users.exists');
 		}
-		catch (\Cartalyst\Sentry\Users\UserNotFoundException $e)
+		catch (UserNotFoundException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('users.notfound');
@@ -350,7 +396,7 @@ class UserRepository extends Repository implements UserInterface {
 			$result['mailData']['userId'] = $user->getId();
 			$result['mailData']['email'] = e($data['email']);
         }
-        catch (\Cartalyst\Sentry\Users\UserNotFoundException $e)
+        catch (UserNotFoundException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('users.notfound');
@@ -389,7 +435,7 @@ class UserRepository extends Repository implements UserInterface {
 				$result['message'] = trans('users.problem');
 			}
         }
-       catch (\Cartalyst\Sentry\Users\UserNotFoundException $e)
+       catch (UserNotFoundException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('users.notfound');
@@ -433,17 +479,17 @@ class UserRepository extends Repository implements UserInterface {
 				$result['message'] = trans('users.oldpassword');
 			}                                        
 		}
-		catch (\Cartalyst\Sentry\Users\LoginRequiredException $e)
+		catch (LoginRequiredException $e)
 		{
 			$result['success'] = false;
 			$result['message'] = 'Login field required.';
 		}
-		catch (\Cartalyst\Sentry\Users\UserExistsException $e)
+		catch (UserExistsException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('users.exists');
 		}
-		catch (\Cartalyst\Sentry\Users\UserNotFoundException $e)
+		catch (UserNotFoundException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('users.notfound');
@@ -474,7 +520,7 @@ class UserRepository extends Repository implements UserInterface {
 		    $result['success'] = true;
 			$result['message'] = trans('users.suspended', array('minutes' => $minutes));
 		}
-		catch (\Cartalyst\Sentry\Users\UserNotFoundException $e)
+		catch (UserNotFoundException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('users.notfound');
@@ -501,7 +547,7 @@ class UserRepository extends Repository implements UserInterface {
 		    $result['success'] = true;
 			$result['message'] = trans('users.unsuspended');
 		}
-		catch (\Cartalyst\Sentry\Users\UserNotFoundException $e)
+		catch (UserNotFoundException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('users.notfound');
@@ -528,7 +574,7 @@ class UserRepository extends Repository implements UserInterface {
 		    $result['success'] = true;
 			$result['message'] = trans('users.banned');
 		}
-		catch (\Cartalyst\Sentry\Users\UserNotFoundException $e)
+		catch (UserNotFoundException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('users.notfound');
@@ -555,7 +601,7 @@ class UserRepository extends Repository implements UserInterface {
 		    $result['success'] = true;
 			$result['message'] = trans('users.unbanned');
 		}
-		catch (\Cartalyst\Sentry\Users\UserNotFoundException $e)
+		catch (UserNotFoundException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('users.notfound');
