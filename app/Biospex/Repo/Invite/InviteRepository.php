@@ -67,6 +67,6 @@ class InviteRepository extends Repository implements InviteInterface {
      */
     public function findByGroupId($id)
     {
-        return $this->model->findByGroupId();
+        return $this->model->findByGroupId($id);
     }
 }
