@@ -220,6 +220,7 @@ class UserRepository extends Repository implements UserInterface {
 		    $user->first_name = e($data['firstName']);
 		    $user->last_name = e($data['lastName']);
             $user->email = e($data['email']);
+            $user->activated = isset($data['activated']) ? 1 : 0;
 
 		    $operator = $this->sentry->getUser();
 		    if ($operator->hasAccess('user_edit_groups'))
