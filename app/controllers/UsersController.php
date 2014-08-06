@@ -136,8 +136,9 @@ class UsersController extends BaseController {
         $groups = $this->group->groupAsOptions();
         $group = $this->group->byName("Users");
         $register = Route::currentRouteName() == 'users.create' ? false : true;
+        $email = null;
 
-        return View::make('users.create', compact('register', 'groups', 'group'));
+        return View::make('users.create', compact('register', 'groups', 'group', 'email'));
 	}
 
 	/**
