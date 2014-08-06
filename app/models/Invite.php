@@ -87,6 +87,6 @@ class Invite extends Eloquent {
      */
     public function findByGroupId($id)
     {
-        return $this->whereGoupId($id)->get();
+        return $this->whereGroupId($id)->get();
     }
 }
