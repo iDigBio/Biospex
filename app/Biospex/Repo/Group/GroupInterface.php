@@ -36,4 +36,11 @@ interface GroupInterface extends RepositoryInterface {
 	 */
 	public function byName($name);
 
+    /**
+     * Return groups as list for select options
+     *
+     * @return mixed
+     */
+    public function groupAsOptions();
+
 }

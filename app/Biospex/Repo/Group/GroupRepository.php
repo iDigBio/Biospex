@@ -204,4 +204,18 @@ class GroupRepository extends Repository implements GroupInterface {
 		return $this->sentry->getGroupProvider()->findAll();
 	}
 
+    /**
+     * Return groups, except User, for select options
+     *
+     * @return mixed
+     */
+    public function groupAsOptions()
+    {
+        $groups = $this->sentry->getGroupProvider()->createModel()->lists('name', 'id');
+        array_unshift($groups, "-- Select --");
+        $user = $this->byName('Users');
+        unset($groups[$user->id]);
+
+        return $groups;
+    }
 }
