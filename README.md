@@ -27,10 +27,10 @@ Installation
 Notes
 -----
 1. Add cron jobs for subject import and workflow manager
---1. 0 * * * * /usr/bin/php /home/biospex/artisan subject:import >> /home/biospex/app/storage/logs/subject.import.log 2>&1
---2. 0 * * * * /usr/bin/php /home/biospex/artisan workflow:manage >> /home/biospex/app/storage/logs/workflow.manage.log 2>&1
+  1. 0 * * * * /usr/bin/php /home/biospex/artisan subject:import >> /home/biospex/app/storage/logs/subject.import.log 2>&1
+  2. 0 * * * * /usr/bin/php /home/biospex/artisan workflow:manage >> /home/biospex/app/storage/logs/workflow.manage.log 2>&1
 2. Add logrotate
---1. /etc/logrotate.d/subject_import
+  1. /etc/logrotate.d/subject_import
 ```Nix
 /home/robert/Work/biospex/app/storage/logs/subject.import.log {
     daily
@@ -42,7 +42,7 @@ Notes
     copytruncate
 }
 ```
---2. /etc/logrotate.d/workflow_manager
+  2. /etc/logrotate.d/workflow_manager
 ```Nix
 /home/robert/Work/biospex/app/storage/logs/workflow.manage.log {
     daily
