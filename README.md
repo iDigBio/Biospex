@@ -23,3 +23,38 @@ Installation
 4. Edit ```app/config/mail.php``` to work with your mail setup.
 5. Run the migrations: ```php artisan migrate```
 6. Seed the Database: ```php artisan db:seed```
+
+Notes
+-----
+1. Add cron jobs for subject import and workflow manager
+--1. 0 * * * * /usr/bin/php /home/biospex/artisan subject:import >> /home/biospex/app/storage/logs/subject.import.log 2>&1
+--2. 0 * * * * /usr/bin/php /home/biospex/artisan workflow:manage >> /home/biospex/app/storage/logs/workflow.manage.log 2>&1
+2. Add logrotate
+--1. /etc/logrotate.d/subject_import
+```
+/home/robert/Work/biospex/app/storage/logs/subject.import.log {
+    daily
+    rotate 5
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+}
+```
+--2. /etc/logrotate.d/workflow_manager
+```
+/home/robert/Work/biospex/app/storage/logs/workflow.manage.log {
+    daily
+    rotate 5
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+}
+```
+
+
+
+
