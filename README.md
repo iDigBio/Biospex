@@ -31,8 +31,7 @@ Notes
 --2. 0 * * * * /usr/bin/php /home/biospex/artisan workflow:manage >> /home/biospex/app/storage/logs/workflow.manage.log 2>&1
 2. Add logrotate
 --1. /etc/logrotate.d/subject_import
-```
-/home/robert/Work/biospex/app/storage/logs/subject.import.log {
+```/home/robert/Work/biospex/app/storage/logs/subject.import.log {
     daily
     rotate 5
     compress
@@ -40,11 +39,9 @@ Notes
     missingok
     notifempty
     copytruncate
-}
-```
+}```
 --2. /etc/logrotate.d/workflow_manager
-```
-/home/robert/Work/biospex/app/storage/logs/workflow.manage.log {
+```/home/robert/Work/biospex/app/storage/logs/workflow.manage.log {
     daily
     rotate 5
     compress
@@ -52,8 +49,7 @@ Notes
     missingok
     notifempty
     copytruncate
-}
-```
+}```
 
 
 
