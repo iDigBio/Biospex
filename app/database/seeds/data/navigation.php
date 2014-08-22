@@ -37,7 +37,7 @@ $items = array(
     array(
         'type' => "topmenu",
         'name' => "projects.projects",
-        'url' => "/projects/all",
+        'url' => "/projects",
         'permission' => 'project_view',
         'order' => 1,
         'parent_id' => 0,
