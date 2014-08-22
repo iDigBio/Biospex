@@ -205,14 +205,20 @@ class GroupRepository extends Repository implements GroupInterface {
 	}
 
     /**
-     * Return groups, except User, for select options
+     * Return groups with Admins optional and without Users for select options
      *
+     * @param bool $admins
      * @return mixed
      */
-    public function groupAsOptions()
+    public function selectOptions($admins = true)
     {
         $groups = $this->sentry->getGroupProvider()->createModel()->lists('name', 'id');
         array_unshift($groups, "-- Select --");
+        if ( ! $admins)
+        {
+            $admin = $this->byName('Admins');
+            unset($groups[$admin->id]);
+        }
         $user = $this->byName('Users');
         unset($groups[$user->id]);
 
