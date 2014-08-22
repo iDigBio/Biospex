@@ -39,8 +39,9 @@ interface GroupInterface extends RepositoryInterface {
     /**
      * Return groups as list for select options
      *
+     * @param bool $admin
      * @return mixed
      */
-    public function groupAsOptions();
+    public function selectOptions($admins = true);
 
 }
