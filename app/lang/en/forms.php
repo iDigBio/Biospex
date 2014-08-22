@@ -25,6 +25,7 @@
  */
 
 return array(
+    'group'                     => "Group",
     'title'                     => "Title",
     'contact'                   => "Contact",
     'contact_email'             => "Contact Email",
