@@ -70,7 +70,7 @@ class SessionsController extends BaseController {
             ));
 
             // Success!
-            return Redirect::intended(route('projects', $result['sessionData']['userId']));
+            return Redirect::intended(route('projects'));
 
         } else {
             Session::flash('error', $result['message']);
