@@ -133,7 +133,7 @@ class UsersController extends BaseController {
 	 */
 	public function create()
 	{
-        $groups = $this->group->groupAsOptions();
+        $groups = $this->group->selectOptions(true);
         $group = $this->group->byName("Users");
         $register = Route::currentRouteName() == 'users.create' ? false : true;
         $email = null;
