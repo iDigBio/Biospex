@@ -82,3 +82,5 @@ require app_path().'/filters.php';
 
 require app_path().'/observers.php';
 
+require app_path().'/blade.php';
+
