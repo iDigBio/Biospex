@@ -36,10 +36,7 @@ class ProjectsTableSeeder extends Seeder {
 
 		DB::table('projects')->truncate();
 
-        $user = Sentry::getUserProvider()->findByLogin('biospex@gmail.com');
-
         Project::create(array(
-            'user_id' => $user->id,
             'group_id' => 3,
             'title' => 'Florida Plant Hotspot Digitization Blitz',
             'slug' => 'florida-plant-hotspot-digitization-blitz',
