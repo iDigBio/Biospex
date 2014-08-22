@@ -28,26 +28,10 @@ $items = array(
     array(
         'type' => "topmenu",
         'name' => "groups.groups",
-        'url' => "#",
+        'url' => "/groups",
         'permission' => 'group_view',
         'order' => 1,
         'parent_id' => 0,
-        'children' => array(
-            array(
-                'type' => "topmenu",
-                'name' => "pages.manage",
-                'url' => "/groups",
-                'permission' => 'group_view',
-                'order' => 2,
-            ),
-            array(
-                'type' => "topmenu",
-                'name' => "pages.create",
-                'url' => "/groups/create",
-                'permission' => 'group_create',
-                'order' => 3,
-            ),
-        )
     ),
     // project
     array(
