@@ -30,7 +30,7 @@ return array(
     'view'              => "View",
     'delete'            => "Delete",
     'create'            => "Create",
-    'data'              => "Data",
+    'data'              => "Add Data",
     'upload'            => "Upload",
     'duplicate'         => "Clone",
     'process'           => "Process",
