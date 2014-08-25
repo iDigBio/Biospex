@@ -81,7 +81,7 @@ class Group extends SentryGroup {
      */
     public function projects()
     {
-        return $this->hasMany('Project')->orderBy('title', 'desc');
+        return $this->hasMany('Project')->orderBy('title');
     }
 
     /**
@@ -98,11 +98,11 @@ class Group extends SentryGroup {
     {
         if ($superuser)
         {
-            $groups = $this->with('Projects')->orderBy('name', 'desc')->get();
+            $groups = $this->with('Projects')->orderBy('name')->get();
         }
         else
         {
-            $groups = $this->with('Projects')->where('user_id', $user->id)->orderBy('name', 'desc')->get();
+            $groups = $this->with('Projects')->where('user_id', $user->id)->orderBy('name')->get();
         }
 
         return $groups;
