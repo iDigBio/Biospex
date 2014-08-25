@@ -1,4 +1,12 @@
 @if ($create)
+    <div class="form-group {{ ($errors->has('group')) ? 'has-error' : '' }}" for="group">
+        {{ Form::label('group', trans('forms.group'), array('class' => 'col-sm-2 control-label')) }}
+        <div class="col-sm-10">
+            {{ Form::select('group_id', $groups, array('class' => 'form-control', 'placeholder' => trans('forms.title'))) }}
+        </div>
+        {{ ($errors->has('group_id') ? $errors->first('group_id') : '') }}
+    </div>
+
     <div class="form-group {{ ($errors->has('title')) ? 'has-error' : '' }}" for="title">
         {{ Form::label('title', trans('forms.title'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
@@ -182,6 +190,14 @@
     <?php $i++ ?>
     @endwhile
 @else
+    <div class="form-group {{ ($errors->has('group')) ? 'has-error' : '' }}" for="group">
+        {{ Form::label('group', trans('forms.group'), array('class' => 'col-sm-2 control-label')) }}
+        <div class="col-sm-10">
+            {{ Form::select('group_id', $groups, $project->group_id, array('class' => 'form-control', 'placeholder' => trans('forms.title'))) }}
+        </div>
+        {{ ($errors->has('group_id') ? $errors->first('group_id') : '') }}
+    </div>
+
     <div class="form-group {{ ($errors->has('title')) ? 'has-error' : '' }}" for="title">
         {{ Form::label('title', trans('forms.title'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
