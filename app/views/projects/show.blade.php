@@ -19,14 +19,15 @@
         <p><em>@lang('pages.created'): {{ $project->created_at }}</em></p>
         <p><em>@lang('pages.updated'): {{ $project->updated_at }}</em></p>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-12">
         <button class="btn btn-default" type="button" onClick="location.href='{{ URL::route('addData', [$project->group_id, $project->id]) }}'">@lang('buttons.data')</button>
         <button class="btn btn-primary" type="button" onClick="location.href='{{ URL::route('project-dup', [$project->group_id, $project->id]) }}'">@lang('buttons.duplicate')</button>
         <button class="btn btn-warning" onClick="location.href='{{ action('ProjectsController@edit', [$project->group_id, $project->id]) }}'">@lang('buttons.edit')</button>
+        @if ($isOwner)
         <button class="btn btn-default btn-danger action_confirm" href="{{ URL::route('groups.projects.destroy', [$project->group_id, $project->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.delete')</button></td>
+        @endif
         <button class="btn btn-success" type="button" onClick="location.href='{{ URL::route('advertise', [$project->group_id, $project->id]) }}'">@lang('buttons.advertise')</button>
     </div>
-    <img src="{{ $imgUrl }}" >
 </div>
 
 <h4>{{ trans('pages.expeditions') }}:</h4>
