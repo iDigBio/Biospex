@@ -9,13 +9,32 @@
 {{-- Content --}}
 @section('content')
 
-<h4>{{ trans('pages.edit') }}
-@if ($user->email == Sentry::getUser()->email)
-	{{ trans('pages.your') }}
-@else 
-	{{ $user->email }}'s 
-@endif 
+<h4>@lang('pages.account_profile')
+    <span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-placement="bottom" data-content="And here's some amazing content. It's very engaging. Right?"></span>
+</h4>
 
+<div class="well clearfix">
+    <div class="col-md-8">
+        @if ($user->first_name)
+        <p><strong>@lang('pages.first_name'):</strong> {{ $user->first_name }} </p>
+        @endif
+        @if ($user->last_name)
+        <p><strong>@lang('pages.last_name'):</strong> {{ $user->last_name }} </p>
+        @endif
+        <p><strong>@lang('pages.email'):</strong> {{ $user->email }}</p>
+
+    </div>
+    <div class="col-md-4">
+        <p><em>@lang('pages.account_created'): {{ $user->created_at }}</em></p>
+        <p><em>@lang('pages.last_updated'): {{ $user->updated_at }}</em></p>
+    </div>
+</div>
+<h4>{{ trans('pages.edit') }}
+    @if ($user->email == Sentry::getUser()->email)
+    {{ trans('pages.your') }}
+    @else
+    {{ $user->email }}'s
+    @endif
 {{ trans('pages.profile') }}</h4>
 <div class="well">
 	{{ Form::open(array(
@@ -70,6 +89,7 @@
             <div class="col-sm-offset-2 col-sm-10">
                 {{ Form::hidden('id', $user->id) }}
                 {{ Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary'))}}
+                {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
             </div>
       </div>
     {{ Form::close()}}
