@@ -27,8 +27,10 @@
 use Biospex\Repo\Repository;
 use Biospex\Repo\Permission\PermissionInterface;
 use Cartalyst\Sentry\Sentry;
+use Group;
 
 class GroupRepository extends Repository implements GroupInterface {
+
     /**
      * @var \Cartalyst\Sentry\Sentry
      */
@@ -42,10 +44,11 @@ class GroupRepository extends Repository implements GroupInterface {
 	/**
 	 * Construct a new Group Object
 	 */
-	public function __construct(Sentry $sentry, PermissionInterface $permission)
+	public function __construct(Sentry $sentry, PermissionInterface $permission, Group $model)
 	{
 		$this->sentry = $sentry;
         $this->permission = $permission;
+        $this->model = $model;
 	}
 
 	/**
@@ -213,15 +216,29 @@ class GroupRepository extends Repository implements GroupInterface {
     public function selectOptions($admins = true)
     {
         $groups = $this->sentry->getGroupProvider()->createModel()->lists('name', 'id');
-        array_unshift($groups, "-- Select --");
+        asort($groups);
+
         if ( ! $admins)
         {
             $admin = $this->byName('Admins');
             unset($groups[$admin->id]);
         }
-        $user = $this->byName('Users');
-        unset($groups[$user->id]);
+
+        $userGroup = $this->byName('Users');
+        unset($groups[$userGroup->id]);
 
         return $groups;
+    }
+
+    /**
+     * Find all the groups depending on user
+     *
+     * @param $user
+     * @param bool $superuser
+     * @return mixed|void
+     */
+    public function findAllGroups($user, $superuser = false)
+    {
+        return $this->sentry->getGroupProvider()->createModel()->findAllGroups($user, $superuser);
     }
 }
