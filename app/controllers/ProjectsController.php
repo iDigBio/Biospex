@@ -71,63 +71,48 @@ class ProjectsController extends BaseController {
         // Establish Filters
         $this->beforeFilter('csrf', array('on' => 'post'));
         $this->beforeFilter('guest', array('only' => array('all')));
-        $this->beforeFilter('hasProjectAccess:project_view', array('only' => array('show', 'index')));
+        $this->beforeFilter('hasProjectAccess:project_view', array('only' => array('show')));
         $this->beforeFilter('hasProjectAccess:project_edit', array('only' => array('edit', 'update', 'data')));
         $this->beforeFilter('hasProjectAccess:project_delete', array('only' => array('destroy')));
-        $this->beforeFilter('hasProjectAccess:project_create', array('only' => array('create', 'data')));
-    }
-
-    /**
-     * Show all projects grouped by groups the user belongs to
-     *
-     * @return \Illuminate\View\View
-     */
-    public function all()
-    {
-        $user = $this->user->getUser();
-        $groups = $user->isSuperUser() ? $this->group->all() : $user->getGroups();
-        foreach ($groups as $group)
-        {
-            if ($group->name == 'Users' || $group->name == 'Admins') continue;
-            $groupProjects[$group->id] = $group->projects;
-            $groupNames[$group->id] = $group->name;
-        }
-
-        return View::make('projects.all', compact('groupProjects', 'groupNames'));
+        $this->beforeFilter('hasProjectAccess:project_create', array('only' => array('data')));
     }
 
     /**
 	 * Display a listing of the resource.
+     * Have to use json_encode + json_decode to fix the different array structure
+     * returned by Sentry group queries.
 	 *
 	 * @return Response
 	 */
 	public function index()
     {
-        return Redirect::action('ProjectsController@all');
+        $user = Sentry::getUser();
+        $groups = $this->group->findAllGroups($user, $user->isSuperUser());
+
+        return View::make('projects.index', compact('groups'));
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @param $groupId
      * @return \Illuminate\View\View
      */
-    public function create($groupId)
+    public function create()
 	{
-        $user = $this->user->getUser();
-        $group = $this->group->find($groupId);
+        $cancel = URL::route('projects');
+        $groups = ['' => '--Select--'] + $this->group->selectOptions(false);
         $count = is_null(Input::old('targetCount')) ? 0 : Input::old('targetCount');
         $create =  Route::currentRouteName() == 'groups.projects.create' ? true : false;
-        return View::make('projects.create', compact('user', 'group', 'count', 'create'));
+
+        return View::make('projects.create', compact('cancel', 'groups', 'count', 'create'));
 	}
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param $groupId
-     * @return \Illuminate\Http\RedirectResponse
+     * @return $this|\Illuminate\Http\RedirectResponse
      */
-    public function store($groupId)
+    public function store()
 	{
         // Form Processing
         $project = $this->projectForm->save(Input::all());
@@ -140,7 +125,7 @@ class ProjectsController extends BaseController {
 
         } else {
             Session::flash('error', trans('projects.project_save_error'));
-            return Redirect::action('ProjectsController@create', $groupId)
+            return Redirect::action('ProjectsController@create')
                 ->withInput()
                 ->withErrors($this->projectForm->errors());
         }
@@ -172,11 +157,12 @@ class ProjectsController extends BaseController {
     {
         $user = $this->user->getUser();
         $project = $this->project->findWith($projectId, ['group']);
-        $group = $project->group;
+        $groups = ['' => '--Select--'] + $this->group->selectOptions(false);
         $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
         $create =  Route::currentRouteName() == 'groups.projects.create' ? true : false;
+        $cancel = URL::route('projects');
 
-        return View::make('projects.clone', compact('user', 'group', 'project', 'count', 'create'));
+        return View::make('projects.clone', compact('user', 'groups', 'project', 'count', 'create', 'cancel'));
     }
 
     /**
@@ -189,10 +175,12 @@ class ProjectsController extends BaseController {
     public function edit($groupId, $projectId)
 	{
         $project = $this->project->find($projectId);
+        $groups = ['' => '--Select--'] + $this->group->selectOptions(false);
         $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
         $create =  Route::currentRouteName() == 'groups.projects.create' ? true : false;
+        $cancel = URL::route('projects');
 
-        return View::make('projects.edit', compact('project', 'count', 'create'));
+        return View::make('projects.edit', compact('project', 'groups', 'count', 'create', 'cancel'));
 	}
 
     /**
