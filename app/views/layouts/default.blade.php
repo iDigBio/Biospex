@@ -46,8 +46,8 @@
             {{ $topmenu }}
             <ul class="nav navbar-nav navbar-right">
                 @if (Sentry::check())
-                <li {{ (Request::is('users/show/' . Session::get('userId')) ? 'class="active"' : '') }}>
-                    <a href="/users/{{ Session::get('userId') }}">{{ Session::get('email') }}</a>
+                <li {{ (Request::is('users/' . Session::get('userId') . '/edit') ? 'class="active"' : '') }}>
+                    <a href="/users/{{ Session::get('userId') }}/edit">{{ Session::get('email') }}</a>
                 </li>
                 <li><a href="{{ URL::route('logout') }}">{{ trans('pages.logout') }}</a></li>
                 @else
