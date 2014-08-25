@@ -115,7 +115,7 @@ class Expedition extends Eloquent {
      */
     public function findByProjectId($projectId)
     {
-        return $this->where('project_id', $projectId)->get();
+        return $this->where('project_id', $projectId)->orderBy('title')->get();
     }
 
     /**
