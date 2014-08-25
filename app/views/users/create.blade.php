@@ -44,6 +44,7 @@
         @endif
 
         {{ Form::submit(trans('buttons.register'), array('class' => 'btn btn-primary')) }}
+        {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
             
         {{ Form::close() }}
     </div>
