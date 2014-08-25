@@ -33,6 +33,8 @@ class ProjectFormLaravelValidator extends AbstractLaravelValidator {
      *
      * @var Array
      */
-    protected $rules = array();
+    protected $rules = array(
+        'group_id' => 'required|integer|min:1',
+    );
 
 }
