@@ -44,4 +44,14 @@ interface GroupInterface extends RepositoryInterface {
      */
     public function selectOptions($admins = true);
 
+    /**
+     * Find all groups. Using this instead of Sentry all groups due to orderby requirements
+     * and the different array structure returned by Sentry when admin or regular user.
+     *
+     * @param $user
+     * @param bool $superuser
+     * @return mixed
+     */
+    public function findAllGroups($user, $superuser = false);
+
 }
