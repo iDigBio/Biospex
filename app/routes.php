@@ -36,6 +36,7 @@ Route::group(
     function () {
 
         Route::get('phpinfo', array('as' => 'phpinfo', 'uses' => 'PhpInfoController@show'));
+        Route::get('test', array('as' => 'test', 'uses' => 'PhpInfoController@test'));
 
         // Session Routes
         Route::get('login', array('as' => 'login', 'uses' => 'SessionsController@create'));
@@ -64,9 +65,6 @@ Route::group(
         Route::get('users/{id}/unban', 'UsersController@unban');
         Route::resource('users', 'UsersController');
 
-        // Show all projects user belongs to by group
-        Route::get('projects/all', 'ProjectsController@all');
-
         // Group Routes
         //Route::get('groups/{groups}/invite', array('as' => 'invite', 'uses' => 'GroupsController@invite'));
         //Route::post('groups/{groups}/invite', array('as' => 'sendInvite', 'uses' => 'GroupsController@sendInvite'));
@@ -78,6 +76,11 @@ Route::group(
 
         // Group/Projects
         Route::resource('groups.projects', 'ProjectsController');
+        // Show all projects user belongs to by group
+        Route::get('projects', array('as' => 'projects', 'uses' => 'ProjectsController@index'));
+
+        Route::get('groups/projects/create', array('as' => 'groups.projects.create', 'uses' => 'ProjectsController@create'));
+        Route::post('groups/projects', array('as' => 'groups.projects.store', 'uses' => 'ProjectsController@store'));
         Route::get('groups/{groups}/projects/{projects}/duplicate', array('as' => 'project-dup', 'uses' => 'ProjectsController@duplicate'));
         Route::get('groups/{groups}/projects/{projects}/data', array('as' => 'addData', 'uses' => 'ProjectsController@data'));
         Route::get('groups/{groups}/projects/{projects}/advertise', array('as' => 'advertise', 'uses' => 'ProjectsController@advertise'));
@@ -88,6 +91,9 @@ Route::group(
         Route::get('groups/{groups}/projects/{projects}/expeditions/{expeditions}/duplicate', array('as' => 'expedition-dup', 'uses' => 'ExpeditionsController@duplicate'));
         Route::get('groups/{groups}/projects/{projects}/expeditions/{expeditions}/process', array('as' => 'process', 'uses' => 'ExpeditionsController@process'));
         Route::get('groups/{groups}/projects/{projects}/expeditions/{expeditions}/download/{id}', array('as' => 'expeditionDownload', 'uses' => 'ExpeditionsController@download'));
+
+        Route::get('grids/{expedition}', array('as' => 'grid-index', 'uses' => 'GridsController@index'));
+        Route::post('grids/{expedition}/grid-data', array('as' => 'grid-data', 'uses' => 'GridsController@index'));
 
         Route::get('/', array('as' => 'home', 'uses' => 'HomeController@index'));
         Route::get('/{slug}', array('as' => 'project', 'uses' => 'HomeController@project'));
