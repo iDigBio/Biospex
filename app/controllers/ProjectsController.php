@@ -121,7 +121,7 @@ class ProjectsController extends BaseController {
         {
             // Success!
             Session::flash('success', trans('projects.project_created'));
-            return Redirect::action('ProjectsController@show', array($project->group_id, $project->id));
+            return Redirect::action('ProjectsController@show', [$project->group_id, $project->id]);
 
         } else {
             Session::flash('error', trans('projects.project_save_error'));
@@ -193,17 +193,19 @@ class ProjectsController extends BaseController {
     public function update($groupId, $id)
 	{
         // Form Processing
-        $project = $this->projectForm->update(Input::all());
+        $result = $this->projectForm->update(Input::all());
 
-        if($project)
+        if($result)
         {
+            $project = $this->project->find($id);
             // Success!
             Session::flash('success', trans('projects.project_updated'));
-            return Redirect::action('groups.projects.show', array($groupId, $id));
+            return Redirect::action('groups.projects.show', [$project->group_id, $project->id]);
 
         } else {
+            $project = $this->project->find($id);
             Session::flash('error', trans('projects.project_save_error'));
-            return Redirect::route('groups.projects.edit', array($groupId, $id))
+            return Redirect::route('groups.projects.edit', [$project->group_id, $project->id])
                 ->withInput()
                 ->withErrors( $this->projectForm->errors() );
         }
@@ -244,7 +246,7 @@ class ProjectsController extends BaseController {
         if (empty($file))
         {
             Session::flash('error', trans('projects.file_required'));
-            return Redirect::route('addData', array($groupId, $projectId));
+            return Redirect::route('addData', [$groupId, $projectId]);
         }
 
         $filename = str_random(8) . '.' . $file->getClientOriginalExtension();
@@ -254,16 +256,16 @@ class ProjectsController extends BaseController {
         {
             Input::file('file')->move($directory, $filename);
             $user = $this->user->getUser();
-            $this->import->create(array('user_id' => $user->id,'project_id' => $projectId, 'file' => $filename));
+            $this->import->create(['user_id' => $user->id,'project_id' => $projectId, 'file' => $filename]);
         }
         catch(Exception $e)
         {
             Session::flash('error', trans('projects.upload_error'));
-            return Redirect::route('addData', array($groupId, $projectId));
+            return Redirect::route('addData', [$groupId, $projectId]);
         }
 
         Session::flash('success', trans('projects.upload_success'));
-        return Redirect::route('groups.projects.show', array($groupId, $projectId));
+        return Redirect::route('groups.projects.show', [$groupId, $projectId]);
     }
 
     /**
