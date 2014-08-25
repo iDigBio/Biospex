@@ -67,6 +67,8 @@ class ProjectsController extends BaseController {
         $this->group = $group;
         $this->user = $user;
         $this->import = $import;
+        $this->currentUser = Sentry::getUser();
+        $this->isSuperUser = $this->currentUser->isSuperUser();
 
         // Establish Filters
         $this->beforeFilter('csrf', array('on' => 'post'));
@@ -86,10 +88,11 @@ class ProjectsController extends BaseController {
 	 */
 	public function index()
     {
-        $user = Sentry::getUser();
-        $groups = $this->group->findAllGroups($user, $user->isSuperUser());
+        $groups = $this->group->findAllGroups($this->currentUser, $this->isSuperUser);
+        $user = $this->currentUser;
+        $isSuperUser = $this->isSuperUser;
 
-        return View::make('projects.index', compact('groups'));
+        return View::make('projects.index', compact('groups', 'user', 'isSuperUser'));
     }
 
     /**
@@ -140,10 +143,11 @@ class ProjectsController extends BaseController {
      */
     public function show($groupId, $id)
 	{
-        $project = $this->project->find($id);
+        $project = $this->project->findWith($id, ['group']);
         $expeditions = $project->expedition;
-        $imgUrl = !empty($project->logo->url) ? $project->logo->url('normal') : asset(Config::get('config.defaultImg'));
-        return View::make('projects.show', compact('project', 'expeditions', 'imgUrl'));
+        $isOwner = ($this->currentUser->id == $project->group->user_id || $this->isSuperUser) ? true : false;
+
+        return View::make('projects.show', compact('isOwner', 'project', 'expeditions'));
 	}
 
     /**
@@ -155,14 +159,13 @@ class ProjectsController extends BaseController {
      */
     public function duplicate($groupId, $projectId)
     {
-        $user = $this->user->getUser();
         $project = $this->project->findWith($projectId, ['group']);
         $groups = ['' => '--Select--'] + $this->group->selectOptions(false);
         $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
         $create =  Route::currentRouteName() == 'groups.projects.create' ? true : false;
         $cancel = URL::route('projects');
 
-        return View::make('projects.clone', compact('user', 'groups', 'project', 'count', 'create', 'cancel'));
+        return View::make('projects.clone', compact('groups', 'project', 'count', 'create', 'cancel'));
     }
 
     /**
@@ -255,8 +258,7 @@ class ProjectsController extends BaseController {
         try
         {
             Input::file('file')->move($directory, $filename);
-            $user = $this->user->getUser();
-            $this->import->create(['user_id' => $user->id,'project_id' => $projectId, 'file' => $filename]);
+            $this->import->create(['user_id' => $this->currentUser->id,'project_id' => $projectId, 'file' => $filename]);
         }
         catch(Exception $e)
         {
@@ -277,16 +279,18 @@ class ProjectsController extends BaseController {
      */
     public function destroy($groupId, $projectId)
 	{
-        if ($this->project->destroy($projectId))
+        $project = $this->project->findWith($projectId, ['group']);
+        $isOwner = ($this->currentUser->id == $project->group->user_id || $this->isSuperUser) ? true : false;
+        if ($isOwner)
         {
+            $this->project->destroy($projectId);
             Session::flash('success', trans('projects.project_destroyed'));
+
             return Redirect::action('ProjectsController@all');
         }
-        else
-        {
-            Session::flash('error', trans('projects.project_destroy_error'));
-            return Redirect::action('ProjectsController@all');
-        }
+
+        Session::flash('error', trans('projects.project_destroy_error'));
+        return Redirect::action('ProjectsController@all');
 	}
 
 }
