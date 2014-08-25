@@ -136,9 +136,10 @@ class UsersController extends BaseController {
         $groups = $this->group->selectOptions();
         $group = $this->group->byName("Users");
         $register = Route::currentRouteName() == 'users.create' ? false : true;
+        $cancel = URL::route('users.index');
         $email = null;
 
-        return View::make('users.create', compact('register', 'groups', 'group', 'email'));
+        return View::make('users.create', compact('register', 'groups', 'group', 'email', 'cancel'));
 	}
 
 	/**
@@ -161,7 +162,7 @@ class UsersController extends BaseController {
 
             // Success!
             Session::flash('success', $result['message']);
-            return Redirect::action('users.show', array($result['mailData']['userId']));
+            return Redirect::action('users.edit', [$result['mailData']['userId']]);
 
         } else {
             Session::flash('error', $result['message']);
@@ -170,34 +171,14 @@ class UsersController extends BaseController {
 	}
 
 	/**
-	 * Display the specified resource.
+	 * Redirect to edit page.
 	 *
 	 * @param  int  $id
 	 * @return Response
 	 */
 	public function show($id)
 	{
-        $user = $this->user->find($id);
-
-        if($user == null || !is_numeric($id))
-            return \App::abort(404);
-
-        $viewPermissions = Sentry::getUser()->hasAccess('permission_view');
-
-        $userGroups = Sentry::getUser()->isSuperUser() ? $this->group->all() : $user->getGroups();
-        foreach ($userGroups as $userGroup)
-        {
-            if ($userGroup->name == 'Users')
-                continue;
-
-            $groups[] = $userGroup;
-            foreach ($userGroup->projects as $project)
-            {
-                $projects[] = $project;
-            }
-        }
-
-        return View::make('users.show', compact('user', 'viewPermissions', 'groups', 'projects'));
+        return Redirect::action('users.edit', [$id]);
     }
 
 	/**
@@ -227,6 +208,7 @@ class UsersController extends BaseController {
         $userEditPermissions = Sentry::getUser()->hasAccess('user_edit_permissions');
         $userEditGroups = Sentry::getUser()->hasAccess('user_edit_groups');
         $superUser = Sentry::getUser()->isSuperUser();
+        $cancel = Sentry::getUser()->isSuperUser() ? URL::route('users.index') : URL::route('projects');
 
         return View::make('users.edit', compact(
                 'user',
@@ -236,7 +218,8 @@ class UsersController extends BaseController {
                 'permissions',
                 'userPermissions',
                 'userEditGroups',
-                'superUser'
+                'superUser',
+                'cancel'
             )
         );
 	}
@@ -267,11 +250,11 @@ class UsersController extends BaseController {
 
             // Success!
             Session::flash('success', $result['message']);
-            return Redirect::action('UsersController@show', array($id));
+            return Redirect::action('users.edit', array($id));
 
         } else {
             Session::flash('error', $result['message']);
-            return Redirect::action('UsersController@edit', array($id))
+            return Redirect::action('users.edit', array($id))
                 ->withInput()
                 ->withErrors( $this->userForm->errors() );
         }
