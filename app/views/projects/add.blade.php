@@ -36,6 +36,9 @@
         </div>
     </div>
     {{ Form::close()}}
+    <div class="col-md-12">
+    {{ trans('pages.add_data_desc') }}
+    </div>
 </div>
 
 @stop
