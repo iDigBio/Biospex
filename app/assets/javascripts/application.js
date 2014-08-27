@@ -11,7 +11,9 @@
 // The available directives right now are require, require_directory, and require_tree
 //
 //= require jquery.2.1.0
+//= require jquery-ui.min.js
 //= require bootstrap
 //= require jquery.1.11.1.validate
 //= require jquery.1.11.1.validate-additional-methods
+//= require jquery.jqGrid.min.js
 //= require_tree .

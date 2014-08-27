@@ -1,9 +1,8 @@
 $(document).ready(function() {
 
     $('.collapse').on('shown.bs.collapse', function () {
-        var groupId = $(this).attr('title');
         $("#collapse"+this.id).removeClass("glyphicon-folder-close").addClass("glyphicon-folder-open");
-        $("#"+this.id).load("/groups/"+groupId+"/projects/"+this.id+"/expeditions");
+        $("#"+this.id).load("/projects/"+this.id+"/expeditions");
     });
 
     $('.collapse').on('hidden.bs.collapse', function () {
@@ -44,6 +43,8 @@ $(document).ready(function() {
         }
     });
 
+    $("[data-toggle='popover']").popover();
+
     /*
     $('input[name="user"]').change(function(){
         $('input[class="userperm"]:checkbox').prop('checked', this.checked);
@@ -61,31 +62,47 @@ $(document).ready(function() {
         $('input[class="permissionperm"]:checkbox').prop('checked', this.checked);
     });
     */
-});
-
 /*
-$(function () {
-    $("#list").jqGrid({
-        url: "example.php",
-        datatype: "json",
-        mtype: "GET",
-        colNames: ["Inv No", "Date", "Amount", "Tax", "Total", "Notes"],
-        colModel: [
-            { name: "col 1", width: 55 },
-            { name: "col 2", width: 90 },
-            { name: "col 3", width: 80, align: "right" },
-            { name: "col 4", width: 80, align: "right" },
-            { name: "col 5", width: 80, align: "right" },
-            { name: "col 6", width: 150, sortable: false }
-        ],
-        pager: "#pager",
-        rowNum: 10,
-        rowList: [10, 20, 30],
-        sortname: "invid",
-        sortorder: "desc",
-        viewrecords: true,
-        gridview: true,
-        autoencode: true
-    });
+    if($('#list').length >0 ){
+        var groupId = $("#groupId").val();
+        var projectId = $("#projectId").val();
+        var expeditionId = $("#expeditionId").val();
+
+        $.ajax({
+            type: "POST",
+            url: "groups/"+groupId+"/projects/"+projectId+"/expeditions/"+expeditionId+"/loadjq",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var obj = response.GetInfoResult;
+                var cnames = JSON.parse(obj.ColNames);
+                var cmodel = JSON.parse(obj.ColModel);
+
+                $("#tblInfo").empty().jqGrid({
+                    datatype: "local",
+                    height: 200,
+                    colNames: cnames,
+                    colModel: cmodel,
+                    width: 500,
+                    pager: "#pager",
+                    rowList: [10, 20, 30],
+                    rowNum: 10,
+                    emptyrecords: "No records to view",
+                    sortorder: "asc",
+                    viewrecords: true,
+                    loadtext: "Loading....",
+                    sortable: true
+                });
+
+                var mydata = JSON.parse(JSON.parse(obj.ColData).Row);
+                for (dr in mydata) {
+                    $("#tblInfo").jqGrid('addRowData', dr, mydata[dr]);
+                }
+            },
+            error: function (response)
+            { alert(response.responseText); }
+        });
+        return false;
+    }
+*/
 });
- */

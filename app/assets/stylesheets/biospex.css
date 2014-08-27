@@ -78,3 +78,6 @@ p a { color: #c00; }
 p a:hover { color: #f00; }
 body.home { padding-top: 40px; }
 
+span.glyphicon {
+ display: inline;
+}
