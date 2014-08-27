@@ -103,7 +103,7 @@ class ProjectsController extends BaseController {
      */
     public function create()
 	{
-        $cancel = URL::route('projects.index');
+		$cancel = URL::previous();
         $groups = ['' => '--Select--'] + $this->group->selectOptions(false);
         $count = is_null(Input::old('targetCount')) ? 0 : Input::old('targetCount');
         $create =  Route::currentRouteName() == 'projects.create' ? true : false;
@@ -162,7 +162,7 @@ class ProjectsController extends BaseController {
         $groups = ['' => '--Select--'] + $this->group->selectOptions(false);
         $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
         $create =  Route::currentRouteName() == 'projects.create' ? true : false;
-        $cancel = URL::route('projects.index');
+		$cancel = URL::previous();
 
         return View::make('projects.clone', compact('groups', 'project', 'count', 'create', 'cancel'));
     }
@@ -179,7 +179,7 @@ class ProjectsController extends BaseController {
         $groups = ['' => '--Select--'] + $this->group->selectOptions(false);
         $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
         $create =  Route::currentRouteName() == 'projects.create' ? true : false;
-        $cancel = URL::route('projects.index');
+		$cancel = URL::previous();
 
         return View::make('projects.edit', compact('project', 'groups', 'count', 'create', 'cancel'));
 	}
