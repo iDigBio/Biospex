@@ -67,8 +67,6 @@ class ProjectsController extends BaseController {
         $this->group = $group;
         $this->user = $user;
         $this->import = $import;
-        $this->currentUser = Sentry::getUser();
-        $this->isSuperUser = $this->currentUser->isSuperUser();
 
 		// Establish Filters
         $this->beforeFilter('csrf', array('on' => 'post'));
@@ -89,9 +87,9 @@ class ProjectsController extends BaseController {
 	 */
 	public function index()
     {
-        $groups = $this->group->findAllGroups($this->currentUser, $this->isSuperUser);
-        $user = $this->currentUser;
-        $isSuperUser = $this->isSuperUser;
+		$user = Sentry::getUser();
+		$isSuperUser = $user->isSuperUser();
+        $groups = $this->group->findAllGroups($user, $isSuperUser);
 
         return View::make('projects.index', compact('groups', 'user', 'isSuperUser'));
     }
@@ -145,7 +143,9 @@ class ProjectsController extends BaseController {
 	{
         $project = $this->project->findWith($id, ['group']);
         $expeditions = $project->expedition;
-        $isOwner = ($this->currentUser->id == $project->group->user_id || $this->isSuperUser) ? true : false;
+		$user = Sentry::getUser();
+		$isSuperUser = $user->isSuperUser();
+        $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
 
         return View::make('projects.show', compact('isOwner', 'project', 'expeditions'));
 	}
@@ -252,7 +252,8 @@ class ProjectsController extends BaseController {
         try
         {
             Input::file('file')->move($directory, $filename);
-            $this->import->create(['user_id' => $this->currentUser->id,'project_id' => $id, 'file' => $filename]);
+			$user = Sentry::getUser();
+            $this->import->create(['user_id' => $user->id,'project_id' => $id, 'file' => $filename]);
         }
         catch(Exception $e)
         {
@@ -273,7 +274,9 @@ class ProjectsController extends BaseController {
     public function destroy($id)
 	{
         $project = $this->project->findWith($id, ['group']);
-        $isOwner = ($this->currentUser->id == $project->group->user_id || $this->isSuperUser) ? true : false;
+		$user = Sentry::getUser();
+		$isSuperUser = $user->isSuperUser();
+        $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
         if ($isOwner)
         {
             $this->project->destroy($id);
