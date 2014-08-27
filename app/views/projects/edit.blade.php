@@ -12,7 +12,7 @@
 <h4>{{ trans('pages.edit') }} {{ $project->title }}</h4>
 <div class="well">
     {{ Form::open(array(
-    'action' => array('ProjectsController@update', $project->group_id, $project->id),
+    'action' => array('ProjectsController@update', $project->id),
     'method' => 'put',
     'class' => 'form-horizontal',
     'role' => 'form'

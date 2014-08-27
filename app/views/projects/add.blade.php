@@ -13,7 +13,7 @@
 <h4>{{ trans('projects.add_data') }}</h4>
 <div class="well">
     {{ Form::open(array(
-        'action' => array('dataUpload', $project->group_id, $project->id),
+        'action' => array('projects.upload', $project->id),
         'method' => 'post',
         'files' => true,
         'enctype' => 'multipart/form-data',
