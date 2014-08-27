@@ -133,8 +133,9 @@ Route::filter('hasProjectAccess', function($route, $request, $value)
         if ($user->isSuperUser())
             return;
 
-        $groupId = $route->getParameter('groups');
-        $group = Sentry::findGroupById($groupId);
+        $id = $route->getParameter('projects');
+		$project = Project::find($id);
+        $group = Sentry::findGroupById($project->group_id);
 
         if ($user->inGroup($group) && $user->hasAccess(array($value)))
             return;

@@ -66,8 +66,6 @@ Route::group(
         Route::resource('users', 'UsersController');
 
         // Group Routes
-        //Route::get('groups/{groups}/invite', array('as' => 'invite', 'uses' => 'GroupsController@invite'));
-        //Route::post('groups/{groups}/invite', array('as' => 'sendInvite', 'uses' => 'GroupsController@sendInvite'));
         Route::resource('groups', 'GroupsController');
 
         // Group invite routes
@@ -75,22 +73,17 @@ Route::group(
         Route::resource('groups.invites', 'InvitesController');
 
         // Group/Projects
-        Route::resource('groups.projects', 'ProjectsController');
-        // Show all projects user belongs to by group
-        Route::get('projects', array('as' => 'projects', 'uses' => 'ProjectsController@index'));
-
-        Route::get('groups/projects/create', array('as' => 'groups.projects.create', 'uses' => 'ProjectsController@create'));
-        Route::post('groups/projects', array('as' => 'groups.projects.store', 'uses' => 'ProjectsController@store'));
-        Route::get('groups/{groups}/projects/{projects}/duplicate', array('as' => 'project-dup', 'uses' => 'ProjectsController@duplicate'));
-        Route::get('groups/{groups}/projects/{projects}/data', array('as' => 'addData', 'uses' => 'ProjectsController@data'));
-        Route::get('groups/{groups}/projects/{projects}/advertise', array('as' => 'advertise', 'uses' => 'ProjectsController@advertise'));
-        Route::post('groups/{groups}/projects/{projects}/upload', array('as' => 'dataUpload', 'uses' => 'ProjectsController@upload'));
+        Route::resource('projects', 'ProjectsController');
+        Route::get('projects/{projects}/duplicate', array('as' => 'projects.duplicate', 'uses' => 'ProjectsController@duplicate'));
+        Route::get('projects/{projects}/data', array('as' => 'projects.data', 'uses' => 'ProjectsController@data'));
+        Route::post('projects/{projects}/data', array('as' => 'projects.upload', 'uses' => 'ProjectsController@upload'));
+        Route::get('projects/{projects}/advertise', array('as' => 'projects.advertise', 'uses' => 'ProjectsController@advertise'));
 
         // Group/Projects/Expeditions
-        Route::resource('groups.projects.expeditions', 'ExpeditionsController');
-        Route::get('groups/{groups}/projects/{projects}/expeditions/{expeditions}/duplicate', array('as' => 'expedition-dup', 'uses' => 'ExpeditionsController@duplicate'));
-        Route::get('groups/{groups}/projects/{projects}/expeditions/{expeditions}/process', array('as' => 'process', 'uses' => 'ExpeditionsController@process'));
-        Route::get('groups/{groups}/projects/{projects}/expeditions/{expeditions}/download/{id}', array('as' => 'expeditionDownload', 'uses' => 'ExpeditionsController@download'));
+        Route::resource('projects.expeditions', 'ExpeditionsController');
+        Route::get('projects/{projects}/expeditions/{expeditions}/duplicate', array('as' => 'projects.expeditions.duplicate', 'uses' => 'ExpeditionsController@duplicate'));
+        Route::get('projects/{projects}/expeditions/{expeditions}/process', array('as' => 'projects.expeditions.process', 'uses' => 'ExpeditionsController@process'));
+        Route::get('projects/{projects}/expeditions/{expeditions}/download/{id}', array('as' => 'projects.expeditions.download', 'uses' => 'ExpeditionsController@download'));
 
         Route::get('grids/{expedition}', array('as' => 'grid-index', 'uses' => 'GridsController@index'));
         Route::post('grids/{expedition}/grid-data', array('as' => 'grid-data', 'uses' => 'GridsController@index'));
@@ -98,73 +91,8 @@ Route::group(
         Route::get('/', array('as' => 'home', 'uses' => 'HomeController@index'));
         Route::get('/{slug}', array('as' => 'project', 'uses' => 'HomeController@project'));
 
-        // Project routes
-        /*
-        GET	/resource	index	resource.index
-        GET	/resource/create	create	resource.create
-        POST	/resource	store	resource.store
-        GET	/resource/{resource}	show	resource.show
-        GET	/resource/{resource}/edit	edit	resource.edit
-        PUT/PATCH	/resource/{resource}	update	resource.update
-        DELETE	/resource/{resource}	destroy	resource.destroy
-         */
     });
 
-/** OTHER PAGES THAT SHOULD NOT BE LOCALIZED **/
 /*
-+--------+-----------------------------------------------------------------------------+-------------------------------------+-------------------------------+---------------------+---------------+
-| Domain | URI                                                                         | Name                                | Action                        | Before Filters      | After Filters |
-+--------+-----------------------------------------------------------------------------+-------------------------------------+-------------------------------+---------------------+---------------+
-|        | GET|HEAD /                                                                  | home                                | Closure                       | LocalRedirectFilter |               |
-|        | GET|HEAD login                                                              | login                               | SessionsController@create     | LocalRedirectFilter |               |
-|        | GET|HEAD logout                                                             | logout                              | SessionsController@destroy    | LocalRedirectFilter |               |
-|        | GET|HEAD sessions/create                                                    | sessions.create                     | SessionsController@create     | LocalRedirectFilter |               |
-|        | POST sessions                                                               | sessions.store                      | SessionsController@store      | LocalRedirectFilter |               |
-|        | DELETE sessions/{sessions}                                                  | sessions.destroy                    | SessionsController@destroy    | LocalRedirectFilter |               |
-|        | GET|HEAD register                                                           | register                            | UsersController@register      | LocalRedirectFilter |               |
-|        | GET|HEAD users/{id}/activate/{code}                                         |                                     | UsersController@activate      | LocalRedirectFilter |               |
-|        | GET|HEAD resend                                                             | resendActivationForm                | Closure                       | LocalRedirectFilter |               |
-|        | POST resend                                                                 |                                     | UsersController@resend        | LocalRedirectFilter |               |
-|        | GET|HEAD forgot                                                             | forgotPasswordForm                  | Closure                       | LocalRedirectFilter |               |
-|        | POST forgot                                                                 |                                     | UsersController@forgot        | LocalRedirectFilter |               |
-|        | POST users/{id}/change                                                      |                                     | UsersController@change        | LocalRedirectFilter |               |
-|        | GET|HEAD users/{id}/reset/{code}                                            |                                     | UsersController@reset         | LocalRedirectFilter |               |
-|        | GET|HEAD users/{id}/suspend                                                 | suspendUserForm                     | Closure                       | LocalRedirectFilter |               |
-|        | POST users/{id}/suspend                                                     |                                     | UsersController@suspend       | LocalRedirectFilter |               |
-|        | GET|HEAD users/{id}/unsuspend                                               |                                     | UsersController@unsuspend     | LocalRedirectFilter |               |
-|        | GET|HEAD users/{id}/ban                                                     |                                     | UsersController@ban           | LocalRedirectFilter |               |
-|        | GET|HEAD users/{id}/unban                                                   |                                     | UsersController@unban         | LocalRedirectFilter |               |
-|        | GET|HEAD users                                                              | users.index                         | UsersController@index         | LocalRedirectFilter |               |
-|        | GET|HEAD users/create                                                       | users.create                        | UsersController@create        | LocalRedirectFilter |               |
-|        | POST users                                                                  | users.store                         | UsersController@store         | LocalRedirectFilter |               |
-|        | GET|HEAD users/{users}                                                      | users.show                          | UsersController@show          | LocalRedirectFilter |               |
-|        | GET|HEAD users/{users}/edit                                                 | users.edit                          | UsersController@edit          | LocalRedirectFilter |               |
-|        | PUT users/{users}                                                           | users.update                        | UsersController@update        | LocalRedirectFilter |               |
-|        | PATCH users/{users}                                                         |                                     | UsersController@update        | LocalRedirectFilter |               |
-|        | DELETE users/{users}                                                        | users.destroy                       | UsersController@destroy       | LocalRedirectFilter |               |
-|        | GET|HEAD groups                                                             | groups.index                        | GroupsController@index        | LocalRedirectFilter |               |
-|        | GET|HEAD groups/create                                                      | groups.create                       | GroupsController@create       | LocalRedirectFilter |               |
-|        | POST groups                                                                 | groups.store                        | GroupsController@store        | LocalRedirectFilter |               |
-|        | GET|HEAD groups/{groups}                                                    | groups.show                         | GroupsController@show         | LocalRedirectFilter |               |
-|        | GET|HEAD groups/{groups}/edit                                               | groups.edit                         | GroupsController@edit         | LocalRedirectFilter |               |
-|        | PUT groups/{groups}                                                         | groups.update                       | GroupsController@update       | LocalRedirectFilter |               |
-|        | PATCH groups/{groups}                                                       |                                     | GroupsController@update       | LocalRedirectFilter |               |
-|        | DELETE groups/{groups}                                                      | groups.destroy                      | GroupsController@destroy      | LocalRedirectFilter |               |
-|        | GET|HEAD groups/{group}/projects                                            | groups.projects.index                | ProjectsController@index      | LocalRedirectFilter |               |
-|        | GET|HEAD groups/{group}/projects/create                                     | groups.projects.create               | ProjectsController@create     | LocalRedirectFilter |               |
-|        | POST groups/{group}/projects                                                | groups.projects.store                | ProjectsController@store      | LocalRedirectFilter |               |
-|        | GET|HEAD groups/{group}/projects/{projects}                                 | groups.projects.show                 | ProjectsController@show       | LocalRedirectFilter |               |
-|        | GET|HEAD groups/{group}/projects/{projects}/edit                            | groups.projects.edit                 | ProjectsController@edit       | LocalRedirectFilter |               |
-|        | PUT groups/{group}/projects/{projects}                                      | groups.projects.update               | ProjectsController@update     | LocalRedirectFilter |               |
-|        | PATCH groups/{group}/projects/{projects}                                    |                                     | ProjectsController@update     | LocalRedirectFilter |               |
-|        | DELETE groups/{group}/projects/{projects}                                   | groups.projects.destroy              | ProjectsController@destroy    | LocalRedirectFilter |               |
-|        | GET|HEAD groups/{groups}/projects/{projects}/expeditions                    | groups.projects.expeditions.index   | ExpeditionsController@index   | LocalRedirectFilter |               |
-|        | GET|HEAD groups/{groups}/projects/{projects}/expeditions/create             | groups.projects.expeditions.create  | ExpeditionsController@create  | LocalRedirectFilter |               |
-|        | POST groups/{groups}/projects/{projects}/expeditions                        | groups.projects.expeditions.store   | ExpeditionsController@store   | LocalRedirectFilter |               |
-|        | GET|HEAD groups/{groups}/projects/{projects}/expeditions/{expeditions}      | groups.projects.expeditions.show    | ExpeditionsController@show    | LocalRedirectFilter |               |
-|        | GET|HEAD groups/{groups}/projects/{projects}/expeditions/{expeditions}/edit | groups.projects.expeditions.edit    | ExpeditionsController@edit    | LocalRedirectFilter |               |
-|        | PUT groups/{groups}/projects/{projects}/expeditions/{expeditions}           | groups.projects.expeditions.update  | ExpeditionsController@update  | LocalRedirectFilter |               |
-|        | PATCH groups/{groups}/projects/{projects}/expeditions/{expeditions}         |                                     | ExpeditionsController@update  | LocalRedirectFilter |               |
-|        | DELETE groups/{groups}/projects/{projects}/expeditions/{expeditions}        | groups.projects.expeditions.destroy | ExpeditionsController@destroy | LocalRedirectFilter |               |
-+--------+-----------------------------------------------------------------------------+-------------------------------------+-------------------------------+---------------------+---------------+
+
 */
