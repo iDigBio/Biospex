@@ -103,7 +103,7 @@ class ExpeditionsController extends BaseController {
      * @param $projectId
      * @return \Illuminate\View\View
      */
-    public function index ($groupId, $projectId)
+    public function index ($projectId)
     {
         $expeditions = $this->expedition->findByProjectId($projectId);
         if (is_null($expeditions)) $expeditions = array();
@@ -121,12 +121,12 @@ class ExpeditionsController extends BaseController {
      * @param $projectId
      * @return \Illuminate\View\View
      */
-    public function create ($groupId, $projectId)
+    public function create ($projectId)
     {
         $project = $this->project->find($projectId);
         $group = $project->group;
         $subjects = $this->subject->getUnassignedSubjectCount($projectId);
-        $create = Route::currentRouteName() == 'groups.projects.expeditions.create' ? true : false;
+        $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
 
         return View::make('expeditions.create', compact('group', 'project', 'subjects', 'create'));
     }
@@ -138,7 +138,7 @@ class ExpeditionsController extends BaseController {
      * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store ($groupId, $projectId)
+    public function store ($projectId)
     {
         // Form Processing
         $subjects = $this->subject->getUnassignedSubjects(Input::only('project_id', 'subjects'));
@@ -149,12 +149,12 @@ class ExpeditionsController extends BaseController {
         if($expedition)
         {
             Session::flash('success', trans('expeditions.expedition_created'));
-            return Redirect::action('ExpeditionsController@show', array($groupId, $projectId, $expedition->id));
+            return Redirect::action('ExpeditionsController@show', [$projectId, $expedition->id]);
         }
         else
         {
             Session::flash('error', trans('expeditions.expedition_save_error'));
-            return Redirect::action('ExpeditionsController@create', $groupId)
+            return Redirect::action('ExpeditionsController@create')
                 ->withInput()
                 ->withErrors($this->expeditionForm->errors());
         }
@@ -168,14 +168,14 @@ class ExpeditionsController extends BaseController {
      * @param $expeditionId
      * @return \Illuminate\View\View
      */
-    public function show ($groupId, $projectId, $expeditionId)
+    public function show ($projectId, $expeditionId)
     {
         $project = $this->project->find($projectId);
         $expedition = $this->expedition->findWith($expeditionId, ['download']);
         $workflowManager = $this->workflowManager->getByExpeditionId($expeditionId);
         $filepath = isset($expedition->download->file) ? Config::get('config.dataDir') . '/' . $expedition->download->file : null;
 
-        return View::make('expeditions.show', compact('groupId', 'project', 'expedition', 'workflowManager', 'filepath'));
+        return View::make('expeditions.show', compact('project', 'expedition', 'workflowManager', 'filepath'));
     }
 
     /**
@@ -186,43 +186,41 @@ class ExpeditionsController extends BaseController {
      * @param $expeditionId
      * @return \Illuminate\View\View
      */
-    public function duplicate ($groupId, $projectId, $expeditionId)
+    public function duplicate ($projectId, $expeditionId)
     {
-        $group = $this->group->find($groupId);
         $project = $this->project->find($projectId);
+        $group = $this->group->find($project->group_id);
         $expedition = $this->expedition->find($expeditionId);
         $subjects = count($expedition->subject);
-        $create = Route::currentRouteName() == 'groups.projects.expeditions.create' ? true : false;
+        $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
         return View::make('expeditions.clone', compact('group', 'project', 'expedition', 'subjects', 'create'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param $groupId
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\View\View
      */
-    public function edit ($groupId, $projectId, $expeditionId)
+    public function edit ($projectId, $expeditionId)
     {
-        $group = $this->group->find($groupId);
         $project = $this->project->find($projectId);
+        $group = $this->group->find($project->group_id);
         $expedition = $this->expedition->find($expeditionId);
         $subjects = count($expedition->subject);
-        $create = Route::currentRouteName() == 'groups.projects.expeditions.create' ? true : false;
+        $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
         return View::make('expeditions.edit', compact('group', 'project', 'expedition', 'subjects', 'create'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param $groupId
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update ($groupId, $projectId, $expeditionId)
+    public function update ($projectId, $expeditionId)
     {
         // Form Processing
         $expedition = $this->expeditionForm->update(Input::all());
@@ -231,11 +229,11 @@ class ExpeditionsController extends BaseController {
         {
             // Success!
             Session::flash('success', trans('expeditions.expedition_updated'));
-            return Redirect::action('groups.projects.expeditions.show', array($groupId, $projectId, $expeditionId));
+            return Redirect::action('projects.expeditions.show', [$projectId, $expeditionId]);
 
         } else {
             Session::flash('error', trans('expeditions.expedition_save_error'));
-            return Redirect::route('groups.projects.expeditions.edit', array($groupId, $projectId, $expeditionId))
+            return Redirect::route('projects.expeditions.edit', [$projectId, $expeditionId])
                 ->withInput()
                 ->withErrors( $this->expeditionForm->errors() );
         }
@@ -244,12 +242,11 @@ class ExpeditionsController extends BaseController {
     /**
      * Start processing expedition
      *
-     * @param $groupId
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function process($groupId, $projectId, $expeditionId)
+    public function process($projectId, $expeditionId)
     {
         $project = $this->project->find($projectId);
 
@@ -271,10 +268,10 @@ class ExpeditionsController extends BaseController {
             Session::flash('error', trans('expeditions.expedition_process_error'));
         }
 
-        return Redirect::action('ExpeditionsController@show', array($groupId, $projectId, $expeditionId));
+        return Redirect::action('ExpeditionsController@show', [$projectId, $expeditionId]);
     }
 
-    public function download($groupId, $projectId, $expeditionId, $downloadId)
+    public function download($projectId, $expeditionId, $downloadId)
     {
         $download = $this->download->find($downloadId);
         $dataDir = Config::get('config.dataDir');
@@ -286,12 +283,11 @@ class ExpeditionsController extends BaseController {
     /**
      * Remove the specified resource from storage.
      *
-     * @param $groupId
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy ($groupId, $projectId, $expeditionId)
+    public function destroy ($projectId, $expeditionId)
     {
         $result = $this->expedition->destroy($expeditionId);
         if($result)
@@ -300,7 +296,7 @@ class ExpeditionsController extends BaseController {
         } else {
             Session::flash('error', trans('expeditions.expedition_destroy_error'));
         }
-        return Redirect::action('groups.projects.show', array($groupId, $projectId));
+        return Redirect::action('projects.show', [$projectId]);
     }
 
 }

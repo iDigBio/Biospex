@@ -208,7 +208,7 @@ class UsersController extends BaseController {
         $userEditPermissions = Sentry::getUser()->hasAccess('user_edit_permissions');
         $userEditGroups = Sentry::getUser()->hasAccess('user_edit_groups');
         $superUser = Sentry::getUser()->isSuperUser();
-        $cancel = Sentry::getUser()->isSuperUser() ? URL::route('users.index') : URL::route('projects');
+        $cancel = Sentry::getUser()->isSuperUser() ? URL::route('users.index') : URL::route('projects.index');
 
         return View::make('users.edit', compact(
                 'user',

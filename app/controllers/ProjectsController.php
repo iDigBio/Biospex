@@ -70,13 +70,14 @@ class ProjectsController extends BaseController {
         $this->currentUser = Sentry::getUser();
         $this->isSuperUser = $this->currentUser->isSuperUser();
 
-        // Establish Filters
+		// Establish Filters
         $this->beforeFilter('csrf', array('on' => 'post'));
         $this->beforeFilter('guest', array('only' => array('all')));
         $this->beforeFilter('hasProjectAccess:project_view', array('only' => array('show')));
         $this->beforeFilter('hasProjectAccess:project_edit', array('only' => array('edit', 'update', 'data')));
         $this->beforeFilter('hasProjectAccess:project_delete', array('only' => array('destroy')));
         $this->beforeFilter('hasProjectAccess:project_create', array('only' => array('data')));
+
     }
 
     /**
@@ -102,10 +103,10 @@ class ProjectsController extends BaseController {
      */
     public function create()
 	{
-        $cancel = URL::route('projects');
+        $cancel = URL::route('projects.index');
         $groups = ['' => '--Select--'] + $this->group->selectOptions(false);
         $count = is_null(Input::old('targetCount')) ? 0 : Input::old('targetCount');
-        $create =  Route::currentRouteName() == 'groups.projects.create' ? true : false;
+        $create =  Route::currentRouteName() == 'projects.create' ? true : false;
 
         return View::make('projects.create', compact('cancel', 'groups', 'count', 'create'));
 	}
@@ -124,7 +125,7 @@ class ProjectsController extends BaseController {
         {
             // Success!
             Session::flash('success', trans('projects.project_created'));
-            return Redirect::action('ProjectsController@show', [$project->group_id, $project->id]);
+            return Redirect::action('ProjectsController@show', [$project->id]);
 
         } else {
             Session::flash('error', trans('projects.project_save_error'));
@@ -141,7 +142,7 @@ class ProjectsController extends BaseController {
      * @param $id
      * @return \Illuminate\View\View
      */
-    public function show($groupId, $id)
+    public function show($id)
 	{
         $project = $this->project->findWith($id, ['group']);
         $expeditions = $project->expedition;
@@ -153,17 +154,16 @@ class ProjectsController extends BaseController {
     /**
      * Create duplicate project
      *
-     * @param $groupId
-     * @param $projectId
+     * @param $id
      * @return \Illuminate\View\View
      */
-    public function duplicate($groupId, $projectId)
+    public function duplicate($id)
     {
-        $project = $this->project->findWith($projectId, ['group']);
+        $project = $this->project->findWith($id, ['group']);
         $groups = ['' => '--Select--'] + $this->group->selectOptions(false);
         $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
-        $create =  Route::currentRouteName() == 'groups.projects.create' ? true : false;
-        $cancel = URL::route('projects');
+        $create =  Route::currentRouteName() == 'projects.create' ? true : false;
+        $cancel = URL::route('projects.index');
 
         return View::make('projects.clone', compact('groups', 'project', 'count', 'create', 'cancel'));
     }
@@ -171,17 +171,16 @@ class ProjectsController extends BaseController {
     /**
      * Show the form for editing the specified resource.
      *
-     * @param $groupId
-     * @param $projectId
+     * @param $id
      * @return \Illuminate\View\View
      */
-    public function edit($groupId, $projectId)
+    public function edit($id)
 	{
-        $project = $this->project->find($projectId);
+        $project = $this->project->find($id);
         $groups = ['' => '--Select--'] + $this->group->selectOptions(false);
         $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
-        $create =  Route::currentRouteName() == 'groups.projects.create' ? true : false;
-        $cancel = URL::route('projects');
+        $create =  Route::currentRouteName() == 'projects.create' ? true : false;
+        $cancel = URL::route('projects.index');
 
         return View::make('projects.edit', compact('project', 'groups', 'count', 'create', 'cancel'));
 	}
@@ -189,26 +188,24 @@ class ProjectsController extends BaseController {
     /**
      * Update the specified resource in storage.
      *
-     * @param $groupId
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update($groupId, $id)
+    public function update($id)
 	{
         // Form Processing
         $result = $this->projectForm->update(Input::all());
+        $project = $this->project->find($id);
 
         if($result)
         {
-            $project = $this->project->find($id);
             // Success!
             Session::flash('success', trans('projects.project_updated'));
-            return Redirect::action('groups.projects.show', [$project->group_id, $project->id]);
+            return Redirect::action('projects.show', [$project->id]);
 
         } else {
-            $project = $this->project->find($id);
             Session::flash('error', trans('projects.project_save_error'));
-            return Redirect::route('groups.projects.edit', [$project->group_id, $project->id])
+            return Redirect::route('projects.edit', [$project->id])
                 ->withInput()
                 ->withErrors( $this->projectForm->errors() );
         }
@@ -217,13 +214,12 @@ class ProjectsController extends BaseController {
     /**
      * Add data to project
      *
-     * @param $groupId
-     * @param $projectId
+     * @param $id
      * @return \Illuminate\View\View
      */
-    public function data($groupId, $projectId)
+    public function data($id)
     {
-        $project = $this->project->find($projectId);
+        $project = $this->project->find($id);
         return View::make('projects.add', compact('project'));
     }
 
@@ -238,18 +234,17 @@ class ProjectsController extends BaseController {
     /**
      * Upload data file
      *
-     * @param $groupId
-     * @param $projectId
+     * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function upload($groupId, $projectId)
+    public function upload($id)
     {
         $file = Input::file('file');
 
         if (empty($file))
         {
             Session::flash('error', trans('projects.file_required'));
-            return Redirect::route('addData', [$groupId, $projectId]);
+            return Redirect::route('projects.data', [$id]);
         }
 
         $filename = str_random(8) . '.' . $file->getClientOriginalExtension();
@@ -258,32 +253,31 @@ class ProjectsController extends BaseController {
         try
         {
             Input::file('file')->move($directory, $filename);
-            $this->import->create(['user_id' => $this->currentUser->id,'project_id' => $projectId, 'file' => $filename]);
+            $this->import->create(['user_id' => $this->currentUser->id,'project_id' => $id, 'file' => $filename]);
         }
         catch(Exception $e)
         {
             Session::flash('error', trans('projects.upload_error'));
-            return Redirect::route('addData', [$groupId, $projectId]);
+            return Redirect::route('projects.data', [$id]);
         }
 
         Session::flash('success', trans('projects.upload_success'));
-        return Redirect::route('groups.projects.show', [$groupId, $projectId]);
+        return Redirect::route('projects.show', [$id]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param $groupId
-     * @param $projectId
+     * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy($groupId, $projectId)
+    public function destroy($id)
 	{
-        $project = $this->project->findWith($projectId, ['group']);
+        $project = $this->project->findWith($id, ['group']);
         $isOwner = ($this->currentUser->id == $project->group->user_id || $this->isSuperUser) ? true : false;
         if ($isOwner)
         {
-            $this->project->destroy($projectId);
+            $this->project->destroy($id);
             Session::flash('success', trans('projects.project_destroyed'));
 
             return Redirect::action('ProjectsController@all');
