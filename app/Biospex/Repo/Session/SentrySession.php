@@ -110,7 +110,7 @@ class SentrySession extends Repository implements SessionInterface {
 			    $result['message'] = trans('sessions.banned');
 			}
 
-			//Login was succesful.  
+			//Login was succesful.
 			return $result;
 	}
 

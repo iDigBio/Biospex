@@ -32,6 +32,7 @@ use Biospex\Repo\Permission\PermissionRepository;
 use Biospex\Repo\Invite\InviteRepository;
 use Permission;
 use Invite;
+use Group;
 
 class RepoServiceProvider extends ServiceProvider {
 
@@ -62,7 +63,7 @@ class RepoServiceProvider extends ServiceProvider {
         $app->bind('Biospex\Repo\Group\GroupInterface', function($app)
         {
             return new GroupRepository(
-                $app['sentry'],  new PermissionRepository(new Permission)
+                $app['sentry'],  new PermissionRepository(new Permission), new Group
             );
         });
 
@@ -104,6 +105,9 @@ class RepoServiceProvider extends ServiceProvider {
 
         // bind message bag
         $app->bind('Illuminate\Support\Contracts\MessageProviderInterface', 'Illuminate\Support\MessageBag');
+
+        // bind Expedition to
+        $app->bind('Mgallegos\LaravelJqgrid\Repositories\RepositoryInterface', 'Biospex\Repo\Expedition\ExpeditionRepository');
     }
 
 }
