@@ -114,6 +114,7 @@ return array(
         'Felixkiss\UniqueWithValidator\UniqueWithValidatorServiceProvider',
         'Codesleeve\LaravelStapler\LaravelStaplerServiceProvider',
         'Codesleeve\AssetPipeline\AssetPipelineServiceProvider',
+        'Mgallegos\LaravelJqgrid\LaravelJqgridServiceProvider',
 
     ),
 
@@ -184,6 +185,7 @@ return array(
         'Menu'          => 'Menu\Menu',
         'Local'         => 'Mcamara\LaravelLocalization\Facades\LaravelLocalization',
         'Carbon'        => 'Carbon\Carbon',
+        'GridRender' => 'Mgallegos\LaravelJqgrid\Facades\GridRender',
 	),
 
 );
