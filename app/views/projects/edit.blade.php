@@ -30,7 +30,7 @@
             {{ Form::hidden('id', $project->id) }}
             {{ Form::hidden('targetCount', $count, array('id' => 'targetCount')) }}
             {{ Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary'))}}
-            {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger', 'onClick' => "location.href='{{ URL::previous() }}'"]) }}
+            {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
         </div>
     </div>
     {{ Form::close()}}
