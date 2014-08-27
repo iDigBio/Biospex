@@ -27,6 +27,7 @@
             {{ Form::hidden('project_id', $project->id) }}
             {{ Form::hidden('id', $expedition->id) }}
             {{ Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary'))}}
+			{{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
         </div>
     </div>
     {{ Form::close()}}

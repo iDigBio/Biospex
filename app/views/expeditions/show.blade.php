@@ -25,10 +25,10 @@
         <p><em>@lang('pages.created'): {{ $expedition->created_at }}</em></p>
         <p><em>@lang('pages.updated'): {{ $expedition->updated_at }}</em></p>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-12">
         <button class="btn btn-default" type="button" onClick="location.href='{{ URL::route('projects.data', [$project->id]) }}'">@lang('buttons.data')</button>
         <button class="btn btn-primary" type="button" onClick="location.href='{{ URL::route('projects.expeditions.duplicate', [$project->id, $expedition->id]) }}'">@lang('buttons.duplicate')</button>
-        <button class="btn btn-warning" onClick="location.href='{{ action('ExpeditionsController@edit', [$project->id, $expedition->id]) }}'">@lang('buttons.edit')</button>
+        <button class="btn btn-warning" onClick="location.href='{{ URL::route('projects.expeditions.edit', [$project->id, $expedition->id]) }}'">@lang('buttons.edit')</button>
         <button class="btn btn-default btn-danger action_confirm" href="{{ URL::route('projects.expeditions.destroy', [$project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.delete')</button></td>
     </div>
 </div>
