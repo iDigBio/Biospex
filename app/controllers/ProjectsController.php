@@ -138,7 +138,6 @@ class ProjectsController extends BaseController {
     /**
      * Display the specified resource.
      *
-     * @param $groupId
      * @param $id
      * @return \Illuminate\View\View
      */
