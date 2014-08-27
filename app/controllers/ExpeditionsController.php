@@ -89,7 +89,7 @@ class ExpeditionsController extends BaseController {
 
         // Establish Filters
         $this->beforeFilter('csrf', array('on' => 'post'));
-        $this->beforeFilter('guest', array('only' => array('all')));
+        $this->beforeFilter('guest', array('only' => array('index')));
         $this->beforeFilter('hasProjectAccess:expedition_view', array('only' => array('show', 'index')));
         $this->beforeFilter('hasProjectAccess:expedition_edit', array('only' => array('edit', 'update')));
         $this->beforeFilter('hasProjectAccess:expedition_delete', array('only' => array('destroy')));

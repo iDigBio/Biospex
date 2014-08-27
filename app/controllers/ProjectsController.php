@@ -70,7 +70,7 @@ class ProjectsController extends BaseController {
 
 		// Establish Filters
         $this->beforeFilter('csrf', array('on' => 'post'));
-        $this->beforeFilter('guest', array('only' => array('all')));
+        $this->beforeFilter('guest', array('only' => array('index')));
         $this->beforeFilter('hasProjectAccess:project_view', array('only' => array('show')));
         $this->beforeFilter('hasProjectAccess:project_edit', array('only' => array('edit', 'update', 'data')));
         $this->beforeFilter('hasProjectAccess:project_delete', array('only' => array('destroy')));
