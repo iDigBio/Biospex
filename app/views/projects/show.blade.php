@@ -22,11 +22,11 @@
     <div class="col-md-12">
         <button class="btn btn-default" type="button" onClick="location.href='{{ URL::route('projects.data', [$project->id]) }}'">@lang('buttons.data')</button>
         <button class="btn btn-primary" type="button" onClick="location.href='{{ URL::route('projects.duplicate', [$project->id]) }}'">@lang('buttons.duplicate')</button>
-        <button class="btn btn-warning" onClick="location.href='{{ action('ProjectsController@edit', [$project->id]) }}'">@lang('buttons.edit')</button>
+        <button class="btn btn-warning" type="button" onClick="location.href='{{ URL::route('projects.edit', [$project->id]) }}'">@lang('buttons.edit')</button>
         @if ($isOwner)
         <button class="btn btn-default btn-danger action_confirm" href="{{ URL::route('projects.destroy', [$project->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.delete')</button></td>
         @endif
-        <button class="btn btn-success" type="button" onClick="location.href='{{ URL::route('advertise', [$project->id]) }}'">@lang('buttons.advertise')</button>
+        <button class="btn btn-success" type="button" onClick="location.href='{{ URL::route('projects.advertise', [$project->id]) }}'">@lang('buttons.advertise')</button>
     </div>
 </div>
 
