@@ -9,23 +9,124 @@
 {{-- Content --}}
 @section('content')
 
-<!-- Container -->
-<div class="container">
-    <!-- Notifications -->
-    @include('layouts/notifications')
-    <!-- ./ notifications -->
-
-    <!-- Content -->
-    <div class="row">
-        <div class="col-md-6">
-            <h2>Temp public page for project</h2>
-
-            <p>Projects will have outward facing pages for the public showing various expeditions, statistics,
-                and other relevant material rgarding the project.</p>
-
+<div id="banner" style="background: url({{ $project->banner_file_name }}) top left no-repeat; height: 250px;">
+    <div class="container">
+        <div class="col-md-12">
+        <img src="{{ $project->logo_file_name }}" alt="{{ $project->title }}" style="border: 5px solid #fff; margin-top: 100px; margin-left: -20px;"/>
         </div>
+        
+        
     </div>
-    <!-- ./ content -->
+</div>
+<br clear="all" />&nbsp;
+<div>
+    <!-- Container -->
+    <div class="container">
+        <!-- Notifications -->
+                <!-- ./ notifications -->
+
+        <!-- Content -->
+        <div class="row">
+            <h1 class="banner">{{ $project->title }}</h1>
+                
+                
+            <div class="col-md-7">
+                
+                 
+                <p class="description">{{ $project->description_short }}</p>
+                
+                {{ $project->description_long }}
+                
+                
+                <h2 style="color: #8dc63f; font-size: 18px; font-weight: bold; margin: 45px 0 10px 0;">How to Participate</h2>
+                
+                <p>This project has the following active expeditions:</p>
+                
+                <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Expedition</th>
+                    <th class="nowrap">% Complete</th>
+                    <th>Join In</th>
+                </tr>
+                </thead>
+                <tbody>
+                                <tr>
+                    <td>Apalachicola National Forest #1</td>
+                    <td class="nowrap">85% <span class="complete"><span class="complete85">&nbsp;</span></span></td>
+                    <td><a href="">Notes from Nature</a></td>
+                </tr><tr>
+                    <td>Apalachicola National Forest #1</td>
+                    <td class="nowrap">35% <span class="complete"><span class="complete35">&nbsp;</span></span></td>
+                    <td><a href="">GeoLocate</a></td>
+                </tr><tr>
+                    <td>Apalachicola National Forest #2</td>
+                    <td class="nowrap">15% <span class="complete"><span class="complete25">&nbsp;</span></span></td>
+                    <td><a href="">Notes from Nature</a></td>
+                </tr><tr>
+                    <td>Apalachicola National Forest #3</td>
+                    <td class="nowrap">00% <span class="complete">&nbsp;</span></td>
+                    <td><a href="">Notes from Nature</a></td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <span title="3" id="1" class="collapse out"></span></td>
+                </tr>
+                                </tbody>
+            </table>
+        </div>
+                
+              
+            </div>
+            <div class="col-md-5"> 
+                
+                <dl>
+                <dt class="firstdl">Managed by</dt>
+                <dd class="firstdl">{{ $project->managed }}</dd>
+                
+                <dt>Contact</dt>
+                <dd><a href="mailto:{{ $project->contact_email }}">{{ $project->contact }}</a></dd>
+                
+                <dt>Website</dt>
+                <dd><a href="{{ $project-> }}">{{ $project-> }}</a></dd>
+                
+                
+                <dt>Circumscription</dt>
+                <dd>{{ $project->circumscription }}</dd>
+                
+                <dt>Strategy</dt>
+                <dd>{{ $project->strategy }}</dd>
+                
+                <dt>Incentives</dt>
+                <dd>{{ $project->incentives }}</dd>
+                
+                <dt>Geographic Scope</dt>
+                <dd>{{ $project->geographic_scope }}</dd>
+                
+                <dt>Taxonomic Scope</dt>
+                <dd>{{ $project->taxonomic_scope }}</dd>
+                
+                <dt>Temporal Scope</dt>
+                <dd>{{ $project->temporal_scope }}</dd>
+                
+                <dt>Language Skills Required</dt>
+                <dd>{{ $project->language_skills }}</dd>
+                
+                </dl>
+               
+                
+
+                
+
+                
+            </div>
+        </div>
+
+
+        
+        <!-- ./ content -->
+    </div>
 </div>
 
 @stop
