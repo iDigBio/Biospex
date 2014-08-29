@@ -67,7 +67,7 @@ return array(
     'denied'                    => "denied",
     'allowed'                   => "allowed",
     'keywords'                  => "Keywords",
-    'add_data_desc'             => "Only zip files are excepted. Those files must contain a meta.xml file describing the included csv file contents.",
+    'add_data_desc'             => "Only zip files are accepted. Those files must contain a meta.xml file describing the included csv file contents.",
 
     'list'                      => "List",
     'manage'                    => "Manage",
