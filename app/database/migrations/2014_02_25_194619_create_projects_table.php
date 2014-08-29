@@ -42,10 +42,8 @@ class CreateProjectsTable extends Migration {
             $table->string('contact');
             $table->string('contact_email');
             $table->string('managed');
-            $table->text('description');
-            $table->text('goal');
-            $table->text('circumscription');
-            $table->text('strategy');
+            $table->string('description_short');
+			$table->text('description_long');
             $table->text('incentives');
             $table->string('geographic_scope');
             $table->string('taxonomic_scope');
