@@ -39,36 +39,20 @@
         {{ ($errors->has('managed') ? $errors->first('managed') : '') }}
     </div>
 
-    <div class="form-group {{ ($errors->has('description')) ? 'has-error' : '' }}">
-        {{ Form::label('description', trans('forms.description'), array('class' => 'col-sm-2 control-label')) }}
+    <div class="form-group {{ ($errors->has('description_short')) ? 'has-error' : '' }}">
+        {{ Form::label('description_short', trans('forms.description_short'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::textarea('description', null, array('class' => 'form-control', 'placeholder' => trans('forms.short-description'))) }}
+            {{ Form::text('description_short', null, array('class' => 'form-control', 'placeholder' => trans('forms.description_short'))) }}
         </div>
-        {{ ($errors->has('description') ? $errors->first('description') : '') }}
+        {{ ($errors->has('description_short') ? $errors->first('description_short') : '') }}
     </div>
 
-    <div class="form-group {{ ($errors->has('goal')) ? 'has-error' : '' }}">
-        {{ Form::label('goal', trans('forms.goal'), array('class' => 'col-sm-2 control-label')) }}
+    <div class="form-group {{ ($errors->has('description_long')) ? 'has-error' : '' }}">
+        {{ Form::label('description_long', trans('forms.description_long'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::textarea('goal', null, array('class' => 'form-control', 'placeholder' => trans('forms.goal'))) }}
+            {{ Form::textarea('description_long', null, array('class' => 'form-control', 'placeholder' => trans('forms.description_long'))) }}
         </div>
-        {{ ($errors->has('goal') ? $errors->first('goal') : '') }}
-    </div>
-
-    <div class="form-group {{ ($errors->has('circumscription')) ? 'has-error' : '' }}">
-        {{ Form::label('circumscription', trans('forms.circumscription'), array('class' => 'col-sm-2 control-label')) }}
-        <div class="col-sm-10">
-            {{ Form::textarea('circumscription', null, array('class' => 'form-control', 'placeholder' => trans('forms.circumscription'))) }}
-        </div>
-        {{ ($errors->has('circumscription') ? $errors->first('circumscription') : '') }}
-    </div>
-
-    <div class="form-group {{ ($errors->has('strategy')) ? 'has-error' : '' }}">
-        {{ Form::label('strategy', trans('forms.strategy_description'), array('class' => 'col-sm-2 control-label')) }}
-        <div class="col-sm-10">
-            {{ Form::textarea('strategy', null, array('class' => 'form-control', 'placeholder' => trans('forms.strategy_description'))) }}
-        </div>
-        {{ ($errors->has('strategy') ? $errors->first('strategy') : '') }}
+        {{ ($errors->has('description_long') ? $errors->first('description_long') : '') }}
     </div>
 
     <div class="form-group {{ ($errors->has('incentives')) ? 'has-error' : '' }}">
@@ -190,13 +174,13 @@
     <?php $i++ ?>
     @endwhile
 @else
-    <div class="form-group {{ ($errors->has('group')) ? 'has-error' : '' }}" for="group">
-        {{ Form::label('group', trans('forms.group'), array('class' => 'col-sm-2 control-label')) }}
-        <div class="col-sm-10">
-            {{ Form::select('group_id', $groups, $project->group_id, array('class' => 'form-control', 'placeholder' => trans('forms.title'))) }}
-        </div>
-        {{ ($errors->has('group_id') ? $errors->first('group_id') : '') }}
-    </div>
+	<div class="form-group {{ ($errors->has('group')) ? 'has-error' : '' }}" for="group">
+		{{ Form::label('group', trans('forms.group'), array('class' => 'col-sm-2 control-label')) }}
+		<div class="col-sm-10">
+			{{ Form::select('group_id', $groups, $project->group_id, array('class' => 'form-control', 'placeholder' => trans('forms.title'))) }}
+		</div>
+		{{ ($errors->has('group_id') ? $errors->first('group_id') : '') }}
+	</div>
 
     <div class="form-group {{ ($errors->has('title')) ? 'has-error' : '' }}" for="title">
         {{ Form::label('title', trans('forms.title'), array('class' => 'col-sm-2 control-label')) }}
@@ -230,37 +214,21 @@
         {{ ($errors->has('managed') ? $errors->first('managed') : '') }}
     </div>
 
-    <div class="form-group {{ ($errors->has('description')) ? 'has-error' : '' }}">
-        {{ Form::label('description', trans('forms.description'), array('class' => 'col-sm-2 control-label')) }}
-        <div class="col-sm-10">
-            {{ Form::textarea('description', $project->description, array('class' => 'form-control', 'placeholder' => trans('forms.short-description'))) }}
-        </div>
-        {{ ($errors->has('description') ? $errors->first('description') : '') }}
-    </div>
+	<div class="form-group {{ ($errors->has('description_short')) ? 'has-error' : '' }}">
+		{{ Form::label('description_short', trans('forms.description_short'), array('class' => 'col-sm-2 control-label')) }}
+		<div class="col-sm-10">
+			{{ Form::text('description_short', $project->description_short, array('class' => 'form-control', 'placeholder' => trans('forms.description_short'))) }}
+		</div>
+		{{ ($errors->has('description_short') ? $errors->first('description_short') : '') }}
+	</div>
 
-    <div class="form-group {{ ($errors->has('goal')) ? 'has-error' : '' }}">
-        {{ Form::label('goal', trans('forms.goal'), array('class' => 'col-sm-2 control-label')) }}
-        <div class="col-sm-10">
-            {{ Form::textarea('goal', $project->goal, array('class' => 'form-control', 'placeholder' => trans('forms.goal'))) }}
-        </div>
-        {{ ($errors->has('goal') ? $errors->first('goal') : '') }}
-    </div>
-
-    <div class="form-group {{ ($errors->has('circumscription')) ? 'has-error' : '' }}">
-        {{ Form::label('circumscription', trans('forms.circumscription'), array('class' => 'col-sm-2 control-label')) }}
-        <div class="col-sm-10">
-            {{ Form::textarea('circumscription', $project->circumscription, array('class' => 'form-control', 'placeholder' => trans('forms.circumscription'))) }}
-        </div>
-        {{ ($errors->has('circumscription') ? $errors->first('circumscription') : '') }}
-    </div>
-
-    <div class="form-group {{ ($errors->has('strategy')) ? 'has-error' : '' }}">
-        {{ Form::label('strategy', trans('forms.strategy_description'), array('class' => 'col-sm-2 control-label')) }}
-        <div class="col-sm-10">
-            {{ Form::textarea('strategy', $project->strategy, array('class' => 'form-control', 'placeholder' => trans('forms.strategy_description'))) }}
-        </div>
-        {{ ($errors->has('strategy') ? $errors->first('strategy') : '') }}
-    </div>
+	<div class="form-group {{ ($errors->has('description_long')) ? 'has-error' : '' }}">
+		{{ Form::label('description_long', trans('forms.description_long'), array('class' => 'col-sm-2 control-label')) }}
+		<div class="col-sm-10">
+			{{ Form::textarea('description_long', $project->description_long, array('class' => 'form-control', 'placeholder' => trans('forms.description_long'))) }}
+		</div>
+		{{ ($errors->has('description_long') ? $errors->first('description_long') : '') }}
+	</div>
 
     <div class="form-group {{ ($errors->has('incentives')) ? 'has-error' : '' }}">
         {{ Form::label('incentives', trans('forms.incentives'), array('class' => 'col-sm-2 control-label')) }}
