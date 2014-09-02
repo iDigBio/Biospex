@@ -94,7 +94,7 @@ class Group extends SentryGroup {
         return Config::get('config.group_permissions');
     }
 
-    public function findAllGroups($user, $superuser)
+    public function findAllGroupsWithProjects($user, $superuser)
     {
         if ($superuser)
         {
