@@ -14,7 +14,7 @@
         <button class="btn btn-primary" onClick="location.href='{{ URL::route('projects.create') }}'">@lang('buttons.create')</button>
     </div>
     <div class="col-md-10 col-md-offset-1">
-		@if ( ! $groups->isEmpty()))
+		@if ( ! $groups->isEmpty())
         <div class="table-responsive">
             <table class="table table-striped table-hover">
                 <thead>
