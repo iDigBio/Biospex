@@ -41,6 +41,7 @@ class CreateProjectsTable extends Migration {
             $table->string('slug')->index();
             $table->string('contact');
             $table->string('contact_email');
+			$table->string('website');
             $table->string('managed');
             $table->string('description_short');
 			$table->text('description_long');
