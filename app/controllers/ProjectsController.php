@@ -283,11 +283,11 @@ class ProjectsController extends BaseController {
             $this->project->destroy($id);
             Session::flash('success', trans('projects.project_destroyed'));
 
-            return Redirect::action('ProjectsController@all');
+            return Redirect::route('projects.index');
         }
 
         Session::flash('error', trans('projects.project_destroy_error'));
-        return Redirect::action('ProjectsController@all');
+        return Redirect::route('projects.index');
 	}
 
 }
