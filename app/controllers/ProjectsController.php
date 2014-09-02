@@ -219,7 +219,8 @@ class ProjectsController extends BaseController {
     public function data($id)
     {
         $project = $this->project->find($id);
-        return View::make('projects.add', compact('project'));
+		$cancel = URL::previous();
+        return View::make('projects.add', compact('project', 'cancel'));
     }
 
     /**
