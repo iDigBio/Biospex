@@ -237,8 +237,8 @@ class GroupRepository extends Repository implements GroupInterface {
      * @param bool $superuser
      * @return mixed|void
      */
-    public function findAllGroups($user, $superuser = false)
+    public function findAllGroupsWithProjects($user, $superuser = false)
     {
-        return $this->sentry->getGroupProvider()->createModel()->findAllGroups($user, $superuser);
+        return $this->sentry->getGroupProvider()->createModel()->findAllGroupsWithProjects($user, $superuser);
     }
 }
