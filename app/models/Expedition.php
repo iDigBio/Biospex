@@ -65,10 +65,10 @@ class Expedition extends Eloquent {
     public static function boot(){
         parent::boot();
 
-        Project::saving(function($model)
-        {
-            $model->target_fields = Input::all();
-        });
+		// Delete associated subjects from expedition_subjects
+		static::deleting(function($model) {
+			$model->subject()->detach();
+		});
     }
 
     /**

@@ -118,10 +118,15 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     public static function boot(){
         parent::boot();
 
-        Project::saving(function($model)
+        static::saving(function($model)
         {
             $model->target_fields = Input::all();
         });
+
+		// Delete associated subjects from expedition_subjects
+		static::deleting(function($model) {
+			$model->expedition()->delete();
+		});
     }
 
     /**

@@ -51,6 +51,18 @@ class Subject extends Eloquent {
         'object_id'
     );
 
+	/**
+	 * Boot function to add model events
+	 */
+	public static function boot(){
+		parent::boot();
+
+		// Delete associated subjects from subjectDocs
+		static::deleting(function($model) {
+			$model->subjectDoc()->delete();
+		});
+	}
+
     /**
      * Return count of project subjects not assigned to expeditions
      * @param $projectId
