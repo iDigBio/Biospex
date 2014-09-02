@@ -80,7 +80,7 @@
 					<dt>Contact</dt>
 					<dd><a href="mailto:{{ $project->contact_email }}">{{ $project->contact }}</a></dd>
 					<dt>Website</dt>
-					<dd><a href="{{ $project-> }}">{{ $project-> }}</a></dd>
+					<dd><a href="{{ $project->website }}">{{ $project->website }}</a></dd>
 					<dt>Circumscription</dt>
 					<dd>{{ $project->circumscription }}</dd>
 					<dt>Strategy</dt>
