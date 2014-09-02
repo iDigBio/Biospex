@@ -35,7 +35,7 @@
                     <tr>
                         <td><span id="collapse{{ $project->id }}" class="glyphicon glyphicon-folder-close pointer" data-toggle="collapse" data-target="#{{ $project->id }}"></span></td>
                         <td><a href="{{ URL::route('projects.show', [$project->id]) }}">{{ $project->title }}</a></td>
-                        <td>{{ $project->description }} </td>
+                        <td>{{ $project->description_short }} </td>
                         <td><a href="{{ URL::route('groups.show', [$group->id]) }}">{{ $group->name }}</a></td>
                         <td class="nowrap">
                             <button class="btn btn-info" type="button" onClick="location.href='{{ URL::route('projects.show', [$project->id]) }}'">@lang('buttons.view')</button>

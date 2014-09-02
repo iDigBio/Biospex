@@ -12,7 +12,7 @@
 
 <div class="well clearfix">
     <div class="col-md-8">
-        <p><strong>@lang('pages.description'):</strong> {{ $project->description }} </p>
+        <p><strong>@lang('pages.description_short'):</strong> {{ $project->description_short }} </p>
         <p><strong>@lang('pages.project_url'):</strong> {{ HTML::linkAction('HomeController@project', $project->title, [$project->slug]) }} </p>
     </div>
     <div class="col-md-2">
@@ -50,7 +50,7 @@
         @foreach ($expeditions as $expedition)
         <tr>
             <td>{{ $expedition->title }}</td>
-            <td>{{ $expedition->description }}</td>
+            <td>{{ $expedition->description_short }}</td>
             <td>{{ $expedition->created_at }}</td>
             <td>{{ $expedition->total_subjects }}</td>
             <td>500</td>
