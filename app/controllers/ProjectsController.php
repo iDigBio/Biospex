@@ -89,7 +89,7 @@ class ProjectsController extends BaseController {
     {
 		$user = Sentry::getUser();
 		$isSuperUser = $user->isSuperUser();
-        $groups = $this->group->findAllGroups($user, $isSuperUser);
+        $groups = $this->group->findAllGroupsWithProjects($user, $isSuperUser);
 
         return View::make('projects.index', compact('groups', 'user', 'isSuperUser'));
     }
