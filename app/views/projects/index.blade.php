@@ -28,10 +28,6 @@
                 </thead>
                 <tbody>
 				@foreach ($groups as $group)
-					@if ($group->name == 'Users' || $group->name == 'Admins')
-						@continue;
-					@endif
-					<?php echo "test"; ?>
 					@foreach ($group->Projects as $project)
 					<tr>
 						<td><span id="collapse{{ $project->id }}" class="glyphicon glyphicon-folder-close pointer" data-toggle="collapse" data-target="#{{ $project->id }}"></span></td>
