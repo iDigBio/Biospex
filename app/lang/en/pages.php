@@ -103,4 +103,6 @@ return array(
     'subjects'                  => "Subjects",
     'project_url'               => "Project Url",
 
+	'no_projects'				=> "There are no projects in this group.",
+
 );
