@@ -305,7 +305,7 @@
     <div class="form-group {{ ($errors->has('logo')) ? 'has-error' : '' }}">
         {{ Form::label('logo', trans('forms.logo'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::file('logo') }}
+            {{ Form::file('logo') }} {{ Config::get('config.logo') }}
         </div>
         {{ ($errors->has('logo') ? $errors->first('logo') : '') }}
     </div>
@@ -313,7 +313,7 @@
     <div class="form-group {{ ($errors->has('banner')) ? 'has-error' : '' }}">
         {{ Form::label('banner', trans('forms.banner'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::file('banner') }}
+            {{ Form::file('banner') }} {{ Config::get('config.banner') }}
         </div>
         {{ ($errors->has('banner') ? $errors->first('banner') : '') }}
     </div>
