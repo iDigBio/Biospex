@@ -52,6 +52,6 @@ interface GroupInterface extends RepositoryInterface {
      * @param bool $superuser
      * @return mixed
      */
-    public function findAllGroups($user, $superuser = false);
+    public function findAllGroupsWithProjects($user, $superuser = false);
 
 }
