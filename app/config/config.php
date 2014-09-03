@@ -26,9 +26,9 @@ return array(
     'dataDir' => storage_path() . '/data',
     'dataTmp' => storage_path() . '/data/tmp',
 
-    /** Default logo and banner sizes used in Project model for Codesleve Stapler */
-    'logo' => '100x100',
-    'banner' => '468x60',
+    /** Min and max logo and banner sizes used in Project model for Codesleve Stapler */
+    'logo' => 'Max. 300 x 200',
+    'banner' => 'Min. 1200 x 300',
 
     /**
      * Default group permissions
