@@ -56,4 +56,6 @@ return array(
     'unassigned'                => "Unassigned",
 	'website'					=> "Website",
 	'website_format'			=> "http:://yoursite.org",
+	'banner_min'				=> 'Min. 1200 x 300',
+	'logo_max'					=> 'Max. 300 x 200',
 );
