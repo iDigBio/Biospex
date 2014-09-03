@@ -146,8 +146,10 @@ class ProjectsController extends BaseController {
 		$user = Sentry::getUser();
 		$isSuperUser = $user->isSuperUser();
         $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
+		$imgUrl = !empty($project->logo->url) ? $project->logo->url() : asset(Config::get('config.defaultImg'));
+		//dd($imgUrl);
 
-        return View::make('projects.show', compact('isOwner', 'project', 'expeditions'));
+        return View::make('projects.show', compact('isOwner', 'project', 'expeditions', 'imgUrl'));
 	}
 
     /**
@@ -192,6 +194,7 @@ class ProjectsController extends BaseController {
      */
     public function update($id)
 	{
+		//dd(Input::file());
         // Form Processing
         $result = $this->projectForm->update(Input::all());
         $project = $this->project->find($id);
