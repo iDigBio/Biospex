@@ -31,6 +31,14 @@
         {{ ($errors->has('contact_email') ? $errors->first('contact_email') : '') }}
     </div>
 
+	<div class="form-group {{ ($errors->has('website')) ? 'has-error' : '' }}">
+		{{ Form::label('website', trans('forms.website'), array('class' => 'col-sm-2 control-label')) }}
+		<div class="col-sm-10">
+			{{ Form::text('website', null, array('class' => 'form-control', 'placeholder' => trans('forms.website_format'))) }}
+		</div>
+		{{ ($errors->has('website') ? $errors->first('website') : '') }}
+	</div>
+
     <div class="form-group {{ ($errors->has('managed')) ? 'has-error' : '' }}">
         {{ Form::label('managed', trans('forms.managed'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
@@ -130,7 +138,7 @@
     <div class="form-group {{ ($errors->has('logo')) ? 'has-error' : '' }}">
         {{ Form::label('logo', trans('forms.logo'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::file('logo') }}
+            {{ Form::file('logo') }} {{ trans('forms.logo_max') }}
         </div>
         {{ ($errors->has('logo') ? $errors->first('logo') : '') }}
     </div>
@@ -138,7 +146,7 @@
     <div class="form-group {{ ($errors->has('banner')) ? 'has-error' : '' }}">
         {{ Form::label('banner', trans('forms.banner'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::file('banner') }}
+            {{ Form::file('banner') }} {{ trans('forms.banner_min') }}
         </div>
         {{ ($errors->has('banner') ? $errors->first('banner') : '') }}
     </div>
@@ -205,6 +213,14 @@
         </div>
         {{ ($errors->has('contact_email') ? $errors->first('contact_email') : '') }}
     </div>
+
+	<div class="form-group {{ ($errors->has('website')) ? 'has-error' : '' }}">
+		{{ Form::label('website', trans('forms.website'), array('class' => 'col-sm-2 control-label')) }}
+		<div class="col-sm-10">
+			{{ Form::text('website', $project->website, array('class' => 'form-control', 'placeholder' => trans('forms.website_format'))) }}
+		</div>
+		{{ ($errors->has('website') ? $errors->first('website') : '') }}
+	</div>
 
     <div class="form-group {{ ($errors->has('managed')) ? 'has-error' : '' }}">
         {{ Form::label('managed', trans('forms.managed'), array('class' => 'col-sm-2 control-label')) }}
@@ -305,7 +321,7 @@
     <div class="form-group {{ ($errors->has('logo')) ? 'has-error' : '' }}">
         {{ Form::label('logo', trans('forms.logo'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::file('logo') }} {{ Config::get('config.logo') }}
+            {{ Form::file('logo') }} {{ trans('forms.logo_max') }}
         </div>
         {{ ($errors->has('logo') ? $errors->first('logo') : '') }}
     </div>
@@ -313,7 +329,7 @@
     <div class="form-group {{ ($errors->has('banner')) ? 'has-error' : '' }}">
         {{ Form::label('banner', trans('forms.banner'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::file('banner') }} {{ Config::get('config.banner') }}
+            {{ Form::file('banner') }} {{ trans('forms.banner_min') }}
         </div>
         {{ ($errors->has('banner') ? $errors->first('banner') : '') }}
     </div>
