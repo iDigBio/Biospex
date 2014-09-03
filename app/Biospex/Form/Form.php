@@ -91,8 +91,6 @@ abstract class Form {
      */
     protected function valid(array $input)
     {
-
         return $this->validator->with($input)->passes();
-
     }
 }
