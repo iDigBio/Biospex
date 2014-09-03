@@ -14,6 +14,7 @@
     {{ Form::open(array(
     'action' => array('ProjectsController@update', $project->id),
     'method' => 'put',
+	'enctype' => 'multipart/form-data',
     'class' => 'form-horizontal',
     'role' => 'form'
     )) }}
