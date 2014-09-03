@@ -81,3 +81,26 @@ body.home { padding-top: 40px; }
 span.glyphicon {
  display: inline;
 }
+
+dl { border-top: 1px solid #ccc; }
+dt { width: 120px; float: left; clear: both; font-size: 11px; margin-top: 5px; border-top: 1px solid #ccc;}
+dd { margin-left: 120px; margin-top: 5px;font-size: 12px; border-top: 1px solid #ccc;}
+.firstdl { border-top: none; }
+h1.banner { color: #241d4e !important; font-size: 28px; margin-left: 15px; font-weight: bold; }
+.participate { display: inline-block; background: #be1e2d; font-weight: 900; color: #fff; font-size: 28px; line-height: 26px; padding: 10px 15px 5px; margin: 20px 0; text-transform: uppercase }
+.participate span { color: #231c50; }
+.participate:hover { color: #231c50; text-decoration: none; }
+.participate:hover span { color: #fff; }
+.description { font-size: 130%; line-height: 150%; font-style: italic; margin-bottom: 15px; }
+.complete { background: #ccc; width: 100px; display: inline-block; }
+
+.complete95 { background: #c00; width: 95px; display: inline-block; }
+.complete85 { background: #c00; width: 85px; display: inline-block; }
+.complete75 { background: #c00; width: 75px; display: inline-block; }
+.complete65 { background: #c00; width: 65px; display: inline-block; }
+.complete55 { background: #c00; width: 55px; display: inline-block; }
+.complete45 { background: #c00; width: 45px; display: inline-block; }
+.complete35 { background: #c00; width: 35px; display: inline-block; }
+.complete25 { background: #c00; width: 25px; display: inline-block; }
+.complete15 { background: #c00; width: 15px; display: inline-block; }
+.complete5 { background: #c00; width: 5px; display: inline-block; }
