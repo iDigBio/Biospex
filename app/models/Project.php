@@ -106,8 +106,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      * @param array $attributes
      */
     public function __construct(array $attributes = array()) {
-        $this->hasAttachedFile('logo', ['styles' => ['normal' => Config::get('config.logo')]]);
-        $this->hasAttachedFile('banner', ['styles' => ['normal' => Config::get('config.banner')]]);
+        $this->hasAttachedFile('logo');
+        $this->hasAttachedFile('banner');
 
         parent::__construct($attributes);
     }
