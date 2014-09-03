@@ -16,7 +16,6 @@
     'method' => 'post',
     'enctype' => 'multipart/form-data',
     'class' => 'form-horizontal',
-    'class' => 'form-horizontal',
     'role' => 'form'
     )) }}
 
