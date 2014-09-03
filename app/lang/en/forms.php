@@ -54,5 +54,6 @@ return array(
     'assign_subjects'           => "Assign Subjects",
     'assigned_subjects'         => "Assigned Subjects",
     'unassigned'                => "Unassigned",
-
+	'website'					=> "Website",
+	'website_format'			=> "http:://yoursite.org",
 );
