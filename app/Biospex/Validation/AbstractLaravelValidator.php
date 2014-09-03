@@ -120,7 +120,7 @@ abstract class AbstractLaravelValidator	implements ValidableInterface {
      *
      * @return \Biospex\Validation\AbstractLaravelValidator
      */
-    public function updateUnique($rule, $column, $ignore)
+    public function modifyRules($rule, $column, $ignore)
     {
         $this->rules[$rule] .= ',' . $column . ',' . $ignore;
         return $this;
