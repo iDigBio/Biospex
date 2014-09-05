@@ -12,7 +12,7 @@
 <div id="banner" style="background: url( {{ $project->banner_file_name }} ) top left no-repeat; height: 250px;">
 	<div class="container">
 		<div class="col-md-12">
-			<img src="{{ $project->logo_file_name }}" alt="{{ $project->title }}"
+			<img src="{{ $project->banner->url() }}" alt="{{ $project->title }}"
 				 style="border: 5px solid #fff; margin-top: 100px; margin-left: -20px;"/>
 		</div>
 	</div>
