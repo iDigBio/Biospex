@@ -192,7 +192,6 @@ class ProjectsController extends BaseController {
      */
     public function update($id)
 	{
-		dd(Input::all());
         // Form Processing
         $result = $this->projectForm->update(Input::all());
         $project = $this->project->find($id);
