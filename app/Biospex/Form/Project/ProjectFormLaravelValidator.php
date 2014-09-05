@@ -35,10 +35,10 @@ class ProjectFormLaravelValidator extends AbstractLaravelValidator {
      */
     protected $rules = array(
         'group_id' => 'required|integer|min:1',
+		'title' => 'required|digits_between:6,140',
 		'description_short' => 'required|digits_between:6,140',
-		//'file' => 'image|mimes:jpeg,bmp,png|image_size:>=1200,>=300',
-		//'banner' => 'image_size:>=1200,>=300',
-		//'logo' => 'image_size:<=300,<=200'
+		'banner' => 'image|image_size:>=1200,>=300',
+		'logo' => 'image|image_size:<=300,<=200'
     );
 
 }
