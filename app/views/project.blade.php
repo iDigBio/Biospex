@@ -9,7 +9,7 @@
 {{-- Content --}}
 @section('content')
 
-<div id="banner" style="background: url("{{ $project->banner->url() }}") top left no-repeat; height: 250px;">
+<div id="banner" style="background: url({{ $project->banner->url() }}) top left no-repeat; height: 250px;">
 	<div class="container">
 		<div class="col-md-12">
 			<img src="{{ $project->logo->url() }}" alt="{{ $project->title }}"
