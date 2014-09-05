@@ -28,7 +28,6 @@
         @endif
         <button class="btn btn-success" type="button" onClick="location.href='{{ URL::route('projects.advertise', [$project->id]) }}'">@lang('buttons.advertise')</button>
     </div>
-    <img src="{{ $imgUrl }}" >
 </div>
 
 <h4>{{ trans('pages.expeditions') }}:</h4>
