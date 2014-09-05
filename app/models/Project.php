@@ -118,6 +118,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     public static function boot(){
         parent::boot();
 
+		static::bootStapler();
+
         static::saving(function($model)
         {
             $model->target_fields = Input::all();
@@ -135,7 +137,6 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     public function group()
     {
         return $this->belongsTo('Group', 'group_id');
-        //return $this->belongsTo('Group', 'group_id')->whereNull('deleted_at');
     }
 
     /**
