@@ -105,4 +105,6 @@ return array(
 
 	'no_projects'				=> "There are no projects in this group.",
 
+	'description_short'         => "Short Description",
+
 );
