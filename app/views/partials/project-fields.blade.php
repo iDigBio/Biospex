@@ -320,17 +320,23 @@
 
     <div class="form-group {{ ($errors->has('logo')) ? 'has-error' : '' }}">
         {{ Form::label('logo', trans('forms.logo'), array('class' => 'col-sm-2 control-label')) }}
-        <div class="col-sm-10">
+        <div class="col-sm-5">
             {{ Form::file('logo') }} {{ trans('forms.logo_max') }}
         </div>
+		<div class="col-sm-5">
+			<img src="{{ $project->logo->url('thumb') }}" />
+		</div>
         {{ ($errors->has('logo') ? $errors->first('logo') : '') }}
     </div>
 
     <div class="form-group {{ ($errors->has('banner')) ? 'has-error' : '' }}">
         {{ Form::label('banner', trans('forms.banner'), array('class' => 'col-sm-2 control-label')) }}
-        <div class="col-sm-10">
-            {{ Form::file('banner') }} {{ trans('forms.banner_min') }}
-        </div>
+        <div class="col-sm-5">
+			{{ Form::file('banner') }} {{ trans('forms.banner_min') }}
+		</div>
+		<div class="col-sm-5">
+			<img src="{{ $project->banner->url('thumb') }}" />
+		</div>
         {{ ($errors->has('banner') ? $errors->first('banner') : '') }}
     </div>
 
