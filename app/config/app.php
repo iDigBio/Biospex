@@ -115,6 +115,7 @@ return array(
         'Codesleeve\LaravelStapler\LaravelStaplerServiceProvider',
         'Codesleeve\AssetPipeline\AssetPipelineServiceProvider',
         'Mgallegos\LaravelJqgrid\LaravelJqgridServiceProvider',
+		'Cviebrock\EloquentSluggable\SluggableServiceProvider',
 		'Cviebrock\ImageValidator\ImageValidatorServiceProvider',
 
     ),
