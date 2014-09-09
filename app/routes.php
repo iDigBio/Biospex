@@ -83,6 +83,7 @@ Route::group(
         Route::resource('projects.expeditions', 'ExpeditionsController');
         Route::get('projects/{projects}/expeditions/{expeditions}/duplicate', array('as' => 'projects.expeditions.duplicate', 'uses' => 'ExpeditionsController@duplicate'));
         Route::get('projects/{projects}/expeditions/{expeditions}/process', array('as' => 'projects.expeditions.process', 'uses' => 'ExpeditionsController@process'));
+		Route::get('projects/{projects}/expeditions/{expeditions}/stop', array('as' => 'projects.expeditions.stop', 'uses' => 'ExpeditionsController@stop'));
         Route::get('projects/{projects}/expeditions/{expeditions}/download/{id}', array('as' => 'projects.expeditions.download', 'uses' => 'ExpeditionsController@download'));
 
         Route::get('grids/{expedition}', array('as' => 'grid-index', 'uses' => 'GridsController@index'));
