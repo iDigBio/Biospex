@@ -50,6 +50,11 @@ class WorkflowManager extends Eloquent {
         'user_id' => 'factory|User'
     );
 
+	public function scopeNotDeleted($query)
+	{
+    	return $query->whereNotNull('deleted_at');
+	}
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
@@ -77,9 +82,9 @@ class WorkflowManager extends Eloquent {
      * @param $id
      * @return mixed
      */
-    public function getByExpeditionId($id)
+    public function getByExpeditionId($id, $deleted)
     {
-        return $this->expeditionid($id)->first();
+        return !$deleted ? $this->expeditionid($id)->first() : $this->expeditionid($id)->NotDeleted()->first();
     }
 
 }
