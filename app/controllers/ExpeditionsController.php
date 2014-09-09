@@ -265,6 +265,35 @@ class ExpeditionsController extends BaseController {
         return Redirect::action('ExpeditionsController@show', [$projectId, $expeditionId]);
     }
 
+	/**
+	 * Stop a expedition process.
+	 *
+	 * @param $projectId
+	 * @param $expeditionId
+	 * @return \Illuminate\Http\RedirectResponse
+	 */
+	public function stop($projectId, $expeditionId)
+	{
+		$workflow = $this->workflowManager->getByExpeditionId($expeditionId);
+		if (is_null($workflow))
+		{
+			Session::flash('error', trans('expeditions.process_no_exists'));
+		}
+		else
+		{
+			$result = $this->workflowManager->destroy($workflow->id);
+			if($result)
+			{
+				Session::flash('success', trans('expeditions.process_stopped'));
+			} else {
+				Session::flash('error', trans('expeditions.process_destroy_error'));
+			}
+		}
+
+		return Redirect::action('ExpeditionsController@show', [$projectId, $expeditionId]);
+
+	}
+
     public function download($projectId, $expeditionId, $downloadId)
     {
         $download = $this->download->find($downloadId);
