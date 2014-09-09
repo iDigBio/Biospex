@@ -11,7 +11,11 @@
 <h3>{{ $expedition->title }}</h3>
 <h5><a href="{{ URL::route('projects.show', [$project->id]) }}">{{ $project->title }}</a></h5>
 <div class="clearfix">
-<button class="btn btn-success pull-right" {{ isset($workflowManager->id) ? 'disabled="disabled"' : '' }} onClick="location.href='{{ action('projects.expeditions.process', [$project->id, $expedition->id]) }}'">@lang('buttons.process')</button>
+@if (is_null($workflowManager))
+	<button class="btn btn-success pull-right" onClick="location.href='{{ action('projects.expeditions.process', [$project->id, $expedition->id]) }}'">@lang('buttons.process')</button>
+@else
+	<button class="btn btn-default btn-danger pull-right action_confirm" href="{{ URL::route('projects.expeditions.stop', [$project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.stop')</button></td>
+@endif
 </div>
 <div class="well clearfix">
     <div class="col-md-8">
