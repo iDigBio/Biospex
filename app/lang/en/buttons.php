@@ -34,6 +34,7 @@ return array(
     'upload'            => "Upload",
     'duplicate'         => "Clone",
     'process'           => "Process",
+	'stop'              => "Stop",
     'cancel'            => "Cancel",
 
     'login'             => "Login",
