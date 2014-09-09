@@ -38,4 +38,8 @@ return array (
     'expedition_destroy_error'      => "An error occurred when deleting expedition",
     'expedition_process_success'    => "The expedition has been added to the process queue",
     'expedition_process_error'      => "An error occurred when trying to process the expedition",
+	'expedition_process_exists'		=> "Expedition cannot be deleted while still in process",
+	'process_no_exists'				=> "Expedition has no processes at this time",
+	'process_stopped'				=> "Expedition process has been stopped",
+	'process_destroy_error'			=> "Expedition process could not be stopped",
 );
