@@ -283,13 +283,22 @@ class ExpeditionsController extends BaseController {
      */
     public function destroy ($projectId, $expeditionId)
     {
-        $result = $this->expedition->destroy($expeditionId);
-        if($result)
-        {
-            Session::flash('success', trans('expeditions.expedition_deleted'));
-        } else {
-            Session::flash('error', trans('expeditions.expedition_destroy_error'));
-        }
+		$workflow = $this->workflowManager->getByExpeditionId($expeditionId);
+		if ( ! is_null($workflow))
+		{
+			Session::flash('error', trans('expeditions.expedition_process_exists'));
+		}
+		else
+		{
+			$result = $this->expedition->destroy($expeditionId);
+			if($result)
+			{
+				Session::flash('success', trans('expeditions.expedition_deleted'));
+			} else {
+				Session::flash('error', trans('expeditions.expedition_destroy_error'));
+			}
+		}
+
         return Redirect::action('projects.show', [$projectId]);
     }
 
