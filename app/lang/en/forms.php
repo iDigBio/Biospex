@@ -31,7 +31,7 @@ return array(
     'contact_email'             => "Contact Email",
     'managed'                   => "Managed By",
     'description_short'         => "Short Description",
-	'description_short_max'     => "Short Description (Max 140 characters)",
+	'description_short_max'     => "Short Description (max 140 characters)",
 	'description_long'			=> "Long Description",
     'incentives'                => "Incentives",
     'geographic_scope'          => "Geographic Scope",
