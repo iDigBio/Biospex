@@ -50,7 +50,7 @@
     <div class="form-group {{ ($errors->has('description_short')) ? 'has-error' : '' }}">
         {{ Form::label('description_short', trans('forms.description_short'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::text('description_short', null, array('class' => 'form-control', 'placeholder' => trans('forms.description_short'))) }}
+            {{ Form::text('description_short', null, array('class' => 'form-control', 'placeholder' => trans('forms.description_short_max'))) }}
         </div>
         {{ ($errors->has('description_short') ? $errors->first('description_short') : '') }}
     </div>
@@ -233,7 +233,7 @@
 	<div class="form-group {{ ($errors->has('description_short')) ? 'has-error' : '' }}">
 		{{ Form::label('description_short', trans('forms.description_short'), array('class' => 'col-sm-2 control-label')) }}
 		<div class="col-sm-10">
-			{{ Form::text('description_short', $project->description_short, array('class' => 'form-control', 'placeholder' => trans('forms.description_short'))) }}
+			{{ Form::text('description_short', $project->description_short, array('class' => 'form-control', 'placeholder' => trans('forms.description_short_max'))) }}
 		</div>
 		{{ ($errors->has('description_short') ? $errors->first('description_short') : '') }}
 	</div>
