@@ -26,7 +26,7 @@
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
 use Biospex\Repo\Expedition\ExpeditionInterface;
-use Biospex\Services\Subject\Subject;
+use Biospex\Services\Subject\SubjectProcess;
 use Biospex\Services\Report\Report;
 use Biospex\Repo\Download\DownloadInterface;
 
