@@ -27,7 +27,7 @@
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Biospex\Repo\Import\ImportInterface;
-use Biospex\Services\Subject\Subject;
+use Biospex\Services\Subject\SubjectProcess;
 use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Mailer\BiospexMailer;
@@ -80,7 +80,7 @@ class SubjectImport extends Command {
     public function __construct(
         ImportInterface $import,
         Filesystem $filesystem,
-        Subject $subject,
+        SubjectProcess $subject,
         UserInterface $user,
         ProjectInterface $project,
         BiospexMailer $mailer,
