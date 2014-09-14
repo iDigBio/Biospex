@@ -19,7 +19,7 @@
 	},
     "require-dev": {
         "barryvdh/laravel-ide-helper": "1.*",
-        "way/generators": "dev-master",
+        "way/generators": "~2.0",
         "way/laravel-test-helpers": "dev-master",
         "mockery/mockery": "0.9.*@dev",
         "league/factory-muffin": "~2.0@dev",
