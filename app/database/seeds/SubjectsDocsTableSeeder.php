@@ -25,7 +25,6 @@
  */
 
 use Illuminate\Database\Seeder;
-use Biospex\Services\Xml\Xml;
 use Biospex\Services\Subject\SubjectProcess;
 use Biospex\Services\Xml\XmlProcess;
 
