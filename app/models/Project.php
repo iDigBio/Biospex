@@ -147,6 +147,14 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         return $this->hasMany('Subject');
     }
 
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 */
+	public function header()
+	{
+		return $this->hasOne('Headers');
+	}
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

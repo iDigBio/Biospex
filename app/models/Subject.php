@@ -46,8 +46,10 @@ class Subject extends Eloquent {
      * @var array
      */
     protected $fillable = array(
-        'mongo_id',
-        'project_id',
+		'project_id',
+		'header_id',
+		'meta_id',
+		'mongo_id',
         'object_id'
     );
 
@@ -113,4 +115,12 @@ class Subject extends Eloquent {
     {
         return $this->hasOne('SubjectDoc', '_id', 'mongo_id');
     }
+
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 */
+	public function header()
+	{
+		return $this->hasOne('Header');
+	}
 }

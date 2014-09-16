@@ -66,6 +66,14 @@ class Header extends Eloquent{
 	}
 
 	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function subject()
+	{
+		return $this->hasMany('Subject');
+	}
+
+	/**
 	 * Find header by project Id
 	 *
 	 * @param $id

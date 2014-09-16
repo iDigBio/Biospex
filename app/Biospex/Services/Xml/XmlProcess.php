@@ -29,39 +29,65 @@ class XmlProcess {
 	private $xml = null;
 	private $xpath = null;
 	private $encoding = 'UTF-8';
-
-	/**
-	 * Initialize the root XML node [optional]
-	 * @param $version
-	 * @param $encoding
-	 * @param $format_output
-	 */
-	public static function init($version = '1.0', $encoding = 'UTF-8', $format_output = true) {
-		self::$xml = new \DOMDocument($version, $encoding);
-		self::$xml->preserveWhiteSpace = false;
-		self::$xml->formatOutput = $format_output;
-		self::$encoding = $encoding;
-	}
+	private $version = '1.0';
 
 	/**
 	 * Load xml string and return
 	 *
 	 * @param $input_xml
-	 * @return null
+	 * @return \DOMDocument
 	 * @throws Exception
 	 */
 	public function load($input_xml)
 	{
-		$this->xml = $this->getXMLRoot();
+		$this->xml = new \DOMDocument($this->version, $this->encoding);
+		$this->xml->preserveWhiteSpace = false;
+
 		$parsed = $this->xml->load($input_xml);
 		if(!$parsed) {
 			throw new Exception('[XML2Array] Error parsing the XML string.');
 		}
 
-		$this->setXPath();
+		$this->xpath = new \DOMXpath($this->xml);
+		$this->xpath->registerNamespace('ns', $this->xml->documentElement->namespaceURI);
 
-		return $this->xml;
+		return $this->xml->saveXML();
 	}
+
+	/**
+	 * Get dom document attribute by tag
+	 *
+	 * @param $tag
+	 * @param $attribute
+	 * @return mixed
+	 */
+	public function getDomTagAttribute($tag, $attribute)
+	{
+		return $this->xml->getElementsByTagName($tag)->item(0)->getAttribute($attribute);
+	}
+
+	/**
+	 * Get dom document element by tag
+	 *
+	 * @param $tag
+	 * @return mixed
+	 */
+	public function getElementByTag($tag)
+	{
+		return $this->xml->getElementsByTagName($tag)->item(0)->nodeValue;
+	}
+
+	/**
+	 * Perform query on dom document
+	 *
+	 * @param $query
+	 * @return mixed
+	 */
+	public function getXpathQuery($query)
+	{
+		return $this->xpath->query($query)->item(0);
+	}
+
 
 	/**
 	 * Convert an XML to Array
@@ -70,8 +96,8 @@ class XmlProcess {
 	 * @return mixed
 	 */
 	public function &createArray($xml) {
-		$array[$xml->documentElement->tagName] = self::convert($xml->documentElement);
-		$this->xml = null;    // clear the xml node in the class for 2nd time use.
+		$array[$this->xml->documentElement->tagName] = self::convert($this->xml->documentElement);
+		//$this->xml = null;    // clear the xml node in the class for 2nd time use.
 		return $array;
 	}
 
@@ -142,67 +168,5 @@ class XmlProcess {
 				break;
 		}
 		return $output;
-	}
-
-	/**
-	 * Get dom document attribute by tag
-	 *
-	 * @param $tag
-	 * @param $attribute
-	 * @return mixed
-	 */
-	public function getDomTagAttribute($tag, $attribute)
-	{
-		return $this->xml->getElementsByTagName($tag)->item(0)->getAttribute($attribute);
-	}
-
-	/**
-	 * Get dom document element by tag
-	 *
-	 * @param $tag
-	 * @return mixed
-	 */
-	public function getElementByTag($tag)
-	{
-		return $this->xml->getElementsByTagName($tag)->item(0)->nodeValue;
-	}
-
-	/**
-	 * Perform query on dom document
-	 *
-	 * @param $query
-	 * @return mixed
-	 */
-	public function getXpathQuery($query)
-	{
-		return $this->xpath->query($query)->item(0);
-	}
-
-	/*
-	 * Get the root XML node, if there isn't one, create it.
-	 */
-	private function getXMLRoot(){
-		if(empty($this->xml)) {
-			$this->init();
-		}
-	}
-
-	/**
-	 * Set xpath for document
-	 *
-	 * @param $xml
-	 */
-	private function setXPath()
-	{
-		$this->xpath = new \DOMXpath($this->xml);
-		$this->xpath->registerNamespace('ns', $this->xml->documentElement->namespaceURI);
-	}
-
-
-	public function headerArray($array)
-	{
-
-
-		return $array;
 	}
 }
