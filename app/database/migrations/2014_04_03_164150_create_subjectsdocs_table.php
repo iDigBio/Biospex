@@ -35,8 +35,8 @@ class CreateSubjectsdocsTable extends Migration {
         Schema::connection('mongodb')->create('subjectsdocs', function($collection)
         {
             $collection->index('project_id');
-            $collection->index('id');
-            $collection->unique(array('project_id', 'id'));
+            $collection->index('subject_id');
+            $collection->unique(array('project_id', 'subject_id'));
             $collection->timestamps();
             $collection->softDeletes();
         });
