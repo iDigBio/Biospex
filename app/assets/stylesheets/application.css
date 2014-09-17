@@ -10,7 +10,6 @@
  * but before any files alphabetically greater than 'application.css' 
  *
  *= require bootstrap
- *= require bootstrap-theme
  *= require jquery-ui.theme
  *= require ui.jqgrid.css
  *= require_tree .
