@@ -35,6 +35,7 @@ class ProjectsTableSeeder extends Seeder {
         Eloquent::unguard();
 
 		DB::table('projects')->truncate();
+		DB::table('imports')->truncate();
 
         Project::create(array(
             'group_id' => 3,
