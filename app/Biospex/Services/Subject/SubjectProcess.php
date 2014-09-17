@@ -124,6 +124,7 @@ class SubjectProcess {
 		$this->subjectdoc = $subjectdoc;
 		$this->subject = $subject;
 		$this->header = $header;
+		$this->metaFile = Config::get('config.metaFile');
 	}
 
 	/**
