@@ -8,30 +8,36 @@
 
 {{-- Content --}}
 @section('content')
-<h4>{{ $project->title }}</h4>
 
-<div class="well clearfix">
-    <div class="col-md-8">
-        <p><strong>@lang('pages.description_short'):</strong> {{ $project->description_short }} </p>
-        <p><strong>@lang('pages.project_url'):</strong> {{ HTML::linkAction('HomeController@project', $project->title, [$project->slug]) }} </p>
-    </div>
-    <div class="col-md-2">
-        <p><em>@lang('pages.created'): {{ $project->created_at }}</em></p>
-        <p><em>@lang('pages.updated'): {{ $project->updated_at }}</em></p>
-    </div>
-    <div class="col-md-12">
-        <button class="btn btn-default" type="button" onClick="location.href='{{ URL::route('projects.data', [$project->id]) }}'">@lang('buttons.data')</button>
-        <button class="btn btn-primary" type="button" onClick="location.href='{{ URL::route('projects.duplicate', [$project->id]) }}'">@lang('buttons.duplicate')</button>
-        <button class="btn btn-warning" type="button" onClick="location.href='{{ URL::route('projects.edit', [$project->id]) }}'">@lang('buttons.edit')</button>
-        @if ($isOwner)
-        <button class="btn btn-default btn-danger action_confirm" href="{{ URL::route('projects.destroy', [$project->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.delete')</button></td>
-        @endif
-        <button class="btn btn-success" type="button" onClick="location.href='{{ URL::route('projects.advertise', [$project->id]) }}'">@lang('buttons.advertise')</button>
+        <ul class="breadcrumb">
+        <li>Group: {{ $group->name }}</li>
+        <li>@lang('pages.created'): {{ $project->created_at }}</li>
+        <li>@lang('pages.updated'): {{ $project->updated_at }}</li>
+        </ul>
+        
+        <div class="jumbotron">
+        <h4>Project:</h4>
+        <h2>{{ $project->title }}</h2>
+        <p>{{ $project->description_short }}</p>
+        
+        </div>
+
+<div class="panel panel-default">
+    <p class="eyesright"><strong>@lang('pages.project_url'):</strong> {{ HTML::linkAction('HomeController@project', $project->title, [$project->slug]) }} </p>
+    <button class="btn btn-default btn-xs" type="button" onClick="location.href='{{ URL::route('projects.data', [$project->id]) }}'">@lang('buttons.data')</button>
+    <button class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ URL::route('projects.duplicate', [$project->id]) }}'">@lang('buttons.duplicate')</button>
+    <button class="btn btn-warning btn-xs" type="button" onClick="location.href='{{ URL::route('projects.edit', [$project->id]) }}'">@lang('buttons.edit')</button>
+    @if ($isOwner)
+    <button class="btn btn-default btn-danger action_confirm btn-xs" href="{{ URL::route('projects.destroy', [$project->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.delete')</button></td>
+    @endif
+    <button class="btn btn-success btn-xs" type="button" onClick="location.href='{{ URL::route('projects.advertise', [$project->id]) }}'">@lang('buttons.advertise')</button>
     </div>
 </div>
 
-<h4>{{ trans('pages.expeditions') }}:</h4>
-<button class="btn btn-primary" onClick="location.href='{{ URL::route('projects.expeditions.create', [$project->id]) }}'">@lang('buttons.create')</button>
+<hr />
+
+<h3>{{ trans('pages.expeditions') }}:</h3>
+<button class="btn btn-primary" onClick="location.href='{{ URL::route('projects.expeditions.create', [$project->id]) }}'">+ @lang('buttons.create')</button>
 <div class="table-responsive">
     <table class="table table-striped table-hover dataTable">
         <thead>
@@ -55,12 +61,12 @@
             <td>{{ $expedition->total_subjects }}</td>
             <td>500</td>
             <td>300</td>
-            <td>37.5%</td>
+            <td>85% <span class="complete"><span class="complete85">&nbsp;</span></span></td>
             <td class="nowrap">
-                <button class="btn btn-info" type="button" onClick="location.href='{{ action('ExpeditionsController@show', [$project->id, $expedition->id]) }}'">@lang('buttons.view')</button>
-                <button class="btn btn-primary" type="button" onClick="location.href='{{ URL::route('projects.expeditions.duplicate', [$project->id, $expedition->id]) }}'">@lang('buttons.duplicate')</button>
-                <button class="btn btn-warning" type="button" onClick="location.href='{{ action('ExpeditionsController@edit', [$project->id, $expedition->id]) }}'">@lang('buttons.edit')</button>
-                <button class="btn btn-default btn-danger action_confirm" href="{{ action('ExpeditionsController@destroy', [$project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.delete')</button></td>
+                <button class="btn btn-info btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@show', [$project->id, $expedition->id]) }}'">@lang('buttons.view')</button>
+                <button class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ URL::route('projects.expeditions.duplicate', [$project->id, $expedition->id]) }}'">@lang('buttons.duplicate')</button>
+                <button class="btn btn-warning btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@edit', [$project->id, $expedition->id]) }}'">@lang('buttons.edit')</button>
+                <button class="btn btn-default btn-danger action_confirm btn-xs" href="{{ action('ExpeditionsController@destroy', [$project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.delete')</button></td>
         </tr>
         @endforeach
         </tbody>

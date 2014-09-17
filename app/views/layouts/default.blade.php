@@ -21,7 +21,7 @@
 <body class="{{ Route::currentRouteName() }}">
 
 <!-- Navbar -->
-<div class="navbar navbar-inverse navbar-fixed-top">
+<div class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -29,7 +29,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ URL::route('home') }}">{{trans('pages.sitename')}}</a>
+            <a class="navbar-brand" href="{{ URL::route('home') }}"><img src="/assets/biospex_header_logo.png" alt="{{trans('pages.sitename')}}" /></a>
         </div>
         <div class="collapse navbar-collapse">
             @if (Config::get('config.translate'))
