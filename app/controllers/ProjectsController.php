@@ -143,11 +143,12 @@ class ProjectsController extends BaseController {
 	{
         $project = $this->project->findWith($id, ['group']);
         $expeditions = $project->expedition;
+		$group = $project->group;
 		$user = Sentry::getUser();
 		$isSuperUser = $user->isSuperUser();
         $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
 
-        return View::make('projects.show', compact('isOwner', 'project', 'expeditions'));
+        return View::make('projects.show', compact('isOwner', 'project', 'expeditions', 'group'));
 	}
 
     /**
