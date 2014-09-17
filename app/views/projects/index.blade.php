@@ -55,7 +55,7 @@
             </table>
         </div>
 		@else
-		{{ trans('pages.no_projects') }}
+		{{ trans('welcome.no_projects') }}
 		@endif
     </div>
 </div>
