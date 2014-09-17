@@ -11,7 +11,7 @@
 <div class="row">
     <div class="col-md-10 col-md-offset-1">
         <h3>{{ trans('projects.projects') }}</h3>
-        <button class="btn btn-primary" onClick="location.href='{{ URL::route('projects.create') }}'">+ @lang('buttons.create')</button>
+        <button class="btn btn-primary" onClick="location.href='{{ URL::route('projects.create') }}'">@lang('buttons.create')</button>
     </div>
     <div class="col-md-10 col-md-offset-1">
 		@if ( ! $groups->isEmpty())
@@ -36,7 +36,7 @@
 						<td><a href="{{ URL::route('groups.show', [$group->id]) }}">{{ $group->name }}</a></td>
 						<td class="nowrap">
 							<button class="btn btn-info btn-xs" type="button" onClick="location.href='{{ URL::route('projects.show', [$project->id]) }}'">@lang('buttons.view')</button>
-							<button class="btn btn-default btn-xs" type="button" onClick="location.href='{{ URL::route('projects.data', [$project->id]) }}'">+ @lang('buttons.data')</button>
+							<button class="btn btn-default btn-xs" type="button" onClick="location.href='{{ URL::route('projects.data', [$project->id]) }}'">@lang('buttons.data')</button>
 							<button class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ URL::route('projects.duplicate', [$project->id]) }}'">@lang('buttons.duplicate')</button>
 							<button class="btn btn-warning btn-xs" type="button" onClick="location.href='{{ URL::route('projects.edit', [$project->id]) }}'">@lang('buttons.edit')</button>
 							@if ($user->id == $group->user_id || $isSuperUser)
