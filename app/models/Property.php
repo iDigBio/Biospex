@@ -59,4 +59,26 @@ class Property extends Eloquent{
 		'short' => 'string',
 		'ns' => 'string'
 	);
+
+	/**
+	 * Find by qualified name
+	 *
+	 * @param $name
+	 * @return mixed
+	 */
+	public function findByQualified($name)
+	{
+		return $this->where('qualified', '=', $name)->first();
+	}
+
+	/**
+	 * Find by short name
+	 *
+	 * @param $name
+	 * @return mixed
+	 */
+	public function findByShort($name)
+	{
+		return $this->where('short', '=', $name)->first();
+	}
 }

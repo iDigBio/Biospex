@@ -24,7 +24,6 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Illuminate\Support\Facades\Config;
 use Codesleeve\Stapler\ORM\EloquentTrait;
 use Codesleeve\Stapler\ORM\StaplerableInterface;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
