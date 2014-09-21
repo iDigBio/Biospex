@@ -16,7 +16,7 @@ class CreatePropertiesTable extends Migration {
 			$table->increments('id');
 			$table->string('qualified');
 			$table->string('short');
-			$table->string('ns');
+			$table->string('namespace');
 			$table->unique('qualified');
 			$table->unique('short');
 			$table->timestamps();
