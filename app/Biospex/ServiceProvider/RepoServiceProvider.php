@@ -91,9 +91,6 @@ class RepoServiceProvider extends ServiceProvider {
 		// bind header repository
 		$app->bind('Biospex\Repo\Header\HeaderInterface', 'Biospex\Repo\Header\HeaderRepository');
 
-        // bind meta repository
-        $app->bind('Biospex\Repo\Meta\MetaInterface', 'Biospex\Repo\Meta\MetaRepository');
-
         // bind workflow manager
         $app->bind('Biospex\Repo\WorkflowManager\WorkflowManagerInterface', 'Biospex\Repo\WorkflowManager\WorkflowManagerRepository');
 
