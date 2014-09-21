@@ -27,6 +27,7 @@
 use Illuminate\Database\Seeder;
 use Biospex\Services\Subject\SubjectProcess;
 use Biospex\Services\Xml\XmlProcess;
+use Biospex\Repo\Property\PropertyInterface;
 
 class SubjectsDocsTableSeeder extends Seeder {
 
@@ -37,18 +38,21 @@ class SubjectsDocsTableSeeder extends Seeder {
      */
     protected $projectId = 1;
 
-    /**
-     * Constructor
-     *
-     * @param SubjectsImport $subjectsImport
-     */
+	/**
+	 * Constructor
+	 *
+	 * @param SubjectProcess $subjectProcess
+	 * @param XmlProcess $xmlProcess
+	 */
     public function __construct (
 		SubjectProcess $subjectProcess,
-		XmlProcess $xmlProcess
+		XmlProcess $xmlProcess,
+		PropertyInterface $property
 	)
     {
         $this->subjectProcess = $subjectProcess;
 		$this->xmlProcess = $xmlProcess;
+		$this->property = $property;
 		$this->metaFile = Config::get('config.metaFile');
     }
 
@@ -61,18 +65,19 @@ class SubjectsDocsTableSeeder extends Seeder {
     {
         Eloquent::unguard();
 
-        DB::table('metas')->truncate();
 		DB::table('properties')->truncate();
 		DB::table('headers')->truncate();
 		DB::table('subjects')->truncate();
         DB::connection('mongodb')->collection('subjectsdocs')->delete();
 
+		// Load xml
 		$xml = $this->xmlProcess->load('app/database/seeds/data/meta.xml');
-		//$array = $this->xmlProcess->createArray($xml);
 
+		// Set core type and file
 		$coreType = $this->xmlProcess->getDomTagAttribute('core', 'rowType');
 		$coreFile = $this->xmlProcess->getElementByTag('core');
 
+		// Set delimited and project id
 		$this->subjectProcess->setDelimiter($this->xmlProcess->getDomTagAttribute('core', 'fieldsTerminatedBy'));
 		$this->subjectProcess->setProjectId($this->projectId);
 
@@ -81,20 +86,24 @@ class SubjectsDocsTableSeeder extends Seeder {
 			$this->subjectProcess->setCore(false);
 			$this->subjectProcess->setOccurrenceFile($coreFile);
 
-			$multiMediaQuery = $this->xmlProcess->getXpathQuery("//ns:extension[contains(@rowType, '{$this->metaFile['multimediaFile']}')]");
+			$multiMediaQuery = $this->xmlProcess->queryOne("//ns:extension[contains(@rowType, '{$this->metaFile['multimediaFile']}')]");
 			$this->subjectProcess->setMultiMediaFile($multiMediaQuery->nodeValue);
 
-			$multiMediaIndexQuery = $this->xmlProcess->getXpathQuery("//ns:field[contains(@term, '{$this->metaFile['identifier']}')]");
+			$multiMediaIndexQuery = $this->xmlProcess->queryOne("//ns:field[contains(@term, '{$this->metaFile['identifier']}')]");
 			$identifier = $multiMediaIndexQuery->attributes->getNamedItem("index")->nodeValue;
+
+			$xpath_query = "/ns:archive/ns:extension[contains(@rowType, '{$this->metaFile['multimediaFile']}')]/ns:field";
 		}
 		elseif (preg_match('/multimedia/', $coreType))
 		{
 			$this->subjectProcess->setCore(true);
 			$this->subjectProcess->setMultiMediaFile($coreFile);
 
-			$occurrenceQuery = $this->xmlProcess->getXpathQuery("//ns:extension[contains(@rowType, '{$this->metaFile['occurrenceFile']}')]");
+			$occurrenceQuery = $this->xmlProcess->queryOne("//ns:extension[contains(@rowType, '{$this->metaFile['occurrenceFile']}')]");
 			$this->subjectProcess->setOccurrenceFile($occurrenceQuery->nodeValue);
 			$identifier = null;
+
+			$xpath_query = "/ns:archive/ns:extension[contains(@rowType, '{$this->metaFile['occurrenceFile']}')]/ns:field";
 		}
 
         $multiMediaFile = $this->subjectProcess->getMultiMediaFile();
@@ -103,16 +112,38 @@ class SubjectsDocsTableSeeder extends Seeder {
         $multimedia = $this->subjectProcess->loadCsv("app/database/seeds/data/$multiMediaFile", 'multimedia');
         $occurrence = $this->subjectProcess->loadCsv("app/database/seeds/data/$occurrenceFile", 'occurrence');
 
-		$this->subjectProcess->setMultiMediaIdentifier($identifier);
-		$this->subjectProcess->setHeaderArray();
+		// Build fields array using index and qualified name
+		$multimediaHeader = $this->subjectProcess->getMultiMediaHeader();
+		$fields = array();
+		$fields[0] = $multimediaHeader[0];
+		foreach($this->xmlProcess->xpathQuery($xpath_query) as $child)
+		{
+			$index = $child->attributes->getNamedItem("index")->nodeValue;
+			$url = $child->attributes->getNamedItem("term")->nodeValue;
+			list($namespace, $short) = preg_match('/:/', $multimediaHeader[$index]) ?
+				preg_split('/:/', $multimediaHeader[$index]) : array('', $multimediaHeader[$index]);
+			$array = array(
+				'qualified' => $url,
+				'short' => $short,
+				'namespace' => $namespace,
+			);
+			try{
+				$this->property->create($array);
+			}
+			catch(Exception $e)
+			{
+				die($e->getMessage());
+			}
 
-		//$multimediaHeader = $this->subjectProcess->getMultiMediaHeader();
-		//$occurrenceHeader = $this->subjectProcess->getOccurrenceHeader();
+			$fields[$index] = $short;
+			$dbArray = null;
+		}
+
+		$this->subjectProcess->setMultiMediaIdentifier($identifier);
+		$this->subjectProcess->setHeaderArray($fields);
 
 		$subjects = $this->subjectProcess->buildSubjectsArray($multimedia, $occurrence);
 
-		$meta = $this->subjectProcess->saveMeta($xml);
-
-        $this->subjectProcess->insertDocs($subjects, $meta);
+        $this->subjectProcess->insertDocs($subjects);
     }
 }
