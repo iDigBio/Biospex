@@ -48,7 +48,7 @@ class Property extends Eloquent{
 	protected $fillable = array(
 		'qualified',
 		'short',
-		'ns'
+		'namespace'
 	);
 
 	/**
@@ -57,7 +57,7 @@ class Property extends Eloquent{
 	public static $factory = array(
 		'qualified' => 'string',
 		'short' => 'string',
-		'ns' => 'string'
+		'namespace' => 'string'
 	);
 
 	/**
