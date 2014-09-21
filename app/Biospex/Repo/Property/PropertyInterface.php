@@ -1,4 +1,4 @@
-<?php  use Biospex\Repo\Property;
+<?php  namespace Biospex\Repo\Property;
 /**
  * PropertyInterface.php
  *
