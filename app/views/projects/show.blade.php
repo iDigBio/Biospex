@@ -23,6 +23,7 @@
         </div>
 
 <div class="panel panel-default">
+    <div style="padding: 10px;">
     <p class="eyesright"><strong>@lang('pages.project_url'):</strong> {{ HTML::linkAction('HomeController@project', $project->title, [$project->slug]) }} </p>
     <button class="btn btn-default btn-xs" type="button" onClick="location.href='{{ URL::route('projects.data', [$project->id]) }}'">@lang('buttons.data')</button>
     <button class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ URL::route('projects.duplicate', [$project->id]) }}'">@lang('buttons.duplicate')</button>
@@ -31,12 +32,13 @@
     <button class="btn btn-default btn-danger action_confirm btn-xs" href="{{ URL::route('projects.destroy', [$project->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.delete')</button></td>
     @endif
     <button class="btn btn-success btn-xs" type="button" onClick="location.href='{{ URL::route('projects.advertise', [$project->id]) }}'">@lang('buttons.advertise')</button>
+    </div>
 </div>
 
 <hr />
 
 <h3>{{ trans('pages.expeditions') }}:</h3>
-<button class="btn btn-primary" onClick="location.href='{{ URL::route('projects.expeditions.create', [$project->id]) }}'">+ @lang('buttons.create')</button>
+<button class="btn btn-success" onClick="location.href='{{ URL::route('projects.expeditions.create', [$project->id]) }}'">+ @lang('buttons.create')</button>
 <div class="table-responsive">
     <table class="table table-striped table-hover dataTable">
         <thead>

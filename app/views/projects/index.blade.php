@@ -11,7 +11,7 @@
 <div class="row">
     <div class="col-md-10 col-md-offset-1">
         <h3>{{ trans('projects.projects') }}</h3>
-        <button class="btn btn-primary" onClick="location.href='{{ URL::route('projects.create') }}'">@lang('buttons.create')</button>
+        <button class="btn btn-success" onClick="location.href='{{ URL::route('projects.create') }}'">+ @lang('buttons.create')</button>
     </div>
     <div class="col-md-10 col-md-offset-1">
 		@if ( ! $groups->isEmpty())
