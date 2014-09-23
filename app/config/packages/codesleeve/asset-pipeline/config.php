@@ -43,13 +43,9 @@ return array(
 		'app/assets/javascripts',
 		'app/assets/stylesheets',
 		'app/assets/images',
-		'lib/assets/javascripts',
-		'lib/assets/stylesheets',
-		'lib/assets/images',
+		'app/assets/stylesheets/fonts',
 		'provider/assets/javascripts',
 		'provider/assets/stylesheets',
-		'provider/assets/images',
-        'provider/assets/stylesheets/fonts'
 	),
 
 	/*
