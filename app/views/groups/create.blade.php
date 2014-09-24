@@ -10,8 +10,8 @@
 @section('content')
 <div class="row">
     <div class="col-md-4 col-md-offset-4">
-	{{ Form::open(array('action' => 'GroupsController@store')) }}
-        <h2>@lang('groups.group_create')</h2>
+	{{ Form::open(array('action' => 'GroupsController@store', 'class' => 'form-horizontal')) }}
+        <legend>@lang('groups.group_create')</legend>
     
         <div class="form-group {{ ($errors->has('name')) ? 'has-error' : '' }}">
             {{ Form::text('name', null, array('class' => 'form-control', 'placeholder' => trans('pages.name'))) }}
@@ -24,6 +24,6 @@
 
     {{ Form::close() }}
     </div>
-</div>1
+</div>
 
 @stop
