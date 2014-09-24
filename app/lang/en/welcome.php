@@ -25,28 +25,24 @@
  */
 
 return array(
-	'no_projects' => '<p>Welcome to Biospex!</p>
-					<p>Follow these instructions to create your first project.</p>
-					<p>A <b>project</b> contains the most complete set of data that will be sent out for transcription
-					and/or georeferencing as smaller <b>expeditions</b>. A project may contain tens of thousands of
-					records. We recommend dividing it into several smaller expeditions of hundreds or just a few
-					thousand that are more manageable for the digitization tools and more exciting for citizen
-					scientists. You may choose to separate the expeditions based on year, taxa, location or another
-					variable. You may also separate at random.</p>
-					<p>The first step in creating a project is to click <b>Create</b>, and provide the descriptive
-					information that is requested on the page that follows. The material you provide on this page will
-					be used when your data are sent out for transcription (Notes from Nature) and/or georeferencing
+	'welcome'   => 'Welcome',
+	'started'   => '<p>Let\'s get started.</p>
+	                <p>BioSpex works by using groups, projects and expeditions. Here is an introduction.</p>',
+	'groups'    => '<h4>Groups</h4>
+	                <p>Groups let you work with other people. If you joined BioSpex by invitation, then you 
+	                are part of someone else\'s group. Otherwise, we made you a group of your very own. You can invite colleagues to your own group.</p>',            
+	'projects'    => '<h4>Projects</h4>
+	                <p>Projects are sets of your data that you want processed. The project also contains the 
+	                descriptions of your targets for processing. The description you provide will be used when 
+	                your data are sent out for transcription (Notes from Nature) and/or georeferencing
 					(GEOLocate) and will be seen by citizen scientists who will use this information to decide if
-					they are interested in and qualified to participate.</p>
-					<p>You are now ready to upload data to BIOSPEX. Click <b>Data</b> and follow the instructions to begin this
-					process. After you upload your first expedition, you can use the
-					<b>Clone</b> feature to upload additional expeditions with the same
-					descriptive information. The <b>Edit </b>and <b>Delete</b> features
-					are also available once you upload an expedition.</p>
-					<p>When you have uploaded your dataset,
-					you can then <b>Process</b> your project to send it off for
-					transcription or georeferencing. Follow the progress made by citizen
-					scientists from your Project page.
-					<p>Still have questions? Feel free to
-					contact us with any questions or concerns.</p>',
+					they are interested in and qualified to participate.</p>',
+	'expeditions'    => '<h4>Expeditions</h4>
+	                <p>Expeditions are sub sets of your data that get sent to various digitization tools. While a 
+	                project may contain tens of thouands of records, expeditions may contain only a few hundred. 
+	                You may choose to separate the expeditions based on year, taxa, location or another variable. 
+	                You may also separate at random. We recommend dividing your data into several expeditions that 
+	                are more manageable for the digitization tools and more exciting for citizen scientists.</p>',
+	'ready'     => '<p>Ready to start? Go ahead, make your first project.</p>',
+
 );

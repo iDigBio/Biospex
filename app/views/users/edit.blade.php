@@ -89,7 +89,7 @@
             <div class="col-sm-offset-2 col-sm-10">
                 {{ Form::hidden('id', $user->id) }}
                 {{ Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary'))}}
-                {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
+                {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-default', 'onClick' => "location.href='$cancel'"]) }}
             </div>
       </div>
     {{ Form::close()}}

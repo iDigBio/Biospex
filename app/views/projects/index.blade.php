@@ -9,13 +9,13 @@
 {{-- Content --}}
 @section('content')
 <div class="row">
+    @if ( ! $groups->isEmpty())
     <div class="col-md-10 col-md-offset-1">
         <h3>{{ trans('projects.projects') }}</h3>
         <button class="btn btn-success" onClick="location.href='{{ URL::route('projects.create') }}'"><span class="glyphicon glyphicon-plus"></span>  @lang('buttons.create')</button>
     </div>
     <div class="col-md-10 col-md-offset-1">
-		@if ( ! $groups->isEmpty())
-        <div class="table-responsive">
+		<div class="table-responsive">
             <table class="table table-striped table-hover">
                 <thead>
                 <tr>
@@ -54,9 +54,22 @@
                 </tbody>
             </table>
         </div>
-		@else
-		{{ trans('welcome.no_projects') }}
-		@endif
     </div>
+	@else
+	<div class="col-md-10 col-md-offset-1">
+        <h3>{{ trans('welcome.welcome') }}</h3>
+    </div>
+    <div class="col-md-10 col-md-offset-1">
+    
+        {{ trans('welcome.started') }}
+		{{ trans('welcome.groups') }}
+		{{ trans('welcome.projects') }}	
+		{{ trans('welcome.expeditions') }}
+		{{ trans('welcome.ready') }}
+	    <button class="btn btn-success" onClick="location.href='{{ URL::route('projects.create') }}'"><span class="glyphicon glyphicon-plus"></span>  @lang('buttons.create')</button>
+  
+	</div>
+	@endif
+    
 </div>
 @stop
