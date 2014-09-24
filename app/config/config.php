@@ -14,14 +14,6 @@ return array(
     /** Turn on language translation in main menu */
     'translate' => false,
 
-    /** Meta.xml file search fields */
-    'metaFile' => array(
-        'multimediaFile' => 'multimedia',
-        'occurrenceFile' => 'occurrence',
-        'identifier'     => 'identifier',
-        'remoteImgUrl'   => 'bestQualityAccessURI'
-    ),
-
     /** Default expedition data directories */
     'dataDir' => storage_path() . '/data',
     'dataTmp' => storage_path() . '/data/tmp',
