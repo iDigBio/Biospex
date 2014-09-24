@@ -9,9 +9,20 @@
 {{-- Content --}}
 @section('content')
 
-<h2>{{ $project->title }}</h2>
-<h4>{{ trans('projects.add_data') }}</h4>
-<div class="well">
+        <ul class="breadcrumb">
+        <li>@lang('pages.created'): {{ $project->created_at }}</li>
+        <li>@lang('pages.updated'): {{ $project->updated_at }}</li>
+        </ul>
+        
+        <div class="jumbotron">
+        <h4>Project:</h4>
+        <h2>{{ $project->title }}</h2>
+        <p>{{ $project->description_short }}</p>
+        
+        </div>
+
+
+<div class="panel panel-default">
     {{ Form::open(array(
         'action' => array('projects.upload', $project->id),
         'method' => 'post',
@@ -32,14 +43,12 @@
 
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            {{ Form::submit(trans('buttons.upload'), array('class' => 'btn btn-primary'))}}
+            {{ Form::submit(trans('buttons.upload'), array('class' => 'btn btn-success'))}}
 			{{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
         </div>
     </div>
     {{ Form::close()}}
-    <div class="col-md-12">
-    {{ trans('pages.add_data_desc') }}
-    </div>
+    <p>{{ trans('pages.add_data_desc') }}</p>
 </div>
 
 @stop

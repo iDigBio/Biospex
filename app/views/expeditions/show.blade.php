@@ -28,10 +28,10 @@
         <p class="eyesright"><strong>@lang('pages.expedition_download'):</strong> <a href="{{ URL::route('projects.expeditions.download', [$project->id, $expedition->id, $expedition->download->id]) }}">{{ $expedition->download->file }}</a> </p>
     @endif
     
-    <button class="btn btn-default btn-xs" type="button" onClick="location.href='{{ URL::route('projects.data', [$project->id]) }}'">@lang('buttons.data')</button>
-    <button class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ URL::route('projects.expeditions.duplicate', [$project->id, $expedition->id]) }}'">@lang('buttons.duplicate')</button>
-    <button class="btn btn-warning btn-xs" onClick="location.href='{{ URL::route('projects.expeditions.edit', [$project->id, $expedition->id]) }}'">@lang('buttons.edit')</button>
-    <button class="btn btn-default btn-danger action_confirm btn-xs" href="{{ URL::route('projects.expeditions.destroy', [$project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.delete')</button></td>
+    <button class="btn btn-default btn-xs" type="button" onClick="location.href='{{ URL::route('projects.data', [$project->id]) }}'"><span class="glyphicon glyphicon-plus-sign"></span> @lang('buttons.data')</button>
+    <button class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ URL::route('projects.expeditions.duplicate', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-share-alt"></span> @lang('buttons.duplicate')</button>
+    <button class="btn btn-warning btn-xs" onClick="location.href='{{ URL::route('projects.expeditions.edit', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-cog"></span> @lang('buttons.edit')</button>
+    <button class="btn btn-default btn-danger action_confirm btn-xs" href="{{ URL::route('projects.expeditions.destroy', [$project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="glyphicon glyphicon-remove-circle"></span> @lang('buttons.delete')</button></td>
     
     </div>
 </div>
@@ -39,9 +39,9 @@
 
 <div class="clearfix">
 @if (is_null($workflowManager))
-	<button class="btn btn-success pull-right" onClick="location.href='{{ action('projects.expeditions.process', [$project->id, $expedition->id]) }}'">@lang('buttons.process')</button>
+	<button class="btn btn-success pull-right" onClick="location.href='{{ action('projects.expeditions.process', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-play"></span> @lang('buttons.process')</button>
 @else
-	<button class="btn btn-default btn-danger pull-right action_confirm" href="{{ URL::route('projects.expeditions.stop', [$project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete">@lang('buttons.stop')</button></td>
+	<button class="btn btn-default btn-danger pull-right action_confirm" href="{{ URL::route('projects.expeditions.stop', [$project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="glyphicon glyphicon-stop"></span> @lang('buttons.stop')</button></td>
 @endif
 </div>
 
