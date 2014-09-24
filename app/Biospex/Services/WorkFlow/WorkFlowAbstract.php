@@ -53,7 +53,6 @@ abstract class WorkFlowAbstract {
 
         $this->dataDir = Config::get('config.dataDir');
         $this->dataTmp = Config::get('config.dataDir');
-        $this->metaFile = Config::get('config.metaFile');
 
         $this->prepareStates();
         $this->setConfig();
