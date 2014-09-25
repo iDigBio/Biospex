@@ -187,7 +187,8 @@ return array(
         'Menu'          => 'Menu\Menu',
         'Local'         => 'Mcamara\LaravelLocalization\Facades\LaravelLocalization',
         'Carbon'        => 'Carbon\Carbon',
-        'GridRender' => 'Mgallegos\LaravelJqgrid\Facades\GridRender',
+        'GridRender' 	=> 'Mgallegos\LaravelJqgrid\Facades\GridRender',
+		'Uuid'			=> 'Webpatser\Uuid\Uuid',
 	),
 
 );
