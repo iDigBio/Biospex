@@ -15,7 +15,8 @@
         "codesleeve/asset-pipeline": "dev-master",
         "cviebrock/eloquent-sluggable": "2.*",
         "mgallegos/laravel-jqgrid": "dev-master",
-        "cviebrock/image-validator": "1.0.*"
+        "cviebrock/image-validator": "1.0.*",
+        "webpatser/laravel-uuid": "dev-master"
 	},
     "require-dev": {
         "barryvdh/laravel-ide-helper": "1.*",
