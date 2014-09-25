@@ -36,7 +36,7 @@ class XmlProcess {
 	 *
 	 * @param $input_xml
 	 * @return \DOMDocument
-	 * @throws Exception
+	 * @throws XmlProcessException
 	 */
 	public function load($input_xml)
 	{
@@ -45,11 +45,13 @@ class XmlProcess {
 
 		$parsed = $this->xml->load($input_xml);
 		if(!$parsed) {
-			throw new Exception('[XML2Array] Error parsing the XML string.');
+			throw new XmlProcessException('[XMLProcess] Error parsing the XML string.');
 		}
 
 		$this->xpath = new \DOMXpath($this->xml);
 		$this->xpath->registerNamespace('ns', $this->xml->documentElement->namespaceURI);
+		$this->xpath->registerNamespace('php', 'http://php.net/xpath');
+		$this->xpath->registerPhpFunctions(); // Allow all PHP functions
 
 		return $this->xml->saveXML();
 	}
@@ -81,13 +83,24 @@ class XmlProcess {
 	 * Perform query on dom document
 	 *
 	 * @param $query
+	 * @param bool $single
 	 * @return mixed
 	 */
-	public function getXpathQuery($query)
+	public function xpathQuery($query)
 	{
-		return $this->xpath->query($query)->item(0);
+		return $this->xpath->query($query);
 	}
 
+	/**
+	 * Return first item of xpath query
+	 *
+	 * @param $query
+	 * @return mixed
+	 */
+	public function xpathQueryOne($query)
+	{
+		return $this->xpathQuery($query)->item(0);
+	}
 
 	/**
 	 * Convert an XML to Array
