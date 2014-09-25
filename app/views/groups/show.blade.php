@@ -8,8 +8,13 @@
 
 {{-- Content --}}
 @section('content')
-<h4>{{ $group->name }}</h4>
-<div class="well clearfix">
+
+        <div class="jumbotron">
+        <h4>Group:</h4>
+        <h2>{{ $group->name }}</h2>
+        
+        </div>
+        
     <div class="table-responsive">
         <table class="table table-striped table-hover dataTable">
             <thead>
@@ -31,7 +36,7 @@
                 </td>
                 <td><ul>
                         @foreach ($group->projects as $project)
-                        <li>{{ HTML::linkAction('ProjectsController@show', $project->title, [$group->id, $project->id]) }}</li>
+                        <li>{{ HTML::linkAction('ProjectsController@show', $project->title, $project->id) }}</li>
                         @endforeach
                     </ul>
                 </td>
@@ -50,7 +55,7 @@
 	</div>
     @endif
 	<div class="col-md-2">
-		<button class="btn btn-warning" onClick="location.href='{{ action('GroupsController@edit', array($group->id)) }}'">@lang('buttons.edit')</button>
+		<button class="btn btn-warning btn-xs" onClick="location.href='{{ action('GroupsController@edit', array($group->id)) }}'"><span class="glyphicon glyphicon-cog"></span> @lang('buttons.edit')</button>
 	</div> 
-</div>
+
 @stop

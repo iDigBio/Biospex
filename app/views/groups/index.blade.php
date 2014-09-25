@@ -8,10 +8,10 @@
 
 {{-- Content --}}
 @section('content')
-<h4>{{ trans('groups.your_groups') }}</h4>
-<p>{{ trans('groups.group_explained') }}</p>
 <div class="row">
-    <div class="col-md-10">
+    <div class="col-md-10 col-md-offset-1">
+    <h3>{{ trans('groups.your_groups') }}</h3>
+    <p>{{ trans('groups.group_explained') }}</p>
         <div class="table-responsive">
             <table class="table table-striped table-hover">
                 <thead>
@@ -23,20 +23,20 @@
                     <tr>
                         <td>{{ $group->name }}</td>
                         <td>
-                            <button class="btn btn-default btn-info" type="button" onClick="location.href='{{ URL::action('GroupsController@show', [$group->id]) }}'">@lang('buttons.view')</button>
-                            <button class="btn btn-default btn-warning" {{ ($group->user_id == $user->id || $isSuperUser) ? '' : 'disabled' }} onClick="location.href='{{ action('GroupsController@edit', array($group->id)) }}'">@lang('buttons.edit')</button>
-                            <button class="btn btn-default btn-danger action_confirm" {{ ($group->user_id == $user->id  || $isSuperUser) ? '' : 'disabled' }} type="button" data-method="delete" href="{{ URL::action('GroupsController@destroy', array($group->id)) }}">@lang('buttons.delete')</button>
-                            <button class="btn btn-default btn-primary" type="button" onClick="location.href='{{ URL::action('groups.invites.index', [$group->id]) }}'">@lang('buttons.invite')</button>
-                         </td>
+                            <button class="btn btn-default btn-info btn-xs" type="button" onClick="location.href='{{ URL::action('GroupsController@show', [$group->id]) }}'"><span class="glyphicon glyphicon-eye-open"></span> @lang('buttons.view')</button>
+                            <button class="btn btn-default btn-warning btn-xs" {{ ($group->user_id == $user->id || $isSuperUser) ? '' : 'disabled' }} onClick="location.href='{{ action('GroupsController@edit', array($group->id)) }}'"><span class="glyphicon glyphicon-cog"></span> @lang('buttons.edit')</button>
+                            <button class="btn btn-default btn-primary btn-xs" type="button" onClick="location.href='{{ URL::action('groups.invites.index', [$group->id]) }}'"><span class="glyphicon glyphicon-user"></span> @lang('buttons.invite')</button>
+                            <button class="btn btn-default btn-danger action_confirm btn-xs" {{ ($group->user_id == $user->id  || $isSuperUser) ? '' : 'disabled' }} type="button" data-method="delete" href="{{ URL::action('GroupsController@destroy', array($group->id)) }}"><span class="glyphicon glyphicon-remove-circle"></span> @lang('buttons.delete')</button>
+                        </td>
                     </tr>
                 @endforeach
                 </tbody>
             </table>
         </div>
     </div>
-    <div class="col-md-10">
+    <div class="col-md-10 col-md-offset-1">
         <h4>{{ trans('groups.group_make') }}</h4>
-        <button class="btn btn-primary" onClick="location.href='{{ URL::action('GroupsController@create') }}'">@lang('buttons.create')</button>
+        <button class="btn btn-success" onClick="location.href='{{ URL::action('GroupsController@create') }}'"><span class="glyphicon glyphicon-plus"></span> @lang('buttons.create')</button>
     </div>
 </div>
 <!--  
