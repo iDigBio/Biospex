@@ -40,7 +40,7 @@ class Helpers {
 	public static function destroyDir($dir, $parent = false)
 	{
 		$it = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
-		$filter = new MyRecursiveFilterIterator($it);
+		$filter = new BiospexRecursiveFilterIterator($it);
 		$files = new RecursiveIteratorIterator($filter, RecursiveIteratorIterator::CHILD_FIRST);
 		foreach($files as $file) {
 			if ($file->isDir()){

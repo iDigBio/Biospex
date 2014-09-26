@@ -1,6 +1,6 @@
 <?php
 /**
- * MyRecursiveFilterIterator.php
+ * BiospexRecursiveFilterIterator.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -24,7 +24,7 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class MyRecursiveFilterIterator extends \RecursiveFilterIterator {
+class BiospexRecursiveFilterIterator extends RecursiveFilterIterator {
 
 	public static $FILTERS = array(
 		'.gitignore',
