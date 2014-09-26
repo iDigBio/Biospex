@@ -35,7 +35,8 @@ class Import extends Eloquent {
     protected $fillable = array(
         'user_id',
         'project_id',
-        'file'
+        'file',
+		'error'
     );
 
     /**
@@ -44,7 +45,8 @@ class Import extends Eloquent {
     public static $factory = array(
         'user_id' => 'factory|User',
         'project_id' => 'factory|Project',
-        'file' => 'string'
+        'file' => 'string',
+		'error' => 'integer',
     );
 
     /**
