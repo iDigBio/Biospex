@@ -1,6 +1,6 @@
-<?php namespace Biospex\Helpers;
+<?php
 /**
- * Flash.php
+ * MyRecursiveFilterIterator.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -23,12 +23,19 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Session;
 
-class Helpers {
-    public static function sessionFlashPush($key, $value) {
-        $values = Session::get($key, []);
-        $values[] = $value;
-        Session::flash($key, $values);
-    }
+class MyRecursiveFilterIterator extends \RecursiveFilterIterator {
+
+	public static $FILTERS = array(
+		'.gitignore',
+	);
+
+	public function accept() {
+		return !in_array(
+			$this->current()->getFilename(),
+			self::$FILTERS,
+			true
+		);
+	}
+
 }
