@@ -11,11 +11,11 @@
     <blockquote>
     {{{ trans('projects.project') }}}: {{{ $projectTitle }}}<br />
     {{{ trans('emails.duplicates') }}}: {{{ $duplicateCount }}}
-    {{{ trans('emails.empties') }}}: {{{ $emptiesCount }}}
+    {{{ trans('emails.rejected) }}}: {{{ $rejectedCount }}}
     </blockquote>
 </p>
 <p>{{ trans('emails.explain_duplicates') }}</p>
-<p>{{ trans('emails.explain_empties') }}</p>
+<p>{{ trans('emails.explain_rejected') }}</p>
 <p>{{ trans('emails.thank_you') }}, <br />
     ~{{ trans('emails.signature') }}</p>
 </body>
