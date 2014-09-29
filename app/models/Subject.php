@@ -123,4 +123,12 @@ class Subject extends Eloquent {
 	{
 		return $this->hasOne('Header');
 	}
+
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 */
+	public function meta()
+	{
+		return $this->hasOne('Meta');
+	}
 }
