@@ -15,8 +15,7 @@
         "codesleeve/asset-pipeline": "dev-master",
         "cviebrock/eloquent-sluggable": "2.*",
         "mgallegos/laravel-jqgrid": "dev-master",
-        "cviebrock/image-validator": "1.0.*",
-        "webpatser/laravel-uuid": "dev-master"
+        "cviebrock/image-validator": "1.0.*"
 	},
     "require-dev": {
         "barryvdh/laravel-ide-helper": "1.*",
@@ -31,6 +30,7 @@
 		"classmap": [
 			"app/commands",
 			"app/controllers",
+            "app/libraries",
 			"app/models",
 			"app/database/migrations",
 			"app/database/seeds",
@@ -47,6 +47,7 @@
 		],
 		"post-update-cmd": [
 			"php artisan clear-compiled",
+
 			"php artisan optimize"
 		],
 		"post-create-project-cmd": [
