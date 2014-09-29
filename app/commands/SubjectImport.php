@@ -137,8 +137,6 @@ class SubjectImport extends Command {
             if ($this->record->error)
                 continue;
 
-			$this->subjectProcess->setProjectId($this->record->project_id);
-
 			$file = "{$this->dataDir}/{$this->record->file}";
 			$fileDir = "{$this->dataTmp}/" . md5($this->record->file);
 
@@ -147,19 +145,9 @@ class SubjectImport extends Command {
 				$this->makeTmp($fileDir);
 				$this->unzip($file, $fileDir);
 
-				$this->subjectProcess->processMetaFile("$fileDir/meta.xml");
+				$this->subjectProcess->processSubjects($this->record->project_id, $fileDir);
 
-				$multiMediaFile = $this->subjectProcess->getMultiMediaFile();
-				$occurrenceFile = $this->subjectProcess->getOccurrenceFile();
-
-				$multimedia = $this->subjectProcess->loadCsv("$fileDir/$multiMediaFile", "multimedia");
-				$occurrence = $this->subjectProcess->loadCsv("$fileDir/$occurrenceFile", "occurrence");
-
-				$this->subjectProcess->setHeaderArray();
-
-				$subjects = $this->subjectProcess->buildSubjectsArray($multimedia, $occurrence);
-
-				$duplicates = $this->subjectProcess->insertDocs($subjects);
+				$duplicates = $this->subjectProcess->getDuplicates();
 				$rejected = $this->subjectProcess->getRejectedMedia();
 
 				$this->report($duplicates, $rejected);
