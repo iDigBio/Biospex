@@ -10,8 +10,8 @@
 <p>
     <blockquote>
     {{{ trans('projects.project') }}}: {{{ $projectTitle }}}<br />
-    {{{ trans('emails.duplicates') }}}: {{{ $duplicateCount }}}
-    {{{ trans('emails.rejected) }}}: {{{ $rejectedCount }}}
+    {{{ trans('emails.duplicates') }}}: {{{ $duplicateCount }}}<br />
+    {{{ trans('emails.rejected') }}}: {{{ $rejectedCount }}}
     </blockquote>
 </p>
 <p>{{ trans('emails.explain_duplicates') }}</p>
