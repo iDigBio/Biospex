@@ -9,6 +9,8 @@ class DatabaseSeeder extends Seeder {
 	 */
 	public function run()
 	{
+		Helpers::destroyDir(Config::get('config.dataDir'));
+
 		Eloquent::unguard();
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
@@ -22,7 +24,6 @@ class DatabaseSeeder extends Seeder {
         $this->call('ProjectWorkflowTableSeeder');
         $this->call('WorkFlowsTableSeeder');
         $this->call('SubjectsDocsTableSeeder');
-        //$this->call('SubjectsTableSeeder');
         $this->call('ExpeditionSubjectTableSeeder');
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
