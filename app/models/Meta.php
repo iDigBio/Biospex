@@ -39,8 +39,7 @@ class Meta extends Eloquent {
 
     protected $fillable = array(
         'project_id',
-        'xml',
-        'header'
+        'xml'
     );
 
     /**
@@ -48,8 +47,7 @@ class Meta extends Eloquent {
      */
     public static $factory = array(
         'project_id' => 'factory|Project',
-        'xml' => 'binary',
-        'header' => 'binary'
+        'xml' => 'binary'
     );
 
     /**
@@ -59,5 +57,13 @@ class Meta extends Eloquent {
     {
         return $this->belongsTo('Project');
     }
+
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function subject()
+	{
+		return $this->hasMany('Subject');
+	}
 
 }
