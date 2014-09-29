@@ -53,24 +53,12 @@ class SubjectsDocsTableSeeder extends Seeder {
 
 		DB::table('properties')->truncate();
 		DB::table('headers')->truncate();
+		DB::table('metas')->truncate();
 		DB::table('subjects')->truncate();
 		DB::connection('mongodb')->collection('subjectsdocs')->truncate();
 
-		$this->subjectProcess->processMetaFile('app/database/seeds/data/meta.xml');
-
-		$this->subjectProcess->setProjectId(1);
-
-		$multiMediaFile = $this->subjectProcess->getMultiMediaFile();
-		$occurrenceFile = $this->subjectProcess->getOccurrenceFile();
-
-		$multimedia = $this->subjectProcess->loadCsv("app/database/seeds/data/$multiMediaFile", "multimedia");
-		$occurrence = $this->subjectProcess->loadCsv("app/database/seeds/data/$occurrenceFile", "occurrence");
-
-		$this->subjectProcess->setHeaderArray();
-
-		$subjects = $this->subjectProcess->buildSubjectsArray($multimedia, $occurrence);
-
-		$this->subjectProcess->insertDocs($subjects);
+		$dir = 'app/database/seeds/data';
+		$this->subjectProcess->processSubjects(1, $dir);
 
     }
 }
