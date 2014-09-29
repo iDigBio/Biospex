@@ -188,7 +188,6 @@ return array(
         'Local'         => 'Mcamara\LaravelLocalization\Facades\LaravelLocalization',
         'Carbon'        => 'Carbon\Carbon',
         'GridRender' 	=> 'Mgallegos\LaravelJqgrid\Facades\GridRender',
-		'Uuid'			=> 'Webpatser\Uuid\Uuid',
 	),
 
 );
