@@ -77,21 +77,21 @@
 			<div class="col-md-5">
 				<dl>
 					<dt class="firstdl">Managed by</dt>
-					<dd class="firstdl">{{ $project->managed }}</dd>
+					<dd class="firstdl">{{ $project->managed }}&nbsp;</dd>
 					<dt>Contact</dt>
-					<dd><a href="mailto:{{ $project->contact_email }}">{{ $project->contact }}</a></dd>
+					<dd><a href="mailto:{{ $project->contact_email }}">{{ $project->contact }}</a>&nbsp;</dd>
 					<dt>Website</dt>
-					<dd><a href="{{ $project->website }}">{{ $project->website }}</a></dd>
+					<dd><a href="{{ $project->website }}">{{ $project->website }}</a>&nbsp;</dd>
 					<dt>Incentives</dt>
-					<dd>{{ $project->incentives }}</dd>
+					<dd>{{ $project->incentives }}&nbsp;</dd>
 					<dt>Geographic Scope</dt>
-					<dd>{{ $project->geographic_scope }}</dd>
+					<dd>{{ $project->geographic_scope }}&nbsp;</dd>
 					<dt>Taxonomic Scope</dt>
-					<dd>{{ $project->taxonomic_scope }}</dd>
+					<dd>{{ $project->taxonomic_scope }}&nbsp;</dd>
 					<dt>Temporal Scope</dt>
-					<dd>{{ $project->temporal_scope }}</dd>
+					<dd>{{ $project->temporal_scope }}&nbsp;</dd>
 					<dt>Language Skills Required</dt>
-					<dd>{{ $project->language_skills }}</dd>
+					<dd>{{ $project->language_skills }}&nbsp;</dd>
 				</dl>
 			</div>
 		</div>
