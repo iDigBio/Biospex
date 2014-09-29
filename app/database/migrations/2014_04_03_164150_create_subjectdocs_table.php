@@ -23,7 +23,7 @@
  */
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSubjectdocTable extends Migration {
+class CreateSubjectdocsTable extends Migration {
 
 	/**
 	 * Run the migrations.
