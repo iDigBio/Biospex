@@ -34,7 +34,7 @@ abstract class Mailer {
 			$message->from($from)->subject($subject)->to($email);
 			$size = sizeof($attachment);
 			for ($i = 0; $i < $size; $i++){
-				$message->attach($attachment[i]);
+				$message->attach($attachment[$i]);
 			}
 		});
 	}
