@@ -27,7 +27,7 @@
 use Illuminate\Database\Seeder;
 use Biospex\Services\Subject\SubjectProcess;
 
-class SubjectsDocTableSeeder extends Seeder {
+class SubjectDocsTableSeeder extends Seeder {
 
 	/**
 	 * Constructor
