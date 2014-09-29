@@ -31,7 +31,7 @@ use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\Header\HeaderInterface;
 use Biospex\Repo\Property\PropertyInterface;
 use Biospex\Services\Xml\XmlProcess;
-use Webpatser\Uuid\Uuid;
+use Biospex\Repo\Meta\MetaInterface;
 
 class SubjectProcess {
 
@@ -129,6 +129,12 @@ class SubjectProcess {
 	private $metaFields = array();
 
 	/**
+	 * Saved meta xml id
+	 * @var
+	 */
+	private $metaId;
+
+	/**
 	 * Constructor
 	 *
 	 * @param SubjectDocInterface $subjectdoc
@@ -136,13 +142,15 @@ class SubjectProcess {
 	 * @param HeaderInterface $header
 	 * @param PropertyInterface $property
 	 * @param XmlProcess $xmlProcess
+	 * @param MetaInterface $meta
 	 */
 	public function __construct (
 		SubjectDocInterface $subjectdoc,
 		SubjectInterface $subject,
 		HeaderInterface $header,
 		PropertyInterface $property,
-		XmlProcess $xmlProcess
+		XmlProcess $xmlProcess,
+		MetaInterface $meta
 	)
 	{
 		$this->subjectdoc = $subjectdoc;
@@ -150,6 +158,101 @@ class SubjectProcess {
 		$this->header = $header;
 		$this->property = $property;
 		$this->xmlProcess = $xmlProcess;
+		$this->meta = $meta;
+	}
+
+	/**
+	 * Process subjects from meta file
+	 *
+	 * @param $projectId
+	 * @param $dir
+	 */
+	public function processSubjects($projectId, $dir)
+	{
+		$this->setProjectId($projectId);
+		$this->processMetaFile("$dir/meta.xml");
+
+		$multiMediaFile = $this->getMultiMediaFile();
+		$occurrenceFile = $this->getOccurrenceFile();
+
+		$multimedia = $this->loadCsv("$dir/$multiMediaFile", "multimedia");
+		$occurrence = $this->loadCsv("$dir/$occurrenceFile", "occurrence");
+
+		$this->setHeaderArray();
+
+		$subjects = $this->buildSubjectsArray($multimedia, $occurrence);
+
+		$this->insertDocs($subjects);
+
+		return;
+	}
+
+	/**
+	 * Process meta file
+	 *
+	 * @param $file
+	 */
+	private function processMetaFile($file)
+	{
+		// Load xml
+		$xml = $this->xmlProcess->load($file);
+
+		// Set core type and file
+		$coreType = $this->xmlProcess->getDomTagAttribute('core', 'rowType');
+		$coreFile = $this->xmlProcess->getElementByTag('core');
+		if (empty($coreType) || empty($coreFile))
+			throw new SubjectProcessException('[SubjectProcess] Error querying core.');
+
+		// Set delimiter
+		$delimiter = $this->xmlProcess->getDomTagAttribute('core', 'fieldsTerminatedBy');
+		if (empty($delimiter))
+			throw new SubjectProcessException('[SubjectProcess] Error querying delimiter.');
+		$this->setDelimiter($delimiter);
+
+		if (preg_match('/occurrence/i', $coreType))
+		{
+			$this->setCore(false);
+			$this->setOccurrenceFile($coreFile);
+
+			$query = "//ns:extension[contains(php:functionString('strtolower', @rowType), 'multimedia')]";
+			$multiMediaQuery = $this->xmlProcess->xpathQueryOne($query);
+			if (empty($multiMediaQuery))
+				throw new SubjectProcessException('[SubjectProcess] Error querying multimedia file.');
+			$this->setMultiMediaFile($multiMediaQuery->nodeValue);
+
+			$query = "//ns:extension/ns:field[contains(php:functionString('strtolower', @term), 'identifier')]";
+			$multiMediaIndexQuery = $this->xmlProcess->xpathQueryOne($query);
+			if (empty($multiMediaIndexQuery))
+				throw new SubjectProcessException('[SubjectProcess] Error querying multimedia identifier index.');
+
+			$identifier = $multiMediaIndexQuery->attributes->getNamedItem("index")->nodeValue;
+			$this->setMultiMediaIdentifierIndex($identifier);
+
+			$occurrence_xpath_query = "//ns:archive/ns:core[contains(php:functionString('strtolower', @rowType), 'occurrence')]/ns:field";
+			$multimedia_xpath_query = "//ns:archive/ns:extension[contains(php:functionString('strtolower', @rowType), 'multimedia')]/ns:field";
+
+		}
+		elseif (preg_match('/multimedia/i', $coreType))
+		{
+			$this->setCore(true);
+			$this->setMultiMediaFile($coreFile);
+
+			$query = "//ns:extension[contains(php:functionString('strtolower', @rowType), 'occurrence')]";
+			$occurrenceQuery = $this->xmlProcess->xpathQueryOne($query);
+			if (empty($occurrenceQuery))
+				throw new SubjectProcessException('[SubjectProcess] Error querying occurrence file.');
+
+			$this->setOccurrenceFile($occurrenceQuery->nodeValue);
+
+			$occurrence_xpath_query = "//ns:archive/ns:extension[contains(php:functionString('strtolower', @rowType), 'occurrence')]/ns:field";
+			$multimedia_xpath_query = "//ns:archive/ns:core[contains(php:functionString('strtolower', @rowType), 'multimedia')]/ns:field";
+		}
+
+		$this->buildMetaFields($multimedia_xpath_query, $occurrence_xpath_query);
+
+		$this->saveMeta($xml);
+
+		return;
 	}
 
 	/**
@@ -268,13 +371,14 @@ class SubjectProcess {
 			$data = array(
 				'project_id' => $subjectDoc->project_id,
 				'header_id' => $this->headerId,
+				'meta_id' => $this->metaId,
 				'mongo_id' => $subjectDoc->_id,
 				'object_id' => $subjectDoc->subject_id,
 			);
 			$this->subject->create($data);
 		}
 
-		return $this->duplicateArray;
+		return;
 	}
 
 	/**
@@ -349,73 +453,6 @@ class SubjectProcess {
 
 			return $short;
 		}
-	}
-
-	/**
-	 * Process meta file for subjects
-	 *
-	 * @param $file
-	 * @throws SubjectProcessException
-	 */
-	public function processMetaFile($file)
-	{
-		// Load xml
-		$this->xmlProcess->load($file);
-
-		// Set core type and file
-		$coreType = $this->xmlProcess->getDomTagAttribute('core', 'rowType');
-		$coreFile = $this->xmlProcess->getElementByTag('core');
-		if (empty($coreType) || empty($coreFile))
-			throw new SubjectProcessException('[SubjectProcess] Error querying core.');
-
-		// Set delimiter
-		$delimiter = $this->xmlProcess->getDomTagAttribute('core', 'fieldsTerminatedBy');
-		if (empty($delimiter))
-			throw new SubjectProcessException('[SubjectProcess] Error querying delimiter.');
-		$this->setDelimiter($delimiter);
-
-		if (preg_match('/occurrence/i', $coreType))
-		{
-			$this->setCore(false);
-			$this->setOccurrenceFile($coreFile);
-
-			$query = "//ns:extension[contains(php:functionString('strtolower', @rowType), 'multimedia')]";
-			$multiMediaQuery = $this->xmlProcess->xpathQueryOne($query);
-			if (empty($multiMediaQuery))
-				throw new SubjectProcessException('[SubjectProcess] Error querying multimedia file.');
-			$this->setMultiMediaFile($multiMediaQuery->nodeValue);
-
-			$query = "//ns:extension/ns:field[contains(php:functionString('strtolower', @term), 'identifier')]";
-			$multiMediaIndexQuery = $this->xmlProcess->xpathQueryOne($query);
-			if (empty($multiMediaIndexQuery))
-				throw new SubjectProcessException('[SubjectProcess] Error querying multimedia identifier index.');
-
-			$identifier = $multiMediaIndexQuery->attributes->getNamedItem("index")->nodeValue;
-			$this->setMultiMediaIdentifierIndex($identifier);
-
-			$occurrence_xpath_query = "//ns:archive/ns:core[contains(php:functionString('strtolower', @rowType), 'occurrence')]/ns:field";
-			$multimedia_xpath_query = "//ns:archive/ns:extension[contains(php:functionString('strtolower', @rowType), 'multimedia')]/ns:field";
-
-		}
-		elseif (preg_match('/multimedia/i', $coreType))
-		{
-			$this->setCore(true);
-			$this->setMultiMediaFile($coreFile);
-
-			$query = "//ns:extension[contains(php:functionString('strtolower', @rowType), 'occurrence')]";
-			$occurrenceQuery = $this->xmlProcess->xpathQueryOne($query);
-			if (empty($occurrenceQuery))
-				throw new SubjectProcessException('[SubjectProcess] Error querying occurrence file.');
-
-			$this->setOccurrenceFile($occurrenceQuery->nodeValue);
-
-			$occurrence_xpath_query = "//ns:archive/ns:extension[contains(php:functionString('strtolower', @rowType), 'occurrence')]/ns:field";
-			$multimedia_xpath_query = "//ns:archive/ns:core[contains(php:functionString('strtolower', @rowType), 'multimedia')]/ns:field";
-		}
-
-		$this->buildMetaFields($multimedia_xpath_query, $occurrence_xpath_query);
-
-		return;
 	}
 
 	/**
@@ -522,16 +559,6 @@ class SubjectProcess {
 	}
 
 	/**
-	 * Return empty UUID array
-	 *
-	 * @return array
-	 */
-	public function getRejectedMedia()
-	{
-		return $this->rejectedMultimedia;
-	}
-
-	/**
 	 * Set header array and update/save
 	 */
 	public function setHeaderArray()
@@ -558,6 +585,43 @@ class SubjectProcess {
 		}
 
 		return;
+	}
+
+	/**
+	 * Save meta data for this upload.
+	 *
+	 * @param $xml
+	 */
+	public function saveMeta($xml)
+	{
+		$result = $this->meta->create(array(
+			'project_id' => $this->projectId,
+			'xml' => $xml,
+		));
+
+		$this->metaId = $result->id;
+
+		return;
+	}
+
+	/**
+	 * Return duplicate array
+	 *
+	 * @return array
+	 */
+	public function getDuplicates()
+	{
+		return $this->duplicateArray;
+	}
+
+	/**
+	 * Return empty UUID array
+	 *
+	 * @return array
+	 */
+	public function getRejectedMedia()
+	{
+		return $this->rejectedMultimedia;
 	}
 
 	/**
