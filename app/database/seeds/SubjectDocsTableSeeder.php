@@ -1,5 +1,7 @@
 <?php
 /**
+ * SubjectsDocTableSeeder.php
+ *
  * @package    Biospex Package
  * @version    1.0
  * @author     Robert Bruhn <79e6ef82@opayq.com>
@@ -21,35 +23,42 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Illuminate\Database\Migrations\Migration;
 
-class CreateSubjectsdocsTable extends Migration {
+use Illuminate\Database\Seeder;
+use Biospex\Services\Subject\SubjectProcess;
 
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-        Schema::connection('mongodb')->create('subjectsdocs', function($collection)
-        {
-            $collection->index('project_id');
-            $collection->index('subject_id');
-            $collection->unique(array('project_id', 'subject_id'));
-            $collection->timestamps();
-            $collection->softDeletes();
-        });
-	}
+class SubjectsDocTableSeeder extends Seeder {
 
 	/**
-	 * Reverse the migrations.
+	 * Constructor
 	 *
-	 * @return void
+	 * @param SubjectProcess $subjectProcess
+	 * @param XmlProcess $xmlProcess
 	 */
-	public function down()
-	{
-        Schema::connection('mongodb')->drop('subjectsdocs');
-	}
+    public function __construct (
+		SubjectProcess $subjectProcess
+	)
+    {
+        $this->subjectProcess = $subjectProcess;
+    }
 
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run ()
+    {
+        Eloquent::unguard();
+
+		DB::table('properties')->truncate();
+		DB::table('headers')->truncate();
+		DB::table('metas')->truncate();
+		DB::table('subjects')->truncate();
+		DB::connection('mongodb')->collection('subjectdocs')->truncate();
+
+		$dir = 'app/database/seeds/data';
+		$this->subjectProcess->processSubjects(1, $dir);
+
+    }
 }

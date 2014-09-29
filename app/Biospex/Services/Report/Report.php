@@ -95,6 +95,7 @@ class Report {
         if (\App::environment() == 'develop')
             return;
 
+		$from = $this->adminEmail;
         $emails[] = $this->adminEmail;
 
         if ( ! is_null($userId))
@@ -113,7 +114,7 @@ class Report {
         $data = array('errorMessage' => $errorMessage);
         $view = 'emails.report-simple-error';
 
-        $this->mailer->sendReport($emails, $subject, $view, $data);
+        $this->mailer->sendReport($from, $emails, $subject, $view, $data);
 
         if ($fatal)
             die();
@@ -132,6 +133,7 @@ class Report {
         if (\App::environment() == 'develop')
             return;
 
+		$from = $this->adminEmail;
         $user = $this->user->find($record->project->user_id);
         $emails[] = $user->email;
 
@@ -142,7 +144,7 @@ class Report {
         );
         $view = 'emails.report-process-complete';
 
-        $this->mailer->sendReport($emails, $subject, $view, $data);
+        $this->mailer->sendReport($from, $emails, $subject, $view, $data);
 
         return;
     }
@@ -158,6 +160,7 @@ class Report {
         if (\App::environment() == 'develop')
             return;
 
+		$from = $this->adminEmail;
         $user = $this->user->find($record->project->user_id);
         $email = $user->email;
 
@@ -172,8 +175,13 @@ class Report {
         );
         $view = 'emails.report-missing_images';
 
-        $this->mailer->sendReport($email, $subject, $view, $data);
+        $this->mailer->sendReport($from, $email, $subject, $view, $data);
     }
+
+	public function reportImport()
+	{
+
+	}
 
     public function debug($message)
     {

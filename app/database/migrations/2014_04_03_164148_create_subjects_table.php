@@ -39,10 +39,13 @@ class CreateSubjectsTable extends Migration {
 			$table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
 			$table->unsignedInteger('header_id');
 			$table->foreign('header_id')->references('id')->on('headers')->onDelete('cascade');
+			$table->unsignedInteger('meta_id');
+			$table->foreign('meta_id')->references('id')->on('metas')->onDelete('cascade');
             $table->string('mongo_id');
             $table->string('object_id');
             $table->unique(array('project_id', 'object_id'));
 			$table->index('header_id');
+			$table->index('meta_id');
             $table->timestamps();
             $table->softDeletes();
 

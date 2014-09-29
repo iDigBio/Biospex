@@ -38,7 +38,7 @@ class TruncateSubjects extends Seeder {
 		DB::table('subjects')->truncate();
 		DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-		DB::connection('mongodb')->collection('subjectsdocs')->truncate();
+		DB::connection('mongodb')->collection('subjectdocs')->truncate();
 
 	}
 }

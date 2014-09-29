@@ -24,6 +24,8 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Cache;
+
 class NotesFromNature extends WorkFlowAbstract
 {
     /**
@@ -307,13 +309,10 @@ class NotesFromNature extends WorkFlowAbstract
      */
     protected function getRemoteImgColumn($metaId)
     {
-        if (!is_null($this->remoteImgColumn))
-            return $this->remoteImgColumn;
-
         if ( ! $this->setMetaData($metaId))
             return false;
 
-        if ( ! $this->subject->loadDom($this->metaXml, true))
+        if ( ! $this->xmlProcess->load($this->metaXml, true))
         {
             $this->report->addError(trans('error_load_dom', array('id' => $metaId)));
             $this->report->reportSimpleError();
@@ -321,7 +320,9 @@ class NotesFromNature extends WorkFlowAbstract
             return false;
         }
 
-        if ( ! $node = $this->subject->getXpathQuery("//ns:field[contains(@term, '{$this->metaFile['remoteImgUrl']}')]"))
+		$query = "//ns:field[contains(php:functionString('strtolower', @term), 'bestQualityAccessURI')]";
+		$node = $this->xmlProcess->xpathQueryOne($query);
+        if (empty($node))
         {
             $this->report->addError(trans('error_xpath', array('id' => $metaId)));
             $this->report->reportSimpleError();
@@ -336,17 +337,22 @@ class NotesFromNature extends WorkFlowAbstract
     }
 
     /**
-     * Set xml and header from meta file
+     * Set xml from meta file
      *
      * @param $metaId
      * @return bool
      */
     protected function setMetaData($metaId)
     {
-        if (!is_null($this->metaXml))
-            return true;
+		$key = md5($metaId);
 
-        if ( ! $meta = $this->subject->getMeta($metaId))
+		if (Cache::has($key))
+		{
+			$this->metaXml = Cache::get($key);
+			return true;
+		}
+
+        if ( ! $meta = $this->meta->find($metaId))
         {
             $this->report->addError(trans('error_xml_meta', array('id' => $metaId)));
             $this->report->reportSimpleError();
@@ -354,8 +360,9 @@ class NotesFromNature extends WorkFlowAbstract
             return false;
         }
 
+		Cache::add($key, $meta->xml, 10);
+
         $this->metaXml = $meta->xml;
-        $this->metaHeader = json_decode($meta->header);
 
         return true;
     }

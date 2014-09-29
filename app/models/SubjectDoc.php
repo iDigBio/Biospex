@@ -40,7 +40,7 @@ class SubjectDoc extends Eloquent {
     /**
      * Set collection
      */
-    protected $collection = 'subjectsdocs';
+    protected $collection = 'subjectdocs';
 
     /**
      * Set primary key

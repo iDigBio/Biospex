@@ -58,9 +58,6 @@ class Meta extends Eloquent {
         return $this->belongsTo('Project');
     }
 
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
-	 */
 	public function subject()
 	{
 		return $this->hasMany('Subject');

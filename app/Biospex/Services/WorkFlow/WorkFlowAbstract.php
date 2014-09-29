@@ -26,9 +26,12 @@
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
 use Biospex\Repo\Expedition\ExpeditionInterface;
-use Biospex\Services\Subject\SubjectProcess;
-use Biospex\Services\Report\Report;
+use Biospex\Repo\Subject\SubjectInterface;
+use Biospex\Repo\Meta\MetaInterface;
 use Biospex\Repo\Download\DownloadInterface;
+use Biospex\Services\Report\Report;
+use Biospex\Services\Xml\XmlProcess;
+
 
 abstract class WorkFlowAbstract {
 
@@ -39,20 +42,24 @@ abstract class WorkFlowAbstract {
 
     public function __construct(
         ExpeditionInterface $expedition,
-        Filesystem $filesystem,
-        Subject $subject,
+		SubjectInterface $subject,
+		MetaInterface $meta,
+		Filesystem $filesystem,
         Report $report,
-        DownloadInterface $download
+        DownloadInterface $download,
+		XmlProcess $xmlProcess
     )
     {
         $this->expedition = $expedition;
+		$this->subject = $subject;
+		$this->meta = $meta;
         $this->filesystem = $filesystem;
-        $this->subject = $subject;
         $this->report = $report;
         $this->download = $download;
+		$this->xmlProcess = $xmlProcess;
 
         $this->dataDir = Config::get('config.dataDir');
-        $this->dataTmp = Config::get('config.dataDir');
+        $this->dataTmp = Config::get('config.dataTmp');
 
         $this->prepareStates();
         $this->setConfig();
@@ -77,7 +84,7 @@ abstract class WorkFlowAbstract {
     {
         if ( ! $this->filesystem->isDirectory($dir))
         {
-            if ( ! $this->filesystem->makeDirectory($dir))
+            if ( ! $this->filesystem->makeDirectory($dir, 0777, true))
                 return false;
         }
 
