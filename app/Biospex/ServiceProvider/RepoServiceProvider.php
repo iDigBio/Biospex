@@ -43,7 +43,7 @@ class RepoServiceProvider extends ServiceProvider {
     {
         $app = $this->app;
 
-        // Bind the Session Repository
+        // Bind the Session Repository with Sentry
         $app->bind('Biospex\Repo\Session\SessionInterface', function($app)
         {
             return new SentrySession(
@@ -51,7 +51,7 @@ class RepoServiceProvider extends ServiceProvider {
             );
         });
 
-        // Bind the User Repository
+        // Bind the User Repository with Sentry
         $app->bind('Biospex\Repo\User\UserInterface', function($app)
         {
             return new UserRepository(
@@ -59,7 +59,7 @@ class RepoServiceProvider extends ServiceProvider {
             );
         });
 
-        // Bind the Group Repository
+        // Bind the Group Repository with Sentry
         $app->bind('Biospex\Repo\Group\GroupInterface', function($app)
         {
             return new GroupRepository(
@@ -67,49 +67,22 @@ class RepoServiceProvider extends ServiceProvider {
             );
         });
 
-        // Bind project repository
+        // Bind repositories
         $app->bind('Biospex\Repo\Project\ProjectInterface', 'Biospex\Repo\Project\ProjectRepository');
-
-        // Bind expedition repository
         $app->bind('Biospex\Repo\Expedition\ExpeditionInterface', 'Biospex\Repo\Expedition\ExpeditionRepository');
-
-        // Bind permission repository
         $app->bind('Biospex\Repo\Permission\PermissionInterface', 'Biospex\Repo\Permission\PermissionRepository');
-
-        // Bind navigation repository
         $app->bind('Biospex\Repo\Navigation\NavigationInterface', 'Biospex\Repo\Navigation\NavigationRepository');
-
-        // Bind subject repository
         $app->bind('Biospex\Repo\Subject\SubjectInterface', 'Biospex\Repo\Subject\SubjectRepository');
-
-        // Bind subjectdoc repository
         $app->bind('Biospex\Repo\SubjectDoc\SubjectDocInterface', 'Biospex\Repo\SubjectDoc\SubjectDocRepository');
-
-        // bind import repository
         $app->bind('Biospex\Repo\Import\ImportInterface', 'Biospex\Repo\Import\ImportRepository');
-
-		// bind header repository
 		$app->bind('Biospex\Repo\Header\HeaderInterface', 'Biospex\Repo\Header\HeaderRepository');
-
-        // bind workflow manager
         $app->bind('Biospex\Repo\WorkflowManager\WorkflowManagerInterface', 'Biospex\Repo\WorkflowManager\WorkflowManagerRepository');
-
-        // bind workflow repository
         $app->bind('Biospex\Repo\WorkFlow\WorkFlowInterface', 'Biospex\Repo\WorkFlow\WorkFlowRepository');
-
-        // bind download repository
         $app->bind('Biospex\Repo\Download\DownloadInterface', 'Biospex\Repo\Download\DownloadRepository');
-
-        // bind invite repository
         $app->bind('Biospex\Repo\Invite\InviteInterface', 'Biospex\Repo\Invite\InviteRepository');
-
-		// bind invite property
 		$app->bind('Biospex\Repo\Property\PropertyInterface', 'Biospex\Repo\Property\PropertyRepository');
-
-        // bind message bag
+		$app->bind('Biospex\Repo\Meta\MetaInterface', 'Biospex\Repo\Meta\MetaRepository');
         $app->bind('Illuminate\Support\Contracts\MessageProviderInterface', 'Illuminate\Support\MessageBag');
-
-        // bind Expedition to
         $app->bind('Mgallegos\LaravelJqgrid\Repositories\RepositoryInterface', 'Biospex\Repo\Expedition\ExpeditionRepository');
     }
 
