@@ -30,6 +30,7 @@ return array(
     'contact'                   => "Contact",
     'contact_email'             => "Contact Email",
     'managed'                   => "Managed By",
+	'description'				=> "Description",
     'description_short'         => "Short Description",
 	'description_short_max'     => "Short Description (max 140 characters)",
 	'description_long'			=> "Long Description",
