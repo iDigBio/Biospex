@@ -37,4 +37,13 @@ class DownloadRepository extends Repository implements DownloadInterface {
         $this->model = $download;
     }
 
+	/**
+	 * Return expired downloads.
+	 *
+	 * @return mixed
+	 */
+	public function getExpired()
+	{
+		return $this->model->getExpired();
+	}
 }

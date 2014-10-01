@@ -25,4 +25,6 @@
  */
 use Biospex\Repo\RepositoryInterface;
 
-interface DownloadInterface extends RepositoryInterface {}
+interface DownloadInterface extends RepositoryInterface {
+	public function getExpired();
+}
