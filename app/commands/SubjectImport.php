@@ -152,21 +152,21 @@ class SubjectImport extends Command {
 			}
 			catch (XmlProcessException $e)
 			{
-				die($e->getMessage());
+				die($e->getMessage() . $e->getTraceAsString());
 				$this->report->addError("Unable to process import id: {$import->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
 				$this->report->importError($import->id, $user->email, $project->title);
 				continue;
 			}
 			catch (SubjectProcessException $e)
 			{
-				die($e->getMessage());
+				die($e->getMessage() . $e->getTraceAsString());
 				$this->report->addError("Unable to process import id: {$import->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
 				$this->report->importError($import->id, $user->email, $project->title);
 				continue;
 			}
 			catch (Exception $e)
 			{
-				die($e->getMessage());
+				die($e->getMessage() . $e->getTraceAsString());
 				$this->report->addError("Unable to process import id: {$import->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
 				$this->report->importError($import->id, $user->email, $project->title);
 				continue;
