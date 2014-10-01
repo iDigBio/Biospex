@@ -27,11 +27,11 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
 use Biospex\Repo\Expedition\ExpeditionInterface;
 use Biospex\Repo\Subject\SubjectInterface;
+use Biospex\Repo\Property\PropertyInterface;
 use Biospex\Repo\Meta\MetaInterface;
 use Biospex\Repo\Download\DownloadInterface;
-use Biospex\Services\Report\Report;
 use Biospex\Services\Xml\XmlProcess;
-
+use Biospex\Services\Report\Report;
 
 abstract class WorkFlowAbstract {
 
@@ -44,6 +44,7 @@ abstract class WorkFlowAbstract {
         ExpeditionInterface $expedition,
 		SubjectInterface $subject,
 		MetaInterface $meta,
+		PropertyInterface $property,
 		Filesystem $filesystem,
         Report $report,
         DownloadInterface $download,
@@ -53,6 +54,7 @@ abstract class WorkFlowAbstract {
         $this->expedition = $expedition;
 		$this->subject = $subject;
 		$this->meta = $meta;
+		$this->property = $property;
         $this->filesystem = $filesystem;
         $this->report = $report;
         $this->download = $download;
@@ -68,6 +70,8 @@ abstract class WorkFlowAbstract {
     abstract protected function prepareStates();
 
     abstract protected function setConfig();
+
+	abstract public function setDebug($value);
 
     abstract public function process($id);
 

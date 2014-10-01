@@ -43,13 +43,6 @@ class NotesFromNature extends WorkFlowAbstract
     protected $record;
 
     /**
-     * User Id of owner used in email reports
-     *
-     * @var
-     */
-    protected $userId;
-
-    /**
      * Data Directory
      *
      * @var string
@@ -85,7 +78,7 @@ class NotesFromNature extends WorkFlowAbstract
      * Remote image column from csv import
      * @var
      */
-    protected $remoteImgColumn = null;
+    protected $bestQualityAccessUri = null;
 
     /**
      * Hold original image url
@@ -139,6 +132,13 @@ class NotesFromNature extends WorkFlowAbstract
      */
     private $smallWidth  = 580;
 
+	/**
+	 * Debug argument from command line for testing
+	 *
+	 * @var
+	 */
+	protected $debug;
+
     /**
      * Set state variable
      *
@@ -171,6 +171,17 @@ class NotesFromNature extends WorkFlowAbstract
         return;
     }
 
+	/**
+	 * Set debug from command line
+	 *
+	 * @param bool $value
+	 */
+	public function setDebug($value = false)
+	{
+		$this->debug = $value;
+		$this->report->setDebug($this->debug);
+	}
+
     /**
      * Process current state
      *
@@ -188,9 +199,7 @@ class NotesFromNature extends WorkFlowAbstract
             return;
         }
 
-        $this->userId = $this->record->project->user_id;
-
-        try {
+		try {
             call_user_func(array($this, $this->states[$this->record->state]));
         }
         catch ( Exception $e )
@@ -202,10 +211,12 @@ class NotesFromNature extends WorkFlowAbstract
             return;
         }
 
+		$groupId = $this->record->Project->group_id;
+
         $this->record->state = $this->record->state+1;
         $this->expedition->save($this->record);
 
-        $this->report->processComplete($this->record);
+        $this->report->processComplete($groupId, $this->record->title);
 
         return;
     }
@@ -253,7 +264,10 @@ class NotesFromNature extends WorkFlowAbstract
         $this->executeCommand("tar -czf {$this->dataDir}/$title.tar.gz -C {$this->dataDir} $title");
 
         if ( ! empty($this->missingImgUrl) || ! empty($this->missingImg))
-            $this->report->missingImages($this->record, $this->missingImgUrl, $this->missingImg);
+		{
+			$groupId = $this->record->Project->group_id;
+			$this->report->missingImages($groupId, $this->record->title, $this->missingImgUrl, $this->missingImg);
+		}
 
         $this->createDownload($this->record->id, "$title.tar.gz");
 
@@ -272,24 +286,25 @@ class NotesFromNature extends WorkFlowAbstract
         {
             $this->subjectArray[$subject->id][] = $subject->object_id;
 
-            if ( ! $remoteImgColumn = $this->getRemoteImgColumn($subject->subjectDoc->meta_id))
+            if ( ! $this->setBestQualityUri())
                 continue;
 
-            if (empty($subject->subjectDoc->{$remoteImgColumn}))
+			$uri = $subject->subjectDoc->subject[$this->bestQualityAccessUri];
+            if (empty($uri))
             {
                 $this->missingImgUrl[] = array($subject->object_id);
                 continue;
             }
 
-            list($image, $ext) = $this->getImage($subject->subjectDoc->bestQualityAccessURI);
+			list($image, $ext) = $this->getImage($uri);
 
             if ( ! $image)
             {
-                $this->missingImg[] = array($subject->subjectDoc->bestQualityAccessURI);
+                $this->missingImg[] = array($uri);
                 continue;
             }
 
-            $this->originalImgUrl[$subject->id.$ext] = $subject->subjectDoc->bestQualityAccessURI;
+            $this->originalImgUrl[$subject->id.$ext] = $uri;
             $path = "{$this->tmpFileDir}/{$subject->id}{$ext}";
 
             if ( ! $this->saveFile($path, $image))
@@ -302,43 +317,22 @@ class NotesFromNature extends WorkFlowAbstract
     }
 
     /**
-     * Retrieve column name for remote image supplied in meta file during import.
-     *
-     * @param $metaId
-     * @return null
+     * Retrieve short name being used for http://rs.tdwg.org/ac/terms/bestQualityAccessURI
      */
-    protected function getRemoteImgColumn($metaId)
+    protected function setBestQualityUri()
     {
-        if ( ! $this->setMetaData($metaId))
-            return false;
+		$result = $this->property->findByQualified('http://rs.tdwg.org/ac/terms/bestQualityAccessURI');
+		if (empty($result))
+			return false;
 
-        if ( ! $this->xmlProcess->load($this->metaXml, true))
-        {
-            $this->report->addError(trans('error_load_dom', array('id' => $metaId)));
-            $this->report->reportSimpleError();
+		$this->bestQualityAccessUri = $result->short;
 
-            return false;
-        }
-
-		$query = "//ns:field[contains(php:functionString('strtolower', @term), 'bestQualityAccessURI')]";
-		$node = $this->xmlProcess->xpathQueryOne($query);
-        if (empty($node))
-        {
-            $this->report->addError(trans('error_xpath', array('id' => $metaId)));
-            $this->report->reportSimpleError();
-
-            return false;
-        }
-        $index = $node->attributes->getNamedItem("index")->nodeValue;
-
-        $this->remoteImgColumn = $this->metaHeader[$index];
-
-        return $this->remoteImgColumn;
+        return true;
     }
 
     /**
      * Set xml from meta file
-     *
+     * TODO: May not need this depending on whether bestQualityAccessURI will always be the same.
      * @param $metaId
      * @return bool
      */
