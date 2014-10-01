@@ -181,9 +181,9 @@ class SubjectProcess {
 		$this->setHeaderArray();
 
 		$subjects = $this->buildSubjectsArray($multimedia, $occurrence);
-		dd($subjects);
 
-		$this->insertDocs($subjects);
+		if ( ! empty($subjects))
+			$this->insertDocs($subjects);
 
 		return;
 	}
@@ -304,12 +304,14 @@ class SubjectProcess {
 	 * Build subject array and insert extension
 	 *
 	 * @param $multimedia
-	 * @param $occurrences
+	 * @param $occurrence
 	 * @return array
 	 * @throws \Exception
 	 */
 	public function buildSubjectsArray ($multimedia, $occurrence)
 	{
+		$subjects = array();
+
 		// create new array with occurrence id as key
 		$occurrences = $this->formatOccurrences($occurrence);
 
