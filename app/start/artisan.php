@@ -11,4 +11,5 @@
 */
 Artisan::resolve('SubjectImport');
 Artisan::resolve('WorkFlowManagerCommand');
+Artisan::resolve('DownloadClean');
 
