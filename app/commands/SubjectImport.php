@@ -164,6 +164,7 @@ class SubjectImport extends Command {
 			}
 			catch (Exception $e)
 			{
+				die($e->getMessage());
 				$this->report->addError("Unable to process import id: {$import->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
 				$this->report->importError($import->id, $user->email, $project->title);
 				continue;
