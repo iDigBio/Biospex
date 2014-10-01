@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder {
 		DB::table('metas')->truncate();
 		DB::table('subjects')->truncate();
 		DB::table('downloads')->truncate();
+		DB::table('workflow_manager')->truncate();
 
 		$this->call('NavigationsTableSeeder');
         $this->call('PermissionTableSeeder');
