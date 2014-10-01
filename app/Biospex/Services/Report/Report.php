@@ -100,7 +100,7 @@ class Report {
     public function reportSimpleError($userId = null)
     {
         if ($this->debug)
-            $this->debug($this->messages->all());
+            $this->debug($this->messages->get('error'));
 
         $emails[] = $this->adminEmail;
 
@@ -144,7 +144,7 @@ class Report {
         $view = 'emails.report-process-complete';
 
 		if ($this->debug)
-			$this->debug("Completed {$title}");
+			$this->debug(array("Completed {$title}"));
 
         $this->mailer->sendReport($this->adminEmail, $emails, $subject, $view, $data);
 
@@ -162,7 +162,7 @@ class Report {
     public function missingImages($groupId, $title, $uuids = array(), $urls = array())
     {
         if ($this->debug)
-            $this->debug("Missing images for {$title}");
+            $this->debug(array("Missing images for {$title}"));
 
 		$group = $this->group->findWith($groupId, ['owner']);
 		$emails[] = $group->Owner->email;
@@ -192,7 +192,7 @@ class Report {
 	public function importError($id, $email, $title)
 	{
 		if ($this->debug)
-			$this->debug($this->messages->all());
+			$this->debug($this->messages->get('error'));
 
 		$emails[] = array($this->adminEmail, $email);
 		$subject = trans('errors.error_import');
