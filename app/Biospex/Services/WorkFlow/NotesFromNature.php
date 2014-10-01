@@ -200,7 +200,10 @@ class NotesFromNature extends WorkFlowAbstract
         }
 
 		try {
-            call_user_func(array($this, $this->states[$this->record->state]));
+            $result = call_user_func(array($this, $this->states[$this->record->state]));
+
+			if ( ! $result)
+				return;
         }
         catch ( Exception $e )
         {
@@ -226,7 +229,7 @@ class NotesFromNature extends WorkFlowAbstract
      */
     public function getResults()
     {
-        return;
+        return false;
     }
 
     /**
@@ -234,7 +237,7 @@ class NotesFromNature extends WorkFlowAbstract
      */
     public function getStatus()
     {
-        return;
+        return false;
     }
 
     /**
@@ -273,7 +276,7 @@ class NotesFromNature extends WorkFlowAbstract
 
         $this->destroyDir($this->tmpFileDir);
 
-        return;
+        return true;
     }
 
     /**
