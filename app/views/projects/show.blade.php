@@ -25,20 +25,20 @@
 <div class="panel panel-default">
     <div style="padding: 10px;">
     <p class="eyesright"><strong>@lang('pages.project_url'):</strong> {{ HTML::linkAction('HomeController@project', $project->title, [$project->slug]) }} </p>
-    <button class="btn btn-default btn-xs" type="button" onClick="location.href='{{ URL::route('projects.data', [$project->id]) }}'"><span class="glyphicon glyphicon-plus-sign"></span> @lang('buttons.data')</button>
-    <button class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ URL::route('projects.duplicate', [$project->id]) }}'"><span class="glyphicon glyphicon-share-alt"></span> @lang('buttons.duplicate')</button>
-    <button class="btn btn-warning btn-xs" type="button" onClick="location.href='{{ URL::route('projects.edit', [$project->id]) }}'"><span class="glyphicon glyphicon-cog"></span> @lang('buttons.edit')</button>
+    <button title="@lang('buttons.dataTitle')" class="btn btn-default btn-xs" type="button" onClick="location.href='{{ URL::route('projects.data', [$project->id]) }}'"><span class="glyphicon glyphicon-plus-sign"></span> @lang('buttons.data')</button>
+    <button title="@lang('buttons.duplicateTitle')" class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ URL::route('projects.duplicate', [$project->id]) }}'"><span class="glyphicon glyphicon-share-alt"></span> @lang('buttons.duplicate')</button>
+    <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs" type="button" onClick="location.href='{{ URL::route('projects.edit', [$project->id]) }}'"><span class="glyphicon glyphicon-cog"></span> @lang('buttons.edit')</button>
     @if ($isOwner)
-    <button class="btn btn-default btn-danger action_confirm btn-xs" href="{{ URL::route('projects.destroy', [$project->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="glyphicon glyphicon-remove-circle"></span> @lang('buttons.delete')</button></td>
+    <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-xs" href="{{ URL::route('projects.destroy', [$project->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="glyphicon glyphicon-remove-circle"></span> @lang('buttons.delete')</button></td>
     @endif
-    <button class="btn btn-success btn-xs" type="button" onClick="location.href='{{ URL::route('projects.advertise', [$project->id]) }}'"><span class="glyphicon glyphicon-globe"></span> @lang('buttons.advertise')</button>
+    <button title="@lang('buttons.advertiseTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ URL::route('projects.advertise', [$project->id]) }}'"><span class="glyphicon glyphicon-globe"></span> @lang('buttons.advertise')</button>
     </div>
 </div>
 
 <hr />
 
 <h3>{{ trans('pages.expeditions') }}:</h3>
-<button class="btn btn-success" onClick="location.href='{{ URL::route('projects.expeditions.create', [$project->id]) }}'"><span class="glyphicon glyphicon-plus"></span> @lang('buttons.create')</button>
+<button class="btn btn-success" title="@lang('buttons.createTitleE')" onClick="location.href='{{ URL::route('projects.expeditions.create', [$project->id]) }}'"><span class="glyphicon glyphicon-plus"></span> @lang('buttons.create')</button>
 <div class="table-responsive">
     <table class="table table-striped table-hover dataTable">
         <thead>
@@ -64,10 +64,10 @@
             <td>300</td>
             <td>85% <span class="complete"><span class="complete85">&nbsp;</span></span></td>
             <td class="nowrap">
-                <button class="btn btn-info btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@show', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-eye-open"></span> <!-- @lang('buttons.view') --></button>
-                <button class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ URL::route('projects.expeditions.duplicate', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-share-alt"></span> <!-- @lang('buttons.duplicate') --></button>
-                <button class="btn btn-warning btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@edit', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-cog"></span> <!-- @lang('buttons.edit') --></button>
-                <button class="btn btn-default btn-danger action_confirm btn-xs" href="{{ action('ExpeditionsController@destroy', [$project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="glyphicon glyphicon-remove-circle"></span> <!-- @lang('buttons.delete') --></button></td>
+                <button title="@lang('buttons.viewTitle')" class="btn btn-info btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@show', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-eye-open"></span> <!-- @lang('buttons.view') --></button>
+                <button title="@lang('buttons.duplicateTitle')" class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ URL::route('projects.expeditions.duplicate', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-share-alt"></span> <!-- @lang('buttons.duplicate') --></button>
+                <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@edit', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-cog"></span> <!-- @lang('buttons.edit') --></button>
+                <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-xs" href="{{ action('ExpeditionsController@destroy', [$project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="glyphicon glyphicon-remove-circle"></span> <!-- @lang('buttons.delete') --></button></td>
         </tr>
         @endforeach
         </tbody>
