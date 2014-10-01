@@ -54,4 +54,14 @@ class Download extends Eloquent {
     {
         return $this->belongsTo('Expedition');
     }
+
+	/**
+	 * Get expired downloads
+	 *
+	 * @return \Illuminate\Database\Eloquent\Collection|static[]
+	 */
+	public function getExpired()
+	{
+		return $this->where('count', '>', 5)->orWhere('created_at', '<', DB::raw('NOW() - INTERVAL 3 DAY'))->get();
+	}
 }
