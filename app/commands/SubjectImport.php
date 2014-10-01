@@ -25,17 +25,17 @@
  */
 
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Filesystem\Filesystem;
+use Symfony\Component\Console\Input\InputArgument;
 use Biospex\Repo\Import\ImportInterface;
+use Biospex\Repo\Project\ProjectInterface;
+use Biospex\Repo\User\UserInterface;
+use Biospex\Services\Report\Report;
 use Biospex\Services\Subject\SubjectProcess;
 use Biospex\Services\Subject\SubjectProcessException;
 use Biospex\Services\Xml\XmlProcess;
 use Biospex\Services\Xml\XmlProcessException;
-use Biospex\Repo\User\UserInterface;
-use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Mailer\BiospexMailer;
-use Illuminate\Support\Contracts\MessageProviderInterface;
 
 class SubjectImport extends Command {
     /**
@@ -66,18 +66,6 @@ class SubjectImport extends Command {
     protected $dataTmp;
 
 	/**
-	 * Current import record
-	 *
-	 * @var
-	 */
-	protected $record;
-
-	/**
-	 * @var bool
-	 */
-	protected $debug;
-
-	/**
 	 * Constructor
 	 *
 	 * @param ImportInterface $import
@@ -88,32 +76,33 @@ class SubjectImport extends Command {
 	 * @param ProjectInterface $project
 	 * @param BiospexMailer $mailer
 	 * @param MessageProviderInterface $messages
-	 * @param PropertyInterface $property
+	 * @param Report $report
 	 */
     public function __construct(
-        ImportInterface $import,
-        Filesystem $filesystem,
-        SubjectProcess $subjectProcess,
+		Filesystem $filesystem,
+		ImportInterface $import,
+		ProjectInterface $project,
+		UserInterface $user,
+		Report $report,
+		SubjectProcess $subjectProcess,
 		XmlProcess $xmlProcess,
-        UserInterface $user,
-        ProjectInterface $project,
-        BiospexMailer $mailer,
-        MessageProviderInterface $messages
+        BiospexMailer $mailer
+
     )
     {
         parent::__construct();
 
-        $this->import = $import;
         $this->filesystem = $filesystem;
+		$this->import = $import;
+		$this->project = $project;
+		$this->user = $user;
+		$this->report = $report;
+		$this->subjectProcess = $subjectProcess;
 		$this->xmlProcess = $xmlProcess;
-        $this->subjectProcess = $subjectProcess;
-        $this->user = $user;
-        $this->project = $project;
         $this->mailer = $mailer;
-        $this->messages = $messages;
+
         $this->dataDir = Config::get('config.dataDir');
         $this->dataTmp = Config::get('config.dataTmp');
-        $this->adminEmail = Config::get('config.adminEmail');
     }
 
     /**
@@ -123,7 +112,7 @@ class SubjectImport extends Command {
      */
     public function fire()
     {
-		$this->debug = $this->argument('debug');
+		$this->report->setDebug($this->argument('debug'));
 
         $imports = $this->import->all();
 
@@ -132,46 +121,52 @@ class SubjectImport extends Command {
 
         foreach ($imports as $import)
         {
-			$this->record = $import;
+			if ($import->error)
+				continue;
 
-            if ($this->record->error)
-                continue;
+			$user = $this->user->find($import->user_id);
+			$project = $this->project->find($import->project_id);
 
-			$file = "{$this->dataDir}/{$this->record->file}";
-			$fileDir = "{$this->dataTmp}/" . md5($this->record->file);
+			$file = "{$this->dataDir}/{$import->file}";
+			$fileDir = "{$this->dataTmp}/" . md5($import->file);
 
 			try
 			{
 				$this->makeTmp($fileDir);
 				$this->unzip($file, $fileDir);
 
-				$this->subjectProcess->processSubjects($this->record->project_id, $fileDir);
+				$this->subjectProcess->processSubjects($import->project_id, $fileDir);
 
 				$duplicates = $this->subjectProcess->getDuplicates();
-				$rejected = $this->subjectProcess->getRejectedMedia();
+				$rejects = $this->subjectProcess->getRejectedMedia();
 
-				$this->report($duplicates, $rejected);
+				list($duplicated, $rejected, $attachments) = $this->createDuplicateReject($duplicates, $rejects);
+
+				$this->report->importComplete($user->email, $project->title, $duplicated, $rejected, $attachments);
+
+				$this->destroyDir($this->dataTmp, true);
 
 				$this->filesystem->delete(array($file));
 
-				$this->import->destroy($this->record->id);
+				$this->import->destroy($import->id);
 			}
 			catch (XmlProcessException $e)
 			{
-				$this->messages->add("error", "Unable to process import id: {$this->record->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
-				$this->report();
+				$this->importError($import);
+				$this->report->addError("error", "Unable to process import id: {$import->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
+				$this->report->importError($import->id, $user->email, $project->title);
 				continue;
 			}
 			catch (SubjectProcessException $e)
 			{
-				$this->messages->add("error", "Unable to process import id: {$this->record->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
-				$this->report();
+				$this->report->addError("error", "Unable to process import id: {$import->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
+				$this->report->importError($import->id, $user->email, $project->title);
 				continue;
 			}
 			catch (Exception $e)
 			{
-				$this->messages->add("error", "Unable to process import id: {$this->record->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
-				$this->report();
+				$this->report->addError("error", "Unable to process import id: {$import->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
+				$this->report->importError($import->id, $user->email, $project->title);
 				continue;
 			}
         }
@@ -191,12 +186,13 @@ class SubjectImport extends Command {
 		);
 	}
 
-    /**
-     * Extract files from zip
-     *
-     * @param $file
+	/**
+	 * Extract files from zip
+	 *
+	 * @param $file
 	 * @param $fileDir
-     */
+	 * @throws Exception
+	 */
     public function unzip($file, $fileDir)
     {
         $zip = new ZipArchive;
@@ -204,49 +200,45 @@ class SubjectImport extends Command {
         if ($res === true) {
             $zip->extractTo($fileDir);
             $zip->close();
-        } else {
-            $this->messages->add("error", "Unable unzip file.");
-            $this->report();
+			return;
         }
-    }
 
-    /**
-     * Copy file to tmp directory
-     * @param $file
-     * @param $fileDirTmp
-     */
-    public function copyFile($file, $fileDirTmp)
-    {
-        if ( ! $this->filesystem->copy($file, $fileDirTmp))
-        {
-            $this->messages->add("error", "Unable to copy file to temp directory.");
-            $this->report();
-        }
+		throw new Exception('Unable to unzip file:' . $file);
     }
 
 	/**
-	 * Create tmp dataDir
+	 * Copy file to tmp directory
+	 *
+	 * @param $file
+	 * @param $fileDirTmp
+	 * @throws Exception
+	 */
+    public function copyFile($file, $fileDirTmp)
+    {
+        if ( ! $this->filesystem->copy($file, $fileDirTmp))
+			throw new Exception('Unable to copy file to temp directory:' . $file);
+
+		return;
+    }
+
+	/**
+	 * Create tmp data directory
 	 *
 	 * @param $dir
+	 * @throws Exception
 	 */
     protected function makeTmp($dir)
     {
         if ( ! $this->filesystem->isDirectory($dir))
         {
             if ( ! $this->filesystem->makeDirectory($dir, 0755, true))
-            {
-                $this->messages->add("error", "Unable to create temporary directory.");
-                $this->report();
-            }
+				throw new Exception('"Unable to create temporary directory:' . $dir);
         }
 
         if ( ! $this->filesystem->isWritable($dir))
         {
             if ( ! chmod($dir, 0777))
-            {
-                $this->messages->add("error", "Unable to make temporary directory writable.");
-                $this->report();
-            }
+				throw new Exception('"Unable to make temporary directory writable:' . $dir);
         }
 
         return;
@@ -266,77 +258,47 @@ class SubjectImport extends Command {
 		Helpers::destroyDir($dir, $parent);
 	}
 
-    /**
-     * Send report for import
-     *
-     * @param $duplicates
-     */
-    public function report($duplicates = array(), $rejected = array())
-    {
-		$user = $this->user->find($this->record->user_id);
-        $project = $this->project->find($this->record->project_id);
-
-        $emails = array();
-		$attachment = array();
-		$data = array();
-		$from = $this->adminEmail;
-
-        if ($this->messages->any())
-		{
-			$this->record->error = 1;
-			$this->import->save($this->record);
-
-            // error exists
-            $emails[] = $this->adminEmail;
-            $emails[] = $user->email;
-            $subject = trans('errors.error_import');
-            $data = array(
-                'importId' => $this->record->id,
-                'projectTitle' => $project->title,
-                'errorMessage' => print_r($this->messages->all(), true)
-            );
-            $view = 'emails.reporterror';
-        }
-		elseif ( ! empty($duplicates) || ! empty($rejected))
-		{
-			$data = array(
-				'projectTitle' => $project->title,
-				'duplicateCount' => 0,
-				'rejectedCount' => 0,
-			);
-
-			$emails[] = $user->email;
-			$subject = trans('emails.import_complete');
-			$view = 'emails.reportsubject';
-
-			if ( ! empty($duplicates))
-			{
-				// no errors but possible duplicates
-				$file = "{$this->dataTmp}/{$user->id}_{$project->id}_duplicates.csv";
-				$this->writeCsv($file, $duplicates);
-				$attachment[] = $file;
-				$data['duplicateCount'] = count($duplicates);
-			}
-
-			if ( ! empty($rejected))
-			{
-				// empty image ids
-				$file = "{$this->dataTmp}/{$user->id}_{$project->id}_rejected.csv";
-				$this->writeCsv($file, $rejected);
-				$attachment[] = $file;
-				$data['rejectedCount'] = count($rejected);
-			}
-		}
-
-		if ($this->debug)
-			$this->debug($data);
-
-		$this->mailer->sendReport($from, $emails, $subject, $view, $data, $attachment);
-
-		$this->destroyDir($this->dataTmp, true);
+	/**
+	 * Set error column on import
+	 */
+	private function importError($import)
+	{
+		$import->error = 1;
+		$this->import->save($import);
 
 		return;
+	}
 
+	/**
+	 * Create duplicate and reject files if any
+	 *
+	 * @param array $duplicates
+	 * @param array $rejects
+	 * @return array
+	 */
+    public function createDuplicateReject($duplicates = array(), $rejects = array())
+    {
+		$attachments = array();
+		$duplicated = 0;
+		$rejected = 0;
+		if ( ! empty($duplicates))
+		{
+			$file = "{$this->dataTmp}/duplicates.csv";
+			$this->writeCsv($file, $duplicates);
+			$attachments[] = $file;
+			$duplicated = count($duplicates);
+		}
+
+		if ( ! empty($rejects))
+		{
+			// empty image ids
+			$file = "{$this->dataTmp}/rejected.csv";
+			$this->writeCsv($file, $rejects);
+			$attachments[] = $file;
+			$rejected = count($rejects);
+		}
+
+		return array($duplicated, $rejected, $attachments);
     }
 
 	/**
@@ -353,13 +315,5 @@ class SubjectImport extends Command {
 			fputcsv($fp, $fields);
 		}
 		fclose($fp);
-	}
-
-	/**
-	 * Dump all messages during debug
-	 */
-	private function debug($data)
-	{
-		dd($data);
 	}
 }

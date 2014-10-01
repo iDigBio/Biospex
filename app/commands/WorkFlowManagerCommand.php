@@ -24,6 +24,7 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
 use Biospex\Repo\WorkFlow\WorkFlowInterface;
 use Biospex\Services\Report\Report;
@@ -49,9 +50,20 @@ class WorkFlowManagerCommand extends Command {
      */
     protected $messages;
 
-    /**
-     * Class constructor
-     */
+	/**
+	 * Debug argument from command line for testing
+	 *
+	 * @var
+	 */
+	protected $debug;
+
+	/**
+	 * Class constructor
+	 *
+	 * @param WorkflowManagerInterface $manager
+	 * @param WorkFlowInterface $workflow
+	 * @param Report $report
+	 */
     public function __construct(
         WorkflowManagerInterface $manager,
         WorkFlowInterface $workflow,
@@ -72,6 +84,9 @@ class WorkFlowManagerCommand extends Command {
      */
     public function fire()
     {
+		$this->debug = $this->argument('debug');
+		$this->report->setDebug($this->debug);
+
         $managers = $this->manager->all();
 
         if (empty($managers))
@@ -79,13 +94,12 @@ class WorkFlowManagerCommand extends Command {
 
         foreach ($managers as $manager)
         {
-            $workflow = $this->workflow->find($manager->workflow_id);
-            $classNameSpace ='Biospex\Services\WorkFlow\\' . $workflow->class;
             try {
+				$workflow = $this->workflow->find($manager->workflow_id);
+				$classNameSpace ='Biospex\Services\WorkFlow\\' . $workflow->class;
                 $class = App::make($classNameSpace);
+				$class->setDebug($this->debug);
                 $class->process($manager->expedition_id);
-
-                //$this->manager->destroy($manager->id);
             }
             catch ( Exception $e )
             {
@@ -98,9 +112,19 @@ class WorkFlowManagerCommand extends Command {
                 $this->report->reportSimpleError();
                 continue;
             }
-
         }
-
     }
+
+	/**
+	 * Get the console command arguments.
+	 *
+	 * @return array
+	 */
+	protected function getArguments()
+	{
+		return array(
+			array('debug', InputArgument::OPTIONAL, 'Debug option. Default false.', false),
+		);
+	}
 }
 
