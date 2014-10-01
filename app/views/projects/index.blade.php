@@ -12,7 +12,7 @@
     @if ( ! $groups->isEmpty())
     <div class="col-md-10 col-md-offset-1">
         <h3>{{ trans('projects.projects') }}</h3>
-        <button class="btn btn-success" onClick="location.href='{{ URL::route('projects.create') }}'"><span class="glyphicon glyphicon-plus"></span>  @lang('buttons.create')</button>
+        <button title="@lang('buttons.createTitleP')" class="btn btn-success" onClick="location.href='{{ URL::route('projects.create') }}'"><span class="glyphicon glyphicon-plus"></span>  @lang('buttons.create')</button>
     </div>
     <div class="col-md-10 col-md-offset-1">
 		<div class="table-responsive">
@@ -35,12 +35,12 @@
 						<td>{{ $project->description_short }} </td>
 						<td><a href="{{ URL::route('groups.show', [$group->id]) }}">{{ $group->name }}</a></td>
 						<td class="nowrap">
-							<button class="btn btn-info btn-xs" type="button" onClick="location.href='{{ URL::route('projects.show', [$project->id]) }}'"><span class="glyphicon glyphicon-eye-open"></span> @lang('buttons.view')</button>
-							<button class="btn btn-default btn-xs" type="button" onClick="location.href='{{ URL::route('projects.data', [$project->id]) }}'"><span class="glyphicon glyphicon-plus-sign"></span> @lang('buttons.data')</button>
-							<button class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ URL::route('projects.duplicate', [$project->id]) }}'"><span class="glyphicon glyphicon-share-alt"></span> @lang('buttons.duplicate')</button>
-							<button class="btn btn-warning btn-xs" type="button" onClick="location.href='{{ URL::route('projects.edit', [$project->id]) }}'"><span class="glyphicon glyphicon-cog"></span> @lang('buttons.edit')</button>
+							<button title="@lang('buttons.viewTitle')" class="btn btn-info btn-xs" type="button" onClick="location.href='{{ URL::route('projects.show', [$project->id]) }}'"><span class="glyphicon glyphicon-eye-open"></span> @lang('buttons.view')</button>
+							<button title="@lang('buttons.dataTitle')" class="btn btn-default btn-xs" type="button" onClick="location.href='{{ URL::route('projects.data', [$project->id]) }}'"><span class="glyphicon glyphicon-plus-sign"></span> @lang('buttons.data')</button>
+							<button title="@lang('buttons.duplicateTitle')" class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ URL::route('projects.duplicate', [$project->id]) }}'"><span class="glyphicon glyphicon-share-alt"></span> @lang('buttons.duplicate')</button>
+							<button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs" type="button" onClick="location.href='{{ URL::route('projects.edit', [$project->id]) }}'"><span class="glyphicon glyphicon-cog"></span> @lang('buttons.edit')</button>
 							@if ($user->id == $group->user_id || $isSuperUser)
-							<button class="btn btn-default btn-danger action_confirm btn-xs" href="{{ URL::route('projects.destroy', [$project->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="glyphicon glyphicon-remove-circle"></span> @lang('buttons.delete')</button>
+							<button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-xs" href="{{ URL::route('projects.destroy', [$project->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="glyphicon glyphicon-remove-circle"></span> @lang('buttons.delete')</button>
 							@endif
 						</td>
 					</tr>
