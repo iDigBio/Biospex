@@ -233,7 +233,7 @@ class SubjectImport extends Command {
     {
         if ( ! $this->filesystem->isDirectory($dir))
         {
-            if ( ! $this->filesystem->makeDirectory($dir, 0755, true))
+            if ( ! $this->filesystem->makeDirectory($dir, 0777, true))
 				throw new Exception('"Unable to create temporary directory:' . $dir);
         }
 
