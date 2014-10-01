@@ -297,6 +297,9 @@ class ExpeditionsController extends BaseController {
     public function download($projectId, $expeditionId, $downloadId)
     {
         $download = $this->download->find($downloadId);
+		$download->count = $download->count + 1;
+		$this->download->save($download);
+
         $dataDir = Config::get('config.dataDir');
         $path = "$dataDir/{$download->file}";
         $headers = array('Content-Type' => 'application/x-compressed');
