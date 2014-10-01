@@ -51,10 +51,6 @@ class SubjectDocsTableSeeder extends Seeder {
     {
         Eloquent::unguard();
 
-		DB::table('properties')->truncate();
-		DB::table('headers')->truncate();
-		DB::table('metas')->truncate();
-		DB::table('subjects')->truncate();
 		DB::connection('mongodb')->collection('subjectdocs')->truncate();
 
 		$dir = 'app/database/seeds/data';

@@ -14,6 +14,12 @@ class DatabaseSeeder extends Seeder {
 		Eloquent::unguard();
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
+		DB::table('properties')->truncate();
+		DB::table('headers')->truncate();
+		DB::table('metas')->truncate();
+		DB::table('subjects')->truncate();
+		DB::table('downloads')->truncate();
+
 		$this->call('NavigationsTableSeeder');
         $this->call('PermissionTableSeeder');
         $this->call('UserTableSeeder');
