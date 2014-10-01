@@ -27,14 +27,24 @@
 return array(
     'update'            => "Update",
     'edit'              => "Edit",
+    'editTitle'         => "Edit this item",
     'view'              => "View",
+    'viewTitle'         => "View details of this item",
     'delete'            => "Delete",
+    'deleteTitle'       => "Delete this item",
     'create'            => "Create",
+    'createTitleP'       => "Create a new Project",
+    'createTitleG'       => "Create a new Group",
+    'createTitleE'       => "Create a new Expedition",
     'data'              => "Add Data",
+    'dataTitle'         => "Add Data to this project via upload",
     'upload'            => "Upload",
     'duplicate'         => "Clone",
+    'duplicateTitle'    => "Clone this item to make a new entity",
     'process'           => "Process",
+	'processTitle'           => "Process this expedition and generate a file for the external service",
 	'stop'              => "Stop",
+    'stopTitle'              => "Stop processing of this expedition and consider it finished.",
     'cancel'            => "Cancel",
 
     'login'             => "Login",
@@ -44,14 +54,18 @@ return array(
     'resend'            => "Resend",
 
     'target_add'        => "Add Target",
+    'addTargetTitle'    => "Add a set of target fields to this project",
     'target_remove'     => "Remove Target",
+    'removeTargetTitle' => "Remove a set of target fields from this project",
 
     'suspend'           => "Suspend",
     'unsuspend'         => "Unsuspend",
     'ban'               => "Ban",
     'unban'             => "Unban",
     'invite'            => "Invite",
+    'inviteTitle'       => "Invite other users to join this group",
     'join'              => "Join",
     'advertise'         => "Advertise",
+    'advertiseTitle'    => "Advertise this project in external sites",
 
 );

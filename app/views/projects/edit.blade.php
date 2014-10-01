@@ -22,8 +22,8 @@
     @include('partials.project-fields', compact('project'))
 
     <div class="form-group">
-        <button id="add_target" class="btn btn-default" type="button">@lang('buttons.target_add')</button>
-        <button id="remove_target" class="btn btn-default" type="button">@lang('buttons.target_remove')</button>
+        <button title="@lang('buttons.addTargetTitle')" id="add_target" class="btn btn-default" type="button">@lang('buttons.target_add')</button>
+        <button title="@lang('buttons.removeTargetTitle')" id="remove_target" class="btn btn-default" type="button">@lang('buttons.target_remove')</button>
     </div>
 
     <div class="form-group">

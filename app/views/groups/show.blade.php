@@ -55,7 +55,7 @@
 	</div>
     @endif
 	<div class="col-md-2">
-		<button class="btn btn-warning btn-xs" onClick="location.href='{{ action('GroupsController@edit', array($group->id)) }}'"><span class="glyphicon glyphicon-cog"></span> @lang('buttons.edit')</button>
+		<button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs" onClick="location.href='{{ action('GroupsController@edit', array($group->id)) }}'"><span class="glyphicon glyphicon-cog"></span> @lang('buttons.edit')</button>
 	</div> 
 
 @stop

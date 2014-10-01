@@ -66,7 +66,7 @@
 		{{ trans('welcome.projects') }}	
 		{{ trans('welcome.expeditions') }}
 		{{ trans('welcome.ready') }}
-	    <button class="btn btn-success" onClick="location.href='{{ URL::route('projects.create') }}'"><span class="glyphicon glyphicon-plus"></span>  @lang('buttons.create')</button>
+	    <button class="btn btn-success" title="@lang('buttons.createTitleP')" onClick="location.href='{{ URL::route('projects.create') }}'"><span class="glyphicon glyphicon-plus"></span>  @lang('buttons.create')</button>
   
 	</div>
 	@endif
