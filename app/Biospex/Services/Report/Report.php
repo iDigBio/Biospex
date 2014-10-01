@@ -26,6 +26,7 @@
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Contracts\MessageProviderInterface;
 use Biospex\Repo\User\UserInterface;
+use Biospex\Repo\Group\GroupInterface;
 use Biospex\Mailer\BiospexMailer;
 
 class Report {
@@ -67,16 +68,22 @@ class Report {
     public function __construct(
         MessageProviderInterface $messages,
         UserInterface $user,
+		GroupInterface $group,
         BiospexMailer $mailer
     )
     {
         $this->messages = $messages;
         $this->user = $user;
+		$this->group = $group;
         $this->mailer = $mailer;
         $this->adminEmail = Config::get('config.adminEmail');
-        $this->debug = Config::get('config.debug');
     }
 
+	/**
+	 * Add error to message bag
+	 *
+	 * @param $error
+	 */
     public function addError($error)
     {
         $this->messages->add('error', $error);
@@ -84,18 +91,17 @@ class Report {
         return;
     }
 
-    public function reportSimpleError($userId = null, $fatal = false)
+	/**
+	 * Report a simple error
+	 *
+	 * @param null $userId
+	 * @param bool $fatal
+	 */
+    public function reportSimpleError($userId = null)
     {
         if ($this->debug)
-        {
-            $this->debug($this->messages->first('error'));
-            return;
-        }
+            $this->debug($this->messages->all());
 
-        if (\App::environment() == 'develop')
-            return;
-
-		$from = $this->adminEmail;
         $emails[] = $this->adminEmail;
 
         if ( ! is_null($userId))
@@ -114,60 +120,57 @@ class Report {
         $data = array('errorMessage' => $errorMessage);
         $view = 'emails.report-simple-error';
 
-        $this->mailer->sendReport($from, $emails, $subject, $view, $data);
-
-        if ($fatal)
-            die();
+        $this->mailer->sendReport($this->adminEmail, $emails, $subject, $view, $data);
 
         return;
     }
 
-    public function processComplete($record)
+	/**
+	 * Current process for expedition completed successfully.
+	 *
+	 * @param $groupId
+	 * @param $title
+	 */
+    public function processComplete($groupId, $title)
     {
-        if ($this->debug)
-        {
-            $this->debug("Completed {$record->title}" . PHP_EOL);
-            return;
-        }
+		$group = $this->group->findWith($groupId, ['owner']);
+		$emails[] = $group->Owner->email;
 
-        if (\App::environment() == 'develop')
-            return;
-
-		$from = $this->adminEmail;
-        $user = $this->user->find($record->project->user_id);
-        $emails[] = $user->email;
-
-        $subject = trans('emails.expedition_complete', array('expedition' => $record->title));
+        $subject = trans('emails.expedition_complete', array('expedition' => $title));
         $data = array(
             'completeMessage' => trans('emails.expedition_complete_message',
-                array('expedition' => $record->title))
+                array('expedition' => $title))
         );
         $view = 'emails.report-process-complete';
 
-        $this->mailer->sendReport($from, $emails, $subject, $view, $data);
+		if ($this->debug)
+			$this->debug("Completed {$title}");
+
+        $this->mailer->sendReport($this->adminEmail, $emails, $subject, $view, $data);
 
         return;
     }
 
-    public function missingImages($record, $uuids = array(), $urls = array())
+	/**
+	 * Expedition has missing images
+	 *
+	 * @param $groupId
+	 * @param $title
+	 * @param array $uuids
+	 * @param array $urls
+	 */
+    public function missingImages($groupId, $title, $uuids = array(), $urls = array())
     {
         if ($this->debug)
-        {
-            $this->debug("Missing images for {$record->title}" . PHP_EOL);
-            return;
-        }
+            $this->debug("Missing images for {$title}");
 
-        if (\App::environment() == 'develop')
-            return;
-
-		$from = $this->adminEmail;
-        $user = $this->user->find($record->project->user_id);
-        $email = $user->email;
+		$group = $this->group->findWith($groupId, ['owner']);
+		$emails[] = $group->Owner->email;
 
         $subject = trans('emails.missing_images_subject');
         $data = array(
             'missingImageMessage' => trans('emails.missing_images'),
-            'expeditionTitle' => $record->title,
+            'expeditionTitle' => $title,
             'missingIds' => trans('emails.missing_img_ids'),
             'missingId' => implode("<br />", $uuids),
             'missingImageUrls' => trans('emails.missing_img_urls'),
@@ -175,18 +178,77 @@ class Report {
         );
         $view = 'emails.report-missing_images';
 
-        $this->mailer->sendReport($from, $email, $subject, $view, $data);
+        $this->mailer->sendReport($this->adminEmail, $emails, $subject, $view, $data);
     }
 
-	public function reportImport()
+	/**
+	 * Send error during subject import
+	 *
+	 * @param $id
+	 * @param $email
+	 * @param $title
+	 * @param $messages
+	 */
+	public function importError($id, $email, $title)
 	{
+		if ($this->debug)
+			$this->debug($this->messages->all());
 
+		$emails[] = array($this->adminEmail, $email);
+		$subject = trans('errors.error_import');
+		$data = array(
+			'importId' => $id,
+			'projectTitle' => $title,
+			'errorMessage' => print_r($this->messages->all(), true)
+		);
+		$view = 'emails.reporterror';
+
+		$this->mailer->sendReport($this->adminEmail, $emails, $subject, $view, $data);
 	}
 
-    public function debug($message)
-    {
-        echo $message . PHP_EOL;
+	/**
+	 * Send report for completed subject import
+	 *
+	 * @param $email
+	 * @param $title
+	 * @param $duplicate
+	 * @param $reject
+	 * @param $attachment
+	 */
+	public function importComplete($email, $title, $duplicated, $rejected, $attachments)
+	{
+		$emails[] = $email;
+		$data = array(
+			'projectTitle' => $title,
+			'duplicateCount' => $duplicated,
+			'rejectedCount' => $rejected,
+		);
+		$subject = trans('emails.import_complete');
+		$view = 'emails.reportsubject';
 
-        return;
+		if ($this->debug)
+			$this->debug($data);
+
+		$this->mailer->sendReport($this->adminEmail, $emails, $subject, $view, $data, $attachments);
+	}
+
+	/**
+	 * Set debug
+	 *
+	 * @param bool $value
+	 */
+	public function setDebug($value = false)
+	{
+		$this->debug = $value;
+	}
+
+	/**
+	 * Dump messages during debug
+	 *
+	 * @param $messages
+	 */
+    public function debug($messages)
+    {
+        dd($messages . PHP_EOL);
     }
 }
