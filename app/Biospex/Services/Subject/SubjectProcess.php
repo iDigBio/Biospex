@@ -181,6 +181,7 @@ class SubjectProcess {
 		$this->setHeaderArray();
 
 		$subjects = $this->buildSubjectsArray($multimedia, $occurrence);
+		dd($subjects);
 
 		$this->insertDocs($subjects);
 
