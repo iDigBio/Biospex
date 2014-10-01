@@ -62,6 +62,6 @@ class Download extends Eloquent {
 	 */
 	public function getExpired()
 	{
-		return $this->where('count', '>', 5)->orWhere('created_at', '<', DB::raw('NOW() - INTERVAL 3 DAY'))->get();
+		return $this->where('count', '>', 5)->orWhere('created_at', '<', DB::raw('NOW() - INTERVAL 7 DAY'))->get();
 	}
 }
