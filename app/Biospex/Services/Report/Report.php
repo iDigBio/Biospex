@@ -58,13 +58,14 @@ class Report {
      */
     protected $debug;
 
-    /**
-     * Constructor
-     *
-     * @param MessageProviderInterface $messages
-     * @param UserInterface $user
-     * @param BiospexMailer $mailer
-     */
+	/**
+	 * Constructor
+	 *
+	 * @param MessageProviderInterface $messages
+	 * @param UserInterface $user
+	 * @param GroupInterface $group
+	 * @param BiospexMailer $mailer
+	 */
     public function __construct(
         MessageProviderInterface $messages,
         UserInterface $user,
@@ -252,8 +253,6 @@ class Report {
 
 	/**
 	 * Dump messages during debug
-	 *
-	 * @param $messages
 	 */
     public function debug()
     {
