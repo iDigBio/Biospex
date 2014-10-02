@@ -139,7 +139,8 @@ class GroupsController extends BaseController {
 	/**
 	 * Display the specified resource.
 	 *
-	 * @return Response
+	 * @param $id
+	 * @return $this
 	 */
 	public function show($id)
 	{
@@ -147,7 +148,7 @@ class GroupsController extends BaseController {
         $permissions = $this->permission->all();
 
 		//Show a group and its permissions. 
-		$group = $this->group->find($id);
+		$group = $this->group->findWith($id, ['owner']);
 
         $viewPermissions = Sentry::getUser()->hasAccess('permission_view');
 
@@ -161,7 +162,8 @@ class GroupsController extends BaseController {
 	/**
 	 * Show the form for editing the specified resource.
 	 *
-	 * @return Response
+	 * @param $id
+	 * @return $this
 	 */
 	public function edit($id)
 	{
