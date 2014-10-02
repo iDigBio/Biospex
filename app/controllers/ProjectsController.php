@@ -74,7 +74,6 @@ class ProjectsController extends BaseController {
         $this->beforeFilter('hasProjectAccess:project_view', array('only' => array('show')));
         $this->beforeFilter('hasProjectAccess:project_edit', array('only' => array('edit', 'update', 'data')));
         $this->beforeFilter('hasProjectAccess:project_delete', array('only' => array('destroy')));
-        $this->beforeFilter('hasProjectAccess:project_create', array('only' => array('data')));
 
     }
 
