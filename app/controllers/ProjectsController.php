@@ -247,7 +247,7 @@ class ProjectsController extends BaseController {
             return Redirect::route('projects.data', [$id]);
         }
 
-        $filename = str_random(8) . '.' . $file->getClientOriginalExtension();
+        $filename = $file->getClientOriginalName();
         $directory = Config::get('config.dataDir');
 
         try
