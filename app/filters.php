@@ -134,8 +134,28 @@ Route::filter('hasProjectAccess', function($route, $request, $value)
             return;
 
         $id = $route->getParameter('projects');
-		$project = Project::find($id);
-        $group = Sentry::findGroupById($project->group_id);
+		$projectKey = md5("project-$id");
+		if (Cache::has($projectKey))
+		{
+			$project = Cache::get($projectKey);
+		}
+		else
+		{
+			$project = Project::find($id);
+			Cache::add($projectKey, $project, 15);
+		}
+
+		$groupId = $project->group_id;
+		$groupKey = "group-$groupId";
+		if (Cache::has($groupKey))
+		{
+			$group = Cache::get($groupKey);
+		}
+		else
+		{
+			$group = Sentry::findGroupById($groupId);
+			Cache::add($groupKey, $group, 15);
+		}
 
         if ($user->inGroup($group) && $user->hasAccess(array($value)))
             return;
@@ -173,7 +193,17 @@ Route::filter('hasGroupAccess', function($route, $request, $value)
 
         if ($id)
         {
-            $group = Sentry::findGroupById($id);
+			$groupKey = "group-$id";
+			if (Cache::has($groupKey))
+			{
+				$group = Cache::get($groupKey);
+			}
+			else
+			{
+				$group = Sentry::findGroupById($id);
+				Cache::add($groupKey, $group, 15);
+			}
+
             if ($group->user_id == $user->id)
                 return;
             if ($user->inGroup($group) && ($value != 'group_edit' || $value != 'group_delete'))
