@@ -197,6 +197,10 @@ class SubjectImport extends Command {
 	 */
     public function unzip($file, $fileDir)
     {
+		shell_exec("unzip $file -d $fileDir");
+
+		return;
+
         $zip = new ZipArchive;
         $res = $zip->open($file);
         if ($res === true) {
