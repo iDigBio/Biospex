@@ -32,31 +32,61 @@ class UserTableSeeder extends Seeder {
      */
     public function run()
     {
-        DB::table('users')->truncate();
+		DB::table('users')->truncate();
 
-        Sentry::getUserProvider()->create(array(
-            'email'         => 'admin@biospex.org',
-            'password'      => 'biospex',
-            'first_name'    => 'Biospex',
-            'last_name'     => 'Admin',
-            'activated'     => 1,
-        ));
+		$users = $this->getUsers();
 
-        Sentry::getUserProvider()->create(array(
-            'email'    => 'biospex@gmail.com',
-            'password' => 'biospex',
-            'first_name'    => 'Austin',
-            'last_name'     => 'Mast',
-            'activated' => 1,
-        ));
-
-        Sentry::getUserProvider()->create(array(
-            'email'    => 'macadamiatree@gmail.com',
-            'password' => 'biospex',
-            'first_name'    => 'Chris',
-            'last_name'     => 'Buddenhagen',
-            'activated' => 1,
-        ));
+		foreach ($users as $user)
+		{
+			Sentry::getUserProvider()->create($user);
+		}
     }
 
+	private function getUsers()
+	{
+		return array(
+			array(
+				'email'         => 'admin@biospex.org',
+				'password'      => 'biospex',
+				'first_name'    => 'Biospex',
+				'last_name'     => 'Admin',
+				'activated'     => 1,
+			),
+			array(
+				'email'    => 'biospex@gmail.com',
+				'password' => 'biospex',
+				'first_name'    => 'Robert',
+				'last_name'     => 'Bruhn',
+				'activated' => 1,
+			),
+			array(
+				'email'    => 'macadamiatree@gmail.com',
+				'password' => 'biospex',
+				'first_name'    => 'Austin',
+				'last_name'     => 'Mast',
+				'activated' => 1,
+			),
+			array(
+				'email'    => 'jspinks@fsu.edu',
+				'password' => 'biospex',
+				'first_name'    => 'Jeremy',
+				'last_name'     => '',
+				'activated' => 1,
+			),
+			array(
+				'email'    => 'eellwood@bio.fsu.edu',
+				'password' => 'biospex',
+				'first_name'    => 'Libby',
+				'last_name'     => '',
+				'activated' => 1,
+			),
+			array(
+				'email'    => 'griccardi@fsu.edu',
+				'password' => 'biospex',
+				'first_name'    => 'Greg',
+				'last_name'     => '',
+				'activated' => 1,
+			)
+		);
+	}
 }

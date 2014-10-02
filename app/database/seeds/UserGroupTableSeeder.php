@@ -34,23 +34,21 @@ class UserGroupTableSeeder extends Seeder {
     {
         DB::table('users_groups')->truncate();
 
-        $userUser = Sentry::getUserProvider()->findByLogin('biospex@gmail.com');
-        $newUser = Sentry::getUserProvider()->findByLogin('macadamiatree@gmail.com');
-        $adminUser = Sentry::getUserProvider()->findByLogin('admin@biospex.org');
+		$groupUser = Sentry::getGroupProvider()->findByName('Users');
+		$groupHerbarium = Sentry::getGroupProvider()->findByName('Herbarium');
+		$groupCalbug = Sentry::getGroupProvider()->findByName('Calbug');
+		$groupAdmin = Sentry::getGroupProvider()->findByName('Admins');
 
-        $user = Sentry::getGroupProvider()->findByName('Users');
-        $herbarium = Sentry::getGroupProvider()->findByName('Herbarium');
-        $calbug = Sentry::getGroupProvider()->findByName('Calbug');
-        $adminGroup = Sentry::getGroupProvider()->findByName('Admins');
-
-        // Assign the groups to the users
-        $userUser->addGroup($user);
-        $userUser->addGroup($herbarium);
-        $userUser->addGroup($calbug);
-        $newUser->addGroup($user);
-        $newUser->addGroup($herbarium);
-        $newUser->addGroup($calbug);
-        $adminUser->addGroup($adminGroup);
+		$users = DB::table('users')->get();
+		foreach ($users as $user)
+		{
+			$sentryUser = Sentry::getUserProvider()->findByLogin($user->email);
+			$sentryUser->addGroup($groupUser);
+			$sentryUser->addGroup($groupHerbarium);
+			$sentryUser->addGroup($groupCalbug);
+			if ($user->email == 'admin@biospex.org')
+				$sentryUser->addGroup($groupAdmin);
+		}
     }
 
 }
