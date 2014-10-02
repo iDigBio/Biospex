@@ -26,10 +26,10 @@
             </thead>
             <tbody>
             <tr>
-                <td>{{ HTML::mailto($group->owner->email, $group->owner->first_name.' '.$group->owner->last_name) }}</td>
+                <td>{{ HTML::mailto($group->Owner->email, $group->Owner->first_name.' '.$group->Owner->last_name) }}</td>
                 <td>
                     <ul>
-                        @foreach ($group->users as $user)
+                        @foreach ($group->Users as $user)
                         <li>{{ HTML::mailto($user->email, $user->first_name.' '.$user->last_name) }}</li>
                         @endforeach
                     </ul>
