@@ -100,7 +100,7 @@ class Report {
     public function reportSimpleError($userId = null)
     {
         if ($this->debug)
-            $this->debug($this->messages->get('error'));
+            $this->debug();
 
         $emails[] = $this->adminEmail;
 
@@ -144,7 +144,10 @@ class Report {
         $view = 'emails.report-process-complete';
 
 		if ($this->debug)
-			$this->debug(array("Completed {$title}"));
+		{
+			$this->addError(print_r($data, true));
+			$this->debug();
+		}
 
         $this->mailer->sendReport($this->adminEmail, $emails, $subject, $view, $data);
 
@@ -161,10 +164,7 @@ class Report {
 	 */
     public function missingImages($groupId, $title, $uuids = array(), $urls = array())
     {
-        if ($this->debug)
-            $this->debug(array("Missing images for {$title}"));
-
-		$group = $this->group->findWith($groupId, ['owner']);
+        $group = $this->group->findWith($groupId, ['owner']);
 		$emails[] = $group->Owner->email;
 
         $subject = trans('emails.missing_images_subject');
@@ -178,6 +178,12 @@ class Report {
         );
         $view = 'emails.report-missing_images';
 
+		if ($this->debug)
+		{
+			$this->addError(print_r($data, true));
+			$this->debug();
+		}
+
         $this->mailer->sendReport($this->adminEmail, $emails, $subject, $view, $data);
     }
 
@@ -187,21 +193,20 @@ class Report {
 	 * @param $id
 	 * @param $email
 	 * @param $title
-	 * @param $messages
 	 */
 	public function importError($id, $email, $title)
 	{
-		if ($this->debug)
-			$this->debug($this->messages->get('error'));
-
 		$emails[] = array($this->adminEmail, $email);
 		$subject = trans('errors.error_import');
 		$data = array(
 			'importId' => $id,
 			'projectTitle' => $title,
-			'errorMessage' => print_r($this->messages->all(), true)
+			'errorMessage' => print_r($this->messages->get('error'), true)
 		);
 		$view = 'emails.reporterror';
+
+		if ($this->debug)
+			$this->debug();
 
 		$this->mailer->sendReport($this->adminEmail, $emails, $subject, $view, $data);
 	}
@@ -211,9 +216,9 @@ class Report {
 	 *
 	 * @param $email
 	 * @param $title
-	 * @param $duplicate
-	 * @param $reject
-	 * @param $attachment
+	 * @param $duplicated
+	 * @param $rejected
+	 * @param $attachments
 	 */
 	public function importComplete($email, $title, $duplicated, $rejected, $attachments)
 	{
@@ -227,7 +232,10 @@ class Report {
 		$view = 'emails.reportsubject';
 
 		if ($this->debug)
-			$this->debug($data);
+		{
+			$this->addError(print_r($data, true));
+			$this->debug();
+		}
 
 		$this->mailer->sendReport($this->adminEmail, $emails, $subject, $view, $data, $attachments);
 	}
@@ -247,8 +255,9 @@ class Report {
 	 *
 	 * @param $messages
 	 */
-    public function debug($messages)
+    public function debug()
     {
-        dd($messages . PHP_EOL);
+		$messages = $this->messages->get('error');
+        dd($messages);
     }
 }
