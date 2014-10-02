@@ -134,28 +134,8 @@ Route::filter('hasProjectAccess', function($route, $request, $value)
             return;
 
         $id = $route->getParameter('projects');
-		$projectKey = md5("project-$id");
-		if (Cache::has($projectKey))
-		{
-			$project = Cache::get($projectKey);
-		}
-		else
-		{
-			$project = Project::find($id);
-			Cache::add($projectKey, $project, 15);
-		}
-
-		$groupId = $project->group_id;
-		$groupKey = "group-$groupId";
-		if (Cache::has($groupKey))
-		{
-			$group = Cache::get($groupKey);
-		}
-		else
-		{
-			$group = Sentry::findGroupById($groupId);
-			Cache::add($groupKey, $group, 15);
-		}
+		$project = Project::find($id);
+        $group = Sentry::findGroupById($project->group_id);
 
         if ($user->inGroup($group) && $user->hasAccess(array($value)))
             return;
