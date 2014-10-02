@@ -193,17 +193,7 @@ Route::filter('hasGroupAccess', function($route, $request, $value)
 
         if ($id)
         {
-			$groupKey = "group-$id";
-			if (Cache::has($groupKey))
-			{
-				$group = Cache::get($groupKey);
-			}
-			else
-			{
-				$group = Sentry::findGroupById($id);
-				Cache::add($groupKey, $group, 15);
-			}
-
+            $group = Sentry::findGroupById($id);
             if ($group->user_id == $user->id)
                 return;
             if ($user->inGroup($group) && ($value != 'group_edit' || $value != 'group_delete'))
