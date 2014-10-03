@@ -190,7 +190,7 @@ class SubjectImport extends Command {
 
 	/**
 	 * Extract files from zip
-	 * Was using ZipArchive here but ran into issues with MAC versus WIN zip files being uploaded.
+	 * TODO: ZipArchive causes MAC uploaded files to extract with two folders. Need to determine better solution.
 	 *
 	 * @param $file
 	 * @param $fileDir
@@ -201,6 +201,17 @@ class SubjectImport extends Command {
 		shell_exec("unzip $file -d $fileDir");
 
 		return;
+		/*
+        $zip = new ZipArchive;
+        $res = $zip->open($file);
+        if ($res === true) {
+            $zip->extractTo($fileDir);
+            $zip->close();
+			return;
+        }
+
+		throw new Exception('Unable to unzip file:' . $file);
+		*/
     }
 
 	/**
