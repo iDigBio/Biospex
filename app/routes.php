@@ -35,8 +35,8 @@ Route::group(
     ),
     function () {
 
-        Route::get('phpinfo', array('as' => 'phpinfo', 'uses' => 'PhpInfoController@show'));
-        Route::get('test', array('as' => 'test', 'uses' => 'PhpInfoController@test'));
+        Route::get('phpinfo', array('as' => 'phpinfo', 'uses' => 'ServerInfoController@showPhpInfo'));
+        Route::get('test', array('as' => 'test', 'uses' => 'ServerInfoController@test'));
 
         // Session Routes
         Route::get('login', array('as' => 'login', 'uses' => 'SessionsController@create'));
