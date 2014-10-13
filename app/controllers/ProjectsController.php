@@ -69,11 +69,11 @@ class ProjectsController extends BaseController {
         $this->import = $import;
 
 		// Establish Filters
-        $this->beforeFilter('csrf', array('on' => 'post'));
-        $this->beforeFilter('guest', array('only' => array('index')));
-        $this->beforeFilter('hasProjectAccess:project_view', array('only' => array('show')));
-        $this->beforeFilter('hasProjectAccess:project_edit', array('only' => array('edit', 'update', 'data')));
-        $this->beforeFilter('hasProjectAccess:project_delete', array('only' => array('destroy')));
+		$this->beforeFilter('auth');
+        $this->beforeFilter('csrf', ['on' => 'post']);
+        $this->beforeFilter('hasProjectAccess:project_view', ['only' => ['show']]);
+        $this->beforeFilter('hasProjectAccess:project_edit', ['only' => ['edit', 'update', 'data']]);
+        $this->beforeFilter('hasProjectAccess:project_delete', ['only' => ['destroy']]);
 
     }
 
@@ -140,14 +140,12 @@ class ProjectsController extends BaseController {
      */
     public function show($id)
 	{
-        $project = $this->project->findWith($id, ['group']);
-        $expeditions = $project->expedition;
-		$group = $project->group;
+        $project = $this->project->findWith($id, ['group', 'expedition']);
 		$user = Sentry::getUser();
 		$isSuperUser = $user->isSuperUser();
         $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
-
-        return View::make('projects.show', compact('isOwner', 'project', 'expeditions', 'group'));
+		
+        return View::make('projects.show', compact('isOwner', 'project'));
 	}
 
     /**
@@ -158,7 +156,7 @@ class ProjectsController extends BaseController {
      */
     public function duplicate($id)
     {
-        $project = $this->project->findWith($id, ['group']);
+        $project = $this->project->findWith($id);
         $groups = ['' => '--Select--'] + $this->group->selectOptions(false);
         $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
         $create =  Route::currentRouteName() == 'projects.create' ? true : false;
