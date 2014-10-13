@@ -24,15 +24,25 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Illuminate\Support\ServiceProvider;
 use Biospex\Repo\Group\GroupRepository;
+use Biospex\Repo\Group\CacheGroupDecorator;
+use Biospex\Repo\Project\ProjectRepository;
+use Biospex\Repo\Project\CacheProjectDecorator;
+use Biospex\Repo\Expedition\ExpeditionRepository;
+use Biospex\Repo\Expedition\CacheExpeditionDecorator;
 use Biospex\Repo\User\UserRepository;
 use Biospex\Repo\Session\SentrySession;
 use Biospex\Repo\Permission\PermissionRepository;
 use Biospex\Repo\Invite\InviteRepository;
+
+use Illuminate\Support\ServiceProvider;
+use Biospex\Services\Cache\LaravelCache;
+
+use Group;
+use Project;
+use Expedition;
 use Permission;
 use Invite;
-use Group;
 
 class RepoServiceProvider extends ServiceProvider {
 
@@ -60,17 +70,73 @@ class RepoServiceProvider extends ServiceProvider {
         });
 
         // Bind the Group Repository with Sentry
+		$app->bind('Biospex\Repo\Group\GroupInterface', function($app)
+		{
+			$group = new GroupRepository(
+				new Group, $app['sentry'], new PermissionRepository(new Permission)
+			);
+			/*
+			$group = new CacheGroupDecorator(
+				$group, new LaravelCache($app['cache'], 'groups')
+			);
+			*/
+			return $group;
+		});
+		/*
         $app->bind('Biospex\Repo\Group\GroupInterface', function($app)
         {
-            return new GroupRepository(
-                $app['sentry'],  new PermissionRepository(new Permission), new Group
+            $group = new GroupRepository(
+				new Group, $app['sentry'], new PermissionRepository(new Permission)
             );
+
+			$group = new CacheGroupDecorator(
+				$group, new LaravelCache($app['cache'], 'groups')
+			);
+
+			return $group;
         });
+		*/
 
         // Bind repositories
         $app->bind('Biospex\Repo\Project\ProjectInterface', 'Biospex\Repo\Project\ProjectRepository');
+		/*
+		$app->bind('Biospex\Repo\Project\ProjectInterface', function($app)
+		{
+			$project = new ProjectRepository(new Project);
+
+			$project = new CacheProjectDecorator(
+				$project, new LaravelCache($app['cache'], 'projects')
+			);
+
+			return $project;
+
+			if (app()->isLocal() == true)
+			{
+				$project = new CacheDecorator(
+					$project,
+					new LaravelCache($app['cache'], 'projects')
+				);
+			}
+
+			return $project;
+
+		});
+		*/
+
         $app->bind('Biospex\Repo\Expedition\ExpeditionInterface', 'Biospex\Repo\Expedition\ExpeditionRepository');
-        $app->bind('Biospex\Repo\Permission\PermissionInterface', 'Biospex\Repo\Permission\PermissionRepository');
+		/*
+		$app->bind('Biospex\Repo\Expedition\ExpeditionInterface', function($app)
+		{
+			$expedition = new ExpeditionRepository(new Expedition);
+
+			$expedition = new CacheExpeditionDecorator(
+				$expedition, new LaravelCache($app['cache'], 'expeditions')
+			);
+
+			return $expedition;
+		});
+		*/
+		$app->bind('Biospex\Repo\Permission\PermissionInterface', 'Biospex\Repo\Permission\PermissionRepository');
         $app->bind('Biospex\Repo\Navigation\NavigationInterface', 'Biospex\Repo\Navigation\NavigationRepository');
         $app->bind('Biospex\Repo\Subject\SubjectInterface', 'Biospex\Repo\Subject\SubjectRepository');
         $app->bind('Biospex\Repo\SubjectDoc\SubjectDocInterface', 'Biospex\Repo\SubjectDoc\SubjectDocRepository');
