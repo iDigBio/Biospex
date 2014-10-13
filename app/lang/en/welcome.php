@@ -45,7 +45,7 @@ return array(
 	                are more manageable for the digitization tools and more exciting for citizen scientists.</p>',
 	'ready'     => '<p>Ready to start? Go ahead, make your first project.</p>',
 	
-	'austin_intro' => '<p>The system is pretty straightforward to use—there are just a few things you need to know.</p>
+	'intro' => '<p>The system is pretty straightforward to use—there are just a few things you need to know.</p>
 
 <p>Specimen digitization can involve a lot of different activities, but the most common are digital imaging, label transcription, and georeferencing the collection locality.  The first of these is an onsite task, but the other two can be completed online with the right crowdsourcing tools.  Biospex and our parent project, iDigBio, are leading efforts to build standards and protocols for interoperability within a constellation of these useful tools.  This release features growing interoperability with Notes from Nature (for transcription), and we have begun to build interoperability with GEOLocate (for georeferencing).</p>
 
