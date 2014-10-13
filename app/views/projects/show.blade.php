@@ -10,7 +10,7 @@
 @section('content')
 
         <ul class="breadcrumb">
-        <li>Group: {{ $group->name }}</li>
+        <li>Group: {{ $project->group->name }}</li>
         <li>@lang('pages.created'): {{ $project->created_at }}</li>
         <li>@lang('pages.updated'): {{ $project->updated_at }}</li>
         </ul>
@@ -31,7 +31,7 @@
     @if ($isOwner)
     <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-xs" href="{{ URL::route('projects.destroy', [$project->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="glyphicon glyphicon-remove-circle"></span> @lang('buttons.delete')</button></td>
     @endif
-    <button title="@lang('buttons.advertiseTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ URL::route('projects.advertise', [$project->id]) }}'"><span class="glyphicon glyphicon-globe"></span> @lang('buttons.advertise')</button>
+    <button title="@lang('buttons.advertiseTitle')" class="btn btn-success btn-xs" type="button" data-toggle="modal" data-target="#basicModal"><span class="glyphicon glyphicon-globe"></span> @lang('buttons.advertise')</button>
     </div>
 </div>
 
@@ -54,7 +54,7 @@
         </tr>
         </thead>
         <tbody>
-        @foreach ($expeditions as $expedition)
+        @foreach ($project->expedition as $expedition)
         <tr>
             <td>{{ $expedition->title }}</td>
             <td>{{ $expedition->description_short }}</td>
@@ -72,5 +72,20 @@
         @endforeach
         </tbody>
     </table>
+</div>
+<div class="modal fade" id="basicModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h4 class="modal-title" id="myModalLabel">@lang('pages.advertise')</h4>
+            </div>
+            <div class="modal-body">
+                @lang('pages.advertise_modal')
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">@lang('pages.close')</button>
+        </div>
+    </div>
+  </div>
 </div>
 @stop
