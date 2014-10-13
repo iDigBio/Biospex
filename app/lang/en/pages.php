@@ -68,6 +68,8 @@ return array(
     'allowed'                   => "allowed",
     'keywords'                  => "Keywords",
     'add_data_desc'             => "Only zip files are accepted. Those files must contain a meta.xml file describing the included csv file contents.",
+	'advertise_modal'			=> "Biospex is participating in the development of standards and protocols for sharing information about projects with our friends at the go-to sites for learning about citizen science opportunities, including scistarter.org and Citizen Science Central. We hope to see this firmed up in the next months and interoperability for advertisement early next year.",
+	'advertise'					=> "Advertise",
 
     'list'                      => "List",
     'manage'                    => "Manage",
@@ -76,6 +78,7 @@ return array(
     'created'                   => "Created",
     'updated'                   => "Updated",
     'clone'                     => "Clone",
+	'close'						=> "Close",
 
     'expedition'                => "Expedition",
     'expeditions'               => "Expeditions",
