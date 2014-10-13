@@ -113,7 +113,7 @@ class Expedition extends Eloquent {
      * @param $projectId
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
-    public function findByProjectId($projectId)
+    public function byProjectId($projectId)
     {
         return $this->where('project_id', $projectId)->orderBy('title')->get();
     }

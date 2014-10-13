@@ -192,7 +192,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      * @param $slug
      * @return \Illuminate\Database\Eloquent\Builder|static
      */
-    public function getBySlug($slug)
+    public function bySlug($slug)
     {
         return $this->with(['group'])->where('slug', '=', $slug)->first();
     }
