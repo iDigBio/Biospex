@@ -36,6 +36,7 @@ Route::group(
     function () {
 
         Route::get('phpinfo', array('as' => 'phpinfo', 'uses' => 'ServerInfoController@showPhpInfo'));
+		Route::get('opcache', array('as' => 'opcache', 'uses' => 'ServerInfoController@showOpCache'));
         Route::get('test', array('as' => 'test', 'uses' => 'ServerInfoController@test'));
 
         // Session Routes
@@ -90,6 +91,7 @@ Route::group(
         Route::post('grids/{expedition}/grid-data', array('as' => 'grid-data', 'uses' => 'GridsController@index'));
 
         Route::get('/', array('as' => 'home', 'uses' => 'HomeController@index'));
+		Route::get('help', array('as' => 'help', 'uses' => 'HomeController@help'));
         Route::get('/{slug}', array('as' => 'project', 'uses' => 'HomeController@project'));
 
     });

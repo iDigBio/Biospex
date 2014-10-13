@@ -56,6 +56,7 @@
                 <li
                 {{ (Request::is('users/create') ? 'class="active"' : '') }}><a href="{{ URL::route('register') }}">{{trans('pages.register')}}</a></li>
                 @endif
+                <li><a href="{{ URL::route('help') }}">{{ trans('pages.help') }}</a></li>
             </ul>
         </div>
         <!--/.nav-collapse -->

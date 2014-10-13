@@ -58,8 +58,16 @@ class HomeController extends BaseController {
      */
     public function project($slug)
     {
-        $project = $this->project->getBySlug($slug);
+        $project = $this->project->bySlug($slug);
 
         return View::make('project', compact('project'));
     }
+
+	/**
+	 * Show help page
+	 */
+	public function help()
+	{
+		return View::make('help');
+	}
 }
