@@ -56,7 +56,7 @@ abstract class Repository {
      * @param array $with
      * @return mixed
      */
-    public function find($id, array $columns = array('*'))
+    public function find($id, $columns = array('*'))
     {
         return $this->model->find($id, $columns);
     }
@@ -67,7 +67,7 @@ abstract class Repository {
      * @param array $data
      * @return mixed
      */
-    public function create(array $data)
+    public function create($data = array())
     {
         return $this->model->create($data);
     }
@@ -78,10 +78,10 @@ abstract class Repository {
      * @param array $input
      * @return mixed
      */
-    public function update(array $input)
+    public function update($data = array())
     {
-        $model = $this->find($input['id']);
-        return $model->update($input);
+        $model = $this->find($data['id']);
+        return $model->fill($data)->save();
     }
 
 
@@ -103,7 +103,7 @@ abstract class Repository {
      * @param array $with
      * @return mixed
      */
-    public function findWith($id, array $with = array())
+    public function findWith($id, $with = array())
     {
         $query = $this->make($with);
 
@@ -115,7 +115,7 @@ abstract class Repository {
      *
      * @param array $with
      */
-    public function make(array $with = array())
+    public function make($with = array())
     {
         return $this->model->with($with);
     }

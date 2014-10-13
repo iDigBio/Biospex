@@ -23,9 +23,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 use Biospex\Repo\RepositoryInterface;
 
 interface ProjectInterface extends RepositoryInterface {
-    public function getBySlug($slug);
+
+    public function bySlug($slug);
+
 }

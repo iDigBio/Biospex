@@ -28,17 +28,15 @@ interface RepositoryInterface {
 
     public function all($columns = array('*'));
 
-    public function find($id, array $columns = array('*'));
+    public function find($id, $columns = array('*'));
 
-    public function create(array $data);
+    public function create($data = array());
 
-    public function update(array $data);
+    public function update($data = array());
 
     public function destroy($id);
 
-    public function findWith($id, array $with = array());
-
-    public function make(array $with = array());
+    public function findWith($id, $with = array());
 
     public function save($record);
 

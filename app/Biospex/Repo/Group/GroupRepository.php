@@ -44,11 +44,44 @@ class GroupRepository extends Repository implements GroupInterface {
 	/**
 	 * Construct a new Group Object
 	 */
-	public function __construct(Sentry $sentry, PermissionInterface $permission, Group $model)
+	public function __construct(
+		Group $model,
+		Sentry $sentry,
+		PermissionInterface $permission
+	)
 	{
+		$this->model = $model;
 		$this->sentry = $sentry;
         $this->permission = $permission;
-        $this->model = $model;
+	}
+
+	/**
+	 * Return all the registered groups
+	 *
+	 * @return stdObject Collection of groups
+	 */
+	public function all($columns = array('*'))
+	{
+		return $this->sentry->getGroupProvider()->findAll();
+	}
+
+	/**
+	 * Return a specific group by a given id
+	 *
+	 * @param  integer $id
+	 * @return Group
+	 */
+	public function find($id, $columns = array('*'))
+	{
+		try
+		{
+			$group = $this->sentry->findGroupById($id);
+		}
+		catch (\Cartalyst\Sentry\Groups\GroupNotFoundException $e)
+		{
+			return false;
+		}
+		return $group;
 	}
 
 	/**
@@ -56,7 +89,7 @@ class GroupRepository extends Repository implements GroupInterface {
 	 *
 	 * @return Response
 	 */
-	public function create(array $data)
+	public function create($data = array())
 	{
 		$result = array();
 		try {
@@ -90,7 +123,7 @@ class GroupRepository extends Repository implements GroupInterface {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update(array $data)
+	public function update($data = array())
 	{
         $permissions = $this->permission->setPermissions($data);
 
@@ -160,25 +193,6 @@ class GroupRepository extends Repository implements GroupInterface {
 	}
 
 	/**
-	 * Return a specific group by a given id
-	 * 
-	 * @param  integer $id
-	 * @return Group
-	 */
-	public function find($id, array $columns = array('*'))
-	{
-		try
-		{
-		    $group = $this->sentry->findGroupById($id);
-		}
-		catch (\Cartalyst\Sentry\Groups\GroupNotFoundException $e)
-		{
-		    return false;
-		}
-		return $group;
-	}
-
-	/**
 	 * Return a specific group by a given name
 	 * 
 	 * @param  string $name
@@ -195,16 +209,6 @@ class GroupRepository extends Repository implements GroupInterface {
 		    return false;
 		}
 		return $group;
-	}
-
-	/**
-	 * Return all the registered groups
-	 *
-	 * @return stdObject Collection of groups
-	 */
-	public function all($columns = array('*'))
-	{
-		return $this->sentry->getGroupProvider()->findAll();
 	}
 
     /**

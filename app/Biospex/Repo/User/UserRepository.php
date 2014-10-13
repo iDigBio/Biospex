@@ -106,7 +106,7 @@ class UserRepository extends Repository implements UserInterface {
      * @param array $columns
      * @return User|bool|\Cartalyst\Sentry\Users\UserInterface
      */
-    public function find($id, array $columns = array('*'))
+    public function find($id, $columns = array('*'))
     {
         try
         {
@@ -132,7 +132,7 @@ class UserRepository extends Repository implements UserInterface {
 	 *
 	 * @return Response
 	 */
-	public function create(array $data)
+	public function create($data = array())
 	{
 		$result = array();
 		try {
@@ -208,7 +208,7 @@ class UserRepository extends Repository implements UserInterface {
 	 * @param  array $data
 	 * @return Response
 	 */
-	public function update(array $data)
+	public function update($data = array())
 	{
 		$result = array();
 		try

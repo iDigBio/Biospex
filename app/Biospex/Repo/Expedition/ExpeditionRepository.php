@@ -78,7 +78,7 @@ class ExpeditionRepository extends Repository implements ExpeditionInterface, Re
      * @param array $data
      * @return mixed|void
      */
-    public function create(array $data)
+    public function create($data = array())
     {
         $expedition = parent::create($data);
         $expedition->subject()->sync($data['subject_ids']);
@@ -91,9 +91,9 @@ class ExpeditionRepository extends Repository implements ExpeditionInterface, Re
      * @param $projectId
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
-    public function findByProjectId($projectId)
+    public function byProjectId($projectId)
     {
-        return $this->model->findByProjectId($projectId);
+        return $this->model->byProjectId($projectId);
     }
 
     /**
