@@ -449,6 +449,9 @@ class NotesFromNature extends WorkFlowAbstract
 
             $this->metadata['images'][] = $data;
 
+			$this->filesystem->delete($filePath);
+
+
             $i++;
         }
         $this->metadata['total'] = $i * 3;
