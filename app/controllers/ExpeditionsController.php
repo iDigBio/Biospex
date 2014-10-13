@@ -104,7 +104,7 @@ class ExpeditionsController extends BaseController {
      */
     public function index ($id)
     {
-        $expeditions = $this->expedition->findByProjectId($id);
+        $expeditions = $this->expedition->byProjectId($id);
         if (is_null($expeditions)) $expeditions = array();
 
         if (Request::ajax()) {
