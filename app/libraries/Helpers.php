@@ -55,4 +55,16 @@ class Helpers {
 
 		return;
 	}
+
+	/**
+	 * Round up to an integer, then to the nearest multiple of 5
+	 * Used for scaling project page percent complete
+	 *
+	 * @param $n
+	 * @param int $x
+	 * @return float
+	 */
+	public static function roundUpToAny($n,$x=5) {
+		return (ceil($n)%$x === 0) ? ceil($n) : round(($n+$x/2)/$x)*$x;
+	}
 }
