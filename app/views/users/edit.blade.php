@@ -9,9 +9,7 @@
 {{-- Content --}}
 @section('content')
 
-<h4>@lang('pages.account_profile')
-    <span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-placement="bottom" data-content="And here's some amazing content. It's very engaging. Right?"></span>
-</h4>
+<h4>@lang('pages.account_profile')</h4>
 
 <div class="well clearfix">
     <div class="col-md-8">
