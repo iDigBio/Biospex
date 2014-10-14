@@ -28,6 +28,7 @@ $items = array(
         'description' => 'A description of Expedition 1 would be included here.',
         'keywords' => 'Random keywords',
         'state' => 'export',
+		'completed' => '0.00',
     ),
     array(
         'project_id' => 1,
@@ -35,6 +36,7 @@ $items = array(
         'description' => 'A description of Expedition 2 would be included here.',
         'keywords' => 'Random keywords',
         'state' => 'export',
+		'completed' => '0.00',
     ),
     array(
         'project_id' => 1,
@@ -42,5 +44,6 @@ $items = array(
         'description' => 'A description of Expedition 3 would be included here.',
         'keywords' => 'Random keywords',
         'state' => 'export',
+		'completed' => '0.00',
     ),
 );

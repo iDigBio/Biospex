@@ -41,6 +41,7 @@ class CreateExpeditionsTable extends Migration {
             $table->text('description');
             $table->string(('keywords'));
             $table->tinyInteger('state')->default(0);
+			$table->decimal('completed', 5, 2);
             $table->timestamps();
             $table->softDeletes();
 
