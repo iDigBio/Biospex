@@ -34,14 +34,18 @@ class Workflow extends Eloquent {
     protected $table = 'workflows';
 
     protected $fillable = array(
-        'name',
+        'title',
+		'url',
+		'class',
     );
 
     /**
      * Array used by FactoryMuff to create Test objects
      */
     public static $factory = array(
-        'name' => 'string'
+		'title' => 'string',
+		'url' => 'string',
+		'class' => 'string',
     );
 
     /**
