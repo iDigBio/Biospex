@@ -60,6 +60,13 @@ class UserTableSeeder extends Seeder {
 				'activated' => 1,
 			),
 			array(
+				'email' => 'nogroup@gmail.com',
+				'password' => 'biospex',
+				'first_name' => 'No',
+				'last_name' => 'Group',
+				'activated' => 1,
+			),
+			array(
 				'email'    => 'macadamiatree@gmail.com',
 				'password' => 'biospex',
 				'first_name'    => 'Austin',
