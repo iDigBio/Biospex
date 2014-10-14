@@ -38,40 +38,32 @@
 						<thead>
 						<tr>
 							<th>Expedition</th>
-							<th class="nowrap">% Complete</th>
+							<th class="nowrap">% Complete <span class="red">*</span></th>
 							<th>Join In</th>
 						</tr>
 						</thead>
 						<tbody>
+						@foreach($project->expedition as $expedition)
 						<tr>
-							<td>Apalachicola National Forest #1</td>
-							<td class="nowrap">85% <span class="complete"><span class="complete85">&nbsp;</span></span>
+							<td>{{ $expedition->title }}</td>
+							<td class="nowrap">{{ $expedition->completed }}%<span class="complete"><span class="complete{{ $expedition->completed }}">&nbsp;</span></span>
 							</td>
-							<td><a href="">Notes from Nature</a></td>
-						</tr>
-						<tr>
-							<td>Apalachicola National Forest #1</td>
-							<td class="nowrap">35% <span class="complete"><span class="complete35">&nbsp;</span></span>
+							<td>
+							<?php $i = 0; ?>
+							@foreach($project->workflow as $workflow)
+							<a href="{{ $workflow->url }}">{{ $workflow->title }}</a>
+							<?php $i < count($project->workflow) ? '<br />' : ''; ?>
+							@endforeach
 							</td>
-							<td><a href="">GeoLocate</a></td>
 						</tr>
-						<tr>
-							<td>Apalachicola National Forest #2</td>
-							<td class="nowrap">15% <span class="complete"><span class="complete25">&nbsp;</span></span>
-							</td>
-							<td><a href="">Notes from Nature</a></td>
-						</tr>
-						<tr>
-							<td>Apalachicola National Forest #3</td>
-							<td class="nowrap">00% <span class="complete">&nbsp;</span></td>
-							<td><a href="">Notes from Nature</a></td>
-						</tr>
+						@endforeach
 						<tr>
 							<td colspan="3">
 								<span title="3" id="1" class="collapse out"></span></td>
 						</tr>
 						</tbody>
 					</table>
+					<span class="red">*</span> <span class="small-font">Functionality currently under construction.</span>
 				</div>
 			</div>
 			<div class="col-md-5">

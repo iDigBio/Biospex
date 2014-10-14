@@ -194,7 +194,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      */
     public function bySlug($slug)
     {
-        return $this->with(['group'])->where('slug', '=', $slug)->first();
+		return $this->with(['group', 'expedition', 'workflow'])->where('slug', '=', $slug)->first();
     }
 
     /**

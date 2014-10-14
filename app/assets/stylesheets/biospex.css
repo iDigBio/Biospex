@@ -80,6 +80,14 @@ span.glyphicon {
  display: inline;
 }
 
+.red {
+    color: #ff0000;
+}
+
+.small-font {
+    font-size: .8em;
+}
+
 dl { border-top: 1px solid #ccc; }
 dt { width: 120px; float: left; clear: both; font-size: 11px; margin-top: 5px; border-top: 1px solid #ccc;}
 dd { margin-left: 120px; margin-top: 5px;font-size: 12px; border-top: 1px solid #ccc;}
