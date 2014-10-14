@@ -64,7 +64,7 @@ class Helpers {
 	 * @param int $x
 	 * @return float
 	 */
-	public static function roundUpToAny($n,$x=5) {
+	public static function roundUpToAnyFive($n,$x=5) {
 		return (ceil($n)%$x === 0) ? ceil($n) : round(($n+$x/2)/$x)*$x;
 	}
 }
