@@ -39,6 +39,7 @@ class WorkFlowsTableSeeder extends Seeder {
 
         Workflow::create(array(
             'title' => "Notes From Nature",
+			'url'   => "http://www.notesfromnature.org/",
             'class' => "NotesFromNature",
         ));
     }
