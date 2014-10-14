@@ -41,4 +41,5 @@ return array (
     'upload_error'              => "An error occurred uploading the file.",
     'upload_success'            => "Upload was successful. You will receive an email when your data has been processed.",
     'no_projects'               => "No projects exist for your groups.",
+	'no_group' => "You must first create or belong to a group to create a project."
 );

@@ -2,7 +2,7 @@
     <div class="form-group {{ ($errors->has('group')) ? 'has-error' : '' }}" for="group">
         {{ Form::label('group', trans('forms.group'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::select('group_id', $groups, array('class' => 'form-control', 'placeholder' => trans('forms.title'))) }}
+            {{ Form::select('group_id', $selectGroups, array('class' => 'form-control', 'placeholder' => trans('forms.title'))) }}
         </div>
         {{ ($errors->has('group_id') ? $errors->first('group_id') : '') }}
     </div>
@@ -185,7 +185,7 @@
 	<div class="form-group {{ ($errors->has('group')) ? 'has-error' : '' }}" for="group">
 		{{ Form::label('group', trans('forms.group'), array('class' => 'col-sm-2 control-label')) }}
 		<div class="col-sm-10">
-			{{ Form::select('group_id', $groups, $project->group_id, array('class' => 'form-control', 'placeholder' => trans('forms.title'))) }}
+			{{ Form::select('group_id', $selectGroups, $project->group_id, array('class' => 'form-control', 'placeholder' => trans('forms.title'))) }}
 		</div>
 		{{ ($errors->has('group_id') ? $errors->first('group_id') : '') }}
 	</div>

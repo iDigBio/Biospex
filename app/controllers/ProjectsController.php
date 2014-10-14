@@ -88,7 +88,8 @@ class ProjectsController extends BaseController {
     {
 		$user = Sentry::getUser();
 		$isSuperUser = $user->isSuperUser();
-        $groups = $this->group->findAllGroupsWithProjects($user, $isSuperUser);
+		$allGroups = $isSuperUser ? Sentry::findAllGroups() : $user->getGroups();
+		$groups = $this->group->findAllGroupsWithProjects($allGroups);
 
         return View::make('projects.index', compact('groups', 'user', 'isSuperUser'));
     }
@@ -100,12 +101,24 @@ class ProjectsController extends BaseController {
      */
     public function create()
 	{
+		$user = Sentry::getUser();
+		$isSuperUser = $user->isSuperUser();
+		$allGroups = $isSuperUser ? Sentry::findAllGroups() : $user->getGroups();
+		$groups = $this->group->selectOptions($allGroups);
+
+		if (empty($groups))
+		{
+			Session::flash('error', trans('projects.no_group'));
+			return Redirect::action('ProjectsController@index');
+		}
+
+
 		$cancel = URL::previous();
-        $groups = ['' => '--Select--'] + $this->group->selectOptions(false);
+		$selectGroups = ['' => '--Select--'] + $groups;
         $count = is_null(Input::old('targetCount')) ? 0 : Input::old('targetCount');
         $create =  Route::currentRouteName() == 'projects.create' ? true : false;
 
-        return View::make('projects.create', compact('cancel', 'groups', 'count', 'create'));
+		return View::make('projects.create', compact('cancel', 'selectGroups', 'count', 'create'));
 	}
 
     /**
@@ -157,12 +170,18 @@ class ProjectsController extends BaseController {
     public function duplicate($id)
     {
         $project = $this->project->findWith($id);
-        $groups = ['' => '--Select--'] + $this->group->selectOptions(false);
+
+		$user = Sentry::getUser();
+		$isSuperUser = $user->isSuperUser();
+		$allGroups = $isSuperUser ? Sentry::findAllGroups() : $user->getGroups();
+		$groups = $this->group->selectOptions($allGroups);
+
+		$selectGroups = ['' => '--Select--'] + $groups;
         $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
         $create =  Route::currentRouteName() == 'projects.create' ? true : false;
 		$cancel = URL::previous();
 
-        return View::make('projects.clone', compact('groups', 'project', 'count', 'create', 'cancel'));
+		return View::make('projects.clone', compact('selectGroups', 'project', 'count', 'create', 'cancel'));
     }
 
     /**
@@ -174,12 +193,18 @@ class ProjectsController extends BaseController {
     public function edit($id)
 	{
         $project = $this->project->find($id);
-        $groups = ['' => '--Select--'] + $this->group->selectOptions(false);
+
+		$user = Sentry::getUser();
+		$isSuperUser = $user->isSuperUser();
+		$allGroups = $isSuperUser ? Sentry::findAllGroups() : $user->getGroups();
+		$groups = $this->group->selectOptions($allGroups);
+
+		$selectGroups = ['' => '--Select--'] + $groups;
         $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
         $create =  Route::currentRouteName() == 'projects.create' ? true : false;
 		$cancel = URL::previous();
 
-        return View::make('projects.edit', compact('project', 'groups', 'count', 'create', 'cancel'));
+		return View::make('projects.edit', compact('project', 'selectGroups', 'count', 'create', 'cancel'));
 	}
 
     /**
