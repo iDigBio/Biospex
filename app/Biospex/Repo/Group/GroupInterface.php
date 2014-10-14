@@ -36,22 +36,22 @@ interface GroupInterface extends RepositoryInterface {
 	 */
 	public function byName($name);
 
-    /**
-     * Return groups as list for select options
-     *
-     * @param bool $admin
-     * @return mixed
-     */
-    public function selectOptions($admins = true);
+	/**
+	 * Return groups as list for select options
+	 *
+	 * @param $allGroups
+	 * @param $create
+	 * @return mixed
+	 */
+	public function selectOptions ($allGroups, $create = false);
 
     /**
      * Find all groups. Using this instead of Sentry all groups due to orderby requirements
      * and the different array structure returned by Sentry when admin or regular user.
      *
-     * @param $user
-     * @param bool $superuser
+	 * @param array $allGroups
      * @return mixed
      */
-    public function findAllGroupsWithProjects($user, $superuser = false);
+	public function findAllGroupsWithProjects ($allGroups = array());
 
 }

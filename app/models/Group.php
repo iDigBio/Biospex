@@ -94,18 +94,13 @@ class Group extends SentryGroup {
         return Config::get('config.group_permissions');
     }
 
-    public function findAllGroupsWithProjects($user, $superuser)
+	public function findAllGroupsWithProjects ($allGroups)
     {
-        if ($superuser)
-        {
-            $groups = $this->with('Projects')->orderBy('name')->get();
-        }
-        else
-        {
-            $groups = $this->with('Projects')->where('user_id', $user->id)->orderBy('name')->get();
-        }
+		foreach ($allGroups as $group)
+		{
+			$ids[] = $group->id;
+		}
 
-        return $groups;
-
+		return $groups = $this->has('Projects')->whereIn('id', $ids)->orderBy('name')->get();
     }
 }

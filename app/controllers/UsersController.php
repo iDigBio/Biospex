@@ -133,7 +133,8 @@ class UsersController extends BaseController {
 	 */
 	public function create()
 	{
-        $groups = $this->group->selectOptions();
+		$allGroups = Sentry::findAllGroups();
+		$groups = $this->group->selectOptions($allGroups, true);
         $group = $this->group->byName("Users");
         $register = Route::currentRouteName() == 'users.create' ? false : true;
         $cancel = URL::route('users.index');

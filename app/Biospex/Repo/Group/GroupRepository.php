@@ -211,27 +211,26 @@ class GroupRepository extends Repository implements GroupInterface {
 		return $group;
 	}
 
-    /**
-     * Return groups with Admins optional and without Users for select options
-     *
-     * @param bool $admins
-     * @return mixed
-     */
-    public function selectOptions($admins = true)
+	/**
+	 * Return groups with Admins optional and without Users for select options
+	 *
+	 * @param $allGroups
+	 * @param bool $create
+	 * @return array|mixed
+	 */
+	public function selectOptions ($allGroups, $create = false)
     {
-        $groups = $this->sentry->getGroupProvider()->createModel()->lists('name', 'id');
-        asort($groups);
+		$options = array();
+		foreach ($allGroups as $key => $group)
+		{
+			if (($group->name == 'Admins' && !$create) || $group->name == 'Users')
+				continue;
 
-        if ( ! $admins)
-        {
-            $admin = $this->byName('Admins');
-            unset($groups[$admin->id]);
-        }
+			$options[$group->id] = $group->name;
+		}
 
-        $userGroup = $this->byName('Users');
-        unset($groups[$userGroup->id]);
-
-        return $groups;
+		asort($options);
+		return $options;
     }
 
     /**
@@ -241,8 +240,8 @@ class GroupRepository extends Repository implements GroupInterface {
      * @param bool $superuser
      * @return mixed|void
      */
-    public function findAllGroupsWithProjects($user, $superuser = false)
+	public function findAllGroupsWithProjects ($allGroups = array())
     {
-        return $this->sentry->getGroupProvider()->createModel()->findAllGroupsWithProjects($user, $superuser);
+		return $this->sentry->getGroupProvider()->createModel()->findAllGroupsWithProjects($allGroups);
     }
 }
