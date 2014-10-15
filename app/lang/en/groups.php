@@ -55,6 +55,8 @@ return array(
     'group_invite'          => "Group Invite",
     'invite_title'          => "Invite others to join the group: :group",
     'invite_explained'      => "Enter the email address(es) of people you want to invite to this group. BIOSPEX will send them an invitation code and instructions on creating an account if necessary.",
+	'group_required' => "Before creating a project, you need to belong to a group. You may use this form to create your new group.",
+
 
     'invite_code'           => "Group Invite Code",
     'group_join'            => "Join a Group",

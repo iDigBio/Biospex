@@ -108,8 +108,8 @@ class ProjectsController extends BaseController {
 
 		if (empty($groups))
 		{
-			Session::flash('error', trans('projects.no_group'));
-			return Redirect::action('ProjectsController@index');
+			Session::flash('success', trans('groups.group_required'));
+			return Redirect::action('GroupsController@create');
 		}
 
 
