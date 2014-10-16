@@ -33,7 +33,7 @@
                     <td>{{ $expedition->total_subjects }}</td>
                     <td>500</td>
                     <td>300</td>
-                    <td>37.5%</td>
+                    <td><span class="complete"><span class="complete35">&nbsp;</span></span> 37.5%</td>
                 </tr>
                 @endforeach
                 </tbody>

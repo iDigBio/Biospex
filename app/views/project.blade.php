@@ -46,7 +46,7 @@
 						@foreach($project->expedition as $expedition)
 						<tr>
 							<td>{{ $expedition->title }}</td>
-							<td class="nowrap">{{ $expedition->completed }}%<span class="complete"><span class="complete{{ $expedition->completed }}">&nbsp;</span></span>
+							<td class="nowrap"><span class="complete"><span class="complete{{ $expedition->completed }}">&nbsp;</span></span> {{ $expedition->completed }}%
 							</td>
 							<td>
 							<?php $i = 0; ?>

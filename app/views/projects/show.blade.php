@@ -62,7 +62,7 @@
             <td>{{ $expedition->total_subjects }}</td>
             <td>500</td>
             <td>300</td>
-            <td>85% <span class="complete"><span class="complete85">&nbsp;</span></span></td>
+            <td><span class="complete"><span class="complete85">&nbsp;</span></span> 85%</td>
             <td class="nowrap">
                 <button title="@lang('buttons.viewTitle')" class="btn btn-info btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@show', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-eye-open"></span> <!-- @lang('buttons.view') --></button>
                 <button title="@lang('buttons.duplicateTitle')" class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ URL::route('projects.expeditions.duplicate', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-share-alt"></span> <!-- @lang('buttons.duplicate') --></button>
