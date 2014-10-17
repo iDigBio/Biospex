@@ -104,7 +104,7 @@ class Expedition extends Eloquent {
      */
     public function download()
     {
-        return $this->hasOne('Download');
+		return $this->hasMany('Download');
     }
 
     /**
