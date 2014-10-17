@@ -29,70 +29,74 @@ Route::pattern('id', '[0-9]+');
 
 /** ADD ALL LOCALIZED ROUTES INSIDE THIS GROUP **/
 Route::group(
-    array(
+	[
         'prefix' => Local::setLocale(),
         'before' => 'LocalRedirectFilter'
-    ),
+	],
     function () {
 
-        Route::get('phpinfo', array('as' => 'phpinfo', 'uses' => 'ServerInfoController@showPhpInfo'));
-		Route::get('opcache', array('as' => 'opcache', 'uses' => 'ServerInfoController@showOpCache'));
-        Route::get('test', array('as' => 'test', 'uses' => 'ServerInfoController@test'));
+		Route::get('phpinfo', ['as' => 'phpinfo', 'uses' => 'ServerInfoController@showPhpInfo']);
+		Route::get('opcache', ['as' => 'opcache', 'uses' => 'ServerInfoController@showOpCache']);
+		Route::get('test', ['as' => 'test', 'uses' => 'ServerInfoController@test']);
 
         // Session Routes
-        Route::get('login', array('as' => 'login', 'uses' => 'SessionsController@create'));
-        Route::get('logout', array('as' => 'logout', 'uses' => 'SessionsController@destroy'));
-        Route::resource('sessions', 'SessionsController', array('only' => array('create', 'store', 'destroy')));
+		Route::get('login', ['as' => 'login', 'uses' => 'SessionsController@create']);
+		Route::get('logout', ['as' => 'logout', 'uses' => 'SessionsController@destroy']);
+		Route::resource('sessions', 'SessionsController', ['only' => ['create', 'store', 'destroy']]);
 
         // User Routes
-        Route::get('register/{code?}', array('as' => 'register', 'uses' => 'UsersController@register'));
-        Route::get('users/{id}/activate/{code}', 'UsersController@activate');
-        Route::get('resend', array('as' => 'resendActivationForm', function () {
+		Route::get('register/{code?}', ['as' => 'register', 'uses' => 'UsersController@register']);
+		Route::get('users/{id}/activate/{code}', ['as' => 'activate', 'uses' => 'UsersController@activate']);
+		Route::get('resend', ['as' => 'resendActivationForm', function ()
+		{
             return View::make('users.resend');
-        }));
-        Route::post('resend', 'UsersController@resend');
-        Route::get('forgot', array('as' => 'forgotPasswordForm', function () {
+		}]);
+		Route::post('resend', ['as' => 'resend', 'uses' => 'UsersController@resend']);
+		Route::get('forgot', ['as' => 'forgotPasswordForm', function ()
+		{
             return View::make('users.forgot');
-        }));
-        Route::post('forgot', 'UsersController@forgot');
-        Route::post('users/{id}/change', 'UsersController@change');
-        Route::get('users/{id}/reset/{code}', 'UsersController@reset');
-        Route::get('users/{id}/suspend', array('as' => 'suspendUserForm', function ($id) {
+		}]);
+		Route::post('forgot', ['as' => 'forgot', 'uses' => 'UsersController@forgot']);
+		Route::post('users/{id}/change', ['as' => 'change', 'uses' => 'UsersController@change']);
+		Route::get('users/{id}/reset/{code}', ['as' => 'reset', 'uses' => 'UsersController@reset']);
+		Route::get('users/{id}/suspend', ['as' => 'suspendUserForm', function ($id)
+		{
             return View::make('users.suspend')->with('id', $id);
-        }));
-        Route::post('users/{id}/suspend', 'UsersController@suspend');
-        Route::get('users/{id}/unsuspend', 'UsersController@unsuspend');
-        Route::get('users/{id}/ban', 'UsersController@ban');
-        Route::get('users/{id}/unban', 'UsersController@unban');
+		}]);
+		Route::post('users/{id}/suspend', ['as' => 'suspend', 'uses' => 'UsersController@suspend']);
+		Route::get('users/{id}/unsuspend', ['as' => 'unsuspend', 'uses' => 'UsersController@unsuspend']);
+		Route::get('users/{id}/ban', ['as' => 'ban', 'uses' => 'UsersController@ban']);
+		Route::get('users/{id}/unban', ['as' => 'unban', 'uses' => 'UsersController@unban']);
         Route::resource('users', 'UsersController');
 
         // Group Routes
         Route::resource('groups', 'GroupsController');
 
         // Group invite routes
-        Route::post('groups/{groups}/invites/{invites}/resend', array('as' => 'groups.invites.resend', 'uses' => 'InvitesController@resend'));
+		Route::post('groups/{groups}/invites/{invites}/resend', ['as' => 'groups.invites.resend', 'uses' => 'InvitesController@resend']);
         Route::resource('groups.invites', 'InvitesController');
 
         // Group/Projects
         Route::resource('projects', 'ProjectsController');
-        Route::get('projects/{projects}/duplicate', array('as' => 'projects.duplicate', 'uses' => 'ProjectsController@duplicate'));
-        Route::get('projects/{projects}/data', array('as' => 'projects.data', 'uses' => 'ProjectsController@data'));
-        Route::post('projects/{projects}/data', array('as' => 'projects.upload', 'uses' => 'ProjectsController@upload'));
-        Route::get('projects/{projects}/advertise', array('as' => 'projects.advertise', 'uses' => 'ProjectsController@advertise'));
+		Route::get('projects/{projects}/duplicate', ['as' => 'projects.duplicate', 'uses' => 'ProjectsController@duplicate']);
+		Route::get('projects/{projects}/data', ['as' => 'projects.data', 'uses' => 'ProjectsController@data']);
+		Route::post('projects/{projects}/data', ['as' => 'projects.upload', 'uses' => 'ProjectsController@upload']);
+		Route::get('projects/{projects}/advertise', ['as' => 'projects.advertise', 'uses' => 'ProjectsController@advertise']);
 
         // Group/Projects/Expeditions
         Route::resource('projects.expeditions', 'ExpeditionsController');
-        Route::get('projects/{projects}/expeditions/{expeditions}/duplicate', array('as' => 'projects.expeditions.duplicate', 'uses' => 'ExpeditionsController@duplicate'));
-        Route::get('projects/{projects}/expeditions/{expeditions}/process', array('as' => 'projects.expeditions.process', 'uses' => 'ExpeditionsController@process'));
-		Route::delete('projects/{projects}/expeditions/{expeditions}/stop', array('as' => 'projects.expeditions.stop', 'uses' => 'ExpeditionsController@stop'));
-        Route::get('projects/{projects}/expeditions/{expeditions}/download/{id}', array('as' => 'projects.expeditions.download', 'uses' => 'ExpeditionsController@download'));
+		Route::get('projects/{projects}/expeditions/{expeditions}/duplicate', ['as' => 'projects.expeditions.duplicate', 'uses' => 'ExpeditionsController@duplicate']);
+		Route::get('projects/{projects}/expeditions/{expeditions}/process', ['as' => 'projects.expeditions.process', 'uses' => 'ExpeditionsController@process']);
+		Route::delete('projects/{projects}/expeditions/{expeditions}/stop', ['as' => 'projects.expeditions.stop', 'uses' => 'ExpeditionsController@stop']);
+		Route::get('projects/{projects}/expeditions/{expeditions}/download', ['as' => 'projects.expeditions.download', 'uses' => 'ExpeditionsController@download']);
+		Route::get('projects/{projects}/expeditions/{expeditions}/file/{id}', ['as' => 'projects.expeditions.file', 'uses' => 'ExpeditionsController@file']);
 
-        Route::get('grids/{expedition}', array('as' => 'grid-index', 'uses' => 'GridsController@index'));
-        Route::post('grids/{expedition}/grid-data', array('as' => 'grid-data', 'uses' => 'GridsController@index'));
+		Route::get('grids/{expedition}', ['as' => 'grid-index', 'uses' => 'GridsController@index']);
+		Route::post('grids/{expedition}/grid-data', ['as' => 'grid-data', 'uses' => 'GridsController@index']);
 
-        Route::get('/', array('as' => 'home', 'uses' => 'HomeController@index'));
-		Route::get('help', array('as' => 'help', 'uses' => 'HomeController@help'));
-        Route::get('/{slug}', array('as' => 'project', 'uses' => 'HomeController@project'));
+		Route::get('/', ['as' => 'home', 'uses' => 'HomeController@index']);
+		Route::get('help', ['as' => 'help', 'uses' => 'HomeController@help']);
+		Route::get('/{slug}', ['as' => 'project', 'uses' => 'HomeController@project']);
 
     });
 
