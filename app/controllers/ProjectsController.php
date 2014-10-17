@@ -153,7 +153,7 @@ class ProjectsController extends BaseController {
      */
     public function show($id)
 	{
-        $project = $this->project->findWith($id, ['group', 'expedition']);
+		$project = $this->project->findWith($id, ['group', 'expedition.download']);
 		$user = Sentry::getUser();
 		$isSuperUser = $user->isSuperUser();
         $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
