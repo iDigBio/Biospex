@@ -88,12 +88,12 @@ class ExpeditionsController extends BaseController {
         $this->download = $download;
 
         // Establish Filters
-        $this->beforeFilter('csrf', array('on' => 'post'));
-        $this->beforeFilter('guest', array('only' => array('index')));
-        $this->beforeFilter('hasProjectAccess:expedition_view', array('only' => array('show', 'index')));
-        $this->beforeFilter('hasProjectAccess:expedition_edit', array('only' => array('edit', 'update')));
-        $this->beforeFilter('hasProjectAccess:expedition_delete', array('only' => array('destroy')));
-        $this->beforeFilter('hasProjectAccess:expedition_create', array('only' => array('create', 'store')));
+		$this->beforeFilter('auth');
+		$this->beforeFilter('csrf', ['on' => 'post']);
+		$this->beforeFilter('hasProjectAccess:expedition_view', ['only' => ['show', 'index', 'download', 'file']]);
+		$this->beforeFilter('hasProjectAccess:expedition_edit', ['only' => ['edit', 'update']]);
+		$this->beforeFilter('hasProjectAccess:expedition_delete', ['only' => ['destroy']]);
+		$this->beforeFilter('hasProjectAccess:expedition_create', ['only' => ['create', 'store']]);
     }
 
     /**
@@ -105,7 +105,7 @@ class ExpeditionsController extends BaseController {
     public function index ($id)
     {
         $expeditions = $this->expedition->byProjectId($id);
-        if (is_null($expeditions)) $expeditions = array();
+		if (is_null($expeditions)) $expeditions = [];
 
         if (Request::ajax()) {
             return View::make('expeditions.indexajax', compact('expeditions'));
@@ -138,7 +138,7 @@ class ExpeditionsController extends BaseController {
     {
         // Form Processing
         $subjects = $this->subject->getUnassignedSubjects(Input::only('project_id', 'subjects'));
-        $input = array_merge(Input::all(), array('subject_ids' => $subjects));
+		$input = array_merge(Input::all(), ['subject_ids' => $subjects]);
 
         $expedition = $this->expeditionForm->save($input);
 
@@ -165,12 +165,9 @@ class ExpeditionsController extends BaseController {
      */
     public function show ($projectId, $expeditionId)
     {
-        $project = $this->project->find($projectId);
-        $expedition = $this->expedition->findWith($expeditionId, ['download']);
-        $workflowManager = $this->workflowManager->getByExpeditionId($expeditionId);
-        $filepath = isset($expedition->download->file) ? Config::get('config.dataDir') . '/' . $expedition->download->file : null;
+		$expedition = $this->expedition->findWith($expeditionId, ['project', 'download', 'workflowManager']);
 
-        return View::make('expeditions.show', compact('project', 'expedition', 'workflowManager', 'filepath'));
+		return View::make('expeditions.show', compact('expedition'));
     }
 
     /**
@@ -248,10 +245,10 @@ class ExpeditionsController extends BaseController {
         {
             foreach ($project->workflow as $workflow)
             {
-                $data = array(
+				$data = [
                     'workflow_id' => $workflow->id,
                     'expedition_id' => $expeditionId,
-                );
+				];
                 $this->workflowManager->create($data);
             }
 
@@ -294,7 +291,20 @@ class ExpeditionsController extends BaseController {
 
 	}
 
-    public function download($projectId, $expeditionId, $downloadId)
+	/**
+	 * Show downloads
+	 *
+	 * @param $projectId
+	 * @param $expeditionId
+	 */
+	public function download ($projectId, $expeditionId)
+	{
+		$expedition = $this->expedition->findWith($expeditionId, ['project', 'download']);
+		dd($expedition);
+		return View::make('expeditions.download', compact('expedition'));
+	}
+
+	public function file ($projectId, $expeditionId, $downloadId)
     {
         $download = $this->download->find($downloadId);
 		$download->count = $download->count + 1;
@@ -302,7 +312,7 @@ class ExpeditionsController extends BaseController {
 
         $dataDir = Config::get('config.dataDir');
         $path = "$dataDir/{$download->file}";
-        $headers = array('Content-Type' => 'application/x-compressed');
+		$headers = ['Content-Type' => 'application/x-compressed'];
         return Response::download($path, $download->file, $headers);
     }
 
