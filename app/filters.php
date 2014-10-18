@@ -63,23 +63,6 @@ Route::filter('auth', function()
     if (!Sentry::check()) return Redirect::guest('login');
 });
 
-
-/*
-|--------------------------------------------------------------------------
-| Guest Filter
-|--------------------------------------------------------------------------
-|
-| The "guest" filter is the counterpart of the authentication filters as
-| it simply checks that the current user is not logged in. A redirect
-| response will be issued if they are, which you may freely change.
-|
-*/
-
-Route::filter('guest', function()
-{
-    if (!Sentry::check()) return Redirect::guest('login');
-});
-
 /*
 |--------------------------------------------------------------------------
 | CSRF Protection Filter
@@ -123,19 +106,46 @@ Route::filter('csrf', function()
     }
 });
 
+/**
+ * Protect Project pages
+ */
 Route::filter('hasProjectAccess', function($route, $request, $value)
 {
-    if (!Sentry::check()) return Redirect::guest('login');
-
-    try {
+	try
+	{
         $user = Sentry::getUser();
 
+		// Super user has all permissions
         if ($user->isSuperUser())
             return;
 
-        $id = $route->getParameter('projects');
-		$project = Project::find($id);
-        $group = Sentry::findGroupById($project->group_id);
+		$id = $route->getParameter('projects');
+		if (empty($id))
+		{
+			Session::flash('error', trans('users.noaccess'));
+			return Redirect::intended('/');
+		}
+
+		$projectKey = md5('project.' . $id);
+		if (Cache::tags('projects')->has($projectKey))
+		{
+			$project = Cache::tags('projects')->get($projectKey);
+		} else
+		{
+			$project = Project::find($id);
+			Cache::tags('projects')->forever($projectKey, $project);
+		}
+
+		$groupId = $project->group_id;
+		$groupKey = md5('group.' . $groupId);
+		if (Cache::tags('groups')->has($groupKey))
+		{
+			$group = Cache::tags('groups')->get($groupKey);
+		} else
+		{
+			$group = Sentry::findGroupById($groupId);
+			Cache::tags('groups')->forever($groupKey, $group);
+		}
 
         if ($user->inGroup($group) && $user->hasAccess(array($value)))
             return;
@@ -173,7 +183,16 @@ Route::filter('hasGroupAccess', function($route, $request, $value)
 
         if ($id)
         {
-            $group = Sentry::findGroupById($id);
+			$groupKey = "group-$id";
+			if (Cache::has($groupKey))
+			{
+				$group = Cache::get($groupKey);
+			} else
+			{
+				$group = Sentry::findGroupById($id);
+				Cache::add($groupKey, $group, 15);
+			}
+
             if ($group->user_id == $user->id)
                 return;
             if ($user->inGroup($group) && ($value != 'group_edit' || $value != 'group_delete'))
