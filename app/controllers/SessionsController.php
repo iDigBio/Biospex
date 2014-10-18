@@ -64,10 +64,10 @@ class SessionsController extends BaseController {
         $result = $this->loginForm->save(Input::all());
 
         if ($result['success']) {
-            Event::fire('user.login', array(
+			Event::fire('user.login', [
                 'userId' => $result['sessionData']['userId'],
                 'email' => $result['sessionData']['email']
-            ));
+			]);
 
             // Success!
             return Redirect::intended(route('projects.index'));

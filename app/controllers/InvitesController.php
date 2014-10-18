@@ -26,7 +26,6 @@
 use Biospex\Repo\Invite\InviteInterface;
 use Biospex\Form\Invite\InviteForm;
 use Biospex\Mailer\BiospexMailer;
-use Biospex\Helpers\Helpers;
 use Cartalyst\Sentry\Users\UserNotFoundException;
 
 class InvitesController extends BaseController {
@@ -44,12 +43,12 @@ class InvitesController extends BaseController {
         $this->mailer = $mailer;
 
         // Establish Filters
-        $this->beforeFilter('csrf', array('on' => 'post'));
-        $this->beforeFilter('guest', array('only' => array('all')));
-        $this->beforeFilter('hasGroupAccess:group_view', array('only' => array('show', 'index')));
-        $this->beforeFilter('hasGroupAccess:group_edit', array('only' => array('edit', 'update')));
-        $this->beforeFilter('hasGroupAccess:group_delete', array('only' => array('destroy')));
-        $this->beforeFilter('hasGroupAccess:group_create', array('only' => array('create')));
+		$this->beforeFilter('auth');
+		$this->beforeFilter('csrf', ['on' => 'post']);
+		$this->beforeFilter('hasGroupAccess:group_view', ['only' => ['show', 'index']]);
+		$this->beforeFilter('hasGroupAccess:group_edit', ['only' => ['edit', 'update']]);
+		$this->beforeFilter('hasGroupAccess:group_delete', ['only' => ['destroy']]);
+		$this->beforeFilter('hasGroupAccess:group_create', ['only' => ['create']]);
     }
 
     /**
@@ -95,11 +94,11 @@ class InvitesController extends BaseController {
             catch (UserNotFoundException $e)
             {
                 $code = str_random(10);
-                $data = array(
+				$data = [
                     'group_id' => $id,
                     'email' => trim($email),
                     'code' => $code
-                );
+				];
 
                 if (!$result = $this->inviteForm->save($data))
                 {
@@ -108,7 +107,7 @@ class InvitesController extends BaseController {
                 else
                 {
                     $subject = trans('emails.group_invite_subject');
-                    $data = array('group' => $group->name, 'code' => $code);
+					$data = ['group' => $group->name, 'code' => $code];
                     $view = 'emails.group-invite';
                     $this->mailer->sendInvite($email, $subject, $view, $data);
                     Helpers::sessionFlashPush('success', trans('groups.send_invite_success', ['group' => $group->name, 'email' => $email]));
@@ -134,7 +133,7 @@ class InvitesController extends BaseController {
         if ($invite)
         {
             $subject = trans('emails.group_invite_subject');
-            $data = array('group' => $group->name, 'code' => $invite->code);
+			$data = ['group' => $group->name, 'code' => $invite->code];
             $view = 'emails.group-invite';
             $this->mailer->sendInvite($invite->email, $subject, $view, $data);
 
@@ -159,9 +158,7 @@ class InvitesController extends BaseController {
     {
         if ($this->invite->destroy($inviteId))
         {
-            Event::fire('invite.destroyed', array(
-                'inviteId' => $inviteId,
-            ));
+			Event::fire('invite.destroyed', ['inviteId' => $inviteId]);
 
             Session::flash('success', trans('groups.invite_destroyed'));
         }

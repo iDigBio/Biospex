@@ -76,11 +76,12 @@ class UsersController extends BaseController {
         $this->invite = $invite;
 
         // Establish Filters
-        $this->beforeFilter('csrf', array('on' => 'post'));
-        $this->beforeFilter('hasUserAccess:user_view', array('only' => array('show', 'index')));
-        $this->beforeFilter('hasUserAccess:user_edit', array('only' => array('edit', 'update')));
-        $this->beforeFilter('hasUserAccess:user_delete', array('only' => array('destroy')));
-        $this->beforeFilter('hasUserAccess:user_create', array('only' => array('create')));
+		$this->beforeFilter('auth', ['except' => ['register', 'activate', 'resend', 'forgot', 'reset']]);
+		$this->beforeFilter('csrf', ['on' => 'post']);
+		$this->beforeFilter('hasUserAccess:user_view', ['only' => ['show', 'index']]);
+		$this->beforeFilter('hasUserAccess:user_edit', ['only' => ['edit', 'update']]);
+		$this->beforeFilter('hasUserAccess:user_delete', ['only' => ['destroy']]);
+		$this->beforeFilter('hasUserAccess:user_create', ['only' => ['create']]);
 	}
 
 
@@ -155,11 +156,11 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-            Event::fire('user.registered', array(
+			Event::fire('user.registered', [
             	'email' => $result['mailData']['email'], 
             	'userId' => $result['mailData']['userId'], 
                 'activationCode' => $result['mailData']['activationCode']
-            ));
+			]);
 
             // Success!
             Session::flash('success', $result['message']);
@@ -245,17 +246,15 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-            Event::fire('user.updated', array(
-                'userId' => $id, 
-            ));
+			Event::fire('user.updated', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
-            return Redirect::action('users.edit', array($id));
+			return Redirect::action('users.edit', [$id]);
 
         } else {
             Session::flash('error', $result['message']);
-            return Redirect::action('users.edit', array($id))
+			return Redirect::action('users.edit', [$id])
                 ->withInput()
                 ->withErrors( $this->userForm->errors() );
         }
@@ -279,9 +278,7 @@ class UsersController extends BaseController {
 
 		if ($this->user->destroy($id))
 		{
-			Event::fire('user.destroyed', array(
-                'userId' => $id, 
-            ));
+			Event::fire('user.destroyed', ['userId' => $id]);
 
             Session::flash('success', trans('users.deleted'));
             return Redirect::action('UsersController@index');
@@ -337,11 +334,11 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-            Event::fire('user.resend', array(
+			Event::fire('user.resend', [
 				'email' => $result['mailData']['email'], 
 				'userId' => $result['mailData']['userId'], 
 				'activationCode' => $result['mailData']['activationCode']
-			));
+			]);
 
             // Success!
             Session::flash('success', $result['message']);
@@ -367,11 +364,11 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-            Event::fire('user.forgot', array(
+			Event::fire('user.forgot', [
 				'email' => $result['mailData']['email'],
 				'userId' => $result['mailData']['userId'],
 				'resetCode' => $result['mailData']['resetCode']
-			));
+			]);
 
             // Success!
             Session::flash('success', $result['message']);
@@ -406,10 +403,10 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-            Event::fire('user.newpassword', array(
+			Event::fire('user.newpassword', [
 				'email' => $result['mailData']['email'],
 				'newPassword' => $result['mailData']['newPassword']
-			));
+			]);
 
             // Success!
             Session::flash('success', $result['message']);
@@ -443,18 +440,16 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-            Event::fire('user.passwordchange', array(
-                'userId' => $id, 
-            ));
+			Event::fire('user.passwordchange', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
-            return Redirect::action('UsersController@show', array($id));
+			return Redirect::action('UsersController@show', [$id]);
         } 
         else 
         {
             Session::flash('error', $result['message']);
-            return Redirect::action('UsersController@edit', array($id))
+			return Redirect::action('UsersController@edit', [$id])
                 ->withInput()
                 ->withErrors( $this->changePasswordForm->errors() );
         }
@@ -479,9 +474,7 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-            Event::fire('user.suspended', array(
-                'userId' => $id, 
-            ));
+			Event::fire('user.suspended', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
@@ -489,7 +482,7 @@ class UsersController extends BaseController {
 
         } else {
             Session::flash('error', $result['message']);
-            return Redirect::action('UsersController@suspend', array($id))
+			return Redirect::action('UsersController@suspend', [$id])
                 ->withInput()
                 ->withErrors( $this->suspendUserForm->errors() );
         }
@@ -513,9 +506,7 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-            Event::fire('user.unsuspended', array(
-                'userId' => $id, 
-            ));
+			Event::fire('user.unsuspended', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
@@ -545,9 +536,7 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-            Event::fire('user.banned', array(
-                'userId' => $id, 
-            ));
+			Event::fire('user.banned', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
@@ -572,9 +561,7 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-            Event::fire('user.unbanned', array(
-                'userId' => $id, 
-            ));
+			Event::fire('user.unbanned', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
@@ -585,7 +572,6 @@ class UsersController extends BaseController {
             return Redirect::action('UsersController@index');
         }
 	}
-
 
 }
 
