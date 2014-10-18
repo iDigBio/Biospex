@@ -52,7 +52,7 @@ class CacheProjectDecorator extends AbstractProjectDecorator
 	 */
 	public function all ($columns = array('*'))
 	{
-		$key = md5('all');
+		$key = md5('projects.all');
 
 		if ($this->cache->has($key))
 		{

@@ -51,7 +51,7 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 	 */
 	public function all ($columns = array('*'))
 	{
-		$key = md5('all');
+		$key = md5('groups.all');
 
 		if ($this->cache->has($key))
 		{
@@ -139,7 +139,7 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 	 */
 	public function findWith ($id, $with = array())
 	{
-		$key = md5('id.' . implode(" ", $with));
+		$key = md5('group.' . $id . implode(" ", $with));
 
 		if ($this->cache->has($key))
 		{
@@ -183,15 +183,17 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 	 */
 	public function selectOptions ($allGroups, $create = false)
 	{
+		/* TODO Figure out a way to cache these per user
 		$key = $create ? md5('select-options') : md5('create-options');
 
 		if ($this->cache->has($key))
 		{
 			return $this->cache->get($key);
 		}
+		*/
 
 		$options = $this->group->selecOptions($allGroups, $create);
-		$this->cache->put($key, $options);
+		//$this->cache->put($key, $options);
 
 		return $options;
 	}
