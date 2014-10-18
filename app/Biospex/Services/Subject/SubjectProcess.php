@@ -84,27 +84,27 @@ class SubjectProcess {
 	 * Header row for core file
 	 * @var
 	 */
-	private $coreHeader = array();
+	private $coreHeader = [];
 
 	/**
 	 * Header row for extension file
 	 *
 	 * @var array
 	 */
-	private $extensionHeader = array();
+	private $extensionHeader = [];
 
 	/**
 	 * Array of duplicate subjects
 	 * @var array
 	 */
-	private $duplicateArray = array();
+	private $duplicateArray = [];
 
 	/**
 	 * Array of images with empty identifiers
 	 *
 	 * @var array
 	 */
-	private $rejectedMultimedia = array();
+	private $rejectedMultimedia = [];
 
 	/**
 	 * Project Id
@@ -130,7 +130,7 @@ class SubjectProcess {
 	 *
 	 * @var
 	 */
-	private $headerArray = array();
+	private $headerArray = [];
 
 	/**
 	 * Header Id for headers associated with project
@@ -144,7 +144,7 @@ class SubjectProcess {
 	 *
 	 * @var array
 	 */
-	private $metaFields = array();
+	private $metaFields = [];
 
 	/**
 	 * Saved meta xml id
@@ -253,7 +253,7 @@ class SubjectProcess {
 	 */
 	public function loadCsv ($type)
 	{
-		$results = array();
+		$results = [];
 		$file = $type == 'core' ? "{$this->dir}/{$this->coreFile}" : "{$this->dir}/{$this->extensionFile}";
 		$handle = fopen($file, "r");
 		if ($handle) {
@@ -310,7 +310,7 @@ class SubjectProcess {
 			$header = $this->extensionHeader;
 		}
 
-		$subjects = array();
+		$subjects = [];
 
 		// create new array with occurrence id as key
 		$occurrences = $this->formatOccurrences($occurrence);
@@ -348,7 +348,7 @@ class SubjectProcess {
 	private function formatOccurrences($occurrence)
 	{
 		$header = $this->mediaIsCore ? $this->extensionHeader : $this->coreHeader;
-		$result = array();
+		$result = [];
 		foreach ($occurrence as $key => $row)
 		{
 			$result[$row[$header[0]]] = $row;
@@ -367,18 +367,18 @@ class SubjectProcess {
 	{
 		foreach ($subjects as $subject) {
 			if (!$this->validateDoc($subject)) {
-				$this->duplicateArray[] = array($subject['subject_id']);
+				$this->duplicateArray[] = [$subject['subject_id']];
 				continue;
 			}
 
 			$subjectDoc = $this->subjectdoc->create($subject);
-			$data = array(
+			$data = [
 				'project_id' => $subjectDoc->project_id,
 				'header_id' => $this->headerId,
 				'meta_id' => $this->metaId,
 				'mongo_id' => $subjectDoc->_id,
 				'object_id' => $subjectDoc->subject_id,
-			);
+			];
 			$this->subject->create($data);
 		}
 
@@ -395,7 +395,7 @@ class SubjectProcess {
 	 */
 	public function buildHeaderRow($row, $type)
 	{
-		$header = array('id');
+		$header = ['id'];
 		$row = array_intersect_key($row, $this->metaFields[$type]);
 
 		foreach ($this->metaFields[$type] as $key => $qualified)
@@ -422,7 +422,7 @@ class SubjectProcess {
 	 */
 	public function checkProperty($qualified, $ns_short)
 	{
-		list($namespace, $short) = preg_match('/:/', $ns_short) ? preg_split('/:/', $ns_short) : array('', $ns_short);
+		list($namespace, $short) = preg_match('/:/', $ns_short) ? preg_split('/:/', $ns_short) : ['', $ns_short];
 
 		$checkQualified = $this->property->findByQualified($qualified);
 		$checkShort = $this->property->findByShort($short);
@@ -436,11 +436,11 @@ class SubjectProcess {
 		elseif (is_null($checkQualified) && ! is_null($checkShort))
 		{
 			$short .= substr(md5(uniqid(mt_rand(), true)), 0, 4);
-			$array = array(
+			$array = [
 				'qualified' => $qualified,
 				'short' => $short,
 				'namespace' => $namespace,
-			);
+			];
 			$this->property->create($array);
 
 			return $short;
@@ -448,11 +448,11 @@ class SubjectProcess {
 		// Create if neither exist using same short
 		elseif (is_null($checkQualified) && is_null($checkShort))
 		{
-			$array = array(
+			$array = [
 				'qualified' => $qualified,
 				'short' => $short,
 				'namespace' => $namespace,
-			);
+			];
 			$this->property->create($array);
 
 			return $short;
@@ -493,8 +493,8 @@ class SubjectProcess {
 	 */
 	public function validateDoc ($subject)
 	{
-		$rules = array('project_id' => 'unique_with:subjectdocs,subject_id');
-		$values = array('project_id' => $subject['project_id'], 'subject_id' => $subject['subject_id']);
+		$rules = ['project_id' => 'unique_with:subjectdocs,subject_id'];
+		$values = ['project_id' => $subject['project_id'], 'subject_id' => $subject['subject_id']];
 
 		$validator = Validator::make($values, $rules);
 		$validator->getPresenceVerifier()->setConnection('mongodb');
@@ -578,12 +578,12 @@ class SubjectProcess {
 	 */
 	public function setMultiMediaIdentifierIndex ()
 	{
-		$values = array(
+		$values = [
 			'identifier',
 			'providerManagedID',
 			'uuid',
 			'recordId',
-		);
+		];
 
 		foreach ($values as $value)
 		{
@@ -618,10 +618,10 @@ class SubjectProcess {
 		if (is_null($result))
 		{
 			$this->headerArray = $headerFields;
-			$array = array(
+			$array = [
 				'project_id' => $this->projectId,
 				'header' => json_encode($this->headerArray),
-			);
+			];
 			$header = $this->header->create($array);
 			$this->headerId = $header->id;
 		}
@@ -642,10 +642,10 @@ class SubjectProcess {
 	 */
 	public function saveMeta($xml)
 	{
-		$result = $this->meta->create(array(
+		$result = $this->meta->create([
 			'project_id' => $this->projectId,
 			'xml' => $xml,
-		));
+		]);
 
 		$this->metaId = $result->id;
 
