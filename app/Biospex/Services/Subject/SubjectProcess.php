@@ -36,18 +36,18 @@ use Biospex\Repo\Meta\MetaInterface;
 class SubjectProcess {
 
 	/**
-	 * Multimedia file from XML
+	 * Core file from XML
 	 *
 	 * @var
 	 */
-	private $multiMediaFile;
+	private $coreFile;
 
 	/**
-	 * Occurrence file from XML
+	 * Extension file from XML
 	 *
 	 * @var
 	 */
-	private $occurrenceFile;
+	private $extensionFile;
 
 	/**
 	 * Sets if media is core or not
@@ -60,26 +60,38 @@ class SubjectProcess {
 	 * Column string value of multimedia identifier.
 	 * @var
 	 */
-	private $multiMediaIdentifier;
+	private $multiMediaIdentifier = null;
 
 	/**
 	 * Multimedia identifier column if occurrence file is core
 	 * @var
 	 */
-	private $multiMediaIdentifierIndex;
+	private $multiMediaIdentifierIndex = null;
 
 	/**
-	 * Header row for multimedia file
+	 * Core file xpath query
 	 * @var
 	 */
-	private $multiMediaHeader = array();
+	private $coreXpathQuery;
 
 	/**
-	 * Header row for occurrence file
+	 * Extension file xpath query
+	 * @var
+	 */
+	private $extXpathQuery;
+
+	/**
+	 * Header row for core file
+	 * @var
+	 */
+	private $coreHeader = array();
+
+	/**
+	 * Header row for extension file
 	 *
 	 * @var array
 	 */
-	private $occurrenceHeader = array();
+	private $extensionHeader = array();
 
 	/**
 	 * Array of duplicate subjects
@@ -100,6 +112,12 @@ class SubjectProcess {
 	 * @var null
 	 */
 	private $projectId = null;
+
+	/**
+	 * Dir
+	 * @var
+	 */
+	private $dir;
 
 	/**
 	 * Delimiter from meta file
@@ -170,17 +188,15 @@ class SubjectProcess {
 	public function processSubjects($projectId, $dir)
 	{
 		$this->setProjectId($projectId);
-		$this->processMetaFile("$dir/meta.xml");
+		$this->setDir($dir);
+		$this->processMetaFile();
 
-		$multiMediaFile = $this->getMultiMediaFile();
-		$occurrenceFile = $this->getOccurrenceFile();
-
-		$multimedia = $this->loadCsv("$dir/$multiMediaFile", "multimedia");
-		$occurrence = $this->loadCsv("$dir/$occurrenceFile", "occurrence");
+		$core = $this->loadCsv("core");
+		$extension = $this->loadCsv("extension");
 
 		$this->setHeaderArray();
 
-		$subjects = $this->buildSubjectsArray($multimedia, $occurrence);
+		$subjects = $this->buildSubjectsArray($core, $extension);
 
 		if ( ! empty($subjects))
 			$this->insertDocs($subjects);
@@ -190,66 +206,37 @@ class SubjectProcess {
 
 	/**
 	 * Process meta file
-	 *
-	 * @param $file
 	 */
-	private function processMetaFile($file)
+	private function processMetaFile ()
 	{
 		// Load xml
-		$xml = $this->xmlProcess->load($file);
+		$xml = $this->xmlProcess->load("{$this->dir}/meta.xml");
 
 		// Set core type and file
 		$coreType = $this->xmlProcess->getDomTagAttribute('core', 'rowType');
+		if (empty($coreType))
+			throw new \Exception('[SubjectProcess] Error querying core type.');
+
 		$coreFile = $this->xmlProcess->getElementByTag('core');
-		if (empty($coreType) || empty($coreFile))
-			throw new SubjectProcessException('[SubjectProcess] Error querying core.');
+		if (empty($coreFile))
+			throw new \Exception('[SubjectProcess] Error querying core file.');
 
 		// Set delimiter
 		$delimiter = $this->xmlProcess->getDomTagAttribute('core', 'fieldsTerminatedBy');
 		if (empty($delimiter))
-			throw new SubjectProcessException('[SubjectProcess] Error querying delimiter.');
+			throw new \Exception('[SubjectProcess] Error querying delimiter.');
 		$this->setDelimiter($delimiter);
 
-		if (preg_match('/occurrence/i', $coreType))
-		{
-			$this->setCore(false);
-			$this->setOccurrenceFile($coreFile);
+		$this->mediaIsCore = preg_match('/occurrence/i', $coreType) ? false : true;
 
-			$query = "//ns:extension[contains(php:functionString('strtolower', @rowType), 'multimedia')]";
-			$multiMediaQuery = $this->xmlProcess->xpathQueryOne($query);
-			if (empty($multiMediaQuery))
-				throw new SubjectProcessException('[SubjectProcess] Error querying multimedia file.');
-			$this->setMultiMediaFile($multiMediaQuery->nodeValue);
+		$this->setMetaFiles($coreFile);
 
-			$query = "//ns:extension/ns:field[contains(php:functionString('strtolower', @term), 'identifier')]";
-			$multiMediaIndexQuery = $this->xmlProcess->xpathQueryOne($query);
-			if (empty($multiMediaIndexQuery))
-				throw new SubjectProcessException('[SubjectProcess] Error querying multimedia identifier index.');
+		if (!$this->mediaIsCore)
+			$this->setMultiMediaIdentifierIndex();
 
-			$identifier = $multiMediaIndexQuery->attributes->getNamedItem("index")->nodeValue;
-			$this->setMultiMediaIdentifierIndex($identifier);
+		$this->setMetaQueries();
 
-			$occurrence_xpath_query = "//ns:archive/ns:core[contains(php:functionString('strtolower', @rowType), 'occurrence')]/ns:field";
-			$multimedia_xpath_query = "//ns:archive/ns:extension[contains(php:functionString('strtolower', @rowType), 'multimedia')]/ns:field";
-
-		}
-		elseif (preg_match('/multimedia/i', $coreType))
-		{
-			$this->setCore(true);
-			$this->setMultiMediaFile($coreFile);
-
-			$query = "//ns:extension[contains(php:functionString('strtolower', @rowType), 'occurrence')]";
-			$occurrenceQuery = $this->xmlProcess->xpathQueryOne($query);
-			if (empty($occurrenceQuery))
-				throw new SubjectProcessException('[SubjectProcess] Error querying occurrence file.');
-
-			$this->setOccurrenceFile($occurrenceQuery->nodeValue);
-
-			$occurrence_xpath_query = "//ns:archive/ns:extension[contains(php:functionString('strtolower', @rowType), 'occurrence')]/ns:field";
-			$multimedia_xpath_query = "//ns:archive/ns:core[contains(php:functionString('strtolower', @rowType), 'multimedia')]/ns:field";
-		}
-
-		$this->buildMetaFields($multimedia_xpath_query, $occurrence_xpath_query);
+		$this->buildMetaFields();
 
 		$this->saveMeta($xml);
 
@@ -262,12 +249,13 @@ class SubjectProcess {
 	 * @param $filePath
 	 * @param null $type
 	 * @return array
-	 * @throws SubjectProcessException
+	 * @throws Exception
 	 */
-	public function loadCsv ($filePath, $type = null)
+	public function loadCsv ($type)
 	{
 		$results = array();
-		$handle = fopen($filePath, "r");
+		$file = $type == 'core' ? "{$this->dir}/{$this->coreFile}" : "{$this->dir}/{$this->extensionFile}";
+		$handle = fopen($file, "r");
 		if ($handle) {
 			$header = null;
 			while (($row = fgetcsv($handle, 10000, $this->delimiter)) !== FALSE) {
@@ -275,13 +263,13 @@ class SubjectProcess {
 				{
 					$header = $this->buildHeaderRow($row, $type);
 
-					if ($type == 'multimedia')
+					if ($type == 'core')
 					{
-						$this->multiMediaHeader = $header;
+						$this->coreHeader = $header;
 					}
 					else
 					{
-						$this->occurrenceHeader = $header;
+						$this->extensionHeader = $header;
 					}
 
 					continue;
@@ -290,7 +278,7 @@ class SubjectProcess {
 				$row = array_intersect_key($row, $header);
 
 				if (count($header) != count($row))
-					throw new SubjectProcessException('[SubjectProcess] Header column count does not match row count.');
+					throw new \Exception('[SubjectProcess] Header column count does not match row count.');
 
 				$results[] = array_combine($header, $row);
 			}
@@ -303,13 +291,25 @@ class SubjectProcess {
 	/**
 	 * Build subject array and insert extension
 	 *
-	 * @param $multimedia
-	 * @param $occurrence
+	 * @param $core
+	 * @param $extension
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function buildSubjectsArray ($multimedia, $occurrence)
+	public function buildSubjectsArray ($core, $extension)
 	{
+		if ($this->mediaIsCore)
+		{
+			$occurrence = $extension;
+			$multimedia = $core;
+			$header = $this->coreHeader;
+		} else
+		{
+			$occurrence = $core;
+			$multimedia = $extension;
+			$header = $this->extensionHeader;
+		}
+
 		$subjects = array();
 
 		// create new array with occurrence id as key
@@ -318,8 +318,8 @@ class SubjectProcess {
 		foreach ($multimedia as $key => $subject)
 		{
 			// TODO: Need to find what id will be when media is core file
-			$occurrenceId = $subject[$this->multiMediaHeader[0]];
-			$subject['id'] = $this->mediaIsCore ? $this->multiMediaHeader[0] : $subject[$this->multiMediaIdentifier];
+			$occurrenceId = $subject[$header[0]];
+			$subject['id'] = $this->mediaIsCore ? $header[0] : $subject[$this->multiMediaIdentifier];
 
 			if (empty($subject['id']))
 			{
@@ -347,10 +347,11 @@ class SubjectProcess {
 	 */
 	private function formatOccurrences($occurrence)
 	{
+		$header = $this->mediaIsCore ? $this->extensionHeader : $this->coreHeader;
 		$result = array();
 		foreach ($occurrence as $key => $row)
 		{
-			$result[$row[$this->occurrenceHeader[0]]] = $row;
+			$result[$row[$header[0]]] = $row;
 		}
 
 		return $result;
@@ -385,11 +386,11 @@ class SubjectProcess {
 	}
 
 	/**
-	 * Build header array for multimedia csv file so it matches qualified names
-	 * and set the multimediaIdentifier string value.
+	 * Build header csv file so it matches qualified names
+	 * and set the multimediaIdentifier string value if media is not core.
 	 *
 	 * @param $row
-	 * @param $type
+	 * @param $type core or extension
 	 * @return array
 	 */
 	public function buildHeaderRow($row, $type)
@@ -400,12 +401,12 @@ class SubjectProcess {
 		foreach ($this->metaFields[$type] as $key => $qualified)
 		{
 			if ( ! isset($row[$key]))
-				throw new SubjectProcessException("[SubjectProcess] Undefined index for $key => $qualified.");
+				throw new \Exception("[SubjectProcess] Undefined index for $key => $qualified.");
 
 			$short = $this->checkProperty($qualified, $row[$key]);
 			$header[$key] = $short;
 
-			if ($type == 'multimedia' && $key == $this->multiMediaIdentifierIndex)
+			if (!is_null($this->multiMediaIdentifierIndex) && $key == $this->multiMediaIdentifierIndex)
 				$this->multiMediaIdentifier = $short;
 		}
 
@@ -464,20 +465,20 @@ class SubjectProcess {
 	 * @param $multimedia
 	 * @param $occurrence
 	 */
-	public function buildMetaFields($multimedia, $occurrence)
+	public function buildMetaFields ()
 	{
-		foreach($this->xmlProcess->xpathQuery($multimedia) as $child)
+		foreach ($this->xmlProcess->xpathQuery($this->coreXpathQuery) as $child)
 		{
 			$index = $child->attributes->getNamedItem("index")->nodeValue;
 			$qualified = $child->attributes->getNamedItem("term")->nodeValue;
-			$this->metaFields['multimedia'][$index] = $qualified;
+			$this->metaFields['core'][$index] = $qualified;
 		}
 
-		foreach($this->xmlProcess->xpathQuery($occurrence) as $child)
+		foreach ($this->xmlProcess->xpathQuery($this->extXpathQuery) as $child)
 		{
 			$index = $child->attributes->getNamedItem("index")->nodeValue;
 			$qualified = $child->attributes->getNamedItem("term")->nodeValue;
-			$this->metaFields['occurrence'][$index] = $qualified;
+			$this->metaFields['extension'][$index] = $qualified;
 		}
 
 		return;
@@ -522,43 +523,83 @@ class SubjectProcess {
 	}
 
 	/**
-	 * Set whether core is medi or not
+	 * Set the directory for files
 	 *
-	 * @param $value
+	 * @param $dir
 	 */
-	public function setCore ($value)
+	private function setDir ($dir)
 	{
-		$this->mediaIsCore = $value;
+		$this->dir = $dir;
 	}
 
 	/**
-	 *  Set occurrence file
+	 * Set files by meta.
 	 *
-	 * @param $filename
+	 * @param $coreFile
+	 * @throws \Exception
 	 */
-	public function setOccurrenceFile ($filename)
+	public function setMetaFiles ($coreFile)
 	{
-		$this->occurrenceFile = $filename;
+		$extension = $this->mediaIsCore ? 'occurrence' : 'multimedia';
+
+		$query = "//ns:archive//ns:extension[contains(php:functionString('strtolower', @rowType), '$extension')]";
+		$result = $this->xmlProcess->xpathQuery($query, true);
+		if (empty($result->nodeValue))
+			throw new \Exception("[SubjectProcess] Error querying $extension file.");
+
+		$this->coreFile = $coreFile;
+		$this->extensionFile = $result->nodeValue;
+
+		return;
 	}
 
 	/**
-	 * Set multimedia file
-	 *
-	 * @param $filename
+	 * Set Xpath queries depending on core
 	 */
-	public function setMultiMediaFile ($filename)
+	public function setMetaQueries ()
 	{
-		$this->multiMediaFile = $filename;
+		if ($this->mediaIsCore)
+		{
+			$this->coreXpathQuery = "//ns:archive/ns:core[contains(php:functionString('strtolower', @rowType), 'multimedia')]/ns:field";
+			$this->extXpathQuery = "//ns:archive/ns:extension[contains(php:functionString('strtolower', @rowType), 'occurrence')]/ns:field";
+		} else
+		{
+			$this->coreXpathQuery = "//ns:archive/ns:core[contains(php:functionString('strtolower', @rowType), 'occurrence')]/ns:field";
+			$this->extXpathQuery = "//ns:archive/ns:extension[contains(php:functionString('strtolower', @rowType), 'multimedia')]/ns:field";
+		}
 	}
 
 	/**
 	 * Set column index for multimedia identifier
-	 *
-	 * @param $index
+	 * dcterms:identifier
+	 * ac:providerManagedID
+	 * idigbio:uuid
+	 * idigbio:recordId
 	 */
-	public function setMultiMediaIdentifierIndex($index)
+	public function setMultiMediaIdentifierIndex ()
 	{
-		$this->multiMediaIdentifierIndex = $index;
+		$values = array(
+			'identifier',
+			'providerManagedID',
+			'uuid',
+			'recordId',
+		);
+
+		foreach ($values as $value)
+		{
+			$query = "//ns:archive//ns:extension/ns:field[contains(php:functionString('strtolower', @term), '$value')]";
+			$result = $this->xmlProcess->xpathQuery($query, true);
+			if (!empty($result->attributes->getNamedItem("index")->nodeValue))
+			{
+				$this->multiMediaIdentifierIndex = $result->attributes->getNamedItem("index")->nodeValue;
+				break;
+			}
+		}
+
+		if (empty($this->multiMediaIdentifierIndex))
+			throw new \Exception('[SubjectProcess] Error querying multimedia identifier index.');
+
+		return;
 	}
 
 	/**
@@ -568,7 +609,11 @@ class SubjectProcess {
 	{
 		$result = $this->header->getByProjectId($this->projectId);
 
-		$headerFields = array_map(function() {}, array_flip($this->multiMediaHeader));
+		$header = $this->mediaIsCore ? $this->coreHeader : $this->extensionHeader;
+
+		$headerFields = array_map(function ()
+			{
+			}, array_flip($header));
 
 		if (is_null($result))
 		{
@@ -627,21 +672,4 @@ class SubjectProcess {
 		return $this->rejectedMultimedia;
 	}
 
-	/**
-	 * Return multimedia file
-	 * @return mixed
-	 */
-	public function getMultiMediaFile ()
-	{
-		return $this->multiMediaFile;
-	}
-
-	/**
-	 * Return occurrence file
-	 * @return mixed
-	 */
-	public function getOccurrenceFile ()
-	{
-		return $this->occurrenceFile;
-	}
 }
