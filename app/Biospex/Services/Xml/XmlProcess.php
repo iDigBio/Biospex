@@ -45,7 +45,7 @@ class XmlProcess {
 
 		$parsed = $this->xml->load($input_xml);
 		if(!$parsed) {
-			throw new XmlProcessException('[XMLProcess] Error parsing the XML string.');
+			throw new \Exception('[XMLProcess] Error parsing the XML string.');
 		}
 
 		$this->xpath = new \DOMXpath($this->xml);
@@ -83,23 +83,15 @@ class XmlProcess {
 	 * Perform query on dom document
 	 *
 	 * @param $query
-	 * @param bool $single
+	 * @param bool $get
 	 * @return mixed
 	 */
-	public function xpathQuery($query)
+	public function xpathQuery ($query, $get = false)
 	{
-		return $this->xpath->query($query);
-	}
+		if (!$get)
+			return $this->xpath->query($query);
 
-	/**
-	 * Return first item of xpath query
-	 *
-	 * @param $query
-	 * @return mixed
-	 */
-	public function xpathQueryOne($query)
-	{
-		return $this->xpathQuery($query)->item(0);
+		return $this->xpath->query($query)->item(0);
 	}
 
 	/**
@@ -120,7 +112,7 @@ class XmlProcess {
 	 * @return mixed
 	 */
 	private function &convert($node) {
-		$output = array();
+		$output = [];
 
 		switch ($node->nodeType) {
 			case XML_CDATA_SECTION_NODE:
@@ -142,7 +134,7 @@ class XmlProcess {
 
 						// assume more nodes of same kind are coming
 						if(!isset($output[$t])) {
-							$output[$t] = array();
+							$output[$t] = [];
 						}
 						$output[$t][] = $v;
 					} else {
@@ -168,13 +160,13 @@ class XmlProcess {
 
 				// loop through the attributes and collect them
 				if($node->attributes->length) {
-					$a = array();
+					$a = [];
 					foreach($node->attributes as $attrName => $attrNode) {
 						$a[$attrName] = (string) $attrNode->value;
 					}
 					// if its an leaf node, store the value in @value instead of directly storing it.
 					if(!is_array($output)) {
-						$output = array('@value' => $output);
+						$output = ['@value' => $output];
 					}
 					$output['@attributes'] = $a;
 				}
