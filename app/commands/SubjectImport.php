@@ -32,9 +32,7 @@ use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Repo\User\UserInterface;
 use Biospex\Services\Report\Report;
 use Biospex\Services\Subject\SubjectProcess;
-use Biospex\Services\Subject\SubjectProcessException;
 use Biospex\Services\Xml\XmlProcess;
-use Biospex\Services\Xml\XmlProcessException;
 use Biospex\Mailer\BiospexMailer;
 
 class SubjectImport extends Command {
@@ -150,20 +148,6 @@ class SubjectImport extends Command {
 
 				$this->import->destroy($import->id);
 			}
-			catch (XmlProcessException $e)
-			{
-				die($e->getMessage() . $e->getTraceAsString());
-				$this->report->addError("Unable to process import id: {$import->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
-				$this->report->importError($import->id, $user->email, $project->title);
-				continue;
-			}
-			catch (SubjectProcessException $e)
-			{
-				die($e->getMessage() . $e->getTraceAsString());
-				$this->report->addError("Unable to process import id: {$import->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
-				$this->report->importError($import->id, $user->email, $project->title);
-				continue;
-			}
 			catch (Exception $e)
 			{
 				die($e->getMessage() . $e->getTraceAsString());
@@ -224,7 +208,7 @@ class SubjectImport extends Command {
     public function copyFile($file, $fileDirTmp)
     {
         if ( ! $this->filesystem->copy($file, $fileDirTmp))
-			throw new Exception('Unable to copy file to temp directory:' . $file);
+			throw new \Exception('Unable to copy file to temp directory:' . $file);
 
 		return;
     }
@@ -240,13 +224,13 @@ class SubjectImport extends Command {
         if ( ! $this->filesystem->isDirectory($dir))
         {
             if ( ! $this->filesystem->makeDirectory($dir, 0777, true))
-				throw new Exception('"Unable to create temporary directory:' . $dir);
+				throw new \Exception('"Unable to create temporary directory:' . $dir);
         }
 
         if ( ! $this->filesystem->isWritable($dir))
         {
             if ( ! chmod($dir, 0777))
-				throw new Exception('"Unable to make temporary directory writable:' . $dir);
+				throw new \Exception('"Unable to make temporary directory writable:' . $dir);
         }
 
         return;
