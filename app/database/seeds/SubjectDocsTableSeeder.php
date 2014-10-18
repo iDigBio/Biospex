@@ -54,7 +54,12 @@ class SubjectDocsTableSeeder extends Seeder {
 		DB::connection('mongodb')->collection('subjectdocs')->truncate();
 
 		$dir = 'app/database/seeds/data';
-		$this->subjectProcess->processSubjects(1, $dir);
-
+		try
+		{
+			$this->subjectProcess->processSubjects(1, $dir);
+		} catch (Exception $e)
+		{
+			die($e->getMessage() . $e->getTraceAsString());
+		}
     }
 }
