@@ -98,7 +98,7 @@ class WorkFlowManagerCommand extends Command {
 				$workflow = $this->workflow->find($manager->workflow_id);
 				$classNameSpace ='Biospex\Services\WorkFlow\\' . $workflow->class;
                 $class = App::make($classNameSpace);
-				$class->setDebug($this->debug);
+				$class->setProperties($workflow->id, $this->debug);
                 $class->process($manager->expedition_id);
             }
             catch ( Exception $e )
