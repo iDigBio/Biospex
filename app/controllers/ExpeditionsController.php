@@ -299,7 +299,7 @@ class ExpeditionsController extends BaseController {
 	 */
 	public function download ($projectId, $expeditionId)
 	{
-		$expedition = $this->expedition->findWith($expeditionId, ['project', 'download']);
+		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'download.workflow']);
 		return View::make('expeditions.download', compact('expedition'));
 	}
 
