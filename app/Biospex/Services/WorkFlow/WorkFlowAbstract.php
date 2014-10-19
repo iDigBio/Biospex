@@ -28,9 +28,7 @@ use Illuminate\Support\Facades\Config;
 use Biospex\Repo\Expedition\ExpeditionInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\Property\PropertyInterface;
-use Biospex\Repo\Meta\MetaInterface;
 use Biospex\Repo\Download\DownloadInterface;
-use Biospex\Services\Xml\XmlProcess;
 use Biospex\Services\Report\Report;
 
 abstract class WorkFlowAbstract {
@@ -43,35 +41,28 @@ abstract class WorkFlowAbstract {
     public function __construct(
         ExpeditionInterface $expedition,
 		SubjectInterface $subject,
-		MetaInterface $meta,
 		PropertyInterface $property,
 		Filesystem $filesystem,
         Report $report,
-        DownloadInterface $download,
-		XmlProcess $xmlProcess
+		DownloadInterface $download
     )
     {
         $this->expedition = $expedition;
 		$this->subject = $subject;
-		$this->meta = $meta;
 		$this->property = $property;
         $this->filesystem = $filesystem;
         $this->report = $report;
         $this->download = $download;
-		$this->xmlProcess = $xmlProcess;
 
         $this->dataDir = Config::get('config.dataDir');
         $this->dataTmp = Config::get('config.dataTmp');
-
-        $this->prepareStates();
-        $this->setConfig();
     }
 
-    abstract protected function prepareStates();
+	abstract protected function setProperties ($workflowId, $debug = false);
 
-    abstract protected function setConfig();
+	abstract protected function setWorkflowId ($id);
 
-	abstract public function setDebug($value);
+	abstract protected function setReportDebug ($debug = false);
 
     abstract public function process($id);
 
@@ -148,10 +139,11 @@ abstract class WorkFlowAbstract {
         return;
     }
 
-    protected function createDownload($expeditionId, $file)
+	protected function createDownload ($expeditionId, $workflowId, $file)
     {
         $data = array(
             'expedition_id' => $expeditionId,
+			'workflow_id' => $workflowId,
             'file' => $file
         );
 
