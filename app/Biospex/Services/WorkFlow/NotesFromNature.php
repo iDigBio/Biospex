@@ -78,7 +78,7 @@ class NotesFromNature extends WorkFlowAbstract
      * Remote image column from csv import
      * @var
      */
-    protected $bestQualityAccessUri = null;
+	protected $accessUri = "accessURI";
 
     /**
      * Hold original image url
@@ -247,7 +247,7 @@ class NotesFromNature extends WorkFlowAbstract
      */
     public function export()
     {
-        $title = "{$this->record->id}-". (preg_replace('/[^a-zA-Z0-9]/', '', base64_encode($this->record->title)));
+		$title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(base64_encode($this->record->title), 0, 10)));
         $this->tmpFileDir = "{$this->dataDir}/$title";
 
         if ( ! $this->createDir($this->tmpFileDir))
@@ -289,10 +289,7 @@ class NotesFromNature extends WorkFlowAbstract
         {
             $this->subjectArray[$subject->id][] = $subject->object_id;
 
-            if ( ! $this->setBestQualityUri())
-                continue;
-
-			$uri = $subject->subjectDoc->subject[$this->bestQualityAccessUri];
+			$uri = $subject->subjectDoc->subject[$this->accessUri];
             if (empty($uri))
             {
                 $this->missingImgUrl[] = array($subject->object_id);
@@ -317,51 +314,6 @@ class NotesFromNature extends WorkFlowAbstract
         }
 
         return $i == 0 ? false : true;
-    }
-
-    /**
-     * Retrieve short name being used for http://rs.tdwg.org/ac/terms/bestQualityAccessURI
-     */
-    protected function setBestQualityUri()
-    {
-		$result = $this->property->findByQualified('http://rs.tdwg.org/ac/terms/bestQualityAccessURI');
-		if (empty($result))
-			return false;
-
-		$this->bestQualityAccessUri = $result->short;
-
-        return true;
-    }
-
-    /**
-     * Set xml from meta file
-     * TODO: May not need this depending on whether bestQualityAccessURI will always be the same.
-     * @param $metaId
-     * @return bool
-     */
-    protected function setMetaData($metaId)
-    {
-		$key = md5($metaId);
-
-		if (Cache::has($key))
-		{
-			$this->metaXml = Cache::get($key);
-			return true;
-		}
-
-        if ( ! $meta = $this->meta->find($metaId))
-        {
-            $this->report->addError(trans('error_xml_meta', array('id' => $metaId)));
-            $this->report->reportSimpleError();
-
-            return false;
-        }
-
-		Cache::add($key, $meta->xml, 10);
-
-        $this->metaXml = $meta->xml;
-
-        return true;
     }
 
     /**
@@ -417,7 +369,8 @@ class NotesFromNature extends WorkFlowAbstract
         $this->metadata['lowResWidth'] = $this->smallWidth;
 
         $i = 0;
-        foreach($files as $filePath) {
+		foreach ($files as $key => $filePath)
+		{
 
             list($width, $height, $type, $attr) = getimagesize($filePath); // $width, $height, $type, $attr
             $info = pathinfo($filePath); // $dirname, $basename, $extension, $filename
@@ -450,10 +403,11 @@ class NotesFromNature extends WorkFlowAbstract
             $this->metadata['images'][] = $data;
 
 			$this->filesystem->delete($filePath);
+			unset($files[$key]);
 
             $i++;
         }
-        $this->metadata['total'] = $i * 3;
+		$this->metadata['total'] = $i * 2;
 
         return true;
     }
