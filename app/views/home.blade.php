@@ -29,7 +29,16 @@
             <div class="col-md-6">
                 <h2>Liberate data from the cabinets</h2>
 
-                <p>The world's 3 billion biodiversity research specimens provide the historical baseline for understanding the patterns of Life's diversity and distribution today and projecting future changes to it.  But information about the majority of these specimens languishes in cabinets.  Biospex is a basecamp for launching, advertising, and managing targeted efforts to digitize these specimens.  We recognize that motivations to digitize the data can vary a lot, from the museum curator to the descendants of a collector reconstructing their ancestor's steps to an environmental group interested in the health of a local water body.  Biospex enables each of these to package their projects in one or a series of digitization expeditions, launch the expeditions at crowdsourcing tools, and widely recruit others to participate.  In the end, you can download the new data AND the data goes back to the museum that curates the physical specimen.</p>
+                <p>The world's 3 billion biodiversity research specimens provide the historical baseline for
+                understanding the patterns of Life's diversity and distribution today and projecting future
+                changes to it.  But information about the majority of these specimens languishes in cabinets.
+                Biospex is a basecamp for launching, advertising, and managing targeted efforts to digitize these
+                specimens.  We recognize that motivations to digitize the data can vary a lot, from the museum
+                curator to the descendants of a collector reconstructing their ancestor's steps to an environmental
+                group interested in the health of a local water body.  Biospex enables each of these to package
+                their projects in one or a series of digitization expeditions, launch the expeditions at crowdsourcing
+                tools, and widely recruit others to participate.  In the end, you can download the new data AND the
+                data goes back to the museum that curates the physical specimen.</p>
 
                 <p>Get started -> <a href="/login">Lead an Expedition</a></p>
             </div>
