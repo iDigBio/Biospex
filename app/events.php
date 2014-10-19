@@ -47,12 +47,10 @@ Event::listen('eloquent.saved: Navigation', function($model)
 
 Event::listen('download.saved', function ()
 {
-	Cache::forget('expeditions');
-	Cache::forget('projects');
+	Cache::forget('users');
 });
 
 Event::listen('download.deleting', function ()
 {
-	Cache::forget('expeditions');
-	Cache::forget('projects');
+	Cache::forget('users');
 });
