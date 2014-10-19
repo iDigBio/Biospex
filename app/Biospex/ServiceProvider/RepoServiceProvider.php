@@ -77,7 +77,7 @@ class RepoServiceProvider extends ServiceProvider {
 			);
 
 			$cache = new CacheGroupDecorator(
-				$group, new LaravelCache($app['cache'], 'groups')
+				$group, new LaravelCache($app['cache'], 'users')
 			);
 
 			return $cache;
@@ -89,7 +89,7 @@ class RepoServiceProvider extends ServiceProvider {
 			$project = new ProjectRepository(new Project);
 
 			$cache = new CacheProjectDecorator(
-				$project, new LaravelCache($app['cache'], 'projects')
+				$project, new LaravelCache($app['cache'], 'users')
 			);
 
 			return $cache;
@@ -102,7 +102,7 @@ class RepoServiceProvider extends ServiceProvider {
 			$expedition = new ExpeditionRepository(new Expedition);
 
 			$cache = new CacheExpeditionDecorator(
-				$expedition, new LaravelCache($app['cache'], 'expeditions')
+				$expedition, new LaravelCache($app['cache'], 'users')
 			);
 
 			return $cache;
