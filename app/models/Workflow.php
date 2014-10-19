@@ -23,37 +23,45 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+class Workflow extends Eloquent
+{
 
-class Workflow extends Eloquent {
+	/**
+	 * The database table used by the model.
+	 *
+	 * @var string
+	 */
+	protected $table = 'workflows';
 
-    /**
-     * The database table used by the model.
-     *
-     * @var string
-     */
-    protected $table = 'workflows';
-
-    protected $fillable = array(
-        'title',
+	protected $fillable = array(
+		'title',
 		'url',
 		'class',
-    );
+	);
 
-    /**
-     * Array used by FactoryMuff to create Test objects
-     */
-    public static $factory = array(
+	/**
+	 * Array used by FactoryMuff to create Test objects
+	 */
+	public static $factory = array(
 		'title' => 'string',
 		'url' => 'string',
 		'class' => 'string',
-    );
+	);
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function project()
-    {
-        return $this->belongsToMany('Project');
-    }
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function project ()
+	{
+		return $this->belongsToMany('Project');
+	}
+
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function download ()
+	{
+		return $this->hasMany('Download');
+	}
 
 }

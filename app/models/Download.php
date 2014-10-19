@@ -34,6 +34,7 @@ class Download extends Eloquent {
 
     protected $fillable = array(
         'expedition_id',
+		'workflow_id',
         'file',
         'count'
     );
@@ -43,6 +44,7 @@ class Download extends Eloquent {
      */
     public static $factory = array(
         'expedition_id' => 'integer',
+		'workflow_id' => 'integer',
         'file' => 'string',
         'count' => 'integer'
     );
@@ -54,6 +56,14 @@ class Download extends Eloquent {
     {
         return $this->belongsTo('Expedition');
     }
+
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function workflow ()
+	{
+		return $this->belongsTo('Workflow');
+	}
 
 	/**
 	 * Get expired downloads
