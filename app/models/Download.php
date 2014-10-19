@@ -49,6 +49,24 @@ class Download extends Eloquent {
         'count' => 'integer'
     );
 
+	/**
+	 * Boot function to add model events
+	 */
+	public static function boot ()
+	{
+		parent::boot();
+
+		static::saved(function ()
+		{
+			Event::fire('download.saved');
+		});
+
+		static::deleting(function ()
+		{
+			Event::fire('download.deleting');
+		});
+	}
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
