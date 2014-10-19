@@ -80,7 +80,7 @@ App::down(function()
 
 require app_path().'/filters.php';
 
-require app_path().'/observers.php';
+require app_path() . '/events.php';
 
 require app_path().'/blade.php';
 
