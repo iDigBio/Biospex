@@ -11,6 +11,7 @@
 
     <ul class="breadcrumb">
     <li><a href="{{ action('ProjectsController@show', [$expedition->project->id]) }}">{{ $expedition->project->title }}</a></li>
+    <li><a href="{{ action('ExpeditionsController@show', [$expedition->project->id, $expedition->id]) }}">{{ $expedition->title }}</a></li>
     <li>@lang('pages.created'): {{ $expedition->created_at }}</li>
     <li>@lang('pages.updated'): {{ $expedition->updated_at }}</li>
     </ul>
@@ -19,9 +20,33 @@
     <h4>Expedition:</h4>
     <h2>{{ $expedition->title }}</h2>
     <p>{{ $expedition->description }}</p>
-    <p>@lang('pages.keywords'): {{ $expedition->keywords }} </p>
     </div>
 
+<div class="table-responsive">
+    <table class="table table-striped table-hover dataTable">
+        <thead>
+        <tr>
+            <th>Workflow</th>
+            <th>Filename</th>
+            <th>Created</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach ($expedition->download as $download)
+        <tr>
+            <td>{{ $download->workflow->title }}</td>
+            <td>{{ $download->file }}</td>
+            <td>{{ $download->created_at }}</td>
+            <td>
+            @if (file_exists(Config::get('config.dataDir') . '/' . $download->file))
+                <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@file', [$expedition->project->id, $expedition->id, $download->id]) }}'"><span class="glyphicon glyphicon-floppy-save"></span> @lang('buttons.download') </button>
+            @endif
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
 </div>
 
 @stop
