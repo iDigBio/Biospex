@@ -183,15 +183,6 @@ class NotesFromNature extends WorkFlowAbstract
      */
     public function process($id)
     {
-		$data = array(
-			'expedition_id' => 1,
-			'workflow_id' => 1,
-			'file' => "test"
-		);
-
-		$this->download->create($data);
-		die();
-
         $this->record = $this->expedition->findWith($id, ['project', 'subject.subjectDoc']);
 
         if (empty($this->record))
