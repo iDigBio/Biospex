@@ -1,6 +1,6 @@
 <?php
 /**
- * observers.php
+ * events.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -45,3 +45,14 @@ Event::listen('eloquent.saved: Navigation', function($model)
     Cache::forget('topmenu');
 });
 
+Event::listen('download.saved', function ()
+{
+	Cache::forget('expeditions');
+	Cache::forget('projects');
+});
+
+Event::listen('download.deleting', function ()
+{
+	Cache::forget('expeditions');
+	Cache::forget('projects');
+});
