@@ -192,7 +192,7 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 		}
 		*/
 
-		$options = $this->group->selecOptions($allGroups, $create);
+		$options = $this->group->selectOptions($allGroups, $create);
 		//$this->cache->put($key, $options);
 
 		return $options;
