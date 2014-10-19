@@ -16,6 +16,8 @@ class CreateDownloadsTable extends Migration {
             $table->increments('id');
             $table->unsignedInteger('expedition_id');
             $table->foreign('expedition_id')->references('id')->on('expeditions')->onDelete('cascade');
+			$table->unsignedInteger('workflow_id');
+			$table->foreign('workflow_id')->references('id')->on('workflows')->onDelete('cascade');
             $table->text('file');
             $table->unsignedInteger('count');
             $table->timestamps();
