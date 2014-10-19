@@ -74,7 +74,7 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 	 */
 	public function find ($id, $columns = array('*'))
 	{
-		$key = md5('group.' . $id);
+		$key = md5("group.$id");
 
 		if ($this->cache->has($key))
 		{
@@ -139,7 +139,7 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 	 */
 	public function findWith ($id, $with = array())
 	{
-		$key = md5('group.' . $id . implode(" ", $with));
+		$key = md5("group.$id." . implode(" ", $with));
 
 		if ($this->cache->has($key))
 		{
@@ -210,7 +210,7 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 		{
 			$ids[] = $group->id;
 		}
-		$key = implode("-", $ids);
+		$key = md5(implode(".", $ids));
 
 		if ($this->cache->has($key))
 		{
