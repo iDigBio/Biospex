@@ -24,8 +24,6 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Cache;
-
 class NotesFromNature extends WorkFlowAbstract
 {
     /**
@@ -33,7 +31,11 @@ class NotesFromNature extends WorkFlowAbstract
      */
     protected $states = array();
 
-    protected $defaultState;
+	/**
+	 * Id for the workflow
+	 * @var null
+	 */
+	protected $workflowId = null;
 
     /**
      * Current expedition being processed
@@ -56,13 +58,7 @@ class NotesFromNature extends WorkFlowAbstract
     protected $tmpFileDir;
 
     /**
-     * Meta xml from meta file
-     * @var
-     */
-    protected $metaXml = null;
-
-    /**
-     * Image types from Config
+	 * Image types used by NfN
      *
      * @var
      */
@@ -133,18 +129,12 @@ class NotesFromNature extends WorkFlowAbstract
     private $smallWidth  = 580;
 
 	/**
-	 * Debug argument from command line for testing
+	 * Set properties
 	 *
-	 * @var
+	 * @param $workflowId
+	 * @param bool $debug
 	 */
-	protected $debug;
-
-    /**
-     * Set state variable
-     *
-     * @return array
-     */
-    protected function prepareStates()
+	public function setProperties ($workflowId, $debug = false)
     {
         $this->states = array(
             'export',
@@ -154,32 +144,36 @@ class NotesFromNature extends WorkFlowAbstract
             'analyze',
         );
 
-        return;
-    }
+		$this->imgTypes = array(
+			'image/jpeg' => '.jpg',
+			'image/png' => '.png',
+			'image/tiff' => '.tiff',
+		);
 
-    /**
-     * Set any configuration options
-     */
-    protected function setConfig()
-    {
-        $this->imgTypes = array(
-            'image/jpeg' => '.jpg',
-            'image/png' => '.png',
-            'image/tiff' => '.tiff',
-        );
+		$this->setWorkflowId($workflowId);
+		$this->setReportDebug($debug);
 
         return;
     }
 
 	/**
-	 * Set debug from command line
+	 * Set workflow id
 	 *
-	 * @param bool $value
+	 * @param $workflowId
 	 */
-	public function setDebug($value = false)
+	protected function setWorkflowId ($workflowId)
 	{
-		$this->debug = $value;
-		$this->report->setDebug($this->debug);
+		$this->workflowId = $workflowId;
+	}
+
+	/**
+	 * Set debug
+	 *
+	 * @param bool $debug
+	 */
+	protected function setReportDebug ($debug = false)
+	{
+		$this->report->setDebug($debug);
 	}
 
     /**
@@ -189,6 +183,15 @@ class NotesFromNature extends WorkFlowAbstract
      */
     public function process($id)
     {
+		$data = array(
+			'expedition_id' => 1,
+			'workflow_id' => 1,
+			'file' => "test"
+		);
+
+		$this->download->create($data);
+		die();
+
         $this->record = $this->expedition->findWith($id, ['project', 'subject.subjectDoc']);
 
         if (empty($this->record))
@@ -272,7 +275,7 @@ class NotesFromNature extends WorkFlowAbstract
 			$this->report->missingImages($groupId, $this->record->title, $this->missingImgUrl, $this->missingImg);
 		}
 
-        $this->createDownload($this->record->id, "$title.tar.gz");
+		$this->createDownload($this->record->id, $this->workflowId, "$title.tar.gz");
 
         $this->destroyDir($this->tmpFileDir);
 
