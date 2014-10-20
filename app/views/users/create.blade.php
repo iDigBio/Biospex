@@ -37,6 +37,7 @@
                 {{ Form::text('invite', $code, array('class' => 'form-control', 'placeholder' => trans('groups.invite_code'))) }}
                 {{ ($errors->has('invite') ?  $errors->first('invite') : '') }}
             </div>
+            {{ Form::hidden('register', 'register') }}
         @else
             <div class="form-group">
                 {{ Form::select('group', $groups, Input::old('group')) }}
