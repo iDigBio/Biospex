@@ -96,7 +96,7 @@ Route::group(
 
 		Route::get('/', ['as' => 'home', 'uses' => 'HomeController@index']);
 		Route::get('help', ['as' => 'help', 'uses' => 'HomeController@help']);
-		Route::get('/{slug}', ['as' => 'project', 'uses' => 'HomeController@project']);
+		Route::get('project/{slug}', ['as' => 'project', 'uses' => 'HomeController@project']);
 
     });
 
