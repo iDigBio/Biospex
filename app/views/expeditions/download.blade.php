@@ -15,6 +15,10 @@
     <h2>{{ $expedition->title }}</h2>
     <p>{{ $expedition->description }}</p>
     </div>
+    
+    <div class="alert alert-info">
+        <p><strong>Your file is ready for download. </strong></p>
+    </div>
 
 <div class="table-responsive">
     <table class="table table-striped table-hover dataTable">
@@ -41,6 +45,7 @@
         @endforeach
         </tbody>
     </table>
+    <br /><button title="Back to Expedition Details" class="btn btn-info btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@process', [$expedition->project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-eye-open"></span> Return</button>
 </div>
 
 @stop
