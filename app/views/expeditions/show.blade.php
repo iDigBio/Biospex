@@ -8,12 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-
-    <ul class="breadcrumb">
-    <li><a href="{{ URL::route('projects.show', [$expedition->project->id]) }}">{{ $expedition->project->title }}</a></li>
-    <li>@lang('pages.created'): {{ $expedition->created_at }}</li>
-    <li>@lang('pages.updated'): {{ $expedition->updated_at }}</li>
-    </ul>
+{{ Breadcrumbs::render('projects.expeditions.show', $expedition) }}
 
     <div class="jumbotron">
     <h4>Expedition:</h4>

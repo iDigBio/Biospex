@@ -121,7 +121,7 @@ class ExpeditionsController extends BaseController {
      */
     public function create ($id)
     {
-        $project = $this->project->findWith($id);
+		$project = $this->project->findWith($id, ['group']);
         $subjects = $this->subject->getUnassignedSubjectCount($id);
         $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
 		$cancel = URL::previous();
@@ -165,7 +165,7 @@ class ExpeditionsController extends BaseController {
      */
     public function show ($projectId, $expeditionId)
     {
-		$expedition = $this->expedition->findWith($expeditionId, ['project', 'download', 'workflowManager']);
+		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'download', 'workflowManager']);
 
 		return View::make('expeditions.show', compact('expedition'));
     }
@@ -179,12 +179,11 @@ class ExpeditionsController extends BaseController {
      */
     public function duplicate ($projectId, $expeditionId)
     {
-        $project = $this->project->find($projectId);
-        $expedition = $this->expedition->find($expeditionId);
+		$expedition = $this->expedition->findWith($expeditionId, ['project.group']);
         $subjects = count($expedition->subject);
         $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
 		$cancel = URL::previous();
-        return View::make('expeditions.clone', compact('project', 'expedition', 'subjects', 'create', 'cancel'));
+		return View::make('expeditions.clone', compact('expedition', 'subjects', 'create', 'cancel'));
     }
 
     /**
@@ -196,12 +195,11 @@ class ExpeditionsController extends BaseController {
      */
     public function edit ($projectId, $expeditionId)
     {
-        $project = $this->project->find($projectId);
-        $expedition = $this->expedition->find($expeditionId);
+		$expedition = $this->expedition->findWith($expeditionId, ['project.group']);
         $subjects = count($expedition->subject);
         $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
 		$cancel = URL::previous();
-        return View::make('expeditions.edit', compact('project', 'expedition', 'subjects', 'create', 'cancel'));
+		return View::make('expeditions.edit', compact('expedition', 'subjects', 'create', 'cancel'));
     }
 
     /**

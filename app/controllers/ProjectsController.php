@@ -169,7 +169,7 @@ class ProjectsController extends BaseController {
      */
     public function duplicate($id)
     {
-        $project = $this->project->findWith($id);
+		$project = $this->project->findWith($id, ['group']);
 
 		$user = Sentry::getUser();
 		$isSuperUser = $user->isSuperUser();
@@ -192,7 +192,7 @@ class ProjectsController extends BaseController {
      */
     public function edit($id)
 	{
-        $project = $this->project->find($id);
+		$project = $this->project->findWith($id, ['group']);
 
 		$user = Sentry::getUser();
 		$isSuperUser = $user->isSuperUser();
@@ -241,7 +241,7 @@ class ProjectsController extends BaseController {
      */
     public function data($id)
     {
-        $project = $this->project->find($id);
+		$project = $this->project->findWith($id, ['group']);
 		$cancel = URL::previous();
         return View::make('projects.add', compact('project', 'cancel'));
     }

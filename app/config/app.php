@@ -117,7 +117,7 @@ return array(
         'Mgallegos\LaravelJqgrid\LaravelJqgridServiceProvider',
 		'Cviebrock\EloquentSluggable\SluggableServiceProvider',
 		'Cviebrock\ImageValidator\ImageValidatorServiceProvider',
-
+		'DaveJamesMiller\Breadcrumbs\ServiceProvider',
     ),
 
 	/*
@@ -188,6 +188,7 @@ return array(
         'Local'         => 'Mcamara\LaravelLocalization\Facades\LaravelLocalization',
         'Carbon'        => 'Carbon\Carbon',
         'GridRender' 	=> 'Mgallegos\LaravelJqgrid\Facades\GridRender',
+		'Breadcrumbs' => 'DaveJamesMiller\Breadcrumbs\Facade',
 	),
 
 );

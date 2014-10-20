@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-
+{{ Breadcrumbs::render('projects.create') }}
 <h4>{{ trans('pages.create') }} {{ trans('projects.project') }}</h4>
 <div class="well">
     {{ Form::open(array(

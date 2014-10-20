@@ -8,18 +8,12 @@
 
 {{-- Content --}}
 @section('content')
-
-        <ul class="breadcrumb">
-        <li>Group: {{ $project->group->name }}</li>
-        <li>@lang('pages.created'): {{ $project->created_at }}</li>
-        <li>@lang('pages.updated'): {{ $project->updated_at }}</li>
-        </ul>
-        
+{{ Breadcrumbs::render('projects.show', $project) }}
         <div class="jumbotron">
         <h4>Project:</h4>
         <h2>{{ $project->title }}</h2>
         <p>{{ $project->description_short }}</p>
-        
+
         </div>
 
 <div class="panel panel-default">

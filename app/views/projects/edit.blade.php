@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-
+{{ Breadcrumbs::render('projects.inside', $project) }}
 <h4>{{ trans('pages.edit') }} {{ $project->title }}</h4>
 <div class="well">
     {{ Form::open(array(

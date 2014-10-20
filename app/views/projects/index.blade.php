@@ -8,6 +8,7 @@
 
 {{-- Content --}}
 @section('content')
+{{ Breadcrumbs::render('projects') }}
 <div class="row">
     @if ( ! $groups->isEmpty())
     <div class="col-md-10 col-md-offset-1">

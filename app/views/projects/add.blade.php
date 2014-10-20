@@ -8,11 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-
-        <ul class="breadcrumb">
-        <li>@lang('pages.created'): {{ $project->created_at }}</li>
-        <li>@lang('pages.updated'): {{ $project->updated_at }}</li>
-        </ul>
+{{ Breadcrumbs::render('projects.inside', $project) }}
         
         <div class="jumbotron">
         <h4>Project:</h4>

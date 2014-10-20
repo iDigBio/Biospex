@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
- 
+{{ Breadcrumbs::render('projects.expeditions.create', $project) }}
 <h2>{{ $project->title }}</h2>
 <h4>{{ trans('pages.create') }} {{ trans('expeditions.expedition') }}</h4>
 <div class="well">
