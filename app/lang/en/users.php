@@ -25,6 +25,7 @@
  */
 return array(
 	'created' 	    	    => "Your account has been created. Check your email for the confirmation link.",
+	'admin_created' => "Account created.",
 	'loginreq' 	        	=> "Login field required.",
 	'exists'	        	=> "User already exists.",
 	'notfound'	        	=> "User not found",
