@@ -167,9 +167,6 @@ Route::filter('hasProjectAccess', function($route, $request, $value)
 
 Route::filter('hasGroupAccess', function($route, $request, $value)
 {
-    if (!Sentry::check()) return Redirect::guest('login');
-
-    $access = false;
     try
     {
         $user = Sentry::getUser();
@@ -216,8 +213,6 @@ Route::filter('hasGroupAccess', function($route, $request, $value)
 
 Route::filter('hasUserAccess', function($route, $request, $value)
 {
-    if (!Sentry::check()) return Redirect::guest('login');
-
     try
     {
         $user = Sentry::getUser();
