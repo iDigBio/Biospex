@@ -40,15 +40,6 @@ class Invite extends Eloquent {
     );
 
     /**
-     * Array used by FactoryMuff to create Test objects
-     */
-    public static $factory = array(
-        'group_id' => 'factory|Group',
-        'email' => 'string',
-        'code' => 'string'
-    );
-
-    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function group()

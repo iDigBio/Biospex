@@ -48,15 +48,6 @@ class Property extends Eloquent{
 	);
 
 	/**
-	 * Array used by FactoryMuff to create Test objects
-	 */
-	public static $factory = array(
-		'qualified' => 'string',
-		'short' => 'string',
-		'namespace' => 'string'
-	);
-
-	/**
 	 * Find by qualified name
 	 *
 	 * @param $name

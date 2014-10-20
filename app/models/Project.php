@@ -77,31 +77,6 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     );
 
     /**
-     * Array used by FactoryMuff to create Test objects
-     */
-    public static $factory = array(
-        'group_id' => 'factory|Group',
-        'title' => 'string',
-        'slug' => 'string',
-        'contact' => 'string',
-        'contact_email' => 'string',
-        'managed' => 'string',
-        'description_short' => 'string',
-		'description_long' => 'text',
-        'incentives' => 'text',
-        'geographic_scope' => 'string',
-        'taxonomic_scope'  => 'string',
-        'temporal_scope' => 'string',
-        'keywords' => 'string',
-        'hashtag' => 'string',
-        'activities' => 'string',
-        'language_skills' => 'string',
-        'logo' => 'string',
-        'banner' => 'string',
-        'target_fields' => 'text',
-    );
-
-    /**
      * @param array $attributes
      */
     public function __construct(array $attributes = array()) {

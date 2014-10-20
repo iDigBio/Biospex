@@ -42,14 +42,12 @@ class WorkflowManager extends Eloquent {
         'user_id'
     );
 
-    /**
-     * Array used by FactoryMuff to create Test objects
-     */
-    public static $factory = array(
-        'expedition_id' => 'factory|Expedition',
-        'user_id' => 'factory|User'
-    );
-
+	/**
+	 * Scope not deleted
+	 *
+	 * @param $query
+	 * @return mixed
+	 */
 	public function scopeNotDeleted($query)
 	{
     	return $query->whereNotNull('deleted_at');

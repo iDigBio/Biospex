@@ -40,16 +40,6 @@ class Import extends Eloquent {
     );
 
     /**
-     * Array used by FactoryMuff to create Test objects
-     */
-    public static $factory = array(
-        'user_id' => 'factory|User',
-        'project_id' => 'factory|Project',
-        'file' => 'string',
-		'error' => 'integer',
-    );
-
-    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project()

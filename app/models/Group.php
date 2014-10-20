@@ -54,17 +54,6 @@ class Group extends SentryGroup {
     );
 
     /**
-     * Array used by FactoryMuff to create Test objects
-     *
-     * user_id is owner of the group
-     */
-    public static $factory = array(
-        'user_id' => 'factory|User',
-        'name' => 'string',
-        'permissions' => 'call|defaultPermissions',
-    );
-
-    /**
      * Returns owner of the group
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

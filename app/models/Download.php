@@ -39,16 +39,6 @@ class Download extends Eloquent {
         'count'
     );
 
-    /**
-     * Array used by FactoryMuff to create Test objects
-     */
-    public static $factory = array(
-        'expedition_id' => 'integer',
-		'workflow_id' => 'integer',
-        'file' => 'string',
-        'count' => 'integer'
-    );
-
 	/**
 	 * Boot function to add model events
 	 */

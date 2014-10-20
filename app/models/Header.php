@@ -50,14 +50,6 @@ class Header extends Eloquent{
 	);
 
 	/**
-	 * Array used by FactoryMuff to create Test objects
-	 */
-	public static $factory = array(
-		'project_id' => 'factory|Project',
-		'header' => 'text'
-	);
-
-	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
 	public function project()

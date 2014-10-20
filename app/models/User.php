@@ -44,18 +44,6 @@ class User extends SentryUser {
     protected $softDelete = true;
 
     /**
-     * Array used by FactoryMuff to create Test objects
-     */
-    public static $factory = array(
-        'email' => 'email',
-        'password' => 'string',
-        'permissions' => array(),
-        'activated' => 1,
-        'first_name' => 'string',
-        'last_name' => 'string',
-    );
-
-    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function import()

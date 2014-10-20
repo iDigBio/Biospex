@@ -40,15 +40,6 @@ class Workflow extends Eloquent
 	);
 
 	/**
-	 * Array used by FactoryMuff to create Test objects
-	 */
-	public static $factory = array(
-		'title' => 'string',
-		'url' => 'string',
-		'class' => 'string',
-	);
-
-	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */
 	public function project ()

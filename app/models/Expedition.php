@@ -50,16 +50,6 @@ class Expedition extends Eloquent {
     );
 
     /**
-     * Array used by FactoryMuff to create Test objects
-     */
-    public static $factory = array(
-        'project_id' => 'factory|Project',
-        'title' => 'string',
-        'description' => 'text',
-        'keywords' => 'string',
-    );
-
-    /**
      * Boot function to add model events
      */
     public static function boot(){
