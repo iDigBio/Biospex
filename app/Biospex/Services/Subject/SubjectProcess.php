@@ -26,6 +26,7 @@
  */
 
 use Validator;
+use Illuminate\Support\Facades\Config;
 use Biospex\Repo\SubjectDoc\SubjectDocInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\Header\HeaderInterface;
@@ -55,18 +56,6 @@ class SubjectProcess {
 	 * @var
 	 */
 	private $mediaIsCore;
-
-	/**
-	 * Column string value of multimedia identifier.
-	 * @var
-	 */
-	private $multiMediaIdentifier = null;
-
-	/**
-	 * Multimedia identifier column if occurrence file is core
-	 * @var
-	 */
-	private $multiMediaIdentifierIndex = null;
 
 	/**
 	 * Core file xpath query
@@ -153,6 +142,12 @@ class SubjectProcess {
 	private $metaId;
 
 	/**
+	 * Array of identifier columns
+	 * @var
+	 */
+	private $identifiers;
+
+	/**
 	 * Constructor
 	 *
 	 * @param SubjectDocInterface $subjectdoc
@@ -177,6 +172,8 @@ class SubjectProcess {
 		$this->property = $property;
 		$this->xmlProcess = $xmlProcess;
 		$this->meta = $meta;
+
+		$this->identifiers = Config::get('config.identifiers');
 	}
 
 	/**
@@ -230,9 +227,6 @@ class SubjectProcess {
 		$this->mediaIsCore = preg_match('/occurrence/i', $coreType) ? false : true;
 
 		$this->setMetaFiles($coreFile);
-
-		if (!$this->mediaIsCore)
-			$this->setMultiMediaIdentifierIndex();
 
 		$this->setMetaQueries();
 
@@ -317,9 +311,10 @@ class SubjectProcess {
 
 		foreach ($multimedia as $key => $subject)
 		{
+			$identifier = $this->getIdentifier($subject);
 			// TODO: Need to find what id will be when media is core file
 			$occurrenceId = $subject[$header[0]];
-			$subject['id'] = $this->mediaIsCore ? $header[0] : $subject[$this->multiMediaIdentifier];
+			$subject['id'] = $this->mediaIsCore ? $header[0] : $identifier;
 
 			if (empty($subject['id']))
 			{
@@ -405,9 +400,6 @@ class SubjectProcess {
 
 			$short = $this->checkProperty($qualified, $row[$key]);
 			$header[$key] = $short;
-
-			if (!is_null($this->multiMediaIdentifierIndex) && $key == $this->multiMediaIdentifierIndex)
-				$this->multiMediaIdentifier = $short;
 		}
 
 		return $header;
@@ -576,30 +568,15 @@ class SubjectProcess {
 	 * idigbio:uuid
 	 * idigbio:recordId
 	 */
-	public function setMultiMediaIdentifierIndex ()
+	public function getIdentifier ($subject)
 	{
-		$values = [
-			'identifier',
-			'providerManagedID',
-			'uuid',
-			'recordId',
-		];
-
-		foreach ($values as $value)
+		foreach ($this->identifiers as $value)
 		{
-			$query = "//ns:archive//ns:extension/ns:field[contains(php:functionString('strtolower', @term), '$value')]";
-			$result = $this->xmlProcess->xpathQuery($query, true);
-			if (!empty($result->attributes->getNamedItem("index")->nodeValue))
-			{
-				$this->multiMediaIdentifierIndex = $result->attributes->getNamedItem("index")->nodeValue;
-				break;
-			}
+			if (isset($subject[$value]) && !empty($subject[$value]))
+				return $subject[$value];
 		}
 
-		if (empty($this->multiMediaIdentifierIndex))
-			throw new \Exception('[SubjectProcess] Error querying multimedia identifier index.');
-
-		return;
+		return false;
 	}
 
 	/**

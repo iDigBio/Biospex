@@ -185,17 +185,6 @@ class SubjectImport extends Command {
 		shell_exec("unzip $file -d $fileDir");
 
 		return;
-		/*
-        $zip = new ZipArchive;
-        $res = $zip->open($file);
-        if ($res === true) {
-            $zip->extractTo($fileDir);
-            $zip->close();
-			return;
-        }
-
-		throw new Exception('Unable to unzip file:' . $file);
-		*/
     }
 
 	/**
