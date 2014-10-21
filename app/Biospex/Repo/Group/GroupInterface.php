@@ -54,4 +54,11 @@ interface GroupInterface extends RepositoryInterface {
      */
 	public function findAllGroupsWithProjects ($allGroups = array());
 
+	/**
+	 * Find all groups
+	 *
+	 * @return mixed
+	 */
+	public function findAllGroups ();
+
 }

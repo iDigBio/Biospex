@@ -13,6 +13,7 @@
     <testsuites>
         <testsuite name="Application Test Suite">
            <directory>./app/tests/</directory>
+            <directory>./app/tests/Controllers/*</directory>
         </testsuite>
     </testsuites>
 </phpunit>

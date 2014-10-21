@@ -57,6 +57,15 @@ abstract class AbstractGroupDecorator implements GroupInterface
 	}
 
 	/**
+	 * Find all groups
+	 * @return mixed
+	 */
+	public function findAllGroups ()
+	{
+		return $this->group->findAllGroups();
+	}
+
+	/**
 	 * Create record
 	 *
 	 * @param array $data

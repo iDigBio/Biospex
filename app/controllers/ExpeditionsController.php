@@ -269,20 +269,22 @@ class ExpeditionsController extends BaseController {
 	 */
 	public function stop($projectId, $expeditionId)
 	{
-		$workflow = $this->workflowManager->getByExpeditionId($expeditionId);
-		if (is_null($workflow))
+		$expedition = $this->expedition->findWith($expeditionId, ['workflowManager']);
+
+		if ($expedition->workflowManager->isEmpty())
 		{
 			Session::flash('error', trans('expeditions.process_no_exists'));
 		}
 		else
 		{
-			$result = $this->workflowManager->destroy($workflow->id);
-			if($result)
+			foreach ($expedition->workflowManager as $workflow)
 			{
-				Session::flash('success', trans('expeditions.process_stopped'));
-			} else {
-				Session::flash('error', trans('expeditions.process_destroy_error'));
+				$this->workflowManager->destroy($workflow->id);
 			}
+
+			$expedition->state = 0;
+			$this->expedition->save($expedition);
+			Session::flash('success', trans('expeditions.process_stopped'));
 		}
 
 		return Redirect::action('ExpeditionsController@show', [$projectId, $expeditionId]);
@@ -290,10 +292,11 @@ class ExpeditionsController extends BaseController {
 	}
 
 	/**
-	 * Show downloads
+	 * how downloads
 	 *
 	 * @param $projectId
 	 * @param $expeditionId
+	 * @return \Illuminate\View\View
 	 */
 	public function download ($projectId, $expeditionId)
 	{

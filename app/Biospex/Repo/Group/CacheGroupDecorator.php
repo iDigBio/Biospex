@@ -89,6 +89,26 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 	}
 
 	/**
+	 * Find all groups
+	 * @return mixed
+	 */
+	public function findAllGroups ()
+	{
+		$key = md5("groups");
+
+		if ($this->cache->has($key))
+		{
+			return $this->cache->get($key);
+		}
+
+		$groups = $this->group->findAllGroups();
+
+		$this->cache->put($key, $groups);
+
+		return $groups;
+	}
+
+	/**
 	 * Create record
 	 *
 	 * @param array $data
@@ -139,7 +159,7 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 	 */
 	public function findWith ($id, $with = array())
 	{
-		$key = md5("group.$id." . implode(" ", $with));
+		$key = md5("group.$id." . implode(".", $with));
 
 		if ($this->cache->has($key))
 		{
@@ -210,7 +230,7 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 		{
 			$ids[] = $group->id;
 		}
-		$key = md5(implode(".", $ids));
+		$key = md5('groups.' . implode(".", $ids));
 
 		if ($this->cache->has($key))
 		{

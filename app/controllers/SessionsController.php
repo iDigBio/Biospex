@@ -23,7 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+use Illuminate\Events\Dispatcher;
 use Biospex\Repo\Session\SessionInterface;
 use Biospex\Form\Login\LoginForm;
 
@@ -39,8 +39,9 @@ class SessionsController extends BaseController {
     /**
      * Constructor
      */
-    public function __construct (SessionInterface $session, LoginForm $loginForm)
+	public function __construct (Dispatcher $events, SessionInterface $session, LoginForm $loginForm)
     {
+		$this->events = $events;
         $this->session = $session;
         $this->loginForm = $loginForm;
     }
@@ -64,7 +65,7 @@ class SessionsController extends BaseController {
         $result = $this->loginForm->save(Input::all());
 
         if ($result['success']) {
-			Event::fire('user.login', [
+			$this->events->fire('user.login', [
                 'userId' => $result['sessionData']['userId'],
                 'email' => $result['sessionData']['email']
 			]);
@@ -89,7 +90,7 @@ class SessionsController extends BaseController {
     public function destroy ()
     {
         $this->session->destroy();
-        Event::fire('user.logout');
+		$this->events->fire('user.logout');
         return Redirect::route('home');
     }
 

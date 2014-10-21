@@ -8,14 +8,8 @@
 <p>{{{ $expeditionTitle }}}</p>
 <p>
     </blockquote>
-    {{{ $missingIds }}}<br />
-    {{{ $missingId }}}
-    </blockquote>
-</p>
-<p>
-    </blockquote>
-    {{{ $missingImageUrls }}}<br />
-    {{{ $missingUrl }}}
+    {{{ $missingImages }}}<br />
+    {{{ $missingList }}}
     </blockquote>
 </p>
 <p>{{ trans('emails.thank_you') }}, <br />

@@ -23,12 +23,26 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+use Illuminate\Events\Dispatcher;
+use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Group\GroupInterface;
 use Biospex\Form\Group\GroupForm;
 use Biospex\Repo\Permission\PermissionInterface;
 
 class GroupsController extends BaseController {
+
+	/**
+	 * User
+	 * @var
+	 */
+	protected $user;
+
+	/**
+	 * Events dispatch
+	 *
+	 * @var Dispatcher
+	 */
+	protected $events;
 
     /**
      * @var Biospex\Repo\Group\GroupInterface
@@ -46,14 +60,24 @@ class GroupsController extends BaseController {
     protected $permission;
 
 	/**
-	 * Constructor
+	 * Instantiate a new GroupsController
+	 *
+	 * @param UserInterface $user
+	 * @param Dispatcher $events
+	 * @param GroupInterface $group
+	 * @param GroupForm $groupForm
+	 * @param PermissionInterface $permission
 	 */
 	public function __construct(
+		UserInterface $user,
+		Dispatcher $events,
         GroupInterface $group,
         GroupForm $groupForm,
         PermissionInterface $permission
     )
 	{
+		$this->user = $user;
+		$this->events = $events;
 		$this->group = $group;
 		$this->groupForm = $groupForm;
         $this->permission = $permission;
@@ -74,9 +98,8 @@ class GroupsController extends BaseController {
 	 */
 	public function index()
 	{
-
         // Find the user and retrieve groups
-        $user = Sentry::getUser();
+		$user = $this->user->getUser();
         $isSuperUser = $user->isSuperUser();
         $groups = $isSuperUser ? $this->group->all() : $user->getGroups();
 
@@ -96,7 +119,7 @@ class GroupsController extends BaseController {
 	 */
 	public function create()
 	{
-        $user = Sentry::getUser();
+		$user = $this->user->getUser();
 		return View::make('groups.create', compact('user'));
 	}
 
@@ -112,11 +135,11 @@ class GroupsController extends BaseController {
         
         if( $result['success'] )
         {
-            $user = Sentry::getUser();
+			$user = $this->user->getUser();
             // Assign the group to the user
             if ($user->addGroup($result['group']))
             {
-                Event::fire('group.created');
+				$this->events->fire('group.created');
 
                 // Success!
                 Session::flash('success', $result['message']);
@@ -151,7 +174,7 @@ class GroupsController extends BaseController {
 		//Show a group and its permissions. 
 		$group = $this->group->findWith($id, ['owner']);
 
-        $viewPermissions = Sentry::getUser()->hasAccess('permission_view');
+		$viewPermissions = $this->user->getUser()->hasAccess('permission_view');
 
 		return View::make('groups.show')->with([
             'group' => $group,
@@ -171,7 +194,7 @@ class GroupsController extends BaseController {
         // Get all available permissions
         $permissions = $this->permission->getPermissionsGroupBy();
 
-        $editPermissions = Sentry::getUser()->hasAccess('permission_edit');
+		$editPermissions = $this->user->getUser()->hasAccess('permission_edit');
 
 		$group = $this->group->find($id);
 		return View::make('groups.edit')->with([
@@ -193,7 +216,7 @@ class GroupsController extends BaseController {
 
         if( $result['success'] )
         {
-			Event::fire('group.updated', ['groupId' => $id]);
+			$this->events->fire('group.updated', ['groupId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
@@ -216,7 +239,7 @@ class GroupsController extends BaseController {
 	{
 		if ($this->group->destroy($id))
 		{
-			Event::fire('group.destroyed', ['groupId' => $id]);
+			$this->events->fire('group.destroyed', ['groupId' => $id]);
 
 			Session::flash('success', trans('groups.group_destroyed'));
             return Redirect::action('GroupsController@index');

@@ -23,7 +23,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Contracts\MessageProviderInterface;
 use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Group\GroupInterface;
@@ -44,12 +43,6 @@ class Report {
      * @var \Biospex\Mailer\BiospexMailer
      */
     protected $mailer;
-
-    /**
-     * Admin email from Config
-     * @var
-     */
-    protected $adminEmail;
 
     /**
      * Debug by showing output for different actions
@@ -77,7 +70,6 @@ class Report {
         $this->user = $user;
 		$this->group = $group;
         $this->mailer = $mailer;
-        $this->adminEmail = Config::get('config.adminEmail');
     }
 
 	/**
@@ -103,12 +95,10 @@ class Report {
         if ($this->debug)
             $this->debug();
 
-        $emails[] = $this->adminEmail;
-
         if ( ! is_null($userId))
         {
             $user = $this->user->find($userId);
-            $emails[] = $user->email;
+			$email = $user->email;
         }
 
         $errorMessage = '';
@@ -121,7 +111,7 @@ class Report {
         $data = array('errorMessage' => $errorMessage);
         $view = 'emails.report-simple-error';
 
-        $this->mailer->sendReport($this->adminEmail, $emails, $subject, $view, $data);
+		$this->fireEvent('user.sendreport', $email, $subject, $view, $data);
 
         return;
     }
@@ -135,7 +125,7 @@ class Report {
     public function processComplete($groupId, $title)
     {
 		$group = $this->group->findWith($groupId, ['owner']);
-		$emails[] = $group->Owner->email;
+		$email = $group->Owner->email;
 
         $subject = trans('emails.expedition_complete', array('expedition' => $title));
         $data = array(
@@ -150,7 +140,7 @@ class Report {
 			$this->debug();
 		}
 
-        $this->mailer->sendReport($this->adminEmail, $emails, $subject, $view, $data);
+		$this->fireEvent('user.sendreport', $email, $subject, $view, $data);
 
         return;
     }
@@ -160,22 +150,20 @@ class Report {
 	 *
 	 * @param $groupId
 	 * @param $title
-	 * @param array $uuids
-	 * @param array $urls
+	 * @param array $images
 	 */
-    public function missingImages($groupId, $title, $uuids = array(), $urls = array())
+	public function missingImages ($groupId, $title, $images = array())
     {
         $group = $this->group->findWith($groupId, ['owner']);
-		$emails[] = $group->Owner->email;
+		$email = $group->Owner->email;
 
         $subject = trans('emails.missing_images_subject');
+
         $data = array(
             'missingImageMessage' => trans('emails.missing_images'),
             'expeditionTitle' => $title,
-            'missingIds' => trans('emails.missing_img_ids'),
-            'missingId' => implode("<br />", $uuids),
-            'missingImageUrls' => trans('emails.missing_img_urls'),
-            'missingUrl' => implode("<br />", $urls)
+			'missingImages' => trans('emails.missing_imgs'),
+			'missingList' => implode("<br />", $images)
         );
         $view = 'emails.report-missing_images';
 
@@ -185,7 +173,7 @@ class Report {
 			$this->debug();
 		}
 
-        $this->mailer->sendReport($this->adminEmail, $emails, $subject, $view, $data);
+		$this->fireEvent('user.sendreport', $email, $subject, $view, $data);
     }
 
 	/**
@@ -197,7 +185,6 @@ class Report {
 	 */
 	public function importError($id, $email, $title)
 	{
-		$emails[] = array($this->adminEmail, $email);
 		$subject = trans('errors.error_import');
 		$data = array(
 			'importId' => $id,
@@ -209,7 +196,7 @@ class Report {
 		if ($this->debug)
 			$this->debug();
 
-		$this->mailer->sendReport($this->adminEmail, $emails, $subject, $view, $data);
+		$this->fireEvent('user.sendreport', $email, $subject, $view, $data);
 	}
 
 	/**
@@ -223,7 +210,6 @@ class Report {
 	 */
 	public function importComplete($email, $title, $duplicated, $rejected, $attachments)
 	{
-		$emails[] = $email;
 		$data = array(
 			'projectTitle' => $title,
 			'duplicateCount' => $duplicated,
@@ -238,7 +224,7 @@ class Report {
 			$this->debug();
 		}
 
-		$this->mailer->sendReport($this->adminEmail, $emails, $subject, $view, $data, $attachments);
+		$this->fireEvent('user.sendreport', $email, $subject, $view, $data, $attachments);
 	}
 
 	/**
@@ -259,4 +245,24 @@ class Report {
 		$messages = $this->messages->get('error');
         dd($messages);
     }
+
+	/**
+	 * Fire send report event
+	 *
+	 * @param $event
+	 * @param $email
+	 * @param $subject
+	 * @param $data
+	 * @param array $attachment
+	 */
+	protected function fireEvent ($event, $email, $subject, $data, $attachments = array())
+	{
+		\Event::fire($event, [
+			'email' => $email,
+			'subject' => $subject,
+			'data' => $data,
+			'attachment' => $attachments
+		]);
+	}
+
 }

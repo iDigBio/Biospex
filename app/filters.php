@@ -127,24 +127,24 @@ Route::filter('hasProjectAccess', function($route, $request, $value)
 		}
 
 		$projectKey = md5('project.' . $id);
-		if (Cache::tags('projects')->has($projectKey))
+		if (Cache::tags('queries')->has($projectKey))
 		{
-			$project = Cache::tags('projects')->get($projectKey);
+			$project = Cache::tags('queries')->get($projectKey);
 		} else
 		{
 			$project = Project::find($id);
-			Cache::tags('projects')->forever($projectKey, $project);
+			Cache::tags('queries')->forever($projectKey, $project);
 		}
 
 		$groupId = $project->group_id;
 		$groupKey = md5('group.' . $groupId);
-		if (Cache::tags('groups')->has($groupKey))
+		if (Cache::tags('queries')->has($groupKey))
 		{
-			$group = Cache::tags('groups')->get($groupKey);
+			$group = Cache::tags('queries')->get($groupKey);
 		} else
 		{
 			$group = Sentry::findGroupById($groupId);
-			Cache::tags('groups')->forever($groupKey, $group);
+			Cache::tags('queries')->forever($groupKey, $group);
 		}
 
         if ($user->inGroup($group) && $user->hasAccess(array($value)))
@@ -180,14 +180,14 @@ Route::filter('hasGroupAccess', function($route, $request, $value)
 
         if ($id)
         {
-			$groupKey = "group-$id";
-			if (Cache::has($groupKey))
+			$groupKey = "group.$id";
+			if (Cache::tags('queries')->has($groupKey))
 			{
-				$group = Cache::get($groupKey);
+				$group = Cache::tags('queries')->get($groupKey);
 			} else
 			{
 				$group = Sentry::findGroupById($id);
-				Cache::add($groupKey, $group, 15);
+				Cache::tags('queries')->forever($groupKey, $group);
 			}
 
             if ($group->user_id == $user->id)

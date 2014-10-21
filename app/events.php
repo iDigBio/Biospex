@@ -40,17 +40,17 @@ Event::listen('user.logout', function()
 // Subscribe to User Mailer events
 Event::subscribe('Biospex\Mailer\BiospexMailer');
 
-Event::listen('eloquent.saved: Navigation', function($model)
+Event::listen('eloquent.saved: *', function ()
 {
-    Cache::forget('topmenu');
+	Cache::flush();
 });
 
-Event::listen('download.saved', function ()
+Event::listen('eloquent.saving: *', function ()
 {
-	Cache::forget('users');
+	Cache::flush();
 });
 
-Event::listen('download.deleting', function ()
+Event::listen('eloquent.deleting: *', function ()
 {
-	Cache::forget('users');
+	Cache::flush();
 });

@@ -140,7 +140,7 @@ class CacheExpeditionDecorator extends AbstractExpeditionDecorator
 	 */
 	public function findWith ($id, $with = array())
 	{
-		$key = md5('expedition.' . $id . implode(" ", $with));
+		$key = md5('expedition.' . $id . implode(".", $with));
 
 		if ($this->cache->has($key))
 		{
@@ -176,7 +176,7 @@ class CacheExpeditionDecorator extends AbstractExpeditionDecorator
 	 */
 	public function byProjectId ($id)
 	{
-		$key = md5('projectid.' . $id);
+		$key = md5('project.' . $id);
 
 		if ($this->cache->has($key))
 		{

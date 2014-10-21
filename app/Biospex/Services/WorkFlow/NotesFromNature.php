@@ -77,18 +77,6 @@ class NotesFromNature extends WorkFlowAbstract
 	protected $accessUri = "accessURI";
 
     /**
-     * Hold original image url
-     * @var array
-     */
-    protected $originalImgUrl = array();
-
-    /**
-     * Stores missing urls
-     * @var array
-     */
-    protected $missingImgUrl = array();
-
-    /**
      * Missing image when retrieving via curl
      *
      * @var array
@@ -136,19 +124,19 @@ class NotesFromNature extends WorkFlowAbstract
 	 */
 	public function setProperties ($workflowId, $debug = false)
     {
-        $this->states = array(
+		$this->states = [
             'export',
             'getStatus',
             'getResults',
             'completed',
             'analyze',
-        );
+		];
 
-		$this->imgTypes = array(
+		$this->imgTypes = [
 			'image/jpeg' => '.jpg',
 			'image/png' => '.png',
 			'image/tiff' => '.tiff',
-		);
+		];
 
 		$this->setWorkflowId($workflowId);
 		$this->setReportDebug($debug);
@@ -208,7 +196,7 @@ class NotesFromNature extends WorkFlowAbstract
             return;
         }
 
-		$groupId = $this->record->Project->group_id;
+		$groupId = $this->record->project->group_id;
 
         $this->record->state = $this->record->state+1;
         $this->expedition->save($this->record);
@@ -244,26 +232,20 @@ class NotesFromNature extends WorkFlowAbstract
 		$title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(base64_encode($this->record->title), 0, 10)));
         $this->tmpFileDir = "{$this->dataDir}/$title";
 
-        if ( ! $this->createDir($this->tmpFileDir))
-            throw new \RuntimeException(trans('errors.error_create_dir', array('directory' => $this->tmpFileDir)));
-
-        if ( ! $this->writeDir($this->tmpFileDir))
-            throw new \RuntimeException(trans('errors.error_write_dir', array('directory' => $this->tmpFileDir)));
-
-        if ( ! $this->buildImgDir())
-            throw new \RuntimeException(trans('errors.error_build_image_dir', array('id' => $this->record->id)));
+		$this->createDir($this->tmpFileDir);
+		$this->writeDir($this->tmpFileDir);
+		$this->buildImgDir();
 
         $this->processImages();
 
-        if ( ! $this->saveFile("{$this->tmpFileDir}/details.js", json_encode($this->metadata, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)))
-            throw new \RuntimeException(trans('errors.error_save_file', array('directory' => "{$this->tmpFileDir}/details.js")));
+		$this->saveFile("{$this->tmpFileDir}/details.js", json_encode($this->metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
         $this->executeCommand("tar -czf {$this->dataDir}/$title.tar.gz -C {$this->dataDir} $title");
 
-        if ( ! empty($this->missingImgUrl) || ! empty($this->missingImg))
+		if (!empty($this->missingImg))
 		{
-			$groupId = $this->record->Project->group_id;
-			$this->report->missingImages($groupId, $this->record->title, $this->missingImgUrl, $this->missingImg);
+			$groupId = $this->record->project->group_id;
+			$this->report->missingImages($groupId, $this->record->title, $this->missingImg);
 		}
 
 		$this->createDownload($this->record->id, $this->workflowId, "$title.tar.gz");
@@ -284,30 +266,40 @@ class NotesFromNature extends WorkFlowAbstract
             $this->subjectArray[$subject->id][] = $subject->object_id;
 
 			$uri = $subject->subjectDoc->subject[$this->accessUri];
-            if (empty($uri))
-            {
-                $this->missingImgUrl[] = array($subject->object_id);
-                continue;
-            }
 
-			list($image, $ext) = $this->getImage($uri);
+			if (empty($uri))
+			{
+				$this->missingImg[] = $subject->id;
+				continue;
+			}
 
-            if ( ! $image)
-            {
-                $this->missingImg[] = array($uri);
-                continue;
-            }
+			$image = $this->getImage(str_replace(" ", "%20", $uri));
 
-            $this->originalImgUrl[$subject->id.$ext] = $uri;
-            $path = "{$this->tmpFileDir}/{$subject->id}{$ext}";
+			if (empty($image))
+			{
+				$this->missingImg[] = $subject->id . ' : ' . $uri;
+				continue;
+			}
 
-            if ( ! $this->saveFile($path, $image))
-                continue;
+			$attr = getimagesizefromstring($image);
+
+			if (!isset($this->imgTypes[$attr['mime']]))
+			{
+				$this->missingImg[] = $subject->id . ' : ' . $uri;
+				continue;
+			}
+
+			$path = $this->tmpFileDir . '/' . $subject->id . $this->imgTypes[$attr['mime']];
+
+			$this->saveFile($path, $image);
 
             $i++;
         }
 
-        return $i == 0 ? false : true;
+		if ($i == 0)
+			throw new \RuntimeException(trans('errors.error_build_image_dir', array('id' => $this->record->id)));
+
+		return;
     }
 
     /**
@@ -325,10 +317,9 @@ class NotesFromNature extends WorkFlowAbstract
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         $image = curl_exec($ch);
-        $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         curl_close($ch);
 
-        return array($image, $this->imgTypes[$contentType]);
+		return $image;
     }
 
     /**
@@ -339,65 +330,53 @@ class NotesFromNature extends WorkFlowAbstract
         $data = array();
 
         $files = $this->filesystem->files($this->tmpFileDir);
-
-        $lrgPath = "{$this->tmpFileDir}/large";
-        if ( ! $this->createDir($lrgPath))
-            throw new \RuntimeException(trans('errors.error_create_dir', array('directory' => $lrgPath)));
-
-        if ( ! $this->writeDir($lrgPath))
-            throw new \RuntimeException(trans('errors.error_write_dir', array('directory' => $lrgPath)));
-
-        $smPath = "{$this->tmpFileDir}/small";
-        if ( ! $this->createDir($smPath))
-            throw new \RuntimeException(trans('errors.error_create_dir', array('directory' => $smPath)));
-
-        if ( ! $this->writeDir($smPath))
-            throw new \RuntimeException(trans('errors.error_write_dir', array('directory' => $smPath)));
+		$lrgTargetPath = $this->tmpFileDir . '/large';
+		$smTargetPath = $this->tmpFileDir . '/small';
 
         $this->metadata['sourceDir'] = $this->tmpFileDir;
         $this->metadata['targetDir'] = $this->tmpFileDir;
         $this->metadata['created_at'] = date('l jS F Y', time());
-        $this->metadata['highResDir'] = $lrgPath;
-        $this->metadata['lowResDir'] = $smPath;
+		$this->metadata['highResDir'] = $lrgTargetPath;
+		$this->metadata['lowResDir'] = $smTargetPath;
         $this->metadata['highResWidth'] = $this->largeWidth;
         $this->metadata['lowResWidth'] = $this->smallWidth;
 
         $i = 0;
 		foreach ($files as $key => $filePath)
 		{
-
             list($width, $height, $type, $attr) = getimagesize($filePath); // $width, $height, $type, $attr
-            $info = pathinfo($filePath); // $dirname, $basename, $extension, $filename
+			$sourceInfo = pathinfo($filePath); // $dirname, $basename, $extension, $filename
+			$lrgTargetHeight = round(($height * $this->largeWidth) / $width);
+			$lrgTargetName = "{$sourceInfo['filename']}.large.png";
 
-            $data['identifier'] = $this->subjectArray[$info['filename']];
-            $data['original']['path'] = array($info['filename'], ".{$info['extension']}");
-            $data['original']['name'] = $info['basename'];
+			$data['identifier'] = $this->subjectArray[$sourceInfo['filename']];
+			$data['original']['path'] = array($sourceInfo['filename'], ".{$sourceInfo['extension']}");
+			$data['original']['name'] = $sourceInfo['basename'];
             $data['original']['width'] = $width;
             $data['original']['height'] = $height;
 
-            $lrgHeight = round(($height * $this->largeWidth) / $width);
-            $lrgName = "{$info['filename']}.large.png";
-            $lrgImgPath = "$lrgPath/$lrgName";
-            $data['large']['name'] = "large/$lrgName";
+			$data['large']['name'] = "large/$lrgTargetName";
             $data['large']['width'] = $this->largeWidth;
-            $data['large']['height'] = $lrgHeight;
-
-            $this->convertImage($filePath, $this->largeWidth, $lrgHeight, $lrgImgPath);
+			$data['large']['height'] = $lrgTargetHeight;
 
 
-            $smallHeight = round(($height * $this->smallWidth) / $width);
-            $smName = "{$info['filename']}.small.png";
-            $smImgPath = "$smPath/$smName";
-            $data['small']['name'] = "small/{$info['filename']}.small.png";
+			$this->image->resizeImage($sourceInfo, $lrgTargetName, $lrgTargetPath, $this->largeWidth, $lrgTargetHeight);
+
+			//$this->convertImage($filePath, $this->largeWidth, $lrgTargetHeight, $lrgImgPath);
+
+			$smTargetHeight = round(($height * $this->smallWidth) / $width);
+			$smTargetName = "{$sourceInfo['filename']}.small.png";
+			$data['small']['name'] = "small/$smTargetName";
             $data['small']['width'] = $this->smallWidth;
-            $data['small']['height'] = $smallHeight;
+			$data['small']['height'] = $smTargetHeight;
 
-            $this->convertImage($filePath, $this->smallWidth, $smallHeight, $smImgPath);
+			$this->image->resizeImage($sourceInfo, $smTargetName, $smTargetPath, $this->smallWidth, $smTargetHeight);
+
+			//$this->convertImage($filePath, $this->smallWidth, $smallHeight, $smImgPath);
 
             $this->metadata['images'][] = $data;
 
 			$this->filesystem->delete($filePath);
-			unset($files[$key]);
 
             $i++;
         }

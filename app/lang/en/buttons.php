@@ -44,7 +44,7 @@ return array(
     'duplicate'         => "Clone",
     'duplicateTitle'    => "Clone this item to make a new entity",
     'process'           => "Process",
-	'processTitle'           => "Process this expedition and generate a file for the external service",
+	'processTitle' => "Process this expedition and generate a file for the external service",
 	'stop'              => "Stop",
     'stopTitle'              => "Stop processing of this expedition and consider it finished.",
     'cancel'            => "Cancel",

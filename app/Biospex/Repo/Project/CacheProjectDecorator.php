@@ -140,7 +140,7 @@ class CacheProjectDecorator extends AbstractProjectDecorator
 	 */
 	public function findWith ($id, $with = array())
 	{
-		$key = md5('project.' . $id . implode(" ", $with));
+		$key = md5('project.' . $id . implode(".", $with));
 
 		if ($this->cache->has($key))
 		{
@@ -176,7 +176,7 @@ class CacheProjectDecorator extends AbstractProjectDecorator
 	 */
 	public function bySlug ($slug)
 	{
-		$key = md5('slug.' . $slug);
+		$key = md5('project.' . $slug);
 
 		if ($this->cache->has($key))
 		{

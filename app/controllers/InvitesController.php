@@ -23,21 +23,58 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Cartalyst\Sentry\Sentry;
+use Cartalyst\Sentry\Users\UserNotFoundException;
+use Illuminate\Events\Dispatcher;
 use Biospex\Repo\Invite\InviteInterface;
 use Biospex\Form\Invite\InviteForm;
 use Biospex\Mailer\BiospexMailer;
-use Cartalyst\Sentry\Users\UserNotFoundException;
 
 class InvitesController extends BaseController {
-    /**
-     * Instantiate a new ProjectsController
-     */
+	/**
+	 * @var Sentry
+	 */
+	protected $sentry;
+
+	/**
+	 * @var Dispatcher
+	 */
+	protected $events;
+
+	/**
+	 * @var InviteInterface
+	 */
+	protected $invite;
+
+	/**
+	 * @var InviteForm
+	 */
+	protected $inviteForm;
+
+	/**
+	 * @var BiospexMailer
+	 */
+	protected $mailer;
+
+	/**
+	 * Instantiate a new InvitesController
+	 *
+	 * @param Sentry $sentry
+	 * @param Dispatcher $events
+	 * @param InviteInterface $invite
+	 * @param InviteForm $inviteForm
+	 * @param BiospexMailer $mailer
+	 */
     public function __construct(
+		Sentry $sentry,
+		Dispatcher $events,
         InviteInterface $invite,
         InviteForm $inviteForm,
         BiospexMailer $mailer
     )
     {
+		$this->sentry = $sentry;
+		$this->events = $events;
         $this->invite = $invite;
         $this->inviteForm = $inviteForm;
         $this->mailer = $mailer;
@@ -59,7 +96,7 @@ class InvitesController extends BaseController {
      */
     public function index($id)
     {
-        $group = Sentry::findGroupById($id);
+		$group = $this->sentry->findGroupById($id);
         $invites = $this->invite->findByGroupId($group->id);
 
         return View::make('invites.index', compact('group', 'invites'));
@@ -73,12 +110,13 @@ class InvitesController extends BaseController {
      */
     public function store($id)
     {
-        $group = Sentry::findGroupById($id);
+		$group = $this->sentry->findGroupById($id);
 
         $emails = explode(',', Input::get('emails'));
 
         foreach ($emails as $email)
         {
+			$email = trim($email);
             if ($duplicate = $this->invite->checkDuplicate($group->id, $email))
             {
                 Helpers::sessionFlashPush('info', trans('groups.invite_duplicate', ['group' => $group->name, 'email' => $email]));
@@ -87,12 +125,13 @@ class InvitesController extends BaseController {
 
             try
             {
-                $user = Sentry::findUserByLogin($email);
+				$user = $this->sentry->findUserByLogin($email);
                 $user->addGroup($group);
                 Helpers::sessionFlashPush('success', trans('groups.user_added', ['email' => $email]));
             }
             catch (UserNotFoundException $e)
             {
+				// add invite
                 $code = str_random(10);
 				$data = [
                     'group_id' => $id,
@@ -106,10 +145,14 @@ class InvitesController extends BaseController {
                 }
                 else
                 {
-                    $subject = trans('emails.group_invite_subject');
-					$data = ['group' => $group->name, 'code' => $code];
-                    $view = 'emails.group-invite';
-                    $this->mailer->sendInvite($email, $subject, $view, $data);
+					//send invite
+					$this->events->fire('user.sendinvite', [
+						'email' => $email,
+						'subject' => trans('emails.group_invite_subject'),
+						'view' => 'emails.group-invite',
+						'data' => ['group' => $group->name, 'code' => $code],
+					]);
+
                     Helpers::sessionFlashPush('success', trans('groups.send_invite_success', ['group' => $group->name, 'email' => $email]));
                 }
             }
@@ -128,14 +171,17 @@ class InvitesController extends BaseController {
     public function resend($groupId, $inviteId)
     {
         $invite = $this->invite->find($inviteId);
-        $group = Sentry::findGroupById($groupId);
+		$group = $this->sentry->findGroupById($groupId);
 
         if ($invite)
         {
-            $subject = trans('emails.group_invite_subject');
-			$data = ['group' => $group->name, 'code' => $invite->code];
-            $view = 'emails.group-invite';
-            $this->mailer->sendInvite($invite->email, $subject, $view, $data);
+			//send invite
+			$this->events->fire('user.sendinvite', [
+				'email' => $invite->email,
+				'subject' => trans('emails.group_invite_subject'),
+				'view' => 'emails.group-invite',
+				'data' => ['group' => $group->name, 'code' => $invite->code],
+			]);
 
             Session::flash('success', trans('groups.send_invite_success', ['group' => $group->name, 'email' => $invite->email]));
         }
@@ -158,7 +204,7 @@ class InvitesController extends BaseController {
     {
         if ($this->invite->destroy($inviteId))
         {
-			Event::fire('invite.destroyed', ['inviteId' => $inviteId]);
+			$this->events->fire('invite.destroyed', ['inviteId' => $inviteId]);
 
             Session::flash('success', trans('groups.invite_destroyed'));
         }

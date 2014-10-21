@@ -23,37 +23,79 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Config;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Config;
 use Biospex\Repo\Expedition\ExpeditionInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\Property\PropertyInterface;
 use Biospex\Repo\Download\DownloadInterface;
 use Biospex\Services\Report\Report;
+use Biospex\Services\Image\Image;
 
 abstract class WorkFlowAbstract {
 
-    /**
-     * @var array
-     */
-    protected $states = array();
+	/**
+	 * @var Filesystem
+	 */
+	protected $filesystem;
+
+	/**
+	 * @var ExpeditionInterface
+	 */
+	protected $expedition;
+
+	/**
+	 * @var SubjectInterface
+	 */
+	protected $subject;
+
+	/**
+	 * @var PropertyInterface
+	 */
+	protected $property;
+
+	/**
+	 * @var DownloadInterface
+	 */
+	protected $download;
+
+	/**
+	 * @var Report
+	 */
+	protected $report;
+
+	/**
+	 * @var
+	 */
+	protected $image;
+
+	/**
+	 * @var mixed
+	 */
+	protected $dataDir;
+
+	/**
+	 * @var mixed
+	 */
+	protected $dataTmp;
 
     public function __construct(
+		Filesystem $filesystem,
         ExpeditionInterface $expedition,
 		SubjectInterface $subject,
 		PropertyInterface $property,
-		Filesystem $filesystem,
+		DownloadInterface $download,
         Report $report,
-		DownloadInterface $download
+		Image $image
     )
     {
-        $this->expedition = $expedition;
+		$this->filesystem = $filesystem;
+		$this->expedition = $expedition;
 		$this->subject = $subject;
 		$this->property = $property;
-        $this->filesystem = $filesystem;
+		$this->download = $download;
         $this->report = $report;
-        $this->download = $download;
-
+		$this->image = $image;
         $this->dataDir = Config::get('config.dataDir');
         $this->dataTmp = Config::get('config.dataTmp');
     }
@@ -80,10 +122,10 @@ abstract class WorkFlowAbstract {
         if ( ! $this->filesystem->isDirectory($dir))
         {
             if ( ! $this->filesystem->makeDirectory($dir, 0777, true))
-                return false;
+				throw new \RuntimeException(trans('errors.error_create_dir', array('directory' => $dir)));
         }
 
-        return true;
+		return $dir;
     }
 
     /**
@@ -97,10 +139,10 @@ abstract class WorkFlowAbstract {
         if ( ! $this->filesystem->isWritable($dir))
         {
             if ( ! chmod($dir, 0777))
-                return false;
+				throw new \RuntimeException(trans('errors.error_write_dir', array('directory' => $dir)));
         }
 
-        return true;
+		return;
     }
 
     /**
@@ -113,9 +155,9 @@ abstract class WorkFlowAbstract {
     protected function saveFile($path, $contents)
     {
         if ( ! $this->filesystem->put($path, $contents))
-            return false;
+			throw new \RuntimeException(trans('errors.error_save_file', array('directory' => "$path/details.js")));
 
-        return true;
+		return;
     }
 
     /**

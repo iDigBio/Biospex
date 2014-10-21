@@ -23,7 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+use Illuminate\Events\Dispatcher;
 use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Group\GroupInterface;
 use Biospex\Form\Register\RegisterForm;
@@ -38,20 +38,69 @@ use Biospex\Repo\Invite\InviteInterface;
 
 class UsersController extends BaseController {
 
+	/**
+	 * @var UserInterface
+	 */
 	protected $user;
+
+	/**
+	 * @var GroupInterface
+	 */
 	protected $group;
+
+	/**
+	 * @var RegisterForm
+	 */
 	protected $registerForm;
+
+	/**
+	 * @var UserForm
+	 */
 	protected $userForm;
+
+	/**
+	 * @var ResendActivationForm
+	 */
 	protected $resendActivationForm;
+
+	/**
+	 * @var ForgotPasswordForm
+	 */
 	protected $forgotPasswordForm;
+
+	/**
+	 * @var ChangePasswordForm
+	 */
 	protected $changePasswordForm;
+
+	/**
+	 * @var SuspendUserForm
+	 */
 	protected $suspendUserForm;
+
+	/**
+	 * @var PermissionInterface
+	 */
     protected $permission;
 
 	/**
 	 * Instantiate a new UsersController
+	 *
+	 * @param Sentry $sentry
+	 * @param Dispatcher $events
+	 * @param UserInterface $user
+	 * @param GroupInterface $group
+	 * @param RegisterForm $registerForm
+	 * @param UserForm $userForm
+	 * @param ResendActivationForm $resendActivationForm
+	 * @param ForgotPasswordForm $forgotPasswordForm
+	 * @param ChangePasswordForm $changePasswordForm
+	 * @param SuspendUserForm $suspendUserForm
+	 * @param PermissionInterface $permission
+	 * @param InviteInterface $invite
 	 */
 	public function __construct(
+		Dispatcher $events,
 		UserInterface $user,
 		GroupInterface $group,
 		RegisterForm $registerForm, 
@@ -64,6 +113,7 @@ class UsersController extends BaseController {
         InviteInterface $invite
     )
 	{
+		$this->events = $events;
 		$this->user = $user;
 		$this->group = $group;
 		$this->registerForm = $registerForm;
@@ -76,7 +126,7 @@ class UsersController extends BaseController {
         $this->invite = $invite;
 
         // Establish Filters
-		$this->beforeFilter('auth', ['except' => ['register', 'activate', 'resend', 'forgot', 'reset']]);
+		$this->beforeFilter('auth', ['except' => ['register', 'activate', 'resend', 'forgot', 'reset', 'store']]);
 		$this->beforeFilter('csrf', ['on' => 'post']);
 		$this->beforeFilter('hasUserAccess:user_view', ['only' => ['show', 'index']]);
 		$this->beforeFilter('hasUserAccess:user_edit', ['only' => ['edit', 'update']]);
@@ -134,7 +184,7 @@ class UsersController extends BaseController {
 	 */
 	public function create()
 	{
-		$allGroups = Sentry::findAllGroups();
+		$allGroups = $this->group->findAllGroups();
 		$groups = $this->group->selectOptions($allGroups, true);
         $group = $this->group->byName("Users");
         $register = Route::currentRouteName() == 'users.create' ? false : true;
@@ -156,14 +206,20 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-			Event::fire('user.registered', [
+			$this->events->fire('user.registered', [
             	'email' => $result['mailData']['email'], 
             	'userId' => $result['mailData']['userId'], 
                 'activationCode' => $result['mailData']['activationCode']
 			]);
 
             // Success!
-            Session::flash('success', $result['message']);
+			if (!empty(Input::get('register')))
+			{
+				Session::flash('success', $result['message']);
+				return Redirect::action('login');
+			}
+
+			Session::flash('success', trans('users.admin_created'));
             return Redirect::action('users.edit', [$result['mailData']['userId']]);
 
         } else {
@@ -207,10 +263,10 @@ class UsersController extends BaseController {
         // Get all permissions
         $permissions = $this->permission->getPermissionsGroupBy();
         $userPermissions = $user->permissions;
-        $userEditPermissions = Sentry::getUser()->hasAccess('user_edit_permissions');
-        $userEditGroups = Sentry::getUser()->hasAccess('user_edit_groups');
-        $superUser = Sentry::getUser()->isSuperUser();
-        $cancel = Sentry::getUser()->isSuperUser() ? URL::route('users.index') : URL::route('projects.index');
+		$userEditPermissions = $this->user->getUser()->hasAccess('user_edit_permissions');
+		$userEditGroups = $this->user->getUser()->hasAccess('user_edit_groups');
+		$superUser = $this->user->getUser()->isSuperUser();
+		$cancel = $this->user->getUser()->isSuperUser() ? URL::route('users.index') : URL::route('projects.index');
 
         return View::make('users.edit', compact(
                 'user',
@@ -246,7 +302,7 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-			Event::fire('user.updated', ['userId' => $id]);
+			$this->events->fire('user.updated', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
@@ -278,7 +334,7 @@ class UsersController extends BaseController {
 
 		if ($this->user->destroy($id))
 		{
-			Event::fire('user.destroyed', ['userId' => $id]);
+			$this->events->fire('user.destroyed', ['userId' => $id]);
 
             Session::flash('success', trans('users.deleted'));
             return Redirect::action('UsersController@index');
@@ -309,13 +365,9 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-            Event::fire('user.activated', array(
-                'userId' => $id, 
-            ));
-
             // Success!
             Session::flash('success', $result['message']);
-            return Redirect::route('home');
+			return Redirect::route('login');
 
         } else {
             Session::flash('error', $result['message']);
@@ -334,7 +386,7 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-			Event::fire('user.resend', [
+			$this->events->fire('user.resend', [
 				'email' => $result['mailData']['email'], 
 				'userId' => $result['mailData']['userId'], 
 				'activationCode' => $result['mailData']['activationCode']
@@ -364,7 +416,7 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-			Event::fire('user.forgot', [
+			$this->events->fire('user.forgot', [
 				'email' => $result['mailData']['email'],
 				'userId' => $result['mailData']['userId'],
 				'resetCode' => $result['mailData']['resetCode']
@@ -403,7 +455,7 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-			Event::fire('user.newpassword', [
+			$this->events->fire('user.newpassword', [
 				'email' => $result['mailData']['email'],
 				'newPassword' => $result['mailData']['newPassword']
 			]);
@@ -440,7 +492,7 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-			Event::fire('user.passwordchange', ['userId' => $id]);
+			$this->events->fire('user.passwordchange', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
@@ -474,7 +526,7 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-			Event::fire('user.suspended', ['userId' => $id]);
+			$this->events->fire('user.suspended', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
@@ -506,7 +558,7 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-			Event::fire('user.unsuspended', ['userId' => $id]);
+			$this->events->fire('user.unsuspended', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
@@ -536,7 +588,7 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-			Event::fire('user.banned', ['userId' => $id]);
+			$this->events->fire('user.banned', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
@@ -561,7 +613,7 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-			Event::fire('user.unbanned', ['userId' => $id]);
+			$this->events->fire('user.unbanned', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);

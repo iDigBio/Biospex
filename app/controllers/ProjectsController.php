@@ -23,7 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+use Cartalyst\Sentry\Sentry;
 use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Form\Project\ProjectForm;
 use Biospex\Repo\Group\GroupInterface;
@@ -31,7 +31,12 @@ use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Import\ImportInterface;
 
 class ProjectsController extends BaseController {
-    /**
+	/**
+	 * @var Sentry
+	 */
+	protected $sentry;
+
+	/**
      * @var Biospex\Repo\Project\ProjectInterface
      */
     protected $project;
@@ -51,10 +56,18 @@ class ProjectsController extends BaseController {
      */
     protected $user;
 
-    /**
-     * Instantiate a new ProjectsController
-     */
+	/**
+	 * Instantiate a new ProjectsController
+	 *
+	 * @param Sentry $sentry
+	 * @param ProjectInterface $project
+	 * @param ProjectForm $projectForm
+	 * @param GroupInterface $group
+	 * @param UserInterface $user
+	 * @param ImportInterface $import
+	 */
     public function __construct(
+		Sentry $sentry,
         ProjectInterface $project,
         ProjectForm $projectForm,
         GroupInterface $group,
@@ -62,6 +75,7 @@ class ProjectsController extends BaseController {
         ImportInterface $import
     )
     {
+		$this->sentry = $sentry;
         $this->project = $project;
         $this->projectForm = $projectForm;
         $this->group = $group;
@@ -86,9 +100,9 @@ class ProjectsController extends BaseController {
 	 */
 	public function index()
     {
-		$user = Sentry::getUser();
+		$user = $this->user->getUser();
 		$isSuperUser = $user->isSuperUser();
-		$allGroups = $isSuperUser ? Sentry::findAllGroups() : $user->getGroups();
+		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
 		$groups = $this->group->findAllGroupsWithProjects($allGroups);
 
         return View::make('projects.index', compact('groups', 'user', 'isSuperUser'));
@@ -101,9 +115,9 @@ class ProjectsController extends BaseController {
      */
     public function create()
 	{
-		$user = Sentry::getUser();
+		$user = $this->user->getUser();
 		$isSuperUser = $user->isSuperUser();
-		$allGroups = $isSuperUser ? Sentry::findAllGroups() : $user->getGroups();
+		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
 		$groups = $this->group->selectOptions($allGroups);
 
 		if (empty($groups))
@@ -154,7 +168,7 @@ class ProjectsController extends BaseController {
     public function show($id)
 	{
 		$project = $this->project->findWith($id, ['group', 'expedition.download']);
-		$user = Sentry::getUser();
+		$user = $this->user->getUser();
 		$isSuperUser = $user->isSuperUser();
         $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
 		
@@ -171,9 +185,9 @@ class ProjectsController extends BaseController {
     {
 		$project = $this->project->findWith($id, ['group']);
 
-		$user = Sentry::getUser();
+		$user = $this->user->getUser();
 		$isSuperUser = $user->isSuperUser();
-		$allGroups = $isSuperUser ? Sentry::findAllGroups() : $user->getGroups();
+		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
 		$groups = $this->group->selectOptions($allGroups);
 
 		$selectGroups = ['' => '--Select--'] + $groups;
@@ -194,9 +208,9 @@ class ProjectsController extends BaseController {
 	{
 		$project = $this->project->findWith($id, ['group']);
 
-		$user = Sentry::getUser();
+		$user = $this->user->getUser();
 		$isSuperUser = $user->isSuperUser();
-		$allGroups = $isSuperUser ? Sentry::findAllGroups() : $user->getGroups();
+		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
 		$groups = $this->group->selectOptions($allGroups);
 
 		$selectGroups = ['' => '--Select--'] + $groups;
@@ -276,7 +290,7 @@ class ProjectsController extends BaseController {
         try
         {
             Input::file('file')->move($directory, $filename);
-			$user = Sentry::getUser();
+			$user = $this->user->getUser();
             $this->import->create(['user_id' => $user->id,'project_id' => $id, 'file' => $filename]);
         }
         catch(Exception $e)
@@ -298,7 +312,7 @@ class ProjectsController extends BaseController {
     public function destroy($id)
 	{
         $project = $this->project->findWith($id, ['group']);
-		$user = Sentry::getUser();
+		$user = $this->user->getUser();
 		$isSuperUser = $user->isSuperUser();
         $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
         if ($isOwner)

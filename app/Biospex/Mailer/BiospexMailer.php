@@ -23,9 +23,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+use Illuminate\Support\Facades\Config;
 
 class BiospexMailer extends Mailer {
+
+	public function __construct ()
+	{
+		$this->adminEmail = Config::get('config.adminEmail');
+	}
 
 	/**
 	 * Outline all the events this class will be listening for. 
@@ -38,6 +43,8 @@ class BiospexMailer extends Mailer {
 		$events->listen('user.resend', 		'Biospex\Mailer\BiospexMailer@welcome', 10);
 		$events->listen('user.forgot',      'Biospex\Mailer\BiospexMailer@forgotPassword', 10);
 		$events->listen('user.newpassword', 'Biospex\Mailer\BiospexMailer@newPassword', 10);
+		$events->listen('user.sendreport', 'Biospex\Mailer\BiospexMailer@sendReport', 10);
+		$events->listen('user.sendinvite', 'Biospex\Mailer\BiospexMailer@sendInvite', 10);
 	}
 
 	/**
@@ -55,7 +62,7 @@ class BiospexMailer extends Mailer {
 		$data['activationCode'] = $activationCode;
 		$data['email'] = $email;
 
-		return $this->sendTo($email, $subject, $view, $data );
+		return $this->sendTo($this->adminEmail, $email, $subject, $view, $data);
 	}
 
 	/**
@@ -73,7 +80,7 @@ class BiospexMailer extends Mailer {
 		$data['resetCode'] = $resetCode;
 		$data['email'] = $email;
 
-		return $this->sendTo($email, $subject, $view, $data );
+		return $this->sendTo($this->adminEmail, $email, $subject, $view, $data);
 	}
 
 	/**
@@ -90,7 +97,7 @@ class BiospexMailer extends Mailer {
 		$data['newPassword'] = $newPassword;
 		$data['email'] = $email;
 
-		return $this->sendTo($email, $subject, $view, $data );
+		return $this->sendTo($this->adminEmail, $email, $subject, $view, $data);
 	}
 
     /**
@@ -102,9 +109,9 @@ class BiospexMailer extends Mailer {
      * @param $data
      * @param string $attachment
      */
-    public function sendReport($from, $email, $subject, $view, $data, $attachment = array())
+	public function sendReport ($email, $subject, $view, $data, $attachments = array())
     {
-        return $this->sendTo($from, $email, $subject, $view, $data, $attachment);
+		return $this->sendTo($this->adminEmail, $email, $subject, $view, $data, $attachments);
     }
 
     /**
@@ -118,7 +125,7 @@ class BiospexMailer extends Mailer {
      */
     public function sendInvite($email, $subject, $view, $data)
     {
-        return $this->sendTo($email, $subject, $view, $data);
+		return $this->sendTo($this->adminEmail, $email, $subject, $view, $data);
     }
 
 }

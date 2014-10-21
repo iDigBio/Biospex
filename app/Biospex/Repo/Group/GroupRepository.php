@@ -85,6 +85,14 @@ class GroupRepository extends Repository implements GroupInterface {
 	}
 
 	/**
+	 * Return all groups
+	 */
+	public function findAllGroups ()
+	{
+		$this->sentry->findAllGroups();
+	}
+
+	/**
 	 * Store a newly created resource in storage.
 	 *
 	 * @return Response

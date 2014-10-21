@@ -144,7 +144,7 @@ class UserRepository extends Repository implements UserInterface {
             $user->addGroup($usersGroup);
 
             // Determine group creation: invite vs admin select vs create user group
-            if (isset($data['invite']))
+			if (isset($data['invite']) && !empty($data['invite']))
             {
                 $invite = $this->invite->findByCode($data['invite']);
                 if ($invite->email == $user->email)
@@ -166,11 +166,11 @@ class UserRepository extends Repository implements UserInterface {
             else
             {
                 // Create user group based on email
-                $parts = explode("@", $data['email']);
+				$parts = explode("@", $user->email);
                 $name = preg_replace('/[^a-zA-Z0-9]/', '', $parts[0]);
                 $userGroup = $this->sentry->createGroup(array(
-                    'user_id'     => e($user->id),
-                    'name'        => e($name),
+					'user_id' => $user->id,
+					'name' => $name,
                     'permissions' => array(),
                 ));
                 $user->addGroup($userGroup);
@@ -180,8 +180,8 @@ class UserRepository extends Repository implements UserInterface {
 	    	$result['success'] = true;
 	    	$result['message'] = trans('users.created');
 	    	$result['mailData']['activationCode'] = $user->GetActivationCode();
-			$result['mailData']['userId'] = $user->getId();
-			$result['mailData']['email'] = e($data['email']);
+			$result['mailData']['userId'] = $user->id;
+			$result['mailData']['email'] = $user->email;
 		}
 		catch (LoginRequiredException $e)
 		{

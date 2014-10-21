@@ -27,14 +27,14 @@ use Mail;
 
 abstract class Mailer {
 
-	public function sendTo($from, $email, $subject, $view, $data = array(), $attachment = array())
+	public function sendTo ($from, $email, $subject, $view, $data = array(), $attachments = array())
 	{
-		Mail::queue($view, $data, function($message) use ($from,$email,$subject,$attachment)
+		Mail::queue($view, $data, function ($message) use ($from, $email, $subject, $attachments)
 		{
 			$message->from($from)->subject($subject)->to($email);
-			$size = sizeof($attachment);
+			$size = sizeof($attachments);
 			for ($i = 0; $i < $size; $i++){
-				$message->attach($attachment[$i]);
+				$message->attach($attachments[$i]);
 			}
 		});
 	}

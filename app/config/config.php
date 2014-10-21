@@ -18,6 +18,10 @@ return array(
     'dataDir' => storage_path() . '/data',
     'dataTmp' => storage_path() . '/data/tmp',
 
+	/** Imagine settings */
+	'library' => 'imagick',
+	'quality' => 100,
+
     /** Min and max logo and banner sizes used in Project model for Codesleve Stapler */
     'logo' => '300x200',
     'banner' => '1200x300',

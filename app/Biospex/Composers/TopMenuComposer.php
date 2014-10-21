@@ -23,17 +23,46 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Cache;
 use Menu\Menu;
+use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Navigation\NavigationInterface as Navigation;
-use Cartalyst\Sentry\Facades\Laravel\Sentry;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class TopMenuComposer {
+	/**
+	 * @var Cache
+	 */
+	protected $cache;
 
+	/**
+	 * @var User
+	 */
+	protected $user;
+
+	/**
+	 * @var Navigation
+	 */
+	protected $navigation;
+
+	/**
+	 * @var Request
+	 */
+	protected $request;
+
+	/**
+	 * @var array
+	 */
     protected $topmenu = array();
 
-    public function __construct(Navigation $navigation, Request $request) {
+	public function __construct (
+		Cache $cache,
+		UserInterface $user,
+		Navigation $navigation,
+		Request $request)
+	{
+		$this->cache = $cache;
+		$this->user = $user;
         $this->navigation = $navigation;
         $this->request = $request;
     }
@@ -57,7 +86,7 @@ class TopMenuComposer {
 
     protected function checkPermission()
     {
-        $user = Sentry::getUser();
+		$user = $this->user->getUser();
         foreach ($this->topmenu as $key => $item)
         {
             $permissions  = explode(',', $item->permission);
