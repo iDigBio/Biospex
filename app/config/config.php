@@ -22,11 +22,18 @@ return array(
     'logo' => '300x200',
     'banner' => '1200x300',
 
+	'identifiers' => [
+		'identifier',
+		'providerManagedID',
+		'uuid',
+		'recordId',
+	],
+
     /**
      * Default group permissions
      */
 
-    'group_permissions' => array(
+	'group_permissions' => [
         "project_create" => 1,
         "project_edit" => 1,
         "project_view" => 1,
@@ -39,7 +46,7 @@ return array(
         "expedition_edit" => 1,
         "expedition_view" => 1,
         "expedition_delete" => 1
-    ),
+	],
 
 
     /**
