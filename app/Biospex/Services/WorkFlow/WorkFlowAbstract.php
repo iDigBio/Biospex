@@ -190,6 +190,5 @@ abstract class WorkFlowAbstract {
         );
 
         $this->download->create($data);
-		\Cache::flush();
     }
 }
