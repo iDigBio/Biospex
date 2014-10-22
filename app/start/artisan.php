@@ -9,7 +9,8 @@
 | the console gets access to each of the command object instances.
 |
 */
-Artisan::resolve('SubjectImport');
+Artisan::resolve('SubjectImportCommand');
 Artisan::resolve('WorkFlowManagerCommand');
-Artisan::resolve('DownloadClean');
+Artisan::resolve('DownloadCleanCommand');
+Artisan::resolve('TestCodeCommand');
 
