@@ -43,9 +43,18 @@ class ServerInfoController extends BaseController
 		if (!Sentry::getUser()->isSuperUser())
 			return Redirect::route('login');
 
-		echo php_sapi_name();
-		echo "<br />";
 		echo phpinfo();
+	}
+
+	public function clear ()
+	{
+		if (!Sentry::getUser()->isSuperUser())
+			return Redirect::route('login');
+
+		Cache::flush();
+
+		Session::flash('success', "Cache has been flushed.");
+		return Redirect::route('projects.index');
 	}
 
 	public function test ()
