@@ -89,26 +89,6 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 	}
 
 	/**
-	 * Find all groups
-	 * @return mixed
-	 */
-	public function findAllGroups ()
-	{
-		$key = md5("groups");
-
-		if ($this->cache->has($key))
-		{
-			return $this->cache->get($key);
-		}
-
-		$groups = $this->group->findAllGroups();
-
-		$this->cache->put($key, $groups);
-
-		return $groups;
-	}
-
-	/**
 	 * Create record
 	 *
 	 * @param array $data
@@ -216,6 +196,26 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 		//$this->cache->put($key, $options);
 
 		return $options;
+	}
+
+	/**
+	 * Find all groups
+	 * @return mixed
+	 */
+	public function findAllGroups ()
+	{
+		$key = md5("groups");
+
+		if ($this->cache->has($key))
+		{
+			return $this->cache->get($key);
+		}
+
+		$groups = $this->group->findAllGroups();
+
+		$this->cache->put($key, $groups);
+
+		return $groups;
 	}
 
 	/**

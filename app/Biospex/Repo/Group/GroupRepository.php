@@ -89,7 +89,7 @@ class GroupRepository extends Repository implements GroupInterface {
 	 */
 	public function findAllGroups ()
 	{
-		$this->sentry->findAllGroups();
+		return $this->sentry->findAllGroups();
 	}
 
 	/**
