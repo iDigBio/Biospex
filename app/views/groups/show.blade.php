@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-
+{{ Breadcrumbs::render('groups.show', $group) }}
         <div class="jumbotron">
         <h4>Group:</h4>
         <h2>{{ $group->name }}</h2>

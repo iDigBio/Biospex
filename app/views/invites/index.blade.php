@@ -8,17 +8,12 @@
 
 {{-- Content --}}
 @section('content')
+{{ Breadcrumbs::render('groups.show', $group) }}
 
-
-        <div class="jumbotron">
-        <h4>Group:</h4>
-        <h2>{{ $group->name }}</h2>
-        
-        </div>
-        
-        
-
-
+<div class="jumbotron">
+<h4>Group:</h4>
+<h2>{{ $group->name }}</h2>
+</div>
 <div class="well clearfix">
     {{ Form::open(array('action' => array('InvitesController@store', $group->id), 'class' => 'form-inline')) }}
     <legend>{{ trans('groups.invite_title', ['group' => $group->name]) }}</legend>

@@ -9,7 +9,7 @@
 {{-- Content --}}
 @section('content')
 <div class="row">
-    
+{{ Breadcrumbs::render('groups.show', $group) }}
     <div class="col-md-4 col-md-offset-4">
 	{{ Form::open(array('action' =>  array('GroupsController@update', $group->id), 'method' => 'put', 'class' => 'form-horizontal')) }}
         <legend>{{ trans('groups.group_edit') }}: {{{ $group->name }}}</legend>

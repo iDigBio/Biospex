@@ -9,6 +9,7 @@
 {{-- Content --}}
 @section('content')
 <div class="row">
+{{ Breadcrumbs::render('groups') }}
     <div class="col-md-10 col-md-offset-1">
     <h3>{{ trans('groups.your_groups') }}</h3>
     <p>{{ trans('groups.group_explained') }}</p>
