@@ -35,7 +35,8 @@ use Biospex\Services\Subject\SubjectProcess;
 use Biospex\Services\Xml\XmlProcess;
 use Biospex\Mailer\BiospexMailer;
 
-class SubjectImport extends Command {
+class SubjectImportCommand extends Command
+{
     /**
      * The console command name.
      *

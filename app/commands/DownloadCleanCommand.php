@@ -29,7 +29,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Biospex\Repo\Download\DownloadInterface;
 use Biospex\Services\Report\Report;
 
-class DownloadClean extends Command {
+class DownloadCleanCommand extends Command
+{
 	/**
 	 * The console command name.
 	 *
