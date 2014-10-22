@@ -36,7 +36,6 @@ Route::group(
     function () {
 
 		Route::get('phpinfo', ['as' => 'phpinfo', 'uses' => 'ServerInfoController@showPhpInfo']);
-		Route::get('opcache', ['as' => 'opcache', 'uses' => 'ServerInfoController@showOpCache']);
 		Route::get('test', ['as' => 'test', 'uses' => 'ServerInfoController@test']);
 
         // Session Routes

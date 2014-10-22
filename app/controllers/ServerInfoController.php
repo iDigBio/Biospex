@@ -43,13 +43,9 @@ class ServerInfoController extends BaseController
 	 */
 	public function showPhpInfo ()
 	{
+		echo php_sapi_name();
+		echo "<br />";
 		echo phpinfo();
-	}
-
-	public function showOpCache ()
-	{
-		require '/media/sf_webs/Work/biospex/vendor/peehaa/opcachegui/bootstrap.php';
-		return;
 	}
 
 	public function test ()
