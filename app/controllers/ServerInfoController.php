@@ -33,9 +33,8 @@ class ServerInfoController extends BaseController
 	public function __construct ()
 	{
 		$this->beforeFilter('auth');
-		$this->beforeFilter('csrf', ['on' => 'post']);
-		$this->beforeFilter('guest', ['only' => ['index']]);
-		$this->beforeFilter('hasAdminAccess');
+		if (!Sentry::getUser()->isSuperUser())
+			return Redirect::route('login');
 	}
 
 	/**
