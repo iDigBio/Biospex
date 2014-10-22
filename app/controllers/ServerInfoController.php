@@ -33,8 +33,6 @@ class ServerInfoController extends BaseController
 	public function __construct ()
 	{
 		$this->beforeFilter('auth');
-		if (!Sentry::getUser()->isSuperUser())
-			return Redirect::route('login');
 	}
 
 	/**
@@ -42,6 +40,9 @@ class ServerInfoController extends BaseController
 	 */
 	public function showPhpInfo ()
 	{
+		if (!Sentry::getUser()->isSuperUser())
+			return Redirect::route('login');
+
 		echo php_sapi_name();
 		echo "<br />";
 		echo phpinfo();
@@ -49,6 +50,9 @@ class ServerInfoController extends BaseController
 
 	public function test ()
 	{
+		if (!Sentry::getUser()->isSuperUser())
+			return Redirect::route('login');
+
 		$n = 0;
 		$x = 5;
 
