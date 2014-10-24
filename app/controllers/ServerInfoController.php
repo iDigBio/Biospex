@@ -44,7 +44,14 @@ class ServerInfoController extends BaseController
 		if (!Sentry::getUser()->isSuperUser())
 			return Redirect::route('login');
 
-		echo phpinfo();
+		ob_start();
+		phpinfo();
+		$pinfo = ob_get_contents();
+		ob_end_clean();
+
+		$info = preg_replace('%^.*<body>(.*)</body>.*$%ms', '$1', $pinfo);
+
+		return View::make('info', compact(['info']));
 	}
 
 	public function clear ()
@@ -53,14 +60,19 @@ class ServerInfoController extends BaseController
 			return Redirect::route('login');
 
 		Cache::flush();
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, Config::get('config.ip') . '/cache.php');
+		curl_exec($ch);
+		curl_close($ch);
 
 		Session::flash('success', "Cache has been flushed.");
-		return Redirect::route('projects.index');
+
+		return Redirect::intended('phpinfo');
 	}
 
 	public function test ()
 	{
-		Queue::push('ExportNotesFromNature', array('folder' => 'MyTest'), 'nfnexport');
+		//Queue::push('ExportNotesFromNature', array('folder' => 'MyTest'), 'nfnexport');
 
 		return;
 	}

@@ -67,4 +67,29 @@ $items = array(
             ),
         )
     ),
+	// Admin
+	array(
+		'type'       => "topmenu",
+		'name'       => "users.admin",
+		'url'        => "#",
+		'permission' => 'superuser',
+		'order'      => 1,
+		'parent_id'  => 0,
+		'children'   => array(
+			array(
+				'type'       => "topmenu",
+				'name'       => "pages.server_info",
+				'url'        => "/phpinfo",
+				'permission' => 'superuser',
+				'order'      => 2,
+			),
+			array(
+				'type'       => "topmenu",
+				'name'       => "pages.clear_cache",
+				'url'        => "/clear",
+				'permission' => 'superuser',
+				'order'      => 3,
+			),
+		)
+	),
 );

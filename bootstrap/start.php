@@ -23,12 +23,10 @@ $app = new Illuminate\Foundation\Application;
 | given environment, then we will automatically detect it for you.
 |
 */
-
-$env = $app->detectEnvironment(array(
-    'local' => array('vbdev'),
-    'develop' => array('idiginfo-test'),
-	'production' => array('idiginfo-www'),
-));
+$env = $app->detectEnvironment(function ()
+{
+	return $_SERVER['LARAVEL_ENV'];
+});
 
 /*
 |--------------------------------------------------------------------------
