@@ -11,22 +11,22 @@
 {{ Breadcrumbs::render('projects.expeditions.inside', $expedition) }}
 
     <div class="jumbotron">
-    <h4>Expedition:</h4>
+    <h4>{{ trans('expeditions.expedition') }}:</h4>
     <h2>{{ $expedition->title }}</h2>
     <p>{{ $expedition->description }}</p>
     </div>
     
     <div class="alert alert-info">
-        <p><strong>Your file is ready for download. </strong></p>
+        <p><strong>{{ trans('expeditions.download_ready') }}</strong></p>
     </div>
 
 <div class="table-responsive">
     <table class="table table-striped table-hover dataTable">
         <thead>
         <tr>
-            <th>Workflow</th>
-            <th>Filename</th>
-            <th>Created</th>
+            <th>{{ trans('pages.actor') }}</th>
+            <th>{{ trans('pages.filename') }}</th>
+            <th>{{ trans('pages.created') }}</th>
             <th></th>
         </tr>
         </thead>

@@ -80,6 +80,8 @@ return array(
     'updated'                   => "Updated",
     'clone'                     => "Clone",
 	'close'						=> "Close",
+	'actor'    => "Actor",
+	'filename' => "Filename",
 
     'expedition'                => "Expedition",
     'expeditions'               => "Expeditions",
