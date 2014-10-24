@@ -181,6 +181,10 @@ class NotesFromNature extends WorkFlowAbstract
             return;
         }
 
+		// TODO This is set so cron does not run it every minute during presentation.
+		$this->record->state = $this->record->state + 1;
+		$this->expedition->save($this->record);
+
 		try {
             $result = call_user_func(array($this, $this->states[$this->record->state]));
 
@@ -198,8 +202,9 @@ class NotesFromNature extends WorkFlowAbstract
 
 		$groupId = $this->record->project->group_id;
 
-        $this->record->state = $this->record->state+1;
-        $this->expedition->save($this->record);
+		// TODO Moved above to avoid cron running it every minute during presentation.
+		//$this->record->state = $this->record->state+1;
+		//$this->expedition->save($this->record);
 
         $this->report->processComplete($groupId, $this->record->title);
 

@@ -123,6 +123,10 @@ class SubjectImportCommand extends Command
 			if ($import->error)
 				continue;
 
+			// TODO This is set so import is not ran every minute from cron during presentation.
+			$import->error = 1;
+			$this->import->save($import);
+
 			$user = $this->user->find($import->user_id);
 			$project = $this->project->find($import->project_id);
 
@@ -147,7 +151,8 @@ class SubjectImportCommand extends Command
 
 				$this->filesystem->delete(array($file));
 
-				$this->import->destroy($import->id);
+				// TODO This is set so cron does not run it every minute during presentation.
+				//$this->import->destroy($import->id);
 			}
 			catch (Exception $e)
 			{
