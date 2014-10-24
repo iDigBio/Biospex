@@ -51,12 +51,12 @@
         @foreach ($project->expedition as $expedition)
         <tr>
             <td>{{ $expedition->title }}</td>
-            <td>{{ $expedition->description_short }}</td>
+            <td>{{ $expedition->description }}</td>
             <td>{{ $expedition->created_at }}</td>
             <td>{{ $expedition->total_subjects }}</td>
-            <td>500</td>
-            <td>300</td>
-            <td><span class="complete"><span class="complete85">&nbsp;</span></span> 85%</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="nowrap"><span class="complete"><span class="complete{{ $expedition->completed }}">&nbsp;</span></span> {{ $expedition->completed }}%
             <td class="nowrap">
                 <button title="@lang('buttons.viewTitle')" class="btn btn-info btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@show', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-eye-open"></span> <!-- @lang('buttons.view') --></button>
                 <button title="@lang('buttons.duplicateTitle')" class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@duplicate', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-share-alt"></span> <!-- @lang('buttons.duplicate') --></button>

@@ -104,13 +104,12 @@ class ExpeditionsController extends BaseController {
      */
     public function index ($id)
     {
-        $expeditions = $this->expedition->byProjectId($id);
-		if (is_null($expeditions)) $expeditions = [];
+		if ( ! Request::ajax())
+			return Redirect::action('ProjectsController@show', [$id]);
 
-        if (Request::ajax()) {
-            return View::make('expeditions.indexajax', compact('expeditions'));
-        }
-        return View::make('expeditions.index', compact('expeditions'));
+		$project = $this->project->findWith($id, ['expedition']);
+
+		return View::make('expeditions.index', compact('project'));
     }
 
     /**
