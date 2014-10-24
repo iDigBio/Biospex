@@ -24,6 +24,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 class ServerInfoController extends BaseController
 {
 
@@ -59,13 +60,7 @@ class ServerInfoController extends BaseController
 
 	public function test ()
 	{
-		if (!Sentry::getUser()->isSuperUser())
-			return Redirect::route('login');
-
-		$n = 0;
-		$x = 5;
-
-		return (ceil($n) % $x === 0) ? ceil($n) : round(($n + $x / 2) / $x) * $x;
+		Queue::push('ExportNotesFromNature', array('folder' => 'MyTest'), 'nfnexport');
 
 		return;
 	}

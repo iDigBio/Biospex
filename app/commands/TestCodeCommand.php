@@ -25,6 +25,7 @@
  */
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
+use Biospex\Services\Queue\ExportNotesFromNature;
 
 class TestCodeCommand extends Command
 {
@@ -59,7 +60,7 @@ class TestCodeCommand extends Command
 	{
 		$this->debug = $this->argument('debug');
 
-		$this->call('cache:clear', [$this->debug]);
+		Queue::push('Biospex\Services\Queue\ExportNotesFromNature', array('folder' => 'MyTest'), 'nfnexport');
 
 		return;
 	}
