@@ -87,18 +87,19 @@ class Report {
 	/**
 	 * Report a simple error
 	 *
-	 * @param null $userId
-	 * @param bool $fatal
+	 * @param null $groupId
 	 */
-    public function reportSimpleError($userId = null)
+	public function reportSimpleError ($groupId = null)
     {
+		$email = null;
+
         if ($this->debug)
             $this->debug();
 
-        if ( ! is_null($userId))
+		if ( ! is_null($groupId))
         {
-            $user = $this->user->find($userId);
-			$email = $user->email;
+			$group = $this->group->findWith($groupId, ['owner']);
+			$email = $group->Owner->email;
         }
 
         $errorMessage = '';

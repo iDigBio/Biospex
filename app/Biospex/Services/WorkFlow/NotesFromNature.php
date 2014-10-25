@@ -171,12 +171,12 @@ class NotesFromNature extends WorkFlowAbstract
      */
     public function process($id)
     {
-        $this->record = $this->expedition->findWith($id, ['project', 'subject.subjectDoc']);
+		$this->record = $this->expedition->findWith($id, ['project,group', 'subject.subjectDoc']);
 
         if (empty($this->record))
         {
             $this->report->addError(trans('errors.error_process', array('id' => $id)));
-            $this->report->reportSimpleError();
+			$this->report->reportSimpleError($this->record->project->group->id);
 
             return;
         }
@@ -194,7 +194,7 @@ class NotesFromNature extends WorkFlowAbstract
         catch ( Exception $e )
         {
             $this->report->addError($e->getMessage());
-            $this->report->reportSimpleError();
+			$this->report->reportSimpleError($this->record->project->group->id);
             $this->destroyDir($this->tmpFileDir);
 
             return;
