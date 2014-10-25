@@ -23,9 +23,9 @@ class DatabaseSeeder extends Seeder {
 
 		$this->call('NavigationsTableSeeder');
         $this->call('PermissionTableSeeder');
-        $this->call('UserTableSeeder');
-        $this->call('GroupTableSeeder');
-        $this->call('UserGroupTableSeeder');
+		//$this->call('UserTableSeeder');
+		//$this->call('GroupTableSeeder');
+		//$this->call('UserGroupTableSeeder');
         $this->call('ProjectsTableSeeder');
         $this->call('ExpeditionsTableSeeder');
         $this->call('ProjectWorkflowTableSeeder');
