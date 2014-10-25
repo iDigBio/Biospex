@@ -171,7 +171,7 @@ class NotesFromNature extends WorkFlowAbstract
      */
     public function process($id)
     {
-		$this->record = $this->expedition->findWith($id, ['project,group', 'subject.subjectDoc']);
+		$this->record = $this->expedition->findWith($id, ['project.group', 'subject.subjectDoc']);
 
         if (empty($this->record))
         {
