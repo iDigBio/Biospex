@@ -184,6 +184,8 @@ class NotesFromNature extends WorkFlowAbstract
 		// TODO This is set so cron does not run it every minute during presentation.
 		$this->record->state = $this->record->state + 1;
 		$this->expedition->save($this->record);
+		if ($this->record->state > 1)
+			return;
 
 		try {
             $result = call_user_func(array($this, $this->states[$this->record->state]));
