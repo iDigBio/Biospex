@@ -107,7 +107,7 @@ class ExpeditionsController extends BaseController {
 		if ( ! Request::ajax())
 			return Redirect::action('ProjectsController@show', [$id]);
 
-		$project = $this->project->findWith($id, ['expedition']);
+		$project = $this->project->findWith($id, ['expedition.subjectCountRelation']);
 
 		return View::make('expeditions.index', compact('project'));
     }
@@ -164,7 +164,7 @@ class ExpeditionsController extends BaseController {
      */
     public function show ($projectId, $expeditionId)
     {
-		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'download', 'workflowManager']);
+		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'download', 'workflowManager', 'subjectCountRelation']);
 
 		return View::make('expeditions.show', compact('expedition'));
     }

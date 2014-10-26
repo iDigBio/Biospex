@@ -40,7 +40,7 @@
 
 
 
-<h4>{{ trans('pages.subjects') }}: {{ $expedition->total_subjects }}</h4>
+<h4>{{ trans('pages.subjects') }}: {{ $expedition->subjectCount }}</h4>
 <div class="table-responsive">
     <table id="list"><tr><td></td></tr></table>
     <div id="pager"></div>

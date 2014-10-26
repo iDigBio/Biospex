@@ -81,6 +81,11 @@ class Expedition extends Eloquent {
         return $this->belongsToMany('Subject');
     }
 
+	public function subjectCountRelation ()
+	{
+		return $this->belongsToMany('Subject')->selectRaw('expedition_id, count(*) as count')->groupBy('expedition_id');
+	}
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -130,8 +135,8 @@ class Expedition extends Eloquent {
         return date("m/d/Y", strtotime($value));
     }
 
-    public function getTotalSubjectsAttribute()
-    {
-        return $this->belongsToMany('Subject')->whereExpeditionId($this->id)->count();
-    }
+	public function getSubjectCountAttribute ()
+	{
+		return $this->subjectCountRelation->first() ? $this->subjectCountRelation->first()->count : 0;
+	}
 }
