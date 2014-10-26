@@ -232,10 +232,10 @@ class NotesFromNature extends WorkFlowAbstract
     public function export()
     {
 		// TODO This is set so cron does not run it every minute during presentation.
+		if ($this->record->state > 0)
+			return;
 		$this->record->state = $this->record->state + 1;
 		$this->expedition->save($this->record);
-		if ($this->record->state > 1)
-			return;
 
 		$title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10)));
         $this->tmpFileDir = "{$this->dataDir}/$title";
