@@ -62,7 +62,7 @@ class SubjectImportCommand extends Command
      * Tmp directory for extracted files
      * @var string
      */
-    protected $dataTmp;
+	protected $fileDir;
 
 	/**
 	 * Constructor
@@ -101,7 +101,6 @@ class SubjectImportCommand extends Command
         $this->mailer = $mailer;
 
         $this->dataDir = Config::get('config.dataDir');
-        $this->dataTmp = Config::get('config.dataTmp');
     }
 
     /**
@@ -130,15 +129,16 @@ class SubjectImportCommand extends Command
 			$user = $this->user->find($import->user_id);
 			$project = $this->project->find($import->project_id);
 
-			$file = $this->dataDir . '/' . $import->file;
-			$fileDir = $this->dataTmp . '/' . md5($import->file);
-
+			$this->fileDir = $this->dataDir . '/' . preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10));
+			$origFile = $this->dataDir . '/' . $import->file;
+			$newFile = $this->fileDir . '/' . $import->file;
 			try
 			{
-				$this->makeTmp($fileDir);
-				$this->unzip($file, $fileDir);
+				$this->makeTmp($this->fileDir);
+				$this->filesystem->move($origFile, $newFile);
+				$this->unzip($newFile, $this->fileDir);
 
-				$this->subjectProcess->processSubjects($import->project_id, $fileDir);
+				$this->subjectProcess->processSubjects($import->project_id, $this->fileDir);
 
 				$duplicates = $this->subjectProcess->getDuplicates();
 				$rejects = $this->subjectProcess->getRejectedMedia();
@@ -147,9 +147,7 @@ class SubjectImportCommand extends Command
 
 				$this->report->importComplete($user->email, $project->title, $duplicated, $rejected, $attachments);
 
-				$this->destroyDir($fileDir, true);
-
-				$this->filesystem->delete(array($file));
+				$this->destroyDir($this->fileDir, true);
 
 				// TODO This is set so cron does not run it every minute during presentation.
 				$this->import->destroy($import->id);
@@ -189,21 +187,6 @@ class SubjectImportCommand extends Command
     public function unzip($file, $fileDir)
     {
 		shell_exec("unzip $file -d $fileDir");
-
-		return;
-    }
-
-	/**
-	 * Copy file to tmp directory
-	 *
-	 * @param $file
-	 * @param $fileDirTmp
-	 * @throws Exception
-	 */
-    public function copyFile($file, $fileDirTmp)
-    {
-        if ( ! $this->filesystem->copy($file, $fileDirTmp))
-			throw new \Exception('Unable to copy file to temp directory:' . $file);
 
 		return;
     }
@@ -270,7 +253,7 @@ class SubjectImportCommand extends Command
 		$rejected = 0;
 		if ( ! empty($duplicates))
 		{
-			$file = "{$this->dataTmp}/duplicates.csv";
+			$file = "{$this->fileDir}/duplicates.csv";
 			$this->writeCsv($file, $duplicates);
 			$attachments[] = $file;
 			$duplicated = count($duplicates);
@@ -279,7 +262,7 @@ class SubjectImportCommand extends Command
 		if ( ! empty($rejects))
 		{
 			// empty image ids
-			$file = "{$this->dataTmp}/rejected.csv";
+			$file = "{$this->fileDir}/rejected.csv";
 			$this->writeCsv($file, $rejects);
 			$attachments[] = $file;
 			$rejected = count($rejects);
