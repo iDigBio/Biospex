@@ -171,19 +171,16 @@ class NotesFromNature extends WorkFlowAbstract
      */
     public function process($id)
     {
-        $this->record = $this->expedition->findWith($id, ['project', 'subject.subjectDoc']);
+		$this->expedition->setPass(true);
+		$this->record = $this->expedition->findWith($id, ['project.group', 'subject.subjectDoc']);
 
         if (empty($this->record))
         {
             $this->report->addError(trans('errors.error_process', array('id' => $id)));
-            $this->report->reportSimpleError();
+			$this->report->reportSimpleError($this->record->project->group->id);
 
             return;
         }
-
-		// TODO This is set so cron does not run it every minute during presentation.
-		$this->record->state = $this->record->state + 1;
-		$this->expedition->save($this->record);
 
 		try {
             $result = call_user_func(array($this, $this->states[$this->record->state]));
@@ -194,7 +191,7 @@ class NotesFromNature extends WorkFlowAbstract
         catch ( Exception $e )
         {
             $this->report->addError($e->getMessage());
-            $this->report->reportSimpleError();
+			$this->report->reportSimpleError($this->record->project->group->id);
             $this->destroyDir($this->tmpFileDir);
 
             return;
@@ -234,7 +231,13 @@ class NotesFromNature extends WorkFlowAbstract
      */
     public function export()
     {
-		$title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(base64_encode($this->record->title), 0, 10)));
+		// TODO This is set so cron does not run it every minute during presentation.
+		if ($this->record->state > 0)
+			return;
+		$this->record->state = $this->record->state + 1;
+		$this->expedition->save($this->record);
+
+		$title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10)));
         $this->tmpFileDir = "{$this->dataDir}/$title";
 
 		$this->createDir($this->tmpFileDir);

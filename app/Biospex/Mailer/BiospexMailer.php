@@ -111,6 +111,9 @@ class BiospexMailer extends Mailer {
      */
 	public function sendReport ($email, $subject, $view, $data, $attachments = array())
     {
+		if (is_null($email))
+			$email = $this->adminEmail;
+
 		return $this->sendTo($this->adminEmail, $email, $subject, $view, $data, $attachments);
     }
 
@@ -125,6 +128,9 @@ class BiospexMailer extends Mailer {
      */
     public function sendInvite($email, $subject, $view, $data)
     {
+		if (is_null($email))
+			$email = $this->adminEmail;
+
 		return $this->sendTo($this->adminEmail, $email, $subject, $view, $data);
     }
 
