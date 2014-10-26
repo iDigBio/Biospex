@@ -130,8 +130,8 @@ class SubjectImportCommand extends Command
 			$user = $this->user->find($import->user_id);
 			$project = $this->project->find($import->project_id);
 
-			$file = "{$this->dataDir}/{$import->file}";
-			$fileDir = "{$this->dataTmp}/" . md5($import->file);
+			$file = $this->dataDir . '/' . $import->file;
+			$fileDir = $this->dataTmp . '/' . md5($import->file);
 
 			try
 			{
@@ -147,12 +147,12 @@ class SubjectImportCommand extends Command
 
 				$this->report->importComplete($user->email, $project->title, $duplicated, $rejected, $attachments);
 
-				$this->destroyDir($this->dataTmp, true);
+				$this->destroyDir($fileDir, true);
 
 				$this->filesystem->delete(array($file));
 
 				// TODO This is set so cron does not run it every minute during presentation.
-				//$this->import->destroy($import->id);
+				$this->import->destroy($import->id);
 			}
 			catch (Exception $e)
 			{

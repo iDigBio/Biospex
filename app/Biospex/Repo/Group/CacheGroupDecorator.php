@@ -26,10 +26,10 @@
  */
 use Biospex\Services\Cache\CacheInterface;
 
-class CacheGroupDecorator extends AbstractGroupDecorator
-{
+class CacheGroupDecorator extends AbstractGroupDecorator {
 
 	protected $cache;
+	protected $pass = false;
 
 	/**
 	 * Constructor
@@ -53,14 +53,15 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 	{
 		$key = md5('groups.all');
 
-		if ($this->cache->has($key))
+		if ($this->cache->has($key) && ! $this->pass)
 		{
 			return $this->cache->get($key);
 		}
 
 		$groups = $this->group->all();
 
-		$this->cache->put($key, $groups);
+		if ( ! $this->pass)
+			$this->cache->put($key, $groups);
 
 		return $groups;
 	}
@@ -76,14 +77,15 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 	{
 		$key = md5("group.$id");
 
-		if ($this->cache->has($key))
+		if ($this->cache->has($key) && ! $this->pass)
 		{
 			return $this->cache->get($key);
 		}
 
 		$group = $this->group->find($id, $columns);
 
-		$this->cache->put($key, $group);
+		if ( ! $this->pass)
+			$this->cache->put($key, $group);
 
 		return $group;
 	}
@@ -141,14 +143,15 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 	{
 		$key = md5("group.$id." . implode(".", $with));
 
-		if ($this->cache->has($key))
+		if ($this->cache->has($key) && ! $this->pass)
 		{
 			return $this->cache->get($key);
 		}
 
 		$group = $this->group->findWith($id, $with);
 
-		$this->cache->put($key, $group);
+		if ( ! $this->pass)
+			$this->cache->put($key, $group);
 
 		return $group;
 	}
@@ -163,14 +166,15 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 	{
 		$key = md5($name);
 
-		if ($this->cache->has($key))
+		if ($this->cache->has($key) && ! $this->pass)
 		{
 			return $this->cache->get($key);
 		}
 
 		$group = $this->group->byName($name);
 
-		$this->cache->put($key, $group);
+		if ( ! $this->pass)
+			$this->cache->put($key, $group);
 
 		return $group;
 	}
@@ -193,6 +197,7 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 		*/
 
 		$options = $this->group->selectOptions($allGroups, $create);
+
 		//$this->cache->put($key, $options);
 
 		return $options;
@@ -206,14 +211,15 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 	{
 		$key = md5("groups");
 
-		if ($this->cache->has($key))
+		if ($this->cache->has($key) && ! $this->pass)
 		{
 			return $this->cache->get($key);
 		}
 
 		$groups = $this->group->findAllGroups();
 
-		$this->cache->put($key, $groups);
+		if ( ! $this->pass)
+			$this->cache->put($key, $groups);
 
 		return $groups;
 	}
@@ -232,13 +238,15 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 		}
 		$key = md5('groups.' . implode(".", $ids));
 
-		if ($this->cache->has($key))
+		if ($this->cache->has($key) && ! $this->pass)
 		{
 			return $this->cache->get($key);
 		}
 
 		$groups = $this->group->findAllGroupsWithProjects($allGroups);
-		$this->cache->put($key, $groups);
+
+		if ( ! $this->pass)
+			$this->cache->put($key, $groups);
 
 		return $groups;
 	}
@@ -255,5 +263,10 @@ class CacheGroupDecorator extends AbstractGroupDecorator
 		$this->cache->flush();
 
 		return $group;
+	}
+
+	public function setPass ($value = false)
+	{
+		$this->pass = $value;
 	}
 }

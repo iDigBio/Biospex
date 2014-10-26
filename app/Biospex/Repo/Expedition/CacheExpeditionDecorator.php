@@ -27,10 +27,10 @@
 
 use Biospex\Services\Cache\CacheInterface;
 
-class CacheExpeditionDecorator extends AbstractExpeditionDecorator
-{
+class CacheExpeditionDecorator extends AbstractExpeditionDecorator {
 
 	protected $cache;
+	protected $pass = false;
 
 	/**
 	 * Constructor
@@ -54,12 +54,13 @@ class CacheExpeditionDecorator extends AbstractExpeditionDecorator
 	{
 		$key = md5('expeditions.all');
 
-		if ($this->cache->has($key))
+		if ($this->cache->has($key) && ! $this->pass)
 		{
 			return $this->cache->get($key);
 		}
 
-		$expeditions = $this->expedition->all();
+		if ( ! $this->pass)
+			$expeditions = $this->expedition->all();
 
 		$this->cache->put($key, $expeditions);
 
@@ -77,14 +78,15 @@ class CacheExpeditionDecorator extends AbstractExpeditionDecorator
 	{
 		$key = md5('expedition.' . $id);
 
-		if ($this->cache->has($key))
+		if ($this->cache->has($key) && ! $this->pass)
 		{
 			return $this->cache->get($key);
 		}
 
 		$expedition = $this->expedition->find($id, $columns);
 
-		$this->cache->put($key, $expedition);
+		if ( ! $this->pass)
+			$this->cache->put($key, $expedition);
 
 		return $expedition;
 	}
@@ -142,14 +144,15 @@ class CacheExpeditionDecorator extends AbstractExpeditionDecorator
 	{
 		$key = md5('expedition.' . $id . implode(".", $with));
 
-		if ($this->cache->has($key))
+		if ($this->cache->has($key) && ! $this->pass)
 		{
 			return $this->cache->get($key);
 		}
 
 		$expedition = $this->expedition->findWith($id, $with);
 
-		$this->cache->put($key, $expedition);
+		if ( ! $this->pass)
+			$this->cache->put($key, $expedition);
 
 		return $expedition;
 	}
@@ -178,16 +181,21 @@ class CacheExpeditionDecorator extends AbstractExpeditionDecorator
 	{
 		$key = md5('project.' . $id);
 
-		if ($this->cache->has($key))
+		if ($this->cache->has($key) && ! $this->pass)
 		{
 			return $this->cache->get($key);
 		}
 
 		$expedition = $this->expedition->byProjectId($id);
 
-		$this->cache->put($key, $expedition);
+		if ( ! $this->pass)
+			$this->cache->put($key, $expedition);
 
 		return $expedition;
 	}
 
+	public function setPass ($value = false)
+	{
+		$this->pass = $value;
+	}
 }

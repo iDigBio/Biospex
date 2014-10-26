@@ -31,6 +31,7 @@ class CacheProjectDecorator extends AbstractProjectDecorator
 {
 
 	protected $cache;
+	protected $pass;
 
 	/**
 	 * Constructor
@@ -54,14 +55,15 @@ class CacheProjectDecorator extends AbstractProjectDecorator
 	{
 		$key = md5('projects.all');
 
-		if ($this->cache->has($key))
+		if ($this->cache->has($key) && ! $this->pass)
 		{
 			return $this->cache->get($key);
 		}
 
 		$projects = $this->project->all();
 
-		$this->cache->put($key, $projects);
+		if ( ! $this->pass)
+			$this->cache->put($key, $projects);
 
 		return $projects;
 	}
@@ -77,14 +79,15 @@ class CacheProjectDecorator extends AbstractProjectDecorator
 	{
 		$key = md5('project.' . $id);
 
-		if ($this->cache->has($key))
+		if ($this->cache->has($key) && ! $this->pass)
 		{
 			return $this->cache->get($key);
 		}
 
 		$project = $this->project->find($id, $columns);
 
-		$this->cache->put($key, $project);
+		if ( ! $this->pass)
+			$this->cache->put($key, $project);
 
 		return $project;
 	}
@@ -142,14 +145,15 @@ class CacheProjectDecorator extends AbstractProjectDecorator
 	{
 		$key = md5('project.' . $id . implode(".", $with));
 
-		if ($this->cache->has($key))
+		if ($this->cache->has($key) && ! $this->pass)
 		{
 			return $this->cache->get($key);
 		}
 
 		$project = $this->project->findWith($id, $with);
 
-		$this->cache->put($key, $project);
+		if ( ! $this->pass)
+			$this->cache->put($key, $project);
 
 		return $project;
 	}
@@ -178,16 +182,21 @@ class CacheProjectDecorator extends AbstractProjectDecorator
 	{
 		$key = md5('project.' . $slug);
 
-		if ($this->cache->has($key))
+		if ($this->cache->has($key) && ! $this->pass)
 		{
 			return $this->cache->get($key);
 		}
 
 		$project = $this->project->bySlug($slug);
 
-		$this->cache->put($key, $project);
+		if ( ! $this->pass)
+			$this->cache->put($key, $project);
 
 		return $project;
 	}
 
+	public function setPass ($value = false)
+	{
+		$this->pass = $value;
+	}
 }

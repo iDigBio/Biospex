@@ -171,6 +171,7 @@ class NotesFromNature extends WorkFlowAbstract
      */
     public function process($id)
     {
+		$this->expedition->setPass(true);
 		$this->record = $this->expedition->findWith($id, ['project.group', 'subject.subjectDoc']);
 
         if (empty($this->record))
@@ -180,12 +181,6 @@ class NotesFromNature extends WorkFlowAbstract
 
             return;
         }
-
-		// TODO This is set so cron does not run it every minute during presentation.
-		$this->record->state = $this->record->state + 1;
-		$this->expedition->save($this->record);
-		if ($this->record->state > 1)
-			return;
 
 		try {
             $result = call_user_func(array($this, $this->states[$this->record->state]));
@@ -236,7 +231,13 @@ class NotesFromNature extends WorkFlowAbstract
      */
     public function export()
     {
-		$title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(base64_encode($this->record->title), 0, 10)));
+		// TODO This is set so cron does not run it every minute during presentation.
+		$this->record->state = $this->record->state + 1;
+		$this->expedition->save($this->record);
+		if ($this->record->state > 1)
+			return;
+
+		$title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10)));
         $this->tmpFileDir = "{$this->dataDir}/$title";
 
 		$this->createDir($this->tmpFileDir);
