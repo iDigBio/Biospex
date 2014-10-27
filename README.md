@@ -19,9 +19,9 @@ Installation
 ------------
 
 1. Clone the repo
-2. Rename ```default.env.php``` to the environment (```.env.local.php```, ```.env.staging.php```, ```.env.php``` for production).
+2. Copy and rename ```default.env.php``` to the environment (```.env.local.php```, ```.env.staging.php```, ```.env.php``` for production).
 3. Set variables in ```*.env.php```.
-5. Rename ```/bootstrap/default.environment.php``` to ```environment.php``` and set your environment.
+5. Copy and rename ```/bootstrap/default.environment.php``` to ```environment.php``` and set your environment.
 6. Run ```php composer.phar install```
 7. Run the migrations: ```php artisan migrate```
 8. Seed the Database: ```php artisan db:seed```
