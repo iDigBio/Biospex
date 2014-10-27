@@ -20,10 +20,11 @@ Installation
 
 1. Clone the repo
 2. Run ```php composer.phar install```
-3. Set up MySql and Mongo database configuration in ```app/config/database.php```
-4. Edit ```app/config/mail.php``` to work with your mail setup.
-5. Run the migrations: ```php artisan migrate```
-6. Seed the Database: ```php artisan db:seed```
+3. Rename ```default.env.php``` to the environment (.env.local.php, .env.staging.php, .env.php for production).
+4. Set variables in ```*.env.php```.
+5. If not production, rename ```/bootstrap/default.environment.php``` to ```environment.php``` and set your environment.
+6. Run the migrations: ```php artisan migrate```
+7. Seed the Database: ```php artisan db:seed```
 
 Notes
 -----
