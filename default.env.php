@@ -1,6 +1,6 @@
 <?php
 /**
- * BiospexRecursiveFilterIterator.php
+ * default.env.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -24,18 +24,35 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class BiospexRecursiveFilterIterator extends RecursiveFilterIterator {
+return [
+	'site.ip'           => '',
+	'site.url'          => '',
+	'site.debug'        => false,
+	'site.key'          => '',
+	'site.timezone'     => '',
+	'site.locale'       => 'en',
+	'site.adminEmail'   => '',
+	'site.registration' => true,
 
-	public static $FILTERS = array(
-		'.gitignore',
-	);
+	'mysql.host'        => '',
+	'mysql.database'    => '',
+	'mysql.username'    => '',
+	'mysql.password'    => '',
 
-	public function accept() {
-		return !in_array(
-			$this->current()->getFilename(),
-			self::$FILTERS,
-			true
-		);
-	}
+	'mongodb.host'      => '',
+	'mongodb.port'      => 27017,
+	'mongodb.username'  => '',
+	'mongodb.password'  => '',
+	'mongodb.database'  => '',
 
-}
+	'mail.driver'       => '',
+	'mail.host'         => '',
+	'mail.port'         => 587,
+	'mail.address'      => '',
+	'mail.name'         => '',
+	'mail.encryption'   => 'tls',
+	'mail.username'     => '',
+	'mail.password'     => '',
+	'mail.sendmail'     => '/usr/sbin/sendmail -bs',
+	'mail.pretend'      => false,
+];

@@ -54,13 +54,22 @@ return array(
 
 		'mysql' => array(
 			'driver'    => 'mysql',
-			'host'      => 'localhost',
-			'database'  => 'database',
-			'username'  => 'root',
-			'password'  => '',
+			'host'     => $_ENV['mysql.host'],
+			'database' => $_ENV['mysql.database'],
+			'username' => $_ENV['mysql.username'],
+			'password' => $_ENV['mysql.password'],
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => '',
+		),
+
+		'mongodb' => array(
+			'driver'   => 'mongodb',
+			'host'     => $_ENV['mongodb.host'],
+			'port'     => $_ENV['mongodb.port'],
+			'username' => $_ENV['mongodb.username'],
+			'password' => $_ENV['mongodb.password'],
+			'database' => $_ENV['mongodb.database']
 		),
 
 		'pgsql' => array(
@@ -82,16 +91,6 @@ return array(
 			'password' => '',
 			'prefix'   => '',
 		),
-
-        'mongodb' => array(
-            'driver'   => 'mongodb',
-            'host'     => 'localhost',
-            'port'     => 27017,
-            'username' => 'root',
-            'password' => '',
-            'database' => ''
-        ),
-
 	),
 
 	/*

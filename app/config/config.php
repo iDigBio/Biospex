@@ -3,10 +3,12 @@
 return array(
 
     /** Set Admin email */
-    'adminEmail' => 'biospex@gmail.com',
+	'adminEmail'   => $_ENV['site.adminEmail'],
 
-    /** Used in code. Different than application debug in app.php */
-    'debug' => false,
+	/**
+	 * Allow/Disallow registration
+	 */
+	'registration' => $_ENV['site.registration'],
 
     /** Default project image path */
     'defaultImg' => 'assets/default.png',
@@ -51,10 +53,4 @@ return array(
         "expedition_view" => 1,
         "expedition_delete" => 1
 	],
-
-
-    /**
-     * Allow/Disallow registration
-     */
-    'registration' => true,
 );

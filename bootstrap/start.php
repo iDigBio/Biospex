@@ -25,7 +25,7 @@ $app = new Illuminate\Foundation\Application;
 */
 $env = $app->detectEnvironment(function ()
 {
-	return $_SERVER['LARAVEL_ENV'];
+	return include __DIR__ . '/environment.php';
 });
 
 /*
