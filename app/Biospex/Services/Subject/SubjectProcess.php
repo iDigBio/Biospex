@@ -240,10 +240,9 @@ class SubjectProcess {
 	/**
 	 * Load csv file
 	 *
-	 * @param $filePath
-	 * @param null $type
+	 * @param $type
 	 * @return array
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function loadCsv ($type)
 	{

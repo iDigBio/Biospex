@@ -101,7 +101,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
 
 		// Delete associated subjects from expedition_subjects
 		static::deleting(function($model) {
-			$model->expedition()->delete();
+			$model->expeditions()->delete();
 		});
     }
 
@@ -116,7 +116,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function subject()
+	public function subjects ()
     {
         return $this->hasMany('Subject');
     }
@@ -132,7 +132,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function expedition()
+	public function expeditions ()
     {
         return $this->hasMany('Expedition');
     }
@@ -140,7 +140,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function meta()
+	public function metas ()
     {
         return $this->hasMany('Meta');
     }
@@ -148,7 +148,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function import()
+	public function imports ()
     {
         return $this->hasMany('Import');
     }
@@ -156,7 +156,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function workflow()
+	public function workflows ()
     {
         return $this->belongsToMany('Workflow');
     }
@@ -169,7 +169,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      */
     public function bySlug($slug)
     {
-		return $this->with(['group', 'expedition', 'workflow'])->where('slug', '=', $slug)->first();
+		return $this->with(['group', 'expeditions', 'workflows'])->where('slug', '=', $slug)->first();
     }
 
     /**

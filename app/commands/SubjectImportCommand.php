@@ -147,7 +147,7 @@ class SubjectImportCommand extends Command
 
 				$this->report->importComplete($user->email, $project->title, $duplicated, $rejected, $attachments);
 
-				$this->destroyDir($this->fileDir, true);
+				$this->filesystem->deleteDirectory($this->fileDir);
 
 				// TODO This is set so cron does not run it every minute during presentation.
 				$this->import->destroy($import->id);
@@ -213,31 +213,6 @@ class SubjectImportCommand extends Command
 
         return;
     }
-
-	/**
-	 * Check if directory exists and destroy
-	 *
-	 * @param $dir
-	 * @param $parent
-	 */
-	public function destroyDir($dir, $parent = false)
-	{
-		if ( ! $this->filesystem->isDirectory($dir))
-			return;
-
-		Helpers::destroyDir($dir, $parent);
-	}
-
-	/**
-	 * Set error column on import
-	 */
-	private function importError($import)
-	{
-		$import->error = 1;
-		$this->import->save($import);
-
-		return;
-	}
 
 	/**
 	 * Create duplicate and reject files if any

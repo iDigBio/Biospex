@@ -39,7 +39,7 @@ class ExpeditionSubjectTableSeeder extends Seeder {
         foreach ($subjects as $subject)
         {
             if ($i > 3) break;
-            $subject->expedition()->attach($i);
+			$subject->expeditions()->attach($i);
             $i = ($subject['id'] % 800 == 0) ? $i+1 : $i;
         }
     }

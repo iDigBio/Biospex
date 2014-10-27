@@ -19,7 +19,7 @@
 
 <div class="panel panel-default">
     <div style="padding: 10px;">
-    @if ( ! $expedition->download->isEmpty())
+    @if ( ! $expedition->downloads->isEmpty())
         <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@download', [$expedition->project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-floppy-save"></span> @lang('buttons.download') </button>
     @endif
     <button title="@lang('buttons.dataTitle')" class="btn btn-default btn-xs" type="button" onClick="location.href='{{ action('ProjectsController@data', [$expedition->project->id]) }}'"><span class="glyphicon glyphicon-plus-sign"></span> @lang('buttons.data')</button>
@@ -31,7 +31,7 @@
 
 
 <div class="clearfix">
-@if ($expedition->workflowManager->isEmpty())
+@if ($expedition->workflowManagers->isEmpty())
 	<button title="@lang('buttons.processTitle')" class="btn btn-success pull-right" onClick="location.href='{{ action('ExpeditionsController@process', [$expedition->project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-play"></span> @lang('buttons.process')</button>
 @else
 	<button title="@lang('buttons.stopTitle')" class="btn btn-default btn-danger pull-right action_confirm" href="{{ action('ExpeditionsController@stop', [$expedition->project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="glyphicon glyphicon-stop"></span> @lang('buttons.stop')</button></td>
@@ -40,7 +40,7 @@
 
 
 
-<h4>{{ trans('pages.subjects') }}: {{ $expedition->subjectCount }}</h4>
+<h4>{{ trans('pages.subjects') }}: {{ $expedition->subjectsCount }}</h4>
 <div class="table-responsive">
     <table id="list"><tr><td></td></tr></table>
     <div id="pager"></div>

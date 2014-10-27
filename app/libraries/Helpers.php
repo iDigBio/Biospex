@@ -33,30 +33,6 @@ class Helpers {
     }
 
 	/**
-	 * Iterate over directory and destroy
-	 *
-	 * @param $dir
-	 * @param bool $parent
-	 */
-	public static function destroyDir($dir, $parent = false)
-	{
-		$it = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
-		$filter = new BiospexRecursiveFilterIterator($it);
-		$files = new RecursiveIteratorIterator($filter, RecursiveIteratorIterator::CHILD_FIRST);
-		foreach($files as $file) {
-			if ($file->isDir()){
-				@rmdir($file->getRealPath());
-			} else {
-				@unlink($file->getRealPath());
-			}
-		}
-		if ($parent)
-			@rmdir($dir);
-
-		return;
-	}
-
-	/**
 	 * Round up to an integer, then to the nearest multiple of 5
 	 * Used for scaling project page percent complete
 	 *

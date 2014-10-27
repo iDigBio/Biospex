@@ -81,7 +81,7 @@ class ExpeditionRepository extends Repository implements ExpeditionInterface, Re
     public function create($data = array())
     {
         $expedition = parent::create($data);
-        $expedition->subject()->sync($data['subject_ids']);
+		$expedition->subjects()->sync($data['subject_ids']);
         return $expedition;
     }
 

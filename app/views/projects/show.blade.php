@@ -48,12 +48,12 @@
         </tr>
         </thead>
         <tbody>
-        @foreach ($project->expedition as $expedition)
+        @foreach ($project->expeditions as $expedition)
         <tr>
             <td>{{ $expedition->title }}</td>
             <td>{{ $expedition->description }}</td>
             <td>{{ $expedition->created_at }}</td>
-            <td>{{ $expedition->subjectCount }}</td>
+            <td>{{ $expedition->subjectsCount }}</td>
             <td>0</td>
             <td>0</td>
             <td class="nowrap"><span class="complete"><span class="complete{{ $expedition->completed }}">&nbsp;</span></span> {{ $expedition->completed }}%
@@ -62,7 +62,7 @@
                 <button title="@lang('buttons.duplicateTitle')" class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@duplicate', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-share-alt"></span> <!-- @lang('buttons.duplicate') --></button>
                 <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@edit', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-cog"></span> <!-- @lang('buttons.edit') --></button>
                 <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-xs" href="{{ action('ExpeditionsController@destroy', [$project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="glyphicon glyphicon-remove-circle"></span> <!-- @lang('buttons.delete') --></button>
-                @if ( ! $expedition->download->isEmpty())
+                @if ( ! $expedition->downloads->isEmpty())
                 <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@download', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-floppy-save"></span> <!-- @lang('buttons.download') --></button>
                 @endif
             </td>

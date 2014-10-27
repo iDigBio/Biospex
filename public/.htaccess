@@ -13,5 +13,3 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
-
-SetEnv LARAVEL_ENV local

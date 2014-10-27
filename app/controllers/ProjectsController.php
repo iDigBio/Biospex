@@ -167,7 +167,7 @@ class ProjectsController extends BaseController {
      */
     public function show($id)
 	{
-		$project = $this->project->findWith($id, ['group', 'expedition.download', 'expedition.subjectCountRelation']);
+		$project = $this->project->findWith($id, ['group', 'expeditions.downloads', 'expeditions.subjectsCountRelation']);
 		$user = $this->user->getUser();
 		$isSuperUser = $user->isSuperUser();
         $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;

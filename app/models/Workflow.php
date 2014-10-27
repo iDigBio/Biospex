@@ -42,7 +42,7 @@ class Workflow extends Eloquent
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */
-	public function project ()
+	public function projects ()
 	{
 		return $this->belongsToMany('Project');
 	}
@@ -50,7 +50,7 @@ class Workflow extends Eloquent
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */
-	public function download ()
+	public function downloads ()
 	{
 		return $this->hasMany('Download');
 	}

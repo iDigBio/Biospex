@@ -31,7 +31,7 @@
         </tr>
         </thead>
         <tbody>
-        @foreach ($expedition->download as $download)
+        @foreach ($expedition->downloads as $download)
         <tr>
             <td>{{ $download->workflow->title }}</td>
             <td>{{ $download->file }}</td>

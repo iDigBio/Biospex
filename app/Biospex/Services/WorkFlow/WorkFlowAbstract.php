@@ -161,16 +161,6 @@ abstract class WorkFlowAbstract {
     }
 
     /**
-     * Iterate over directory and destroy
-     */
-    protected function destroyDir($dir)
-    {
-        $success = $this->filesystem->deleteDirectory($dir);
-
-        return $success;
-    }
-
-    /**
      * Exceute shell commands
      * @param $cmd
      */

@@ -37,7 +37,7 @@ class ProjectWorkflowTableSeeder extends Seeder {
 
         foreach ($projects as $project)
         {
-            $project->workflow()->attach(1);
+			$project->workflows()->attach(1);
         }
     }
 

@@ -72,7 +72,7 @@ class Subject extends Eloquent {
      */
     public function getUnassignedSubjectCount($projectId)
     {
-        return Subject::has('expedition','<', 1)
+		return Subject::has('expeditions', '<', 1)
             ->where('project_id', $projectId)
             ->count();
     }
@@ -84,7 +84,7 @@ class Subject extends Eloquent {
      */
     public function getUnassignedSubjects($input)
     {
-        $ids = $this->has('expedition','<',1)
+		$ids = $this->has('expeditions', '<', 1)
             ->where('project_id',$input['project_id'])
             ->take($input['subjects'])
             ->get(array('id'))
@@ -103,7 +103,7 @@ class Subject extends Eloquent {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function expedition()
+	public function expeditions ()
     {
         return $this->belongsToMany('Expedition');
     }

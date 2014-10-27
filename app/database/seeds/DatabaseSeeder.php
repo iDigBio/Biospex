@@ -9,7 +9,7 @@ class DatabaseSeeder extends Seeder {
 	 */
 	public function run()
 	{
-		Helpers::destroyDir(Config::get('config.dataDir'));
+		File::deleteDirectory(Config::get('config.dataDir'));
 
 		Eloquent::unguard();
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
@@ -23,9 +23,9 @@ class DatabaseSeeder extends Seeder {
 
 		$this->call('NavigationsTableSeeder');
         $this->call('PermissionTableSeeder');
-		//$this->call('UserTableSeeder');
-		//$this->call('GroupTableSeeder');
-		//$this->call('UserGroupTableSeeder');
+		$this->call('UserTableSeeder');
+		$this->call('GroupTableSeeder');
+		$this->call('UserGroupTableSeeder');
         $this->call('ProjectsTableSeeder');
         $this->call('ExpeditionsTableSeeder');
         $this->call('ProjectWorkflowTableSeeder');

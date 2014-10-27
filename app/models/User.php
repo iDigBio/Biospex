@@ -46,7 +46,7 @@ class User extends SentryUser {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function import()
+	public function imports ()
     {
         return $this->hasMany('Import');
     }
@@ -54,7 +54,7 @@ class User extends SentryUser {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function workflowManager()
+	public function workflowManagers ()
     {
         return $this->hasMany('WorkflowManager');
     }

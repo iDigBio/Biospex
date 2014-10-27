@@ -64,9 +64,18 @@ class ExpeditionsController extends BaseController {
      */
     protected $subject;
 
-    /**
-     * Instantiate a new ProjectsController
-     */
+	/**
+	 * Instantiate a new ProjectsController
+	 *
+	 * @param ExpeditionInterface $expedition
+	 * @param ExpeditionForm $expeditionForm
+	 * @param ProjectInterface $project
+	 * @param GroupInterface $group
+	 * @param UserInterface $user
+	 * @param SubjectInterface $subject
+	 * @param WorkflowManagerInterface $workflowManager
+	 * @param DownloadInterface $download
+	 */
     public function __construct(
         ExpeditionInterface $expedition,
         ExpeditionForm $expeditionForm,
@@ -107,7 +116,7 @@ class ExpeditionsController extends BaseController {
 		if ( ! Request::ajax())
 			return Redirect::action('ProjectsController@show', [$id]);
 
-		$project = $this->project->findWith($id, ['expedition.subjectCountRelation']);
+		$project = $this->project->findWith($id, ['expeditions.subjectsCountRelation']);
 
 		return View::make('expeditions.index', compact('project'));
     }
@@ -164,7 +173,7 @@ class ExpeditionsController extends BaseController {
      */
     public function show ($projectId, $expeditionId)
     {
-		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'download', 'workflowManager', 'subjectCountRelation']);
+		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads', 'workflowManagers', 'subjectsCountRelation']);
 
 		return View::make('expeditions.show', compact('expedition'));
     }
@@ -178,11 +187,11 @@ class ExpeditionsController extends BaseController {
      */
     public function duplicate ($projectId, $expeditionId)
     {
-		$expedition = $this->expedition->findWith($expeditionId, ['project.group']);
-        $subjects = count($expedition->subject);
+		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'subjectsCountRelation']);
         $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
 		$cancel = URL::previous();
-		return View::make('expeditions.clone', compact('expedition', 'subjects', 'create', 'cancel'));
+
+		return View::make('expeditions.clone', compact('expedition', 'create', 'cancel'));
     }
 
     /**
@@ -236,11 +245,11 @@ class ExpeditionsController extends BaseController {
      */
     public function process($projectId, $expeditionId)
     {
-        $project = $this->project->find($projectId);
+		$project = $this->project->findWith($projectId, ['workflows']);
 
         try
         {
-            foreach ($project->workflow as $workflow)
+			foreach ($project->workflows as $workflow)
             {
 				$data = [
                     'workflow_id' => $workflow->id,
@@ -268,15 +277,15 @@ class ExpeditionsController extends BaseController {
 	 */
 	public function stop($projectId, $expeditionId)
 	{
-		$expedition = $this->expedition->findWith($expeditionId, ['workflowManager']);
+		$expedition = $this->expedition->findWith($expeditionId, ['workflowManagers']);
 
-		if ($expedition->workflowManager->isEmpty())
+		if ($expedition->workflowManagers->isEmpty())
 		{
 			Session::flash('error', trans('expeditions.process_no_exists'));
 		}
 		else
 		{
-			foreach ($expedition->workflowManager as $workflow)
+			foreach ($expedition->workflowManagers as $workflow)
 			{
 				$this->workflowManager->destroy($workflow->id);
 			}

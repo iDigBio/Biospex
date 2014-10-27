@@ -2,7 +2,10 @@
 /vendor
 composer.phar
 .env.local.php
+.env.development.php
+.env.staging.php
 .env.php
+/bootstrap/environment.php
 .DS_Store
 Thumbs.db
 .idea

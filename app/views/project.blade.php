@@ -43,16 +43,16 @@
 						</tr>
 						</thead>
 						<tbody>
-						@foreach($project->expedition as $expedition)
+						@foreach($project->expeditions as $expedition)
 						<tr>
 							<td>{{ $expedition->title }}</td>
 							<td class="nowrap"><span class="complete"><span class="complete{{ $expedition->completed }}">&nbsp;</span></span> {{ $expedition->completed }}%
 							</td>
 							<td>
 							<?php $i = 0; ?>
-							@foreach($project->workflow as $workflow)
+							@foreach($project->workflows as $workflow)
 							<a href="{{ $workflow->url }}">{{ $workflow->title }}</a>
-							<?php $i < count($project->workflow) ? '<br />' : ''; ?>
+							<?php $i < count($project->workflows) ? '<br />' : ''; ?>
 							@endforeach
 							</td>
 						</tr>

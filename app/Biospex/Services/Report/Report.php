@@ -254,7 +254,7 @@ class Report {
 	 * @param $email
 	 * @param $subject
 	 * @param $data
-	 * @param array $attachment
+	 * @param array $attachments
 	 */
 	protected function fireEvent ($event, $email, $subject, $data, $attachments = array())
 	{

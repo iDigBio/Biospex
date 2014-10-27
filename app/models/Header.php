@@ -60,7 +60,7 @@ class Header extends Eloquent{
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */
-	public function subject()
+	public function subjects ()
 	{
 		return $this->hasMany('Subject');
 	}

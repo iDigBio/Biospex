@@ -85,10 +85,9 @@ class BiospexMailer extends Mailer {
 
 	/**
 	 * Email New Password info to user.
-	 * @param  string $email          
-	 * @param  int    $userId         
-	 * @param  string $resetCode 		
-	 * @return bool
+	 *
+	 * @param $email
+	 * @param $newPassword
 	 */
 	public function newPassword($email, $newPassword)
 	{
@@ -107,7 +106,7 @@ class BiospexMailer extends Mailer {
      * @param $subject
      * @param $view
      * @param $data
-     * @param string $attachment
+	 * @param array $attachments
      */
 	public function sendReport ($email, $subject, $view, $data, $attachments = array())
     {

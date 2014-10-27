@@ -57,7 +57,7 @@ class Expedition extends Eloquent {
 
 		// Delete associated subjects from expedition_subjects
 		static::deleting(function($model) {
-			$model->subject()->detach();
+			$model->subjects()->detach();
 		});
     }
 
@@ -76,12 +76,16 @@ class Expedition extends Eloquent {
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function subject()
+	public function subjects ()
     {
         return $this->belongsToMany('Subject');
     }
 
-	public function subjectCountRelation ()
+	/**
+	 * Return count through relationship
+	 * @return mixed
+	 */
+	public function subjectsCountRelation ()
 	{
 		return $this->belongsToMany('Subject')->selectRaw('expedition_id, count(*) as count')->groupBy('expedition_id');
 	}
@@ -89,7 +93,7 @@ class Expedition extends Eloquent {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function workflowManager()
+	public function workflowManagers ()
     {
         return $this->hasMany('WorkflowManager');
     }
@@ -97,7 +101,7 @@ class Expedition extends Eloquent {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function download()
+	public function downloads ()
     {
 		return $this->hasMany('Download');
     }
@@ -135,8 +139,13 @@ class Expedition extends Eloquent {
         return date("m/d/Y", strtotime($value));
     }
 
-	public function getSubjectCountAttribute ()
+	/**
+	 * Get counts attribute
+	 *
+	 * @return int
+	 */
+	public function getSubjectsCountAttribute ()
 	{
-		return $this->subjectCountRelation->first() ? $this->subjectCountRelation->first()->count : 0;
+		return $this->subjectsCountRelation->first() ? $this->subjectsCountRelation->first()->count : 0;
 	}
 }

@@ -313,7 +313,7 @@
     <div class="form-group {{ ($errors->has('workflow')) ? 'has-error' : '' }}">
         {{ Form::label('workflow', trans('forms.workflow'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-4">
-            {{ Form::select('workflow', array('1' => 'Notes From Nature', '2' => 'GeoLocate', '3' => 'Notes From Nature - GeoLocate'), $project->workflow, array('class' => 'form-control')) }}
+            {{ Form::select('workflow', array('1' => 'Notes From Nature', '2' => 'GeoLocate', '3' => 'Notes From Nature - GeoLocate'), $project->workflows, array('class' => 'form-control')) }}
         </div>
         {{ ($errors->has('workflow') ? $errors->first('workflow') : '') }}
     </div>

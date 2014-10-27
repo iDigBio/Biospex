@@ -172,7 +172,7 @@ class NotesFromNature extends WorkFlowAbstract
     public function process($id)
     {
 		$this->expedition->setPass(true);
-		$this->record = $this->expedition->findWith($id, ['project.group', 'subject.subjectDoc']);
+		$this->record = $this->expedition->findWith($id, ['project.group', 'subjects.subjectDoc']);
 
         if (empty($this->record))
         {
@@ -192,7 +192,7 @@ class NotesFromNature extends WorkFlowAbstract
         {
             $this->report->addError($e->getMessage());
 			$this->report->reportSimpleError($this->record->project->group->id);
-            $this->destroyDir($this->tmpFileDir);
+			$this->filesystem->deleteDirectory($this->tmpFileDir);
 
             return;
         }
@@ -258,7 +258,7 @@ class NotesFromNature extends WorkFlowAbstract
 
 		$this->createDownload($this->record->id, $this->workflowId, "$title.tar.gz");
 
-        $this->destroyDir($this->tmpFileDir);
+		$this->filesystem->deleteDirectory($this->tmpFileDir);
 
         return true;
     }
@@ -269,7 +269,7 @@ class NotesFromNature extends WorkFlowAbstract
     protected function buildImgDir()
     {
         $i = 0;
-        foreach ($this->record->subject as $subject)
+		foreach ($this->record->subjects as $subject)
         {
             $this->subjectArray[$subject->id][] = $subject->object_id;
 
