@@ -67,7 +67,7 @@ class ServerInfoController extends BaseController
 
 		Session::flash('success', "Cache has been flushed.");
 
-		return Redirect::back();
+		return Redirect::intended('/projects');
 	}
 
 	public function test ()
