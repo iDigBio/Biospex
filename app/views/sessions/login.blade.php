@@ -7,29 +7,48 @@
 
 {{-- Content --}}
 @section('content')
-<div class="row">
-    <div class="col-md-4 col-md-offset-4">
-        {{ Form::open(array('action' => 'SessionsController@store')) }}
-
-            <h2 class="form-signin-heading">@lang('pages.signin')</h2>
-
-            <div class="form-group {{ ($errors->has('email')) ? 'has-error' : '' }}">
-                {{ Form::text('email', null, array('class' => 'form-control', 'placeholder' => trans('pages.email'), 'autofocus')) }}
-                {{ ($errors->has('email') ? $errors->first('email') : '') }}
+<div class="row centered-form">
+    <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">{{ trans('pages.signin') }}</h3>
             </div>
-
-            <div class="form-group {{ ($errors->has('password')) ? 'has-error' : '' }}">
-                {{ Form::password('password', array('class' => 'form-control', 'placeholder' => trans('pages.password')))}}
-                {{ ($errors->has('password') ?  $errors->first('password') : '') }}
+            <div class="panel-body">
+                {{ Form::open(array('action' => 'SessionsController@store')) }}
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="form-group {{ ($errors->has('email')) ? 'has-error' : '' }}">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+                                {{Form::email('email', '', ['id' => 'email', 'class' => 'form-control', 'placeholder' => 'Email address', 'required', 'autocomplete' => 'off'])}}
+                            </div>
+                            {{ ($errors->has('email') ?  $errors->first('email') : '') }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="form-group">
+                            <div class="input-group {{ ($errors->has('password')) ? 'has-error' : '' }}">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                {{Form::password('password', ['id' => 'password', 'class' => 'form-control', 'placeholder' => 'Password', 'required', 'autocomplete' => 'off'])}}
+                            </div>
+                            {{ ($errors->has('password') ?  $errors->first('password') : '') }}
+                        </div>
+                    </div>
+                </div>
+                {{Form::label('remember', trans('pages.rememberme'))}}
+                {{Form::checkbox('remember')}}
+                <input type="submit" value="Login" class="btn btn-primary btn-block">
+                {{Form::close()}}
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 margin-top-10">
+                        {{ link_to_action('forgotPasswordForm', trans('pages.password_forgot'))}}
+                        or <i class="glyphicon glyphicon-log-in"></i> {{ link_to_action('register', trans('pages.register')) }}
+                   </div>
+               </div>
             </div>
-            
-            <label class="checkbox">
-                {{ Form::checkbox('rememberMe', 'rememberMe') }} @lang('pages.rememberme')
-            </label>
-            {{ Form::submit(trans('buttons.login'), array('class' => 'btn btn-primary'))}}
-            <a class="btn btn-link" href="{{ route('forgotPasswordForm') }}">@lang('buttons.password_forgot')</a>
-        {{ Form::close() }}
+        </div>
     </div>
 </div>
-
 @stop

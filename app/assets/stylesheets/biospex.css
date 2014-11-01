@@ -11,9 +11,26 @@ body {
     white-space: nowrap;
 }
 
+.margin-left-5 {
+    margin-left: 5px;
+}
 
+.margin-top-10 {
+    margin-top: 10px;
+}
 
+.centered-form {
+    margin-top: 10%;
+}
 
+.centered-form .panel {
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: rgba(0, 0, 0, 0.3) 20px 20px 20px;
+}
+
+.has-error {
+    color: #ff0000;
+}
 .tt-dropdown-menu {
     width: 422px;
     margin-top: 12px;
