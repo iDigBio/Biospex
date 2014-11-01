@@ -13,13 +13,13 @@
 
 <div class="well clearfix">
     <div class="col-md-8">
-        @if ($user->first_name)
-        <p><strong>@lang('pages.first_name'):</strong> {{ $user->first_name }} </p>
+        @if ($user->profile->first_name)
+        <p><strong>{{ trans('pages.first_name') }}:</strong> {{ $user->profile->first_name }} </p>
         @endif
-        @if ($user->last_name)
-        <p><strong>@lang('pages.last_name'):</strong> {{ $user->last_name }} </p>
+        @if ($user->profile->last_name)
+        <p><strong>{{ trans('pages.last_name') }}:</strong> {{ $user->profile->last_name }} </p>
         @endif
-        <p><strong>@lang('pages.email'):</strong> {{ $user->email }}</p>
+        <p><strong>{{ trans('pages.email') }}:</strong> {{ $user->email }}</p>
 
     </div>
     <div class="col-md-4">
@@ -42,20 +42,20 @@
         'role' => 'form'
         )) }}
         
-        <div class="form-group {{ ($errors->has('firstName')) ? 'has-error' : '' }}" for="firstName">
-            {{ Form::label('edit_firstName', trans('pages.first_name'), array('class' => 'col-sm-2 control-label')) }}
+        <div class="form-group {{ ($errors->has('first_name')) ? 'has-error' : '' }}" for="first_name">
+            {{ Form::label('edit_first_name', trans('pages.first_name'), array('class' => 'col-sm-2 control-label')) }}
             <div class="col-sm-10">
-              {{ Form::text('firstName', $user->first_name, array('class' => 'form-control', 'placeholder' => trans('pages.first_name'), 'id' => 'edit_firstName'))}}
+              {{ Form::text('first_name', $user->profile->first_name, array('class' => 'form-control', 'placeholder' => trans('pages.first_name'), 'id' => 'edit_first_name'))}}
             </div>
-            {{ ($errors->has('firstName') ? $errors->first('firstName') : '') }}    			
+            {{ ($errors->has('first_name') ? $errors->first('first_name') : '') }}
     	</div>
 
-        <div class="form-group {{ ($errors->has('lastName')) ? 'has-error' : '' }}" for="lastName">
-            {{ Form::label('edit_lastName', trans('pages.last_name'), array('class' => 'col-sm-2 control-label')) }}
+        <div class="form-group {{ ($errors->has('last_name')) ? 'has-error' : '' }}" for="last_name">
+            {{ Form::label('edit_last_name', trans('pages.last_name'), array('class' => 'col-sm-2 control-label')) }}
             <div class="col-sm-10">
-              {{ Form::text('lastName', $user->last_name, array('class' => 'form-control', 'placeholder' => trans('pages.last_name'), 'id' => 'edit_lastName'))}}
+              {{ Form::text('last_name', $user->profile->last_name, array('class' => 'form-control', 'placeholder' => trans('pages.last_name'), 'id' => 'edit_last_name'))}}
             </div>
-            {{ ($errors->has('lastName') ? $errors->first('lastName') : '') }}                
+            {{ ($errors->has('last_name') ? $errors->first('last_name') : '') }}
         </div>
 
         <div class="form-group {{ ($errors->has('email')) ? 'has-error' : '' }}" for="email">

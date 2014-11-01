@@ -84,3 +84,5 @@ require app_path() . '/events.php';
 
 require app_path().'/blade.php';
 
+$app['Cartalyst\Sentry\Sentry'] = $app['sentry'];
+

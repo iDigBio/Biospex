@@ -23,6 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Cartalyst\Sentry\Sentry;
 use Illuminate\Events\Dispatcher;
 use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Group\GroupInterface;
@@ -37,6 +38,11 @@ use Biospex\Repo\Invite\InviteInterface;
 
 
 class UsersController extends BaseController {
+
+	/**
+	 * @var Sentry
+	 */
+	protected $sentry;
 
 	/**
 	 * @var UserInterface
@@ -100,6 +106,7 @@ class UsersController extends BaseController {
 	 * @param InviteInterface $invite
 	 */
 	public function __construct(
+		Sentry $sentry,
 		Dispatcher $events,
 		UserInterface $user,
 		GroupInterface $group,
@@ -113,6 +120,7 @@ class UsersController extends BaseController {
         InviteInterface $invite
     )
 	{
+		$this->sentry = $sentry;
 		$this->events = $events;
 		$this->user = $user;
 		$this->group = $group;
@@ -142,7 +150,7 @@ class UsersController extends BaseController {
 	 */
 	public function index()
 	{
-        $users = $this->user->all();
+		$users = $this->sentry->findAllUsers();
       
         return View::make('users.index', compact('users'));
 	}
@@ -206,15 +214,15 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-			$this->events->fire('user.registered', [
-            	'email' => $result['mailData']['email'], 
-            	'userId' => $result['mailData']['userId'], 
-                'activationCode' => $result['mailData']['activationCode']
-			]);
-
-            // Success!
-			if (!empty(Input::get('register')))
+			// Success!
+			if (Input::exists('registeruser'))
 			{
+				$this->events->fire('user.registered', [
+					'email'          => $result['mailData']['email'],
+					'userId'         => $result['mailData']['userId'],
+					'activationCode' => $result['mailData']['activationCode']
+				]);
+
 				Session::flash('success', $result['message']);
 				return Redirect::action('login');
 			}
@@ -247,7 +255,7 @@ class UsersController extends BaseController {
 	 */
 	public function edit($id)
 	{
-        $user = $this->user->find($id);
+		$user = $this->sentry->findUserById($id);
 
         if($user == null || !is_numeric($id))
         {

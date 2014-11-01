@@ -48,12 +48,11 @@ abstract class Repository {
         return $this->model->all($columns);
     }
 
-
     /**
-     * Find by id. Enable eager loading using with.
+	 * Find by id.
      *
      * @param $id
-     * @param array $with
+	 * @param array $columns
      * @return mixed
      */
     public function find($id, $columns = array('*'))

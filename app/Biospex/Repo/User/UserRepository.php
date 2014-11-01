@@ -32,6 +32,7 @@ use Cartalyst\Sentry\Users\UserExistsException;
 use Cartalyst\Sentry\Groups\GroupNotFoundException;
 use Biospex\Repo\Permission\PermissionInterface;
 use Biospex\Repo\Invite\InviteInterface;
+use Mockery\CountValidator\Exception;
 use User;
 
 class UserRepository extends Repository implements UserInterface {
@@ -48,6 +49,10 @@ class UserRepository extends Repository implements UserInterface {
 
 	/**
 	 * Construct a new User Object
+	 *
+	 * @param Sentry $sentry
+	 * @param PermissionInterface $permission
+	 * @param InviteInterface $invite
 	 */
 	public function __construct(Sentry $sentry, PermissionInterface $permission, InviteInterface $invite)
 	{
@@ -64,7 +69,7 @@ class UserRepository extends Repository implements UserInterface {
      * @param array $columns
      * @return array|mixed
      */
-    public function all($columns = array('*'))
+	public function all ($columns = ['*'])
     {
         $users = $this->sentry->findAllUsers();
 
@@ -99,14 +104,14 @@ class UserRepository extends Repository implements UserInterface {
         return $users;
     }
 
-    /**
-     * Return a specific user from the given id
-     *
-     * @param int $id
-     * @param array $columns
-     * @return User|bool|\Cartalyst\Sentry\Users\UserInterface
-     */
-    public function find($id, $columns = array('*'))
+	/**
+	 * Return a specific user from the given id
+	 *
+	 * @param $id
+	 * @param array $columns
+	 * @return bool|\Cartalyst\Sentry\Users\UserInterface|mixed
+	 */
+	public function find ($id, $columns = ['*'])
     {
         try
         {
@@ -130,14 +135,22 @@ class UserRepository extends Repository implements UserInterface {
 	/**
 	 * Store a newly created resource in storage.
 	 *
-	 * @return Response
+	 * @param array $data
+	 * @return array|mixed
 	 */
-	public function create($data = array())
+	public function create ($data = [])
 	{
-		$result = array();
+		$result = [];
+		$register = isset($data['registeruser']) ? false : true;
 		try {
 			//Attempt to register the user. 
-			$user = $this->sentry->register(array('email' => e($data['email']), 'password' => e($data['password'])));
+			$user = $this->sentry->register([
+				'email'    => e($data['email']),
+				'password' => e($data['password']),
+			], $register);
+			$user->profile->first_name = e($data['first_name']);
+			$user->profile->last_name = e($data['first_name']);
+			$user->profile->save();
 
             // Add to Users group
             $usersGroup = $this->sentry->findGroupByName('Users');
@@ -168,11 +181,11 @@ class UserRepository extends Repository implements UserInterface {
                 // Create user group based on email
 				$parts = explode("@", $user->email);
                 $name = preg_replace('/[^a-zA-Z0-9]/', '', $parts[0]);
-                $userGroup = $this->sentry->createGroup(array(
+				$userGroup = $this->sentry->createGroup([
 					'user_id' => $user->id,
 					'name' => $name,
-                    'permissions' => array(),
-                ));
+					'permissions' => [],
+				]);
                 $user->addGroup($userGroup);
             }
 
@@ -197,7 +210,11 @@ class UserRepository extends Repository implements UserInterface {
         {
             $result['success'] = false;
             $result['message'] = trans('groups.notfound');
-        }
+        } catch (Exception $e)
+		{
+			$result['success'] = false;
+			$result['message'] = $e->getMessage();
+		}
 
 		return $result;
 	}
@@ -208,17 +225,17 @@ class UserRepository extends Repository implements UserInterface {
 	 * @param  array $data
 	 * @return Response
 	 */
-	public function update($data = array())
+	public function update ($data = [])
 	{
-		$result = array();
+		$result = [];
 		try
 		{
 		    // Find the user using the user id
 		    $user = $this->sentry->findUserById($data['id']);
 
 		    // Update the user details
-		    $user->first_name = e($data['firstName']);
-		    $user->last_name = e($data['lastName']);
+			$user->profile->first_name = e($data['first_name']);
+			$user->profile->last_name = e($data['last_name']);
             $user->email = e($data['email']);
             $user->activated = isset($data['activated']) ? 1 : 0;
 
@@ -248,6 +265,7 @@ class UserRepository extends Repository implements UserInterface {
 		    // Update the user
 		    if ($user->save())
 		    {
+				$user->profile->save();
 		        // User information was updated
 		        $result['success'] = true;
 	    		$result['message'] = trans('users.updated');
@@ -304,7 +322,7 @@ class UserRepository extends Repository implements UserInterface {
 	 */
 	public function activate($id, $code)
 	{
-		$result = array();
+		$result = [];
 		try
 		{
 		    // Find the user using the user id
@@ -316,7 +334,7 @@ class UserRepository extends Repository implements UserInterface {
 		        // User activation passed
 		        $result['success'] = true;
 		        $url = route('login');
-	    		$result['message'] = trans('users.activated', array('url' => $url));
+				$result['message'] = trans('users.activated', ['url' => $url]);
 		    }
 		    else
 		    {
@@ -345,7 +363,7 @@ class UserRepository extends Repository implements UserInterface {
 	 */
 	public function resend($data)
 	{
-		$result = array();
+		$result = [];
 		try {
             //Attempt to find the user. 
             $user = $this->sentry->getUserProvider()->findByLogin(e($data['email']));
@@ -386,7 +404,7 @@ class UserRepository extends Repository implements UserInterface {
 	 */
 	public function forgotPassword($data)
 	{
-		$result = array();
+		$result = [];
 		try
         {
 			$user = $this->sentry->getUserProvider()->findByLogin(e($data['email']));
@@ -413,7 +431,7 @@ class UserRepository extends Repository implements UserInterface {
 	 */
 	public function resetPassword($id, $code)
 	{
-		$result = array();
+		$result = [];
 		try
         {
 	        // Find the user
@@ -445,12 +463,14 @@ class UserRepository extends Repository implements UserInterface {
 	}
 
 	/**
-	 * Process a change password request. 
-	 * @return Array $data
+	 * Process a change password request.
+	 *
+	 * @param $data
+	 * @return array
 	 */
 	public function changePassword($data)
 	{
-		$result = array();
+		$result = [];
 		try
 		{
 			$user = $this->sentry->getUserProvider()->findById($data['id']);        
@@ -506,7 +526,7 @@ class UserRepository extends Repository implements UserInterface {
 	 */
 	public function suspend($id, $minutes)
 	{
-		$result = array();
+		$result = [];
 		try
 		{
 		    // Find the user using the user id
@@ -519,7 +539,7 @@ class UserRepository extends Repository implements UserInterface {
 		    $throttle->suspend();
 
 		    $result['success'] = true;
-			$result['message'] = trans('users.suspended', array('minutes' => $minutes));
+			$result['message'] = trans('users.suspended', ['minutes' => $minutes]);
 		}
 		catch (UserNotFoundException $e)
 		{
@@ -531,12 +551,12 @@ class UserRepository extends Repository implements UserInterface {
 
 	/**
 	 * Remove a users' suspension.
-	 * @param  [type] $id [description]
-	 * @return [type]     [description]
+	 * @param $id
+	 * @return array
 	 */
 	public function unSuspend($id)
 	{
-		$result = array();
+		$result = [];
 		try
 		{
 		    // Find the user using the user id
@@ -563,7 +583,7 @@ class UserRepository extends Repository implements UserInterface {
 	 */
 	public function ban($id)
 	{
-		$result = array();
+		$result = [];
 		try
 		{
 		    // Find the user using the user id
@@ -590,7 +610,7 @@ class UserRepository extends Repository implements UserInterface {
 	 */
 	public function unBan($id)
 	{
-		$result = array();
+		$result = [];
 		try
 		{
 		    // Find the user using the user id
@@ -611,10 +631,13 @@ class UserRepository extends Repository implements UserInterface {
 	}
 
 	/**
-     * Generate password - helper function
-     * From http://www.phpscribble.com/i4xzZu/Generate-random-passwords-of-given-length-and-strength
-     *
-     */
+	 * Generate password - helper function
+	 * From http://www.phpscribble.com/i4xzZu/Generate-random-passwords-of-given-length-and-strength
+	 *
+	 * @param int $length
+	 * @param int $strength
+	 * @return string
+	 */
     private function _generatePassword($length=9, $strength=4) {
         $vowels = 'aeiouy';
         $consonants = 'bcdfghjklmnpqrstvwxz';

@@ -27,6 +27,11 @@
 use Biospex\Repo\Repository;
 use Biospex\Repo\Permission\PermissionInterface;
 use Cartalyst\Sentry\Sentry;
+use Cartalyst\Sentry\Groups\GroupNotFoundException;
+use Cartalyst\Sentry\Groups\GroupExistsException;
+use Cartalyst\Sentry\Users\LoginRequiredException;
+use Cartalyst\Sentry\Users\UserExistsException;
+use Cartalyst\Sentry\Groups\NameRequiredException;
 use Group;
 
 class GroupRepository extends Repository implements GroupInterface {
@@ -43,6 +48,10 @@ class GroupRepository extends Repository implements GroupInterface {
 
 	/**
 	 * Construct a new Group Object
+	 *
+	 * @param Group $model
+	 * @param Sentry $sentry
+	 * @param PermissionInterface $permission
 	 */
 	public function __construct(
 		Group $model,
@@ -58,9 +67,10 @@ class GroupRepository extends Repository implements GroupInterface {
 	/**
 	 * Return all the registered groups
 	 *
-	 * @return stdObject Collection of groups
+	 * @param array $columns
+	 * @return array|mixed
 	 */
-	public function all($columns = array('*'))
+	public function all ($columns = ['*'])
 	{
 		return $this->sentry->getGroupProvider()->findAll();
 	}
@@ -68,16 +78,16 @@ class GroupRepository extends Repository implements GroupInterface {
 	/**
 	 * Return a specific group by a given id
 	 *
-	 * @param  integer $id
-	 * @return Group
+	 * @param $id
+	 * @param array $columns
+	 * @return bool|\Cartalyst\Sentry\Groups\GroupInterface|mixed
 	 */
-	public function find($id, $columns = array('*'))
+	public function find ($id, $columns = ['*'])
 	{
 		try
 		{
 			$group = $this->sentry->findGroupById($id);
-		}
-		catch (\Cartalyst\Sentry\Groups\GroupNotFoundException $e)
+		} catch (GroupNotFoundException $e)
 		{
 			return false;
 		}
@@ -95,28 +105,27 @@ class GroupRepository extends Repository implements GroupInterface {
 	/**
 	 * Store a newly created resource in storage.
 	 *
-	 * @return Response
+	 * @param array $data
+	 * @return array|mixed
 	 */
-	public function create($data = array())
+	public function create ($data = [])
 	{
-		$result = array();
+		$result = [];
 		try {
 			    // Create the group
-			    $result['group'] = $this->sentry->createGroup(array(
+			$result['group'] = $this->sentry->createGroup([
                     'user_id'     => e($data['user_id']),
                     'name'        => e($data['name']),
-                    'permissions' => array(),
-                ));
+					'permissions' => [],
+			]);
 
 			   	$result['success'] = true;
 	    		$result['message'] = trans('groups.created');
-		}
-		catch (\Cartalyst\Sentry\Users\LoginRequiredException $e)
+		} catch (LoginRequiredException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('groups.loginreq');
-		}
-		catch (\Cartalyst\Sentry\Users\UserExistsException $e)
+		} catch (UserExistsException $e)
 		{
 		    $result['success'] = false;
 	    	$result['message'] = trans('groups.userexists');;
@@ -124,14 +133,14 @@ class GroupRepository extends Repository implements GroupInterface {
 
 		return $result;
 	}
-	
+
 	/**
 	 * Update the specified resource in storage.
 	 *
-	 * @param  int  $id
-	 * @return Response
+	 * @param array $data
+	 * @return mixed
 	 */
-	public function update($data = array())
+	public function update ($data = [])
 	{
         $permissions = $this->permission->setPermissions($data);
 
@@ -157,18 +166,15 @@ class GroupRepository extends Repository implements GroupInterface {
 		        $result['success'] = false;
 				$result['message'] = trans('groups.updateproblem');;
 		    }
-		}
-		catch (\Cartalyst\Sentry\Groups\NameRequiredException $e)
+		} catch (NameRequiredException $e)
 		{
 			$result['success'] = false;
 			$result['message'] = trans('groups.namereq');;
-		}
-		catch (\Cartalyst\Sentry\Groups\GroupExistsException $e)
+		} catch (GroupExistsException $e)
 		{
 			$result['success'] = false;
 			$result['message'] = trans('groups.groupexists');;
-		}
-		catch (\Cartalyst\Sentry\Groups\GroupNotFoundException $e)
+		} catch (GroupNotFoundException $e)
 		{
 			$result['success'] = false;
 			$result['message'] = trans('groups.notfound');
@@ -192,8 +198,7 @@ class GroupRepository extends Repository implements GroupInterface {
 
 		    // Delete the group
 		    $group->delete();
-		}
-		catch (\Cartalyst\Sentry\Groups\GroupNotFoundException $e)
+		} catch (GroupNotFoundException $e)
 		{
 		    return false;
 		}
@@ -211,8 +216,7 @@ class GroupRepository extends Repository implements GroupInterface {
 		try
 		{
 		    $group = $this->sentry->findGroupByName($name);
-		}
-		catch (\Cartalyst\Sentry\Groups\GroupNotFoundException $e)
+		} catch (GroupNotFoundException $e)
 		{
 		    return false;
 		}
@@ -228,7 +232,7 @@ class GroupRepository extends Repository implements GroupInterface {
 	 */
 	public function selectOptions ($allGroups, $create = false)
     {
-		$options = array();
+		$options = [];
 		foreach ($allGroups as $key => $group)
 		{
 			if (($group->name == 'Admins' && !$create) || $group->name == 'Users')
@@ -241,14 +245,13 @@ class GroupRepository extends Repository implements GroupInterface {
 		return $options;
     }
 
-    /**
-     * Find all the groups depending on user
-     *
-     * @param $user
-     * @param bool $superuser
-     * @return mixed|void
-     */
-	public function findAllGroupsWithProjects ($allGroups = array())
+	/**
+	 * Find all the groups depending on user
+	 *
+	 * @param array $allGroups
+	 * @return mixed
+	 */
+	public function findAllGroupsWithProjects ($allGroups = [])
     {
 		return $this->sentry->getGroupProvider()->createModel()->findAllGroupsWithProjects($allGroups);
     }

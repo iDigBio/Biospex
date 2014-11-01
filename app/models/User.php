@@ -43,6 +43,24 @@ class User extends SentryUser {
      */
     protected $softDelete = true;
 
+	/**
+	 * Used during phpunit tests for setting hash
+	 */
+	public static function boot ()
+	{
+		parent::boot();
+
+		//  Used during phpunit tests for setting hash
+		self::$hasher = new Cartalyst\Sentry\Hashing\NativeHasher;
+
+		static::created(function ($model)
+		{
+			$profile = new Profile;
+			$profile->user_id = $model->id;
+			$profile->save();
+		});
+	}
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -59,12 +77,11 @@ class User extends SentryUser {
         return $this->hasMany('WorkflowManager');
     }
 
-    /**
-     * Used during phpunit tests for setting hash
-     */
-    public static function boot()
-    {
-        self::$hasher = new Cartalyst\Sentry\Hashing\NativeHasher;
-    }
-
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 */
+	public function profile ()
+	{
+		return $this->hasOne('Profile');
+	}
 }

@@ -23,6 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Cartalyst\Sentry\Sentry;
 use Illuminate\Events\Dispatcher;
 use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Group\GroupInterface;
@@ -30,6 +31,11 @@ use Biospex\Form\Group\GroupForm;
 use Biospex\Repo\Permission\PermissionInterface;
 
 class GroupsController extends BaseController {
+
+	/**
+	 * @var Sentry
+	 */
+	protected $sentry;
 
 	/**
 	 * User
@@ -62,6 +68,7 @@ class GroupsController extends BaseController {
 	/**
 	 * Instantiate a new GroupsController
 	 *
+	 * @param Sentry $sentry
 	 * @param UserInterface $user
 	 * @param Dispatcher $events
 	 * @param GroupInterface $group
@@ -69,6 +76,7 @@ class GroupsController extends BaseController {
 	 * @param PermissionInterface $permission
 	 */
 	public function __construct(
+		Sentry $sentry,
 		UserInterface $user,
 		Dispatcher $events,
         GroupInterface $group,
@@ -76,6 +84,7 @@ class GroupsController extends BaseController {
         PermissionInterface $permission
     )
 	{
+		$this->sentry = $sentry;
 		$this->user = $user;
 		$this->events = $events;
 		$this->group = $group;
@@ -92,14 +101,14 @@ class GroupsController extends BaseController {
     }
 
 	/**
-	 * Display a listing of the resource.
+	 * Display groups.
 	 *
 	 * @return Response
 	 */
 	public function index()
 	{
         // Find the user and retrieve groups
-		$user = $this->user->getUser();
+		$user = $this->sentry->getUser();
         $isSuperUser = $user->isSuperUser();
         $groups = $isSuperUser ? $this->group->all() : $user->getGroups();
 
@@ -113,18 +122,18 @@ class GroupsController extends BaseController {
 	}
 
 	/**
-	 * Show the form for creating a new resource.
+	 * Show create group form.
 	 *
 	 * @return Response
 	 */
 	public function create()
 	{
-		$user = $this->user->getUser();
+		$user = $this->sentry->getUser();
 		return View::make('groups.create', compact('user'));
 	}
 
 	/**
-	 * Store a newly created resource in storage.
+	 * Store a newly created group.
 	 *
 	 * @return Response
 	 */
@@ -135,7 +144,7 @@ class GroupsController extends BaseController {
         
         if( $result['success'] )
         {
-			$user = $this->user->getUser();
+			$user = $this->sentry->getUser();
             // Assign the group to the user
             if ($user->addGroup($result['group']))
             {
@@ -161,7 +170,7 @@ class GroupsController extends BaseController {
 	}
 
 	/**
-	 * Display the specified resource.
+	 * Show group.
 	 *
 	 * @param $id
 	 * @return $this
@@ -171,10 +180,10 @@ class GroupsController extends BaseController {
         // Get all available permissions
         $permissions = $this->permission->all();
 
-		//Show a group and its permissions. 
-		$group = $this->group->findWith($id, ['owner']);
+		//Show a group and its permissions.
+		$group = $this->sentry->findGroupById($id);
 
-		$viewPermissions = $this->user->getUser()->hasAccess('permission_view');
+		$viewPermissions = $this->sentry->getUser()->hasAccess('permission_view');
 
 		return View::make('groups.show')->with([
             'group' => $group,
@@ -184,7 +193,7 @@ class GroupsController extends BaseController {
 	}
 
 	/**
-	 * Show the form for editing the specified resource.
+	 * Show group edit form.
 	 *
 	 * @param $id
 	 * @return $this
@@ -194,9 +203,9 @@ class GroupsController extends BaseController {
         // Get all available permissions
         $permissions = $this->permission->getPermissionsGroupBy();
 
-		$editPermissions = $this->user->getUser()->hasAccess('permission_edit');
+		$editPermissions = $this->sentry->getUser()->hasAccess('permission_edit');
 
-		$group = $this->group->find($id);
+		$group = $this->sentry->findGroupById($id);
 		return View::make('groups.edit')->with([
             'group' => $group,
             'permissions' => $permissions,
@@ -205,9 +214,10 @@ class GroupsController extends BaseController {
 	}
 
 	/**
-	 * Update the specified resource in storage.
+	 * Update group.
 	 *
-	 * @return Response
+	 * @param $id
+	 * @return $this|\Illuminate\Http\RedirectResponse
 	 */
 	public function update($id)
 	{
@@ -231,9 +241,10 @@ class GroupsController extends BaseController {
 	}
 
 	/**
-	 * Remove the specified resource from storage.
+	 * Remove group.
 	 *
-	 * @return Response
+	 * @param $id
+	 * @return \Illuminate\Http\RedirectResponse
 	 */
 	public function destroy($id)
 	{
