@@ -119,6 +119,14 @@ return array(
             'numeric' => 'Minutes must be a number',
             'required' => 'You must specify suspension length in minutes',
         ),
+		'registeruser' => [
+			'required_with' => 'Field required for new users.',
+			'honeypot'      => 'Form not submitted correctly',
+		],
+		'registertime' => [
+			'required_with' => 'Field required on time',
+			'honeytime'     => 'Too much time has elapse. Please refresh form.',
+		]
     ),
 
     /*

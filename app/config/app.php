@@ -118,6 +118,7 @@ return array(
 		'Cviebrock\EloquentSluggable\SluggableServiceProvider',
 		'Cviebrock\ImageValidator\ImageValidatorServiceProvider',
 		'DaveJamesMiller\Breadcrumbs\ServiceProvider',
+		'Msurguy\Honeypot\HoneypotServiceProvider',
     ),
 
 	/*

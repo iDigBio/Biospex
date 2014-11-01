@@ -18,7 +18,8 @@
         "cviebrock/image-validator": "1.0.*",
         "davejamesmiller/laravel-breadcrumbs": "~2.2.2",
         "imagine/imagine": "~0.5.0",
-        "pda/pheanstalk": "~2.0"
+        "pda/pheanstalk": "~2.0",
+        "msurguy/honeypot": "dev-master"
 	},
     "require-dev": {
         "barryvdh/laravel-ide-helper": "1.*",

@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "df64642b326ff5e9c3e7ab33ac07be24",
+    "hash": "14cda2bc6e813981a6d8c5345256a2aa",
     "packages": [
         {
             "name": "anahkiasen/html-object",
@@ -1522,6 +1522,55 @@
                 "psr-3"
             ],
             "time": "2014-09-30 13:30:58"
+        },
+        {
+            "name": "msurguy/honeypot",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/msurguy/Honeypot.git",
+                "reference": "65737678112d9c083d1beabf527fa2d877ec9e9c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/msurguy/Honeypot/zipball/65737678112d9c083d1beabf527fa2d877ec9e9c",
+                "reference": "65737678112d9c083d1beabf527fa2d877ec9e9c",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/config": "4.*",
+                "illuminate/support": "4.*",
+                "illuminate/translation": "4.*",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "0.9.*",
+                "phpunit/phpunit": "4.0.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Msurguy\\Honeypot\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Maksim Surguy",
+                    "email": "m.surguy@gmail.com"
+                }
+            ],
+            "description": "Honeypot spam prevention",
+            "keywords": [
+                "Forms",
+                "Honeypot",
+                "laravel",
+                "spam"
+            ],
+            "time": "2014-09-27 07:45:58"
         },
         {
             "name": "nesbot/carbon",
@@ -3622,6 +3671,7 @@
         "vespakoen/menu": 20,
         "codesleeve/asset-pipeline": 20,
         "mgallegos/laravel-jqgrid": 20,
+        "msurguy/honeypot": 20,
         "way/laravel-test-helpers": 20,
         "mockery/mockery": 20,
         "raveren/kint": 20
