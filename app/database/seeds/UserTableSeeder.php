@@ -23,7 +23,17 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Biospex\Repo\User\UserInterface;
+
 class UserTableSeeder extends Seeder {
+
+	/**
+	 * @param UserInterface $user
+	 */
+	public function __construct (UserInterface $user)
+	{
+		$this->user = $user;
+	}
 
     /**
      * Run the database seeds.
@@ -33,12 +43,22 @@ class UserTableSeeder extends Seeder {
     public function run()
     {
 		DB::table('users')->truncate();
+		DB::table('profiles')->truncate();
 
 		$users = $this->getUsers();
 
 		foreach ($users as $user)
 		{
-			Sentry::getUserProvider()->create($user);
+			$sentryUser = Sentry::register($user, true);
+			$sentryUser->profile->first_name = $user['first_name'];
+			$sentryUser->profile->last_name = $user['last_name'];
+			$sentryUser->profile->save();
+			/*
+			/$user = $this->user->find($sentryUser->id);
+			$user->first_name = $user['first_name'];
+			$user->last_name = $user['last_name'];
+			$user->profile()->save($user);
+			*/
 		}
     }
 
@@ -50,50 +70,13 @@ class UserTableSeeder extends Seeder {
 				'password'      => 'biospex',
 				'first_name'    => 'Biospex',
 				'last_name'     => 'Admin',
-				'activated'     => 1,
 			),
 			array(
 				'email'    => 'biospex@gmail.com',
 				'password' => 'biospex',
 				'first_name'    => 'Robert',
 				'last_name'     => 'Bruhn',
-				'activated' => 1,
 			),
-			array(
-				'email' => 'nogroup@gmail.com',
-				'password' => 'biospex',
-				'first_name' => 'No',
-				'last_name' => 'Group',
-				'activated' => 1,
-			),
-			array(
-				'email'    => 'macadamiatree@gmail.com',
-				'password' => 'biospex',
-				'first_name'    => 'Austin',
-				'last_name'     => 'Mast',
-				'activated' => 1,
-			),
-			array(
-				'email'    => 'jspinks@fsu.edu',
-				'password' => 'biospex',
-				'first_name'    => 'Jeremy',
-				'last_name'     => '',
-				'activated' => 1,
-			),
-			array(
-				'email'    => 'eellwood@bio.fsu.edu',
-				'password' => 'biospex',
-				'first_name'    => 'Libby',
-				'last_name'     => '',
-				'activated' => 1,
-			),
-			array(
-				'email'    => 'griccardi@fsu.edu',
-				'password' => 'biospex',
-				'first_name'    => 'Greg',
-				'last_name'     => '',
-				'activated' => 1,
-			)
 		);
 	}
 }

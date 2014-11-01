@@ -43,16 +43,15 @@ class UserGroupTableSeeder extends Seeder {
 		foreach ($users as $user)
 		{
 			$sentryUser = Sentry::getUserProvider()->findByLogin($user->email);
-			$sentryUser->addGroup($groupUser);
-
-			if ($user->email == 'nogroup@gmail.com')
-				continue;
-
-			$sentryUser->addGroup($groupHerbarium);
-			$sentryUser->addGroup($groupCalbug);
-
 			if ($user->email == 'admin@biospex.org')
+			{
 				$sentryUser->addGroup($groupAdmin);
+			} else
+			{
+				$sentryUser->addGroup($groupUser);
+				$sentryUser->addGroup($groupHerbarium);
+				$sentryUser->addGroup($groupCalbug);
+			}
 		}
     }
 
