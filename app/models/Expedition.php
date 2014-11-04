@@ -106,16 +106,13 @@ class Expedition extends Eloquent {
 		return $this->hasMany('Download');
     }
 
-    /**
-     * Return expeditions by project id
-     *
-     * @param $projectId
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
-     */
-    public function byProjectId($projectId)
-    {
-        return $this->where('project_id', $projectId)->orderBy('title')->get();
-    }
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function actors()
+	{
+		return $this->belongsToMany('Actor', 'expedition_actor')->withPivot('state', 'completed');
+	}
 
     /**
      * Accessor for created_at
