@@ -172,28 +172,10 @@ class CacheExpeditionDecorator extends AbstractExpeditionDecorator {
 	}
 
 	/**
-	 * By Project Id
+	 * Set cache pass
 	 *
-	 * @param $id
-	 * @return mixed
+	 * @param bool $value
 	 */
-	public function byProjectId ($id)
-	{
-		$key = md5('project.' . $id);
-
-		if ($this->cache->has($key) && ! $this->pass)
-		{
-			return $this->cache->get($key);
-		}
-
-		$expedition = $this->expedition->byProjectId($id);
-
-		if ( ! $this->pass)
-			$this->cache->put($key, $expedition);
-
-		return $expedition;
-	}
-
 	public function setPass ($value = false)
 	{
 		$this->pass = $value;

@@ -26,8 +26,4 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface ExpeditionInterface extends RepositoryInterface {
-
-	public function byProjectId($projectId);
-
-}
+interface ExpeditionInterface extends RepositoryInterface {}
