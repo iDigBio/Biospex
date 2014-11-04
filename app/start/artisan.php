@@ -12,5 +12,6 @@
 Artisan::resolve('SubjectImportCommand');
 Artisan::resolve('WorkFlowManagerCommand');
 Artisan::resolve('DownloadCleanCommand');
+Artisan::resolve('ViewsCommand');
 Artisan::resolve('TestCodeCommand');
 

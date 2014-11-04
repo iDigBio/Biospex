@@ -1,10 +1,10 @@
 <?php
 /**
- * Workflow.php
+ * ViewsCommand.php
  *
  * @package    Biospex Package
  * @version    1.0
- * @author     Robert Bruhn <79e6ef82@opayq.com>
+ * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
  * @link       http://biospex.org
@@ -23,36 +23,57 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-class Workflow extends Eloquent
-{
+use Illuminate\Console\Command;
+use Illuminate\Filesystem\Filesystem;
+
+class ViewsCommand extends Command {
 
 	/**
-	 * The database table used by the model.
+	 * The console command name.
 	 *
 	 * @var string
 	 */
-	protected $table = 'workflows';
-
-	protected $fillable = array(
-		'title',
-		'url',
-		'class',
-	);
+	protected $name = 'views:clear';
 
 	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 * The console command description.
+	 *
+	 * @var string
 	 */
-	public function projects ()
+	protected $description = 'Clear views folder';
+
+	/**
+	 * The file system instance.
+	 *
+	 * @var \Illuminate\Filesystem\Filesystem
+	 */
+	protected $files;
+
+	/**
+	 * Create a new command instance.
+	 *
+	 * @param Filesystem $files
+	 */
+	public function __construct(Filesystem $files)
 	{
-		return $this->belongsToMany('Project');
+		parent::__construct();
+		$this->files = $files;
 	}
 
 	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 * Execute the console command.
+	 *
+	 * @return mixed
 	 */
-	public function downloads ()
+	public function fire()
 	{
-		return $this->hasMany('Download');
+
+		foreach ($this->files->files(storage_path().'/views') as $file)
+		{
+			$this->files->delete($file);
+		}
+
+		$this->info('Views deleted from cache');
 	}
 
 }
