@@ -1,6 +1,6 @@
-<?php namespace Biospex\Repo\WorkFlow;
+<?php namespace Biospex\Repo\Actor;
 /**
- * WorkFlowInterface.php
+ * ActorRepository.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -24,6 +24,16 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Biospex\Repo\RepositoryInterface;
+use Biospex\Repo\Repository;
+use Actor;
 
-interface WorkFlowInterface extends RepositoryInterface {}
+class ActorRepository extends Repository implements ActorInterface {
+
+    /**
+     * @param Actor $actor
+     */
+    public function __construct(Actor $actor)
+    {
+        $this->model = $actor;
+    }
+}
