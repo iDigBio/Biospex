@@ -1,4 +1,4 @@
-<?php namespace Biospex\Services\WorkFlow;
+<?php namespace Biospex\Services\Actor;
 /**
  * NotesFromNature.php
  *
@@ -24,7 +24,7 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class NotesFromNature extends WorkFlowAbstract
+class NotesFromNature extends ActorAbstract
 {
     /**
      * @var array
@@ -32,10 +32,10 @@ class NotesFromNature extends WorkFlowAbstract
     protected $states = array();
 
 	/**
-	 * Id for the workflow
+	 * Id for the actor
 	 * @var null
 	 */
-	protected $workflowId = null;
+	protected $actorId = null;
 
     /**
      * Current expedition being processed
@@ -119,10 +119,10 @@ class NotesFromNature extends WorkFlowAbstract
 	/**
 	 * Set properties
 	 *
-	 * @param $workflowId
+	 * @param $actorId
 	 * @param bool $debug
 	 */
-	public function setProperties ($workflowId, $debug = false)
+	public function setProperties ($actorId, $debug = false)
     {
 		$this->states = [
             'export',
@@ -138,7 +138,7 @@ class NotesFromNature extends WorkFlowAbstract
 			'image/tiff' => '.tiff',
 		];
 
-		$this->setWorkflowId($workflowId);
+		$this->setActorId($actorId);
 		$this->setReportDebug($debug);
 
         return;
@@ -147,11 +147,11 @@ class NotesFromNature extends WorkFlowAbstract
 	/**
 	 * Set workflow id
 	 *
-	 * @param $workflowId
+	 * @param $actorId
 	 */
-	protected function setWorkflowId ($workflowId)
+	protected function setActorId ($actorId)
 	{
-		$this->workflowId = $workflowId;
+		$this->actorId = $actorId;
 	}
 
 	/**
@@ -172,7 +172,7 @@ class NotesFromNature extends WorkFlowAbstract
     public function process($id)
     {
 		$this->expedition->setPass(true);
-		$this->record = $this->expedition->findWith($id, ['project.group', 'subjects.subjectDoc']);
+		$this->record = $this->expedition->findWith($id, ['actor', 'project.group', 'subjects.subjectDoc']);
 
         if (empty($this->record))
         {
@@ -183,7 +183,7 @@ class NotesFromNature extends WorkFlowAbstract
         }
 
 		try {
-            $result = call_user_func(array($this, $this->states[$this->record->state]));
+            $result = call_user_func(array($this, $this->states[$this->record->pivot->state]));
 
 			if ( ! $result)
 				return;
@@ -200,8 +200,8 @@ class NotesFromNature extends WorkFlowAbstract
 		$groupId = $this->record->project->group_id;
 
 		// TODO Moved above to avoid cron running it every minute during presentation.
-		//$this->record->state = $this->record->state+1;
-		//$this->expedition->save($this->record);
+		//$this->record->pivot->state = $this->record->pivot->state+1;
+		//$this->expedition->pivot->save();
 
         $this->report->processComplete($groupId, $this->record->title);
 
@@ -232,10 +232,10 @@ class NotesFromNature extends WorkFlowAbstract
     public function export()
     {
 		// TODO This is set so cron does not run it every minute during presentation.
-		if ($this->record->state > 0)
+		if ($this->record->pivot->state > 0)
 			return;
-		$this->record->state = $this->record->state + 1;
-		$this->expedition->save($this->record);
+		$this->record->pivot->state = $this->record->pivot->state + 1;
+		$this->expedition->pivot->save();
 
 		$title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10)));
         $this->tmpFileDir = "{$this->dataDir}/$title";
@@ -256,7 +256,7 @@ class NotesFromNature extends WorkFlowAbstract
 			$this->report->missingImages($groupId, $this->record->title, $this->missingImg);
 		}
 
-		$this->createDownload($this->record->id, $this->workflowId, "$title.tar.gz");
+		$this->createDownload($this->record->id, $this->actorId, "$title.tar.gz");
 
 		$this->filesystem->deleteDirectory($this->tmpFileDir);
 

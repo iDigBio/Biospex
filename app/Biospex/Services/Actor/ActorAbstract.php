@@ -1,6 +1,6 @@
-<?php namespace Biospex\Services\WorkFlow;
+<?php namespace Biospex\Services\Actor;
 /**
- * WorkFlowAbstract.php
+ * ActorAbstract.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -32,7 +32,7 @@ use Biospex\Repo\Download\DownloadInterface;
 use Biospex\Services\Report\Report;
 use Biospex\Services\Image\Image;
 
-abstract class WorkFlowAbstract {
+abstract class ActorAbstract {
 
 	/**
 	 * @var Filesystem
@@ -100,9 +100,9 @@ abstract class WorkFlowAbstract {
         $this->dataTmp = Config::get('config.dataTmp');
     }
 
-	abstract protected function setProperties ($workflowId, $debug = false);
+	abstract protected function setProperties ($actorId, $debug = false);
 
-	abstract protected function setWorkflowId ($id);
+	abstract protected function setActorId ($id);
 
 	abstract protected function setReportDebug ($debug = false);
 
@@ -114,9 +114,12 @@ abstract class WorkFlowAbstract {
 
     abstract protected function getResults();
 
-    /**
-     * Create directory
-     */
+	/**
+	 * Create directory
+	 *
+	 * @param $dir
+	 * @return mixed
+	 */
     protected function createDir($dir)
     {
         if ( ! $this->filesystem->isDirectory($dir))
@@ -171,11 +174,11 @@ abstract class WorkFlowAbstract {
         return;
     }
 
-	protected function createDownload ($expeditionId, $workflowId, $file)
+	protected function createDownload ($expeditionId, $actorId, $file)
     {
         $data = array(
             'expedition_id' => $expeditionId,
-			'workflow_id' => $workflowId,
+			'actor_id' => $actorId,
             'file' => $file
         );
 
