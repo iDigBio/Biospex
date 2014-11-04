@@ -23,12 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 class WorkflowManager extends Eloquent {
-
-    use SoftDeletingTrait;
-
     /**
      * The database table used by the model.
      *
@@ -37,21 +33,10 @@ class WorkflowManager extends Eloquent {
     protected $table = 'workflow_manager';
 
     protected $fillable = array(
-        'workflow_id',
         'expedition_id',
-        'user_id'
+		'stopped',
+		'error',
     );
-
-	/**
-	 * Scope not deleted
-	 *
-	 * @param $query
-	 * @return mixed
-	 */
-	public function scopeNotDeleted($query)
-	{
-    	return $query->whereNotNull('deleted_at');
-	}
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -61,28 +46,27 @@ class WorkflowManager extends Eloquent {
         return $this->belongsTo('Expedition');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function user()
-    {
-        return $this->belongsTo('User');
-    }
-
+	/**
+	 * Scope
+	 *
+	 * @param $query
+	 * @param $id
+	 * @return mixed
+	 */
     public function scopeExpeditionId($query, $id)
     {
         return $query->where('expedition_id', '=', $id);
     }
 
-    /**
-     * Get workflow process by expedition id
-     *
-     * @param $id
-     * @return mixed
-     */
-    public function getByExpeditionId($id, $deleted)
+	/**
+	 * Get workflow process by expedition id
+	 *
+	 * @param $id
+	 * @return mixed
+	 */
+    public function findByExpeditionId($id)
     {
-        return !$deleted ? $this->expeditionid($id)->first() : $this->expeditionid($id)->NotDeleted()->first();
+        return $this->expeditionid($id)->first();
     }
 
 }
