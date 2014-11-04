@@ -44,8 +44,8 @@ class WorkflowManagerRepository extends Repository implements WorkflowManagerInt
 	 * @param bool $deleted
 	 * @return mixed
 	 */
-	public function getByExpeditionId($id, $deleted = false)
+	public function findByExpeditionId($id)
     {
-        return $this->model->getByExpeditionId($id, $deleted);
+        return $this->model->getByExpeditionId($id);
     }
 }

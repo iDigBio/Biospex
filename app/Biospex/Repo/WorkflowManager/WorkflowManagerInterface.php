@@ -34,5 +34,5 @@ interface WorkflowManagerInterface extends RepositoryInterface {
      * @param $id
      * @return mixed
      */
-    public function getByExpeditionId($id, $deleted = false);
+    public function findByExpeditionId($id);
 }
