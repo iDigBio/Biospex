@@ -61,4 +61,14 @@ class Actor extends Eloquent
 		return $this->hasMany('Download');
 	}
 
+	/**
+	 * Return as select list
+	 *
+	 * @return array
+	 */
+	public function selectList()
+	{
+		return $this->lists('title', 'id');
+	}
+
 }
