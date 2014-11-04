@@ -26,7 +26,7 @@
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
-use Biospex\Repo\WorkFlow\WorkFlowInterface;
+use Biospex\Repo\Actor\ActorInterface;
 use Biospex\Services\Report\Report;
 
 class WorkFlowManagerCommand extends Command {
@@ -61,17 +61,17 @@ class WorkFlowManagerCommand extends Command {
 	 * Class constructor
 	 *
 	 * @param WorkflowManagerInterface $manager
-	 * @param WorkFlowInterface $workflow
+	 * @param ActorInterface $actor
 	 * @param Report $report
 	 */
     public function __construct(
         WorkflowManagerInterface $manager,
-        WorkFlowInterface $workflow,
+        ActorInterface $actor,
         Report $report
     )
     {
         $this->manager = $manager;
-        $this->workflow = $workflow;
+        $this->actor = $actor;
         $this->report = $report;
 
         parent::__construct();
@@ -95,18 +95,18 @@ class WorkFlowManagerCommand extends Command {
         foreach ($managers as $manager)
         {
             try {
-				$workflow = $this->workflow->find($manager->workflow_id);
-				$classNameSpace ='Biospex\Services\WorkFlow\\' . $workflow->class;
+				$actor = $this->actor->find($manager->actor_id);
+				$classNameSpace ='Biospex\Services\Actor\\' . $actor->class;
                 $class = App::make($classNameSpace);
-				$class->setProperties($workflow->id, $this->debug);
+				$class->setProperties($actor->id, $this->debug);
                 $class->process($manager->expedition_id);
             }
             catch ( Exception $e )
             {
                 $this->report->addError(trans('errors.error_workflow_manager',
                     array(
-                        'class' => $workflow->class,
-                        'id' => $manager->workflow_id,
+                        'class' => $actor->class,
+                        'id' => $manager->actor_id,
                         'error' => $e->getFile() . " - " . $e->getLine() . ": " . $e->getMessage()
                     )));
                 $this->report->reportSimpleError();
