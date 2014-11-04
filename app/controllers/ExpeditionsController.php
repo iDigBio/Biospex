@@ -268,22 +268,16 @@ class ExpeditionsController extends BaseController {
 	 */
 	public function stop($projectId, $expeditionId)
 	{
-		// test
-		$expedition = $this->expedition->findWith($expeditionId, ['workflowManagers']);
+		$workflow = $this->workflowManager->findByExpeditionId($expeditionId);
 
-		if ($expedition->workflowManagers->isEmpty())
+		if ($workflow->isEmpty())
 		{
 			Session::flash('error', trans('expeditions.process_no_exists'));
 		}
 		else
 		{
-			foreach ($expedition->workflowManagers as $workflowManager)
-			{
-				$this->workflowManager->destroy($workflowManager->id);
-			}
-
-			$expedition->state = 0;
-			$this->expedition->save($expedition);
+			$workflow->stopped = 1;
+			$this->workflowManager->save($workflow);
 			Session::flash('success', trans('expeditions.process_stopped'));
 		}
 
