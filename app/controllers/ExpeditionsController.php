@@ -245,18 +245,9 @@ class ExpeditionsController extends BaseController {
      */
     public function process($projectId, $expeditionId)
     {
-		$project = $this->project->findWith($projectId, ['workflows']);
-
         try
         {
-			foreach ($project->workflows as $workflow)
-            {
-				$data = [
-                    'workflow_id' => $workflow->id,
-                    'expedition_id' => $expeditionId,
-				];
-                $this->workflowManager->create($data);
-            }
+			$this->workflowManager->create(['expedition' => $expeditionId]);
 
             Session::flash('success', trans('expeditions.expedition_process_success'));
         }
@@ -277,6 +268,7 @@ class ExpeditionsController extends BaseController {
 	 */
 	public function stop($projectId, $expeditionId)
 	{
+		// test
 		$expedition = $this->expedition->findWith($expeditionId, ['workflowManagers']);
 
 		if ($expedition->workflowManagers->isEmpty())
@@ -285,9 +277,9 @@ class ExpeditionsController extends BaseController {
 		}
 		else
 		{
-			foreach ($expedition->workflowManagers as $workflow)
+			foreach ($expedition->workflowManagers as $workflowManager)
 			{
-				$this->workflowManager->destroy($workflow->id);
+				$this->workflowManager->destroy($workflowManager->id);
 			}
 
 			$expedition->state = 0;
