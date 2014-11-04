@@ -34,7 +34,7 @@ class Download extends Eloquent {
 
     protected $fillable = array(
         'expedition_id',
-		'workflow_id',
+		'actor_id',
         'file',
         'count'
     );
@@ -50,9 +50,9 @@ class Download extends Eloquent {
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
-	public function workflow ()
+	public function actor ()
 	{
-		return $this->belongsTo('Workflow');
+		return $this->belongsTo('Actor');
 	}
 
 	/**
