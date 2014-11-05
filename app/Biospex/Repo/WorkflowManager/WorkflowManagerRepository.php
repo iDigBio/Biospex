@@ -38,6 +38,17 @@ class WorkflowManagerRepository extends Repository implements WorkflowManagerInt
     }
 
 	/**
+	 * Find with eager loading
+	 *
+	 * @param array $with
+	 * @return mixed
+	 */
+	public function allWith($with = array())
+	{
+		return $this->model->allWith($with);
+	}
+
+	/**
 	 * Get workflow process by expedition id
 	 *
 	 * @param $id
