@@ -85,7 +85,7 @@ workflow and others in the coming months, along with a guide to inserting Optica
 so that you can sort your images into thematic expeditions.</p>
 
 <p>Creating a project involves providing images and a somewhat detailed description of the project, but it\'s worth it.
-The content is used to produce an attractive project homepage, and the content can be repurposed for advertising in the
+The content is used to produce an attractive project homepage (<a href="/project/florida-plant-hotspot-digitization-blitz" target="_blank">see example</a>), and the content can be repurposed for advertising in the
 future.  Biospex is participating in the development of standards and protocols for sharing information about projects
 with our friends at the go-to sites for learning about citizen science opportunities, including
 <a href="http://www.scistarter.com" target="_blank">scistarter.com</a> and
