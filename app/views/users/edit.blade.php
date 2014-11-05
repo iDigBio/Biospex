@@ -73,6 +73,8 @@
                 {{ Form::checkbox('activated', '1', $user->activated, array('class' => 'name')); }}
             </div>
         </div>
+        @else
+        {{ Form::hidden('activated', $user->activated) }}
         @endif
 
         @if ($userEditGroups)
