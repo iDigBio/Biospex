@@ -31,8 +31,6 @@ class ExpeditionsTableSeeder extends Seeder {
 	{
         Eloquent::unguard();
 
-        DB::table('expeditions')->truncate();
-
         $this->expeditions = $this->loadData();
 
         foreach ($this->expeditions as $expedition)

@@ -1,10 +1,10 @@
 <?php
 /**
- * WorkFlowsTableSeeder.php
+ * ActorsTableSeeder.php
  *
  * @package    Biospex Package
  * @version    1.0
- * @author     Robert Bruhn <79e6ef82@opayq.com>
+ * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
  * @link       http://biospex.org
@@ -23,25 +23,39 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+class ActorsTableSeeder extends Seeder {
 
-class WorkFlowsTableSeeder extends Seeder {
+	/**
+	 * Run the database seeds.
+	 *
+	 * @return void
+	 */
+	public function run()
+	{
+		Eloquent::unguard();
 
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
-    {
-        Eloquent::unguard();
+		$actors = $this->getActors();
 
-        DB::table('workflows')->truncate();
+		foreach ($actors as $actor)
+		{
+			Actor::create($actor);
+		}
+	}
 
-        Workflow::create(array(
-            'title' => "Notes From Nature",
-			'url'   => "http://www.notesfromnature.org/",
-            'class' => "NotesFromNature",
-        ));
-    }
+	public function getActors()
+	{
+		return [
+			[
+				'title' => "Notes From Nature",
+				'url'   => "http://www.notesfromnature.org/",
+				'class' => "NotesFromNature",
+			],
+			[
+				'title' => "OCR",
+				'url'   => "http:/someurl.com/",
+				'class' => "OCR",
+			]
+		];
+	}
 
 }

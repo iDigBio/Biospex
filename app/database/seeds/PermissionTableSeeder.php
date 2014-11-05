@@ -37,8 +37,6 @@ class PermissionTableSeeder extends Seeder {
     {
         Eloquent::unguard();
 
-        DB::table('permissions')->truncate();
-
         $this->permissions = $this->loadData();
 
         foreach ($this->permissions as $permission) {

@@ -32,8 +32,6 @@ class GroupTableSeeder extends Seeder {
      */
     public function run()
     {
-        DB::table('groups')->truncate();
-
         $permissions = Config::get('config.group_permissions');
 
         Sentry::getGroupProvider()->create(array(

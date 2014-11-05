@@ -1,6 +1,6 @@
 <?php
 /**
- * ProjectWorkflowTableSeeder.php
+ * ProjectActorTableSeeder.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -23,7 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-class ProjectWorkflowTableSeeder extends Seeder {
+class ProjectActorTableSeeder extends Seeder {
     /**
      * Run the database seeds.
      *
@@ -31,13 +31,15 @@ class ProjectWorkflowTableSeeder extends Seeder {
      */
     public function run()
     {
-        DB::table('project_workflow')->truncate();
-
         $projects = Project::all();
+		$actors = Actor::all();
 
         foreach ($projects as $project)
         {
-			$project->workflows()->attach(1);
+			foreach ($actors as $actor)
+			{
+				$project->actors()->attach($actor->id);
+			}
         }
     }
 

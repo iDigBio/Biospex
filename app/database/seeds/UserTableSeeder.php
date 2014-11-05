@@ -42,16 +42,18 @@ class UserTableSeeder extends Seeder {
      */
     public function run()
     {
-		DB::table('users')->truncate();
-		DB::table('profiles')->truncate();
-
 		$users = $this->getUsers();
 
 		foreach ($users as $user)
 		{
+			$first_name = $user['first_name'];
+			$last_name = $user['last_name'];
+			unset($user['first_name']);
+			unset($user['last_name']);
+
 			$sentryUser = Sentry::register($user, true);
-			$sentryUser->profile->first_name = $user['first_name'];
-			$sentryUser->profile->last_name = $user['last_name'];
+			$sentryUser->profile->first_name = $first_name;
+			$sentryUser->profile->last_name = $last_name;
 			$sentryUser->profile->save();
 			/*
 			/$user = $this->user->find($sentryUser->id);

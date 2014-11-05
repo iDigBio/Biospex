@@ -31,8 +31,6 @@ class ExpeditionSubjectTableSeeder extends Seeder {
      */
     public function run()
     {
-        DB::table('expedition_subject')->truncate();
-
         $subjects = Subject::all();
 
         $i = 1;

@@ -1,6 +1,6 @@
 <?php
 /**
- * TruncateSubjects.php
+ * TruncateTables.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -23,22 +23,25 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-class TruncateSubjects extends Seeder {
 
-	/**
-	 * Run the database seeds.
-	 *
-	 * @return void
-	 */
-	public function run ()
+class TruncateTables extends Seeder {
+	public function run()
 	{
+		File::deleteDirectory(Config::get('config.dataDir'));
+
 		Eloquent::unguard();
-
 		DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-		DB::table('subjects')->truncate();
-		DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
+		$tableNames = Schema::getConnection()->getDoctrineSchemaManager()->listTableNames();
+		foreach ($tableNames as $name)
+		{
+			//if you don't want to truncate migrations
+			if ($name == 'migrations')
+			{
+				continue;
+			}
+			DB::table($name)->truncate();
+		}
 		DB::connection('mongodb')->collection('subjectdocs')->truncate();
-
 	}
 }
