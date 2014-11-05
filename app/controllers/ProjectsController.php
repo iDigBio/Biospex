@@ -29,6 +29,7 @@ use Biospex\Form\Project\ProjectForm;
 use Biospex\Repo\Group\GroupInterface;
 use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Import\ImportInterface;
+use Biospex\Repo\Actor\ActorInterface;
 
 class ProjectsController extends BaseController {
 	/**
@@ -57,6 +58,11 @@ class ProjectsController extends BaseController {
     protected $user;
 
 	/**
+	 * @var ActorInterface
+	 */
+	protected $actor;
+
+	/**
 	 * Instantiate a new ProjectsController
 	 *
 	 * @param Sentry $sentry
@@ -65,6 +71,7 @@ class ProjectsController extends BaseController {
 	 * @param GroupInterface $group
 	 * @param UserInterface $user
 	 * @param ImportInterface $import
+	 * @param ActorInterface $actor
 	 */
     public function __construct(
 		Sentry $sentry,
@@ -72,7 +79,8 @@ class ProjectsController extends BaseController {
         ProjectForm $projectForm,
         GroupInterface $group,
         UserInterface $user,
-        ImportInterface $import
+        ImportInterface $import,
+		ActorInterface $actor
     )
     {
 		$this->sentry = $sentry;
@@ -81,6 +89,7 @@ class ProjectsController extends BaseController {
         $this->group = $group;
         $this->user = $user;
         $this->import = $import;
+		$this->actor = $actor;
 
 		// Establish Filters
 		$this->beforeFilter('auth');
@@ -119,6 +128,7 @@ class ProjectsController extends BaseController {
 		$isSuperUser = $user->isSuperUser();
 		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
 		$groups = $this->group->selectOptions($allGroups);
+		$actors = $this->actor->selectList();
 
 		if (empty($groups))
 		{
@@ -126,13 +136,12 @@ class ProjectsController extends BaseController {
 			return Redirect::action('GroupsController@create');
 		}
 
-
 		$cancel = URL::previous();
 		$selectGroups = ['' => '--Select--'] + $groups;
         $count = is_null(Input::old('targetCount')) ? 0 : Input::old('targetCount');
         $create =  Route::currentRouteName() == 'projects.create' ? true : false;
 
-		return View::make('projects.create', compact('cancel', 'selectGroups', 'count', 'create'));
+		return View::make('projects.create', compact('cancel', 'selectGroups', 'count', 'create', 'actors'));
 	}
 
     /**
@@ -206,7 +215,8 @@ class ProjectsController extends BaseController {
      */
     public function edit($id)
 	{
-		$project = $this->project->findWith($id, ['group']);
+		$project = $this->project->findWith($id, ['group', 'actors']);
+		$actors = $this->actor->selectList();
 
 		$user = $this->user->getUser();
 		$isSuperUser = $user->isSuperUser();
@@ -218,7 +228,7 @@ class ProjectsController extends BaseController {
         $create =  Route::currentRouteName() == 'projects.create' ? true : false;
 		$cancel = URL::previous();
 
-		return View::make('projects.edit', compact('project', 'selectGroups', 'count', 'create', 'cancel'));
+		return View::make('projects.edit', compact('project', 'actors', 'selectGroups', 'count', 'create', 'cancel'));
 	}
 
     /**
