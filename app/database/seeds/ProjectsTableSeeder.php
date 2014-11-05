@@ -55,7 +55,7 @@ class ProjectsTableSeeder extends Seeder {
         ));
 
 		$actors = Actor::all();
-		$i = 1;
+		$i = 0;
 		foreach ($actors as $actor)
 		{
 			$project->actors()->attach($actor->id, ['order_by' => $i++]);
