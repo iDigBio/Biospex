@@ -13,18 +13,13 @@
 
 <div class="well clearfix">
     <div class="col-md-8">
-        @if ($user->profile->first_name)
         <p><strong>{{ trans('pages.first_name') }}:</strong> {{ $user->profile->first_name }} </p>
-        @endif
-        @if ($user->profile->last_name)
         <p><strong>{{ trans('pages.last_name') }}:</strong> {{ $user->profile->last_name }} </p>
-        @endif
         <p><strong>{{ trans('pages.email') }}:</strong> {{ $user->email }}</p>
-
     </div>
     <div class="col-md-4">
-        <p><em>@lang('pages.account_created'): {{ $user->created_at }}</em></p>
-        <p><em>@lang('pages.last_updated'): {{ $user->updated_at }}</em></p>
+        <p><em>{{ trans('pages.account_created') }}: {{ $user->created_at }}</em></p>
+        <p><em>{{ trans('pages.last_updated') }}: {{ $user->updated_at }}</em></p>
     </div>
 </div>
 <h4>{{ trans('pages.edit') }}
