@@ -127,13 +127,18 @@
         {{ ($errors->has('language_skills') ? $errors->first('language_skills') : '') }}
     </div>
 
-    <div class="form-group {{ ($errors->has('workflow')) ? 'has-error' : '' }}">
-        {{ Form::label('workflow', trans('forms.workflow'), array('class' => 'col-sm-2 control-label')) }}
+    <?php $i = 1 ?>
+    @foreach($actors as $actor)
+    <?php $name = 'actor['.$i.']'; ?>
+    <div class="form-group {{ ($errors->has($name)) ? 'has-error' : '' }}">
+        {{ Form::label($name, trans('forms.actor'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::select('workflow', array('1' => 'Notes From Nature', '2' => 'GeoLocate', '3' => 'Notes From Nature - GeoLocate'), array('class' => 'form-control', 'placeholder' => trans('forms.workflow'))) }}
+            {{ Form::select($name, ['' => '--Select--'] + $actors, array('class' => 'form-control', 'placeholder' => trans('forms.actor'))) }}
         </div>
-        {{ ($errors->has('workflow') ? $errors->first('workflow') : '') }}
+        {{ ($errors->has($name) ? $errors->first($name) : '') }}
     </div>
+    <?php $i++; ?>
+    @endforeach
 
     <div class="form-group {{ ($errors->has('logo')) ? 'has-error' : '' }}">
         {{ Form::label('logo', trans('forms.logo'), array('class' => 'col-sm-2 control-label')) }}
@@ -310,13 +315,19 @@
         {{ ($errors->has('language_skills') ? $errors->first('language_skills') : '') }}
     </div>
 
-    <div class="form-group {{ ($errors->has('workflow')) ? 'has-error' : '' }}">
-        {{ Form::label('workflow', trans('forms.workflow'), array('class' => 'col-sm-2 control-label')) }}
-        <div class="col-sm-4">
-            {{ Form::select('workflow', array('1' => 'Notes From Nature', '2' => 'GeoLocate', '3' => 'Notes From Nature - GeoLocate'), $project->workflows, array('class' => 'form-control')) }}
+    @for($i = 0; $i < count($actors); $i++)
+    <?php
+    $name = 'actor['.$i.']';
+    $value = isset($project->actors[$i]) ? $project->actors[$i]->id : null;
+    ?>
+    <div class="form-group {{ ($errors->has($name)) ? 'has-error' : '' }}">
+        {{ Form::label($name, trans('forms.actor'), array('class' => 'col-sm-2 control-label')) }}
+        <div class="col-sm-10">
+            {{ Form::select($name, ['' => '--Select--'] + $actors, $value, array('class' => 'form-control', 'placeholder' => trans('forms.actor'))) }}
         </div>
-        {{ ($errors->has('workflow') ? $errors->first('workflow') : '') }}
+        {{ ($errors->has($name) ? $errors->first($name) : '') }}
     </div>
+    @endfor
 
     <div class="form-group {{ ($errors->has('logo')) ? 'has-error' : '' }}">
         {{ Form::label('logo', trans('forms.logo'), array('class' => 'col-sm-2 control-label')) }}
@@ -354,28 +365,28 @@
     ?>
     <div {{ $count == 0 ? 'style="display:none"' : '' }} class="target form-group">
     {{ Form::label('target', trans('forms.target'), array('class' => 'col-sm-2 control-label')) }}
-    <div class="panel panel-default col-sm-10">
-        <div class="panel-body">
-            <div class="form-group col-sm-10 {{ ($errors->has('target_core')) ? 'has-error' : '' }}">
-                {{ Form::text('target_core['.$i.']', $target_core, array('class' => 'form-control', 'placeholder' => trans('forms.target_core'))) }}
-            </div>
-            <div class="form-group col-sm-10 {{ ($errors->has('target_name')) ? 'has-error' : '' }}">
-                {{ Form::text('target_name['.$i.']', $target_name, array('class' => 'form-control', 'placeholder' => trans('forms.target_name'))) }}
-            </div>
-            <div class="form-group col-sm-10 {{ ($errors->has('target_description')) ? 'has-error' : '' }}">
-                {{ Form::text('target_description['.$i.']', $target_description, array('class' => 'form-control', 'placeholder' => trans('forms.target_description'))) }}
-            </div>
-            <div class="form-group col-sm-10 {{ ($errors->has('target_valid_response')) ? 'has-error' : '' }}">
-                {{ Form::text('target_valid_response['.$i.']', $target_valid_response, array('class' => 'form-control', 'placeholder' => trans('forms.target_valid_response'))) }}
-            </div>
-            <div class="form-group col-sm-10 {{ ($errors->has('target_inference')) ? 'has-error' : '' }}">
-                {{ Form::text('target_inference['.$i.']', $target_inference, array('class' => 'form-control', 'placeholder' => trans('forms.target_inference'))) }}
-            </div>
-            <div class="form-group col-sm-10 {{ ($errors->has('target_inference_example')) ? 'has-error' : '' }}">
-                {{ Form::text('target_inference_example['.$i.']', $target_inference_example, array('class' => 'form-control', 'placeholder' => trans('forms.target_inference_example'))) }}
+        <div class="panel panel-default col-sm-10">
+            <div class="panel-body">
+                <div class="form-group col-sm-10 {{ ($errors->has('target_core')) ? 'has-error' : '' }}">
+                    {{ Form::text('target_core['.$i.']', $target_core, array('class' => 'form-control', 'placeholder' => trans('forms.target_core'))) }}
+                </div>
+                <div class="form-group col-sm-10 {{ ($errors->has('target_name')) ? 'has-error' : '' }}">
+                    {{ Form::text('target_name['.$i.']', $target_name, array('class' => 'form-control', 'placeholder' => trans('forms.target_name'))) }}
+                </div>
+                <div class="form-group col-sm-10 {{ ($errors->has('target_description')) ? 'has-error' : '' }}">
+                    {{ Form::text('target_description['.$i.']', $target_description, array('class' => 'form-control', 'placeholder' => trans('forms.target_description'))) }}
+                </div>
+                <div class="form-group col-sm-10 {{ ($errors->has('target_valid_response')) ? 'has-error' : '' }}">
+                    {{ Form::text('target_valid_response['.$i.']', $target_valid_response, array('class' => 'form-control', 'placeholder' => trans('forms.target_valid_response'))) }}
+                </div>
+                <div class="form-group col-sm-10 {{ ($errors->has('target_inference')) ? 'has-error' : '' }}">
+                    {{ Form::text('target_inference['.$i.']', $target_inference, array('class' => 'form-control', 'placeholder' => trans('forms.target_inference'))) }}
+                </div>
+                <div class="form-group col-sm-10 {{ ($errors->has('target_inference_example')) ? 'has-error' : '' }}">
+                    {{ Form::text('target_inference_example['.$i.']', $target_inference_example, array('class' => 'form-control', 'placeholder' => trans('forms.target_inference_example'))) }}
+                </div>
             </div>
         </div>
-    </div>
     </div>
     <?php $i++ ?>
     @endwhile
