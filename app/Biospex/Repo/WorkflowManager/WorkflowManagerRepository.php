@@ -41,11 +41,10 @@ class WorkflowManagerRepository extends Repository implements WorkflowManagerInt
 	 * Get workflow process by expedition id
 	 *
 	 * @param $id
-	 * @param bool $deleted
 	 * @return mixed
 	 */
 	public function findByExpeditionId($id)
     {
-        return $this->model->getByExpeditionId($id);
+        return $this->model->findByExpeditionId($id);
     }
 }
