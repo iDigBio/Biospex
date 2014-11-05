@@ -76,4 +76,15 @@ class WorkflowManager extends Eloquent {
         return $this->expeditionid($id)->first();
     }
 
+	/**
+	 * Get all with relationship.
+	 *
+	 * @param $with
+	 * @return \Illuminate\Database\Eloquent\Collection|static[]
+	 */
+	public function allWith($with)
+	{
+		return $this->with($with)->get();
+	}
+
 }
