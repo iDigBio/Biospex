@@ -6,6 +6,7 @@
 	"require": {
         "php": ">=5.3.0",
         "laravel/framework": "4.2.*",
+        "doctrine/dbal": "~2.4",
         "jenssegers/mongodb": "*",
         "vespakoen/menu": "dev-master",
         "mcamara/laravel-localization": "0.14.*",
