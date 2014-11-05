@@ -116,7 +116,7 @@ class ExpeditionsController extends BaseController {
 		if ( ! Request::ajax())
 			return Redirect::action('ProjectsController@show', [$id]);
 
-		$project = $this->project->findWith($id, ['expeditions.subjectsCountRelation']);
+		$project = $this->project->findWith($id, ['expeditions.subjectsCountRelation', 'expeditions.actorsCompletedRelation']);
 
 		return View::make('expeditions.index', compact('project'));
     }
@@ -173,7 +173,7 @@ class ExpeditionsController extends BaseController {
      */
     public function show ($projectId, $expeditionId)
     {
-		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads', 'workflowManagers', 'subjectsCountRelation']);
+		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads', 'workflowManager', 'subjectsCountRelation']);
 
 		return View::make('expeditions.show', compact('expedition'));
     }
@@ -247,12 +247,24 @@ class ExpeditionsController extends BaseController {
     {
         try
         {
-			$this->workflowManager->create(['expedition' => $expeditionId]);
+			$expedition = $this->expedition->findWith($expeditionId, ['project.actors', 'workflowManager']);
+
+			if ( ! is_null($expedition->workflowManager))
+			{
+				$expedition->workflowManager->stopped = 0;
+				$this->workflowManager->save($expedition->workflowManager);
+			}
+			else
+			{
+				$this->workflowManager->save(['expedition_id' => $expeditionId]);
+				$expedition->actors()->sync($expedition->project->actors);
+			}
 
             Session::flash('success', trans('expeditions.expedition_process_success'));
         }
         catch(Exception $e)
         {
+			dd($e->getMessage());
             Session::flash('error', trans('expeditions.expedition_process_error'));
         }
 
@@ -270,7 +282,7 @@ class ExpeditionsController extends BaseController {
 	{
 		$workflow = $this->workflowManager->findByExpeditionId($expeditionId);
 
-		if ($workflow->isEmpty())
+		if (is_null($workflow))
 		{
 			Session::flash('error', trans('expeditions.process_no_exists'));
 		}
