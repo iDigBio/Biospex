@@ -43,4 +43,5 @@ return array(
 	'process_stopped'           => "Expedition process has been stopped.",
 	'process_destroy_error'     => "Expedition process could not be stopped.",
 	'download_ready'            => "Your file is ready for download.",
+	'processing_not_started'	=> "Processing not been started."
 );
