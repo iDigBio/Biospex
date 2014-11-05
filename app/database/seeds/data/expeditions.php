@@ -27,23 +27,17 @@ $items = array(
         'title' => 'Example Expedition #1',
         'description' => 'A description of Expedition 1 would be included here.',
         'keywords' => 'Random keywords',
-        'state' => 'export',
-		'completed' => '0',
     ),
     array(
         'project_id' => 1,
         'title' => 'Example Expedition #2',
         'description' => 'A description of Expedition 2 would be included here.',
         'keywords' => 'Random keywords',
-        'state' => 'export',
-		'completed' => '0',
     ),
     array(
         'project_id' => 1,
         'title' => 'Example Expedition #3',
         'description' => 'A description of Expedition 3 would be included here.',
         'keywords' => 'Random keywords',
-        'state' => 'export',
-		'completed' => '0',
     ),
 );
