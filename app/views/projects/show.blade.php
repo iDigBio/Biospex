@@ -54,9 +54,17 @@
             <td>{{ $expedition->description }}</td>
             <td>{{ $expedition->created_at }}</td>
             <td>{{ $expedition->subjectsCount }}</td>
+            @if( ! $expedition->actors->isEmpty())
             <td>0</td>
             <td>0</td>
-            <td class="nowrap"><span class="complete"><span class="complete{{ $expedition->completed }}">&nbsp;</span></span> {{ $expedition->completed }}%
+            <td class="nowrap">
+                <span class="complete">
+                    <span class="complete{{ Helpers::roundUpToAnyFive($expedition->actorsCompleted) }}">&nbsp;</span>
+                </span> {{ Helpers::roundUpToAnyFive($expedition->actorsCompleted) }}%
+            </td>
+            @else
+            <td class="nowrap" colspan="3">{{ trans('expeditions.processing_not_started') }}</td>
+            @endif
             <td class="nowrap">
                 <button title="@lang('buttons.viewTitle')" class="btn btn-info btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@show', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-eye-open"></span> <!-- @lang('buttons.view') --></button>
                 <button title="@lang('buttons.duplicateTitle')" class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@duplicate', [$project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-share-alt"></span> <!-- @lang('buttons.duplicate') --></button>
