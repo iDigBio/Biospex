@@ -87,33 +87,70 @@ class WorkFlowManagerCommand extends Command {
 		$this->debug = $this->argument('debug');
 		$this->report->setDebug($this->debug);
 
-        $managers = $this->manager->all();
+        $managers = $this->manager->allWith(['expedition.actors']);
 
         if (empty($managers))
             return;
 
         foreach ($managers as $manager)
-        {
-            try {
-				$actor = $this->actor->find($manager->actor_id);
-				$classNameSpace ='Biospex\Services\Actor\\' . $actor->class;
-                $class = App::make($classNameSpace);
-				$class->setProperties($actor->id, $this->debug);
-                $class->process($manager->expedition_id);
-            }
-            catch ( Exception $e )
-            {
-                $this->report->addError(trans('errors.error_workflow_manager',
-                    array(
-                        'class' => $actor->class,
-                        'id' => $manager->actor_id,
-                        'error' => $e->getFile() . " - " . $e->getLine() . ": " . $e->getMessage()
-                    )));
-                $this->report->reportSimpleError();
-                continue;
-            }
-        }
+		{
+			if ($this->checkProcess($manager))
+				continue;
+
+			$this->processActors($manager);
+		}
     }
+
+	/**
+	 * @param $manager
+	 * @return bool
+	 */
+	public function checkProcess ($manager)
+	{
+		return $manager->stopped == 1 || $manager->error == 1;
+	}
+
+	/**
+	 * @param $manager
+	 */
+	public function processActors ($manager)
+	{
+		foreach ($manager->expedition->actors as $actor)
+		{
+			try
+			{
+				$actor = $this->actor->find($manager->actor_id);
+				$classNameSpace = 'Biospex\Services\Actor\\' . $actor->class;
+				$class = App::make($classNameSpace);
+				$class->setProperties($actor->id, $this->debug);
+				$class->process($manager->expedition_id);
+			} catch (Exception $e)
+			{
+				$manager->error = 1;
+				$this->manager->save($manager);
+				$this->createError($manager, $actor, $e);
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Create and send error email
+	 *
+	 * @param $manager
+	 * @param $actor
+	 * @param $e
+	 */
+	public function createError ($manager, $actor, $e)
+	{
+		$this->report->addError(trans('errors.error_workflow_manager',
+			array(
+				'class' => $actor->class,
+				'id'    => $manager->id . ':' . $actor->id,
+				'error' => $e->getFile() . " - " . $e->getLine() . ": " . $e->getMessage()
+			)));
+		$this->report->reportSimpleError();
+	}
 
 	/**
 	 * Get the console command arguments.
