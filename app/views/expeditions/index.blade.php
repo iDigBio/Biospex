@@ -20,7 +20,11 @@
                     <td>{{ $expedition->subjectsCount }}</td>
                     <td>0</td>
                     <td>0</td>
-                    <td class="nowrap"><span class="complete"><span class="complete{{ $expedition->completed }}">&nbsp;</span></span> {{ $expedition->completed }}%
+                    <td class="nowrap">
+                        <span class="complete">
+                            <span class="complete{{ Helpers::roundUpToAnyFive($expedition->actorsCompleted) }}">&nbsp;</span>
+                        </span> {{ Helpers::roundUpToAnyFive($expedition->actorsCompleted) }}%
+                    </td>
                 </tr>
                 @endforeach
         </tbody>
