@@ -32,6 +32,13 @@ class WorkflowManager extends Eloquent {
      */
     protected $table = 'workflow_manager';
 
+	/**
+	 * Do not use timestamps
+	 *
+	 * @var bool
+	 */
+	public $timestamps = false;
+
     protected $fillable = array(
         'expedition_id',
 		'stopped',
