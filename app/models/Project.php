@@ -60,6 +60,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         'slug',
         'contact',
         'contact_email',
+		'website',
         'managed',
         'description_short',
 		'description_long',
