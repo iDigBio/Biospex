@@ -108,12 +108,6 @@ abstract class ActorAbstract {
 
     abstract public function process($id);
 
-    abstract protected function export();
-
-    abstract protected function getStatus();
-
-    abstract protected function getResults();
-
 	/**
 	 * Create directory
 	 *

@@ -43,13 +43,6 @@ class Ocr extends ActorAbstract {
 	protected $record;
 
 	/**
-	 * Data Directory
-	 *
-	 * @var string
-	 */
-	protected $dataDir;
-
-	/**
 	 * Set properties
 	 *
 	 * @param $actorId
@@ -58,11 +51,8 @@ class Ocr extends ActorAbstract {
 	public function setProperties ($actorId, $debug = false)
 	{
 		$this->states = [
-			'export',
-			'getStatus',
-			'getResults',
+			'send',
 			'completed',
-			'analyze',
 		];
 
 		$this->setActorId($actorId);
@@ -96,17 +86,12 @@ class Ocr extends ActorAbstract {
 		return;
 	}
 
-	public function export()
+	public function send()
 	{
 		return;
 	}
 
-	public function getStatus()
-	{
-		return;
-	}
-
-	public function getResults()
+	public function completed()
 	{
 		return;
 	}

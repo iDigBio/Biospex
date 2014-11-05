@@ -172,7 +172,7 @@ class NotesFromNature extends ActorAbstract
     public function process($id)
     {
 		$this->expedition->setPass(true);
-		$this->record = $this->expedition->findWith($id, ['actor', 'project.group', 'subjects.subjectDoc']);
+		$this->record = $this->expedition->findWith($id, ['project.group', 'subjects.subjectDoc']);
 
         if (empty($this->record))
         {
