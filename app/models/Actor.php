@@ -1,6 +1,6 @@
 <?php
 /**
- * ProjectWorkflowTableSeeder.php
+ * Actor.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -23,22 +23,52 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-class ProjectWorkflowTableSeeder extends Seeder {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
-    {
-        DB::table('project_workflow')->truncate();
 
-        $projects = Project::all();
+class Actor extends Eloquent
+{
 
-        foreach ($projects as $project)
-        {
-			$project->workflows()->attach(1);
-        }
-    }
+	/**
+	 * The database table used by the model.
+	 *
+	 * @var string
+	 */
+	protected $table = 'actors';
+
+	protected $fillable = array(
+		'title',
+		'url',
+		'class',
+	);
+
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function projects ()
+	{
+		return $this->belongsToMany('Project', 'project_actor')->withTimestamps()->withPivot('order_by');
+	}
+
+	public function expeditions ()
+	{
+		return $this->belongsToMany('Expedition', 'expedition_actor')->withPivot('state', 'completed')->withTimestamps();
+	}
+
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function downloads ()
+	{
+		return $this->hasMany('Download');
+	}
+
+	/**
+	 * Return as select list
+	 *
+	 * @return array
+	 */
+	public function selectList()
+	{
+		return $this->where('private', '=', 0)->lists('title', 'id');
+	}
 
 }

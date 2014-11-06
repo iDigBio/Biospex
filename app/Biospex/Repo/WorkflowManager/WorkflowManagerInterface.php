@@ -28,11 +28,19 @@ use Biospex\Repo\RepositoryInterface;
 
 interface WorkflowManagerInterface extends RepositoryInterface {
 
+	/**
+	 * Return all records with relationship
+	 *
+	 * @param array $with
+	 * @return mixed
+	 */
+	public function allWith($with = array());
+
     /**
      * Get workflow process by expedition id
      * 
      * @param $id
      * @return mixed
      */
-    public function getByExpeditionId($id, $deleted = false);
+    public function findByExpeditionId($id);
 }

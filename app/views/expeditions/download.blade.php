@@ -33,7 +33,7 @@
         <tbody>
         @foreach ($expedition->downloads as $download)
         <tr>
-            <td>{{ $download->workflow->title }}</td>
+            <td>{{ $download->actor->title }}</td>
             <td>{{ $download->file }}</td>
             <td>{{ $download->created_at }}</td>
             <td>

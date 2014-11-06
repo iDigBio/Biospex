@@ -78,24 +78,15 @@ class Expedition extends Eloquent {
      */
 	public function subjects ()
     {
-        return $this->belongsToMany('Subject');
+        return $this->belongsToMany('Subject')->withTimestamps();
     }
 
 	/**
-	 * Return count through relationship
-	 * @return mixed
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
 	 */
-	public function subjectsCountRelation ()
-	{
-		return $this->belongsToMany('Subject')->selectRaw('expedition_id, count(*) as count')->groupBy('expedition_id');
-	}
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-	public function workflowManagers ()
+	public function workflowManager ()
     {
-        return $this->hasMany('WorkflowManager');
+        return $this->hasOne('WorkflowManager');
     }
 
     /**
@@ -106,16 +97,13 @@ class Expedition extends Eloquent {
 		return $this->hasMany('Download');
     }
 
-    /**
-     * Return expeditions by project id
-     *
-     * @param $projectId
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
-     */
-    public function byProjectId($projectId)
-    {
-        return $this->where('project_id', $projectId)->orderBy('title')->get();
-    }
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function actors()
+	{
+		return $this->belongsToMany('Actor', 'expedition_actor')->withPivot('state', 'completed')->withTimestamps();
+	}
 
     /**
      * Accessor for created_at
@@ -140,6 +128,15 @@ class Expedition extends Eloquent {
     }
 
 	/**
+	 * Return count through relationship
+	 * @return mixed
+	 */
+	public function subjectsCountRelation ()
+	{
+		return $this->belongsToMany('Subject')->selectRaw('expedition_id, count(*) as count')->groupBy('expedition_id');
+	}
+
+	/**
 	 * Get counts attribute
 	 *
 	 * @return int
@@ -147,5 +144,24 @@ class Expedition extends Eloquent {
 	public function getSubjectsCountAttribute ()
 	{
 		return $this->subjectsCountRelation->first() ? $this->subjectsCountRelation->first()->count : 0;
+	}
+
+	/**
+	 * Return completed through relationship
+	 * @return mixed
+	 */
+	public function actorsCompletedRelation ()
+	{
+		return $this->belongsToMany('Actor', 'expedition_actor')->selectRaw('expedition_id, avg(completed) as avg')->groupBy('expedition_id');
+	}
+
+	/**
+	 * Get completed attribute of actors
+	 *
+	 * @return int
+	 */
+	public function getActorsCompletedAttribute ()
+	{
+		return $this->actorsCompletedRelation->first() ? $this->actorsCompletedRelation->first()->avg : 0;
 	}
 }

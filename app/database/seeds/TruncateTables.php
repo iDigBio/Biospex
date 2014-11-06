@@ -1,10 +1,10 @@
 <?php
 /**
- * WorkFlowsTableSeeder.php
+ * TruncateTables.php
  *
  * @package    Biospex Package
  * @version    1.0
- * @author     Robert Bruhn <79e6ef82@opayq.com>
+ * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
  * @link       http://biospex.org
@@ -24,24 +24,24 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class WorkFlowsTableSeeder extends Seeder {
+class TruncateTables extends Seeder {
+	public function run()
+	{
+		File::deleteDirectory(Config::get('config.dataDir'));
 
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
-    {
-        Eloquent::unguard();
+		Eloquent::unguard();
+		DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        DB::table('workflows')->truncate();
-
-        Workflow::create(array(
-            'title' => "Notes From Nature",
-			'url'   => "http://www.notesfromnature.org/",
-            'class' => "NotesFromNature",
-        ));
-    }
-
+		$tableNames = Schema::getConnection()->getDoctrineSchemaManager()->listTableNames();
+		foreach ($tableNames as $name)
+		{
+			//if you don't want to truncate migrations
+			if ($name == 'migrations')
+			{
+				continue;
+			}
+			DB::table($name)->truncate();
+		}
+		DB::connection('mongodb')->collection('subjectdocs')->truncate();
+	}
 }

@@ -1,10 +1,10 @@
 <?php
 /**
- * PermissionTableSeeder.php
+ * ProjectActorTableSeeder.php
  *
  * @package    Biospex Package
  * @version    1.0
- * @author     Robert Bruhn <79e6ef82@opayq.com>
+ * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
  * @link       http://biospex.org
@@ -23,32 +23,24 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-class PermissionTableSeeder extends Seeder {
-
-    protected $permissions;
-
+class ProjectActorTableSeeder extends Seeder {
     /**
      * Run the database seeds.
      *
      * @return void
      */
-    public function run ()
+    public function run()
     {
-        Eloquent::unguard();
+        $projects = Project::all();
+		$actors = Actor::all();
 
-        $this->permissions = $this->loadData();
-
-        foreach ($this->permissions as $permission) {
-            Permission::create($permission);
+        foreach ($projects as $project)
+        {
+			foreach ($actors as $actor)
+			{
+				$project->actors()->attach($actor->id);
+			}
         }
-    }
-
-    public function loadData()
-    {
-        require_once 'data/permissions.php';
-
-        return $items;
     }
 
 }

@@ -1,10 +1,10 @@
-<?php
+<?php  namespace Biospex\Services\Actor;
 /**
- * PermissionTableSeeder.php
+ * Ocr.php
  *
  * @package    Biospex Package
  * @version    1.0
- * @author     Robert Bruhn <79e6ef82@opayq.com>
+ * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
  * @link       http://biospex.org
@@ -23,32 +23,61 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+class Ocr extends ActorAbstract {
+	/**
+	 * @var array
+	 */
+	protected $states = array();
 
-class PermissionTableSeeder extends Seeder {
+	/**
+	 * Actor object
+	 */
+	protected $actor;
 
-    protected $permissions;
+	/**
+	 * Expedition Id
+	 */
+	protected $expeditionId;
 
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run ()
-    {
-        Eloquent::unguard();
+	/**
+	 * Current expedition being processed
+	 *
+	 * @var
+	 */
+	protected $record;
 
-        $this->permissions = $this->loadData();
+	/**
+	 * Set properties
+	 *
+	 * @param $actor
+	 * @param bool $debug
+	 */
+	public function setProperties ($actor, $debug = false)
+	{
+		$this->states = [
+			'send',
+			'completed',
+		];
 
-        foreach ($this->permissions as $permission) {
-            Permission::create($permission);
-        }
-    }
+		$this->actor = $actor;
+		$this->expeditionId = $actor->pivot->expedition_id;
+		$this->report->setDebug($debug);
 
-    public function loadData()
-    {
-        require_once 'data/permissions.php';
+		return;
+	}
 
-        return $items;
-    }
+	public function process()
+	{
+		return false;
+	}
 
+	public function send()
+	{
+		return false;
+	}
+
+	public function completed()
+	{
+		return false;
+	}
 }

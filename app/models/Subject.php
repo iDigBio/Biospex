@@ -105,7 +105,7 @@ class Subject extends Eloquent {
      */
 	public function expeditions ()
     {
-        return $this->belongsToMany('Expedition');
+        return $this->belongsToMany('Expedition')->withTimestamps();
     }
 
     /**

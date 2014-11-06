@@ -36,8 +36,6 @@ class NavigationsTableSeeder extends Seeder {
     {
         Eloquent::unguard();
 
-        DB::table('navigations')->truncate();
-
         $this->items = $this->loadData();
 
         foreach ($this->items as $item) {

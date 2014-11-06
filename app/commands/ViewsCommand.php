@@ -1,6 +1,6 @@
 <?php
 /**
- * TruncateSubjects.php
+ * ViewsCommand.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -23,22 +23,57 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-class TruncateSubjects extends Seeder {
+use Illuminate\Console\Command;
+use Illuminate\Filesystem\Filesystem;
+
+class ViewsCommand extends Command {
 
 	/**
-	 * Run the database seeds.
+	 * The console command name.
 	 *
-	 * @return void
+	 * @var string
 	 */
-	public function run ()
+	protected $name = 'views:clear';
+
+	/**
+	 * The console command description.
+	 *
+	 * @var string
+	 */
+	protected $description = 'Clear views folder';
+
+	/**
+	 * The file system instance.
+	 *
+	 * @var \Illuminate\Filesystem\Filesystem
+	 */
+	protected $files;
+
+	/**
+	 * Create a new command instance.
+	 *
+	 * @param Filesystem $files
+	 */
+	public function __construct(Filesystem $files)
 	{
-		Eloquent::unguard();
-
-		DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-		DB::table('subjects')->truncate();
-		DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-
-		DB::connection('mongodb')->collection('subjectdocs')->truncate();
-
+		parent::__construct();
+		$this->files = $files;
 	}
+
+	/**
+	 * Execute the console command.
+	 *
+	 * @return mixed
+	 */
+	public function fire()
+	{
+
+		foreach ($this->files->files(storage_path().'/views') as $file)
+		{
+			$this->files->delete($file);
+		}
+
+		$this->info('Views deleted from cache');
+	}
+
 }

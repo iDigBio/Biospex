@@ -3,7 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
 @parent
-{{trans('projects.project')}}
+{{ $project->title }}
 @stop
 
 {{-- Content --}}
@@ -44,18 +44,20 @@
 						</thead>
 						<tbody>
 						@foreach($project->expeditions as $expedition)
+						@if( ! $expedition->actors->isEmpty())
 						<tr>
 							<td>{{ $expedition->title }}</td>
-							<td class="nowrap"><span class="complete"><span class="complete{{ $expedition->completed }}">&nbsp;</span></span> {{ $expedition->completed }}%
+							<td class="nowrap">
+							    <span class="complete">
+							        <span class="complete{{ Helpers::roundUpToAnyFive($expedition->actorsCompleted) }}">&nbsp;</span>
+							    </span> {{ Helpers::roundUpToAnyFive($expedition->actorsCompleted) }}%
 							</td>
 							<td>
-							<?php $i = 0; ?>
-							@foreach($project->workflows as $workflow)
-							<a href="{{ $workflow->url }}">{{ $workflow->title }}</a>
-							<?php $i < count($project->workflows) ? '<br />' : ''; ?>
+							@foreach($expedition->actors as $actor)
+							<a href="{{ $actor->url }}">{{ $actor->title }}</a>&nbsp;&nbsp;
 							@endforeach
-							</td>
 						</tr>
+						@endif
 						@endforeach
 						<tr>
 							<td colspan="3">

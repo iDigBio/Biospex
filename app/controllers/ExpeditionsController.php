@@ -116,7 +116,7 @@ class ExpeditionsController extends BaseController {
 		if ( ! Request::ajax())
 			return Redirect::action('ProjectsController@show', [$id]);
 
-		$project = $this->project->findWith($id, ['expeditions.subjectsCountRelation']);
+		$project = $this->project->findWith($id, ['expeditions.subjectsCountRelation', 'expeditions.actorsCompletedRelation']);
 
 		return View::make('expeditions.index', compact('project'));
     }
@@ -173,7 +173,7 @@ class ExpeditionsController extends BaseController {
      */
     public function show ($projectId, $expeditionId)
     {
-		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads', 'workflowManagers', 'subjectsCountRelation']);
+		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads', 'workflowManager', 'subjectsCountRelation']);
 
 		return View::make('expeditions.show', compact('expedition'));
     }
@@ -245,23 +245,26 @@ class ExpeditionsController extends BaseController {
      */
     public function process($projectId, $expeditionId)
     {
-		$project = $this->project->findWith($projectId, ['workflows']);
-
         try
         {
-			foreach ($project->workflows as $workflow)
-            {
-				$data = [
-                    'workflow_id' => $workflow->id,
-                    'expedition_id' => $expeditionId,
-				];
-                $this->workflowManager->create($data);
-            }
+			$expedition = $this->expedition->findWith($expeditionId, ['project.actors', 'workflowManager']);
+
+			if ( ! is_null($expedition->workflowManager))
+			{
+				$expedition->workflowManager->stopped = 0;
+				$this->workflowManager->save($expedition->workflowManager);
+			}
+			else
+			{
+				$this->workflowManager->create(['expedition_id' => $expeditionId]);
+				$expedition->actors()->sync($expedition->project->actors);
+			}
 
             Session::flash('success', trans('expeditions.expedition_process_success'));
         }
         catch(Exception $e)
         {
+			dd($e->getMessage());
             Session::flash('error', trans('expeditions.expedition_process_error'));
         }
 
@@ -277,21 +280,16 @@ class ExpeditionsController extends BaseController {
 	 */
 	public function stop($projectId, $expeditionId)
 	{
-		$expedition = $this->expedition->findWith($expeditionId, ['workflowManagers']);
+		$workflow = $this->workflowManager->findByExpeditionId($expeditionId);
 
-		if ($expedition->workflowManagers->isEmpty())
+		if (is_null($workflow))
 		{
 			Session::flash('error', trans('expeditions.process_no_exists'));
 		}
 		else
 		{
-			foreach ($expedition->workflowManagers as $workflow)
-			{
-				$this->workflowManager->destroy($workflow->id);
-			}
-
-			$expedition->state = 0;
-			$this->expedition->save($expedition);
+			$workflow->stopped = 1;
+			$this->workflowManager->save($workflow);
 			Session::flash('success', trans('expeditions.process_stopped'));
 		}
 
@@ -308,7 +306,7 @@ class ExpeditionsController extends BaseController {
 	 */
 	public function download ($projectId, $expeditionId)
 	{
-		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'download.workflow']);
+		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads.actor']);
 		return View::make('expeditions.download', compact('expedition'));
 	}
 

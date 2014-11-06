@@ -34,10 +34,7 @@ class ProjectsTableSeeder extends Seeder {
 	{
         Eloquent::unguard();
 
-		DB::table('projects')->truncate();
-		DB::table('imports')->truncate();
-
-        Project::create(array(
+        $project = Project::create(array(
             'group_id' => 3,
             'title' => 'Florida Plant Hotspot Digitization Blitz',
             'slug' => 'florida-plant-hotspot-digitization-blitz',
@@ -56,6 +53,13 @@ class ProjectsTableSeeder extends Seeder {
             'activities' => 'Transcription',
             'language_skills' => 'English and perhaps occasionally Spanish',
         ));
+
+		$actors = Actor::all();
+		$i = 0;
+		foreach ($actors as $actor)
+		{
+			$project->actors()->attach($actor->id, ['order_by' => $i++]);
+		}
 	}
 
 }

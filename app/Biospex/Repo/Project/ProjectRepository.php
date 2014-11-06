@@ -41,4 +41,44 @@ class ProjectRepository extends Repository implements ProjectInterface {
     {
         return $this->model->bySlug($slug);
     }
+
+	/**
+	 * Override create for relationships
+	 * @param array $data
+	 * @return mixed
+	 */
+	public function create($data = array())
+	{
+		$project = $this->model->create($data);
+
+		$actors = [];
+		foreach ($data['actor'] as $key => $actor)
+		{
+			$actors[$actor] = ['order_by' => $key];
+		}
+		$project->actors()->attach($actors);
+
+		return $project;
+	}
+
+	/**
+	 * Override update to handle relationship
+	 *
+	 * @param array $data
+	 * @return mixed
+	 */
+	public function update($data = array())
+	{
+		$project = $this->find($data['id']);
+		$project->fill($data)->save();
+
+		$actors = [];
+		foreach ($data['actor'] as $key => $actor)
+		{
+			$actors[$actor] = ['order_by' => $key];
+		}
+		$project->actors()->sync($actors);
+
+		return $project;
+	}
 }

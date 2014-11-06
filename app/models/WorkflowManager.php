@@ -23,12 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 class WorkflowManager extends Eloquent {
-
-    use SoftDeletingTrait;
-
     /**
      * The database table used by the model.
      *
@@ -36,22 +32,18 @@ class WorkflowManager extends Eloquent {
      */
     protected $table = 'workflow_manager';
 
-    protected $fillable = array(
-        'workflow_id',
-        'expedition_id',
-        'user_id'
-    );
-
 	/**
-	 * Scope not deleted
+	 * Do not use timestamps
 	 *
-	 * @param $query
-	 * @return mixed
+	 * @var bool
 	 */
-	public function scopeNotDeleted($query)
-	{
-    	return $query->whereNotNull('deleted_at');
-	}
+	public $timestamps = false;
+
+    protected $fillable = array(
+        'expedition_id',
+		'stopped',
+		'error',
+    );
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -61,28 +53,38 @@ class WorkflowManager extends Eloquent {
         return $this->belongsTo('Expedition');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function user()
-    {
-        return $this->belongsTo('User');
-    }
-
+	/**
+	 * Scope
+	 *
+	 * @param $query
+	 * @param $id
+	 * @return mixed
+	 */
     public function scopeExpeditionId($query, $id)
     {
         return $query->where('expedition_id', '=', $id);
     }
 
-    /**
-     * Get workflow process by expedition id
-     *
-     * @param $id
-     * @return mixed
-     */
-    public function getByExpeditionId($id, $deleted)
+	/**
+	 * Get workflow process by expedition id
+	 *
+	 * @param $id
+	 * @return mixed
+	 */
+    public function findByExpeditionId($id)
     {
-        return !$deleted ? $this->expeditionid($id)->first() : $this->expeditionid($id)->NotDeleted()->first();
+        return $this->expeditionid($id)->first();
     }
+
+	/**
+	 * Get all with relationship.
+	 *
+	 * @param $with
+	 * @return \Illuminate\Database\Eloquent\Collection|static[]
+	 */
+	public function allWith($with)
+	{
+		return $this->with($with)->get();
+	}
 
 }

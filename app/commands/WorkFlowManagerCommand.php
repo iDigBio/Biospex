@@ -26,7 +26,7 @@
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
-use Biospex\Repo\WorkFlow\WorkFlowInterface;
+use Biospex\Repo\Actor\ActorInterface;
 use Biospex\Services\Report\Report;
 
 class WorkFlowManagerCommand extends Command {
@@ -61,17 +61,17 @@ class WorkFlowManagerCommand extends Command {
 	 * Class constructor
 	 *
 	 * @param WorkflowManagerInterface $manager
-	 * @param WorkFlowInterface $workflow
+	 * @param ActorInterface $actor
 	 * @param Report $report
 	 */
     public function __construct(
         WorkflowManagerInterface $manager,
-        WorkFlowInterface $workflow,
+        ActorInterface $actor,
         Report $report
     )
     {
         $this->manager = $manager;
-        $this->workflow = $workflow;
+        $this->actor = $actor;
         $this->report = $report;
 
         parent::__construct();
@@ -87,33 +87,69 @@ class WorkFlowManagerCommand extends Command {
 		$this->debug = $this->argument('debug');
 		$this->report->setDebug($this->debug);
 
-        $managers = $this->manager->all();
+        $managers = $this->manager->allWith(['expedition.actors']);
 
         if (empty($managers))
             return;
 
         foreach ($managers as $manager)
-        {
-            try {
-				$workflow = $this->workflow->find($manager->workflow_id);
-				$classNameSpace ='Biospex\Services\WorkFlow\\' . $workflow->class;
-                $class = App::make($classNameSpace);
-				$class->setProperties($workflow->id, $this->debug);
-                $class->process($manager->expedition_id);
-            }
-            catch ( Exception $e )
-            {
-                $this->report->addError(trans('errors.error_workflow_manager',
-                    array(
-                        'class' => $workflow->class,
-                        'id' => $manager->workflow_id,
-                        'error' => $e->getFile() . " - " . $e->getLine() . ": " . $e->getMessage()
-                    )));
-                $this->report->reportSimpleError();
-                continue;
-            }
-        }
+		{
+			if ($this->checkProcess($manager))
+				continue;
+
+			$this->processActors($manager);
+		}
     }
+
+	/**
+	 * @param $manager
+	 * @return bool
+	 */
+	public function checkProcess ($manager)
+	{
+		return $manager->stopped == 1 || $manager->error == 1;
+	}
+
+	/**
+	 * @param $manager
+	 */
+	public function processActors ($manager)
+	{
+		foreach ($manager->expedition->actors as $actor)
+		{
+			try
+			{
+				$classNameSpace = 'Biospex\Services\Actor\\' . $actor->class;
+				$class = App::make($classNameSpace);
+				$class->setProperties($actor, $this->debug);
+				$class->process();
+			} catch (Exception $e)
+			{
+				$manager->error = 1;
+				$this->manager->save($manager);
+				$this->createError($manager, $actor, $e);
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Create and send error email
+	 *
+	 * @param $manager
+	 * @param $actor
+	 * @param $e
+	 */
+	public function createError ($manager, $actor, $e)
+	{
+		$this->report->addError(trans('errors.error_workflow_manager',
+			array(
+				'class' => $actor->class,
+				'id'    => $manager->id . ':' . $actor->id,
+				'error' => $e->getFile() . " - " . $e->getLine() . ": " . $e->getMessage()
+			)));
+		$this->report->reportSimpleError();
+	}
 
 	/**
 	 * Get the console command arguments.

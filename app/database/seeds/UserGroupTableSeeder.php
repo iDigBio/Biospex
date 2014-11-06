@@ -32,8 +32,6 @@ class UserGroupTableSeeder extends Seeder {
      */
     public function run()
     {
-        DB::table('users_groups')->truncate();
-
 		$groupUser = Sentry::getGroupProvider()->findByName('Users');
 		$groupHerbarium = Sentry::getGroupProvider()->findByName('Herbarium');
 		$groupCalbug = Sentry::getGroupProvider()->findByName('Calbug');

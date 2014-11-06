@@ -86,17 +86,6 @@ class ExpeditionRepository extends Repository implements ExpeditionInterface, Re
     }
 
     /**
-     * Find by project id
-     *
-     * @param $projectId
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
-     */
-    public function byProjectId($projectId)
-    {
-        return $this->model->byProjectId($projectId);
-    }
-
-    /**
      * Calculate the number of rows. It's used for paging the result.
      *
      * @param  array $filters

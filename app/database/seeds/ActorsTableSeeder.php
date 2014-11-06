@@ -1,10 +1,11 @@
 <?php
+
 /**
- * Workflow.php
+ * ActorsTableSeeder.php
  *
  * @package    Biospex Package
  * @version    1.0
- * @author     Robert Bruhn <79e6ef82@opayq.com>
+ * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
  * @link       http://biospex.org
@@ -23,36 +24,40 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-class Workflow extends Eloquent
-{
+class ActorsTableSeeder extends Seeder {
 
 	/**
-	 * The database table used by the model.
+	 * Run the database seeds.
 	 *
-	 * @var string
+	 * @return void
 	 */
-	protected $table = 'workflows';
-
-	protected $fillable = array(
-		'title',
-		'url',
-		'class',
-	);
-
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function projects ()
+	public function run ()
 	{
-		return $this->belongsToMany('Project');
+		Eloquent::unguard();
+
+		$actors = $this->getActors();
+
+		foreach ($actors as $actor)
+		{
+			Actor::create($actor);
+		}
 	}
 
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
-	 */
-	public function downloads ()
+	public function getActors ()
 	{
-		return $this->hasMany('Download');
+		return [
+			[
+				'title' => "Notes From Nature",
+				'url'   => "http://www.notesfromnature.org/",
+				'class' => "NotesFromNature",
+			],
+			[
+				'title'   => "OCR",
+				'url'     => "http:/someurl.com/",
+				'class'   => "OCR",
+				'private' => 1
+			]
+		];
 	}
 
 }

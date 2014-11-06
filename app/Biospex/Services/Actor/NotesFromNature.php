@@ -1,4 +1,6 @@
-<?php namespace Biospex\Services\WorkFlow;
+<?php namespace Biospex\Services\Actor;
+use Biospex\Repo\Actor\ActorInterface;
+
 /**
  * NotesFromNature.php
  *
@@ -24,7 +26,7 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class NotesFromNature extends WorkFlowAbstract
+class NotesFromNature extends ActorAbstract
 {
     /**
      * @var array
@@ -32,10 +34,14 @@ class NotesFromNature extends WorkFlowAbstract
     protected $states = array();
 
 	/**
-	 * Id for the workflow
-	 * @var null
+	 * Actor object
 	 */
-	protected $workflowId = null;
+	protected $actor;
+
+	/**
+	 * Expedition Id
+	 */
+	protected $expeditionId;
 
     /**
      * Current expedition being processed
@@ -119,10 +125,10 @@ class NotesFromNature extends WorkFlowAbstract
 	/**
 	 * Set properties
 	 *
-	 * @param $workflowId
+	 * @param $actor
 	 * @param bool $debug
 	 */
-	public function setProperties ($workflowId, $debug = false)
+	public function setProperties ($actor, $debug = false)
     {
 		$this->states = [
             'export',
@@ -138,52 +144,33 @@ class NotesFromNature extends WorkFlowAbstract
 			'image/tiff' => '.tiff',
 		];
 
-		$this->setWorkflowId($workflowId);
-		$this->setReportDebug($debug);
+		$this->actor = $actor;
+		$this->expeditionId = $actor->pivot->expedition_id;
+		$this->report->setDebug($debug);
 
         return;
     }
-
-	/**
-	 * Set workflow id
-	 *
-	 * @param $workflowId
-	 */
-	protected function setWorkflowId ($workflowId)
-	{
-		$this->workflowId = $workflowId;
-	}
-
-	/**
-	 * Set debug
-	 *
-	 * @param bool $debug
-	 */
-	protected function setReportDebug ($debug = false)
-	{
-		$this->report->setDebug($debug);
-	}
 
     /**
      * Process current state
      *
      * @param $id
      */
-    public function process($id)
+    public function process()
     {
 		$this->expedition->setPass(true);
-		$this->record = $this->expedition->findWith($id, ['project.group', 'subjects.subjectDoc']);
+		$this->record = $this->expedition->findWith($this->expeditionId, ['project.group', 'subjects.subjectDoc']);
 
         if (empty($this->record))
         {
-            $this->report->addError(trans('errors.error_process', array('id' => $id)));
+            $this->report->addError(trans('errors.error_process', array('id' => $this->expeditionId)));
 			$this->report->reportSimpleError($this->record->project->group->id);
 
             return;
         }
 
 		try {
-            $result = call_user_func(array($this, $this->states[$this->record->state]));
+            $result = call_user_func(array($this, $this->states[$this->actor->pivot->state]));
 
 			if ( ! $result)
 				return;
@@ -196,14 +183,6 @@ class NotesFromNature extends WorkFlowAbstract
 
             return;
         }
-
-		$groupId = $this->record->project->group_id;
-
-		// TODO Moved above to avoid cron running it every minute during presentation.
-		//$this->record->state = $this->record->state+1;
-		//$this->expedition->save($this->record);
-
-        $this->report->processComplete($groupId, $this->record->title);
 
         return;
     }
@@ -232,10 +211,10 @@ class NotesFromNature extends WorkFlowAbstract
     public function export()
     {
 		// TODO This is set so cron does not run it every minute during presentation.
-		if ($this->record->state > 0)
+		if ($this->actor->pivot->state > 0)
 			return;
-		$this->record->state = $this->record->state + 1;
-		$this->expedition->save($this->record);
+		$this->actor->pivot->state = $this->actor->pivot->state + 1;
+		$this->actor->pivot->save();
 
 		$title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10)));
         $this->tmpFileDir = "{$this->dataDir}/$title";
@@ -256,9 +235,17 @@ class NotesFromNature extends WorkFlowAbstract
 			$this->report->missingImages($groupId, $this->record->title, $this->missingImg);
 		}
 
-		$this->createDownload($this->record->id, $this->workflowId, "$title.tar.gz");
+		$this->createDownload($this->record->id, $this->actor->id, "$title.tar.gz");
 
 		$this->filesystem->deleteDirectory($this->tmpFileDir);
+
+		$groupId = $this->record->project->group_id;
+
+		// TODO Moved above to avoid cron running it every minute during presentation.
+		//$this->actor->pivot->state = $this->actor->pivot->state+1;
+		//$this->actor->pivot->save();
+
+		$this->report->processComplete($groupId, $this->record->title);
 
         return true;
     }

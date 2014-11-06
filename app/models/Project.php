@@ -60,6 +60,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         'slug',
         'contact',
         'contact_email',
+		'website',
         'managed',
         'description_short',
 		'description_long',
@@ -156,9 +157,9 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-	public function workflows ()
+	public function actors ()
     {
-        return $this->belongsToMany('Workflow');
+        return $this->belongsToMany('Actor', 'project_actor')->withPivot('order_by')->orderBy('order_by', 'asc')->withTimestamps();
     }
 
     /**
@@ -169,7 +170,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      */
     public function bySlug($slug)
     {
-		return $this->with(['group', 'expeditions', 'workflows'])->where('slug', '=', $slug)->first();
+		return $this->with(['group', 'expeditions.actorsCompletedRelation', 'expeditions.actors'])->where('slug', '=', $slug)->first();
     }
 
     /**

@@ -69,14 +69,6 @@ class User extends SentryUser {
         return $this->hasMany('Import');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-	public function workflowManagers ()
-    {
-        return $this->hasMany('WorkflowManager');
-    }
-
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
 	 */
