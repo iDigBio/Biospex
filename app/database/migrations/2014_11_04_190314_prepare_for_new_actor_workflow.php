@@ -18,7 +18,7 @@ class PrepareForNewActorWorkflow extends Migration {
 		Schema::rename('workflows', 'actors');
 		Schema::rename('project_workflow', 'project_actor');
 
-		Schema::create('actors', function(Blueprint $table)
+		Schema::table('actors', function(Blueprint $table)
 		{
 			$table->tinyInteger('private')->default(0);
 		});
