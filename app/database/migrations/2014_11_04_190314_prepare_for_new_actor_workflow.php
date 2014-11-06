@@ -24,6 +24,7 @@ class PrepareForNewActorWorkflow extends Migration {
 			$table->unsignedInteger('actor_id');
 			$table->tinyInteger('state')->default(0);
 			$table->integer('completed')->default(0);
+			$table->tinyInteger('private')->default(0);
 			$table->timestamps();
 
 			$table->foreign('expedition_id')->references('id')->on('expeditions')->onDelete('cascade');
