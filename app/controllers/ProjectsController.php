@@ -207,15 +207,21 @@ class ProjectsController extends BaseController {
 		return View::make('projects.clone', compact('selectGroups', 'project', 'count', 'create', 'cancel'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param $id
-     * @return \Illuminate\View\View
-     */
-    public function edit($id)
+	/**
+	 * Show the form for editing the specified resource.
+	 *
+	 * @param $id
+	 * @return \Illuminate\View\View
+	 */
+	public function edit($id)
 	{
-		$project = $this->project->findWith($id, ['group', 'actors']);
+		$project = $this->project->findWith($id, ['group', 'actors', 'expeditions.workflowManager']);
+		$workflowCheck = '';
+		foreach ($project->expeditions as $expedition)
+		{
+			$workflowCheck = is_null($expedition->workflowManager) ? '' : 'readonly';
+		}
+
 		$actors = $this->actor->selectList();
 
 		$user = $this->user->getUser();
@@ -224,11 +230,11 @@ class ProjectsController extends BaseController {
 		$groups = $this->group->selectOptions($allGroups);
 
 		$selectGroups = ['' => '--Select--'] + $groups;
-        $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
-        $create =  Route::currentRouteName() == 'projects.create' ? true : false;
+		$count = is_null($project->target_fields) ? 0 : count($project->target_fields);
+		$create =  Route::currentRouteName() == 'projects.create' ? true : false;
 		$cancel = URL::previous();
 
-		return View::make('projects.edit', compact('project', 'actors', 'selectGroups', 'count', 'create', 'cancel'));
+		return View::make('projects.edit', compact('project', 'actors', 'workflowCheck', 'selectGroups', 'count', 'create', 'cancel'));
 	}
 
     /**
