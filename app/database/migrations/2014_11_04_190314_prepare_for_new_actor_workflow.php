@@ -43,6 +43,23 @@ class PrepareForNewActorWorkflow extends Migration {
 			$table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
 		});
 
+		// Rename workflow_id and create foreign key for actors
+		Schema::table('downloads', function(Blueprint $table)
+		{
+			$table->dropIndex('downloads_workflow_id_foreign');
+			$table->dropForeign('downloads_workflow_id_foreign');
+			$table->renameColumn('workflow_id', 'actor_id');
+			$table->dropColumn('count');
+			$table->foreign('actor_id')->references('id')->on('actors')->onDelete('cascade');
+		});
+
+		// Work around to read count to downloads. Fails when in same migration
+		Schema::table('downloads', function(Blueprint $table)
+		{
+			$table->unsignedInteger('count')->default(0)->after('file');
+		});
+
+
 		// Create proper indexes on workflow_manager and add columns
 		Schema::table('workflow_manager', function(Blueprint $table)
 		{
@@ -54,30 +71,6 @@ class PrepareForNewActorWorkflow extends Migration {
 			$table->tinyInteger('stopped')->index()->default(0);
 			$table->tinyInteger('error')->index()->default(0);
 		});
-
-		// Rename workflow_id and create foreign key for actors
-		Schema::table('downloads', function(Blueprint $table)
-		{
-			$table->dropIndex('downloads_workflow_id_foreign');
-			$table->dropForeign('downloads_workflow_id_foreign');
-			$table->renameColumn('workflow_id', 'actor_id');
-			$table->dropColumn('count');
-			$table->unsignedInteger('count')->default(0)->after('file');
-			$table->foreign('actor_id')->references('id')->on('actors')->onDelete('cascade');
-		});
-
-		// Select any existing records from workflow_manager and insert into expedition_actor
-		$results = DB::select('SELECT * FROM workflow_manager');
-		if ($results)
-		{
-			foreach ($results as $result)
-			{
-				$expedition = DB::select('SELECT * FROM expeditions WHERE id = ?', [$result->expedition_id]);
-				$fields = "expedition_id, actor_id, state, completed";
-				$values = [$result->expedition_id, $result->actor_id, $expedition->state, $expedition->completed];
-				DB::insert('INSERT INTO expedition_actor (' . $fields . ') VALUES (?,?,?,?)', [$values]);
-			}
-		}
 
 		// Drop state, completed columns
 		Schema::table('expeditions', function(Blueprint $table)
