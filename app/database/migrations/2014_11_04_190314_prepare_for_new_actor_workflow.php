@@ -17,6 +17,12 @@ class PrepareForNewActorWorkflow extends Migration {
 		// Rename tables and create expedition_actor
 		Schema::rename('workflows', 'actors');
 		Schema::rename('project_workflow', 'project_actor');
+
+		Schema::create('actors', function(Blueprint $table)
+		{
+			$table->tinyInteger('private')->default(0);
+		});
+
 		Schema::create('expedition_actor', function(Blueprint $table)
 		{
 			$table->increments('id');
@@ -24,7 +30,6 @@ class PrepareForNewActorWorkflow extends Migration {
 			$table->unsignedInteger('actor_id');
 			$table->tinyInteger('state')->default(0);
 			$table->integer('completed')->default(0);
-			$table->tinyInteger('private')->default(0);
 			$table->timestamps();
 
 			$table->foreign('expedition_id')->references('id')->on('expeditions')->onDelete('cascade');
@@ -134,6 +139,11 @@ class PrepareForNewActorWorkflow extends Migration {
 		{
 			$table->tinyInteger('state')->default(0);
 			$table->integer('completed')->default(0);
+		});
+
+		Schema::create('actors', function(Blueprint $table)
+		{
+			$table->dropColumn('private');
 		});
 
 		DB::statement('SET FOREIGN_KEY_CHECKS=1;');
