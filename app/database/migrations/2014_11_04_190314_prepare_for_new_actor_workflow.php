@@ -61,6 +61,8 @@ class PrepareForNewActorWorkflow extends Migration {
 			$table->dropIndex('downloads_workflow_id_foreign');
 			$table->dropForeign('downloads_workflow_id_foreign');
 			$table->renameColumn('workflow_id', 'actor_id');
+			$table->dropColumn('count');
+			$table->unsignedInteger('count')->default(0)->after('file');
 			$table->foreign('actor_id')->references('id')->on('actors')->onDelete('cascade');
 		});
 
