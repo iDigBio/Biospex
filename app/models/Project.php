@@ -159,7 +159,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      */
 	public function actors ()
     {
-        return $this->belongsToMany('Actor', 'project_actor')->withPivot('order_by')->orderBy('order_by', 'asc');
+        return $this->belongsToMany('Actor', 'project_actor')->withPivot('order_by')->orderBy('order_by', 'asc')->withTimestamps();
     }
 
     /**

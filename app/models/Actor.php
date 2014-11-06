@@ -45,12 +45,12 @@ class Actor extends Eloquent
 	 */
 	public function projects ()
 	{
-		return $this->belongsToMany('Project', 'project_actor')->withPivot('order_by');
+		return $this->belongsToMany('Project', 'project_actor')->withTimestamps()->withPivot('order_by');
 	}
 
 	public function expeditions ()
 	{
-		return $this->belongsToMany('Expedition', 'expedition_actor')->withPivot('state', 'completed');
+		return $this->belongsToMany('Expedition', 'expedition_actor')->withPivot('state', 'completed')->withTimestamps();
 	}
 
 	/**

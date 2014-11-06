@@ -78,7 +78,7 @@ class Expedition extends Eloquent {
      */
 	public function subjects ()
     {
-        return $this->belongsToMany('Subject');
+        return $this->belongsToMany('Subject')->withTimestamps();
     }
 
 	/**
@@ -102,7 +102,7 @@ class Expedition extends Eloquent {
 	 */
 	public function actors()
 	{
-		return $this->belongsToMany('Actor', 'expedition_actor')->withPivot('state', 'completed');
+		return $this->belongsToMany('Actor', 'expedition_actor')->withPivot('state', 'completed')->withTimestamps();
 	}
 
     /**
