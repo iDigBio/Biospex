@@ -30,10 +30,14 @@ class Ocr extends ActorAbstract {
 	protected $states = array();
 
 	/**
-	 * Id for the actor
-	 * @var null
+	 * Actor object
 	 */
-	protected $actorId = null;
+	protected $actor;
+
+	/**
+	 * Expedition Id
+	 */
+	protected $expeditionId;
 
 	/**
 	 * Current expedition being processed
@@ -45,54 +49,35 @@ class Ocr extends ActorAbstract {
 	/**
 	 * Set properties
 	 *
-	 * @param $actorId
+	 * @param $actor
 	 * @param bool $debug
 	 */
-	public function setProperties ($actorId, $debug = false)
+	public function setProperties ($actor, $debug = false)
 	{
 		$this->states = [
 			'send',
 			'completed',
 		];
 
-		$this->setActorId($actorId);
-		$this->setReportDebug($debug);
-
-		return;
-	}
-
-	/**
-	 * Set workflow id
-	 *
-	 * @param $actorId
-	 */
-	protected function setActorId ($actorId)
-	{
-		$this->actorId = $actorId;
-	}
-
-	/**
-	 * Set debug
-	 *
-	 * @param bool $debug
-	 */
-	protected function setReportDebug ($debug = false)
-	{
+		$this->actor = $actor;
+		$this->expeditionId = $actor->pivot->expedition_id;
 		$this->report->setDebug($debug);
+
+		return;
 	}
 
-	public function process($id)
+	public function process()
 	{
-		return;
+		return false;
 	}
 
 	public function send()
 	{
-		return;
+		return false;
 	}
 
 	public function completed()
 	{
-		return;
+		return false;
 	}
 }

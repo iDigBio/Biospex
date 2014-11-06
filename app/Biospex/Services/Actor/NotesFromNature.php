@@ -184,14 +184,6 @@ class NotesFromNature extends ActorAbstract
             return;
         }
 
-		$groupId = $this->record->project->group_id;
-
-		// TODO Moved above to avoid cron running it every minute during presentation.
-		//$this->actor->pivot->state = $this->actor->pivot->state+1;
-		//$this->actor->pivot->save();
-
-        $this->report->processComplete($groupId, $this->record->title);
-
         return;
     }
 
@@ -246,6 +238,14 @@ class NotesFromNature extends ActorAbstract
 		$this->createDownload($this->record->id, $this->actor->id, "$title.tar.gz");
 
 		$this->filesystem->deleteDirectory($this->tmpFileDir);
+
+		$groupId = $this->record->project->group_id;
+
+		// TODO Moved above to avoid cron running it every minute during presentation.
+		//$this->actor->pivot->state = $this->actor->pivot->state+1;
+		//$this->actor->pivot->save();
+
+		$this->report->processComplete($groupId, $this->record->title);
 
         return true;
     }
