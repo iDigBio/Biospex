@@ -256,7 +256,7 @@ class ExpeditionsController extends BaseController {
 			}
 			else
 			{
-				$this->workflowManager->save(['expedition_id' => $expeditionId]);
+				$this->workflowManager->create(['expedition_id' => $expeditionId]);
 				$expedition->actors()->sync($expedition->project->actors);
 			}
 
