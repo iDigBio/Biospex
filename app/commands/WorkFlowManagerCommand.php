@@ -119,11 +119,10 @@ class WorkFlowManagerCommand extends Command {
 		{
 			try
 			{
-				$actor = $this->actor->find($manager->actor_id);
 				$classNameSpace = 'Biospex\Services\Actor\\' . $actor->class;
 				$class = App::make($classNameSpace);
-				$class->setProperties($actor->id, $this->debug);
-				$class->process($manager->expedition_id);
+				$class->setProperties($actor, $this->debug);
+				$class->process();
 			} catch (Exception $e)
 			{
 				$manager->error = 1;
