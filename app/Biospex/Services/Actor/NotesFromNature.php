@@ -1,4 +1,6 @@
 <?php namespace Biospex\Services\Actor;
+use Biospex\Repo\Actor\ActorInterface;
+
 /**
  * NotesFromNature.php
  *
@@ -32,10 +34,14 @@ class NotesFromNature extends ActorAbstract
     protected $states = array();
 
 	/**
-	 * Id for the actor
-	 * @var null
+	 * Actor object
 	 */
-	protected $actorId = null;
+	protected $actor;
+
+	/**
+	 * Expedition Id
+	 */
+	protected $expeditionId;
 
     /**
      * Current expedition being processed
@@ -119,10 +125,10 @@ class NotesFromNature extends ActorAbstract
 	/**
 	 * Set properties
 	 *
-	 * @param $actorId
+	 * @param $actor
 	 * @param bool $debug
 	 */
-	public function setProperties ($actorId, $debug = false)
+	public function setProperties ($actor, $debug = false)
     {
 		$this->states = [
             'export',
@@ -138,52 +144,33 @@ class NotesFromNature extends ActorAbstract
 			'image/tiff' => '.tiff',
 		];
 
-		$this->setActorId($actorId);
-		$this->setReportDebug($debug);
+		$this->actor = $actor;
+		$this->expeditionId = $actor->pivot->expedition_id;
+		$this->report->setDebug($debug);
 
         return;
     }
-
-	/**
-	 * Set workflow id
-	 *
-	 * @param $actorId
-	 */
-	protected function setActorId ($actorId)
-	{
-		$this->actorId = $actorId;
-	}
-
-	/**
-	 * Set debug
-	 *
-	 * @param bool $debug
-	 */
-	protected function setReportDebug ($debug = false)
-	{
-		$this->report->setDebug($debug);
-	}
 
     /**
      * Process current state
      *
      * @param $id
      */
-    public function process($id)
+    public function process()
     {
 		$this->expedition->setPass(true);
-		$this->record = $this->expedition->findWith($id, ['project.group', 'subjects.subjectDoc']);
+		$this->record = $this->expedition->findWith($this->expeditionId, ['project.group', 'subjects.subjectDoc']);
 
         if (empty($this->record))
         {
-            $this->report->addError(trans('errors.error_process', array('id' => $id)));
+            $this->report->addError(trans('errors.error_process', array('id' => $this->expeditionId)));
 			$this->report->reportSimpleError($this->record->project->group->id);
 
             return;
         }
 
 		try {
-            $result = call_user_func(array($this, $this->states[$this->record->pivot->state]));
+            $result = call_user_func(array($this, $this->states[$this->actor->pivot->state]));
 
 			if ( ! $result)
 				return;
@@ -200,8 +187,8 @@ class NotesFromNature extends ActorAbstract
 		$groupId = $this->record->project->group_id;
 
 		// TODO Moved above to avoid cron running it every minute during presentation.
-		//$this->record->pivot->state = $this->record->pivot->state+1;
-		//$this->expedition->pivot->save();
+		//$this->actor->pivot->state = $this->actor->pivot->state+1;
+		//$this->actor->pivot->save();
 
         $this->report->processComplete($groupId, $this->record->title);
 
@@ -232,10 +219,10 @@ class NotesFromNature extends ActorAbstract
     public function export()
     {
 		// TODO This is set so cron does not run it every minute during presentation.
-		if ($this->record->pivot->state > 0)
+		if ($this->actor->pivot->state > 0)
 			return;
-		$this->record->pivot->state = $this->record->pivot->state + 1;
-		$this->expedition->pivot->save();
+		$this->actor->pivot->state = $this->actor->pivot->state + 1;
+		$this->actor->pivot->save();
 
 		$title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10)));
         $this->tmpFileDir = "{$this->dataDir}/$title";
@@ -256,7 +243,7 @@ class NotesFromNature extends ActorAbstract
 			$this->report->missingImages($groupId, $this->record->title, $this->missingImg);
 		}
 
-		$this->createDownload($this->record->id, $this->actorId, "$title.tar.gz");
+		$this->createDownload($this->record->id, $this->actor->id, "$title.tar.gz");
 
 		$this->filesystem->deleteDirectory($this->tmpFileDir);
 

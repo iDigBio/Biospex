@@ -100,13 +100,9 @@ abstract class ActorAbstract {
         $this->dataTmp = Config::get('config.dataTmp');
     }
 
-	abstract protected function setProperties ($actorId, $debug = false);
+	abstract protected function setProperties ($actor, $debug = false);
 
-	abstract protected function setActorId ($id);
-
-	abstract protected function setReportDebug ($debug = false);
-
-    abstract public function process($id);
+    abstract public function process();
 
 	/**
 	 * Create directory
