@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ActorsTableSeeder.php
  *
@@ -30,7 +31,7 @@ class ActorsTableSeeder extends Seeder {
 	 *
 	 * @return void
 	 */
-	public function run()
+	public function run ()
 	{
 		Eloquent::unguard();
 
@@ -42,7 +43,7 @@ class ActorsTableSeeder extends Seeder {
 		}
 	}
 
-	public function getActors()
+	public function getActors ()
 	{
 		return [
 			[
@@ -51,9 +52,10 @@ class ActorsTableSeeder extends Seeder {
 				'class' => "NotesFromNature",
 			],
 			[
-				'title' => "OCR",
-				'url'   => "http:/someurl.com/",
-				'class' => "OCR",
+				'title'   => "OCR",
+				'url'     => "http:/someurl.com/",
+				'class'   => "OCR",
+				'private' => 1
 			]
 		];
 	}
