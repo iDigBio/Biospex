@@ -68,7 +68,7 @@ class Actor extends Eloquent
 	 */
 	public function selectList()
 	{
-		return $this->lists('title', 'id');
+		return $this->where('private', '=', 0)->lists('title', 'id');
 	}
 
 }
