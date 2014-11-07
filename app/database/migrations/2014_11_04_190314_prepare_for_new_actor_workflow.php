@@ -39,12 +39,15 @@ class PrepareForNewActorWorkflow extends Migration {
 		// Create proper indexes and keys on project_workflow
 		Schema::table('project_actor', function (Blueprint $table)
 		{
-			$table->dropIndex('project_workflow_workflow_id_foreign');
 			$table->dropIndex('project_workflow_project_id_foreign');
+			$table->dropIndex('project_workflow_workflow_id_foreign');
 			$table->dropForeign('project_workflow_workflow_id_foreign');
 			$table->dropForeign('project_workflow_project_id_foreign');
 			$table->renameColumn('workflow_id', 'actor_id');
 			$table->tinyInteger('order_by')->index()->default(0);
+		});
+		Schema::table('project_actor', function (Blueprint $table)
+		{
 			$table->foreign('actor_id')->references('id')->on('actors')->onDelete('cascade');
 			$table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
 		});
@@ -56,15 +59,13 @@ class PrepareForNewActorWorkflow extends Migration {
 			$table->dropForeign('downloads_workflow_id_foreign');
 			$table->renameColumn('workflow_id', 'actor_id');
 			$table->dropColumn('count');
-			$table->foreign('actor_id')->references('id')->on('actors')->onDelete('cascade');
 		});
-
 		// Work around to read count to downloads. Fails when in same migration
 		Schema::table('downloads', function(Blueprint $table)
 		{
+			$table->foreign('actor_id')->references('id')->on('actors')->onDelete('cascade');
 			$table->unsignedInteger('count')->default(0)->after('file');
 		});
-
 
 		// Create proper indexes on workflow_manager and add columns
 		Schema::table('workflow_manager', function(Blueprint $table)
@@ -111,6 +112,9 @@ class PrepareForNewActorWorkflow extends Migration {
 			$table->dropForeign('project_actor_project_id_foreign');
 			$table->dropColumn('order_by');
 			$table->renameColumn('actor_id', 'workflow_id');
+		});
+		Schema::table('project_workflow', function (Blueprint $table)
+		{
 			$table->foreign('workflow_id')->references('id')->on('workflows')->onDelete('cascade');
 			$table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
 		});
@@ -132,6 +136,9 @@ class PrepareForNewActorWorkflow extends Migration {
 			$table->dropIndex('downloads_actor_id_foreign');
 			$table->dropForeign('downloads_actor_id_foreign');
 			$table->renameColumn('actor_id', 'workflow_id');
+		});
+		Schema::table('downloads', function(Blueprint $table)
+		{
 			$table->foreign('workflow_id')->references('id')->on('workflows')->onDelete('cascade');
 		});
 

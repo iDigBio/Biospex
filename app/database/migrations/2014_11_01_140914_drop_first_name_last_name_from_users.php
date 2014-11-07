@@ -14,15 +14,6 @@ class DropFirstNameLastNameFromUsers extends Migration {
 	{
 		Schema::table('users', function(Blueprint $table)
 		{
-			$users = DB::select('select * from users');
-			if ($users)
-			{
-				foreach ($users as $user)
-				{
-					DB::update('update profiles set user_id = ?, first_name = ?, last_name = ?', [$user->id, $user->first_name, $user->last_name]);
-				}
-			}
-
 			$table->dropColumn(['first_name', 'last_name']);
 		});
 	}
