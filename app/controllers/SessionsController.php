@@ -36,9 +36,13 @@ class SessionsController extends BaseController {
     protected $session;
     protected $loginForm;
 
-    /**
-     * Constructor
-     */
+	/**
+	 * Constructor
+	 *
+	 * @param Dispatcher $events
+	 * @param SessionInterface $session
+	 * @param LoginForm $loginForm
+	 */
 	public function __construct (Dispatcher $events, SessionInterface $session, LoginForm $loginForm)
     {
 		$this->events = $events;
@@ -81,12 +85,11 @@ class SessionsController extends BaseController {
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int $id
-     * @return Response
-     */
+	/**
+	 * Delete user session
+	 *
+	 * @return \Illuminate\Http\RedirectResponse
+	 */
     public function destroy ()
     {
         $this->session->destroy();
