@@ -71,7 +71,7 @@ class SessionsController extends BaseController {
 			]);
 
             // Success!
-            return Redirect::intended(route('projects.index'));
+			return Redirect::route('projects.index');
 
         } else {
             Session::flash('error', $result['message']);
