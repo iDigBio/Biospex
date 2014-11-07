@@ -38,6 +38,9 @@ class ProjectActorTableSeeder extends Seeder {
         {
 			foreach ($actors as $actor)
 			{
+				if ($actor->title == "OCR")
+					continue;
+
 				$project->actors()->attach($actor->id);
 			}
         }
