@@ -15,6 +15,7 @@ class AddProductIdIdIndexes extends Migration {
 		Schema::connection('mongodb')->collection('subjectdocs', function(Blueprint $collection)
 		{
 			$collection->index('id');
+			$collection->index('project_id');
 			$collection->unique(['project_id', 'id']);
 		});
 	}
@@ -29,6 +30,7 @@ class AddProductIdIdIndexes extends Migration {
 		Schema::connection('mongodb')->collection('subjectdocs', function(Blueprint $collection)
 		{
 			$collection->dropIndex('id');
+			$collection->dropIndex('project_id');
 			$collection->dropIndex(['project_id', 'id']);
 		});
 	}
