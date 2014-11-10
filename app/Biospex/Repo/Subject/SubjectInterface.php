@@ -30,4 +30,6 @@ interface SubjectInterface extends RepositoryInterface {
     public function getUnassignedSubjectCount($projectId);
 
     public function getUnassignedSubjects($input);
+
+	public function findByForeignId($column, $id);
 }

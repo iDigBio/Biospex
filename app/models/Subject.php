@@ -66,33 +66,6 @@ class Subject extends Eloquent {
 	}
 
     /**
-     * Return count of project subjects not assigned to expeditions
-     * @param $projectId
-     * @return mixed
-     */
-    public function getUnassignedSubjectCount($projectId)
-    {
-		return Subject::has('expeditions', '<', 1)
-            ->where('project_id', $projectId)
-            ->count();
-    }
-
-    /**
-     * Return project subjects not assigned to expeditions by limit
-     * @param $input
-     * @return mixed
-     */
-    public function getUnassignedSubjects($input)
-    {
-		$ids = $this->has('expeditions', '<', 1)
-            ->where('project_id',$input['project_id'])
-            ->take($input['subjects'])
-            ->get(array('id'))
-            ->toArray();
-        return array_flatten($ids);
-    }
-
-    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function project()
@@ -130,5 +103,44 @@ class Subject extends Eloquent {
 	public function meta()
 	{
 		return $this->hasOne('Meta');
+	}
+
+	/**
+	 * Return count of project subjects not assigned to expeditions
+	 * @param $projectId
+	 * @return mixed
+	 */
+	public function getUnassignedSubjectCount($projectId)
+	{
+		return Subject::has('expeditions', '<', 1)
+			->where('project_id', $projectId)
+			->count();
+	}
+
+	/**
+	 * Return project subjects not assigned to expeditions by limit
+	 * @param $input
+	 * @return mixed
+	 */
+	public function getUnassignedSubjects($input)
+	{
+		$ids = $this->has('expeditions', '<', 1)
+			->where('project_id',$input['project_id'])
+			->take($input['subjects'])
+			->get(array('id'))
+			->toArray();
+		return array_flatten($ids);
+	}
+
+	/**
+	 * Find by foreign id.
+	 *
+	 * @param $column
+	 * @param $id
+	 * @return mixed
+	 */
+	public function findByForeignId($column, $id)
+	{
+		return $this->where($column, $id)->first();
 	}
 }

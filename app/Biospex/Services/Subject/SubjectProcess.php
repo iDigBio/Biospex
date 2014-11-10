@@ -321,13 +321,9 @@ class SubjectProcess {
 				continue;
 			}
 
-			$subjects[$key] = array(
-				'project_id' => $this->projectId,
-				'subject_id' => $subject['id'],
-				'subject' => array_merge($this->headerArray, $subject),
-				'occurrence' => $occurrences[$occurrenceId]
-			);
-
+			$subjects[$key] = ['project_id' => $this->projectId]
+				+ array_merge($this->headerArray, $subject)
+				+ ['occurrence' => $occurrences[$occurrenceId]];
 		}
 
 		return $subjects;
@@ -361,7 +357,7 @@ class SubjectProcess {
 	{
 		foreach ($subjects as $subject) {
 			if (!$this->validateDoc($subject)) {
-				$this->duplicateArray[] = [$subject['subject_id']];
+				$this->duplicateArray[] = [$subject['id']];
 				continue;
 			}
 
@@ -371,7 +367,7 @@ class SubjectProcess {
 				'header_id' => $this->headerId,
 				'meta_id' => $this->metaId,
 				'mongo_id' => $subjectDoc->_id,
-				'object_id' => $subjectDoc->subject_id,
+				'object_id' => $subjectDoc->id,
 			];
 			$this->subject->create($data);
 		}
@@ -384,8 +380,9 @@ class SubjectProcess {
 	 * and set the multimediaIdentifier string value if media is not core.
 	 *
 	 * @param $row
-	 * @param $type core or extension
+	 * @param $type
 	 * @return array
+	 * @throws \Exception
 	 */
 	public function buildHeaderRow($row, $type)
 	{
@@ -421,7 +418,7 @@ class SubjectProcess {
 		// Return if qualified exists and short is the same.
 		if ( ! is_null($checkQualified))
 		{
-			return $checkQualified->short;
+			$short = $checkQualified->short;
 		}
 		// Create using new short if qualified is null and short exists.
 		elseif (is_null($checkQualified) && ! is_null($checkShort))
@@ -433,8 +430,6 @@ class SubjectProcess {
 				'namespace' => $namespace,
 			];
 			$this->property->create($array);
-
-			return $short;
 		}
 		// Create if neither exist using same short
 		elseif (is_null($checkQualified) && is_null($checkShort))
@@ -445,16 +440,13 @@ class SubjectProcess {
 				'namespace' => $namespace,
 			];
 			$this->property->create($array);
-
-			return $short;
 		}
+
+		return $short;
 	}
 
 	/**
 	 * Build the core and extension field array from meta file.
-	 *
-	 * @param $multimedia
-	 * @param $occurrence
 	 */
 	public function buildMetaFields ()
 	{
@@ -484,8 +476,8 @@ class SubjectProcess {
 	 */
 	public function validateDoc ($subject)
 	{
-		$rules = ['project_id' => 'unique_with:subjectdocs,subject_id'];
-		$values = ['project_id' => $subject['project_id'], 'subject_id' => $subject['subject_id']];
+		$rules = ['project_id' => 'unique_with:subjectdocs,id'];
+		$values = ['project_id' => $subject['project_id'], 'id' => $subject['id']];
 
 		$validator = Validator::make($values, $rules);
 		$validator->getPresenceVerifier()->setConnection('mongodb');

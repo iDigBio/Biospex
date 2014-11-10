@@ -307,10 +307,15 @@ class ProjectsController extends BaseController {
         {
             Input::file('file')->move($directory, $filename);
 			$user = $this->user->getUser();
-            $this->import->create(['user_id' => $user->id,'project_id' => $id, 'file' => $filename]);
+            $this->import->create([
+				'user_id' => $user->id,
+				'project_id' => $id,
+				'file' => $filename
+			]);
         }
         catch(Exception $e)
         {
+			dd($e->getMessage());
             Session::flash('error', trans('projects.upload_error'));
             return Redirect::route('projects.data', [$id]);
         }

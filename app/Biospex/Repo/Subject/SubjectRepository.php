@@ -46,4 +46,10 @@ class SubjectRepository extends Repository implements SubjectInterface {
     {
         return $this->model->getUnassignedSubjects($input);
     }
+
+	public function findByForeignId($column, $id)
+	{
+		return $this->model->findByForeignId($column, $id);
+
+	}
 }

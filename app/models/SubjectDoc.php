@@ -25,12 +25,8 @@
  */
 
 use Jenssegers\Mongodb\Model as Eloquent;
-use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 class SubjectDoc extends Eloquent {
-
-    use SoftDeletingTrait;
-    protected $dates = ['deleted_at'];
 
     /**
      * Redefine connection to use mongodb
