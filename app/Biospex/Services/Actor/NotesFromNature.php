@@ -260,11 +260,11 @@ class NotesFromNature extends ActorAbstract
         {
             $this->subjectArray[$subject->id][] = $subject->object_id;
 
-			$uri = $subject->subjectDoc->subject[$this->accessUri];
+			$uri = $subject->subjectDoc{$this->accessUri};
 
 			if (empty($uri))
 			{
-				$this->missingImg[] = $subject->id;
+				$this->missingImg[] = $subject->subjectDoc->id;
 				continue;
 			}
 
@@ -280,7 +280,7 @@ class NotesFromNature extends ActorAbstract
 
 			if (!isset($this->imgTypes[$attr['mime']]))
 			{
-				$this->missingImg[] = $subject->id . ' : ' . $uri;
+				$this->missingImg[] = $subject->subjectDoc->id . ' : ' . $uri;
 				continue;
 			}
 
