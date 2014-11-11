@@ -25,7 +25,14 @@ class UpdateMongoDb extends Seeder {
 
 		try
 		{
-			$results = $this->subjectdoc->all();
+			$subject = SubjectDoc::with('expeditions')->find("54602013b0e6dfec198b61af");
+			dd($subject->expeditions);
+			$expedition = Expedition::find(1);
+			$subject->expeditions()->attach($expedition);
+
+			die();
+
+			/*
 			foreach ($results as $result)
 			{
 				$subject = $this->subject->findByForeignId('mongo_id', $result->_id);
@@ -42,6 +49,7 @@ class UpdateMongoDb extends Seeder {
 
 				$result->delete();
 			}
+			*/
 		} catch (Exception $e)
 		{
 			die($e->getMessage() . $e->getTraceAsString());
