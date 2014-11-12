@@ -1,6 +1,6 @@
-<?php namespace Biospex\Repo\SubjectDoc;
+<?php
 /**
- * SubjectDocRepository.php
+ * SubjectsDocTableSeeder.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -24,16 +24,40 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Biospex\Repo\Repository;
-use SubjectDoc;
+use Illuminate\Database\Seeder;
+use Biospex\Services\Subject\SubjectProcess;
 
-class SubjectDocRepository extends Repository implements SubjectDocInterface {
+class SubjectsTableSeeder extends Seeder {
+
+	/**
+	 * Constructor
+	 *
+	 * @param SubjectProcess $subjectProcess
+	 * @param XmlProcess $xmlProcess
+	 */
+    public function __construct (
+		SubjectProcess $subjectProcess
+	)
+    {
+        $this->subjectProcess = $subjectProcess;
+    }
 
     /**
-     * @param SubjectDoc $subjectdoc
+     * Run the database seeds.
+     *
+     * @return void
      */
-    public function __construct(SubjectDoc $subjectdoc)
+    public function run ()
     {
-        $this->model = $subjectdoc;
+        Eloquent::unguard();
+
+		$dir = 'app/database/seeds/data';
+		try
+		{
+			$this->subjectProcess->processSubjects(1, $dir);
+		} catch (Exception $e)
+		{
+			die($e->getMessage() . $e->getTraceAsString());
+		}
     }
 }

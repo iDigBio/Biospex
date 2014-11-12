@@ -32,6 +32,8 @@ class CreateSubjectdocsTable extends Migration {
 	 */
 	public function up()
 	{
+		Schema::connection('mongodb')->drop('subjectdocs');
+
         Schema::connection('mongodb')->create('subjectdocs', function($collection)
         {
             $collection->index('project_id');

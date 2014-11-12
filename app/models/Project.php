@@ -114,14 +114,6 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         return $this->belongsTo('Group', 'group_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-	public function subjects ()
-    {
-        return $this->hasMany('Subject');
-    }
-
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
 	 */

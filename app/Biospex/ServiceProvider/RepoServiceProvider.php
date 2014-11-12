@@ -111,7 +111,6 @@ class RepoServiceProvider extends ServiceProvider {
 		$app->bind('Biospex\Repo\Permission\PermissionInterface', 'Biospex\Repo\Permission\PermissionRepository');
         $app->bind('Biospex\Repo\Navigation\NavigationInterface', 'Biospex\Repo\Navigation\NavigationRepository');
         $app->bind('Biospex\Repo\Subject\SubjectInterface', 'Biospex\Repo\Subject\SubjectRepository');
-        $app->bind('Biospex\Repo\SubjectDoc\SubjectDocInterface', 'Biospex\Repo\SubjectDoc\SubjectDocRepository');
         $app->bind('Biospex\Repo\Import\ImportInterface', 'Biospex\Repo\Import\ImportRepository');
 		$app->bind('Biospex\Repo\Header\HeaderInterface', 'Biospex\Repo\Header\HeaderRepository');
         $app->bind('Biospex\Repo\WorkflowManager\WorkflowManagerInterface', 'Biospex\Repo\WorkflowManager\WorkflowManagerRepository');
@@ -121,7 +120,7 @@ class RepoServiceProvider extends ServiceProvider {
 		$app->bind('Biospex\Repo\Property\PropertyInterface', 'Biospex\Repo\Property\PropertyRepository');
 		$app->bind('Biospex\Repo\Meta\MetaInterface', 'Biospex\Repo\Meta\MetaRepository');
         $app->bind('Illuminate\Support\Contracts\MessageProviderInterface', 'Illuminate\Support\MessageBag');
-        $app->bind('Mgallegos\LaravelJqgrid\Repositories\RepositoryInterface', 'Biospex\Repo\Expedition\ExpeditionRepository');
+        $app->bind('Biospex\Repo\Grid\GridInterface', 'Biospex\Repo\Grid\GridRepository');
     }
 
 }

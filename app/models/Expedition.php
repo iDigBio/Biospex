@@ -23,6 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Jenssegers\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 class Expedition extends Eloquent {
@@ -36,6 +37,10 @@ class Expedition extends Eloquent {
      * @var string
      */
     protected $table = 'expeditions';
+
+	protected $connection = 'mysql';
+
+	protected $primaryKey = 'id';
 
     /**
      * Accepted attributes
@@ -72,8 +77,9 @@ class Expedition extends Eloquent {
     }
 
     /**
-     * Has many relationships
-     *
+     * Belongs to many
+	 * $expedition->subjects()->attach($subject) adds expedition ids in subjects
+	 *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
 	public function subjects ()
