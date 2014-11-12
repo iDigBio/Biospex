@@ -464,7 +464,7 @@ class SubjectProcess {
 	 */
 	public function validateDoc ($subject)
 	{
-		$rules = ['project_id' => 'unique_with:subjectdocs,id'];
+		$rules = ['project_id' => 'unique_with:subjects,id'];
 		$values = ['project_id' => $subject['project_id'], 'id' => $subject['id']];
 
 		$validator = Validator::make($values, $rules);

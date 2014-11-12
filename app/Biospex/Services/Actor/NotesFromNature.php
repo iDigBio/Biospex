@@ -1,6 +1,4 @@
 <?php namespace Biospex\Services\Actor;
-use Biospex\Repo\Actor\ActorInterface;
-
 /**
  * NotesFromNature.php
  *
@@ -159,7 +157,7 @@ class NotesFromNature extends ActorAbstract
     public function process()
     {
 		$this->expedition->setPass(true);
-		$this->record = $this->expedition->findWith($this->expeditionId, ['project.group', 'subjects.subjectDoc']);
+		$this->record = $this->expedition->findWith($this->expeditionId, ['project.group', 'subjects']);
 
         if (empty($this->record))
         {
@@ -258,13 +256,11 @@ class NotesFromNature extends ActorAbstract
         $i = 0;
 		foreach ($this->record->subjects as $subject)
         {
-            $this->subjectArray[$subject->id][] = $subject->object_id;
-
-			$uri = $subject->subjectDoc{$this->accessUri};
+           	$uri = $subject->{$this->accessUri};
 
 			if (empty($uri))
 			{
-				$this->missingImg[] = $subject->subjectDoc->id;
+				$this->missingImg[] = $subject->id;
 				continue;
 			}
 
@@ -280,11 +276,11 @@ class NotesFromNature extends ActorAbstract
 
 			if (!isset($this->imgTypes[$attr['mime']]))
 			{
-				$this->missingImg[] = $subject->subjectDoc->id . ' : ' . $uri;
+				$this->missingImg[] = $subject->id . ' : ' . $uri;
 				continue;
 			}
 
-			$path = $this->tmpFileDir . '/' . $subject->id . $this->imgTypes[$attr['mime']];
+			$path = $this->tmpFileDir . '/' . $subject->_id . $this->imgTypes[$attr['mime']];
 
 			$this->saveFile($path, $image);
 
@@ -344,7 +340,7 @@ class NotesFromNature extends ActorAbstract
 			$lrgTargetHeight = round(($height * $this->largeWidth) / $width);
 			$lrgTargetName = "{$sourceInfo['filename']}.large.png";
 
-			$data['identifier'] = $this->subjectArray[$sourceInfo['filename']];
+			$data['identifier'] = $sourceInfo['filename'];
 			$data['original']['path'] = array($sourceInfo['filename'], ".{$sourceInfo['extension']}");
 			$data['original']['name'] = $sourceInfo['basename'];
             $data['original']['width'] = $width;
