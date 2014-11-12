@@ -75,6 +75,16 @@ class Subject extends Eloquent {
 		return $query->where('project_id', $id);
 	}
 
+	public function expeditionsCountRelation ()
+	{
+		return $this->belongsToMany('Expedition')->selectRaw('expedition_id, count(*) as count')->groupBy('expedition_id');
+	}
+
+	public function getExpeditionsCountAttribute ()
+	{
+		return $this->expeditionsCountRelation->first() ? $this->expeditionsCountRelation->first()->count : 0;
+	}
+
 	/**
 	 * Return count of project subjects not assigned to expeditions
 	 * @param $projectId

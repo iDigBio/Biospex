@@ -130,6 +130,11 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         return $this->hasMany('Expedition');
     }
 
+	public function subjects()
+	{
+		return $this->hasManyThrough('Expedition', 'Subject');
+	}
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

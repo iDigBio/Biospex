@@ -53,7 +53,7 @@
             <td>{{ $expedition->title }}</td>
             <td>{{ $expedition->description }}</td>
             <td>{{ $expedition->created_at }}</td>
-            <td>{{ $expedition->subjectsCount }}</td>
+            <td>{{ $expedition->subjects->expeditionsCount }}</td>
             @if( ! $expedition->actors->isEmpty())
             <td>0</td>
             <td>0</td>

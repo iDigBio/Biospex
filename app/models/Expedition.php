@@ -137,9 +137,13 @@ class Expedition extends Eloquent {
 	 * Return count through relationship
 	 * @return mixed
 	 */
+	/*
 	public function subjectsCountRelation ()
 	{
-		return $this->belongsToMany('Subject')->selectRaw('expedition_id, count(*) as count')->groupBy('expedition_id');
+		return $this->belongsToMany('Subject')
+			->selectRaw('count(expedition_ids) as count(*)')
+			->groupBy('expedition_ids');
+		//return $this->belongsToMany('Subject')->selectRaw('expedition_ids, count(*) as count')->groupBy('expedition_ids');
 	}
 
 	/**
@@ -147,11 +151,12 @@ class Expedition extends Eloquent {
 	 *
 	 * @return int
 	 */
+	/*
 	public function getSubjectsCountAttribute ()
 	{
 		return $this->subjectsCountRelation->first() ? $this->subjectsCountRelation->first()->count : 0;
 	}
-
+	*/
 	/**
 	 * Return completed through relationship
 	 * @return mixed
