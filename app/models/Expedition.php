@@ -137,7 +137,6 @@ class Expedition extends Eloquent {
 	 * Return count through relationship
 	 * @return mixed
 	 */
-	/*
 	public function subjectsCountRelation ()
 	{
 		return $this->belongsToMany('Subject')
@@ -151,12 +150,11 @@ class Expedition extends Eloquent {
 	 *
 	 * @return int
 	 */
-	/*
 	public function getSubjectsCountAttribute ()
 	{
 		return $this->subjectsCountRelation->first() ? $this->subjectsCountRelation->first()->count : 0;
 	}
-	*/
+
 	/**
 	 * Return completed through relationship
 	 * @return mixed
