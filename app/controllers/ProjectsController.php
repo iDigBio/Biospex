@@ -198,13 +198,15 @@ class ProjectsController extends BaseController {
 		$isSuperUser = $user->isSuperUser();
 		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
 		$groups = $this->group->selectOptions($allGroups);
+		$actors = $this->actor->selectList();
+		$workflowCheck = '';
 
 		$selectGroups = ['' => '--Select--'] + $groups;
         $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
         $create =  Route::currentRouteName() == 'projects.create' ? true : false;
 		$cancel = URL::previous();
 
-		return View::make('projects.clone', compact('selectGroups', 'project', 'count', 'create', 'cancel'));
+		return View::make('projects.clone', compact('selectGroups', 'project', 'count', 'create', 'cancel', 'actors', 'workflowCheck'));
     }
 
 	/**
