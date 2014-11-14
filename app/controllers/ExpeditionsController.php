@@ -31,6 +31,9 @@ use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
 use Biospex\Repo\Download\DownloadInterface;
+use Biospex\Repo\Header\HeaderInterface;
+use Biospex\Repo\Grid\GridInterface;
+use Mgallegos\LaravelJqgrid\Encoders\RequestedDataInterface;
 
 class ExpeditionsController extends BaseController {
 
@@ -64,8 +67,13 @@ class ExpeditionsController extends BaseController {
      */
     protected $subject;
 
+
+	protected $grid;
+
+	protected $requestedDataInterface;
+
 	/**
-	 * Instantiate a new ProjectsController
+	 * Instantiate a new ExpeditionsController
 	 *
 	 * @param ExpeditionInterface $expedition
 	 * @param ExpeditionForm $expeditionForm
@@ -75,6 +83,8 @@ class ExpeditionsController extends BaseController {
 	 * @param SubjectInterface $subject
 	 * @param WorkflowManagerInterface $workflowManager
 	 * @param DownloadInterface $download
+	 * @param RequestedDataInterface $requestedDataInterface
+	 * @param GridInterface $grid
 	 */
     public function __construct(
         ExpeditionInterface $expedition,
@@ -84,7 +94,10 @@ class ExpeditionsController extends BaseController {
         UserInterface $user,
         SubjectInterface $subject,
         WorkflowManagerInterface $workflowManager,
-        DownloadInterface $download
+        DownloadInterface $download,
+		HeaderInterface $header,
+		RequestedDataInterface $requestedDataInterface,
+		GridInterface $grid
     )
     {
         $this->expedition = $expedition;
@@ -95,6 +108,9 @@ class ExpeditionsController extends BaseController {
         $this->subject = $subject;
         $this->workflowManager = $workflowManager;
         $this->download = $download;
+		$this->header = $header;
+		$this->requestedDataInterface = $requestedDataInterface;
+		$this->grid = $grid;
 
         // Establish Filters
 		$this->beforeFilter('auth');
@@ -116,7 +132,7 @@ class ExpeditionsController extends BaseController {
 		if ( ! Request::ajax())
 			return Redirect::action('ProjectsController@show', [$id]);
 
-		$project = $this->project->findWith($id, ['expeditions.subjectsCountRelation', 'expeditions.actorsCompletedRelation']);
+		$project = $this->project->findWith($id, ['expeditions', 'expeditions.actorsCompletedRelation']);
 
 		return View::make('expeditions.index', compact('project'));
     }
@@ -173,7 +189,7 @@ class ExpeditionsController extends BaseController {
      */
     public function show ($projectId, $expeditionId)
     {
-		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads', 'workflowManager', 'subjectsCountRelation']);
+		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads', 'workflowManager']);
 
 		return View::make('expeditions.show', compact('expedition'));
     }
@@ -187,7 +203,7 @@ class ExpeditionsController extends BaseController {
      */
     public function duplicate ($projectId, $expeditionId)
     {
-		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'subjectsCountRelation']);
+		$expedition = $this->expedition->findWith($expeditionId, ['project.group']);
         $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
 		$cancel = URL::previous();
 
@@ -349,5 +365,12 @@ class ExpeditionsController extends BaseController {
 
         return Redirect::action('projects.show', [$projectId]);
     }
+
+	public function grid()
+	{
+		//$headers = $this->header->getByProjectId(Input::get('projectId'));
+
+		GridEncoder::encodeRequestedData($this->subject, Input::all());
+	}
 
 }
