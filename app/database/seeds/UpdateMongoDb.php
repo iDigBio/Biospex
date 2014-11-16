@@ -1,21 +1,7 @@
 <?php
 use Illuminate\Database\Seeder;
-use Biospex\Repo\Project\ProjectInterface;
-use Biospex\Repo\Expedition\ExpeditionInterface;
-use Biospex\Repo\Subject\SubjectInterface;
 
 class UpdateMongoDb extends Seeder {
-
-	public function __construct (
-		ProjectInterface $project,
-		ExpeditionInterface $expedition,
-		SubjectInterface $subject
-	)
-	{
-		$this->project = $project;
-		$this->expedition = $expedition;
-		$this->subject = $subject;
-	}
 
 	/**
 	 * Run the database seeds.
@@ -28,19 +14,21 @@ class UpdateMongoDb extends Seeder {
 
 		try
 		{
-			$subjects = $this->subject->all();
+			$subjects = Subject::all();
 			foreach ($subjects as $subject)
 			{
 				$subject->project_id = [(string) $subject->project_id];
-				$subject->save();
 
-				$results = DB::select("SELECT * FROM expedition_subject where subject_id = ?", array($subject->_id));
+				$results = DB::connection('mysql')->select("SELECT es.expedition_id
+									FROM subjects s
+									INNER JOIN expedition_subject es on es.subject_id = s.id
+									WHERE s.mongo_id = ?", array($subject->_id));
 				if ($results)
 				{
 					foreach ($results as $result)
 					{
-						$expedition = $this->expedition->find($result->expedition_id);
-						$expedition->subjects()->attach($subject);
+						$expedition = Expedition::find($result->expedition_id);
+						$expedition->subjects()->attach($subject->_id);
 					}
 				}
 				else
@@ -49,6 +37,7 @@ class UpdateMongoDb extends Seeder {
 				}
 
 				$subject->ocr = '';
+
 				$subject->save();
 			}
 
