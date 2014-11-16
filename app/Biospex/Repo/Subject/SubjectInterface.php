@@ -26,4 +26,8 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface SubjectInterface extends RepositoryInterface {}
+interface SubjectInterface extends RepositoryInterface {
+	public function getUnassignedCount($id);
+
+	public function getSubjectIds($input);
+}

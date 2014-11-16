@@ -23,7 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+use Jenssegers\Mongodb\Model as Eloquent;
 use Codesleeve\Stapler\ORM\EloquentTrait;
 use Codesleeve\Stapler\ORM\StaplerableInterface;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
@@ -50,6 +50,10 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      * @var string
      */
     protected $table = 'projects';
+
+	protected $connection = 'mysql';
+
+	protected $primaryKey = 'id';
 
     /**
      * @var array
@@ -129,6 +133,14 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     {
         return $this->hasMany('Expedition');
     }
+
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function subjects()
+	{
+		return $this->hasMany('Subject');
+	}
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

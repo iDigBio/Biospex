@@ -60,6 +60,14 @@ class Subject extends Eloquent {
     }
 
 	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function project()
+	{
+		return $this->belongsTo('Project');
+	}
+
+	/**
 	 * Belongs to many
 	 * $subject->expeditions()->attach($expedition) adds relation in expedition_subject
 	 *
@@ -80,9 +88,9 @@ class Subject extends Eloquent {
 	 * @param $projectId
 	 * @return mixed
 	 */
-	public function getUnassignedSubjectCount($projectId)
+	public function getUnassignedCount($projectId)
 	{
-		return $this->has('expeditions', '<', 1)
+		return $this->where('expedition_ids', 'size', 0)
 			->where('project_id', $projectId)
 			->count();
 	}
@@ -92,13 +100,14 @@ class Subject extends Eloquent {
 	 * @param $input
 	 * @return mixed
 	 */
-	public function getUnassignedSubjects($input)
+	public function getSubjectIds($input)
 	{
-		$ids = $this->has('expeditions', '<', 1)
-			->where('project_id',$input['project_id'])
+		$ids = $this->where('expedition_ids', 'size', 0)
+			->where('project_id', "{$input['project_id']}")
 			->take($input['subjects'])
-			->get(array('id'))
+			->get(array('_id'))
 			->toArray();
+
 		return array_flatten($ids);
 	}
 

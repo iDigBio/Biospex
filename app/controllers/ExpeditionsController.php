@@ -146,7 +146,7 @@ class ExpeditionsController extends BaseController {
     public function create ($id)
     {
 		$project = $this->project->findWith($id, ['group']);
-        $subjects = $this->subject->getUnassignedSubjectCount($id);
+        $subjects = $this->subject->getUnassignedCount($id);
         $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
 		$cancel = URL::previous();
 
@@ -161,7 +161,7 @@ class ExpeditionsController extends BaseController {
     public function store ()
     {
         // Form Processing
-        $subjects = $this->subject->getUnassignedSubjects(Input::only('project_id', 'subjects'));
+        $subjects = $this->subject->getSubjectIds(Input::only('project_id', 'subjects'));
 		$input = array_merge(Input::all(), ['subject_ids' => $subjects]);
 
         $expedition = $this->expeditionForm->save($input);
