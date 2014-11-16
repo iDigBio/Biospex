@@ -75,7 +75,7 @@ class Subject extends Eloquent {
 	 */
 	public function expeditions()
 	{
-		return $this->belongsToMany('Expedition')->withPivot('product_id');
+		return $this->belongsToMany('Expedition')->withPivot('project_id');
 	}
 
 	public function scopeProjectId($query, $id)
