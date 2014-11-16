@@ -1,9 +1,8 @@
 <?php
-
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class DropSubjectsTable extends Migration {
+class DropSubjectsExpeditionSubjectTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -14,6 +13,7 @@ class DropSubjectsTable extends Migration {
 	{
 		DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 		Schema::drop('subjects');
+		Schema::drop('expedition_subject');
 		DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 	}
 
@@ -35,6 +35,20 @@ class DropSubjectsTable extends Migration {
 
 			$table->engine = 'InnoDB';
 		});
+
+		Schema::create('expedition_subject', function(Blueprint $table) {
+			$table->increments('id');
+			$table->unsignedInteger('expedition_id');
+			$table->foreign('expedition_id')->references('id')->on('expeditions')->onDelete('cascade');
+			$table->unsignedInteger('subject_id');
+			$table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
+			$table->timestamps();
+			$table->softDeletes();
+
+			$table->engine = 'InnoDB';
+		});
+
+		DB::connection('mongodb')->collection('subjectdocs')->unset('expedition_ids');
 		DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 	}
 
