@@ -347,10 +347,11 @@ class ExpeditionsController extends BaseController {
      */
     public function destroy ($projectId, $expeditionId)
     {
-		$workflow = $this->workflowManager->getByExpeditionId($expeditionId);
+		$workflow = $this->workflowManager->findByExpeditionId($expeditionId);
 		if ( ! is_null($workflow))
 		{
 			Session::flash('error', trans('expeditions.expedition_process_exists'));
+			return Redirect::action('projects.expeditions.show', [$projectId, $expeditionId]);
 		}
 		else
 		{
