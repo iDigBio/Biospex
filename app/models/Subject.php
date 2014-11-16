@@ -67,17 +67,6 @@ class Subject extends Eloquent {
 		return $this->belongsTo('Project');
 	}
 
-	/**
-	 * Belongs to many
-	 * $subject->expeditions()->attach($expedition) adds relation in expedition_subject
-	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function expeditions()
-	{
-		return $this->belongsToMany('Expedition')->withPivot('project_id');
-	}
-
 	public function scopeProjectId($query, $id)
 	{
 		return $query->where('project_id', $id);
