@@ -317,7 +317,7 @@ class SubjectProcess {
 				continue;
 			}
 
-			$subjects[$key] = ['project_id' => $this->projectId]
+			$subjects[$key] = ['project_id' => (string) $this->projectId, 'ocr' => '', 'expedition_ids' => []]
 				+ array_merge($this->headerArray, $subject)
 				+ ['occurrence' => $occurrences[$occurrenceId]];
 		}
