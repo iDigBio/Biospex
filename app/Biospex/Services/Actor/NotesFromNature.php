@@ -104,7 +104,7 @@ class NotesFromNature extends ActorAbstract
      *
      * @var
      */
-    protected $subjectArray;
+    protected $identifierArray;
 
     /**
      * Large image width for NfN
@@ -256,7 +256,10 @@ class NotesFromNature extends ActorAbstract
         $i = 0;
 		foreach ($this->record->subjects as $subject)
         {
-           	$uri = $subject->{$this->accessUri};
+			// Sets up array for retrieving identifier when building details.js
+            $this->identifierArray[$subject->_id] = $subject->id;
+
+			$uri = $subject->{$this->accessUri};
 
 			if (empty($uri))
 			{
@@ -340,7 +343,7 @@ class NotesFromNature extends ActorAbstract
 			$lrgTargetHeight = round(($height * $this->largeWidth) / $width);
 			$lrgTargetName = "{$sourceInfo['filename']}.large.png";
 
-			$data['identifier'] = $sourceInfo['filename'];
+			$data['identifier'] = $this->identifierArray[$sourceInfo['filename']];
 			$data['original']['path'] = array($sourceInfo['filename'], ".{$sourceInfo['extension']}");
 			$data['original']['name'] = $sourceInfo['basename'];
             $data['original']['width'] = $width;
