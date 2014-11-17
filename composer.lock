@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a8e9f6a8f81896bbacb2309d25ad0cc3",
+    "hash": "6d9fb95e453815c753de2e6b3abeada3",
     "packages": [
         {
             "name": "anahkiasen/html-object",
@@ -241,12 +241,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/CodeSleeve/asset-pipeline.git",
-                "reference": "3699ba337e383b49c61d004284174546afa8d624"
+                "reference": "b2de0660a6505375b1cbbffe7d5c6e03ae6c08dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CodeSleeve/asset-pipeline/zipball/3699ba337e383b49c61d004284174546afa8d624",
-                "reference": "3699ba337e383b49c61d004284174546afa8d624",
+                "url": "https://api.github.com/repos/CodeSleeve/asset-pipeline/zipball/b2de0660a6505375b1cbbffe7d5c6e03ae6c08dc",
+                "reference": "b2de0660a6505375b1cbbffe7d5c6e03ae6c08dc",
                 "shasum": ""
             },
             "require": {
@@ -284,7 +284,7 @@
                 }
             ],
             "description": "A very simple and easy to use asset pipeline for laravel 4.",
-            "time": "2014-11-04 16:31:34"
+            "time": "2014-11-07 16:41:56"
         },
         {
             "name": "codesleeve/laravel-stapler",
@@ -1804,16 +1804,16 @@
         },
         {
             "name": "mgallegos/laravel-jqgrid",
-            "version": "dev-master",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mgallegos/laravel-jqgrid.git",
-                "reference": "97fbb8be3535ff3860df67e13673432f10d421e4"
+                "reference": "5f544e812611ba44b02ce0d43cfa4a415e6edc00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mgallegos/laravel-jqgrid/zipball/97fbb8be3535ff3860df67e13673432f10d421e4",
-                "reference": "97fbb8be3535ff3860df67e13673432f10d421e4",
+                "url": "https://api.github.com/repos/mgallegos/laravel-jqgrid/zipball/5f544e812611ba44b02ce0d43cfa4a415e6edc00",
+                "reference": "5f544e812611ba44b02ce0d43cfa4a415e6edc00",
                 "shasum": ""
             },
             "require": {
@@ -1847,7 +1847,7 @@
                 "jquery",
                 "laravel"
             ],
-            "time": "2014-09-15 04:42:44"
+            "time": "2014-09-14 14:07:45"
         },
         {
             "name": "monolog/monolog",
@@ -2112,16 +2112,16 @@
         },
         {
             "name": "patchwork/utf8",
-            "version": "v1.1.25",
+            "version": "v1.1.26",
             "source": {
                 "type": "git",
-                "url": "https://github.com/nicolas-grekas/Patchwork-UTF8.git",
-                "reference": "2d43bd047b120279511d45e76e61c5a9812d9a83"
+                "url": "https://github.com/tchwork/utf8.git",
+                "reference": "6b8e46603b49ee87ad6bceb314da94cc04ffcdce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nicolas-grekas/Patchwork-UTF8/zipball/2d43bd047b120279511d45e76e61c5a9812d9a83",
-                "reference": "2d43bd047b120279511d45e76e61c5a9812d9a83",
+                "url": "https://api.github.com/repos/tchwork/utf8/zipball/6b8e46603b49ee87ad6bceb314da94cc04ffcdce",
+                "reference": "6b8e46603b49ee87ad6bceb314da94cc04ffcdce",
                 "shasum": ""
             },
             "require": {
@@ -2152,19 +2152,19 @@
             "authors": [
                 {
                     "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com",
-                    "role": "Developer"
+                    "email": "p@tchwork.com"
                 }
             ],
-            "description": "Extensive, portable and performant handling of UTF-8 and grapheme clusters for PHP",
-            "homepage": "https://github.com/nicolas-grekas/Patchwork-UTF8",
+            "description": "Portable and performant UTF-8, Unicode and Grapheme Clusters for PHP",
+            "homepage": "https://github.com/tchwork/utf8",
             "keywords": [
+                "grapheme",
                 "i18n",
                 "unicode",
                 "utf-8",
                 "utf8"
             ],
-            "time": "2014-08-05 08:00:32"
+            "time": "2014-11-08 10:13:25"
         },
         {
             "name": "pda/pheanstalk",
@@ -4068,7 +4068,6 @@
     "stability-flags": {
         "vespakoen/menu": 20,
         "codesleeve/asset-pipeline": 20,
-        "mgallegos/laravel-jqgrid": 20,
         "msurguy/honeypot": 20,
         "way/laravel-test-helpers": 20,
         "mockery/mockery": 20,

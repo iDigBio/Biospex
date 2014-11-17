@@ -15,7 +15,7 @@
         "codesleeve/laravel-stapler": "1.0.*",
         "codesleeve/asset-pipeline": "dev-master",
         "cviebrock/eloquent-sluggable": "2.*",
-        "mgallegos/laravel-jqgrid": "dev-master",
+        "mgallegos/laravel-jqgrid": "1.*",
         "cviebrock/image-validator": "1.0.*",
         "davejamesmiller/laravel-breadcrumbs": "~2.2.2",
         "imagine/imagine": "~0.5.0",
