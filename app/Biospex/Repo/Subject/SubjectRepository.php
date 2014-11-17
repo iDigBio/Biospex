@@ -42,8 +42,8 @@ class SubjectRepository extends Repository implements SubjectInterface {
 		return $this->model->getUnassignedCount($id);
 	}
 
-	public function getSubjectIds($input)
+	public function getSubjectIds($projectId, $take = null, $expeditionId = null)
 	{
-		return $this->model->getSubjectIds($input);
+		return $this->model->getSubjectIds($projectId, $take, $expeditionId);
 	}
 }
