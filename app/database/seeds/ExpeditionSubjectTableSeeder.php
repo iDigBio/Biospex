@@ -42,8 +42,6 @@ class ExpeditionSubjectTableSeeder extends Seeder {
 				if ($i == 800) break;
 				// add expedition ids to subjects
 				$expedition->subjects()->attach($subject);
-				// add relation in expedition_subject
-				$subject->expeditions()->attach($expedition, ['project_id' => $expedition->project_id]);
 				$i++;
 			}
 		}
