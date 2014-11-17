@@ -91,8 +91,9 @@ Route::group(
 		Route::get('projects/{projects}/expeditions/{expeditions}/download', ['as' => 'projects.expeditions.download', 'uses' => 'ExpeditionsController@download']);
 		Route::get('projects/{projects}/expeditions/{expeditions}/file/{id}', ['as' => 'projects.expeditions.file', 'uses' => 'ExpeditionsController@file']);
 
-		Route::get('grids/{expedition}', ['as' => 'grid-index', 'uses' => 'GridsController@index']);
-		Route::post('grids/{expedition}/grid-data', ['as' => 'grid-data', 'uses' => 'GridsController@index']);
+		Route::post('/projects/{projects}/expeditions/{expeditions}/grid', ['as' => 'projects.expeditions.gir', 'uses' => 'ExpeditionsController@grid']);
+		//Route::get('/projects/{projects}/expeditions/{expeditions}/grid', ['as' => 'grid', 'uses' => 'ExpeditionsController@loadGrid']);
+		//Route::post('grids/{expedition}/grid-data', ['as' => 'grid-data', 'uses' => 'GridsController@index']);
 
 		Route::get('/', ['as' => 'home', 'uses' => 'HomeController@index']);
 		Route::get('help', ['as' => 'help', 'uses' => 'HomeController@help']);
