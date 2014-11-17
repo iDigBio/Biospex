@@ -76,12 +76,10 @@ Route::filter('auth', function()
 
 Route::filter('csrf', function()
 {
-    // var_dump($_SESSION);
-    //            var_dump($_POST);
-    //            die();
+	$token = Request::ajax() ? Request::header('X-CSRF-Token') : Input::get('_token');
 
     // TODO: Rewrite this tree of conditionals
-    if (Session::token() !== Input::get('_token') || Session::token()===null || Input::get('_token')===null)
+    if (Session::token() !== $token || Session::token()===null || $token===null)
     {
         // Session token and form tokens do not match or one is empty
         if(App::environment() === 'testing')
