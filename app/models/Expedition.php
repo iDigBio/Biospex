@@ -59,11 +59,6 @@ class Expedition extends Eloquent {
      */
     public static function boot(){
         parent::boot();
-
-		// Delete associated subjects from expedition_subjects
-		static::deleting(function($model) {
-			$model->subjects()->detach();
-		});
     }
 
     /**
@@ -84,7 +79,7 @@ class Expedition extends Eloquent {
      */
 	public function subjects ()
     {
-        return $this->belongsToMany('Subject')->withTimestamps();
+        return $this->belongsToMany('Subject');
     }
 
 	/**
