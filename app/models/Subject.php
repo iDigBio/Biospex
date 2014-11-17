@@ -126,6 +126,30 @@ class Subject extends Eloquent {
 	}
 
 	/**
+	 * Hokey Pokey way to detach mongodb subjects from expeditions.
+	 *
+	 * @param $ids
+	 * @param $expeditionId
+	 */
+	public function detachSubjects($ids, $expeditionId)
+	{
+		foreach ($ids as $id)
+		{
+			$array = [];
+			$subject = $this->find($id);
+			foreach ($subject->expedition_ids as $value)
+			{
+				if ($expeditionId != $value)
+					$array[] = $value;
+			}
+			$subject->expedition_ids = $array;
+			$subject->save();
+		}
+
+		return;
+	}
+
+	/**
 	 * Calculate the number of rows. It's used for paging the result.
 	 *  An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
 	 *  The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.

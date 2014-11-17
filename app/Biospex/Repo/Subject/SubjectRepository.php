@@ -46,4 +46,16 @@ class SubjectRepository extends Repository implements SubjectInterface {
 	{
 		return $this->model->getSubjectIds($projectId, $take, $expeditionId);
 	}
+
+	/**
+	 * Detach subjects
+	 *
+	 * @param array $ids
+	 * @param $expeditionId
+	 * @return mixed
+	 */
+	public function detachSubjects($ids = array(), $expeditionId)
+	{
+		return $this->model->detachSubjects($ids, $expeditionId);
+	}
 }
