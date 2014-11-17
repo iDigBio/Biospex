@@ -161,7 +161,7 @@ class ExpeditionsController extends BaseController {
     public function store ()
     {
         // Form Processing
-        $subjects = $this->subject->getSubjectIds(Input::only('project_id', 'subjects'));
+        $subjects = $this->subject->getSubjectIds(Input::get('project_id'), Input::get('subjects'));
 		$input = array_merge(Input::all(), ['subject_ids' => $subjects]);
 
         $expedition = $this->expeditionForm->save($input);
@@ -280,7 +280,6 @@ class ExpeditionsController extends BaseController {
         }
         catch(Exception $e)
         {
-			dd($e->getMessage());
             Session::flash('error', trans('expeditions.expedition_process_error'));
         }
 
@@ -355,11 +354,16 @@ class ExpeditionsController extends BaseController {
 		}
 		else
 		{
-			$result = $this->expedition->destroy($expeditionId);
-			if($result)
+			try
 			{
+				$subjects = $this->subject->getSubjectIds($projectId, null, $expeditionId);
+				$this->subject->detachSubjects($subjects, $expeditionId);
+				$this->expedition->destroy($expeditionId);
+
 				Session::flash('success', trans('expeditions.expedition_deleted'));
-			} else {
+			}
+			catch(Exception $e)
+			{
 				Session::flash('error', trans('expeditions.expedition_destroy_error'));
 			}
 		}
