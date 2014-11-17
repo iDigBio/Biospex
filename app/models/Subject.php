@@ -85,15 +85,28 @@ class Subject extends Eloquent {
 	}
 
 	/**
-	 * Return project subjects not assigned to expeditions by limit
-	 * @param $input
-	 * @return mixed
+	 * Return subjects by id. Use for assigned and unassigned.
+	 * @param $projectId
+	 * @param $take
+	 * @param $expeditionId
+	 * @return array
 	 */
-	public function getSubjectIds($input)
+	public function getSubjectIds($projectId, $take, $expeditionId)
 	{
-		$ids = $this->where('expedition_ids', 'size', 0)
-			->where('project_id', "{$input['project_id']}")
-			->take($input['subjects'])
+		$ids = $this->whereNested(function($query) use ($projectId, $take, $expeditionId)
+		{
+			if( ! is_null($expeditionId))
+			{
+				$query->where('expedition_ids', '=', $expeditionId);
+			}
+			else
+			{
+				$query->where('expedition_ids', 'size', 0);
+			}
+
+			$query->where('project_id', '=', "$projectId");
+		})
+			->take($take)
 			->get(array('_id'))
 			->toArray();
 
