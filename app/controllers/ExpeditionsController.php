@@ -26,13 +26,8 @@
 use Biospex\Repo\Expedition\ExpeditionInterface;
 use Biospex\Form\Expedition\ExpeditionForm;
 use Biospex\Repo\Project\ProjectInterface;
-use Biospex\Repo\Group\GroupInterface;
-use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
-use Biospex\Repo\Download\DownloadInterface;
-use Biospex\Repo\Header\HeaderInterface;
-use Mgallegos\LaravelJqgrid\Encoders\RequestedDataInterface;
 
 class ExpeditionsController extends BaseController {
 
@@ -52,24 +47,9 @@ class ExpeditionsController extends BaseController {
     protected $project;
 
     /**
-     * @var Biospex\Repo\Group\GroupInterface
-     */
-    protected $group;
-
-    /**
-     * @var Biospex\Repo\User\UserInterface
-     */
-    protected $user;
-
-    /**
      * @var Biospex\Repo\Subject\SubjectInterface
      */
     protected $subject;
-
-
-	protected $grid;
-
-	protected $requestedDataInterface;
 
 	/**
 	 * Instantiate a new ExpeditionsController
@@ -77,41 +57,27 @@ class ExpeditionsController extends BaseController {
 	 * @param ExpeditionInterface $expedition
 	 * @param ExpeditionForm $expeditionForm
 	 * @param ProjectInterface $project
-	 * @param GroupInterface $group
-	 * @param UserInterface $user
 	 * @param SubjectInterface $subject
 	 * @param WorkflowManagerInterface $workflowManager
-	 * @param DownloadInterface $download
-	 * @param RequestedDataInterface $requestedDataInterface
 	 */
     public function __construct(
         ExpeditionInterface $expedition,
         ExpeditionForm $expeditionForm,
         ProjectInterface $project,
-        GroupInterface $group,
-        UserInterface $user,
         SubjectInterface $subject,
-        WorkflowManagerInterface $workflowManager,
-        DownloadInterface $download,
-		HeaderInterface $header,
-		RequestedDataInterface $requestedDataInterface
+        WorkflowManagerInterface $workflowManager
     )
     {
         $this->expedition = $expedition;
         $this->expeditionForm = $expeditionForm;
         $this->project = $project;
-        $this->group = $group;
-        $this->user = $user;
         $this->subject = $subject;
         $this->workflowManager = $workflowManager;
-        $this->download = $download;
-		$this->header = $header;
-		$this->requestedDataInterface = $requestedDataInterface;
 
         // Establish Filters
 		$this->beforeFilter('auth');
 		$this->beforeFilter('csrf', ['on' => 'post']);
-		$this->beforeFilter('hasProjectAccess:expedition_view', ['only' => ['show', 'index', 'download', 'file']]);
+		$this->beforeFilter('hasProjectAccess:expedition_view', ['only' => ['show', 'index']]);
 		$this->beforeFilter('hasProjectAccess:expedition_edit', ['only' => ['edit', 'update']]);
 		$this->beforeFilter('hasProjectAccess:expedition_delete', ['only' => ['destroy']]);
 		$this->beforeFilter('hasProjectAccess:expedition_create', ['only' => ['create', 'store']]);
@@ -128,7 +94,7 @@ class ExpeditionsController extends BaseController {
 		if ( ! Request::ajax())
 			return Redirect::action('ProjectsController@show', [$id]);
 
-		$project = $this->project->findWith($id, ['expeditions', 'expeditions.actorsCompletedRelation']);
+		$project = $this->project->findWith($id, ['expeditions.actorsCompletedRelation']);
 
 		return View::make('expeditions.index', compact('project'));
     }
@@ -308,31 +274,6 @@ class ExpeditionsController extends BaseController {
 
 	}
 
-	/**
-	 * how downloads
-	 *
-	 * @param $projectId
-	 * @param $expeditionId
-	 * @return \Illuminate\View\View
-	 */
-	public function download ($projectId, $expeditionId)
-	{
-		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads.actor']);
-		return View::make('expeditions.download', compact('expedition'));
-	}
-
-	public function file ($projectId, $expeditionId, $downloadId)
-    {
-        $download = $this->download->find($downloadId);
-		$download->count = $download->count + 1;
-		$this->download->save($download);
-
-        $dataDir = Config::get('config.dataDir');
-        $path = "$dataDir/{$download->file}";
-		$headers = ['Content-Type' => 'application/x-compressed'];
-        return Response::download($path, $download->file, $headers);
-    }
-
     /**
      * Remove the specified resource from storage.
      *
@@ -366,13 +307,4 @@ class ExpeditionsController extends BaseController {
 
         return Redirect::action('projects.show', [$projectId]);
     }
-
-	public function grid()
-	{
-		return;
-		//$headers = $this->header->getByProjectId(Input::get('projectId'));
-
-		GridEncoder::encodeRequestedData($this->subject, Input::all());
-	}
-
 }
