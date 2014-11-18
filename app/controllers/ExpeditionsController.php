@@ -32,7 +32,6 @@ use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
 use Biospex\Repo\Download\DownloadInterface;
 use Biospex\Repo\Header\HeaderInterface;
-use Biospex\Repo\Grid\GridInterface;
 use Mgallegos\LaravelJqgrid\Encoders\RequestedDataInterface;
 
 class ExpeditionsController extends BaseController {
@@ -84,7 +83,6 @@ class ExpeditionsController extends BaseController {
 	 * @param WorkflowManagerInterface $workflowManager
 	 * @param DownloadInterface $download
 	 * @param RequestedDataInterface $requestedDataInterface
-	 * @param GridInterface $grid
 	 */
     public function __construct(
         ExpeditionInterface $expedition,
@@ -96,8 +94,7 @@ class ExpeditionsController extends BaseController {
         WorkflowManagerInterface $workflowManager,
         DownloadInterface $download,
 		HeaderInterface $header,
-		RequestedDataInterface $requestedDataInterface,
-		GridInterface $grid
+		RequestedDataInterface $requestedDataInterface
     )
     {
         $this->expedition = $expedition;
