@@ -43,8 +43,6 @@ $(document).ready(function() {
         }
     });
 
-    $("[data-toggle='popover']").popover();
-
     /*
     $('input[name="user"]').change(function(){
         $('input[class="userperm"]:checkbox').prop('checked', this.checked);
@@ -62,15 +60,75 @@ $(document).ready(function() {
         $('input[class="permissionperm"]:checkbox').prop('checked', this.checked);
     });
     */
+
+    var $grid = $("#grid");
+    var projectId = $("#projectId").val();
+    var expeditionId = $("#expeditionId").val();
+    $grid.jqGrid({
+        mtype: "POST",
+        url: "/projects/"+projectId+"/expeditions/"+expeditionId+"/grid",
+        postData: {projectId:projectId, expeditionId:expeditionId },
+        datatype: "json",
+        colModel: [{ name: "id", width: 50 },
+            { name: "accessUri", width: 80, align: "center", formatter: "string"},
+            { name: "orc", width: 100, formatter: "string", align: "right"}
+        ],
+        rowNum: 10,
+        rowList: [5,10,20],
+        pager: "#pager",
+        gridview: true,
+        rownumbers: true,
+        sortname: "id",
+        viewrecords: true,
+        sortorder: "desc",
+        caption: "Setting coloumn headers dynamicaly",
+        jsonReader: { root: "data" },
+        loadBeforeSend: function(jqXHR) {
+            jqXHR.setRequestHeader("X-CSRF-Token", $('meta[name="_token"]').attr('content'));
+        },
+        beforeProcessing: function (data) {
+            var $self = $(this), model = data.model, name, $colHeader, $sortingIcons;
+            if (model) {
+                for (name in model) {
+                    if (model.hasOwnProperty(name)) {
+                        $colHeader = $("#jqgh_" + $.jgrid.jqID(this.id + "_" + name));
+                        $sortingIcons = $colHeader.find(">span.s-ico");
+                        $colHeader.text(model[name].label);
+                        $colHeader.append($sortingIcons);
+                    }
+                }
+            }
+        },
+        loadonce: true,
+        height: "auto"
+    });
+    $("#en").button().click(function () {
+        $grid.jqGrid("setGridParam", {
+            datatype: "json",
+            url: "DynamicHeaderProperties.json"
+        }).trigger("reloadGrid", {current: true});
+    });
+    $("#ru").button().click(function () {
+        $grid.jqGrid("setGridParam", {
+            datatype: "json",
+            url: "DynamicHeaderPropertiesRu.json"
+        }).trigger("reloadGrid", {current: true});
+    });
+    $("#de").button().click(function () {
+        $grid.jqGrid("setGridParam", {
+            datatype: "json",
+            url: "DynamicHeaderPropertiesDe.json"
+        }).trigger("reloadGrid", {current: true});
+    });
+
 /*
-    if($('#list').length >0 ){
-        var groupId = $("#groupId").val();
+    if($('#grid').length >0 ){
         var projectId = $("#projectId").val();
         var expeditionId = $("#expeditionId").val();
 
         $.ajax({
             type: "POST",
-            url: "groups/"+groupId+"/projects/"+projectId+"/expeditions/"+expeditionId+"/loadjq",
+            url: "/projects/"+projectId+"/expeditions/"+expeditionId+"/grid",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (response) {
