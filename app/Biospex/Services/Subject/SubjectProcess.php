@@ -27,7 +27,6 @@
 
 use Validator;
 use Illuminate\Support\Facades\Config;
-use Biospex\Repo\SubjectDoc\SubjectDocInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\Header\HeaderInterface;
 use Biospex\Repo\Property\PropertyInterface;
@@ -150,7 +149,6 @@ class SubjectProcess {
 	/**
 	 * Constructor
 	 *
-	 * @param SubjectDocInterface $subjectdoc
 	 * @param SubjectInterface $subject
 	 * @param HeaderInterface $header
 	 * @param PropertyInterface $property
@@ -158,7 +156,6 @@ class SubjectProcess {
 	 * @param MetaInterface $meta
 	 */
 	public function __construct (
-		SubjectDocInterface $subjectdoc,
 		SubjectInterface $subject,
 		HeaderInterface $header,
 		PropertyInterface $property,
@@ -166,7 +163,6 @@ class SubjectProcess {
 		MetaInterface $meta
 	)
 	{
-		$this->subjectdoc = $subjectdoc;
 		$this->subject = $subject;
 		$this->header = $header;
 		$this->property = $property;
@@ -321,7 +317,7 @@ class SubjectProcess {
 				continue;
 			}
 
-			$subjects[$key] = ['project_id' => $this->projectId]
+			$subjects[$key] = ['project_id' => (string) $this->projectId, 'ocr' => '', 'expedition_ids' => []]
 				+ array_merge($this->headerArray, $subject)
 				+ ['occurrence' => $occurrences[$occurrenceId]];
 		}
@@ -361,15 +357,7 @@ class SubjectProcess {
 				continue;
 			}
 
-			$subjectDoc = $this->subjectdoc->create($subject);
-			$data = [
-				'project_id' => $subjectDoc->project_id,
-				'header_id' => $this->headerId,
-				'meta_id' => $this->metaId,
-				'mongo_id' => $subjectDoc->_id,
-				'object_id' => $subjectDoc->id,
-			];
-			$this->subject->create($data);
+			$this->subject->create($subject);
 		}
 
 		return;
@@ -476,7 +464,7 @@ class SubjectProcess {
 	 */
 	public function validateDoc ($subject)
 	{
-		$rules = ['project_id' => 'unique_with:subjectdocs,id'];
+		$rules = ['project_id' => 'unique_with:subjects,id'];
 		$values = ['project_id' => $subject['project_id'], 'id' => $subject['id']];
 
 		$validator = Validator::make($values, $rules);
@@ -558,6 +546,8 @@ class SubjectProcess {
 	 * ac:providerManagedID
 	 * idigbio:uuid
 	 * idigbio:recordId
+	 * @param $subject
+	 * @return bool
 	 */
 	public function getIdentifier ($subject)
 	{

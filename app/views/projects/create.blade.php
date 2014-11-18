@@ -22,11 +22,6 @@
     @include('partials.project-fields')
 
     <div class="form-group">
-        <button title="@lang('buttons.addTargetTitle')" id="add_target" class="btn btn-default" type="button">@lang('buttons.target_add')</button>
-        <button title="@lang('buttons.removeTargetTitle')" id="remove_target" class="btn btn-default" type="button">@lang('buttons.target_remove')</button>
-    </div>
-
-    <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             {{ Form::hidden('targetCount', 0, array('id' => 'targetCount')) }}
             {{ Form::submit(trans('buttons.create'), array('class' => 'btn btn-primary')) }}

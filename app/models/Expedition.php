@@ -23,6 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Jenssegers\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 class Expedition extends Eloquent {
@@ -36,6 +37,10 @@ class Expedition extends Eloquent {
      * @var string
      */
     protected $table = 'expeditions';
+
+	protected $connection = 'mysql';
+
+	protected $primaryKey = 'id';
 
     /**
      * Accepted attributes
@@ -54,11 +59,6 @@ class Expedition extends Eloquent {
      */
     public static function boot(){
         parent::boot();
-
-		// Delete associated subjects from expedition_subjects
-		static::deleting(function($model) {
-			$model->subjects()->detach();
-		});
     }
 
     /**
@@ -72,13 +72,14 @@ class Expedition extends Eloquent {
     }
 
     /**
-     * Has many relationships
-     *
+     * Belongs to many
+	 * $expedition->subjects()->attach($subject) adds expedition ids in subjects
+	 *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
 	public function subjects ()
     {
-        return $this->belongsToMany('Subject')->withTimestamps();
+        return $this->belongsToMany('Subject');
     }
 
 	/**
@@ -133,7 +134,9 @@ class Expedition extends Eloquent {
 	 */
 	public function subjectsCountRelation ()
 	{
-		return $this->belongsToMany('Subject')->selectRaw('expedition_id, count(*) as count')->groupBy('expedition_id');
+		//return DB::select("select count(expedition_id) as count from expedition_subject group by expedition_id");
+		//return $this->subjects->count();
+		//return $this->belongsToMany('Subject')->selectRaw('count(expedition_ids) as count')->groupBy('expedition_ids');
 	}
 
 	/**
@@ -143,7 +146,8 @@ class Expedition extends Eloquent {
 	 */
 	public function getSubjectsCountAttribute ()
 	{
-		return $this->subjectsCountRelation->first() ? $this->subjectsCountRelation->first()->count : 0;
+		return $this->subjects->count();
+		//return $this->subjectsCountRelation->first() ? $this->subjectsCountRelation->first()->count : 0;
 	}
 
 	/**

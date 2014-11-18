@@ -24,85 +24,52 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Jenssegers\Eloquent\Model as Eloquent;
-use Illuminate\Database\Eloquent\SoftDeletingTrait;
+use Jenssegers\Mongodb\Model as Eloquent;
 
 class Subject extends Eloquent {
 
-    use SoftDeletingTrait;
-    protected $dates = ['deleted_at'];
+    /**
+     * Redefine connection to use mongodb
+     */
+    protected $connection = 'mongodb';
 
     /**
-     * Set connection since extending from Moloquent
+     * Set collection
      */
-    protected $connection = 'mysql';
+    protected $collection = 'subjects';
 
     /**
-     * Set primary id of table
+     * Set primary key
      */
-    protected $primaryKey = 'id';
+    protected $primaryKey = '_id';
 
     /**
-     * @var array
+     * set guarded properties
      */
-    protected $fillable = array(
-		'project_id',
-		'header_id',
-		'meta_id',
-		'mongo_id',
-        'object_id'
-    );
+    protected $guarded = array('_id');
+
+    /**
+     * Finds document by unique object id (from media.csv)
+     *
+     * @param $value
+     * @return mixed
+     */
+    public function findById($value)
+    {
+        return $this->where('id', $value)->get();
+    }
 
 	/**
-	 * Boot function to add model events
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
-	public static function boot(){
-		parent::boot();
-
-		// Delete associated subjects from subjectDocs
-		static::deleting(function($model) {
-			$model->subjectDoc()->delete();
-		});
+	public function project()
+	{
+		return $this->belongsTo('Project');
 	}
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function project()
-    {
-        return $this->belongsTo('Project');
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-	public function expeditions ()
-    {
-        return $this->belongsToMany('Expedition')->withTimestamps();
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function subjectDoc()
-    {
-        return $this->hasOne('SubjectDoc', '_id', 'mongo_id');
-    }
-
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
-	 */
-	public function header()
+	public function scopeProjectId($query, $id)
 	{
-		return $this->hasOne('Header');
-	}
-
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
-	 */
-	public function meta()
-	{
-		return $this->hasOne('Meta');
+		return $query->where('project_id', $id);
 	}
 
 	/**
@@ -110,25 +77,39 @@ class Subject extends Eloquent {
 	 * @param $projectId
 	 * @return mixed
 	 */
-	public function getUnassignedSubjectCount($projectId)
+	public function getUnassignedCount($projectId)
 	{
-		return Subject::has('expeditions', '<', 1)
+		return $this->where('expedition_ids', 'size', 0)
 			->where('project_id', $projectId)
 			->count();
 	}
 
 	/**
-	 * Return project subjects not assigned to expeditions by limit
-	 * @param $input
-	 * @return mixed
+	 * Return subjects by id. Use for assigned and unassigned.
+	 * @param $projectId
+	 * @param $take
+	 * @param $expeditionId
+	 * @return array
 	 */
-	public function getUnassignedSubjects($input)
+	public function getSubjectIds($projectId, $take, $expeditionId)
 	{
-		$ids = $this->has('expeditions', '<', 1)
-			->where('project_id',$input['project_id'])
-			->take($input['subjects'])
-			->get(array('id'))
+		$ids = $this->whereNested(function($query) use ($projectId, $take, $expeditionId)
+		{
+			if( ! is_null($expeditionId))
+			{
+				$query->where('expedition_ids', '=', $expeditionId);
+			}
+			else
+			{
+				$query->where('expedition_ids', 'size', 0);
+			}
+
+			$query->where('project_id', '=', "$projectId");
+		})
+			->take($take)
+			->get(array('_id'))
 			->toArray();
+
 		return array_flatten($ids);
 	}
 
@@ -142,5 +123,168 @@ class Subject extends Eloquent {
 	public function findByForeignId($column, $id)
 	{
 		return $this->where($column, $id)->first();
+	}
+
+	/**
+	 * Hokey Pokey way to detach mongodb subjects from expeditions.
+	 *
+	 * @param $ids
+	 * @param $expeditionId
+	 */
+	public function detachSubjects($ids, $expeditionId)
+	{
+		foreach ($ids as $id)
+		{
+			$array = [];
+			$subject = $this->find($id);
+			foreach ($subject->expedition_ids as $value)
+			{
+				if ($expeditionId != $value)
+					$array[] = $value;
+			}
+			$subject->expedition_ids = $array;
+			$subject->save();
+		}
+
+		return;
+	}
+
+	/**
+	 * Calculate the number of rows. It's used for paging the result.
+	 *  An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
+	 *  The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
+	 *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
+	 *  when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
+	 *  The 'data' key will contain the string searched by the user.
+	 *
+	 * @param $filters
+	 * @param $projectId
+	 * @param $expeditionId
+	 * @return int
+	 */
+	public function getTotalNumberOfRows($filters, $projectId, $expeditionId)
+	{
+		return intval($this->projectid(1)->whereNested(function($query) use ($filters, $projectId)
+		{
+			foreach ($filters as $filter)
+			{
+				if($filter['op'] == 'is in')
+				{
+					$query->whereIn($filter['field'], explode(',',$filter['data']));
+					continue;
+				}
+
+				if($filter['op'] == 'is not in')
+				{
+					$query->whereNotIn($filter['field'], explode(',',$filter['data']));
+					continue;
+				}
+
+				$query->where($filter['field'], $filter['op'], $filter['data']);
+			}
+		})
+			->count());
+	}
+
+	/**
+	 * Get the rows data to be shown in the grid.
+	 *  An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
+	 *  The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
+	 *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
+	 *  when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
+	 *  The 'data' key will contain the string searched by the user.
+	 *
+	 * @param $limit
+	 * @param $offset
+	 * @param null $orderBy
+	 * @param null $sord
+	 * @param array $filters
+	 * @param null $projectId
+	 * @param null $expeditionId
+	 * @return mixed
+	 */
+	public function getRows($limit, $offset, $orderBy, $sord, $filters, $projectId, $expeditionId)
+	{
+		if(!is_null($orderBy) || !is_null($sord))
+		{
+			$this->orderBy = array(array($orderBy, $sord));
+		}
+
+		if($limit == 0)
+		{
+			$limit = 1;
+		}
+
+		$orderByRaw = array();
+
+		foreach ($this->orderBy as $orderBy)
+		{
+			array_push($orderByRaw, implode(' ',$orderBy));
+		}
+
+		$orderByRaw = implode(',',$orderByRaw);
+
+		$rows = $this->whereNested(function ($query) use ($filters)
+				{
+					foreach ($filters as $filter)
+					{
+						if ($filter['op'] == 'is in')
+						{
+							$query->whereIn($filter['field'], explode(',', $filter['data']));
+							continue;
+						}
+
+						if ($filter['op'] == 'is not in')
+						{
+							$query->whereNotIn($filter['field'], explode(',', $filter['data']));
+							continue;
+						}
+						$query->where($filter['field'], $filter['op'], $filter['data']);
+					}
+				})
+			->projectid()
+			->take($limit)
+			->skip($offset)
+			->orderByRaw($orderByRaw)
+			->get();
+
+		/*
+		$rows = $this->projectid(1)->with('subjectDoc')->whereNested(function($query) use ($filters, $projectId)
+		{
+		    foreach ($filters as $filter)
+			{
+				if($filter['op'] == 'is in')
+				{
+					$query->whereIn($filter['field'], explode(',',$filter['data']));
+					continue;
+				}
+
+				if($filter['op'] == 'is not in')
+				{
+					$query->whereNotIn($filter['field'], explode(',',$filter['data']));
+					continue;
+				}
+
+				$query->where($filter['field'], $filter['op'], $filter['data']);
+			}
+		})
+
+		->take($limit)
+		->skip($offset)
+		->orderByRaw($orderByRaw)
+		->get();
+		*/
+		if(!is_array($rows))
+		{
+			$rows = $rows->toArray();
+		}
+
+		foreach ($rows as &$row)
+		{
+			$row = array_values((array) $row);
+		}
+
+		return $rows;
+
 	}
 }

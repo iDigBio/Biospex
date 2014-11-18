@@ -1,18 +1,7 @@
 <?php
 use Illuminate\Database\Seeder;
-use Biospex\Repo\SubjectDoc\SubjectDocInterface;
-use Biospex\Repo\Subject\SubjectInterface;
 
 class UpdateMongoDb extends Seeder {
-
-	public function __construct (
-		SubjectDocInterface $subjectdoc,
-		SubjectInterface $subject
-	)
-	{
-		$this->subjectdoc = $subjectdoc;
-		$this->subject = $subject;
-	}
 
 	/**
 	 * Run the database seeds.
@@ -25,31 +14,33 @@ class UpdateMongoDb extends Seeder {
 
 		try
 		{
-			$subject = SubjectDoc::with('expeditions')->find("54602013b0e6dfec198b61af");
-			dd($subject->expeditions);
-			$expedition = Expedition::find(1);
-			$subject->expeditions()->attach($expedition);
-
-			die();
-
-			/*
-			foreach ($results as $result)
+			$subjects = Subject::all();
+			foreach ($subjects as $subject)
 			{
-				$subject = $this->subject->findByForeignId('mongo_id', $result->_id);
-				$newDoc['project_id'] = $result->project_id;
-				foreach ($result->subject as $key => $value)
+				$subject->project_id = [(string) $subject->project_id];
+
+				$results = DB::connection('mysql')->select("SELECT es.expedition_id
+									FROM subjects s
+									INNER JOIN expedition_subject es on es.subject_id = s.id
+									WHERE s.mongo_id = ?", array($subject->_id));
+				if ($results)
 				{
-					$newDoc[$key] = $value;
+					foreach ($results as $result)
+					{
+						$expedition = Expedition::find($result->expedition_id);
+						$expedition->subjects()->attach($subject->_id);
+					}
 				}
-				$newDoc['occurrence'] = $result->occurrence;
+				else
+				{
+					$subject->expedition_ids = [];
+				}
 
-				$doc = $this->subjectdoc->create($newDoc);
-				$subject->mongo_id = $doc->_id;
+				$subject->ocr = '';
+
 				$subject->save();
-
-				$result->delete();
 			}
-			*/
+
 		} catch (Exception $e)
 		{
 			die($e->getMessage() . $e->getTraceAsString());

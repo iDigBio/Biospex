@@ -32,14 +32,19 @@ class ExpeditionSubjectTableSeeder extends Seeder {
     public function run()
     {
         $subjects = Subject::all();
+		$expeditions = Expedition::all();
 
-        $i = 1;
-        foreach ($subjects as $subject)
-        {
-            if ($i > 3) break;
-			$subject->expeditions()->attach($i);
-            $i = ($subject['id'] % 800 == 0) ? $i+1 : $i;
-        }
+		foreach ($expeditions as $expedition)
+		{
+			$i = 1;
+			foreach ($subjects as $subject)
+			{
+				if ($i == 800) break;
+				// add expedition ids to subjects
+				$expedition->subjects()->attach($subject);
+				$i++;
+			}
+		}
     }
 
 }

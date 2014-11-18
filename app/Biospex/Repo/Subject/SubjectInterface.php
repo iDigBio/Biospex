@@ -27,9 +27,9 @@
 use Biospex\Repo\RepositoryInterface;
 
 interface SubjectInterface extends RepositoryInterface {
-    public function getUnassignedSubjectCount($projectId);
+	public function getUnassignedCount($id);
 
-    public function getUnassignedSubjects($input);
+	public function getSubjectIds($projectId, $take = null, $expeditionId = null);
 
-	public function findByForeignId($column, $id);
+	public function detachSubjects($ids = array(), $expeditionId);
 }
