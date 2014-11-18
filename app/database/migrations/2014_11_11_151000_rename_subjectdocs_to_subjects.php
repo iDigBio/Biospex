@@ -10,8 +10,9 @@ class RenameSubjectdocsToSubjects extends Migration {
 	 */
 	public function up()
 	{
-		$mongo = new MongoClient();
-		$mongo->admin->command(array('renameCollection'=>'biospex.subjectdocs','to'=>'biospex.subjects'));
+		$connection = DB::connection('mongodb');
+		$client = $connection->getMongoClient();
+		$client->admin->command(array('renameCollection'=>'biospex.subjectdocs','to'=>'biospex.subjects'));
 	}
 
 	/**
@@ -21,8 +22,9 @@ class RenameSubjectdocsToSubjects extends Migration {
 	 */
 	public function down()
 	{
-		$mongo = new MongoClient();
-		$mongo->admin->command(array('renameCollection'=>'biospex.subjects','to'=>'biospex.subjectdocs'));
+		$connection = DB::connection('mongodb');
+		$client = $connection->getMongoClient();
+		$client->admin->command(array('renameCollection'=>'biospex.subjects','to'=>'biospex.subjectdocs'));
 	}
 
 }
