@@ -31,12 +31,12 @@ class ExpeditionSubjectTableSeeder extends Seeder {
      */
     public function run()
     {
-        $subjects = Subject::all();
 		$expeditions = Expedition::all();
 
 		foreach ($expeditions as $expedition)
 		{
-			$i = 1;
+			$subjects = Subject::where('expedition_ids', 'size', 0)->get();
+			$i = 0;
 			foreach ($subjects as $subject)
 			{
 				if ($i == 800) break;
