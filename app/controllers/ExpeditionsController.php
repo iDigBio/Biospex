@@ -107,7 +107,6 @@ class ExpeditionsController extends BaseController {
         $this->download = $download;
 		$this->header = $header;
 		$this->requestedDataInterface = $requestedDataInterface;
-		$this->grid = $grid;
 
         // Establish Filters
 		$this->beforeFilter('auth');
@@ -370,6 +369,7 @@ class ExpeditionsController extends BaseController {
 
 	public function grid()
 	{
+		return;
 		//$headers = $this->header->getByProjectId(Input::get('projectId'));
 
 		GridEncoder::encodeRequestedData($this->subject, Input::all());
