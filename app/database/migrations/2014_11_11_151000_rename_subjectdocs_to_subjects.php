@@ -12,7 +12,11 @@ class RenameSubjectdocsToSubjects extends Migration {
 	{
 		$connection = DB::connection('mongodb');
 		$client = $connection->getMongoClient();
-		$client->admin->command(array('renameCollection'=>'biospex.subjectdocs','to'=>'biospex.subjects'));
+		$db = $connection->getMongoDB();
+		$client->admin->command([
+			'renameCollection' => $db . '.subjectdocs',
+			'to' => $db . '.subjects'
+		]);
 	}
 
 	/**
@@ -24,7 +28,11 @@ class RenameSubjectdocsToSubjects extends Migration {
 	{
 		$connection = DB::connection('mongodb');
 		$client = $connection->getMongoClient();
-		$client->admin->command(array('renameCollection'=>'biospex.subjects','to'=>'biospex.subjectdocs'));
+		$db = $connection->getMongoDB();
+		$client->admin->command([
+			'renameCollection' => $db . '.subjects',
+			'to' => $db . '.subjectdocs'
+		]);
 	}
 
 }
