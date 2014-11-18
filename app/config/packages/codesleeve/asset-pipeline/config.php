@@ -44,8 +44,11 @@ return array(
 		'app/assets/stylesheets',
 		'app/assets/images',
 		'app/assets/stylesheets/fonts',
-		'provider/assets/javascripts',
-		'provider/assets/stylesheets',
+		'provider/assets/jqgrid',
+		'provider/assets/jquery',
+		'provider/assets/jquery/images',
+		'provider/assets/jquery-validation',
+		'provider/assets/bootstrap',
 	),
 
 	/*
