@@ -20,7 +20,7 @@
 <div class="panel panel-default">
     <div style="padding: 10px;">
     @if ( ! $expedition->downloads->isEmpty())
-        <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@download', [$expedition->project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-floppy-save"></span> @lang('buttons.download') </button>
+        <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ action('DownloadsController@index', [$expedition->project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-floppy-save"></span> @lang('buttons.download') </button>
     @endif
     <button title="@lang('buttons.dataTitle')" class="btn btn-default btn-xs" type="button" onClick="location.href='{{ action('ProjectsController@data', [$expedition->project->id]) }}'"><span class="glyphicon glyphicon-plus-sign"></span> @lang('buttons.data')</button>
     <button title="@lang('buttons.duplicateTitle')" class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@duplicate', [$expedition->project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-share-alt"></span> @lang('buttons.duplicate')</button>
@@ -40,7 +40,9 @@
 
 <h4>{{ trans('pages.subjects') }}: {{ $expedition->subjectsCount }}</h4>
 <div class="table-responsive">
-    <table id="list"><tr><td></td></tr></table>
+    <input type="hidden" id="projectId" value="{{ $expedition->project->id }}">
+    <input type="hidden" id="expeditionId" value="{{ $expedition->id }}">
+    <table id="grid"><tr><td></td></tr></table>
     <div id="pager"></div>
 </div>
 @stop
