@@ -24,10 +24,11 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Mgallegos\LaravelJqgrid\Repositories\RepositoryInterface;
 use Biospex\Repo\Repository;
 use Subject;
 
-class SubjectRepository extends Repository implements SubjectInterface {
+class SubjectRepository extends Repository implements SubjectInterface, RepositoryInterface {
 
     /**
      * @param Subject $subject
@@ -57,5 +58,31 @@ class SubjectRepository extends Repository implements SubjectInterface {
 	public function detachSubjects($ids = array(), $expeditionId)
 	{
 		return $this->model->detachSubjects($ids, $expeditionId);
+	}
+
+	/**
+	 * Grid: get total number of rows.
+	 *
+	 * @param array $filters
+	 * @return int
+	 */
+	public function getTotalNumberOfRows(array $filters = array())
+	{
+		return $this->model->getTotalNumberOfRows($filters);
+	}
+
+	/**
+	 * Grid: get rows.
+	 *
+	 * @param int $limit
+	 * @param int $offset
+	 * @param null $orderBy
+	 * @param null $sord
+	 * @param array $filters
+	 * @return array
+	 */
+	public function getRows($limit, $offset, $orderBy = null, $sord = null, array $filters = array())
+	{
+		return $this->model->getRows($limit, $offset, $orderBy, $sord, $filters);
 	}
 }

@@ -28,46 +28,62 @@ use Jenssegers\Mongodb\Model as Eloquent;
 
 class Subject extends Eloquent {
 
-    /**
-     * Redefine connection to use mongodb
-     */
-    protected $connection = 'mongodb';
+	/**
+	 * Redefine connection to use mongodb
+	 */
+	protected $connection = 'mongodb';
 
-    /**
-     * Set collection
-     */
-    protected $collection = 'subjects';
+	/**
+	 * Set collection
+	 */
+	protected $collection = 'subjects';
 
-    /**
-     * Set primary key
-     */
-    protected $primaryKey = '_id';
+	/**
+	 * Set primary key
+	 */
+	protected $primaryKey = '_id';
 
-    /**
-     * set guarded properties
-     */
-    protected $guarded = array('_id');
+	/**
+	 * set guarded properties
+	 */
+	protected $guarded = array('_id');
 
-    /**
-     * Finds document by unique object id (from media.csv)
-     *
-     * @param $value
-     * @return mixed
-     */
-    public function findById($value)
-    {
-        return $this->where('id', $value)->get();
-    }
+	/**
+	 * Visible columns
+	 *
+	 * @var Array
+	 *
+	 */
+	protected $visibleColumns = ['id', 'accessURI', 'ocr'];
+
+	/**
+	 * OrderBy
+	 *
+	 * @var array
+	 *
+	 */
+	protected $orderBy = array(array());
+
+	/**
+	 * Finds document by unique object id (from media.csv)
+	 *
+	 * @param $value
+	 * @return mixed
+	 */
+	public function findById ($value)
+	{
+		return $this->where('id', $value)->get();
+	}
 
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
-	public function project()
+	public function project ()
 	{
 		return $this->belongsTo('Project');
 	}
 
-	public function scopeProjectId($query, $id)
+	public function scopeProjectId ($query, $id)
 	{
 		return $query->where('project_id', $id);
 	}
@@ -77,7 +93,7 @@ class Subject extends Eloquent {
 	 * @param $projectId
 	 * @return mixed
 	 */
-	public function getUnassignedCount($projectId)
+	public function getUnassignedCount ($projectId)
 	{
 		return $this->where('expedition_ids', 'size', 0)
 			->where('project_id', $projectId)
@@ -91,15 +107,14 @@ class Subject extends Eloquent {
 	 * @param $expeditionId
 	 * @return array
 	 */
-	public function getSubjectIds($projectId, $take, $expeditionId)
+	public function getSubjectIds ($projectId, $take, $expeditionId)
 	{
-		$ids = $this->whereNested(function($query) use ($projectId, $take, $expeditionId)
+		$ids = $this->whereNested(function ($query) use ($projectId, $take, $expeditionId)
 		{
-			if( ! is_null($expeditionId))
+			if ( ! is_null($expeditionId))
 			{
 				$query->where('expedition_ids', '=', $expeditionId);
-			}
-			else
+			} else
 			{
 				$query->where('expedition_ids', 'size', 0);
 			}
@@ -120,7 +135,7 @@ class Subject extends Eloquent {
 	 * @param $id
 	 * @return mixed
 	 */
-	public function findByForeignId($column, $id)
+	public function findByForeignId ($column, $id)
 	{
 		return $this->where($column, $id)->first();
 	}
@@ -131,7 +146,7 @@ class Subject extends Eloquent {
 	 * @param $ids
 	 * @param $expeditionId
 	 */
-	public function detachSubjects($ids, $expeditionId)
+	public function detachSubjects ($ids, $expeditionId)
 	{
 		foreach ($ids as $id)
 		{
@@ -151,32 +166,33 @@ class Subject extends Eloquent {
 
 	/**
 	 * Calculate the number of rows. It's used for paging the result.
+	 *
+	 * @param  array $filters
 	 *  An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
 	 *  The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
 	 *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
 	 *  when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
 	 *  The 'data' key will contain the string searched by the user.
-	 *
-	 * @param $filters
-	 * @param $projectId
-	 * @param $expeditionId
-	 * @return int
+	 * @return integer
+	 *  Total number of rows
 	 */
-	public function getTotalNumberOfRows($filters, $projectId, $expeditionId)
+	public function getTotalNumberOfRows ($filters)
 	{
-		return intval($this->projectid(1)->whereNested(function($query) use ($filters, $projectId)
+		return intval($this->whereNested(function ($query) use ($filters)
 		{
+			$query->where('project_id', '=', Route::input('projects'));
+
 			foreach ($filters as $filter)
 			{
-				if($filter['op'] == 'is in')
+				if ($filter['op'] == 'is in')
 				{
-					$query->whereIn($filter['field'], explode(',',$filter['data']));
+					$query->whereIn($filter['field'], explode(',', $filter['data']));
 					continue;
 				}
 
-				if($filter['op'] == 'is not in')
+				if ($filter['op'] == 'is not in')
 				{
-					$query->whereNotIn($filter['field'], explode(',',$filter['data']));
+					$query->whereNotIn($filter['field'], explode(',', $filter['data']));
 					continue;
 				}
 
@@ -186,31 +202,36 @@ class Subject extends Eloquent {
 			->count());
 	}
 
+
 	/**
 	 * Get the rows data to be shown in the grid.
+	 *
+	 * @param  integer $limit
+	 *  Number of rows to be shown into the grid
+	 * @param  integer $offset
+	 *  Start position
+	 * @param  string $orderBy
+	 *  Column name to order by.
+	 * @param  array $sordvisibleColumns
+	 *  Sorting order
+	 * @param  array $filters
 	 *  An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
 	 *  The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
 	 *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
 	 *  when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
 	 *  The 'data' key will contain the string searched by the user.
-	 *
-	 * @param $limit
-	 * @param $offset
-	 * @param null $orderBy
-	 * @param null $sord
-	 * @param array $filters
-	 * @param null $projectId
-	 * @param null $expeditionId
-	 * @return mixed
+	 * @return array
+	 *  An array of array, each array will have the data of a row.
+	 *  Example: array(array('row 1 col 1','row 1 col 2'), array('row 2 col 1','row 2 col 2'))
 	 */
-	public function getRows($limit, $offset, $orderBy, $sord, $filters, $projectId, $expeditionId)
+	public function getRows ($limit, $offset, $orderBy, $sord, $filters)
 	{
-		if(!is_null($orderBy) || !is_null($sord))
+		if ( ! is_null($orderBy) || ! is_null($sord))
 		{
 			$this->orderBy = array(array($orderBy, $sord));
 		}
 
-		if($limit == 0)
+		if ($limit == 0)
 		{
 			$limit = 1;
 		}
@@ -219,62 +240,38 @@ class Subject extends Eloquent {
 
 		foreach ($this->orderBy as $orderBy)
 		{
-			array_push($orderByRaw, implode(' ',$orderBy));
+			array_push($orderByRaw, implode(':', $orderBy));
 		}
 
-		$orderByRaw = implode(',',$orderByRaw);
+		$orderByRaw = implode(',', $orderByRaw);
 
 		$rows = $this->whereNested(function ($query) use ($filters)
-				{
-					foreach ($filters as $filter)
-					{
-						if ($filter['op'] == 'is in')
-						{
-							$query->whereIn($filter['field'], explode(',', $filter['data']));
-							continue;
-						}
-
-						if ($filter['op'] == 'is not in')
-						{
-							$query->whereNotIn($filter['field'], explode(',', $filter['data']));
-							continue;
-						}
-						$query->where($filter['field'], $filter['op'], $filter['data']);
-					}
-				})
-			->projectid()
-			->take($limit)
-			->skip($offset)
-			->orderByRaw($orderByRaw)
-			->get();
-
-		/*
-		$rows = $this->projectid(1)->with('subjectDoc')->whereNested(function($query) use ($filters, $projectId)
 		{
-		    foreach ($filters as $filter)
+			$query->where('project_id', '=', Route::input('projects'));
+
+			foreach ($filters as $filter)
 			{
-				if($filter['op'] == 'is in')
+				if ($filter['op'] == 'is in')
 				{
-					$query->whereIn($filter['field'], explode(',',$filter['data']));
+					$query->whereIn($filter['field'], explode(',', $filter['data']));
 					continue;
 				}
 
-				if($filter['op'] == 'is not in')
+				if ($filter['op'] == 'is not in')
 				{
-					$query->whereNotIn($filter['field'], explode(',',$filter['data']));
+					$query->whereNotIn($filter['field'], explode(',', $filter['data']));
 					continue;
 				}
 
 				$query->where($filter['field'], $filter['op'], $filter['data']);
 			}
 		})
+			->take($limit)
+			->skip($offset)
+			->orderBy($orderByRaw)
+			->get($this->visibleColumns);
 
-		->take($limit)
-		->skip($offset)
-		->orderByRaw($orderByRaw)
-		->get();
-		*/
-		if(!is_array($rows))
+		if ( ! is_array($rows))
 		{
 			$rows = $rows->toArray();
 		}
@@ -285,6 +282,5 @@ class Subject extends Eloquent {
 		}
 
 		return $rows;
-
 	}
 }

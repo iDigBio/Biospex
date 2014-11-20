@@ -61,65 +61,81 @@ $(document).ready(function() {
     });
     */
 
-    var $grid = $("#grid");
+    var $grid = $("#jqgrid");
     var projectId = $("#projectId").val();
     var expeditionId = $("#expeditionId").val();
     $grid.jqGrid({
-        mtype: "POST",
-        url: "/projects/"+projectId+"/expeditions/"+expeditionId+"/grid",
-        postData: {projectId:projectId, expeditionId:expeditionId },
+        mtype: "GET",
+        url: "/projects/"+projectId+"/expeditions/"+expeditionId+"/grids",
         datatype: "json",
-        colModel: [{ name: "id", width: 50 },
-            { name: "accessUri", width: 80, align: "center", formatter: "string"},
-            { name: "orc", width: 100, formatter: "string", align: "right"}
+        colModel:[
+            {name: '_id',index: '_id', hidden: true, editable: true, editrules: {edithidden: true}, jsonmap: "cell.0"},
+            {name: 'ocr',index: 'ocr', sortable:false, jsonmap: "cell.3"},
+            {name: 'id',index: 'id', sortable:false, jsonmap: "cell.1"},
+            {name: 'accessURI', index: 'accessURI', editable: false, sortable: false, formatter: 'showlink',
+                formatoptions: { baseLinkUrl: 'javascript:', showAction: "link('", addParam: "');"},
+                jsonmap: "cell.2"
+            },
         ],
         rowNum: 10,
         rowList: [5,10,20],
-        pager: "#pager",
+        pager: "#jqpager",
         gridview: true,
+        shrinkToFit: false,
+        width: null,
+        emptyrecords: "No records to view",
         rownumbers: true,
         sortname: "id",
         viewrecords: true,
         sortorder: "desc",
-        caption: "Setting coloumn headers dynamicaly",
-        jsonReader: { root: "data" },
+        autoencode: true,
+        loadonce: false,
+        height: "auto",
+        caption: "Subjects",
+        jsonReader: {
+            root: "rows",
+            page: "page",
+            total: "total",
+            records: "records"
+        },
         loadBeforeSend: function(jqXHR) {
             jqXHR.setRequestHeader("X-CSRF-Token", $('meta[name="_token"]').attr('content'));
         },
-        beforeProcessing: function (data) {
-            var $self = $(this), model = data.model, name, $colHeader, $sortingIcons;
-            if (model) {
-                for (name in model) {
-                    if (model.hasOwnProperty(name)) {
-                        $colHeader = $("#jqgh_" + $.jgrid.jqID(this.id + "_" + name));
-                        $sortingIcons = $colHeader.find(">span.s-ico");
-                        $colHeader.text(model[name].label);
-                        $colHeader.append($sortingIcons);
-                    }
+        gridComplete: function () {
+            $(this).parent().append('<span id="widthTest" />');
+            gridName = this.id;
+            $('#gbox_' + gridName + ' .ui-jqgrid-htable,#' + gridName).css('width', 'inherit');
+            $('#' + gridName).parent().css('width', 'inherit');
+            var columnNames = $("#" + gridName).jqGrid('getGridParam', 'colModel');
+            var thisWidth;
+            // Loop through Cols
+            for (var itm = 0, itmCount = columnNames.length; itm < itmCount; itm++) {
+                var curObj = $('[aria-describedby=' + gridName + '_' + columnNames[itm].name + ']');
+                var thisCell = $('#' + gridName + '_' + columnNames[itm].name + ' div');
+                $('#widthTest').html(thisCell.text()).css({
+                    'font-family': thisCell.css('font-family'),
+                    'font-size': thisCell.css('font-size'),
+                    'font-weight': thisCell.css('font-weight')
+                });
+                var maxWidth = Width = $('#widthTest').width() + 24;
+                //var maxWidth = 0;
+                // Loop through Rows
+                for (var itm2 = 0, itm2Count = curObj.length; itm2 < itm2Count; itm2++) {
+                    var thisCell = $(curObj[itm2]);
+                    $('#widthTest').html(thisCell.html()).css({
+                        'font-family': thisCell.css('font-family'),
+                        'font-size': thisCell.css('font-size'),
+                        'font-weight': thisCell.css('font-weight')
+                    });
+                    thisWidth = $('#widthTest').width();
+                    if (thisWidth > maxWidth) maxWidth = thisWidth;
                 }
+                $('#' + gridName + ' .jqgfirstrow td:eq(' + itm + '), #' + gridName + '_' + columnNames[itm].name).width(maxWidth).css('min-width', maxWidth);
             }
-        },
-        loadonce: true,
-        height: "auto"
+            $('#widthTest').remove();
+        }
     });
-    $("#en").button().click(function () {
-        $grid.jqGrid("setGridParam", {
-            datatype: "json",
-            url: "DynamicHeaderProperties.json"
-        }).trigger("reloadGrid", {current: true});
-    });
-    $("#ru").button().click(function () {
-        $grid.jqGrid("setGridParam", {
-            datatype: "json",
-            url: "DynamicHeaderPropertiesRu.json"
-        }).trigger("reloadGrid", {current: true});
-    });
-    $("#de").button().click(function () {
-        $grid.jqGrid("setGridParam", {
-            datatype: "json",
-            url: "DynamicHeaderPropertiesDe.json"
-        }).trigger("reloadGrid", {current: true});
-    });
+
 
 /*
     if($('#grid').length >0 ){
@@ -164,3 +180,12 @@ $(document).ready(function() {
     }
 */
 });
+
+function link(id) {
+
+    var row = id.split("=");
+    var row_ID = row[1];
+    var uri= $("#jqgrid").getCell(row_ID, 'accessURI');
+    window.open(uri);
+
+}

@@ -1,10 +1,10 @@
-<?php namespace Biospex\Repo\Subject;
+<?php namespace Biospex\Repo\Grid;
 /**
- * SubjectInterface.php
+ * GridInterface.php
  *
  * @package    Biospex Package
  * @version    1.0
- * @author     Robert Bruhn <79e6ef82@opayq.com>
+ * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
  * @link       http://biospex.org
@@ -24,16 +24,4 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Biospex\Repo\RepositoryInterface;
-
-interface SubjectInterface extends RepositoryInterface {
-	public function getUnassignedCount($id);
-
-	public function getSubjectIds($projectId, $take = null, $expeditionId = null);
-
-	public function detachSubjects($ids = array(), $expeditionId);
-
-	public function getTotalNumberOfRows(array $filters = array());
-
-	public function getRows($limit, $offset, $orderBy = null, $sord = null, array $filters = array());
-}
+interface GridInterface {}

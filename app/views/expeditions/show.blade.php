@@ -42,7 +42,7 @@
 <div class="table-responsive">
     <input type="hidden" id="projectId" value="{{ $expedition->project->id }}">
     <input type="hidden" id="expeditionId" value="{{ $expedition->id }}">
-    <table id="grid"><tr><td></td></tr></table>
-    <div id="pager"></div>
+    <table id="jqgrid"></table>
+    <div id="jqpager"></div>
 </div>
 @stop

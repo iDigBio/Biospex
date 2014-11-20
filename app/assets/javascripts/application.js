@@ -17,4 +17,5 @@
 //= require jquery.jqGrid.min
 //= require grid.locale-en
 //= require bootstrap.min
+//= stub jqgrid
 //= require_tree .
