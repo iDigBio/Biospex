@@ -23,7 +23,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Cartalyst\Sentry\Sentry;
 use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Form\Project\ProjectForm;
 use Biospex\Repo\Group\GroupInterface;
@@ -32,10 +31,6 @@ use Biospex\Repo\Import\ImportInterface;
 use Biospex\Repo\Actor\ActorInterface;
 
 class ProjectsController extends BaseController {
-	/**
-	 * @var Sentry
-	 */
-	protected $sentry;
 
 	/**
      * @var Biospex\Repo\Project\ProjectInterface
@@ -74,7 +69,6 @@ class ProjectsController extends BaseController {
 	 * @param ActorInterface $actor
 	 */
     public function __construct(
-		Sentry $sentry,
         ProjectInterface $project,
         ProjectForm $projectForm,
         GroupInterface $group,
@@ -83,7 +77,6 @@ class ProjectsController extends BaseController {
 		ActorInterface $actor
     )
     {
-		$this->sentry = $sentry;
         $this->project = $project;
         $this->projectForm = $projectForm;
         $this->group = $group;
