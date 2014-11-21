@@ -94,6 +94,7 @@ Route::group(
 
 		// Projects/Expeditions/Grids
 		Route::resource('projects.expeditions.grids', 'GridsController');
+		Route::get('projects/{projects}/expeditions/{expeditions}/grids/load', ['as' => 'load', 'uses' => 'GridsController@load']);
 
 		Route::get('/', ['as' => 'home', 'uses' => 'HomeController@index']);
 		Route::get('help', ['as' => 'help', 'uses' => 'HomeController@help']);
