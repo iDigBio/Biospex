@@ -114,7 +114,6 @@ return array(
 		'Felixkiss\UniqueWithValidator\UniqueWithValidatorServiceProvider',
 		'Codesleeve\LaravelStapler\LaravelStaplerServiceProvider',
 		'Codesleeve\AssetPipeline\AssetPipelineServiceProvider',
-		'Mgallegos\LaravelJqgrid\LaravelJqgridServiceProvider',
 		'Cviebrock\EloquentSluggable\SluggableServiceProvider',
 		'Cviebrock\ImageValidator\ImageValidatorServiceProvider',
 		'DaveJamesMiller\Breadcrumbs\ServiceProvider',
@@ -188,8 +187,6 @@ return array(
 		'Menu'        => 'Menu\Menu',
 		'Local'       => 'Mcamara\LaravelLocalization\Facades\LaravelLocalization',
 		'Carbon'      => 'Carbon\Carbon',
-		'GridRender'  => 'Mgallegos\LaravelJqgrid\Facades\GridRender',
-		'GridEncoder' => 'Mgallegos\LaravelJqgrid\Facades\GridEncoder',
 		'Breadcrumbs' => 'DaveJamesMiller\Breadcrumbs\Facade',
 	),
 
