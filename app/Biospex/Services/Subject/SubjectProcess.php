@@ -569,9 +569,8 @@ class SubjectProcess {
 
 		$header = $this->mediaIsCore ? $this->coreHeader : $this->extensionHeader;
 
-		$headerFields = array_map(function ()
-			{
-			}, array_flip($header));
+		$headerFields = array_map(function (){}, array_flip($header));
+		if ( ! in_array('ocr', $headerFields)) $headerFields['ocr'] = '';
 
 		if (is_null($result))
 		{
