@@ -93,8 +93,8 @@ Route::group(
 		Route::resource('projects.expeditions.downloads', 'DownloadsController');
 
 		// Projects/Expeditions/Grids
-		Route::resource('projects.expeditions.grids', 'GridsController');
-		Route::get('projects/{projects}/expeditions/{expeditions}/grids/load', ['as' => 'load', 'uses' => 'GridsController@load']);
+		Route::get('projects/{projects}/expeditions/{expeditions}/grids', ['as' => 'projects.expeditions.grids', 'uses' => 'GridsController@index']);
+		Route::get('projects/{projects}/expeditions/{expeditions}/grids/load', ['as' => 'projects.expeditions.grids.load', 'uses' => 'GridsController@load']);
 
 		Route::get('/', ['as' => 'home', 'uses' => 'HomeController@index']);
 		Route::get('help', ['as' => 'help', 'uses' => 'HomeController@help']);
