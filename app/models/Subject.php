@@ -54,7 +54,13 @@ class Subject extends Eloquent {
 	 * @var Array
 	 *
 	 */
-	protected $visibleColumns = ['id', 'accessURI', 'ocr'];
+	protected $visibleColumns;
+
+	public function __construct()
+	{
+		parent::__construct();
+		$this->visibleColumns = Config::get('config.visibleColumns');
+	}
 
 	/**
 	 * OrderBy
@@ -164,6 +170,14 @@ class Subject extends Eloquent {
 		return;
 	}
 
+	public function loadGridModel()
+	{
+		$colNames = $this->getColNames();
+		$colModel = $this->buildColModel();
+
+		return ['colNames' => $colNames, 'colModel' => $colModel];
+	}
+
 	/**
 	 * Calculate the number of rows. It's used for paging the result.
 	 *
@@ -204,17 +218,16 @@ class Subject extends Eloquent {
 
 
 	/**
+	 *
 	 * Get the rows data to be shown in the grid.
 	 *
-	 * @param  integer $limit
-	 *  Number of rows to be shown into the grid
-	 * @param  integer $offset
-	 *  Start position
-	 * @param  string $orderBy
-	 *  Column name to order by.
-	 * @param  array $sordvisibleColumns
-	 *  Sorting order
-	 * @param  array $filters
+	 * @param $limit
+	 * @param $offset
+	 * @param $orderBy
+	 * @param $sord
+	 * @param $initial
+	 * @param $filters
+	 * @return array
 	 *  An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
 	 *  The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
 	 *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
@@ -276,11 +289,59 @@ class Subject extends Eloquent {
 			$rows = $rows->toArray();
 		}
 
-		foreach ($rows as &$row)
+		return $rows;
+	}
+
+	/**
+	 * Get column names in upper case.
+	 *
+	 * @return array
+	 */
+	protected function getColNames()
+	{
+		return $this->visibleColumns;
+	}
+
+	/**
+	 * Build column model for grid.
+	 *
+	 * @return array
+	 */
+	protected function buildColModel()
+	{
+		foreach ($this->visibleColumns as $column)
 		{
-			$row = array_values((array) $row);
+			$colModel[] = $this->formatColumn($column);
 		}
 
-		return $rows;
+		return $colModel;
+	}
+
+	/**
+	 * Format the given column for grid model.
+	 *
+	 * @param $column
+	 * @return array
+	 */
+	protected function formatColumn($column)
+	{
+		$col = [
+			'index' => $column,
+			'jsonmap' => $column,
+			'key' => false,
+			'name' => $column,
+			'resizable' => true,
+			'search' => true,
+			'sortable' => true,
+			'editable' => false,
+		];
+
+		if ($column == 'accessURI')
+		{
+			$col['formatter'] = 'link';
+			$col['formatoptions'] = ['target' => '_new'];
+		}
+
+		return $col;
 	}
 }
