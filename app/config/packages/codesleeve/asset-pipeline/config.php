@@ -45,6 +45,7 @@ return array(
 		'app/assets/images',
 		'app/assets/stylesheets/fonts',
 		'provider/assets/jqgrid',
+		'provider/assets/jqgrid/plugins',
 		'provider/assets/jquery',
 		'provider/assets/jquery/images',
 		'provider/assets/jquery-validation',
