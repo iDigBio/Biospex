@@ -42,6 +42,7 @@ return array(
 	 * Visible columns in jqGrid.
 	 */
 	'visibleColumns' => [
+		'_id',
 		'id',
 		'accessURI',
 		'ocr'
