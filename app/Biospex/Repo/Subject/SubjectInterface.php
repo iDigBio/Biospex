@@ -33,6 +33,8 @@ interface SubjectInterface extends RepositoryInterface {
 
 	public function detachSubjects($ids = array(), $expeditionId);
 
+	public function loadGridModel();
+
 	public function getTotalNumberOfRows(array $filters = array());
 
 	public function getRows($limit, $offset, $orderBy = null, $sord = null, array $filters = array());
