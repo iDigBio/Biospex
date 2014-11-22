@@ -24,11 +24,10 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Mgallegos\LaravelJqgrid\Repositories\RepositoryInterface;
 use Biospex\Repo\Repository;
 use Subject;
 
-class SubjectRepository extends Repository implements SubjectInterface, RepositoryInterface {
+class SubjectRepository extends Repository implements SubjectInterface {
 
     /**
      * @param Subject $subject
@@ -61,6 +60,14 @@ class SubjectRepository extends Repository implements SubjectInterface, Reposito
 	}
 
 	/**
+	 * Load grid model for jqGrid.
+	 */
+	public function loadGridModel()
+	{
+		return $this->model->loadGridModel();
+	}
+
+	/**
 	 * Grid: get total number of rows.
 	 *
 	 * @param array $filters
@@ -74,10 +81,11 @@ class SubjectRepository extends Repository implements SubjectInterface, Reposito
 	/**
 	 * Grid: get rows.
 	 *
-	 * @param int $limit
-	 * @param int $offset
+	 * @param $limit
+	 * @param $offset
 	 * @param null $orderBy
 	 * @param null $sord
+	 * @param bool $initial
 	 * @param array $filters
 	 * @return array
 	 */
