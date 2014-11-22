@@ -28,11 +28,23 @@ return array(
     'logo' => '300x200',
     'banner' => '1200x300',
 
+	/**
+	 * Possible identifiers in subject uploads.
+	 */
 	'identifiers' => [
 		'identifier',
 		'providerManagedID',
 		'uuid',
 		'recordId',
+	],
+
+	/**
+	 * Visible columns in jqGrid.
+	 */
+	'visibleColumns' => [
+		'id',
+		'accessURI',
+		'ocr'
 	],
 
     /**
