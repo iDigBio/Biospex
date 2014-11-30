@@ -267,7 +267,7 @@ class NotesFromNature extends ActorAbstract
 				continue;
 			}
 
-			$image = $this->getImage(str_replace(" ", "%20", $uri));
+			$image = $this->image->getImageFromUrl(str_replace(" ", "%20", $uri));
 
 			if (empty($image))
 			{
@@ -294,26 +294,6 @@ class NotesFromNature extends ActorAbstract
 			throw new \RuntimeException(trans('errors.error_build_image_dir', array('id' => $this->record->id)));
 
 		return;
-    }
-
-    /**
-     * Retrieve image from url
-     *
-     * @param $url
-     * @return array
-     */
-    protected function getImage($url)
-    {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        $image = curl_exec($ch);
-        curl_close($ch);
-
-		return $image;
     }
 
     /**
