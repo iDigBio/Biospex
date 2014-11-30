@@ -62,13 +62,6 @@ class NotesFromNature extends ActorAbstract
     protected $tmpFileDir;
 
     /**
-	 * Image types used by NfN
-     *
-     * @var
-     */
-    protected $imgTypes;
-
-    /**
      * CSV header array associated with meta file
      * @var array
      */
@@ -134,12 +127,6 @@ class NotesFromNature extends ActorAbstract
             'getResults',
             'completed',
             'analyze',
-		];
-
-		$this->imgTypes = [
-			'image/jpeg' => '.jpg',
-			'image/png' => '.png',
-			'image/tiff' => '.tiff',
 		];
 
 		$this->actor = $actor;
@@ -275,15 +262,15 @@ class NotesFromNature extends ActorAbstract
 				continue;
 			}
 
-			$attr = getimagesizefromstring($image);
+			$ext = $this->image->getExtension($image, true);
 
-			if (!isset($this->imgTypes[$attr['mime']]))
+			if ( ! $ext)
 			{
 				$this->missingImg[] = $subject->id . ' : ' . $uri;
 				continue;
 			}
 
-			$path = $this->tmpFileDir . '/' . $subject->_id . $this->imgTypes[$attr['mime']];
+			$path = $this->tmpFileDir . '/' . $subject->_id . $ext;
 
 			$this->saveFile($path, $image);
 
@@ -336,8 +323,6 @@ class NotesFromNature extends ActorAbstract
 
 			$this->image->resizeImage($sourceInfo, $lrgTargetName, $lrgTargetPath, $this->largeWidth, $lrgTargetHeight);
 
-			//$this->convertImage($filePath, $this->largeWidth, $lrgTargetHeight, $lrgImgPath);
-
 			$smTargetHeight = round(($height * $this->smallWidth) / $width);
 			$smTargetName = "{$sourceInfo['filename']}.small.png";
 			$data['small']['name'] = "small/$smTargetName";
@@ -345,8 +330,6 @@ class NotesFromNature extends ActorAbstract
 			$data['small']['height'] = $smTargetHeight;
 
 			$this->image->resizeImage($sourceInfo, $smTargetName, $smTargetPath, $this->smallWidth, $smTargetHeight);
-
-			//$this->convertImage($filePath, $this->smallWidth, $smallHeight, $smImgPath);
 
             $this->metadata['images'][] = $data;
 
@@ -357,20 +340,5 @@ class NotesFromNature extends ActorAbstract
 		$this->metadata['total'] = $i * 2;
 
         return true;
-    }
-
-    /**
-     * Convert image and resize.
-     *
-     * @param $file
-     * @param $width
-     * @param $height
-     * @param $newImgPath
-     */
-    protected function convertImage($file, $width, $height, $newImgPath)
-    {
-        $this->executeCommand("/usr/bin/convert $file -colorspace RGB -resize {$width}x{$height} $newImgPath");
-
-        return;
     }
 }
