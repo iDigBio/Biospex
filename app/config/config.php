@@ -23,6 +23,17 @@ return array(
 	/** Imagine settings */
 	'library' => 'imagick',
 	'quality' => 100,
+	'preview' => [
+		'outputDir' => storage_path() . '/cache/images',
+		'width' => 150,
+		'height' => 150
+	],
+	'imageTypeExtension' => [
+		'image/jpeg' => ".jpg",
+		'image/png' => ".png",
+		'image/tiff' => ".tif",
+		'image/gif' => ".gif"
+	],
 
     /** Min and max logo and banner sizes used in Project model for Codesleve Stapler */
     'logo' => '300x200',
@@ -41,12 +52,23 @@ return array(
 	/**
 	 * Visible columns in jqGrid.
 	 */
-	'visibleColumns' => [
-		'_id',
+	'modelColumns' => [
+		'Included',
+		'Id',
+		'AccessURI',
+		'Ocr'
+	],
+
+	/**
+	 * Columns used in select statement for grid.
+	 */
+	'selectColumns' => [
+		'expedition_ids',
 		'id',
 		'accessURI',
 		'ocr'
 	],
+
 
     /**
      * Default group permissions
