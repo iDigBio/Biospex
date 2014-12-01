@@ -14,8 +14,9 @@
 //= require jquery-ui.min
 //= require jquery.validate.min
 //= require additional-methods.min
-//= require jquery.jqGrid.min
+//= require ui.multiselect
+//= require jquery.qtip.min
 //= require grid.locale-en
+//= require jquery.jqGrid.min
 //= require bootstrap.min
-//= stub jqgrid
 //= require_tree .

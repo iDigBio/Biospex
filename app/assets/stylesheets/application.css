@@ -11,5 +11,7 @@
  *
  *= require jquery-ui.min
  *= require ui.jqgrid
+ *= require ui.multiselect
+ *= require jquery.qtip.min
  *= require_tree .
  */

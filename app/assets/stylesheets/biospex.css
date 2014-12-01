@@ -247,3 +247,13 @@ h1.banner { color: #241d4e !important; font-size: 28px; margin-left: 15px; font-
  
  .eyesright { float: right; }
 
+ /** jqGrid **/
+.ui-jqgrid .ui-pg-input { height: 16px; }
+.ui-jqgrid tr.jqgrow td.textInDiv>div {
+    max-height: 40px;
+    overflow: auto
+}
+td.form-view-data>span>div {
+    max-height: 150px;
+    overflow: auto
+}
