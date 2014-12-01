@@ -307,9 +307,17 @@ class NotesFromNature extends ActorAbstract
 		{
             list($width, $height, $type, $attr) = getimagesize($filePath); // $width, $height, $type, $attr
 			$sourceInfo = pathinfo($filePath); // $dirname, $basename, $extension, $filename
-			$lrgTargetHeight = round(($height * $this->largeWidth) / $width);
-			$lrgTargetName = "{$sourceInfo['filename']}.large.png";
+			$sourceFilePath = $sourceInfo['dirname'] . '/' . $sourceInfo['basename'];
 
+			$lrgTargetHeight = $this->setProportion($width, $height, $this->largeWidth);
+			$lrgTargetName = "{$sourceInfo['filename']}.large.png";
+			$targetFilePathLg = $lrgTargetPath . '/' . $lrgTargetName;
+
+			$smTargetHeight = $this->setProportion($width, $height, $this->smallWidth);
+			$smTargetName = "{$sourceInfo['filename']}.small.png";
+			$targetFilePathSm = $smTargetPath . '/' . $smTargetName;
+
+			// Set array
 			$data['identifier'] = $this->identifierArray[$sourceInfo['filename']];
 			$data['original']['path'] = array($sourceInfo['filename'], ".{$sourceInfo['extension']}");
 			$data['original']['name'] = $sourceInfo['basename'];
@@ -320,16 +328,19 @@ class NotesFromNature extends ActorAbstract
             $data['large']['width'] = $this->largeWidth;
 			$data['large']['height'] = $lrgTargetHeight;
 
-
-			$this->image->resizeImage($sourceInfo, $lrgTargetName, $lrgTargetPath, $this->largeWidth, $lrgTargetHeight);
-
-			$smTargetHeight = round(($height * $this->smallWidth) / $width);
-			$smTargetName = "{$sourceInfo['filename']}.small.png";
 			$data['small']['name'] = "small/$smTargetName";
-            $data['small']['width'] = $this->smallWidth;
+			$data['small']['width'] = $this->smallWidth;
 			$data['small']['height'] = $smTargetHeight;
 
-			$this->image->resizeImage($sourceInfo, $smTargetName, $smTargetPath, $this->smallWidth, $smTargetHeight);
+			$this->image->createDirectory($lrgTargetPath);
+			$this->image->setWidth($this->largeWidth);
+			$this->image->setHeight($lrgTargetHeight);
+			$this->image->resizeImage($sourceFilePath, $targetFilePathLg);
+
+			$this->image->createDirectory($smTargetPath);
+			$this->image->setWidth($this->smallWidth);
+			$this->image->setHeight($smTargetHeight);
+			$this->image->resizeImage($sourceFilePath, $targetFilePathSm);
 
             $this->metadata['images'][] = $data;
 
@@ -341,4 +352,9 @@ class NotesFromNature extends ActorAbstract
 
         return true;
     }
+
+	protected function setProportion($width, $height, $limit)
+	{
+		return round(($height * $limit) / $width);
+	}
 }
