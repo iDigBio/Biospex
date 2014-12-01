@@ -10,9 +10,6 @@ return array(
 	 */
 	'registration' => $_ENV['site.registration'],
 
-    /** Default project image path */
-    'defaultImg' => 'assets/default.png',
-
     /** Turn on language translation in main menu */
     'translate' => false,
 
@@ -21,18 +18,19 @@ return array(
     'dataTmp' => storage_path() . '/data/tmp',
 
 	/** Imagine settings */
-	'library' => 'imagick',
-	'quality' => 100,
-	'preview' => [
-		'outputDir' => storage_path() . '/cache/images',
-		'width' => 150,
-		'height' => 150
-	],
-	'imageTypeExtension' => [
-		'image/jpeg' => ".jpg",
-		'image/png' => ".png",
-		'image/tiff' => ".tif",
-		'image/gif' => ".gif"
+	'images' => [
+		'thumbDefaultImg' => '/assets/default_image.jpg',
+		'thumbOutputDir' => storage_path() . '/images',
+		'thumbWidth' => 150,
+		'thumbHeight' => 150,
+		'library' => 'imagick',
+		'quality' => 100,
+		'imageTypeExtension' => [
+			'image/jpeg' => ".jpg",
+			'image/png' => ".png",
+			'image/tiff' => ".tif",
+			'image/gif' => ".gif"
+		],
 	],
 
     /** Min and max logo and banner sizes used in Project model for Codesleve Stapler */
