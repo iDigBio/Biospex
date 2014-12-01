@@ -30,8 +30,8 @@ use Imagine\Gd\Imagine as GdImagine;
 use Imagine\Image\Box;
 use Config, File, Log;
 
-class Image
-{
+class Image {
+
 	/**
 	 * Instance of the Imagine package
 	 *
@@ -47,54 +47,164 @@ class Image
 	protected $library;
 
 	/**
+	 * Mime type of file.
+	 *
+	 * @var
+	 */
+	protected $mimeType;
+
+	/**
+	 * @var mixed
+	 */
+	protected $width;
+
+	/**
+	 * @var mixed
+	 */
+	protected $height;
+
+	/**
+	 * Image quality.
+	 *
+	 * @var mixed
+	 */
+	protected $quality;
+
+	/**
+	 * Array of image types to extensions from Config.
+	 *
+	 * @var
+	 */
+	protected $imageTypeExtension = [];
+
+	/**
 	 * Initialize the image service
 	 */
 	public function __construct ()
 	{
-		if (!$this->imagine)
+		if ( ! $this->imagine)
 		{
-			$this->library = Config::get('config.library', 'gd');
+			$this->library = Config::get('config.images.library', 'gd');
 
 			// Now create the instance
 			if ($this->library == 'imagick') $this->imagine = new ImagickImagine;
 			elseif ($this->library == 'gmagick') $this->imagine = new GmagickImagine;
 			elseif ($this->library == 'gd') $this->imagine = new GdImagine;
-			else                                 $this->imagine = new GdImagine;
+			else $this->imagine = new GdImagine;
 		}
+
+		$this->quality = Config::get('config.images.quality', 100);
+		$this->imageTypeExtension = Config::get('config.images.imageTypeExtension');
 	}
 
 	/**
-	 * Resize image
-	 * @param $sourceInfo
-	 * @param $targetName
-	 * @param $targetPath
-	 * @param $width
-	 * @param $height
+	 * Resize image.
+	 *
+	 * @param $sourceFilePath
+	 * @param $targetFilePath
 	 */
-	public function resizeImage ($sourceInfo, $targetName, $targetPath, $width, $height)
+	public function resizeImage ($sourceFilePath, $targetFilePath)
 	{
-		// Quality
-		$quality = Config::get('config.quality', 100);
-
-		// Directories and file names
-		$fileName = $sourceInfo['basename'];
-		$sourceFilePath = $sourceInfo['dirname'] . '/' . $fileName;
-		$targetFilePath = $targetPath . '/' . $targetName;
-
-		// Create directory if missing
 		try
 		{
-			// Create dir if missing
-			if (!File::isDirectory($targetPath) and $targetPath) @File::makeDirectory($targetPath);
-
-			$this->imagine->open($sourceFilePath)
-				->resize(new Box($width, $height))
-				->save($targetFilePath, array('quality' => $quality));
+			$size = $this->createBox($this->width, $this->height);
+			$this->imagine->open($sourceFilePath)->resize($size)
+				->save($targetFilePath, array('quality' => $this->quality));
 		} catch (\Exception $e)
 		{
 			Log::error('[IMAGE SERVICE] Failed to resize image "' . $sourceFilePath . '" [' . $e->getMessage() . ']');
 		}
 
 		return;
+	}
+
+	/**
+	 * Create Imagine Box.
+	 *
+	 * @param $width
+	 * @param $height
+	 * @return Box
+	 */
+	protected function createBox($width, $height)
+	{
+		return new Box($width, $height);
+	}
+
+	/**
+	 * Create directory.
+	 *
+	 * @param $path
+	 */
+	public function createDirectory($path)
+	{
+		if ( ! File::isDirectory($path))
+		{
+			@File::makeDirectory($path, 777, true);
+		}
+	}
+
+	/**
+	 * Get file extension.
+	 *
+	 * @param $file
+	 * @param bool $string
+	 * @return string
+	 */
+	public function getExtension ($file, $string = false)
+	{
+		$info = ! $string ? getimagesize($file) : getimagesizefromstring($file);
+
+		return isset($this->imageTypeExtension[$info['mime']]) ?
+			$this->imageTypeExtension[$info['mime']] : false;
+	}
+
+	/**
+	 * Return mime type.
+	 *
+	 * @return string
+	 */
+	public function getMimeType ()
+	{
+		return empty($this->mimeType) ? 'image/jpeg' : $this->mimeType;
+	}
+
+	/**
+	 * Retrieve image from url
+	 *
+	 * @param $url
+	 * @return array
+	 */
+	public function getImageFromUrl ($url)
+	{
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+		$image = curl_exec($ch);
+		curl_close($ch);
+
+		return $image;
+	}
+
+	/**
+	 * Set width for resizing.
+	 *
+	 * @param $width
+	 */
+	public function setWidth($width)
+	{
+		$this->width = $width;
+	}
+
+	/**
+	 * Set height for resizing.
+	 *
+	 * @param $height
+	 */
+	public function setHeight($height)
+	{
+		$this->height = $height;
 	}
 }
