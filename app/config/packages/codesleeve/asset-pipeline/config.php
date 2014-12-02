@@ -49,6 +49,7 @@ return array(
 		'provider/assets/jquery',
 		'provider/assets/jquery/images',
 		'provider/assets/jquery-validation',
+		'provider/assets/qTip',
 		'provider/assets/bootstrap',
 	),
 
