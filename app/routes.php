@@ -96,6 +96,10 @@ Route::group(
 		Route::get('projects/{projects}/expeditions/{expeditions}/grids', ['as' => 'projects.expeditions.grids', 'uses' => 'GridsController@index']);
 		Route::get('projects/{projects}/expeditions/{expeditions}/grids/load', ['as' => 'projects.expeditions.grids.load', 'uses' => 'GridsController@load']);
 
+		// ImagesController
+		Route::get('images/html', ['as' => 'images.html', 'uses' => 'ImagesController@html']);
+		Route::get('images/preview', ['as' => 'images.preview', 'uses' => 'ImagesController@preview']);
+
 		Route::get('/', ['as' => 'home', 'uses' => 'HomeController@index']);
 		Route::get('help', ['as' => 'help', 'uses' => 'HomeController@help']);
 		Route::get('project/{slug}', ['as' => 'project', 'uses' => 'HomeController@project']);
