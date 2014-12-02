@@ -71,22 +71,24 @@ class Thumbnail extends Image{
 	 */
 	public function thumbFromUrl ($url)
 	{
+		$this->setOutPutFile($url);
+
 		if (File::isFile($this->outputFile))
 			return $this->outputFile;
 
-		$image = $this->getImageFromUrl($url);
-		$size = $this->createBox($this->width, $this->height);
-		$mode = ImageInterface::THUMBNAIL_OUTBOUND;
-
-		$this->createDirectory($this->outputDir);
-
 		try {
+			$image = $this->getImageFromUrl($url);
+			$size = $this->createBox($this->width, $this->height);
+			$mode = ImageInterface::THUMBNAIL_OUTBOUND;
+
+			$this->createDirectory($this->outputDir);
+
 			$this->imagine->load($image)->thumbnail($size, $mode)
 				->save($this->outputFile, array('quality' => $this->quality));
 		}
 		catch (Exception $e)
 		{
-			return $this->defaultImg;
+			return false;
 		}
 
 		return $this->outputFile;
@@ -100,8 +102,10 @@ class Thumbnail extends Image{
 	 */
 	public function getThumbnail($url)
 	{
-		$this->setOutPutFile($url);
-		$file = $this->thumbFromUrl($url);
+		if ( ! $file = $this->thumbFromUrl($url))
+		{
+			$file = $this->defaultImg;
+		}
 
 		return File::get($file);
 	}
@@ -114,7 +118,7 @@ class Thumbnail extends Image{
 	 */
 	public function setOutPutFile($url)
 	{
-		$filename = md5($url) . 'jpg';
+		$filename = md5($url) . '.jpg';
 		$this->outputFile = $this->outputDir . '/' . $filename;
 	}
 }
