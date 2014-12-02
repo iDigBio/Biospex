@@ -49,17 +49,24 @@ class Subject extends Eloquent {
 	protected $guarded = array('_id');
 
 	/**
-	 * Visible columns
+	 * Model columns
 	 *
 	 * @var Array
 	 *
 	 */
-	protected $visibleColumns;
+	protected $modelColumns;
+
+	/**
+	 * Select columns for grid.
+	 * @var array
+	 */
+	protected $selectColumns;
 
 	public function __construct()
 	{
 		parent::__construct();
-		$this->visibleColumns = Config::get('config.visibleColumns');
+		$this->modelColumns = Config::get('config.modelColumns');
+		$this->selectColumns = Config::get('config.selectColumns');
 	}
 
 	/**
@@ -172,8 +179,8 @@ class Subject extends Eloquent {
 
 	public function loadGridModel()
 	{
-		$colNames = $this->getColNames();
-		$colModel = $this->buildColModel();
+		$colNames = $this->modelColumns;
+		$colModel = $this->setColModel();
 
 		return ['colNames' => $colNames, 'colModel' => $colModel];
 	}
@@ -198,6 +205,19 @@ class Subject extends Eloquent {
 
 			foreach ($filters as $filter)
 			{
+				if ($filter['field'] == 'expedition_ids')
+				{
+					if ($filter['data'] == "true")
+					{
+						$query->whereIn($filter['field'], [Route::input('expeditions')]);
+					}
+					elseif ($filter['data'] == "false")
+					{
+						$query->whereNotIn($filter['field'], [Route::input('expeditions')]);
+					}
+					continue;
+				}
+
 				if ($filter['op'] == 'is in')
 				{
 					$query->whereIn($filter['field'], explode(',', $filter['data']));
@@ -264,6 +284,19 @@ class Subject extends Eloquent {
 
 			foreach ($filters as $filter)
 			{
+				if ($filter['field'] == 'expedition_ids')
+				{
+					if ($filter['data'] == "true")
+					{
+						$query->whereIn($filter['field'], [Route::input('expeditions')]);
+					}
+					elseif ($filter['data'] == "false")
+					{
+						$query->whereNotIn($filter['field'], [Route::input('expeditions')]);
+					}
+					continue;
+				}
+
 				if ($filter['op'] == 'is in')
 				{
 					$query->whereIn($filter['field'], explode(',', $filter['data']));
@@ -282,24 +315,31 @@ class Subject extends Eloquent {
 			->take($limit)
 			->skip($offset)
 			->orderBy($orderByRaw)
-			->get($this->visibleColumns);
+			->get($this->selectColumns);
 
 		if ( ! is_array($rows))
 		{
 			$rows = $rows->toArray();
 		}
 
+		$this->setRowCheckbox($rows);
+
 		return $rows;
 	}
 
 	/**
-	 * Get column names in upper case.
+	 * If row has expeditionId, mark as checked
 	 *
-	 * @return array
+	 * @param $rows
 	 */
-	protected function getColNames()
+	protected function setRowCheckbox(&$rows)
 	{
-		return $this->visibleColumns;
+		$expeditionId = Route::input('expeditions');
+		foreach ($rows as &$row)
+		{
+			$row['checked'] = in_array($expeditionId, $row['expedition_ids']) ? true : false;
+			$row['expedition_ids'] = in_array($expeditionId, $row['expedition_ids']) ? true : false;
+		}
 	}
 
 	/**
@@ -307,9 +347,9 @@ class Subject extends Eloquent {
 	 *
 	 * @return array
 	 */
-	protected function buildColModel()
+	protected function setColModel()
 	{
-		foreach ($this->visibleColumns as $column)
+		foreach ($this->selectColumns as $column)
 		{
 			$colModel[] = $this->formatColumn($column);
 		}
@@ -325,23 +365,55 @@ class Subject extends Eloquent {
 	 */
 	protected function formatColumn($column)
 	{
+		if ($column == 'expedition_ids')
+			return $this->buildExpeditionCheckbox();
+
 		$col = [
-			'index' => $column,
-			'jsonmap' => $column,
-			'key' => false,
 			'name' => $column,
+			'index' => $column,
+			'key' => false,
 			'resizable' => true,
 			'search' => true,
 			'sortable' => true,
-			'editable' => false,
+			'editable' => true,
+			'classes' => $column == 'ocr' ? "textInDiv" : ""
 		];
 
-		if ($column == 'accessURI')
+		if ($column == 'ocr')
 		{
-			$col['formatter'] = 'link';
-			$col['formatoptions'] = ['target' => '_new'];
+			$col = array_merge($col, [
+				'title' => false,
+				'classes' => "textInDiv",
+				'formatter' => "textFormatter"
+			]);
 		}
 
+		if ($column == 'accessURI')
+			$this->addUriLink($col);
+
 		return $col;
+	}
+
+	protected function addUriLink(&$col)
+	{
+		$col = array_merge($col, [
+			'classes' => "thumbPreview",
+			'formatter' => 'imagePreview'
+		]);
+	}
+
+	protected function buildExpeditionCheckbox()
+	{
+		return [
+			'name' => 'expedition_ids',
+			'index' => 'expedition_ids',
+			'width' => 100,
+			'align' => 'center',
+			'formatter' => 'checkbox',
+			'edittype' => 'checkbox',
+			'editoptions' => ['value' => 'Yes:No', 'defaultValue' => 'No'],
+            'stype' => 'select',
+			'searchoptions' => ['sopt' => ['eq', 'ne'], 'value' => ':Any;true:Yes;false:No']
+		];
 	}
 }
