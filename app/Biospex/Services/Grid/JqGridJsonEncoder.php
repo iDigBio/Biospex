@@ -298,7 +298,7 @@ class JqGridJsonEncoder {
 				'page' => $page,
 				'total' => $totalPages,
 				'records' => $count,
-				'rows' => $rows
+				'rows' => $rows,
 			]);
 		}
 	}
