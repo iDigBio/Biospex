@@ -59,8 +59,8 @@
             <td>0</td>
             <td class="nowrap">
                 <span class="complete">
-                    <span class="complete{{ Helpers::roundUpToAnyFive($expedition->actorsCompleted) }}">&nbsp;</span>
-                </span> {{ Helpers::roundUpToAnyFive($expedition->actorsCompleted) }}%
+                    <span class="complete{{ Helper::roundUpToAnyFive($expedition->actorsCompleted) }}">&nbsp;</span>
+                </span> {{ Helper::roundUpToAnyFive($expedition->actorsCompleted) }}%
             </td>
             @else
             <td class="nowrap" colspan="3">{{ trans('expeditions.processing_not_started') }}</td>

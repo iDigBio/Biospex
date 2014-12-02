@@ -49,8 +49,8 @@
 							<td>{{ $expedition->title }}</td>
 							<td class="nowrap">
 							    <span class="complete">
-							        <span class="complete{{ Helpers::roundUpToAnyFive($expedition->actorsCompleted) }}">&nbsp;</span>
-							    </span> {{ Helpers::roundUpToAnyFive($expedition->actorsCompleted) }}%
+							        <span class="complete{{ Helper::roundUpToAnyFive($expedition->actorsCompleted) }}">&nbsp;</span>
+							    </span> {{ Helper::roundUpToAnyFive($expedition->actorsCompleted) }}%
 							</td>
 							<td>
 							@foreach($expedition->actors as $actor)

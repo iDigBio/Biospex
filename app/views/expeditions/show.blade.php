@@ -39,10 +39,10 @@
 </div>
 
 <h4>{{ trans('pages.subjects') }}: {{ $expedition->subjectsCount }}</h4>
-<div class="table-responsive">
+<div class="table-responsive" id="jqtable">
     <input type="hidden" id="projectId" value="{{ $expedition->project->id }}">
     <input type="hidden" id="expeditionId" value="{{ $expedition->id }}">
-    <table id="jqgrid"></table>
-    <div id="jqpager"></div>
+    <table id="list"></table>
+    <div id="pager"></div>
 </div>
 @stop
