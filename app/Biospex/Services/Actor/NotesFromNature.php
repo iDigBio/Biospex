@@ -254,7 +254,7 @@ class NotesFromNature extends ActorAbstract
 				continue;
 			}
 
-			$image = $this->image->getImageFromUrl(str_replace(" ", "%20", $uri));
+			$image = $this->image->getImageFromUrl($uri);
 
 			if (empty($image))
 			{
