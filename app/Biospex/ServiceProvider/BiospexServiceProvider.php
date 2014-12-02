@@ -24,7 +24,7 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 use Illuminate\Support\ServiceProvider;
-
+use Illuminate\Foundation\AliasLoader;
 
 class BiospexServiceProvider extends ServiceProvider {
 
@@ -51,7 +51,13 @@ class BiospexServiceProvider extends ServiceProvider {
 
         $composerServiceProvider = new ComposerServiceProvider($this->app);
         $composerServiceProvider->register();
-    }
+
+		$this->app->booting(function()
+		{
+			$loader = AliasLoader::getInstance();
+			$loader->alias('Helper', 'Biospex\Helpers\Helper');
+		});
+	}
 
     /**
      * Get the services provided by the provider.

@@ -1,6 +1,6 @@
 <?php namespace Biospex\Helpers;
 /**
- * Helpers.php
+ * Helper.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -24,7 +24,7 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class Helpers {
+class Helper {
 
     public static function sessionFlashPush($key, $value) {
         $values = Session::get($key, []);
