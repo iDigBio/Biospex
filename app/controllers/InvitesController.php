@@ -119,7 +119,7 @@ class InvitesController extends BaseController {
 			$email = trim($email);
             if ($duplicate = $this->invite->checkDuplicate($group->id, $email))
             {
-                Helpers::sessionFlashPush('info', trans('groups.invite_duplicate', ['group' => $group->name, 'email' => $email]));
+                Helper::sessionFlashPush('info', trans('groups.invite_duplicate', ['group' => $group->name, 'email' => $email]));
                 continue;
             }
 
@@ -127,7 +127,7 @@ class InvitesController extends BaseController {
             {
 				$user = $this->sentry->findUserByLogin($email);
                 $user->addGroup($group);
-                Helpers::sessionFlashPush('success', trans('groups.user_added', ['email' => $email]));
+                Helper::sessionFlashPush('success', trans('groups.user_added', ['email' => $email]));
             }
             catch (UserNotFoundException $e)
             {
@@ -141,7 +141,7 @@ class InvitesController extends BaseController {
 
                 if (!$result = $this->inviteForm->save($data))
                 {
-                    Helpers::sessionFlashPush('warning', trans('groups.send_invite_error', ['group' => $group->name, 'email' => $email]));
+                    Helper::sessionFlashPush('warning', trans('groups.send_invite_error', ['group' => $group->name, 'email' => $email]));
                 }
                 else
                 {
@@ -153,7 +153,7 @@ class InvitesController extends BaseController {
 						'data' => ['group' => $group->name, 'code' => $code],
 					]);
 
-                    Helpers::sessionFlashPush('success', trans('groups.send_invite_success', ['group' => $group->name, 'email' => $email]));
+                    Helper::sessionFlashPush('success', trans('groups.send_invite_success', ['group' => $group->name, 'email' => $email]));
                 }
             }
         }
