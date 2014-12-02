@@ -1,0 +1,23 @@
+Simplified custom and quick downloads
+
+We've simplified our download packages. Instead of including all demos and source files,
+we now only include the concatenated files. The new structure looks like this:
+.
+├── images
+│   └── ...
+├── index.html
+├── jquery-ui.css
+├── jquery-ui.js
+├── jquery-ui.min.css
+├── jquery-ui.min.js
+├── jquery-ui.structure.css
+├── jquery-ui.structure.min.css
+├── jquery-ui.theme.css
+├── jquery-ui.theme.min.css
+└── jquery.js
+
+The jquery-ui.structure.css file provides the structural CSS rules (such as margins and positioning),
+and the jquery-ui.theme.css file contains the theming rules (such as backgrounds, colors, and fonts).
+This setup allows you to easily change themes by swapping in new jquery-ui.theme.css files.
+You can also build a theme from scratch by building on top of jquery-ui.structure.css.
+The jquery-ui.css file contains both jquery-ui.structure.css and jquery-ui.theme.css.
