@@ -1,4 +1,4 @@
-<?php
+<?php namespace Biospex\Helpers;
 /**
  * Helpers.php
  *
