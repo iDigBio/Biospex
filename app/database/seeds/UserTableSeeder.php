@@ -66,19 +66,25 @@ class UserTableSeeder extends Seeder {
 
 	private function getUsers()
 	{
-		return array(
-			array(
+		return [
+			[
 				'email'         => 'admin@biospex.org',
 				'password'      => 'biospex',
 				'first_name'    => 'Biospex',
 				'last_name'     => 'Admin',
-			),
-			array(
+			],
+			[
 				'email'    => 'biospex@gmail.com',
 				'password' => 'biospex',
 				'first_name'    => 'Robert',
 				'last_name'     => 'Bruhn',
-			),
-		);
+			],
+			[
+				'email'    => 'benwbrum@gmail.com',
+				'password' => 'Password',
+				'first_name'    => 'Ben',
+				'last_name'     => 'Brumfield',
+			],
+		];
 	}
 }
