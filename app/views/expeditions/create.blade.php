@@ -13,7 +13,7 @@
 <h4>{{ trans('pages.create') }} {{ trans('expeditions.expedition') }}</h4>
 <div class="well">
     {{ Form::open(array(
-    'action' => array('ExpeditionsController@update', $project->id),
+    'action' => array('ExpeditionsController@create', $project->id),
     'method' => 'post',
     'class' => 'form-horizontal',
     'role' => 'form'
