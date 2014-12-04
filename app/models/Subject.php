@@ -34,11 +34,6 @@ class Subject extends Eloquent {
 	protected $connection = 'mongodb';
 
 	/**
-	 * Set collection
-	 */
-	protected $collection = 'subjects';
-
-	/**
 	 * Set primary key
 	 */
 	protected $primaryKey = '_id';
@@ -46,47 +41,14 @@ class Subject extends Eloquent {
 	/**
 	 * set guarded properties
 	 */
-	protected $guarded = array('_id');
-
-	/**
-	 * Model columns
-	 *
-	 * @var Array
-	 *
-	 */
-	protected $modelColumns;
-
-	/**
-	 * Select columns for grid.
-	 * @var array
-	 */
-	protected $selectColumns;
-
-	public function __construct()
-	{
-		parent::__construct();
-		$this->modelColumns = Config::get('config.modelColumns');
-		$this->selectColumns = Config::get('config.selectColumns');
-	}
+	protected $guarded = ['_id'];
 
 	/**
 	 * OrderBy
 	 *
 	 * @var array
-	 *
 	 */
-	protected $orderBy = array(array());
-
-	/**
-	 * Finds document by unique object id (from media.csv)
-	 *
-	 * @param $value
-	 * @return mixed
-	 */
-	public function findById ($value)
-	{
-		return $this->where('id', $value)->get();
-	}
+	protected $orderBy = [[]];
 
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -99,6 +61,17 @@ class Subject extends Eloquent {
 	public function scopeProjectId ($query, $id)
 	{
 		return $query->where('project_id', $id);
+	}
+
+	/**
+	 * Finds document by unique object id (from media.csv)
+	 *
+	 * @param $value
+	 * @return mixed
+	 */
+	public function findById ($value)
+	{
+		return $this->where('id', $value)->get();
 	}
 
 	/**
@@ -179,7 +152,7 @@ class Subject extends Eloquent {
 
 	public function loadGridModel()
 	{
-		$colNames = $this->modelColumns;
+		$colNames = Config::get('config.modelColumns');
 		$colModel = $this->setColModel();
 
 		return ['colNames' => $colNames, 'colModel' => $colModel];
@@ -245,7 +218,6 @@ class Subject extends Eloquent {
 	 * @param $offset
 	 * @param $orderBy
 	 * @param $sord
-	 * @param $initial
 	 * @param $filters
 	 * @return array
 	 *  An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
@@ -259,6 +231,8 @@ class Subject extends Eloquent {
 	 */
 	public function getRows ($limit, $offset, $orderBy, $sord, $filters)
 	{
+		$selectColumns = Config::get('config.selectColumns');
+
 		if ( ! is_null($orderBy) || ! is_null($sord))
 		{
 			$this->orderBy = array(array($orderBy, $sord));
@@ -315,7 +289,7 @@ class Subject extends Eloquent {
 			->take($limit)
 			->skip($offset)
 			->orderBy($orderByRaw)
-			->get($this->selectColumns);
+			->get($selectColumns);
 
 		if ( ! is_array($rows))
 		{
@@ -349,7 +323,9 @@ class Subject extends Eloquent {
 	 */
 	protected function setColModel()
 	{
-		foreach ($this->selectColumns as $column)
+		$selectColumns = Config::get('config.selectColumns');
+
+		foreach ($selectColumns as $column)
 		{
 			$colModel[] = $this->formatColumn($column);
 		}
@@ -412,7 +388,7 @@ class Subject extends Eloquent {
 			'formatter' => 'checkbox',
 			'edittype' => 'checkbox',
 			'editoptions' => ['value' => 'Yes:No', 'defaultValue' => 'No'],
-            'stype' => 'select',
+			'stype' => 'select',
 			'searchoptions' => ['sopt' => ['eq', 'ne'], 'value' => ':Any;true:Yes;false:No']
 		];
 	}
