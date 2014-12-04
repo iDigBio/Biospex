@@ -185,7 +185,10 @@ class SubjectProcess {
 		$this->processMetaFile();
 
 		$core = $this->loadCsv("core");
-		$extension = $this->loadCsv("extension");
+		if ($this->extensionFile)
+		{
+			$extension = $this->loadCsv("extension");
+		}
 
 		$this->setHeaderArray();
 
@@ -285,7 +288,7 @@ class SubjectProcess {
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function buildSubjectsArray ($core, $extension)
+	public function buildSubjectsArray ($core, $extension = null)
 	{
 		if ($this->mediaIsCore)
 		{
@@ -302,13 +305,13 @@ class SubjectProcess {
 		$subjects = [];
 
 		// create new array with occurrence id as key
-		$occurrences = $this->formatOccurrences($occurrence);
+		$occurrences = is_null($occurrence) ? null : $this->formatOccurrences($occurrence);
 
 		foreach ($multimedia as $key => $subject)
 		{
 			$identifier = $this->getIdentifier($subject);
 			// TODO: Need to find what id will be when media is core file
-			$occurrenceId = $subject[$header[0]];
+			$occurrenceId = $this->mediaIsCore ? null : $subject[$header[0]];
 			$subject['id'] = $this->mediaIsCore ? $header[0] : $identifier;
 
 			if (empty($subject['id']))
@@ -319,7 +322,7 @@ class SubjectProcess {
 
 			$subjects[$key] = ['project_id' => (string) $this->projectId, 'ocr' => '', 'expedition_ids' => []]
 				+ array_merge($this->headerArray, $subject)
-				+ ['occurrence' => $occurrences[$occurrenceId]];
+				+ ['occurrence' => is_null($occurrences) ? '' : $occurrences[$occurrenceId]];
 		}
 
 		return $subjects;
@@ -445,11 +448,14 @@ class SubjectProcess {
 			$this->metaFields['core'][$index] = $qualified;
 		}
 
-		foreach ($this->xmlProcess->xpathQuery($this->extXpathQuery) as $child)
+		if ($this->extensionFile)
 		{
-			$index = $child->attributes->getNamedItem("index")->nodeValue;
-			$qualified = $child->attributes->getNamedItem("term")->nodeValue;
-			$this->metaFields['extension'][$index] = $qualified;
+			foreach ($this->xmlProcess->xpathQuery($this->extXpathQuery) as $child)
+			{
+				$index = $child->attributes->getNamedItem("index")->nodeValue;
+				$qualified = $child->attributes->getNamedItem("term")->nodeValue;
+				$this->metaFields['extension'][$index] = $qualified;
+			}
 		}
 
 		return;
@@ -515,11 +521,9 @@ class SubjectProcess {
 
 		$query = "//ns:archive//ns:extension[contains(php:functionString('strtolower', @rowType), '$extension')]";
 		$result = $this->xmlProcess->xpathQuery($query, true);
-		if (empty($result->nodeValue))
-			throw new \Exception("[SubjectProcess] Error querying $extension file.");
 
 		$this->coreFile = $coreFile;
-		$this->extensionFile = $result->nodeValue;
+		$this->extensionFile = empty($result->nodeValue) ? false : $result->nodeValue;
 
 		return;
 	}
@@ -532,12 +536,21 @@ class SubjectProcess {
 		if ($this->mediaIsCore)
 		{
 			$this->coreXpathQuery = "//ns:archive/ns:core[contains(php:functionString('strtolower', @rowType), 'multimedia')]/ns:field";
-			$this->extXpathQuery = "//ns:archive/ns:extension[contains(php:functionString('strtolower', @rowType), 'occurrence')]/ns:field";
-		} else
+			if ($this->extensionFile)
+			{
+				$this->extXpathQuery = "//ns:archive/ns:extension[contains(php:functionString('strtolower', @rowType), 'occurrence')]/ns:field";
+			}
+		}
+		else
 		{
 			$this->coreXpathQuery = "//ns:archive/ns:core[contains(php:functionString('strtolower', @rowType), 'occurrence')]/ns:field";
-			$this->extXpathQuery = "//ns:archive/ns:extension[contains(php:functionString('strtolower', @rowType), 'multimedia')]/ns:field";
+			if ($this->extensionFile)
+			{
+				$this->extXpathQuery = "//ns:archive/ns:extension[contains(php:functionString('strtolower', @rowType), 'multimedia')]/ns:field";
+			}
 		}
+
+		return;
 	}
 
 	/**
