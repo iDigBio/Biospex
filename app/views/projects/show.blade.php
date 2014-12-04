@@ -3,7 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
 @parent
-{{ $project->title }}
+
 @stop
 
 {{-- Content --}}
