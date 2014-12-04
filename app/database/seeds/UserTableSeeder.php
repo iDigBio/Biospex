@@ -79,12 +79,7 @@ class UserTableSeeder extends Seeder {
 				'first_name'    => 'Robert',
 				'last_name'     => 'Bruhn',
 			],
-			[
-				'email'    => 'benwbrum@gmail.com',
-				'password' => 'Password',
-				'first_name'    => 'Ben',
-				'last_name'     => 'Brumfield',
-			],
+
 		];
 	}
 }
