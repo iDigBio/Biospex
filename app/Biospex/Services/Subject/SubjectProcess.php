@@ -185,10 +185,8 @@ class SubjectProcess {
 		$this->processMetaFile();
 
 		$core = $this->loadCsv("core");
-		if ($this->extensionFile)
-		{
-			$extension = $this->loadCsv("extension");
-		}
+
+		$extension = $this->extensionFile ? $this->loadCsv("extension") : null;
 
 		$this->setHeaderArray();
 
@@ -250,7 +248,8 @@ class SubjectProcess {
 		$handle = fopen($file, "r");
 		if ($handle) {
 			$header = null;
-			while (($row = fgetcsv($handle, 10000, $this->delimiter)) !== FALSE) {
+			while (($row = fgetcsv($handle, 10000, $this->delimiter)) !== FALSE && ! is_null($row[0])) {
+
 				if ($header === null)
 				{
 					$header = $this->buildHeaderRow($row, $type);
@@ -270,7 +269,7 @@ class SubjectProcess {
 				$row = array_intersect_key($row, $header);
 
 				if (count($header) != count($row))
-					throw new \Exception('[SubjectProcess] Header column count does not match row count.');
+					throw new \Exception('[SubjectProcess] Header column count does not match row count. Header - Row: ' . count($header) . ' - ' . count($row));
 
 				$results[] = array_combine($header, $row);
 			}
@@ -312,7 +311,7 @@ class SubjectProcess {
 			$identifier = $this->getIdentifier($subject);
 			// TODO: Need to find what id will be when media is core file
 			$occurrenceId = $this->mediaIsCore ? null : $subject[$header[0]];
-			$subject['id'] = $this->mediaIsCore ? $header[0] : $identifier;
+			$subject['id'] = $this->mediaIsCore ? $subject[$header[0]] : $identifier;
 
 			if (empty($subject['id']))
 			{
@@ -356,6 +355,7 @@ class SubjectProcess {
 	{
 		foreach ($subjects as $subject) {
 			if (!$this->validateDoc($subject)) {
+				echo $subject['id'] . "\n";
 				$this->duplicateArray[] = [$subject['id']];
 				continue;
 			}
@@ -496,7 +496,7 @@ class SubjectProcess {
 	 */
 	public function setProjectId($id)
 	{
-		$this->projectId = (int)$id;
+		$this->projectId = $id;
 	}
 
 	/**
