@@ -135,7 +135,7 @@ class Expedition extends Eloquent {
 	 */
 	public function getSubjectsCountAttribute ()
 	{
-		return $this->subject()->count();
+		return $this->subjects()->count();
 	}
 
 	/**
