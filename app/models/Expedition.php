@@ -135,16 +135,7 @@ class Expedition extends Eloquent {
 	 */
 	public function getSubjectsCountAttribute ()
 	{
-		return $this->subjectCountRelation();
-	}
-
-	/**
-	 * Return subject count
-	 * @return mixed
-	 */
-	public function subjectCountRelation ()
-	{
-		return $this->belongsToMany('Subject')->count();
+		return $this->subject()->count();
 	}
 
 	/**
