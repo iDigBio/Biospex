@@ -1,4 +1,4 @@
-<?php namespace Biospex\Trait;
+<?php namespace Biospex\Traits;
 /**
  * UuidTrait.php
  *
