@@ -59,7 +59,12 @@ class UpdateUuids extends Seeder {
 					$this->updatePivot($expedition->actors, $expedition->uuid, 'expedition_uuid');
 
 				if ( ! empty($expedition->workflowManager))
+				{
+					print_r($expedition->workflowManager);
+					exit;
+
 					$this->updateRelation($expedition->workflowManager, $expedition->uuid, 'expedition_uuid');
+				}
 
 				$subjects = Subject::where('expedition_ids', '=', $expedition->id)->get();
 				if ( ! empty($subjects))
