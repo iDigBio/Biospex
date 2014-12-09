@@ -59,6 +59,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      * @var array
      */
     protected $fillable = array(
+		'uuid',
         'group_id',
         'title',
         'slug',
@@ -123,7 +124,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
 	 */
 	public function header()
 	{
-		return $this->hasOne('Headers');
+		return $this->hasOne('Header');
 	}
 
     /**

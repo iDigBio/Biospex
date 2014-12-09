@@ -48,7 +48,9 @@ class Expedition extends Eloquent {
      * @var array
      */
     protected $fillable = array(
+		'uuid',
         'project_id',
+		'project_uuid',
         'title',
         'description',
         'keywords',
