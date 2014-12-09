@@ -28,7 +28,17 @@ class UpdateUuids extends Seeder {
 	{
 		Eloquent::unguard();
 
-		$projects = Project::with(['expeditions', 'expeditions.actors', 'expeditions.workflowManager', 'header', 'imports', 'metas', 'actors', 'subjects'])->get();
+		$projects = Project::with([
+			'expeditions' => function($query){ $query->withTrashed(); },
+			'expeditions.actors',
+			'expeditions.workflowManager',
+			'header' => function($query){ $query->withTrashed(); },
+			'imports',
+			'metas' => function($query){ $query->withTrashed(); },
+			'actors' => function($query){ $query->withTrashed(); },
+			'subjects'
+		])->get();
+
 		foreach ($projects as $project)
 		{
 			$project->uuid = empty($project->uuid) ? Uuid::uuid4()->__toString() : $project->uuid;
