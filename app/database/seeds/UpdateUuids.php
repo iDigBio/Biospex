@@ -87,19 +87,11 @@ class UpdateUuids extends Seeder {
 
 	protected function updateRelation($relations, $uuid, $field = 'project_uuid')
 	{
-		if (is_array($relations))
+		foreach ($relations as $relation)
 		{
-			foreach ($relations as $relation)
-			{
-				$relation->{$field} = $uuid;
-				$relation->save();
-			}
-
-			return;
+			$relation->{$field} = $uuid;
+			$relation->save();
 		}
-
-		$relations->{$field} = $uuid;
-		$relations->save();
 
 		return;
 	}
