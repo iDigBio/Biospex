@@ -60,10 +60,8 @@ class UpdateUuids extends Seeder {
 
 				if ( ! empty($expedition->workflowManager))
 				{
-					print_r($expedition->workflowManager);
-					exit;
-
-					$this->updateRelation($expedition->workflowManager, $expedition->uuid, 'expedition_uuid');
+					$expedition->workflowManager->expedition_uuid = $expedition->uuid;
+					$expedition->workflowManager->save();
 				}
 
 				$subjects = Subject::where('expedition_ids', '=', $expedition->id)->get();
@@ -89,11 +87,21 @@ class UpdateUuids extends Seeder {
 
 	protected function updateRelation($relations, $uuid, $field = 'project_uuid')
 	{
-		foreach ($relations as $relation)
+		if (is_array($relations))
 		{
-			$relation->{$field} = $uuid;
-			$relation->save();
+			foreach ($relations as $relation)
+			{
+				$relation->{$field} = $uuid;
+				$relation->save();
+			}
+
+			return;
 		}
+
+		$relations->{$field} = $uuid;
+		$relations->save();
+
+		return;
 	}
 
 	protected function updatePivot($relations, $uuid, $field = 'project_uuid')
