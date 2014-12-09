@@ -40,6 +40,7 @@ class WorkflowManager extends Eloquent {
 	public $timestamps = false;
 
     protected $fillable = array(
+		'expedition_uuid',
         'expedition_id',
 		'stopped',
 		'error',
