@@ -47,21 +47,7 @@ class UpdateUuids extends Seeder {
 				$this->updatePivot($project->actors, $project->uuid);
 
 			if ( ! empty($project->subjects))
-			{
-				foreach ($project->subjects as $subject)
-				{
-					$vars = $subject->project_id;
-					foreach ($vars as $key => $id)
-					{
-						if ($id == $project->id)
-							$vars[$key] = $project->uuid;
-					}
-					$subject->project_id = $vars;
-					$subject->save();
-				}
-
-			}
-
+				$this->updateRelation($project->subjects, $project->uuid, 'project_id');
 
 			foreach ($project->expeditions as $expedition)
 			{
