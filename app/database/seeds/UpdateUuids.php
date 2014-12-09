@@ -35,7 +35,7 @@ class UpdateUuids extends Seeder {
 			'header' => function($query){ $query->withTrashed(); },
 			'imports',
 			'metas' => function($query){ $query->withTrashed(); },
-			'actors' => function($query){ $query->withTrashed(); },
+			'actors',
 			'subjects'
 		])->get();
 
