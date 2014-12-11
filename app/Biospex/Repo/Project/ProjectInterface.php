@@ -29,4 +29,6 @@ interface ProjectInterface extends RepositoryInterface {
 
     public function bySlug($slug);
 
+	public function findByUuid($uuid);
+
 }

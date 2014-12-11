@@ -195,6 +195,29 @@ class CacheProjectDecorator extends AbstractProjectDecorator
 		return $project;
 	}
 
+	/**
+	 * Find by uuid using cache or query.
+	 *
+	 * @param $uuid
+	 * @return mixed
+	 */
+	public function findByUuid($uuid)
+	{
+		$key = md5('project.' . $uuid);
+
+		if ($this->cache->has($key) && ! $this->pass)
+		{
+			return $this->cache->get($key);
+		}
+
+		$project = $this->project->findByUuid($uuid);
+
+		if ( ! $this->pass)
+			$this->cache->put($key, $project);
+
+		return $project;
+	}
+
 	public function setPass ($value = false)
 	{
 		$this->pass = $value;

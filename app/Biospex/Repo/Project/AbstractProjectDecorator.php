@@ -102,4 +102,15 @@ abstract class AbstractProjectDecorator implements ProjectInterface
 		return $this->project->findWith($id, $with);
 	}
 
+	/**
+	 * Find by uuid.
+	 *
+	 * @param $uuid
+	 * @return mixed
+	 */
+	public function findByUuid($uuid)
+	{
+		return $this->project->findByUuid($uuid);
+	}
+
 }

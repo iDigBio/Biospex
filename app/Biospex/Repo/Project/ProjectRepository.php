@@ -37,10 +37,27 @@ class ProjectRepository extends Repository implements ProjectInterface {
         $this->model = $project;
     }
 
+	/**
+	 * Find by url slug
+	 *
+	 * @param $slug
+	 * @return \Illuminate\Database\Eloquent\Builder|static
+	 */
     public function bySlug($slug)
     {
         return $this->model->bySlug($slug);
     }
+
+	/**
+	 * Find by uuid
+	 *
+	 * @param $uuid
+	 * @return mixed
+	 */
+	public function findByUuid($uuid)
+	{
+		return $this->model->findByUuid($uuid);
+	}
 
 	/**
 	 * Override create for relationships
