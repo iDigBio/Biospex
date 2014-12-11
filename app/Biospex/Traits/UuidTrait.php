@@ -35,8 +35,7 @@ trait UuidTrait
 	public static function bootUuidTrait()
 	{
 		static::creating(function($model) {
-			$model->incrementing = false;
-			$model->{$model->getKeyName()} = Uuid::uuid4()->__toString();
+			$model->uuid = Uuid::uuid4()->__toString();
 		});
 	}
 }
