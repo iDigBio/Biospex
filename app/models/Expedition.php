@@ -25,10 +25,13 @@
  */
 use Jenssegers\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
+use Biospex\Traits\UuidTrait;
 
 class Expedition extends Eloquent {
 
     use SoftDeletingTrait;
+	use UuidTrait;
+
     protected $dates = ['deleted_at'];
 
     /**
@@ -50,7 +53,6 @@ class Expedition extends Eloquent {
     protected $fillable = array(
 		'uuid',
         'project_id',
-		'project_uuid',
         'title',
         'description',
         'keywords',
@@ -106,6 +108,42 @@ class Expedition extends Eloquent {
 	public function actors()
 	{
 		return $this->belongsToMany('Actor', 'expedition_actor')->withPivot('state', 'completed')->withTimestamps();
+	}
+
+	/**
+	 * Find by uuid.
+	 *
+	 * @param $uuid
+	 * @return mixed
+	 */
+	public function findByUuid($uuid)
+	{
+		return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
+	}
+
+	/**
+	 * Set uuid for binary storage.
+	 *
+	 * @param $value
+	 */
+	public function setUuidAttribute($value)
+	{
+		$this->attributes['uuid'] = pack('H*', str_replace('-', '', $value));
+	}
+
+	/**
+	 * Return uuid in normal format.
+	 *
+	 * @param $value
+	 * @return string
+	 */
+	public function getUuidAttribute($value)
+	{
+		if (is_null($value))
+			return;
+
+		$uuid = bin2hex($value);
+		return substr($uuid, 0, 8) . '-' . substr($uuid, 8, 4) . '-' . substr($uuid, 12, 4) . '-' . substr($uuid, 16, 4) . '-' . substr($uuid, 20);
 	}
 
     /**
