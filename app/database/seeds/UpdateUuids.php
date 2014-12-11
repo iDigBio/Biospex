@@ -31,6 +31,7 @@ class UpdateUuids extends Seeder {
 		$projects = Project::with([
 			'expeditions' => function($query){ $query->withTrashed(); },
 			'expeditions.actors',
+			'expeditions.downloads',
 			'expeditions.workflowManager',
 			'header' => function($query){ $query->withTrashed(); },
 			'imports',
@@ -67,6 +68,9 @@ class UpdateUuids extends Seeder {
 
 				if ( ! empty($expedition->actors))
 					$this->updatePivot($expedition->actors, $expedition->uuid, 'expedition_uuid');
+
+				if ( ! empty($expedition->downloads))
+					$this->updateRelation($expedition->downloads, $expedition->uuid, 'expedition_uuid');
 
 				if ( ! empty($expedition->workflowManager))
 				{
