@@ -45,8 +45,11 @@ class UpdateUuids extends Seeder {
 			$project->uuid = empty($project->uuid) ? Uuid::uuid4()->__toString() : $project->uuid;
 			$project->save();
 
-			$project->header->project_uuid = $project->uuid;
-			$project->header->save();
+			if ( ! empty($project->header))
+			{
+				$project->header->project_uuid = $project->uuid;
+				$project->header->save();
+			}
 
 			if ( ! empty($project->imports))
 				$this->updateRelation($project->imports, $project->uuid);
