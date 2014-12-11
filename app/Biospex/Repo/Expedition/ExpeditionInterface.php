@@ -26,4 +26,6 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface ExpeditionInterface extends RepositoryInterface {}
+interface ExpeditionInterface extends RepositoryInterface {
+	public function findByUuid($uuid);
+}

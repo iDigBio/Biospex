@@ -172,6 +172,29 @@ class CacheExpeditionDecorator extends AbstractExpeditionDecorator {
 	}
 
 	/**
+	 * Find by uuid using cache or query.
+	 *
+	 * @param $uuid
+	 * @return mixed
+	 */
+	public function findByUuid($uuid)
+	{
+		$key = md5('expedition.' . $uuid);
+
+		if ($this->cache->has($key) && ! $this->pass)
+		{
+			return $this->cache->get($key);
+		}
+
+		$project = $this->project->findByUuid($uuid);
+
+		if ( ! $this->pass)
+			$this->cache->put($key, $project);
+
+		return $project;
+	}
+
+	/**
 	 * Set cache pass
 	 *
 	 * @param bool $value

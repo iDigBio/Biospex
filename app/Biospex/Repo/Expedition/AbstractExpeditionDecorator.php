@@ -102,4 +102,14 @@ abstract class AbstractExpeditionDecorator implements ExpeditionInterface
 		return $this->expedition->findWith($id, $with);
 	}
 
+	/**
+	 * Find by uuid.
+	 *
+	 * @param $uuid
+	 * @return mixed
+	 */
+	public function findByUuid($uuid)
+	{
+		return $this->project->findByUuid($uuid);
+	}
 }

@@ -55,4 +55,15 @@ class ExpeditionRepository extends Repository implements ExpeditionInterface {
 
         return $expedition;
     }
+
+	/**
+	 * Find by uuid
+	 *
+	 * @param $uuid
+	 * @return mixed
+	 */
+	public function findByUuid($uuid)
+	{
+		return $this->model->findByUuid($uuid);
+	}
 }
