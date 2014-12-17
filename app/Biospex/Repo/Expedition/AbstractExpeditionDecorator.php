@@ -110,6 +110,6 @@ abstract class AbstractExpeditionDecorator implements ExpeditionInterface
 	 */
 	public function findByUuid($uuid)
 	{
-		return $this->project->findByUuid($uuid);
+		return $this->expedition->findByUuid($uuid);
 	}
 }
