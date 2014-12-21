@@ -99,3 +99,9 @@ Breadcrumbs::register('projects.expeditions.inside', function ($breadcrumbs, $ex
 	$breadcrumbs->parent('projects.expeditions.show-with-link', $expedition);
 	$breadcrumbs->push('');
 });
+
+Breadcrumbs::register('projects.subjects', function ($breadcrumbs, $project)
+{
+	$breadcrumbs->parent('projects.show-with-link', $project);
+	$breadcrumbs->push('Subjects');
+});
