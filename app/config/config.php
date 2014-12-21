@@ -51,7 +51,7 @@ return array(
 	 * Visible columns in jqGrid.
 	 */
 	'modelColumns' => [
-		'Included',
+		'Assigned',
 		'Id',
 		'AccessURI',
 		'Ocr'
