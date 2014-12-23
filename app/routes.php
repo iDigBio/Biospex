@@ -92,9 +92,17 @@ Route::group(
 		// Projects/Expeditions/Downloads
 		Route::resource('projects.expeditions.downloads', 'DownloadsController');
 
+		// Group/Projects/subjects
+		//Route::resource('projects.subjects', 'SubjectsController');
+		//Route::get('projects/{projects}/subjects/load', ['as' => 'projects.subjects.load', 'uses' => 'SubjectsController@load']);
+
 		// Projects/Expeditions/Grids
-		Route::get('projects/{projects}/expeditions/{expeditions}/grids', ['as' => 'projects.expeditions.grids', 'uses' => 'GridsController@index']);
-		Route::get('projects/{projects}/expeditions/{expeditions}/grids/load', ['as' => 'projects.expeditions.grids.load', 'uses' => 'GridsController@load']);
+		Route::get('projects/{projects}/subjects', ['as' => 'projects.subjects', 'uses' => 'SubjectsController@index']);
+		Route::get('projects/{projects}/subjects/load', ['as' => 'projects.subjects.load', 'uses' => 'SubjectsController@load']);
+		Route::get('projects/{projects}/subjects/{expeditions}', ['as' => 'projects.subjects.show', 'uses' => 'SubjectsController@show']);
+		Route::post('projects/{projects}/subjects/{expeditions}', ['as' => 'projects.subjects.store', 'uses' => 'SubjectsController@store']);
+
+
 
 		// ImagesController
 		Route::get('images/html', ['as' => 'images.html', 'uses' => 'ImagesController@html']);
