@@ -18,5 +18,6 @@
 //= require jquery.qtip.min
 //= require grid.locale-en
 //= require jquery.jqGrid.min
+//= require jquery-blockui.min
 //= require bootstrap.min
 //= require_tree .
