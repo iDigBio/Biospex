@@ -180,14 +180,7 @@ class Subject extends Eloquent {
 			{
 				if ($filter['field'] == 'expedition_ids')
 				{
-					if ($filter['data'] == "true")
-					{
-						$query->whereIn($filter['field'], [Route::input('expeditions')]);
-					}
-					elseif ($filter['data'] == "false")
-					{
-						$query->whereNotIn($filter['field'], [Route::input('expeditions')]);
-					}
+					$this->expeditionIdFilter($filter, $query, Route::input('expeditions'));
 					continue;
 				}
 
@@ -260,14 +253,7 @@ class Subject extends Eloquent {
 			{
 				if ($filter['field'] == 'expedition_ids')
 				{
-					if ($filter['data'] == "true")
-					{
-						$query->whereIn($filter['field'], [Route::input('expeditions')]);
-					}
-					elseif ($filter['data'] == "false")
-					{
-						$query->whereNotIn($filter['field'], [Route::input('expeditions')]);
-					}
+					$this->expeditionIdFilter($filter, $query, Route::input('expeditions'));
 					continue;
 				}
 
@@ -302,6 +288,39 @@ class Subject extends Eloquent {
 	}
 
 	/**
+	 * Filter for expedition id present or not.
+	 *
+	 * @param $filter
+	 * @param $query
+	 * @param $expeditionId
+	 */
+	protected function expeditionIdFilter($filter, &$query, $expeditionId)
+	{
+		if ($filter['data'] == "true")
+		{
+			if (empty($expeditionId))
+			{
+				$query->whereRaw(array('expedition_ids' => array('$not' => array('$size' => 0))));
+				return;
+			}
+
+			$query->whereIn($filter['field'], [$expeditionId]);
+			return;
+		}
+
+		if (empty($expeditionId))
+		{
+			$query->where('expedition_ids', 'size', 0);
+			return;
+		}
+
+		$query->whereNotIn($filter['field'], [$expeditionId]);
+		return;
+
+	}
+
+
+	/**
 	 * If row has expeditionId, mark as checked
 	 *
 	 * @param $rows
@@ -311,8 +330,14 @@ class Subject extends Eloquent {
 		$expeditionId = Route::input('expeditions');
 		foreach ($rows as &$row)
 		{
-			$row['checked'] = in_array($expeditionId, $row['expedition_ids']) ? true : false;
-			$row['expedition_ids'] = in_array($expeditionId, $row['expedition_ids']) ? true : false;
+			if (empty($expeditionId))
+			{
+				$row['expedition_ids'] = !empty($row['expedition_ids']) ? "Yes" : "No";
+				continue;
+			}
+
+			//$row['checked'] = in_array($expeditionId, $row['expedition_ids']) ? true : false;
+			$row['expedition_ids'] = in_array($expeditionId, $row['expedition_ids']) ? "Yes" : "No";
 		}
 	}
 
@@ -351,7 +376,7 @@ class Subject extends Eloquent {
 			'resizable' => true,
 			'search' => true,
 			'sortable' => true,
-			'editable' => true,
+			'editable' => false,
 			'classes' => $column == 'ocr' ? "textInDiv" : ""
 		];
 
@@ -385,9 +410,9 @@ class Subject extends Eloquent {
 			'index' => 'expedition_ids',
 			'width' => 100,
 			'align' => 'center',
-			'formatter' => 'checkbox',
-			'edittype' => 'checkbox',
-			'editoptions' => ['value' => 'Yes:No', 'defaultValue' => 'No'],
+			//'formatter' => 'checkbox',
+			//'edittype' => 'checkbox',
+			//'editoptions' => ['value' => 'Yes:No', 'defaultValue' => 'No'],
 			'stype' => 'select',
 			'searchoptions' => ['sopt' => ['eq', 'ne'], 'value' => ':Any;true:Yes;false:No']
 		];
