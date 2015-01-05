@@ -9,7 +9,7 @@ $(function() {
         var expedition = $("#expeditionId").val();
         $.ajax({
             type: "GET",
-            url: "/projects/" + project + "/expeditions/" + expedition + "/grids/load",
+            url: "/projects/"+project+"/subjects/load",
             dataType: "json",
             success: jqGrid(project, expedition)
         });
@@ -71,7 +71,7 @@ function jqGrid(project, expedition)
             }
             return -1;
         },
-        refreshSerchingToolbar = function ($grid, myDefaultSearch) {
+        refreshSearchingToolbar = function ($grid, myDefaultSearch) {
             var postData = $grid.jqGrid('getGridParam', 'postData'), filters, i, l,
                 rules, rule, iCol, cm = $grid.jqGrid('getGridParam', 'colModel'),
                 cmi, control, tagName;
@@ -123,7 +123,6 @@ function jqGrid(project, expedition)
                 }
             }
         },
-        //cm = result.colModel,
         saveObjectInLocalStorage = function (storageItemName, object) {
             if (typeof window.localStorage !== 'undefined') {
                 window.localStorage.setItem(storageItemName, JSON.stringify(object));
@@ -226,7 +225,56 @@ function jqGrid(project, expedition)
                 });
             });
         },
-        firstLoad = true;1
+        addButton = function(options) {
+            $grid.jqGrid('navButtonAdd', '#pager', options);
+            $grid.jqGrid('navButtonAdd', '#' + $grid[0].id + '_toppager', options);
+        },
+        setMultipleSelect = function($this) {
+            var data = $this.getDataIDs();
+            for(var x = 0; x < data.length; x++){
+                var row = $this.jqGrid ('getRowData', data[x]);
+                if (row.expedition_ids == "Yes") {
+                    $this.setSelection(data[x], false);
+                    updateIdsOfSelectedRows(x, true);
+                }
+            }
+        },
+        updateDatabase = function(ids, selected) {
+            var request = $.ajax({
+                type:"POST",
+                beforeSend: function (request)
+                {
+                    $grid.block({message: "<h3>Saving...</h3>"});
+                    request.setRequestHeader('X-CSRF-Token', $('meta[name="_token"]').attr('content'));
+                },
+                url: "/projects/" + project + "/subjects/" + expedition,
+                data: { ids: ids, selected: selected },
+                dataType: "json"
+            });
+            request.done(function( msg ) {
+                for (i = 0; i < ids.length; i++) {
+                    var rowData = $grid.jqGrid ('getRowData', ids[i]);
+                    rowData.expedition_ids = selected == true ? "Yes" : "No";
+                    $grid.jqGrid('setRowData', ids[i], rowData);
+                    updateIdsOfSelectedRows(ids[i], selected);
+                }
+                $grid.unblock();
+            });
+            request.fail(function( jqXHR, textStatus ) {
+                $grid.unblock();
+            });
+        },
+        setMultiSelectCheckbox = function(){
+            var rowNum = $grid.jqGrid('getGridParam', 'rowNum');
+            var selNum = $grid.jqGrid('getGridParam', 'selarrrow').length;
+            alert(rowNum+"="+selNum);
+            if (rowNum == selNum) {
+                $("#cb_list").attr("checked", true);
+            } else {
+                $("#cb_list").attr("checked", false);
+            }
+        },
+        firstLoad = true;
         myColumnsState = restoreColumnState.call($grid, cm);
         isColState = typeof (myColumnsState) !== 'undefined' && myColumnsState !== null;
         idsOfSelectedRows = isColState && typeof (myColumnsState.selectedRows) !== "undefined" ? myColumnsState.selectedRows : [];
@@ -241,7 +289,7 @@ function jqGrid(project, expedition)
                 cell: "",
                 id: "_id"
             },
-            url: "/projects/" + project + "/expeditions/" + expedition + "/grids",
+            url: "/projects/" + project + "/subjects/" + expedition,
             datatype: 'json',
             mtype: 'GET',
             colNames: result.colNames,
@@ -249,6 +297,7 @@ function jqGrid(project, expedition)
             rowNum: isColState ? myColumnsState.rowNum : 10,
             rowList: [10, 20, 50, 100],
             pager: '#pager',
+            toppager: true,
             gridview: true,
             page: isColState ? myColumnsState.page : 1,
             search: isColState ? myColumnsState.search : false,
@@ -258,6 +307,7 @@ function jqGrid(project, expedition)
             rownumbers: true,
             ignoreCase: true,
             multiselect: true,
+            multiboxonly: true,
             shrinkToFit: false,
             autowidth: true,
             viewrecords: true,
@@ -265,15 +315,21 @@ function jqGrid(project, expedition)
             caption: 'Subjects',
             height: '100%',
             onSelectRow: function (id, isSelected) {
-                updateIdsOfSelectedRows(id, isSelected);
+                if (expedition == 0)
+                    return false;
+
+                updateDatabase([id], isSelected);
                 saveColumnState.call($grid, $grid[0].p.remapColumns);
             },
             onSelectAll: function (aRowids, isSelected) {
+                if (!expedition)
+                    return false;
+
                 var i, count, id;
                 for (i = 0, count = aRowids.length; i < count; i++) {
                     id = aRowids[i];
-                    updateIdsOfSelectedRows(id, isSelected);
                 }
+                updateDatabase(aRowids, isSelected);
                 saveColumnState.call($grid, $grid[0].p.remapColumns);
             },
             loadComplete: function () {
@@ -290,17 +346,13 @@ function jqGrid(project, expedition)
                             {stringResult: true, searchOnEnter: true, defaultSearch: myDefaultSearch});
                     }
                 }
-                var data = $this.getDataIDs();
-                for(var x = 0; x < data.length; x++){
-                    var row = $this.jqGrid ('getRowData', data[x]);
-                    if (row.expedition_ids == "Yes") {
-                        $this.setSelection(data[x], false);
-                    }
-                }
-                refreshSerchingToolbar($this, myDefaultSearch);
+                setMultipleSelect($this);
+                refreshSearchingToolbar($this, myDefaultSearch);
                 for (i = 0, count = idsOfSelectedRows.length; i < count; i++) {
                     $this.jqGrid('setSelection', idsOfSelectedRows[i], false);
                 }
+                if (expedition == 0)
+                    $this.jqGrid('hideCol', 'cb');
                 saveColumnState.call($this, this.p.remapColumns);
             },
             resizeStop: function () {
@@ -319,8 +371,17 @@ function jqGrid(project, expedition)
             overlay: 0,
             odata: [{ oper:'eq', text:'equal'},{ oper:'ne', text:'not equal'},{ oper:'lt', text:'less'},{ oper:'le', text:'less or equal'},{ oper:'gt', text:'greater'},{ oper:'ge', text:'greater or equal'},{ oper:'bw', text:'begins with'},{ oper:'bn', text:'does not begin with'},{ oper:'in', text:'is in'},{ oper:'ni', text:'is not in'},{ oper:'ew', text:'ends with'},{ oper:'en', text:'does not end with'},{ oper:'cn', text:'contains'},{ oper:'nc', text:'does not contain'}]
         });
-        $grid.jqGrid('navGrid','#pager',{edit: false, add: false, del: false, view: true});
-        $grid.jqGrid('navButtonAdd', '#pager', {
+        $grid.jqGrid('navGrid','#pager',{
+            edit: false,
+            add: false,
+            del: false,
+            view: true,
+            cloneToTop: true,
+            beforeRefresh: function(){
+                $grid.jqGrid('setGridParam',{datatype:'json'}).trigger('reloadGrid');
+            }
+        });
+        addButton({
             caption: "",
             buttonicon: "ui-icon-calculator",
             title: "Choose columns",
@@ -335,7 +396,7 @@ function jqGrid(project, expedition)
                 });
             }
         });
-        $grid.jqGrid('navButtonAdd', '#pager', {
+        addButton({
             caption: "",
             buttonicon: "ui-icon-closethick",
             title: "Clear saved grid's settings",
@@ -343,7 +404,7 @@ function jqGrid(project, expedition)
                 removeObjectFromLocalStorage(myColumnStateName($(this)));
                 window.location.reload();
             }
-        });
+        })
     }
 };
 
