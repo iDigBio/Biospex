@@ -29,8 +29,22 @@ use Biospex\Repo\Project\ProjectInterface;
 
 class SubjectsController extends BaseController {
 
+	/**
+	 * @var
+	 */
 	protected $grid;
 
+	/**
+	 * @var
+	 */
+	protected $project;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param JqGridJsonEncoder $grid
+	 * @param ProjectInterface $project
+	 */
 	public function __construct(JqGridJsonEncoder $grid, ProjectInterface $project)
 	{
 		$this->grid = $grid;
@@ -40,9 +54,10 @@ class SubjectsController extends BaseController {
 	}
 
 	/**
-	 * Display subject page
+	 * Display subject page.
 	 *
-	 * @return Response
+	 * @param $projectId
+	 * @return \Illuminate\View\View
 	 */
 	public function index($projectId)
 	{
@@ -69,6 +84,11 @@ class SubjectsController extends BaseController {
 		$this->grid->encodeRequestedData(Input::all());
 	}
 
+	/**
+	 * Store selected rows to respective expeditions.
+	 *
+	 * @return string
+	 */
 	public function store()
 	{
 		return $this->grid->updateSelectedRows(Route::input('expeditions'), Input::all());
