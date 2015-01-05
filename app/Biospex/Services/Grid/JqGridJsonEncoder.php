@@ -23,31 +23,55 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Illuminate\Support\Facades\Input;
 use Maatwebsite\Excel\Excel;
 use Biospex\Repo\Subject\SubjectInterface;
+use Biospex\Repo\Expedition\ExpeditionInterface;
 use Exception;
 
 class JqGridJsonEncoder {
 
+	/**
+	 * @var SubjectInterface
+	 */
 	protected $subject;
 
+	/**
+	 * @var ExpeditionInterface
+	 */
+	protected $expedition;
+
+	/**
+	 * @var Excel
+	 */
 	protected $excel;
 
 	/**
 	 * Construct
 	 *
 	 * @param SubjectInterface $subject
+	 * @param ExpeditionInterface $expedition
 	 * @param Excel $excel
 	 */
-	public function __construct(SubjectInterface $subject, Excel $excel)
+	public function __construct(
+		SubjectInterface $subject,
+		ExpeditionInterface $expedition,
+		Excel $excel
+	)
 	{
 		$this->subject = $subject;
+		$this->expedition = $expedition;
 		$this->excel = $excel;
 	}
 
+	/**
+	 * Load grid model.
+	 *
+	 * @return string
+	 */
 	public function loadGridModel()
 	{
-		return $this->subject->loadGridModel();
+		return json_encode($this->subject->loadGridModel());
 	}
 
 	/**
@@ -301,6 +325,28 @@ class JqGridJsonEncoder {
 				'rows' => $rows,
 			]);
 		}
+	}
+
+	/**
+	 * Update selected rows
+	 *
+	 * @param $id
+	 * @param $data
+	 * @return string
+	 */
+	public function updateSelectedRows($id, $data)
+	{
+		if ($data['selected'] == "true")
+		{
+			$expedition = $this->expedition->find($id);
+			$result = $expedition->subjects()->sync($data['ids'], false);
+		}
+		else
+		{
+			$result = $this->subject->detachSubjects($data['ids'], $id);
+		}
+
+		return json_encode($result);
 	}
 
 	/**
