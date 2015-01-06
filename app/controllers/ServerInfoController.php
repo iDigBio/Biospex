@@ -70,10 +70,8 @@ class ServerInfoController extends BaseController
 		return Redirect::intended('/projects');
 	}
 
-	public function test ()
+	public function example ()
 	{
-		//Queue::push('ExportNotesFromNature', array('folder' => 'MyTest'), 'nfnexport');
-
-		return;
+		return Redirect::route('projects.index')->with('message', 'Test page ran.');
 	}
 }
