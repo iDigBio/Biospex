@@ -54,3 +54,8 @@ Event::listen('eloquent.deleted: *', function ()
 {
 	Cache::flush();
 });
+
+Queue::failing(function($connection, $job, $data)
+{
+	//
+});
