@@ -66,7 +66,6 @@ class WorkflowManagerService {
 		if (empty($manager) || $this->checkProcess($manager))
 		{
 			$this->delete($job);
-
 			return;
 		}
 
