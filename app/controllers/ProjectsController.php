@@ -302,11 +302,13 @@ class ProjectsController extends BaseController {
         {
             Input::file('file')->move($directory, $filename);
 			$user = $this->user->getUser();
-            $this->import->create([
-				'user_id' => $user->id,
-				'project_id' => $id,
-				'file' => $filename
-			]);
+            $import = $this->import->create([
+                            'user_id' => $user->id,
+                            'project_id' => $id,
+                            'file' => $filename
+                        ]);
+
+            Queue::push('Biospex\Services\Queue\SubjectsImportService', ['id' => $import->id], 'subjectsImport');
         }
         catch(Exception $e)
         {
