@@ -95,7 +95,7 @@ class WorkflowManagerService {
 			try
 			{
 				$classNameSpace = 'Biospex\Services\Actor\\' . $actor->class;
-				$class = App::make($classNameSpace);
+				$class = \App::make($classNameSpace);
 				$class->setProperties($actor, $this->debug);
 				$class->process();
 			} catch (Exception $e)
