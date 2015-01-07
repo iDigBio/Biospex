@@ -229,14 +229,19 @@ class ExpeditionsController extends BaseController {
 
 			if ( ! is_null($expedition->workflowManager))
 			{
+                $workflowId = $expedition->workflowManager->id;
 				$expedition->workflowManager->stopped = 0;
+                $expedition->workflowManager->queue = 1;
 				$this->workflowManager->save($expedition->workflowManager);
 			}
 			else
 			{
-				$this->workflowManager->create(['expedition_id' => $expeditionId]);
-				$expedition->actors()->sync($expedition->project->actors);
+				$workflowManager = $this->workflowManager->create(['expedition_id' => $expeditionId, 'queue' => 1]);
+				$workflowId = $workflowManager->id;
+                $expedition->actors()->sync($expedition->project->actors);
 			}
+
+            Queue::push('Biospex\Services\Queue\WorkflowManagerService', ['id' => $workflowId], 'workflowManager');
 
             Session::flash('success', trans('expeditions.expedition_process_success'));
         }
@@ -266,6 +271,7 @@ class ExpeditionsController extends BaseController {
 		else
 		{
 			$workflow->stopped = 1;
+            $workflow->queue = 0;
 			$this->workflowManager->save($workflow);
 			Session::flash('success', trans('expeditions.process_stopped'));
 		}
