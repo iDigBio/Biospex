@@ -100,7 +100,7 @@ abstract class ActorAbstract {
         $this->dataTmp = Config::get('config.dataTmp');
     }
 
-	abstract protected function setProperties ($actor, $debug = false);
+	abstract protected function setProperties ($actor);
 
     abstract public function process();
 
