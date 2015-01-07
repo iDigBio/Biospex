@@ -44,6 +44,7 @@ class WorkflowManager extends Eloquent {
         'expedition_id',
 		'stopped',
 		'error',
+        'queue'
     );
 
     /**
