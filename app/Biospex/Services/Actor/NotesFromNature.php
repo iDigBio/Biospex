@@ -117,9 +117,8 @@ class NotesFromNature extends ActorAbstract
 	 * Set properties
 	 *
 	 * @param $actor
-	 * @param bool $debug
 	 */
-	public function setProperties ($actor, $debug = false)
+	public function setProperties ($actor)
     {
 		$this->states = [
             'export',
@@ -131,15 +130,12 @@ class NotesFromNature extends ActorAbstract
 
 		$this->actor = $actor;
 		$this->expeditionId = $actor->pivot->expedition_id;
-		$this->report->setDebug($debug);
 
         return;
     }
 
     /**
      * Process current state
-     *
-     * @param $id
      */
     public function process()
     {
@@ -195,12 +191,6 @@ class NotesFromNature extends ActorAbstract
      */
     public function export()
     {
-		// TODO This is set so cron does not run it every minute during presentation.
-		if ($this->actor->pivot->state > 0)
-			return;
-		$this->actor->pivot->state = $this->actor->pivot->state + 1;
-		$this->actor->pivot->save();
-
 		$title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10)));
         $this->tmpFileDir = "{$this->dataDir}/$title";
 
@@ -226,9 +216,8 @@ class NotesFromNature extends ActorAbstract
 
 		$groupId = $this->record->project->group_id;
 
-		// TODO Moved above to avoid cron running it every minute during presentation.
-		//$this->actor->pivot->state = $this->actor->pivot->state+1;
-		//$this->actor->pivot->save();
+		$this->actor->pivot->state = $this->actor->pivot->state+1;
+		$this->actor->pivot->save();
 
 		$this->report->processComplete($groupId, $this->record->title);
 
