@@ -52,7 +52,7 @@ class Ocr extends ActorAbstract {
 	 * @param $actor
 	 * @param bool $debug
 	 */
-	public function setProperties ($actor, $debug = false)
+	public function setProperties ($actor)
 	{
 		$this->states = [
 			'send',
@@ -61,7 +61,6 @@ class Ocr extends ActorAbstract {
 
 		$this->actor = $actor;
 		$this->expeditionId = $actor->pivot->expedition_id;
-		$this->report->setDebug($debug);
 
 		return;
 	}
