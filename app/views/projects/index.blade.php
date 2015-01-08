@@ -37,9 +37,9 @@
 						<td><a href="{{ URL::route('groups.show', [$group->id]) }}">{{ $group->name }}</a></td>
 						<td class="nowrap">
 							<button title="@lang('buttons.viewTitle')" class="btn btn-info btn-xs" type="button" onClick="location.href='{{ URL::route('projects.show', [$project->id]) }}'"><span class="glyphicon glyphicon-eye-open"></span> @lang('buttons.view')</button>
-							<button title="@lang('buttons.dataTitle')" class="btn btn-default btn-xs" type="button" onClick="location.href='{{ URL::route('projects.data', [$project->id]) }}'"><span class="glyphicon glyphicon-plus-sign"></span> @lang('buttons.data')</button>
+							<button title="@lang('buttons.dataTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ URL::route('projects.data', [$project->id]) }}'"><span class="glyphicon glyphicon-plus-sign"></span> @lang('buttons.data')</button>
 							<button title="@lang('buttons.dataViewTitle')" class="btn btn-info btn-xs" type="button" onClick="location.href='{{ URL::route('projects.subjects.show', [$project->id]) }}'"><span class="glyphicon glyphicon-search"></span> @lang('buttons.dataView')</button>
-							<button title="@lang('buttons.duplicateTitle')" class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ URL::route('projects.duplicate', [$project->id]) }}'"><span class="glyphicon glyphicon-share-alt"></span> @lang('buttons.duplicate')</button>
+							<button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ URL::route('projects.duplicate', [$project->id]) }}'"><span class="glyphicon glyphicon-share-alt"></span> @lang('buttons.duplicate')</button>
 							<button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs" type="button" onClick="location.href='{{ URL::route('projects.edit', [$project->id]) }}'"><span class="glyphicon glyphicon-cog"></span> @lang('buttons.edit')</button>
 							@if ($user->id == $group->user_id || $isSuperUser)
 							<button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-xs" href="{{ URL::route('projects.destroy', [$project->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="glyphicon glyphicon-remove-circle"></span> @lang('buttons.delete')</button>
