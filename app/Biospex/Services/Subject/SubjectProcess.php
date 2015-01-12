@@ -357,7 +357,6 @@ class SubjectProcess {
 
 		foreach ($subjects as $subject) {
 			if (!$this->validateDoc($subject)) {
-				echo $subject['id'] . "\n";
 				$this->duplicateArray[] = [$subject['id']];
 				continue;
 			}
