@@ -353,6 +353,8 @@ class SubjectProcess {
 	 */
 	public function insertDocs ($subjects)
 	{
+		$data = [];
+
 		foreach ($subjects as $subject) {
 			if (!$this->validateDoc($subject)) {
 				echo $subject['id'] . "\n";
@@ -360,8 +362,29 @@ class SubjectProcess {
 				continue;
 			}
 
-			$this->subject->create($subject);
+			$newSubject = $this->subject->create($subject);
+
+			$this->buildOcrQueue($data, $newSubject);
 		}
+
+		Queue::push('Biospex\Services\Queue\OcrService', ['data' => $data], 'ocr');
+
+		return;
+	}
+
+	/**
+	 * Build the ocr and send to the queue.
+	 *
+	 * @param $data
+	 * @param $subject
+	 */
+	private function buildOcrQueue(&$data, $subject)
+	{
+		$data[$subject->_id] = [
+			'id' => $subject->id,
+			'project_id' => $subject->project_id,
+			'url' => $subject->bestQualityAccessURI
+		];
 
 		return;
 	}
