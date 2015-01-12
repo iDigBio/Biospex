@@ -41,8 +41,6 @@ class OcrService {
 		Report $report
 	)
 	{
-		$this->manager = $manager;
-		$this->actor = $actor;
 		$this->report = $report;
 	}
 
@@ -54,51 +52,9 @@ class OcrService {
 	 */
 	public function fire($job, $data)
 	{
-		$manager = $this->manager->findWith($data['id'], ['expedition.actors']);
-
-		if (empty($manager) || $this->checkProcess($manager))
-		{
-			$this->delete($job);
-			return;
-		}
-
-		$this->processActors($manager);
-
 		$this->delete($job);
 
 		return;
-	}
-
-	/**
-	 * @param $manager
-	 * @return bool
-	 */
-	public function checkProcess ($manager)
-	{
-		return $manager->stopped == 1 || $manager->error == 1;
-	}
-
-	/**
-	 * @param $manager
-	 */
-	public function processActors ($manager)
-	{
-		foreach ($manager->expedition->actors as $actor)
-		{
-			try
-			{
-				$classNameSpace = 'Biospex\Services\Actor\\' . $actor->class;
-				$class = \App::make($classNameSpace);
-				$class->setProperties($actor);
-				$class->process();
-			} catch (Exception $e)
-			{
-				$manager->error = 1;
-				$this->manager->save($manager);
-				$this->createError($manager, $actor, $e);
-				break;
-			}
-		}
 	}
 
 	/**
