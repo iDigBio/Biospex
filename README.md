@@ -13,6 +13,8 @@ Requirements
  - Mongo PECL Extension
  - PHP gd, imagick, mcrypt, mysql, mysqlnd, opcache, memcached, pdo, pdo_mysql, pdo_sqlite,
  readline, sqlite3
+ - Beanstalkd
+ - Supervisord
 
 
 Installation
@@ -28,35 +30,26 @@ Installation
 
 Notes
 -----
-1. Add cron jobs for subject import and workflow manager
-  1. 0 * * * * /usr/bin/php /home/biospex/artisan subject:import >> /home/biospex/app/storage/logs/subject.import.log 2>&1
-  2. 0 * * * * /usr/bin/php /home/biospex/artisan workflow:manage >> /home/biospex/app/storage/logs/workflow.manage.log 2>&1
-2. Add logrotate
-  1. /etc/logrotate.d/subject_import
+1. Create myqueue.conf then read, update, and restart supervisord.
+2. Add cron jobs for workflow manager (hourly) and download clean (midnight)
+  1. 0 * * * * /usr/bin/php /home/biospex/artisan workflow:manage >> /home/biospex/app/storage/logs/workflow.manage.log 2>&1
+  2. 00 00 * * * /usr/bin/php /home/biospex/artisan download:clean >> /home/biospex/app/storage/logs/download.clean.log 2>&1
+3. Add logrotate
+  1. /etc/logrotate.d/apache2
 ```Nix
-/home/robert/Work/biospex/app/storage/logs/subject.import.log {
+/home/biospex/app/storage/logs/*.log {
     daily
-    rotate 5
+    missingok
+    rotate 3
     compress
     delaycompress
-    missingok
     notifempty
-    copytruncate
+    create 644 www-data www-data
+    sharedscripts
+    dateext
+    dateformat -web01-%Y-%m-%d-%s
 }
 ```
-  2. /etc/logrotate.d/workflow_manager
-```Nix
-/home/robert/Work/biospex/app/storage/logs/workflow.manage.log {
-    daily
-    rotate 5
-    compress
-    delaycompress
-    missingok
-    notifempty
-    copytruncate
-}
-```
-
 
 
 
