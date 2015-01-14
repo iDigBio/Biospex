@@ -23,6 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 use Biospex\Services\Report\Report;
 
 class OcrService {
