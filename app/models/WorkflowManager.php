@@ -1,6 +1,6 @@
 <?php
 /**
- * WorkflowExec.php
+ * WorkflowManager.php
  *
  * @package    Biospex Package
  * @version    1.0
