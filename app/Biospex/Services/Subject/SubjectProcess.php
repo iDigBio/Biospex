@@ -362,11 +362,10 @@ class SubjectProcess {
 			}
 
 			$newSubject = $this->subject->create($subject);
-
 			$this->buildOcrQueue($data, $newSubject);
 		}
 
-		Queue::push('Biospex\Services\Queue\OcrService', ['data' => $data], 'ocr');
+		\Queue::push('Biospex\Services\Queue\OcrService', ['data' => $data], 'ocr');
 
 		return;
 	}
