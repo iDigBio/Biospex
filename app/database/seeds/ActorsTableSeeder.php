@@ -50,12 +50,6 @@ class ActorsTableSeeder extends Seeder {
 				'title' => "Notes From Nature",
 				'url'   => "http://www.notesfromnature.org/",
 				'class' => "NotesFromNature",
-			],
-			[
-				'title'   => "OCR",
-				'url'     => "http:/someurl.com/",
-				'class'   => "OCR",
-				'private' => 1
 			]
 		];
 	}
