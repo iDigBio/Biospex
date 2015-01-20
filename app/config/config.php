@@ -17,6 +17,11 @@ return array(
     'dataDir' => storage_path() . '/data',
     'dataTmp' => storage_path() . '/data/tmp',
 
+	/**
+	 * OCR url
+	 */
+	'ocrUrl' => $_ENV['site.ocrUrl'],
+
 	/** Imagine settings */
 	'images' => [
 		'thumbDefaultImg' => '/assets/default_image.jpg',
