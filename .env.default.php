@@ -35,6 +35,7 @@ return [
 	'site.adminEmail'   => 'youremail@provider.com',
 	'site.registration' => true,
 	'site.ocrUrl'       => 'http://ocr.dev.morphbank.net/status',
+	'site.ocrCrop'		=> 'none',
 
 	'mysql.host'       => 'localhost',
 	'mysql.database'   => 'db',

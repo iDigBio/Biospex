@@ -17,10 +17,11 @@ return array(
     'dataDir' => storage_path() . '/data',
     'dataTmp' => storage_path() . '/data/tmp',
 
-	/**
-	 * OCR url
+	/*
+	 * OCR
 	 */
 	'ocrUrl' => $_ENV['site.ocrUrl'],
+	'ocrCrop' => $_ENV['site.ocrCrop'],
 
 	/** Imagine settings */
 	'images' => [
