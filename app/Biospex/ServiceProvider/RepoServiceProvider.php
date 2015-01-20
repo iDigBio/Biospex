@@ -119,6 +119,7 @@ class RepoServiceProvider extends ServiceProvider {
         $app->bind('Biospex\Repo\Invite\InviteInterface', 'Biospex\Repo\Invite\InviteRepository');
 		$app->bind('Biospex\Repo\Property\PropertyInterface', 'Biospex\Repo\Property\PropertyRepository');
 		$app->bind('Biospex\Repo\Meta\MetaInterface', 'Biospex\Repo\Meta\MetaRepository');
+		$app->bind('Biospex\Repo\OcrQueue\OcrQueueInterface', 'Biospex\Repo\OcrQueue\OcrQueueRepository');
         $app->bind('Illuminate\Support\Contracts\MessageProviderInterface', 'Illuminate\Support\MessageBag');
     }
 
