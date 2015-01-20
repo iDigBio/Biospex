@@ -34,7 +34,7 @@ return [
 	'site.locale'       => 'en',
 	'site.adminEmail'   => 'youremail@provider.com',
 	'site.registration' => true,
-	'site.ocrUrl'       => 'http://ocr.dev.morphbank.net/status',
+	'site.ocrUrl'       => 'http://ocr.dev.morphbank.net/batchocr',
 	'site.ocrCrop'		=> 'none',
 
 	'mysql.host'       => 'localhost',
