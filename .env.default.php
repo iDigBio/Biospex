@@ -26,14 +26,15 @@
 
 // Descriptions can be found in /app/config files
 return [
-	'site.ip'          => '127.0.0.1',
-	'site.url'         => 'http://yoursite.com',
+	'site.ip'           => '127.0.0.1',
+	'site.url'          => 'http://yoursite.com',
 	'site.debug'        => false,
-	'site.key'         => 'KLMJHNjsnkwotikgnkMJkmloghweFGTG',
-	'site.timezone'    => 'America/New_York',
+	'site.key'          => 'KLMJHNjsnkwotikgnkMJkmloghweFGTG',
+	'site.timezone'     => 'America/New_York',
 	'site.locale'       => 'en',
-	'site.adminEmail'  => 'youremail@provider.com',
+	'site.adminEmail'   => 'youremail@provider.com',
 	'site.registration' => true,
+	'site.ocrUrl'       => 'http://ocr.dev.morphbank.net/status',
 
 	'mysql.host'       => 'localhost',
 	'mysql.database'   => 'db',
