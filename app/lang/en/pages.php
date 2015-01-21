@@ -112,7 +112,7 @@ return array(
 
 	'navigation'              => "Navigation",
 	'translate'               => "Language",
-	'subjects'                => "Subjects",
+	'subjects'                => "Subjects assigned to expedition",
 	'project_url'             => "Project Url",
 
 	'no_projects'             => "There are no projects in this group.",
