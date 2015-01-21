@@ -163,7 +163,7 @@ class OcrService {
 	 */
 	private function processFile ($queue, $file)
 	{
-		if ($file->header->status == "in progress")
+		if ($file->header->status == "in progress" || empty($file->header))
 		{
 			$this->release();
 
