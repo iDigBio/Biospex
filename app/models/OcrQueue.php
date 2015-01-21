@@ -23,7 +23,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Biospex\Traits\UuidTrait;
+
 class OcrQueue extends Eloquent {
+
+	use UuidTrait;
 
 	/**
 	 * The database table used by the model.
