@@ -34,7 +34,6 @@ Notes
 2. Add cron jobs for workflow manager (hourly), download clean (midnight), ocr polling.
   1. 0 * * * * /usr/bin/php /home/biospex/artisan workflow:manage >> /home/biospex/app/storage/logs/workflow.manage.log 2>&1
   2. 00 00 * * * /usr/bin/php /home/biospex/artisan download:clean >> /home/biospex/app/storage/logs/download.clean.log 2>&1
-  3. 0,15,30,45 * * * * /usr/bin/php /home/biospex/artisan ocr:poll >> /home/biospex/app/storage/logs/ocr.poll.log 2>&1
 3. Add logrotate
   1. /etc/logrotate.d/apache2
 ```Nix
