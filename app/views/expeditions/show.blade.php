@@ -38,7 +38,7 @@
 @endif
 </div>
 
-<h4>{{ trans('pages.subjects') }}: {{ $expedition->subjectsCount }}</h4>
+<h4>{{ trans('pages.subjects') }}: <span id="subjectCount">{{ $expedition->subjectsCount }}</span></h4>
 <div class="table-responsive" id="jqtable">
     <input type="hidden" id="projectId" value="{{ $expedition->project->id }}">
     <input type="hidden" id="expeditionId" value="{{ $expedition->id }}">
