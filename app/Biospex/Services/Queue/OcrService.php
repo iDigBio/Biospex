@@ -82,6 +82,9 @@ class OcrService {
 		if ( ! $this->checkExist($queue))
 			return;
 
+		if ( ! $this->checkError($queue))
+			return;
+
 		$this->processQueue($queue);
 
 		return;
@@ -95,10 +98,34 @@ class OcrService {
 	 */
 	private function checkExist ($queue)
 	{
-		if ( ! $queue->isEmpty())
+		if ($queue->isEmpty())
+		{
+			$this->delete();
 			return false;
+		}
 
-		$this->delete();
+		return true;
+	}
+
+	/**
+	 * Check for error in processing queue.
+	 *
+	 * @param $queue
+	 * @return bool
+	 */
+	private function checkError($queue)
+	{
+		if ($queue->error)
+		{
+			$error = [
+				'id'       => $queue->id,
+				'messages' => "Ocr Queue error during process",
+				'url'      => ''
+			];
+			$this->addReportError($error);
+
+			return false;
+		}
 
 		return true;
 	}
@@ -169,7 +196,12 @@ class OcrService {
 		}
 
 		if ($this->error)
+		{
+			$queue->error = 1;
+			$queue->save();
 			$this->report->reportSimpleError();
+			$this->delete();
+		}
 
 		$this->queue->destroy($queue->id);
 		$this->delete();
