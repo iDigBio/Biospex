@@ -1,4 +1,5 @@
-<?php  namespace Biospex\Services\Queue;
+<?php namespace Biospex\Services\Queue;
+
 /**
  * OcrService.php
  *
@@ -24,9 +25,12 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Biospex\Repo\OcrQueue\OcrQueueInterface;
+use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Services\Report\Report;
 
 class OcrService {
+
 	/**
 	 * Illuminate\Support\Contracts\MessageProviderInterface
 	 * @var
@@ -34,15 +38,33 @@ class OcrService {
 	protected $messages;
 
 	/**
-	 * Class constructor
+	 * Current job
+	 */
+	protected $job;
+
+	/**
+	 * Variable if error exists
+	 */
+	protected $error = false;
+
+	/**
+	 * Constructor
 	 *
+	 * @param OcrQueueInterface $queue
+	 * @param SubjectInterface $subject
 	 * @param Report $report
 	 */
-	public function __construct(
+	public function __construct (
+		OcrQueueInterface $queue,
+		SubjectInterface $subject,
 		Report $report
 	)
 	{
+		$this->queue = $queue;
+		$this->subject = $subject;
 		$this->report = $report;
+		$this->ocrPostUrl = \Config::get('config.ocrPostUrl');
+		$this->ocrGetUrl = \Config::get('config.ocrGetUrl');
 	}
 
 	/**
@@ -51,68 +73,193 @@ class OcrService {
 	 * @param $job
 	 * @param $data
 	 */
-	public function fire($job, $data)
+	public function fire ($job, $data)
 	{
-		$this->delete($job);
+		$this->job = $job;
+
+		$queue = $this->queue->find($data['id']);
+
+		if ( ! $this->checkExist($queue))
+			return;
+
+		$this->processQueue($queue);
 
 		return;
 	}
 
 	/**
-	 * Create and send error email
+	 * Check if queue object is empty and remove from job if necessary.
 	 *
-	 * @param $manager
-	 * @param $actor
-	 * @param $e
+	 * @param $queue
+	 * @return bool
 	 */
-	public function createError ($manager, $actor, $e)
+	private function checkExist ($queue)
 	{
-		$this->report->addError(trans('errors.error_workflow_manager',
+		if ( ! $queue->isEmpty())
+			return false;
+
+		$this->delete();
+
+		return true;
+	}
+
+	/**
+	 * Process the ocr queue
+	 *
+	 * @param $queue
+	 */
+	private function processQueue ($queue)
+	{
+		if (empty($queue->status))
+		{
+			$queue->status == "in progress";
+			$queue->save();
+			$this->sendFile($queue);
+
+			return;
+		}
+
+		if ($queue->status == "in progress")
+		{
+			$file = $this->requestFile($queue);
+			$this->processFile($queue, $file);
+		}
+
+		return;
+	}
+
+	/**
+	 * Process returned json file from ocr server. Complete job or release again for processing.
+	 *
+	 * @param $queue
+	 * @param $file
+	 */
+	private function processFile ($queue, $file)
+	{
+		if ($file->header->status == "in progress")
+		{
+			$this->release();
+
+			return;
+		}
+
+		$this->updateSubjects($queue, $file);
+
+		return;
+	}
+
+	private function updateSubjects ($queue, $file)
+	{
+		foreach ($file->subjects as $id => $data)
+		{
+			if ($id->data->status == "error")
+			{
+				$error = [
+					'id'       => $id,
+					'messages' => $id->data->messages,
+					'url'      => $id->data->url
+				];
+				$this->addReportError($error);
+				continue;
+			}
+
+			$subject = $this->subject->find($id);
+			$subject->ocr = $id->data->ocr;
+			$subject->save();
+		}
+
+		if ($this->error)
+			$this->report->reportSimpleError();
+
+		$this->queue->destroy($queue->id);
+		$this->delete();
+
+		return;
+	}
+
+	/**
+	 * Send json data as file.
+	 *
+	 * @param $queue
+	 */
+	private function sendFile ($queue)
+	{
+		$delimiter = '-------------' . uniqid();
+		$data = '';
+		$data .= "--" . $delimiter . "\r\n";
+		$data .= 'Content-Disposition: form-data; name="' . $queue->uuid . '.json";
+			' . ' filename="' . $queue->uuid . '.json"' . "\r\n";
+		$data .= 'Content-Type: application/json' . "\r\n";
+		$data .= "\r\n";
+		$data .= $queue->data . "\r\n";
+		$data .= "--" . $delimiter . "--\r\n";
+
+		$handle = curl_init($this->ocrPostUrl);
+		curl_setopt($handle, CURLOPT_POST, true);
+		curl_setopt($handle, CURLOPT_HTTPHEADER, array(
+			'Content-Type: multipart/form-data; boundary=' . $delimiter,
+			'Content-Length: ' . strlen($data)));
+		curl_setopt($handle, CURLOPT_POSTFIELDS, $data);
+		curl_exec($handle);
+		curl_close($handle);
+
+		$this->release();
+
+		return;
+	}
+
+	private function requestFile ($queue)
+	{
+		$file = file_get_contents($this->ocrGetUrl . '/' . $queue->uuid . '.json');
+
+		return json_decode($file);
+	}
+
+	private function addReportError ($error)
+	{
+		$this->report->addError(trans('errors.error_ocr_queue',
 			array(
-				'class' => $actor->class,
-				'id'    => $manager->id . ':' . $actor->id,
-				'error' => $e->getFile() . " - " . $e->getLine() . ": " . $e->getMessage()
+				'id'      => $error->id,
+				'message' => $error->messages,
+				'url'     => $error->url
 			)));
-		$this->report->reportSimpleError();
+
+		$this->error = true;
+
+		return;
 	}
 
 	/**
 	 * Delete a job from the queue
-	 * @param $job
 	 */
-	public function delete($job)
+	public function delete ()
 	{
-		$job->delete();
+		$this->job->delete();
 	}
 
 	/**
 	 * Release a job back to the queue
-	 * @param $job
+	 *
+	 * @param int $seconds
 	 */
-	public function release($job)
+	public function release ($seconds = 60)
 	{
-		$job->release();
+		$this->job->release($seconds);
 	}
 
 	/**
 	 * Return number of attempts on the job
-	 *
-	 * @param $job
-	 * @return mixed
 	 */
-	public function getAttempts($job)
+	public function getAttempts ()
 	{
-		return $job->attempts();
+		return $this->job->attempts();
 	}
 
 	/**
 	 * Get id of job
-	 *
-	 * @param $job
-	 * @return mixed
 	 */
-	public function getJobId($job)
+	public function getJobId ()
 	{
-		return $job->getJobId();
+		return $this->job->getJobId();
 	}
 }
