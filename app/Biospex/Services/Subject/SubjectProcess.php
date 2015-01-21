@@ -32,6 +32,7 @@ use Biospex\Repo\Header\HeaderInterface;
 use Biospex\Repo\Property\PropertyInterface;
 use Biospex\Services\Xml\XmlProcess;
 use Biospex\Repo\Meta\MetaInterface;
+use Biospex\Repo\OcrQueue\OcrQueueInterface;
 
 class SubjectProcess {
 
@@ -147,6 +148,11 @@ class SubjectProcess {
 	private $identifiers;
 
 	/**
+	 * Crop for OCR
+	 */
+	private $ocrCrop;
+
+	/**
 	 * Constructor
 	 *
 	 * @param SubjectInterface $subject
@@ -154,13 +160,15 @@ class SubjectProcess {
 	 * @param PropertyInterface $property
 	 * @param XmlProcess $xmlProcess
 	 * @param MetaInterface $meta
+	 * @param OcrQueueInterface $ocr
 	 */
 	public function __construct (
 		SubjectInterface $subject,
 		HeaderInterface $header,
 		PropertyInterface $property,
 		XmlProcess $xmlProcess,
-		MetaInterface $meta
+		MetaInterface $meta,
+		OcrQueueInterface $ocr
 	)
 	{
 		$this->subject = $subject;
@@ -168,8 +176,10 @@ class SubjectProcess {
 		$this->property = $property;
 		$this->xmlProcess = $xmlProcess;
 		$this->meta = $meta;
+		$this->ocr = $ocr;
 
 		$this->identifiers = Config::get('config.identifiers');
+		$this->ocrCrop = Config::get('config.ocrCrop');
 	}
 
 	/**
@@ -365,7 +375,8 @@ class SubjectProcess {
 			$this->buildOcrQueue($data, $newSubject);
 		}
 
-		\Queue::push('Biospex\Services\Queue\OcrService', ['data' => $data], 'ocr');
+		$id = $this->saveOcrQueue($data);
+		\Queue::push('Biospex\Services\Queue\OcrService', ['id' => $id], 'ocr');
 
 		return;
 	}
@@ -379,12 +390,26 @@ class SubjectProcess {
 	private function buildOcrQueue(&$data, $subject)
 	{
 		$data[$subject->_id] = [
-			'id' => $subject->id,
-			'project_id' => $subject->project_id,
-			'url' => $subject->bestQualityAccessURI
+			'crop' => $this->ocrCrop,
+			'ocr' => '',
+			'status' => 'pending',
+			'url' => $subject->accessURI
 		];
 
 		return;
+	}
+
+	/**
+	 * Save OCR data for later processing.
+	 *
+	 * @param $data
+	 * @return mixed
+	 */
+	private function saveOcrQueue($data)
+	{
+		return $this->ocr->create([
+			'data' => json_encode(['subjects' => $data]),
+		]);
 	}
 
 	/**
