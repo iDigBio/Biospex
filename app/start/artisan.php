@@ -11,6 +11,5 @@
 */
 Artisan::resolve('WorkFlowManagerCommand');
 Artisan::resolve('DownloadCleanCommand');
-Artisan::resolve('OcrPollCommand');
 Artisan::resolve('ViewsCommand');
 
