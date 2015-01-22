@@ -251,7 +251,8 @@ function jqGrid(project, expedition)
                 data: { ids: ids, selected: selected },
                 dataType: "json"
             });
-            request.done(function( msg ) {
+            request.done(function( data ) {
+                $('#subjectCount').html(data);
                 for (i = 0; i < ids.length; i++) {
                     var rowData = $grid.jqGrid ('getRowData', ids[i]);
                     rowData.expedition_ids = selected == true ? "Yes" : "No";
