@@ -48,13 +48,6 @@ class OcrQueue extends Eloquent {
 	];
 
 	/**
-	 * Boot function to add model events
-	 */
-	public static function boot(){
-		parent::boot();
-	}
-
-	/**
 	 * Find by uuid.
 	 *
 	 * @param $uuid
