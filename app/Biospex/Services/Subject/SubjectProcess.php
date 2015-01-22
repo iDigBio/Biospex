@@ -407,9 +407,10 @@ class SubjectProcess {
 	 */
 	private function saveOcrQueue($data)
 	{
-		return $this->ocr->create([
+		$queue = $this->ocr->create([
 			'data' => json_encode(['subjects' => $data]),
 		]);
+		return $queue->id;
 	}
 
 	/**
