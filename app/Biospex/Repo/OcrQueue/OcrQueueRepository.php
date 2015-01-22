@@ -30,7 +30,7 @@ use OcrQueue;
 class OcrQueueRepository extends Repository implements OcrQueueInterface {
 
     /**
-     * @param Header $header
+     * @param OcrQueue $ocr
      */
     public function __construct(OcrQueue $ocr)
     {
