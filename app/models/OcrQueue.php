@@ -40,9 +40,29 @@ class OcrQueue extends Eloquent {
 	 * @var array
 	 */
 	protected $fillable = [
+		'uuid',
 		'data',
 		'status',
 		'error',
 		'message'
 	];
+
+	/**
+	 * Boot function to add model events
+	 */
+	public static function boot(){
+		parent::boot();
+	}
+
+	/**
+	 * Find by uuid.
+	 *
+	 * @param $uuid
+	 * @return mixed
+	 */
+	public function findByUuid($uuid)
+	{
+		return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
+	}
+
 }
