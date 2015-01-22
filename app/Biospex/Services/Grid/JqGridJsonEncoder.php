@@ -336,17 +336,20 @@ class JqGridJsonEncoder {
 	 */
 	public function updateSelectedRows($id, $data)
 	{
+		$expedition = $this->expedition->find($id);
+
 		if ($data['selected'] == "true")
 		{
-			$expedition = $this->expedition->find($id);
-			$result = $expedition->subjects()->sync($data['ids'], false);
+			$expedition->subjects()->sync($data['ids'], false);
 		}
 		else
 		{
-			$result = $this->subject->detachSubjects($data['ids'], $id);
+			$this->subject->detachSubjects($data['ids'], $id);
 		}
 
-		return json_encode($result);
+		$count = $expedition->getSubjectsCountAttribute();
+
+		return json_encode($count);
 	}
 
 	/**
