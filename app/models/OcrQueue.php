@@ -42,6 +42,8 @@ class OcrQueue extends Eloquent {
 	protected $fillable = [
 		'uuid',
 		'data',
+		'subject_count',
+		'tries',
 		'status',
 		'error',
 		'message'
