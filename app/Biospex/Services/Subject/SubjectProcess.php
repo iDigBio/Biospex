@@ -364,7 +364,7 @@ class SubjectProcess {
 	public function insertDocs ($subjects)
 	{
 		$data = [];
-
+		$count = 0;
 		foreach ($subjects as $subject) {
 			if (!$this->validateDoc($subject)) {
 				$this->duplicateArray[] = [$subject['id']];
@@ -373,9 +373,10 @@ class SubjectProcess {
 
 			$newSubject = $this->subject->create($subject);
 			$this->buildOcrQueue($data, $newSubject);
+			$count++;
 		}
 
-		$id = $this->saveOcrQueue($data);
+		$id = $this->saveOcrQueue($data, $count);
 		\Queue::push('Biospex\Services\Queue\OcrService', ['id' => $id], 'ocr');
 
 		return;
@@ -403,12 +404,14 @@ class SubjectProcess {
 	 * Save OCR data for later processing.
 	 *
 	 * @param $data
+	 * @param $count
 	 * @return mixed
 	 */
-	private function saveOcrQueue($data)
+	private function saveOcrQueue($data, $count)
 	{
 		$queue = $this->ocr->create([
 			'data' => json_encode(['subjects' => $data]),
+			'subject_count' => $count
 		]);
 		return $queue->id;
 	}
