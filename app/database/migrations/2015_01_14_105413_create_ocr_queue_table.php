@@ -15,6 +15,8 @@ class CreateOcrQueueTable extends Migration {
 		Schema::create('ocr_queue', function(Blueprint $table) {
 			$table->increments('id');
 			$table->string('status', 30)->nullable();
+			$table->integer('subject_count')->default(0);
+			$table->tinyInteger('tries')->default(0);
 			$table->tinyInteger('error')->default(0);
 			$table->text('message')->nullable();
 			$table->timestamps();
