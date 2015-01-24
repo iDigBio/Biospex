@@ -180,7 +180,6 @@ class Image {
 		curl_setopt($ch, CURLOPT_URL, str_replace(" ", "%20", $url));
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 		$image = curl_exec($ch);
 		curl_close($ch);
