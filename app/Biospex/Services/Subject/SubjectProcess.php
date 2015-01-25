@@ -410,6 +410,7 @@ class SubjectProcess {
 	private function saveOcrQueue($data, $count)
 	{
 		$queue = $this->ocr->create([
+			'project_id' => $this->projectId,
 			'data' => json_encode(['subjects' => $data]),
 			'subject_count' => $count
 		]);
