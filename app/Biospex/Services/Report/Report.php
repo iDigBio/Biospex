@@ -229,6 +229,25 @@ class Report {
 	}
 
 	/**
+	 * Send report for completed ocr processing.
+	 *
+	 * @param $email
+	 * @param $title
+	 */
+	public function ocrComplete($email, $title)
+	{
+		$data = array(
+			'message' => trans('projects.ocr_complete'),
+			'projectTitle' => $title,
+			'errors' => print_r($this->messages->get('error'), true)
+		);
+		$subject = trans('emails.ocr_complete');
+		$view = 'emails.reportocr';
+
+		$this->fireEvent('user.sendreport', $email, $subject, $view, $data);
+	}
+
+	/**
 	 * Set debug
 	 *
 	 * @param bool $value
