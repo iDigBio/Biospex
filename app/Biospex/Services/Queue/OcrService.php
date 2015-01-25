@@ -63,6 +63,21 @@ class OcrService {
 	protected $ocrGetUrl;
 
 	/**
+	 * Group Id.
+	 */
+	protected $groupId;
+
+	/**
+	 * Group owner email.
+	 */
+	protected $email;
+
+	/**
+	 * Project title
+	 */
+	protected $title;
+
+	/**
 	 * Constructor
 	 *
 	 * @param OcrQueueInterface $queue
@@ -94,6 +109,7 @@ class OcrService {
 		$this->id = $data['id'];
 
 		$this->record = $this->queue->findWith($this->id, ['project.group.owner']);
+		$this->setVars();
 
 		if ( ! $this->checkExist())
 			return;
@@ -103,7 +119,19 @@ class OcrService {
 
 		$this->processQueue();
 
-		$this->report->ocrComplete($this->record->project->group->owner->email, $this->record->project->title);
+		$this->report->ocrComplete($this->email, $this->title);
+
+		return;
+	}
+
+	/**
+	 * Set variables.
+	 */
+	private function setVars()
+	{
+		$this->groupId = $this->record->project->group->id;
+		$this->email = $this->record->project->group->owner->email;
+		$this->title = $this->record->project->title;
 
 		return;
 	}
@@ -176,7 +204,7 @@ class OcrService {
 		{
 			$this->updateRecord('error', 1);
 			$this->addReportError($this->record->id, trans('errors.error_ocr_header'));
-			$this->report->reportSimpleError($this->record->project->group->id);
+			$this->report->reportSimpleError($this->groupId);
 			$this->delete();
 			return;
 		}
@@ -224,7 +252,7 @@ class OcrService {
 		if ($queueError == true)
 		{
 			$this->updateRecord('error', 1);
-			$this->report->reportSimpleError($this->record->project->group->id);
+			$this->report->reportSimpleError($this->groupId);
 			$this->delete();
 			return;
 		}
@@ -263,7 +291,7 @@ class OcrService {
 		{
 			$this->updateRecord('error', 1);
 			$this->addReportError($this->record->id, trans('errors.error_ocr_curl'));
-			$this->report->reportSimpleError($this->record->project->group->id);
+			$this->report->reportSimpleError($this->groupId);
 		}
 		curl_close($ch);
 
@@ -282,7 +310,7 @@ class OcrService {
 		{
 			$this->updateRecord('error', 1);
 			$this->addReportError($this->record->id, trans('errors.error_ocr_request'));
-			$this->report->reportSimpleError($this->record->project->group->id);
+			$this->report->reportSimpleError($this->groupId);
 			$this->delete();
 			return false;
 		}
