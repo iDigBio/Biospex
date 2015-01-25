@@ -225,6 +225,19 @@ function jqGrid(project, expedition)
                 });
             });
         },
+        updateOcrText = function() {
+            $('td.ocrPreview').each(function() {
+                $(this).qtip({
+                    content: {
+                        text: $(this).html()
+                    },
+                    position: {
+                        viewport: $(window)
+                    },
+                    style: 'qtip-wiki'
+                });
+            });
+        },
         addButton = function(options) {
             $grid.jqGrid('navButtonAdd', '#pager', options);
             $grid.jqGrid('navButtonAdd', '#' + $grid[0].id + '_toppager', options);
@@ -315,7 +328,13 @@ function jqGrid(project, expedition)
             autoencode: true,
             caption: 'Subjects',
             height: '100%',
-            onSelectRow: function (id, isSelected) {
+            beforeSelectRow: function(rowid, e) {
+                if ($(e.target).hasClass('cbox'))
+                    return true;
+
+                return false;
+            },
+            onSelectRow: function (id, isSelected, e) {
                 if (expedition == 0)
                     return false;
 
@@ -361,6 +380,7 @@ function jqGrid(project, expedition)
             },
             gridComplete: function() {
                 updateUrlLinks.call();
+                updateOcrText.call();
             }
         });
         $.extend($.jgrid.search, {
@@ -411,10 +431,6 @@ function jqGrid(project, expedition)
 
 var functionsMapping = {
     // here we define the implementations of the custom formatter which we use
-    "textFormatter": function (cellValue, opts, rowObject) {
-        return cellValue;
-        //return "<div>" + cellValue + "</div>";
-    },
     "imagePreview" : function (cellValue, opts, rowObjects) {
         return '<a href="'+cellValue+'" title="/images/html/?url='+encodeURIComponent(cellValue)+'" target="_new">'+cellValue+'</a>';
     }
