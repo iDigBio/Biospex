@@ -1935,18 +1935,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/msurguy/Honeypot.git",
-                "reference": "834670cc4f71a9301cb45ee8b0c9b2d69519beff"
+                "reference": "6e7c590240ac0dc1e95c80a65349dfe48e42be09"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/msurguy/Honeypot/zipball/834670cc4f71a9301cb45ee8b0c9b2d69519beff",
-                "reference": "834670cc4f71a9301cb45ee8b0c9b2d69519beff",
+                "url": "https://api.github.com/repos/msurguy/Honeypot/zipball/6e7c590240ac0dc1e95c80a65349dfe48e42be09",
+                "reference": "6e7c590240ac0dc1e95c80a65349dfe48e42be09",
                 "shasum": ""
             },
             "require": {
-                "illuminate/config": "4.*",
-                "illuminate/support": "4.*",
-                "illuminate/translation": "4.*",
+                "illuminate/config": "4.*|5.*",
+                "illuminate/support": "4.*|5.*",
+                "illuminate/translation": "4.*|5.*",
                 "php": ">=5.3.0"
             },
             "require-dev": {
@@ -1976,7 +1976,7 @@
                 "laravel",
                 "spam"
             ],
-            "time": "2014-11-17 17:44:42"
+            "time": "2015-01-22 17:27:32"
         },
         {
             "name": "nesbot/carbon",
