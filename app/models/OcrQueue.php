@@ -40,6 +40,7 @@ class OcrQueue extends Eloquent {
 	 * @var array
 	 */
 	protected $fillable = [
+		'project_id',
 		'uuid',
 		'data',
 		'subject_count',
@@ -48,6 +49,14 @@ class OcrQueue extends Eloquent {
 		'error',
 		'message'
 	];
+
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function project()
+	{
+		return $this->belongsTo('Project');
+	}
 
 	/**
 	 * Find by uuid.
