@@ -170,6 +170,14 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function ocrQueue()
+    {
+        return $this->hasMany('OcrQueue');
+    }
+
+    /**
      * Get project by slug
      *
      * @param $slug
