@@ -39,7 +39,7 @@ return array (
     'add_data'                  => "Add Data",
     'file_required'             => "A file upload is required.",
     'upload_error'              => "An error occurred uploading the file.",
-    'upload_success'            => "Upload was successful. You will receive an email when your data has been processed.",
+    'upload_success'            => "Upload was successful. You will receive an email when your import data has been processed. A separate email will be sent when OCR processing is complete. ",
     'no_projects'               => "No projects exist for your groups.",
     'ocr_complete'              => "The OCR processing of your data is complete. Any errors in processing will appear in the message below.",
 );
