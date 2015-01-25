@@ -43,5 +43,5 @@ return array (
     'missing_img_urls'                  => "Missing Image Urls",
     'group_invite_subject'              => "Bisopex Group Invite",
     'group_invite_message'              => "You have been invited to join the Biospex group :group. Please click the link below to register using this email address.",
-
+    'ocr_complete'                      => "OCR Process Complete",
 );
