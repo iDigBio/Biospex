@@ -376,16 +376,14 @@ class Subject extends Eloquent {
 			'resizable' => true,
 			'search' => true,
 			'sortable' => true,
-			'editable' => false,
-			'classes' => $column == 'ocr' ? "textInDiv" : ""
+			'editable' => false
 		];
 
 		if ($column == 'ocr')
 		{
 			$col = array_merge($col, [
 				'title' => false,
-				'classes' => "textInDiv",
-				'formatter' => "textFormatter"
+				'classes' => "ocrPreview"
 			]);
 		}
 
