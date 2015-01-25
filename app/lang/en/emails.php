@@ -31,7 +31,7 @@ return array (
     'explain_duplicates'                => "If duplicates exist, you will find their ids in an attached file.",
 	'rejected'							=> "Empty Image UUIDs",
 	'explain_rejected'					=> "If empty image uuids exist, you will find the records in an attached file.",
-    'import_message'                    => "The following data import has been completed.",
+    'import_message'                    => "The following data import has been completed. OCR processing may take a longer and you will receive an email when it is complete.",
     'thank_you'                         => "Thank you",
     'signature'                         => "The Biospex Team",
     'welcome'                           => "Welcome",
