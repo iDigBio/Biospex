@@ -236,10 +236,17 @@ class Report {
 	 */
 	public function ocrComplete($email, $title)
 	{
+		$errorMessage = '';
+		$messages = $this->messages->get('error');
+		foreach ($messages as $message)
+		{
+			$errorMessage .= "$message<br />";
+		}
+
 		$data = array(
-			'message' => trans('projects.ocr_complete'),
+			'mainMessage' => trans('projects.ocr_complete'),
 			'projectTitle' => $title,
-			'errors' => print_r($this->messages->get('error'), true)
+			'errorMessage' => $errorMessage
 		);
 		$subject = trans('emails.ocr_complete');
 		$view = 'emails.reportocr';
