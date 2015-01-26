@@ -194,7 +194,13 @@ class OcrService {
 	 */
 	private function processFile ($file)
 	{
-		if ($file->header->status == "in progress" || empty($file->header))
+		if (empty($file->header))
+		{
+			$this->queueLater();
+			return false;
+		}
+
+		if ($file->header->status == "in progress")
 		{
 			$this->queueLater();
 			return false;
