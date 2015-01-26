@@ -4,6 +4,7 @@ use Illuminate\Console\Command;
 use Biospex\Repo\OcrQueue\OcrQueueInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Services\Report\Report;
+use Illuminate\Events\Dispatcher;
 
 class TestCommand extends Command {
 
@@ -39,6 +40,12 @@ class TestCommand extends Command {
 	 */
 	public function fire ()
 	{
+		$this->events->fire('user.newpassword', [
+			'email' => "biospex@gmail.com",
+			'newPassword' => "asfdfasasfa"
+		]);
+
+		/*
 		$data = array(
 			'projectTitle' => "Testing Email",
 			'mainMessage' => trans('projects.ocr_complete'),
@@ -47,7 +54,7 @@ class TestCommand extends Command {
 		$view = 'emails.reportocr';
 
 		$this->fireEvent('user.sendreport', 'biospex@gmail.com', $subject, $view, $data);
-
+		*/
 		return;
 	}
 	protected function fireEvent ($event, $email, $subject, $data, $attachments = array())
