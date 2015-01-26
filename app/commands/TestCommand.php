@@ -26,10 +26,12 @@ class TestCommand extends Command {
 	 * @param Report $report
 	 */
 	public function __construct (
-		Report $report
+		Report $report,
+		Dispatcher $events
 	)
 	{
 		parent::__construct();
+		$this->events = $events;
 	}
 
 	/**
