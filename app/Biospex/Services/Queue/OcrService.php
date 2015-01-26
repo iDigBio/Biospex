@@ -119,8 +119,6 @@ class OcrService {
 
 		$this->processQueue();
 
-		$this->report->ocrComplete($this->email, $this->title);
-
 		return;
 	}
 
@@ -233,14 +231,11 @@ class OcrService {
 	 */
 	private function updateSubjects ($file)
 	{
-		$queueError = false;
-
 		foreach ($file->subjects as $id => $data)
 		{
 			if ($data->status == "error")
 			{
 				$this->addReportError($id, $data->messages, $data->url);
-				$queueError = true;
 				continue;
 			}
 
@@ -249,16 +244,9 @@ class OcrService {
 			$subject->save();
 		}
 
-		if ($queueError == true)
-		{
-			$this->updateRecord('error', 1);
-			$this->report->reportSimpleError($this->groupId);
-			$this->delete();
-			return;
-		}
-
 		$this->record->destroy($this->record->id);
 		$this->delete();
+		$this->report->ocrComplete($this->email, $this->title);
 
 		return;
 	}
