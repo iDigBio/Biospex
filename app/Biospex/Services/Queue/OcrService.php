@@ -117,7 +117,10 @@ class OcrService {
 		if ( ! $this->checkError())
 			return;
 
-		$this->processQueue();
+		if ( ! $this->processQueue())
+			return;
+
+		$this->report->ocrComplete($this->email, $this->title);
 
 		return;
 	}
@@ -165,7 +168,7 @@ class OcrService {
 	/**
 	 * Process the ocr queue
 	 *
-	 * @param $queue
+	 * @return bool|void
 	 */
 	private function processQueue ()
 	{
@@ -174,28 +177,27 @@ class OcrService {
 			$this->updateRecord('status', 'in progress');
 			$this->sendFile();
 			$this->queueLater();
-			return;
+			return false;
 		}
 
 		if ( ! $file = $this->requestFile())
 			return;
 
-		$this->processFile($file);
-
-		return;
+		return $this->processFile($file);
 	}
 
 	/**
 	 * Process returned json file from ocr server. Complete job or queue again for processing.
 	 *
 	 * @param $file
+	 * @return bool
 	 */
 	private function processFile ($file)
 	{
 		if ($file->header->status == "in progress" || empty($file->header))
 		{
 			$this->queueLater();
-			return;
+			return false;
 		}
 
 		if ($file->header->status == "error")
@@ -204,12 +206,10 @@ class OcrService {
 			$this->addReportError($this->record->id, trans('errors.error_ocr_header'));
 			$this->report->reportSimpleError($this->groupId);
 			$this->delete();
-			return;
+			return false;
 		}
 
-		$this->updateSubjects($file);
-
-		return;
+		return $this->updateSubjects($file);
 	}
 
 	/**
@@ -228,14 +228,18 @@ class OcrService {
 	 * Update subjects using ocr results.
 	 *
 	 * @param $file
+	 * @return bool
 	 */
 	private function updateSubjects ($file)
 	{
+		$queueError = false;
+
 		foreach ($file->subjects as $id => $data)
 		{
 			if ($data->status == "error")
 			{
 				$this->addReportError($id, $data->messages, $data->url);
+				$queueError = true;
 				continue;
 			}
 
@@ -244,11 +248,18 @@ class OcrService {
 			$subject->save();
 		}
 
+		if ($queueError == true)
+		{
+			$this->updateRecord('error', 1);
+			$this->report->reportSimpleError($this->groupId);
+			$this->delete();
+			return false;
+		}
+
 		$this->record->destroy($this->record->id);
 		$this->delete();
-		$this->report->ocrComplete($this->email, $this->title);
 
-		return;
+		return true;
 	}
 
 	/**
