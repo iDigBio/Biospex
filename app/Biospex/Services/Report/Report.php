@@ -44,6 +44,11 @@ class Report {
      */
     protected $mailer;
 
+	/**
+	 * Data for attachments.
+	 */
+	protected $csvData = [];
+
     /**
      * Debug by showing output for different actions
      *
@@ -70,6 +75,8 @@ class Report {
         $this->user = $user;
 		$this->group = $group;
         $this->mailer = $mailer;
+
+		$this->dataDir = \Config::get('config.dataDir');
     }
 
 	/**
@@ -229,21 +236,53 @@ class Report {
 	}
 
 	/**
-	 * Send report for completed ocr processing.
+	 * Build csv array.
 	 *
-	 * @param $email
-	 * @param $title
+	 * @param $data
+	 * @return bool
 	 */
-	public function ocrComplete($email, $title)
+	public function buildCsvArray($data)
 	{
-		$data = array(
-			'mainMessage' => trans('projects.ocr_complete'),
-			'projectTitle' => $title
-		);
-		$subject = trans('emails.ocr_complete');
-		$view = 'emails.reportocr';
+		$this->csvData[] = $data;
 
-		$this->fireEvent('user.sendreport', $email, $subject, $view, $data);
+		return true;
+	}
+
+	/**
+	 * Create attachment.
+	 *
+	 * @param array $data
+	 * @return array
+	 */
+	public function createAttachment()
+	{
+		$attachment = array();
+		$count = count($this->data[]);
+
+		if ($count)
+		{
+			$file = $this->dataDir . "/" . str_random(40) . ".csv";
+			$this->writeCsv($file, $this->data[]);
+			$attachments[] = $file;
+		}
+
+		return $attachment;
+	}
+
+	/**
+	 * Write to csv file
+	 *
+	 * @param $file
+	 * @param $array
+	 */
+	private function writeCsv($file, $array)
+	{
+		$fp = fopen($file, 'w');
+		foreach ($array as $fields)
+		{
+			fputcsv($fp, $fields);
+		}
+		fclose($fp);
 	}
 
 	/**
