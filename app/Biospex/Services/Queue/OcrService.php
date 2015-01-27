@@ -27,7 +27,7 @@
 
 use Biospex\Repo\OcrQueue\OcrQueueInterface;
 use Biospex\Repo\Subject\SubjectInterface;
-use Biospex\Services\Report\Report;
+use Biospex\Services\Report\OcrReport;
 
 class OcrService {
 
@@ -87,7 +87,7 @@ class OcrService {
 	public function __construct (
 		OcrQueueInterface $queue,
 		SubjectInterface $subject,
-		Report $report
+		OcrReport $report
 	)
 	{
 		$this->queue = $queue;
@@ -117,9 +117,14 @@ class OcrService {
 		if ( ! $this->checkError())
 			return;
 
-		$this->processQueue();
+		if ( ! $file = $this->processQueue())
+			return;
 
-		$this->report->ocrComplete($this->email, $this->title);
+		if ( ! $this->processFile($file))
+			return;
+
+		$this->updateSubjects($file);
+		$this->report->complete($this->email, $this->title);
 
 		return;
 	}
@@ -180,9 +185,9 @@ class OcrService {
 		}
 
 		if ( ! $file = $this->requestFile())
-			return;
+			return false;
 
-		return $this->processFile($file);
+		return $file;
 	}
 
 	/**
@@ -214,7 +219,7 @@ class OcrService {
 			return false;
 		}
 
-		return $this->updateSubjects($file);
+		return true;
 	}
 
 	/**
@@ -237,14 +242,16 @@ class OcrService {
 	 */
 	private function updateSubjects ($file)
 	{
-		$queueError = false;
-
+		$error = false;
 		foreach ($file->subjects as $id => $data)
 		{
 			if ($data->status == "error")
 			{
-				$this->addReportError($id, $data->messages, $data->url);
-				$queueError = true;
+				$error = $this->report->buildCsvArray([
+					'id' => $id,
+					'message' => $data->message,
+					'url' => $data->url
+				]);
 				continue;
 			}
 
@@ -253,18 +260,10 @@ class OcrService {
 			$subject->save();
 		}
 
-		if ($queueError == true)
-		{
-			$this->updateRecord('error', 1);
-			$this->report->reportSimpleError($this->groupId);
-			$this->delete();
-			return false;
-		}
-
-		$this->record->destroy($this->record->id);
+		$error == true ? $this->updateRecord('error', 1) : $this->record->destroy($this->record->id);
 		$this->delete();
 
-		return true;
+		return;
 	}
 
 	/**
