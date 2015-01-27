@@ -117,8 +117,7 @@ class OcrService {
 		if ( ! $this->checkError())
 			return;
 
-		if ( ! $this->processQueue())
-			return;
+		$this->processQueue();
 
 		$this->report->ocrComplete($this->email, $this->title);
 
