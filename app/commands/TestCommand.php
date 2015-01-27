@@ -57,7 +57,7 @@ class TestCommand extends Command {
 		$subject = trans('emails.ocr_complete');
 		$view = 'emails.reportocr';
 		*/
-		$this->fireEvent('user.sendreport', 'biospex@gmail.com', $subject, $view, $data);
+		//$this->fireEvent('user.sendreport', 'biospex@gmail.com', $subject, $view, $data);
 
 		return;
 	}
