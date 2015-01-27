@@ -42,20 +42,21 @@ class TestCommand extends Command {
 	 */
 	public function fire ()
 	{
-		/*
+
 		$this->events->fire('user.newpassword', [
 			'email' => "biospex@gmail.com",
 			'newPassword' => "asfdfasasfa"
 		]);
-		*/
 
+
+		/*
 		$data = array(
 			'projectTitle' => "Testing Email",
 			'mainMessage' => trans('projects.ocr_complete'),
 		);
 		$subject = trans('emails.ocr_complete');
 		$view = 'emails.reportocr';
-
+		*/
 		$this->fireEvent('user.sendreport', 'biospex@gmail.com', $subject, $view, $data);
 
 		return;
