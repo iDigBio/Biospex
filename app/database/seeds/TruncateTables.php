@@ -23,11 +23,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Biospex\Helpers\Helper;
 
 class TruncateTables extends Seeder {
 	public function run()
 	{
-		File::deleteDirectory(Config::get('config.dataDir'));
+		Helper::deleteDirectoryContents(Config::get('config.dataDir'));
 
 		Eloquent::unguard();
 		DB::statement('SET FOREIGN_KEY_CHECKS=0;');
