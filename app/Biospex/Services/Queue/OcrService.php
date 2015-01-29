@@ -123,8 +123,9 @@ class OcrService {
 		if ( ! $this->processFile($file))
 			return;
 
-		$this->updateSubjects($file);
-		$this->report->complete($this->email, $this->title);
+		$csv = $this->updateSubjects($file);
+
+		$this->report->complete($this->email, $this->title, $csv);
 
 		return;
 	}
@@ -242,16 +243,12 @@ class OcrService {
 	 */
 	private function updateSubjects ($file)
 	{
-		$error = false;
+		$data = [];
 		foreach ($file->subjects as $id => $data)
 		{
 			if ($data->status == "error")
 			{
-				$error = $this->report->buildCsvArray([
-					'id' => $id,
-					'message' => $data->message,
-					'url' => $data->url
-				]);
+				$data[] = ['id' => $id, 'message' => $data->message, 'url' => $data->url];
 				continue;
 			}
 
@@ -260,10 +257,10 @@ class OcrService {
 			$subject->save();
 		}
 
-		$error == true ? $this->updateRecord('error', 1) : $this->record->destroy($this->record->id);
+		! empty($data) ? $this->updateRecord('error', 1) : $this->record->destroy($this->record->id);
 		$this->delete();
 
-		return;
+		return $data;
 	}
 
 	/**
