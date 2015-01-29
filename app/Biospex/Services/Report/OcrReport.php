@@ -31,16 +31,16 @@ class OcrReport extends Report{
 	 *
 	 * @param $email
 	 * @param $title
-	 * @param array $attachment
+	 * @param $csv
 	 */
-	public function complete($email, $title)
+	public function complete($email, $title, $csv)
 	{
-		$attachment = $this->createAttachment();
+		$attachment = $this->createAttachment($csv);
 
-		$data = array(
+		$data = [
 			'projectTitle' => $title,
 			'mainMessage' => trans('projects.ocr_complete')
-		);
+		];
 		$subject = trans('emails.ocr_complete');
 		$view = 'emails.reportocr';
 
