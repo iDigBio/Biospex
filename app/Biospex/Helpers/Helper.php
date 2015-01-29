@@ -43,4 +43,40 @@ class Helper {
 	public static function roundUpToAnyFive($n,$x=5) {
 		return (ceil($n)%$x === 0) ? ceil($n) : round(($n+$x/2)/$x)*$x;
 	}
+
+    public static function deleteDirectoryContents($dir, $ignore = ['.gitignore'])
+    {
+        if (false === file_exists($dir))
+        {
+            return false;
+        }
+
+        /** @var SplFileInfo[] $files */
+        $files = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ($files as $fileinfo)
+        {
+            if ($fileinfo->isDir())
+            {
+                if (false === rmdir($fileinfo->getRealPath()))
+                {
+                    return false;
+                }
+            } else
+            {
+                if (in_array($fileinfo->getFilename(), $ignore))
+                {
+                    continue;
+                }
+
+                if (false === unlink($fileinfo->getRealPath()))
+                {
+                    return false;
+                }
+            }
+        }
+    }
 }
