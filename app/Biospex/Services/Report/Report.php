@@ -44,11 +44,6 @@ class Report {
      */
     protected $mailer;
 
-	/**
-	 * Data for attachments.
-	 */
-	protected $csvData = [];
-
     /**
      * Debug by showing output for different actions
      *
@@ -236,53 +231,42 @@ class Report {
 	}
 
 	/**
-	 * Build csv array.
-	 *
-	 * @param $data
-	 * @return bool
-	 */
-	public function buildCsvArray($data)
-	{
-		$this->csvData[] = $data;
-
-		return true;
-	}
-
-	/**
 	 * Create attachment.
 	 *
-	 * @param array $data
+	 * @param array $csv
 	 * @return array
 	 */
-	public function createAttachment()
+	protected function createAttachment($csv)
 	{
-		$attachment = array();
-		$count = count($this->data[]);
+		$attachment = [];
+		$count = count($csv);
 
 		if ($count)
 		{
 			$file = $this->dataDir . "/" . str_random(40) . ".csv";
-			$this->writeCsv($file, $this->data[]);
-			$attachments[] = $file;
+			$this->writeCsv($file, $csv);
+			$attachment[] = $file;
 		}
 
 		return $attachment;
 	}
 
 	/**
-	 * Write to csv file
+	 * Write to csv file.
 	 *
 	 * @param $file
-	 * @param $array
+	 * @param $csv
 	 */
-	private function writeCsv($file, $array)
+	protected function writeCsv($file, $csv)
 	{
 		$fp = fopen($file, 'w');
-		foreach ($array as $fields)
-		{
-			fputcsv($fp, $fields);
+		fputcsv($fp, array_keys($csv['0']));
+		foreach($csv as $values){
+			fputcsv($fp, $values);
 		}
 		fclose($fp);
+
+		return;
 	}
 
 	/**
