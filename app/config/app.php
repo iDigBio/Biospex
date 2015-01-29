@@ -118,6 +118,7 @@ return array(
 		'Cviebrock\ImageValidator\ImageValidatorServiceProvider',
 		'DaveJamesMiller\Breadcrumbs\ServiceProvider',
 		'Msurguy\Honeypot\HoneypotServiceProvider',
+		'Maatwebsite\Excel\ExcelServiceProvider',
 	),
 
 	/*
@@ -188,6 +189,7 @@ return array(
 		'Local'       => 'Mcamara\LaravelLocalization\Facades\LaravelLocalization',
 		'Carbon'      => 'Carbon\Carbon',
 		'Breadcrumbs' => 'DaveJamesMiller\Breadcrumbs\Facade',
+		'Excel'       => 'Maatwebsite\Excel\Facades\Excel',
 	),
 
 );
