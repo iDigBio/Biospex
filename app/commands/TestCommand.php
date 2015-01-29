@@ -16,10 +16,6 @@ class TestCommand extends Command {
 
 	/**
 	 * Constructor
-	 *
-	 * @param OcrQueueInterface $queue
-	 * @param SubjectInterface $subject
-	 * @param Report $report
 	 */
 	public function __construct ()
 	{
