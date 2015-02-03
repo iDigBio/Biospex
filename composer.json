@@ -23,7 +23,7 @@
     "imagine/imagine": "~0.5.0",
     "pda/pheanstalk": "~2.0",
     "msurguy/honeypot": "dev-master",
-    "maatwebsite/excel": "1.*",
+    "maatwebsite/excel": "~1.2.1",
     "rhumsaa/uuid": "~2.8",
     "anlutro/curl": "0.6.*",
     "guzzlehttp/guzzle": "~4.0"
