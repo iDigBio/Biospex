@@ -49,7 +49,9 @@ return [
 	'mongodb.password'  => 'pass',
 	'mongodb.database'  => 'db',
 
-	'mail.driver'       => 'smtp',
+	'mail.domain'       => 'mailgun domain',
+	'mail.secret'       => 'mailgun secret key',
+	'mail.driver'       => 'mailgun',
 	'mail.host'         => 'smtp.mailgun.org',
 	'mail.port'         => 587,
 	'mail.address'      => 'youremail@provider.com',
