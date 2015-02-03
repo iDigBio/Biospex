@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Console\Command;
+use Illuminate\Events\Dispatcher;
 
 class TestCommand extends Command {
 
@@ -17,9 +18,12 @@ class TestCommand extends Command {
 	/**
 	 * Constructor
 	 */
-	public function __construct ()
+	public function __construct (
+		Dispatcher $events
+	)
 	{
 		parent::__construct();
+		$this->events = $events;
 	}
 
 	/**
@@ -28,5 +32,13 @@ class TestCommand extends Command {
 	public function fire ()
 	{
 
+		$this->events->fire('user.newpassword', [
+			'email' => "biospex@gmail.com",
+			'newPassword' => "asfdfasasfa"
+		]);
+		echo "Email fired\n";
+
+		return;
 	}
+
 }
