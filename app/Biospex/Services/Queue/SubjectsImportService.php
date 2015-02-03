@@ -28,7 +28,7 @@ use Illuminate\Filesystem\Filesystem;
 use Biospex\Repo\Import\ImportInterface;
 use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Repo\User\UserInterface;
-use Biospex\Services\Report\Report;
+use Biospex\Services\Report\SubjectImportReport;
 use Biospex\Services\Subject\SubjectProcess;
 use Biospex\Services\Xml\XmlProcess;
 use Biospex\Mailer\BiospexMailer;
@@ -58,14 +58,14 @@ class SubjectsImportService {
 	 * @param UserInterface $user
 	 * @param ProjectInterface $project
 	 * @param BiospexMailer $mailer
-	 * @param Report $report
+	 * @param SubjectImportReport $report
 	 */
 	public function __construct(
 		Filesystem $filesystem,
 		ImportInterface $import,
 		ProjectInterface $project,
 		UserInterface $user,
-		Report $report,
+		SubjectImportReport $report,
 		SubjectProcess $subjectProcess,
 		XmlProcess $xmlProcess,
 		BiospexMailer $mailer
@@ -108,9 +108,7 @@ class SubjectsImportService {
 			$duplicates = $this->subjectProcess->getDuplicates();
 			$rejects = $this->subjectProcess->getRejectedMedia();
 
-			list($duplicated, $rejected, $attachments) = $this->createDuplicateReject($duplicates, $rejects);
-
-			$this->report->importComplete($user->email, $project->title, $duplicated, $rejected, $attachments);
+			$this->report->complete($user->email, $project->title, $duplicates, $rejects);
 
 			$this->filesystem->deleteDirectory($this->fileDir);
 
@@ -121,7 +119,7 @@ class SubjectsImportService {
 			$import->error = 1;
 			$this->import->save($import);
 			$this->report->addError("Unable to process import id: {$import->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
-			$this->report->importError($import->id, $user->email, $project->title);
+			$this->report->error($import->id, $user->email, $project->title);
 		}
 
 		$this->delete($job);
