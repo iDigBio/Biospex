@@ -33,7 +33,6 @@ class OcrService {
 
 	/**
 	 * Illuminate\Support\Contracts\MessageProviderInterface
-	 * @var
 	 */
 	protected $messages;
 
@@ -82,7 +81,7 @@ class OcrService {
 	 *
 	 * @param OcrQueueInterface $queue
 	 * @param SubjectInterface $subject
-	 * @param Report $report
+	 * @param OcrReport $report
 	 */
 	public function __construct (
 		OcrQueueInterface $queue,
@@ -243,12 +242,12 @@ class OcrService {
 	 */
 	private function updateSubjects ($file)
 	{
-		$data = [];
+		$csv = [];
 		foreach ($file->subjects as $id => $data)
 		{
 			if ($data->status == "error")
 			{
-				$data[] = ['id' => $id, 'message' => $data->message, 'url' => $data->url];
+				$csv[] = ['id' => $id, 'message' => $data->message, 'url' => $data->url];
 				continue;
 			}
 
@@ -257,10 +256,10 @@ class OcrService {
 			$subject->save();
 		}
 
-		! empty($data) ? $this->updateRecord('error', 1) : $this->record->destroy($this->record->id);
+		! empty($csv) ? $this->updateRecord('error', 1) : $this->record->destroy($this->record->id);
 		$this->delete();
 
-		return $data;
+		return $csv;
 	}
 
 	/**
