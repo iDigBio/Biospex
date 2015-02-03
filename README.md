@@ -15,6 +15,7 @@ Requirements
  readline, sqlite3
  - Beanstalkd
  - Supervisord
+ - Mailgun or some other email configuration
 
 
 Installation
