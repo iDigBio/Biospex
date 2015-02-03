@@ -94,13 +94,13 @@ class SubjectsImportService {
 		$user = $this->user->find($import->user_id);
 		$project = $this->project->find($import->project_id);
 
-		$this->fileDir = $this->dataDir . '/' . preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10));
+		$this->fileDir = $this->dataDir . '/' . str_random(10);
 		$origFile = $this->dataDir . '/' . $import->file;
 		$newFile = $this->fileDir . '/' . $import->file;
 		try
 		{
 			$this->makeTmp($this->fileDir);
-			$this->filesystem->move($origFile, $newFile);
+			$this->moveFile($origFile, $newFile);
 			$this->unzip($newFile, $this->fileDir);
 
 			$this->subjectProcess->processSubjects($import->project_id, $this->fileDir);
@@ -161,6 +161,21 @@ class SubjectsImportService {
 			if ( ! chmod($dir, 0777))
 				throw new \Exception('"Unable to make temporary directory writable:' . $dir);
 		}
+
+		return;
+	}
+
+	/**
+	 * Move file.
+	 *
+	 * @param $origFile
+	 * @param $newFile
+	 * @throws \Exception
+	 */
+	protected function moveFile($origFile, $newFile)
+	{
+		if ( ! $this->filesystem->move($origFile, $newFile))
+			throw new \Exception('"Unable to move file during Subject Import Process.');
 
 		return;
 	}
