@@ -26,13 +26,13 @@
  */
 
 use Validator;
-use Illuminate\Support\Facades\Config;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\Header\HeaderInterface;
 use Biospex\Repo\Property\PropertyInterface;
 use Biospex\Services\Xml\XmlProcess;
 use Biospex\Repo\Meta\MetaInterface;
 use Biospex\Repo\OcrQueue\OcrQueueInterface;
+use Maatwebsite\Excel\Excel;
 
 class SubjectProcess {
 
@@ -109,10 +109,34 @@ class SubjectProcess {
 	private $dir;
 
 	/**
-	 * Delimiter from meta file
-	 * @var
+	 * Core delimiter
 	 */
-	private $delimiter;
+	private $coreDelimiter;
+
+	/**
+	 * Core enclosure
+	 */
+	private $coreEnclosure;
+
+	/**
+	 * core line ending
+	 */
+	private $coreLineEnding;
+
+	/**
+	 * Extension delimiter
+	 */
+	private $extDelimiter;
+
+	/**
+	 * Extension enclosure
+	 */
+	private $extEnclosure;
+
+	/**
+	 * Extension line ending
+	 */
+	private $extLineEnding;
 
 	/**
 	 * Header array for project
@@ -161,6 +185,7 @@ class SubjectProcess {
 	 * @param XmlProcess $xmlProcess
 	 * @param MetaInterface $meta
 	 * @param OcrQueueInterface $ocr
+	 * @param Excel $excel
 	 */
 	public function __construct (
 		SubjectInterface $subject,
@@ -168,7 +193,8 @@ class SubjectProcess {
 		PropertyInterface $property,
 		XmlProcess $xmlProcess,
 		MetaInterface $meta,
-		OcrQueueInterface $ocr
+		OcrQueueInterface $ocr,
+		Excel $excel
 	)
 	{
 		$this->subject = $subject;
@@ -177,9 +203,10 @@ class SubjectProcess {
 		$this->xmlProcess = $xmlProcess;
 		$this->meta = $meta;
 		$this->ocr = $ocr;
+		$this->excel = $excel;
 
-		$this->identifiers = Config::get('config.identifiers');
-		$this->ocrCrop = Config::get('config.ocrCrop');
+		$this->identifiers = \Config::get('config.identifiers');
+		$this->ocrCrop = \Config::get('config.ocrCrop');
 	}
 
 	/**
@@ -225,11 +252,9 @@ class SubjectProcess {
 		if (empty($coreFile))
 			throw new \Exception('[SubjectProcess] Error querying core file.');
 
-		// Set delimiter
-		$delimiter = $this->xmlProcess->getDomTagAttribute('core', 'fieldsTerminatedBy');
-		if (empty($delimiter))
-			throw new \Exception('[SubjectProcess] Error querying delimiter.');
-		$this->setDelimiter($delimiter);
+		// Set csv settings
+		$this->setCsvSettings('core');
+		$this->setCsvSettings('extension');
 
 		$this->mediaIsCore = preg_match('/occurrence/i', $coreType) ? false : true;
 
@@ -253,37 +278,33 @@ class SubjectProcess {
 	 */
 	public function loadCsv ($type)
 	{
-		$results = [];
-		$file = $type == 'core' ? "{$this->dir}/{$this->coreFile}" : "{$this->dir}/{$this->extensionFile}";
-		$handle = fopen($file, "r");
-		if ($handle) {
-			$header = null;
-			while (($row = fgetcsv($handle, 10000, $this->delimiter)) !== FALSE && ! is_null($row[0])) {
+		$file = ($type == 'core') ? "{$this->dir}/{$this->coreFile}" : "{$this->dir}/{$this->extensionFile}";
+		$delimiter = ($type == 'core') ? $this->coreDelimiter : $this->extDelimiter;
+		$enclosure = ($type == 'core') ? $this->coreEnclosure : $this->extEnclosure;
+		$lineEnding = ($type == 'core') ? $this->coreLineEnding : $this->extLineEnding;
 
-				if ($header === null)
-				{
-					$header = $this->buildHeaderRow($row, $type);
+		$data = $this->excel->setDelimiter($delimiter)
+			->setEnclosure($enclosure)
+			->setLineEnding($lineEnding)
+			->load($file)
+			->get();
 
-					if ($type == 'core')
-					{
-						$this->coreHeader = $header;
-					}
-					else
-					{
-						$this->extensionHeader = $header;
-					}
+		// Get first row for header. Laravel-Excel returns array with key starting at 1 so reset array keys starting at zero.
+		$header = $this->buildHeaderRow(array_values($data->first()->toArray()), $type);
+		$this->setHeaderProperty($header, $type);
+		$rows = $data->toArray();
 
-					continue;
-				}
+		foreach ($rows as $key => $row)
+		{
+			if ($key == 0)
+				continue;
 
-				$row = array_intersect_key($row, $header);
+			$row = array_intersect_key(array_values($row), $header);
 
-				if (count($header) != count($row))
-					throw new \Exception('[SubjectProcess] Header column count does not match row count. Header - Row: ' . count($header) . ' - ' . count($row));
+			if (count($header) != count($row))
+				throw new \Exception('[SubjectProcess] Header column count does not match row count. Header - Row: ' . count($header) . ' - ' . count($row));
 
-				$results[] = array_combine($header, $row);
-			}
-			fclose($handle);
+			$results[] = array_combine($header, $row);
 		}
 
 		return $results;
@@ -367,7 +388,7 @@ class SubjectProcess {
 		$count = 0;
 		foreach ($subjects as $subject) {
 			if (!$this->validateDoc($subject)) {
-				$this->duplicateArray[] = [$subject['id']];
+				$this->duplicateArray[] = $subject;
 				continue;
 			}
 
@@ -375,6 +396,9 @@ class SubjectProcess {
 			$this->buildOcrQueue($data, $newSubject);
 			$count++;
 		}
+
+		if ($count == 0)
+			return;
 
 		$id = $this->saveOcrQueue($data, $count);
 		\Queue::push('Biospex\Services\Queue\OcrService', ['id' => $id], 'ocr');
@@ -492,6 +516,7 @@ class SubjectProcess {
 	 */
 	public function buildMetaFields ()
 	{
+		$this->metaFields['core'][0] = 'id';
 		foreach ($this->xmlProcess->xpathQuery($this->coreXpathQuery) as $child)
 		{
 			$index = $child->attributes->getNamedItem("index")->nodeValue;
@@ -501,6 +526,7 @@ class SubjectProcess {
 
 		if ($this->extensionFile)
 		{
+			$this->metaFields['extension'][0] = 'id';
 			foreach ($this->xmlProcess->xpathQuery($this->extXpathQuery) as $child)
 			{
 				$index = $child->attributes->getNamedItem("index")->nodeValue;
@@ -531,13 +557,35 @@ class SubjectProcess {
 	}
 
 	/**
-	 * Set delimiter
+	 * Set csv settings.
 	 *
-	 * @param $delimiter
+	 * @param $type
+	 * @throws \Exception
 	 */
-	public function setDelimiter ($delimiter)
+	public function setCsvSettings ($type)
 	{
-		$this->delimiter = ($delimiter == ",") ? "," : str_replace("\\t", "\t", $delimiter);
+		if ($type == 'core')
+		{
+			$delimiter = $this->xmlProcess->getDomTagAttribute('core', 'fieldsTerminatedBy');
+			$this->coreDelimiter = ($delimiter == "\\t") ? "\t" : $delimiter;
+			$this->coreLineEnding = $this->xmlProcess->getDomTagAttribute('core', 'linesTerminatedBy');
+			$this->coreEnclosure = $this->xmlProcess->getDomTagAttribute('core', 'fieldsEnclosedBy');
+
+			if (empty($this->coreDelimiter))
+				throw new \Exception('[SubjectProcess] Error core delimiter is empty.');
+		}
+		else
+		{
+			$delimiter = $this->xmlProcess->getDomTagAttribute('extension', 'fieldsTerminatedBy');
+			$this->extDelimiter = ($delimiter == "\\t") ? "\t" : $delimiter;
+			$this->extLineEnding = $this->xmlProcess->getDomTagAttribute('extension', 'linesTerminatedBy');
+			$this->extEnclosure = $this->xmlProcess->getDomTagAttribute('extension', 'fieldsEnclosedBy');
+
+			if (empty($this->extDelimiter))
+				throw new \Exception('[SubjectProcess] Error extension delimiter is empty.');
+		}
+
+		return;
 	}
 
 	/**
@@ -622,6 +670,26 @@ class SubjectProcess {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Set header properties.
+	 *
+	 * @param $header
+	 * @param $type
+	 */
+	private function setHeaderProperty($header, $type)
+	{
+		if ($type == 'core')
+		{
+			$this->coreHeader = $header;
+		}
+		else
+		{
+			$this->extensionHeader = $header;
+		}
+
+		return;
 	}
 
 	/**
