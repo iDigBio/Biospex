@@ -27,6 +27,7 @@ use Illuminate\Support\Contracts\MessageProviderInterface;
 use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Group\GroupInterface;
 use Biospex\Mailer\BiospexMailer;
+use Maatwebsite\Excel\Excel;
 
 class Report {
     /**
@@ -44,13 +45,6 @@ class Report {
      */
     protected $mailer;
 
-    /**
-     * Debug by showing output for different actions
-     *
-     * @var
-     */
-    protected $debug;
-
 	/**
 	 * Constructor
 	 *
@@ -58,20 +52,24 @@ class Report {
 	 * @param UserInterface $user
 	 * @param GroupInterface $group
 	 * @param BiospexMailer $mailer
+	 * @param Excel $excel
 	 */
     public function __construct(
         MessageProviderInterface $messages,
         UserInterface $user,
 		GroupInterface $group,
-        BiospexMailer $mailer
+        BiospexMailer $mailer,
+		Excel $excel
     )
     {
         $this->messages = $messages;
         $this->user = $user;
 		$this->group = $group;
         $this->mailer = $mailer;
+		$this->excel = $excel;
 
 		$this->dataDir = \Config::get('config.dataDir');
+		$this->excelStorage = \Config::get('excel::export');
     }
 
 	/**
@@ -94,9 +92,6 @@ class Report {
 	public function reportSimpleError ($groupId = null)
     {
 		$email = null;
-
-        if ($this->debug)
-            $this->debug();
 
 		if ( ! is_null($groupId))
         {
@@ -137,12 +132,6 @@ class Report {
         );
         $view = 'emails.report-process-complete';
 
-		if ($this->debug)
-		{
-			$this->addError(print_r($data, true));
-			$this->debug();
-		}
-
 		$this->fireEvent('user.sendreport', $email, $subject, $view, $data);
 
         return;
@@ -170,123 +159,34 @@ class Report {
         );
         $view = 'emails.report-missing_images';
 
-		if ($this->debug)
-		{
-			$this->addError(print_r($data, true));
-			$this->debug();
-		}
-
 		$this->fireEvent('user.sendreport', $email, $subject, $view, $data);
     }
-
-	/**
-	 * Send error during subject import
-	 *
-	 * @param $id
-	 * @param $email
-	 * @param $title
-	 */
-	public function importError($id, $email, $title)
-	{
-		$subject = trans('errors.error_import');
-		$data = array(
-			'importId' => $id,
-			'projectTitle' => $title,
-			'errorMessage' => print_r($this->messages->get('error'), true)
-		);
-		$view = 'emails.reporterror';
-
-		if ($this->debug)
-			$this->debug();
-
-		$this->fireEvent('user.sendreport', $email, $subject, $view, $data);
-	}
-
-	/**
-	 * Send report for completed subject import
-	 *
-	 * @param $email
-	 * @param $title
-	 * @param $duplicated
-	 * @param $rejected
-	 * @param $attachments
-	 */
-	public function importComplete($email, $title, $duplicated, $rejected, $attachments)
-	{
-		$data = array(
-			'projectTitle' => $title,
-			'duplicateCount' => $duplicated,
-			'rejectedCount' => $rejected,
-		);
-		$subject = trans('emails.import_complete');
-		$view = 'emails.reportsubject';
-
-		if ($this->debug)
-		{
-			$this->addError(print_r($data, true));
-			$this->debug();
-		}
-
-		$this->fireEvent('user.sendreport', $email, $subject, $view, $data, $attachments);
-	}
 
 	/**
 	 * Create attachment.
 	 *
 	 * @param array $csv
+	 * @param string $name
 	 * @return array
 	 */
-	protected function createAttachment($csv)
+	public function createAttachment($csv, $name = null)
 	{
-		$attachment = [];
 		$count = count($csv);
+		if ( ! $count)
+			return [];
 
-		if ($count)
-		{
-			$file = $this->dataDir . "/" . str_random(40) . ".csv";
-			$this->writeCsv($file, $csv);
-			$attachment[] = $file;
-		}
+		$path = $this->excelStorage['store']['path'] . "/";
+		$fileName = (is_null($name)) ? str_random(40) : $name . str_random(10);
+		$ext = ".csv";
 
-		return $attachment;
+		$this->excel->create($fileName, function($excel) use($csv) {
+			$excel->sheet('page1', function($sheet) use($csv) {
+				$sheet->fromArray($csv);
+			});
+		})->store('csv');
+
+		return [$path . $fileName . $ext];
 	}
-
-	/**
-	 * Write to csv file.
-	 *
-	 * @param $file
-	 * @param $csv
-	 */
-	protected function writeCsv($file, $csv)
-	{
-		$fp = fopen($file, 'w');
-		fputcsv($fp, array_keys($csv['0']));
-		foreach($csv as $values){
-			fputcsv($fp, $values);
-		}
-		fclose($fp);
-
-		return;
-	}
-
-	/**
-	 * Set debug
-	 *
-	 * @param bool $value
-	 */
-	public function setDebug($value = false)
-	{
-		$this->debug = $value;
-	}
-
-	/**
-	 * Dump messages during debug
-	 */
-    public function debug()
-    {
-		$messages = $this->messages->get('error');
-        dd($messages);
-    }
 
 	/**
 	 * Fire send report event
