@@ -176,7 +176,7 @@ class Report {
 			return [];
 
 		$path = $this->excelStorage['store']['path'] . "/";
-		$fileName = (is_null($name)) ? str_random(40) : $name . str_random(10);
+		$fileName = (is_null($name)) ? str_random(10) : $name . str_random(5);
 		$ext = ".csv";
 
 		$this->excel->create($fileName, function($excel) use($csv) {
@@ -194,14 +194,16 @@ class Report {
 	 * @param $event
 	 * @param $email
 	 * @param $subject
+     * @param $view
 	 * @param $data
 	 * @param array $attachments
 	 */
-	protected function fireEvent ($event, $email, $subject, $data, $attachments = array())
+	protected function fireEvent ($event, $email, $subject, $view, $data, $attachments = array())
 	{
 		\Event::fire($event, [
 			'email' => $email,
 			'subject' => $subject,
+            'view' => $view,
 			'data' => $data,
 			'attachment' => $attachments
 		]);
