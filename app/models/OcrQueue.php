@@ -47,7 +47,7 @@ class OcrQueue extends Eloquent {
 		'tries',
 		'status',
 		'error',
-		'message'
+		'attachments'
 	];
 
 	/**
