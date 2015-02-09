@@ -19,7 +19,7 @@ class CreateOcrQueueTable extends Migration {
 			$table->integer('subject_count')->default(0);
 			$table->tinyInteger('tries')->default(0);
 			$table->tinyInteger('error')->default(0);
-			$table->text('message')->nullable();
+			$table->text('attachments')->nullable();
 			$table->timestamps();
 			$table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
 			$table->engine = 'InnoDB';
