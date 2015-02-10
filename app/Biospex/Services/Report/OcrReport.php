@@ -32,10 +32,12 @@ class OcrReport extends Report{
 	 * @param $email
 	 * @param $title
 	 * @param $csv
+	 * @return array
 	 */
 	public function complete($email, $title, $csv)
 	{
-		$attachment = $this->createAttachment($csv);
+		$count = count($csv);
+		$attachment = $count ? $this->createAttachment($csv) : [];
 
 		$data = [
 			'projectTitle' => $title,
@@ -45,5 +47,7 @@ class OcrReport extends Report{
 		$view = 'emails.reportocr';
 
 		$this->fireEvent('user.sendreport', $email, $subject, $view, $data, $attachment);
+
+		return $count == 0 ? false : $attachment;
 	}
 }
