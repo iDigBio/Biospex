@@ -124,7 +124,12 @@ class OcrService {
 
 		$csv = $this->updateSubjects($file);
 
-		$this->report->complete($this->email, $this->title, $csv);
+		$attachment = $this->report->complete($this->email, $this->title, $csv);
+
+		!$attachment ? $this->record->destroy($this->record->id) :
+			$this->updateRecord(['error' => 1, 'attachments' => json_encode($attachment)]);
+
+		$this->delete();
 
 		return;
 	}
@@ -178,7 +183,7 @@ class OcrService {
 	{
 		if (empty($this->record->status))
 		{
-			$this->updateRecord('status', 'in progress');
+			$this->updateRecord(['status' => 'in progress']);
 			$this->sendFile();
 			$this->queueLater();
 			return false;
@@ -210,14 +215,17 @@ class OcrService {
 			return false;
 		}
 
+		/**
+		TODO - Replace this when Shiva fixes OCR server response.
 		if ($file->header->status == "error")
 		{
-			$this->updateRecord('error', 1);
+			$this->updateRecord(['error' => 1]);
 			$this->addReportError($this->record->id, trans('errors.error_ocr_header'));
 			$this->report->reportSimpleError($this->groupId);
 			$this->delete();
 			return false;
 		}
+		*/
 
 		return true;
 	}
@@ -225,12 +233,15 @@ class OcrService {
 	/**
 	 * Update queue record value
 	 *
-	 * @param $field
-	 * @param $value
+	 * @param $fields
 	 */
-	private function updateRecord($field, $value)
+	private function updateRecord($fields)
 	{
-		$this->record->{$field} = $value;
+		foreach ($fields as $key => $value)
+		{
+			$this->record->{$key} = $value;
+		}
+
 		$this->record->save();
 	}
 
@@ -245,9 +256,9 @@ class OcrService {
 		$csv = [];
 		foreach ($file->subjects as $id => $data)
 		{
-			if ($data->status == "error")
+			if ($data->ocr == "error")
 			{
-				$csv[] = ['id' => $id, 'message' => $data->message, 'url' => $data->url];
+				$csv[] = ['id' => $id, 'message' => implode(" -- ", $data->messages), 'url' => $data->url];
 				continue;
 			}
 
@@ -255,9 +266,6 @@ class OcrService {
 			$subject->ocr = $data->ocr;
 			$subject->save();
 		}
-
-		! empty($csv) ? $this->updateRecord('error', 1) : $this->record->destroy($this->record->id);
-		$this->delete();
 
 		return $csv;
 	}
@@ -288,7 +296,7 @@ class OcrService {
 		$response = curl_exec($ch);
 		if ($response === false)
 		{
-			$this->updateRecord('error', 1);
+			$this->updateRecord(['error' => 1]);
 			$this->addReportError($this->record->id, trans('errors.error_ocr_curl'));
 			$this->report->reportSimpleError($this->groupId);
 		}
@@ -307,7 +315,7 @@ class OcrService {
 		$file = @file_get_contents($this->ocrGetUrl . '/' . $this->record->uuid . '.json');
 		if ($file === false)
 		{
-			$this->updateRecord('error', 1);
+			$this->updateRecord(['error' => 1]);
 			$this->addReportError($this->record->id, trans('errors.error_ocr_request'));
 			$this->report->reportSimpleError($this->groupId);
 			$this->delete();
@@ -352,7 +360,7 @@ class OcrService {
 		$minutes = $this->record->tries == 0 ? round(2 * ($this->record->subject_count / 10)) : 2;
 		$date = \Carbon::now()->addMinutes($minutes);
 		\Queue::later($date, 'Biospex\Services\Queue\OcrService', ['id' => $this->id], 'ocr');
-		$this->updateRecord('tries', $this->record->tries +=1);
+		$this->updateRecord(['tries' => $this->record->tries +=1]);
 		$this->delete();
 
 		return;
