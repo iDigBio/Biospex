@@ -171,10 +171,6 @@ class Report {
 	 */
 	public function createAttachment($csv, $name = null)
 	{
-		$count = count($csv);
-		if ( ! $count)
-			return [];
-
 		$path = $this->excelStorage['store']['path'] . "/";
 		$fileName = (is_null($name)) ? str_random(10) : $name . str_random(5);
 		$ext = ".csv";
@@ -207,6 +203,8 @@ class Report {
 			'data' => $data,
 			'attachment' => $attachments
 		]);
+
+        return;
 	}
 
 }
