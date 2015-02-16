@@ -184,7 +184,9 @@ class OcrService {
 		if (empty($this->record->status))
 		{
 			$this->updateRecord(['status' => 'in progress']);
-			$this->sendFile();
+			if ( ! $this->sendFile())
+				return false;
+
 			$this->queueLater();
 			return false;
 		}
@@ -294,18 +296,22 @@ class OcrService {
 			'Content-Type: multipart/form-data; boundary=' . $delimiter,
 			'Content-Length: ' . strlen($data)));
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+		curl_setopt($ch, CURLOPT_HEADER, true);
+		curl_setopt($ch, CURLOPT_NOBODY, true);
 		curl_setopt($ch, CURLOPT_FAILONERROR, true);
-
 		$response = curl_exec($ch);
-		if ($response === false)
+
+		$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		if ($http_status == 400)
 		{
 			$this->updateRecord(['error' => 1]);
 			$this->addReportError($this->record->id, trans('errors.error_ocr_curl'));
 			$this->report->reportSimpleError($this->groupId);
+			return false;
 		}
 		curl_close($ch);
 
-		return;
+		return true;
 	}
 
 	/**
