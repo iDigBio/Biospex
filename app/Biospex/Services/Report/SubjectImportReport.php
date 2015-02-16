@@ -36,10 +36,10 @@ class SubjectImportReport extends Report {
 	 */
 	public function complete($email, $title, $duplicates, $rejects)
 	{
-		$duplicated = $this->createAttachment($duplicates, 'duplicated');
-		$rejected = $this->createAttachment($rejects, 'rejected');
+		$duplicated = ! empty($duplicates) ? $this->createAttachment($duplicates, 'duplicated') : [];
+		$rejected = ! empty($rejects) ? $this->createAttachment($rejects, 'rejected') : [];
 
-		$attachments = [$duplicated, $rejected];
+		$attachments = array_merge($duplicated, $rejected);
 
 		$data = array(
 			'projectTitle' => $title,
