@@ -172,6 +172,12 @@ class SubjectProcess {
 	private $identifiers;
 
 	/**
+	 * Media identifier.
+	 * @var
+	 */
+	private $identifierColumn;
+
+	/**
 	 * Crop for OCR
 	 */
 	private $ocrCrop;
@@ -236,7 +242,7 @@ class SubjectProcess {
 	}
 
 	/**
-	 * Process meta file
+	 * Process meta file.
 	 */
 	private function processMetaFile ()
 	{
@@ -291,6 +297,7 @@ class SubjectProcess {
 
 		// Get first row for header. Laravel-Excel returns array with key starting at 1 so reset array keys starting at zero.
 		$header = $this->buildHeaderRow(array_values($data->first()->toArray()), $type);
+		$this->setIdentifierColumn($header);
 		$this->setHeaderProperty($header, $type);
 		$rows = $data->toArray();
 
@@ -299,12 +306,14 @@ class SubjectProcess {
 			if ($key == 0)
 				continue;
 
-			$row = array_intersect_key(array_values($row), $header);
-
+			// Check row and header have same count
 			if (count($header) != count($row))
 				throw new \Exception('[SubjectProcess] Header column count does not match row count. Header - Row: ' . count($header) . ' - ' . count($row));
 
-			$results[] = array_combine($header, $row);
+			$combined = array_combine($header, $row);
+			$this->stripUuidPrefix($combined, $type);
+
+			$results[] = $combined;
 		}
 
 		return $results;
@@ -339,10 +348,9 @@ class SubjectProcess {
 
 		foreach ($multimedia as $key => $subject)
 		{
-			$identifier = $this->getIdentifier($subject);
 			// TODO: Need to find what id will be when media is core file
 			$occurrenceId = $this->mediaIsCore ? null : $subject[$header[0]];
-			$subject['id'] = $this->mediaIsCore ? $subject[$header[0]] : $identifier;
+			$subject['id'] = $this->mediaIsCore ? $subject[$header[0]] : $subject[$this->identifierColumn];
 
 			if (empty($subject['id']))
 			{
@@ -370,7 +378,7 @@ class SubjectProcess {
 		$result = [];
 		foreach ($occurrence as $key => $row)
 		{
-			$result[$row[$header[0]]] = $row;
+			$result[$row[substr($header[0], -36)]] = $row;
 		}
 
 		return $result;
@@ -388,6 +396,7 @@ class SubjectProcess {
 		$count = 0;
 		foreach ($subjects as $subject) {
 			if (!$this->validateDoc($subject)) {
+				$this->unsetSubjectVariables($subject);
 				$this->duplicateArray[] = $subject;
 				continue;
 			}
@@ -589,6 +598,19 @@ class SubjectProcess {
 	}
 
 	/**
+	 * Unset unnecessary variables when creating csv.
+	 *
+	 * @param $subject
+	 */
+	private function unsetSubjectVariables(&$subject)
+	{
+		unset($subject['project_id']);
+		unset($subject['ocr']);
+		unset($subject['expedition_ids']);
+		unset($subject['occurrence']);
+	}
+
+	/**
 	 * Set project id being processed
 	 *
 	 * @param $id
@@ -653,23 +675,18 @@ class SubjectProcess {
 	}
 
 	/**
-	 * Set column index for multimedia identifier
-	 * dcterms:identifier
-	 * ac:providerManagedID
-	 * idigbio:uuid
-	 * idigbio:recordId
-	 * @param $subject
-	 * @return bool
+	 * Set the identifier column
+	 *
+	 * @param $header
 	 */
-	public function getIdentifier ($subject)
+	private function setIdentifierColumn($header)
 	{
-		foreach ($this->identifiers as $value)
-		{
-			if (isset($subject[$value]) && !empty($subject[$value]))
-				return $subject[$value];
-		}
+		if ( ! $result = array_intersect($this->identifiers, $header))
+			return;
 
-		return false;
+		$this->identifierColumn = $result[0];
+
+		return;
 	}
 
 	/**
@@ -720,6 +737,22 @@ class SubjectProcess {
 			$result->header = json_encode($this->headerArray);
 			$this->headerId = $result->id;
 		}
+
+		return;
+	}
+
+	/**
+	 * Strip prefixes from uuids.
+	 *
+	 * @param $combined
+	 * @param $type
+	 */
+	private function stripUuidPrefix(&$combined, $type)
+	{
+		if (isset($combined[$this->identifierColumn]) && ! empty($combined[$this->identifierColumn]))
+			$combined[$this->identifierColumn] = substr($combined[$this->identifierColumn], -36);
+
+		$combined[$this->metaFields[$type][0]] = substr($combined[$this->metaFields[$type][0]], -36);
 
 		return;
 	}
