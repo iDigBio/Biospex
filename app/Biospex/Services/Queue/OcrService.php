@@ -278,6 +278,9 @@ class OcrService {
 		$delimiter = '-------------' . uniqid();
 		$data = '';
 		$data .= "--" . $delimiter . "\r\n";
+		$data .= 'Content-Disposition: form-data; response="http"';
+		$data .= "\r\n\r\n";
+		$data .= "--" . $delimiter . "\r\n";
 		$data .= 'Content-Disposition: form-data; name="file";
 			' . ' filename="' . $this->record->uuid . '.json"' . "\r\n";
 		$data .= 'Content-Type: application/json' . "\r\n";
