@@ -95,13 +95,12 @@ class SubjectsImportService {
 		$project = $this->project->find($import->project_id);
 
 		$this->fileDir = $this->dataDir . '/' . str_random(10);
-		$origFile = $this->dataDir . '/' . $import->file;
-		$newFile = $this->fileDir . '/' . $import->file;
+		$zipFile = $this->dataDir . '/' . $import->file;
+
 		try
 		{
-			$this->makeTmp($this->fileDir);
-			$this->moveFile($origFile, $newFile);
-			$this->unzip($newFile, $this->fileDir);
+			$this->makeTmp();
+			$this->unzip($zipFile);
 
 			$this->subjectProcess->processSubjects($import->project_id, $this->fileDir);
 
@@ -111,6 +110,7 @@ class SubjectsImportService {
 			$this->report->complete($user->email, $project->title, $duplicates, $rejects);
 
 			$this->filesystem->deleteDirectory($this->fileDir);
+			$this->filesystem->delete($zipFile);
 
 			$this->import->destroy($import->id);
 		}
@@ -128,54 +128,37 @@ class SubjectsImportService {
 	}
 
 	/**
+	 * Create tmp data directory
+	 *
+	 * @throws \Exception
+	 */
+	protected function makeTmp()
+	{
+		if ( ! $this->filesystem->isDirectory($this->fileDir))
+		{
+			if ( ! $this->filesystem->makeDirectory($this->fileDir, 0777, true))
+				throw new \Exception('"Unable to create temporary directory:' . $this->fileDir);
+		}
+
+		if ( ! $this->filesystem->isWritable($this->fileDir))
+		{
+			if ( ! chmod($this->fileDir, 0777))
+				throw new \Exception('"Unable to make temporary directory writable:' . $this->fileDir);
+		}
+
+		return;
+	}
+
+	/**
 	 * Extract files from zip
 	 * TODO: ZipArchive causes MAC uploaded files to extract with two folders. Need to determine better solution.
 	 *
-	 * @param $file
-	 * @param $fileDir
+	 * @param $zipFile
 	 * @throws Exception
 	 */
-	public function unzip($file, $fileDir)
+	public function unzip($zipFile)
 	{
-		shell_exec("unzip $file -d $fileDir");
-
-		return;
-	}
-
-	/**
-	 * Create tmp data directory
-	 *
-	 * @param $dir
-	 * @throws \Exception
-	 */
-	protected function makeTmp($dir)
-	{
-		if ( ! $this->filesystem->isDirectory($dir))
-		{
-			if ( ! $this->filesystem->makeDirectory($dir, 0777, true))
-				throw new \Exception('"Unable to create temporary directory:' . $dir);
-		}
-
-		if ( ! $this->filesystem->isWritable($dir))
-		{
-			if ( ! chmod($dir, 0777))
-				throw new \Exception('"Unable to make temporary directory writable:' . $dir);
-		}
-
-		return;
-	}
-
-	/**
-	 * Move file.
-	 *
-	 * @param $origFile
-	 * @param $newFile
-	 * @throws \Exception
-	 */
-	protected function moveFile($origFile, $newFile)
-	{
-		if ( ! $this->filesystem->move($origFile, $newFile))
-			throw new \Exception('"Unable to move file during Subject Import Process.');
+		shell_exec("unzip $zipFile -d $this->fileDir");
 
 		return;
 	}
