@@ -35,8 +35,9 @@ Route::group(
 	],
     function () {
 
+		Route::get('test', ['as' => 'get.test', 'uses' => 'ServerInfoController@getTest']);
+		Route::post('test', ['as' => 'post.test', 'uses' => 'ServerInfoController@postTest']);
 		Route::get('phpinfo', ['as' => 'phpinfo', 'uses' => 'ServerInfoController@showPhpInfo']);
-		Route::get('example', ['as' => 'example', 'uses' => 'ServerInfoController@example']);
 		Route::get('clear', ['as' => 'clear', 'uses' => 'ServerInfoController@clear']);
 
         // Session Routes
