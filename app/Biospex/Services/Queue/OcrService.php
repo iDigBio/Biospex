@@ -279,37 +279,30 @@ class OcrService {
 	{
 		$delimiter = '-------------' . uniqid();
 		$data = '';
-		$data .= "--" . $delimiter . "\r\n";
-		$data .= 'Content-Disposition: form-data; response="http"';
-		$data .= "\r\n\r\n";
-		$data .= "--" . $delimiter . "\r\n";
-		$data .= 'Content-Disposition: form-data; name="file";
-			' . ' filename="' . $this->record->uuid . '.json"' . "\r\n";
-		$data .= 'Content-Type: application/json' . "\r\n";
-		$data .= "\r\n";
-		$data .= $this->record->data . "\r\n";
-		$data .= "--" . $delimiter . "--\r\n";
+
+		$data .= $this->buildFormContent($delimiter, "response", "text/html", "http");
+		$data .= $this->buildFormContent($delimiter, "file", "application/json", $this->record->data, $this->record->uuid . ".json");
 
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $this->ocrPostUrl);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 			'Content-Type: multipart/form-data; boundary=' . $delimiter,
 			'Content-Length: ' . strlen($data)));
+		curl_setopt($ch, CURLOPT_POST, 1);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-		curl_setopt($ch, CURLOPT_HEADER, true);
-		curl_setopt($ch, CURLOPT_NOBODY, true);
 		curl_setopt($ch, CURLOPT_FAILONERROR, true);
-		$response = curl_exec($ch);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-		$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		if ($http_status == 400)
+		$response = curl_exec($ch);
+		curl_close($ch);
+
+		if ($response === false)
 		{
 			$this->updateRecord(['error' => 1]);
 			$this->addReportError($this->record->id, trans('errors.error_ocr_curl'));
 			$this->report->reportSimpleError($this->groupId);
 			return false;
 		}
-		curl_close($ch);
 
 		return true;
 	}
@@ -332,6 +325,32 @@ class OcrService {
 		}
 
 		return json_decode($file);
+	}
+
+	/**
+	 * Build form fields sent to the ocr server.
+	 *
+	 * @param $delimiter
+	 * @param $name
+	 * @param $type
+	 * @param $content
+	 * @param null $filename
+	 * @return string
+	 */
+	private function buildFormContent($delimiter, $name, $type, $content, $filename = null)
+	{
+		$data = '';
+		$data .= "--" . $delimiter . "\r\n";
+		$data .= 'Content-Disposition: form-data; name="' . $name . '";';
+		$data .= ! is_null($filename) ? 'filename="' . $filename . '"' : "";
+		$data .= "\r\n";
+		$data .= 'Content-Type: ' . $type . "\r\n";
+		$data .= "\r\n";
+		$data .= $content . "\r\n";
+		$data .= "\r\n\r\n";
+		$data .= "--" . $delimiter . "--\r\n";
+
+		return $data;
 	}
 
 	/**
