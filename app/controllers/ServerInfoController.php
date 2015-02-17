@@ -33,7 +33,27 @@ class ServerInfoController extends BaseController
 	 */
 	public function __construct ()
 	{
-		$this->beforeFilter('auth');
+		$this->beforeFilter('auth', ['only' => ['showPhpInfo', 'clear']]);
+	}
+
+	/**
+	 * Test $_POST
+	 */
+	public function postTest()
+	{
+		http_response_code(400);
+
+		exit;
+	}
+
+	/**
+	 * Test $_GET
+	 */
+	public function getTest()
+	{
+		http_response_code(200);
+
+		exit;
 	}
 
 	/**
@@ -70,8 +90,4 @@ class ServerInfoController extends BaseController
 		return Redirect::intended('/projects');
 	}
 
-	public function example ()
-	{
-		return Redirect::route('projects.index')->with('message', 'Test page ran.');
-	}
 }
