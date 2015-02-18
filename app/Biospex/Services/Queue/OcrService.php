@@ -280,29 +280,41 @@ class OcrService {
 		$delimiter = '-------------' . uniqid();
 		$data = '';
 
-		$data .= $this->buildFormContent($delimiter, "response", "text/html", "http");
-		$data .= $this->buildFormContent($delimiter, "file", "application/json", $this->record->data, $this->record->uuid . ".json");
+		$data .= "--" . $delimiter . "\r\n";
+		$data .= 'Content-Disposition: form-data; name="response"' . "\r\n";
+		$data .= 'Content-Type: text/html' . "\r\n";
+		$data .= "\r\n";
+		$data .= 'http' . "\r\n";
+		$data .= "\r\n\r\n";
+
+		$data .= "--" . $delimiter . "\r\n";
+		$data .= 'Content-Disposition: form-data; name="file";
+			' . ' filename="' . $this->record->uuid . '.json"' . "\r\n";
+		$data .= 'Content-Type: application/json' . "\r\n";
+		$data .= "\r\n";
+		$data .= $this->record->data . "\r\n";
+		$data .= "--" . $delimiter . "--\r\n";
 
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $this->ocrPostUrl);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 			'Content-Type: multipart/form-data; boundary=' . $delimiter,
 			'Content-Length: ' . strlen($data)));
-		curl_setopt($ch, CURLOPT_POST, 1);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 		curl_setopt($ch, CURLOPT_FAILONERROR, true);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 		$response = curl_exec($ch);
-		curl_close($ch);
-
 		if ($response === false)
 		{
 			$this->updateRecord(['error' => 1]);
-			$this->addReportError($this->record->id, trans('errors.error_ocr_curl'));
+			$this->addReportError($this->record->id, trans('errors.error_ocr_curl') . curl_error($ch));
 			$this->report->reportSimpleError($this->groupId);
+			curl_close($ch);
+
 			return false;
 		}
+
+		curl_close($ch);
 
 		return true;
 	}
@@ -328,32 +340,6 @@ class OcrService {
 	}
 
 	/**
-	 * Build form fields sent to the ocr server.
-	 *
-	 * @param $delimiter
-	 * @param $name
-	 * @param $type
-	 * @param $content
-	 * @param null $filename
-	 * @return string
-	 */
-	private function buildFormContent($delimiter, $name, $type, $content, $filename = null)
-	{
-		$data = '';
-		$data .= "--" . $delimiter . "\r\n";
-		$data .= 'Content-Disposition: form-data; name="' . $name . '";';
-		$data .= ! is_null($filename) ? 'filename="' . $filename . '"' : "";
-		$data .= "\r\n";
-		$data .= 'Content-Type: ' . $type . "\r\n";
-		$data .= "\r\n";
-		$data .= $content . "\r\n";
-		$data .= "\r\n\r\n";
-		$data .= "--" . $delimiter . "--\r\n";
-
-		return $data;
-	}
-
-	/**
 	 * Add error to report.
 	 *
 	 * @param $id
@@ -366,7 +352,7 @@ class OcrService {
 			array(
 				'id'      => $id,
 				'message' => $messages,
-				'url'     => $url
+				'url'     => !empty($url) ? $url : ''
 			)));
 
 		return;
