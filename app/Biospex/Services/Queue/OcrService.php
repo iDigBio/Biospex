@@ -371,7 +371,7 @@ class OcrService {
 	 */
 	public function queueLater()
 	{
-		$minutes = $this->record->tries == 0 ? round(2 * ($this->record->subject_count / 10)) : 2;
+		$minutes = $this->record->tries == 0 ? round($this->record->subject_count / 10) : 2;
 		$date = \Carbon::now()->addMinutes($minutes);
 		\Queue::later($date, 'Biospex\Services\Queue\OcrService', ['id' => $this->id], 'ocr');
 		$this->updateRecord(['tries' => $this->record->tries +=1]);
