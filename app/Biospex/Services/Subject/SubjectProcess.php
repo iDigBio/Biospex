@@ -228,7 +228,6 @@ class SubjectProcess {
 		$this->processMetaFile();
 
 		$core = $this->loadCsv("core");
-
 		$extension = $this->extensionFile ? $this->loadCsv("extension") : null;
 
 		$this->setHeaderArray();
@@ -265,11 +264,8 @@ class SubjectProcess {
 		$this->mediaIsCore = preg_match('/occurrence/i', $coreType) ? false : true;
 
 		$this->setMetaFiles($coreFile);
-
 		$this->setMetaQueries();
-
 		$this->buildMetaFields();
-
 		$this->saveMeta($xml);
 
 		return;
