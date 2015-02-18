@@ -39,7 +39,7 @@ class ExpeditionSubjectTableSeeder extends Seeder {
 			$i = 0;
 			foreach ($subjects as $subject)
 			{
-				if ($i == 800) break;
+				if ($i == 300) break;
 				// add expedition ids to subjects
 				$expedition->subjects()->attach($subject);
 				$i++;
