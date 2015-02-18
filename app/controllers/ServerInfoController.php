@@ -41,7 +41,7 @@ class ServerInfoController extends BaseController
 	 */
 	public function postTest()
 	{
-		http_response_code(400);
+		http_response_code(200);
 
 		exit;
 	}
