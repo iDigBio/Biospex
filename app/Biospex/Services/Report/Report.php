@@ -103,7 +103,7 @@ class Report {
         $messages = $this->messages->get('error');
         foreach ($messages as $message)
         {
-            $errorMessage .= "$message<br /><br />";
+            $errorMessage .= "$message ";
         }
         $subject = trans('errors.error');
         $data = array('errorMessage' => $errorMessage);
