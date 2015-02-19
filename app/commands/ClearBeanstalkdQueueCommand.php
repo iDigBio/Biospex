@@ -45,6 +45,12 @@ class ClearBeanstalkdQueueCommand extends Command {
 	protected $description = 'Clear a Beanstalkd queue, by deleting all pending jobs.';
 
 	/**
+	 * All the queues defined for beanstalkd.
+	 * @var array
+	 */
+	protected $queues;
+
+	/**
 	 * Create a new command instance.
 	 */
 	public function __construct()
@@ -71,11 +77,38 @@ class ClearBeanstalkdQueueCommand extends Command {
 	 */
 	public function fire()
 	{
+		$this->queues = Config::get('config.beanstalkd');
 
-		$queue = ($this->argument('queue')) ? $this->argument('queue') : Config::get('queue.connections.beanstalkd.queue');
+		$queues = ($this->argument('queue')) ? $this->argument('queue') : $this->queues;
 
+		is_array($queues) ? $this->loopQueues($queues) : $this->clearQueue($queues);
+
+		return;
+	}
+
+	/**
+	 * Loop through queues and remove.
+	 *
+	 * @param $queues
+	 */
+	protected function loopQueues($queues)
+	{
+		foreach ($queues as $queue)
+		{
+			$this->clearQueue($queue);
+		}
+
+		return;
+	}
+
+	/**
+	 * Clear Queue.
+	 *
+	 * @param $queue
+	 */
+	protected function clearQueue($queue)
+	{
 		$this->info(sprintf('Clearing queue: %s', $queue));
-
 		$pheanstalk = Queue::getPheanstalk();
 		$pheanstalk->useTube($queue);
 		$pheanstalk->watch($queue);
@@ -85,6 +118,8 @@ class ClearBeanstalkdQueueCommand extends Command {
 		}
 
 		$this->info('...cleared.');
+
+		return;
 	}
 
 }
