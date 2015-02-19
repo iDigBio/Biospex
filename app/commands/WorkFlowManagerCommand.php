@@ -51,6 +51,7 @@ class WorkFlowManagerCommand extends Command {
     public function __construct(WorkflowManagerInterface $manager)
     {
         $this->manager = $manager;
+		$this->queue = \Config::get('config.beanstalkd.workflowManager');
 
         parent::__construct();
     }
@@ -72,7 +73,7 @@ class WorkFlowManagerCommand extends Command {
 			if ($this->checkProcess($manager))
 				continue;
 
-			Queue::push('Biospex\Services\Queue\WorkflowManagerService', ['id' => $manager->id], 'workflowManager');
+			Queue::push('Biospex\Services\Queue\WorkflowManagerService', ['id' => $manager->id], $this->queue);
 
 			$manager->queue = 1;
 			$manager->save();
