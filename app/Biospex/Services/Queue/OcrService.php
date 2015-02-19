@@ -77,6 +77,12 @@ class OcrService {
 	protected $title;
 
 	/**
+	 * Configuration value for queue.
+	 * @var
+	 */
+	protected $ocrQueue;
+
+	/**
 	 * Constructor
 	 *
 	 * @param OcrQueueInterface $queue
@@ -94,6 +100,7 @@ class OcrService {
 		$this->report = $report;
 		$this->ocrPostUrl = \Config::get('config.ocrPostUrl');
 		$this->ocrGetUrl = \Config::get('config.ocrGetUrl');
+		$this->ocrQueue = \Config::get('config.beanstalkd.ocr');
 	}
 
 	/**
@@ -373,7 +380,7 @@ class OcrService {
 	{
 		$minutes = $this->record->tries == 0 ? round($this->record->subject_count / 15) : 2;
 		$date = \Carbon::now()->addMinutes($minutes);
-		\Queue::later($date, 'Biospex\Services\Queue\OcrService', ['id' => $this->id], 'ocr');
+		\Queue::later($date, 'Biospex\Services\Queue\OcrService', ['id' => $this->id], $this->ocrQueue);
 		$this->updateRecord(['tries' => $this->record->tries +=1]);
 		$this->delete();
 
