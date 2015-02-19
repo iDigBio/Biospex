@@ -13,4 +13,5 @@ Artisan::resolve('WorkFlowManagerCommand');
 Artisan::resolve('DownloadCleanCommand');
 Artisan::resolve('ViewsCommand');
 Artisan::resolve('TestCommand');
+Artisan::resolve('ClearBeanstalkdQueueCommand');
 
