@@ -3970,12 +3970,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/padraic/mockery.git",
-                "reference": "df892adc6088cc9c70b2bb804a5e154d2856f4f4"
+                "reference": "a450aa28455781c7a72e50794b0f9d954cf8decb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/df892adc6088cc9c70b2bb804a5e154d2856f4f4",
-                "reference": "df892adc6088cc9c70b2bb804a5e154d2856f4f4",
+                "url": "https://api.github.com/repos/padraic/mockery/zipball/a450aa28455781c7a72e50794b0f9d954cf8decb",
+                "reference": "a450aa28455781c7a72e50794b0f9d954cf8decb",
                 "shasum": ""
             },
             "require": {
@@ -4027,7 +4027,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2015-02-18 09:34:00"
+            "time": "2015-02-18 18:54:04"
         },
         {
             "name": "phpdocumentor/reflection-docblock",
