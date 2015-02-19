@@ -241,7 +241,7 @@ class ExpeditionsController extends BaseController {
                 $expedition->actors()->sync($expedition->project->actors);
 			}
 
-            Queue::push('Biospex\Services\Queue\WorkflowManagerService', ['id' => $workflowId], 'workflowManager');
+            Queue::push('Biospex\Services\Queue\WorkflowManagerService', ['id' => $workflowId], \Config::get('config.beanstalkd.workflowManager'));
 
             Session::flash('success', trans('expeditions.expedition_process_success'));
         }
