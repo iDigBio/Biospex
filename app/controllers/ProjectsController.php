@@ -308,7 +308,7 @@ class ProjectsController extends BaseController {
                             'file' => $filename
                         ]);
 
-            Queue::push('Biospex\Services\Queue\SubjectsImportService', ['id' => $import->id], 'subjectsImport');
+            Queue::push('Biospex\Services\Queue\SubjectsImportService', ['id' => $import->id], \Config::get('config.beanstalkd.subjectsImport'));
         }
         catch(Exception $e)
         {
