@@ -183,6 +183,12 @@ class SubjectProcess {
 	private $ocrCrop;
 
 	/**
+	 * Queue to use when processing OCR.
+	 * @var
+	 */
+	private $queue;
+
+	/**
 	 * Constructor
 	 *
 	 * @param SubjectInterface $subject
@@ -213,6 +219,8 @@ class SubjectProcess {
 
 		$this->identifiers = \Config::get('config.identifiers');
 		$this->ocrCrop = \Config::get('config.ocrCrop');
+		$this->queue = \Config::get('config.beanstalkd.ocr');
+
 	}
 
 	/**
@@ -406,7 +414,7 @@ class SubjectProcess {
 			return;
 
 		$id = $this->saveOcrQueue($data, $count);
-		\Queue::push('Biospex\Services\Queue\OcrService', ['id' => $id], 'ocr');
+		\Queue::push('Biospex\Services\Queue\OcrService', ['id' => $id], $this->queue);
 
 		return;
 	}
