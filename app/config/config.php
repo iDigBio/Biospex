@@ -24,6 +24,16 @@ return array(
 	'ocrGetUrl'         => $_ENV['site.ocrGetUrl'],
 	'ocrCrop'           => $_ENV['site.ocrCrop'],
 
+	/*
+	 * Beanstalkd queues for myqueue.conf per site.
+	 */
+	'beanstalkd'        => [
+		'default'         => $_ENV['beanstalkd.default'],
+		'subjectsImport'  => $_ENV['beanstalkd.subjectsImport'],
+		'workflowManager' => $_ENV['beanstalkd.workflowManager'],
+		'ocr'             => $_ENV['beanstalkd.ocr']
+	],
+
 	/** Imagine settings */
 	'images'            => [
 		'thumbDefaultImg'    => '/assets/default_image.jpg',
