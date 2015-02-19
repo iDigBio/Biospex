@@ -38,6 +38,11 @@ return [
 	'site.ocrGetUrl'    => 'http://ocr.dev.morphbank.net/status',
 	'site.ocrCrop'      => 'no',
 
+	'beanstalkd.default'         => 'default',
+	'beanstalkd.subjectsImport'  => 'subjectsImport',
+	'beanstalkd.workflowManager' => 'workflowManager',
+	'beanstalkd.ocr'             => 'ocr',
+
 	'mysql.host'        => 'localhost',
 	'mysql.database'    => 'db',
 	'mysql.username'    => 'user',
