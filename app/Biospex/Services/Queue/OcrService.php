@@ -28,6 +28,7 @@
 use Biospex\Repo\OcrQueue\OcrQueueInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Services\Report\OcrReport;
+use Mockery\CountValidator\Exception;
 
 class OcrService {
 
@@ -114,29 +115,40 @@ class OcrService {
 		$this->job = $job;
 		$this->id = $data['id'];
 
-		$this->record = $this->queue->findWith($this->id, ['project.group.owner']);
-		$this->setVars();
+		try
+		{
+			$this->record = $this->queue->findWith($this->id, ['project.group.owner']);
+			$this->setVars();
+			$this->checkExist();
 
-		if ( ! $this->checkExist())
-			return;
+			if ( ! $this->checkError())
+				return;
 
-		if ( ! $this->checkError())
-			return;
+			$file = $this->processQueue();
 
-		if ( ! $file = $this->processQueue())
-			return;
+			if ( ! $this->processFile($file))
+				return;
 
-		if ( ! $this->processFile($file))
-			return;
+			$csv = $this->updateSubjects($file);
 
-		$csv = $this->updateSubjects($file);
+			$attachment = $this->report->complete($this->email, $this->title, $csv);
 
-		$attachment = $this->report->complete($this->email, $this->title, $csv);
+			if (! $attachment)
+			{
+				$this->record->destroy($this->record->id);
+			}
+			else
+			{
+				$this->updateRecord(['error' => 1, 'attachments' => json_encode($attachment)]);
+				throw new \Exception("Queue Error with attachment. Record id: " . $this->record->id);
+			}
 
-		!$attachment ? $this->record->destroy($this->record->id) :
-			$this->updateRecord(['error' => 1, 'attachments' => json_encode($attachment)]);
-
-		$this->delete();
+			$this->delete();
+		}
+		catch(Exception $e)
+		{
+			$this->delete();
+		}
 
 		return;
 	}
@@ -156,15 +168,14 @@ class OcrService {
 	/**
 	 * Check if queue object is empty and remove from job if necessary.
 	 *
-	 * @return bool
+	 * @throws \Exception
 	 */
 	private function checkExist ()
 	{
 		if (count($this->record))
-			return true;
+			return;
 
-		$this->delete();
-		return false;
+		throw new \Exception("Record does not exist");
 	}
 
 	/**
@@ -177,29 +188,29 @@ class OcrService {
 		if ( ! $this->record->error)
 			return true;
 
-		$this->delete();
 		return false;
 	}
 
 	/**
 	 * Process the ocr queue
 	 *
-	 * @return bool|void
+	 * @return bool|mixed
+	 * @throws \Exception
 	 */
 	private function processQueue ()
 	{
 		if (empty($this->record->status))
 		{
-			$this->updateRecord(['status' => 'in progress']);
 			if ( ! $this->sendFile())
-				return false;
+				throw new \Exception("Error sending file. Record id: " . $this->record->id);
 
+			$this->updateRecord(['status' => 'in progress']);
 			$this->queueLater();
 			return false;
 		}
 
 		if ( ! $file = $this->requestFile())
-			return false;
+			throw new \Exception("Error requesting file. Record id: " . $this->record->id);
 
 		return $file;
 	}
