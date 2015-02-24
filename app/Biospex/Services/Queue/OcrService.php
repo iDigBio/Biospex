@@ -327,6 +327,8 @@ class OcrService {
 			$this->updateRecord(['error' => 1]);
 			$this->addReportError($this->record->id, trans('errors.error_ocr_curl') . curl_error($ch));
 			$this->report->reportSimpleError($this->groupId);
+
+			\Log::alert(curl_error($ch));
 			curl_close($ch);
 
 			return false;
