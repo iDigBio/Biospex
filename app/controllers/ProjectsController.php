@@ -312,7 +312,6 @@ class ProjectsController extends BaseController {
         }
         catch(Exception $e)
         {
-			dd($e->getMessage());
             Session::flash('error', trans('projects.upload_error'));
             return Redirect::route('projects.data', [$id]);
         }
