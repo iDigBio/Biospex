@@ -95,7 +95,6 @@ class ClearBeanstalkdQueueCommand extends Command {
 	{
 		foreach ($queues as $queue)
 		{
-            echo "Clearning $queue\n";
 			$this->clearQueue($queue);
 		}
 
