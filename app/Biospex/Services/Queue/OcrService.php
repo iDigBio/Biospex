@@ -360,7 +360,7 @@ class OcrService {
             return false;
         }
 
-        $this->file = json_encode($file);
+        $this->file = json_dencode($file);
 
         return true;
     }
