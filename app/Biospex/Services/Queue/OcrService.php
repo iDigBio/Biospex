@@ -52,6 +52,12 @@ class OcrService {
     protected $id;
 
     /**
+     * Retruned file array.
+     * @var json array
+     */
+    protected $file;
+
+    /**
      * Post url for ocr server.
      */
     protected $ocrPostUrl;
@@ -123,26 +129,28 @@ class OcrService {
             if ( ! $this->checkError())
                 return;
 
-            $file = $this->processQueue();
-
-            if ( ! $this->processFile($file))
+            if ( ! $this->processQueue())
                 return;
 
-            $csv = $this->updateSubjects($file);
+            if ( ! $this->processFile())
+                return;
+
+            $csv = $this->updateSubjects();
 
             $attachment = $this->report->complete($this->email, $this->title, $csv);
 
             if ( ! $attachment)
             {
                 $this->record->destroy($this->record->id);
-            } else
+            }
+            else
             {
                 $this->updateRecord(['error' => 1, 'attachments' => json_encode($attachment)]);
-                throw new \Exception("Queue Error with attachment. Record id: " . $this->record->id);
             }
 
             $this->delete();
-        } catch (\Exception $e)
+        }
+        catch (\Exception $e)
         {
             $this->delete();
         }
@@ -207,28 +215,27 @@ class OcrService {
             return false;
         }
 
-        if ( ! $file = $this->requestFile())
+        if ( ! $this->requestFile())
             throw new \Exception("Error requesting file. Record id: " . $this->record->id);
 
-        return $file;
+        return true;
     }
 
     /**
      * Process returned json file from ocr server. Complete job or queue again for processing.
      *
-     * @param $file
      * @return bool
      */
-    private function processFile ($file)
+    private function processFile ()
     {
-        if (empty($file->header))
+        if (empty($this->file->header))
         {
             $this->queueLater();
 
             return false;
         }
 
-        if ($file->header->status == "in progress")
+        if ($this->file->header->status == "in progress")
         {
             $this->queueLater();
 
@@ -268,13 +275,12 @@ class OcrService {
     /**
      * Update subjects using ocr results.
      *
-     * @param $file
-     * @return bool
+     * @return array
      */
-    private function updateSubjects ($file)
+    private function updateSubjects ()
     {
         $csv = [];
-        foreach ($file->subjects as $id => $data)
+        foreach ($this->file->subjects as $id => $data)
         {
             if ($data->ocr == "error")
             {
@@ -354,7 +360,9 @@ class OcrService {
             return false;
         }
 
-        return json_decode($file);
+        $this->file = json_encode($file);
+
+        return true;
     }
 
     /**
