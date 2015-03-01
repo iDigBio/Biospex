@@ -39,7 +39,7 @@ return array(
     'error_build_image_dir'     => "No images were retrieved during build for Expedition Id :id.",
     'error_delete_user'         => "Unable to delete user.",
     'error_ocr_queue'           => "Process error - :id, :message, :url.",
-    'error_ocr_curl'            => "Ocr Queue error sending file.",
-    'error_ocr_request'         => "Ocr failed on request file.",
+    'error_ocr_curl'            => "Ocr Queue error sending file for record :id. Message: :message",
+    'error_ocr_request'         => "Ocr failed when requesting file for record :id.",
     'error_ocr_header'          => "Ocr header response reported error while processing file."
 );
