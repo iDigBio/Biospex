@@ -119,17 +119,20 @@ class OcrService {
     {
         $this->job = $job;
         $this->id = $data['id'];
+        $this->record = $this->queue->findWith($this->id, ['project.group.owner']);
+
+        $this->setVars();
+
+        if ( ! $this->checkExist())
+            return;
+
+        if ( ! $this->checkError())
+            return;
 
         try
         {
-            $this->record = $this->queue->findWith($this->id, ['project.group.owner']);
-            $this->setVars();
-            $this->checkExist();
-
-            if ( ! $this->checkError())
-                return;
-
-            if ( ! $this->processQueue())
+            $result = empty($this->record->status) ? $this->sendFile() : $this->requestFile();
+            if ( ! $result)
                 return;
 
             if ( ! $this->processFile())
@@ -149,13 +152,18 @@ class OcrService {
             }
 
             $this->delete();
+
+            return;
         }
         catch (\Exception $e)
         {
+            $this->updateRecord(['error' => 1]);
+            $this->addReportError($this->record->id, $e->getMessage());
+            $this->report->reportSimpleError($this->groupId);
             $this->delete();
-        }
 
-        return;
+            return;
+        }
     }
 
     /**
@@ -178,9 +186,11 @@ class OcrService {
     private function checkExist ()
     {
         if (count($this->record))
-            return;
+            return true;
 
-        throw new \Exception("Record does not exist");
+        $this->delete();
+
+        return false;
     }
 
     /**
@@ -194,31 +204,6 @@ class OcrService {
             return true;
 
         return false;
-    }
-
-    /**
-     * Process the ocr queue
-     *
-     * @return bool|mixed
-     * @throws \Exception
-     */
-    private function processQueue ()
-    {
-        if (empty($this->record->status))
-        {
-            if ( ! $this->sendFile())
-                throw new \Exception("Error sending file. Record id: " . $this->record->id);
-
-            $this->updateRecord(['status' => 'in progress']);
-            $this->queueLater();
-
-            return false;
-        }
-
-        if ( ! $this->requestFile())
-            throw new \Exception("Error requesting file. Record id: " . $this->record->id);
-
-        return true;
     }
 
     /**
@@ -298,6 +283,9 @@ class OcrService {
 
     /**
      * Send json data as file.
+     *
+     * @return bool
+     * @throws \Exception
      */
     private function sendFile ()
     {
@@ -331,34 +319,26 @@ class OcrService {
         curl_close($ch);
 
         if ($response === false)
-        {
-            $this->updateRecord(['error' => 1]);
-            $this->addReportError($this->record->id, trans('errors.error_ocr_curl') . print_r($response, true));
-            $this->report->reportSimpleError($this->groupId);
+            throw new \Exception(trans('errors.error_ocr_curl', ['id' => $this->record->id, 'message' => print_r($response, true)]));
 
-            return false;
-        }
+        $this->updateRecord(['status' => 'in progress']);
+        $this->queueLater();
 
-        return true;
+        return false;
+
     }
 
     /**
      * Request file from ocr server.
      *
-     * @return mixed
+     * @return bool
+     * @throws \Exception
      */
     private function requestFile ()
     {
         $file = @file_get_contents($this->ocrGetUrl . '/' . $this->record->uuid . '.json');
         if ($file === false)
-        {
-            $this->updateRecord(['error' => 1]);
-            $this->addReportError($this->record->id, trans('errors.error_ocr_request'));
-            $this->report->reportSimpleError($this->groupId);
-            $this->delete();
-
-            return false;
-        }
+            throw new \Exception(trans('errors.error_ocr_request', ['id' => $this->record->id]));
 
         $this->file = json_decode($file);
 
@@ -390,6 +370,8 @@ class OcrService {
     public function delete ()
     {
         $this->job->delete();
+
+        return;
     }
 
     /**
