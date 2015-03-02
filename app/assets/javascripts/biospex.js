@@ -44,8 +44,11 @@ $(document).ready(function() {
     });
 
     $("#userGroup").change(function(){
-       this.value == 0 ? $("#groupInput").show() : $("#groupInput").hide();
+       this.value == 'new' ? $("#groupInput").show() : $("#groupInput").hide();
     });
+    if ($("#userGroup").length > 0){
+        $("#userGroup").val() == 'new' ? $("#groupInput").show() : $("#groupInput").hide();
+    }
 
     /*
     $('input[name="user"]').change(function(){
