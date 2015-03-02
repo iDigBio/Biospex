@@ -74,8 +74,11 @@
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-12 col-md-12">
-                            <div class="form-group">
-                                {{ Form::select('group', ['' => 'Select Group', 0 => "New"] + $groups, Input::old('group'), ['id' => 'userGroup']) }}
+                            <div class="input-group {{ ($errors->has('group')) ? 'has-error' : '' }}">
+                                <div class="form-group">
+                                    {{ Form::select('group', ['' => 'Select Group', 'new' => "New"] + $groups, Input::old('group'), ['id' => 'userGroup']) }}
+                                </div>
+                                {{$errors->first('group')}}
                             </div>
                         </div>
                     </div>
