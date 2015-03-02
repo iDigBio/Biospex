@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\Register;
+
 /**
  * RegisterFormLaravelValidator.php
  *
@@ -26,18 +27,20 @@
 use Biospex\Validation\AbstractLaravelValidator;
 
 class RegisterFormLaravelValidator extends AbstractLaravelValidator {
-	
-	/**
-	 * Validation rules
-	 *
-	 * @var Array 
-	 */
-	protected $rules = array(
-		'email' => 'required|min:4|max:32|email',
-		'password' => 'required|min:6|confirmed',
-		'password_confirmation' => 'required',
-		'registeruser'          => 'honeypot',
-		'registertime'          => 'required:|honeytime:5'
-	);
+
+    /**
+     * Validation rules
+     *
+     * @var Array
+     */
+    protected $rules = [
+        'email'                 => 'required|min:4|max:32|email',
+        'password'              => 'required|min:6|confirmed',
+        'password_confirmation' => 'required',
+        'group'                 => 'required_without:registeruser',
+        'new_group'             => 'required_if:group,new',
+        'registeruser'          => 'honeypot',
+        'registertime'          => 'required:|honeytime:5',
+    ];
 
 }
