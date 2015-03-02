@@ -43,6 +43,10 @@ $(document).ready(function() {
         }
     });
 
+    $("#userGroup").change(function(){
+       this.value == 0 ? $("#groupInput").show() : $("#groupInput").hide();
+    });
+
     /*
     $('input[name="user"]').change(function(){
         $('input[class="userperm"]:checkbox').prop('checked', this.checked);
