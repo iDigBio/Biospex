@@ -55,6 +55,8 @@
                                 {{$errors->first('password')}}
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12">
                             <div class="form-group">
                                 <div class="input-group {{ ($errors->has('password_confirmation')) ? 'has-error' : '' }}">
@@ -64,15 +66,19 @@
                                 {{$errors->first('password_confirmation')}}
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 collapse" id="groupInput">
                             <div class="form-group">
                                 <div class="input-group {{ ($errors->has('new_group')) ? 'has-error' : '' }}">
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                                    {{Form::password('new_group', ['class' => 'form-control', 'id' =>'new_group', 'placeholder' => trans('pages.new_group')])}}
+                                    {{Form::text('new_group', Input::old('new_group'), ['class' => 'form-control', 'placeholder' => trans('pages.new_group')])}}
                                 </div>
                                 {{$errors->first('new_group')}}
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12">
                             <div class="input-group {{ ($errors->has('group')) ? 'has-error' : '' }}">
                                 <div class="form-group">
