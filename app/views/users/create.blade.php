@@ -3,11 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
 @parent
-@if ($register)
-    @lang('pages.register')
-@else
-    @lang('pages.create')
-@endif
+@lang('pages.create')
 @stop
 
 {{-- Content --}}
@@ -16,7 +12,7 @@
     <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
         <div class="panel panel-info">
             <div class="panel-heading">
-                <h3 class="panel-title">{{ trans('pages.register_account') }}</h3>
+                <h3 class="panel-title">{{ trans('pages.create_account') }}</h3>
             </div>
             <div class="panel-body">
                 {{ Form::open(array('action' => 'UsersController@store')) }}
@@ -68,35 +64,24 @@
                                 {{$errors->first('password_confirmation')}}
                             </div>
                         </div>
-
-                        @if ($register)
-                        <div class="col-xs-12 col-sm-12 col-md-12">
-                            <div class="form-group {{ ($errors->has('invite')) ? 'has-error' : '' }}">
-                                {{ Form::text('invite', $code, array('class' => 'form-control', 'placeholder' => trans('groups.invite_code'))) }}
-                                {{ ($errors->has('invite') ?  $errors->first('invite') : '') }}
+                        <div class="col-xs-12 col-sm-12 col-md-12 collapse" id="groupInput">
+                            <div class="form-group">
+                                <div class="input-group {{ ($errors->has('new_group')) ? 'has-error' : '' }}">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                    {{Form::password('new_group', ['class' => 'form-control', 'id' =>'new_group', 'placeholder' => trans('pages.new_group')])}}
+                                </div>
+                                {{$errors->first('new_group')}}
                             </div>
                         </div>
-                        {{ Form::honeypot('registeruser', 'registertime') }}
-                        @else
                         <div class="col-xs-12 col-sm-12 col-md-12">
                             <div class="form-group">
-                                {{ Form::select('group', $groups, Input::old('group')) }}
+                                {{ Form::select('group', ['' => 'Select Group', 0 => "New"] + $groups, Input::old('group'), ['id' => 'userGroup']) }}
                             </div>
                         </div>
-                        @endif
                     </div>
-                    @if ($register)
-                    {{ Form::submit(trans('buttons.register'), array('class' => 'btn btn-primary btn-block')) }}
-                    @endif
-                    @if ( ! $register)
+                    {{ Form::submit(trans('buttons.create'), array('class' => 'btn btn-primary btn-block')) }}
                     {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-block btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
-                    @endif
                 {{ Form::close() }}
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12 col-md-12 margin-top-10">
-                       {{link_to_action('login', trans('pages.already_have_account'))}}
-                    </div>
-                </div>
             </div>
         </div>
     </div>
