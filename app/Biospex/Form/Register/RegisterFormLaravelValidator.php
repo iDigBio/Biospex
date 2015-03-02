@@ -34,13 +34,13 @@ class RegisterFormLaravelValidator extends AbstractLaravelValidator {
      * @var Array
      */
     protected $rules = [
-        'email'                 => 'required|min:4|max:32|email',
+        'email'                 => 'required|min:4|max:32|email|unique:users',
         'password'              => 'required|min:6|confirmed',
         'password_confirmation' => 'required',
         'group'                 => 'required_without:registeruser',
-        'new_group'             => 'required_if:group,new',
+        'new_group'             => 'required_if:group,new|regex:/(^[a-zA-Z\s])/|min:4|max:32',
         'registeruser'          => 'honeypot',
-        'registertime'          => 'required:|honeytime:5',
+        'registertime'          => 'required_with:registeruser|honeytime:5',
     ];
 
 }
