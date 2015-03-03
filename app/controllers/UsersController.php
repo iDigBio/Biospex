@@ -179,10 +179,7 @@ class UsersController extends BaseController {
         $code = isset($invite->code) ? $invite->code : null;
         $email = isset($invite->email) ? $invite->email : null;
 
-        $group = $this->group->byName("Users");
-        $register = Route::currentRouteName() == 'register' ? true : false;
-
-        return View::make('users.create', compact('register', 'group', 'code', 'email'));
+        return View::make('users.register', compact('code', 'email'));
     }
 
     /**
@@ -194,12 +191,9 @@ class UsersController extends BaseController {
 	{
 		$allGroups = $this->group->findAllGroups();
 		$groups = $this->group->selectOptions($allGroups, true);
-        $group = $this->group->byName("Users");
-        $register = Route::currentRouteName() == 'users.create' ? false : true;
         $cancel = URL::route('users.index');
-        $email = null;
 
-        return View::make('users.create', compact('register', 'groups', 'group', 'email', 'cancel'));
+        return View::make('users.create', compact('groups', 'cancel'));
 	}
 
 	/**
@@ -335,9 +329,8 @@ class UsersController extends BaseController {
 	{
         if(!is_numeric($id))
         {
-            // @codeCoverageIgnoreStart
-            return \App::abort(404);
-            // @codeCoverageIgnoreEnd
+            Session::flash('error', trans('errors.error_delete_user'));
+            return Redirect::action('UsersController@index');
         }
 
 		if ($this->user->destroy($id))
