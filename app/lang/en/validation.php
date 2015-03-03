@@ -120,11 +120,9 @@ return [
             'required' => 'You must specify suspension length in minutes',
         ],
         'registeruser'             => [
-            'required_with' => 'Field required for new users.',
-            'honeypot'      => 'Form not submitted correctly',
+            'honeypot'      => 'Form required to be submitted on time.',
         ],
         'registertime'             => [
-            'required_with' => 'Field required on time',
             'honeytime'     => 'Too much time has elapse. Please refresh form.',
         ],
         'group'                    => [
