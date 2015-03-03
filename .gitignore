@@ -5,6 +5,7 @@ composer.phar
 .env.development.php
 .env.staging.php
 .env.php
+example.json
 /bootstrap/environment.php
 .DS_Store
 Thumbs.db
