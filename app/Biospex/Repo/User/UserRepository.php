@@ -156,7 +156,7 @@ class UserRepository extends Repository implements UserInterface {
             $usersGroup = $this->sentry->findGroupByName('Users');
             $user->addGroup($usersGroup);
 
-            // Determine group creation: invite vs admin select vs create user group
+            // Determine group creation: invite vs admin select vs admin create vs create from email
 			if (isset($data['invite']) && !empty($data['invite']))
             {
                 $invite = $this->invite->findByCode($data['invite']);
@@ -173,8 +173,20 @@ class UserRepository extends Repository implements UserInterface {
             }
             elseif ( ! empty($data['group']))
             {
-                $group = $this->sentry->findGroupById($data['group']);
-                $user->addGroup($group);
+                if ($data['group'] == 'new')
+                {
+                    $userGroup = $this->sentry->createGroup([
+                        'user_id' => $user->id,
+                        'name' => $data['new_group'],
+                        'permissions' => [],
+                    ]);
+                    $user->addGroup($userGroup);
+                }
+                else
+                {
+                    $group = $this->sentry->findGroupById($data['group']);
+                    $user->addGroup($group);
+                }
             }
             else
             {
