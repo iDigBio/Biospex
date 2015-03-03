@@ -51,6 +51,8 @@ Notes
     dateformat -web01-%Y-%m-%d-%s
 }
 ```
+4. Edit /etc/default/beanstalkd and add or uncomment START=yes to start Beanstalkd upon server startup/reboot.
+5. Copy supervisord.conf to /etc/init/supervisord.conf to start supervisord upon server startup/reboot.
 
 
 
