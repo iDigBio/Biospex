@@ -29,6 +29,7 @@ use Illuminate\Events\Dispatcher;
 use Biospex\Repo\Invite\InviteInterface;
 use Biospex\Form\Invite\InviteForm;
 use Biospex\Mailer\BiospexMailer;
+use Biospex\Helpers\Helper;
 
 class InvitesController extends BaseController {
 	/**
