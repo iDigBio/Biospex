@@ -7,8 +7,6 @@ composer.phar
 .env.php
 example.json
 /bootstrap/environment.php
-.DS_Store
-Thumbs.db
 .idea
 .gitkeep
 /_ide_helper.php
