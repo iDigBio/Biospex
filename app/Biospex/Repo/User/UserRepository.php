@@ -149,7 +149,7 @@ class UserRepository extends Repository implements UserInterface {
 				'password' => e($data['password']),
 			], $register);
 			$user->profile->first_name = e($data['first_name']);
-			$user->profile->last_name = e($data['first_name']);
+			$user->profile->last_name = e($data['last_name']);
 			$user->profile->save();
 
             // Add to Users group
