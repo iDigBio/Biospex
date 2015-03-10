@@ -289,19 +289,16 @@ class OcrService {
      */
     private function sendFile ()
     {
-        $delimiter = '-------------' . uniqid();
         $data = '';
+        $delimiter = '-------------' . uniqid();
 
         $data .= "--" . $delimiter . "\r\n";
-        $data .= 'Content-Disposition: form-data; name="response"' . "\r\n";
-        $data .= 'Content-Type: text/html' . "\r\n";
-        $data .= "\r\n";
+        $data .= 'Content-Disposition: form-data; name="response"' . "\r\n\r\n";
         $data .= 'http' . "\r\n";
-        $data .= "\r\n\r\n";
+        $data .= "\r\n";
 
         $data .= "--" . $delimiter . "\r\n";
-        $data .= 'Content-Disposition: form-data; name="file";
-			' . ' filename="' . $this->record->uuid . '.json"' . "\r\n";
+        $data .= 'Content-Disposition: form-data; name="file"; filename="' . $this->record->uuid . '.json"' . "\r\n";
         $data .= 'Content-Type: application/json' . "\r\n";
         $data .= "\r\n";
         $data .= $this->record->data . "\r\n";
@@ -312,6 +309,7 @@ class OcrService {
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: multipart/form-data; boundary=' . $delimiter,
             'Content-Length: ' . strlen($data)]);
+        curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_FAILONERROR, true);
 
