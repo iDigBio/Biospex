@@ -70,11 +70,11 @@
 			</div>
 			<div class="col-md-5">
 				<dl>
-					<dt class="firstdl">Managed by</dt>
+					<dt class="firstdl">Organization</dt>
 					<dd class="firstdl">{{ $project->organization }}&nbsp;</dd>
 					<dt>Contact</dt>
 					<dd><a href="mailto:{{ $project->contact_email }}">{{ $project->contact }}</a>&nbsp;</dd>
-					<dt>Website</dt>
+					<dt>Organization Website</dt>
 					<dd><a href="{{ $project->organization_website }}">{{ $project->organization_website }}</a>&nbsp;</dd>
 					<dt>Incentives</dt>
 					<dd>{{ $project->incentives }}&nbsp;</dd>
