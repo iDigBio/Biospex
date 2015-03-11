@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\Project;
+
 /**
  * ProjectFormLaravelValidator.php
  *
@@ -33,12 +34,15 @@ class ProjectFormLaravelValidator extends AbstractLaravelValidator {
      *
      * @var Array
      */
-    protected $rules = array(
-        'group_id' => 'required|integer|min:1',
-		'title' => 'required|digits_between:6,140',
-		'description_short' => 'required|digits_between:6,140',
-		'banner' => 'image|image_size:>=1200,>=300',
-		'logo' => 'image|image_size:<=300,<=200'
-    );
+    protected $rules = [
+        'group_id'          => 'required|integer|min:1',
+        'title'             => 'required|digits_between:6,140',
+        'contact'           => 'required',
+        'contact_email'     => 'required|min:4|max:32|email',
+        'description_short' => 'required|digits_between:6,140',
+        'keywords'          => 'required',
+        'banner'            => 'image|image_size:>=1200,>=300',
+        'logo'              => 'image|image_size:<=300,<=200'
+    ];
 
 }
