@@ -101,6 +101,15 @@ span.glyphicon {
     color: #ff0000;
 }
 
+.form-group.required .control-label:after {
+    content:" *";
+    color:red;
+}
+
+.form-group label {
+    font-weight: bold;
+}
+
 .small-font {
     font-size: .8em;
 }
