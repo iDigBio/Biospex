@@ -90,6 +90,9 @@ return [
     'clear_cache'             => "Clear Cache",
     'server_info'             => "Server Info",
     'example'                 => "Example",
+    'ocr_files'               => "Ocr Files",
+    'ocr_file_delete_error'   => "Error deleting Ocr file",
+    'ocr_file_delete_success' => "Ocr file deleted successfully",
 
     'expedition'              => "Expedition",
     'expeditions'             => "Expeditions",
