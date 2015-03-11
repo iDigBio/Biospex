@@ -39,6 +39,8 @@ Route::group(
 		Route::post('test', ['as' => 'post.test', 'uses' => 'ServerInfoController@postTest']);
 		Route::get('phpinfo', ['as' => 'phpinfo', 'uses' => 'ServerInfoController@showPhpInfo']);
 		Route::get('clear', ['as' => 'clear', 'uses' => 'ServerInfoController@clear']);
+        Route::get('ocr', ['as' => 'get.ocr', 'uses' => 'ServerInfoController@ocr']);
+        Route::delete('ocr/{file}', ['as' => 'delete.ocr', 'uses' => 'ServerInfoController@ocr']);
 
         // Session Routes
 		Route::get('login', ['as' => 'login', 'uses' => 'SessionsController@create']);
