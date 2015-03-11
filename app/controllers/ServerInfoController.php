@@ -25,15 +25,19 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 class ServerInfoController extends BaseController
 {
 
-	/**
-	 * Constructor
-	 */
+    /**
+     * Constructor
+     *
+     * @param Curl $curl
+     */
 	public function __construct ()
 	{
-		$this->beforeFilter('auth', ['only' => ['showPhpInfo', 'clear']]);
+		$this->beforeFilter('auth', ['only' => ['showPhpInfo', 'clear', 'ocr', 'ocrDestroy']]);
+        $this->ocrDeleteUrl = \Config::get('config.ocrDeleteUrl');
 	}
 
 	/**
@@ -89,5 +93,56 @@ class ServerInfoController extends BaseController
 
 		return Redirect::intended('/projects');
 	}
+
+    public function ocr($file = null)
+    {
+        if ( ! is_null($file))
+        {
+            if ( ! $this->deleteJsonFile($file))
+            {
+                Session::flash('error', trans('pages.ocr_file_delete_error'));
+            }
+            else
+            {
+                Session::flash('success', trans('pages.ocr_file_delete_success'));
+            }
+        }
+
+
+        $html = file_get_contents("http://ocr.dev.morphbank.net/status");
+
+        $dom = new DomDocument;
+        libxml_use_internal_errors(true);
+        $dom->loadHTML($html);
+        libxml_use_internal_errors(false);
+
+        $elements = $dom->getElementsByTagName('li');
+
+
+        return View::make('ocr', compact('elements'));
+    }
+
+    private function deleteJsonFile($file)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->ocrDeleteUrl);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded',
+            'API-KEY:t$p480UAJ5v8P=ifcE23&hpM?#+&r3'
+        ]);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "file=" . $file);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+
+        $response = curl_exec($ch);
+        curl_close ($ch);
+
+        if($response === false)
+            return false;
+
+        return true;
+
+    }
 
 }
