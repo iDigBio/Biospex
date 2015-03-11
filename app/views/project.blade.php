@@ -71,11 +71,11 @@
 			<div class="col-md-5">
 				<dl>
 					<dt class="firstdl">Managed by</dt>
-					<dd class="firstdl">{{ $project->managed }}&nbsp;</dd>
+					<dd class="firstdl">{{ $project->organization }}&nbsp;</dd>
 					<dt>Contact</dt>
 					<dd><a href="mailto:{{ $project->contact_email }}">{{ $project->contact }}</a>&nbsp;</dd>
 					<dt>Website</dt>
-					<dd><a href="{{ $project->website }}">{{ $project->website }}</a>&nbsp;</dd>
+					<dd><a href="{{ $project->organization_website }}">{{ $project->organization_website }}</a>&nbsp;</dd>
 					<dt>Incentives</dt>
 					<dd>{{ $project->incentives }}&nbsp;</dd>
 					<dt>Geographic Scope</dt>
