@@ -259,11 +259,11 @@ class SubjectProcess {
 		// Set core type and file
 		$coreType = $this->xmlProcess->getDomTagAttribute('core', 'rowType');
 		if (empty($coreType))
-			throw new \Exception('[SubjectProcess] Error querying core type.');
+			throw new \Exception(trans('emails.error_core_type'));
 
 		$coreFile = $this->xmlProcess->getElementByTag('core');
 		if (empty($coreFile))
-			throw new \Exception('[SubjectProcess] Error querying core file.');
+			throw new \Exception(trans('emails.error_core_file_missing'));
 
 		// Set csv settings
 		$this->setCsvSettings('core');
@@ -312,7 +312,7 @@ class SubjectProcess {
 
 			// Check row and header have same count
 			if (count($header) != count($row))
-				throw new \Exception('[SubjectProcess] Header column count does not match row count. Header - Row: ' . count($header) . ' - ' . count($row));
+				throw new \Exception(trans('emails.error_csv_row_count', ['headers' => count($header), 'rows' => count($row)]));
 
 			$combined = array_combine($header, $row);
 			$this->stripUuidPrefix($combined, $type);
@@ -470,7 +470,7 @@ class SubjectProcess {
 		foreach ($this->metaFields[$type] as $key => $qualified)
 		{
 			if ( ! isset($row[$key]))
-				throw new \Exception("[SubjectProcess] Undefined index for $key => $qualified.");
+				throw new \Exception(trans('', ['key' => $key, 'qualified' => $qualified]));
 
 			$short = $this->checkProperty($qualified, $row[$key]);
 			$header[$key] = $short;
@@ -584,7 +584,7 @@ class SubjectProcess {
 			$this->coreEnclosure = $this->xmlProcess->getDomTagAttribute('core', 'fieldsEnclosedBy');
 
 			if (empty($this->coreDelimiter))
-				throw new \Exception('[SubjectProcess] Error core delimiter is empty.');
+				throw new \Exception(trans('emails.error_csv_core_delimiter'));
 		}
 		else
 		{
@@ -594,7 +594,7 @@ class SubjectProcess {
 			$this->extEnclosure = $this->xmlProcess->getDomTagAttribute('extension', 'fieldsEnclosedBy');
 
 			if (empty($this->extDelimiter))
-				throw new \Exception('[SubjectProcess] Error extension delimiter is empty.');
+				throw new \Exception(trans('emails.error_csv_ext_delimiter'));
 		}
 
 		return;
