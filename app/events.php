@@ -60,7 +60,7 @@ Queue::failing(function($connection, $job, $data)
     \Event::fire('user.sendreport', [
         'view'       => 'report-failed-jobs',
         'subject'    => trans('emails.failed_job_subject'),
-        'message'    => trans('emails.failed_job_message', [$job->id]),
+        'data'    => ['message' => trans('emails.failed_job_message', [$job->id])],
     ]);
 
     return;
