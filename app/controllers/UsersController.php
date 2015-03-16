@@ -329,7 +329,7 @@ class UsersController extends BaseController {
 	{
         if(!is_numeric($id))
         {
-            Session::flash('error', trans('errors.error_delete_user'));
+            Session::flash('error', trans('pages.error_delete_user'));
             return Redirect::action('UsersController@index');
         }
 
@@ -342,7 +342,7 @@ class UsersController extends BaseController {
         }
         else 
         {
-        	Session::flash('error', trans('errors.error_delete_user'));
+        	Session::flash('error', trans('pages.error_delete_user'));
             return Redirect::action('UsersController@index');
         }
 	}
