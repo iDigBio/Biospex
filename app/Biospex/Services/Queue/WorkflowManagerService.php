@@ -116,7 +116,7 @@ class WorkflowManagerService {
 	 */
 	public function createError ($manager, $actor, $e)
 	{
-		$this->report->addError(trans('errors.error_workflow_manager',
+		$this->report->addError(trans('emails.error_workflow_manager',
 			array(
 				'class' => $actor->class,
 				'id'    => $manager->id . ':' . $actor->id,
