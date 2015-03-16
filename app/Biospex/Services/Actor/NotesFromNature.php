@@ -144,7 +144,7 @@ class NotesFromNature extends ActorAbstract
 
         if (empty($this->record))
         {
-            $this->report->addError(trans('errors.error_process', array('id' => $this->expeditionId)));
+            $this->report->addError(trans('emails.error_process', array('id' => $this->expeditionId)));
 			$this->report->reportSimpleError($this->record->project->group->id);
 
             return;
@@ -267,7 +267,7 @@ class NotesFromNature extends ActorAbstract
         }
 
 		if ($i == 0)
-			throw new \RuntimeException(trans('errors.error_build_image_dir', array('id' => $this->record->id)));
+			throw new \RuntimeException(trans('emails.error_build_image_dir', array('id' => $this->record->id)));
 
 		return;
     }
