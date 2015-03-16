@@ -94,6 +94,8 @@ return [
     'ocr_file_delete_error'   => "Error deleting Ocr file",
     'ocr_file_delete_success' => "Ocr file deleted successfully",
 
+    'error_delete_user'       => "Unable to delete user.",
+
     'expedition'              => "Expedition",
     'expeditions'             => "Expeditions",
     'expedition_create'       => "Create Expedition",
