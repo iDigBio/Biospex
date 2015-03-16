@@ -352,7 +352,6 @@ class SubjectProcess {
 
 		foreach ($multimedia as $key => $subject)
 		{
-			// TODO: Need to find what id will be when media is core file
 			$occurrenceId = $this->mediaIsCore ? null : $subject[$header[0]];
 			$subject['id'] = $this->mediaIsCore ? $subject[$header[0]] : $subject[$this->identifierColumn];
 
