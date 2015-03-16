@@ -95,7 +95,7 @@ class OcrService {
      * @param SubjectInterface $subject
      * @param OcrReport $report
      */
-    public function __construct (
+    public function __construct(
         OcrQueueInterface $queue,
         SubjectInterface $subject,
         OcrReport $report
@@ -115,7 +115,7 @@ class OcrService {
      * @param $job
      * @param $data
      */
-    public function fire ($job, $data)
+    public function fire($job, $data)
     {
         $this->job = $job;
         $this->id = $data['id'];
@@ -169,7 +169,7 @@ class OcrService {
     /**
      * Set variables.
      */
-    private function setVars ()
+    private function setVars()
     {
         $this->groupId = $this->record->project->group->id;
         $this->email = $this->record->project->group->owner->email;
@@ -183,7 +183,7 @@ class OcrService {
      *
      * @throws \Exception
      */
-    private function checkExist ()
+    private function checkExist()
     {
         if (count($this->record))
             return true;
@@ -198,7 +198,7 @@ class OcrService {
      *
      * @return bool
      */
-    private function checkError ()
+    private function checkError()
     {
         if ( ! $this->record->error)
             return true;
@@ -211,7 +211,7 @@ class OcrService {
      *
      * @return bool
      */
-    private function processFile ()
+    private function processFile()
     {
         if (empty($this->file->header))
         {
@@ -227,17 +227,16 @@ class OcrService {
             return false;
         }
 
-        /**
-         * TODO - Replace this when Shiva fixes OCR server response.
-         * if ($file->header->status == "error")
-         * {
-         * $this->updateRecord(['error' => 1]);
-         * $this->addReportError($this->record->id, trans('errors.error_ocr_header'));
-         * $this->report->reportSimpleError($this->groupId);
-         * $this->delete();
-         * return false;
-         * }
-         */
+        if ($this->file->header->status == "error")
+        {
+            $this->updateRecord(['error' => 1]);
+            $this->addReportError($this->record->id, trans('emails.error_ocr_header'));
+            $this->report->reportSimpleError($this->groupId);
+            $this->delete();
+
+            return false;
+        }
+
 
         return true;
     }
@@ -247,7 +246,7 @@ class OcrService {
      *
      * @param $fields
      */
-    private function updateRecord ($fields)
+    private function updateRecord($fields)
     {
         foreach ($fields as $key => $value)
         {
@@ -262,7 +261,7 @@ class OcrService {
      *
      * @return array
      */
-    private function updateSubjects ()
+    private function updateSubjects()
     {
         $csv = [];
         foreach ($this->file->subjects as $id => $data)
@@ -287,7 +286,7 @@ class OcrService {
      * @return bool
      * @throws \Exception
      */
-    private function sendFile ()
+    private function sendFile()
     {
         $data = '';
         $delimiter = '-------------' . uniqid();
@@ -317,7 +316,7 @@ class OcrService {
         curl_close($ch);
 
         if ($response === false)
-            throw new \Exception(trans('errors.error_ocr_curl', ['id' => $this->record->id, 'message' => print_r($response, true)]));
+            throw new \Exception(trans('emails.error_ocr_curl', ['id' => $this->record->id, 'message' => print_r($response, true)]));
 
         $this->updateRecord(['status' => 'in progress']);
         $this->queueLater();
@@ -332,11 +331,11 @@ class OcrService {
      * @return bool
      * @throws \Exception
      */
-    private function requestFile ()
+    private function requestFile()
     {
         $file = @file_get_contents($this->ocrGetUrl . '/' . $this->record->uuid . '.json');
         if ($file === false)
-            throw new \Exception(trans('errors.error_ocr_request', ['id' => $this->record->id]));
+            throw new \Exception(trans('emails.error_ocr_request', ['id' => $this->record->id]));
 
         $this->file = json_decode($file);
 
@@ -350,9 +349,9 @@ class OcrService {
      * @param $messages
      * @param string $url
      */
-    private function addReportError ($id, $messages, $url = '')
+    private function addReportError($id, $messages, $url = '')
     {
-        $this->report->addError(trans('errors.error_ocr_queue',
+        $this->report->addError(trans('emails.error_ocr_queue',
             [
                 'id'      => $id,
                 'message' => $messages,
@@ -365,7 +364,7 @@ class OcrService {
     /**
      * Delete a job from the queue
      */
-    public function delete ()
+    public function delete()
     {
         $this->job->delete();
 
@@ -375,7 +374,7 @@ class OcrService {
     /**
      * Requeue if ocr process is not finished. Check count and set time for first status check.
      */
-    public function queueLater ()
+    public function queueLater()
     {
         $minutes = $this->record->tries == 0 ? round($this->record->subject_count / 15) : 2;
         $date = \Carbon::now()->addMinutes($minutes);
@@ -391,7 +390,7 @@ class OcrService {
      *
      * @param int $seconds
      */
-    public function release ($seconds = 60)
+    public function release($seconds = 60)
     {
         $this->job->release($seconds);
     }
@@ -399,7 +398,7 @@ class OcrService {
     /**
      * Return number of attempts on the job
      */
-    public function getAttempts ()
+    public function getAttempts()
     {
         return $this->job->attempts();
     }
@@ -407,7 +406,7 @@ class OcrService {
     /**
      * Get id of job
      */
-    public function getJobId ()
+    public function getJobId()
     {
         return $this->job->getJobId();
     }
