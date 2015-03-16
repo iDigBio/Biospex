@@ -1,4 +1,5 @@
-<?php  namespace Biospex\Services\Queue;
+<?php namespace Biospex\Services\Queue;
+
 /**
  * SubjectsImportService.php
  *
@@ -35,219 +36,221 @@ use Biospex\Mailer\BiospexMailer;
 
 class SubjectsImportService {
 
-	/**
-	 * Directory where darwin core files are stored
-	 *
-	 * @var string
-	 */
-	protected $dataDir;
+    /**
+     * Directory where darwin core files are stored
+     *
+     * @var string
+     */
+    protected $dataDir;
 
-	/**
-	 * Tmp directory for extracted files
-	 * @var string
-	 */
-	protected $fileDir;
+    /**
+     * Tmp directory for extracted files
+     * @var string
+     */
+    protected $fileDir;
 
-	/**
-	 * Constructor
-	 *
-	 * @param ImportInterface $import
-	 * @param Filesystem $filesystem
-	 * @param SubjectProcess $subjectProcess
-	 * @param XmlProcess $xmlProcess
-	 * @param UserInterface $user
-	 * @param ProjectInterface $project
-	 * @param BiospexMailer $mailer
-	 * @param SubjectImportReport $report
-	 */
-	public function __construct(
-		Filesystem $filesystem,
-		ImportInterface $import,
-		ProjectInterface $project,
-		UserInterface $user,
-		SubjectImportReport $report,
-		SubjectProcess $subjectProcess,
-		XmlProcess $xmlProcess,
-		BiospexMailer $mailer
-	)
-	{
-		$this->filesystem = $filesystem;
-		$this->import = $import;
-		$this->project = $project;
-		$this->user = $user;
-		$this->report = $report;
-		$this->subjectProcess = $subjectProcess;
-		$this->xmlProcess = $xmlProcess;
-		$this->mailer = $mailer;
+    /**
+     * Constructor
+     *
+     * @param ImportInterface $import
+     * @param Filesystem $filesystem
+     * @param SubjectProcess $subjectProcess
+     * @param XmlProcess $xmlProcess
+     * @param UserInterface $user
+     * @param ProjectInterface $project
+     * @param BiospexMailer $mailer
+     * @param SubjectImportReport $report
+     */
+    public function __construct(
+        Filesystem $filesystem,
+        ImportInterface $import,
+        ProjectInterface $project,
+        UserInterface $user,
+        SubjectImportReport $report,
+        SubjectProcess $subjectProcess,
+        XmlProcess $xmlProcess,
+        BiospexMailer $mailer
+    )
+    {
+        $this->filesystem = $filesystem;
+        $this->import = $import;
+        $this->project = $project;
+        $this->user = $user;
+        $this->report = $report;
+        $this->subjectProcess = $subjectProcess;
+        $this->xmlProcess = $xmlProcess;
+        $this->mailer = $mailer;
 
-		$this->dataDir = \Config::get('config.dataDir');
-	}
+        $this->dataDir = \Config::get('config.dataDir');
+    }
 
-	/**
-	 * Fire method
-	 * @param $job
-	 * @param $data
-	 */
-	public function fire ($job, $data)
-	{
-		$import = $this->import->find($data['id']);
-		$user = $this->user->find($import->user_id);
-		$project = $this->project->find($import->project_id);
+    /**
+     * Fire method
+     * @param $job
+     * @param $data
+     */
+    public function fire($job, $data)
+    {
+        $import = $this->import->find($data['id']);
+        $user = $this->user->find($import->user_id);
+        $project = $this->project->find($import->project_id);
 
-		$this->fileDir = $this->dataDir . '/' . str_random(10);
-		$zipFile = $this->dataDir . '/' . $import->file;
+        $this->fileDir = $this->dataDir . '/' . str_random(10);
+        $zipFile = $this->dataDir . '/' . $import->file;
 
-		try
-		{
-			$this->makeTmp();
-			$this->unzip($zipFile);
+        try
+        {
+            $this->makeTmp();
+            $this->unzip($zipFile);
 
-			$this->subjectProcess->processSubjects($import->project_id, $this->fileDir);
+            $this->subjectProcess->processSubjects($import->project_id, $this->fileDir);
 
-			$duplicates = $this->subjectProcess->getDuplicates();
-			$rejects = $this->subjectProcess->getRejectedMedia();
+            $duplicates = $this->subjectProcess->getDuplicates();
+            $rejects = $this->subjectProcess->getRejectedMedia();
 
-			$this->report->complete($user->email, $project->title, $duplicates, $rejects);
+            $this->report->complete($user->email, $project->title, $duplicates, $rejects);
 
-			$this->filesystem->deleteDirectory($this->fileDir);
-			$this->filesystem->delete($zipFile);
+            $this->filesystem->deleteDirectory($this->fileDir);
+            $this->filesystem->delete($zipFile);
 
-			$this->import->destroy($import->id);
-		}
-		catch (Exception $e)
-		{
-			$import->error = 1;
-			$this->import->save($import);
-			$this->report->addError("Unable to process import id: {$import->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
-			$this->report->error($import->id, $user->email, $project->title);
-		}
+            $this->import->destroy($import->id);
+        }
+        catch (Exception $e)
+        {
+            $import->error = 1;
+            $this->import->save($import);
+            $this->report->addError(trans('emails.error_import_process',
+                ['id' => $import->id, 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]
+            ));
+            $this->report->error($import->id, $user->email, $project->title);
+        }
 
-		$this->delete($job);
+        $this->delete($job);
 
-		return;
-	}
+        return;
+    }
 
-	/**
-	 * Create tmp data directory
-	 *
-	 * @throws \Exception
-	 */
-	protected function makeTmp()
-	{
-		if ( ! $this->filesystem->isDirectory($this->fileDir))
-		{
-			if ( ! $this->filesystem->makeDirectory($this->fileDir, 0777, true))
-				throw new \Exception('"Unable to create temporary directory:' . $this->fileDir);
-		}
+    /**
+     * Create tmp data directory
+     *
+     * @throws \Exception
+     */
+    protected function makeTmp()
+    {
+        if ( ! $this->filesystem->isDirectory($this->fileDir))
+        {
+            if ( ! $this->filesystem->makeDirectory($this->fileDir, 0777, true))
+                throw new \Exception(trans('emails.error_create_dir', ['directory' => $this->fileDir]));
+        }
 
-		if ( ! $this->filesystem->isWritable($this->fileDir))
-		{
-			if ( ! chmod($this->fileDir, 0777))
-				throw new \Exception('"Unable to make temporary directory writable:' . $this->fileDir);
-		}
+        if ( ! $this->filesystem->isWritable($this->fileDir))
+        {
+            if ( ! chmod($this->fileDir, 0777))
+                throw new \Exception(trans('emails.error_write_dir', ['directory' => $this->fileDir]));
+        }
 
-		return;
-	}
+        return;
+    }
 
-	/**
-	 * Extract files from zip
-	 * TODO: ZipArchive causes MAC uploaded files to extract with two folders. Need to determine better solution.
-	 *
-	 * @param $zipFile
-	 * @throws Exception
-	 */
-	public function unzip($zipFile)
-	{
-		shell_exec("unzip $zipFile -d $this->fileDir");
+    /**
+     * Extract files from zip
+     * ZipArchive causes MAC uploaded files to extract with two folders.
+     *
+     * @param $zipFile
+     * @throws Exception
+     */
+    public function unzip($zipFile)
+    {
+        shell_exec("unzip $zipFile -d $this->fileDir");
 
-		return;
-	}
+        return;
+    }
 
-	/**
-	 * Create duplicate and reject files if any
-	 *
-	 * @param array $duplicates
-	 * @param array $rejects
-	 * @return array
-	 */
-	public function createDuplicateReject($duplicates = array(), $rejects = array())
-	{
-		$attachments = array();
-		$duplicated = 0;
-		$rejected = 0;
-		if ( ! empty($duplicates))
-		{
-			$file = "{$this->fileDir}/duplicates.csv";
-			$this->writeCsv($file, $duplicates);
-			$attachments[] = $file;
-			$duplicated = count($duplicates);
-		}
+    /**
+     * Create duplicate and reject files if any
+     *
+     * @param array $duplicates
+     * @param array $rejects
+     * @return array
+     */
+    public function createDuplicateReject($duplicates = [], $rejects = [])
+    {
+        $attachments = [];
+        $duplicated = 0;
+        $rejected = 0;
+        if ( ! empty($duplicates))
+        {
+            $file = "{$this->fileDir}/duplicates.csv";
+            $this->writeCsv($file, $duplicates);
+            $attachments[] = $file;
+            $duplicated = count($duplicates);
+        }
 
-		if ( ! empty($rejects))
-		{
-			// empty image ids
-			$file = "{$this->fileDir}/rejected.csv";
-			$this->writeCsv($file, $rejects);
-			$attachments[] = $file;
-			$rejected = count($rejects);
-		}
+        if ( ! empty($rejects))
+        {
+            // empty image ids
+            $file = "{$this->fileDir}/rejected.csv";
+            $this->writeCsv($file, $rejects);
+            $attachments[] = $file;
+            $rejected = count($rejects);
+        }
 
-		return array($duplicated, $rejected, $attachments);
-	}
+        return [$duplicated, $rejected, $attachments];
+    }
 
-	/**
-	 * Write to csv file
-	 *
-	 * @param $file
-	 * @param $array
-	 */
-	private function writeCsv($file, $array)
-	{
-		$fp = fopen($file, 'w');
-		foreach ($array as $fields)
-		{
-			fputcsv($fp, $fields);
-		}
-		fclose($fp);
-	}
+    /**
+     * Write to csv file
+     *
+     * @param $file
+     * @param $array
+     */
+    private function writeCsv($file, $array)
+    {
+        $fp = fopen($file, 'w');
+        foreach ($array as $fields)
+        {
+            fputcsv($fp, $fields);
+        }
+        fclose($fp);
+    }
 
-	/**
-	 * Delete a job from the queue
-	 * @param $job
-	 */
-	public function delete($job)
-	{
-		$job->delete();
-	}
+    /**
+     * Delete a job from the queue
+     * @param $job
+     */
+    public function delete($job)
+    {
+        $job->delete();
+    }
 
-	/**
-	 * Release a job ack to the queue
-	 * @param $job
-	 */
-	public function release($job)
-	{
-		$job->release();
-	}
+    /**
+     * Release a job ack to the queue
+     * @param $job
+     */
+    public function release($job)
+    {
+        $job->release();
+    }
 
-	/**
-	 * Return number of attempts on the job
-	 *
-	 * @param $job
-	 * @return mixed
-	 */
-	public function getAttempts($job)
-	{
-		return $job->attempts();
-	}
+    /**
+     * Return number of attempts on the job
+     *
+     * @param $job
+     * @return mixed
+     */
+    public function getAttempts($job)
+    {
+        return $job->attempts();
+    }
 
-	/**
-	 * Get id of job
-	 *
-	 * @param $job
-	 * @return mixed
-	 */
-	public function getJobId($job)
-	{
-		return $job->getJobId();
-	}
+    /**
+     * Get id of job
+     *
+     * @param $job
+     * @return mixed
+     */
+    public function getJobId($job)
+    {
+        return $job->getJobId();
+    }
 }
