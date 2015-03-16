@@ -115,7 +115,7 @@ abstract class ActorAbstract {
         if ( ! $this->filesystem->isDirectory($dir))
         {
             if ( ! $this->filesystem->makeDirectory($dir, 0777, true))
-				throw new \RuntimeException(trans('errors.error_create_dir', array('directory' => $dir)));
+				throw new \RuntimeException(trans('emails.error_create_dir', array('directory' => $dir)));
         }
 
 		return $dir;
@@ -132,7 +132,7 @@ abstract class ActorAbstract {
         if ( ! $this->filesystem->isWritable($dir))
         {
             if ( ! chmod($dir, 0777))
-				throw new \RuntimeException(trans('errors.error_write_dir', array('directory' => $dir)));
+				throw new \RuntimeException(trans('emails.error_write_dir', array('directory' => $dir)));
         }
 
 		return;
@@ -148,7 +148,7 @@ abstract class ActorAbstract {
     protected function saveFile($path, $contents)
     {
         if ( ! $this->filesystem->put($path, $contents))
-			throw new \RuntimeException(trans('errors.error_save_file', array('directory' => "$path/details.js")));
+			throw new \RuntimeException(trans('emails.error_save_file', array('directory' => "$path/details.js")));
 
 		return;
     }
