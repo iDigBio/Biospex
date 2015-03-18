@@ -108,7 +108,7 @@ class Subject extends Eloquent {
 			$query->where('project_id', '=', "$projectId");
 		})
 			->take($take)
-			->get(array('_id'))
+			->get(['_id'])
 			->toArray();
 
 		return array_flatten($ids);
@@ -174,32 +174,8 @@ class Subject extends Eloquent {
 	{
 		return intval($this->whereNested(function ($query) use ($filters)
 		{
-			$query->where('project_id', '=', Route::input('projects'));
-
-			foreach ($filters as $filter)
-			{
-				if ($filter['field'] == 'expedition_ids')
-				{
-					$this->expeditionIdFilter($filter, $query, Route::input('expeditions'));
-					continue;
-				}
-
-				if ($filter['op'] == 'is in')
-				{
-					$query->whereIn($filter['field'], explode(',', $filter['data']));
-					continue;
-				}
-
-				if ($filter['op'] == 'is not in')
-				{
-					$query->whereNotIn($filter['field'], explode(',', $filter['data']));
-					continue;
-				}
-
-				$query->where($filter['field'], $filter['op'], $filter['data']);
-			}
-		})
-			->count());
+            $this->buildQuery($query, $filters);
+		})->count());
 	}
 
 
@@ -228,7 +204,7 @@ class Subject extends Eloquent {
 
 		if ( ! is_null($orderBy) || ! is_null($sord))
 		{
-			$this->orderBy = array(array($orderBy, $sord));
+			$this->orderBy = [[$orderBy, $sord]];
 		}
 
 		if ($limit == 0)
@@ -236,7 +212,7 @@ class Subject extends Eloquent {
 			$limit = 1;
 		}
 
-		$orderByRaw = array();
+		$orderByRaw = [];
 
 		foreach ($this->orderBy as $orderBy)
 		{
@@ -247,32 +223,9 @@ class Subject extends Eloquent {
 
 		$rows = $this->whereNested(function ($query) use ($filters)
 		{
-			$query->where('project_id', '=', Route::input('projects'));
-
-			foreach ($filters as $filter)
-			{
-				if ($filter['field'] == 'expedition_ids')
-				{
-					$this->expeditionIdFilter($filter, $query, Route::input('expeditions'));
-					continue;
-				}
-
-				if ($filter['op'] == 'is in')
-				{
-					$query->whereIn($filter['field'], explode(',', $filter['data']));
-					continue;
-				}
-
-				if ($filter['op'] == 'is not in')
-				{
-					$query->whereNotIn($filter['field'], explode(',', $filter['data']));
-					continue;
-				}
-
-				$query->where($filter['field'], $filter['op'], $filter['data']);
-			}
+			$this->buildQuery($query, $filters);
 		})
-			->take($limit)
+            ->take($limit)
 			->skip($offset)
 			->orderBy($orderByRaw)
 			->get($selectColumns);
@@ -287,6 +240,42 @@ class Subject extends Eloquent {
 		return $rows;
 	}
 
+    /**
+     * Build query for search.
+     *
+     * @param $query
+     * @param $filters
+     */
+    protected function buildQuery(&$query, $filters)
+    {
+        $query->where('project_id', '=', Route::input('projects'));
+
+        foreach ($filters as $filter)
+        {
+            if ($filter['field'] == 'expedition_ids')
+            {
+                $this->expeditionIdFilter($filter, $query, Route::input('expeditions'));
+                continue;
+            }
+
+            if ($filter['op'] == 'is in')
+            {
+                $query->whereIn($filter['field'], explode(',', $filter['data']));
+                continue;
+            }
+
+            if ($filter['op'] == 'is not in')
+            {
+                $query->whereNotIn($filter['field'], explode(',', $filter['data']));
+                continue;
+            }
+
+            $query->where($filter['field'], $filter['op'], $filter['data']);
+        }
+
+        return;
+    }
+
 	/**
 	 * Filter for expedition id present or not.
 	 *
@@ -300,7 +289,7 @@ class Subject extends Eloquent {
 		{
 			if (empty($expeditionId))
 			{
-				$query->whereRaw(array('expedition_ids' => array('$not' => array('$size' => 0))));
+				$query->whereRaw(['expedition_ids' => ['$not' => ['$size' => 0]]]);
 				return;
 			}
 
