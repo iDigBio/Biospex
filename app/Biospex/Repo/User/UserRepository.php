@@ -28,6 +28,7 @@ use Biospex\Repo\Repository;
 use Cartalyst\Sentry\Sentry;
 use Cartalyst\Sentry\Users\UserNotFoundException;
 use Cartalyst\Sentry\Users\LoginRequiredException;
+use Cartalyst\Sentry\Users\UserAlreadyActivatedException;
 use Cartalyst\Sentry\Users\UserExistsException;
 use Cartalyst\Sentry\Groups\GroupNotFoundException;
 use Biospex\Repo\Permission\PermissionInterface;
@@ -355,6 +356,11 @@ class UserRepository extends Repository implements UserInterface {
 	    		$result['message'] = trans('users.notactivated');
 		    }
 		}
+        catch (UserAlreadyActivatedException $e)
+        {
+            $result['success'] = true;
+            $result['message'] = trans('users.already_activated');
+        }
 		catch (UserExistsException $e)
 		{
 		    $result['success'] = false;
