@@ -34,7 +34,6 @@ use Cartalyst\Sentry\Groups\GroupNotFoundException;
 use Biospex\Repo\Permission\PermissionInterface;
 use Biospex\Repo\Invite\InviteInterface;
 use Mockery\CountValidator\Exception;
-use User;
 
 class UserRepository extends Repository implements UserInterface {
 
