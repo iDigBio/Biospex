@@ -94,7 +94,7 @@ return [
     'ocr_file_delete_error'   => "Error deleting Ocr file",
     'ocr_file_delete_success' => "Ocr file deleted successfully",
 
-    'error_url_id_missing'    => "A necessary id in the url is missing.",
+    'error_missing_variable'  => "A necessary variable is missing. Please contact the admin to report the error.",
 
     'error_delete_user'       => "Unable to delete user.",
 
