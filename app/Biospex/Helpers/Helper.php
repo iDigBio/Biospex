@@ -24,12 +24,14 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Illuminate\Support\Facades\Session;
+
 class Helper {
 
     public static function sessionFlashPush($key, $value) {
         $values = \Session::get($key, []);
         $values[] = $value;
-        \Session::flash($key, $values);
+        Session::flash($key, $values);
     }
 
 	/**
