@@ -94,6 +94,8 @@ return [
     'ocr_file_delete_error'   => "Error deleting Ocr file",
     'ocr_file_delete_success' => "Ocr file deleted successfully",
 
+    'error_url_id_missing'    => "A necessary id in the url is missing.",
+
     'error_delete_user'       => "Unable to delete user.",
 
     'expedition'              => "Expedition",
