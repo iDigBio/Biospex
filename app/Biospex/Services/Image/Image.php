@@ -139,7 +139,7 @@ class Image {
 	{
 		if ( ! File::isDirectory($path))
 		{
-			@File::makeDirectory($path, 777, true);
+			File::makeDirectory($path, 777, true);
 		}
 	}
 
