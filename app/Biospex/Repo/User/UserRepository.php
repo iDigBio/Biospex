@@ -453,7 +453,7 @@ class UserRepository extends Repository implements UserInterface {
         {
 	        // Find the user
 	        $user = $this->sentry->getUserProvider()->findById($id);
-	        $newPassword = $this->_generatePassword(8,8);
+	        $newPassword = $this->generatePassword(8,8);
 
 			// Attempt to reset the user password
 			if ($user->attemptResetPassword($code, $newPassword))
@@ -655,7 +655,7 @@ class UserRepository extends Repository implements UserInterface {
 	 * @param int $strength
 	 * @return string
 	 */
-    private function _generatePassword($length=9, $strength=4) {
+    private function generatePassword($length=9, $strength=4) {
         $vowels = 'aeiouy';
         $consonants = 'bcdfghjklmnpqrstvwxz';
         if ($strength & 1) {
