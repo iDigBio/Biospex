@@ -294,7 +294,7 @@ class NotesFromNature extends ActorAbstract
         $i = 0;
 		foreach ($files as $key => $filePath)
 		{
-            list($width, $height, $type, $attr) = getimagesize($filePath); // $width, $height, $type, $attr
+            list($width, $height) = getimagesize($filePath); // $width, $height, $type, $attr
 			$sourceInfo = pathinfo($filePath); // $dirname, $basename, $extension, $filename
 			$sourceFilePath = $sourceInfo['dirname'] . '/' . $sourceInfo['basename'];
 
