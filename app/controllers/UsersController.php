@@ -251,7 +251,7 @@ class UsersController extends BaseController {
 	{
 		$user = $this->sentry->findUserById($id);
 
-        if($user == null || !is_numeric($id))
+        if(is_null($user) || !is_numeric($id))
         {
             Session::flash('error', trans('pages.error_missing_variable'));
             return Redirect::route('home');
