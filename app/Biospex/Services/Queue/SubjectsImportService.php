@@ -50,6 +50,12 @@ class SubjectsImportService {
     protected $fileDir;
 
     /**
+     * Queue job.
+     * @var
+     */
+    protected $job;
+
+    /**
      * Constructor
      *
      * @param ImportInterface $import
@@ -91,6 +97,7 @@ class SubjectsImportService {
      */
     public function fire($job, $data)
     {
+        $this->job = $job;
         $import = $this->import->find($data['id']);
         $user = $this->user->find($import->user_id);
         $project = $this->project->find($import->project_id);
@@ -125,7 +132,7 @@ class SubjectsImportService {
             $this->report->error($import->id, $user->email, $project->title);
         }
 
-        $this->delete($job);
+        $this->delete();
 
         return;
     }
@@ -216,41 +223,37 @@ class SubjectsImportService {
 
     /**
      * Delete a job from the queue
-     * @param $job
      */
-    public function delete($job)
+    public function delete()
     {
-        $job->delete();
+        $this->job->delete();
     }
 
     /**
      * Release a job ack to the queue
-     * @param $job
      */
-    public function release($job)
+    public function release()
     {
-        $job->release();
+        $this->job->release();
     }
 
     /**
      * Return number of attempts on the job
      *
-     * @param $job
      * @return mixed
      */
-    public function getAttempts($job)
+    public function getAttempts()
     {
-        return $job->attempts();
+        return $this->job->attempts();
     }
 
     /**
      * Get id of job
      *
-     * @param $job
      * @return mixed
      */
-    public function getJobId($job)
+    public function getJobId()
     {
-        return $job->getJobId();
+        return $this->job->getJobId();
     }
 }
