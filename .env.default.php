@@ -36,6 +36,7 @@ return [
 	'site.registration' => true,
 	'site.ocrPostUrl'   => 'http://ocr.dev.morphbank.net/batchocr',
 	'site.ocrGetUrl'    => 'http://ocr.dev.morphbank.net/status',
+    'site.ocrDeleteUrl' => 'http://ocr.dev.morphbank.net/delete',
 	'site.ocrCrop'      => 'no',
 
 	'beanstalkd.default'         => 'default',

@@ -144,7 +144,7 @@ class NotesFromNature extends ActorAbstract
 
         if (empty($this->record))
         {
-            $this->report->addError(trans('errors.error_process', array('id' => $this->expeditionId)));
+            $this->report->addError(trans('emails.error_process', array('id' => $this->expeditionId)));
 			$this->report->reportSimpleError($this->record->project->group->id);
 
             return;
@@ -267,7 +267,7 @@ class NotesFromNature extends ActorAbstract
         }
 
 		if ($i == 0)
-			throw new \RuntimeException(trans('errors.error_build_image_dir', array('id' => $this->record->id)));
+			throw new \RuntimeException(trans('emails.error_build_image_dir', array('id' => $this->record->id)));
 
 		return;
     }
@@ -294,7 +294,7 @@ class NotesFromNature extends ActorAbstract
         $i = 0;
 		foreach ($files as $key => $filePath)
 		{
-            list($width, $height, $type, $attr) = getimagesize($filePath); // $width, $height, $type, $attr
+            list($width, $height) = getimagesize($filePath); // $width, $height, $type, $attr
 			$sourceInfo = pathinfo($filePath); // $dirname, $basename, $extension, $filename
 			$sourceFilePath = $sourceInfo['dirname'] . '/' . $sourceInfo['basename'];
 

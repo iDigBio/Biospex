@@ -28,12 +28,12 @@ use Biospex\Repo\Repository;
 use Cartalyst\Sentry\Sentry;
 use Cartalyst\Sentry\Users\UserNotFoundException;
 use Cartalyst\Sentry\Users\LoginRequiredException;
+use Cartalyst\Sentry\Users\UserAlreadyActivatedException;
 use Cartalyst\Sentry\Users\UserExistsException;
 use Cartalyst\Sentry\Groups\GroupNotFoundException;
 use Biospex\Repo\Permission\PermissionInterface;
 use Biospex\Repo\Invite\InviteInterface;
 use Mockery\CountValidator\Exception;
-use User;
 
 class UserRepository extends Repository implements UserInterface {
 
@@ -168,7 +168,7 @@ class UserRepository extends Repository implements UserInterface {
                 }
                 else
                 {
-                    Session::flash('warning', trans('errors.invite_email_mismatch'));
+                    Session::flash('warning', trans('groups.invite_email_mismatch'));
                 }
             }
             elseif ( ! empty($data['group']))
@@ -355,6 +355,11 @@ class UserRepository extends Repository implements UserInterface {
 	    		$result['message'] = trans('users.notactivated');
 		    }
 		}
+        catch (UserAlreadyActivatedException $e)
+        {
+            $result['success'] = true;
+            $result['message'] = trans('users.already_activated');
+        }
 		catch (UserExistsException $e)
 		{
 		    $result['success'] = false;
@@ -448,7 +453,7 @@ class UserRepository extends Repository implements UserInterface {
         {
 	        // Find the user
 	        $user = $this->sentry->getUserProvider()->findById($id);
-	        $newPassword = $this->_generatePassword(8,8);
+	        $newPassword = $this->generatePassword(8,8);
 
 			// Attempt to reset the user password
 			if ($user->attemptResetPassword($code, $newPassword))
@@ -650,7 +655,7 @@ class UserRepository extends Repository implements UserInterface {
 	 * @param int $strength
 	 * @return string
 	 */
-    private function _generatePassword($length=9, $strength=4) {
+    private function generatePassword($length=9, $strength=4) {
         $vowels = 'aeiouy';
         $consonants = 'bcdfghjklmnpqrstvwxz';
         if ($strength & 1) {

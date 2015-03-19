@@ -4,12 +4,11 @@
     <meta charset="utf-8">
 </head>
 <body>
-<h2>{{ trans('emails.error') }}</h2>
+<h2>{{ trans('emails.failed_job_subject') }}</h2>
 
 <p>
 <blockquote>
-{{ trans('emails.error_message') }}<br />
-{{{ $errorMessage }}}
+    {{{ $message }}}
 </blockquote>
 </p>
 <p>{{ trans('emails.thank_you') }}, <br />

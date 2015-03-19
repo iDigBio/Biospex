@@ -187,18 +187,7 @@ class CacheGroupDecorator extends AbstractGroupDecorator {
 	 */
 	public function selectOptions ($allGroups, $create = false)
 	{
-		/* TODO Figure out a way to cache these per user
-		$key = $create ? md5('select-options') : md5('create-options');
-
-		if ($this->cache->has($key))
-		{
-			return $this->cache->get($key);
-		}
-		*/
-
 		$options = $this->group->selectOptions($allGroups, $create);
-
-		//$this->cache->put($key, $options);
 
 		return $options;
 	}

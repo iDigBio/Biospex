@@ -60,7 +60,7 @@ class SubjectImportReport extends Report {
 	 */
 	public function error($id, $email, $title)
 	{
-		$subject = trans('errors.error_import');
+		$subject = trans('emails.error_import');
 		$data = array(
 			'importId' => $id,
 			'projectTitle' => $title,

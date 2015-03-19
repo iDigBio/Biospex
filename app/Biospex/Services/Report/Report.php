@@ -1,4 +1,5 @@
 <?php namespace Biospex\Services\Report;
+
 /**
  * Report.php
  *
@@ -30,6 +31,7 @@ use Biospex\Mailer\BiospexMailer;
 use Maatwebsite\Excel\Excel;
 
 class Report {
+
     /**
      * @var \Illuminate\Support\Contracts\MessageProviderInterface
      */
@@ -45,38 +47,38 @@ class Report {
      */
     protected $mailer;
 
-	/**
-	 * Constructor
-	 *
-	 * @param MessageProviderInterface $messages
-	 * @param UserInterface $user
-	 * @param GroupInterface $group
-	 * @param BiospexMailer $mailer
-	 * @param Excel $excel
-	 */
+    /**
+     * Constructor
+     *
+     * @param MessageProviderInterface $messages
+     * @param UserInterface $user
+     * @param GroupInterface $group
+     * @param BiospexMailer $mailer
+     * @param Excel $excel
+     */
     public function __construct(
         MessageProviderInterface $messages,
         UserInterface $user,
-		GroupInterface $group,
+        GroupInterface $group,
         BiospexMailer $mailer,
-		Excel $excel
+        Excel $excel
     )
     {
         $this->messages = $messages;
         $this->user = $user;
-		$this->group = $group;
+        $this->group = $group;
         $this->mailer = $mailer;
-		$this->excel = $excel;
+        $this->excel = $excel;
 
-		$this->dataDir = \Config::get('config.dataDir');
-		$this->excelStorage = \Config::get('excel::export');
+        $this->dataDir = \Config::get('config.dataDir');
+        $this->excelStorage = \Config::get('excel::export');
     }
 
-	/**
-	 * Add error to message bag
-	 *
-	 * @param $error
-	 */
+    /**
+     * Add error to message bag
+     *
+     * @param $error
+     */
     public function addError($error)
     {
         $this->messages->add('error', $error);
@@ -84,19 +86,19 @@ class Report {
         return;
     }
 
-	/**
-	 * Report a simple error
-	 *
-	 * @param null $groupId
-	 */
-	public function reportSimpleError ($groupId = null)
+    /**
+     * Report a simple error
+     *
+     * @param null $groupId
+     */
+    public function reportSimpleError($groupId = null)
     {
-		$email = null;
+        $email = null;
 
-		if ( ! is_null($groupId))
+        if ( ! is_null($groupId))
         {
-			$group = $this->group->findWith($groupId, ['owner']);
-			$email = $group->Owner->email;
+            $group = $this->group->findWith($groupId, ['owner']);
+            $email = $group->Owner->email;
         }
 
         $errorMessage = '';
@@ -105,106 +107,108 @@ class Report {
         {
             $errorMessage .= "$message ";
         }
-        $subject = trans('errors.error');
-        $data = array('errorMessage' => $errorMessage);
+        $subject = trans('emails.error');
+        $data = ['errorMessage' => $errorMessage];
         $view = 'emails.report-simple-error';
 
-		$this->fireEvent('user.sendreport', $email, $subject, $view, $data);
+        $this->fireEvent('user.sendreport', $email, $subject, $view, $data);
 
         return;
     }
 
-	/**
-	 * Current process for expedition completed successfully.
-	 *
-	 * @param $groupId
-	 * @param $title
-	 */
+    /**
+     * Current process for expedition completed successfully.
+     *
+     * @param $groupId
+     * @param $title
+     */
     public function processComplete($groupId, $title)
     {
-		$group = $this->group->findWith($groupId, ['owner']);
-		$email = $group->Owner->email;
+        $group = $this->group->findWith($groupId, ['owner']);
+        $email = $group->Owner->email;
 
-        $subject = trans('emails.expedition_complete', array('expedition' => $title));
-        $data = array(
+        $subject = trans('emails.expedition_complete', ['expedition' => $title]);
+        $data = [
             'completeMessage' => trans('emails.expedition_complete_message',
-                array('expedition' => $title))
-        );
+                ['expedition' => $title])
+        ];
         $view = 'emails.report-process-complete';
 
-		$this->fireEvent('user.sendreport', $email, $subject, $view, $data);
+        $this->fireEvent('user.sendreport', $email, $subject, $view, $data);
 
         return;
     }
 
-	/**
-	 * Expedition has missing images
-	 *
-	 * @param $groupId
-	 * @param $title
-	 * @param array $images
-	 */
-	public function missingImages ($groupId, $title, $images = array())
+    /**
+     * Expedition has missing images
+     *
+     * @param $groupId
+     * @param $title
+     * @param array $images
+     */
+    public function missingImages($groupId, $title, $images = [])
     {
         $group = $this->group->findWith($groupId, ['owner']);
-		$email = $group->Owner->email;
+        $email = $group->Owner->email;
 
         $subject = trans('emails.missing_images_subject');
 
-        $data = array(
+        $data = [
             'missingImageMessage' => trans('emails.missing_images'),
-            'expeditionTitle' => $title,
-			'missingImages' => trans('emails.missing_imgs'),
-			'missingList' => implode("<br />", $images)
-        );
+            'expeditionTitle'     => $title,
+            'missingImages'       => trans('emails.missing_imgs'),
+            'missingList'         => implode("<br />", $images)
+        ];
         $view = 'emails.report-missing_images';
 
-		$this->fireEvent('user.sendreport', $email, $subject, $view, $data);
+        $this->fireEvent('user.sendreport', $email, $subject, $view, $data);
     }
 
-	/**
-	 * Create attachment.
-	 *
-	 * @param array $csv
-	 * @param string $name
-	 * @return array
-	 */
-	public function createAttachment($csv, $name = null)
-	{
-		$path = $this->excelStorage['store']['path'] . "/";
-		$fileName = (is_null($name)) ? str_random(10) : $name . str_random(5);
-		$ext = ".csv";
+    /**
+     * Create attachment.
+     *
+     * @param array $csv
+     * @param string $name
+     * @return array
+     */
+    public function createAttachment($csv, $name = null)
+    {
+        $path = $this->excelStorage['store']['path'] . "/";
+        $fileName = (is_null($name)) ? str_random(10) : $name . str_random(5);
+        $ext = ".csv";
 
-		$this->excel->create($fileName, function($excel) use($csv) {
-			$excel->sheet('page1', function($sheet) use($csv) {
-				$sheet->fromArray($csv);
-			});
-		})->store('csv');
+        $this->excel->create($fileName, function ($excel) use ($csv)
+        {
+            $excel->sheet('page1', function ($sheet) use ($csv)
+            {
+                $sheet->fromArray($csv);
+            });
+        })->store('csv');
 
-		return [$path . $fileName . $ext];
-	}
+        return [$path . $fileName . $ext];
+    }
 
-	/**
-	 * Fire send report event
-	 *
-	 * @param $event
-	 * @param $email
-	 * @param $subject
+    /**
+     * Fire send report event
+     *
+     * @param $event
+     * @param $email
+     * @param $subject
      * @param $view
-	 * @param $data
-	 * @param array $attachments
-	 */
-	protected function fireEvent ($event, $email, $subject, $view, $data, $attachments = array())
-	{
-		\Event::fire($event, [
-			'email' => $email,
-			'subject' => $subject,
-            'view' => $view,
-			'data' => $data,
-			'attachment' => $attachments
-		]);
+     * @param $data
+     * @param array $attachments
+     */
+    protected function fireEvent($event, $email, $subject, $view, $data, $attachments = [])
+    {
+        \Event::fire($event, [
+            'email'      => $email,
+            'subject'    => $subject,
+            'view'       => $view,
+            'data'       => $data,
+            'attachment' => $attachments
+        ]);
 
         return;
-	}
+    }
 
 }

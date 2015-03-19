@@ -45,7 +45,7 @@ class XmlProcess {
 
 		$parsed = $this->xml->load($input_xml);
 		if(!$parsed) {
-			throw new \Exception('[XMLProcess] Error parsing the XML string.');
+			throw new \Exception(trans('emails.error_loading_xml'));
 		}
 
 		$this->xpath = new \DOMXpath($this->xml);

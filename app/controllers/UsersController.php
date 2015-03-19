@@ -251,11 +251,10 @@ class UsersController extends BaseController {
 	{
 		$user = $this->sentry->findUserById($id);
 
-        if($user == null || !is_numeric($id))
+        if(is_null($user) || !is_numeric($id))
         {
-            // @codeCoverageIgnoreStart
-            return \App::abort(404);
-            // @codeCoverageIgnoreEnd
+            Session::flash('error', trans('pages.error_missing_variable'));
+            return Redirect::route('home');
         }
 
         $groups = $user->groups->toArray();
@@ -294,9 +293,8 @@ class UsersController extends BaseController {
 	{
         if(!is_numeric($id))
         {
-            // @codeCoverageIgnoreStart
-            return \App::abort(404);
-            // @codeCoverageIgnoreEnd
+            Session::flash('error', trans('pages.error_missing_variable'));
+            return Redirect::route('home');
         }
 
 		// Form Processing
@@ -329,7 +327,7 @@ class UsersController extends BaseController {
 	{
         if(!is_numeric($id))
         {
-            Session::flash('error', trans('errors.error_delete_user'));
+            Session::flash('error', trans('pages.error_delete_user'));
             return Redirect::action('UsersController@index');
         }
 
@@ -342,7 +340,7 @@ class UsersController extends BaseController {
         }
         else 
         {
-        	Session::flash('error', trans('errors.error_delete_user'));
+        	Session::flash('error', trans('pages.error_delete_user'));
             return Redirect::action('UsersController@index');
         }
 	}
@@ -357,9 +355,8 @@ class UsersController extends BaseController {
 	{
         if(!is_numeric($id))
         {
-            // @codeCoverageIgnoreStart
-            return \App::abort(404);
-            // @codeCoverageIgnoreEnd
+            Session::flash('error', trans('pages.error_missing_variable'));
+            return Redirect::route('home');
         }
 
 		$result = $this->user->activate($id, $code);
@@ -447,9 +444,8 @@ class UsersController extends BaseController {
 	{
         if(!is_numeric($id))
         {
-            // @codeCoverageIgnoreStart
-            return \App::abort(404);
-            // @codeCoverageIgnoreEnd
+            Session::flash('error', trans('pages.error_missing_variable'));
+            return Redirect::route('home');
         }
 
 		$result = $this->user->resetPassword($id, $code);
@@ -480,9 +476,8 @@ class UsersController extends BaseController {
 	{
         if(!is_numeric($id))
         {
-            // @codeCoverageIgnoreStart
-            return \App::abort(404);
-            // @codeCoverageIgnoreEnd
+            Session::flash('error', trans('pages.error_missing_variable'));
+            return Redirect::route('home');
         }
 
 		$data = Input::all();
@@ -517,9 +512,8 @@ class UsersController extends BaseController {
 	{
         if(!is_numeric($id))
         {
-            // @codeCoverageIgnoreStart
-            return \App::abort(404);
-            // @codeCoverageIgnoreEnd
+            Session::flash('error', trans('pages.error_missing_variable'));
+            return Redirect::route('home');
         }
 
 		// Form Processing
@@ -550,9 +544,8 @@ class UsersController extends BaseController {
 	{
         if(!is_numeric($id))
         {
-            // @codeCoverageIgnoreStart
-            return \App::abort(404);
-            // @codeCoverageIgnoreEnd
+            Session::flash('error', trans('pages.error_missing_variable'));
+            return Redirect::route('home');
         }
 
 		$result = $this->user->unSuspend($id);
@@ -580,9 +573,8 @@ class UsersController extends BaseController {
 	{
         if(!is_numeric($id))
         {
-            // @codeCoverageIgnoreStart
-            return \App::abort(404);
-            // @codeCoverageIgnoreEnd
+            Session::flash('error', trans('pages.error_missing_variable'));
+            return Redirect::route('home');
         }
 
 		$result = $this->user->ban($id);
@@ -605,9 +597,8 @@ class UsersController extends BaseController {
 	{
         if(!is_numeric($id))
         {
-            // @codeCoverageIgnoreStart
-            return \App::abort(404);
-            // @codeCoverageIgnoreEnd
+            Session::flash('error', trans('pages.error_missing_variable'));
+            return Redirect::route('home');
         }
         
 		$result = $this->user->unBan($id);
