@@ -40,6 +40,7 @@ class ProjectFormLaravelValidator extends AbstractLaravelValidator {
         'contact'           => 'required',
         'contact_email'     => 'required|min:4|max:32|email',
         'description_short' => 'required|digits_between:6,140',
+        'description_long'  => 'required',
         'keywords'          => 'required',
         'banner'            => 'image|image_size:>=1200,>=300',
         'logo'              => 'image|image_size:<=300,<=200'
