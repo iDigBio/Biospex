@@ -71,7 +71,7 @@
         {{ ($errors->has('description_short') ? $errors->first('description_short') : '') }}
     </div>
 
-    <div class="form-group {{ ($errors->has('description_long')) ? 'has-error' : '' }}">
+    <div class="form-group required {{ ($errors->has('description_long')) ? 'has-error' : '' }}">
         {{ Form::label('description_long', trans('forms.description_long'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
             {{ Form::textarea('description_long', null, array('class' => 'form-control', 'placeholder' => trans('forms.description_long'))) }}
@@ -117,6 +117,14 @@
             {{ Form::text('keywords', null, array('class' => 'form-control', 'placeholder' => trans('forms.keywords'))) }}
         </div>
         {{ ($errors->has('keywords') ? $errors->first('keywords') : '') }}
+    </div>
+
+    <div class="form-group {{ ($errors->has('blog_url')) ? 'has-error' : '' }}">
+        {{ Form::label('blog_url', trans('forms.blog_url'), array('class' => 'col-sm-2 control-label')) }}
+        <div class="col-sm-10">
+            {{ Form::text('blog_url', null, array('class' => 'form-control', 'placeholder' => trans('forms.blog_url_format'))) }}
+        </div>
+        {{ ($errors->has('blog_url') ? $errors->first('blog_url') : '') }}
     </div>
 
     <div class="form-group {{ ($errors->has('facebook')) ? 'has-error' : '' }}">
@@ -252,7 +260,7 @@
 		{{ ($errors->has('description_short') ? $errors->first('description_short') : '') }}
 	</div>
 
-	<div class="form-group {{ ($errors->has('description_long')) ? 'has-error' : '' }}">
+	<div class="form-group required {{ ($errors->has('description_long')) ? 'has-error' : '' }}">
 		{{ Form::label('description_long', trans('forms.description_long'), array('class' => 'col-sm-2 control-label')) }}
 		<div class="col-sm-10">
 			{{ Form::textarea('description_long', $project->description_long, array('class' => 'form-control', 'placeholder' => trans('forms.description_long'))) }}
@@ -300,10 +308,18 @@
         {{ ($errors->has('keywords') ? $errors->first('keywords') : '') }}
     </div>
 
+    <div class="form-group {{ ($errors->has('blog_url')) ? 'has-error' : '' }}">
+        {{ Form::label('blog_url', trans('forms.blog_url'), array('class' => 'col-sm-2 control-label')) }}
+        <div class="col-sm-10">
+            {{ Form::text('blog_url', $project->blog_url, array('class' => 'form-control', 'placeholder' => trans('forms.blog_url_format'))) }}
+        </div>
+        {{ ($errors->has('blog_url') ? $errors->first('blog_url') : '') }}
+    </div>
+
     <div class="form-group {{ ($errors->has('facebook')) ? 'has-error' : '' }}">
         {{ Form::label('facebook', trans('forms.facebook'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::text('facebook', $project->facebook, array('class' => 'form-control', 'placeholder' => trans('forms.facebook'))) }}
+            {{ Form::text('facebook', $project->facebook, array('class' => 'form-control', 'placeholder' => trans('forms.facebook_format'))) }}
         </div>
         {{ ($errors->has('facebook') ? $errors->first('facebook') : '') }}
     </div>
@@ -311,7 +327,7 @@
     <div class="form-group {{ ($errors->has('twitter')) ? 'has-error' : '' }}">
         {{ Form::label('twitter', trans('forms.twitter'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::text('twitter', $project->twitter, array('class' => 'form-control', 'placeholder' => trans('forms.twitter'))) }}
+            {{ Form::text('twitter', $project->twitter, array('class' => 'form-control', 'placeholder' => trans('forms.twitter_format'))) }}
         </div>
         {{ ($errors->has('twitter') ? $errors->first('twitter') : '') }}
     </div>

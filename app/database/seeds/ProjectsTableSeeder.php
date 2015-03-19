@@ -52,6 +52,7 @@ class ProjectsTableSeeder extends Seeder {
             'taxonomic_scope'      => 'Seed Plants',
             'temporal_scope'       => '1860–present',
             'keywords'             => 'Biodiversity Hotspot, East Gulf Coastal Plain, Florida, Florida State University, Robert K. Godfrey Herbarium, Seed Plants',
+            'blog_url'             => '',
             'facebook'             => '',
             'twitter'              => '',
             'activities'           => 'Transcription',

@@ -66,4 +66,6 @@ return [
     'facebook_format'             => "http://facebook.com/example",
     'twitter'                     => "Twitter",
     'twitter_format'              => "http://twitter.com/example",
+    'blog_url'                    => "Project Blog",
+    'blog_url_format'             => "http://blog.com",
 ];
