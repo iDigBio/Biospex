@@ -78,6 +78,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         'taxonomic_scope',
         'temporal_scope',
         'keywords',
+        'blog_url',
         'facebook',
         'twitter',
         'activities',
