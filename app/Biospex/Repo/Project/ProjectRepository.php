@@ -87,6 +87,7 @@ class ProjectRepository extends Repository implements ProjectInterface {
 	public function update($data = array())
 	{
 		$project = $this->find($data['id']);
+        $project->advertise = $data;
 		$project->fill($data)->save();
 
 		$actors = [];
