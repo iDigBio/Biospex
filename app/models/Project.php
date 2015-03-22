@@ -294,13 +294,13 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
                     $build[$field] = $this->{$value};
                 }
 
-                if ($type == 'col')
+                if ($type == 'column')
                 {
                     $build[$field] = $input[$value];
                     continue;
                 }
 
-                if ($type == 'val')
+                if ($type == 'value')
                 {
                     $build[$field] = $value;
                     continue;
