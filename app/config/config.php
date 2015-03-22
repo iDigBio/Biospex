@@ -111,7 +111,7 @@ return [
         'projectImage'            => ['column' => 'logo_file_name'],
     ],
 
-    'statusList'        => [
+    'statusSelect'        => [
         'starting' => 'Starting',
         'acting'   => 'Acting',
         'complete' => 'Complete',
