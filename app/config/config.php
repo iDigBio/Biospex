@@ -111,6 +111,13 @@ return [
         'projectImage'            => ['column' => 'logo_file_name'],
     ],
 
+    'statusList'        => [
+        'starting' => 'Starting',
+        'acting'   => 'Acting',
+        'complete' => 'Complete',
+        'hiatus'   => 'Hiatus'
+    ],
+
     /**
      * Default group permissions
      */
