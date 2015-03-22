@@ -323,4 +323,15 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
 
         $this->attributes['advertise'] = json_encode($advertise);
     }
+
+    /**
+     * Accessor for advertise.
+     *
+     * @param $value
+     * @return mixed
+     */
+    public function getAdvertiseAttribute($value)
+    {
+        return json_decode($value);
+    }
 }
