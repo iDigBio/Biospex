@@ -85,6 +85,31 @@ return [
         'ocr'
     ],
 
+    /**
+     * Default advertise fields for PPSR_CORE
+     */
+    'ppsr' => [
+        'ProjectGUID'             => ['col' => 'uuid'],
+        'ProjectName'             => ['col' => 'title'],
+        'ProjectDataProvider'     => ['val' => 'Biospex'],
+        'ProjectDescription'      => ['col' => 'description_long'],
+        'ProjectDateLastUpdated'  => ['col' => 'updated_at'],
+        'ProjectContactName'      => ['col' => 'contact'],
+        'ProjectContactEmail'     => ['col' => 'contact_email'],
+        'ProjectStatus'           => ['col' => ['starting', 'acting', 'complete', 'hiatus']],
+        'ProjectOrganization'     => ['col' => 'organization_url'],
+        'ProjectVolunteerSupport' => ['col' => 'incentives'],
+        'ProjectURL'              => ['col' => 'slug'],
+        'ProjectFacebook'         => ['col' => 'facebook'],
+        'ProjectTwitter'          => ['col' => 'twitter'],
+        'ProjectKeywords'         => ['array' => ['keywords', 'geographic_scope', 'temporal_scope']],
+        'fieldOfScience'          => [],
+        'participationType'       => [],
+        'participantEducation'    => ['col' => 'language_skills'],
+        'fundingSource'           => ['col' => 'funding_source'],
+        'projectBlog'             => ['col' => 'blog_url'],
+        'projectImage'            => ['col' => 'logo_file_name'],
+    ],
 
     /**
      * Default group permissions
