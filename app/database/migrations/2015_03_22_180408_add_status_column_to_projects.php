@@ -14,7 +14,7 @@ class AddStatusColumnToProjects extends Migration {
 	{
 		Schema::table('projects', function(Blueprint $table)
 		{
-            $table->enum('status', array('starting', 'acting', 'complete', 'hiatus'))->default('starting');
+            $table->enum('status', array('starting', 'acting', 'complete', 'hiatus'))->default('starting')->after('target_fields');
 		});
 	}
 
