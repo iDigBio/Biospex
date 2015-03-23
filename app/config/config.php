@@ -97,9 +97,9 @@ return [
         'ProjectContactName'      => ['column' => 'contact'],
         'ProjectContactEmail'     => ['column' => 'contact_email'],
         'ProjectStatus'           => ['column' => 'status'],
-        'ProjectOrganization'     => ['column' => 'organization_url'],
+        'ProjectOrganization'     => ['column' => 'organization'],
         'ProjectVolunteerSupport' => ['column' => 'incentives'],
-        'ProjectURL'              => ['column' => 'slug'],
+        'ProjectURL'              => ['url' => 'slug'],
         'ProjectFacebook'         => ['column' => 'facebook'],
         'ProjectTwitter'          => ['column' => 'twitter'],
         'ProjectKeywords'         => ['array' => ['keywords', 'geographic_scope', 'temporal_scope']],
@@ -108,10 +108,10 @@ return [
         'participantEducation'    => ['column' => 'language_skills'],
         'fundingSource'           => ['column' => 'funding_source'],
         'projectBlog'             => ['column' => 'blog_url'],
-        'projectImage'            => ['column' => 'logo_file_name'],
+        'projectImage'            => ['url' => 'logo'],
     ],
 
-    'statusSelect'        => [
+    'statusSelect'      => [
         'starting' => 'Starting',
         'acting'   => 'Acting',
         'complete' => 'Complete',
