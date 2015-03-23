@@ -122,7 +122,7 @@ class ProjectsController extends BaseController {
 		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
 		$groups = $this->group->selectOptions($allGroups);
 		$actors = $this->actor->selectList();
-        $statusSelect = \Config::get('config.statusList');
+        $statusSelect = \Config::get('config.statusSelect');
 
 		if (empty($groups))
 		{
