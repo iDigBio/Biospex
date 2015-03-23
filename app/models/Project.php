@@ -316,6 +316,15 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
                     $build[$field] = rtrim($combined, ', ');
                     continue;
                 }
+
+                if ($type == 'url')
+                {
+                    if ($value == 'slug')
+                        $build[$field] = $_ENV['site.url'] . '/' . $this->{$value};
+
+                    if ($value == 'logo')
+                        $build[$field] = $_ENV['site.url'] . $this->{$value}->url();
+                }
             }
         }
 
@@ -324,14 +333,4 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         $this->attributes['advertise'] = json_encode($advertise);
     }
 
-    /**
-     * Accessor for advertise.
-     *
-     * @param $value
-     * @return mixed
-     */
-    public function getAdvertiseAttribute($value)
-    {
-        return json_decode($value);
-    }
 }
