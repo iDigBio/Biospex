@@ -27,6 +27,7 @@
 // Descriptions can be found in /app/config files
 return [
 	'site.ip'           => '127.0.0.1',
+    'site.name'         => 'Biospex',
 	'site.url'          => 'http://yoursite.com',
 	'site.debug'        => false,
 	'site.key'          => 'KLMJHNjsnkwotikgnkMJkmloghweFGTG',
