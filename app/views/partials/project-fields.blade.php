@@ -10,7 +10,7 @@
     <div class="form-group required {{ ($errors->has('status')) ? 'has-error' : '' }}" for="group">
         {{ Form::label('status', trans('forms.status'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::select('status', $selectStatus, array('class' => 'form-control', 'placeholder' => trans('forms.status'))) }}
+            {{ Form::select('status', $statusSelect, array('class' => 'form-control', 'placeholder' => trans('forms.status'))) }}
         </div>
         {{ ($errors->has('status') ? $errors->first('status') : '') }}
     </div>
@@ -207,7 +207,7 @@
     <div class="form-group required {{ ($errors->has('status')) ? 'has-error' : '' }}" for="group">
         {{ Form::label('status', trans('forms.status'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::select('status', $selectStatus, $project->status, array('class' => 'form-control', 'placeholder' => trans('forms.status'))) }}
+            {{ Form::select('status', $statusSelect, $project->status, array('class' => 'form-control', 'placeholder' => trans('forms.status'))) }}
         </div>
         {{ ($errors->has('status') ? $errors->first('status') : '') }}
     </div>
