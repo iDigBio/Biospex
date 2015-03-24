@@ -80,6 +80,7 @@ return [
     'contact'                 => "Contact",
     'message'                 => "Message",
     'contact_biospex'         => "Contact Biospex Team",
+    'contact_success'         => "Your message has been sent. Thank you.",
 
     'list'                    => "List",
     'manage'                  => "Manage",
