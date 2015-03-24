@@ -38,10 +38,10 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     use SluggableTrait;
 	use UuidTrait;
 
-    protected $sluggable = array(
+    protected $sluggable = [
         'build_from' => 'title',
         'save_to'    => 'slug',
-    );
+    ];
 
     protected $dates = ['deleted_at'];
 
@@ -60,7 +60,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     /**
      * @var array
      */
-    protected $fillable = array(
+    protected $fillable = [
 		'uuid',
         'group_id',
         'title',
@@ -85,13 +85,14 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         'language_skills',
         'logo',
         'banner',
-        'target_fields'
-    );
+        'target_fields',
+        'advertise',
+    ];
 
     /**
      * @param array $attributes
      */
-    public function __construct(array $attributes = array()) {
+    public function __construct(array $attributes = []) {
 		$this->hasAttachedFile('logo', ['styles' => ['thumb' => '100x67']]);
         $this->hasAttachedFile('banner', ['styles' => ['thumb' => '200x50']]);
 
@@ -210,7 +211,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      */
     public function setTargetFieldsAttribute($input)
     {
-        $target_fields = array();
+        $target_fields = [];
 
         if (isset($input['targetCount']) && $input['targetCount'] > 0)
         {
@@ -218,14 +219,14 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
             {
                 if (empty($input['target_name'][$i])) continue;
 
-                $fields = array(
+                $fields = [
                     'target_core'               => $input['target_core'][$i],
                     'target_name'               => $input['target_name'][$i],
                     'target_description'        => $input['target_description'][$i],
                     'target_valid_response'     => $input['target_valid_response'][$i],
                     'target_inference'          => $input['target_inference'][$i],
                     'target_inference_example'  => $input['target_inference_example'][$i],
-                );
+                ];
                 $target_fields[$i] = $fields;
             }
         }
@@ -272,4 +273,71 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     {
         return date("m/d/Y", strtotime($value));
     }
+
+    /**
+     * Set attribute for advertise.
+     *
+     * @param $input
+     */
+    public function setAdvertiseAttribute($input)
+    {
+        $extra = isset($input['advertiseExtra']) ? $input['advertiseExtra'] : '';
+
+        $build = [];
+        $ppsrFields = \Config::get('config.ppsr');
+        foreach ($ppsrFields as $field => $data)
+        {
+            foreach ($data as $type => $value)
+            {
+                if ($type == 'private')
+                {
+                    $build[$field] = $this->{$value};
+                }
+
+                if ($type == 'column')
+                {
+                    $build[$field] = $input[$value];
+                    continue;
+                }
+
+                if ($type == 'value')
+                {
+                    $build[$field] = $value;
+                    continue;
+                }
+
+                if ($type == 'array')
+                {
+                    $combined = '';
+                    foreach ($value as $col)
+                    {
+                        $combined .= $input[$col] . ", ";
+                    }
+                    $build[$field] = rtrim($combined, ', ');
+                    continue;
+                }
+
+                if ($type == 'url')
+                {
+                    if ($value == 'slug')
+                    {
+                        $build[$field] = $_ENV['site.url'] . '/' . $this->{$value};
+                        continue;
+                    }
+
+                    if ($value == 'logo')
+                    {
+                        $build[$field] = $_ENV['site.url'] . $this->{$value}->url();
+                        continue;
+                    }
+
+                }
+            }
+        }
+
+        $advertise = ! empty($extra) ? array_merge($build, $extra) : $build;
+
+        $this->attributes['advertise'] = json_encode($advertise, JSON_UNESCAPED_UNICODE);
+    }
+
 }

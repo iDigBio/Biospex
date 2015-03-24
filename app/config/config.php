@@ -85,6 +85,38 @@ return [
         'ocr'
     ],
 
+    /**
+     * Default advertise fields for PPSR_CORE
+     */
+    'ppsr'              => [
+        'ProjectGUID'             => ['private' => 'uuid'],
+        'ProjectName'             => ['column' => 'title'],
+        'ProjectDataProvider'     => ['value' => $_ENV['site.name']],
+        'ProjectDescription'      => ['column' => 'description_long'],
+        'ProjectDateLastUpdated'  => ['private' => 'updated_at'],
+        'ProjectContactName'      => ['column' => 'contact'],
+        'ProjectContactEmail'     => ['column' => 'contact_email'],
+        'ProjectStatus'           => ['column' => 'status'],
+        'ProjectOrganization'     => ['column' => 'organization'],
+        'ProjectVolunteerSupport' => ['column' => 'incentives'],
+        'ProjectURL'              => ['url' => 'slug'],
+        'ProjectFacebook'         => ['column' => 'facebook'],
+        'ProjectTwitter'          => ['column' => 'twitter'],
+        'ProjectKeywords'         => ['array' => ['keywords', 'geographic_scope', 'temporal_scope']],
+        'fieldOfScience'          => [],
+        'participationType'       => [],
+        'participantEducation'    => ['column' => 'language_skills'],
+        'fundingSource'           => ['column' => 'funding_source'],
+        'projectBlog'             => ['column' => 'blog_url'],
+        'projectImage'            => ['url' => 'logo'],
+    ],
+
+    'statusSelect'      => [
+        'starting' => 'Starting',
+        'acting'   => 'Acting',
+        'complete' => 'Complete',
+        'hiatus'   => 'Hiatus'
+    ],
 
     /**
      * Default group permissions

@@ -87,7 +87,7 @@ class ProjectsController extends BaseController {
 		// Establish Filters
 		$this->beforeFilter('auth');
         $this->beforeFilter('csrf', ['on' => 'post']);
-        $this->beforeFilter('hasProjectAccess:project_view', ['only' => ['show']]);
+        $this->beforeFilter('hasProjectAccess:project_view', ['only' => ['show', 'advertiseDownload']]);
         $this->beforeFilter('hasProjectAccess:project_edit', ['only' => ['edit', 'update', 'data']]);
         $this->beforeFilter('hasProjectAccess:project_delete', ['only' => ['destroy']]);
 
@@ -122,6 +122,7 @@ class ProjectsController extends BaseController {
 		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
 		$groups = $this->group->selectOptions($allGroups);
 		$actors = $this->actor->selectList();
+        $statusSelect = \Config::get('config.statusSelect');
 
 		if (empty($groups))
 		{
@@ -134,7 +135,7 @@ class ProjectsController extends BaseController {
         $count = is_null(Input::old('targetCount')) ? 0 : Input::old('targetCount');
         $create =  Route::currentRouteName() == 'projects.create' ? true : false;
 
-		return View::make('projects.create', compact('cancel', 'selectGroups', 'count', 'create', 'actors'));
+		return View::make('projects.create', compact('cancel', 'selectGroups', 'count', 'create', 'actors', 'statusSelect'));
 	}
 
     /**
@@ -192,6 +193,7 @@ class ProjectsController extends BaseController {
 		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
 		$groups = $this->group->selectOptions($allGroups);
 		$actors = $this->actor->selectList();
+        $statusSelect = \Config::get('config.statusSelect');
 		$workflowCheck = '';
 
 		$selectGroups = ['' => '--Select--'] + $groups;
@@ -199,7 +201,7 @@ class ProjectsController extends BaseController {
         $create =  Route::currentRouteName() == 'projects.create' ? true : false;
 		$cancel = URL::previous();
 
-		return View::make('projects.clone', compact('selectGroups', 'project', 'count', 'create', 'cancel', 'actors', 'workflowCheck'));
+		return View::make('projects.clone', compact('selectGroups', 'project', 'count', 'create', 'cancel', 'actors', 'statusSelect', 'workflowCheck'));
     }
 
 	/**
@@ -218,6 +220,7 @@ class ProjectsController extends BaseController {
 		}
 
 		$actors = $this->actor->selectList();
+        $statusSelect = \Config::get('config.statusSelect');
 
 		$user = $this->user->getUser();
 		$isSuperUser = $user->isSuperUser();
@@ -229,7 +232,7 @@ class ProjectsController extends BaseController {
 		$create =  Route::currentRouteName() == 'projects.create' ? true : false;
 		$cancel = URL::previous();
 
-		return View::make('projects.edit', compact('project', 'actors', 'workflowCheck', 'selectGroups', 'count', 'create', 'cancel'));
+		return View::make('projects.edit', compact('project', 'actors', 'statusSelect', 'workflowCheck', 'selectGroups', 'count', 'create', 'cancel'));
 	}
 
     /**
@@ -274,9 +277,34 @@ class ProjectsController extends BaseController {
     /**
      * Advertise
      */
-    public function advertise()
+    public function advertise($id)
     {
+        $project = $this->project->find($id);
 
+        if (empty($project->advertise))
+        {
+            $project->advertise = json_decode(json_encode($project), true);
+            $project->save();
+        }
+
+        return View::make('projects.advertise', compact('project'));
+
+    }
+
+    /**
+     * Advertise download
+     *
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function advertiseDownload($id)
+    {
+        $project = $this->project->find($id);
+
+        return Response::make($project->advertise, '200', array(
+            'Content-Type' => 'application/json',
+            'Content-Disposition' => 'attachment; filename="' . $project->uuid . '.json"'
+        ));
     }
 
     /**
@@ -343,5 +371,38 @@ class ProjectsController extends BaseController {
         Session::flash('error', trans('projects.project_destroy_error'));
         return Redirect::route('projects.index');
 	}
+
+    /*
+     $advertise = [];
+        $fields = \Config::get('config.ppsr');
+        foreach ($fields as $field => $data)
+        {
+            foreach ($data as $type => $value)
+            {
+                if ($type == 'col')
+                {
+                    $advertise[$field] = $project->{$value};
+                    continue;
+                }
+
+                if ($type == 'val')
+                {
+                    $advertise[$field] = $value;
+                    continue;
+                }
+
+                if ($type == 'array')
+                {
+                    $combined = '';
+                    foreach ($type as $col)
+                    {
+                        $combined .= $project->{$col} . ", ";
+                    }
+                    $advertise[$field] = rtrim($combined, ', ');
+                    continue;
+                }
+            }
+        }
+     */
 
 }

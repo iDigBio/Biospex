@@ -60,13 +60,15 @@ class ProjectRepository extends Repository implements ProjectInterface {
 	}
 
 	/**
-	 * Override create for relationships
+	 * Override create for relationships and building the advertise column.
 	 * @param array $data
 	 * @return mixed
 	 */
 	public function create($data = array())
 	{
 		$project = $this->model->create($data);
+        $project->advertise = $data;
+        $project->save();
 
 		$actors = [];
 		foreach ($data['actor'] as $key => $actor)
@@ -87,6 +89,7 @@ class ProjectRepository extends Repository implements ProjectInterface {
 	public function update($data = array())
 	{
 		$project = $this->find($data['id']);
+        $project->advertise = $data;
 		$project->fill($data)->save();
 
 		$actors = [];

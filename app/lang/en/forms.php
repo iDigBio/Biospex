@@ -26,6 +26,7 @@
 
 return [
     'group'                       => "Group",
+    'status'                      => "Status",
     'title'                       => "Title",
     'contact'                     => "Contact",
     'contact_email'               => "Contact Email",

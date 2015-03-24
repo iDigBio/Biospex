@@ -76,6 +76,7 @@ return [
     'captcha_text'            => "Fill in with the text of the image",
     'already_have_account'    => "Already have an account? Login here",
     'new_group'               => "New Group",
+    'advertise_title'         => "PPSR Advertising",
 
     'list'                    => "List",
     'manage'                  => "Manage",

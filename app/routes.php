@@ -85,6 +85,7 @@ Route::group(
 		Route::get('projects/{projects}/data', ['as' => 'projects.data', 'uses' => 'ProjectsController@data']);
 		Route::post('projects/{projects}/data', ['as' => 'projects.upload', 'uses' => 'ProjectsController@upload']);
 		Route::get('projects/{projects}/advertise', ['as' => 'projects.advertise', 'uses' => 'ProjectsController@advertise']);
+        Route::get('projects/{projects}/advertiseDownload', ['as' => 'projects.advertiseDownload', 'uses' => 'ProjectsController@advertiseDownload']);
 
         // Projects/Expeditions
         Route::resource('projects.expeditions', 'ExpeditionsController');

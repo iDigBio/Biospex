@@ -2,9 +2,17 @@
     <div class="form-group required {{ ($errors->has('group')) ? 'has-error' : '' }}" for="group">
         {{ Form::label('group', trans('forms.group'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
-            {{ Form::select('group_id', $selectGroups, array('class' => 'form-control', 'placeholder' => trans('forms.title'))) }}
+            {{ Form::select('group_id', $selectGroups, array('class' => 'form-control', 'placeholder' => trans('forms.group'))) }}
         </div>
         {{ ($errors->has('group_id') ? $errors->first('group_id') : '') }}
+    </div>
+
+    <div class="form-group required {{ ($errors->has('status')) ? 'has-error' : '' }}" for="group">
+        {{ Form::label('status', trans('forms.status'), array('class' => 'col-sm-2 control-label')) }}
+        <div class="col-sm-10">
+            {{ Form::select('status', $statusSelect, array('class' => 'form-control', 'placeholder' => trans('forms.status'))) }}
+        </div>
+        {{ ($errors->has('status') ? $errors->first('status') : '') }}
     </div>
 
     <div class="form-group required {{ ($errors->has('title')) ? 'has-error' : '' }}" for="title">
@@ -195,6 +203,14 @@
 		</div>
 		{{ ($errors->has('group_id') ? $errors->first('group_id') : '') }}
 	</div>
+
+    <div class="form-group required {{ ($errors->has('status')) ? 'has-error' : '' }}" for="group">
+        {{ Form::label('status', trans('forms.status'), array('class' => 'col-sm-2 control-label')) }}
+        <div class="col-sm-10">
+            {{ Form::select('status', $statusSelect, $project->status, array('class' => 'form-control', 'placeholder' => trans('forms.status'))) }}
+        </div>
+        {{ ($errors->has('status') ? $errors->first('status') : '') }}
+    </div>
 
     <div class="form-group required {{ ($errors->has('title')) ? 'has-error' : '' }}" for="title">
         {{ Form::label('title', trans('forms.title'), array('class' => 'col-sm-2 control-label')) }}
