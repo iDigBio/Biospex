@@ -281,6 +281,12 @@ class ProjectsController extends BaseController {
     {
         $project = $this->project->find($id);
 
+        if (empty($project->advertise))
+        {
+            $project->advertise = json_decode(json_encode($project), true);
+            $project->save();
+        }
+
         return View::make('projects.advertise', compact('project'));
 
     }

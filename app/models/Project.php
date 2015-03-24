@@ -320,17 +320,24 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
                 if ($type == 'url')
                 {
                     if ($value == 'slug')
+                    {
                         $build[$field] = $_ENV['site.url'] . '/' . $this->{$value};
+                        continue;
+                    }
 
                     if ($value == 'logo')
+                    {
                         $build[$field] = $_ENV['site.url'] . $this->{$value}->url();
+                        continue;
+                    }
+
                 }
             }
         }
 
         $advertise = ! empty($extra) ? array_merge($build, $extra) : $build;
 
-        $this->attributes['advertise'] = json_encode($advertise);
+        $this->attributes['advertise'] = json_encode($advertise, JSON_UNESCAPED_UNICODE);
     }
 
 }
