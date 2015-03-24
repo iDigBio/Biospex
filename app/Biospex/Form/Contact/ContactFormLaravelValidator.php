@@ -1,10 +1,11 @@
-<?php namespace Biospex\Mailer;
+<?php namespace Biospex\Form\Contact;
+
 /**
- * Mailer.php
+ * ContactFormLaravelValidator.php.php
  *
  * @package    Biospex Package
  * @version    1.0
- * @author     Robert Bruhn <79e6ef82@opayq.com>
+ * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
  * @link       http://biospex.org
@@ -23,19 +24,22 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Mail;
+use Biospex\Validation\AbstractLaravelValidator;
 
-abstract class Mailer {
+class ContactFormLaravelValidator extends AbstractLaravelValidator {
 
-	public function sendTo ($from, $email, $subject, $view, $data = [], $attachments = [])
-	{
-		Mail::queue($view, $data, function ($message) use ($from, $email, $subject, $attachments)
-		{
-			$message->from($from)->subject($subject)->to($email);
-			$size = sizeof($attachments);
-			for ($i = 0; $i < $size; $i++){
-				$message->attach($attachments[$i]);
-			}
-		});
-	}
+    /**
+     * Validation rules
+     *
+     * @var Array
+     */
+    protected $rules = [
+        'first_name'   => 'required|alpha',
+        'last_name'    => 'required|alpha',
+        'email'        => 'required|min:4|max:32|email',
+        'message'      => 'required',
+        'registeruser' => 'honeypot',
+        'registertime' => 'required_with:registeruser|honeytime:5',
+    ];
+
 }

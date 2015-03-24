@@ -24,6 +24,7 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 use Biospex\Repo\Project\ProjectInterface;
+use Biospex\Form\Contact\ContactForm;
 
 class HomeController extends BaseController {
 
@@ -33,11 +34,25 @@ class HomeController extends BaseController {
     protected $project;
 
     /**
-     * Constructor
+     * @var ContactForm
      */
-    public function __construct(ProjectInterface $project)
+    protected $contactForm;
+
+    /**
+     * Constructor
+     *
+     * @param ProjectInterface $project
+     * @param ContactForm $contactForm
+     */
+    public function __construct(
+        ProjectInterface $project,
+        ContactForm $contactForm
+    )
     {
+        $this->beforeFilter('csrf', ['on' => 'post']);
+
         $this->project = $project;
+        $this->contactForm = $contactForm;
     }
 
     /**
@@ -63,11 +78,54 @@ class HomeController extends BaseController {
         return View::make('project', compact('project'));
     }
 
-	/**
-	 * Show help page
-	 */
-	public function help()
-	{
-		return View::make('help');
-	}
+    /**
+     * Show help page
+     */
+    public function help()
+    {
+        return View::make('help');
+    }
+
+    /**
+     * Display contact form.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function contact()
+    {
+        return View::make('contact');
+    }
+
+    /**
+     * Send contact form.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function sendContactForm()
+    {
+        $result = $this->contactForm->check(Input::all());
+
+        if ($result)
+        {
+            \Event::fire('user.sendcontact', [
+                'view'    => 'emails.contact',
+                'subject' => trans('emails.contact_subject'),
+                'data'    => [
+                    'first_name' => Input::get('first_name'),
+                    'last_name'  => Input::get('last_name'),
+                    'email'      => Input::get('email'),
+                    'email_message'    => Input::get('message'),
+                ],
+            ]);
+
+            Session::flash('success', trans('pages.contact_success'));
+
+            return Redirect::route('home');
+        }
+
+        Session::flash('error', trans('pages.contact_fail'));
+
+        return Redirect::route('contact')->withInput()->withErrors($this->contactForm->errors());
+
+    }
 }

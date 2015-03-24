@@ -1,10 +1,11 @@
-<?php namespace Biospex\Mailer;
+<?php namespace Biospex\Form\Contact;
+
 /**
- * Mailer.php
+ * ContactForm.php.php
  *
  * @package    Biospex Package
  * @version    1.0
- * @author     Robert Bruhn <79e6ef82@opayq.com>
+ * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
  * @link       http://biospex.org
@@ -23,19 +24,29 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Mail;
 
-abstract class Mailer {
+use Biospex\Form\Form;
+use Biospex\Validation\ValidableInterface;
 
-	public function sendTo ($from, $email, $subject, $view, $data = [], $attachments = [])
-	{
-		Mail::queue($view, $data, function ($message) use ($from, $email, $subject, $attachments)
-		{
-			$message->from($from)->subject($subject)->to($email);
-			$size = sizeof($attachments);
-			for ($i = 0; $i < $size; $i++){
-				$message->attach($attachments[$i]);
-			}
-		});
-	}
+class ContactForm extends Form {
+
+    public function __construct(ValidableInterface $validator)
+    {
+        $this->validator = $validator;
+    }
+
+    /**
+     * Test if form validator passes
+     *
+     * @param array $input
+     * @return bool
+     */
+    public function check(array $input)
+    {
+        if( ! $this->valid($input) )
+            return false;
+
+        return true;
+    }
+
 }

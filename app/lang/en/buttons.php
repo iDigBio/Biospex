@@ -50,6 +50,7 @@ return array(
 	'stop'              => "Stop",
 	'stopTitle'         => "Stop processing of this expedition and consider it finished.",
 	'cancel'            => "Cancel",
+    'send'              => "Send",
 
 	'login'             => "Login",
 	'password_forgot'   => "Forgot Password",

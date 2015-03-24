@@ -116,6 +116,10 @@ Route::group(
 		Route::get('help', ['as' => 'help', 'uses' => 'HomeController@help']);
 		Route::get('project/{slug}', ['as' => 'project', 'uses' => 'HomeController@project']);
 
+        // Contact form
+        Route::get('contact', ['as' => 'contact', 'uses' => 'HomeController@contact']);
+        Route::post('contact', ['as' => 'contact.send', 'uses' => 'HomeController@sendContactForm']);
+
     });
 
 /*
