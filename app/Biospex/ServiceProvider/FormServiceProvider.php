@@ -46,6 +46,7 @@ use Biospex\Form\Expedition\ExpeditionForm;
 use Biospex\Form\Expedition\ExpeditionFormLaravelValidator;
 use Biospex\Form\Invite\InviteForm;
 use Biospex\Form\Invite\InviteFormLaravelValidator;
+use Biospex\Form\Contact\ContactForm;
 use Biospex\Form\Contact\ContactFormLaravelValidator;
 
 class FormServiceProvider extends ServiceProvider {
