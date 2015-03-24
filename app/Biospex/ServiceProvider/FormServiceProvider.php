@@ -157,6 +157,14 @@ class FormServiceProvider extends ServiceProvider {
             );
         });
 
+        // Bind the Contact Form
+        $app->bind('Biospex\Form\Contact\ContactForm', function($app)
+        {
+            return new ContactForm(
+                new ContactFormLaravelValidator( $app['validator'] )
+            );
+        });
+
     }
 
 }
