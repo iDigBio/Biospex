@@ -77,6 +77,9 @@ return [
     'already_have_account'    => "Already have an account? Login here",
     'new_group'               => "New Group",
     'advertise_title'         => "PPSR Advertising",
+    'contact'                 => "Contact",
+    'message'                 => "Message",
+    'contact_biospex'         => "Contact Biospex Team",
 
     'list'                    => "List",
     'manage'                  => "Manage",
