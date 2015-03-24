@@ -58,7 +58,7 @@ Event::listen('eloquent.deleted: *', function ()
 Queue::failing(function($connection, $job, $data)
 {
     \Event::fire('user.sendreport', [
-        'view'       => 'report-failed-jobs',
+        'view'       => 'emails.report-failed-jobs',
         'subject'    => trans('emails.failed_job_subject'),
         'data'    => ['message' => trans('emails.failed_job_message', [$job->id])],
     ]);
