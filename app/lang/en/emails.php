@@ -42,6 +42,7 @@ return [
     'group_invite_message'        => "You have been invited to join the Biospex group :group. Please click the link below to register using this email address.",
     'ocr_complete'                => "OCR Process Complete",
     'contact'                     => "Contact Form",
+    'contact_subject'             => "Biospex Contact Form",
     'contact_first'               => "First Name",
     'contact_last'                => "Last Name",
     'contact_email'               => "Email",
