@@ -6,11 +6,11 @@
 <body>
 <h2>{{ trans('emails.contact') }}</h2>
 
-<p><b>{{ trans('emails.contact_first') }}:</b> {{{ $firstName }}}</p>
-<p><b>{{ trans('emails.contact_last') }}:</b> {{{ $lastName }}}</p>
+<p><b>{{ trans('emails.contact_first') }}:</b> {{{ $first_name }}}</p>
+<p><b>{{ trans('emails.contact_last') }}:</b> {{{ $last_name }}}</p>
 <p><b>{{ trans('emails.contact_email') }}:</b> {{{ $email }}}</p>
 <p><b>{{ trans('emails.contact_message') }}:</b><br />
-    {{{ $message }}}
+    {{{ $email_message }}}
 </p>
 </body>
 </html>
