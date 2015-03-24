@@ -17,6 +17,8 @@ return [
     'dataDir'           => storage_path() . '/data',
     'dataTmp'           => storage_path() . '/data/tmp',
 
+    'disableConfig'     => true,
+
     /*
      * OCR
      */
