@@ -188,6 +188,11 @@ class SubjectProcess {
 	 */
 	private $queue;
 
+    /**
+     * @var mixed
+     */
+    private $disableOcr;
+
 	/**
 	 * Constructor
 	 *
@@ -219,6 +224,7 @@ class SubjectProcess {
 
 		$this->identifiers = \Config::get('config.identifiers');
 		$this->ocrCrop = \Config::get('config.ocrCrop');
+        $this->disableOcr = \Config::get('config.disableOcr');
 		$this->queue = \Config::get('config.beanstalkd.ocr');
 
 	}
@@ -413,7 +419,9 @@ class SubjectProcess {
 			return;
 
 		$id = $this->saveOcrQueue($data, $count);
-		\Queue::push('Biospex\Services\Queue\OcrService', ['id' => $id], $this->queue);
+
+		if ( ! $this->disableOcr)
+            \Queue::push('Biospex\Services\Queue\OcrService', ['id' => $id], $this->queue);
 
 		return;
 	}
