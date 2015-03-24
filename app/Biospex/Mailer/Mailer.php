@@ -27,7 +27,7 @@ use Mail;
 
 abstract class Mailer {
 
-	public function sendTo ($from, $email, $subject, $view, $data = array(), $attachments = array())
+	public function sendTo ($from, $email, $subject, $view, $data = [], $attachments = [])
 	{
 		Mail::queue($view, $data, function ($message) use ($from, $email, $subject, $attachments)
 		{
