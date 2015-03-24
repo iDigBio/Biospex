@@ -41,6 +41,11 @@ return [
     'group_invite_subject'        => "Bisopex Group Invite",
     'group_invite_message'        => "You have been invited to join the Biospex group :group. Please click the link below to register using this email address.",
     'ocr_complete'                => "OCR Process Complete",
+    'contact'                     => "Contact Form",
+    'contact_first'               => "First Name",
+    'contact_last'                => "Last Name",
+    'contact_email'               => "Email",
+    'contact_message'             => "Message",
 
     'error'                       => "Biospex error report.",
     'error_import'                => "An error has occurred during data import.",
@@ -56,7 +61,7 @@ return [
     'error_csv_row_count'         => "Header column count does not match row count. :headers headers / :rows rows",
     'error_csv_build_header'      => "Undefined index for :key => :qualified when building header for csv import.",
     'error_csv_core_delimiter'    => "CSV core delimiter is empty.",
-    'error_csv_ext_delimiter'    => "CSV extension delimiter is empty.",
+    'error_csv_ext_delimiter'     => "CSV extension delimiter is empty.",
     'error_load_xml'              => "Unable to load dom document for meta id :id",
     'error_build_image_dir'       => "No images were retrieved during build for Expedition Id :id.",
 
