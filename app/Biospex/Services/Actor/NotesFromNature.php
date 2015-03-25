@@ -197,15 +197,19 @@ class NotesFromNature extends ActorAbstract
 		$this->createDir($this->tmpFileDir);
 		$this->writeDir($this->tmpFileDir);
 
+        \Log::alert("Building image directory for {$this->record->id}");
 		$this->buildImgDir();
         \Log::alert("Finished building image directory for {$this->record->id}");
 
+        \Log::alert("Start processing images for {$this->record->id}");
         $this->processImages();
         \Log::alert("Processed images for {$this->record->id}");
 
+        \Log::alert("Saving details file for {$this->record->id}");
 		$this->saveFile("{$this->tmpFileDir}/details.js", json_encode($this->metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         \Log::alert("Saved details file for {$this->record->id}");
 
+        \Log::alert("Executing tar command for {$this->record->id}");
         $this->executeCommand("tar -czf {$this->dataDir}/$title.tar.gz {$this->tmpFileDir}");
         \Log::alert("Executed tar file for {$this->record->id}");
 
@@ -285,8 +289,12 @@ class NotesFromNature extends ActorAbstract
         $data = array();
 
         $files = $this->filesystem->files($this->tmpFileDir);
-		$lrgTargetPath = $this->tmpFileDir . '/large';
-		$smTargetPath = $this->tmpFileDir . '/small';
+
+        $lrgTargetPath = $this->tmpFileDir . '/large';
+        $this->image->createDirectory($lrgTargetPath);
+
+        $smTargetPath = $this->tmpFileDir . '/small';
+        $this->image->createDirectory($smTargetPath);
 
         $this->metadata['sourceDir'] = $this->tmpFileDir;
         $this->metadata['targetDir'] = $this->tmpFileDir;
@@ -296,6 +304,7 @@ class NotesFromNature extends ActorAbstract
         $this->metadata['highResWidth'] = $this->largeWidth;
         $this->metadata['lowResWidth'] = $this->smallWidth;
 
+        \Log::alert("Looping through images for {$this->record->id}");
         $i = 0;
 		foreach ($files as $key => $filePath)
 		{
@@ -326,25 +335,25 @@ class NotesFromNature extends ActorAbstract
 			$data['small']['width'] = $this->smallWidth;
 			$data['small']['height'] = $smTargetHeight;
 
-			$this->image->createDirectory($lrgTargetPath);
 			$this->image->setWidth($this->largeWidth);
 			$this->image->setHeight($lrgTargetHeight);
 			$this->image->resizeImage($sourceFilePath, $targetFilePathLg);
 
-			$this->image->createDirectory($smTargetPath);
 			$this->image->setWidth($this->smallWidth);
 			$this->image->setHeight($smTargetHeight);
 			$this->image->resizeImage($sourceFilePath, $targetFilePathSm);
 
             $this->metadata['images'][] = $data;
 
-			$this->filesystem->delete($filePath);
+			if ( ! $this->filesystem->delete($filePath))
+                Log::error('Failed to delete image: ' . $filePath);
 
             $i++;
         }
+
 		$this->metadata['total'] = $i * 2;
 
-        return true;
+        return;
     }
 
 	protected function setProportion($width, $height, $limit)

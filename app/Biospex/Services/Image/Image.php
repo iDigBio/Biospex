@@ -137,10 +137,19 @@ class Image {
 	 */
 	public function createDirectory($path)
 	{
-		if ( ! File::isDirectory($path))
-		{
-			File::makeDirectory($path, 777, true);
-		}
+        try
+        {
+            if ( ! File::isDirectory($path))
+            {
+                File::makeDirectory($path, 777, true);
+            }
+        }
+        catch (\Exception $e)
+        {
+            throw new \RuntimeException("Could not create directory." . $e->getMessage());
+        }
+
+        return;
 	}
 
 	/**
