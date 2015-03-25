@@ -304,14 +304,18 @@ class NotesFromNature extends ActorAbstract
         $this->metadata['highResWidth'] = $this->largeWidth;
         $this->metadata['lowResWidth'] = $this->smallWidth;
 
-        \Log::alert("Looping through images for {$this->record->id}");
+        \Log::alert("Looping through images");
         $i = 0;
 		foreach ($files as $key => $filePath)
 		{
+            \Log::alert("Getting image size");
             list($width, $height) = getimagesize($filePath); // $width, $height, $type, $attr
-			$sourceInfo = pathinfo($filePath); // $dirname, $basename, $extension, $filename
+
+            \Log::alert("Getting image path info");
+            $sourceInfo = pathinfo($filePath); // $dirname, $basename, $extension, $filename
 			$sourceFilePath = $sourceInfo['dirname'] . '/' . $sourceInfo['basename'];
 
+            \Log::alert("Setting image proportion");
 			$lrgTargetHeight = $this->setProportion($width, $height, $this->largeWidth);
 			$lrgTargetName = "{$sourceInfo['filename']}.large.png";
 			$targetFilePathLg = $lrgTargetPath . '/' . $lrgTargetName;
@@ -322,7 +326,7 @@ class NotesFromNature extends ActorAbstract
 
 			// Set array
 			$data['identifier'] = $this->identifierArray[$sourceInfo['filename']];
-			$data['original']['path'] = array($sourceInfo['filename'], ".{$sourceInfo['extension']}");
+			$data['original']['path'] = [$sourceInfo['filename'], ".{$sourceInfo['extension']}"];
 			$data['original']['name'] = $sourceInfo['basename'];
             $data['original']['width'] = $width;
             $data['original']['height'] = $height;
@@ -335,6 +339,7 @@ class NotesFromNature extends ActorAbstract
 			$data['small']['width'] = $this->smallWidth;
 			$data['small']['height'] = $smTargetHeight;
 
+            \Log::alert("Setting image and resizing {$filePath}");
 			$this->image->setWidth($this->largeWidth);
 			$this->image->setHeight($lrgTargetHeight);
 			$this->image->resizeImage($sourceFilePath, $targetFilePathLg);
@@ -342,14 +347,18 @@ class NotesFromNature extends ActorAbstract
 			$this->image->setWidth($this->smallWidth);
 			$this->image->setHeight($smTargetHeight);
 			$this->image->resizeImage($sourceFilePath, $targetFilePathSm);
+            \Log::alert("Finished setting image and resizing {$filePath}");
 
             $this->metadata['images'][] = $data;
 
+            \Log::alert("Deleting {$filePath}");
 			if ( ! $this->filesystem->delete($filePath))
                 Log::error('Failed to delete image: ' . $filePath);
 
             $i++;
         }
+
+        \Log::alert("Finshed image loop");
 
 		$this->metadata['total'] = $i * 2;
 
