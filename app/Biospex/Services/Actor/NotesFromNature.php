@@ -196,13 +196,18 @@ class NotesFromNature extends ActorAbstract
 
 		$this->createDir($this->tmpFileDir);
 		$this->writeDir($this->tmpFileDir);
+
 		$this->buildImgDir();
+        \Log::alert("Finished building image directory for {$this->record->id}");
 
         $this->processImages();
+        \Log::alert("Processed images for {$this->record->id}");
 
 		$this->saveFile("{$this->tmpFileDir}/details.js", json_encode($this->metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        \Log::alert("Saved details file for {$this->record->id}");
 
         $this->executeCommand("tar -czf {$this->dataDir}/$title.tar.gz {$this->tmpFileDir}");
+        \Log::alert("Executed tar file for {$this->record->id}");
 
 		if (!empty($this->missingImg))
 		{
