@@ -29,7 +29,7 @@ class NotesFromNature extends ActorAbstract
     /**
      * @var array
      */
-    protected $states = array();
+    protected $states = [];
 
 	/**
 	 * Actor object
@@ -62,10 +62,17 @@ class NotesFromNature extends ActorAbstract
     protected $tmpFileDir;
 
     /**
+     * Full path to downloaded images
+     *
+     * @var
+     */
+    protected $tmpImageDir;
+
+    /**
      * CSV header array associated with meta file
      * @var array
      */
-    protected $metaHeader = array();
+    protected $metaHeader = [];
 
     /**
      * Remote image column from csv import
@@ -78,19 +85,19 @@ class NotesFromNature extends ActorAbstract
      *
      * @var array
      */
-    protected $missingImg = array();
+    protected $missingImg = [];
 
     /**
      * Data array for images
      * @var array
      */
-    protected $data = array();
+    protected $data = [];
 
     /**
      * Metadata array for images
      * @var array
      */
-    protected $metadata = array();
+    protected $metadata = [];
 
     /**
      * Array to hold subjects and identifiers
@@ -144,14 +151,14 @@ class NotesFromNature extends ActorAbstract
 
         if (empty($this->record))
         {
-            $this->report->addError(trans('emails.error_process', array('id' => $this->expeditionId)));
+            $this->report->addError(trans('emails.error_process', ['id' => $this->expeditionId]));
 			$this->report->reportSimpleError($this->record->project->group->id);
 
             return;
         }
 
 		try {
-            $result = call_user_func(array($this, $this->states[$this->actor->pivot->state]));
+            $result = call_user_func([$this, $this->states[$this->actor->pivot->state]]);
 
 			if ( ! $result)
 				return;
@@ -193,9 +200,10 @@ class NotesFromNature extends ActorAbstract
     {
 		$title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10)));
         $this->tmpFileDir = "{$this->dataDir}/$title";
+        $this->tmpImageDir = $this->tmpImageDir . '/tmp';
 
-		$this->createDir($this->tmpFileDir);
-		$this->writeDir($this->tmpFileDir);
+		$this->createDir($this->tmpImageDir);
+		$this->writeDir($this->tmpImageDir);
 
         \Log::alert("Building image directory for {$this->record->id}");
 		$this->buildImgDir();
@@ -208,6 +216,10 @@ class NotesFromNature extends ActorAbstract
         \Log::alert("Saving details file for {$this->record->id}");
 		$this->saveFile("{$this->tmpFileDir}/details.js", json_encode($this->metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         \Log::alert("Saved details file for {$this->record->id}");
+
+        \Log::alert("Deleting tmp image directory");
+        if ( ! $this->filesystem->deleteDirectory($this->tmpFileDir))
+            Log::error('Failed to delete tmp image directory');
 
         \Log::alert("Executing tar command for {$this->record->id}");
         $this->executeCommand("tar -czf {$this->dataDir}/$title.tar.gz {$this->tmpFileDir}");
@@ -268,7 +280,7 @@ class NotesFromNature extends ActorAbstract
 				continue;
 			}
 
-			$path = $this->tmpFileDir . '/' . $subject->_id . $ext;
+			$path = $this->tmpImageDir . '/' . $subject->_id . $ext;
 
 			$this->saveFile($path, $image);
 
@@ -276,7 +288,7 @@ class NotesFromNature extends ActorAbstract
         }
 
 		if ($i == 0)
-			throw new \RuntimeException(trans('emails.error_build_image_dir', array('id' => $this->record->id)));
+			throw new \RuntimeException(trans('emails.error_build_image_dir', ['id' => $this->record->id]));
 
 		return;
     }
@@ -286,9 +298,9 @@ class NotesFromNature extends ActorAbstract
      */
     protected function processImages()
     {
-        $data = array();
+        $data = [];
 
-        $files = $this->filesystem->files($this->tmpFileDir);
+        $files = $this->filesystem->files($this->tmpImageDir);
 
         $lrgTargetPath = $this->tmpFileDir . '/large';
         $this->image->createDirectory($lrgTargetPath);
@@ -296,8 +308,8 @@ class NotesFromNature extends ActorAbstract
         $smTargetPath = $this->tmpFileDir . '/small';
         $this->image->createDirectory($smTargetPath);
 
-        $this->metadata['sourceDir'] = $this->tmpFileDir;
-        $this->metadata['targetDir'] = $this->tmpFileDir;
+        $this->metadata['sourceDir'] = $this->tmpImageDir;
+        $this->metadata['targetDir'] = $this->tmpImageDir;
         $this->metadata['created_at'] = date('l jS F Y', time());
 		$this->metadata['highResDir'] = $lrgTargetPath;
 		$this->metadata['lowResDir'] = $smTargetPath;
@@ -350,10 +362,6 @@ class NotesFromNature extends ActorAbstract
             \Log::alert("Finished setting image and resizing {$filePath}");
 
             $this->metadata['images'][] = $data;
-
-            \Log::alert("Deleting {$filePath}");
-			if ( ! $this->filesystem->delete($filePath))
-                Log::error('Failed to delete image: ' . $filePath);
 
             $i++;
         }
