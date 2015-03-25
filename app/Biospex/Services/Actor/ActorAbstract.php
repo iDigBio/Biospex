@@ -114,7 +114,7 @@ abstract class ActorAbstract {
     {
         if ( ! $this->filesystem->isDirectory($dir))
         {
-            if ( ! $this->filesystem->makeDirectory($dir, 0777, true))
+            if ( ! $this->filesystem->makeDirectory($dir, 0775, true))
 				throw new \RuntimeException(trans('emails.error_create_dir', array('directory' => $dir)));
         }
 
@@ -131,7 +131,7 @@ abstract class ActorAbstract {
     {
         if ( ! $this->filesystem->isWritable($dir))
         {
-            if ( ! chmod($dir, 0777))
+            if ( ! chmod($dir, 0775))
 				throw new \RuntimeException(trans('emails.error_write_dir', array('directory' => $dir)));
         }
 
