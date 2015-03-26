@@ -317,17 +317,24 @@ class NotesFromNature extends ActorAbstract
 			$data['small']['width'] = $this->smallWidth;
 			$data['small']['height'] = $smTargetHeight;
 
-			$this->image->setWidth($this->largeWidth);
-			$this->image->setHeight($lrgTargetHeight);
-			$this->image->resizeImage($sourceFilePath, $targetFilePathLg);
+            $width = "{$this->largeWidth}x{$this->largeWidth}";
+            shell_exec("gm convert -size $width $sourceFilePath -resize $width $targetFilePathLg");
+			//$this->image->setWidth($this->largeWidth);
+			//$this->image->setHeight($lrgTargetHeight);
+			//$this->image->resizeImage($sourceFilePath, $targetFilePathLg);
 
-			$this->image->setWidth($this->smallWidth);
-			$this->image->setHeight($smTargetHeight);
-			$this->image->resizeImage($sourceFilePath, $targetFilePathSm);
+            $width = "{$this->largeWidth}x{$this->smallWidth}";
+            shell_exec("gm convert -size $width $sourceFilePath -resize $width $targetFilePathSm");
+
+			//$this->image->setWidth($this->smallWidth);
+			//$this->image->setHeight($smTargetHeight);
+			//$this->image->resizeImage($sourceFilePath, $targetFilePathSm);
 
             $this->metadata['images'][] = $data;
 
 			$this->filesystem->delete($filePath);
+
+            \Log::alert("Processed $sourceFilePath");
 
             $i++;
         }
