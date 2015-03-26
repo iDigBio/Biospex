@@ -31,15 +31,15 @@ class NotesFromNature extends ActorAbstract
      */
     protected $states = [];
 
-	/**
-	 * Actor object
-	 */
-	protected $actor;
+    /**
+     * Actor object
+     */
+    protected $actor;
 
-	/**
-	 * Expedition Id
-	 */
-	protected $expeditionId;
+    /**
+     * Expedition Id
+     */
+    protected $expeditionId;
 
     /**
      * Current expedition being processed
@@ -62,6 +62,13 @@ class NotesFromNature extends ActorAbstract
     protected $tmpFileDir;
 
     /**
+     * Full path to downloaded images
+     *
+     * @var
+     */
+    protected $tmpImageDir;
+
+    /**
      * CSV header array associated with meta file
      * @var array
      */
@@ -71,7 +78,7 @@ class NotesFromNature extends ActorAbstract
      * Remote image column from csv import
      * @var
      */
-	protected $accessUri = "accessURI";
+    protected $accessUri = "accessURI";
 
     /**
      * Missing image when retrieving via curl
@@ -113,23 +120,23 @@ class NotesFromNature extends ActorAbstract
      */
     private $smallWidth  = 580;
 
-	/**
-	 * Set properties
-	 *
-	 * @param $actor
-	 */
-	public function setProperties ($actor)
+    /**
+     * Set properties
+     *
+     * @param $actor
+     */
+    public function setProperties ($actor)
     {
-		$this->states = [
+        $this->states = [
             'export',
             'getStatus',
             'getResults',
             'completed',
             'analyze',
-		];
+        ];
 
-		$this->actor = $actor;
-		$this->expeditionId = $actor->pivot->expedition_id;
+        $this->actor = $actor;
+        $this->expeditionId = $actor->pivot->expedition_id;
 
         return;
     }
@@ -139,28 +146,28 @@ class NotesFromNature extends ActorAbstract
      */
     public function process()
     {
-		$this->expedition->setPass(true);
-		$this->record = $this->expedition->findWith($this->expeditionId, ['project.group', 'subjects']);
+        $this->expedition->setPass(true);
+        $this->record = $this->expedition->findWith($this->expeditionId, ['project.group', 'subjects']);
 
         if (empty($this->record))
         {
             $this->report->addError(trans('emails.error_process', ['id' => $this->expeditionId]));
-			$this->report->reportSimpleError($this->record->project->group->id);
+            $this->report->reportSimpleError($this->record->project->group->id);
 
             return;
         }
 
-		try {
+        try {
             $result = call_user_func([$this, $this->states[$this->actor->pivot->state]]);
 
-			if ( ! $result)
-				return;
+            if ( ! $result)
+                return;
         }
         catch ( Exception $e )
         {
             $this->report->addError($e->getMessage());
-			$this->report->reportSimpleError($this->record->project->group->id);
-			$this->filesystem->deleteDirectory($this->tmpFileDir);
+            $this->report->reportSimpleError($this->record->project->group->id);
+            $this->filesystem->deleteDirectory($this->tmpFileDir);
 
             return;
         }
@@ -191,20 +198,31 @@ class NotesFromNature extends ActorAbstract
      */
     public function export()
     {
-        $this->setPaths();
-        \Log::alert("Paths created.");
+        $title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10)));
+        $this->tmpFileDir = "{$this->dataDir}/$title";
+        $this->tmpImageDir = $this->tmpImageDir . '/tmp';
 
-        \Log::alert("Building images for {$this->record->id}");
-        $this->buildImg();
-        \Log::alert("Finished building images for {$this->record->id}");
+        $this->createDir($this->tmpImageDir);
+        $this->writeDir($this->tmpImageDir);
 
+        \Log::alert("Building image directory for {$this->record->id}");
+        $this->buildImgDir();
+        \Log::alert("Finished building image directory for {$this->record->id}");
+
+        \Log::alert("Start processing images for {$this->record->id}");
+        $this->processImages();
+        \Log::alert("Processed images for {$this->record->id}");
 
         \Log::alert("Saving details file for {$this->record->id}");
         $this->saveFile("{$this->tmpFileDir}/details.js", json_encode($this->metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         \Log::alert("Saved details file for {$this->record->id}");
 
+        \Log::alert("Deleting tmp image directory");
+        if ( ! $this->filesystem->deleteDirectory($this->tmpFileDir))
+            Log::error('Failed to delete tmp image directory');
+
         \Log::alert("Executing tar command for {$this->record->id}");
-        $this->executeCommand("tar -czf {$this->dataDir}/{$this->title}.tar.gz {$this->tmpFileDir}");
+        $this->executeCommand("tar -czf {$this->dataDir}/$title.tar.gz {$this->tmpFileDir}");
         \Log::alert("Executed tar file for {$this->record->id}");
 
         if (!empty($this->missingImg))
@@ -213,7 +231,7 @@ class NotesFromNature extends ActorAbstract
             $this->report->missingImages($groupId, $this->record->title, $this->missingImg);
         }
 
-        $this->createDownload($this->record->id, $this->actor->id, "$this->title.tar.gz");
+        $this->createDownload($this->record->id, $this->actor->id, "$title.tar.gz");
 
         $this->filesystem->deleteDirectory($this->tmpFileDir);
 
@@ -227,143 +245,136 @@ class NotesFromNature extends ActorAbstract
         return true;
     }
 
-    protected function setPaths()
+    /**
+     * Process expedition for export
+     */
+    protected function buildImgDir()
     {
-        $this->title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10)));
-        $this->tmpFileDir = "{$this->dataDir}/$this->title";
-        $this->createDir($this->tmpFileDir);
-        $this->writeDir($this->tmpFileDir);
+        $i = 0;
+        foreach ($this->record->subjects as $subject)
+        {
+            // Sets up array for retrieving identifier when building details.js
+            $this->identifierArray[$subject->_id] = $subject->id;
 
-        $this->lrgTargetPath = $this->tmpFileDir . '/large';
-        $this->createDir($this->lrgTargetPath);
-        $this->writeDir($this->lrgTargetPath);
+            $uri = $subject->{$this->accessUri};
 
-        $this->smTargetPath = $this->tmpFileDir . '/small';
-        $this->createDir($this->smTargetPath);
-        $this->writeDir($this->smTargetPath);
+            if (empty($uri))
+            {
+                $this->missingImg[] = $subject->id;
+                continue;
+            }
+
+            $image = $this->image->getImageFromUrl($uri);
+
+            if (empty($image))
+            {
+                $this->missingImg[] = $subject->id . ' : ' . $uri;
+                continue;
+            }
+
+            $ext = $this->image->getExtension($image, true);
+
+            if ( ! $ext)
+            {
+                $this->missingImg[] = $subject->id . ' : ' . $uri;
+                continue;
+            }
+
+            $path = $this->tmpImageDir . '/' . $subject->_id . $ext;
+
+            $this->saveFile($path, $image);
+
+            $i++;
+        }
+
+        if ($i == 0)
+            throw new \RuntimeException(trans('emails.error_build_image_dir', ['id' => $this->record->id]));
 
         return;
     }
 
     /**
-     * Process expedition for export
+     * Process images for NfN for an expedition
      */
-    protected function buildImg()
+    protected function processImages()
     {
-        $this->buildMetaData();
+        $data = [];
 
+        $files = $this->filesystem->files($this->tmpImageDir);
+
+        $lrgTargetPath = $this->tmpFileDir . '/large';
+        $this->image->createDirectory($lrgTargetPath);
+
+        $smTargetPath = $this->tmpFileDir . '/small';
+        $this->image->createDirectory($smTargetPath);
+
+        $this->metadata['sourceDir'] = $this->tmpImageDir;
+        $this->metadata['targetDir'] = $this->tmpImageDir;
+        $this->metadata['created_at'] = date('l jS F Y', time());
+        $this->metadata['highResDir'] = $lrgTargetPath;
+        $this->metadata['lowResDir'] = $smTargetPath;
+        $this->metadata['highResWidth'] = $this->largeWidth;
+        $this->metadata['lowResWidth'] = $this->smallWidth;
+
+        \Log::alert("Looping through images");
         $i = 0;
-		foreach ($this->record->subjects as $subject)
+        foreach ($files as $key => $filePath)
         {
-			// Sets up array for retrieving identifier when building details.js
-            $this->identifierArray[$subject->_id] = $subject->id;
+            \Log::alert("Getting image size");
+            list($width, $height) = getimagesize($filePath); // $width, $height, $type, $attr
 
-			$uri = $subject->{$this->accessUri};
+            \Log::alert("Getting image path info");
+            $sourceInfo = pathinfo($filePath); // $dirname, $basename, $extension, $filename
+            $sourceFilePath = $sourceInfo['dirname'] . '/' . $sourceInfo['basename'];
 
-			if (empty($uri))
-			{
-				$this->missingImg[] = $subject->id;
-				continue;
-			}
+            \Log::alert("Setting image proportion");
+            $lrgTargetHeight = $this->setProportion($width, $height, $this->largeWidth);
+            $lrgTargetName = "{$sourceInfo['filename']}.large.png";
+            $targetFilePathLg = $lrgTargetPath . '/' . $lrgTargetName;
 
-			$image = $this->image->getImageFromUrl($uri);
+            $smTargetHeight = $this->setProportion($width, $height, $this->smallWidth);
+            $smTargetName = "{$sourceInfo['filename']}.small.png";
+            $targetFilePathSm = $smTargetPath . '/' . $smTargetName;
 
-			if (empty($image))
-			{
-				$this->missingImg[] = $subject->id . ' : ' . $uri;
-				continue;
-			}
+            // Set array
+            $data['identifier'] = $this->identifierArray[$sourceInfo['filename']];
+            $data['original']['path'] = [$sourceInfo['filename'], ".{$sourceInfo['extension']}"];
+            $data['original']['name'] = $sourceInfo['basename'];
+            $data['original']['width'] = $width;
+            $data['original']['height'] = $height;
 
-			$ext = $this->image->getExtension($image, true);
+            $data['large']['name'] = "large/$lrgTargetName";
+            $data['large']['width'] = $this->largeWidth;
+            $data['large']['height'] = $lrgTargetHeight;
 
-			if ( ! $ext)
-			{
-				$this->missingImg[] = $subject->id . ' : ' . $uri;
-				continue;
-			}
+            $data['small']['name'] = "small/$smTargetName";
+            $data['small']['width'] = $this->smallWidth;
+            $data['small']['height'] = $smTargetHeight;
 
-			$path = $this->tmpFileDir . '/' . $subject->_id . $ext;
+            \Log::alert("Setting image and resizing {$filePath}");
+            $this->image->setWidth($this->largeWidth);
+            $this->image->setHeight($lrgTargetHeight);
+            $this->image->resizeImage($sourceFilePath, $targetFilePathLg);
 
-			$this->saveFile($path, $image);
+            $this->image->setWidth($this->smallWidth);
+            $this->image->setHeight($smTargetHeight);
+            $this->image->resizeImage($sourceFilePath, $targetFilePathSm);
+            \Log::alert("Finished setting image and resizing {$filePath}");
 
-            $this->processImage($path);
+            $this->metadata['images'][] = $data;
 
             $i++;
         }
 
-		if ($i == 0)
-			throw new \RuntimeException(trans('emails.error_build_image_dir', ['id' => $this->record->id]));
+        \Log::alert("Finshed image loop");
 
-        $this->metadata['images'][] = $this->data;
         $this->metadata['total'] = $i * 2;
 
-		return;
-    }
-
-    protected function processImage($filePath)
-    {
-        \Log::alert("Getting image size");
-        list($width, $height) = getimagesize($filePath); // $width, $height, $type, $attr
-
-        \Log::alert("Getting image path info");
-        $sourceInfo = pathinfo($filePath); // $dirname, $basename, $extension, $filename
-        $sourceFilePath = $sourceInfo['dirname'] . '/' . $sourceInfo['basename'];
-
-        \Log::alert("Setting image proportion");
-        $lrgTargetHeight = $this->setProportion($width, $height, $this->largeWidth);
-        $lrgTargetName = "{$sourceInfo['filename']}.large.png";
-        $targetFilePathLg = $this->lrgTargetPath . '/' . $lrgTargetName;
-
-        $smTargetHeight = $this->setProportion($width, $height, $this->smallWidth);
-        $smTargetName = "{$sourceInfo['filename']}.small.png";
-        $targetFilePathSm = $this->smTargetPath . '/' . $smTargetName;
-
-        // Set array
-        $this->data[]['identifier'] = $this->identifierArray[$sourceInfo['filename']];
-        $this->data[]['original']['path'] = [$sourceInfo['filename'], ".{$sourceInfo['extension']}"];
-        $this->data[]['original']['name'] = $sourceInfo['basename'];
-        $this->data[]['original']['width'] = $width;
-        $this->data[]['original']['height'] = $height;
-
-        $this->data[]['large']['name'] = "large/$lrgTargetName";
-        $this->data[]['large']['width'] = $this->largeWidth;
-        $this->data[]['large']['height'] = $lrgTargetHeight;
-
-        $this->data[]['small']['name'] = "small/$smTargetName";
-        $this->data[]['small']['width'] = $this->smallWidth;
-        $this->data[]['small']['height'] = $smTargetHeight;
-
-        \Log::alert("Setting image and resizing {$filePath}");
-        $this->image->setWidth($this->largeWidth);
-        $this->image->setHeight($lrgTargetHeight);
-        $this->image->resizeImage($sourceFilePath, $targetFilePathLg);
-
-        $this->image->setWidth($this->smallWidth);
-        $this->image->setHeight($smTargetHeight);
-        $this->image->resizeImage($sourceFilePath, $targetFilePathSm);
-        \Log::alert("Finished setting image and resizing {$filePath}");
-
-        if ( ! $this->filesystem->delete($filePath))
-            \Log::alert("Could not delete {$filePath}");
-
         return;
     }
 
-    protected function buildMetaData()
+    protected function setProportion($width, $height, $limit)
     {
-        $this->metadata['sourceDir'] = $this->tmpFileDir;
-        $this->metadata['targetDir'] = $this->tmpFileDir;
-        $this->metadata['created_at'] = date('l jS F Y', time());
-        $this->metadata['highResDir'] = $this->lrgTargetPath;
-        $this->metadata['lowResDir'] = $this->smTargetPath;
-        $this->metadata['highResWidth'] = $this->largeWidth;
-        $this->metadata['lowResWidth'] = $this->smallWidth;
-
-        return;
+        return round(($height * $limit) / $width);
     }
-
-	protected function setProportion($width, $height, $limit)
-	{
-		return round(($height * $limit) / $width);
-	}
 }
