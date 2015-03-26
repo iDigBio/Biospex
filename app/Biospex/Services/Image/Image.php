@@ -105,17 +105,19 @@ class Image {
 	 */
 	public function resizeImage ($sourceFilePath, $targetFilePath)
 	{
+        $result = false;
+
 		try
 		{
 			$size = $this->createBox($this->width, $this->height);
-			$this->imagine->open($sourceFilePath)->resize($size)
+			$result = $this->imagine->open($sourceFilePath)->resize($size)
 				->save($targetFilePath, array('quality' => $this->quality));
 		} catch (\Exception $e)
 		{
 			Log::error('[IMAGE SERVICE] Failed to resize image. Source: "' . $sourceFilePath . ' :: Target: "' . $targetFilePath . ' [' . $e->getMessage() . ']');
 		}
 
-		return;
+		return $result;
 	}
 
 	/**
