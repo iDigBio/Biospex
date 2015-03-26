@@ -62,6 +62,24 @@ class NotesFromNature extends ActorAbstract
     protected $tmpFileDir;
 
     /**
+     * Path to large images inside temp folder
+     * @var
+     */
+    protected $lrgTargetPath;
+
+    /**
+     * Path to small images inside temp folder
+     * @var
+     */
+    protected $smTargetPath;
+
+    /**
+     * Title of temp folder and tar file
+     * @var
+     */
+    protected $title;
+
+    /**
      * CSV header array associated with meta file
      * @var array
      */
@@ -278,7 +296,6 @@ class NotesFromNature extends ActorAbstract
 
         $files = $this->filesystem->files($this->tmpFileDir);
 
-
         $this->metadata['sourceDir'] = $this->tmpFileDir;
         $this->metadata['targetDir'] = $this->tmpFileDir;
         $this->metadata['created_at'] = date('l jS F Y', time());
@@ -317,18 +334,16 @@ class NotesFromNature extends ActorAbstract
 			$data['small']['width'] = $this->smallWidth;
 			$data['small']['height'] = $smTargetHeight;
 
-            $width = "{$this->largeWidth}x{$this->largeWidth}";
-            shell_exec("gm convert -size $width $sourceFilePath -resize $width $targetFilePathLg");
-			//$this->image->setWidth($this->largeWidth);
-			//$this->image->setHeight($lrgTargetHeight);
-			//$this->image->resizeImage($sourceFilePath, $targetFilePathLg);
+            $this->image->setWidth($this->largeWidth);
+			$this->image->setHeight($lrgTargetHeight);
+			$this->image->resizeImage($sourceFilePath, $targetFilePathLg);
 
             $width = "{$this->largeWidth}x{$this->smallWidth}";
             shell_exec("gm convert -size $width $sourceFilePath -resize $width $targetFilePathSm");
 
-			//$this->image->setWidth($this->smallWidth);
-			//$this->image->setHeight($smTargetHeight);
-			//$this->image->resizeImage($sourceFilePath, $targetFilePathSm);
+			$this->image->setWidth($this->smallWidth);
+			$this->image->setHeight($smTargetHeight);
+			$this->image->resizeImage($sourceFilePath, $targetFilePathSm);
 
             $this->metadata['images'][] = $data;
 
