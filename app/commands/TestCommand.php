@@ -2,6 +2,7 @@
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Biospex\Services\Image\Image;
 
 class TestCommand extends Command {
 
@@ -18,11 +19,12 @@ class TestCommand extends Command {
     /**
      * Constructor
      */
-    public function __construct(Filesystem $filesystem)
+    public function __construct(Filesystem $filesystem, Image $image)
     {
         parent::__construct();
 
         $this->filesystem = $filesystem;
+        $this->image = $image;
     }
 
     /**
