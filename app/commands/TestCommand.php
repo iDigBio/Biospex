@@ -50,7 +50,6 @@ class TestCommand extends Command {
         list($width, $height) = getimagesize($path); // $width, $height, $type, $attr
         $targetHeight = $this->setProportion($width, $height, 580);
 
-
         $this->image->setWidth(580);
         $this->image->setHeight($targetHeight);
         $this->image->resizeImage($path, $test);
