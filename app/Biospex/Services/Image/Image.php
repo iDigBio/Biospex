@@ -112,7 +112,7 @@ class Image {
 				->save($targetFilePath, array('quality' => $this->quality));
 		} catch (\Exception $e)
 		{
-			Log::error('[IMAGE SERVICE] Failed to resize image "' . $sourceFilePath . '" [' . $e->getMessage() . ']');
+			Log::error('[IMAGE SERVICE] Failed to resize image. Source: "' . $sourceFilePath . ' :: Target: "' . $targetFilePath . ' [' . $e->getMessage() . ']');
 		}
 
 		return;
@@ -141,7 +141,7 @@ class Image {
         {
             if ( ! File::isDirectory($path))
             {
-                File::makeDirectory($path, 777, true);
+                File::makeDirectory($path, 775, true);
             }
         }
         catch (\Exception $e)

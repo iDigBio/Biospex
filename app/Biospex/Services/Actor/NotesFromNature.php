@@ -316,19 +316,19 @@ class NotesFromNature extends ActorAbstract
         $targetFilePathSm = $this->smTargetPath . '/' . $smTargetName;
 
         // Set array
-        $this->data['identifier'] = $this->identifierArray[$sourceInfo['filename']];
-        $this->data['original']['path'] = [$sourceInfo['filename'], ".{$sourceInfo['extension']}"];
-        $this->data['original']['name'] = $sourceInfo['basename'];
-        $this->data['original']['width'] = $width;
-        $this->data['original']['height'] = $height;
+        $this->data[]['identifier'] = $this->identifierArray[$sourceInfo['filename']];
+        $this->data[]['original']['path'] = [$sourceInfo['filename'], ".{$sourceInfo['extension']}"];
+        $this->data[]['original']['name'] = $sourceInfo['basename'];
+        $this->data[]['original']['width'] = $width;
+        $this->data[]['original']['height'] = $height;
 
-        $this->data['large']['name'] = "large/$lrgTargetName";
-        $this->data['large']['width'] = $this->largeWidth;
-        $this->data['large']['height'] = $lrgTargetHeight;
+        $this->data[]['large']['name'] = "large/$lrgTargetName";
+        $this->data[]['large']['width'] = $this->largeWidth;
+        $this->data[]['large']['height'] = $lrgTargetHeight;
 
-        $this->data['small']['name'] = "small/$smTargetName";
-        $this->data['small']['width'] = $this->smallWidth;
-        $this->data['small']['height'] = $smTargetHeight;
+        $this->data[]['small']['name'] = "small/$smTargetName";
+        $this->data[]['small']['width'] = $this->smallWidth;
+        $this->data[]['small']['height'] = $smTargetHeight;
 
         \Log::alert("Setting image and resizing {$filePath}");
         $this->image->setWidth($this->largeWidth);
