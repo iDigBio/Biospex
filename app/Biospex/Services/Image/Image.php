@@ -141,7 +141,7 @@ class Image {
         {
             if ( ! File::isDirectory($path))
             {
-                File::makeDirectory($path, 775, true);
+                File::makeDirectory($path, 777, true);
             }
         }
         catch (\Exception $e)

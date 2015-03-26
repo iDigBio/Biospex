@@ -235,9 +235,12 @@ class NotesFromNature extends ActorAbstract
         $this->writeDir($this->tmpFileDir);
 
         $this->lrgTargetPath = $this->tmpFileDir . '/large';
+        $this->createDir($this->lrgTargetPath);
+        $this->writeDir($this->lrgTargetPath);
+
         $this->smTargetPath = $this->tmpFileDir . '/small';
-        $this->image->createDirectory($this->lrgTargetPath);
-        $this->image->createDirectory($this->smTargetPath);
+        $this->createDir($this->smTargetPath);
+        $this->writeDir($this->smTargetPath);
 
         return;
     }
