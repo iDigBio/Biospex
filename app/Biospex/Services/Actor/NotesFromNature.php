@@ -245,6 +245,7 @@ class NotesFromNature extends ActorAbstract
     protected function buildImgDir()
     {
         $i = 0;
+        \Log::alert("Building image directory");
 		foreach ($this->record->subjects as $subject)
         {
 			// Sets up array for retrieving identifier when building details.js
@@ -284,6 +285,8 @@ class NotesFromNature extends ActorAbstract
 		if ($i == 0)
 			throw new \RuntimeException(trans('emails.error_build_image_dir', ['id' => $this->record->id]));
 
+        \Log::alert("Building image directory complete");
+
 		return;
     }
 
@@ -305,6 +308,7 @@ class NotesFromNature extends ActorAbstract
         $this->metadata['lowResWidth'] = $this->smallWidth;
 
         $i = 0;
+        \Log::alert("Processing images");
 		foreach ($files as $key => $filePath)
 		{
             list($width, $height) = getimagesize($filePath); // $width, $height, $type, $attr
@@ -334,26 +338,26 @@ class NotesFromNature extends ActorAbstract
 			$data['small']['width'] = $this->smallWidth;
 			$data['small']['height'] = $smTargetHeight;
 
+            \Log::alert("Saving $targetFilePathLg");
             $this->image->setWidth($this->largeWidth);
 			$this->image->setHeight($lrgTargetHeight);
 			$this->image->resizeImage($sourceFilePath, $targetFilePathLg);
 
-            $width = "{$this->largeWidth}x{$this->smallWidth}";
-            shell_exec("gm convert -size $width $sourceFilePath -resize $width $targetFilePathSm");
-
+            \Log::alert("Saving $targetFilePathSm");
 			$this->image->setWidth($this->smallWidth);
 			$this->image->setHeight($smTargetHeight);
 			$this->image->resizeImage($sourceFilePath, $targetFilePathSm);
 
             $this->metadata['images'][] = $data;
 
+            \Log::alert("Deleting $filePath");
 			$this->filesystem->delete($filePath);
-
-            \Log::alert("Processed $sourceFilePath");
 
             $i++;
         }
 		$this->metadata['total'] = $i * 2;
+
+        \Log::alert("Completed processing images.");
 
         return true;
     }
