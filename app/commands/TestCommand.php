@@ -59,4 +59,12 @@ class TestCommand extends Command {
         return isset($this->imageTypeExtension[$info['mime']]) ?
             $this->imageTypeExtension[$info['mime']] : false;
     }
+
+    public function saveFile($path, $contents)
+    {
+        if ( ! $this->filesystem->put($path, $contents))
+            throw new \RuntimeException(trans('emails.error_save_file', array('directory' => "$path/details.js")));
+
+        return;
+    }
 }
