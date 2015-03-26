@@ -43,7 +43,7 @@ return [
         'thumbOutputDir'     => storage_path() . '/images',
         'thumbWidth'         => 150,
         'thumbHeight'        => 150,
-        'library'            => 'gmagick',
+        'library'            => 'imagick',
         'quality'            => 100,
         'imageTypeExtension' => [
             'image/jpeg' => ".jpg",
