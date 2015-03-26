@@ -47,7 +47,9 @@ class TestCommand extends Command {
 
         $this->saveFile($path, $image);
 
-        shell_exec("gm convert -size 580X580 " . $path . " -resize 580X580 " . $test);
+        exec("gm convert -size 580X580 " . $path . " -resize 580X580 " . $test, $retArr, $retVal);
+        print_r($retArr);
+        print_r($retVal);
 
         return;
     }
