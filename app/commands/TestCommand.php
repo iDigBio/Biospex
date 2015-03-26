@@ -47,9 +47,13 @@ class TestCommand extends Command {
 
         $this->saveFile($path, $image);
 
-        exec("gm convert -size 580X580 " . $path . " -resize 580X580 " . $test, $retArr, $retVal);
-        print_r($retArr);
-        print_r($retVal);
+        list($width, $height) = getimagesize($path); // $width, $height, $type, $attr
+        $targetHeight = $this->setProportion($width, $height, 580);
+
+
+        $this->image->setWidth(580);
+        $this->image->setHeight($targetHeight);
+        $this->image->resizeImage($path, $test);
 
         return;
     }
@@ -68,5 +72,10 @@ class TestCommand extends Command {
             throw new \RuntimeException(trans('emails.error_save_file', array('directory' => "$path/details.js")));
 
         return;
+    }
+
+    protected function setProportion($width, $height, $limit)
+    {
+        return round(($height * $limit) / $width);
     }
 }
