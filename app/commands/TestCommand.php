@@ -53,6 +53,9 @@ class TestCommand extends Command {
 
         $this->image->setWidth(580);
         $this->image->setHeight($targetHeight);
+        $result = $this->image->resizeImage($path, $test);
+
+        /*
         do
         {
             $result = $this->image->resizeImage($path, $test);
@@ -60,7 +63,7 @@ class TestCommand extends Command {
         while( ! $result);
 
         print_r($result);
-
+        */
         return;
     }
 
