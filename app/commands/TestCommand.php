@@ -52,7 +52,9 @@ class TestCommand extends Command {
 
         $this->image->setWidth(580);
         $this->image->setHeight($targetHeight);
-        $this->image->resizeImage($path, $test);
+        $result = $this->image->resizeImage($path, $test);
+
+        print_r($result);
 
         return;
     }
