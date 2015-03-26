@@ -217,10 +217,6 @@ class NotesFromNature extends ActorAbstract
         $this->saveFile("{$this->tmpFileDir}/details.js", json_encode($this->metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         \Log::alert("Saved details file for {$this->record->id}");
 
-        \Log::alert("Deleting tmp image directory");
-        if ( ! $this->filesystem->deleteDirectory($this->tmpFileDir))
-            Log::error('Failed to delete tmp image directory');
-
         \Log::alert("Executing tar command for {$this->record->id}");
         $this->executeCommand("tar -czf {$this->dataDir}/$title.tar.gz {$this->tmpFileDir}");
         \Log::alert("Executed tar file for {$this->record->id}");
@@ -362,6 +358,10 @@ class NotesFromNature extends ActorAbstract
             \Log::alert("Finished setting image and resizing {$filePath}");
 
             $this->metadata['images'][] = $data;
+
+            \Log::alert("Deleting image");
+            if ( ! $this->filesystem->delete($filePath))
+                Log::error('Failed to delete image');
 
             $i++;
         }
