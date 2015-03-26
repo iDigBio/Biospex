@@ -42,8 +42,8 @@ class TestCommand extends Command {
 
         $ext = $this->image->getExtension($image, true);
 
-        $path = public_path() . '/test.' . $ext;
-        $test = public_path() . '/resized.' . $ext;
+        $path = storage_path() . '/test.' . $ext;
+        $test = storage_path() . '/resized.' . $ext;
 
         $this->saveFile($path, $image);
 
