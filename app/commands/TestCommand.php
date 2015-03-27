@@ -32,7 +32,7 @@ class TestCommand extends Command {
      */
     public function fire()
     {
-        $url = "http://herbarium.bio.fsu.edu/showimage.php?Image=images/herbarium/jpegs/000016295.jpg";
+       $url = "http://herbarium.bio.fsu.edu/showimage.php?Image=images/herbarium/jpegs/000016295.jpg";
 
         $rc = new Curl([$this, "save"]);
         $rc->options = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1, CURLINFO_HEADER_OUT => 1];
@@ -45,6 +45,9 @@ class TestCommand extends Command {
 
     public function save($image, $info)
     {
+        $info = $this->image->getImageInfoFromString($image);
+        print_r($info);
+        return;
         $this->filesystem->put(storage_path() . "/test.jpg", $image);
         $this->image->imageMagick(storage_path() . "/test.jpg");
         $this->image->resize(storage_path() . "/testsm.jpg", 50, 0);
