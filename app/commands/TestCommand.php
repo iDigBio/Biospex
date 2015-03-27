@@ -49,7 +49,7 @@ class TestCommand extends Command {
         print_r($info);
 
         $this->filesystem->put(storage_path() . "/test.jpg", $image);
-        $this->image->imageMagick(storage_path() . "/test.jpg");
+        $this->image->imageMagick(storage_path() . "/data/4-17f9a20a23/5512ba2500cf791f438b4ffe.jpg");
         $this->image->resize(storage_path() . "/testsm.jpg", 50, 0);
         $this->image->destroy();
 
