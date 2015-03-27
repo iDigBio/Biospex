@@ -1,7 +1,7 @@
 <?php namespace Biospex\Services\Image;
 
 /**
- * Image.php
+ * GMagick.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -24,197 +24,226 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Imagine\Imagick\Imagine as ImagickImagine;
-use Imagine\Gmagick\Imagine as GmagickImagine;
-use Imagine\Gd\Imagine as GdImagine;
-use Imagine\Image\Box;
-use Config, File, Log;
+use Illuminate\Filesystem\Filesystem;
 
 class Image {
 
-	/**
-	 * Instance of the Imagine package
-	 *
-	 * @var \Imagine\Gd\Imagine
-	 */
-	protected $imagine;
+    /**
+     * Instance of Gmagick
+     */
+    protected $image;
 
-	/**
-	 * Type of library used by the service
-	 *
-	 * @var string
-	 */
-	protected $library;
+    /**
+     * @var $geometry
+     */
+    protected $geometry;
 
-	/**
-	 * Mime type of file.
-	 *
-	 * @var
-	 */
-	protected $mimeType;
+    /**
+     * Path information about file.
+     *
+     * @var $pathinfo
+     */
+    protected $pathinfo;
 
-	/**
-	 * @var mixed
-	 */
-	protected $width;
+    /**
+     * New image width.
+     * @var
+     */
+    protected $newWidth;
 
-	/**
-	 * @var mixed
-	 */
-	protected $height;
+    /**
+     * New image height.
+     * @var
+     */
+    protected $newHeight;
 
-	/**
-	 * Image quality.
-	 *
-	 * @var mixed
-	 */
-	protected $quality;
+    /**
+     * Mime type of file.
+     *
+     * @var
+     */
+    protected $mimeType;
 
-	/**
-	 * Array of image types to extensions from Config.
-	 *
-	 * @var
-	 */
-	protected $imageTypeExtension = [];
+    /**
+     * Array of image types to extensions from Config.
+     *
+     * @var
+     */
+    protected $imageTypeExtension = [];
 
-	/**
-	 * Initialize the image service
-	 */
-	public function __construct ()
-	{
-		if ( ! $this->imagine)
-		{
-			$this->library = Config::get('config.images.library', 'gd');
+    /**
+     * Initialize the image service.
+     *
+     * @param $file
+     */
+    public function __construct(Filesystem $filesystem)
+    {
+        $this->filesystem = $filesystem;
+        $this->imageTypeExtension = \Config::get('config.images.imageTypeExtension');
 
-			// Now create the instance
-			if ($this->library == 'imagick') $this->imagine = new ImagickImagine;
-			elseif ($this->library == 'gmagick') $this->imagine = new GmagickImagine;
-			elseif ($this->library == 'gd') $this->imagine = new GdImagine;
-			else $this->imagine = new GdImagine;
-		}
+        return;
+    }
 
-		$this->quality = Config::get('config.images.quality', 100);
-		$this->imageTypeExtension = Config::get('config.images.imageTypeExtension');
-	}
+    public function imageMagick($file)
+    {
+        $this->imagick = new \Imagick($file);
+        $this->geometry = $this->imagick->getImageGeometry();
+        $this->pathinfo = pathinfo($file);
+    }
 
-	/**
-	 * Resize image.
-	 *
-	 * @param $sourceFilePath
-	 * @param $targetFilePath
-	 */
-	public function resizeImage ($sourceFilePath, $targetFilePath)
-	{
-        $result = false;
-
-		try
-		{
-			$size = $this->createBox($this->width, $this->height);
-			$result = $this->imagine->open($sourceFilePath)->resize($size)
-				->save($targetFilePath, array('quality' => $this->quality));
-		} catch (\Exception $e)
-		{
-			Log::error('[IMAGE SERVICE] Failed to resize image. Source: "' . $sourceFilePath . ' :: Target: "' . $targetFilePath . ' [' . $e->getMessage() . ']');
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Create Imagine Box.
-	 *
-	 * @param $width
-	 * @param $height
-	 * @return Box
-	 */
-	protected function createBox($width, $height)
-	{
-		return new Box($width, $height);
-	}
-
-	/**
-	 * Create directory.
-	 *
-	 * @param $path
-	 */
-	public function createDirectory($path)
-	{
+    /**
+     * Resize image.
+     *
+     * @param $target
+     * @param int $width
+     * @param int $height
+     */
+    public function resize($target, $width = 0, $height = 0)
+    {
         try
         {
-            if ( ! File::isDirectory($path))
-            {
-                File::makeDirectory($path, 777, true);
-            }
+            $this->imagick->resizeImage($width, $height, \Imagick::FILTER_LANCZOS, 1);
+            $this->imagick->writeImage($target);
         }
         catch (\Exception $e)
         {
-            throw new \RuntimeException("Could not create directory." . $e->getMessage());
+            Log::error('[IMAGE SERVICE] Failed to resize image. Target: "' . $target . ' [' . $e->getMessage() . ']');
+        }
+    }
+
+    /**
+     * Get image width.
+     *
+     * @return mixed
+     */
+    public function getImageWidth()
+    {
+        return $this->geometry['width'];
+    }
+
+    /**
+     * Get image height.
+     *
+     * @return mixed
+     */
+    public function getImageHeight()
+    {
+        return $this->geometry['height'];
+    }
+
+    /**
+     * Get directory name for image.
+     *
+     * @return mixed
+     */
+    public function getDirName()
+    {
+        return $this->pathinfo['dirname'];
+    }
+
+    /**
+     * Get base name of the image file.
+     *
+     * @return mixed
+     */
+    public function getBaseName()
+    {
+        return $this->pathinfo['basename'];
+    }
+
+    /**
+     * Get file name.
+     *
+     * @return mixed
+     */
+    public function getFileName()
+    {
+        return $this->pathinfo['filename'];
+    }
+
+    /**
+     * Return extension from file.
+     *
+     * @return mixed
+     */
+    public function getExtension()
+    {
+        return $this->pathinfo['extension'];
+    }
+
+    /**
+     * Get image height from file being checked. Used on existing file, not imagick file.
+     *
+     * @param $file
+     * @param bool $var
+     * @return array
+     */
+    public function getImageSizeFromFile($file, $var = false)
+    {
+        list($width, $height) = getimagesize($file);
+
+        return !$var ? [$width, $height] : ($var == 'w' ? $width : $height);
+    }
+
+    /**
+     * Get file extension from image string.
+     *
+     * @param $file
+     * @return bool
+     */
+    public function getExtensionFromString($file)
+    {
+        $info = getimagesizefromstring($file);
+
+        return isset($this->imageTypeExtension[$info['mime']]) ? $this->imageTypeExtension[$info['mime']] : false;
+    }
+
+    /**
+     * Return mime type.
+     *
+     * @return string
+     */
+    public function getMimeType()
+    {
+        return empty($this->mimeType) ? 'image/jpeg' : $this->mimeType;
+    }
+
+    /**
+     * Destroy.
+     */
+    public function destroy()
+    {
+        $this->imagick->clear();
+        $this->imagick->destroy();
+    }
+
+    protected function saveFile($path, $contents)
+    {
+        if ( ! $this->filesystem->put($path, $contents))
+            throw new \RuntimeException(trans('emails.error_save_file'));
+
+        return;
+    }
+
+    /**
+     * Created directory.
+     *
+     * @param $dir
+     */
+    public function createDir($dir)
+    {
+        if ( ! $this->filesystem->isDirectory($dir))
+        {
+            if ( ! $this->filesystem->makeDirectory($dir, 0775, true))
+                throw new \RuntimeException(trans('emails.error_create_dir', ['directory' => $dir]));
         }
 
         return;
-	}
+    }
 
-	/**
-	 * Get file extension.
-	 *
-	 * @param $file
-	 * @param bool $string
-	 * @return string
-	 */
-	public function getExtension ($file, $string = false)
-	{
-		$info = ! $string ? getimagesize($file) : getimagesizefromstring($file);
+    public function deleteImage($file)
+    {
+        return $this->filesystem->delete($file);
+    }
 
-		return isset($this->imageTypeExtension[$info['mime']]) ?
-			$this->imageTypeExtension[$info['mime']] : false;
-	}
-
-	/**
-	 * Return mime type.
-	 *
-	 * @return string
-	 */
-	public function getMimeType ()
-	{
-		return empty($this->mimeType) ? 'image/jpeg' : $this->mimeType;
-	}
-
-	/**
-	 * Retrieve image from url
-	 *
-	 * @param $url
-	 * @return array
-	 */
-	public function getImageFromUrl ($url)
-	{
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, str_replace(" ", "%20", $url));
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-		$image = curl_exec($ch);
-		curl_close($ch);
-
-		return $image;
-	}
-
-	/**
-	 * Set width for resizing.
-	 *
-	 * @param $width
-	 */
-	public function setWidth($width)
-	{
-		$this->width = $width;
-	}
-
-	/**
-	 * Set height for resizing.
-	 *
-	 * @param $height
-	 */
-	public function setHeight($height)
-	{
-		$this->height = $height;
-	}
 }
