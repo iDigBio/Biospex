@@ -1,4 +1,5 @@
-<?php  namespace Biospex\Services\Queue;
+<?php namespace Biospex\Services\Queue;
+
 /**
  * WorkflowManagerService.php
  *
@@ -24,144 +25,145 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
-use Biospex\Repo\Actor\ActorInterface;
 use Biospex\Services\Report\Report;
 
 class WorkflowManagerService {
-	/**
-	 * Illuminate\Support\Contracts\MessageProviderInterface
-	 * @var
-	 */
-	protected $messages;
 
-	/**
-	 * Class constructor
-	 *
-	 * @param WorkflowManagerInterface $manager
-	 * @param ActorInterface $actor
-	 * @param Report $report
-	 */
-	public function __construct(
-		WorkflowManagerInterface $manager,
-		ActorInterface $actor,
-		Report $report
-	)
-	{
-		$this->manager = $manager;
-		$this->actor = $actor;
-		$this->report = $report;
-	}
+    /**
+     * Illuminate\Support\Contracts\MessageProviderInterface
+     * @var
+     */
+    protected $messages;
 
-	/**
-	 * Fire queue.
-	 *
-	 * @param $job
-	 * @param $data
-	 */
-	public function fire($job, $data)
-	{
-		$manager = $this->manager->findWith($data['id'], ['expedition.actors']);
+    /**
+     * Class constructor
+     *
+     * @param WorkflowManagerInterface $manager
+     * @param Report $report
+     */
+    public function __construct(
+        WorkflowManagerInterface $manager,
+        Report $report
+    )
+    {
+        $this->manager = $manager;
+        $this->report = $report;
+    }
 
-		if (empty($manager) || $this->checkProcess($manager))
-		{
-			$this->delete($job);
-			return;
-		}
+    /**
+     * Fire queue.
+     *
+     * @param $job
+     * @param $data
+     */
+    public function fire($job, $data)
+    {
+        $manager = $this->manager->findWith($data['id'], ['expedition.actors']);
 
-		$this->processActors($manager);
+        if (empty($manager) || $this->checkProcess($manager))
+        {
+            $this->delete($job);
 
-		$this->delete($job);
+            return;
+        }
 
-		return;
-	}
+        $this->processActors($manager);
 
-	/**
-	 * @param $manager
-	 * @return bool
-	 */
-	public function checkProcess ($manager)
-	{
-		return $manager->stopped == 1 || $manager->error == 1;
-	}
+        $this->delete($job);
 
-	/**
-	 * @param $manager
-	 */
-	public function processActors ($manager)
-	{
-		foreach ($manager->expedition->actors as $actor)
-		{
-			try
-			{
-				$classNameSpace = 'Biospex\Services\Actor\\' . $actor->class;
-				$class = \App::make($classNameSpace);
-				$class->setProperties($actor);
-				$class->process();
-			} catch (Exception $e)
-			{
-				$manager->error = 1;
-				$this->manager->save($manager);
-				$this->createError($manager, $actor, $e);
-				break;
-			}
-		}
-	}
+        return;
+    }
 
-	/**
-	 * Create and send error email
-	 *
-	 * @param $manager
-	 * @param $actor
-	 * @param $e
-	 */
-	public function createError ($manager, $actor, $e)
-	{
-		$this->report->addError(trans('emails.error_workflow_manager',
-			array(
-				'class' => $actor->class,
-				'id'    => $manager->id . ':' . $actor->id,
-				'error' => $e->getFile() . " - " . $e->getLine() . ": " . $e->getMessage()
-			)));
-		$this->report->reportSimpleError();
-	}
+    /**
+     * @param $manager
+     * @return bool
+     */
+    public function checkProcess($manager)
+    {
+        return $manager->stopped == 1 || $manager->error == 1;
+    }
 
-	/**
-	 * Delete a job from the queue
-	 * @param $job
-	 */
-	public function delete($job)
-	{
-		$job->delete();
-	}
+    /**
+     * @param $manager
+     */
+    public function processActors($manager)
+    {
+        foreach ($manager->expedition->actors as $actor)
+        {
+            try
+            {
+                $classNameSpace = 'Biospex\Services\Actor\\' . $actor->class;
+                $class = \App::make($classNameSpace);
+                $class->setProperties($actor);
+                $class->process();
+            }
+            catch (\Exception $e)
+            {
+                \Log::critical($e->getMessage());
+                break;
+                $manager->error = 1;
+                $this->manager->save($manager);
+                $this->createError($manager, $actor, $e);
+                break;
+            }
+        }
+    }
 
-	/**
-	 * Release a job back to the queue
-	 * @param $job
-	 */
-	public function release($job)
-	{
-		$job->release();
-	}
+    /**
+     * Create and send error email
+     *
+     * @param $manager
+     * @param $actor
+     * @param $e
+     */
+    public function createError($manager, $actor, $e)
+    {
+        $this->report->addError(trans('emails.error_workflow_manager',
+            [
+                'class' => $actor->class,
+                'id'    => $manager->id . ', Actor Id ' . $actor->id,
+                'error' => $e->getFile() . " - " . $e->getLine() . ": " . $e->getMessage()
+            ]));
+        $this->report->reportSimpleError();
+    }
 
-	/**
-	 * Return number of attempts on the job
-	 *
-	 * @param $job
-	 * @return mixed
-	 */
-	public function getAttempts($job)
-	{
-		return $job->attempts();
-	}
+    /**
+     * Delete a job from the queue
+     * @param $job
+     */
+    public function delete($job)
+    {
+        $job->delete();
+    }
 
-	/**
-	 * Get id of job
-	 *
-	 * @param $job
-	 * @return mixed
-	 */
-	public function getJobId($job)
-	{
-		return $job->getJobId();
-	}
+    /**
+     * Release a job back to the queue
+     * @param $job
+     */
+    public function release($job)
+    {
+        $job->release();
+    }
+
+    /**
+     * Return number of attempts on the job
+     *
+     * @param $job
+     * @return mixed
+     */
+    public function getAttempts($job)
+    {
+        return $job->attempts();
+    }
+
+    /**
+     * Get id of job
+     *
+     * @param $job
+     * @return mixed
+     */
+    public function getJobId($job)
+    {
+        return $job->getJobId();
+    }
 }
