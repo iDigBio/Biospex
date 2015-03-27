@@ -46,10 +46,10 @@ return [
         'library'            => 'gmagick',
         'quality'            => 100,
         'imageTypeExtension' => [
-            'image/jpeg' => ".jpg",
-            'image/png'  => ".png",
-            'image/tiff' => ".tif",
-            'image/gif'  => ".gif"
+            'image/jpeg' => "jpg",
+            'image/png'  => "png",
+            'image/tiff' => "tif",
+            'image/gif'  => "gif"
         ],
     ],
 
