@@ -356,6 +356,8 @@ class NotesFromNature extends ActorAbstract {
 
             $this->filesystem->delete($file);
 
+            \Log::alert("Saved $file");
+
             $i++;
         }
 
