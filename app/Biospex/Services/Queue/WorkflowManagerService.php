@@ -99,8 +99,6 @@ class WorkflowManagerService {
             }
             catch (\Exception $e)
             {
-                \Log::critical($e->getMessage());
-                break;
                 $manager->error = 1;
                 $this->manager->save($manager);
                 $this->createError($manager, $actor, $e);
