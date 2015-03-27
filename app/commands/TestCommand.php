@@ -47,7 +47,7 @@ class TestCommand extends Command {
     {
         $info = $this->image->getImageInfoFromString($image);
         print_r($info);
-        return;
+
         $this->filesystem->put(storage_path() . "/test.jpg", $image);
         $this->image->imageMagick(storage_path() . "/test.jpg");
         $this->image->resize(storage_path() . "/testsm.jpg", 50, 0);
