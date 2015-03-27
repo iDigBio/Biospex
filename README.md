@@ -12,7 +12,8 @@ Requirements
  - Composer
  - Mongo PECL Extension
  - PHP gd, imagick, mcrypt, mysql, mysqlnd, opcache, memcached, pdo, pdo_mysql, pdo_sqlite,
- readline, sqlite3
+ readline, sqlite3, raphf, propro
+ - PECL http
  - Beanstalkd
  - Supervisord
  - Mailgun or some other email configuration
