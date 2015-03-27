@@ -171,6 +171,12 @@ abstract class ActorAbstract {
         $this->download->create($data);
     }
 
+    /**
+     * Parse header.
+     *
+     * @param $header
+     * @return array
+     */
     public function parseHeader($header)
     {
         $headers = [];
