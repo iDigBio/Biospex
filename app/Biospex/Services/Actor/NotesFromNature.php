@@ -1,4 +1,5 @@
 <?php namespace Biospex\Services\Actor;
+
 /**
  * NotesFromNature.php
  *
@@ -23,23 +24,24 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Biospex\Services\Curl\Curl;
 
-class NotesFromNature extends ActorAbstract
-{
+class NotesFromNature extends ActorAbstract {
+
     /**
      * @var array
      */
     protected $states = [];
 
-	/**
-	 * Actor object
-	 */
-	protected $actor;
+    /**
+     * Actor object
+     */
+    protected $actor;
 
-	/**
-	 * Expedition Id
-	 */
-	protected $expeditionId;
+    /**
+     * Expedition Id
+     */
+    protected $expeditionId;
 
     /**
      * Current expedition being processed
@@ -80,6 +82,13 @@ class NotesFromNature extends ActorAbstract
     protected $title;
 
     /**
+     * Array of image urls from subjects.
+     *
+     * @var $imageUriArray
+     */
+    protected $imageUriArray;
+
+    /**
      * CSV header array associated with meta file
      * @var array
      */
@@ -89,7 +98,7 @@ class NotesFromNature extends ActorAbstract
      * Remote image column from csv import
      * @var
      */
-	protected $accessURI = "accessURI";
+    protected $accessURI = "accessURI";
 
     /**
      * Missing image when retrieving via curl
@@ -129,25 +138,25 @@ class NotesFromNature extends ActorAbstract
      *
      * @var int
      */
-    private $smallWidth  = 580;
+    private $smallWidth = 580;
 
-	/**
-	 * Set properties
-	 *
-	 * @param $actor
-	 */
-	public function setProperties ($actor)
+    /**
+     * Set properties
+     *
+     * @param $actor
+     */
+    public function setProperties($actor)
     {
-		$this->states = [
+        $this->states = [
             'export',
             'getStatus',
             'getResults',
             'completed',
             'analyze',
-		];
+        ];
 
-		$this->actor = $actor;
-		$this->expeditionId = $actor->pivot->expedition_id;
+        $this->actor = $actor;
+        $this->expeditionId = $actor->pivot->expedition_id;
 
         return;
     }
@@ -157,49 +166,23 @@ class NotesFromNature extends ActorAbstract
      */
     public function process()
     {
-		$this->expedition->setPass(true);
-		$this->record = $this->expedition->findWith($this->expeditionId, ['project.group', 'subjects']);
+        $this->expedition->setPass(true);
+        $this->record = $this->expedition->findWith($this->expeditionId, ['project.group', 'subjects']);
 
         if (empty($this->record))
         {
             $this->report->addError(trans('emails.error_process', ['id' => $this->expeditionId]));
-			$this->report->reportSimpleError($this->record->project->group->id);
+            $this->report->reportSimpleError($this->record->project->group->id);
 
             return;
         }
 
-		try {
-            $result = call_user_func([$this, $this->states[$this->actor->pivot->state]]);
-
-			if ( ! $result)
-				return;
-        }
-        catch ( Exception $e )
-        {
-            $this->report->addError($e->getMessage());
-			$this->report->reportSimpleError($this->record->project->group->id);
-			$this->filesystem->deleteDirectory($this->tmpFileDir);
-
+        if ( ! is_callable([$this, $this->states[$this->actor->pivot->state]]))
             return;
-        }
+
+        call_user_func([$this, $this->states[$this->actor->pivot->state]]);
 
         return;
-    }
-
-    /**
-     * Get results
-     */
-    public function getResults()
-    {
-        return false;
-    }
-
-    /**
-     * Get status
-     */
-    public function getStatus()
-    {
-        return false;
     }
 
     /**
@@ -209,91 +192,118 @@ class NotesFromNature extends ActorAbstract
      */
     public function export()
     {
-		$this->setPaths();
+        $this->setPaths();
 
-		$this->buildImgDir();
+        $this->buildImageUriArray();
 
-        $this->processImages();
+        $this->getImagesFromUri();
 
-		$this->saveFile("{$this->tmpFileDir}/details.js", json_encode($this->metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $this->buildFiles();
 
-        $this->executeCommand("tar -czf {$this->dataDir}/$this->title.tar.gz -C {$this->dataDir}/$this->title");
+        $this->saveFile("{$this->tmpFileDir}/details.js", json_encode($this->metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
-		if (!empty($this->missingImg))
-		{
-			$groupId = $this->record->project->group_id;
-			$this->report->missingImages($groupId, $this->record->title, $this->missingImg);
-		}
+        $this->compressDir();
 
-		$this->createDownload($this->record->id, $this->actor->id, "{$this->title}.tar.gz");
+        if ( ! empty($this->missingImg))
+        {
+            $groupId = $this->record->project->group_id;
+            $this->report->missingImages($groupId, $this->record->title, $this->missingImg);
+        }
 
-		$this->filesystem->deleteDirectory($this->tmpFileDir);
+        $this->createDownload($this->record->id, $this->actor->id, "{$this->title}.tar.gz");
 
-		$groupId = $this->record->project->group_id;
+        $this->filesystem->deleteDirectory($this->tmpFileDir);
 
-		$this->actor->pivot->state = $this->actor->pivot->state+1;
-		$this->actor->pivot->save();
+        $groupId = $this->record->project->group_id;
 
-		$this->report->processComplete($groupId, $this->record->title);
+        $this->actor->pivot->state = $this->actor->pivot->state + 1;
+        $this->actor->pivot->save();
+
+        $this->report->processComplete($groupId, $this->record->title);
 
         return true;
     }
 
     /**
-     * Process expedition for export
+     * Build array of image uris for curl.
      */
-    protected function buildImgDir()
+    protected function buildImageUriArray()
     {
-        $i = 0;
-        \Log::alert("Building image directory");
-		foreach ($this->record->subjects as $subject)
+        foreach ($this->record->subjects as $subject)
         {
-			// Sets up array for retrieving identifier when building details.js
+            $uri = $subject->{$this->accessURI};
+            if (empty($uri))
+            {
+                $this->addMissingImage($subject->id);
+                continue;
+            }
+
+            // Sets up array for retrieving identifier when building details.js
             $this->identifierArray[$subject->_id] = $subject->id;
 
-			$uri = $subject->{$this->accessURI};
-
-			if (empty($uri))
-			{
-				$this->missingImg[] = $subject->id;
-				continue;
-			}
-
-			$image = $this->image->getImageFromUrl($uri);
-
-			if (empty($image))
-			{
-				$this->missingImg[] = $subject->id . ' : ' . $uri;
-				continue;
-			}
-
-			$ext = $this->image->getExtension($image, true);
-
-			if ( ! $ext)
-			{
-				$this->missingImg[] = $subject->id . ' : ' . $uri;
-				continue;
-			}
-
-			$path = $this->tmpFileDir . '/' . $subject->_id . $ext;
-
-			$this->saveFile($path, $image);
-
-            $i++;
+            $this->imageUriArray[$subject->_id] = str_replace(" ", "%20", $uri);
         }
 
-		if ($i == 0)
-			throw new \RuntimeException(trans('emails.error_build_image_dir', ['id' => $this->record->id]));
+        return;
+    }
 
-        \Log::alert("Building image directory complete");
+    /**
+     * Process expedition for export
+     */
+    protected function getImagesFromUri()
+    {
+        $rc = new Curl([$this, "saveImage"]);
+        $rc->options = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1, CURLINFO_HEADER_OUT => 1];
+        $rc->window_size = 5;
 
-		return;
+        foreach ($this->imageUriArray as $key => $uri)
+        {
+            $rc->get($uri, ["key: $key"]);
+        }
+
+        $rc->execute();
+
+        return;
+    }
+
+    public function saveImage($image, $info)
+    {
+        if ($info['http_code'] == 200)
+        {
+            $key = $this->getImageKey($info['request_header']);
+
+            if (empty($image))
+            {
+                $this->addMissingImage($key, $info['url']);
+
+                return;
+            }
+
+            $ext = $this->image->getExtensionFromString($image);
+
+            if ( ! $ext)
+            {
+                $this->addMissingImage($key, $info['url']);
+
+                return;
+            }
+
+            $path = "{$this->tmpFileDir}/$key.$ext";
+
+            $this->saveFile($path, $image);
+
+            return;
+        }
+
+        $this->addMissingImage($info['url']);
+
+        return;
     }
 
     /**
      * Process images for NfN for an expedition
      */
-    protected function processImages()
+    protected function buildFiles()
     {
         $data = [];
 
@@ -302,64 +312,56 @@ class NotesFromNature extends ActorAbstract
         $this->metadata['sourceDir'] = $this->tmpFileDir;
         $this->metadata['targetDir'] = $this->tmpFileDir;
         $this->metadata['created_at'] = date('l jS F Y', time());
-		$this->metadata['highResDir'] = $this->lrgTargetPath;
-		$this->metadata['lowResDir'] = $this->smTargetPath;
+        $this->metadata['highResDir'] = $this->lrgTargetPath;
+        $this->metadata['lowResDir'] = $this->smTargetPath;
         $this->metadata['highResWidth'] = $this->largeWidth;
         $this->metadata['lowResWidth'] = $this->smallWidth;
 
         $i = 0;
-        \Log::alert("Processing images");
-		foreach ($files as $key => $filePath)
-		{
-            list($width, $height) = getimagesize($filePath); // $width, $height, $type, $attr
-			$sourceInfo = pathinfo($filePath); // $dirname, $basename, $extension, $filename
-			$sourceFilePath = $sourceInfo['dirname'] . '/' . $sourceInfo['basename'];
+        foreach ($files as $file)
+        {
+            $this->image->imageMagick($file);
+            $origWidth = $this->image->getImageWidth();
+            $origHeight = $this->image->getImageHeight();
+            $baseName = $this->image->getBaseName();
+            $fileName = $this->image->getFileName();
+            $extension = $this->image->getExtension();
 
-			$lrgTargetHeight = $this->setProportion($width, $height, $this->largeWidth);
-			$lrgTargetName = "{$sourceInfo['filename']}.large.png";
-			$targetFilePathLg = $this->lrgTargetPath . '/' . $lrgTargetName;
+            $lrgTargetName = "$fileName.large.$extension";
+            $targetFilePathLg = $this->lrgTargetPath . '/' . $lrgTargetName;
+            $this->image->resize($targetFilePathLg, $this->largeWidth, 0);
 
-			$smTargetHeight = $this->setProportion($width, $height, $this->smallWidth);
-			$smTargetName = "{$sourceInfo['filename']}.small.png";
-			$targetFilePathSm = $this->smTargetPath . '/' . $smTargetName;
+            $smTargetName = $lrgTargetName = "$fileName.small.$extension";
+            $targetFilePathSm = $this->smTargetPath . '/' . $smTargetName;
+            $this->image->resize($targetFilePathSm, $this->smallWidth, 0);
 
-			// Set array
-			$data['identifier'] = $this->identifierArray[$sourceInfo['filename']];
-			$data['original']['path'] = [$sourceInfo['filename'], ".{$sourceInfo['extension']}"];
-			$data['original']['name'] = $sourceInfo['basename'];
-            $data['original']['width'] = $width;
-            $data['original']['height'] = $height;
+            $this->image->destroy();
 
-			$data['large']['name'] = "large/$lrgTargetName";
+            // Set array
+            $data['identifier'] = $this->identifierArray[$fileName];
+            $data['original']['path'] = [$fileName, ".$extension"];
+            $data['original']['name'] = $baseName;
+            $data['original']['width'] = $origWidth;
+            $data['original']['height'] = $origHeight;
+
+            $data['large']['name'] = "large/$lrgTargetName";
             $data['large']['width'] = $this->largeWidth;
-			$data['large']['height'] = $lrgTargetHeight;
+            $data['large']['height'] = $this->image->getImageSizeFromFile($targetFilePathLg, 'h');
 
-			$data['small']['name'] = "small/$smTargetName";
-			$data['small']['width'] = $this->smallWidth;
-			$data['small']['height'] = $smTargetHeight;
-
-            \Log::alert("Saving $targetFilePathLg");
-            $this->image->setWidth($this->largeWidth);
-			$this->image->setHeight($lrgTargetHeight);
-			$this->image->resizeImage($sourceFilePath, $targetFilePathLg);
-
-            \Log::alert("Saving $targetFilePathSm");
-			$this->image->setWidth($this->smallWidth);
-			$this->image->setHeight($smTargetHeight);
-			$this->image->resizeImage($sourceFilePath, $targetFilePathSm);
+            $data['small']['name'] = "small/$smTargetName";
+            $data['small']['width'] = $this->smallWidth;
+            $data['small']['height'] = $this->image->getImageSizeFromFile($targetFilePathSm, 'h');;
 
             $this->metadata['images'][] = $data;
 
-            \Log::alert("Deleting $filePath");
-			$this->filesystem->delete($filePath);
+            $this->filesystem->delete($file);
 
             $i++;
         }
-		$this->metadata['total'] = $i * 2;
 
-        \Log::alert("Completed processing images.");
+        $this->metadata['total'] = $i * 2;
 
-        return true;
+        return;
     }
 
     /**
@@ -381,8 +383,37 @@ class NotesFromNature extends ActorAbstract
         $this->writeDir($this->smTargetPath);
     }
 
-	protected function setProportion($width, $height, $limit)
-	{
-		return round(($height * $limit) / $width);
-	}
+    /**
+     * Add missing image information to array.
+     *
+     * @param $key
+     * @param $uri
+     */
+    protected function addMissingImage($key, $uri = null)
+    {
+        $this->missingImg[] = $key . ' : ' . $uri;
+
+        return;
+    }
+
+    /**
+     * Compress directory.
+     */
+    protected function compressDir()
+    {
+        $a = new \PharData("{$this->dataDir}/{$this->title}.tar");
+        $a->buildFromDirectory("{$this->dataDir}/{$this->title}");
+        $a->compress(\Phar::GZ);
+        unset($a);
+        unlink("{$this->dataDir}/{$this->title}.tar");
+
+        return;
+    }
+
+    protected function getImageKey($headers)
+    {
+        $header = $this->parseHeader($headers);
+
+        return $header['key'];
+    }
 }
