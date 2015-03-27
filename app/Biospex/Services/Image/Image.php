@@ -193,9 +193,22 @@ class Image {
      */
     public function getExtensionFromString($file)
     {
-        $info = getimagesizefromstring($file);
+        $info = $this->getImageInfoFromString($file);
 
         return isset($this->imageTypeExtension[$info['mime']]) ? $this->imageTypeExtension[$info['mime']] : false;
+    }
+
+    /**
+     * Get image info from string.
+     *
+     * @param $string
+     * @return array
+     */
+    public function getImageInfoFromString($string)
+    {
+        $info = getimagesizefromstring($string);
+
+        return $info;
     }
 
     /**
