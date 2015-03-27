@@ -55,13 +55,13 @@ Event::listen('eloquent.deleted: *', function ()
     Cache::flush();
 });
 
-Queue::failing(function ($connection, $job, $data)
+Queue::failing(function ($connection, $job)
 {
     \Event::fire('user.sendreport', [
         'email'   => null,
         'subject' => trans('emails.failed_job_subject'),
         'view'    => 'emails.report-failed-jobs',
-        'data'    => ['message' => trans('emails.failed_job_message', [$job->getJobId()])],
+        'data'    => ['text' => trans('emails.failed_job_message', ['id' => $job->getJobId()])],
     ]);
 
     return;
