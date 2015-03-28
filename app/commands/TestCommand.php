@@ -3,7 +3,7 @@
 use Illuminate\Console\Command;
 use Biospex\Services\Image\Image;
 use Illuminate\Filesystem\Filesystem;
-use Biospex\Services\Curl\Curl;
+use Biospex\Services\Actor\NotesFromNature;
 
 class TestCommand extends Command {
 
@@ -20,11 +20,12 @@ class TestCommand extends Command {
     /**
      * Constructor
      */
-    public function __construct(Image $image, Filesystem $filesystem)
+    public function __construct(Image $image, Filesystem $filesystem, NotesFromNature $notes)
     {
         parent::__construct();
         $this->image = $image;
         $this->filesystem = $filesystem;
+        $this->notes = $notes;
     }
 
     /**
@@ -33,6 +34,11 @@ class TestCommand extends Command {
     public function fire()
     {
      //   convert /data/web/staging.biospex.org/app/storage/data/4-17f9a20a23/5512ba2500cf791f438b4ffe.jpg  -resize 64x64  /data/web/staging.biospex.org/app/storage/testsm.jpg
+        $this->notes->setPaths();
+        $this->notes->buildFiles();
+
+        return;
+
         $files = $this->filesystem->files("/data/web/staging.biospex.org/app/storage/data/4-aa4ef932d6");
 
         foreach ($files as $file)
