@@ -86,7 +86,12 @@ class Image {
 
     public function imageMagick($file)
     {
-        $this->imagick = new \Imagick($file);
+        $f = fopen($file, 'r');
+        fseek($f, 0);
+        $this->imagick = new \Imagick();
+        $this->imagick->readimagefile($f);
+        fclose($f);
+
         $this->geometry = $this->imagick->getImageGeometry();
         $this->pathinfo = pathinfo($file);
     }
@@ -102,6 +107,7 @@ class Image {
     {
         try
         {
+            $this->imagick->setcolorspace(\Imagick::COLORSPACE_RGB);
             $this->imagick->resizeImage($width, $height, \Imagick::FILTER_LANCZOS, 1);
             $this->imagick->writeImage($target);
         }
