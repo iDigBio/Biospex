@@ -338,7 +338,7 @@ class NotesFromNature extends ActorAbstract {
             $this->image->destroy();
 
             // Set array
-            $data['identifier'] = "test";//$this->identifierArray[$fileName];
+            $data['identifier'] = $this->identifierArray[$fileName];
             $data['original']['path'] = [$fileName, ".$extension"];
             $data['original']['name'] = $baseName;
             $data['original']['width'] = $origWidth;
@@ -371,8 +371,7 @@ class NotesFromNature extends ActorAbstract {
      */
     public function setPaths()
     {
-        //$this->title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10)));
-        $this->title = "4-aa4ef932d6";
+        $this->title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10)));
         $this->tmpFileDir = "{$this->dataDir}/$this->title";
         $this->createDir($this->tmpFileDir);
         $this->writeDir($this->tmpFileDir);
