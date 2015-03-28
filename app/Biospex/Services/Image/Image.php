@@ -89,11 +89,13 @@ class Image {
         $f = fopen($file, 'r');
         fseek($f, 0);
         $this->imagick = new \Imagick();
+        $this->imagick->setResourceLimit(6,1);
         $this->imagick->readimagefile($f);
         fclose($f);
-
         $this->geometry = $this->imagick->getImageGeometry();
-        $this->pathinfo = pathinfo($file);
+        $this->setImagePathInfo($file);
+
+        return;
     }
 
     /**
@@ -102,19 +104,37 @@ class Image {
      * @param $target
      * @param int $width
      * @param int $height
+     * @return bool
      */
     public function resize($target, $width = 0, $height = 0)
     {
         try
         {
-            $this->imagick->setcolorspace(\Imagick::COLORSPACE_RGB);
-            $this->imagick->resizeImage($width, $height, \Imagick::FILTER_LANCZOS, 1);
-            $this->imagick->writeImage($target);
+            $scale = $this->imagick->scaleImage($width, $height);
+            if ( ! $scale)
+                return false;
+
+            $write = $this->imagick->writeImage($target);
+            if ( ! $write)
+                return false;
+
+            return true;
         }
         catch (\Exception $e)
         {
-            Log::error('[IMAGE SERVICE] Failed to resize image. Target: "' . $target . ' [' . $e->getMessage() . ']');
+            \Log::error('[IMAGE SERVICE] Failed to resize image. Target: "' . $target . ' [' . $e->getMessage() . ']');
+            return false;
         }
+    }
+
+    /**
+     * Set pathinfo for image.
+     *
+     * @param $file
+     */
+    public function setImagePathInfo($file)
+    {
+        $this->pathinfo = pathinfo($file);
     }
 
     /**
@@ -184,11 +204,11 @@ class Image {
      * @param bool $var
      * @return array
      */
-    public function getImageSizeFromFile($file, $var = false)
+    public function getImageSizeFromFile($file, $var = null)
     {
         list($width, $height) = getimagesize($file);
 
-        return !$var ? [$width, $height] : ($var == 'w' ? $width : $height);
+        return is_null($var) ? [$width, $height] : ($var == 'w' ? $width : $height);
     }
 
     /**
@@ -197,7 +217,7 @@ class Image {
      * @param $file
      * @return bool
      */
-    public function getExtensionFromString($file)
+    public function getImageExtensionFromString($file)
     {
         $info = $this->getImageInfoFromString($file);
 
