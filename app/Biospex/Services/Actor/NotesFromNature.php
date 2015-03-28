@@ -67,19 +67,19 @@ class NotesFromNature extends ActorAbstract {
      * Path to large images inside temp folder
      * @var
      */
-    protected $lrgTargetPath;
+    protected $lrgFilePath;
 
     /**
      * Path to small images inside temp folder
      * @var
      */
-    protected $smTargetPath;
+    protected $smFilePath;
 
     /**
      * Title of temp folder and tar file
      * @var
      */
-    protected $title;
+    public $title;
 
     /**
      * Array of image urls from subjects.
@@ -192,15 +192,17 @@ class NotesFromNature extends ActorAbstract {
      */
     public function export()
     {
+        $this->setTitle("{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10))));
+
         $this->setPaths();
 
         $this->buildImageUriArray();
 
         $this->getImagesFromUri();
 
-        $this->buildFiles();
+        $this->convert();
 
-        $this->saveFile("{$this->tmpFileDir}/details.js", json_encode($this->metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $this->buildDetails();
 
         $this->compressDir();
 
@@ -254,7 +256,7 @@ class NotesFromNature extends ActorAbstract {
     {
         $rc = new Curl([$this, "saveImage"]);
         $rc->options = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1, CURLINFO_HEADER_OUT => 1];
-        $rc->window_size = 5;
+        $rc->window_size = 10;
 
         foreach ($this->imageUriArray as $key => $uri)
         {
@@ -266,6 +268,13 @@ class NotesFromNature extends ActorAbstract {
         return;
     }
 
+    /**
+     * Callback function to save retrieved image from curl.
+     *
+     * @param $image
+     * @param $info
+     * @throws \Exception
+     */
     public function saveImage($image, $info)
     {
         if ($info['http_code'] == 200)
@@ -279,7 +288,7 @@ class NotesFromNature extends ActorAbstract {
                 return;
             }
 
-            $ext = $this->image->getExtensionFromString($image);
+            $ext = $this->image->getImageExtensionFromString($image);
 
             if ( ! $ext)
             {
@@ -301,9 +310,43 @@ class NotesFromNature extends ActorAbstract {
     }
 
     /**
-     * Process images for NfN for an expedition
+     * Convert images.
      */
-    public function buildFiles()
+    public function convert()
+    {
+        $files = $this->filesystem->files($this->tmpFileDir);
+
+        foreach ($files as $file)
+        {
+            $this->image->imageMagick($file);
+            $fileName = $this->image->getFileName();
+            $extension = $this->image->getExtension();
+
+            $lrgFilePath = "{$this->lrgFilePath}/$fileName.large.$extension";
+            $smFilePath = "{$this->smFilePath}/$fileName.small.$extension";
+
+            if ( ! $this->image->resize($lrgFilePath, $this->largeWidth, 0))
+            {
+                $this->filesystem->delete($file);
+                $this->addMissingImage($lrgFilePath);
+            }
+            elseif ( ! $this->image->resize($smFilePath, $this->smallWidth, 0))
+            {
+                $this->filesystem->delete($file);
+                $this->addMissingImage($smFilePath);
+            }
+
+            $this->image->destroy();
+        }
+
+        return;
+
+    }
+
+    /**
+     * Build detail.js file.
+     */
+    public function buildDetails()
     {
         $data = [];
 
@@ -312,56 +355,50 @@ class NotesFromNature extends ActorAbstract {
         $this->metadata['sourceDir'] = $this->tmpFileDir;
         $this->metadata['targetDir'] = $this->tmpFileDir;
         $this->metadata['created_at'] = date('l jS F Y', time());
-        $this->metadata['highResDir'] = $this->lrgTargetPath;
-        $this->metadata['lowResDir'] = $this->smTargetPath;
+        $this->metadata['highResDir'] = $this->lrgFilePath;
+        $this->metadata['lowResDir'] = $this->smFilePath;
         $this->metadata['highResWidth'] = $this->largeWidth;
         $this->metadata['lowResWidth'] = $this->smallWidth;
 
         $i = 0;
         foreach ($files as $file)
         {
-            $this->image->imageMagick($file);
-            $origWidth = $this->image->getImageWidth();
-            $origHeight = $this->image->getImageHeight();
+            // Original Image info.
+            list($width, $height) = $this->image->getImageSizeFromFile($file);
+            $this->image->setImagePathInfo($file);
             $baseName = $this->image->getBaseName();
             $fileName = $this->image->getFileName();
             $extension = $this->image->getExtension();
 
-            $lrgTargetName = "$fileName.large.$extension";
-            $targetFilePathLg = $this->lrgTargetPath . '/' . $lrgTargetName;
-            $this->image->resize($targetFilePathLg, $this->largeWidth, 0);
-
-            $smTargetName = $lrgTargetName = "$fileName.small.$extension";
-            $targetFilePathSm = $this->smTargetPath . '/' . $smTargetName;
-            $this->image->resize($targetFilePathSm, $this->smallWidth, 0);
-
-            $this->image->destroy();
-
-            // Set array
+            // Set array for original image.
             $data['identifier'] = $this->identifierArray[$fileName];
             $data['original']['path'] = [$fileName, ".$extension"];
             $data['original']['name'] = $baseName;
-            $data['original']['width'] = $origWidth;
-            $data['original']['height'] = $origHeight;
+            $data['original']['width'] = $width;
+            $data['original']['height'] = $height;
 
-            $data['large']['name'] = "large/$lrgTargetName";
-            $data['large']['width'] = $this->largeWidth;
-            $data['large']['height'] = $this->image->getImageSizeFromFile($targetFilePathLg, 'h');
+            // Set array for large image.
+            list($width, $height) = $this->image->getImageSizeFromFile("{$this->lrgFilePath}/$fileName.large.$extension");
+            $data['large']['name'] = "large/$fileName.large.$extension";
+            $data['large']['width'] = $width;
+            $data['large']['height'] = $height;
 
-            $data['small']['name'] = "small/$smTargetName";
-            $data['small']['width'] = $this->smallWidth;
-            $data['small']['height'] = $this->image->getImageSizeFromFile($targetFilePathSm, 'h');;
+            // Set array for small image.
+            list($width, $height) = $this->image->getImageSizeFromFile("{$this->smFilePath}/$fileName.small.$extension");
+            $data['small']['name'] = "small/$fileName.small.$extension";
+            $data['small']['width'] = $width;
+            $data['small']['height'] = $height;
 
             $this->metadata['images'][] = $data;
 
             $this->filesystem->delete($file);
 
-            \Log::alert("Saved $file");
-
             $i++;
         }
 
         $this->metadata['total'] = $i * 2;
+
+        $this->saveFile("{$this->tmpFileDir}/details.js", json_encode($this->metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
         return;
     }
@@ -371,18 +408,26 @@ class NotesFromNature extends ActorAbstract {
      */
     public function setPaths()
     {
-        $this->title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10)));
         $this->tmpFileDir = "{$this->dataDir}/$this->title";
         $this->createDir($this->tmpFileDir);
         $this->writeDir($this->tmpFileDir);
 
-        $this->lrgTargetPath = $this->tmpFileDir . '/large';
-        $this->createDir($this->lrgTargetPath);
-        $this->writeDir($this->lrgTargetPath);
+        $this->lrgFilePath = $this->tmpFileDir . '/large';
+        $this->createDir($this->lrgFilePath);
+        $this->writeDir($this->lrgFilePath);
 
-        $this->smTargetPath = $this->tmpFileDir . '/small';
-        $this->createDir($this->smTargetPath);
-        $this->writeDir($this->smTargetPath);
+        $this->smFilePath = $this->tmpFileDir . '/small';
+        $this->createDir($this->smFilePath);
+        $this->writeDir($this->smFilePath);
+    }
+
+    /**
+     * Set title for image directory.
+     * @param $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
     }
 
     /**
