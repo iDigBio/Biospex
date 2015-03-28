@@ -32,13 +32,21 @@ class TestCommand extends Command {
      */
     public function fire()
     {
-       $url = "http://herbarium.bio.fsu.edu/showimage.php?Image=images/herbarium/jpegs/000016295.jpg";
+     //   convert /data/web/staging.biospex.org/app/storage/data/4-17f9a20a23/5512ba2500cf791f438b4ffe.jpg  -resize 64x64  /data/web/staging.biospex.org/app/storage/testsm.jpg
+        $files = $this->filesystem->files("/data/web/staging.biospex.org/app/storage/data/4-aa4ef932d6");
 
-        $rc = new Curl([$this, "save"]);
-        $rc->options = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1, CURLINFO_HEADER_OUT => 1];
-        $rc->window_size = 1;
-        $rc->get($url);
-        $rc->execute();
+        foreach ($files as $file)
+        {
+            $this->image->imageMagick($file);
+            $origWidth = $this->image->getImageWidth();
+            $origHeight = $this->image->getImageHeight();
+            $baseName = $this->image->getBaseName();
+            $fileName = $this->image->getFileName();
+            $extension = $this->image->getExtension();
+
+            echo $baseName . PHP_EOL;
+            return;
+        }
 
         return;
     }
