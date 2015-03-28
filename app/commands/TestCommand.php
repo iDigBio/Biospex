@@ -45,7 +45,7 @@ class TestCommand extends Command {
             $extension = $this->image->getExtension();
 
             $lrgTargetName = "$fileName.large.$extension";
-            $targetFilePathLg = "/data/web/staging.biospex.org/app/storage/data/4-aa4ef932d6/" . $lrgTargetName;
+            $targetFilePathLg = "/data/web/staging.biospex.org/app/storage/data/4-aa4ef932d6/large/" . $lrgTargetName;
             $this->image->resize($targetFilePathLg, 1540, 0);
 
             echo $baseName . PHP_EOL;
