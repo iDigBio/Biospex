@@ -227,7 +227,7 @@ class NotesFromNature extends ActorAbstract {
     /**
      * Build array of image uris for curl.
      */
-    protected function buildImageUriArray()
+    public function buildImageUriArray()
     {
         foreach ($this->record->subjects as $subject)
         {
@@ -250,7 +250,7 @@ class NotesFromNature extends ActorAbstract {
     /**
      * Process expedition for export
      */
-    protected function getImagesFromUri()
+    public function getImagesFromUri()
     {
         $rc = new Curl([$this, "saveImage"]);
         $rc->options = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1, CURLINFO_HEADER_OUT => 1];
@@ -371,8 +371,7 @@ class NotesFromNature extends ActorAbstract {
      */
     public function setPaths()
     {
-        //$this->title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10)));
-        $this->title = "4-aa4ef932d6";
+        $this->title = "{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10)));
         $this->tmpFileDir = "{$this->dataDir}/$this->title";
         $this->createDir($this->tmpFileDir);
         $this->writeDir($this->tmpFileDir);
@@ -392,7 +391,7 @@ class NotesFromNature extends ActorAbstract {
      * @param $key
      * @param $uri
      */
-    protected function addMissingImage($key, $uri = null)
+    public function addMissingImage($key, $uri = null)
     {
         $this->missingImg[] = $key . ' : ' . $uri;
 
@@ -402,7 +401,7 @@ class NotesFromNature extends ActorAbstract {
     /**
      * Compress directory.
      */
-    protected function compressDir()
+    public function compressDir()
     {
         $a = new \PharData("{$this->dataDir}/{$this->title}.tar");
         $a->buildFromDirectory("{$this->dataDir}/{$this->title}");
@@ -413,7 +412,13 @@ class NotesFromNature extends ActorAbstract {
         return;
     }
 
-    protected function getImageKey($headers)
+    /**
+     * Get image key from headers.
+     *
+     * @param $headers
+     * @return mixed
+     */
+    public function getImageKey($headers)
     {
         $header = $this->parseHeader($headers);
 
