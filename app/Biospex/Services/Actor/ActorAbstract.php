@@ -178,7 +178,7 @@ abstract class ActorAbstract {
     protected function saveFile($path, $contents)
     {
         if ( ! $this->filesystem->put($path, $contents))
-			throw new \Exception(trans('emails.error_save_file', ['directory' => "$path/details.js"]));
+			throw new \Exception(trans('emails.error_save_file', ['directory' => $path]));
 
 		return;
     }
