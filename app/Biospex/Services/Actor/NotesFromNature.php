@@ -137,18 +137,6 @@ class NotesFromNature extends ActorAbstract {
     private $smallWidth = 580;
 
     /**
-     * Count of urls.
-     * @var int
-     */
-    private $urlCount = 0;
-
-    /**
-     * Count of retrieved images.
-     * @var int
-     */
-    private $imgCount = 0;
-
-    /**
      * Set properties
      * @param $actor
      * @return mixed
@@ -197,7 +185,7 @@ class NotesFromNature extends ActorAbstract {
      */
     public function export()
     {
-        $this->setTitle("{$this->record->id}-" . (preg_replace('/[^a-zA-Z0-9]/', '', substr(md5(uniqid(mt_rand(), true)), 0, 10))));
+        $this->setTitle("{$this->record->id}-" . md5($this->record->title));
 
         $this->setPaths();
 
@@ -244,8 +232,6 @@ class NotesFromNature extends ActorAbstract {
 
             $this->imageUriArray[$subject->_id] = str_replace(" ", "%20", $uri);
         }
-
-        $this->urlCount = count($this->imageUriArray);
 
         return;
     }
@@ -300,9 +286,10 @@ class NotesFromNature extends ActorAbstract {
 
             $path = "{$this->tmpFileDir}/$key.$ext";
 
-            $this->saveFile($path, $image);
+            if ( ! $this->filesystem->exists($path))
+                return;
 
-            $this->imgCount++;
+            $this->saveFile($path, $image);
 
             return;
         }
@@ -328,15 +315,18 @@ class NotesFromNature extends ActorAbstract {
             $lrgFilePath = "{$this->lrgFilePath}/$fileName.large.$extension";
             $smFilePath = "{$this->smFilePath}/$fileName.small.$extension";
 
+            if ($this->filesystem->exists($lrgFilePath) && $this->filesystem->exists($smFilePath))
+                continue;
+
             if ( ! $this->image->resize($lrgFilePath, $this->largeWidth, 0))
             {
                 $this->filesystem->delete($file);
-                $this->addMissingImage($lrgFilePath);
+                $this->addMissingImage(null, $lrgFilePath);
             }
             elseif ( ! $this->image->resize($smFilePath, $this->smallWidth, 0))
             {
                 $this->filesystem->delete($file);
-                $this->addMissingImage($smFilePath);
+                $this->addMissingImage(null, $smFilePath);
             }
 
             $this->image->destroy();
