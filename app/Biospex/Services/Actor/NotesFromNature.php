@@ -315,7 +315,7 @@ class NotesFromNature extends ActorAbstract {
     public function convert()
     {
         $files = $this->filesystem->files($this->tmpFileDir);
-
+        $i=0;
         foreach ($files as $file)
         {
             $this->image->imageMagick($file);
@@ -337,6 +337,10 @@ class NotesFromNature extends ActorAbstract {
             }
 
             $this->image->destroy();
+            $i++;
+
+            if ($i % 50 == 0)
+                echo "Converted $i" . PHP_EOL;
         }
 
         return;
