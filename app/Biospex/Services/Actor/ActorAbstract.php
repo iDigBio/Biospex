@@ -25,7 +25,6 @@
  */
 use Config;
 use Illuminate\Filesystem\Filesystem;
-use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
 use Biospex\Repo\Expedition\ExpeditionInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\Property\PropertyInterface;
@@ -34,12 +33,6 @@ use Biospex\Services\Report\Report;
 use Biospex\Services\Image\Image;
 
 abstract class ActorAbstract {
-
-    /**
-     * Workflow manager object.
-     * @var $manager
-     */
-    protected $manager;
 
 	/**
      * Filesystem
@@ -113,8 +106,7 @@ abstract class ActorAbstract {
 		PropertyInterface $property,
 		DownloadInterface $download,
         Report $report,
-        Image $image,
-        WorkflowManagerInterface $manager
+        Image $image
     )
     {
 		$this->filesystem = $filesystem;
@@ -124,7 +116,6 @@ abstract class ActorAbstract {
 		$this->download = $download;
         $this->report = $report;
         $this->image = $image;
-        $this->manager = $manager;
         $this->dataDir = Config::get('config.dataDir');
         $this->dataTmp = Config::get('config.dataTmp');
     }
@@ -228,18 +219,5 @@ abstract class ActorAbstract {
         }
 
         return $headers;
-    }
-
-    /**
-     * Reset queue value on workflow manager.
-     * @param $expeditionId
-     */
-    protected function removeFromQueue($expeditionId)
-    {
-        $workflow = $this->manager->findByExpeditionId($expeditionId);
-        $workflow->queue = 0;
-        $workflow->save();
-
-        return;
     }
 }
