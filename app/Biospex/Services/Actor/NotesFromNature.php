@@ -137,6 +137,18 @@ class NotesFromNature extends ActorAbstract {
     private $smallWidth = 580;
 
     /**
+     * Count of urls.
+     * @var int
+     */
+    private $urlCount = 0;
+
+    /**
+     * Count of retrieved images.
+     * @var int
+     */
+    private $imgCount = 0;
+
+    /**
      * Set properties
      * @param $actor
      * @return mixed
@@ -199,12 +211,6 @@ class NotesFromNature extends ActorAbstract {
 
         $this->compressDir();
 
-        if ( ! empty($this->missingImg))
-        {
-            $groupId = $this->record->project->group_id;
-            $this->report->missingImages($groupId, $this->record->title, $this->missingImg);
-        }
-
         $this->createDownload($this->record->id, $this->actor->id, "{$this->title}.tar.gz");
 
         $this->filesystem->deleteDirectory($this->tmpFileDir);
@@ -214,7 +220,7 @@ class NotesFromNature extends ActorAbstract {
         $this->actor->pivot->state = $this->actor->pivot->state + 1;
         $this->actor->pivot->save();
 
-        $this->report->processComplete($groupId, $this->record->title);
+        $this->report->processComplete($groupId, $this->record->title, $this->missingImg, $this->record->id . '-missing_images');
 
         return;
     }
@@ -238,6 +244,8 @@ class NotesFromNature extends ActorAbstract {
 
             $this->imageUriArray[$subject->_id] = str_replace(" ", "%20", $uri);
         }
+
+        $this->urlCount = count($this->imageUriArray);
 
         return;
     }
@@ -294,10 +302,12 @@ class NotesFromNature extends ActorAbstract {
 
             $this->saveFile($path, $image);
 
+            $this->imgCount++;
+
             return;
         }
 
-        $this->addMissingImage($info['url']);
+        $this->addMissingImage(null, $info['url']);
 
         return;
     }
@@ -433,9 +443,16 @@ class NotesFromNature extends ActorAbstract {
      * @param $key
      * @param $uri
      */
-    public function addMissingImage($key, $uri = null)
+    public function addMissingImage($key = null, $uri = null)
     {
-        $this->missingImg[] = $key . ' : ' . $uri;
+        if ( ! is_null($key) && ! is_null($uri))
+            $this->missingImg[] = $key . ' : ' . $uri;
+
+        if (is_null($key) && ! is_null($uri))
+            $this->missingImg[] = $uri;
+
+        if ( ! is_null($key) && is_null($uri))
+            $this->missingImg[] = $key;
 
         return;
     }
