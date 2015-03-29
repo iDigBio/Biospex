@@ -33,7 +33,7 @@ return [
     'signature'                   => "The Biospex Team",
     'welcome'                     => "Welcome",
     'expedition_complete'         => "Biospex process completed: :expedition",
-    'expedition_complete_message' => "The expedition \":expedition\" has been processed successfully. If a download file was created during this process, you may access the link on the Expedition view page.",
+    'expedition_complete_message' => "The expedition \":expedition\" has been processed successfully. If a download file was created during this process, you may access the link on the Expedition view page. If there were errors, an attachment will be included in this email.",
     'missing_images_subject'      => "Missing image information",
     'missing_images'              => "The below images were unable to be found. Missing image ids were missing the url column in the csv file. Missing image urls were images we were unable to retrieve or convert.",
     'missing_img_ids'             => "Missing Image Ids:",
