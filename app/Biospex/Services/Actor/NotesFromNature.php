@@ -285,10 +285,6 @@ class NotesFromNature extends ActorAbstract {
             }
 
             $path = "{$this->tmpFileDir}/$key.$ext";
-
-            if ( ! $this->filesystem->exists($path))
-                return;
-
             $this->saveFile($path, $image);
 
             return;
