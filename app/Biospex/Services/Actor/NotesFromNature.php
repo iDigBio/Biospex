@@ -335,7 +335,7 @@ class NotesFromNature extends ActorAbstract {
             $i++;
 
             if ($i % 50 == 0)
-                echo "Converted $i" . PHP_EOL;
+                \Log::alert("Converted $i");
         }
 
         return;
