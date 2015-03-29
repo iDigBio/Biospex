@@ -177,8 +177,6 @@ class NotesFromNature extends ActorAbstract {
 
         call_user_func([$this, $this->states[$this->actor->pivot->state]]);
 
-        $this->removeFromQueue($this->expeditionId);
-
         return;
     }
 
