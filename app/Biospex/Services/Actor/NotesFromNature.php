@@ -343,7 +343,7 @@ class NotesFromNature extends ActorAbstract {
     }
 
     /**
-     * Build detail.js file.
+     * Build detail.js file
      */
     public function buildDetails()
     {
