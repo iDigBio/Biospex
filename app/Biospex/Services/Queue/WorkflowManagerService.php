@@ -96,15 +96,27 @@ class WorkflowManagerService {
                 $class = \App::make($classNameSpace);
                 $class->setProperties($actor);
                 $class->process();
+                $this->setQueue($manager, 0);
             }
             catch (\Exception $e)
             {
-                $manager->error = 1;
-                $this->manager->save($manager);
+                $this->setQueue($manager, 1);
                 $this->createError($manager, $actor, $e);
                 break;
             }
         }
+    }
+
+    /**
+     * @param $manager
+     * @param $value
+     */
+    public function setQueue(&$manager, $value)
+    {
+        $manager->queue = $value;
+        $manager->save();
+
+        return;
     }
 
     /**
