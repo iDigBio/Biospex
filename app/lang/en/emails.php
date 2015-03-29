@@ -35,7 +35,7 @@ return [
     'expedition_complete'         => "Biospex process completed: :expedition",
     'expedition_complete_message' => "The expedition \":expedition\" has been processed successfully. If a download file was created during this process, you may access the link on the Expedition view page.",
     'missing_images_subject'      => "Missing image information",
-    'missing_images'              => "The below images were unable to be found. Missing image ids were missing the url column in the csv file. Missing image urls were images we were unable to retrieve.",
+    'missing_images'              => "The below images were unable to be found. Missing image ids were missing the url column in the csv file. Missing image urls were images we were unable to retrieve or convert.",
     'missing_img_ids'             => "Missing Image Ids:",
     'missing_img_urls'            => "Missing Image Urls",
     'group_invite_subject'        => "Bisopex Group Invite",
