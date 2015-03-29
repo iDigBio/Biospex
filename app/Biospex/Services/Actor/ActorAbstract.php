@@ -229,4 +229,17 @@ abstract class ActorAbstract {
 
         return $headers;
     }
+
+    /**
+     * Reset queue value on workflow manager.
+     * @param $expeditionId
+     */
+    protected function removeFromQueue($expeditionId)
+    {
+        $workflow = $this->manager->findByExpeditionId($expeditionId);
+        $workflow->queue = 0;
+        $workflow->save();
+
+        return;
+    }
 }
