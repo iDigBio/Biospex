@@ -25,6 +25,7 @@
  */
 use Config;
 use Illuminate\Filesystem\Filesystem;
+use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
 use Biospex\Repo\Expedition\ExpeditionInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\Property\PropertyInterface;
@@ -34,51 +35,77 @@ use Biospex\Services\Image\Image;
 
 abstract class ActorAbstract {
 
+    /**
+     * Workflow manager object.
+     * @var $manager
+     */
+    protected $manager;
+
 	/**
-	 * @var Filesystem
+     * Filesystem
+	 * @var object
 	 */
 	protected $filesystem;
 
 	/**
-	 * @var ExpeditionInterface
+     * ExpeditionInterface
+	 * @var object
 	 */
 	protected $expedition;
 
 	/**
-	 * @var SubjectInterface
+     * SubjectInterface
+	 * @var object
 	 */
 	protected $subject;
 
 	/**
-	 * @var PropertyInterface
+     * PropertyInterface
+	 * @var object
 	 */
 	protected $property;
 
 	/**
-	 * @var DownloadInterface
+     * DownloadInterface
+	 * @var object
 	 */
 	protected $download;
 
 	/**
-	 * @var Report
+     * ReportInterface
+	 * @var object
 	 */
 	protected $report;
 
 	/**
-	 * @var
+     * ImageInterface
+	 * @var object
 	 */
 	protected $image;
 
 	/**
-	 * @var mixed
+     * Data directory on server.
+	 * @var string
 	 */
 	protected $dataDir;
 
 	/**
-	 * @var mixed
+     * Data tmp directory on server.
+	 * @var string
 	 */
 	protected $dataTmp;
 
+    /**
+     * Constructor
+     * @param Filesystem $filesystem
+     * @param ExpeditionInterface $expedition
+     * @param SubjectInterface $subject
+     * @param PropertyInterface $property
+     * @param DownloadInterface $download
+     * @param Report $report
+     * @param Image $image
+     * @param WorkflowManagerInterface $manager
+     */
     public function __construct(
 		Filesystem $filesystem,
         ExpeditionInterface $expedition,
@@ -86,7 +113,8 @@ abstract class ActorAbstract {
 		PropertyInterface $property,
 		DownloadInterface $download,
         Report $report,
-        Image $image
+        Image $image,
+        WorkflowManagerInterface $manager
     )
     {
 		$this->filesystem = $filesystem;
@@ -96,12 +124,22 @@ abstract class ActorAbstract {
 		$this->download = $download;
         $this->report = $report;
         $this->image = $image;
+        $this->manager = $manager;
         $this->dataDir = Config::get('config.dataDir');
         $this->dataTmp = Config::get('config.dataTmp');
     }
 
+    /**
+     * Each class needs to set properties.
+     * @param $actor
+     * @return mixed
+     */
 	abstract protected function setProperties ($actor);
 
+    /**
+     * Each class has a process to handle the states.
+     * @return mixed
+     */
     abstract public function process();
 
     /**
@@ -177,7 +215,7 @@ abstract class ActorAbstract {
      * @param $header
      * @return array
      */
-    public function parseHeader($header)
+    protected function parseHeader($header)
     {
         $headers = [];
 
