@@ -29,121 +29,117 @@ use Biospex\Services\Curl\Curl;
 class NotesFromNature extends ActorAbstract {
 
     /**
+     * States of expedition corresponding to class methods.
      * @var array
      */
     protected $states = [];
 
     /**
-     * Actor object
+     * Actor object.
+     * @var object
      */
     protected $actor;
 
     /**
      * Expedition Id
+     * @var int
      */
     protected $expeditionId;
 
     /**
-     * Current expedition being processed
-     *
-     * @var
+     * Current expedition being processed.
+     * @var object
      */
     protected $record;
 
     /**
-     * Data Directory
-     *
+     * Data Directory.
      * @var string
      */
     protected $dataDir;
 
     /**
-     * Full path to temp file director
-     * @var
+     * Full path to temp file director.
+     * @var string
      */
     protected $tmpFileDir;
 
     /**
-     * Path to large images inside temp folder
-     * @var
+     * Path to large images inside temp folder.
+     * @var string
      */
     protected $lrgFilePath;
 
     /**
-     * Path to small images inside temp folder
-     * @var
+     * Path to small images inside temp folder.
+     * @var string
      */
     protected $smFilePath;
 
     /**
-     * Title of temp folder and tar file
-     * @var
+     * Title of temp folder and tar file.
+     * @var string
      */
     public $title;
 
     /**
      * Array of image urls from subjects.
-     *
-     * @var $imageUriArray
+     * @var array
      */
     protected $imageUriArray;
 
     /**
-     * CSV header array associated with meta file
+     * CSV header array associated with meta file.
      * @var array
      */
     protected $metaHeader = [];
 
     /**
-     * Remote image column from csv import
-     * @var
+     * Remote image column from csv import.
+     * @var string
      */
     protected $accessURI = "accessURI";
 
     /**
-     * Missing image when retrieving via curl
-     *
+     * Missing image when retrieving via curl.
      * @var array
      */
     protected $missingImg = [];
 
     /**
-     * Data array for images
+     * Data array for images.
      * @var array
      */
     protected $data = [];
 
     /**
-     * Metadata array for images
+     * Metadata array for images.
      * @var array
      */
     protected $metadata = [];
 
     /**
-     * Array to hold subjects and identifiers
-     *
-     * @var
+     * Array to hold subjects and identifiers.
+     * @var array
      */
     protected $identifierArray;
 
     /**
-     * Large image width for NfN
-     *
+     * Large image width for NfN.
      * @var int
      */
     private $largeWidth = 1540;
 
     /**
-     * Small image width for NfN
-     *
+     * Small image width for NfN.
      * @var int
      */
     private $smallWidth = 580;
 
     /**
      * Set properties
-     *
      * @param $actor
+     * @return mixed
      */
     public function setProperties($actor)
     {
@@ -158,7 +154,6 @@ class NotesFromNature extends ActorAbstract {
         $this->actor = $actor;
         $this->expeditionId = $actor->pivot->expedition_id;
 
-        return;
     }
 
     /**
@@ -182,13 +177,13 @@ class NotesFromNature extends ActorAbstract {
 
         call_user_func([$this, $this->states[$this->actor->pivot->state]]);
 
+        $this->removeFromQueue($this->expeditionId);
+
         return;
     }
 
     /**
      * Export the expedition
-     *
-     * @throws \RuntimeException
      */
     public function export()
     {
@@ -223,7 +218,7 @@ class NotesFromNature extends ActorAbstract {
 
         $this->report->processComplete($groupId, $this->record->title);
 
-        return true;
+        return;
     }
 
     /**
