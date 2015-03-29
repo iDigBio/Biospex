@@ -251,7 +251,7 @@ class NotesFromNature extends ActorAbstract {
     {
         $rc = new Curl([$this, "saveImage"]);
         $rc->options = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1, CURLINFO_HEADER_OUT => 1];
-        $rc->window_size = 10;
+        $rc->window_size = 5;
 
         foreach ($this->imageUriArray as $key => $uri)
         {
