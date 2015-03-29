@@ -247,7 +247,9 @@ class NotesFromNature extends ActorAbstract {
 
         foreach ($this->imageUriArray as $key => $uri)
         {
-            $rc->get($uri, ["key: $key"]);
+            $result = glob("{$this->tmpFileDir}/$key.*");
+            if (empty($result))
+                $rc->get($uri, ["key: $key"]);
         }
 
         $rc->execute();
