@@ -260,6 +260,10 @@ class NotesFromNature extends ActorAbstract {
                 $rc->get($uri, ["key: $key"]);
                 $execute = true;
             }
+            else
+            {
+                \Log::alert("Image for uri found");
+            }
         }
 
         if ($execute)
@@ -325,10 +329,23 @@ class NotesFromNature extends ActorAbstract {
             $smFilePath = "{$this->smFilePath}/$fileName.small.$extension";
 
             if( ! $this->filesystem->exists($lrgFilePath))
+            {
                 $this->image->resize($lrgFilePath, $this->largeWidth, 0);
+            }
+            else
+            {
+                \Log::alert("Image for lrg path found");
+            }
 
             if( ! $this->filesystem->exists($smFilePath))
+            {
                 $this->image->resize($smFilePath, $this->smallWidth, 0);
+            }
+            else
+            {
+                \Log::alert("Image for sm path found");
+            }
+
 
             $this->image->destroy();
             $this->imgCount++;
