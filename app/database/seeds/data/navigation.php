@@ -90,6 +90,13 @@ $items = array(
 				'permission' => 'superuser',
 				'order'      => 3,
 			),
+            array(
+                'type'       => "topmenu",
+                'name'       => "pages.ocr_files",
+                'url'        => "/ocr",
+                'permission' => 'superuser',
+                'order'      => 3,
+            ),
 		)
 	),
 );
