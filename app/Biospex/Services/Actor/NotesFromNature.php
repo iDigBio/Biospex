@@ -137,6 +137,12 @@ class NotesFromNature extends ActorAbstract {
     private $smallWidth = 580;
 
     /**
+     * Image count.
+     * @var int
+     */
+    private $imgCount = 0;
+
+    /**
      * Set properties
      * @param $actor
      * @return mixed
@@ -245,14 +251,19 @@ class NotesFromNature extends ActorAbstract {
         $rc->options = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1, CURLINFO_HEADER_OUT => 1];
         $rc->window_size = 5;
 
+        $execute = false;
         foreach ($this->imageUriArray as $key => $uri)
         {
             $result = glob("{$this->tmpFileDir}/$key.*");
             if (empty($result))
+            {
                 $rc->get($uri, ["key: $key"]);
+                $execute = true;
+            }
         }
 
-        $rc->execute();
+        if ($execute)
+            $rc->execute();
 
         return;
     }
@@ -303,7 +314,7 @@ class NotesFromNature extends ActorAbstract {
     public function convert()
     {
         $files = $this->filesystem->files($this->tmpFileDir);
-        $i=0;
+
         foreach ($files as $file)
         {
             $this->image->imageMagick($file);
@@ -313,25 +324,14 @@ class NotesFromNature extends ActorAbstract {
             $lrgFilePath = "{$this->lrgFilePath}/$fileName.large.$extension";
             $smFilePath = "{$this->smFilePath}/$fileName.small.$extension";
 
-            if ($this->filesystem->exists($lrgFilePath) && $this->filesystem->exists($smFilePath))
-                continue;
+            if( ! $this->filesystem->exists($lrgFilePath))
+                $this->image->resize($lrgFilePath, $this->largeWidth, 0);
 
-            if ( ! $this->image->resize($lrgFilePath, $this->largeWidth, 0))
-            {
-                $this->filesystem->delete($file);
-                $this->addMissingImage(null, $lrgFilePath);
-            }
-            elseif ( ! $this->image->resize($smFilePath, $this->smallWidth, 0))
-            {
-                $this->filesystem->delete($file);
-                $this->addMissingImage(null, $smFilePath);
-            }
+            if( ! $this->filesystem->exists($smFilePath))
+                $this->image->resize($smFilePath, $this->smallWidth, 0);
 
             $this->image->destroy();
-            $i++;
-
-            if ($i % 50 == 0)
-                \Log::alert("Converted $i");
+            $this->imgCount++;
         }
 
         return;
