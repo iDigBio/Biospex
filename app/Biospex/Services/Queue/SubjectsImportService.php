@@ -102,7 +102,8 @@ class SubjectsImportService {
         $user = $this->user->find($import->user_id);
         $project = $this->project->find($import->project_id);
 
-        $this->fileDir = $this->dataDir . '/' . str_random(10);
+        $fileName = pathinfo($this->dataDir . '/' . $import->file, PATHINFO_FILENAME );
+        $this->fileDir = $this->dataDir . '/' . md5($fileName);
         $zipFile = $this->dataDir . '/' . $import->file;
 
         try
