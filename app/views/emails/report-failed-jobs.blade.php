@@ -8,7 +8,7 @@
 
 <p>
 <blockquote>
-    {{{ $message }}}
+    {{{ $text }}}
 </blockquote>
 </p>
 <p>{{ trans('emails.thank_you') }}, <br />

@@ -24,7 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Imagine\Image\ImageInterface;
+use Biospex\Services\Curl\Curl;
+use Biospex\Services\Curl\Request;
 use Config, File;
 
 class Thumbnail extends Image{
@@ -50,12 +51,10 @@ class Thumbnail extends Image{
 	protected $outputDir;
 
 	/**
-	 * Initialize the image service
+	 * Set variables.
 	 */
-	public function __construct ()
+	public function setVars()
 	{
-		parent::__construct();
-
 		// We can read the output path from our configuration file.
 		$this->defaultImg = Config::get('config.images.thumbDefaultImg');
 		$this->width = Config::get('config.images.thumbWidth');
@@ -72,43 +71,60 @@ class Thumbnail extends Image{
 	public function thumbFromUrl ($url)
 	{
 		$this->setOutPutFile($url);
+        $this->createDir($this->outputDir);
 
-		if (File::isFile($this->outputFile))
-			return $this->outputFile;
+		if (File::isFile($this->outputFileSm))
+			return $this->outputFileSm;
 
 		try {
-			$image = $this->getImageFromUrl($url);
-			$size = $this->createBox($this->width, $this->height);
-			$mode = ImageInterface::THUMBNAIL_OUTBOUND;
-
-			$this->createDirectory($this->outputDir);
-
-			$this->imagine->load($image)->thumbnail($size, $mode)
-				->save($this->outputFile, array('quality' => $this->quality));
+            $rc = new Curl([$this, "saveThumbnail"]);
+            $rc->options = [CURLOPT_HEADER => 0, CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1];
+            $rc->window_size = 1;
+            $request = new Request($url);
+            $rc->add($request);
+            $rc->execute();
 		}
 		catch (Exception $e)
 		{
-			return false;
+            \Log::critical($e->getMessage());
 		}
 
-		return $this->outputFile;
+		return $this->outputFileSm;
 	}
 
-	/**
-	 * Return thumbnail or create if not exists.
-	 *
-	 * @param $url
-	 * @return string
-	 */
-	public function getThumbnail($url)
-	{
-		if ( ! $file = $this->thumbFromUrl($url))
-		{
-			$file = $this->defaultImg;
-		}
+    /**
+     * Return thumbnail or create if not exists.
+     *
+     * @param $url
+     * @return string
+     */
+    public function getThumbnail($url)
+    {
+        $this->setVars();
 
-		return File::get($file);
-	}
+        if ( ! $file = $this->thumbFromUrl($url))
+        {
+            $file = $this->defaultImg;
+        }
+
+        return File::get($file);
+    }
+
+    /**
+     * Save thumb file.
+     *
+     * @param $image
+     * @param $info
+     */
+    public function saveThumbnail($image, $info)
+    {
+        $this->saveFile($this->outputFileLg, $image);
+        $this->imageMagick($this->outputFileLg);
+        $this->resize($this->outputFileSm, $this->width, 0);
+        $this->deleteImage($this->outputFileLg);
+
+        return;
+    }
 
 	/**
 	 * Set output file path.
@@ -118,7 +134,10 @@ class Thumbnail extends Image{
 	 */
 	public function setOutPutFile($url)
 	{
-		$filename = md5($url) . '.jpg';
-		$this->outputFile = $this->outputDir . '/' . $filename;
+		$filenameLg = md5($url) . '.jpg';
+        $filenameSm = md5($url) . '.small.jpg';
+		$this->outputFileLg = $this->outputDir . '/' . $filenameLg;
+        $this->outputFileSm = $this->outputDir . '/' . $filenameSm;
 	}
+
 }

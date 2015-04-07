@@ -121,11 +121,16 @@ class Report {
      *
      * @param $groupId
      * @param $title
+     * @param $csv
+     * @param $name
      */
-    public function processComplete($groupId, $title)
+    public function processComplete($groupId, $title, $csv = null, $name = null)
     {
         $group = $this->group->findWith($groupId, ['owner']);
         $email = $group->Owner->email;
+
+        $count = count($csv);
+        $attachment = $count ? $this->createAttachment($csv, $name) : [];
 
         $subject = trans('emails.expedition_complete', ['expedition' => $title]);
         $data = [
@@ -134,34 +139,9 @@ class Report {
         ];
         $view = 'emails.report-process-complete';
 
-        $this->fireEvent('user.sendreport', $email, $subject, $view, $data);
+        $this->fireEvent('user.sendreport', $email, $subject, $view, $data, $attachment);
 
         return;
-    }
-
-    /**
-     * Expedition has missing images
-     *
-     * @param $groupId
-     * @param $title
-     * @param array $images
-     */
-    public function missingImages($groupId, $title, $images = [])
-    {
-        $group = $this->group->findWith($groupId, ['owner']);
-        $email = $group->Owner->email;
-
-        $subject = trans('emails.missing_images_subject');
-
-        $data = [
-            'missingImageMessage' => trans('emails.missing_images'),
-            'expeditionTitle'     => $title,
-            'missingImages'       => trans('emails.missing_imgs'),
-            'missingList'         => implode("<br />", $images)
-        ];
-        $view = 'emails.report-missing_images';
-
-        $this->fireEvent('user.sendreport', $email, $subject, $view, $data);
     }
 
     /**

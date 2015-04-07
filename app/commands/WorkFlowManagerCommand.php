@@ -86,7 +86,10 @@ class WorkFlowManagerCommand extends Command {
 	 */
 	public function checkProcess ($manager)
 	{
-		return $manager->stopped == 1 || $manager->error == 1 || $manager->queue == 1;
+        if ($manager->stopped == 1 || $manager->error == 1 || $manager->queue == 1)
+            return true;
+
+        return false;
 	}
 }
 

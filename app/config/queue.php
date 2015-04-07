@@ -38,6 +38,7 @@ return array(
 			'driver' => 'beanstalkd',
 			'host'   => 'localhost',
 			'queue'  => $_ENV['beanstalkd.default'],
+            'ttr'    => 10800
 		),
 
 		'sqs' => array(

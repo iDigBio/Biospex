@@ -25,16 +25,16 @@
  */
 
 // User Login event
-Event::listen('user.login', function($userId, $email)
+Event::listen('user.login', function ($userId, $email)
 {
     Session::put('userId', $userId);
     Session::put('email', $email);
 }, 10);
 
 // User logout event
-Event::listen('user.logout', function()
+Event::listen('user.logout', function ()
 {
-	Session::flush();
+    Session::flush();
 }, 10);
 
 // Subscribe to User Mailer events
@@ -42,25 +42,26 @@ Event::subscribe('Biospex\Mailer\BiospexMailer');
 
 Event::listen('eloquent.saving: *', function ()
 {
-	Cache::flush();
+    Cache::flush();
 });
 
 Event::listen('eloquent.saved: *', function ()
 {
-	Cache::flush();
+    Cache::flush();
 });
 
 Event::listen('eloquent.deleted: *', function ()
 {
-	Cache::flush();
+    Cache::flush();
 });
 
-Queue::failing(function($connection, $job, $data)
+Queue::failing(function ($connection, $job)
 {
     \Event::fire('user.sendreport', [
-        'view'       => 'emails.report-failed-jobs',
-        'subject'    => trans('emails.failed_job_subject'),
-        'data'    => ['message' => trans('emails.failed_job_message', [$job->id])],
+        'email'   => null,
+        'subject' => trans('emails.failed_job_subject'),
+        'view'    => 'emails.report-failed-jobs',
+        'data'    => ['text' => trans('emails.failed_job_message', ['id' => $job->getJobId()])],
     ]);
 
     return;

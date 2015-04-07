@@ -24,7 +24,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+use Biospex\Services\Curl\Curl;
 
 class ServerInfoController extends BaseController
 {
@@ -36,7 +36,7 @@ class ServerInfoController extends BaseController
      */
 	public function __construct ()
 	{
-		$this->beforeFilter('auth', ['only' => ['showPhpInfo', 'clear', 'ocr', 'ocrDestroy']]);
+		$this->beforeFilter('auth', ['only' => ['showPhpInfo', 'clear', 'ocr']]);
         $this->ocrDeleteUrl = \Config::get('config.ocrDeleteUrl');
 	}
 
@@ -94,20 +94,23 @@ class ServerInfoController extends BaseController
 		return Redirect::intended('/projects');
 	}
 
-    public function ocr($file = null)
+    public function ocr()
     {
-        if ( ! is_null($file))
+        if (Request::isMethod('post') &&  ! empty(Input::get('files')))
         {
-            if ( ! $this->deleteJsonFile($file))
+            $files = Input::get('files');
+            $rc = new Curl();
+            $rc->window_size = 5;
+            foreach ($files as $file)
             {
-                Session::flash('error', trans('pages.ocr_file_delete_error'));
+                $options = [CURLOPT_RETURNTRANSFER => true, CURLOPT_FAILONERROR, true];
+                $headers = ['Content-Type: application/x-www-form-urlencoded', 'API-KEY:t$p480UAJ5v8P=ifcE23&hpM?#+&r3'];
+                $data = "file=$file";
+                $rc->post($this->ocrDeleteUrl, $data, $headers, $options);
             }
-            else
-            {
-                Session::flash('success', trans('pages.ocr_file_delete_success'));
-            }
-        }
 
+            $rc->execute();
+        }
 
         $html = file_get_contents("http://ocr.dev.morphbank.net/status");
 
@@ -121,28 +124,4 @@ class ServerInfoController extends BaseController
 
         return View::make('ocr', compact('elements'));
     }
-
-    private function deleteJsonFile($file)
-    {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->ocrDeleteUrl);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/x-www-form-urlencoded',
-            'API-KEY:t$p480UAJ5v8P=ifcE23&hpM?#+&r3'
-        ]);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "file=" . $file);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FAILONERROR, true);
-
-        $response = curl_exec($ch);
-        curl_close ($ch);
-
-        if($response === false)
-            return false;
-
-        return true;
-
-    }
-
 }

@@ -35,50 +35,70 @@ use Biospex\Services\Image\Image;
 abstract class ActorAbstract {
 
 	/**
-	 * @var Filesystem
+     * Filesystem
+	 * @var object
 	 */
 	protected $filesystem;
 
 	/**
-	 * @var ExpeditionInterface
+     * ExpeditionInterface
+	 * @var object
 	 */
 	protected $expedition;
 
 	/**
-	 * @var SubjectInterface
+     * SubjectInterface
+	 * @var object
 	 */
 	protected $subject;
 
 	/**
-	 * @var PropertyInterface
+     * PropertyInterface
+	 * @var object
 	 */
 	protected $property;
 
 	/**
-	 * @var DownloadInterface
+     * DownloadInterface
+	 * @var object
 	 */
 	protected $download;
 
 	/**
-	 * @var Report
+     * ReportInterface
+	 * @var object
 	 */
 	protected $report;
 
 	/**
-	 * @var
+     * ImageInterface
+	 * @var object
 	 */
 	protected $image;
 
 	/**
-	 * @var mixed
+     * Data directory on server.
+	 * @var string
 	 */
 	protected $dataDir;
 
 	/**
-	 * @var mixed
+     * Data tmp directory on server.
+	 * @var string
 	 */
 	protected $dataTmp;
 
+    /**
+     * Constructor
+     * @param Filesystem $filesystem
+     * @param ExpeditionInterface $expedition
+     * @param SubjectInterface $subject
+     * @param PropertyInterface $property
+     * @param DownloadInterface $download
+     * @param Report $report
+     * @param Image $image
+     * @param WorkflowManagerInterface $manager
+     */
     public function __construct(
 		Filesystem $filesystem,
         ExpeditionInterface $expedition,
@@ -86,7 +106,7 @@ abstract class ActorAbstract {
 		PropertyInterface $property,
 		DownloadInterface $download,
         Report $report,
-		Image $image
+        Image $image
     )
     {
 		$this->filesystem = $filesystem;
@@ -95,27 +115,37 @@ abstract class ActorAbstract {
 		$this->property = $property;
 		$this->download = $download;
         $this->report = $report;
-		$this->image = $image;
+        $this->image = $image;
         $this->dataDir = Config::get('config.dataDir');
         $this->dataTmp = Config::get('config.dataTmp');
     }
 
+    /**
+     * Each class needs to set properties.
+     * @param $actor
+     * @return mixed
+     */
 	abstract protected function setProperties ($actor);
 
+    /**
+     * Each class has a process to handle the states.
+     * @return mixed
+     */
     abstract public function process();
 
-	/**
-	 * Create directory
-	 *
-	 * @param $dir
-	 * @return mixed
-	 */
+    /**
+     * Create directory.
+     *
+     * @param $dir
+     * @return mixed
+     * @throws \Exception
+     */
     protected function createDir($dir)
     {
         if ( ! $this->filesystem->isDirectory($dir))
         {
-            if ( ! $this->filesystem->makeDirectory($dir, 0777, true))
-				throw new \RuntimeException(trans('emails.error_create_dir', array('directory' => $dir)));
+            if ( ! $this->filesystem->makeDirectory($dir, 0775, true))
+				throw new \Exception(trans('emails.error_create_dir', ['directory' => $dir]));
         }
 
 		return $dir;
@@ -125,53 +155,69 @@ abstract class ActorAbstract {
      * Make sure directory is writable.
      *
      * @param $dir
-     * @return bool
+     * @throws \Exception
      */
     protected function writeDir($dir)
     {
         if ( ! $this->filesystem->isWritable($dir))
         {
-            if ( ! chmod($dir, 0777))
-				throw new \RuntimeException(trans('emails.error_write_dir', array('directory' => $dir)));
+            if ( ! chmod($dir, 0775))
+				throw new \Exception(trans('emails.error_write_dir', ['directory' => $dir]));
         }
 
 		return;
     }
 
     /**
-     * Save a file to destination path
+     * Save a file to destination path.
      *
      * @param $path
      * @param $contents
-     * @return bool
+     * @throws \Exception
      */
     protected function saveFile($path, $contents)
     {
         if ( ! $this->filesystem->put($path, $contents))
-			throw new \RuntimeException(trans('emails.error_save_file', array('directory' => "$path/details.js")));
+			throw new \Exception(trans('emails.error_save_file', ['directory' => $path]));
 
 		return;
     }
 
-    /**
-     * Exceute shell commands
-     * @param $cmd
+    /** Create download file.
+     *
+     * @param $expeditionId
+     * @param $actorId
+     * @param $file
      */
-    protected function executeCommand($cmd)
+    protected function createDownload ($expeditionId, $actorId, $file)
     {
-        shell_exec($cmd);
-
-        return;
-    }
-
-	protected function createDownload ($expeditionId, $actorId, $file)
-    {
-        $data = array(
+        $data = [
             'expedition_id' => $expeditionId,
 			'actor_id' => $actorId,
             'file' => $file
-        );
+        ];
 
         $this->download->create($data);
+    }
+
+    /**
+     * Parse header.
+     *
+     * @param $header
+     * @return array
+     */
+    protected function parseHeader($header)
+    {
+        $headers = [];
+
+        foreach (explode("\n", $header) as $i => $h) {
+            $h = explode(':', $h, 2);
+
+            if (isset($h[1])) {
+                $headers[$h[0]] = trim($h[1]);
+            }
+        }
+
+        return $headers;
     }
 }
