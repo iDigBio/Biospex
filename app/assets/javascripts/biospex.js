@@ -50,11 +50,15 @@ $(document).ready(function() {
         $("#userGroup").val() == 'new' ? $("#groupInput").show() : $("#groupInput").hide();
     }
 
-    $('#checkall').click(function() {
-        if($(this).attr("checked")){
-            $('.checkbox').addClass('checked');
+    $('#selectall').click(function(event) {  //on click
+        if(this.checked) { // check select status
+            $('.checkbox').each(function() { //loop through each checkbox
+                this.checked = true;  //select all checkboxes with class "checkbox1"
+            });
         }else{
-            $('.checkbox').removeClass('checked');
+            $('.checkbox').each(function() { //loop through each checkbox
+                this.checked = false; //deselect all checkboxes with class "checkbox1"
+            });
         }
     });
 

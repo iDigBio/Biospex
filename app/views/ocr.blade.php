@@ -19,8 +19,8 @@
 
         <div class="form-group col-md-offset-4">
             <div class="col-sm-6">
-                {{ Form::checkbox('checkall', null, null, ['id'=>'checkall']) }}
-                {{ Form::label('Check All', 'Check All', array('id'=>'','class'=>'')) }}
+                {{ Form::checkbox('selectall', null, null, ['id'=>'selectall']) }}
+                {{ Form::label('Select All', 'Select All', array('id'=>'','class'=>'')) }}
             </div>
         </div>
 
