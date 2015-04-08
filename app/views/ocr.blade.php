@@ -17,6 +17,13 @@
         'role' => 'form'
         )) }}
 
+        <div class="form-group col-md-offset-4">
+            <div class="col-sm-6">
+                {{ Form::checkbox('checkall', null, null, ['id'=>'checkall']) }}
+                {{ Form::label("Check All", array('id'=>'','class'=>'')) }}
+            </div>
+        </div>
+
         @foreach ($elements as $item)
             @if (preg_match('/\.json/i', $item->nodeValue))
                 <div class="form-group col-md-offset-4">
