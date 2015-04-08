@@ -28,7 +28,7 @@
             @if (preg_match('/\.json/i', $item->nodeValue))
                 <div class="form-group col-md-offset-4">
                     <div class="col-sm-6">
-                        {{ Form::checkbox('files[]', $item->nodeValue, null, ['id' => $item->nodeValue, 'class' => 'checkbox']) }}
+                        {{ Form::checkbox('files[]', $item->nodeValue, null, ['id' => $item->nodeValue, 'class' => 'checkbox-all']) }}
                         {{ Form::label($item->nodeValue, $item->nodeValue, ['id'=>'','class'=>'']) }}
                     </div>
                 </div>
