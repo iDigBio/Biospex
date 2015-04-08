@@ -50,6 +50,14 @@ $(document).ready(function() {
         $("#userGroup").val() == 'new' ? $("#groupInput").show() : $("#groupInput").hide();
     }
 
+    $('#checkall').click(function() {
+        if($(this).attr("checked")){
+            $('.checkbox').find('span').addClass('checked');
+        }else{
+            $('.checkbox').find('span').removeClass('checked');
+        }
+    });
+
     /*
     $('input[name="user"]').change(function(){
         $('input[class="userperm"]:checkbox').prop('checked', this.checked);
