@@ -29,7 +29,7 @@
                 <div class="form-group col-md-offset-4">
                     <div class="col-sm-6">
                         {{ Form::checkbox('files[]', $item->nodeValue, null, ['id'=>$item->nodeValue, 'class' => 'checkbox']) }}
-                        {{ Form::label($item->nodeValue, $item->nodeValue) }}
+                        {{ Form::label($item->nodeValue, $item->nodeValue,array('id'=>'','class'=>'') }}
                     </div>
                 </div>
             @endif
