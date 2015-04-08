@@ -52,9 +52,9 @@ $(document).ready(function() {
 
     $('#checkall').click(function() {
         if($(this).attr("checked")){
-            $('.checkbox').find('span').addClass('checked');
+            $('.checkbox').addClass('checked');
         }else{
-            $('.checkbox').find('span').removeClass('checked');
+            $('.checkbox').removeClass('checked');
         }
     });
 
