@@ -332,6 +332,9 @@ class NotesFromNature extends ActorAbstract {
 
             $this->image->destroy();
             $this->imgCount++;
+
+            if ($this->imgCount % 20 == 0)
+                \Log::alert("Saved {$this->imgCount}.");
         }
 
         return;
