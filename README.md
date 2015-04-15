@@ -11,8 +11,7 @@ Requirements
  - Mongodb
  - Composer
  - Mongo PECL Extension
- - PHP gd, imagick, mcrypt, mysql, mysqlnd, opcache, memcached, pdo, pdo_mysql, pdo_sqlite,
- readline, sqlite3
+ - PHP sudo apt-get install -qq php5-cli php5-fpm php5-mysql php5-pgsql php5-sqlite php5-mongo php5-curl php5-gd php5-gmp php5-mcrypt php5-memcached php5-imagick php5-intl php5-xdebug
  - Beanstalkd
  - Supervisord
  - Mailgun or some other email configuration
@@ -31,7 +30,7 @@ Installation
 
 Notes
 -----
-1. Create myqueue.conf then read, update, and restart supervisord.
+1. Create biospex-queue.conf then read, update, and restart supervisord.
 2. Add cron jobs for workflow manager (hourly), download clean (midnight), ocr polling.
   1. 0 * * * * /usr/bin/php /home/biospex/artisan workflow:manage >> /home/biospex/app/storage/logs/workflow.manage.log 2>&1
   2. 00 00 * * * /usr/bin/php /home/biospex/artisan download:clean >> /home/biospex/app/storage/logs/download.clean.log 2>&1
@@ -52,7 +51,6 @@ Notes
 }
 ```
 4. Edit /etc/default/beanstalkd and add or uncomment START=yes to start Beanstalkd upon server startup/reboot.
-5. Copy supervisord.conf to /etc/init/supervisord.conf to start supervisord upon server startup/reboot.
 
 
 
