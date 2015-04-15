@@ -300,6 +300,8 @@ class NotesFromNature extends ActorAbstract {
             $path = "{$this->tmpFileDir}/$key.$ext";
             $this->saveFile($path, $image);
 
+            \Log::alert("Saving image $path.");
+
             return;
         }
 
