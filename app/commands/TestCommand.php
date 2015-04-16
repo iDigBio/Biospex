@@ -40,6 +40,8 @@ class TestCommand extends Command {
             try
             {
                 $this->image->imageMagick($file);
+                $fileName = $this->image->getFileName();
+                echo "$fileName\n";
             }
             catch (\Exception $e)
             {
