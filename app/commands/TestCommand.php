@@ -48,7 +48,7 @@ class TestCommand extends Command {
                 $fileName = $this->image->getFileName();
                 echo "Caught Exception: $fileName " . $e->getMessage() . "/n";
 
-                continue;
+                die();
             }
         }
 
