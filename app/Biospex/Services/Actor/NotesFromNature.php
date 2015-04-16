@@ -322,14 +322,17 @@ class NotesFromNature extends ActorAbstract {
             try
             {
                 $this->image->imageMagick($file);
-                $fileName = $this->image->getFileName();
-                $extension = $this->image->getExtension();
             }
             catch (\Exception $e)
             {
+                $fileName = $this->image->getFileName();
                 $this->addMissingImage($fileName, $this->imageUriArray[$fileName]);
+
                 continue;
             }
+
+            $fileName = $this->image->getFileName();
+            $extension = $this->image->getExtension();
 
             $lrgFilePath = "{$this->lrgFilePath}/$fileName.large.$extension";
             $smFilePath = "{$this->smFilePath}/$fileName.small.$extension";
