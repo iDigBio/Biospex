@@ -33,11 +33,23 @@ class TestCommand extends Command {
      */
     public function fire()
     {
-     //   convert /data/web/staging.biospex.org/app/storage/data/4-17f9a20a23/5512ba2500cf791f438b4ffe.jpg  -resize 64x64  /data/web/staging.biospex.org/app/storage/testsm.jpg
-        $this->notes->setTitle('4-03f4526548');
-        $this->notes->setPaths();
-        $this->notes->convert();
-        //$this->notes->buildDetails();
-        return;
+        $files = $this->filesystem->files($this->tmpFileDir);
+
+        foreach ($files as $file)
+        {
+            try
+            {
+                $this->image->imageMagick($file);
+            }
+            catch (\Exception $e)
+            {
+                $fileName = $this->image->getFileName();
+                echo "Caught Exception: $fileName " . $e->getMessage() . "/n";
+
+                continue;
+            }
+
+        }
+
     }
 }
