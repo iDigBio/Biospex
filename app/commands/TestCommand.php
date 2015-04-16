@@ -50,7 +50,6 @@ class TestCommand extends Command {
 
                 continue;
             }
-
         }
 
     }
