@@ -33,7 +33,7 @@ class TestCommand extends Command {
      */
     public function fire()
     {
-        $files = $this->filesystem->files($this->tmpFileDir);
+        $files = $this->filesystem->files("app/storage/data/4-e33c305f9cf2e45dcf300c46faa8a87f");
 
         foreach ($files as $file)
         {
