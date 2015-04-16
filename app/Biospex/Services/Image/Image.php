@@ -29,6 +29,12 @@ use Illuminate\Filesystem\Filesystem;
 class Image {
 
     /**
+     * File for image.
+     * @var
+     */
+    protected $file;
+
+    /**
      * Instance of Gmagick
      */
     protected $image;
@@ -74,7 +80,7 @@ class Image {
     /**
      * Initialize the image service.
      *
-     * @param $file
+     * @param Filesystem $filesystem
      */
     public function __construct(Filesystem $filesystem)
     {
@@ -84,11 +90,27 @@ class Image {
         return;
     }
 
-    public function imageMagick($file)
+    /**
+     * Set image file.
+     *
+     * @param $file
+     */
+    public function setImageMagickFile($file)
     {
-        $this->setImagePathInfo($file);
+        $this->file = $file;
+        $this->setImagePathInfo($this->file);
 
-        $f = fopen($file, 'r');
+        return;
+    }
+
+    /**
+     * Read image using imagick.
+     *
+     * @param $file
+     */
+    public function imageMagick()
+    {
+        $f = fopen($this->file, 'r');
         fseek($f, 0);
         $this->imagick = new \Imagick();
         $this->imagick->setResourceLimit(6,1);
