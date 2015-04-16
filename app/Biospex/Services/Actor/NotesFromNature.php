@@ -199,6 +199,8 @@ class NotesFromNature extends ActorAbstract {
 
         $this->getImagesFromUri();
 
+        \Log::alert("All images retreived from URLs.");
+
         $this->convert();
 
         $this->buildDetails();
@@ -300,8 +302,6 @@ class NotesFromNature extends ActorAbstract {
             $path = "{$this->tmpFileDir}/$key.$ext";
             $this->saveFile($path, $image);
 
-            \Log::alert("Saving image $path.");
-
             return;
         }
 
@@ -319,20 +319,29 @@ class NotesFromNature extends ActorAbstract {
 
         foreach ($files as $file)
         {
-            $this->image->imageMagick($file);
-            $fileName = $this->image->getFileName();
-            $extension = $this->image->getExtension();
+            try
+            {
+                $this->image->imageMagick($file);
+                $fileName = $this->image->getFileName();
+                $extension = $this->image->getExtension();
+            }
+            catch (\Exception $e)
+            {
+                $this->addMissingImage($fileName, $this->imageUriArray[$fileName]);
+                continue;
+            }
 
             $lrgFilePath = "{$this->lrgFilePath}/$fileName.large.$extension";
             $smFilePath = "{$this->smFilePath}/$fileName.small.$extension";
 
-            if( ! $this->filesystem->exists($lrgFilePath))
+            if ( ! $this->filesystem->exists($lrgFilePath))
                 $this->image->resize($lrgFilePath, $this->largeWidth, 0);
 
-            if( ! $this->filesystem->exists($smFilePath))
+            if ( ! $this->filesystem->exists($smFilePath))
                 $this->image->resize($smFilePath, $this->smallWidth, 0);
 
             $this->image->destroy();
+
             $this->imgCount++;
 
             if ($this->imgCount % 20 == 0)
