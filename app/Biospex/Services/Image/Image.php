@@ -133,7 +133,7 @@ class Image {
      */
     public function setImageSizeInfo($file)
     {
-        $size = File::isFile($file) ? getimagesize($file) : getimagesizefromstring($file);
+        $size = is_string($file) ? getimagesizefromstring($file) : getimagesize($file);
         $this->width = $size[0];
         $this->height = $size[1];
         $this->setExtension($size['mime']);
@@ -157,7 +157,7 @@ class Image {
      */
     public function setExtension($mime = null)
     {
-        $this->extension = is_null($mime) ? $this->pathinfo['extension'] : $this->imageTypeExtension[$this->mime];
+        $this->extension = is_null($mime) ? $this->pathinfo['extension'] : $this->imageTypeExtension[$mime];
 
         return;
     }
