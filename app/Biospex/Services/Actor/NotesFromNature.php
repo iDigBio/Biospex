@@ -290,7 +290,8 @@ class NotesFromNature extends ActorAbstract {
                 return;
             }
 
-            $ext = $this->image->getImageExtensionFromString($image);
+            $this->image->setImageSizeInfo($image);
+            $ext = $this->image->getFileExtension();
 
             if ( ! $ext)
             {
@@ -319,20 +320,25 @@ class NotesFromNature extends ActorAbstract {
 
         foreach ($files as $file)
         {
+            $this->image->setImagePathInfo($file);
+
+            if ($this->image->getMimeType() === false)
+                continue;
+
+            $fileName = $this->image->getFileName();
+            $extension = $this->image->getFileExtension();
+
             try
             {
-                $this->image->imageMagick($file);
+
+               $this->image->readImageMagickFile($file);
             }
             catch (\Exception $e)
             {
-                $fileName = $this->image->getFileName();
                 $this->addMissingImage($fileName, $this->imageUriArray[$fileName]);
 
                 continue;
             }
-
-            $fileName = $this->image->getFileName();
-            $extension = $this->image->getExtension();
 
             $lrgFilePath = "{$this->lrgFilePath}/$fileName.large.$extension";
             $smFilePath = "{$this->smFilePath}/$fileName.small.$extension";
