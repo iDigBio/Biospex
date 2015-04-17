@@ -24,9 +24,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 use Biospex\Services\Curl\Curl;
 use Biospex\Services\Curl\Request;
-use Config, File;
 
 class Thumbnail extends Image{
 
@@ -119,10 +119,12 @@ class Thumbnail extends Image{
     public function saveThumbnail($image, $info)
     {
         $this->saveFile($this->outputFileLg, $image);
-        $this->setImageMagickFile($this->outputFileLg);
-        $this->imageMagick();
-        $this->resize($this->outputFileSm, $this->width, 0);
+        $this->readImageMagickFile($this->outputFileLg);
+        $this->setImageMagickGeometry();
+        $this->resizeMagick($this->outputFileSm, $this->width, 0);
+        $this->setImageSizeInfo($this->outputFileLg);
         $this->deleteImage($this->outputFileLg);
+        $this->destroyImageMagick();
 
         return;
     }
