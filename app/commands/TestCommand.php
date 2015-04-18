@@ -42,6 +42,7 @@ class TestCommand extends Command {
         foreach ($files as $file)
         {
             $this->image->setImagePathInfo($file);
+            echo "Set pathinfo on file." . PHP_EOL;
 
             if ($this->image->getMimeType() === false)
                 continue;
