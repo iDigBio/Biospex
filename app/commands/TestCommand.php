@@ -34,45 +34,36 @@ class TestCommand extends Command {
         $time_start = microtime(true);
 
         $this->setPaths();
-        echo "Paths set." . PHP_EOL;
 
         $files = $this->filesystem->files($this->tmpFileDir);
-        echo "Retrieved files." . PHP_EOL;
 
         foreach ($files as $file)
         {
             $this->image->setImagePathInfo($file);
-            echo "Set pathinfo on file." . PHP_EOL;
 
             if ($this->image->getMimeType() === false)
                 continue;
 
             $fileName = $this->image->getFileName();
-            echo "Get File name." . PHP_EOL;
 
             $extension = $this->image->getFileExtension();
-            echo "Get Extension." . PHP_EOL;
 
             try
             {
 
-                echo "Reading file" . PHP_EOL;
                 $this->image->readImageMagickFile($file);
             }
             catch (\Exception $e)
             {
-                echo "Could not read file: " . $e->getMessage();
                 die();
             }
 
             $tmpLrgFilePath = "{$this->wrkPath}/$fileName.large.$extension";
             $tmpSmFilePath = "{$this->wrkPath}/$fileName.small.$extension";
 
-            echo "Resizing Images" . PHP_EOL;
-            $this->image->resizeMagick($tmpLrgFilePath, $this->largeWidth, 0);
-            $this->image->resizeMagick($tmpSmFilePath, $this->smallWidth, 0);
+            $this->image->resizeMagick($tmpLrgFilePath, 1540, 0);
+            $this->image->resizeMagick($tmpSmFilePath, 580, 0);
 
-            echo "Destroying image magick" . PHP_EOL;
             $this->image->destroyImageMagick();
 
             $lrgFilePath = "{$this->lrgFilePath}/$fileName.large.$extension";
