@@ -82,12 +82,6 @@ abstract class ActorAbstract {
 	 */
 	protected $dataDir;
 
-	/**
-     * Data tmp directory on server.
-	 * @var string
-	 */
-	protected $dataTmp;
-
     /**
      * Constructor
      * @param Filesystem $filesystem
@@ -117,7 +111,6 @@ abstract class ActorAbstract {
         $this->report = $report;
         $this->image = $image;
         $this->dataDir = Config::get('config.dataDir');
-        $this->dataTmp = Config::get('config.dataTmp');
     }
 
     /**
