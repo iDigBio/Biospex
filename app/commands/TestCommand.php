@@ -3,7 +3,6 @@
 use Illuminate\Console\Command;
 use Biospex\Services\Image\Image;
 use Illuminate\Filesystem\Filesystem;
-use Biospex\Services\Actor\NotesFromNature;
 
 class TestCommand extends Command {
 
@@ -20,12 +19,11 @@ class TestCommand extends Command {
     /**
      * Constructor
      */
-    public function __construct(Image $image, Filesystem $filesystem, NotesFromNature $notes)
+    public function __construct(Image $image, Filesystem $filesystem)
     {
         parent::__construct();
         $this->image = $image;
         $this->filesystem = $filesystem;
-        $this->notes = $notes;
     }
 
     /**
@@ -36,8 +34,10 @@ class TestCommand extends Command {
         $time_start = microtime(true);
 
         $this->setPaths();
+        echo "Paths set." . PHP_EOL;
 
         $files = $this->filesystem->files($this->tmpFileDir);
+        echo "Retrieved files." . PHP_EOL;
 
         foreach ($files as $file)
         {
@@ -82,7 +82,7 @@ class TestCommand extends Command {
         $execution_time = ($time_end - $time_start)/60;
 
         //execution time of the script
-        echo '<b>Total Execution Time:</b> '.$execution_time.' Mins' . PHP_EOL;
+        echo "Total Execution Time: ". $execution_time . " Mins" . PHP_EOL;
 
     }
 
