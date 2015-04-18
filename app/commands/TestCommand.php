@@ -72,6 +72,7 @@ class TestCommand extends Command {
             $this->image->resizeMagick($tmpLrgFilePath, $this->largeWidth, 0);
             $this->image->resizeMagick($tmpSmFilePath, $this->smallWidth, 0);
 
+            echo "Destroying image magick" . PHP_EOL;
             $this->image->destroyImageMagick();
 
             $lrgFilePath = "{$this->lrgFilePath}/$fileName.large.$extension";
