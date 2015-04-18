@@ -48,11 +48,15 @@ class TestCommand extends Command {
                 continue;
 
             $fileName = $this->image->getFileName();
+            echo "Get File name." . PHP_EOL;
+
             $extension = $this->image->getFileExtension();
+            echo "Get Extension." . PHP_EOL;
 
             try
             {
 
+                echo "Reading file" . PHP_EOL;
                 $this->image->readImageMagickFile($file);
             }
             catch (\Exception $e)
@@ -64,6 +68,7 @@ class TestCommand extends Command {
             $tmpLrgFilePath = "{$this->wrkPath}/$fileName.large.$extension";
             $tmpSmFilePath = "{$this->wrkPath}/$fileName.small.$extension";
 
+            echo "Resizing Images" . PHP_EOL;
             $this->image->resizeMagick($tmpLrgFilePath, $this->largeWidth, 0);
             $this->image->resizeMagick($tmpSmFilePath, $this->smallWidth, 0);
 
