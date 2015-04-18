@@ -33,24 +33,71 @@ class TestCommand extends Command {
      */
     public function fire()
     {
-        $files = $this->filesystem->files("app/storage/data/4-e33c305f9cf2e45dcf300c46faa8a87f");
+        $time_start = microtime(true);
+
+        $this->setPaths();
+
+        $files = $this->filesystem->files($this->tmpFileDir);
 
         foreach ($files as $file)
         {
+            $this->image->setImagePathInfo($file);
+
+            if ($this->image->getMimeType() === false)
+                continue;
+
+            $fileName = $this->image->getFileName();
+            $extension = $this->image->getFileExtension();
+
             try
             {
-                $this->image->imageMagick($file);
-                $fileName = $this->image->getFileName();
-                echo "$fileName\n";
+
+                $this->image->readImageMagickFile($file);
             }
             catch (\Exception $e)
             {
-                $fileName = $this->image->getFileName();
-                echo "Caught Exception: $fileName " . $e->getMessage() . "/n";
-
-                die();
+                continue;
             }
+
+            $tmpLrgFilePath = "{$this->wrkPath}/$fileName.large.$extension";
+            $tmpSmFilePath = "{$this->wrkPath}/$fileName.small.$extension";
+
+            $this->image->resizeMagick($tmpLrgFilePath, $this->largeWidth, 0);
+            $this->image->resizeMagick($tmpSmFilePath, $this->smallWidth, 0);
+
+            $this->image->destroyImageMagick();
+
+            $lrgFilePath = "{$this->lrgFilePath}/$fileName.large.$extension";
+            $smFilePath = "{$this->smFilePath}/$fileName.small.$extension";
+
+            $this->filesystem->move($tmpLrgFilePath, $lrgFilePath);
+            $this->filesystem->move($tmpSmFilePath, $smFilePath);
+
+            $this->imgCount++;
         }
 
+        $time_end = microtime(true);
+
+        //dividing with 60 will give the execution time in minutes other wise seconds
+        $execution_time = ($time_end - $time_start)/60;
+
+        //execution time of the script
+        echo '<b>Total Execution Time:</b> '.$execution_time.' Mins' . PHP_EOL;
+
+    }
+
+    public function setPaths()
+    {
+        $this->wrkPath = storage_path('working');
+        $this->filesystem->makeDirectory($this->wrkPath);
+
+        $this->tmpFileDir = storage_path('data/4-e33c305f9cf2e45dcf300c46faa8a87f');
+        $this->filesystem->makeDirectory($this->tmpFileDir);
+
+        $this->lrgFilePath = $this->tmpFileDir . '/large';
+        $this->filesystem->makeDirectory($this->lrgFilePath);
+
+        $this->smFilePath = $this->tmpFileDir . '/small';
+        $this->filesystem->makeDirectory($this->smFilePath);
     }
 }
