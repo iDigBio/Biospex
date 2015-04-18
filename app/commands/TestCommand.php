@@ -71,8 +71,6 @@ class TestCommand extends Command {
 
             $this->filesystem->move($tmpLrgFilePath, $lrgFilePath);
             $this->filesystem->move($tmpSmFilePath, $smFilePath);
-
-            $this->imgCount++;
         }
 
         $time_end = microtime(true);
