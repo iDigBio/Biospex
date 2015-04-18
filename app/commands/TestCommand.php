@@ -56,7 +56,8 @@ class TestCommand extends Command {
             }
             catch (\Exception $e)
             {
-                continue;
+                echo "Could not read file: " . $e->getMessage();
+                die();
             }
 
             $tmpLrgFilePath = "{$this->wrkPath}/$fileName.large.$extension";
