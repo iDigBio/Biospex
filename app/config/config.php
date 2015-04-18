@@ -14,8 +14,7 @@ return [
     'translate'         => false,
 
     /** Default expedition data directories */
-    'dataDir'           => storage_path() . '/data',
-    'dataTmp'           => storage_path() . '/data/tmp',
+    'dataDir'           => storage_path('data'),
 
     /*
      * OCR
@@ -40,7 +39,7 @@ return [
     /** Imagine settings */
     'images'            => [
         'thumbDefaultImg'    => '/assets/default_image.jpg',
-        'thumbOutputDir'     => storage_path() . '/images',
+        'thumbOutputDir'     => storage_path('images'),
         'thumbWidth'         => 150,
         'thumbHeight'        => 150,
         'library'            => 'gmagick',
