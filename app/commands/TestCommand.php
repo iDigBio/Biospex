@@ -89,15 +89,15 @@ class TestCommand extends Command {
     public function setPaths()
     {
         $this->wrkPath = storage_path('working');
-        $this->filesystem->makeDirectory($this->wrkPath);
+        $this->image->createDir($this->wrkPath);
 
         $this->tmpFileDir = storage_path('data/4-e33c305f9cf2e45dcf300c46faa8a87f');
-        $this->filesystem->makeDirectory($this->tmpFileDir);
+        $this->image->createDir($this->tmpFileDir);
 
         $this->lrgFilePath = $this->tmpFileDir . '/large';
-        $this->filesystem->makeDirectory($this->lrgFilePath);
+        $this->image->createDir($this->lrgFilePath);
 
         $this->smFilePath = $this->tmpFileDir . '/small';
-        $this->filesystem->makeDirectory($this->smFilePath);
+        $this->image->createDir($this->smFilePath);
     }
 }
