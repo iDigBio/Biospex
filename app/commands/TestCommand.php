@@ -58,19 +58,22 @@ class TestCommand extends Command {
                 die();
             }
 
-            $tmpLrgFilePath = "{$this->wrkPath}/$fileName.large.$extension";
-            $tmpSmFilePath = "{$this->wrkPath}/$fileName.small.$extension";
-
-            $this->image->resizeMagick($tmpLrgFilePath, 1540, 0);
-            $this->image->resizeMagick($tmpSmFilePath, 580, 0);
-
-            $this->image->destroyImageMagick();
+            //$tmpLrgFilePath = "{$this->wrkPath}/$fileName.large.$extension";
+            //$tmpSmFilePath = "{$this->wrkPath}/$fileName.small.$extension";
 
             $lrgFilePath = "{$this->lrgFilePath}/$fileName.large.$extension";
             $smFilePath = "{$this->smFilePath}/$fileName.small.$extension";
 
-            $this->filesystem->move($tmpLrgFilePath, $lrgFilePath);
-            $this->filesystem->move($tmpSmFilePath, $smFilePath);
+            $this->image->resizeMagick($lrgFilePath, 1540, 0);
+            $this->image->resizeMagick($smFilePath, 580, 0);
+
+            $this->image->destroyImageMagick();
+
+            //$lrgFilePath = "{$this->lrgFilePath}/$fileName.large.$extension";
+            //$smFilePath = "{$this->smFilePath}/$fileName.small.$extension";
+
+            //$this->filesystem->move($tmpLrgFilePath, $lrgFilePath);
+            //$this->filesystem->move($tmpSmFilePath, $smFilePath);
         }
 
         $time_end = microtime(true);
