@@ -53,12 +53,6 @@ class NotesFromNature extends ActorAbstract {
     protected $record;
 
     /**
-     * Data Directory.
-     * @var string
-     */
-    protected $dataDir;
-
-    /**
      * Full path to temp file director.
      * @var string
      */
@@ -198,6 +192,7 @@ class NotesFromNature extends ActorAbstract {
         $this->buildImageUriArray();
 
         $this->getImagesFromUri();
+        return;
 
         $this->convert();
 
@@ -224,6 +219,7 @@ class NotesFromNature extends ActorAbstract {
      */
     public function buildImageUriArray()
     {
+        $i=0;
         foreach ($this->record->subjects as $subject)
         {
             $uri = $subject->{$this->accessURI};
@@ -237,6 +233,9 @@ class NotesFromNature extends ActorAbstract {
             $this->identifierArray[$subject->_id] = $subject->id;
 
             $this->imageUriArray[$subject->_id] = str_replace(" ", "%20", $uri);
+            $i++;
+            if ($i == 1000)
+                break;
         }
 
         return;
@@ -440,6 +439,8 @@ class NotesFromNature extends ActorAbstract {
         $this->smFilePath = $this->tmpFileDir . '/small';
         $this->createDir($this->smFilePath);
         $this->writeDir($this->smFilePath);
+
+        return;
     }
 
     /**
