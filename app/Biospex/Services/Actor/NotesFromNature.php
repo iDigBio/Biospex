@@ -177,6 +177,11 @@ class NotesFromNature extends ActorAbstract {
 
         call_user_func([$this, $this->states[$this->actor->pivot->state]]);
 
+        $this->actor->pivot->state = $this->actor->pivot->state + 1;
+        $this->actor->pivot->save();
+
+        $this->report->processComplete($this->record->project->group_id, $this->record->title, $this->missingImg, $this->record->id . '-missing_images');
+
         return;
     }
 
@@ -204,13 +209,6 @@ class NotesFromNature extends ActorAbstract {
 
         $this->filesystem->deleteDirectory($this->tmpFileDir);
 
-        $groupId = $this->record->project->group_id;
-
-        $this->actor->pivot->state = $this->actor->pivot->state + 1;
-        $this->actor->pivot->save();
-
-        $this->report->processComplete($groupId, $this->record->title, $this->missingImg, $this->record->id . '-missing_images');
-
         return;
     }
 
@@ -219,7 +217,6 @@ class NotesFromNature extends ActorAbstract {
      */
     public function buildImageUriArray()
     {
-        $i=0;
         foreach ($this->record->subjects as $subject)
         {
             $uri = $subject->{$this->accessURI};
@@ -233,9 +230,6 @@ class NotesFromNature extends ActorAbstract {
             $this->identifierArray[$subject->_id] = $subject->id;
 
             $this->imageUriArray[$subject->_id] = str_replace(" ", "%20", $uri);
-            $i++;
-            if ($i == 1000)
-                break;
         }
 
         return;
