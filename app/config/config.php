@@ -14,7 +14,7 @@ return [
     'translate'         => false,
 
     /** Default expedition data directories */
-    'dataDir'           => storage_path('data'),
+    'dataDir'           => storage_path('test'),
 
     /*
      * OCR
