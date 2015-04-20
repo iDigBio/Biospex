@@ -161,6 +161,8 @@ class NotesFromNature extends ActorAbstract {
      */
     public function process()
     {
+        $time_start = microtime(true);
+
         $this->expedition->setPass(true);
         $this->record = $this->expedition->findWith($this->expeditionId, ['project.group', 'subjects']);
 
@@ -182,6 +184,10 @@ class NotesFromNature extends ActorAbstract {
 
         $this->report->processComplete($this->record->project->group_id, $this->record->title, $this->missingImg, $this->record->id . '-missing_images');
 
+        $time_end = microtime(true);
+        $execution_time = ($time_end - $time_start)/60;
+        echo 'Total Execution Time: '.$execution_time.' Mins';
+
         return;
     }
 
@@ -197,7 +203,6 @@ class NotesFromNature extends ActorAbstract {
         $this->buildImageUriArray();
 
         $this->getImagesFromUri();
-        return;
 
         $this->convert();
 
