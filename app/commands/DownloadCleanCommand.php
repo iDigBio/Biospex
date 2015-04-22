@@ -46,11 +46,11 @@ class DownloadCleanCommand extends Command
 	protected $description = "Remove expired download files.";
 
 	/**
-	 * Directory where darwin core files are stored
+	 * Directory where nfn downloads are stored.
 	 *
 	 * @var string
 	 */
-	protected $dataDir;
+	protected $nfnExportDir;
 
 	/**
 	 * Constructor
@@ -71,7 +71,7 @@ class DownloadCleanCommand extends Command
 		$this->download = $download;
 		$this->report = $report;
 
-		$this->dataDir = Config::get('config.dataDir');
+		$this->nfnExportDir = Config::get('config.nfnExportDir');
 	}
 
 	/**
@@ -89,7 +89,7 @@ class DownloadCleanCommand extends Command
 		{
 			try
 			{
-				$file = $this->dataDir . "/" . $download->file;
+				$file = $this->nfnExportDir . "/" . $download->file;
 				if ($this->filesystem->isFile($file))
 					$this->filesystem->delete($file);
 
