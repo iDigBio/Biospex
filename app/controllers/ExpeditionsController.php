@@ -225,6 +225,7 @@ class ExpeditionsController extends BaseController {
     {
         try
         {
+            $this->expedition->setPass(true);
 			$expedition = $this->expedition->findWith($expeditionId, ['project.actors', 'workflowManager']);
 
 			if ( ! is_null($expedition->workflowManager))
