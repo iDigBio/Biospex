@@ -13,8 +13,14 @@ return [
     /** Turn on language translation in main menu */
     'translate'         => false,
 
-    /** Default expedition data directories */
-    'dataDir'           => storage_path('data'),
+    /** Scratch drive for performing processes */
+    'scratchDir'        => storage_path('scratch'),
+
+    /** NfN Export storage */
+    'nfnExportDir'      => storage_path('exports/nfn'),
+
+    /** Report exports */
+    'reportExportDir'   => storage_path('exports/report'),
 
     /*
      * OCR
