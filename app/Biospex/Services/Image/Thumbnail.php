@@ -27,6 +27,7 @@
 
 use Biospex\Services\Curl\Curl;
 use Biospex\Services\Curl\Request;
+use Illuminate\Support\Facades\Config;
 
 class Thumbnail extends Image{
 
