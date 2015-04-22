@@ -22,6 +22,9 @@ return [
     /** Report exports */
     'reportExportDir'   => storage_path('exports/report'),
 
+    /** Subjects import directory */
+    'subjectsImportDir' => storage_path('imports/subjects'),
+
     /*
      * OCR
      */
