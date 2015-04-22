@@ -186,7 +186,7 @@ class NotesFromNature extends ActorAbstract {
 
         $time_end = microtime(true);
         $execution_time = ($time_end - $time_start)/60;
-        echo 'Total Execution Time: '.$execution_time.' Mins';
+        \Log::alert('Total Execution Time: '.$execution_time.' Mins');
 
         return;
     }
@@ -348,9 +348,6 @@ class NotesFromNature extends ActorAbstract {
             $this->image->destroyImageMagick();
 
             $this->imgCount++;
-
-            if ($this->imgCount % 20 == 0)
-                \Log::alert("Saved {$this->imgCount}.");
         }
 
         return;
