@@ -36,19 +36,31 @@ class Thumbnail extends Image{
 	 */
 	protected $outputFile;
 
+    /**
+     * Output directory
+     *
+     * @var string
+     */
+    protected $outputDir;
+
 	/**
 	 * Default image.
 	 *
 	 * @var mixed
 	 */
-	protected $defaultImg;
+	private $defaultImg;
 
-	/**
-	 * Output directory
-	 *
-	 * @var string
-	 */
-	protected $outputDir;
+    /**
+     * Thumbnail width.
+     * @var
+     */
+    private $tnWidth;
+
+    /**
+     * Thumbnail height.
+     * @var
+     */
+    private $tnHeight;
 
 	/**
 	 * Set variables.
@@ -57,9 +69,9 @@ class Thumbnail extends Image{
 	{
 		// We can read the output path from our configuration file.
 		$this->defaultImg = Config::get('config.images.thumbDefaultImg');
-		$this->width = Config::get('config.images.thumbWidth');
-		$this->height = Config::get('config.images.thumbHeight');
-		$this->outputDir = Config::get('config.images.thumbOutputDir') . '/' . $this->width . '_' . $this->height;
+		$this->tnWidth = Config::get('config.images.thumbWidth');
+		$this->tnHeight = Config::get('config.images.thumbHeight');
+		$this->outputDir = Config::get('config.images.thumbOutputDir') . '/' . $this->tnWidth . '_' . $this->tnHeight;
 	}
 
 	/**
@@ -121,7 +133,7 @@ class Thumbnail extends Image{
         $this->saveFile($this->outputFileLg, $image);
         $this->readImageMagickFile($this->outputFileLg);
         $this->setImageMagickGeometry();
-        $this->resizeMagick($this->outputFileSm, $this->width, 0);
+        $this->resizeMagick($this->outputFileSm, $this->tnWidth, 0);
         $this->setImageSizeInfo($this->outputFileLg);
         $this->deleteImage($this->outputFileLg);
         $this->destroyImageMagick();
