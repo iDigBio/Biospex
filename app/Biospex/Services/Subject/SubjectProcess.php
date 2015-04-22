@@ -33,6 +33,7 @@ use Biospex\Services\Xml\XmlProcess;
 use Biospex\Repo\Meta\MetaInterface;
 use Biospex\Repo\OcrQueue\OcrQueueInterface;
 use Maatwebsite\Excel\Excel;
+use Illuminate\Support\Facades\Config;
 
 class SubjectProcess {
 
@@ -222,10 +223,10 @@ class SubjectProcess {
 		$this->ocr = $ocr;
 		$this->excel = $excel;
 
-		$this->identifiers = \Config::get('config.identifiers');
-		$this->ocrCrop = \Config::get('config.ocrCrop');
-        $this->disableOcr = \Config::get('config.disableOcr');
-		$this->queue = \Config::get('config.beanstalkd.ocr');
+		$this->identifiers = Config::get('config.identifiers');
+		$this->ocrCrop = Config::get('config.ocrCrop');
+        $this->disableOcr = Config::get('config.disableOcr');
+		$this->queue = Config::get('config.beanstalkd.ocr');
 
 	}
 
