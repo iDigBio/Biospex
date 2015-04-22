@@ -123,7 +123,6 @@ class Image {
     public function setImageSizeInfoFromFile($file)
     {
         $size = getimagesize($file);
-        \Log::alert(print_r($size, true));
         $this->width = $size[0];
         $this->height = $size[1];
         $this->setExtension($size['mime']);
@@ -138,7 +137,6 @@ class Image {
     public function setImageSizeInfoFromString($file)
     {
         $size = getimagesizefromstring($file);
-        \Log::alert(print_r($size, true));
         $this->width = $size[0];
         $this->height = $size[1];
         $this->setExtension($size['mime']);
