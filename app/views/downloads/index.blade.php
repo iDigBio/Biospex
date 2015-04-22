@@ -37,7 +37,7 @@
             <td>{{ $download->file }}</td>
             <td>{{ $download->created_at }}</td>
             <td>
-            @if (file_exists(Config::get('config.dataDir') . '/' . $download->file))
+            @if (file_exists(Config::get('config.nfnExportDir') . '/' . $download->file))
                 <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ action('DownloadsController@show', [$expedition->project->id, $expedition->id, $download->id]) }}'"><span class="glyphicon glyphicon-floppy-save"></span> @lang('buttons.download') </button>
             @endif
             </td>
