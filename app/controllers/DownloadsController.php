@@ -74,8 +74,8 @@ class DownloadsController extends BaseController {
 		$download->count = $download->count + 1;
 		$this->download->save($download);
 
-		$dataDir = Config::get('config.dataDir');
-		$path = "$dataDir/{$download->file}";
+		$nfnExportDir = Config::get('config.nfnExportDir');
+		$path = "$nfnExportDir/{$download->file}";
 		$headers = ['Content-Type' => 'application/x-compressed'];
 		return Response::download($path, $download->file, $headers);
 	}
