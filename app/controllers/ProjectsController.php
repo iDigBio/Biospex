@@ -324,7 +324,7 @@ class ProjectsController extends BaseController {
         }
 
         $filename = $file->getClientOriginalName();
-        $directory = Config::get('config.dataDir');
+        $directory = Config::get('config.subjectsImportDir');
 
         try
         {
