@@ -56,6 +56,7 @@ return [
     'error_create_dir'            => "Unable to create directory: :directory",
     'error_write_dir'             => "Unable to make directory writable: :directory",
     'error_save_file'             => "Unable to save file: :directory",
+    'error_move_file'             => "Unable to move file: :directory",
     'error_workflow_manager'      => "An error occurred while processing :class using workflow id :id. Message - :error",
     'error_core_type'             => "Error querying core type from meta file.",
     'error_core_file_missing'     => "Could not determine core file from meta file.",
