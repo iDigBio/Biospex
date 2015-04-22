@@ -132,9 +132,7 @@ class Thumbnail extends Image{
     {
         $this->saveFile($this->outputFileLg, $image);
         $this->readImageMagickFile($this->outputFileLg);
-        $this->setImageMagickGeometry();
         $this->resizeMagick($this->outputFileSm, $this->tnWidth, 0);
-        $this->setImageSizeInfo($this->outputFileLg);
         $this->deleteImage($this->outputFileLg);
         $this->destroyImageMagick();
 
