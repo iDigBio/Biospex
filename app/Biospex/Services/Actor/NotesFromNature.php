@@ -293,7 +293,7 @@ class NotesFromNature extends ActorAbstract {
                 return;
             }
 
-            $this->image->setImageSizeInfo($image);
+            $this->image->setImageSizeInfoFromString($image);
             $ext = $this->image->getFileExtension();
 
             if ( ! $ext)
@@ -383,34 +383,29 @@ class NotesFromNature extends ActorAbstract {
         {
             // Original Image info.
             $this->image->setImagePathInfo($file);
-            $width = $this->image->getImageWidth();
-            $height = $this->image->getImageHeight();
             $baseName = $this->image->getBaseName();
             $fileName = $this->image->getFileName();
             $extension = $this->image->getFileExtension();
+            $this->image->setImageSizeInfoFromFile($file);
 
             // Set array for original image.
             $data['identifier'] = $this->identifierArray[$fileName];
             $data['original']['path'] = [$fileName, ".$extension"];
             $data['original']['name'] = $baseName;
-            $data['original']['width'] = $width;
-            $data['original']['height'] = $height;
+            $data['original']['width'] = $this->image->getImageWidth();
+            $data['original']['height'] = $this->image->getImageHeight();
 
             // Set array for large image.
-            $this->image->setImagePathInfo("{$this->lrgFilePath}/$fileName.large.$extension");
-            $width = $this->image->getImageWidth();
-            $height = $this->image->getImageHeight();
+            $this->image->setImageSizeInfoFromFile("{$this->lrgFilePath}/$fileName.large.$extension");
             $data['large']['name'] = "large/$fileName.large.$extension";
-            $data['large']['width'] = $width;
-            $data['large']['height'] = $height;
+            $data['large']['width'] = $this->image->getImageWidth();
+            $data['large']['height'] = $this->image->getImageHeight();
 
             // Set array for small image.
-            $this->image->setImagePathInfo("{$this->smFilePath}/$fileName.small.$extension");
-            $width = $this->image->getImageWidth();
-            $height = $this->image->getImageHeight();
+            $this->image->setImageSizeInfoFromFile("{$this->smFilePath}/$fileName.small.$extension");
             $data['small']['name'] = "small/$fileName.small.$extension";
-            $data['small']['width'] = $width;
-            $data['small']['height'] = $height;
+            $data['small']['width'] = $this->image->getImageWidth();
+            $data['small']['height'] = $this->image->getImageHeight();
 
             $this->metadata['images'][] = $data;
 
