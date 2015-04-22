@@ -32,14 +32,14 @@ class Image {
     /**
      * Instance of Gmagick
      */
-    protected $image;
+    protected $imagick;
 
     /**
      * Geometry for imagemagick image.
      *
      * @var $geometry
      */
-    protected $geometry;
+    protected $geometry = null;
 
     /**
      * Width of original image.
@@ -68,24 +68,13 @@ class Image {
      * @var
      */
     protected $extension;
+
     /**
      * Path information about file.
      *
      * @var $pathinfo
      */
     protected $pathinfo;
-
-    /**
-     * New image width.
-     * @var
-     */
-    protected $newWidth;
-
-    /**
-     * New image height.
-     * @var
-     */
-    protected $newHeight;
 
     /**
      * Mime type of file.
@@ -127,13 +116,29 @@ class Image {
     }
 
     /**
-     * Set image size info.
+     * Set image size info from file.
      *
      * @param $file
      */
-    public function setImageSizeInfo($file)
+    public function setImageSizeInfoFromFile($file)
     {
-        $size = is_string($file) ? getimagesizefromstring($file) : getimagesize($file);
+        $size = getimagesize($file);
+        \Log::alert(print_r($size, true));
+        $this->width = $size[0];
+        $this->height = $size[1];
+        $this->setExtension($size['mime']);
+        $this->setMimeType($size['mime']);
+    }
+
+    /**
+     * Set image size info from image string.
+     *
+     * @param $file
+     */
+    public function setImageSizeInfoFromString($file)
+    {
+        $size = getimagesizefromstring($file);
+        \Log::alert(print_r($size, true));
         $this->width = $size[0];
         $this->height = $size[1];
         $this->setExtension($size['mime']);
@@ -148,6 +153,8 @@ class Image {
     protected function setMimeType($mime = null)
     {
         $this->mime = is_null($mime) ? array_search($this->pathinfo['extension'], $this->imageTypeExtension) : $mime;
+
+        return;
     }
 
     /**
@@ -169,7 +176,7 @@ class Image {
      */
     public function getImageWidth()
     {
-        return ! empty($this->geometry['width']) ? $this->geometry['width'] : $this->width;
+        return ! is_null($this->geometry['width']) ? $this->geometry['width'] : $this->width;
     }
 
     /**
@@ -179,7 +186,7 @@ class Image {
      */
     public function getImageHeight()
     {
-        return ! empty($this->geometry['height']) ? $this->geometry['height'] : $this->height;
+        return ! is_null($this->geometry['height']) ? $this->geometry['height'] : $this->height;
     }
 
     /**
@@ -244,17 +251,8 @@ class Image {
         $this->imagick = new \Imagick();
         $this->imagick->setResourceLimit(6,1);
         $this->imagick->readImageFile($f);
-        fclose($f);
-
-        return;
-    }
-
-    /**
-     * Set geometry for imagemagick file.
-     */
-    public function setImageMagickGeometry()
-    {
         $this->geometry = $this->imagick->getImageGeometry();
+        fclose($f);
 
         return;
     }
@@ -295,6 +293,7 @@ class Image {
     {
         $this->imagick->clear();
         $this->imagick->destroy();
+        $this->geometry = null;
     }
 
     /**
