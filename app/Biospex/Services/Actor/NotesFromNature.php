@@ -25,6 +25,7 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 use Biospex\Services\Curl\Curl;
+use Illuminate\Support\Facades\Config;
 
 class NotesFromNature extends ActorAbstract {
 
@@ -51,6 +52,9 @@ class NotesFromNature extends ActorAbstract {
      * @var object
      */
     protected $record;
+
+    /** Notes from Nature export directory */
+    protected $nfnExportDir;
 
     /**
      * Full path to temp file director.
@@ -153,6 +157,7 @@ class NotesFromNature extends ActorAbstract {
 
         $this->actor = $actor;
         $this->expeditionId = $actor->pivot->expedition_id;
+        $this->nfnExportDir = Config::get('config.nfnExportDir');
 
     }
 
@@ -209,6 +214,8 @@ class NotesFromNature extends ActorAbstract {
         $this->buildDetails();
 
         $this->compressDir();
+
+        $this->moveFile("{$this->scratchDir}/{$this->title}.tar.gz", "{$this->nfnExportDir}/{$this->title}.tar.gz");
 
         $this->createDownload($this->record->id, $this->actor->id, "{$this->title}.tar.gz");
 
@@ -424,7 +431,7 @@ class NotesFromNature extends ActorAbstract {
      */
     public function setPaths()
     {
-        $this->tmpFileDir = "{$this->dataDir}/$this->title";
+        $this->tmpFileDir = "{$this->scratchDir}/$this->title";
         $this->createDir($this->tmpFileDir);
         $this->writeDir($this->tmpFileDir);
 
@@ -473,11 +480,11 @@ class NotesFromNature extends ActorAbstract {
      */
     public function compressDir()
     {
-        $a = new \PharData("{$this->dataDir}/{$this->title}.tar");
-        $a->buildFromDirectory("{$this->dataDir}/{$this->title}");
+        $a = new \PharData("{$this->scratchDir}/{$this->title}.tar");
+        $a->buildFromDirectory("{$this->scratchDir}/{$this->title}");
         $a->compress(\Phar::GZ);
         unset($a);
-        unlink("{$this->dataDir}/{$this->title}.tar");
+        unlink("{$this->scratchDir}/{$this->title}.tar");
 
         return;
     }
