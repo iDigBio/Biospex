@@ -253,28 +253,6 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
-     * Accessor for created_at
-     *
-     * @param $value
-     * @return bool|string
-     */
-    public function getCreatedAtAttribute($value)
-    {
-        return date("m/d/Y", strtotime($value));
-    }
-
-    /**
-     * Accessor updated_at
-     *
-     * @param $value
-     * @return bool|string
-     */
-    public function getUpdatedAtAttribute($value)
-    {
-        return date("m/d/Y", strtotime($value));
-    }
-
-    /**
      * Set attribute for advertise.
      *
      * @param $input
