@@ -24,8 +24,7 @@
     "msurguy/honeypot": "dev-master",
     "maatwebsite/excel": "~1.2.1",
     "rhumsaa/uuid": "~2.8",
-    "guzzlehttp/guzzle": "~4.0",
-    "mccool/laravel-auto-presenter": "~2.2"
+    "guzzlehttp/guzzle": "~4.0"
   },
   "require-dev": {
     "barryvdh/laravel-ide-helper": "1.*",
