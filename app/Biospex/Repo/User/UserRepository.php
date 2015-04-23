@@ -250,6 +250,7 @@ class UserRepository extends Repository implements UserInterface {
 			$user->profile->last_name = e($data['last_name']);
             $user->email = e($data['email']);
             $user->activated = isset($data['activated']) ? 1 : 0;
+            $user->timezone = e($data['timezone']);
 
 		    $operator = $this->sentry->getUser();
 		    if ($operator->hasAccess('user_edit_groups'))
