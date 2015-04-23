@@ -119,7 +119,6 @@ return array(
 		'DaveJamesMiller\Breadcrumbs\ServiceProvider',
 		'Msurguy\Honeypot\HoneypotServiceProvider',
 		'Maatwebsite\Excel\ExcelServiceProvider',
-        'McCool\LaravelAutoPresenter\LaravelAutoPresenterServiceProvider',
 	),
 
 	/*
