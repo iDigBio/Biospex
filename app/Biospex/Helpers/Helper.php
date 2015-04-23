@@ -46,6 +46,49 @@ class Helper {
 		return (ceil($n)%$x === 0) ? ceil($n) : round(($n+$x/2)/$x)*$x;
 	}
 
+    /**
+     * Format date using timezone and format.
+     *
+     * @param $date
+     * @param null $format
+     * @param null $tz
+     * @return mixed
+     */
+    public static function formatDate($date, $format = null, $tz = null)
+    {
+        return $date->copy()->tz($tz)->format($format);
+    }
+
+    /**
+     * Return timezone array for select box
+     *
+     * @return array
+     */
+    public static function timeZoneSelect()
+    {
+        $timezones = \DateTimeZone::listIdentifiers(\DateTimeZone::ALL);
+
+        $timezone_offsets = [];
+        foreach( $timezones as $timezone )
+        {
+            $tz = new \DateTimeZone($timezone);
+            $timezone_offsets[$timezone] = $tz->getOffset(new \DateTime);
+        }
+
+        $timezone_list = [];
+        foreach( $timezone_offsets as $timezone => $offset )
+        {
+            $offset_prefix = $offset < 0 ? '-' : '+';
+            $offset_formatted = gmdate( 'H:i', abs($offset) );
+
+            $pretty_offset = "UTC${offset_prefix}${offset_formatted}";
+
+            $timezone_list[$timezone] = "(${pretty_offset}) $timezone";
+        }
+
+        return $timezone_list;
+    }
+
     public static function deleteDirectoryContents($dir, $ignore = ['.gitignore'])
     {
         if (false === file_exists($dir))
