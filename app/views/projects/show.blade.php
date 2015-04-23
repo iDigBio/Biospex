@@ -52,7 +52,7 @@
         <tr>
             <td>{{ $expedition->title }}</td>
             <td>{{ $expedition->description }}</td>
-            <td>{{ $expedition->created_at }}</td>
+            <td>{{ Helper::formatDate($expedition->created_at, 'Y-m-d', $user->timezone); }}</td>
             <td>{{ $expedition->subjectsCount }}</td>
             @if( ! $expedition->actors->isEmpty())
             <td>0</td>
