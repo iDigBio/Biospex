@@ -43,4 +43,15 @@ class ProjectForm extends Form {
         return $input;
     }
 
+    /**
+     * Test if form validator passes
+     *
+     * @param array $input
+     * @return bool
+     */
+    protected function valid(array $input)
+    {
+        return $this->validator->with($input)->modifyRules('title', 'title', $input['id'])->passes();
+    }
+
 }
