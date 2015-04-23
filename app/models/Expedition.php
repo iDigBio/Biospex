@@ -146,28 +146,6 @@ class Expedition extends Eloquent {
 		return substr($uuid, 0, 8) . '-' . substr($uuid, 8, 4) . '-' . substr($uuid, 12, 4) . '-' . substr($uuid, 16, 4) . '-' . substr($uuid, 20);
 	}
 
-    /**
-     * Accessor for created_at
-     *
-     * @param $value
-     * @return bool|string
-     */
-    public function getCreatedAtAttribute($value)
-    {
-        return date("m/d/Y", strtotime($value));
-    }
-
-    /**
-     * Accessor updated_at
-     *
-     * @param $value
-     * @return bool|string
-     */
-    public function getUpdatedAtAttribute($value)
-    {
-        return date("m/d/Y", strtotime($value));
-    }
-
 	/**
 	 * Get counts attribute
 	 *
