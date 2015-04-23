@@ -36,7 +36,7 @@ class ProjectFormLaravelValidator extends AbstractLaravelValidator {
      */
     protected $rules = [
         'group_id'          => 'required|integer|min:1',
-        'title'             => 'required|between:6,140',
+        'title'             => 'required|between:6,140|unique:projects',
         'contact'           => 'required',
         'contact_email'     => 'required|min:4|max:32|email',
         'description_short' => 'required|between:6,140',
