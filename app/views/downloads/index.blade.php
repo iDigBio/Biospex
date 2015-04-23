@@ -25,23 +25,27 @@
         <thead>
         <tr>
             <th>{{ trans('pages.actor') }}</th>
+            <th>{{ trans('pages.id') }}</th>
             <th>{{ trans('pages.filename') }}</th>
+            <th>{{ trans('pages.filesize') }}</th>
             <th>{{ trans('pages.created') }}</th>
+            <th>{{ trans('pages.downloadurl') }}</th>
             <th></th>
         </tr>
         </thead>
         <tbody>
         @foreach ($expedition->downloads as $download)
-        <tr>
-            <td>{{ $download->actor->title }}</td>
-            <td>{{ $download->file }}</td>
-            <td>{{ $download->created_at }}</td>
-            <td>
-            @if (file_exists(Config::get('config.nfnExportDir') . '/' . $download->file))
-                <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ action('DownloadsController@show', [$expedition->project->id, $expedition->id, $download->id]) }}'"><span class="glyphicon glyphicon-floppy-save"></span> @lang('buttons.download') </button>
+            @if (File::exists(Config::get('config.nfnExportDir') . '/' . $download->file))
+            <tr>
+                <td>{{ $download->actor->title }}</td>
+                <td>{{ $download->id }}</td>
+                <td>{{ $download->file }}</td>
+                <td>{{ Helper::humanFilesize(File::size(Config::get('config.nfnExportDir') . '/' . $download->file)) }}</td>
+                <td>{{ Helper::formatDate($download->created_at, 'Y-m-d', $user->timezone) }}</td>
+                <td>{{ action('DownloadsController@show', [$expedition->project->id, $expedition->id, $download->id]) }}</td>
+                <td><button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ action('DownloadsController@show', [$expedition->project->id, $expedition->id, $download->id]) }}'"><span class="glyphicon glyphicon-floppy-save"></span> @lang('buttons.download') </button></td>
+            </tr>
             @endif
-            </td>
-        </tr>
         @endforeach
         </tbody>
     </table>
