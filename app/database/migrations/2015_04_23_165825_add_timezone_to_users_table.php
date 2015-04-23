@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddTimezoneToProfilesTable extends Migration {
+class AddTimezoneToUsersTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,9 +12,9 @@ class AddTimezoneToProfilesTable extends Migration {
 	 */
 	public function up()
 	{
-        Schema::table('profiles', function(Blueprint $table)
+        Schema::table('users', function(Blueprint $table)
         {
-            $table->string('timezone')->default('America/New_York')->after('last_name');
+            $table->string('timezone')->default('America/New_York')->after('reset_password_code');
         });
 	}
 
@@ -25,9 +25,9 @@ class AddTimezoneToProfilesTable extends Migration {
 	 */
 	public function down()
 	{
-        Schema::table('profiles', function(Blueprint $table)
+        Schema::table('users', function(Blueprint $table)
         {
-            $table->dropColumn('last_name');
+            $table->dropColumn('timezone');
         });
 	}
 
