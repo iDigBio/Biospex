@@ -61,6 +61,15 @@
             {{ ($errors->has('email') ? $errors->first('email') : '') }}
         </div>
 
+        <div class="form-group {{ ($errors->has('timezone')) ? 'has-error' : '' }}" for="timezone">
+            {{ Form::label('timezone', trans('forms.timezone'), array('class' => 'col-sm-2 control-label')) }}
+            <div class="col-sm-10">
+                {{ Form::select('timezone', $timezones, $user->timezone, array('class' => 'form-control')) }}
+            </div>
+            {{ ($errors->has('timezone') ? $errors->first('timezone') : '') }}
+        </div>
+
+
         @if ($superUser)
         <div class="form-group" for="activated">
             {{ Form::label('edit_activated', trans('pages.activated'), array('class' => 'col-sm-2 control-label')) }}
