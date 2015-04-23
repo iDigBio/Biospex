@@ -14,7 +14,7 @@ class AddTimezoneToProfilesTable extends Migration {
 	{
         Schema::table('profiles', function(Blueprint $table)
         {
-            $table->string('timezone')->after('last_name');
+            $table->string('timezone')->default('America/New_York')->after('last_name');
         });
 	}
 
