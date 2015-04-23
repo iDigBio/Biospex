@@ -371,38 +371,4 @@ class ProjectsController extends BaseController {
         Session::flash('error', trans('projects.project_destroy_error'));
         return Redirect::route('projects.index');
 	}
-
-    /*
-     $advertise = [];
-        $fields = \Config::get('config.ppsr');
-        foreach ($fields as $field => $data)
-        {
-            foreach ($data as $type => $value)
-            {
-                if ($type == 'col')
-                {
-                    $advertise[$field] = $project->{$value};
-                    continue;
-                }
-
-                if ($type == 'val')
-                {
-                    $advertise[$field] = $value;
-                    continue;
-                }
-
-                if ($type == 'array')
-                {
-                    $combined = '';
-                    foreach ($type as $col)
-                    {
-                        $combined .= $project->{$col} . ", ";
-                    }
-                    $advertise[$field] = rtrim($combined, ', ');
-                    continue;
-                }
-            }
-        }
-     */
-
 }
