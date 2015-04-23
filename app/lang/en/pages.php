@@ -134,4 +134,7 @@ return [
 
     'description_short'       => "Short Description",
 
+    'id'                      => 'Id',
+    'filesize'                => 'File Size',
+    'downloadurl'             => 'Download Url'
 ];
