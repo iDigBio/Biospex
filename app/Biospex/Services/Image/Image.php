@@ -247,6 +247,8 @@ class Image {
         $f = fopen($file, 'r');
         fseek($f, 0);
         $this->imagick = new \Imagick();
+        $this->imagick->setImageCompression(Imagick::COMPRESSION_JPEG);
+        $this->imagick->setImageCompressionQuality(80);
         $this->imagick->setResourceLimit(6,1);
         $this->imagick->readImageFile($f);
         $this->geometry = $this->imagick->getImageGeometry();
