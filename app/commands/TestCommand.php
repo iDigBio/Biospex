@@ -1,8 +1,7 @@
 <?php
 
 use Illuminate\Console\Command;
-use Biospex\Services\Image\Image;
-use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\DB;
 
 class TestCommand extends Command {
 
@@ -19,11 +18,9 @@ class TestCommand extends Command {
     /**
      * Constructor
      */
-    public function __construct(Image $image, Filesystem $filesystem)
+    public function __construct()
     {
         parent::__construct();
-        $this->image = $image;
-        $this->filesystem = $filesystem;
     }
 
     /**
@@ -31,73 +28,19 @@ class TestCommand extends Command {
      */
     public function fire()
     {
-        $time_start = microtime(true);
+        $tables = DB::select("select table_name from information_schema.tables where table_schema='biospex'");
 
-        $this->setPaths();
-
-        $files = $this->filesystem->files($this->tmpFileDir);
-
-        foreach ($files as $file)
+        foreach ($tables as $table)
         {
-            $this->image->setImagePathInfo($file);
-
-            if ($this->image->getMimeType() === false)
-                continue;
-
-            $fileName = $this->image->getFileName();
-
-            $extension = $this->image->getFileExtension();
-
-            try
+            if (Schema::hasColumn($table->table_name, 'created_at'))
             {
-
-                $this->image->readImageMagickFile($file);
-            }
-            catch (\Exception $e)
-            {
-                die();
+                DB::statement("UPDATE {$table->table_name} SET created_at = CONVERT_TZ(created_at, 'America/New_York', 'UTC');");
             }
 
-            //$tmpLrgFilePath = "{$this->wrkPath}/$fileName.large.$extension";
-            //$tmpSmFilePath = "{$this->wrkPath}/$fileName.small.$extension";
+            if (Schema::hasColumn($table->table_name, 'updated_at'))
+            {
+                DB::statement("UPDATE {$table->table_name} SET updated_at = CONVERT_TZ(created_at, 'America/New_York', 'UTC');");
+        }   }
 
-            $lrgFilePath = "{$this->lrgFilePath}/$fileName.large.$extension";
-            $smFilePath = "{$this->smFilePath}/$fileName.small.$extension";
-
-            $this->image->resizeMagick($lrgFilePath, 1540, 0);
-            $this->image->resizeMagick($smFilePath, 580, 0);
-
-            $this->image->destroyImageMagick();
-
-            //$lrgFilePath = "{$this->lrgFilePath}/$fileName.large.$extension";
-            //$smFilePath = "{$this->smFilePath}/$fileName.small.$extension";
-
-            //$this->filesystem->move($tmpLrgFilePath, $lrgFilePath);
-            //$this->filesystem->move($tmpSmFilePath, $smFilePath);
-        }
-
-        $time_end = microtime(true);
-
-        //dividing with 60 will give the execution time in minutes other wise seconds
-        $execution_time = ($time_end - $time_start)/60;
-
-        //execution time of the script
-        echo "Total Execution Time: ". $execution_time . " Mins" . PHP_EOL;
-
-    }
-
-    public function setPaths()
-    {
-        $this->wrkPath = storage_path('working');
-        $this->image->createDir($this->wrkPath);
-
-        $this->tmpFileDir = storage_path('data/4-e33c305f9cf2e45dcf300c46faa8a87f');
-        $this->image->createDir($this->tmpFileDir);
-
-        $this->lrgFilePath = $this->tmpFileDir . '/large';
-        $this->image->createDir($this->lrgFilePath);
-
-        $this->smFilePath = $this->tmpFileDir . '/small';
-        $this->image->createDir($this->smFilePath);
     }
 }

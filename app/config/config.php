@@ -32,8 +32,7 @@ return [
     'ocrGetUrl'         => $_ENV['site.ocrGetUrl'],
     'ocrDeleteUrl'      => $_ENV['site.ocrDeleteUrl'],
     'ocrCrop'           => $_ENV['site.ocrCrop'],
-
-    'disableOcr'        => true,
+    'disableOcr'        => $_ENV['site.disableOcr'],
 
     /*
      * Beanstalkd queues for myqueue.conf per site.
