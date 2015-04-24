@@ -39,8 +39,7 @@ class TruncateTables extends Seeder {
 			{
 				continue;
 			}
-            echo $name . PHP_EOL;
-			//DB::table($name)->truncate();
+			DB::table($name)->truncate();
 		}
 		DB::connection('mongodb')->collection('subjects')->truncate();
 	}
