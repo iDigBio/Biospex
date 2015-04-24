@@ -99,7 +99,6 @@ class ExpeditionsController extends BaseController {
 			return Redirect::action('ProjectsController@show', [$id]);
 
         $user = $this->user->getUser();
-        $user->load('profile');
 		$project = $this->project->findWith($id, ['expeditions.actorsCompletedRelation']);
 
 		return View::make('expeditions.index', compact('project', 'user'));
