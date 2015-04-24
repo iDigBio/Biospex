@@ -39,6 +39,7 @@ return [
 	'site.ocrGetUrl'    => 'http://ocr.dev.morphbank.net/status',
     'site.ocrDeleteUrl' => 'http://ocr.dev.morphbank.net/delete',
 	'site.ocrCrop'      => 'no',
+    'site.disableOcr'   => true,
 
 	'beanstalkd.default'         => 'default',
 	'beanstalkd.subjectsImport'  => 'subjectsImport',
