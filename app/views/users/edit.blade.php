@@ -18,7 +18,7 @@
         <p><strong>{{ trans('pages.email') }}:</strong> {{ $user->email }}</p>
     </div>
     <div class="col-md-4">
-        <p><em>{{ trans('pages.account_created') }}: {{ $user->created_at }}</em></p>
+        <p><em>{{ trans('pages.account_created') }}: {{ Helper::formatDate($user->created_at, 'Y-m-d', $user->timezone) }}</em></p>
         <p><em>{{ trans('pages.last_updated') }}: {{ $user->updated_at }}</em></p>
     </div>
 </div>
