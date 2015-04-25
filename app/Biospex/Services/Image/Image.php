@@ -242,13 +242,11 @@ class Image {
      *
      * @param $file
      */
-    public function readImageMagickFile($file)
+    public function imagickFile($file)
     {
         $f = fopen($file, 'r');
         fseek($f, 0);
         $this->imagick = new \Imagick();
-        $this->imagick->setImageCompression(Imagick::COMPRESSION_JPEG);
-        $this->imagick->setImageCompressionQuality(80);
         $this->imagick->setResourceLimit(6,1);
         $this->imagick->readImageFile($f);
         $this->geometry = $this->imagick->getImageGeometry();
@@ -265,31 +263,29 @@ class Image {
      * @param int $height
      * @return bool
      */
-    public function resizeMagick($target, $width = 0, $height = 0)
+    public function imagickScale($target, $width = 0, $height = 0)
     {
         try
         {
-            $scale = $this->imagick->scaleImage($width, $height);
-            if ( ! $scale)
-                return false;
+            $this->imagick->scaleImage($width, $height);
+            $this->imagick->setImageCompression(\Imagick::COMPRESSION_JPEG);
+            $this->imagick->setImageCompressionQuality(80);
+            $this->imagick->writeImage($target);
 
-            $write = $this->imagick->writeImage($target);
-            if ( ! $write)
-                return false;
-
-            return true;
+            return;
         }
         catch (\Exception $e)
         {
             \Log::error('[IMAGE SERVICE] Failed to resize image. Target: "' . $target . ' [' . $e->getMessage() . ']');
-            return false;
+
+            return;
         }
     }
 
     /**
      * Destroy.
      */
-    public function destroyImageMagick()
+    public function imagickDestroy()
     {
         $this->imagick->clear();
         $this->imagick->destroy();
