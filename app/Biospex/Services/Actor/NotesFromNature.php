@@ -166,8 +166,6 @@ class NotesFromNature extends ActorAbstract {
      */
     public function process()
     {
-        $time_start = microtime(true);
-
         $this->expedition->setPass(true);
         $this->record = $this->expedition->findWith($this->expeditionId, ['project.group', 'subjects']);
 
@@ -188,10 +186,6 @@ class NotesFromNature extends ActorAbstract {
         $this->actor->pivot->save();
 
         $this->report->processComplete($this->record->project->group_id, $this->record->title, $this->missingImg, $this->record->id . '-missing_images');
-
-        $time_end = microtime(true);
-        $execution_time = ($time_end - $time_start)/60;
-        \Log::alert('Total Execution Time: '.$execution_time.' Mins');
 
         return;
     }
@@ -329,12 +323,11 @@ class NotesFromNature extends ActorAbstract {
                 continue;
 
             $fileName = $this->image->getFileName();
-            $extension = $this->image->getFileExtension();
 
             try
             {
 
-               $this->image->readImageMagickFile($file);
+               $this->image->imagickFile($file);
             }
             catch (\Exception $e)
             {
@@ -343,16 +336,16 @@ class NotesFromNature extends ActorAbstract {
                 continue;
             }
 
-            $lrgFilePath = "{$this->lrgFilePath}/$fileName.large.$extension";
-            $smFilePath = "{$this->smFilePath}/$fileName.small.$extension";
+            $lrgFilePath = "{$this->lrgFilePath}/$fileName.large.jpg";
+            $smFilePath = "{$this->smFilePath}/$fileName.small.jpg";
 
             if ( ! $this->filesystem->exists($lrgFilePath))
-                $this->image->resizeMagick($lrgFilePath, $this->largeWidth, 0);
+                $this->image->imagickScale($lrgFilePath, $this->largeWidth, 0);
 
             if ( ! $this->filesystem->exists($smFilePath))
-                $this->image->resizeMagick($smFilePath, $this->smallWidth, 0);
+                $this->image->imagickScale($smFilePath, $this->smallWidth, 0);
 
-            $this->image->destroyImageMagick();
+            $this->image->imagickDestroy();
 
             $this->imgCount++;
         }
@@ -497,3 +490,4 @@ class NotesFromNature extends ActorAbstract {
         return $header['key'];
     }
 }
+
