@@ -26,6 +26,7 @@
  */
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
 use Biospex\Services\Report\Report;
+use Illuminate\Support\Facades\App;
 
 class WorkflowManagerService {
 
@@ -93,7 +94,7 @@ class WorkflowManagerService {
             try
             {
                 $classNameSpace = 'Biospex\Services\Actor\\' . $actor->class;
-                $class = \App::make($classNameSpace);
+                $class = App::make($classNameSpace);
                 $class->setProperties($actor);
                 $class->process();
                 $manager->queue = 0;
