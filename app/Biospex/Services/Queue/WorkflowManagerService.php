@@ -115,17 +115,6 @@ class WorkflowManagerService {
     }
 
     /**
-     * @param $manager
-     * @param $value
-     */
-    public function setQueue(&$manager, $value)
-    {
-
-
-        return;
-    }
-
-    /**
      * Create and send error email
      *
      * @param $manager
