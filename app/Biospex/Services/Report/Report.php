@@ -163,7 +163,7 @@ class Report {
             {
                 $sheet->fromArray($csv);
             });
-        })->store('csv');
+        })->store('csv', $path);
 
         return [$path . $fileName . $ext];
     }
