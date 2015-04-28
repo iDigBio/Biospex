@@ -40,7 +40,7 @@
                 <td>{{ $download->actor->title }}</td>
                 <td>{{ $download->id }}</td>
                 <td>{{ $download->file }}</td>
-                <td>{{ Helper::humanFilesize(File::size(Config::get('config.nfnExportDir') . '/' . $download->file)) }}</td>
+                <td>{{ Helper::humanFileSize(File::size(Config::get('config.nfnExportDir') . '/' . $download->file)) }}</td>
                 <td>{{ Helper::formatDate($download->created_at, 'Y-m-d', $user->timezone) }}</td>
                 <td>{{ action('DownloadsController@show', [$expedition->project->id, $expedition->id, $download->id]) }}</td>
                 <td><button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ action('DownloadsController@show', [$expedition->project->id, $expedition->id, $download->id]) }}'"><span class="glyphicon glyphicon-floppy-save"></span> @lang('buttons.download') </button></td>
