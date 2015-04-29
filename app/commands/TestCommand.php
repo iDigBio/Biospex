@@ -21,6 +21,7 @@ class TestCommand extends Command {
     public function __construct()
     {
         parent::__construct();
+
     }
 
     /**
@@ -28,7 +29,15 @@ class TestCommand extends Command {
      */
     public function fire()
     {
-        $tables = DB::select("select table_name from information_schema.tables where table_schema='biospex'");
+        $this->updateTableDates();
+
+        return;
+    }
+
+
+    public function updateTableDates()
+    {
+        $tables = DB::select("select table_name from information_schema.tables where table_schema='biospex_staging'");
 
         foreach ($tables as $table)
         {
@@ -40,7 +49,7 @@ class TestCommand extends Command {
             if (Schema::hasColumn($table->table_name, 'updated_at'))
             {
                 DB::statement("UPDATE {$table->table_name} SET updated_at = CONVERT_TZ(created_at, 'America/New_York', 'UTC');");
-        }   }
-
+            }
+        }
     }
 }
