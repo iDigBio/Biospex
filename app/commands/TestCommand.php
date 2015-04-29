@@ -37,7 +37,7 @@ class TestCommand extends Command {
 
     public function updateTableDates()
     {
-        $tables = DB::select("select table_name from information_schema.tables where table_schema='biospex_staging'");
+        $tables = DB::select("select table_name from information_schema.tables where table_schema='biospex'");
 
         foreach ($tables as $table)
         {
