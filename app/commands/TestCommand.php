@@ -2,6 +2,8 @@
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Biospex\Services\Report\SubjectImportReport as Report;
+
 
 class TestCommand extends Command {
 
@@ -18,9 +20,11 @@ class TestCommand extends Command {
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Report $report)
     {
         parent::__construct();
+
+        $this->report = $report;
 
     }
 
@@ -29,27 +33,8 @@ class TestCommand extends Command {
      */
     public function fire()
     {
-        $this->updateTableDates();
+        $this->report->complete('biospex@gmail.com', 'This is a test.', ['duplicates'], ['reject']);
 
         return;
-    }
-
-
-    public function updateTableDates()
-    {
-        $tables = DB::select("select table_name from information_schema.tables where table_schema='biospex'");
-
-        foreach ($tables as $table)
-        {
-            if (Schema::hasColumn($table->table_name, 'created_at'))
-            {
-                DB::statement("UPDATE {$table->table_name} SET created_at = CONVERT_TZ(created_at, 'America/New_York', 'UTC');");
-            }
-
-            if (Schema::hasColumn($table->table_name, 'updated_at'))
-            {
-                DB::statement("UPDATE {$table->table_name} SET updated_at = CONVERT_TZ(created_at, 'America/New_York', 'UTC');");
-            }
-        }
     }
 }
