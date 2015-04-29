@@ -13,9 +13,17 @@ return [
     /** Turn on language translation in main menu */
     'translate'         => false,
 
-    /** Default expedition data directories */
-    'dataDir'           => storage_path() . '/data',
-    'dataTmp'           => storage_path() . '/data/tmp',
+    /** Scratch drive for performing processes */
+    'scratchDir'        => storage_path('scratch'),
+
+    /** NfN Export storage */
+    'nfnExportDir'      => storage_path('exports/nfn'),
+
+    /** Report exports */
+    'reportExportDir'   => storage_path('exports/report'),
+
+    /** Subjects import directory */
+    'subjectsImportDir' => storage_path('imports/subjects'),
 
     'disableConfig'     => true,
 
@@ -26,8 +34,7 @@ return [
     'ocrGetUrl'         => $_ENV['site.ocrGetUrl'],
     'ocrDeleteUrl'      => $_ENV['site.ocrDeleteUrl'],
     'ocrCrop'           => $_ENV['site.ocrCrop'],
-
-    'disableOcr'        => true,
+    'disableOcr'        => $_ENV['site.disableOcr'],
 
     /*
      * Beanstalkd queues for myqueue.conf per site.
@@ -42,7 +49,7 @@ return [
     /** Imagine settings */
     'images'            => [
         'thumbDefaultImg'    => '/assets/default_image.jpg',
-        'thumbOutputDir'     => storage_path() . '/images',
+        'thumbOutputDir'     => storage_path('images'),
         'thumbWidth'         => 150,
         'thumbHeight'        => 150,
         'library'            => 'gmagick',

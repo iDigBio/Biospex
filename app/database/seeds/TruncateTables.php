@@ -28,8 +28,6 @@ use Biospex\Helpers\Helper;
 class TruncateTables extends Seeder {
 	public function run()
 	{
-		Helper::deleteDirectoryContents(Config::get('config.dataDir'));
-
 		Eloquent::unguard();
 		DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 

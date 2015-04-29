@@ -33,21 +33,27 @@ use Biospex\Services\Report\SubjectImportReport;
 use Biospex\Services\Subject\SubjectProcess;
 use Biospex\Services\Xml\XmlProcess;
 use Biospex\Mailer\BiospexMailer;
+use Illuminate\Support\Facades\Config;
 
 class SubjectsImportService {
 
     /**
-     * Directory where darwin core files are stored
+     * Scratch directory.
+     */
+    protected $scratchDir;
+
+    /**
+     * Directory where darwin core files are stored during processing.
      *
      * @var string
      */
-    protected $dataDir;
+    protected $subjectsImportDir;
 
     /**
      * Tmp directory for extracted files
      * @var string
      */
-    protected $fileDir;
+    protected $scratchFileDir;
 
     /**
      * Queue job.
@@ -87,7 +93,8 @@ class SubjectsImportService {
         $this->xmlProcess = $xmlProcess;
         $this->mailer = $mailer;
 
-        $this->dataDir = \Config::get('config.dataDir');
+        $this->scratchDir = Config::get('config.scratchDir');
+        $this->subjectsImportDir = Config::get('config.subjectsImportDir');
     }
 
     /**
@@ -102,23 +109,23 @@ class SubjectsImportService {
         $user = $this->user->find($import->user_id);
         $project = $this->project->find($import->project_id);
 
-        $fileName = pathinfo($this->dataDir . '/' . $import->file, PATHINFO_FILENAME );
-        $this->fileDir = $this->dataDir . '/' . md5($fileName);
-        $zipFile = $this->dataDir . '/' . $import->file;
+        $fileName = pathinfo($this->subjectsImportDir . '/' . $import->file, PATHINFO_FILENAME );
+        $this->scratchFileDir = $this->scratchDir . '/' . $import->id . '-' . md5($fileName);
+        $zipFile = $this->subjectsImportDir . '/' . $import->file;
 
         try
         {
             $this->makeTmp();
             $this->unzip($zipFile);
 
-            $this->subjectProcess->processSubjects($import->project_id, $this->fileDir);
+            $this->subjectProcess->processSubjects($import->project_id, $this->scratchFileDir);
 
             $duplicates = $this->subjectProcess->getDuplicates();
             $rejects = $this->subjectProcess->getRejectedMedia();
 
             $this->report->complete($user->email, $project->title, $duplicates, $rejects);
 
-            $this->filesystem->deleteDirectory($this->fileDir);
+            $this->filesystem->deleteDirectory($this->scratchFileDir);
             $this->filesystem->delete($zipFile);
 
             $this->import->destroy($import->id);
@@ -145,16 +152,16 @@ class SubjectsImportService {
      */
     protected function makeTmp()
     {
-        if ( ! $this->filesystem->isDirectory($this->fileDir))
+        if ( ! $this->filesystem->isDirectory($this->scratchFileDir))
         {
-            if ( ! $this->filesystem->makeDirectory($this->fileDir, 0777, true))
-                throw new \Exception(trans('emails.error_create_dir', ['directory' => $this->fileDir]));
+            if ( ! $this->filesystem->makeDirectory($this->scratchFileDir, 0777, true))
+                throw new \Exception(trans('emails.error_create_dir', ['directory' => $this->scratchFileDir]));
         }
 
-        if ( ! $this->filesystem->isWritable($this->fileDir))
+        if ( ! $this->filesystem->isWritable($this->scratchFileDir))
         {
-            if ( ! chmod($this->fileDir, 0777))
-                throw new \Exception(trans('emails.error_write_dir', ['directory' => $this->fileDir]));
+            if ( ! chmod($this->scratchFileDir, 0777))
+                throw new \Exception(trans('emails.error_write_dir', ['directory' => $this->scratchFileDir]));
         }
 
         return;
@@ -169,57 +176,9 @@ class SubjectsImportService {
      */
     public function unzip($zipFile)
     {
-        shell_exec("unzip $zipFile -d $this->fileDir");
+        shell_exec("unzip $zipFile -d $this->scratchFileDir");
 
         return;
-    }
-
-    /**
-     * Create duplicate and reject files if any
-     *
-     * @param array $duplicates
-     * @param array $rejects
-     * @return array
-     */
-    public function createDuplicateReject($duplicates = [], $rejects = [])
-    {
-        $attachments = [];
-        $duplicated = 0;
-        $rejected = 0;
-        if ( ! empty($duplicates))
-        {
-            $file = "{$this->fileDir}/duplicates.csv";
-            $this->writeCsv($file, $duplicates);
-            $attachments[] = $file;
-            $duplicated = count($duplicates);
-        }
-
-        if ( ! empty($rejects))
-        {
-            // empty image ids
-            $file = "{$this->fileDir}/rejected.csv";
-            $this->writeCsv($file, $rejects);
-            $attachments[] = $file;
-            $rejected = count($rejects);
-        }
-
-        return [$duplicated, $rejected, $attachments];
-    }
-
-    /**
-     * Write to csv file
-     *
-     * @param $file
-     * @param $array
-     */
-    private function writeCsv($file, $array)
-    {
-        $fp = fopen($file, 'w');
-        foreach ($array as $fields)
-        {
-            fputcsv($fp, $fields);
-        }
-        fclose($fp);
     }
 
     /**

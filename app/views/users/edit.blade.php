@@ -18,8 +18,8 @@
         <p><strong>{{ trans('pages.email') }}:</strong> {{ $user->email }}</p>
     </div>
     <div class="col-md-4">
-        <p><em>{{ trans('pages.account_created') }}: {{ $user->created_at }}</em></p>
-        <p><em>{{ trans('pages.last_updated') }}: {{ $user->updated_at }}</em></p>
+        <p><em>{{ trans('pages.account_created') }}: {{ Helper::formatDate($user->created_at, 'Y-m-d', $user->timezone) }}</em></p>
+        <p><em>{{ trans('pages.last_updated') }}: {{ Helper::formatDate($user->updated_at, 'Y-m-d', $user->timezone) }}</em></p>
     </div>
 </div>
 <h4>{{ trans('pages.edit') }}
@@ -60,6 +60,15 @@
             </div>
             {{ ($errors->has('email') ? $errors->first('email') : '') }}
         </div>
+
+        <div class="form-group {{ ($errors->has('timezone')) ? 'has-error' : '' }}" for="timezone">
+            {{ Form::label('timezone', trans('forms.timezone'), array('class' => 'col-sm-2 control-label')) }}
+            <div class="col-sm-10">
+                {{ Form::select('timezone', $timezones, $user->timezone, array('class' => 'form-control')) }}
+            </div>
+            {{ ($errors->has('timezone') ? $errors->first('timezone') : '') }}
+        </div>
+
 
         @if ($superUser)
         <div class="form-group" for="activated">

@@ -25,18 +25,49 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 use Illuminate\Filesystem\Filesystem;
+use Config, File;
 
 class Image {
 
     /**
      * Instance of Gmagick
      */
-    protected $image;
+    protected $imagick;
 
     /**
+     * Geometry for imagemagick image.
+     *
      * @var $geometry
      */
-    protected $geometry;
+    protected $geometry = null;
+
+    /**
+     * Width of original image.
+     *
+     * @var
+     */
+    protected $width;
+
+    /**
+     * Height of original image.
+     *
+     * @var
+     */
+    protected $height;
+
+    /**
+     * Mime type of image.
+     *
+     * @var
+     */
+    protected $mime;
+
+    /**
+     * Extension of image file.
+     *
+     * @var
+     */
+    protected $extension;
 
     /**
      * Path information about file.
@@ -44,18 +75,6 @@ class Image {
      * @var $pathinfo
      */
     protected $pathinfo;
-
-    /**
-     * New image width.
-     * @var
-     */
-    protected $newWidth;
-
-    /**
-     * New image height.
-     * @var
-     */
-    protected $newHeight;
 
     /**
      * Mime type of file.
@@ -74,57 +93,14 @@ class Image {
     /**
      * Initialize the image service.
      *
-     * @param $file
+     * @param Filesystem $filesystem
      */
     public function __construct(Filesystem $filesystem)
     {
         $this->filesystem = $filesystem;
-        $this->imageTypeExtension = \Config::get('config.images.imageTypeExtension');
+        $this->imageTypeExtension = Config::get('config.images.imageTypeExtension');
 
         return;
-    }
-
-    public function imageMagick($file)
-    {
-        $f = fopen($file, 'r');
-        fseek($f, 0);
-        $this->imagick = new \Imagick();
-        $this->imagick->setResourceLimit(6,1);
-        $this->imagick->readimagefile($f);
-        fclose($f);
-        $this->geometry = $this->imagick->getImageGeometry();
-        $this->setImagePathInfo($file);
-
-        return;
-    }
-
-    /**
-     * Resize image.
-     *
-     * @param $target
-     * @param int $width
-     * @param int $height
-     * @return bool
-     */
-    public function resize($target, $width = 0, $height = 0)
-    {
-        try
-        {
-            $scale = $this->imagick->scaleImage($width, $height);
-            if ( ! $scale)
-                return false;
-
-            $write = $this->imagick->writeImage($target);
-            if ( ! $write)
-                return false;
-
-            return true;
-        }
-        catch (\Exception $e)
-        {
-            \Log::error('[IMAGE SERVICE] Failed to resize image. Target: "' . $target . ' [' . $e->getMessage() . ']');
-            return false;
-        }
     }
 
     /**
@@ -135,6 +111,60 @@ class Image {
     public function setImagePathInfo($file)
     {
         $this->pathinfo = pathinfo($file);
+        $this->setExtension();
+        $this->setMimeType();
+    }
+
+    /**
+     * Set image size info from file.
+     *
+     * @param $file
+     */
+    public function setImageSizeInfoFromFile($file)
+    {
+        $size = getimagesize($file);
+        $this->width = $size[0];
+        $this->height = $size[1];
+        $this->setExtension($size['mime']);
+        $this->setMimeType($size['mime']);
+    }
+
+    /**
+     * Set image size info from image string.
+     *
+     * @param $file
+     */
+    public function setImageSizeInfoFromString($file)
+    {
+        $size = getimagesizefromstring($file);
+        $this->width = $size[0];
+        $this->height = $size[1];
+        $this->setExtension($size['mime']);
+        $this->setMimeType($size['mime']);
+    }
+
+    /**
+     * Set mime type for image.
+     *
+     * @param null $mime
+     */
+    protected function setMimeType($mime = null)
+    {
+        $this->mime = is_null($mime) ? array_search($this->pathinfo['extension'], $this->imageTypeExtension) : $mime;
+
+        return;
+    }
+
+    /**
+     * Set extension from file.
+     *
+     * @param null $mime
+     */
+    public function setExtension($mime = null)
+    {
+        $this->extension = is_null($mime) ? $this->pathinfo['extension'] : $this->imageTypeExtension[$mime];
+
+        return;
     }
 
     /**
@@ -144,7 +174,7 @@ class Image {
      */
     public function getImageWidth()
     {
-        return $this->geometry['width'];
+        return ! is_null($this->geometry['width']) ? $this->geometry['width'] : $this->width;
     }
 
     /**
@@ -154,7 +184,7 @@ class Image {
      */
     public function getImageHeight()
     {
-        return $this->geometry['height'];
+        return ! is_null($this->geometry['height']) ? $this->geometry['height'] : $this->height;
     }
 
     /**
@@ -188,53 +218,13 @@ class Image {
     }
 
     /**
-     * Return extension from file.
+     * Get file extension.
      *
      * @return mixed
      */
-    public function getExtension()
+    public function getFileExtension()
     {
-        return $this->pathinfo['extension'];
-    }
-
-    /**
-     * Get image height from file being checked. Used on existing file, not imagick file.
-     *
-     * @param $file
-     * @param bool $var
-     * @return array
-     */
-    public function getImageSizeFromFile($file, $var = null)
-    {
-        list($width, $height) = getimagesize($file);
-
-        return is_null($var) ? [$width, $height] : ($var == 'w' ? $width : $height);
-    }
-
-    /**
-     * Get file extension from image string.
-     *
-     * @param $file
-     * @return bool
-     */
-    public function getImageExtensionFromString($file)
-    {
-        $info = $this->getImageInfoFromString($file);
-
-        return isset($this->imageTypeExtension[$info['mime']]) ? $this->imageTypeExtension[$info['mime']] : false;
-    }
-
-    /**
-     * Get image info from string.
-     *
-     * @param $string
-     * @return array
-     */
-    public function getImageInfoFromString($string)
-    {
-        $info = getimagesizefromstring($string);
-
-        return $info;
+        return $this->extension;
     }
 
     /**
@@ -244,18 +234,70 @@ class Image {
      */
     public function getMimeType()
     {
-        return empty($this->mimeType) ? 'image/jpeg' : $this->mimeType;
+        return $this->mimeType;
+    }
+
+    /**
+     * Read image using imagick.
+     *
+     * @param $file
+     */
+    public function imagickFile($file)
+    {
+        $f = fopen($file, 'r');
+        fseek($f, 0);
+        $this->imagick = new \Imagick();
+        $this->imagick->setResourceLimit(6,1);
+        $this->imagick->readImageFile($f);
+        $this->geometry = $this->imagick->getImageGeometry();
+        fclose($f);
+
+        return;
+    }
+
+    /**
+     * Resize image.
+     *
+     * @param $target
+     * @param int $width
+     * @param int $height
+     * @return bool
+     */
+    public function imagickScale($target, $width = 0, $height = 0)
+    {
+        try
+        {
+            $this->imagick->scaleImage($width, $height);
+            $this->imagick->setImageCompression(\Imagick::COMPRESSION_JPEG);
+            $this->imagick->setImageCompressionQuality(80);
+            $this->imagick->writeImage($target);
+
+            return;
+        }
+        catch (\Exception $e)
+        {
+            \Log::error('[IMAGE SERVICE] Failed to resize image. Target: "' . $target . ' [' . $e->getMessage() . ']');
+
+            return;
+        }
     }
 
     /**
      * Destroy.
      */
-    public function destroy()
+    public function imagickDestroy()
     {
         $this->imagick->clear();
         $this->imagick->destroy();
+        $this->geometry = null;
     }
 
+    /**
+     * Save file.
+     *
+     * @param $path
+     * @param $contents
+     */
     protected function saveFile($path, $contents)
     {
         if ( ! $this->filesystem->put($path, $contents))
@@ -286,3 +328,4 @@ class Image {
     }
 
 }
+

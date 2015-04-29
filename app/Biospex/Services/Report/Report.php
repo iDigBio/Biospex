@@ -153,7 +153,7 @@ class Report {
      */
     public function createAttachment($csv, $name = null)
     {
-        $path = $this->excelStorage['store']['path'] . "/";
+        $path = $this->excelStorage['store']['path'] . "/report/";
         $fileName = (is_null($name)) ? str_random(10) : $name . str_random(5);
         $ext = ".csv";
 
@@ -163,7 +163,7 @@ class Report {
             {
                 $sheet->fromArray($csv);
             });
-        })->store('csv');
+        })->store('csv', $path);
 
         return [$path . $fileName . $ext];
     }

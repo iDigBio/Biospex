@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\SoftDeletingTrait;
 use Cviebrock\EloquentSluggable\SluggableInterface;
 use Cviebrock\EloquentSluggable\SluggableTrait;
 use Biospex\Traits\UuidTrait;
+use Illuminate\Support\Facades\Config;
 
 class Project extends Eloquent implements StaplerableInterface, SluggableInterface{
 
@@ -38,13 +39,20 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     use SluggableTrait;
 	use UuidTrait;
 
+    /**
+     * Sluggable value.
+     * @var array
+     */
     protected $sluggable = [
         'build_from' => 'title',
         'save_to'    => 'slug',
     ];
 
+    /**
+     * Dates to protect.
+     * @var array
+     */
     protected $dates = ['deleted_at'];
-
 
     /**
      * The database table used by the model.
@@ -53,8 +61,17 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      */
     protected $table = 'projects';
 
+    /**
+     * Database connection.
+     * @var string
+     */
 	protected $connection = 'mysql';
 
+    /**
+     * Primary key of the table.
+     *
+     * @var string
+     */
 	protected $primaryKey = 'id';
 
     /**
@@ -106,6 +123,10 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         parent::boot();
 
 		static::bootStapler();
+
+        static::creating(function($model) {
+            $model->tag_uri = Input::all();
+        });
 
         static::saving(function($model)
         {
@@ -205,6 +226,16 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
 	}
 
     /**
+     * Set tag uri for rfc 4151 specs.
+     *
+     * @return string
+     */
+    public function setTagUriAttribute($input)
+    {
+        return 'tag:' . $_ENV['site.domain'] . ',' . date('Y-m-d') . ':' . $this->attributes['slug'];
+    }
+
+    /**
      * Mutator for target_fields
      *
      * @param $input
@@ -250,28 +281,6 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     public function getTargetFieldsAttribute($value)
     {
         return json_decode($value);
-    }
-
-    /**
-     * Accessor for created_at
-     *
-     * @param $value
-     * @return bool|string
-     */
-    public function getCreatedAtAttribute($value)
-    {
-        return date("m/d/Y", strtotime($value));
-    }
-
-    /**
-     * Accessor updated_at
-     *
-     * @param $value
-     * @return bool|string
-     */
-    public function getUpdatedAtAttribute($value)
-    {
-        return date("m/d/Y", strtotime($value));
     }
 
     /**

@@ -260,6 +260,7 @@ class UsersController extends BaseController {
         $groups = $user->groups->toArray();
         $userGroups = array_map(function ($groups){ return $groups['name']; }, $groups);
         $allGroups = $this->group->all();
+        $timezones = \Biospex\Helpers\Helper::timeZoneSelect();
 
         // Get all permissions
         $permissions = $this->permission->getPermissionsGroupBy();
@@ -271,6 +272,7 @@ class UsersController extends BaseController {
 
         return View::make('users.edit', compact(
                 'user',
+                'timezones',
                 'userEditPermissions',
                 'allGroups',
                 'userGroups',

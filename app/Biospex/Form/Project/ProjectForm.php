@@ -42,5 +42,4 @@ class ProjectForm extends Form {
 
         return $input;
     }
-
 }

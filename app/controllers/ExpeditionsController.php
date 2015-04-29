@@ -28,6 +28,7 @@ use Biospex\Form\Expedition\ExpeditionForm;
 use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
+use Biospex\Repo\User\UserInterface;
 
 class ExpeditionsController extends BaseController {
 
@@ -51,21 +52,23 @@ class ExpeditionsController extends BaseController {
      */
     protected $subject;
 
-	/**
-	 * Instantiate a new ExpeditionsController
-	 *
-	 * @param ExpeditionInterface $expedition
-	 * @param ExpeditionForm $expeditionForm
-	 * @param ProjectInterface $project
-	 * @param SubjectInterface $subject
-	 * @param WorkflowManagerInterface $workflowManager
-	 */
+    /**
+     * Instantiate a new ExpeditionsController.
+     *
+     * @param ExpeditionInterface $expedition
+     * @param ExpeditionForm $expeditionForm
+     * @param ProjectInterface $project
+     * @param SubjectInterface $subject
+     * @param WorkflowManagerInterface $workflowManager
+     * @param UserInterface $user
+     */
     public function __construct(
         ExpeditionInterface $expedition,
         ExpeditionForm $expeditionForm,
         ProjectInterface $project,
         SubjectInterface $subject,
-        WorkflowManagerInterface $workflowManager
+        WorkflowManagerInterface $workflowManager,
+        UserInterface $user
     )
     {
         $this->expedition = $expedition;
@@ -73,6 +76,7 @@ class ExpeditionsController extends BaseController {
         $this->project = $project;
         $this->subject = $subject;
         $this->workflowManager = $workflowManager;
+        $this->user = $user;
 
         // Establish Filters
 		$this->beforeFilter('auth');
@@ -94,9 +98,10 @@ class ExpeditionsController extends BaseController {
 		if ( ! Request::ajax())
 			return Redirect::action('ProjectsController@show', [$id]);
 
+        $user = $this->user->getUser();
 		$project = $this->project->findWith($id, ['expeditions.actorsCompletedRelation']);
 
-		return View::make('expeditions.index', compact('project'));
+		return View::make('expeditions.index', compact('project', 'user'));
     }
 
     /**
@@ -225,6 +230,7 @@ class ExpeditionsController extends BaseController {
     {
         try
         {
+            $this->expedition->setPass(true);
 			$expedition = $this->expedition->findWith($expeditionId, ['project.actors', 'workflowManager']);
 
 			if ( ! is_null($expedition->workflowManager))

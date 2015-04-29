@@ -25,6 +25,7 @@
  */
 use Biospex\Repo\Expedition\ExpeditionInterface;
 use Biospex\Repo\Download\DownloadInterface;
+use Biospex\Repo\User\UserInterface;
 
 class DownloadsController extends BaseController {
 
@@ -38,19 +39,25 @@ class DownloadsController extends BaseController {
 	 */
 	protected $download;
 
-	/**
-	 * Instantiate a new DownloadsController
-	 *
-	 * @param ExpeditionInterface $expedition
-	 * @param DownloadInterface $download
-	 */
-	public function __construct (ExpeditionInterface $expedition,	DownloadInterface $download)
+    /**
+     * Instantiate a new DownloadsController.
+     *
+     * @param ExpeditionInterface $expedition
+     * @param DownloadInterface $download
+     * @param UserInterface $user
+     */
+	public function __construct (
+        ExpeditionInterface $expedition,
+        DownloadInterface $download,
+        UserInterface $user
+    )
 	{
 		$this->expedition = $expedition;
 		$this->download = $download;
+        $this->user = $user;
 
 		// Establish Filters
-		$this->beforeFilter('auth');
+		$this->beforeFilter('auth', ['only' => ['index']]);
 		$this->beforeFilter('csrf', ['on' => 'post']);
 		$this->beforeFilter('hasProjectAccess:expedition_view', ['only' => ['download', 'file']]);
 	}
@@ -64,8 +71,9 @@ class DownloadsController extends BaseController {
 	 */
 	public function index ($projectId, $expeditionId)
 	{
+        $user = $this->user->getUser();
 		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads.actor']);
-		return View::make('downloads.index', compact('expedition'));
+		return View::make('downloads.index', compact('expedition', 'user'));
 	}
 
 	public function show ($projectId, $expeditionId, $downloadId)
@@ -74,8 +82,8 @@ class DownloadsController extends BaseController {
 		$download->count = $download->count + 1;
 		$this->download->save($download);
 
-		$dataDir = Config::get('config.dataDir');
-		$path = "$dataDir/{$download->file}";
+		$nfnExportDir = Config::get('config.nfnExportDir');
+		$path = "$nfnExportDir/{$download->file}";
 		$headers = ['Content-Type' => 'application/x-compressed'];
 		return Response::download($path, $download->file, $headers);
 	}

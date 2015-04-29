@@ -77,16 +77,11 @@ abstract class ActorAbstract {
 	protected $image;
 
 	/**
-     * Data directory on server.
+     * Scratch directory for processing.
+     *
 	 * @var string
 	 */
-	protected $dataDir;
-
-	/**
-     * Data tmp directory on server.
-	 * @var string
-	 */
-	protected $dataTmp;
+	protected $scratchDir;
 
     /**
      * Constructor
@@ -116,8 +111,7 @@ abstract class ActorAbstract {
 		$this->download = $download;
         $this->report = $report;
         $this->image = $image;
-        $this->dataDir = Config::get('config.dataDir');
-        $this->dataTmp = Config::get('config.dataTmp');
+        $this->scratchDir = Config::get('config.scratchDir');
     }
 
     /**
@@ -181,6 +175,21 @@ abstract class ActorAbstract {
 			throw new \Exception(trans('emails.error_save_file', ['directory' => $path]));
 
 		return;
+    }
+
+    /**
+     * Move a file.
+     *
+     * @param $path
+     * @param $target
+     * @throws \Exception
+     */
+    protected function moveFile($path, $target)
+    {
+        if ( ! $this->filesystem->move($path, $target))
+            throw new \Exception(trans('emails.error_save_file', ['directory' => $path]));
+
+        return;
     }
 
     /** Create download file.

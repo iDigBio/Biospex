@@ -1,9 +1,7 @@
 <?php
 
 use Illuminate\Console\Command;
-use Biospex\Services\Image\Image;
-use Illuminate\Filesystem\Filesystem;
-use Biospex\Services\Actor\NotesFromNature;
+use Illuminate\Support\Facades\DB;
 
 class TestCommand extends Command {
 
@@ -20,12 +18,10 @@ class TestCommand extends Command {
     /**
      * Constructor
      */
-    public function __construct(Image $image, Filesystem $filesystem, NotesFromNature $notes)
+    public function __construct()
     {
         parent::__construct();
-        $this->image = $image;
-        $this->filesystem = $filesystem;
-        $this->notes = $notes;
+
     }
 
     /**
@@ -33,11 +29,27 @@ class TestCommand extends Command {
      */
     public function fire()
     {
-     //   convert /data/web/staging.biospex.org/app/storage/data/4-17f9a20a23/5512ba2500cf791f438b4ffe.jpg  -resize 64x64  /data/web/staging.biospex.org/app/storage/testsm.jpg
-        $this->notes->setTitle('4-03f4526548');
-        $this->notes->setPaths();
-        $this->notes->convert();
-        //$this->notes->buildDetails();
+        $this->updateTableDates();
+
         return;
+    }
+
+
+    public function updateTableDates()
+    {
+        $tables = DB::select("select table_name from information_schema.tables where table_schema='biospex_staging'");
+
+        foreach ($tables as $table)
+        {
+            if (Schema::hasColumn($table->table_name, 'created_at'))
+            {
+                DB::statement("UPDATE {$table->table_name} SET created_at = CONVERT_TZ(created_at, 'America/New_York', 'UTC');");
+            }
+
+            if (Schema::hasColumn($table->table_name, 'updated_at'))
+            {
+                DB::statement("UPDATE {$table->table_name} SET updated_at = CONVERT_TZ(created_at, 'America/New_York', 'UTC');");
+            }
+        }
     }
 }

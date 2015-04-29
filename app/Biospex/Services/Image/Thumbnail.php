@@ -24,9 +24,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 use Biospex\Services\Curl\Curl;
 use Biospex\Services\Curl\Request;
-use Config, File;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
 
 class Thumbnail extends Image{
 
@@ -36,19 +38,31 @@ class Thumbnail extends Image{
 	 */
 	protected $outputFile;
 
+    /**
+     * Output directory
+     *
+     * @var string
+     */
+    protected $outputDir;
+
 	/**
 	 * Default image.
 	 *
 	 * @var mixed
 	 */
-	protected $defaultImg;
+	private $defaultImg;
 
-	/**
-	 * Output directory
-	 *
-	 * @var string
-	 */
-	protected $outputDir;
+    /**
+     * Thumbnail width.
+     * @var
+     */
+    private $tnWidth;
+
+    /**
+     * Thumbnail height.
+     * @var
+     */
+    private $tnHeight;
 
 	/**
 	 * Set variables.
@@ -57,9 +71,9 @@ class Thumbnail extends Image{
 	{
 		// We can read the output path from our configuration file.
 		$this->defaultImg = Config::get('config.images.thumbDefaultImg');
-		$this->width = Config::get('config.images.thumbWidth');
-		$this->height = Config::get('config.images.thumbHeight');
-		$this->outputDir = Config::get('config.images.thumbOutputDir') . '/' . $this->width . '_' . $this->height;
+		$this->tnWidth = Config::get('config.images.thumbWidth');
+		$this->tnHeight = Config::get('config.images.thumbHeight');
+		$this->outputDir = Config::get('config.images.thumbOutputDir') . '/' . $this->tnWidth . '_' . $this->tnHeight;
 	}
 
 	/**
@@ -119,9 +133,10 @@ class Thumbnail extends Image{
     public function saveThumbnail($image, $info)
     {
         $this->saveFile($this->outputFileLg, $image);
-        $this->imageMagick($this->outputFileLg);
-        $this->resize($this->outputFileSm, $this->width, 0);
+        $this->imagickFile($this->outputFileLg);
+        $this->imagickScale($this->outputFileSm, $this->tnWidth, 0);
         $this->deleteImage($this->outputFileLg);
+        $this->imagickDestroy();
 
         return;
     }
