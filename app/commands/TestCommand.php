@@ -25,7 +25,6 @@ class TestCommand extends Command {
         parent::__construct();
 
         $this->report = $report;
-
     }
 
     /**
@@ -33,7 +32,20 @@ class TestCommand extends Command {
      */
     public function fire()
     {
-        $this->report->complete('biospex@gmail.com', 'This is a test.', ['duplicates'], ['reject']);
+        $data = array(
+            'projectTitle' => "Test Title",
+            'importMessage' => trans('emails.import_complete_message'),
+        );
+        $subject = trans('emails.import_complete');
+        $view = 'emails.reportsubject';
+
+        \Event::fire('user.sendreport', [
+            'email'      => 'biospex@gmail.com',
+            'subject'    => $subject,
+            'view'       => $view,
+            'data'       => $data,
+            'attachment' => []
+        ]);
 
         return;
     }
