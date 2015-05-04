@@ -51,7 +51,7 @@ class WorkFlowManagerCommand extends Command {
     public function __construct(WorkflowManagerInterface $manager)
     {
         $this->manager = $manager;
-		$this->queue = \Config::get('config.beanstalkd.workflowManager');
+		$this->queue = \Config::get('config.beanstalkd.workflow-manager');
 
         parent::__construct();
     }
