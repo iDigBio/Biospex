@@ -43,6 +43,7 @@ return [
     'site.disableOcr'             => true,
 
     'beanstalkd.default'          => 'default',
+    'beanstalkd.mail'             => 'mail',
     'beanstalkd.subjects-import'  => 'subjects-import',
     'beanstalkd.workflow-manager' => 'workflow-manager',
     'beanstalkd.ocr'              => 'ocr',
