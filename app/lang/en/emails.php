@@ -73,5 +73,5 @@ return [
     'error_ocr_queue'             => "Process error - :id, :message, :url.",
     'error_ocr_stuck_queue'       => "The queue job with id of :id has :tries tries and may need some oversight.",
     'failed_job_subject'          => "Failed Job Report.",
-    'failed_job_message'          => "Job queue :id has failed. ",
+    'failed_job_message'          => "Job queue :id has failed.<br />Job Data: :jobData ",
 ];
