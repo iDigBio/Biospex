@@ -57,11 +57,14 @@ Event::listen('eloquent.deleted: *', function ()
 
 Queue::failing(function ($connection, $job)
 {
-    \Event::fire('user.sendreport', [
+    if ($job->getQueue() == Config::get('config.beanstalkd.default'))
+        return;
+
+    Event::fire('user.sendreport', [
         'email'   => null,
         'subject' => trans('emails.failed_job_subject'),
         'view'    => 'emails.report-failed-jobs',
-        'data'    => ['text' => trans('emails.failed_job_message', ['id' => $job->getJobId()])],
+        'data'    => ['text' => trans('emails.failed_job_message', ['id' => $job->getJobId(), 'jobData' => $job->getRawBody()])],
     ]);
 
     return;
