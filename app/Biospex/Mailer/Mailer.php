@@ -29,7 +29,6 @@ abstract class Mailer {
 
 	public function sendTo ($from, $email, $subject, $view, $data = [], $attachments = [])
 	{
-        /*
         Mail::queueOn(\Config::get('config.beanstalkd.mail'), $view, $data, function ($message) use ($from, $email, $subject, $attachments)
 		{
 			$message->from($from)->subject($subject)->to($email);
@@ -38,14 +37,5 @@ abstract class Mailer {
 				$message->attach($attachments[$i]);
 			}
 		});
-        */
-        Mail::send($view, $data, function ($message) use ($from, $email, $subject, $attachments)
-        {
-            $message->from($from)->subject($subject)->to($email);
-            $size = sizeof($attachments);
-            for ($i = 0; $i < $size; $i++){
-                $message->attach($attachments[$i]);
-            }
-        });
 	}
 }
