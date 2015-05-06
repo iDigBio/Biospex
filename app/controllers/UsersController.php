@@ -211,10 +211,14 @@ class UsersController extends BaseController {
 			// Success!
 			if (Input::exists('registeruser'))
 			{
+                $email = $result['mailData']['email'];
+				$userId = $result['mailData']['userId'];
+                $activationCode = $result['mailData']['activationCode'];
+
 				$this->events->fire('user.registered', [
-					'email'          => $result['mailData']['email'],
-					'userId'         => $result['mailData']['userId'],
-					'activationCode' => $result['mailData']['activationCode']
+					'email'          => $email,
+                    'activateHtmlLink' => HTML::linkRoute('activate', 'Click Here', ['id' => $userId, 'code' => urlencode($activationCode)]),
+                    'activateTextLink' => route('activate', ['id' => $userId, 'code' => urlencode($activationCode)])
 				]);
 
 				Session::flash('success', $result['message']);
