@@ -29,7 +29,7 @@ abstract class Mailer {
 
 	public function sendTo ($from, $email, $subject, $view, $data = [], $attachments = [])
 	{
-        Mail::queueOn(\Config::get('config.beanstalkd.default'), $view, $data, function ($message) use ($from, $email, $subject, $attachments)
+		Mail::queueOn(\Config::get('config.beanstalkd.default'), $view, $data, function ($message) use ($from, $email, $subject, $attachments)
 		{
 			$message->from($from)->subject($subject)->to($email);
 			$size = sizeof($attachments);
