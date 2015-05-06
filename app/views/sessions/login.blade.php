@@ -43,8 +43,9 @@
                 {{Form::close()}}
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 margin-top-10">
-                        {{ link_to_action('forgotPasswordForm', trans('pages.password_forgot'))}}
-                        or <i class="glyphicon glyphicon-log-in"></i> {{ link_to_action('register', trans('pages.register')) }}
+                        {{ link_to_action('forgotPasswordForm', trans('pages.password_forgot'))}} ||
+                        {{ link_to_action('resendActivationForm', trans('pages.resend_activation'))}} ||
+                        {{ link_to_action('register', trans('pages.register')) }}
                    </div>
                </div>
             </div>
