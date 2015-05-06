@@ -47,6 +47,9 @@ return [
     'contact_last'                => "Last Name",
     'contact_email'               => "Email",
     'contact_message'             => "Message",
+    'account'                     => "Account",
+    'activate_message_html'       => "To activate your account",
+    'activate_message_text'       => "Or point your browser to this address",
 
     'error'                       => "Biospex error report.",
     'error_import'                => "An error has occurred during data import.",
