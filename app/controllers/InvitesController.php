@@ -146,12 +146,15 @@ class InvitesController extends BaseController {
                 }
                 else
                 {
-					//send invite
+                    //send invite
 					$this->events->fire('user.sendinvite', [
 						'email' => $email,
 						'subject' => trans('emails.group_invite_subject'),
 						'view' => 'emails.group-invite',
-						'data' => ['group' => $group->name, 'code' => $code],
+						'data' => [
+                            'group' => $group->name,
+                            'invite' => HTML::linkRoute('register', 'Click Here', ['code' => $code])
+                        ],
 					]);
 
                     Helper::sessionFlashPush('success', trans('groups.send_invite_success', ['group' => $group->name, 'email' => $email]));
@@ -177,12 +180,15 @@ class InvitesController extends BaseController {
         if ($invite)
         {
 			//send invite
-			$this->events->fire('user.sendinvite', [
-				'email' => $invite->email,
-				'subject' => trans('emails.group_invite_subject'),
-				'view' => 'emails.group-invite',
-				'data' => ['group' => $group->name, 'code' => $invite->code],
-			]);
+            $this->events->fire('user.sendinvite', [
+                'email' => $invite-email,
+                'subject' => trans('emails.group_invite_subject'),
+                'view' => 'emails.group-invite',
+                'data' => [
+                    'group' => $group->name,
+                    'invite' => HTML::linkRoute('register', 'Click Here', ['code' => $invite->code])
+                ],
+            ]);
 
             Session::flash('success', trans('groups.send_invite_success', ['group' => $group->name, 'email' => $invite->email]));
         }
