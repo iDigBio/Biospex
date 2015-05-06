@@ -35,7 +35,7 @@ return [
     'site.timezone'               => 'America/New_York',
     'site.locale'                 => 'en',
     'site.adminEmail'             => 'youremail@provider.org',
-    'site.doNotReplyEmail'        => 'do-not-reply@provider.org',
+    'site.doNotReplyEmail'        => 'noreply@provider.org',
     'site.registration'           => true,
     'site.ocrPostUrl'             => 'http://ocr.dev.morphbank.net/batchocr',
     'site.ocrGetUrl'              => 'http://ocr.dev.morphbank.net/status',
