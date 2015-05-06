@@ -52,17 +52,17 @@ class BiospexMailer extends Mailer {
 
     /**
      * Send a welcome email to a new user.
-     * @param  string $email
-     * @param  int $userId
-     * @param  string $activationCode
-     * @return bool
+     * @param $email
+     * @param $userId
+     * @param $activateHtmlLink
+     * @param $activateTextLink
      */
-    public function welcome($email, $userId, $activationCode)
+    public function welcome($email, $activateHtmlLink, $activateTextLink)
     {
         $subject = trans('users.welcome');
         $view = 'emails.welcome';
-        $data['userId'] = $userId;
-        $data['activationCode'] = $activationCode;
+        $data['activateHtmlLink'] = $activateHtmlLink;
+        $data['activateTextLink'] = $activateTextLink;
         $data['email'] = $email;
 
         return $this->sendTo($this->doNotReplyEmail, $email, $subject, $view, $data);
