@@ -31,6 +31,7 @@ class BiospexMailer extends Mailer {
     public function __construct()
     {
         $this->adminEmail = Config::get('config.adminEmail');
+        $this->doNotReplyEmail = Config::get('config.doNotReplyEmail');
     }
 
     /**
@@ -64,7 +65,7 @@ class BiospexMailer extends Mailer {
         $data['activationCode'] = $activationCode;
         $data['email'] = $email;
 
-        return $this->sendTo($this->adminEmail, $email, $subject, $view, $data);
+        return $this->sendTo($this->doNotReplyEmail, $email, $subject, $view, $data);
     }
 
     /**
@@ -82,7 +83,7 @@ class BiospexMailer extends Mailer {
         $data['resetCode'] = $resetCode;
         $data['email'] = $email;
 
-        return $this->sendTo($this->adminEmail, $email, $subject, $view, $data);
+        return $this->sendTo($this->doNotReplyEmail, $email, $subject, $view, $data);
     }
 
     /**
@@ -98,7 +99,7 @@ class BiospexMailer extends Mailer {
         $data['newPassword'] = $newPassword;
         $data['email'] = $email;
 
-        return $this->sendTo($this->adminEmail, $email, $subject, $view, $data);
+        return $this->sendTo($this->doNotReplyEmail, $email, $subject, $view, $data);
     }
 
     /**
@@ -115,7 +116,7 @@ class BiospexMailer extends Mailer {
         if (is_null($email))
             $email = $this->adminEmail;
 
-        return $this->sendTo($this->adminEmail, $email, $subject, $view, $data, $attachments);
+        return $this->sendTo($this->doNotReplyEmail, $email, $subject, $view, $data, $attachments);
     }
 
     /**
@@ -132,7 +133,7 @@ class BiospexMailer extends Mailer {
         if (is_null($email))
             $email = $this->adminEmail;
 
-        return $this->sendTo($this->adminEmail, $email, $subject, $view, $data);
+        return $this->sendTo($this->doNotReplyEmail, $email, $subject, $view, $data);
     }
 
     /**
@@ -144,7 +145,7 @@ class BiospexMailer extends Mailer {
      */
     public function sendContactForm($view, $subject, $data)
     {
-        return $this->sendTo($this->adminEmail, $this->adminEmail, $subject, $view, $data);
+        return $this->sendTo($this->doNotReplyEmail, $this->adminEmail, $subject, $view, $data);
     }
 
 }
