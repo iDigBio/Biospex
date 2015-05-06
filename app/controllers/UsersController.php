@@ -390,11 +390,15 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-			$this->events->fire('user.resend', [
-				'email' => $result['mailData']['email'], 
-				'userId' => $result['mailData']['userId'], 
-				'activationCode' => $result['mailData']['activationCode']
-			]);
+            $email = $result['mailData']['email'];
+            $userId = $result['mailData']['userId'];
+            $activationCode = $result['mailData']['activationCode'];
+
+            $this->events->fire('user.resend', [
+                'email'          => $email,
+                'activateHtmlLink' => HTML::linkRoute('activate', 'Click Here', ['id' => $userId, 'code' => urlencode($activationCode)]),
+                'activateTextLink' => route('activate', ['id' => $userId, 'code' => urlencode($activationCode)])
+            ]);
 
             // Success!
             Session::flash('success', $result['message']);
@@ -420,11 +424,15 @@ class UsersController extends BaseController {
 
         if( $result['success'] )
         {
-			$this->events->fire('user.forgot', [
-				'email' => $result['mailData']['email'],
-				'userId' => $result['mailData']['userId'],
-				'resetCode' => $result['mailData']['resetCode']
-			]);
+            $email = $result['mailData']['email'];
+            $userId = $result['mailData']['userId'];
+            $resetCode = $result['mailData']['resetCode'];
+
+            $this->events->fire('user.forgot', [
+                'email' => $email,
+                'resetHtmlLink' => HTML::linkRoute('reset', 'Click Here', ['id' => $userId, 'code' => urlencode($resetCode)]),
+                'resetTextLink' => route('reset', ['id' => $userId, 'code' => urlencode($resetCode)]),
+            ]);
 
             // Success!
             Session::flash('success', $result['message']);
