@@ -7,6 +7,8 @@
 <!-- Content -->
 @yield('content')
 <!-- ./ content -->
+<br />
+<br />
 <p>
 {{ trans('emails.thank_you') }}, <br /><br />
 {{ trans('emails.signature') }}<br />
