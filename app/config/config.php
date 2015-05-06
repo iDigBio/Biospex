@@ -41,7 +41,6 @@ return [
      */
     'beanstalkd'        => [
         'default'          => $_ENV['beanstalkd.default'],
-        'mail'             => $_ENV['beanstalkd.mail'],
         'subjects-import'  => $_ENV['beanstalkd.subjects-import'],
         'workflow-manager' => $_ENV['beanstalkd.workflow-manager'],
         'ocr'              => $_ENV['beanstalkd.ocr']
