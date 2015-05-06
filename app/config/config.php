@@ -6,6 +6,11 @@ return [
     'adminEmail'        => $_ENV['site.adminEmail'],
 
     /**
+     * Set do not reply email for sending messages.
+     */
+    'doNotReplyEamil'   => $_ENV['site.doNotReplyEmail'],
+
+    /**
      * Allow/Disallow registration
      */
     'registration'      => $_ENV['site.registration'],
