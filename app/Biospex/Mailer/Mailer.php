@@ -31,7 +31,7 @@ abstract class Mailer {
 	{
 		Mail::queueOn(\Config::get('config.beanstalkd.default'), $view, $data, function ($message) use ($from, $email, $subject, $attachments)
 		{
-			$message->from($from)->subject($subject)->to($email);
+			$message->from($from['address'], $from['name'])->subject($subject)->to($email);
 			$size = sizeof($attachments);
 			for ($i = 0; $i < $size; $i++){
 				$message->attach($attachments[$i]);
