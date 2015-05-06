@@ -1,19 +1,15 @@
-<!DOCTYPE html>
-<html lang="en-US">
-<head>
-    <meta charset="utf-8">
-</head>
-<body>
-<h2>{{ trans('emails.import_complete') }}</h2>
+@extends('layouts.email', ['adminEmail' => $adminEmail])
 
-<p>{{ trans('emails.import_message') }}:</p>
-<p>
+{{-- Content --}}
+@section('content')
+    <h2>@lang('emails.import_complete')</h2>
+
+    <p>@lang('emails.import_message'):</p>
+    <p>
     <blockquote>
-    {{{ trans('projects.project') }}}: {{{ $projectTitle }}}<br />
-    {{{ $importMessage }}}<br />
+        <b>@lang('projects.project'):</b> {{{ $projectTitle }}}
+        <br />
+        {{{ $importMessage }}}<br />
     </blockquote>
-</p>
-<p>{{ trans('emails.thank_you') }}, <br />
-    ~{{ trans('emails.signature') }}</p>
-</body>
-</html>
+    </p>
+@stop

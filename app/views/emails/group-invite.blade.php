@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="en-US">
-<head>
-    <meta charset="utf-8">
-</head>
-<body>
-<h2>{{ trans('emails.welcome') }}</h2>
+@extends('layouts.email', ['adminEmail' => $adminEmail])
 
-<p>{{ trans('emails.group_invite_message', ['group' => $group]) }}</p>
-<p><a href="{{ URL::action('UsersController@register', [$code]) }}">{{ URL::action('UsersController@register', ['code' => $code]) }}</a></p>
-
-<p>{{ trans('emails.thank_you') }}, <br />
-    ~{{ trans('emails.signature') }}</p>
-</body>
-</html>
+{{-- Content --}}
+@section('content')
+    <h2>@lang('emails.welcome')</h2>
+    <p>@lang('emails.group_invite_message', ['group' => $group, 'invite' => $invite])</p>
+    <p></p>
+@stop
