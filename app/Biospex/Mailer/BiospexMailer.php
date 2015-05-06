@@ -30,7 +30,7 @@ class BiospexMailer extends Mailer {
 
     public function __construct()
     {
-        $this->adminEmail = Config::get('mail.admin');
+        $this->adminEmail = Config::get('config.adminEmail');
         $this->from = Config::get('mail.from');
     }
 
