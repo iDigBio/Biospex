@@ -1,14 +1,9 @@
-<!DOCTYPE html>
-<html lang="en-US">
-	<head>
-		<meta charset="utf-8">
-	</head>
-	<body>
-		<h2>Password Reset</h2>
+@extends('layouts.email', ['adminEmail' => $adminEmail])
 
-		<p>To reset your password, <a href="{{ URL::action('UsersController@reset', array('id' => $userId, 'code' => urlencode($resetCode))) }}">click here.</a>  If you did not request a password reset, you can safely ignore this email - nothing will be changed.</p>
-		<p>Or point your browser to this address: <br /> {{ URL::action('UsersController@reset', array('id' => $userId, 'code' => urlencode($resetCode))) }}</p>
-		<p>Thank you, <br />
-			~The Admin Team</p>
-	</body>
-</html>
+{{-- Content --}}
+@section('content')
+    <h2>@lang('emails.password_reset')</h2>
+    <p><b>@lang('emails.password_message_html'),</b> {{ $resetHtmlLink }}</p>
+    <p><b>@lang('emails.password_message_text'):</b> {{ $resetTextLink }}</p>
+    <p>@lang('emails.password_warning')</p>
+@stop

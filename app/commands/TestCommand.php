@@ -32,10 +32,11 @@ class TestCommand extends Command {
      */
     public function fire()
     {
-        \Event::fire('user.registered', [
-            'email'          => 'biospex@gmail.com',
-            'activateHtmlLink' => HTML::linkRoute('activate', 'Click Here', ['id' => 999, 'code' => urlencode('kmlgkgmg')]),
-            'activateTextLink' => route('activate', ['id' => 999, 'code' => urlencode('kmlgkgmg')])
+        $email = "biospex@gmail.com";
+
+        \Event::fire('user.newpassword', [
+            'email' => $email,
+            'newPassword' => 'thistest'
         ]);
 
         /*

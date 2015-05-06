@@ -2,8 +2,8 @@
 
 {{-- Content --}}
 @section('content')
-		<h2>{{ trans('emails.welcome') }}</h2>
-		<p><b>{{ trans('emails.account') }}:</b> {{{ $email }}}</p>
-		<p>{{ trans('emails.activate_message_html') }}, {{ $activateHtmlLink }}</p>
-		<p>{{ trans('emails.activate_message_text') }}: {{ $activateTextLink }}</p>
+		<h2>@lang('emails.welcome')</h2>
+		<p><b>@lang('emails.account'):</b> {{{ $email }}}</p>
+		<p><b>@lang('emails.activate_message_html'),</b> {{ $activateHtmlLink }}</p>
+		<p><b>@lang('emails.activate_message_text'):</b> {{ $activateTextLink }}</p>
 @stop

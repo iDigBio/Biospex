@@ -1,17 +1,11 @@
-<!DOCTYPE html>
-<html lang="en-US">
-<head>
-    <meta charset="utf-8">
-</head>
-<body>
-<h2>{{ trans('emails.failed_job_subject') }}</h2>
+@extends('layouts.email', ['adminEmail' => $adminEmail])
 
-<p>
-<blockquote>
-    {{{ $text }}}
-</blockquote>
-</p>
-<p>{{ trans('emails.thank_you') }}, <br />
-    ~{{ trans('emails.signature') }}</p>
-</body>
-</html>
+{{-- Content --}}
+@section('content')
+    <h2>@lang('emails.failed_job_subject')</h2>
+    <p>
+    <blockquote>
+        {{{ $text }}}
+    </blockquote>
+    </p>
+@stop

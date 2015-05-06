@@ -71,17 +71,17 @@ class BiospexMailer extends Mailer {
 
     /**
      * Email Password Reset info to a user.
-     * @param  string $email
-     * @param  int $userId
-     * @param  string $resetCode
-     * @return bool
+     * @param $email
+     * @param $resetHtmlLink
+     * @param $resetTextLink
      */
-    public function forgotPassword($email, $userId, $resetCode)
+    public function forgotPassword($email, $resetHtmlLink, $resetTextLink)
     {
         $subject = trans('users.reset_password');
         $view = 'emails.reset';
-        $data['userId'] = $userId;
-        $data['resetCode'] = $resetCode;
+        $data['resetHtmlLink'] = $resetHtmlLink;
+        $data['resetTextLink'] = $resetTextLink;
+        $data['adminEmail'] = $this->adminEmail;
         $data['email'] = $email;
 
         return $this->sendTo($this->doNotReplyEmail, $email, $subject, $view, $data);
@@ -98,6 +98,7 @@ class BiospexMailer extends Mailer {
         $subject = trans('users.new_password');
         $view = 'emails.newpassword';
         $data['newPassword'] = $newPassword;
+        $data['adminEmail'] = $this->adminEmail;
         $data['email'] = $email;
 
         return $this->sendTo($this->doNotReplyEmail, $email, $subject, $view, $data);
@@ -117,22 +118,24 @@ class BiospexMailer extends Mailer {
         if (is_null($email))
             $email = $this->adminEmail;
 
+        $data['adminEmail'] = $this->adminEmail;
+
         return $this->sendTo($this->doNotReplyEmail, $email, $subject, $view, $data, $attachments);
     }
 
     /**
-     * Send invite
-     *
+     * Send group invite
      * @param $email
      * @param $subject
      * @param $view
      * @param $data
-     * @param string $attachment
      */
     public function sendInvite($email, $subject, $view, $data)
     {
         if (is_null($email))
             $email = $this->adminEmail;
+
+        $data['adminEmail'] = $this->adminEmail;
 
         return $this->sendTo($this->doNotReplyEmail, $email, $subject, $view, $data);
     }
@@ -146,6 +149,8 @@ class BiospexMailer extends Mailer {
      */
     public function sendContactForm($view, $subject, $data)
     {
+        $data['adminEmail'] = $this->adminEmail;
+
         return $this->sendTo($this->doNotReplyEmail, $this->adminEmail, $subject, $view, $data);
     }
 
