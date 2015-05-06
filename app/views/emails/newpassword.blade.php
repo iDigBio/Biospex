@@ -2,8 +2,6 @@
 
 {{-- Content --}}
 @section('content')
-		<h2>@lang('emails.password_new')</h2>
-
-		<p>@lang('emails.password_new_text'):</p>
-		<p><blockquote>{{{ $newPassword }}}</blockquote></p>
+    <h2>@lang('emails.password_new')</h2>
+    <p><b>@lang('emails.password_new_text'):</b> {{{ $newPassword }}}</p>
 @stop
