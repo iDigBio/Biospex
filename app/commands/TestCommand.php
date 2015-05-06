@@ -33,7 +33,7 @@ class TestCommand extends Command {
     public function fire()
     {
         \Event::fire('user.registered', [
-            'email'          => 'biospex.org',
+            'email'          => 'biospex@gmail.com',
             'activateHtmlLink' => HTML::linkRoute('activate', 'Click Here', ['id' => 999, 'code' => urlencode('kmlgkgmg')]),
             'activateTextLink' => route('activate', ['id' => 999, 'code' => urlencode('kmlgkgmg')])
         ]);
