@@ -2,6 +2,9 @@
 
 return [
 
+    /** Set Admin email */
+    'adminEmail'        => $_ENV['mail.admin'],
+
     /**
      * Allow/Disallow registration
      */
