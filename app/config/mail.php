@@ -54,7 +54,7 @@ return array(
 	|
 	*/
 
-	'from'       => array('address' => $_ENV['mail.address'], 'name' => $_ENV['mail.name']),
+	'from'       => ['address' => $_ENV['mail.noreply'], 'name' => $_ENV['mail.name']],
 
 	/*
 	|--------------------------------------------------------------------------
