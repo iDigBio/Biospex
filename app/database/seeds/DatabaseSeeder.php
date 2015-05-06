@@ -9,19 +9,7 @@ class DatabaseSeeder extends Seeder {
 	 */
 	public function run()
 	{
-		$this->call('TruncateTables');
-		$this->call('NavigationsTableSeeder');
-        $this->call('PermissionTableSeeder');
-		$this->call('UserTableSeeder');
-		$this->call('GroupTableSeeder');
-		$this->call('UserGroupTableSeeder');
-		$this->call('ActorsTableSeeder');
-        $this->call('ProjectsTableSeeder');
-        $this->call('ExpeditionsTableSeeder');
-        $this->call('SubjectsTableSeeder');
-        $this->call('ExpeditionSubjectTableSeeder');
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 	}
 
 }
