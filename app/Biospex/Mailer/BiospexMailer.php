@@ -63,6 +63,7 @@ class BiospexMailer extends Mailer {
         $view = 'emails.welcome';
         $data['activateHtmlLink'] = $activateHtmlLink;
         $data['activateTextLink'] = $activateTextLink;
+        $data['adminEmail'] = $this->adminEmail;
         $data['email'] = $email;
 
         return $this->sendTo($this->doNotReplyEmail, $email, $subject, $view, $data);
