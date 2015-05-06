@@ -32,6 +32,13 @@ class TestCommand extends Command {
      */
     public function fire()
     {
+        \Event::fire('user.registered', [
+            'email'          => 'biospex.org',
+            'activateHtmlLink' => HTML::linkRoute('activate', 'Click Here', ['id' => 999, 'code' => urlencode('kmlgkgmg')]),
+            'activateTextLink' => route('activate', ['id' => 999, 'code' => urlencode('kmlgkgmg')])
+        ]);
+
+        /*
         $data = array(
             'projectTitle' => "Test Title",
             'importMessage' => trans('emails.import_complete_message'),
@@ -46,6 +53,7 @@ class TestCommand extends Command {
             'data'       => $data,
             'attachment' => []
         ]);
+        */
 
         return;
     }
