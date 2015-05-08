@@ -433,7 +433,7 @@ class SubjectProcess {
 	 * @param $data
 	 * @param $subject
 	 */
-	private function buildOcrQueue(&$data, $subject)
+	public function buildOcrQueue(&$data, $subject)
 	{
 		$data[$subject->_id] = [
 			'crop' => $this->ocrCrop,
@@ -452,7 +452,7 @@ class SubjectProcess {
 	 * @param $count
 	 * @return mixed
 	 */
-	private function saveOcrQueue($data, $count)
+	public function saveOcrQueue($data, $count)
 	{
 		$queue = $this->ocr->create([
 			'project_id' => $this->projectId,
