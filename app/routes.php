@@ -90,6 +90,7 @@ Route::group(
         Route::resource('projects.expeditions', 'ExpeditionsController');
 		Route::get('projects/{projects}/expeditions/{expeditions}/duplicate', ['as' => 'projects.expeditions.duplicate', 'uses' => 'ExpeditionsController@duplicate']);
 		Route::get('projects/{projects}/expeditions/{expeditions}/process', ['as' => 'projects.expeditions.process', 'uses' => 'ExpeditionsController@process']);
+        Route::get('projects/{projects}/expeditions/{expeditions}/ocr', ['as' => 'projects.expeditions.ocr', 'uses' => 'ExpeditionsController@ocr']);
 		Route::delete('projects/{projects}/expeditions/{expeditions}/stop', ['as' => 'projects.expeditions.stop', 'uses' => 'ExpeditionsController@stop']);
 
 		// Projects/Expeditions/Downloads
