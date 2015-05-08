@@ -44,5 +44,6 @@ return array(
 	'process_destroy_error'     => "Expedition process could not be stopped.",
 	'download_ready'            => "Your file is ready for download.",
 	'processing_not_started'	=> "Processing not been started.",
-    'ocr_reprocess_started'     => "OCR processing has been submitted. You will be notified by email when the process is complete.",
+    'ocr_process_success'       => "OCR processing has been submitted. You will be notified by email when the process is complete.",
+    'ocr_process_error'         => "An error occurred trying to start the OCR processing. Please notify th administration.",
 );
