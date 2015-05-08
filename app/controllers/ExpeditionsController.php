@@ -29,6 +29,7 @@ use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
 use Biospex\Repo\User\UserInterface;
+use Biospex\Services\Subject\SubjectProcess;
 
 class ExpeditionsController extends BaseController {
 
@@ -53,6 +54,11 @@ class ExpeditionsController extends BaseController {
     protected $subject;
 
     /**
+     * @var Biospex\Services\Subject\SubjectProcess
+     */
+    protected $subjectProcess;
+
+    /**
      * Instantiate a new ExpeditionsController.
      *
      * @param ExpeditionInterface $expedition
@@ -61,6 +67,7 @@ class ExpeditionsController extends BaseController {
      * @param SubjectInterface $subject
      * @param WorkflowManagerInterface $workflowManager
      * @param UserInterface $user
+     * @param SubjectProcess $subjectProcess
      */
     public function __construct(
         ExpeditionInterface $expedition,
@@ -68,7 +75,8 @@ class ExpeditionsController extends BaseController {
         ProjectInterface $project,
         SubjectInterface $subject,
         WorkflowManagerInterface $workflowManager,
-        UserInterface $user
+        UserInterface $user,
+        SubjectProcess $subjectProcess
     )
     {
         $this->expedition = $expedition;
@@ -77,12 +85,13 @@ class ExpeditionsController extends BaseController {
         $this->subject = $subject;
         $this->workflowManager = $workflowManager;
         $this->user = $user;
+        $this->subjectProcess = $subjectProcess;
 
         // Establish Filters
 		$this->beforeFilter('auth');
 		$this->beforeFilter('csrf', ['on' => 'post']);
 		$this->beforeFilter('hasProjectAccess:expedition_view', ['only' => ['show', 'index']]);
-		$this->beforeFilter('hasProjectAccess:expedition_edit', ['only' => ['edit', 'update']]);
+		$this->beforeFilter('hasProjectAccess:expedition_edit', ['only' => ['edit', 'update', 'ocr']]);
 		$this->beforeFilter('hasProjectAccess:expedition_delete', ['only' => ['destroy']]);
 		$this->beforeFilter('hasProjectAccess:expedition_create', ['only' => ['create', 'store']]);
     }
@@ -254,6 +263,41 @@ class ExpeditionsController extends BaseController {
         catch(Exception $e)
         {
             Session::flash('error', trans('expeditions.expedition_process_error'));
+        }
+
+        return Redirect::action('ExpeditionsController@show', [$projectId, $expeditionId]);
+    }
+
+    public function ocr($projectId, $expeditionId)
+    {
+        try
+        {
+            $expedition = $this->expedition->findWith($expeditionId, ['subjects']);
+
+            $data = [];
+            $count = 0;
+            $this->subjectProcess->setProjectId($projectId);
+            foreach ($expedition->subjects as $subject)
+            {
+                if ( ! empty($subject->ocr))
+                    continue;
+
+                $this->subjectProcess->buildOcrQueue($data, $subject);
+                $count++;
+            }
+
+            if ($count > 0)
+            {
+                $id = $this->subjectProcess->saveOcrQueue($data, $count);
+                if ( ! \Config::get('config.disableOcr'))
+                    \Queue::push('Biospex\Services\Queue\OcrService', ['id' => $id], \Config::get('config.beanstalkd.ocr'));
+            }
+
+            Session::flash('success', trans('expeditions.ocr_process_success'));
+        }
+        catch(Exception $e)
+        {
+            Session::flash('error', trans('expeditions.ocr_process_error'));
         }
 
         return Redirect::action('ExpeditionsController@show', [$projectId, $expeditionId]);
