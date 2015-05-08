@@ -25,8 +25,6 @@ return [
     /** Subjects import directory */
     'subjectsImportDir' => storage_path('imports/subjects'),
 
-    'disableConfig'     => true,
-
     /*
      * OCR
      */
