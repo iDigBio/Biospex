@@ -43,5 +43,6 @@ return array(
 	'process_stopped'           => "Expedition process has been stopped.",
 	'process_destroy_error'     => "Expedition process could not be stopped.",
 	'download_ready'            => "Your file is ready for download.",
-	'processing_not_started'	=> "Processing not been started."
+	'processing_not_started'	=> "Processing not been started.",
+    'ocr_reprocess_started'     => "OCR processing has been submitted. You will be notified by email when the process is complete.",
 );
