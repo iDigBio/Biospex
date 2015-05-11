@@ -42,7 +42,6 @@ return [
     'site.ocrDeleteUrl'           => 'http://ocr.dev.morphbank.net/delete',
     'site.ocrCrop'                => 'no',
     'site.disableOcr'             => true,
-    'site.scratchDir'             => '/specify-location-to/scratch',
 
     'beanstalkd.default'          => 'default',
     'beanstalkd.subjects-import'  => 'subjects-import',
