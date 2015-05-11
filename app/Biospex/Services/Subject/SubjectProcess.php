@@ -419,10 +419,11 @@ class SubjectProcess {
 		if ($count == 0)
 			return;
 
-		$id = $this->saveOcrQueue($data, $count);
+        if ($this->disableOcr)
+            return;
 
-		if ( ! $this->disableOcr)
-            \Queue::push('Biospex\Services\Queue\OcrService', ['id' => $id], $this->queue);
+		$id = $this->saveOcrQueue($data, $count);
+        \Queue::push('Biospex\Services\Queue\OcrService', ['id' => $id], $this->queue);
 
 		return;
 	}
