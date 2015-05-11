@@ -14,7 +14,7 @@ return [
     'translate'         => false,
 
     /** Scratch drive for performing processes */
-    'scratchDir'        => storage_path('scratch'),
+    'scratchDir'        => $_ENV['site.scratchDir'],
 
     /** NfN Export storage */
     'nfnExportDir'      => storage_path('exports/nfn'),
