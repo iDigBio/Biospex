@@ -286,11 +286,10 @@ class ExpeditionsController extends BaseController {
                 $count++;
             }
 
-            if ($count > 0)
+            if ($count > 0 && ! \Config::get('config.disableOcr'))
             {
                 $id = $this->subjectProcess->saveOcrQueue($data, $count);
-                if ( ! \Config::get('config.disableOcr'))
-                    \Queue::push('Biospex\Services\Queue\OcrService', ['id' => $id], \Config::get('config.beanstalkd.ocr'));
+                \Queue::push('Biospex\Services\Queue\OcrService', ['id' => $id], \Config::get('config.beanstalkd.ocr'));
             }
 
             Session::flash('success', trans('expeditions.ocr_process_success'));
