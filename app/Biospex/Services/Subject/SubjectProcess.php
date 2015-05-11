@@ -298,11 +298,9 @@ class SubjectProcess {
 		$file = ($type == 'core') ? "{$this->dir}/{$this->coreFile}" : "{$this->dir}/{$this->extensionFile}";
 		$delimiter = ($type == 'core') ? $this->coreDelimiter : $this->extDelimiter;
 		$enclosure = ($type == 'core') ? $this->coreEnclosure : $this->extEnclosure;
-		$lineEnding = ($type == 'core') ? $this->coreLineEnding : $this->extLineEnding;
 
 		$data = $this->excel->setDelimiter($delimiter)
 			->setEnclosure($enclosure)
-			->setLineEnding($lineEnding)
 			->load($file)
 			->get();
 
