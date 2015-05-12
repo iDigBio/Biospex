@@ -43,7 +43,8 @@ class SubjectImportCommand {
     protected $description = "Command to re-queue subjects after a failure.";
 
     /**
-     * Class constructor
+     * Class constructor.
+     * @param ImportInterface $import
      */
     public function __construct(ImportInterface $import)
     {
