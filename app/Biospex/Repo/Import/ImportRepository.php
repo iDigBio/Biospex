@@ -38,9 +38,9 @@ class ImportRepository extends Repository implements ImportInterface {
     }
 
     /**
-     * @param array $where
+     * @param $error
      */
-    public function findWhere($where = [])
+    public function findByError($error = 0)
     {
 
     }

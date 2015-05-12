@@ -27,5 +27,5 @@ use Biospex\Repo\RepositoryInterface;
 
 interface ImportInterface extends RepositoryInterface {
 
-    public function findWhere($where = []);
+    public function findByError($error = 0);
 }
