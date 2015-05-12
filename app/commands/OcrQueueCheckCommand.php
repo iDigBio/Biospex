@@ -26,7 +26,7 @@
 use Biospex\Repo\OcrQueue\OcrQueueInterface;
 use Biospex\Services\Report\Report;
 
-class OcrQueueCheck {
+class OcrQueueCheckCommand {
 
     /**
      * The console command name.
