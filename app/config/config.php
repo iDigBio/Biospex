@@ -3,7 +3,7 @@
 return [
 
     /** Set Admin email */
-    'adminEmail'        => $_ENV['mail.admin'],
+    'adminEmail'        => $_ENV['site.adminEmail'],
 
     /**
      * Allow/Disallow registration
