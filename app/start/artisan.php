@@ -14,4 +14,6 @@ Artisan::resolve('DownloadCleanCommand');
 Artisan::resolve('ViewsCommand');
 Artisan::resolve('TestCommand');
 Artisan::resolve('ClearBeanstalkdQueueCommand');
+Artisan::resolve('OcrQueueCheckCommand');
+Artisan::resolve('SubjectImportCommand');
 
