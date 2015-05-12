@@ -32,12 +32,12 @@ class Import extends Eloquent {
      */
     protected $table = 'imports';
 
-    protected $fillable = array(
+    protected $fillable = [
         'user_id',
         'project_id',
         'file',
 		'error'
-    );
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -53,5 +53,15 @@ class Import extends Eloquent {
     public function user()
     {
         return $this->belongsTo('User');
+    }
+
+    /**
+     * Find by error.
+     * @param $error
+     * @return mixed
+     */
+    public function findByError($error)
+    {
+        return $this->whereError($error)->get();
     }
 }
