@@ -25,4 +25,7 @@
  */
 use Biospex\Repo\RepositoryInterface;
 
-interface ImportInterface extends RepositoryInterface {}
+interface ImportInterface extends RepositoryInterface {
+
+    public function findWhere($where = []);
+}
