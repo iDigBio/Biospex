@@ -133,7 +133,7 @@ class SubjectsImportService {
         catch (Exception $e)
         {
             $import->error = 1;
-            $this->import->save($import);
+            $import->save();
             $this->report->addError(trans('emails.error_import_process',
                 ['id' => $import->id, 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]
             ));
