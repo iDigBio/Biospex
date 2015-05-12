@@ -26,7 +26,7 @@
 
 use Biospex\Repo\Import\ImportInterface;
 
-class SubjectImportProcess {
+class SubjectImportCommand {
 
     /**
      * The console command name.
