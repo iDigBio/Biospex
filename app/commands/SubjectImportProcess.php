@@ -33,7 +33,7 @@ class SubjectImportProcess {
      *
      * @var string
      */
-    protected $name = 'import:subjects';
+    protected $name = 'subjects:import';
 
     /**
      * The console command description.
