@@ -38,11 +38,14 @@ class ImportRepository extends Repository implements ImportInterface {
     }
 
     /**
-     * @param $error
+     * Find by error value.
+     *
+     * @param int $error
+     * @return Import
      */
     public function findByError($error = 0)
     {
-
+        return $this->model->findByError($error);
     }
 
 }

@@ -62,6 +62,6 @@ class Import extends Eloquent {
      */
     public function findByError($error)
     {
-        return $this->whereError($error)->get();
+        return $this->where('error', '=', $error)->get();
     }
 }
