@@ -37,4 +37,12 @@ class ImportRepository extends Repository implements ImportInterface {
         $this->model = $import;
     }
 
+    /**
+     * @param array $where
+     */
+    public function findWhere($where = [])
+    {
+
+    }
+
 }
