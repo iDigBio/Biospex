@@ -23,10 +23,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Illuminate\Console\Command;
 use Biospex\Repo\OcrQueue\OcrQueueInterface;
 use Biospex\Services\Report\Report;
 
-class OcrQueueCheckCommand {
+class OcrQueueCheckCommand extends Command {
 
     /**
      * The console command name.
