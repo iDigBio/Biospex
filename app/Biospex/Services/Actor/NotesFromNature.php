@@ -361,6 +361,10 @@ class NotesFromNature extends ActorAbstract {
         foreach ($files as $file)
         {
             $this->image->setImagePathInfo($file);
+
+            if ($this->image->getMimeType() === false)
+                continue;
+
             $fileName = $this->image->getFileName();
             $baseName = $this->image->getBaseName();
 
