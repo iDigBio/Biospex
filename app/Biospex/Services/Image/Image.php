@@ -112,7 +112,8 @@ class Image {
     {
         $this->pathinfo = pathinfo($file);
         $this->setExtension();
-        $this->setMimeType();
+        $mime = array_search($this->pathinfo['extension'], $this->imageTypeExtension);
+        $this->setMimeType($mime);
     }
 
     /**
@@ -148,9 +149,9 @@ class Image {
      *
      * @param null $mime
      */
-    protected function setMimeType($mime = null)
+    protected function setMimeType($mime)
     {
-        $this->mime = is_null($mime) ? array_search($this->pathinfo['extension'], $this->imageTypeExtension) : $mime;
+        $this->mime = $mime;
 
         return;
     }
