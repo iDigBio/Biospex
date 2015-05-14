@@ -1,0 +1,11 @@
+{
+  "name": "Biospex",
+  "description": "Use BIOSPEX to provision, advertise, and lead public Biodiversity Specimen Digitization Expeditions",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "~3.3.2",
+    "bootstrap-select": "~1.6.4",
+    "font-awesome": "~4.3.0"
+  }
+}

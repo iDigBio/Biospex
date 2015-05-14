@@ -1,0 +1,5 @@
+suites:
+    main:
+        namespace: Biospex
+        psr4_prefix: Biospex
+        src_path: app
