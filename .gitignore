@@ -10,3 +10,4 @@ example.json
 .idea
 .gitkeep
 /_ide_helper.php
+/node_modules
