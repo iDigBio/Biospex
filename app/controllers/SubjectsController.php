@@ -26,6 +26,7 @@
 
 use Biospex\Services\Grid\JqGridJsonEncoder;
 use Biospex\Repo\Project\ProjectInterface;
+use Biospex\Repo\User\UserInterface;
 
 class SubjectsController extends BaseController {
 
@@ -39,16 +40,23 @@ class SubjectsController extends BaseController {
 	 */
 	protected $project;
 
+    /**
+     * @var
+     */
+    protected $user;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param JqGridJsonEncoder $grid
 	 * @param ProjectInterface $project
+     * @param UserInterface $user
 	 */
-	public function __construct(JqGridJsonEncoder $grid, ProjectInterface $project)
+	public function __construct(JqGridJsonEncoder $grid, ProjectInterface $project, UserInterface $user)
 	{
 		$this->grid = $grid;
 		$this->project = $project;
+        $this->user = $user;
 		$this->beforeFilter('auth');
 		$this->beforeFilter('csrf', ['on' => 'post']);
 	}
@@ -62,8 +70,11 @@ class SubjectsController extends BaseController {
 	public function index($projectId)
 	{
 		$project = $this->project->find($projectId);
+        $user = $this->user->getUser();
+        $isSuperUser = $user->isSuperUser();
+        $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
 
-		return View::make('subjects.show', compact('project'));
+		return View::make('subjects.show', compact('project', 'isOwner'));
 	}
 
 	/**

@@ -14,7 +14,7 @@
         <h4>Project:</h4>
         <h2>{{ $project->title }}</h2>
         <p>{{ $project->description_short }}</p>
-        
+
         </div>
 
 

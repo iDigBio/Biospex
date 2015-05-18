@@ -127,7 +127,8 @@ return [
 
     'navigation'              => "Navigation",
     'translate'               => "Language",
-    'subjects'                => "Subjects assigned to expedition",
+    'subjects'                => "Subjects",
+    'subjects_assigned'       => "Subjects assigned to Expedition",
     'project_url'             => "Project Url",
 
     'no_projects'             => "There are no projects in this group.",
