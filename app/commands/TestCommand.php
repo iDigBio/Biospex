@@ -1,8 +1,9 @@
 <?php
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Biospex\Services\Report\SubjectImportReport as Report;
+use Biospex\Repo\Subject\SubjectInterface;
+use Biospex\Repo\Expedition\ExpeditionInterface;
 
 
 class TestCommand extends Command {
@@ -20,11 +21,10 @@ class TestCommand extends Command {
     /**
      * Constructor
      */
-    public function __construct(Report $report)
+    public function __construct()
     {
         parent::__construct();
 
-        $this->report = $report;
     }
 
     /**
@@ -32,30 +32,8 @@ class TestCommand extends Command {
      */
     public function fire()
     {
-        $email = "biospex@gmail.com";
-
-        \Event::fire('user.newpassword', [
-            'email' => $email,
-            'newPassword' => 'thistest'
-        ]);
-
-        /*
-        $data = array(
-            'projectTitle' => "Test Title",
-            'importMessage' => trans('emails.import_complete_message'),
-        );
-        $subject = trans('emails.import_complete');
-        $view = 'emails.reportsubject';
-
-        \Event::fire('user.sendreport', [
-            'email'      => 'biospex@gmail.com',
-            'subject'    => $subject,
-            'view'       => $view,
-            'data'       => $data,
-            'attachment' => []
-        ]);
-        */
 
         return;
+
     }
 }
