@@ -31,7 +31,7 @@
                         <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-xs" href="{{ action('ExpeditionsController@destroy', [$expedition->project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="glyphicon glyphicon-remove-circle"></span> @lang('buttons.delete')</button>
                         </div>
                         <div class="col-md-4">
-                            <button title="@lang('buttons.ocrTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@ocr', [$expedition->project->id, $expedition->project->id]) }}'"><span class="glyphicon glyphicon-repeat"></span> @lang('buttons.ocr')</button>
+                            <button title="@lang('buttons.ocrTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@ocr', [$expedition->project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-repeat"></span> @lang('buttons.ocr')</button>
                         </div>
                         <div class="col-md-4">
                         @if (is_null($expedition->workflowManager) || $expedition->workflowManager->stopped == 1)
