@@ -88,6 +88,17 @@ abstract class AbstractGroupDecorator implements GroupInterface
 	}
 
 	/**
+	 * Destroy records
+	 *
+	 * @param $id
+	 * @return mixed
+	 */
+	public function destroy ($id)
+	{
+		return $this->group->destroy($id);
+	}
+
+	/**
 	 * Find with eager loading
 	 *
 	 * @param $id
