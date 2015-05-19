@@ -26,9 +26,9 @@
  */
 
 use Illuminate\Filesystem\Filesystem;
+use Cartalyst\Sentry\Sentry;
 use Biospex\Repo\Import\ImportInterface;
 use Biospex\Repo\Project\ProjectInterface;
-use Biospex\Repo\User\UserInterface;
 use Biospex\Services\Report\SubjectImportReport;
 use Biospex\Services\Subject\SubjectProcess;
 use Biospex\Services\Xml\XmlProcess;
@@ -36,6 +36,46 @@ use Biospex\Mailer\BiospexMailer;
 use Illuminate\Support\Facades\Config;
 
 class SubjectsImportService {
+
+    /**
+     * @var Filesystem
+     */
+    protected $filesystem;
+
+    /**
+     * @var ImportInterface
+     */
+    protected $import;
+
+    /**
+     * @var ProjectInterface
+     */
+    protected $project;
+
+    /**
+     * @var Sentry
+     */
+    protected $sentry;
+
+    /**
+     * @var SubjectImportReport
+     */
+    protected $report;
+
+    /**
+     * @var SubjectProcess
+     */
+    protected $subjectProcess;
+
+    /**
+     * @var XmlProcess
+     */
+    protected $xmlProcess;
+
+    /**
+     * @var BiospexMailer
+     */
+    protected $mailer;
 
     /**
      * Scratch directory.
@@ -68,7 +108,7 @@ class SubjectsImportService {
      * @param Filesystem $filesystem
      * @param SubjectProcess $subjectProcess
      * @param XmlProcess $xmlProcess
-     * @param UserInterface $user
+     * @param Sentry $sentry
      * @param ProjectInterface $project
      * @param BiospexMailer $mailer
      * @param SubjectImportReport $report
@@ -77,7 +117,7 @@ class SubjectsImportService {
         Filesystem $filesystem,
         ImportInterface $import,
         ProjectInterface $project,
-        UserInterface $user,
+        Sentry $sentry,
         SubjectImportReport $report,
         SubjectProcess $subjectProcess,
         XmlProcess $xmlProcess,
@@ -87,7 +127,7 @@ class SubjectsImportService {
         $this->filesystem = $filesystem;
         $this->import = $import;
         $this->project = $project;
-        $this->user = $user;
+        $this->sentry = $sentry;
         $this->report = $report;
         $this->subjectProcess = $subjectProcess;
         $this->xmlProcess = $xmlProcess;
@@ -106,7 +146,7 @@ class SubjectsImportService {
     {
         $this->job = $job;
         $import = $this->import->find($data['id']);
-        $user = $this->user->find($import->user_id);
+        $user = $this->sentry->findUserById($import->user_id);
         $project = $this->project->find($import->project_id);
 
         $fileName = pathinfo($this->subjectsImportDir . '/' . $import->file, PATHINFO_FILENAME );
