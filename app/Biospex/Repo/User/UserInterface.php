@@ -26,4 +26,12 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface UserInterface extends RepositoryInterface {}
+interface UserInterface extends RepositoryInterface {
+
+    public function activate($id, $code);
+    public function resetPassword($id, $code);
+    public function unSuspend($id);
+    public function ban($id);
+    public function unBan($id);
+
+}
