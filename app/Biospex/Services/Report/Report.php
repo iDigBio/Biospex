@@ -25,7 +25,6 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 use Illuminate\Support\Contracts\MessageProviderInterface;
-use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Group\GroupInterface;
 use Biospex\Mailer\BiospexMailer;
 use Maatwebsite\Excel\Excel;
@@ -36,11 +35,6 @@ class Report {
      * @var \Illuminate\Support\Contracts\MessageProviderInterface
      */
     protected $messages;
-
-    /**
-     * @var \Biospex\Repo\User\UserInterface
-     */
-    protected $user;
 
     /**
      * @var \Biospex\Mailer\BiospexMailer
@@ -58,14 +52,12 @@ class Report {
      */
     public function __construct(
         MessageProviderInterface $messages,
-        UserInterface $user,
         GroupInterface $group,
         BiospexMailer $mailer,
         Excel $excel
     )
     {
         $this->messages = $messages;
-        $this->user = $user;
         $this->group = $group;
         $this->mailer = $mailer;
         $this->excel = $excel;
