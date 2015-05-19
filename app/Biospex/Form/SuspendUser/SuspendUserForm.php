@@ -29,6 +29,21 @@ use Biospex\Repo\User\UserInterface;
 
 class SuspendUserForm extends Form{
 
+    /**
+     * @var ValidableInterface
+     */
+    protected $validator;
+
+    /**
+     * @var UserInterface
+     */
+    protected $user;
+
+    /**
+     * Constructor.
+     * @param ValidableInterface $validator
+     * @param UserInterface $user
+     */
 	public function __construct(ValidableInterface $validator, UserInterface $user)
 	{
 		$this->validator = $validator;
