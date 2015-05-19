@@ -25,7 +25,7 @@
  */
 use Biospex\Repo\Expedition\ExpeditionInterface;
 use Biospex\Repo\Download\DownloadInterface;
-use Biospex\Repo\User\UserInterface;
+use Cartalyst\Sentry\Sentry;
 
 class DownloadsController extends BaseController {
 
@@ -40,21 +40,26 @@ class DownloadsController extends BaseController {
 	protected $download;
 
     /**
+     * @var Sentry
+     */
+    protected $sentry;
+
+    /**
      * Instantiate a new DownloadsController.
      *
      * @param ExpeditionInterface $expedition
      * @param DownloadInterface $download
-     * @param UserInterface $user
+     * @param Sentry $sentry
      */
 	public function __construct (
         ExpeditionInterface $expedition,
         DownloadInterface $download,
-        UserInterface $user
+        Sentry $sentry
     )
 	{
 		$this->expedition = $expedition;
 		$this->download = $download;
-        $this->user = $user;
+        $this->sentry = $sentry;
 
 		// Establish Filters
 		$this->beforeFilter('auth', ['only' => ['index']]);
