@@ -254,6 +254,7 @@ class UsersController extends BaseController {
 	public function edit($id)
 	{
 		$user = $this->sentry->findUserById($id);
+        $currentUser = $this->sentry->getUser();
 
         if(is_null($user) || !is_numeric($id))
         {
@@ -269,10 +270,10 @@ class UsersController extends BaseController {
         // Get all permissions
         $permissions = $this->permission->getPermissionsGroupBy();
         $userPermissions = $user->permissions;
-		$userEditPermissions = $this->user->getUser()->hasAccess('user_edit_permissions');
-		$userEditGroups = $this->user->getUser()->hasAccess('user_edit_groups');
-		$superUser = $this->user->getUser()->isSuperUser();
-		$cancel = $this->user->getUser()->isSuperUser() ? URL::route('users.index') : URL::route('projects.index');
+		$userEditPermissions = $currentUser->hasAccess('user_edit_permissions');
+		$userEditGroups = $currentUser->hasAccess('user_edit_groups');
+		$superUser = $currentUser->isSuperUser();
+		$cancel = $currentUser->isSuperUser() ? URL::route('users.index') : URL::route('projects.index');
 
         return View::make('users.edit', compact(
                 'user',
@@ -337,8 +338,11 @@ class UsersController extends BaseController {
             return Redirect::action('UsersController@index');
         }
 
-		if ($this->user->destroy($id))
+        $user = $this->sentry->findUserById($id);
+
+		if ($user)
 		{
+            $user->delete();
 			$this->events->fire('user.destroyed', ['userId' => $id]);
 
             Session::flash('success', trans('users.deleted'));
