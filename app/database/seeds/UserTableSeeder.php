@@ -24,15 +24,21 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 use Biospex\Repo\User\UserInterface;
+use Cartalyst\Sentry\Sentry;
 
 class UserTableSeeder extends Seeder {
 
+    /**
+     * @var Sentry
+     */
+    protected $sentry;
+
 	/**
-	 * @param UserInterface $user
+	 * @param Sentry $sentry
 	 */
-	public function __construct (UserInterface $user)
+	public function __construct (Sentry $sentry)
 	{
-		$this->user = $user;
+		$this->sentry = $sentry;
 	}
 
     /**
@@ -51,16 +57,10 @@ class UserTableSeeder extends Seeder {
 			unset($user['first_name']);
 			unset($user['last_name']);
 
-			$sentryUser = Sentry::register($user, true);
+			$sentryUser = $this->sentry->register($user, true);
 			$sentryUser->profile->first_name = $first_name;
 			$sentryUser->profile->last_name = $last_name;
 			$sentryUser->profile->save();
-			/*
-			/$user = $this->user->find($sentryUser->id);
-			$user->first_name = $user['first_name'];
-			$user->last_name = $user['last_name'];
-			$user->profile()->save($user);
-			*/
 		}
     }
 
