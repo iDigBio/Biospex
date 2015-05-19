@@ -26,7 +26,7 @@
 
 use Biospex\Services\Grid\JqGridJsonEncoder;
 use Biospex\Repo\Project\ProjectInterface;
-use Biospex\Repo\User\UserInterface;
+use Cartalyst\Sentry\Sentry;
 
 class SubjectsController extends BaseController {
 
@@ -41,22 +41,22 @@ class SubjectsController extends BaseController {
 	protected $project;
 
     /**
-     * @var
+     * @var Sentry
      */
-    protected $user;
+    protected $sentry;
 
 	/**
 	 * Constructor.
 	 *
 	 * @param JqGridJsonEncoder $grid
 	 * @param ProjectInterface $project
-     * @param UserInterface $user
+     * @param Sentry $sentry
 	 */
-	public function __construct(JqGridJsonEncoder $grid, ProjectInterface $project, UserInterface $user)
+	public function __construct(JqGridJsonEncoder $grid, ProjectInterface $project, Sentry $sentry)
 	{
 		$this->grid = $grid;
 		$this->project = $project;
-        $this->user = $user;
+        $this->sentry = $sentry;
 		$this->beforeFilter('auth');
 		$this->beforeFilter('csrf', ['on' => 'post']);
 	}
@@ -70,7 +70,7 @@ class SubjectsController extends BaseController {
 	public function index($projectId)
 	{
 		$project = $this->project->find($projectId);
-        $user = $this->user->getUser();
+        $user = $this->sentry->getUser();
         $isSuperUser = $user->isSuperUser();
         $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
 
