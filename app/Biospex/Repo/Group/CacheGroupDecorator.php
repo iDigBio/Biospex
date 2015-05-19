@@ -119,6 +119,20 @@ class CacheGroupDecorator extends AbstractGroupDecorator {
 	}
 
 	/**
+	 * Destroy records
+	 *
+	 * @param $id
+	 * @return mixed
+	 */
+	public function destroy ($id)
+	{
+		$group = $this->group->destroy($id);
+		$this->cache->flush();
+
+		return $group;
+	}
+
+	/**
 	 * Find with eager loading
 	 *
 	 * @param $id
