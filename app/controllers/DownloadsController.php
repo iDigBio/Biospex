@@ -76,7 +76,7 @@ class DownloadsController extends BaseController {
 	 */
 	public function index ($projectId, $expeditionId)
 	{
-        $user = $this->user->getUser();
+        $user = $this->sentry->getUser();
 		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads.actor']);
 		return View::make('downloads.index', compact('expedition', 'user'));
 	}
