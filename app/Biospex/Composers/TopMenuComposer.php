@@ -25,7 +25,7 @@
  */
 use Cache;
 use Menu\Menu;
-use Biospex\Repo\User\UserInterface;
+use Cartalyst\Sentry\Sentry;
 use Biospex\Repo\Navigation\NavigationInterface as Navigation;
 use Illuminate\Http\Request;
 
@@ -36,9 +36,9 @@ class TopMenuComposer {
 	protected $cache;
 
 	/**
-	 * @var User
+	 * @var Sentry
 	 */
-	protected $user;
+	protected $sentry;
 
 	/**
 	 * @var Navigation
@@ -57,12 +57,12 @@ class TopMenuComposer {
 
 	public function __construct (
 		Cache $cache,
-		UserInterface $user,
+		Sentry $sentry,
 		Navigation $navigation,
 		Request $request)
 	{
 		$this->cache = $cache;
-		$this->user = $user;
+		$this->sentry = $sentry;
         $this->navigation = $navigation;
         $this->request = $request;
     }
@@ -86,7 +86,7 @@ class TopMenuComposer {
 
     protected function checkPermission()
     {
-		$user = $this->user->getUser();
+		$user = $this->sentry->getUser();
         foreach ($this->topmenu as $key => $item)
         {
             $permissions  = explode(',', $item->permission);
