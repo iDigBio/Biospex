@@ -23,10 +23,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Cartalyst\Sentry\Sentry;
 use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Form\Project\ProjectForm;
 use Biospex\Repo\Group\GroupInterface;
-use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Import\ImportInterface;
 use Biospex\Repo\Actor\ActorInterface;
 
@@ -50,7 +50,7 @@ class ProjectsController extends BaseController {
     /**
      * @var Biospex\Repo\User\UserInterface
      */
-    protected $user;
+    protected $sentry;
 
 	/**
 	 * @var ActorInterface
@@ -64,7 +64,7 @@ class ProjectsController extends BaseController {
 	 * @param ProjectInterface $project
 	 * @param ProjectForm $projectForm
 	 * @param GroupInterface $group
-	 * @param UserInterface $user
+	 * @param Sentry $sentry
 	 * @param ImportInterface $import
 	 * @param ActorInterface $actor
 	 */
@@ -72,7 +72,7 @@ class ProjectsController extends BaseController {
         ProjectInterface $project,
         ProjectForm $projectForm,
         GroupInterface $group,
-        UserInterface $user,
+        Sentry $sentry,
         ImportInterface $import,
 		ActorInterface $actor
     )
@@ -80,7 +80,7 @@ class ProjectsController extends BaseController {
         $this->project = $project;
         $this->projectForm = $projectForm;
         $this->group = $group;
-        $this->user = $user;
+        $this->sentry = $sentry;
         $this->import = $import;
 		$this->actor = $actor;
 
@@ -102,7 +102,7 @@ class ProjectsController extends BaseController {
 	 */
 	public function index()
     {
-		$user = $this->user->getUser();
+		$user = $this->sentry->getUser();
 		$isSuperUser = $user->isSuperUser();
 		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
 		$groups = $this->group->findAllGroupsWithProjects($allGroups);
@@ -117,7 +117,7 @@ class ProjectsController extends BaseController {
      */
     public function create()
 	{
-		$user = $this->user->getUser();
+		$user = $this->sentry->getUser();
 		$isSuperUser = $user->isSuperUser();
 		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
 		$groups = $this->group->selectOptions($allGroups);
@@ -171,7 +171,7 @@ class ProjectsController extends BaseController {
     public function show($id)
 	{
 		$project = $this->project->findWith($id, ['group', 'expeditions.downloads', 'expeditions.actors', 'expeditions.actorsCompletedRelation']);
-		$user = $this->user->getUser();
+		$user = $this->sentry->getUser();
 		$isSuperUser = $user->isSuperUser();
         $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
 		
@@ -188,7 +188,7 @@ class ProjectsController extends BaseController {
     {
 		$project = $this->project->findWith($id, ['group']);
 
-		$user = $this->user->getUser();
+		$user = $this->usentry->getUser();
 		$isSuperUser = $user->isSuperUser();
 		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
 		$groups = $this->group->selectOptions($allGroups);
@@ -222,7 +222,7 @@ class ProjectsController extends BaseController {
 		$actors = $this->actor->selectList();
         $statusSelect = \Config::get('config.statusSelect');
 
-		$user = $this->user->getUser();
+		$user = $this->sentry->getUser();
 		$isSuperUser = $user->isSuperUser();
 		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
 		$groups = $this->group->selectOptions($allGroups);
@@ -329,7 +329,7 @@ class ProjectsController extends BaseController {
         try
         {
             Input::file('file')->move($directory, $filename);
-			$user = $this->user->getUser();
+			$user = $this->sentry->getUser();
             $import = $this->import->create([
                             'user_id' => $user->id,
                             'project_id' => $id,
@@ -357,7 +357,7 @@ class ProjectsController extends BaseController {
     public function destroy($id)
 	{
         $project = $this->project->findWith($id, ['group']);
-		$user = $this->user->getUser();
+		$user = $this->sentry->getUser();
 		$isSuperUser = $user->isSuperUser();
         $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
         if ($isOwner)
