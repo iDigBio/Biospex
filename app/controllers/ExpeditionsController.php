@@ -23,12 +23,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Cartalyst\Sentry\Sentry;
 use Biospex\Repo\Expedition\ExpeditionInterface;
 use Biospex\Form\Expedition\ExpeditionForm;
 use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
-use Biospex\Repo\User\UserInterface;
 use Biospex\Services\Subject\SubjectProcess;
 
 class ExpeditionsController extends BaseController {
@@ -54,6 +54,16 @@ class ExpeditionsController extends BaseController {
     protected $subject;
 
     /**
+     * @var WorkflowManagerInterface
+     */
+    protected $workflowManager;
+
+    /**
+     * @var Sentry
+     */
+    protected $sentry;
+
+    /**
      * @var Biospex\Services\Subject\SubjectProcess
      */
     protected $subjectProcess;
@@ -66,7 +76,7 @@ class ExpeditionsController extends BaseController {
      * @param ProjectInterface $project
      * @param SubjectInterface $subject
      * @param WorkflowManagerInterface $workflowManager
-     * @param UserInterface $user
+     * @param Sentry $sentry
      * @param SubjectProcess $subjectProcess
      */
     public function __construct(
@@ -75,7 +85,7 @@ class ExpeditionsController extends BaseController {
         ProjectInterface $project,
         SubjectInterface $subject,
         WorkflowManagerInterface $workflowManager,
-        UserInterface $user,
+        Sentry $sentry,
         SubjectProcess $subjectProcess
     )
     {
@@ -84,7 +94,7 @@ class ExpeditionsController extends BaseController {
         $this->project = $project;
         $this->subject = $subject;
         $this->workflowManager = $workflowManager;
-        $this->user = $user;
+        $this->sentry = $sentry;
         $this->subjectProcess = $subjectProcess;
 
         // Establish Filters
@@ -107,7 +117,7 @@ class ExpeditionsController extends BaseController {
 		if ( ! Request::ajax())
 			return Redirect::action('ProjectsController@show', [$id]);
 
-        $user = $this->user->getUser();
+        $user = $this->sentry->getUser();
 		$project = $this->project->findWith($id, ['expeditions.actorsCompletedRelation']);
 
 		return View::make('expeditions.index', compact('project', 'user'));
