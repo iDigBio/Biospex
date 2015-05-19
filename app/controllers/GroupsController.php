@@ -25,10 +25,10 @@
  */
 use Cartalyst\Sentry\Sentry;
 use Illuminate\Events\Dispatcher;
-use Biospex\Repo\User\UserInterface;
 use Biospex\Repo\Group\GroupInterface;
 use Biospex\Form\Group\GroupForm;
 use Biospex\Repo\Permission\PermissionInterface;
+use Cartalyst\Sentry\Groups\GroupNotFoundException;
 
 class GroupsController extends BaseController {
 
@@ -69,7 +69,6 @@ class GroupsController extends BaseController {
 	 * Instantiate a new GroupsController
 	 *
 	 * @param Sentry $sentry
-	 * @param UserInterface $user
 	 * @param Dispatcher $events
 	 * @param GroupInterface $group
 	 * @param GroupForm $groupForm
@@ -77,7 +76,6 @@ class GroupsController extends BaseController {
 	 */
 	public function __construct(
 		Sentry $sentry,
-		UserInterface $user,
 		Dispatcher $events,
         GroupInterface $group,
         GroupForm $groupForm,
@@ -85,7 +83,6 @@ class GroupsController extends BaseController {
     )
 	{
 		$this->sentry = $sentry;
-		$this->user = $user;
 		$this->events = $events;
 		$this->group = $group;
 		$this->groupForm = $groupForm;
@@ -110,7 +107,7 @@ class GroupsController extends BaseController {
         // Find the user and retrieve groups
 		$user = $this->sentry->getUser();
         $isSuperUser = $user->isSuperUser();
-        $groups = $isSuperUser ? $this->group->all() : $user->getGroups();
+        $groups = $isSuperUser ? $this->sentry->findAllGroups() : $user->getGroups();
 
         foreach ($groups as $key => $group)
         {
@@ -248,16 +245,15 @@ class GroupsController extends BaseController {
 	 */
 	public function destroy($id)
 	{
-		if ($this->group->destroy($id))
-		{
-			$this->events->fire('group.destroyed', ['groupId' => $id]);
-
-			Session::flash('success', trans('groups.group_destroyed'));
-            return Redirect::action('GroupsController@index');
-        }
-        else 
+        try
         {
-        	Session::flash('error', trans('groups.group_destroyed_failed'));
+            $group = $this->sentry->findGroupById($id);
+            $group->delete();
+            Session::flash('success', trans('groups.group_destroyed'));
+            return Redirect::action('GroupsController@index');
+        } catch (GroupNotFoundException $e)
+        {
+            Session::flash('error', trans('groups.group_destroyed_failed'));
             return Redirect::action('GroupsController@index');
         }
 	}
