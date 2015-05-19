@@ -30,6 +30,7 @@ interface UserInterface extends RepositoryInterface {
 
     public function activate($id, $code);
     public function resetPassword($id, $code);
+    public function suspened($id, $minutes);
     public function unSuspend($id);
     public function ban($id);
     public function unBan($id);
