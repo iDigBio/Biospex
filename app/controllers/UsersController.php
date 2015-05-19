@@ -35,6 +35,7 @@ use Biospex\Form\ChangePassword\ChangePasswordForm;
 use Biospex\Form\SuspendUser\SuspendUserForm;
 use Biospex\Repo\Permission\PermissionInterface;
 use Biospex\Repo\Invite\InviteInterface;
+use Illuminate\Support\Facades\URL;
 
 
 class UsersController extends BaseController {
