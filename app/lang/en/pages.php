@@ -69,7 +69,7 @@ return [
     'denied'                  => "denied",
     'allowed'                 => "allowed",
     'keywords'                => "Keywords",
-    'add_data_desc'           => "Only zip files are accepted. Those files must contain a meta.xml file describing the included csv file contents.",
+    'add_data_desc'           => "Only zipped Darwin Core files are accepted. Download :link.",
     'advertise_modal'         => "Biospex is participating in the development of standards and protocols for sharing information about projects with our friends at the go-to sites for learning about citizen science opportunities, including scistarter.org and Citizen Science Central. We hope to see this firmed up in the next months and interoperability for advertisement early next year.",
     'advertise'               => "Advertise",
     'help'                    => "Help",
@@ -137,5 +137,15 @@ return [
 
     'id'                      => 'Id',
     'filesize'                => 'File Size',
-    'downloadurl'             => 'Download Url'
+    'downloadurl'             => 'Download Url',
+
+    'upload_nfn_results'      => "Import Notes From Nature Results",
+    'upload_nfn_desc'         => "Only CSV files from Notes from Nature accepted.",
+    'upload_darwin_file'      => "Import Darwin Core File",
+    'add_data'                => "Project Imports",
+    'file_required'           => "A file upload is required.",
+    'file_type_error'         => "File type is not accepted.",
+    'bad_type'                => "Error with post type. Please contact the Admin regarding this issue.",
+    'upload_error'            => "An error occurred uploading the file. Error: :error",
+    'upload_success'          => "Upload was successful. You will receive an email when your import data has been processed. A separate email will be sent when OCR processing is complete. ",
 ];

@@ -88,7 +88,7 @@ class ProjectsController extends BaseController {
 		$this->beforeFilter('auth');
         $this->beforeFilter('csrf', ['on' => 'post']);
         $this->beforeFilter('hasProjectAccess:project_view', ['only' => ['show', 'advertiseDownload']]);
-        $this->beforeFilter('hasProjectAccess:project_edit', ['only' => ['edit', 'update', 'data']]);
+        $this->beforeFilter('hasProjectAccess:project_edit', ['only' => ['edit', 'update']]);
         $this->beforeFilter('hasProjectAccess:project_delete', ['only' => ['destroy']]);
 
     }
@@ -262,19 +262,6 @@ class ProjectsController extends BaseController {
 	}
 
     /**
-     * Add data to project
-     *
-     * @param $id
-     * @return \Illuminate\View\View
-     */
-    public function data($id)
-    {
-		$project = $this->project->findWith($id, ['group']);
-		$cancel = URL::previous();
-        return View::make('projects.add', compact('project', 'cancel'));
-    }
-
-    /**
      * Advertise
      */
     public function advertise($id)
@@ -305,47 +292,6 @@ class ProjectsController extends BaseController {
             'Content-Type' => 'application/json',
             'Content-Disposition' => 'attachment; filename="' . $project->uuid . '.json"'
         ));
-    }
-
-    /**
-     * Upload data file
-     *
-     * @param $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function upload($id)
-    {
-        $file = Input::file('file');
-
-        if (empty($file))
-        {
-            Session::flash('error', trans('projects.file_required'));
-            return Redirect::route('projects.data', [$id]);
-        }
-
-        $filename = $file->getClientOriginalName();
-        $directory = Config::get('config.subjectsImportDir');
-
-        try
-        {
-            Input::file('file')->move($directory, $filename);
-			$user = $this->sentry->getUser();
-            $import = $this->import->create([
-                            'user_id' => $user->id,
-                            'project_id' => $id,
-                            'file' => $filename
-                        ]);
-
-            Queue::push('Biospex\Services\Queue\SubjectsImportService', ['id' => $import->id], \Config::get('config.beanstalkd.subjects-import'));
-        }
-        catch(Exception $e)
-        {
-            Session::flash('error', trans('projects.upload_error'));
-            return Redirect::route('projects.data', [$id]);
-        }
-
-        Session::flash('success', trans('projects.upload_success'));
-        return Redirect::route('projects.show', [$id]);
     }
 
     /**

@@ -3,7 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
 @parent
-{{ trans('projects.add_data') }}
+{{ trans('pages.add_data') }}
 @stop
 
 {{-- Content --}}
@@ -17,34 +17,75 @@
 
         </div>
 
+<div class="col-xs-12 col-sm-6 col-md-8 col-sm-offset-3 col-md-offset-2">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">{{ trans('pages.upload_darwin_file') }}</h3>
+            </div>
+            <div class="panel-body">
+                {{ Form::open(array(
+                    'action' => array('projects.upload', $project->id),
+                    'method' => 'post',
+                    'files' => true,
+                    'enctype' => 'multipart/form-data',
+                    'id' => 'formAddData',
+                    'class' => 'form-horizontal',
+                    'role' => 'form'
+                )) }}
+                <p>{{ trans('pages.add_data_desc', ['link' => link_to_asset('darwin-core-example.zip', "Darwin Core Example")]) }}</p>
 
-<div class="panel panel-default">
-    {{ Form::open(array(
-        'action' => array('projects.upload', $project->id),
-        'method' => 'post',
-        'files' => true,
-        'enctype' => 'multipart/form-data',
-        'id' => 'formAddData',
-        'class' => 'form-horizontal',
-        'role' => 'form'
-    )) }}
+                <div class="form-group {{ ($errors->has('file')) ? 'has-error' : '' }}">
+                    {{ Form::label('file', trans('forms.file'), array('id' => 'file', 'class' => 'col-sm-2 control-label')) }}
+                    <div class="col-sm-10">
+                        {{ Form::file('file') }}
+                    </div>
+                    {{ ($errors->has('file') ? $errors->first('file') : '') }}
+                </div>
 
-    <div class="form-group {{ ($errors->has('file')) ? 'has-error' : '' }}">
-        {{ Form::label('file', trans('forms.file'), array('id' => 'file', 'class' => 'col-sm-2 control-label')) }}
-        <div class="col-sm-10">
-            {{ Form::file('file') }}
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        {{ Form::submit(trans('buttons.upload'), array('class' => 'btn btn-success'))}}
+                        {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
+                    </div>
+                </div>
+                {{ Form::hidden('type', 'subjects') }}
+                {{ Form::close()}}
+            </div>
         </div>
-        {{ ($errors->has('file') ? $errors->first('file') : '') }}
-    </div>
 
-    <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-            {{ Form::submit(trans('buttons.upload'), array('class' => 'btn btn-success'))}}
-			{{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">{{ trans('pages.upload_nfn_results') }}</h3>
+            </div>
+            <div class="panel-body">
+                {{ Form::open(array(
+                    'action' => array('projects.upload', $project->id),
+                    'method' => 'post',
+                    'files' => true,
+                    'enctype' => 'multipart/form-data',
+                    'id' => 'formAddData',
+                    'class' => 'form-horizontal',
+                    'role' => 'form'
+                )) }}
+                <p>{{ trans('pages.upload_nfn_desc') }}</p>
+                <div class="form-group {{ ($errors->has('file')) ? 'has-error' : '' }}">
+                    {{ Form::label('file', trans('forms.file'), array('id' => 'file', 'class' => 'col-sm-2 control-label')) }}
+                    <div class="col-sm-10">
+                        {{ Form::file('file') }}
+                    </div>
+                    {{ ($errors->has('file') ? $errors->first('file') : '') }}
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        {{ Form::submit(trans('buttons.upload'), array('class' => 'btn btn-success'))}}
+                        {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
+                    </div>
+                </div>
+                {{ Form::hidden('type', 'nfn') }}
+                {{ Form::close()}}
+            </div>
         </div>
     </div>
-    {{ Form::close()}}
-    <p>{{ trans('pages.add_data_desc') }}</p>
-</div>
 
 @stop
