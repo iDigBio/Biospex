@@ -188,7 +188,7 @@ class ProjectsController extends BaseController {
     {
 		$project = $this->project->findWith($id, ['group']);
 
-		$user = $this->usentry->getUser();
+		$user = $this->sentry->getUser();
 		$isSuperUser = $user->isSuperUser();
 		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
 		$groups = $this->group->selectOptions($allGroups);
