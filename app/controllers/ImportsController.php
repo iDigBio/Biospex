@@ -105,11 +105,11 @@ class ImportsController extends BaseController {
 
         if ( ! empty($result))
         {
-            Session::flash('error', trans('projects.upload_error', ['error' => $result]));
+            Session::flash('error', trans('pages.upload_error', ['error' => $result]));
             return Redirect::route('projects.import', [$id]);
         }
 
-        Session::flash('success', trans('projects.upload_success'));
+        Session::flash('success', trans('pages.upload_success'));
         return Redirect::route('projects.show', [$id]);
     }
 }
