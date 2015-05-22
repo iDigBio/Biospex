@@ -25,6 +25,9 @@ return [
     /** Subjects import directory */
     'subjectsImportDir' => storage_path('imports/subjects'),
 
+    /** Results import directory */
+    'resultsImportDir' => storage_path('imports/results'),
+
     /*
      * OCR
      */
