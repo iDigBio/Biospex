@@ -30,6 +30,8 @@ use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
 use Biospex\Services\Subject\SubjectProcess;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Config;
 
 class ExpeditionsController extends BaseController {
 
@@ -266,7 +268,7 @@ class ExpeditionsController extends BaseController {
                 $expedition->actors()->sync($expedition->project->actors);
 			}
 
-            Queue::push('Biospex\Services\Queue\WorkflowManagerService', ['id' => $workflowId], \Config::get('config.beanstalkd.workflow-manager'));
+            Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $workflowId, 'class' => 'WorkflowManagerQueue'], Config::get('config.beanstalkd.workflow'));
 
             Session::flash('success', trans('expeditions.expedition_process_success'));
         }
@@ -299,7 +301,7 @@ class ExpeditionsController extends BaseController {
             if ($count > 0 && ! \Config::get('config.disableOcr'))
             {
                 $id = $this->subjectProcess->saveOcrQueue($data, $count);
-                \Queue::push('Biospex\Services\Queue\OcrService', ['id' => $id], \Config::get('config.beanstalkd.ocr'));
+                \Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $id, 'class' => 'OcrProcessQueue'], Config::get('config.beanstalkd.ocr'));
             }
 
             Session::flash('success', trans('expeditions.ocr_process_success'));
