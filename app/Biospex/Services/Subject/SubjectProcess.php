@@ -34,6 +34,7 @@ use Biospex\Repo\Meta\MetaInterface;
 use Biospex\Repo\OcrQueue\OcrQueueInterface;
 use Maatwebsite\Excel\Excel;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Queue;
 
 class SubjectProcess {
 
@@ -421,7 +422,7 @@ class SubjectProcess {
             return;
 
 		$id = $this->saveOcrQueue($data, $count);
-        \Queue::push('Biospex\Services\Queue\OcrService', ['id' => $id], $this->queue);
+        Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $id, 'class' => 'OcrProcessQueue'], $this->queue);
 
 		return;
 	}
