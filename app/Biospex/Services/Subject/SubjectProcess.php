@@ -304,7 +304,7 @@ class SubjectProcess {
 			->load($file)
 			->get();
 
-		// Get first row for header. Laravel-Excel returns array with key starting at 1 so reset array keys starting at zero.
+		// Get first row for header.
 		$header = $this->buildHeaderRow(array_values($data->first()->toArray()), $type);
 		$this->setIdentifierColumn($header);
 		$this->setHeaderProperty($header, $type);
