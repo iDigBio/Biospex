@@ -65,7 +65,7 @@ class SubjectImportCommand extends Command {
         $count = 0;
         foreach ($imports as $import)
         {
-            Queue::push('Biospex\Services\Queue\SubjectsImportService', ['id' => $import->id], Config::get('config.beanstalkd.subjects-import'));
+            Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $import->id, 'class' => 'SubjectImportQueue'], Config::get('config.beanstalkd.import'));
             $count++;
         }
 
