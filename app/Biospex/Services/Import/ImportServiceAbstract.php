@@ -1,6 +1,6 @@
 <?php  namespace Biospex\Services\Import;
 /**
- * ImportService.php
+ * ImportServiceAbstract.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -28,11 +28,9 @@ use Cartalyst\Sentry\Sentry;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Queue;
 use Biospex\Repo\Import\ImportInterface;
 
-class ImportService {
-
+abstract class ImportServiceAbstract {
     /**
      * @var Sentry
      */
@@ -42,6 +40,17 @@ class ImportService {
      * @var ImportInterface
      */
     protected $import;
+
+    /**
+     * Directory for storing imported files.
+     * @var string
+     */
+    protected $directory;
+
+    /**
+     * @var
+     */
+    protected $queue;
 
     /**
      * Instantiate a new ProjectsController.
@@ -56,29 +65,65 @@ class ImportService {
     {
         $this->sentry = $sentry;
         $this->import = $import;
+
+        $this->directory = Config::get('config.subjectsImportDir');
     }
 
     /**
-     * Upload subjects for project.
+     * Import function.
      *
      * @param $id
-     * @return string|void
+     * @return mixed
      */
-    public function subjects($id)
+    abstract function import($id);
+
+    protected function setQueue($queue)
+    {
+        $this->queue = Config::get($queue);
+
+        return;
+    }
+
+    /**
+     * Validation on uploaded files.
+     *
+     * @param $file
+     * @param $type
+     * @return mixed
+     */
+    protected function validate($type)
     {
         $validator = Validator::make(
             ['file' => Input::file('file')],
-            ['file' => 'required|mimes:zip']
+            ['file' => 'required|mimes:' . $type]
         );
 
-        if($validator->fails())
-            return trans('pages.file_type_error');
+        return $validator->fails();
+    }
 
+    /**
+     * Move uploaded file.
+     *
+     * @return mixed
+     */
+    protected function moveFile()
+    {
         $file = Input::file('file');
         $filename = $file->getClientOriginalName();
-        $directory = Config::get('config.subjectsImportDir');
+        Input::file('file')->move($this->directory, $filename);
 
-        Input::file('file')->move($directory, $filename);
+        return $filename;
+    }
+
+    /**
+     * Insert record into import table.
+     *
+     * @param $id
+     * @param $filename
+     * @return mixed
+     */
+    protected function importInsert($id, $filename)
+    {
         $user = $this->sentry->getUser();
         $import = $this->import->create([
             'user_id' => $user->id,
@@ -86,28 +131,6 @@ class ImportService {
             'file' => $filename
         ]);
 
-        Queue::push('Biospex\Services\Queue\SubjectsImportService', ['id' => $import->id], \Config::get('config.beanstalkd.subjects-import'));
-
-        return;
+        return $import;
     }
-
-    public function nfn($id)
-    {
-        $validator = Validator::make(
-            ['file' => Input::file('file')],
-            ['file' => 'required|mimes:csv']
-        );
-
-        if($validator->fails())
-            return trans('pages.file_type_error');
-
-        $file = Input::file('file');
-        $filename = $file->getClientOriginalName();
-
-
-        //Queue::push('Biospex\Services\Queue\SubjectsImportService', ['id' => $import->id], \Config::get('config.beanstalkd.subjects-import'));
-
-        return;
-    }
-
 }
