@@ -73,7 +73,7 @@ class WorkFlowManagerCommand extends Command {
 			if ($this->checkProcess($manager))
 				continue;
 
-			Queue::push('Biospex\Services\Queue\WorkflowManagerService', ['id' => $manager->id], $this->queue);
+			Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $manager->id, 'class' => 'WorkflowManagerQueue'], $this->queue);
 
 			$manager->queue = 1;
 			$manager->save();
