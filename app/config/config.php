@@ -26,7 +26,7 @@ return [
     'subjectsImportDir' => storage_path('imports/subjects'),
 
     /** Results import directory */
-    'resultsImportDir' => storage_path('imports/results'),
+    'resultsImportDir'  => storage_path('imports/results'),
 
     /*
      * OCR
@@ -41,10 +41,10 @@ return [
      * Beanstalkd queues for myqueue.conf per site.
      */
     'beanstalkd'        => [
-        'default'          => $_ENV['beanstalkd.default'],
-        'subjects-import'  => $_ENV['beanstalkd.subjects-import'],
-        'workflow-manager' => $_ENV['beanstalkd.workflow-manager'],
-        'ocr'              => $_ENV['beanstalkd.ocr']
+        'default'  => $_ENV['beanstalkd.default'],
+        'import'   => $_ENV['beanstalkd.import'],
+        'workflow' => $_ENV['beanstalkd.workflow'],
+        'ocr'      => $_ENV['beanstalkd.ocr']
     ],
 
     /** Imagine settings */
