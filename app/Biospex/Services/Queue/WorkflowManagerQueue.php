@@ -28,7 +28,7 @@ use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
 use Biospex\Services\Report\Report;
 use Illuminate\Support\Facades\App;
 
-class WorkflowManagerService {
+class WorkflowManagerQueue extends QueueAbstract {
 
     /**
      * Illuminate\Support\Contracts\MessageProviderInterface
@@ -52,25 +52,28 @@ class WorkflowManagerService {
     }
 
     /**
-     * Fire queue.
-     *
+     * Fire method.
      * @param $job
      * @param $data
+     * @return mixed
      */
     public function fire($job, $data)
     {
-        $manager = $this->manager->findWith($data['id'], ['expedition.actors']);
+        $this->job = $job;
+        $this->data = $data;
+
+        $manager = $this->manager->findWith($this->data['id'], ['expedition.actors']);
 
         if (empty($manager) || $this->checkProcess($manager))
         {
-            $this->delete($job);
+            $this->delete();
 
             return;
         }
 
         $this->processActors($manager);
 
-        $this->delete($job);
+        $this->delete();
 
         return;
     }
@@ -130,45 +133,5 @@ class WorkflowManagerService {
                 'error' => $e->getFile() . " - " . $e->getLine() . ": " . $e->getMessage()
             ]));
         $this->report->reportSimpleError();
-    }
-
-    /**
-     * Delete a job from the queue
-     * @param $job
-     */
-    public function delete($job)
-    {
-        $job->delete();
-    }
-
-    /**
-     * Release a job back to the queue
-     * @param $job
-     */
-    public function release($job)
-    {
-        $job->release();
-    }
-
-    /**
-     * Return number of attempts on the job
-     *
-     * @param $job
-     * @return mixed
-     */
-    public function getAttempts($job)
-    {
-        return $job->attempts();
-    }
-
-    /**
-     * Get id of job
-     *
-     * @param $job
-     * @return mixed
-     */
-    public function getJobId($job)
-    {
-        return $job->getJobId();
     }
 }

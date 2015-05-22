@@ -1,7 +1,6 @@
-<?php namespace Biospex\Services\Queue;
-
+<?php  namespace Biospex\Services\Queue;
 /**
- * SubjectsImportService.php
+ * NfnResultsService.php.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -29,18 +28,23 @@ use Illuminate\Filesystem\Filesystem;
 use Cartalyst\Sentry\Sentry;
 use Biospex\Repo\Import\ImportInterface;
 use Biospex\Repo\Project\ProjectInterface;
-use Biospex\Services\Report\SubjectImportReport;
-use Biospex\Services\Subject\SubjectProcess;
-use Biospex\Services\Xml\XmlProcess;
+use Biospex\Repo\Subject\SubjectInterface;
+use Biospex\Repo\Transcription\TranscriptionInterface;
 use Biospex\Mailer\BiospexMailer;
 use Illuminate\Support\Facades\Config;
+use Maatwebsite\Excel\Excel;
 
-class SubjectsImportService {
+class NfnTranscriptionQueue extends QueueAbstract {
 
     /**
      * @var Filesystem
      */
     protected $filesystem;
+
+    /**
+     * @var Sentry
+     */
+    protected $sentry;
 
     /**
      * @var ImportInterface
@@ -53,24 +57,14 @@ class SubjectsImportService {
     protected $project;
 
     /**
-     * @var Sentry
+     * @var SubjectInterface
      */
-    protected $sentry;
+    protected $subject;
 
     /**
-     * @var SubjectImportReport
+     * @var TranscriptionInterface
      */
-    protected $report;
-
-    /**
-     * @var SubjectProcess
-     */
-    protected $subjectProcess;
-
-    /**
-     * @var XmlProcess
-     */
-    protected $xmlProcess;
+    protected $transcription;
 
     /**
      * @var BiospexMailer
@@ -78,63 +72,41 @@ class SubjectsImportService {
     protected $mailer;
 
     /**
-     * Scratch directory.
+     * @var Excel
      */
-    protected $scratchDir;
+    protected $excel;
 
     /**
-     * Directory where darwin core files are stored during processing.
+     * Directory where result files are stored.
      *
      * @var string
      */
-    protected $subjectsImportDir;
-
-    /**
-     * Tmp directory for extracted files
-     * @var string
-     */
-    protected $scratchFileDir;
-
-    /**
-     * Queue job.
-     * @var
-     */
-    protected $job;
+    protected $resultsImportDir;
 
     /**
      * Constructor
-     *
-     * @param ImportInterface $import
-     * @param Filesystem $filesystem
-     * @param SubjectProcess $subjectProcess
-     * @param XmlProcess $xmlProcess
-     * @param Sentry $sentry
-     * @param ProjectInterface $project
-     * @param BiospexMailer $mailer
-     * @param SubjectImportReport $report
      */
     public function __construct(
         Filesystem $filesystem,
+        Sentry $sentry,
         ImportInterface $import,
         ProjectInterface $project,
-        Sentry $sentry,
-        SubjectImportReport $report,
-        SubjectProcess $subjectProcess,
-        XmlProcess $xmlProcess,
-        BiospexMailer $mailer
+        SubjectInterface $subject,
+        TranscriptionInterface $transcription,
+        BiospexMailer $mailer,
+        Excel $excel
     )
     {
         $this->filesystem = $filesystem;
+        $this->sentry = $sentry;
         $this->import = $import;
         $this->project = $project;
-        $this->sentry = $sentry;
-        $this->report = $report;
-        $this->subjectProcess = $subjectProcess;
-        $this->xmlProcess = $xmlProcess;
+        $this->subject = $subject;
+        $this->transcription = $transcription;
         $this->mailer = $mailer;
+        $this->excel = $excel;
 
-        $this->scratchDir = Config::get('config.scratchDir');
-        $this->subjectsImportDir = Config::get('config.subjectsImportDir');
+        $this->resultsImportDir = Config::get('config.resultsImportDir');
     }
 
     /**
@@ -145,23 +117,31 @@ class SubjectsImportService {
     public function fire($job, $data)
     {
         $this->job = $job;
-        $import = $this->import->find($data['id']);
+        $this->data = $data;
+
+        $import = $this->import->find($this->data['id']);
         $user = $this->sentry->findUserById($import->user_id);
         $project = $this->project->find($import->project_id);
 
-        $fileName = pathinfo($this->subjectsImportDir . '/' . $import->file, PATHINFO_FILENAME );
-        $this->scratchFileDir = $this->scratchDir . '/' . $import->id . '-' . md5($fileName);
-        $zipFile = $this->subjectsImportDir . '/' . $import->file;
+        $file = $this->resultsImportDir . '/' . $import->file;
 
         try
         {
-            $this->makeTmp();
-            $this->unzip($zipFile);
-
-            $this->subjectProcess->processSubjects($import->project_id, $this->scratchFileDir);
-
-            $duplicates = $this->subjectProcess->getDuplicates();
-            $rejects = $this->subjectProcess->getRejectedMedia();
+            $data = $this->excel->load($file)->get();
+            $header = [];
+            foreach($data as $key => $row)
+            {
+                if ($key == 0)
+                {
+                    $row[0] = 'nfnId';
+                    $header = $row;
+                    continue;
+                }
+                $result = array_combine($header, $row);
+                print_r($result);
+                exit;
+            }
+            return;
 
             $this->report->complete($user->email, $project->title, $duplicates, $rejects);
 
