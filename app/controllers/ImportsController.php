@@ -25,7 +25,7 @@
  */
 use Cartalyst\Sentry\Sentry;
 use Illuminate\Support\Facades\URL;
-use Biospex\Services\Import\ImportService;
+use Biospex\Services\Import\ImportServiceFactory;
 use Biospex\Repo\Project\ProjectInterface;
 
 class ImportsController extends BaseController {
@@ -41,26 +41,27 @@ class ImportsController extends BaseController {
     protected $sentry;
 
     /**
-     * @var ImportService
+     * @var ImportServiceFactory
      */
-    protected $import;
+    protected $importFactory;
 
 
     /**
-     * Instantiate a new ProjectsController
-     * @param ImportService $import
+     * Instantiate a new ProjectsController.
+     *
+     * @param ImportServiceFactory $importFactory
      * @param ProjectInterface $project
      * @param Sentry $sentry
      */
     public function __construct(
-        ImportService $import,
+        ImportServiceFactory $importFactory,
         ProjectInterface $project,
         Sentry $sentry
     )
     {
         $this->project = $project;
         $this->sentry = $sentry;
-        $this->import = $import;
+        $this->importFactory = $importFactory;
 
         // Establish Filters
         $this->beforeFilter('auth');
@@ -95,13 +96,14 @@ class ImportsController extends BaseController {
             return Redirect::route('projects.import', [$id]);
         }
 
-        if ( ! is_callable([$this->import, Input::get('type')]))
+        $obj = $this->importFactory->create(Input::get('class'));
+        if ( ! $obj)
         {
             Session::flash('error', trans('pages.bad_type'));
             return Redirect::route('projects.import', [$id]);
         }
 
-        $result = call_user_func_array([$this->import, Input::get('type')], [$id]);
+        $result = $obj->import($id);
 
         if ( ! empty($result))
         {
