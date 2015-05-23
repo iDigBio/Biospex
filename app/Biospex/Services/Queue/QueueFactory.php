@@ -38,9 +38,10 @@ class QueueFactory {
     public function fire($job, $data)
     {
         $class = $data['class'];
-        if(class_exists($class))
+        $nameSpace = 'Biospex\Services\Queue\\';
+        if(class_exists($nameSpace . $class))
         {
-            $obj = App::make($class);
+            $obj = App::make($nameSpace . $class);
             $obj->fire($job, $data);
 
             return;
