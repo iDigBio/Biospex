@@ -66,7 +66,7 @@ abstract class ImportServiceAbstract {
         $this->sentry = $sentry;
         $this->import = $import;
 
-        $this->directory = Config::get('config.subjectsImportDir');
+        $this->directory = Config::get('config.subjectImportDir');
     }
 
     /**

@@ -23,10 +23,10 @@ return [
     'reportExportDir'   => storage_path('exports/report'),
 
     /** Subjects import directory */
-    'subjectsImportDir' => storage_path('imports/subjects'),
+    'subjectImportDir' => storage_path('imports/subjects'),
 
     /** Results import directory */
-    'resultsImportDir'  => storage_path('imports/results'),
+    'transcriptionImportDir'  => storage_path('imports/transcriptions'),
 
     /*
      * OCR

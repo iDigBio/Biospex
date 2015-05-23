@@ -128,7 +128,7 @@ class SubjectImportQueue extends QueueAbstract{
         $this->mailer = $mailer;
 
         $this->scratchDir = Config::get('config.scratchDir');
-        $this->subjectsImportDir = Config::get('config.subjectsImportDir');
+        $this->subjectImportDir = Config::get('config.subjectImportDir');
     }
 
     /**
@@ -147,9 +147,9 @@ class SubjectImportQueue extends QueueAbstract{
         $user = $this->sentry->findUserById($import->user_id);
         $project = $this->project->find($import->project_id);
 
-        $fileName = pathinfo($this->subjectsImportDir . '/' . $import->file, PATHINFO_FILENAME );
+        $fileName = pathinfo($this->subjectImportDir . '/' . $import->file, PATHINFO_FILENAME );
         $this->scratchFileDir = $this->scratchDir . '/' . $import->id . '-' . md5($fileName);
-        $zipFile = $this->subjectsImportDir . '/' . $import->file;
+        $zipFile = $this->subjectImportDir . '/' . $import->file;
 
         try
         {

@@ -77,11 +77,11 @@ class NfnTranscriptionQueue extends QueueAbstract {
     protected $excel;
 
     /**
-     * Directory where result files are stored.
+     * Directory where transcriptions files are stored.
      *
      * @var string
      */
-    protected $resultsImportDir;
+    protected $transcriptionImportDir;
 
     /**
      * Constructor
@@ -106,7 +106,7 @@ class NfnTranscriptionQueue extends QueueAbstract {
         $this->mailer = $mailer;
         $this->excel = $excel;
 
-        $this->resultsImportDir = Config::get('config.resultsImportDir');
+        $this->transcriptionImportDir = Config::get('config.transcriptionImportDir');
     }
 
     /**
@@ -123,7 +123,7 @@ class NfnTranscriptionQueue extends QueueAbstract {
         $user = $this->sentry->findUserById($import->user_id);
         $project = $this->project->find($import->project_id);
 
-        $file = $this->resultsImportDir . '/' . $import->file;
+        $file = $this->transcriptionImportDir . '/' . $import->file;
 
         try
         {
