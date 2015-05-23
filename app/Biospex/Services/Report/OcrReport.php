@@ -44,7 +44,7 @@ class OcrReport extends Report{
 			'mainMessage' => trans('projects.ocr_complete')
 		];
 		$subject = trans('emails.ocr_complete');
-		$view = 'emails.reportocr';
+		$view = 'emails.report-simple';
 
 		$this->fireEvent('user.sendreport', $email, $subject, $view, $data, $attachment);
 
