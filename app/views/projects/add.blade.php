@@ -28,18 +28,18 @@
                     'method' => 'post',
                     'files' => true,
                     'enctype' => 'multipart/form-data',
-                    'id' => 'formAddData',
+                    'id' => 'form-data',
                     'class' => 'form-horizontal',
                     'role' => 'form'
                 )) }}
                 <p>{{ trans('pages.add_data_desc', ['link' => link_to_asset('darwin-core-example.zip', "Darwin Core Example")]) }}</p>
 
-                <div class="form-group {{ ($errors->has('darwin')) ? 'has-error' : '' }}">
-                    {{ Form::label('darwin', trans('forms.file'), array('id' => 'darwin', 'class' => 'col-sm-2 control-label')) }}
+                <div class="form-group {{ ($errors->has('file')) ? 'has-error' : '' }}">
+                    {{ Form::label('file', trans('forms.file'), array('id' => 'file', 'class' => 'col-sm-2 control-label')) }}
                     <div class="col-sm-10">
-                        {{ Form::file('darwin') }}
+                        {{ Form::file('file') }}
                     </div>
-                    {{ ($errors->has('darwin') ? $errors->first('darwin') : '') }}
+                    {{ ($errors->has('file') ? $errors->first('file') : '') }}
                 </div>
 
                 <div class="form-group">
@@ -48,6 +48,7 @@
                         {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
                     </div>
                 </div>
+                {{ Form::hidden('field', 'darwin') }}
                 {{ Form::hidden('class', 'SubjectImport') }}
                 {{ Form::close()}}
             </div>
@@ -63,17 +64,17 @@
                     'method' => 'post',
                     'files' => true,
                     'enctype' => 'multipart/form-data',
-                    'id' => 'formAddData',
+                    'id' => 'form-trans',
                     'class' => 'form-horizontal',
                     'role' => 'form'
                 )) }}
                 <p>{{ trans('pages.upload_nfn_desc') }}</p>
-                <div class="form-group {{ ($errors->has('nfn')) ? 'has-error' : '' }}">
-                    {{ Form::label('nfn', trans('forms.file'), array('id' => 'nfn', 'class' => 'col-sm-2 control-label')) }}
+                <div class="form-group {{ ($errors->has('file')) ? 'has-error' : '' }}">
+                    {{ Form::label('file', trans('forms.file'), array('id' => 'file', 'class' => 'col-sm-2 control-label')) }}
                     <div class="col-sm-10">
-                        {{ Form::file('nfn') }}
+                        {{ Form::file('file') }}
                     </div>
-                    {{ ($errors->has('nfn') ? $errors->first('nfn') : '') }}
+                    {{ ($errors->has('file') ? $errors->first('file') : '') }}
                 </div>
 
                 <div class="form-group">
@@ -82,6 +83,7 @@
                         {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
                     </div>
                 </div>
+                {{ Form::hidden('field', 'nfn') }}
                 {{ Form::hidden('class', 'NfnTranscriptionImport') }}
                 {{ Form::close()}}
             </div>
