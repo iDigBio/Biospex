@@ -111,7 +111,7 @@ class ImportsController extends BaseController {
             return Redirect::route('projects.import', [$id]);
         }
 
-        Session::flash('success', trans('pages.upload_success'));
+        Session::flash('success', trans('pages.upload_trans_success'));
         return Redirect::route('projects.show', [$id]);
     }
 }
