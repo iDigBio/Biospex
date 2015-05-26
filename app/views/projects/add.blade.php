@@ -48,7 +48,6 @@
                         {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
                     </div>
                 </div>
-                {{ Form::hidden('field', 'darwin') }}
                 {{ Form::hidden('class', 'SubjectImport') }}
                 {{ Form::close()}}
             </div>
@@ -83,7 +82,6 @@
                         {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
                     </div>
                 </div>
-                {{ Form::hidden('field', 'nfn') }}
                 {{ Form::hidden('class', 'NfnTranscriptionImport') }}
                 {{ Form::close()}}
             </div>
