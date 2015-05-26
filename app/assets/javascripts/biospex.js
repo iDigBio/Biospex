@@ -36,9 +36,13 @@ $(document).ready(function() {
 
     $( "#formAddData" ).validate({
         rules: {
-            file: {
+            darwin: {
                 required: true,
                 extension: "zip"
+            },
+            nfn: {
+                required: true,
+                extension: "csv"
             }
         }
     });
