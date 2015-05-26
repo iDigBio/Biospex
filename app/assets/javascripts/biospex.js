@@ -34,13 +34,17 @@ $(document).ready(function() {
         $('#targetCount').val($("div.target:visible").length);
     });
 
-    $( "#formAddData" ).validate({
+    $( "#form-data" ).validate({
         rules: {
-            darwin: {
+            file: {
                 required: true,
-                extension: "zip"
-            },
-            nfn: {
+                extension: "nfn"
+            }
+        }
+    });
+    $( "#form-trans" ).validate({
+        rules: {
+            file: {
                 required: true,
                 extension: "csv"
             }
