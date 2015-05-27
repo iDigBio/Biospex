@@ -1,6 +1,6 @@
 <?php  namespace Biospex\Repo\Transcription;
 /**
- * TranscriptionRepository.php
+ * TestRepository.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -28,11 +28,7 @@ use Biospex\Repo\Repository;
 use Transcription;
 
 class TranscriptionRepository extends Repository implements TranscriptionInterface{
-
-    /**
-     * @param Transcription $transcription
-     */
-    public function __constructor(Transcription $transcription)
+    public function __construct(Transcription $transcription)
     {
         $this->model = $transcription;
     }

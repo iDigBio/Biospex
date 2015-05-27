@@ -1,6 +1,6 @@
 <?php  namespace Biospex\Repo\Transcription;
 /**
- * TranscriptionInterface.php
+ * TestInterface.php
  *
  * @package    Biospex Package
  * @version    1.0
