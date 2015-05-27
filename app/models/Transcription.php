@@ -32,6 +32,8 @@ class Transcription extends Eloquent {
      */
     protected $connection = 'mongodb';
 
+    protected $table = 'transcriptions';
+
     /**
      * Set primary key
      */
@@ -41,6 +43,13 @@ class Transcription extends Eloquent {
      * set guarded properties
      */
     protected $guarded = ['_id'];
+
+    /**
+     * OrderBy
+     *
+     * @var array
+     */
+    protected $orderBy = [[]];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
