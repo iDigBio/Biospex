@@ -146,6 +146,7 @@ return [
     'file_required'           => "A file upload is required.",
     'file_type_error'         => "File type is not accepted.",
     'bad_type'                => "Error with post type. Please contact the Admin regarding this issue.",
-    'upload_error'            => "An error occurred uploading the file. Error: :error",
-    'upload_success'          => "Upload was successful. You will receive an email when your import data has been processed. A separate email will be sent when OCR processing is complete. ",
+    'upload_error'            => "An error occurred uploading the file. :error",
+    'upload_success'          => "Upload was successful. You will receive an email when your import data has been processed. A separate email will be sent when OCR processing is complete.",
+    'upload_trans_success'    => "Upload was successful. You will receive an email when your import data has been processed.",
 ];
