@@ -38,7 +38,6 @@ class CreateTranscriptionsTable extends Migration {
             $collection->unique('nfn_id');
             $collection->index('project_id');
             $collection->index('subject_id');
-            $collection->unique(array('project_id', 'subject_id'));
             $collection->timestamps();
             $collection->softDeletes();
         });
