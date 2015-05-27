@@ -39,7 +39,6 @@ class CreateTranscriptionsTable extends Migration {
             $collection->index('project_id');
             $collection->index('subject_id');
             $collection->timestamps();
-            $collection->softDeletes();
         });
 	}
 
