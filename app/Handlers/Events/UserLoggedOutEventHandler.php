@@ -1,18 +1,16 @@
 <?php namespace Biospex\Handlers\Events;
 
-use Biospex\Events\UserLoggedOut;
+use Biospex\Events\UserLoggedOutEvent;
 use Illuminate\Support\Facades\Session;
 
-class UserLoggedOutHandler {
+class UserLoggedOutEventHandler {
 
-	/**
-	 * Create the event handler.
-	 *
-	 * @return void
-	 */
+    /**
+     * Create the event handler.
+     */
 	public function __construct()
 	{
-		//
+
 	}
 
 	/**
@@ -21,7 +19,7 @@ class UserLoggedOutHandler {
 	 * @param  UserLoggedOut  $event
 	 * @return void
 	 */
-	public function handle(UserLoggedOut $event)
+	public function handle(UserLoggedOutEvent $event)
 	{
         Session::flush();
 	}

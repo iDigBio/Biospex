@@ -1,9 +1,9 @@
 <?php namespace Biospex\Handlers\Events;
 
-use Biospex\Events\UserLoggedIn;
+use Biospex\Events\UserLoggedInEvent;
 use Illuminate\Support\Facades\Session;
 
-class UserLoggedInHandler {
+class UserLoggedInEventHandler {
 
     /**
      * Create the event handler.
@@ -19,7 +19,7 @@ class UserLoggedInHandler {
 	 * @param  UserLoggedIn  $event
 	 * @return void
 	 */
-	public function handle(UserLoggedIn $event)
+	public function handle(UserLoggedInEvent $event)
 	{
 		Session::put('userId', $event->userId);
         Session::put('email', $event->email);

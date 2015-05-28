@@ -3,7 +3,7 @@
  * AuthController.php
  *
  * @package    Biospex Package
- * @version    1.0
+ * @version    2.0
  * @author     Robert Bruhn <79e6ef82@opayq.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
@@ -61,7 +61,7 @@ class AuthController extends Controller {
 
         Session::flash('error', $result['message']);
 
-        Redirect::route('login')->withInput();
+        return Redirect::route('login')->withInput();
     }
 
     /**
@@ -73,6 +73,6 @@ class AuthController extends Controller {
     {
         $this->dispatch(new UserLogOutCommand());
 
-        Redirect::route('home');
+        return Redirect::route('home');
     }
 }

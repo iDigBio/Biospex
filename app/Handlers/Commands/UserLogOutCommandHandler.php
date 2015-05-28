@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Event;
 use Biospex\Commands\UserLogOutCommand;
 use Biospex\Repositories\Contracts\Auth;
-use Biospex\Events\UserLoggedOut;
+use Biospex\Events\UserLoggedOutEvent;
 
 class UserLogOutCommandHandler {
 
@@ -19,7 +19,6 @@ class UserLogOutCommandHandler {
      */
 	public function __construct(Auth $auth)
 	{
-		//
         $this->auth = $auth;
     }
 
@@ -32,7 +31,7 @@ class UserLogOutCommandHandler {
 	public function handle(UserLogOutCommand $command)
 	{
         $this->auth->destroy();
-        Event::fire(new UserLoggedOut());
+        Event::fire(new UserLoggedOutEvent());
 	}
 
 }

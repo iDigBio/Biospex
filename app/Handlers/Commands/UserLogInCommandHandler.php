@@ -2,7 +2,7 @@
 
 use Biospex\Commands\UserLogInCommand;
 use Biospex\Repositories\Contracts\Auth;
-use Biospex\Events\UserLoggedIn;
+use Biospex\Events\UserLoggedInEvent;
 use Illuminate\Support\Facades\Event;
 
 class UserLogInCommandHandler {
@@ -33,7 +33,7 @@ class UserLogInCommandHandler {
 		$result = $this->auth->store($command->request);
 
         if ($result['success'])
-            Event::fire(new UserLoggedIn($result));
+            Event::fire(new UserLoggedInEvent($result));
 
         return $result;
 	}

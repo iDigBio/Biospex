@@ -2,7 +2,7 @@
 
 use Illuminate\Queue\SerializesModels;
 
-class UserLoggedIn extends Event {
+class UserLoggedInEvent extends Event {
 
 	use SerializesModels;
     /**

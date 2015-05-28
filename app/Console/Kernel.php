@@ -11,7 +11,6 @@ class Kernel extends ConsoleKernel {
 	 * @var array
 	 */
 	protected $commands = [
-		'Biospex\Console\Commands\Inspire',
         'Biospex\Console\Commands\WorkFlowManagerCommand',
         'Biospex\Console\Commands\DownloadCleanCommand',
         'Biospex\Console\Commands\ViewsCommand',
@@ -27,8 +26,7 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected function schedule(Schedule $schedule)
 	{
-		$schedule->command('inspire')
-				 ->hourly();
+		//$schedule->command('inspire')->hourly();
 	}
 
 }
