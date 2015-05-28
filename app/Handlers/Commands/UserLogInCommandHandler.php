@@ -4,7 +4,6 @@ use Biospex\Commands\UserLogInCommand;
 use Biospex\Repositories\Contracts\Auth;
 use Biospex\Events\UserLoggedIn;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Redirect;
 
 class UserLogInCommandHandler {
 

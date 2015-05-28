@@ -1,7 +1,5 @@
 <?php namespace Biospex\Commands;
 
-use Biospex\Commands\Command;
-
 class UserLogInCommand extends Command {
 
     public $request;

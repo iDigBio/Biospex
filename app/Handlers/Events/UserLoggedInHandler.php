@@ -3,7 +3,7 @@
 use Biospex\Events\UserLoggedIn;
 use Illuminate\Support\Facades\Session;
 
-class UserLoggedInSetSession {
+class UserLoggedInHandler {
 
     /**
      * Create the event handler.
