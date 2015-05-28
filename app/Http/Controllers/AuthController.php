@@ -1,6 +1,6 @@
 <?php namespace Biospex\Http\Controllers;
 /**
- * SessionsController.php
+ * AuthController.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -25,28 +25,29 @@
  */
 
 use Illuminate\Events\Dispatcher;
-use Biospex\Repositories\Contracts\SessionInterface;
-use Biospex\Http\Requests\LoginFromRequest;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
+use Biospex\Repositories\Contracts\Auth;
+use Biospex\Http\Requests\UserLoginRequest;
+use Biospex\Commands\UserLogInCommand;
 
-class SessionsController extends Controller {
+class AuthController extends Controller {
 
     /**
      * Member Vars
      */
-    protected $session;
+    protected $auth;
 
-	/**
-	 * Constructor
-	 *
-	 * @param Dispatcher $events
-	 * @param SessionInterface $session
-	 * @param LoginForm $loginForm
-	 */
-	public function __construct (Dispatcher $events, SessionInterface $session)
+    /**
+     * Constructor
+     *
+     * @param Dispatcher $events
+     * @param Auth $auth
+     */
+	public function __construct (Dispatcher $events, Auth $auth)
     {
 		$this->events = $events;
-        $this->session = $session;
+        $this->auth = $auth;
     }
 
     /**
@@ -62,14 +63,16 @@ class SessionsController extends Controller {
      * @param LoginFromRequest $request
      * @return mixed
      */
-    public function store (LoginFromRequest $request)
+    public function store (UserLoginRequest $request)
     {
-        $this->events->fire('user.login', [
-            'userId' => $request->get['sessionData']['userId'],
-            'email' => $request->get['sessionData']['email']
-        ]);
+        $result = $this->dispatch(new UserLogInCommand($request->only('email', 'password', 'remember')));
 
-        return Redirect::route('projects.index');
+        if ($result['success'])
+            return Redirect::route('projects.index');
+
+        Session::flash('error', $result['message']);
+
+        return Redirect::route('login')->withInput();
     }
 
 	/**
@@ -79,7 +82,7 @@ class SessionsController extends Controller {
 	 */
     public function destroy ()
     {
-        $this->session->destroy();
+        $this->auth->destroy();
 		$this->events->fire('user.logout');
         return Redirect::route('home');
     }
