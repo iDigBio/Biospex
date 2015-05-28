@@ -24,34 +24,21 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
-use Biospex\Repositories\Contracts\Auth;
 use Biospex\Http\Requests\UserLoginRequest;
 use Biospex\Commands\UserLogInCommand;
+use Biospex\Commands\UserLogOutCommand;
 
 class AuthController extends Controller {
 
     /**
-     * Member Vars
-     */
-    protected $auth;
-
-    /**
      * Constructor
-     *
-     * @param Dispatcher $events
-     * @param Auth $auth
      */
-	public function __construct (Dispatcher $events, Auth $auth)
-    {
-		$this->events = $events;
-        $this->auth = $auth;
-    }
+	public function __construct () {}
 
     /**
-     * Show the login form
+     * Show login form
      */
     public function create ()
     {
@@ -59,32 +46,33 @@ class AuthController extends Controller {
     }
 
     /**
-     * Store a newly created resource in storage.
-     * @param LoginFromRequest $request
+     * Check user login and store.
+     *
+     * @param UserLoginRequest $request
      * @return mixed
      */
     public function store (UserLoginRequest $request)
     {
-        $result = $this->dispatch(new UserLogInCommand($request->only('email', 'password', 'remember')));
+        $input = $request->only('email', 'password', 'remember');
+        $result = $this->dispatch(new UserLogInCommand($input));
 
         if ($result['success'])
             return Redirect::route('projects.index');
 
         Session::flash('error', $result['message']);
 
-        return Redirect::route('login')->withInput();
+        Redirect::route('login')->withInput();
     }
 
-	/**
-	 * Delete user session
-	 *
-	 * @return \Illuminate\Http\RedirectResponse
-	 */
+    /**
+     * Delete user session
+     *
+     * @return mixed
+     */
     public function destroy ()
     {
-        $this->auth->destroy();
-		$this->events->fire('user.logout');
-        return Redirect::route('home');
-    }
+        $this->dispatch(new UserLogOutCommand());
 
+        Redirect::route('home');
+    }
 }
