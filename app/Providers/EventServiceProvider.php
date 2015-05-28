@@ -1,5 +1,8 @@
 <?php namespace Biospex\Providers;
 
+use Biospex\Events\UserLoggedIn;
+use Biospex\Handlers\Events\UserLoggedInSetSession;
+
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -14,6 +17,9 @@ class EventServiceProvider extends ServiceProvider {
 		'event.name' => [
 			'EventListener',
 		],
+        UserLoggedIn::class => [
+            UserLoggedInSetSession::class
+        ]
 	];
 
 	/**
