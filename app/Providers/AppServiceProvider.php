@@ -47,6 +47,15 @@ class AppServiceProvider extends ServiceProvider {
             return $app['sentry'];
         });
 
+        /*
+         * Development Providers
+         */
+        if($this->app->environment('local'))
+        {
+            $this->app->register('Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider');
+            $this->app->register('Barryvdh\Debugbar\ServiceProvider');
+        }
+
 	}
 
 }
