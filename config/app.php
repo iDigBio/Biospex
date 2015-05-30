@@ -147,7 +147,7 @@ return [
         'Biospex\Providers\RouteServiceProvider',
 
         /*
-         * Other Providers
+         * Vendor Providers
          */
         'Collective\Html\HtmlServiceProvider',
         'Cartalyst\Sentry\SentryServiceProvider',
@@ -167,10 +167,7 @@ return [
          * Biospex Providers
          */
         'Biospex\Providers\ViewComposerServiceProvider',
-        'Biospex\Providers\HelperServiceProvider',
         'Biospex\Providers\RepositoriesServiceProvider',
-        'Biospex\Providers\AnnotationsServiceProvider',
-
     ],
 
     /*
