@@ -1,36 +1,11 @@
 <?php namespace Biospex\Http\Controllers;
-/**
- * InvitesController.php
- *
- * @package    Biospex Package
- * @version    1.0
- * @author     Robert Bruhn <bruhnrp@gmail.com>
- * @license    GNU General Public License, version 3
- * @copyright  (c) 2014, Biospex
- * @link       http://biospex.org
- *
- * This file is part of Biospex.
- * Biospex is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Biospex is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 use Cartalyst\Sentry\Sentry;
 use Cartalyst\Sentry\Users\UserNotFoundException;
 use Illuminate\Events\Dispatcher;
-use Biospex\Repositories\Contracts\InviteInterface;
+use Biospex\Repositories\Contracts\Invite;
 use Biospex\Form\Invite\InviteForm;
-use Biospex\Mailer\BiospexMailer;
-use Biospex\Helpers\Helper;
+use Biospex\Services\Mailer\BiospexMailer;
 
 class InvitesController extends Controller {
 	/**
@@ -44,7 +19,7 @@ class InvitesController extends Controller {
 	protected $events;
 
 	/**
-	 * @var InviteInterface
+	 * @var Invite
 	 */
 	protected $invite;
 
@@ -63,14 +38,14 @@ class InvitesController extends Controller {
 	 *
 	 * @param Sentry $sentry
 	 * @param Dispatcher $events
-	 * @param InviteInterface $invite
+	 * @param Invite $invite
 	 * @param InviteForm $inviteForm
 	 * @param BiospexMailer $mailer
 	 */
     public function __construct(
 		Sentry $sentry,
 		Dispatcher $events,
-        InviteInterface $invite,
+        Invite $invite,
         InviteForm $inviteForm,
         BiospexMailer $mailer
     )
@@ -120,7 +95,7 @@ class InvitesController extends Controller {
 			$email = trim($email);
             if ($duplicate = $this->invite->checkDuplicate($group->id, $email))
             {
-                Helper::sessionFlashPush('info', trans('groups.invite_duplicate', ['group' => $group->name, 'email' => $email]));
+                session_flash_push('info', trans('groups.invite_duplicate', ['group' => $group->name, 'email' => $email]));
                 continue;
             }
 
@@ -128,7 +103,7 @@ class InvitesController extends Controller {
             {
 				$user = $this->sentry->findUserByLogin($email);
                 $user->addGroup($group);
-                Helper::sessionFlashPush('success', trans('groups.user_added', ['email' => $email]));
+                session_flash_push('success', trans('groups.user_added', ['email' => $email]));
             }
             catch (UserNotFoundException $e)
             {
@@ -142,7 +117,7 @@ class InvitesController extends Controller {
 
                 if (!$result = $this->inviteForm->save($data))
                 {
-                    Helper::sessionFlashPush('warning', trans('groups.send_invite_error', ['group' => $group->name, 'email' => $email]));
+                    session_flash_push('warning', trans('groups.send_invite_error', ['group' => $group->name, 'email' => $email]));
                 }
                 else
                 {
@@ -154,7 +129,7 @@ class InvitesController extends Controller {
 						'data' => ['group' => $group->name, 'code' => $code],
 					]);
 
-                    Helper::sessionFlashPush('success', trans('groups.send_invite_success', ['group' => $group->name, 'email' => $email]));
+                    session_flash_push('success', trans('groups.send_invite_success', ['group' => $group->name, 'email' => $email]));
                 }
             }
         }
