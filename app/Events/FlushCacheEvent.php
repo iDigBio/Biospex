@@ -1,7 +1,6 @@
 <?php namespace Biospex\Events;
 
 use Cache;
-use Session;
 use Route;
 
 class FlushCacheEvent extends Event {
@@ -20,7 +19,6 @@ class FlushCacheEvent extends Event {
             return;
 
         Cache::flush();
-        Session::flush('success', 'flushed cache');
     }
 
 }
