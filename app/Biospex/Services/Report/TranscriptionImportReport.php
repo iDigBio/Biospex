@@ -45,4 +45,24 @@ class TranscriptionImportReport extends Report {
 
         return;
     }
+
+    /**
+     * Send error during transcription import
+     *
+     * @param $id
+     * @param $email
+     * @param $title
+     */
+    public function error($id, $email, $title)
+    {
+        $subject = trans('emails.error_import');
+        $data = array(
+            'importId' => $id,
+            'projectTitle' => $title,
+            'errorMessage' => print_r($this->messages->get('error'), true)
+        );
+        $view = 'emails.reporterror';
+
+        $this->fireEvent('user.sendreport', $email, $subject, $view, $data);
+    }
 }
