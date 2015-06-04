@@ -35,7 +35,7 @@ class ClearBeanstalkdQueueCommand extends Command {
 	 *
 	 * @var string
 	 */
-	protected $name = 'queue:beanstalkd:clear';
+	protected $name = 'queue:clear';
 
 	/**
 	 * The console command description.
