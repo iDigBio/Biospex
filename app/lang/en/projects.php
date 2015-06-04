@@ -37,6 +37,4 @@ return array (
     'project_save_error'        => "An error occurred when saving project.",
     'project_destroy_error'     => "An error occurred when deleting project.",
     'no_projects'               => "No projects exist for your groups.",
-    'ocr_complete'              => "The OCR processing of your data is complete. If there were any errors in processing images, an attached file will be present.",
-    'transcription_complete'    => "The transcription import for your projects is complete. You may view results on the report pages.",
 );
