@@ -54,7 +54,7 @@ class SubjectRepository extends Repository implements SubjectInterface {
 	 * @param $expeditionId
 	 * @return mixed
 	 */
-	public function detachSubjects($ids = array(), $expeditionId)
+	public function detachSubjects($ids = [], $expeditionId)
 	{
 		return $this->model->detachSubjects($ids, $expeditionId);
 	}
@@ -73,7 +73,7 @@ class SubjectRepository extends Repository implements SubjectInterface {
 	 * @param array $filters
 	 * @return int
 	 */
-	public function getTotalNumberOfRows(array $filters = array())
+	public function getTotalNumberOfRows(array $filters = [])
 	{
 		return $this->model->getTotalNumberOfRows($filters);
 	}
@@ -89,8 +89,17 @@ class SubjectRepository extends Repository implements SubjectInterface {
 	 * @param array $filters
 	 * @return array
 	 */
-	public function getRows($limit, $offset, $orderBy = null, $sord = null, array $filters = array())
+	public function getRows($limit, $offset, $orderBy = null, $sord = null, array $filters = [])
 	{
 		return $this->model->getRows($limit, $offset, $orderBy, $sord, $filters);
 	}
+
+    /**
+     * @param $filename
+     * @return mixed
+     */
+    public function findByFilename($filename)
+    {
+        return $this->model->findByFilename($filename);
+    }
 }
