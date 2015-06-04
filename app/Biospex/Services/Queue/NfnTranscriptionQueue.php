@@ -24,15 +24,15 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Illuminate\Filesystem\Filesystem;
-use Cartalyst\Sentry\Sentry;
-use Biospex\Repo\Import\ImportInterface;
-use Biospex\Repo\Project\ProjectInterface;
-use Biospex\Repo\Subject\SubjectInterface;
-use Biospex\Repo\Transcription\TranscriptionInterface;
-use Biospex\Mailer\BiospexMailer;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Validator;
+use Biospex\Repo\Import\ImportInterface;
+use Biospex\Repo\Transcription\TranscriptionInterface;
+use Biospex\Repo\Subject\SubjectInterface;
+use Biospex\Services\Report\TranscriptionImportReport;
 use Maatwebsite\Excel\Excel;
+use Rhumsaa\Uuid\Console\Exception;
 
 class NfnTranscriptionQueue extends QueueAbstract {
 
@@ -42,24 +42,9 @@ class NfnTranscriptionQueue extends QueueAbstract {
     protected $filesystem;
 
     /**
-     * @var Sentry
-     */
-    protected $sentry;
-
-    /**
      * @var ImportInterface
      */
     protected $import;
-
-    /**
-     * @var ProjectInterface
-     */
-    protected $project;
-
-    /**
-     * @var SubjectInterface
-     */
-    protected $subject;
 
     /**
      * @var TranscriptionInterface
@@ -67,9 +52,16 @@ class NfnTranscriptionQueue extends QueueAbstract {
     protected $transcription;
 
     /**
-     * @var BiospexMailer
+     * @var TranscriptionImportReport
      */
-    protected $mailer;
+    protected $report;
+
+    /**
+     * CSV array for collection unprocessed transcriptions.
+     *
+     * @var array
+     */
+    protected $csv = [];
 
     /**
      * @var Excel
@@ -85,25 +77,28 @@ class NfnTranscriptionQueue extends QueueAbstract {
 
     /**
      * Constructor
+     *
+     * @param Filesystem $filesystem
+     * @param ImportInterface $import
+     * @param TranscriptionInterface $transcription
+     * @param SubjectInterface $subject
+     * @param TranscriptionImportReport $report
+     * @param Excel $excel
      */
     public function __construct(
         Filesystem $filesystem,
-        Sentry $sentry,
         ImportInterface $import,
-        ProjectInterface $project,
-        SubjectInterface $subject,
         TranscriptionInterface $transcription,
-        BiospexMailer $mailer,
+        SubjectInterface $subject,
+        TranscriptionImportReport $report,
         Excel $excel
     )
     {
         $this->filesystem = $filesystem;
-        $this->sentry = $sentry;
         $this->import = $import;
-        $this->project = $project;
-        $this->subject = $subject;
         $this->transcription = $transcription;
-        $this->mailer = $mailer;
+        $this->subject = $subject;
+        $this->report = $report;
         $this->excel = $excel;
 
         $this->transcriptionImportDir = Config::get('config.transcriptionImportDir');
@@ -119,35 +114,41 @@ class NfnTranscriptionQueue extends QueueAbstract {
         $this->job = $job;
         $this->data = $data;
 
-        $import = $this->import->find($this->data['id']);
-        $user = $this->sentry->findUserById($import->user_id);
-        $project = $this->project->find($import->project_id);
-
+        $import = $this->import->findWith($this->data['id'], ['project', 'user']);
         $file = $this->transcriptionImportDir . '/' . $import->file;
 
         try
         {
-            $data = $this->excel->load($file)->get();
+            $data = $this->excel->load($file)->get()->toArray();
             $header = [];
             foreach($data as $key => $row)
             {
+                list($header, $row) = $this->createHeader($header, $key, $row);
                 if ($key == 0)
+                    continue;
+
+                $combined = array_combine($header, $row);
+
+                // Check if fsu collection and search subjects by file name
+                $subject = $this->getSubject($combined);
+
+                if ( ! $subject)
                 {
-                    $row[0] = 'nfnId';
-                    $header = $row;
+                    $this->csv[] = $combined;
                     continue;
                 }
-                $result = array_combine($header, $row);
-                print_r($result);
-                exit;
+
+                $addArray = ['project_id' => (string) $subject->project_id, 'expedition_ids' => $subject->expedition_ids];
+                $combined = $addArray + $combined;
+
+                if ($this->validate($combined))
+                    continue;
+
+                $this->transcription->create($combined);
             }
-            return;
 
-            $this->report->complete($user->email, $project->title, $duplicates, $rejects);
-
-            $this->filesystem->deleteDirectory($this->scratchFileDir);
-            $this->filesystem->delete($zipFile);
-
+            $this->report->complete($import->user->email, $import->project->title, $this->csv);
+            $this->filesystem->delete($file);
             $this->import->destroy($import->id);
         }
         catch (Exception $e)
@@ -157,7 +158,9 @@ class NfnTranscriptionQueue extends QueueAbstract {
             $this->report->addError(trans('emails.error_import_process',
                 ['id' => $import->id, 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]
             ));
-            $this->report->error($import->id, $user->email, $project->title);
+            $this->report->error($import->id, $import->user->email, $import->project->title);
+
+            return;
         }
 
         $this->delete();
@@ -166,74 +169,74 @@ class NfnTranscriptionQueue extends QueueAbstract {
     }
 
     /**
-     * Create tmp data directory
+     * Validate transcription to prevent duplicates.
      *
-     * @throws \Exception
-     */
-    protected function makeTmp()
-    {
-        if ( ! $this->filesystem->isDirectory($this->scratchFileDir))
-        {
-            if ( ! $this->filesystem->makeDirectory($this->scratchFileDir, 0777, true))
-                throw new \Exception(trans('emails.error_create_dir', ['directory' => $this->scratchFileDir]));
-        }
-
-        if ( ! $this->filesystem->isWritable($this->scratchFileDir))
-        {
-            if ( ! chmod($this->scratchFileDir, 0777))
-                throw new \Exception(trans('emails.error_write_dir', ['directory' => $this->scratchFileDir]));
-        }
-
-        return;
-    }
-
-    /**
-     * Extract files from zip
-     * ZipArchive causes MAC uploaded files to extract with two folders.
-     *
-     * @param $zipFile
-     * @throws Exception
-     */
-    public function unzip($zipFile)
-    {
-        shell_exec("unzip $zipFile -d $this->scratchFileDir");
-
-        return;
-    }
-
-    /**
-     * Delete a job from the queue
-     */
-    public function delete()
-    {
-        $this->job->delete();
-    }
-
-    /**
-     * Release a job ack to the queue
-     */
-    public function release()
-    {
-        $this->job->release();
-    }
-
-    /**
-     * Return number of attempts on the job
-     *
+     * @param $combined
      * @return mixed
      */
-    public function getAttempts()
+    public function validate($combined)
     {
-        return $this->job->attempts();
+        $rules = ['nfn_id' => 'unique:transcriptions'];
+        $values = ['nfn_id' => $combined['nfn_id']];
+        $validator = Validator::make($values, $rules);
+        $validator->getPresenceVerifier()->setConnection('mongodb');
+
+        // returns true if failed.
+        $fail = $validator->fails();
+
+        if ($fail)
+            $this->csv[] = $combined;
+
+        return $fail;
     }
 
     /**
-     * Get id of job
+     * Build header row.
      *
+     * @param $header
+     * @param $key
+     * @param $row
+     * @return array
+     */
+    public function createHeader(&$header, $key, $row)
+    {
+        if ($key != 0)
+            return [$header, $row];
+
+        $row[0] = 'nfn_id';
+        $header = $row;
+        $header = array_replace($header, array_fill_keys(array_keys($header, 'created_at'), 'create_date'));
+
+        return [$header, $row];
+    }
+
+    /**
+     * @param $combined
      * @return mixed
      */
-    public function getJobId()
+    public function getSubject($combined)
     {
-        return $this->job->getJobId();
+        if ($this->checkCollection($combined))
+        {
+            $filename = strtok(trim($combined['filename']), '.');
+            $subject = $this->subject->findByFilename($filename);
+        }
+        else
+        {
+            $subject = $this->subject->find(trim($combined['subject_id']));
+        }
+
+        return $subject;
+    }
+
+    /**
+     * Check if FSU collection.
+     *
+     * @param $combined
+     * @return bool
+     */
+    public function checkCollection($combined)
+    {
+        return strtolower(trim($combined['collection'])) == 'herbarium';
     }
 }
