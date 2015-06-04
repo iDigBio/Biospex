@@ -10,7 +10,6 @@ class DatabaseSeeder extends Seeder {
 	public function run()
 	{
 		$this->call('TruncateTables');
-		$this->call('NavigationsTableSeeder');
         $this->call('PermissionTableSeeder');
 		$this->call('UserTableSeeder');
 		$this->call('GroupTableSeeder');
