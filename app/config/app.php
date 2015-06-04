@@ -119,7 +119,6 @@ return [
         'DaveJamesMiller\Breadcrumbs\ServiceProvider',
         'Msurguy\Honeypot\HoneypotServiceProvider',
         'Maatwebsite\Excel\ExcelServiceProvider',
-        'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider',
     ],
 
     /*
