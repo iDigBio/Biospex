@@ -65,8 +65,6 @@ abstract class ImportServiceAbstract {
     {
         $this->sentry = $sentry;
         $this->import = $import;
-
-        $this->directory = Config::get('config.subjectImportDir');
     }
 
     /**
@@ -77,6 +75,21 @@ abstract class ImportServiceAbstract {
      */
     abstract function import($id);
 
+    /**
+     * Set import directory.
+     *
+     * @param $dir
+     */
+    protected function setDirectory($dir)
+    {
+        $this->directory = Config::get($dir);
+    }
+
+    /**
+     * Set queue.
+     *
+     * @param $queue
+     */
     protected function setQueue($queue)
     {
         $this->queue = Config::get($queue);
@@ -87,7 +100,6 @@ abstract class ImportServiceAbstract {
     /**
      * Validation on uploaded files.
      *
-     * @param $file
      * @param $type
      * @return mixed
      */
@@ -109,7 +121,7 @@ abstract class ImportServiceAbstract {
     protected function moveFile()
     {
         $file = Input::file('file');
-        $filename = $file->getClientOriginalName();
+        $filename = md5($file->getClientOriginalName()) . '.' . $file->guessExtension();
         Input::file('file')->move($this->directory, $filename);
 
         return $filename;

@@ -39,6 +39,8 @@ class SubjectImport extends ImportServiceAbstract{
         if($this->validate('zip'))
             return trans('pages.file_type_error');
 
+        $this->setDirectory('config.subjectImportDir');
+
         $filename = $this->moveFile();
         $import = $this->importInsert($id, $filename);
         $this->setQueue('config.beanstalkd.import');

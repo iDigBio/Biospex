@@ -36,8 +36,10 @@ class NfnTranscriptionImport extends ImportServiceAbstract {
      */
     public function import($id)
     {
-        if($this->validate('csv'))
+        if($this->validate('txt'))
             return trans('pages.file_type_error');
+
+        $this->setDirectory('config.transcriptionImportDir');
 
         $filename = $this->moveFile();
         $import = $this->importInsert($id, $filename);
