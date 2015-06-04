@@ -145,6 +145,9 @@ class Report {
     public function createAttachment($csv, $name = null)
     {
         $path = $this->excelStorage['store']['path'] . "/report/";
+        if ( ! \File::isDirectory($path))
+            \File::makeDirectory($path);
+
         $fileName = (is_null($name)) ? str_random(10) : $name . str_random(5);
         $ext = ".csv";
 
