@@ -51,7 +51,7 @@
                         {{$errors->first('email')}}
                     </div>
 
-                    {{ Form::honeypot('registeruser', 'registertime') }}
+                    {{ Honeypot::generate('registeruser', 'registertime') }}
                     {{ Form::submit(trans('buttons.send'), array('class' => 'btn btn-primary btn-block')) }}
                     {{ Form::close() }}
                 </div>

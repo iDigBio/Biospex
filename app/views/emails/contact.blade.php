@@ -2,7 +2,7 @@
 
 {{-- Content --}}
 @section('content')
-    <h2>@lang('emails.contact') }}</h2>
+    <h2>@lang('emails.contact')</h2>
 
     <p><b>@lang('emails.contact_first'):</b> {{{ $first_name }}}</p>
     <p><b>@lang('emails.contact_last'):</b> {{{ $last_name }}}</p>
