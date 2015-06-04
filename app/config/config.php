@@ -19,9 +19,6 @@ return [
     /** NfN Export storage */
     'nfnExportDir'      => storage_path('exports/nfn'),
 
-    /** Report exports */
-    'reportExportDir'   => storage_path('exports/report'),
-
     /** Subjects import directory */
     'subjectImportDir' => storage_path('imports/subjects'),
 
