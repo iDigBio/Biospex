@@ -42,11 +42,12 @@ class SubjectImportReport extends Report {
 		$attachments = array_merge($duplicated, $rejected);
 
 		$data = array(
-			'projectTitle' => $title,
-			'importMessage' => trans('emails.import_complete_message'),
+			'importMessage' => trans('emails.import_subject_complete', ['project' => $title]),
+            'csvMessage' => trans('emails.import_dup_rej_message'),
+            'ocrImportMessage' => trans('emails.import_ocr_message'),
 		);
-		$subject = trans('emails.import_complete');
-		$view = 'emails.reportsubject';
+		$subject = trans('emails.import_subject_subject');
+		$view = 'emails.report-import';
 
 		$this->fireEvent('user.sendreport', $email, $subject, $view, $data, $attachments);
 	}

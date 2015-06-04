@@ -41,7 +41,7 @@ class OcrReport extends Report{
 
 		$data = [
 			'projectTitle' => $title,
-			'mainMessage' => trans('projects.ocr_complete')
+			'mainMessage' => trans('emails.ocr_complete_message')
 		];
 		$subject = trans('emails.ocr_complete');
 		$view = 'emails.report-simple';
