@@ -129,6 +129,8 @@ class SubjectImportQueue extends QueueAbstract{
 
         $this->scratchDir = Config::get('config.scratchDir');
         $this->subjectImportDir = Config::get('config.subjectImportDir');
+        if ( ! $this->filesystem->isDirectory($this->subjectImportDir))
+            $this->filesystem->makeDirectory($this->subjectImportDir);
     }
 
     /**
