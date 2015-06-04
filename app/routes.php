@@ -78,7 +78,7 @@ Route::group(
 		Route::post('groups/{groups}/invites/{invites}/resend', ['as' => 'groups.invites.resend', 'uses' => 'InvitesController@resend']);
         Route::resource('groups.invites', 'InvitesController');
 
-        // Group/Projects
+        // Projects
         Route::resource('projects', 'ProjectsController');
 		Route::get('projects/{projects}/duplicate', ['as' => 'projects.duplicate', 'uses' => 'ProjectsController@duplicate']);
 		Route::get('projects/{projects}/advertise', ['as' => 'projects.advertise', 'uses' => 'ProjectsController@advertise']);
