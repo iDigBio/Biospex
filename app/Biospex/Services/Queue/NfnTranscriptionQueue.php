@@ -237,6 +237,6 @@ class NfnTranscriptionQueue extends QueueAbstract {
      */
     public function checkCollection($combined)
     {
-        return strtolower(trim($combined['collection'])) == 'herbarium';
+        return strtolower(trim($combined['collection'])) == 'fsu';
     }
 }
