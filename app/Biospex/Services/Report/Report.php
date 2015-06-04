@@ -62,7 +62,6 @@ class Report {
         $this->mailer = $mailer;
         $this->excel = $excel;
 
-        $this->dataDir = \Config::get('config.dataDir');
         $this->excelStorage = \Config::get('excel::export');
     }
 
