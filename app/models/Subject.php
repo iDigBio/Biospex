@@ -241,6 +241,17 @@ class Subject extends Eloquent {
 	}
 
     /**
+     * Retrieve subject via accessURI filename (extensions not included).
+     *
+     * @param $filename
+     * @return mixed
+     */
+    public function findByFilename($filename)
+    {
+        return $this->where('accessURI', 'like', '%' . $filename . '%')->first();
+    }
+
+    /**
      * Build query for search.
      *
      * @param $query
