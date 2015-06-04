@@ -155,6 +155,7 @@ class NotesFromNature extends ActorAbstract {
         $this->actor = $actor;
         $this->expeditionId = $actor->pivot->expedition_id;
         $this->nfnExportDir = Config::get('config.nfnExportDir');
+        $this->createDir($this->nfnExportDir);
 
     }
 
