@@ -23,17 +23,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Cache;
+use Illuminate\Support\Facades\Config;
 use Menu\Menu;
 use Cartalyst\Sentry\Sentry;
 use Biospex\Repo\Navigation\NavigationInterface as Navigation;
 use Illuminate\Http\Request;
 
 class TopMenuComposer {
-	/**
-	 * @var Cache
-	 */
-	protected $cache;
 
 	/**
 	 * @var Sentry
@@ -53,30 +49,26 @@ class TopMenuComposer {
 	/**
 	 * @var array
 	 */
-    protected $topmenu = array();
+    protected $topmenu = [];
 
 	public function __construct (
-		Cache $cache,
 		Sentry $sentry,
 		Navigation $navigation,
-		Request $request)
+		Request $request
+    )
 	{
-		$this->cache = $cache;
 		$this->sentry = $sentry;
         $this->navigation = $navigation;
         $this->request = $request;
+
+        $this->topmenu = Config::get('navigation.topmenu');
     }
 
     public function compose($view)
     {
-         $this->topmenu = Cache::rememberForever('topmenu', function()
-        {
-            return $this->navigation->getMenu('topmenu');
-        });
-
         $this->checkPermission();
 
-        if ($this->topmenu->isEmpty())
+        if (empty($this->topmenu))
             return $view->with('topmenu', null);
 
         $this->buildMenu();
@@ -89,7 +81,7 @@ class TopMenuComposer {
 		$user = $this->sentry->getUser();
         foreach ($this->topmenu as $key => $item)
         {
-            $permissions  = explode(',', $item->permission);
+            $permissions  = explode(',', $item['permission']);
             if(is_null($user) || ! $user->hasAccess($permissions))
                  unset($this->topmenu[$key]);
         }
@@ -97,14 +89,14 @@ class TopMenuComposer {
 
     public function buildMenu() {
 
-        Menu::handler('topmenu', array('class' => 'nav navbar-nav'))->hydrate(function()
+        Menu::handler('topmenu', ['class' => 'nav navbar-nav'])->hydrate(function()
             {
                 return $this->topmenu;
             },
             function($children, $item)
             {
-                if ($this->request->is($item->url)) $item->addClass('active');
-                $children->add($item->url, trans($item->name), Menu::items($item->name));
+                if ($this->request->is($item['url'])) $item->addClass('active');
+                $children->add($item['url'], $item['label'], Menu::items($item['label']));
             });
 
         Menu::handler('topmenu')->getItemsAtDepth(0)->map(function($item)
