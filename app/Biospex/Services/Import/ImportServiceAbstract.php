@@ -25,9 +25,6 @@
  */
 
 use Cartalyst\Sentry\Sentry;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Config;
 use Biospex\Repo\Import\ImportInterface;
 
 abstract class ImportServiceAbstract {
@@ -82,7 +79,10 @@ abstract class ImportServiceAbstract {
      */
     protected function setDirectory($dir)
     {
-        $this->directory = Config::get($dir);
+        $this->directory = \Config::get($dir);
+        if ( ! \File::isDirectory($this->directory))
+            \File::makeDirectory($this->directory);
+
     }
 
     /**
@@ -92,7 +92,7 @@ abstract class ImportServiceAbstract {
      */
     protected function setQueue($queue)
     {
-        $this->queue = Config::get($queue);
+        $this->queue = \Config::get($queue);
 
         return;
     }
@@ -105,8 +105,8 @@ abstract class ImportServiceAbstract {
      */
     protected function validate($type)
     {
-        $validator = Validator::make(
-            ['file' => Input::file('file')],
+        $validator = \Validator::make(
+            ['file' => \Input::file('file')],
             ['file' => 'required|mimes:' . $type]
         );
 
@@ -120,9 +120,9 @@ abstract class ImportServiceAbstract {
      */
     protected function moveFile()
     {
-        $file = Input::file('file');
+        $file = \Input::file('file');
         $filename = md5($file->getClientOriginalName()) . '.' . $file->guessExtension();
-        Input::file('file')->move($this->directory, $filename);
+        \Input::file('file')->move($this->directory, $filename);
 
         return $filename;
     }
