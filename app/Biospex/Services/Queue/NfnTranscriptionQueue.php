@@ -102,6 +102,8 @@ class NfnTranscriptionQueue extends QueueAbstract {
         $this->excel = $excel;
 
         $this->transcriptionImportDir = Config::get('config.transcriptionImportDir');
+        if ( ! $this->filesystem->isDirectory($this->transcriptionImportDir))
+            $this->filesystem->makeDirectory($this->transcriptionImportDir);
     }
 
     /**
