@@ -72,7 +72,7 @@
                                 {{ ($errors->has('invite') ?  $errors->first('invite') : '') }}
                             </div>
                         </div>
-                        {{ Form::honeypot('registeruser', 'registertime') }}
+                        {{ Honeypot::generate('registeruser', 'registertime') }}
                     </div>
                     {{ Form::submit(trans('buttons.register'), array('class' => 'btn btn-primary btn-block')) }}
                 {{ Form::close() }}

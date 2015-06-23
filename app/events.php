@@ -60,11 +60,14 @@ Queue::failing(function ($connection, $job)
     if ($job->getQueue() == Config::get('config.beanstalkd.default'))
         return;
 
+    $id = $job->getJobId();
+    $jobData = $job->getRawBody();
+
     Event::fire('user.sendreport', [
         'email'   => null,
         'subject' => trans('emails.failed_job_subject'),
         'view'    => 'emails.report-failed-jobs',
-        'data'    => ['text' => trans('emails.failed_job_message', ['id' => $job->getJobId(), 'jobData' => $job->getRawBody()])],
+        'data'    => ['text' => trans('emails.failed_job_message', ['id' => $id, 'jobData' => $jobData])],
     ]);
 
     return;

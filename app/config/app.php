@@ -117,8 +117,7 @@ return [
         'Cviebrock\EloquentSluggable\SluggableServiceProvider',
         'Cviebrock\ImageValidator\ImageValidatorServiceProvider',
         'DaveJamesMiller\Breadcrumbs\ServiceProvider',
-        'Msurguy\Honeypot\HoneypotServiceProvider',
-        'Maatwebsite\Excel\ExcelServiceProvider',
+        'Msurguy\Honeypot\HoneypotServiceProvider'
     ],
 
     /*
@@ -189,7 +188,6 @@ return [
         'Local'       => 'Mcamara\LaravelLocalization\Facades\LaravelLocalization',
         'Carbon'      => 'Carbon\Carbon',
         'Breadcrumbs' => 'DaveJamesMiller\Breadcrumbs\Facade',
-        'Excel'       => 'Maatwebsite\Excel\Facades\Excel',
         'Honeypot' => 'Msurguy\Honeypot\HoneypotFacade',
     ],
 

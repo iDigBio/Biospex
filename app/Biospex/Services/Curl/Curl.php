@@ -137,19 +137,6 @@ class Curl {
     }
 
     /**
-     * Add a request to the request queue
-     *
-     * @param Request $request
-     * @return bool
-     */
-    public function add($request)
-    {
-        $this->requests[] = $request;
-
-        return true;
-    }
-
-    /**
      * Create new Request and add it to the request queue
      *
      * @param string $url
@@ -159,7 +146,7 @@ class Curl {
      * @param  $options
      * @return bool
      */
-    public function request($url, $method = "GET", $post_data = null, $headers = null, $options = null)
+    private function request($url, $method = "GET", $post_data = null, $headers = null, $options = null)
     {
         $this->requests[] = new Request($url, $method, $post_data, $headers, $options);
 
@@ -204,43 +191,36 @@ class Curl {
         // rolling curl window must always be greater than 1
         if (sizeof($this->requests) == 1)
         {
-            return $this->single_curl();
+            return $this->single();
         }
         else
         {
             // start the rolling curl. window_size is the max number of simultaneous connections
-            return $this->rolling_curl($window_size);
+            return $this->rolling($window_size);
         }
     }
 
     /**
-     * Performs a single curl request
+     * Performs a single curl request. Callback is optional.
      *
-     * @access private
-     * @return string
+     * @return bool|mixed
      */
-    private function single_curl()
+    private function single()
     {
         $ch = curl_init();
         $request = array_shift($this->requests);
-        $options = $this->get_options($request);
+        $options = $this->getOptions($request);
         curl_setopt_array($ch, $options);
         $output = curl_exec($ch);
         $info = curl_getinfo($ch);
 
-        // it's not neccesary to set a callback for one-off requests
-        if ($this->callback)
-        {
-            $callback = $this->callback;
-            if (is_callable($this->callback))
-            {
-                call_user_func($callback, $output, $info, $request);
-            }
-        }
-        else
+        if ( ! $this->callback)
             return $output;
 
-        return true;
+        if ( ! is_callable($this->callback))
+            return false;
+
+        return call_user_func($this->callback, $output, $info, $request);
     }
 
     /**
@@ -251,7 +231,7 @@ class Curl {
      * @param int $window_size Max number of simultaneous connections
      * @return bool
      */
-    private function rolling_curl($window_size = null)
+    private function rolling($window_size = null)
     {
         if ($window_size)
             $this->window_size = $window_size;
@@ -272,7 +252,7 @@ class Curl {
         {
             $ch = curl_init();
 
-            $options = $this->get_options($this->requests[$i]);
+            $options = $this->getOptions($this->requests[$i]);
 
             curl_setopt_array($ch, $options);
             curl_multi_add_handle($master, $ch);
@@ -297,20 +277,19 @@ class Curl {
                 $output = curl_multi_getcontent($done['handle']);
 
                 // send the return values to the callback function.
-                $callback = $this->callback;
-                if (is_callable($callback))
+                if (is_callable($this->callback))
                 {
                     $key = (string) $done['handle'];
                     $request = $this->requests[$this->requestMap[$key]];
                     unset($this->requestMap[$key]);
-                    call_user_func($callback, $output, $info, $request);
+                    call_user_func($this->callback, $output, $info, $request);
                 }
 
                 // start a new request (it's important to do this before removing the old one)
                 if ($i < sizeof($this->requests) && isset($this->requests[$i]) && $i < count($this->requests))
                 {
                     $ch = curl_init();
-                    $options = $this->get_options($this->requests[$i]);
+                    $options = $this->getOptions($this->requests[$i]);
                     curl_setopt_array($ch, $options);
                     curl_multi_add_handle($master, $ch);
 
@@ -345,7 +324,7 @@ class Curl {
      * @param Request $request
      * @return array
      */
-    private function get_options($request)
+    private function getOptions($request)
     {
         // options for this entire curl object
         $options = $this->__get('options');

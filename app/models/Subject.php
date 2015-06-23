@@ -58,7 +58,20 @@ class Subject extends Eloquent {
 		return $this->belongsTo('Project');
 	}
 
-	public function scopeProjectId ($query, $id)
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\EmbedsMany
+     */
+    public function occurrence()
+    {
+        return $this->embedsOne('Occurrence', 'occurrence');
+    }
+
+    /**
+     * @param $query
+     * @param $id
+     * @return mixed
+     */
+	public function scopeProjectId($query, $id)
 	{
 		return $query->where('project_id', $id);
 	}
@@ -69,10 +82,22 @@ class Subject extends Eloquent {
 	 * @param $value
 	 * @return mixed
 	 */
-	public function findById ($value)
+	public function findById($value)
 	{
 		return $this->where('id', $value)->get();
 	}
+
+    /**
+     * Find by project id and occurrence id.
+     *
+     * @param $project_id
+     * @param $occurrence_id
+     * @return mixed
+     */
+    public function findByProjectOccurrenceId($project_id, $occurrence_id)
+    {
+        return $this->projectid($project_id)->where('occurrence.id', $occurrence_id)->get();
+    }
 
 	/**
 	 * Return count of project subjects not assigned to expeditions

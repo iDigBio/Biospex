@@ -26,7 +26,6 @@
 use Illuminate\Support\Facades\Config;
 use Menu\Menu;
 use Cartalyst\Sentry\Sentry;
-use Biospex\Repo\Navigation\NavigationInterface as Navigation;
 use Illuminate\Http\Request;
 
 class TopMenuComposer {
@@ -35,11 +34,6 @@ class TopMenuComposer {
 	 * @var Sentry
 	 */
 	protected $sentry;
-
-	/**
-	 * @var Navigation
-	 */
-	protected $navigation;
 
 	/**
 	 * @var Request
@@ -53,12 +47,10 @@ class TopMenuComposer {
 
 	public function __construct (
 		Sentry $sentry,
-		Navigation $navigation,
 		Request $request
     )
 	{
 		$this->sentry = $sentry;
-        $this->navigation = $navigation;
         $this->request = $request;
 
         $this->topmenu = Config::get('navigation.topmenu');

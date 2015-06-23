@@ -25,6 +25,7 @@
  */
 
 use Illuminate\Support\Facades\App;
+use Exception;
 
 class QueueFactory {
 

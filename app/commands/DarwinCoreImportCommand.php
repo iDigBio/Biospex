@@ -1,6 +1,6 @@
 <?php
 /**
- * SubjectImportProcess.php.php
+ * DarwinCoreImportProcess.php.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -26,21 +26,21 @@
 use Illuminate\Console\Command;
 use Biospex\Repo\Import\ImportInterface;
 
-class SubjectImportCommand extends Command {
+class DarwinCoreImportCommand extends Command {
 
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'subjects:import';
+    protected $name = 'dwc:import';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = "Command to re-queue subjects after a failure.";
+    protected $description = "Command to re-queue dwc import after a failure.";
 
     /**
      * Class constructor.
@@ -65,7 +65,7 @@ class SubjectImportCommand extends Command {
         $count = 0;
         foreach ($imports as $import)
         {
-            Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $import->id, 'class' => 'SubjectImportQueue'], Config::get('config.beanstalkd.import'));
+            Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $import->id, 'class' => 'DarwinCoreImportQueue'], Config::get('config.beanstalkd.import'));
             $count++;
         }
 

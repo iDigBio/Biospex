@@ -36,7 +36,7 @@ class TranscriptionImportReport extends Report {
      */
     public function complete($email, $title, $csv)
     {
-        $attachments = ! empty($csv) ? $this->createAttachment($csv, 'rejected') : [];
+        $attachments = ! empty($csv) ? $this->createAttachment($csv, 'duplicates') : [];
         $data = [
             'importMessage' => trans('emails.import_transcription_complete', ['project' => $title]),
             'csvMessage' => trans('emails.import_dup_rej_message'),

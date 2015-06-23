@@ -2,7 +2,7 @@
 
 use Illuminate\Console\Command;
 
-class TestCommand extends Command {
+class TestAppCommand extends Command {
 
     /**
      * The console command name.
@@ -16,15 +16,10 @@ class TestCommand extends Command {
 
     /**
      * Constructor
-     * @param SubjectInterface $subject
      */
-    public function __construct
-    (
-
-    )
+    public function __construct()
     {
         parent::__construct();
-
     }
 
     /**
@@ -32,7 +27,6 @@ class TestCommand extends Command {
      */
     public function fire()
     {
-
+        return;
     }
-
 }

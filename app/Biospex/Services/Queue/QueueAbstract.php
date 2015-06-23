@@ -54,11 +54,12 @@ abstract class QueueAbstract {
     }
 
     /**
-     * Release a job ack to the queue
+     * Release a job back to the queue
+     * @param null $seconds
      */
-    protected function release()
+    protected function release($seconds = null)
     {
-        $this->job->release();
+        $this->job->release($seconds);
     }
 
     /**
@@ -80,4 +81,5 @@ abstract class QueueAbstract {
     {
         return $this->job->getJobId();
     }
+
 }

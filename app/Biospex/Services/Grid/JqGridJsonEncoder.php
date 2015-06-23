@@ -23,8 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Illuminate\Support\Facades\Input;
-use Maatwebsite\Excel\Excel;
+
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\Expedition\ExpeditionInterface;
 use Exception;
@@ -55,13 +54,11 @@ class JqGridJsonEncoder {
 	 */
 	public function __construct(
 		SubjectInterface $subject,
-		ExpeditionInterface $expedition,
-		Excel $excel
+		ExpeditionInterface $expedition
 	)
 	{
 		$this->subject = $subject;
 		$this->expedition = $expedition;
-		$this->excel = $excel;
 	}
 
 	/**
@@ -242,80 +239,9 @@ class JqGridJsonEncoder {
 		}
 
 		if(isset($postedData['exportFormat']))
-		{
-			$this->excel->create($postedData['name'], function($excel) use ($rows, $postedData)
-			{
-				foreach (json_decode($postedData['fileProperties'], true) as $key => $value)
-				{
-					$method = 'set' . ucfirst($key);
+        {
 
-					$excel->$method($value);
-				}
-
-				$excel->sheet($postedData['name'], function($Sheet) use ($rows, $postedData)
-				{
-					$columnCounter = 0;
-
-					foreach (json_decode($postedData['model'], true) as $a => $model)
-					{
-						if(isset($model['hidden']) && $model['hidden'] !== true)
-						{
-							$columnCounter++;
-						}
-
-						if(isset($model['hidedlg']) && $model['hidedlg'] === true)
-						{
-							continue;
-						}
-
-						if(empty($postedData['pivot']))
-						{
-							foreach ($rows as $b => &$row)
-							{
-								if(isset($model['hidden']) && $model['hidden'] === true)
-								{
-									unset($row[$model['index']]);
-								}
-								else
-								{
-									if(isset($model['label']))
-									{
-										$row = array_add($row, $model['label'], $row[$model['index']]);
-										unset($row[$model['index']]);
-									}
-									else
-									{
-										$temp = $row[$model['index']];
-										unset($row[$model['index']]);
-										$row = array_add($row, $model['index'], $temp);
-									}
-								}
-							}
-						}
-
-						if(isset($model['align']) && isset($model['hidden']) && $model['hidden'] !== true)
-						{
-							$Sheet->getStyle($this->num_to_letter($columnCounter, true))->getAlignment()->applyFromArray(
-								array('horizontal' => $model['align'])
-							);
-						}
-					}
-
-					foreach (json_decode($postedData['sheetProperties'], true) as $key => $value)
-					{
-						$method = 'set' . ucfirst($key);
-
-						$Sheet->$method($value);
-					}
-
-					$Sheet->fromArray($rows);
-
-					$Sheet->row(1, function($Row) {
-						$Row->setFontWeight('bold');
-					});
-				});
-			})->export($postedData['exportFormat']);
-		}
+        }
 		else
 		{
 			echo json_encode([

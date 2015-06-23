@@ -38,7 +38,7 @@ $(document).ready(function() {
         rules: {
             file: {
                 required: true,
-                extension: "nfn"
+                extension: "zip"
             }
         }
     });
@@ -47,6 +47,13 @@ $(document).ready(function() {
             file: {
                 required: true,
                 extension: "csv"
+            }
+        }
+    });
+    $( "#form-recordset" ).validate({
+        rules: {
+            recordset: {
+                required: true
             }
         }
     });

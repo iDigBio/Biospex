@@ -1,6 +1,6 @@
 <?php  namespace Biospex\Services\Report;
 /**
- * SubjectImportReport.php
+ * DarwinCoreImportReport.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -24,7 +24,7 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class SubjectImportReport extends Report {
+class DarwinCoreImportReport extends Report {
 
 	/**
 	 * Send report for completed subject import

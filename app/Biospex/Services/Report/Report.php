@@ -27,7 +27,7 @@
 use Illuminate\Support\Contracts\MessageProviderInterface;
 use Biospex\Repo\Group\GroupInterface;
 use Biospex\Mailer\BiospexMailer;
-use Maatwebsite\Excel\Excel;
+use League\Csv\Writer;
 
 class Report {
 
@@ -53,16 +53,14 @@ class Report {
     public function __construct(
         MessageProviderInterface $messages,
         GroupInterface $group,
-        BiospexMailer $mailer,
-        Excel $excel
+        BiospexMailer $mailer
     )
     {
         $this->messages = $messages;
         $this->group = $group;
         $this->mailer = $mailer;
-        $this->excel = $excel;
 
-        $this->excelStorage = \Config::get('excel::export');
+        $this->exportReportsDir = \Config::get('config.exportReportsDir');
     }
 
     /**
@@ -144,22 +142,19 @@ class Report {
      */
     public function createAttachment($csv, $name = null)
     {
-        $path = $this->excelStorage['store']['path'] . "/report/";
+        $path = $this->exportReportsDir;
         if ( ! \File::isDirectory($path))
             \File::makeDirectory($path);
 
         $fileName = (is_null($name)) ? str_random(10) : $name . str_random(5);
         $ext = ".csv";
 
-        $this->excel->create($fileName, function ($excel) use ($csv)
-        {
-            $excel->sheet('page1', function ($sheet) use ($csv)
-            {
-                $sheet->fromArray($csv);
-            });
-        })->store('csv', $path);
+        $header = array_keys($csv[0]);
+        $writer = Writer::createFromPath(new \SplFileObject(storage_path($path . "/" . $fileName . $ext), 'a+'), 'w');
+        $writer->insertOne($header);
+        $writer->insertAll($csv);
 
-        return [$path . $fileName . $ext];
+        return [$path . "/" . $fileName . $ext];
     }
 
     /**

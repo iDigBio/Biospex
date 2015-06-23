@@ -1,6 +1,6 @@
 <?php
 /**
- * reminders.php
+ * Occurrence.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -23,25 +23,24 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-return array(
 
-	/*
-	|--------------------------------------------------------------------------
-	| Password Reminder Language Lines
-	|--------------------------------------------------------------------------
-	|
-	| The following language lines are the default lines which match reasons
-	| that are given by the password broker for a password update attempt
-	| has failed, such as for an invalid token or invalid new password.
-	|
-	*/
+use Jenssegers\Mongodb\Model as Eloquent;
 
-	"password" => "Las contraseñas deben tener al menos seis caracteres y que coincida con la confirmación.",
+class Occurrence extends Eloquent {
 
-	"user" => "No podemos encontrar un usuario con ese e-mail.",
+    /**
+     * Redefine connection to use mongodb
+     */
+    protected $connection = 'mongodb';
 
-	"token" => "Esta señal de restablecimiento de contraseña no es válida.",
+    /**
+     * Set primary key
+     */
+    protected $primaryKey = '_id';
 
-	"sent" => "Contraseña recordatorio enviado!",
+    /**
+     * set guarded properties
+     */
+    protected $guarded = ['_id'];
 
-);
+}

@@ -26,13 +26,10 @@
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Validator;
 use Biospex\Repo\Import\ImportInterface;
-use Biospex\Repo\Transcription\TranscriptionInterface;
-use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Services\Report\TranscriptionImportReport;
-use Maatwebsite\Excel\Excel;
-use Rhumsaa\Uuid\Console\Exception;
+use Biospex\Services\Process\NfnTranscription;
+use Exception;
 
 class NfnTranscriptionQueue extends QueueAbstract {
 
@@ -47,7 +44,7 @@ class NfnTranscriptionQueue extends QueueAbstract {
     protected $import;
 
     /**
-     * @var TranscriptionInterface
+     * @var NfnTranscription
      */
     protected $transcription;
 
@@ -64,11 +61,6 @@ class NfnTranscriptionQueue extends QueueAbstract {
     protected $csv = [];
 
     /**
-     * @var Excel
-     */
-    protected $excel;
-
-    /**
      * Directory where transcriptions files are stored.
      *
      * @var string
@@ -76,30 +68,24 @@ class NfnTranscriptionQueue extends QueueAbstract {
     protected $transcriptionImportDir;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Filesystem $filesystem
      * @param ImportInterface $import
-     * @param TranscriptionInterface $transcription
-     * @param SubjectInterface $subject
      * @param TranscriptionImportReport $report
-     * @param Excel $excel
+     * @param NfnTranscription $transcription
      */
     public function __construct(
         Filesystem $filesystem,
         ImportInterface $import,
-        TranscriptionInterface $transcription,
-        SubjectInterface $subject,
         TranscriptionImportReport $report,
-        Excel $excel
+        NfnTranscription $transcription
     )
     {
         $this->filesystem = $filesystem;
         $this->import = $import;
-        $this->transcription = $transcription;
-        $this->subject = $subject;
         $this->report = $report;
-        $this->excel = $excel;
+        $this->transcription = $transcription;
 
         $this->transcriptionImportDir = Config::get('config.transcriptionImportDir');
         if ( ! $this->filesystem->isDirectory($this->transcriptionImportDir))
@@ -121,35 +107,8 @@ class NfnTranscriptionQueue extends QueueAbstract {
 
         try
         {
-            $data = $this->excel->load($file)->get()->toArray();
-            $header = [];
-            foreach($data as $key => $row)
-            {
-                list($header, $row) = $this->createHeader($header, $key, $row);
-                if ($key == 0)
-                    continue;
-
-                $combined = array_combine($header, $row);
-
-                // Check if fsu collection and search subjects by file name
-                $subject = $this->getSubject($combined);
-
-                if ( ! $subject)
-                {
-                    $this->csv[] = $combined;
-                    continue;
-                }
-
-                $addArray = ['project_id' => (string) $subject->project_id, 'expedition_ids' => $subject->expedition_ids];
-                $combined = $addArray + $combined;
-
-                if ($this->validate($combined))
-                    continue;
-
-                $this->transcription->create($combined);
-            }
-
-            $this->report->complete($import->user->email, $import->project->title, $this->csv);
+            $csv = $this->transcription->process($file);
+            $this->report->complete($import->user->email, $import->project->title, $csv);
             $this->filesystem->delete($file);
             $this->import->destroy($import->id);
         }
@@ -168,77 +127,5 @@ class NfnTranscriptionQueue extends QueueAbstract {
         $this->delete();
 
         return;
-    }
-
-    /**
-     * Validate transcription to prevent duplicates.
-     *
-     * @param $combined
-     * @return mixed
-     */
-    public function validate($combined)
-    {
-        $rules = ['nfn_id' => 'unique:transcriptions'];
-        $values = ['nfn_id' => $combined['nfn_id']];
-        $validator = Validator::make($values, $rules);
-        $validator->getPresenceVerifier()->setConnection('mongodb');
-
-        // returns true if failed.
-        $fail = $validator->fails();
-
-        if ($fail)
-            $this->csv[] = $combined;
-
-        return $fail;
-    }
-
-    /**
-     * Build header row.
-     *
-     * @param $header
-     * @param $key
-     * @param $row
-     * @return array
-     */
-    public function createHeader(&$header, $key, $row)
-    {
-        if ($key != 0)
-            return [$header, $row];
-
-        $row[0] = 'nfn_id';
-        $header = $row;
-        $header = array_replace($header, array_fill_keys(array_keys($header, 'created_at'), 'create_date'));
-
-        return [$header, $row];
-    }
-
-    /**
-     * @param $combined
-     * @return mixed
-     */
-    public function getSubject($combined)
-    {
-        if ($this->checkCollection($combined))
-        {
-            $filename = strtok(trim($combined['filename']), '.');
-            $subject = $this->subject->findByFilename($filename);
-        }
-        else
-        {
-            $subject = $this->subject->find(trim($combined['subject_id']));
-        }
-
-        return $subject;
-    }
-
-    /**
-     * Check if FSU collection.
-     *
-     * @param $combined
-     * @return bool
-     */
-    public function checkCollection($combined)
-    {
-        return strtolower(trim($combined['collection'])) == 'fsu';
     }
 }

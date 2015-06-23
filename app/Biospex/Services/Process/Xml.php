@@ -1,6 +1,6 @@
-<?php namespace Biospex\Services\Xml;
+<?php namespace Biospex\Services\Process;
 /**
- * XmlProcess.php
+ * Xml.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -24,29 +24,28 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class XmlProcess {
+class Xml {
 
 	private $xml = null;
 	private $xpath = null;
 	private $encoding = 'UTF-8';
 	private $version = '1.0';
 
-	/**
-	 * Load xml string and return
-	 *
-	 * @param $input_xml
-	 * @return \DOMDocument
-	 * @throws XmlProcessException
-	 */
+    /**
+     * Load xml string and return
+     *
+     * @param $input_xml
+     * @return string
+     * @throws \Exception
+     */
 	public function load($input_xml)
 	{
 		$this->xml = new \DOMDocument($this->version, $this->encoding);
 		$this->xml->preserveWhiteSpace = false;
 
 		$parsed = $this->xml->load($input_xml);
-		if(!$parsed) {
+		if(!$parsed)
 			throw new \Exception(trans('emails.error_loading_xml'));
-		}
 
 		$this->xpath = new \DOMXpath($this->xml);
 		$this->xpath->registerNamespace('ns', $this->xml->documentElement->namespaceURI);

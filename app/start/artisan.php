@@ -12,8 +12,8 @@
 Artisan::resolve('WorkFlowManagerCommand');
 Artisan::resolve('DownloadCleanCommand');
 Artisan::resolve('ViewsCommand');
-Artisan::resolve('TestCommand');
+Artisan::resolve('TestAppCommand');
 Artisan::resolve('ClearBeanstalkdQueueCommand');
 Artisan::resolve('OcrQueueCheckCommand');
-Artisan::resolve('SubjectImportCommand');
+Artisan::resolve('DarwinCoreImportCommand');
 

@@ -90,12 +90,6 @@ class ImportsController extends BaseController {
      */
     public function upload($id)
     {
-        if (empty(Input::file('file')))
-        {
-            Session::flash('error', trans('pages.file_required'));
-            return Redirect::route('projects.import', [$id]);
-        }
-
         $obj = $this->importFactory->create(Input::get('class'));
         if ( ! $obj)
         {
@@ -103,13 +97,10 @@ class ImportsController extends BaseController {
             return Redirect::route('projects.import', [$id]);
         }
 
-        $result = $obj->import($id);
+        $validate = $obj->import($id);
 
-        if ( ! empty($result))
-        {
-            Session::flash('error', trans('pages.upload_error', ['error' => $result]));
-            return Redirect::route('projects.import', [$id]);
-        }
+        if ( ! empty($validate))
+            return Redirect::route('projects.import', [$id])->withErrors($validate);
 
         Session::flash('success', trans('pages.upload_trans_success'));
         return Redirect::route('projects.show', [$id]);

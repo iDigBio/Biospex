@@ -40,4 +40,6 @@ interface SubjectInterface extends RepositoryInterface {
 	public function getRows($limit, $offset, $orderBy = null, $sord = null, array $filters = array());
 
     public function findByFilename($filename);
+
+    public function findByProjectOccurrenceId($project_id, $occurrence_id);
 }

@@ -42,6 +42,8 @@ return [
     'site.ocrCrop'        => 'no',
     'site.disableOcr'     => true,
 
+    'nfn.collection'      => 'fsu',
+
     'beanstalkd.default'  => 'default',
     'beanstalkd.import'   => 'import',
     'beanstalkd.workflow' => 'workflow',

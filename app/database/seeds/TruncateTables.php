@@ -42,5 +42,6 @@ class TruncateTables extends Seeder {
 			DB::table($name)->truncate();
 		}
 		DB::connection('mongodb')->collection('subjects')->truncate();
+        DB::connection('mongodb')->collection('transcriptions')->truncate();
 	}
 }

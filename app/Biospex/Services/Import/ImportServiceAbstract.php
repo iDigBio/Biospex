@@ -98,22 +98,6 @@ abstract class ImportServiceAbstract {
     }
 
     /**
-     * Validation on uploaded files.
-     *
-     * @param $type
-     * @return mixed
-     */
-    protected function validate($type)
-    {
-        $validator = \Validator::make(
-            ['file' => \Input::file('file')],
-            ['file' => 'required|mimes:' . $type]
-        );
-
-        return $validator->fails();
-    }
-
-    /**
      * Move uploaded file.
      *
      * @return mixed

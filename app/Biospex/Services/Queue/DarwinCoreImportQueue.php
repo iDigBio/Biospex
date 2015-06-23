@@ -1,7 +1,7 @@
 <?php namespace Biospex\Services\Queue;
 
 /**
- * SubjectsImportService.php
+ * DarwinCoreImportService.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -29,13 +29,13 @@ use Illuminate\Filesystem\Filesystem;
 use Cartalyst\Sentry\Sentry;
 use Biospex\Repo\Import\ImportInterface;
 use Biospex\Repo\Project\ProjectInterface;
-use Biospex\Services\Report\SubjectImportReport;
-use Biospex\Services\Subject\SubjectProcess;
-use Biospex\Services\Xml\XmlProcess;
+use Biospex\Services\Report\DarwinCoreImportReport;
+use Biospex\Services\Process\DarwinCore;
+use Biospex\Services\Process\Xml;
 use Biospex\Mailer\BiospexMailer;
 use Illuminate\Support\Facades\Config;
 
-class SubjectImportQueue extends QueueAbstract{
+class DarwinCoreImportQueue extends QueueAbstract{
 
     /**
      * @var Filesystem
@@ -58,19 +58,19 @@ class SubjectImportQueue extends QueueAbstract{
     protected $sentry;
 
     /**
-     * @var SubjectImportReport
+     * @var DarwinCoreImportReport
      */
     protected $report;
 
     /**
-     * @var SubjectProcess
+     * @var DarwinCore
      */
-    protected $subjectProcess;
+    protected $process;
 
     /**
-     * @var XmlProcess
+     * @var xml
      */
-    protected $xmlProcess;
+    protected $xml;
 
     /**
      * @var BiospexMailer
@@ -100,21 +100,21 @@ class SubjectImportQueue extends QueueAbstract{
      *
      * @param ImportInterface $import
      * @param Filesystem $filesystem
-     * @param SubjectProcess $subjectProcess
-     * @param XmlProcess $xmlProcess
+     * @param DarwinCore $process
+     * @param Xml $xml
      * @param Sentry $sentry
      * @param ProjectInterface $project
      * @param BiospexMailer $mailer
-     * @param SubjectImportReport $report
+     * @param DarwinCoreImportReport $report
      */
     public function __construct(
         Filesystem $filesystem,
         ImportInterface $import,
         ProjectInterface $project,
         Sentry $sentry,
-        SubjectImportReport $report,
-        SubjectProcess $subjectProcess,
-        XmlProcess $xmlProcess,
+        DarwinCoreImportReport $report,
+        DarwinCore $process,
+        Xml $xml,
         BiospexMailer $mailer
     )
     {
@@ -123,8 +123,8 @@ class SubjectImportQueue extends QueueAbstract{
         $this->project = $project;
         $this->sentry = $sentry;
         $this->report = $report;
-        $this->subjectProcess = $subjectProcess;
-        $this->xmlProcess = $xmlProcess;
+        $this->process = $process;
+        $this->xml = $xml;
         $this->mailer = $mailer;
 
         $this->scratchDir = Config::get('config.scratchDir');
@@ -158,10 +158,10 @@ class SubjectImportQueue extends QueueAbstract{
             $this->makeTmp();
             $this->unzip($zipFile);
 
-            $this->subjectProcess->processSubjects($import->project_id, $this->scratchFileDir);
+            $this->process->process($import->project_id, $this->scratchFileDir);
 
-            $duplicates = $this->subjectProcess->getDuplicates();
-            $rejects = $this->subjectProcess->getRejectedMedia();
+            $duplicates = $this->process->getDuplicates();
+            $rejects = $this->process->getRejectedMedia();
 
             $this->report->complete($user->email, $project->title, $duplicates, $rejects);
 

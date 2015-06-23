@@ -31,6 +31,7 @@ use Cviebrock\EloquentSluggable\SluggableInterface;
 use Cviebrock\EloquentSluggable\SluggableTrait;
 use Biospex\Traits\UuidTrait;
 use Illuminate\Support\Facades\Config;
+use Biospex\Helpers\Helper;
 
 class Project extends Eloquent implements StaplerableInterface, SluggableInterface{
 
@@ -293,7 +294,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         $extra = isset($input['advertiseExtra']) ? $input['advertiseExtra'] : '';
 
         $build = [];
-        $ppsrFields = \Config::get('config.ppsr');
+        $ppsrFields = Config::get('config.ppsr');
         foreach ($ppsrFields as $field => $data)
         {
             foreach ($data as $type => $value)
@@ -301,6 +302,11 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
                 if ($type == 'private')
                 {
                     $build[$field] = $this->{$value};
+                }
+
+                if ($type == 'date')
+                {
+                    $build[$field] = Helper::formatDate($this->{$value}, 'Y-m-d m:d:s');
                 }
 
                 if ($type == 'column')

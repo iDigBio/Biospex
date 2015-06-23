@@ -3,41 +3,56 @@
 return [
 
     /** Set Admin email */
-    'adminEmail'        => $_ENV['site.adminEmail'],
+    'adminEmail'             => $_ENV['site.adminEmail'],
 
     /**
      * Allow/Disallow registration
      */
-    'registration'      => $_ENV['site.registration'],
+    'registration'           => $_ENV['site.registration'],
 
     /** Turn on language translation in main menu */
-    'translate'         => false,
+    'translate'              => false,
 
     /** Scratch drive for performing processes */
-    'scratchDir'        => storage_path('scratch'),
+    'scratchDir'             => storage_path('scratch'),
 
     /** NfN Export storage */
-    'nfnExportDir'      => storage_path('exports/nfn'),
+    'nfnExportDir'           => storage_path('exports/nfn'),
+
+    /**
+     * Export reports directory
+     */
+    'exportReportsDir'       => storage_path('exports/report'),
 
     /** Subjects import directory */
-    'subjectImportDir' => storage_path('imports/subjects'),
+    'subjectImportDir'       => storage_path('imports/subjects'),
 
     /** Results import directory */
-    'transcriptionImportDir'  => storage_path('imports/transcriptions'),
+    'transcriptionImportDir' => storage_path('imports/transcriptions'),
+
+    /**
+     * iDigBio api query url
+     */
+    'recordsetUrl'           => 'https://csv.idigbio.org/?query={"recordset":"RECORDSET_ID"}',
+
+    /**
+     * Match used in Notes From Nature transcription import for matching.
+     */
+    'collection'             => $_ENV['nfn.collection'],
 
     /*
      * OCR
      */
-    'ocrPostUrl'        => $_ENV['site.ocrPostUrl'],
-    'ocrGetUrl'         => $_ENV['site.ocrGetUrl'],
-    'ocrDeleteUrl'      => $_ENV['site.ocrDeleteUrl'],
-    'ocrCrop'           => $_ENV['site.ocrCrop'],
-    'disableOcr'        => $_ENV['site.disableOcr'],
+    'ocrPostUrl'             => $_ENV['site.ocrPostUrl'],
+    'ocrGetUrl'              => $_ENV['site.ocrGetUrl'],
+    'ocrDeleteUrl'           => $_ENV['site.ocrDeleteUrl'],
+    'ocrCrop'                => $_ENV['site.ocrCrop'],
+    'disableOcr'             => $_ENV['site.disableOcr'],
 
     /*
      * Beanstalkd queues for myqueue.conf per site.
      */
-    'beanstalkd'        => [
+    'beanstalkd'             => [
         'default'  => $_ENV['beanstalkd.default'],
         'import'   => $_ENV['beanstalkd.import'],
         'workflow' => $_ENV['beanstalkd.workflow'],
@@ -45,7 +60,7 @@ return [
     ],
 
     /** Imagine settings */
-    'images'            => [
+    'images'                 => [
         'thumbDefaultImg'    => '/assets/default_image.jpg',
         'thumbOutputDir'     => storage_path('images'),
         'thumbWidth'         => 150,
@@ -61,13 +76,13 @@ return [
     ],
 
     /** Min and max logo and banner sizes used in Project model for Codesleve Stapler */
-    'logo'              => '300x200',
-    'banner'            => '1200x300',
+    'logo'                   => '300x200',
+    'banner'                 => '1200x300',
 
     /**
      * Possible identifiers in subject uploads.
      */
-    'identifiers'       => [
+    'identifiers'            => [
         'identifier',
         'providerManagedID',
         'uuid',
@@ -77,7 +92,7 @@ return [
     /**
      * Visible columns in jqGrid.
      */
-    'modelColumns'      => [
+    'modelColumns'           => [
         'Assigned',
         'Id',
         'AccessURI',
@@ -87,7 +102,7 @@ return [
     /**
      * Columns used in select statement for grid.
      */
-    'selectColumns'     => [
+    'selectColumns'          => [
         'expedition_ids',
         'id',
         'accessURI',
@@ -97,12 +112,12 @@ return [
     /**
      * Default advertise fields for PPSR_CORE
      */
-    'ppsr'              => [
+    'ppsr'                   => [
         'ProjectGUID'             => ['private' => 'uuid'],
         'ProjectName'             => ['column' => 'title'],
         'ProjectDataProvider'     => ['value' => $_ENV['site.name']],
         'ProjectDescription'      => ['column' => 'description_long'],
-        'ProjectDateLastUpdated'  => ['private' => 'updated_at'],
+        'ProjectDateLastUpdated'  => ['date' => 'updated_at'],
         'ProjectContactName'      => ['column' => 'contact'],
         'ProjectContactEmail'     => ['column' => 'contact_email'],
         'ProjectStatus'           => ['column' => 'status'],
@@ -120,7 +135,7 @@ return [
         'projectImage'            => ['url' => 'logo'],
     ],
 
-    'statusSelect'      => [
+    'statusSelect'           => [
         'starting' => 'Starting',
         'acting'   => 'Acting',
         'complete' => 'Complete',
@@ -131,7 +146,7 @@ return [
      * Default group permissions
      */
 
-    'group_permissions' => [
+    'group_permissions'      => [
         "project_create"    => 1,
         "project_edit"      => 1,
         "project_view"      => 1,

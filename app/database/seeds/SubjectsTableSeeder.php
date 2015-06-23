@@ -25,21 +25,20 @@
  */
 
 use Illuminate\Database\Seeder;
-use Biospex\Services\Subject\SubjectProcess;
+use Biospex\Services\Process\DarwinCore;
 
 class SubjectsTableSeeder extends Seeder {
 
 	/**
 	 * Constructor
 	 *
-	 * @param SubjectProcess $subjectProcess
-	 * @param XmlProcess $xmlProcess
+	 * @param DarwinCore $process
 	 */
     public function __construct (
-		SubjectProcess $subjectProcess
+        DarwinCore $process
 	)
     {
-        $this->subjectProcess = $subjectProcess;
+        $this->process = $process;
     }
 
     /**
@@ -54,7 +53,7 @@ class SubjectsTableSeeder extends Seeder {
 		$dir = 'app/database/seeds/data';
 		try
 		{
-			$this->subjectProcess->processSubjects(1, $dir);
+			$this->process->process(1, $dir);
 		} catch (Exception $e)
 		{
 			die($e->getMessage() . $e->getTraceAsString());

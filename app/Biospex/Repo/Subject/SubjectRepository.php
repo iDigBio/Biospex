@@ -102,4 +102,14 @@ class SubjectRepository extends Repository implements SubjectInterface {
     {
         return $this->model->findByFilename($filename);
     }
+
+    /**
+     * @param $project_id
+     * @param $occurrence_id
+     * @return mixed
+     */
+    public function findByProjectOccurrenceId($project_id, $occurrence_id)
+    {
+        return $this->model->findByProjectOccurrenceId($project_id, $occurrence_id);
+    }
 }

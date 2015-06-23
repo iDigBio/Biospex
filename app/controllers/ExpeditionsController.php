@@ -29,7 +29,7 @@ use Biospex\Form\Expedition\ExpeditionForm;
 use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
-use Biospex\Services\Subject\SubjectProcess;
+use Biospex\Services\Process\DarwinCore;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Config;
 
@@ -66,9 +66,9 @@ class ExpeditionsController extends BaseController {
     protected $sentry;
 
     /**
-     * @var Biospex\Services\Subject\SubjectProcess
+     * @var Biospex\Services\Process\DarwinCore
      */
-    protected $subjectProcess;
+    protected $process;
 
     /**
      * Instantiate a new ExpeditionsController.
@@ -79,7 +79,7 @@ class ExpeditionsController extends BaseController {
      * @param SubjectInterface $subject
      * @param WorkflowManagerInterface $workflowManager
      * @param Sentry $sentry
-     * @param SubjectProcess $subjectProcess
+     * @param DarwinCore $process
      */
     public function __construct(
         ExpeditionInterface $expedition,
@@ -88,7 +88,7 @@ class ExpeditionsController extends BaseController {
         SubjectInterface $subject,
         WorkflowManagerInterface $workflowManager,
         Sentry $sentry,
-        SubjectProcess $subjectProcess
+        DarwinCore $process
     )
     {
         $this->expedition = $expedition;
@@ -97,7 +97,7 @@ class ExpeditionsController extends BaseController {
         $this->subject = $subject;
         $this->workflowManager = $workflowManager;
         $this->sentry = $sentry;
-        $this->subjectProcess = $subjectProcess;
+        $this->process = $process;
 
         // Establish Filters
 		$this->beforeFilter('auth');
@@ -288,19 +288,19 @@ class ExpeditionsController extends BaseController {
 
             $data = [];
             $count = 0;
-            $this->subjectProcess->setProjectId($projectId);
+            $this->process->setProjectId($projectId);
             foreach ($expedition->subjects as $subject)
             {
                 if ( ! empty($subject->ocr))
                     continue;
 
-                $this->subjectProcess->buildOcrQueue($data, $subject);
+                $this->process->buildOcrQueue($data, $subject);
                 $count++;
             }
 
             if ($count > 0 && ! \Config::get('config.disableOcr'))
             {
-                $id = $this->subjectProcess->saveOcrQueue($data, $count);
+                $id = $this->process->saveOcrQueue($data, $count);
                 \Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $id, 'class' => 'OcrProcessQueue'], Config::get('config.beanstalkd.ocr'));
             }
 

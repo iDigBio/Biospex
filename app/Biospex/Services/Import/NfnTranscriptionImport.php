@@ -36,8 +36,13 @@ class NfnTranscriptionImport extends ImportServiceAbstract {
      */
     public function import($id)
     {
-        if($this->validate('txt'))
-            return trans('pages.file_type_error');
+        $validator = \Validator::make(
+            ['file' => \Input::file('file')],
+            ['file' => 'required|mimes:txt']
+        );
+
+        if ($validator->fails())
+            return $validator;
 
         $this->setDirectory('config.transcriptionImportDir');
 
