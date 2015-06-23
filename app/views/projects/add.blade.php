@@ -33,7 +33,7 @@
                     'class' => 'form-horizontal',
                     'role' => 'form'
                 ]) }}
-                <p>{{ HTML::link("#dataModal", 'Instructions', ['class' => 'btn btn-xs btn-primary', 'data-toggle'=>'modal']) }}</p>
+                <p>{{ HTML::link("#dataModal", 'Instructions', ['class' => 'btn btn-xs btn-info', 'data-toggle'=>'modal']) }}</p>
 
                 <div class="form-group {{ ($errors->has('file')) ? 'has-error' : '' }}">
                     {{ Form::label('file', trans('forms.file'), ['id' => 'file', 'class' => 'col-sm-2 control-label']) }}
@@ -45,8 +45,8 @@
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        {{ Form::submit(trans('buttons.upload'), ['class' => 'btn btn-xs btn-success'])}}
-                        {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-xs btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
+                        {{ Form::submit(trans('buttons.upload'), ['class' => 'btn btn-xs btn-primary'])}}
+                        {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-xs btn-danger', 'onClick' => "location.href='$cancel'"]) }}
                     </div>
                 </div>
                 {{ Form::hidden('class', 'DarwinCoreImport') }}
@@ -68,7 +68,7 @@
                     'class' => 'form-horizontal',
                     'role' => 'form'
                 )) }}
-                <p>{{ HTML::link("#recordsetModal", 'Instructions', ['class' => 'btn btn-xs btn-primary', 'data-toggle'=>'modal']) }}</p>
+                <p>{{ HTML::link("#recordsetModal", 'Instructions', ['class' => 'btn btn-xs btn-info', 'data-toggle'=>'modal']) }}</p>
 
                 <div class="form-group {{ ($errors->has('recordset')) ? 'has-error' : '' }}">
                     {{ Form::label('recordset', trans('forms.recordset'), array('id' => 'recordset', 'class' => 'col-sm-2 control-label')) }}
@@ -80,8 +80,8 @@
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        {{ Form::submit(trans('buttons.upload'), ['class' => 'btn btn-xs btn-success'])}}
-                        {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-xs btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
+                        {{ Form::submit(trans('buttons.upload'), ['class' => 'btn btn-xs btn-primary'])}}
+                        {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-xs btn-danger', 'onClick' => "location.href='$cancel'"]) }}
                     </div>
                 </div>
                 {{ Form::hidden('class', 'RecordSetImport') }}
@@ -106,7 +106,7 @@
                     'class' => 'form-horizontal',
                     'role' => 'form'
                 ]) }}
-                <p>{{ HTML::link("#transcriptionModal", 'Instructions', ['class' => 'btn btn-xs btn-primary', 'data-toggle'=>'modal']) }}</p>
+                <p>{{ HTML::link("#transcriptionModal", 'Instructions', ['class' => 'btn btn-xs btn-info', 'data-toggle'=>'modal']) }}</p>
                 <div class="form-group {{ ($errors->has('file')) ? 'has-error' : '' }}">
                     {{ Form::label('file', trans('forms.file'), ['id' => 'file', 'class' => 'col-sm-2 control-label']) }}
                     <div class="col-sm-10">
@@ -117,8 +117,8 @@
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        {{ Form::submit(trans('buttons.upload'), ['class' => 'btn btn-xs btn-success'])}}
-                        {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-xs btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
+                        {{ Form::submit(trans('buttons.upload'), ['class' => 'btn btn-xs btn-primary'])}}
+                        {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-xs btn-danger', 'onClick' => "location.href='$cancel'"]) }}
                     </div>
                 </div>
                 {{ Form::hidden('class', 'NfnTranscriptionImport') }}
