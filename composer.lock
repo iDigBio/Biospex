@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "547112a2b832547a4157a47ccd95c10f",
+    "hash": "cd864c461efedf3795c78f16bc3239ec",
     "packages": [
         {
             "name": "anahkiasen/html-object",
@@ -1172,16 +1172,16 @@
         },
         {
             "name": "filp/whoops",
-            "version": "1.1.6",
+            "version": "1.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filp/whoops.git",
-                "reference": "37b5e653c99cbb9113108d7dc59a0ddc306acc46"
+                "reference": "72538eeb70bbfb11964412a3d098d109efd012f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filp/whoops/zipball/37b5e653c99cbb9113108d7dc59a0ddc306acc46",
-                "reference": "37b5e653c99cbb9113108d7dc59a0ddc306acc46",
+                "url": "https://api.github.com/repos/filp/whoops/zipball/72538eeb70bbfb11964412a3d098d109efd012f7",
+                "reference": "72538eeb70bbfb11964412a3d098d109efd012f7",
                 "shasum": ""
             },
             "require": {
@@ -1226,7 +1226,7 @@
                 "whoops",
                 "zf2"
             ],
-            "time": "2015-05-29 15:12:07"
+            "time": "2015-06-29 05:42:04"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1878,16 +1878,16 @@
         },
         {
             "name": "mcamara/laravel-localization",
-            "version": "0.14.9",
+            "version": "0.15.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mcamara/laravel-localization.git",
-                "reference": "83013e3f53802dbdc139b872dbc5a3add33d3337"
+                "reference": "6dfcf17fe48ceb05c76b542cde648d8b6afe9e48"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mcamara/laravel-localization/zipball/83013e3f53802dbdc139b872dbc5a3add33d3337",
-                "reference": "83013e3f53802dbdc139b872dbc5a3add33d3337",
+                "url": "https://api.github.com/repos/mcamara/laravel-localization/zipball/6dfcf17fe48ceb05c76b542cde648d8b6afe9e48",
+                "reference": "6dfcf17fe48ceb05c76b542cde648d8b6afe9e48",
                 "shasum": ""
             },
             "require": {
@@ -1922,20 +1922,20 @@
                 "localization",
                 "php"
             ],
-            "time": "2014-10-08 10:22:06"
+            "time": "2014-11-24 09:54:46"
         },
         {
             "name": "monolog/monolog",
-            "version": "1.14.0",
+            "version": "1.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "b287fbbe1ca27847064beff2bad7fb6920bf08cc"
+                "reference": "dc5150cc608f2334c72c3b6a553ec9668a4156b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/b287fbbe1ca27847064beff2bad7fb6920bf08cc",
-                "reference": "b287fbbe1ca27847064beff2bad7fb6920bf08cc",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/dc5150cc608f2334c72c3b6a553ec9668a4156b0",
+                "reference": "dc5150cc608f2334c72c3b6a553ec9668a4156b0",
                 "shasum": ""
             },
             "require": {
@@ -1972,7 +1972,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.14.x-dev"
+                    "dev-master": "1.15.x-dev"
                 }
             },
             "autoload": {
@@ -1998,7 +1998,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2015-06-19 13:29:54"
+            "time": "2015-07-12 13:54:09"
         },
         {
             "name": "msurguy/honeypot",
@@ -2191,16 +2191,16 @@
         },
         {
             "name": "patchwork/utf8",
-            "version": "v1.2.2",
+            "version": "v1.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tchwork/utf8.git",
-                "reference": "7287a6fb2c46a66ac6bfbaf0e4975229b27efcba"
+                "reference": "a7a9a987d01d052ff9c99510ecbd07ebc6c270f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tchwork/utf8/zipball/7287a6fb2c46a66ac6bfbaf0e4975229b27efcba",
-                "reference": "7287a6fb2c46a66ac6bfbaf0e4975229b27efcba",
+                "url": "https://api.github.com/repos/tchwork/utf8/zipball/a7a9a987d01d052ff9c99510ecbd07ebc6c270f2",
+                "reference": "a7a9a987d01d052ff9c99510ecbd07ebc6c270f2",
                 "shasum": ""
             },
             "require": {
@@ -2220,10 +2220,12 @@
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Patchwork": "class/",
-                    "Normalizer": "class/"
-                }
+                "psr-4": {
+                    "Patchwork\\": "src/Patchwork/"
+                },
+                "classmap": [
+                    "src/Normalizer.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -2244,7 +2246,7 @@
                 "utf-8",
                 "utf8"
             ],
-            "time": "2015-04-26 09:51:43"
+            "time": "2015-06-25 08:17:49"
         },
         {
             "name": "pda/pheanstalk",
@@ -3759,12 +3761,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/raveren/kint.git",
-                "reference": "74f51addd833af89ebc5360ceec4d6816bd767c0"
+                "reference": "f5f48fa101845671aa8596b40a49713ddefcc77d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/raveren/kint/zipball/74f51addd833af89ebc5360ceec4d6816bd767c0",
-                "reference": "74f51addd833af89ebc5360ceec4d6816bd767c0",
+                "url": "https://api.github.com/repos/raveren/kint/zipball/f5f48fa101845671aa8596b40a49713ddefcc77d",
+                "reference": "f5f48fa101845671aa8596b40a49713ddefcc77d",
                 "shasum": ""
             },
             "require": {
@@ -3802,7 +3804,7 @@
                 "kint",
                 "php"
             ],
-            "time": "2015-06-05 12:56:14"
+            "time": "2015-07-05 17:56:29"
         },
         {
             "name": "symfony/class-loader",

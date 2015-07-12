@@ -6,9 +6,10 @@ Public Participation Manager
 Requirements
 ------------
 
- - PHP 5.5 or greater
+ - PHP 5.6 or greater
  - MySQL
  - Mongodb
+ - ImageMagick
  - Composer
  - Mongo PECL Extension
  - PHP sudo apt-get install -qq php5-cli php5-fpm php5-mysql php5-pgsql php5-sqlite php5-mongo php5-curl php5-gd php5-gmp php5-mcrypt php5-memcached php5-imagick php5-intl php5-xdebug
@@ -51,6 +52,4 @@ Notes
 }
 ```
 4. Edit /etc/default/beanstalkd and add or uncomment START=yes to start Beanstalkd upon server startup/reboot.
-
-
 

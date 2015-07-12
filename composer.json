@@ -12,7 +12,7 @@
     "doctrine/dbal": "~2.4",
     "jenssegers/mongodb": "*",
     "vespakoen/menu": "2.*",
-    "mcamara/laravel-localization": "0.14.*",
+    "mcamara/laravel-localization": "0.15.*",
     "cartalyst/sentry": "2.1.*",
     "felixkiss/uniquewith-validator": "1.0.*",
     "codesleeve/laravel-stapler": "1.0.*",
