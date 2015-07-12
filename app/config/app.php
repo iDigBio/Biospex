@@ -188,7 +188,8 @@ return [
         'Local'       => 'Mcamara\LaravelLocalization\Facades\LaravelLocalization',
         'Carbon'      => 'Carbon\Carbon',
         'Breadcrumbs' => 'DaveJamesMiller\Breadcrumbs\Facade',
-        'Honeypot' => 'Msurguy\Honeypot\HoneypotFacade',
+        'Honeypot'    => 'Msurguy\Honeypot\HoneypotFacade',
+        'Carbon'      => 'Carbon\Carbon',
     ],
 
 ];
