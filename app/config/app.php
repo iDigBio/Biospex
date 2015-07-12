@@ -189,7 +189,6 @@ return [
         'Carbon'      => 'Carbon\Carbon',
         'Breadcrumbs' => 'DaveJamesMiller\Breadcrumbs\Facade',
         'Honeypot'    => 'Msurguy\Honeypot\HoneypotFacade',
-        'Carbon'      => 'Carbon\Carbon',
     ],
 
 ];
