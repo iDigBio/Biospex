@@ -22,6 +22,7 @@ return array (
   'facebook' => 'Facebook',
   'facebook_format' => 'http://facebook.com/example',
   'file' => 'File',
+  'url' => 'Url',
   'funding_source' => 'Funding Source',
   'geographic_scope' => 'Geographic Scope',
   'group' => 'Group',

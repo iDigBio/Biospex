@@ -42,6 +42,13 @@ $(document).ready(function() {
             }
         }
     });
+    $( "#form-data-url" ).validate({
+        rules: {
+            url: {
+                required: true
+            }
+        }
+    });
     $( "#form-trans" ).validate({
         rules: {
             file: {

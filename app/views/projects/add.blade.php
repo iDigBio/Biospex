@@ -16,9 +16,8 @@
         <p>{{ $project->description_short }}</p>
 
         </div>
-
-<div class="col-xs-12">
-    <div class="col-lg-4 col-md-4 col-sm-4">
+<div class="row">
+    <div class="col-md-4">
         <div class="panel panel-info">
             <div class="panel-heading">
                 <h3 class="panel-title">{{ trans('pages.upload_darwin_file') }}</h3>
@@ -37,14 +36,14 @@
 
                 <div class="form-group {{ ($errors->has('file')) ? 'has-error' : '' }}">
                     {{ Form::label('file', trans('forms.file'), ['id' => 'file', 'class' => 'col-sm-2 control-label']) }}
-                    <div class="col-sm-10">
+                    <div class="col-md-10">
                         {{ Form::file('file') }}
                     </div>
                     {{ ($errors->has('file') ? $errors->first('file') : '') }}
                 </div>
 
                 <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
+                    <div class="col-md-offset-2 col-md-10">
                         {{ Form::submit(trans('buttons.upload'), ['class' => 'btn btn-xs btn-primary'])}}
                         {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-xs btn-danger', 'onClick' => "location.href='$cancel'"]) }}
                     </div>
@@ -55,7 +54,7 @@
         </div>
     </div>
 
-    <div class="col-lg-4 col-md-4 col-sm-4">
+    <div class="col-md-4">
         <div class="panel panel-info">
             <div class="panel-heading">
                 <h3 class="panel-title">{{ trans('pages.upload_recordset') }}</h3>
@@ -72,14 +71,14 @@
 
                 <div class="form-group {{ ($errors->has('recordset')) ? 'has-error' : '' }}">
                     {{ Form::label('recordset', trans('forms.recordset'), array('id' => 'recordset', 'class' => 'col-sm-2 control-label')) }}
-                    <div class="col-sm-10">
+                    <div class="col-md-10">
                         {{Form::text('recordset', Input::old('recordset'), ['id' => 'recordset', 'class' => 'form-control input-sm', 'placeholder' => trans('pages.recordset'),])}}
                     </div>
                     {{ ($errors->has('recordset') ? $errors->first('recordset') : '') }}
                 </div>
 
                 <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
+                    <div class="col-md-offset-2 col-md-10">
                         {{ Form::submit(trans('buttons.upload'), ['class' => 'btn btn-xs btn-primary'])}}
                         {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-xs btn-danger', 'onClick' => "location.href='$cancel'"]) }}
                     </div>
@@ -91,7 +90,7 @@
         </div>
     </div>
 
-    <div class="col-lg-4 col-md-4 col-sm-4">
+    <div class="col-md-4">
         <div class="panel panel-info">
             <div class="panel-heading">
                 <h3 class="panel-title">{{ trans('pages.upload_nfn_results') }}</h3>
@@ -116,12 +115,48 @@
                 </div>
 
                 <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
+                    <div class="col-md-offset-2 col-md-10">
                         {{ Form::submit(trans('buttons.upload'), ['class' => 'btn btn-xs btn-primary'])}}
                         {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-xs btn-danger', 'onClick' => "location.href='$cancel'"]) }}
                     </div>
                 </div>
                 {{ Form::hidden('class', 'NfnTranscriptionImport') }}
+                {{ Form::close()}}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">{{ trans('pages.upload_darwin_url') }}</h3>
+            </div>
+            <div class="panel-body">
+                {{ Form::open([
+                    'action' => ['projects.upload', $project->id],
+                    'method' => 'post',
+                    'id' => 'form-data-url',
+                    'class' => 'form-horizontal',
+                    'role' => 'form'
+                ]) }}
+                <p>{{ HTML::link("#dataModal", 'Instructions', ['class' => 'btn btn-xs btn-info', 'data-toggle'=>'modal']) }}</p>
+
+                <div class="form-group {{ ($errors->has('data-url')) ? 'has-error' : '' }}">
+                    {{ Form::label('data-url', trans('forms.url'), array('id' => 'data-url', 'class' => 'col-sm-2 control-label')) }}
+                    <div class="col-md-10">
+                        {{Form::text('data-url', Input::old('data-url'), ['id' => 'url', 'class' => 'form-control input-sm', 'placeholder' => trans('pages.core_url'),])}}
+                    </div>
+                    {{ ($errors->has('data-url') ? $errors->first('data-url') : '') }}
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        {{ Form::submit(trans('buttons.upload'), ['class' => 'btn btn-xs btn-primary'])}}
+                        {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-xs btn-danger', 'onClick' => "location.href='$cancel'"]) }}
+                    </div>
+                </div>
+                {{ Form::hidden('class', 'DarwinCoreImport') }}
                 {{ Form::close()}}
             </div>
         </div>
