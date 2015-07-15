@@ -48,7 +48,8 @@
                         {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-xs btn-danger', 'onClick' => "location.href='$cancel'"]) }}
                     </div>
                 </div>
-                {{ Form::hidden('class', 'DarwinCoreImport') }}
+                {{ Form::hidden('class', 'DarwinCoreFileImport') }}
+                {{ Form::hidden('user_id', $project->group->user_id) }}
                 {{ Form::close()}}
             </div>
         </div>
@@ -121,6 +122,7 @@
                     </div>
                 </div>
                 {{ Form::hidden('class', 'NfnTranscriptionImport') }}
+                {{ Form::hidden('user_id', $project->group->user_id) }}
                 {{ Form::close()}}
             </div>
         </div>
@@ -145,7 +147,7 @@
                 <div class="form-group {{ ($errors->has('data-url')) ? 'has-error' : '' }}">
                     {{ Form::label('data-url', trans('forms.url'), array('id' => 'data-url', 'class' => 'col-sm-2 control-label')) }}
                     <div class="col-md-10">
-                        {{Form::text('data-url', Input::old('data-url'), ['id' => 'url', 'class' => 'form-control input-sm', 'placeholder' => trans('pages.core_url'),])}}
+                        {{Form::text('data-url', Input::old('data-url'), ['id' => 'data-url', 'class' => 'form-control input-sm', 'placeholder' => trans('pages.core_url'),])}}
                     </div>
                     {{ ($errors->has('data-url') ? $errors->first('data-url') : '') }}
                 </div>
@@ -156,7 +158,8 @@
                         {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-xs btn-danger', 'onClick' => "location.href='$cancel'"]) }}
                     </div>
                 </div>
-                {{ Form::hidden('class', 'DarwinCoreImport') }}
+                {{ Form::hidden('class', 'DarwinCoreUrlImport') }}
+                {{ Form::hidden('user_id', $project->group->user_id) }}
                 {{ Form::close()}}
             </div>
         </div>

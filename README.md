@@ -6,16 +6,30 @@ Public Participation Manager
 Requirements
 ------------
 
- - PHP 5.6 or greater
- - MySQL
- - Mongodb
- - ImageMagick
- - Composer
- - Mongo PECL Extension
- - PHP sudo apt-get install -qq php5-cli php5-fpm php5-mysql php5-pgsql php5-sqlite php5-mongo php5-curl php5-gd php5-gmp php5-mcrypt php5-memcached php5-imagick php5-intl php5-xdebug
- - Beanstalkd
- - Supervisord
- - Mailgun or some other email configuration
+- Unbuntu
+- Apache
+- Software
+- PHP => 5.6 ()
+        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C
+        sudo add-apt-repository -y ppa:ondrej/php5-5.6
+        sudo apt-key update
+        sudo apt-get update
+        Extensions: sudo apt-get install -qq php5-cli php5-fpm php5-mysql php5-pgsql php5-sqlite php5-mongo php5-curl php5-gd php5-gmp php5-mcrypt php5-memcached php5-imagick php5-intl php5-xdebug
+    Memcached
+        sudo apt-get install -qq memcached
+    Beanstalkd
+        sudo apt-get install -qq beanstalkd
+        Configurations I can do myself
+    Supervisord
+        sudo apt-get install -qq supervisor
+    ImageMagick
+        sudo apt-get install imagemagick --fix-missing
+    Composer
+        sudo curl -sS https://getcomposer.org/installer | sudo php
+        sudo mv composer.phar /usr/local/bin/composer
+
+Mongo DB
+MySql
 
 
 Installation

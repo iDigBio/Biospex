@@ -44,7 +44,7 @@ $(document).ready(function() {
     });
     $( "#form-data-url" ).validate({
         rules: {
-            url: {
+            "data-url": {
                 required: true
             }
         }

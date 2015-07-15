@@ -35,7 +35,7 @@ use Biospex\Services\Process\Xml;
 use Biospex\Mailer\BiospexMailer;
 use Illuminate\Support\Facades\Config;
 
-class DarwinCoreImportQueue extends QueueAbstract{
+class DarwinCoreFileImportQueue extends QueueAbstract{
 
     /**
      * @var Filesystem

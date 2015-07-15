@@ -455,7 +455,7 @@ class DarwinCore {
         foreach ($this->metaFile->getMetaFields($type) as $key => $qualified)
         {
             if ( ! isset($row[$key]))
-                throw new \Exception(trans('', ['key' => $key, 'qualified' => $qualified]));
+                throw new \Exception(trans('emails.error_csv_build_header', ['key' => $key, 'qualified' => $qualified]));
 
             $short = $this->checkProperty($qualified, $row[$key]);
             $header[$key] = $short;

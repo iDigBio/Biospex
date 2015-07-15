@@ -137,7 +137,7 @@ class RecordSet {
         $import = $this->importInsert($fileName);
 
         unset($this->data);
-        $this->data = ['id' => $import->id, 'class' => 'DarwinCoreImportQueue'];
+        $this->data = ['id' => $import->id, 'class' => 'DarwinCoreFileImportQueue'];
 
         $this->pushToQueue();
 

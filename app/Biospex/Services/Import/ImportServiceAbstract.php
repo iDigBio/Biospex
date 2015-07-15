@@ -114,15 +114,15 @@ abstract class ImportServiceAbstract {
     /**
      * Insert record into import table.
      *
+     * @param $user_id
      * @param $id
      * @param $filename
      * @return mixed
      */
-    protected function importInsert($id, $filename)
+    protected function importInsert($user_id, $id, $filename)
     {
-        $user = $this->sentry->getUser();
         $import = $this->import->create([
-            'user_id' => $user->id,
+            'user_id' => $user_id,
             'project_id' => $id,
             'file' => $filename
         ]);

@@ -1,6 +1,6 @@
 <?php  namespace Biospex\Services\Import;
 /**
- * DarwinCoreImport.php
+ * DarwinCoreUrlImport.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -26,7 +26,7 @@
 
 use Illuminate\Support\Facades\Queue;
 
-class DarwinCoreImport extends ImportServiceAbstract{
+class DarwinCoreUrlImport extends ImportServiceAbstract{
 
     /**
      * Upload subjects for project.
@@ -37,20 +37,23 @@ class DarwinCoreImport extends ImportServiceAbstract{
     public function import($id)
     {
         $validator = \Validator::make(
-            ['file' => \Input::file('file')],
-            ['file' => 'required|mimes:zip']
+            ['data-url' => \Input::input('data-url')],
+            ['data-url' => 'required|url']
         );
 
         if ($validator->fails())
             return $validator;
 
-        $this->setDirectory('config.subjectImportDir');
-
-        $filename = $this->moveFile();
-        $import = $this->importInsert($id, $filename);
         $this->setQueue('config.beanstalkd.import');
 
-        Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $import->id, 'class' => 'DarwinCoreImportQueue'], $this->queue);
+        $data = [
+            'id' => $id,
+            'user_id' => \Input::input('user_id'),
+            'url' => \Input::input('data-url'),
+            'class' => 'DarwinCoreUrlImportQueue'
+        ];
+
+        \Queue::push('Biospex\Services\Queue\QueueFactory', $data, $this->queue);
 
         return;
     }

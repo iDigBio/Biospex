@@ -29,6 +29,30 @@ use Illuminate\Support\Facades\Session;
 
 class Helper {
 
+    /**
+     * Encode a full url.
+     *
+     * @param $url
+     * @return string
+     */
+    public static function url_encode($url)
+    {
+            $parts = parse_url($url);
+            $path_parts = array_map('rawurldecode', explode('/', $parts['path']));
+
+            return
+                $parts['scheme'] . '://' .
+                $parts['host'] .
+                implode('/', array_map('rawurlencode', $path_parts))
+                ;
+    }
+
+    /**
+     * Push messages to session.
+     *
+     * @param $key
+     * @param $value
+     */
     public static function sessionFlashPush($key, $value)
     {
         $values = \Session::get($key, []);
