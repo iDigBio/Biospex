@@ -32,7 +32,7 @@
                     'class' => 'form-horizontal',
                     'role' => 'form'
                 ]) }}
-                <p>{{ HTML::link("#dataModal", 'Instructions', ['class' => 'btn btn-xs btn-info', 'data-toggle'=>'modal']) }}</p>
+                <p>{{ HTML::link("#dataFileModal", 'Instructions', ['class' => 'btn btn-xs btn-info', 'data-toggle'=>'modal']) }}</p>
 
                 <div class="form-group {{ ($errors->has('file')) ? 'has-error' : '' }}">
                     {{ Form::label('file', trans('forms.file'), ['id' => 'file', 'class' => 'col-sm-2 control-label']) }}
@@ -142,7 +142,7 @@
                     'class' => 'form-horizontal',
                     'role' => 'form'
                 ]) }}
-                <p>{{ HTML::link("#dataModal", 'Instructions', ['class' => 'btn btn-xs btn-info', 'data-toggle'=>'modal']) }}</p>
+                <p>{{ HTML::link("#dataUrlModal", 'Instructions', ['class' => 'btn btn-xs btn-info', 'data-toggle'=>'modal']) }}</p>
 
                 <div class="form-group {{ ($errors->has('data-url')) ? 'has-error' : '' }}">
                     {{ Form::label('data-url', trans('forms.url'), array('id' => 'data-url', 'class' => 'col-sm-2 control-label')) }}
