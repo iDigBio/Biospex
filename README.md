@@ -8,27 +8,45 @@ Requirements
 
 - Unbuntu
 - Apache
-- Software
 - PHP => 5.6 ()
-        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C
-        sudo add-apt-repository -y ppa:ondrej/php5-5.6
-        sudo apt-key update
-        sudo apt-get update
-        Extensions: sudo apt-get install -qq php5-cli php5-fpm php5-mysql php5-pgsql php5-sqlite php5-mongo php5-curl php5-gd php5-gmp php5-mcrypt php5-memcached php5-imagick php5-intl php5-xdebug
-    Memcached
-        sudo apt-get install -qq memcached
-    Beanstalkd
-        sudo apt-get install -qq beanstalkd
-        Configurations I can do myself
-    Supervisord
-        sudo apt-get install -qq supervisor
-    ImageMagick
-        sudo apt-get install imagemagick --fix-missing
-    Composer
-        sudo curl -sS https://getcomposer.org/installer | sudo php
-        sudo mv composer.phar /usr/local/bin/composer
-
+```sh
+   sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C
+   sudo add-apt-repository -y ppa:ondrej/php5-5.6
+   sudo apt-key update
+   sudo apt-get update
+```
+- PHP Extensions
+```sh
+    sudo apt-get install -qq php5-cli php5-fpm php5-mysql php5-pgsql php5-sqlite php5-mongo php5-curl php5-gd php5-gmp php5-mcrypt php5-memcached php5-imagick php5-intl php5-xdebug
+```
+Memcached
+```sh
+    sudo apt-get install -qq memcached
+```
+Beanstalkd
+```sh
+    sudo apt-get install -qq beanstalkd
+```
+Supervisord
+```sh
+    sudo apt-get install -qq supervisor
+```
+ImageMagick
+```sh
+    sudo apt-get install imagemagick --fix-missing
+```
+Composer
+```sh
+    sudo curl -sS https://getcomposer.org/installer | sudo php
+    sudo mv composer.phar /usr/local/bin/composer
+```
 Mongo DB
+```sh
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+    echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list
+    sudo apt-get update
+    sudo apt-get install -y mongodb-org
+```
 MySql
 
 
