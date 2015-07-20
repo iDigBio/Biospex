@@ -451,7 +451,6 @@ class DarwinCore {
      */
     public function buildHeaderRow($row, $type)
     {
-        $header = ['id'];
         foreach ($this->metaFile->getMetaFields($type) as $key => $qualified)
         {
             if ( ! isset($row[$key]))
@@ -473,6 +472,9 @@ class DarwinCore {
      */
     public function checkProperty($qualified, $ns_short)
     {
+        if ($qualified == 'id' || $qualified == 'coreid')
+            return $qualified;
+
         list($namespace, $short) = preg_match('/:/', $ns_short) ? preg_split('/:/', $ns_short) : ['', $ns_short];
 
         $checkQualified = $this->property->findByQualified($qualified);
