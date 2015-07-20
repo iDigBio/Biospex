@@ -6,17 +6,19 @@
  */
 class MetaFile {
 
-    private $coreType;
-    private $coreFile;
-    private $coreDelimiter;
-    private $coreEnclosure;
-    private $extDelimiter;
-    private $extEnclosure;
-    private $mediaIsCore;
-    private $extensionFile;
-    private $coreXpathQuery;
-    private $extXpathQuery;
-    private $metaFields;
+    protected $xml;
+    protected $core = null;
+    protected $extension = null;
+    protected $metaFileImages;
+    protected $metaFileRowTypes;
+    protected $mediaIsCore;
+    protected $coreFile;
+    protected $extensionFile;
+    protected $coreDelimiter;
+    protected $coreEnclosure;
+    protected $extDelimiter;
+    protected $extEnclosure;
+    protected $metaFields;
 
     /**
      * Constructor
@@ -26,6 +28,8 @@ class MetaFile {
     public function __construct(Xml $xml)
     {
         $this->xml = $xml;
+        $this->metaFileImages = \Config::get('metaFileImages');
+        $this->metaFileRowTypes = \Config::get('metaFileRowTypes');
     }
 
     /**
@@ -39,30 +43,55 @@ class MetaFile {
     {
         $xml = $this->xml->load($dir . '/meta.xml');
 
-        $this->setCoreType();
-        $this->setCoreFile();
+        // New
+        $this->loadCoreNode();
+        $this->loadExtensionNode();
         $this->setMediaIsCore();
+        $this->setCoreFile();
         $this->setExtensionFile();
         $this->setCoreCsvSettings();
         $this->setExtensionCsvSettings();
-        $this->setCoreXpathQuery();
-        $this->setExtXpathQuery();
-        $this->setCoreMetaFields();
-        $this->setExtMetaFields();
+        $this->setMetaFields('core');
+        $this->setMetaFields('extension');
 
         return $xml;
     }
 
     /**
-     * Set core type.
-     *
-     * @throws \Exception
+     * Load core node from meta file.
      */
-    private function setCoreType()
+    public function loadCoreNode()
     {
-        $this->coreType = $this->xml->getDomTagAttribute('core', 'rowType');
-        if (empty($this->coreType))
-            throw new \Exception(trans('emails.error_core_type'));
+        $query = "//ns:archive/ns:core";
+        $this->core = $this->xml->xpathQuery($query, true);
+
+        return;
+    }
+
+    /**
+     * Load extension node from meta file.
+     * TODO Loads extension using file location from config. Need more robust method.
+     */
+    public function loadExtensionNode()
+    {
+        foreach ($this->metaFileRowTypes as $rowType => $fileName)
+        {
+            $query = "//ns:archive/ns:extension[contains(ns:files/ns:location, '" . $fileName . ".')]";
+            $this->extension = $this->xml->xpathQuery($query, true);
+            if ($this->extension)
+                break;
+        }
+
+        return;
+    }
+
+    /**
+     * Set if multimedia is the core.
+     */
+    private function setMediaIsCore()
+    {
+        $rowType = $this->core->attributes->getNamedItem("rowType")->nodeValue;
+        $this->mediaIsCore = preg_match('/occurrence/i', $rowType) ? false : true;
 
         return;
     }
@@ -74,9 +103,19 @@ class MetaFile {
      */
     private function setCoreFile()
     {
-        $this->coreFile = $this->xml->getElementByTag('core');
+        $this->coreFile = $this->core->nodeValue;
         if (empty($this->coreFile))
             throw new \Exception(trans('emails.error_core_file_missing'));
+
+        return;
+    }
+
+    /**
+     * Set extension file.
+     */
+    private function setExtensionFile ()
+    {
+        $this->extensionFile = $this->extension->nodeValue;
 
         return;
     }
@@ -88,12 +127,14 @@ class MetaFile {
      */
     private function setCoreCsvSettings()
     {
-        $delimiter = $this->xml->getDomTagAttribute('core', 'fieldsTerminatedBy');
+        $delimiter = $this->core->attributes->getNamedItem("fieldsTerminatedBy")->nodeValue;
         $this->coreDelimiter = ($delimiter == "\\t") ? "\t" : $delimiter;
-        $this->coreEnclosure = $this->xml->getDomTagAttribute('core', 'fieldsEnclosedBy');
+        $this->coreEnclosure = $this->core->attributes->getNamedItem("fieldsEnclosedBy")->nodeValue;
 
         if (empty($this->coreDelimiter))
             throw new \Exception(trans('emails.error_csv_core_delimiter'));
+
+        return;
     }
 
     /**
@@ -103,105 +144,42 @@ class MetaFile {
      */
     private function setExtensionCsvSettings()
     {
-        $delimiter = $this->xml->getDomTagAttribute('extension', 'fieldsTerminatedBy');
+        $delimiter = $this->extension->attributes->getNamedItem("fieldsTerminatedBy")->nodeValue;
         $this->extDelimiter = ($delimiter == "\\t") ? "\t" : $delimiter;
-        $this->extEnclosure = $this->xml->getDomTagAttribute('extension', 'fieldsEnclosedBy');
+        $this->extEnclosure = $this->extension->attributes->getNamedItem("fieldsEnclosedBy")->nodeValue;
 
         if (empty($this->extDelimiter))
             throw new \Exception(trans('emails.error_csv_ext_delimiter'));
-    }
-
-    /**
-     * Set if multimedia is the core.
-     */
-    private function setMediaIsCore()
-    {
-        $this->mediaIsCore = preg_match('/occurrence/i', $this->coreType) ? false : true;
-    }
-
-    /**
-     * Set extension file.
-     */
-    private function setExtensionFile ()
-    {
-        $extension = $this->mediaIsCore ? 'occurrence' : 'multimedia';
-
-        $query = "//ns:archive//ns:extension[contains(php:functionString('strtolower', @rowType), '$extension')]";
-        $result = $this->xml->xpathQuery($query, true);
-
-        $this->extensionFile = empty($result->nodeValue) ? false : $result->nodeValue;
 
         return;
     }
 
     /**
-     * Set core xpath query.
+     * Set meta fields.
+     *
+     * @param $type
      */
-    private function setCoreXpathQuery()
+    private function setMetaFields($type)
     {
-        $this->coreXpathQuery = $this->mediaIsCore ?
-            "//ns:archive/ns:core[contains(php:functionString('strtolower', @rowType), 'multimedia')]/ns:field" :
-            "//ns:archive/ns:core[contains(php:functionString('strtolower', @rowType), 'occurrence')]/ns:field";
-
-        return;
-    }
-
-    /**
-     * Set extension xpath query.
-     */
-    private function setExtXpathQuery()
-    {
-        if ( ! $this->extensionFile)
-            return;
-
-        $this->extXpathQuery = $this->mediaIsCore ?
-            "//ns:archive/ns:extension[contains(php:functionString('strtolower', @rowType), 'occurrence')]/ns:field" :
-            "//ns:archive/ns:extension[contains(php:functionString('strtolower', @rowType), 'multimedia')]/ns:field";
-
-        return;
-    }
-
-    /**
-     * Set core meta fields.
-     */
-    private function setCoreMetaFields()
-    {
-        $this->metaFields['core'][0] = 'id';
-        foreach ($this->xml->xpathQuery($this->coreXpathQuery) as $child)
+        foreach ($this->$type->childNodes as $child)
         {
+            if ($child->tagName == "files")
+                continue;
+
             $index = $child->attributes->getNamedItem("index")->nodeValue;
+
+            if ($child->tagName == 'id' || $child->tagName == 'coreid')
+            {
+                $this->metaFields[$type][$index] = $child->tagName;
+                continue;
+            }
+
             $qualified = $child->attributes->getNamedItem("term")->nodeValue;
-            $this->metaFields['core'][$index] = $qualified;
+
+            $this->metaFields[$type][$index] = $qualified;
         }
 
         return;
-    }
-
-    /**
-     * Set extension meta fields.
-     */
-    private function setExtMetaFields()
-    {
-        if ( ! $this->extensionFile)
-            return;
-
-        $this->metaFields['extension'][0] = 'id';
-        foreach ($this->xml->xpathQuery($this->extXpathQuery) as $child)
-        {
-            $index = $child->attributes->getNamedItem("index")->nodeValue;
-            $qualified = $child->attributes->getNamedItem("term")->nodeValue;
-            $this->metaFields['extension'][$index] = $qualified;
-        }
-
-        return;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCoreType()
-    {
-        return $this->coreType;
     }
 
     /**
