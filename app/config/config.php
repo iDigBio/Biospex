@@ -40,6 +40,15 @@ return [
      */
     'collection'             => $_ENV['nfn.collection'],
 
+    /**
+     * DCA import row types for multimedia.
+     */
+    'metaFileRowTypes' => [
+       'http://rs.tdwg.org/ac/terms/multimedia' => 'multimedia',
+       'http://rs.gbif.org/terms/1.0/Image' => 'images',
+       'http://rs.tdwg.org/dwc/terms/Occurrence' => 'occurrence'
+    ],
+
     /*
      * OCR
      */
