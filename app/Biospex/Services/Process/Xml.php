@@ -56,29 +56,6 @@ class Xml {
 	}
 
 	/**
-	 * Get dom document attribute by tag
-	 *
-	 * @param $tag
-	 * @param $attribute
-	 * @return mixed
-	 */
-	public function getDomTagAttribute($tag, $attribute)
-	{
-		return $this->xml->getElementsByTagName($tag)->item(0)->getAttribute($attribute);
-	}
-
-	/**
-	 * Get dom document element by tag
-	 *
-	 * @param $tag
-	 * @return mixed
-	 */
-	public function getElementByTag($tag)
-	{
-		return $this->xml->getElementsByTagName($tag)->item(0)->nodeValue;
-	}
-
-	/**
 	 * Perform query on dom document
 	 *
 	 * @param $query
