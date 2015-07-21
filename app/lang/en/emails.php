@@ -52,6 +52,7 @@ return [
     'signature'                     => 'The Biospex Team',
     'thank_you'                     => 'Thank you',
     'welcome'                       => 'Welcome',
+    'error_rowtype_mismatch'        => 'Row Type mismatch in reading meta xml file. :file :row_type :type_file',
     //================================== Obsolete strings ==================================//
     'error_build_image_dir'         => 'No images were retrieved during build for Expedition Id :id.',
     'error_csv_build_header'        => 'Undefined index for :key => :qualified when building header for csv import.',
