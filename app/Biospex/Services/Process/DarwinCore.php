@@ -188,7 +188,7 @@ class DarwinCore {
     {
         $this->setProjectId($projectId);
 
-        $xml = $this->metaFile->process($dir);
+        $xml = $this->metaFile->process($dir . '/meta.xml');
         $this->saveMeta($xml);
 
         // Load multimedia first to create subjects
