@@ -112,7 +112,7 @@ return [
         'Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider',
         'Cartalyst\Sentry\SentryServiceProvider',
         'Felixkiss\UniqueWithValidator\UniqueWithValidatorServiceProvider',
-        'Codesleeve\LaravelStapler\LaravelStaplerServiceProvider',
+        'Codesleeve\LaravelStapler\Providers\L4ServiceProvider',
         'Codesleeve\AssetPipeline\AssetPipelineServiceProvider',
         'Cviebrock\EloquentSluggable\SluggableServiceProvider',
         'Cviebrock\ImageValidator\ImageValidatorServiceProvider',
