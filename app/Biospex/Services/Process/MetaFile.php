@@ -1,15 +1,18 @@
 <?php  namespace Biospex\Services\Process;
-
 /**
  * Class MetaFile
  * @package Biospex\Services\Process
  */
+
+use Biospex\Services\Process\Xml;
+use Biospex\Services\Report\Report;
+
 class MetaFile {
 
     protected $xml;
+    protected $report;
     protected $core = null;
     protected $extension = null;
-    protected $metaFileImages;
     protected $metaFileRowTypes;
     protected $mediaIsCore;
     protected $coreFile;
@@ -25,27 +28,28 @@ class MetaFile {
      *
      * @param Xml $xml
      */
-    public function __construct(Xml $xml)
+    public function __construct(Xml $xml, Report $report)
     {
         $this->xml = $xml;
-        $this->metaFileImages = \Config::get('metaFileImages');
-        $this->metaFileRowTypes = \Config::get('metaFileRowTypes');
+        $this->report = $report;
+        $this->metaFileRowTypes = \Config::get('config.metaFileRowTypes');
     }
 
     /**
      * Process meta file.
      *
-     * @param $dir
+     * @param $file
      * @return string
      * @throws \Exception
      */
-    public function process ($dir)
+    public function process ($file)
     {
-        $xml = $this->xml->load($dir . '/meta.xml');
+        $xml = $this->xml->load($file);
 
         // New
         $this->loadCoreNode();
         $this->loadExtensionNode();
+        $this->checkExtensionRowType($file);
         $this->setMediaIsCore();
         $this->setCoreFile();
         $this->setExtensionFile();
@@ -81,6 +85,25 @@ class MetaFile {
             if ($this->extension)
                 break;
         }
+
+        return;
+    }
+
+    /**
+     * Check row type against file given and send warning if mismatch occurs.
+     *
+     * @param $file
+     */
+    private function checkExtensionRowType($file)
+    {
+        $rowType = $this->extension->attributes->getNamedItem("rowType")->nodeValue;
+        if ( isset($this->metaFileRowTypes[$rowType]))
+            return;
+
+        $this->report->addError(trans('emails.error_rowtype_mismatch',
+            ['file' => $file, 'row_type' => $rowType, 'type_file' => $this->extension->nodeValue]
+        ));
+        $this->report->reportSimpleError();
 
         return;
     }
