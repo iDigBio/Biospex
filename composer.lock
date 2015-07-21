@@ -288,16 +288,16 @@
         },
         {
             "name": "codesleeve/laravel-stapler",
-            "version": "v1.0.03",
+            "version": "v1.0.04",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CodeSleeve/laravel-stapler.git",
-                "reference": "85f8a95e283564cd8392431cce4d43762cd24df0"
+                "reference": "297e84cb047f1874a83f17c4eea3f0930d4bd946"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CodeSleeve/laravel-stapler/zipball/85f8a95e283564cd8392431cce4d43762cd24df0",
-                "reference": "85f8a95e283564cd8392431cce4d43762cd24df0",
+                "url": "https://api.github.com/repos/CodeSleeve/laravel-stapler/zipball/297e84cb047f1874a83f17c4eea3f0930d4bd946",
+                "reference": "297e84cb047f1874a83f17c4eea3f0930d4bd946",
                 "shasum": ""
             },
             "require": {
@@ -334,7 +334,7 @@
                 "stapler",
                 "upload"
             ],
-            "time": "2015-02-04 07:33:44"
+            "time": "2015-07-20 04:49:58"
         },
         {
             "name": "codesleeve/sprockets",
@@ -377,16 +377,16 @@
         },
         {
             "name": "codesleeve/stapler",
-            "version": "v1.0.04",
+            "version": "v1.0.05",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CodeSleeve/stapler.git",
-                "reference": "46f398993dd85a1a509f9ee379bb3891f45df4e7"
+                "reference": "4475ec4ca36ee14fd9b7e4ae0e026075f8704734"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CodeSleeve/stapler/zipball/46f398993dd85a1a509f9ee379bb3891f45df4e7",
-                "reference": "46f398993dd85a1a509f9ee379bb3891f45df4e7",
+                "url": "https://api.github.com/repos/CodeSleeve/stapler/zipball/4475ec4ca36ee14fd9b7e4ae0e026075f8704734",
+                "reference": "4475ec4ca36ee14fd9b7e4ae0e026075f8704734",
                 "shasum": ""
             },
             "require": {
@@ -426,7 +426,7 @@
                 "s3",
                 "upload"
             ],
-            "time": "2015-02-02 15:16:16"
+            "time": "2015-04-21 16:55:09"
         },
         {
             "name": "coffeescript/coffeescript",
@@ -2970,16 +2970,16 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.7.1",
+            "version": "v2.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/EventDispatcher.git",
-                "reference": "be3c5ff8d503c46768aeb78ce6333051aa6f26d9"
+                "reference": "9310b5f9a87ec2ea75d20fec0b0017c77c66dac3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/be3c5ff8d503c46768aeb78ce6333051aa6f26d9",
-                "reference": "be3c5ff8d503c46768aeb78ce6333051aa6f26d9",
+                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/9310b5f9a87ec2ea75d20fec0b0017c77c66dac3",
+                "reference": "9310b5f9a87ec2ea75d20fec0b0017c77c66dac3",
                 "shasum": ""
             },
             "require": {
@@ -3024,20 +3024,20 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
-            "time": "2015-06-08 09:37:21"
+            "time": "2015-06-18 19:21:56"
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.7.1",
+            "version": "v2.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Filesystem.git",
-                "reference": "a0d43eb3e17d4f4c6990289805a488a0482a07f3"
+                "reference": "2d7b2ddaf3f548f4292df49a99d19c853d43f0b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Filesystem/zipball/a0d43eb3e17d4f4c6990289805a488a0482a07f3",
-                "reference": "a0d43eb3e17d4f4c6990289805a488a0482a07f3",
+                "url": "https://api.github.com/repos/symfony/Filesystem/zipball/2d7b2ddaf3f548f4292df49a99d19c853d43f0b8",
+                "reference": "2d7b2ddaf3f548f4292df49a99d19c853d43f0b8",
                 "shasum": ""
             },
             "require": {
@@ -3073,7 +3073,7 @@
             ],
             "description": "Symfony Filesystem Component",
             "homepage": "https://symfony.com",
-            "time": "2015-06-08 09:37:21"
+            "time": "2015-07-09 16:07:40"
         },
         {
             "name": "symfony/finder",
@@ -3808,16 +3808,16 @@
         },
         {
             "name": "symfony/class-loader",
-            "version": "v2.7.1",
+            "version": "v2.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ClassLoader.git",
-                "reference": "84843730de48ca0feba91004a03c7c952f8ea1da"
+                "reference": "2fccbc544997340808801a7410cdcb96dd12edc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ClassLoader/zipball/84843730de48ca0feba91004a03c7c952f8ea1da",
-                "reference": "84843730de48ca0feba91004a03c7c952f8ea1da",
+                "url": "https://api.github.com/repos/symfony/ClassLoader/zipball/2fccbc544997340808801a7410cdcb96dd12edc4",
+                "reference": "2fccbc544997340808801a7410cdcb96dd12edc4",
                 "shasum": ""
             },
             "require": {
@@ -3854,20 +3854,20 @@
             ],
             "description": "Symfony ClassLoader Component",
             "homepage": "https://symfony.com",
-            "time": "2015-06-08 09:37:21"
+            "time": "2015-06-25 12:52:11"
         },
         {
             "name": "symfony/var-dumper",
-            "version": "v2.7.1",
+            "version": "v2.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",
-                "reference": "c509921f260353bf07b257f84017777c8b0aa4bc"
+                "reference": "fde603d9f4b2418ff0f0315b93eb039c9aa41205"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/c509921f260353bf07b257f84017777c8b0aa4bc",
-                "reference": "c509921f260353bf07b257f84017777c8b0aa4bc",
+                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/fde603d9f4b2418ff0f0315b93eb039c9aa41205",
+                "reference": "fde603d9f4b2418ff0f0315b93eb039c9aa41205",
                 "shasum": ""
             },
             "require": {
@@ -3913,7 +3913,7 @@
                 "debug",
                 "dump"
             ],
-            "time": "2015-06-08 09:37:21"
+            "time": "2015-07-01 12:07:40"
         },
         {
             "name": "way/generators",
