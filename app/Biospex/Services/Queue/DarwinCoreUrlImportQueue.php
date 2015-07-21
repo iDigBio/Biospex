@@ -40,12 +40,14 @@ class DarwinCoreUrlImportQueue extends QueueAbstract {
     (
         Filesystem $filesystem,
         ImportInterface $import,
-        Report $report
+        Report $report,
+        Project $project
     )
     {
         $this->filesystem = $filesystem;
         $this->import = $import;
         $this->report = $report;
+        $this->project = $project;
 
         $this->importDir = \Config::get('config.subjectImportDir');
         if ( ! $this->filesystem->isDirectory($this->importDir))
@@ -70,10 +72,11 @@ class DarwinCoreUrlImportQueue extends QueueAbstract {
         }
         catch (Exception $e)
         {
+            $project = $this->project->findWith($this->data['project_id'], ['group']);
             $this->report->addError(trans('emails.error_import_process',
                 ['id' => $this->data['id'], 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]
             ));
-            $this->report->reportSimpleError();
+            $this->report->reportSimpleError($project->group->id);
         }
 
         $this->delete();
@@ -89,7 +92,7 @@ class DarwinCoreUrlImportQueue extends QueueAbstract {
      */
     public function download()
     {
-        $fileName =  $this->data['id'] . ".zip";
+        $fileName =  basename($this->data['url']);
         $filePath = $this->importDir . "/" .$fileName;
 
         $file = file_get_contents(\Helper::url_encode($this->data['url']));
