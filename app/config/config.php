@@ -45,8 +45,8 @@ return [
      */
     'metaFileRowTypes' => [
        'http://rs.tdwg.org/ac/terms/multimedia' => 'multimedia',
-       'http://rs.gbif.org/terms/1.0/Image' => 'images',
-       'http://rs.tdwg.org/dwc/terms/Occurrence' => 'occurrence'
+       'http://rs.gbif.org/terms/1.0/image' => 'images',
+       'http://rs.tdwg.org/dwc/terms/occurrence' => 'occurrence'
     ],
 
     /*
