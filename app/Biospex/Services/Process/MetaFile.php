@@ -96,7 +96,7 @@ class MetaFile {
      */
     private function checkExtensionRowType($file)
     {
-        $rowType = $this->extension->attributes->getNamedItem("rowType")->nodeValue;
+        $rowType = strtolower($this->extension->attributes->getNamedItem("rowType")->nodeValue);
         if ( isset($this->metaFileRowTypes[$rowType]))
             return;
 
