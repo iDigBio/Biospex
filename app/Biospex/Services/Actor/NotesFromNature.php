@@ -235,6 +235,9 @@ class NotesFromNature extends ActorAbstract {
             $this->imageUriArray[$subject->_id] = str_replace(" ", "%20", $uri);
         }
 
+        if (empty($this->imageUriArray))
+            throw new \Exception(trans('emails.error_empty_image_uri', ['id' => $this->expeditionId]));
+
         return;
     }
 
