@@ -61,7 +61,7 @@
   </core>
   <extension encoding="utf-8" fieldsTerminatedBy="\t" linesTerminatedBy="\n" fieldsEnclosedBy="" ignoreHeaderLines="1" rowType="http://rs.tdwg.org/ac/terms/Multimedia">
     <files>
-      <location>multimedia.txt</location>
+      <location>multimedia_raw.txt</location>
     </files>
     <coreid index="0" />
     <field index="1" term="http://rs.tdwg.org/ac/terms/attributionLinkURL"/>
