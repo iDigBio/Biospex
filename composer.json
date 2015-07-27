@@ -22,7 +22,7 @@
     "davejamesmiller/laravel-breadcrumbs": "~2.2.2",
     "pda/pheanstalk": "~2.0",
     "msurguy/honeypot": "dev-master",
-    "rhumsaa/uuid": "~2.8",
+    "ramsey/uuid": "~2.8",
     "guzzlehttp/guzzle": "~4.0",
     "league/csv": "^7.1"
   },
