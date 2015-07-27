@@ -3,6 +3,7 @@
 use Illuminate\Filesystem\Filesystem;
 use Biospex\Repo\Import\ImportInterface;
 use Biospex\Services\Report\Report;
+use Biospex\Repo\Project\ProjectInterface;
 
 class DarwinCoreUrlImportQueue extends QueueAbstract {
 
@@ -35,13 +36,14 @@ class DarwinCoreUrlImportQueue extends QueueAbstract {
      * @param Filesystem $filesystem
      * @param ImportInterface $import
      * @param Report $report
+     * @param Project $project
      */
     public function __construct
     (
         Filesystem $filesystem,
         ImportInterface $import,
         Report $report,
-        Project $project
+        ProjectInterface $project
     )
     {
         $this->filesystem = $filesystem;
@@ -70,7 +72,7 @@ class DarwinCoreUrlImportQueue extends QueueAbstract {
         try {
             $this->download();
         }
-        catch (Exception $e)
+        catch (\Exception $e)
         {
             $project = $this->project->findWith($this->data['project_id'], ['group']);
             $this->report->addError(trans('emails.error_import_process',
