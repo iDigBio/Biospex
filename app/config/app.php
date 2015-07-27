@@ -106,6 +106,8 @@ return [
         'Illuminate\Validation\ValidationServiceProvider',
         'Illuminate\View\ViewServiceProvider',
         'Illuminate\Workbench\WorkbenchServiceProvider',
+
+        // Vendor Packages
         'Biospex\ServiceProvider\BiospexServiceProvider',
         'Jenssegers\Mongodb\MongodbServiceProvider',
         'Menu\MenuServiceProvider',
@@ -183,6 +185,8 @@ return [
         'URL'         => 'Illuminate\Support\Facades\URL',
         'Validator'   => 'Illuminate\Support\Facades\Validator',
         'View'        => 'Illuminate\Support\Facades\View',
+
+        // Vendor packages
         'Sentry'      => 'Cartalyst\Sentry\Facades\Laravel\Sentry',
         'Menu'        => 'Menu\Menu',
         'Local'       => 'Mcamara\LaravelLocalization\Facades\LaravelLocalization',
