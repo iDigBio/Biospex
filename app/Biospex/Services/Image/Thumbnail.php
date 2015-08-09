@@ -92,10 +92,8 @@ class Thumbnail extends Image{
 
 		try {
             $rc = new Curl([$this, "saveThumbnail"]);
-            $rc->options = [CURLOPT_HEADER => 0, CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1];
-            $rc->window_size = 1;
-            $request = new Request($url);
-            $rc->add($request);
+            $rc->options = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1, CURLINFO_HEADER_OUT => 1];
+            $rc->get($url);
             $rc->execute();
 		}
 		catch (Exception $e)
