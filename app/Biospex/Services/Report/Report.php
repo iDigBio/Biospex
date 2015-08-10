@@ -150,7 +150,7 @@ class Report {
         $ext = ".csv";
 
         $header = array_keys($csv[0]);
-        $writer = Writer::createFromPath(new \SplFileObject(storage_path($path . "/" . $fileName . $ext), 'a+'), 'w');
+        $writer = Writer::createFromPath(new \SplFileObject($path . "/" . $fileName . $ext, 'a+'), 'w');
         $writer->insertOne($header);
         $writer->insertAll($csv);
 
