@@ -294,7 +294,7 @@ class DarwinCore {
         if ($this->reject($data))
             return;
 
-        $subject = ['project_id' => (string) $this->projectId, 'ocr' => '', 'expedition_ids' => []]
+        $subject = ['project_id' => $this->projectId, 'ocr' => '', 'expedition_ids' => []]
                 + array_merge($this->headerArray, $data)
                 + ['occurrence' => is_null($occurrenceId) ? '' : $occurrenceId];
 
@@ -378,7 +378,7 @@ class DarwinCore {
      */
     public function saveOccurrence($data, $type)
     {
-        $subjects = $this->subject->findByProjectOccurrenceId((string) $this->projectId, $data[$this->importHeader[$type][0]]);
+        $subjects = $this->subject->findByProjectOccurrenceId($this->projectId, $data[$this->importHeader[$type][0]]);
 
         if ($subjects->isEmpty())
             return;

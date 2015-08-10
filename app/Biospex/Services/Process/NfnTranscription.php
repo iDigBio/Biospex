@@ -76,7 +76,7 @@ class NfnTranscription {
         if ( ! $subject = $this->getSubject($combined))
             return true;
 
-        $addArray = ['project_id' => (string) $subject->project_id, 'expedition_ids' => $subject->expedition_ids];
+        $addArray = ['project_id' => $subject->project_id, 'expedition_ids' => $subject->expedition_ids];
         $combined = $addArray + $combined;
 
         if ($this->validate($combined))

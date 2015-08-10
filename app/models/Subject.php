@@ -73,7 +73,7 @@ class Subject extends Eloquent {
      */
 	public function scopeProjectId($query, $id)
 	{
-		return $query->where('project_id', $id);
+		return $query->where('project_id', (int) $id);
 	}
 
 	/**
@@ -107,7 +107,7 @@ class Subject extends Eloquent {
 	public function getUnassignedCount ($projectId)
 	{
 		return $this->where('expedition_ids', 'size', 0)
-			->where('project_id', $projectId)
+			->where('project_id', (int) $projectId)
 			->count();
 	}
 
@@ -124,13 +124,13 @@ class Subject extends Eloquent {
 		{
 			if ( ! is_null($expeditionId))
 			{
-				$query->where('expedition_ids', '=', $expeditionId);
+				$query->where('expedition_ids', '=', (int) $expeditionId);
 			} else
 			{
 				$query->where('expedition_ids', 'size', 0);
 			}
 
-			$query->where('project_id', '=', "$projectId");
+			$query->where('project_id', '=', (int) $projectId);
 		})
 			->take($take)
 			->get(['_id'])
@@ -165,7 +165,7 @@ class Subject extends Eloquent {
 			$subject = $this->find($id);
 			foreach ($subject->expedition_ids as $value)
 			{
-				if ($expeditionId != $value)
+				if ((int) $expeditionId != $value)
 					$array[] = $value;
 			}
 			$subject->expedition_ids = $array;
@@ -284,13 +284,16 @@ class Subject extends Eloquent {
      */
     protected function buildQuery(&$query, $filters)
     {
-        $query->where('project_id', '=', Route::input('projects'));
+		$projectId = (int) Route::input('projects');
+		$expeditionId = (int) Route::input('expeditions');
+
+        $query->where('project_id', '=', $projectId);
 
         foreach ($filters as $filter)
         {
             if ($filter['field'] == 'expedition_ids')
             {
-                $this->expeditionIdFilter($filter, $query, Route::input('expeditions'));
+                $this->expeditionIdFilter($filter, $query, $expeditionId);
                 continue;
             }
 
@@ -329,7 +332,7 @@ class Subject extends Eloquent {
 				return;
 			}
 
-			$query->whereIn($filter['field'], [$expeditionId]);
+			$query->whereIn($filter['field'], [(int) $expeditionId]);
 			return;
 		}
 
@@ -339,7 +342,7 @@ class Subject extends Eloquent {
 			return;
 		}
 
-		$query->whereNotIn($filter['field'], [$expeditionId]);
+		$query->whereNotIn($filter['field'], [(int) $expeditionId]);
 		return;
 
 	}
@@ -352,7 +355,7 @@ class Subject extends Eloquent {
 	 */
 	protected function setRowCheckbox(&$rows)
 	{
-		$expeditionId = Route::input('expeditions');
+		$expeditionId = (int) Route::input('expeditions');
 		foreach ($rows as &$row)
 		{
 			if (empty($expeditionId))

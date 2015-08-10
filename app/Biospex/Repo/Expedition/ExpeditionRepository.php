@@ -49,8 +49,7 @@ class ExpeditionRepository extends Repository implements ExpeditionInterface {
      */
     public function create($data = array())
     {
-        $result = $this->model->create($data);
-		$expedition = $this->model->find($result->id);
+        $expedition = $this->model->create($data);
 		$expedition->subjects()->sync($data['subject_ids']);
 
         return $expedition;
