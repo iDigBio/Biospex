@@ -326,7 +326,7 @@ class NotesFromNature extends ActorAbstract {
             try
             {
 
-               $this->image->imagickFile($file);
+                $this->image->imagickFile($file);
             }
             catch (\Exception $e)
             {
@@ -511,13 +511,13 @@ class NotesFromNature extends ActorAbstract {
     public function addMissingImage($key = null, $uri = null)
     {
         if ( ! is_null($key) && ! is_null($uri))
-            $this->missingImg[] = $key . ' : ' . $uri;
+            $this->missingImg[] = ['value' => $key . ' : ' . $uri];
 
         if (is_null($key) && ! is_null($uri))
-            $this->missingImg[] = $uri;
+            $this->missingImg[] = ['value' => $uri];
 
         if ( ! is_null($key) && is_null($uri))
-            $this->missingImg[] = $key;
+            $this->missingImg[] = ['value' => $key];
 
         return;
     }
