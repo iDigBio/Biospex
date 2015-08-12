@@ -302,7 +302,7 @@ class Image {
     protected function saveFile($path, $contents)
     {
         if ( ! $this->filesystem->put($path, $contents))
-            throw new \RuntimeException(trans('emails.error_save_file'));
+            throw new \RuntimeException(trans('emails.error_save_file', ['directory' => $path]));
 
         return;
     }
