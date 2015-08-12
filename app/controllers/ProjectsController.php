@@ -174,7 +174,7 @@ class ProjectsController extends BaseController {
 		$user = $this->sentry->getUser();
 		$isSuperUser = $user->isSuperUser();
         $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
-		
+
         return View::make('projects.show', compact('user', 'isOwner', 'project'));
 	}
 
