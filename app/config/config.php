@@ -2,38 +2,23 @@
 
 return [
 
-    /** Set Admin email */
-    'adminEmail'             => $_ENV['site.adminEmail'],
-
     /**
-     * Allow/Disallow registration
+     * Site variables
      */
+    'adminEmail'             => $_ENV['site.adminEmail'],
     'registration'           => $_ENV['site.registration'],
-
-    /** Turn on language translation in main menu */
     'translate'              => false,
 
-    /** Scratch drive for performing processes */
     'scratchDir'             => storage_path('scratch'),
-
-    /** NfN Export storage */
     'nfnExportDir'           => storage_path('exports/nfn'),
-
-    /**
-     * Export reports directory
-     */
     'exportReportsDir'       => storage_path('exports/report'),
-
-    /** Subjects import directory */
     'subjectImportDir'       => storage_path('imports/subjects'),
-
-    /** Results import directory */
     'transcriptionImportDir' => storage_path('imports/transcriptions'),
 
     /**
      * iDigBio api query url
      */
-    'recordsetUrl'           => 'https://csv.idigbio.org/?query={"recordset":"RECORDSET_ID"}',
+    'recordsetUrl'           => 'https://beta-api.idigbio.org/v2/download/?rq={"recordset":"RECORDSET_ID"}',
 
     /**
      * Match used in Notes From Nature transcription import for matching.
