@@ -3761,12 +3761,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/raveren/kint.git",
-                "reference": "f5f48fa101845671aa8596b40a49713ddefcc77d"
+                "reference": "84807eb67af45f182636e7d34c6267e7f062f9ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/raveren/kint/zipball/f5f48fa101845671aa8596b40a49713ddefcc77d",
-                "reference": "f5f48fa101845671aa8596b40a49713ddefcc77d",
+                "url": "https://api.github.com/repos/raveren/kint/zipball/84807eb67af45f182636e7d34c6267e7f062f9ac",
+                "reference": "84807eb67af45f182636e7d34c6267e7f062f9ac",
                 "shasum": ""
             },
             "require": {
@@ -3804,7 +3804,7 @@
                 "kint",
                 "php"
             ],
-            "time": "2015-07-05 17:56:29"
+            "time": "2015-08-13 08:23:04"
         },
         {
             "name": "symfony/class-loader",
