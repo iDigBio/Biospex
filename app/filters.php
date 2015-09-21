@@ -35,14 +35,12 @@
 |
 */
 
-App::before(function($request)
-{
+App::before(function ($request) {
     //
 });
 
 
-App::after(function($request, $response)
-{
+App::after(function ($request, $response) {
     //
 });
 
@@ -58,9 +56,10 @@ App::after(function($request, $response)
 */
 
 
-Route::filter('auth', function()
-{
-    if (!Sentry::check()) return Redirect::guest('login');
+Route::filter('auth', function () {
+    if (! Sentry::check()) {
+        return Redirect::guest('login');
+    }
 });
 
 /*
@@ -74,19 +73,15 @@ Route::filter('auth', function()
 |
 */
 
-Route::filter('csrf', function()
-{
-	$token = Request::ajax() ? Request::header('X-CSRF-Token') : Input::get('_token');
+Route::filter('csrf', function () {
+    $token = Request::ajax() ? Request::header('X-CSRF-Token') : Input::get('_token');
 
     // TODO: Rewrite this tree of conditionals
-    if (Session::token() !== $token || Session::token()===null || $token===null)
-    {
+    if (Session::token() !== $token || Session::token() === null || $token === null) {
         // Session token and form tokens do not match or one is empty
-        if(App::environment() === 'testing')
-        {
+        if (App::environment() === 'testing') {
             // We only want to allow CSRF override if we're running tests
-            if(Input::get('IgnoreCSRFTokenError')===true)
-            {
+            if (Input::get('IgnoreCSRFTokenError') === true) {
                 // Allow CSRF override in testing environment
                 return;
             } else {
@@ -107,132 +102,122 @@ Route::filter('csrf', function()
 /**
  * Protect Project pages
  */
-Route::filter('hasProjectAccess', function($route, $request, $value)
-{
-	try
-	{
+Route::filter('hasProjectAccess', function ($route, $request, $value) {
+    try {
         $user = Sentry::getUser();
 
-		// Super user has all permissions
-        if ($user->isSuperUser())
+        // Super user has all permissions
+        if ($user->isSuperUser()) {
             return;
+        }
 
-		$id = $route->getParameter('projects');
-		if (empty($id))
-		{
-			Session::flash('error', trans('users.noaccess'));
-			return Redirect::intended('/');
-		}
+        $id = $route->getParameter('projects');
+        if (empty($id)) {
+            Session::flash('error', trans('users.noaccess'));
 
-		$projectKey = md5('project.' . $id);
-		if (Cache::tags('queries')->has($projectKey))
-		{
-			$project = Cache::tags('queries')->get($projectKey);
-		} else
-		{
-			$project = Project::find($id);
-			Cache::tags('queries')->forever($projectKey, $project);
-		}
+            return Redirect::intended('/');
+        }
 
-		$groupId = $project->group_id;
-		$groupKey = md5('group.' . $groupId);
-		if (Cache::tags('queries')->has($groupKey))
-		{
-			$group = Cache::tags('queries')->get($groupKey);
-		} else
-		{
-			$group = Sentry::findGroupById($groupId);
-			Cache::tags('queries')->forever($groupKey, $group);
-		}
+        $projectKey = md5('project.' . $id);
+        if (Cache::tags('queries')->has($projectKey)) {
+            $project = Cache::tags('queries')->get($projectKey);
+        } else {
+            $project = Project::find($id);
+            Cache::tags('queries')->forever($projectKey, $project);
+        }
 
-        if ($user->inGroup($group) && $user->hasAccess(array($value)))
+        $groupId = $project->group_id;
+        $groupKey = md5('group.' . $groupId);
+        if (Cache::tags('queries')->has($groupKey)) {
+            $group = Cache::tags('queries')->get($groupKey);
+        } else {
+            $group = Sentry::findGroupById($groupId);
+            Cache::tags('queries')->forever($groupKey, $group);
+        }
+
+        if ($user->inGroup($group) && $user->hasAccess([$value])) {
             return;
+        }
 
         Session::flash('error', trans('users.noaccess'));
+
         return Redirect::intended('/');
-    }
-    catch (Cartalyst\Sentry\Users\UserNotFoundException $e)
-    {
+    } catch (Cartalyst\Sentry\Users\UserNotFoundException $e) {
         Session::flash('error', trans('users.notfound'));
+
         return Redirect::guest('login');
-    }
-    catch (Cartalyst\Sentry\Groups\GroupNotFoundException $e)
-    {
+    } catch (Cartalyst\Sentry\Groups\GroupNotFoundException $e) {
         Session::flash('error', trans('groups.notfound'));
+
         return Redirect::guest('login');
     }
 });
 
-Route::filter('hasGroupAccess', function($route, $request, $value)
-{
-    try
-    {
+Route::filter('hasGroupAccess', function ($route, $request, $value) {
+    try {
         $user = Sentry::getUser();
         $id = $route->getParameter('groups');
 
-        if ($user->isSuperUser())
+        if ($user->isSuperUser()) {
             return;
+        }
 
-        if (empty($id) && $user->hasAccess(array($value)))
+        if (empty($id) && $user->hasAccess([$value])) {
             return;
+        }
 
-        if ($id)
-        {
-			$groupKey = "group.$id";
-			if (Cache::tags('queries')->has($groupKey))
-			{
-				$group = Cache::tags('queries')->get($groupKey);
-			} else
-			{
-				$group = Sentry::findGroupById($id);
-				Cache::tags('queries')->forever($groupKey, $group);
-			}
+        if ($id) {
+            $groupKey = "group.$id";
+            if (Cache::tags('queries')->has($groupKey)) {
+                $group = Cache::tags('queries')->get($groupKey);
+            } else {
+                $group = Sentry::findGroupById($id);
+                Cache::tags('queries')->forever($groupKey, $group);
+            }
 
-            if ($group->user_id == $user->id)
+            if ($group->user_id == $user->id) {
                 return;
-            if ($user->inGroup($group) && ($value != 'group_edit' || $value != 'group_delete'))
+            }
+            if ($user->inGroup($group) && ($value != 'group_edit' || $value != 'group_delete')) {
                 return;
+            }
         }
 
         Session::flash('error', trans('users.noaccess'));
+
         return Redirect::intended('/');
-    }
-    catch (Cartalyst\Sentry\Users\UserNotFoundException $e)
-    {
+    } catch (Cartalyst\Sentry\Users\UserNotFoundException $e) {
         Session::flash('error', trans('users.notfound'));
+
         return Redirect::guest('login');
-    }
-    catch (Cartalyst\Sentry\Groups\GroupNotFoundException $e)
-    {
+    } catch (Cartalyst\Sentry\Groups\GroupNotFoundException $e) {
         Session::flash('error', trans('groups.notfound'));
+
         return Redirect::guest('login');
     }
 });
 
-Route::filter('hasUserAccess', function($route, $request, $value)
-{
-    try
-    {
+Route::filter('hasUserAccess', function ($route, $request, $value) {
+    try {
         $user = Sentry::getUser();
         $userId = $route->getParameter('users');
 
-        if ($user->id == $userId) return;
+        if ($user->id == $userId) {
+            return;
+        }
 
-        if (!$user->hasAccess(array($value)))
-        {
+        if (! $user->hasAccess([$value])) {
             Session::flash('error', trans('users.noaccess'));
+
             return Redirect::intended('/');
         }
-    }
-    catch (Cartalyst\Sentry\Users\UserNotFoundException $e)
-    {
+    } catch (Cartalyst\Sentry\Users\UserNotFoundException $e) {
         Session::flash('error', trans('users.notfound'));
-        return Redirect::guest('login');
-    }
 
-    catch (Cartalyst\Sentry\Groups\GroupNotFoundException $e)
-    {
+        return Redirect::guest('login');
+    } catch (Cartalyst\Sentry\Groups\GroupNotFoundException $e) {
         Session::flash('error', trans('groups.notfound'));
+
         return Redirect::guest('login');
     }
 });

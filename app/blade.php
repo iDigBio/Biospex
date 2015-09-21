@@ -24,7 +24,6 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-Blade::extend(function($value)
-{
+Blade::extend(function ($value) {
     return preg_replace('/(\s*)@(break|continue)(\s*)/', '$1<?php $2; ?>$3', $value);
 });

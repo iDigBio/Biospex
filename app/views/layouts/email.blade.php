@@ -6,13 +6,14 @@
 <body>
 <!-- Content -->
 @yield('content')
-<!-- ./ content -->
-<br />
-<br />
+        <!-- ./ content -->
+<br/>
+<br/>
+
 <p>
-{{ trans('emails.thank_you') }}, <br /><br />
-{{ trans('emails.signature') }}<br />
-{{{ $adminEmail  }}}
+    {{ trans('emails.thank_you') }}, <br/><br/>
+    {{ trans('emails.signature') }}<br/>
+    {{{ $adminEmail  }}}
 </p>
 </body>
 </html>

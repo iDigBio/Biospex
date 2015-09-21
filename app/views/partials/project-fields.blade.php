@@ -169,15 +169,15 @@
 
     <?php $i = 1 ?>
     @foreach($actors as $actor)
-    <?php $name = 'actor['.$i.']'; ?>
-    <div class="form-group required {{ ($errors->has($name)) ? 'has-error' : '' }}">
-        {{ Form::label($name, trans('forms.actor'), array('class' => 'col-sm-2 control-label')) }}
-        <div class="col-sm-4">
-            {{ Form::select($name, ['' => '--Select--'] + $actors, array('class' => 'form-control', 'placeholder' => trans('forms.actor'))) }}
+        <?php $name = 'actor[' . $i . ']'; ?>
+        <div class="form-group required {{ ($errors->has($name)) ? 'has-error' : '' }}">
+            {{ Form::label($name, trans('forms.actor'), array('class' => 'col-sm-2 control-label')) }}
+            <div class="col-sm-4">
+                {{ Form::select($name, ['' => '--Select--'] + $actors, array('class' => 'form-control', 'placeholder' => trans('forms.actor'))) }}
+            </div>
+            {{ ($errors->has($name) ? $errors->first($name) : '') }}
         </div>
-        {{ ($errors->has($name) ? $errors->first($name) : '') }}
-    </div>
-    <?php $i++; ?>
+        <?php $i++; ?>
     @endforeach
 
     <div class="form-group {{ ($errors->has('logo')) ? 'has-error' : '' }}">
@@ -196,13 +196,13 @@
         {{ ($errors->has('banner') ? $errors->first('banner') : '') }}
     </div>
 @else
-	<div class="form-group required {{ ($errors->has('group')) ? 'has-error' : '' }}" for="group">
-		{{ Form::label('group', trans('forms.group'), array('class' => 'col-sm-2 control-label')) }}
-		<div class="col-sm-10">
-			{{ Form::select('group_id', $selectGroups, $project->group_id, array('class' => 'form-control', 'placeholder' => trans('forms.title'))) }}
-		</div>
-		{{ ($errors->has('group_id') ? $errors->first('group_id') : '') }}
-	</div>
+    <div class="form-group required {{ ($errors->has('group')) ? 'has-error' : '' }}" for="group">
+        {{ Form::label('group', trans('forms.group'), array('class' => 'col-sm-2 control-label')) }}
+        <div class="col-sm-10">
+            {{ Form::select('group_id', $selectGroups, $project->group_id, array('class' => 'form-control', 'placeholder' => trans('forms.title'))) }}
+        </div>
+        {{ ($errors->has('group_id') ? $errors->first('group_id') : '') }}
+    </div>
 
     <div class="form-group required {{ ($errors->has('status')) ? 'has-error' : '' }}" for="group">
         {{ Form::label('status', trans('forms.status'), array('class' => 'col-sm-2 control-label')) }}
@@ -268,21 +268,21 @@
         {{ ($errors->has('funding_source') ? $errors->first('funding_source') : '') }}
     </div>
 
-	<div class="form-group required {{ ($errors->has('description_short')) ? 'has-error' : '' }}">
-		{{ Form::label('description_short', trans('forms.description_short'), array('class' => 'col-sm-2 control-label')) }}
-		<div class="col-sm-10">
-			{{ Form::text('description_short', $project->description_short, array('class' => 'form-control', 'placeholder' => trans('forms.description_short_max'))) }}
-		</div>
-		{{ ($errors->has('description_short') ? $errors->first('description_short') : '') }}
-	</div>
+    <div class="form-group required {{ ($errors->has('description_short')) ? 'has-error' : '' }}">
+        {{ Form::label('description_short', trans('forms.description_short'), array('class' => 'col-sm-2 control-label')) }}
+        <div class="col-sm-10">
+            {{ Form::text('description_short', $project->description_short, array('class' => 'form-control', 'placeholder' => trans('forms.description_short_max'))) }}
+        </div>
+        {{ ($errors->has('description_short') ? $errors->first('description_short') : '') }}
+    </div>
 
-	<div class="form-group required {{ ($errors->has('description_long')) ? 'has-error' : '' }}">
-		{{ Form::label('description_long', trans('forms.description_long'), array('class' => 'col-sm-2 control-label')) }}
-		<div class="col-sm-10">
-			{{ Form::textarea('description_long', $project->description_long, array('class' => 'form-control', 'placeholder' => trans('forms.description_long'))) }}
-		</div>
-		{{ ($errors->has('description_long') ? $errors->first('description_long') : '') }}
-	</div>
+    <div class="form-group required {{ ($errors->has('description_long')) ? 'has-error' : '' }}">
+        {{ Form::label('description_long', trans('forms.description_long'), array('class' => 'col-sm-2 control-label')) }}
+        <div class="col-sm-10">
+            {{ Form::textarea('description_long', $project->description_long, array('class' => 'form-control', 'placeholder' => trans('forms.description_long'))) }}
+        </div>
+        {{ ($errors->has('description_long') ? $errors->first('description_long') : '') }}
+    </div>
 
     <div class="form-group {{ ($errors->has('incentives')) ? 'has-error' : '' }}">
         {{ Form::label('incentives', trans('forms.incentives'), array('class' => 'col-sm-2 control-label')) }}
@@ -365,17 +365,17 @@
     </div>
 
     @for($i = 0; $i < count($actors); $i++)
-    <?php
-    $name = 'actor['.$i.']';
-    $value = isset($project->actors[$i]) ? $project->actors[$i]->id : null;
-    ?>
-    <div class="form-group required {{ ($errors->has($name)) ? 'has-error' : '' }}">
-        {{ Form::label($name, trans('forms.actor'), array('class' => 'col-sm-2 control-label')) }}
-        <div class="col-sm-4">
-            {{ Form::select($name, ['' => '--Select--'] + $actors, $value, array('class' => 'form-control', $workflowCheck, 'placeholder' => trans('forms.actor'))) }}
+        <?php
+        $name = 'actor[' . $i . ']';
+        $value = isset($project->actors[$i]) ? $project->actors[$i]->id : null;
+        ?>
+        <div class="form-group required {{ ($errors->has($name)) ? 'has-error' : '' }}">
+            {{ Form::label($name, trans('forms.actor'), array('class' => 'col-sm-2 control-label')) }}
+            <div class="col-sm-4">
+                {{ Form::select($name, ['' => '--Select--'] + $actors, $value, array('class' => 'form-control', $workflowCheck, 'placeholder' => trans('forms.actor'))) }}
+            </div>
+            {{ ($errors->has($name) ? $errors->first($name) : '') }}
         </div>
-        {{ ($errors->has($name) ? $errors->first($name) : '') }}
-    </div>
     @endfor
 
     <div class="form-group {{ ($errors->has('logo')) ? 'has-error' : '' }}">
@@ -383,20 +383,20 @@
         <div class="col-sm-5">
             {{ Form::file('logo') }} {{ trans('forms.logo_max') }}
         </div>
-		<div class="col-sm-5">
-			<img src="{{ $project->logo->url('thumb') }}" />
-		</div>
+        <div class="col-sm-5">
+            <img src="{{ $project->logo->url('thumb') }}"/>
+        </div>
         {{ ($errors->has('logo') ? $errors->first('logo') : '') }}
     </div>
 
     <div class="form-group {{ ($errors->has('banner')) ? 'has-error' : '' }}">
         {{ Form::label('banner', trans('forms.banner'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-5">
-			{{ Form::file('banner') }} {{ trans('forms.banner_min') }}
-		</div>
-		<div class="col-sm-5">
-			<img src="{{ $project->banner->url('thumb') }}" />
-		</div>
+            {{ Form::file('banner') }} {{ trans('forms.banner_min') }}
+        </div>
+        <div class="col-sm-5">
+            <img src="{{ $project->banner->url('thumb') }}"/>
+        </div>
         {{ ($errors->has('banner') ? $errors->first('banner') : '') }}
     </div>
 @endif
