@@ -33,15 +33,16 @@ use Biospex\Traits\UuidTrait;
 use Illuminate\Support\Facades\Config;
 use Biospex\Helpers\Helper;
 
-class Project extends Eloquent implements StaplerableInterface, SluggableInterface{
-
+class Project extends Eloquent implements StaplerableInterface, SluggableInterface
+{
     use EloquentTrait;
     use SoftDeletingTrait;
     use SluggableTrait;
-	use UuidTrait;
+    use UuidTrait;
 
     /**
      * Sluggable value.
+     *
      * @var array
      */
     protected $sluggable = [
@@ -51,6 +52,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
 
     /**
      * Dates to protect.
+     *
      * @var array
      */
     protected $dates = ['deleted_at'];
@@ -64,33 +66,34 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
 
     /**
      * Database connection.
+     *
      * @var string
      */
-	protected $connection = 'mysql';
+    protected $connection = 'mysql';
 
     /**
      * Primary key of the table.
      *
      * @var string
      */
-	protected $primaryKey = 'id';
+    protected $primaryKey = 'id';
 
     /**
      * @var array
      */
     protected $fillable = [
-		'uuid',
+        'uuid',
         'group_id',
         'title',
         'slug',
         'contact',
         'contact_email',
-		'organization_website',
+        'organization_website',
         'organization',
         'project_partners',
         'funding_source',
         'description_short',
-		'description_long',
+        'description_long',
         'incentives',
         'geographic_scope',
         'taxonomic_scope',
@@ -110,8 +113,9 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     /**
      * @param array $attributes
      */
-    public function __construct(array $attributes = []) {
-		$this->hasAttachedFile('logo', ['styles' => ['thumb' => '100x67']]);
+    public function __construct(array $attributes = [])
+    {
+        $this->hasAttachedFile('logo', ['styles' => ['thumb' => '100x67']]);
         $this->hasAttachedFile('banner', ['styles' => ['thumb' => '200x50']]);
 
         parent::__construct($attributes);
@@ -120,24 +124,24 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     /**
      * Boot function to add model events
      */
-    public static function boot(){
+    public static function boot()
+    {
         parent::boot();
 
-		static::bootStapler();
+        static::bootStapler();
 
-        static::creating(function($model) {
+        static::creating(function ($model) {
             $model->tag_uri = Input::all();
         });
 
-        static::saving(function($model)
-        {
+        static::saving(function ($model) {
             $model->target_fields = Input::all();
         });
 
-		// Delete associated subjects from expedition_subjects
-		static::deleting(function($model) {
-			$model->expeditions()->delete();
-		});
+        // Delete associated subjects from expedition_subjects
+        static::deleting(function ($model) {
+            $model->expeditions()->delete();
+        });
     }
 
     /**
@@ -148,34 +152,34 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         return $this->belongsTo('Group', 'group_id');
     }
 
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
-	 */
-	public function header()
-	{
-		return $this->hasOne('Header');
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function header()
+    {
+        return $this->hasOne('Header');
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-	public function expeditions ()
+    public function expeditions()
     {
         return $this->hasMany('Expedition');
     }
 
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
-	 */
-	public function subjects()
-	{
-		return $this->hasMany('Subject');
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function subjects()
+    {
+        return $this->hasMany('Subject');
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-	public function metas ()
+    public function metas()
     {
         return $this->hasMany('Meta');
     }
@@ -183,7 +187,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-	public function imports ()
+    public function imports()
     {
         return $this->hasMany('Import');
     }
@@ -191,7 +195,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-	public function actors ()
+    public function actors()
     {
         return $this->belongsToMany('Actor', 'project_actor')->withPivot('order_by')->orderBy('order_by', 'asc')->withTimestamps();
     }
@@ -205,6 +209,14 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function userGridField()
+    {
+        return $this->hasMany('UserGridField');
+    }
+
+    /**
      * Get project by slug
      *
      * @param $slug
@@ -212,19 +224,19 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      */
     public function bySlug($slug)
     {
-		return $this->with(['group', 'expeditions.actorsCompletedRelation', 'expeditions.actors'])->where('slug', '=', $slug)->first();
+        return $this->with(['group', 'expeditions.actorsCompletedRelation', 'expeditions.actors'])->where('slug', '=', $slug)->first();
     }
 
-	/**
-	 * Find by uuid.
-	 *
-	 * @param $uuid
-	 * @return mixed
-	 */
-	public function findByUuid($uuid)
-	{
-		return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
-	}
+    /**
+     * Find by uuid.
+     *
+     * @param $uuid
+     * @return mixed
+     */
+    public function findByUuid($uuid)
+    {
+        return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
+    }
 
     /**
      * Set tag uri for rfc 4151 specs.
@@ -245,32 +257,30 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     {
         $target_fields = [];
 
-        if (isset($input['targetCount']) && $input['targetCount'] > 0)
-        {
-            for ($i=0; $i<$input['targetCount']; $i++)
-            {
-                if (empty($input['target_name'][$i])) continue;
+        if (isset($input['targetCount']) && $input['targetCount'] > 0) {
+            for ($i = 0; $i < $input['targetCount']; $i++) {
+                if (empty($input['target_name'][$i])) {
+                    continue;
+                }
 
                 $fields = [
-                    'target_core'               => $input['target_core'][$i],
-                    'target_name'               => $input['target_name'][$i],
-                    'target_description'        => $input['target_description'][$i],
-                    'target_valid_response'     => $input['target_valid_response'][$i],
-                    'target_inference'          => $input['target_inference'][$i],
-                    'target_inference_example'  => $input['target_inference_example'][$i],
+                    'target_core'              => $input['target_core'][$i],
+                    'target_name'              => $input['target_name'][$i],
+                    'target_description'       => $input['target_description'][$i],
+                    'target_valid_response'    => $input['target_valid_response'][$i],
+                    'target_inference'         => $input['target_inference'][$i],
+                    'target_inference_example' => $input['target_inference_example'][$i],
                 ];
                 $target_fields[$i] = $fields;
             }
-        }
-        else
-        {
+        } else {
             unset($input['target_name']);
             unset($input['target_description']);
             unset($input['target_valid_response']);
             unset($input['target_inference']);
             unset($input['target_inference_example']);
         }
-        $this->attributes['target_fields'] = ( ! empty($target_fields)) ? json_encode($target_fields) : '';
+        $this->attributes['target_fields'] = (! empty($target_fields)) ? json_encode($target_fields) : '';
     }
 
     /**
@@ -295,57 +305,45 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
 
         $build = [];
         $ppsrFields = Config::get('config.ppsr');
-        foreach ($ppsrFields as $field => $data)
-        {
-            foreach ($data as $type => $value)
-            {
-                if ($type == 'private')
-                {
+        foreach ($ppsrFields as $field => $data) {
+            foreach ($data as $type => $value) {
+                if ($type == 'private') {
                     $build[$field] = $this->{$value};
                 }
 
-                if ($type == 'date')
-                {
+                if ($type == 'date') {
                     $build[$field] = Helper::formatDate($this->{$value}, 'Y-m-d m:d:s');
                 }
 
-                if ($type == 'column')
-                {
+                if ($type == 'column') {
                     $build[$field] = $input[$value];
                     continue;
                 }
 
-                if ($type == 'value')
-                {
+                if ($type == 'value') {
                     $build[$field] = $value;
                     continue;
                 }
 
-                if ($type == 'array')
-                {
+                if ($type == 'array') {
                     $combined = '';
-                    foreach ($value as $col)
-                    {
+                    foreach ($value as $col) {
                         $combined .= $input[$col] . ", ";
                     }
                     $build[$field] = rtrim($combined, ', ');
                     continue;
                 }
 
-                if ($type == 'url')
-                {
-                    if ($value == 'slug')
-                    {
+                if ($type == 'url') {
+                    if ($value == 'slug') {
                         $build[$field] = $_ENV['site.url'] . '/' . $this->{$value};
                         continue;
                     }
 
-                    if ($value == 'logo')
-                    {
+                    if ($value == 'logo') {
                         $build[$field] = $_ENV['site.url'] . $this->{$value}->url();
                         continue;
                     }
-
                 }
             }
         }
@@ -354,5 +352,4 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
 
         $this->attributes['advertise'] = json_encode($advertise, JSON_UNESCAPED_UNICODE);
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * WorkflowManager.php
  *
@@ -23,8 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-class WorkflowManager extends Eloquent {
+class WorkflowManager extends Eloquent
+{
     /**
      * The database table used by the model.
      *
@@ -32,20 +33,20 @@ class WorkflowManager extends Eloquent {
      */
     protected $table = 'workflow_manager';
 
-	/**
-	 * Do not use timestamps
-	 *
-	 * @var bool
-	 */
-	public $timestamps = false;
+    /**
+     * Do not use timestamps
+     *
+     * @var bool
+     */
+    public $timestamps = false;
 
-    protected $fillable = array(
-		'expedition_uuid',
+    protected $fillable = [
+        'expedition_uuid',
         'expedition_id',
-		'stopped',
-		'error',
+        'stopped',
+        'error',
         'queue'
-    );
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -55,38 +56,37 @@ class WorkflowManager extends Eloquent {
         return $this->belongsTo('Expedition');
     }
 
-	/**
-	 * Scope
-	 *
-	 * @param $query
-	 * @param $id
-	 * @return mixed
-	 */
+    /**
+     * Scope
+     *
+     * @param $query
+     * @param $id
+     * @return mixed
+     */
     public function scopeExpeditionId($query, $id)
     {
         return $query->where('expedition_id', '=', $id);
     }
 
-	/**
-	 * Get workflow process by expedition id
-	 *
-	 * @param $id
-	 * @return mixed
-	 */
+    /**
+     * Get workflow process by expedition id
+     *
+     * @param $id
+     * @return mixed
+     */
     public function findByExpeditionId($id)
     {
         return $this->expeditionid($id)->first();
     }
 
-	/**
-	 * Get all with relationship.
-	 *
-	 * @param $with
-	 * @return \Illuminate\Database\Eloquent\Collection|static[]
-	 */
-	public function allWith($with)
-	{
-		return $this->with($with)->get();
-	}
-
+    /**
+     * Get all with relationship.
+     *
+     * @param $with
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function allWith($with)
+    {
+        return $this->with($with)->get();
+    }
 }

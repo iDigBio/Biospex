@@ -27,8 +27,8 @@ use Cartalyst\Sentry\Groups\Eloquent\Group as SentryGroup;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
-class Group extends SentryGroup {
-
+class Group extends SentryGroup
+{
     use SoftDeletingTrait;
     protected $dates = ['deleted_at'];
 
@@ -47,11 +47,11 @@ class Group extends SentryGroup {
     /**
      * @var array
      */
-    protected $fillable = array(
+    protected $fillable = [
         'user_id',
         'name',
         'permissions',
-    );
+    ];
 
     /**
      * Returns owner of the group
@@ -83,13 +83,12 @@ class Group extends SentryGroup {
         return Config::get('config.group_permissions');
     }
 
-	public function findAllGroupsWithProjects ($allGroups)
+    public function findAllGroupsWithProjects($allGroups)
     {
-		foreach ($allGroups as $group)
-		{
-			$ids[] = $group->id;
-		}
+        foreach ($allGroups as $group) {
+            $ids[] = $group->id;
+        }
 
-		return $groups = $this->has('Projects')->whereIn('id', $ids)->orderBy('name')->get();
+        return $groups = $this->has('Projects')->whereIn('id', $ids)->orderBy('name')->get();
     }
 }

@@ -27,10 +27,10 @@ use Jenssegers\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 use Biospex\Traits\UuidTrait;
 
-class Expedition extends Eloquent {
-
+class Expedition extends Eloquent
+{
     use SoftDeletingTrait;
-	use UuidTrait;
+    use UuidTrait;
 
     protected $dates = ['deleted_at'];
 
@@ -41,27 +41,28 @@ class Expedition extends Eloquent {
      */
     protected $table = 'expeditions';
 
-	protected $connection = 'mysql';
+    protected $connection = 'mysql';
 
-	protected $primaryKey = 'id';
+    protected $primaryKey = 'id';
 
     /**
      * Accepted attributes
      *
      * @var array
      */
-    protected $fillable = array(
-		'uuid',
+    protected $fillable = [
+        'uuid',
         'project_id',
         'title',
         'description',
         'keywords',
-    );
+    ];
 
     /**
      * Boot function to add model events
      */
-    public static function boot(){
+    public static function boot()
+    {
         parent::boot();
     }
 
@@ -77,19 +78,19 @@ class Expedition extends Eloquent {
 
     /**
      * Belongs to many
-	 * $expedition->subjects()->attach($subject) adds expedition ids in subjects
-	 *
+     * $expedition->subjects()->attach($subject) adds expedition ids in subjects
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-	public function subjects ()
+    public function subjects()
     {
         return $this->belongsToMany('Subject');
     }
 
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
-	 */
-	public function workflowManager ()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function workflowManager()
     {
         return $this->hasOne('WorkflowManager');
     }
@@ -97,81 +98,92 @@ class Expedition extends Eloquent {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-	public function downloads ()
+    public function downloads()
     {
-		return $this->hasMany('Download');
+        return $this->hasMany('Download');
     }
 
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
-	 */
-	public function actors()
-	{
-		return $this->belongsToMany('Actor', 'expedition_actor')->withPivot('state', 'completed')->withTimestamps();
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function actors()
+    {
+        return $this->belongsToMany('Actor', 'expedition_actor')->withPivot('state', 'completed')->withTimestamps();
+    }
 
-	/**
-	 * Find by uuid.
-	 *
-	 * @param $uuid
-	 * @return mixed
-	 */
-	public function findByUuid($uuid)
-	{
-		return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function userGridField()
+    {
+        return $this->hasMany('UserGridField');
+    }
 
-	/**
-	 * Set uuid for binary storage.
-	 *
-	 * @param $value
-	 */
-	public function setUuidAttribute($value)
-	{
-		$this->attributes['uuid'] = pack('H*', str_replace('-', '', $value));
-	}
+    /**
+     * Find by uuid.
+     *
+     * @param $uuid
+     * @return mixed
+     */
+    public function findByUuid($uuid)
+    {
+        return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
+    }
 
-	/**
-	 * Return uuid in normal format.
-	 *
-	 * @param $value
-	 * @return string
-	 */
-	public function getUuidAttribute($value)
-	{
-		if (is_null($value))
-			return;
+    /**
+     * Set uuid for binary storage.
+     *
+     * @param $value
+     */
+    public function setUuidAttribute($value)
+    {
+        $this->attributes['uuid'] = pack('H*', str_replace('-', '', $value));
+    }
 
-		$uuid = bin2hex($value);
-		return substr($uuid, 0, 8) . '-' . substr($uuid, 8, 4) . '-' . substr($uuid, 12, 4) . '-' . substr($uuid, 16, 4) . '-' . substr($uuid, 20);
-	}
+    /**
+     * Return uuid in normal format.
+     *
+     * @param $value
+     * @return string
+     */
+    public function getUuidAttribute($value)
+    {
+        if (is_null($value)) {
+            return;
+        }
 
-	/**
-	 * Get counts attribute
-	 *
-	 * @return int
-	 */
-	public function getSubjectsCountAttribute ()
-	{
-		return $this->subjects()->count();
-	}
+        $uuid = bin2hex($value);
 
-	/**
-	 * Return completed through relationship
-	 * @return mixed
-	 */
-	public function actorsCompletedRelation ()
-	{
-		return $this->belongsToMany('Actor', 'expedition_actor')->selectRaw('expedition_id, avg(completed) as avg')->groupBy('expedition_id');
-	}
+        return substr($uuid, 0, 8) . '-' . substr($uuid, 8, 4) . '-' . substr($uuid, 12, 4) . '-' . substr($uuid, 16, 4) . '-' . substr($uuid, 20);
+    }
 
-	/**
-	 * Get completed attribute of actors
-	 *
-	 * @return int
-	 */
-	public function getActorsCompletedAttribute ()
-	{
-		return $this->actorsCompletedRelation->first() ? $this->actorsCompletedRelation->first()->avg : 0;
-	}
+    /**
+     * Get counts attribute
+     *
+     * @return int
+     */
+    public function getSubjectsCountAttribute()
+    {
+        return $this->subjects()->count();
+    }
+
+    /**
+     * Return completed through relationship
+     *
+     * @return mixed
+     */
+    public function actorsCompletedRelation()
+    {
+        return $this->belongsToMany('Actor', 'expedition_actor')->selectRaw('expedition_id, avg(completed) as avg')->groupBy('expedition_id');
+    }
+
+    /**
+     * Get completed attribute of actors
+     *
+     * @return int
+     */
+    public function getActorsCompletedAttribute()
+    {
+        return $this->actorsCompletedRelation->first() ? $this->actorsCompletedRelation->first()->avg : 0;
+    }
 }

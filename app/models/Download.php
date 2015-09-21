@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Download.php
  *
@@ -23,8 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-class Download extends Eloquent {
+class Download extends Eloquent
+{
     /**
      * The database table used by the model.
      *
@@ -32,12 +33,12 @@ class Download extends Eloquent {
      */
     protected $table = 'downloads';
 
-    protected $fillable = array(
+    protected $fillable = [
         'expedition_id',
-		'actor_id',
+        'actor_id',
         'file',
         'count'
-    );
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -47,21 +48,21 @@ class Download extends Eloquent {
         return $this->belongsTo('Expedition');
     }
 
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */
-	public function actor ()
-	{
-		return $this->belongsTo('Actor');
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function actor()
+    {
+        return $this->belongsTo('Actor');
+    }
 
-	/**
-	 * Get expired downloads
-	 *
-	 * @return \Illuminate\Database\Eloquent\Collection|static[]
-	 */
-	public function getExpired()
-	{
-		return $this->where('count', '>', 5)->orWhere('created_at', '<', DB::raw('NOW() - INTERVAL 7 DAY'))->get();
-	}
+    /**
+     * Get expired downloads
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function getExpired()
+    {
+        return $this->where('count', '>', 5)->orWhere('created_at', '<', DB::raw('NOW() - INTERVAL 7 DAY'))->get();
+    }
 }

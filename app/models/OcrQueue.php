@@ -25,48 +25,47 @@
  */
 use Biospex\Traits\UuidTrait;
 
-class OcrQueue extends Eloquent {
+class OcrQueue extends Eloquent
+{
+    use UuidTrait;
 
-	use UuidTrait;
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'ocr_queue';
 
-	/**
-	 * The database table used by the model.
-	 *
-	 * @var string
-	 */
-	protected $table = 'ocr_queue';
+    /**
+     * @var array
+     */
+    protected $fillable = [
+        'project_id',
+        'uuid',
+        'data',
+        'subject_count',
+        'tries',
+        'status',
+        'error',
+        'attachments'
+    ];
 
-	/**
-	 * @var array
-	 */
-	protected $fillable = [
-		'project_id',
-		'uuid',
-		'data',
-		'subject_count',
-		'tries',
-		'status',
-		'error',
-		'attachments'
-	];
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function project()
+    {
+        return $this->belongsTo('Project');
+    }
 
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */
-	public function project()
-	{
-		return $this->belongsTo('Project');
-	}
-
-	/**
-	 * Find by uuid.
-	 *
-	 * @param $uuid
-	 * @return mixed
-	 */
-	public function findByUuid($uuid)
-	{
-		return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
-	}
-
+    /**
+     * Find by uuid.
+     *
+     * @param $uuid
+     * @return mixed
+     */
+    public function findByUuid($uuid)
+    {
+        return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Actor.php
  *
@@ -23,52 +24,49 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 class Actor extends Eloquent
 {
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'actors';
 
-	/**
-	 * The database table used by the model.
-	 *
-	 * @var string
-	 */
-	protected $table = 'actors';
+    protected $fillable = [
+        'title',
+        'url',
+        'class',
+    ];
 
-	protected $fillable = array(
-		'title',
-		'url',
-		'class',
-	);
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function projects()
+    {
+        return $this->belongsToMany('Project', 'project_actor')->withTimestamps()->withPivot('order_by');
+    }
 
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function projects ()
-	{
-		return $this->belongsToMany('Project', 'project_actor')->withTimestamps()->withPivot('order_by');
-	}
+    public function expeditions()
+    {
+        return $this->belongsToMany('Expedition', 'expedition_actor')->withPivot('state', 'completed')->withTimestamps();
+    }
 
-	public function expeditions ()
-	{
-		return $this->belongsToMany('Expedition', 'expedition_actor')->withPivot('state', 'completed')->withTimestamps();
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function downloads()
+    {
+        return $this->hasMany('Download');
+    }
 
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
-	 */
-	public function downloads ()
-	{
-		return $this->hasMany('Download');
-	}
-
-	/**
-	 * Return as select list
-	 *
-	 * @return array
-	 */
-	public function selectList()
-	{
-		return $this->where('private', '=', 0)->lists('title', 'id');
-	}
-
+    /**
+     * Return as select list
+     *
+     * @return array
+     */
+    public function selectList()
+    {
+        return $this->where('private', '=', 0)->lists('title', 'id');
+    }
 }

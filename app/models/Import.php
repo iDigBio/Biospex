@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Import.php
  *
@@ -23,8 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-class Import extends Eloquent {
+class Import extends Eloquent
+{
     /**
      * The database table used by the model.
      *
@@ -36,7 +37,7 @@ class Import extends Eloquent {
         'user_id',
         'project_id',
         'file',
-		'error'
+        'error'
     ];
 
     /**
@@ -57,6 +58,7 @@ class Import extends Eloquent {
 
     /**
      * Find by error.
+     *
      * @param $error
      * @return mixed
      */

@@ -26,37 +26,37 @@
 
 use Jenssegers\Mongodb\Model as Eloquent;
 
-class Subject extends Eloquent {
+class Subject extends Eloquent
+{
+    /**
+     * Redefine connection to use mongodb
+     */
+    protected $connection = 'mongodb';
 
-	/**
-	 * Redefine connection to use mongodb
-	 */
-	protected $connection = 'mongodb';
+    /**
+     * Set primary key
+     */
+    protected $primaryKey = '_id';
 
-	/**
-	 * Set primary key
-	 */
-	protected $primaryKey = '_id';
+    /**
+     * set guarded properties
+     */
+    protected $guarded = ['_id'];
 
-	/**
-	 * set guarded properties
-	 */
-	protected $guarded = ['_id'];
+    /**
+     * OrderBy
+     *
+     * @var array
+     */
+    protected $orderBy = [[]];
 
-	/**
-	 * OrderBy
-	 *
-	 * @var array
-	 */
-	protected $orderBy = [[]];
-
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */
-	public function project ()
-	{
-		return $this->belongsTo('Project');
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function project()
+    {
+        return $this->belongsTo('Project');
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\EmbedsMany
@@ -71,21 +71,21 @@ class Subject extends Eloquent {
      * @param $id
      * @return mixed
      */
-	public function scopeProjectId($query, $id)
-	{
-		return $query->where('project_id', (int) $id);
-	}
+    public function scopeProjectId($query, $id)
+    {
+        return $query->where('project_id', (int) $id);
+    }
 
-	/**
-	 * Finds document by unique object id (from media.csv)
-	 *
-	 * @param $value
-	 * @return mixed
-	 */
-	public function findById($value)
-	{
-		return $this->where('id', $value)->get();
-	}
+    /**
+     * Finds document by unique object id (from media.csv)
+     *
+     * @param $value
+     * @return mixed
+     */
+    public function findById($value)
+    {
+        return $this->where('id', $value)->get();
+    }
 
     /**
      * Find by project id and occurrence id.
@@ -99,171 +99,155 @@ class Subject extends Eloquent {
         return $this->projectid($project_id)->where('occurrence.id', $occurrence_id)->get();
     }
 
-	/**
-	 * Return count of project subjects not assigned to expeditions
-	 * @param $projectId
-	 * @return mixed
-	 */
-	public function getUnassignedCount ($projectId)
-	{
-		return $this->where('expedition_ids', 'size', 0)
-			->where('project_id', (int) $projectId)
-			->count();
-	}
+    /**
+     * Return count of project subjects not assigned to expeditions
+     *
+     * @param $projectId
+     * @return mixed
+     */
+    public function getUnassignedCount($projectId)
+    {
+        return $this->where('expedition_ids', 'size', 0)
+            ->where('project_id', (int) $projectId)
+            ->count();
+    }
 
-	/**
-	 * Return subjects by id. Use for assigned and unassigned.
-	 * @param $projectId
-	 * @param $take
-	 * @param $expeditionId
-	 * @return array
-	 */
-	public function getSubjectIds ($projectId, $take, $expeditionId)
-	{
-		$ids = $this->whereNested(function ($query) use ($projectId, $take, $expeditionId)
-		{
-			if ( ! is_null($expeditionId))
-			{
-				$query->where('expedition_ids', '=', (int) $expeditionId);
-			} else
-			{
-				$query->where('expedition_ids', 'size', 0);
-			}
+    /**
+     * Return subjects by id. Use for assigned and unassigned.
+     *
+     * @param $projectId
+     * @param $take
+     * @param $expeditionId
+     * @return array
+     */
+    public function getSubjectIds($projectId, $take, $expeditionId)
+    {
+        $ids = $this->whereNested(function ($query) use ($projectId, $take, $expeditionId) {
+            if (! is_null($expeditionId)) {
+                $query->where('expedition_ids', '=', (int) $expeditionId);
+            } else {
+                $query->where('expedition_ids', 'size', 0);
+            }
 
-			$query->where('project_id', '=', (int) $projectId);
-		})
-			->take($take)
-			->get(['_id'])
-			->toArray();
+            $query->where('project_id', '=', (int) $projectId);
+        })
+            ->take($take)
+            ->get(['_id'])
+            ->toArray();
 
-		return array_flatten($ids);
-	}
+        return array_flatten($ids);
+    }
 
-	/**
-	 * Find by foreign id.
-	 *
-	 * @param $column
-	 * @param $id
-	 * @return mixed
-	 */
-	public function findByForeignId ($column, $id)
-	{
-		return $this->where($column, $id)->first();
-	}
+    /**
+     * Find by foreign id.
+     *
+     * @param $column
+     * @param $id
+     * @return mixed
+     */
+    public function findByForeignId($column, $id)
+    {
+        return $this->where($column, $id)->first();
+    }
 
-	/**
-	 * Hokey Pokey way to detach mongodb subjects from expeditions.
-	 *
-	 * @param $ids
-	 * @param $expeditionId
-	 */
-	public function detachSubjects ($ids, $expeditionId)
-	{
-		foreach ($ids as $id)
-		{
-			$array = [];
-			$subject = $this->find($id);
-			foreach ($subject->expedition_ids as $value)
-			{
-				if ((int) $expeditionId != $value)
-					$array[] = $value;
-			}
-			$subject->expedition_ids = $array;
-			$subject->save();
-		}
+    /**
+     * Hokey Pokey way to detach mongodb subjects from expeditions.
+     *
+     * @param $ids
+     * @param $expeditionId
+     */
+    public function detachSubjects($ids, $expeditionId)
+    {
+        foreach ($ids as $id) {
+            $array = [];
+            $subject = $this->find($id);
+            foreach ($subject->expedition_ids as $value) {
+                if ((int) $expeditionId != $value) {
+                    $array[] = $value;
+                }
+            }
+            $subject->expedition_ids = $array;
+            $subject->save();
+        }
 
-		return;
-	}
+        return;
+    }
 
-	public function loadGridModel()
-	{
-		$colNames = Config::get('config.modelColumns');
-		$colModel = $this->setColModel();
-
-		return ['colNames' => $colNames, 'colModel' => $colModel];
-	}
-
-	/**
-	 * Calculate the number of rows. It's used for paging the result.
-	 *
-	 * @param  array $filters
-	 *  An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
-	 *  The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
-	 *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
-	 *  when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
-	 *  The 'data' key will contain the string searched by the user.
-	 * @return integer
-	 *  Total number of rows
-	 */
-	public function getTotalNumberOfRows ($filters)
-	{
-		return intval($this->whereNested(function ($query) use ($filters)
-		{
+    /**
+     * Calculate the number of rows. It's used for paging the result.
+     *
+     * @param  array $filters
+     *  An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
+     *  The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
+     *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
+     *  when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
+     *  The 'data' key will contain the string searched by the user.
+     * @return integer
+     *  Total number of rows
+     */
+    public function getTotalNumberOfRows($filters)
+    {
+        return intval($this->whereNested(function ($query) use ($filters) {
             $this->buildQuery($query, $filters);
-		})->count());
-	}
+        })->count());
+    }
 
 
-	/**
-	 *
-	 * Get the rows data to be shown in the grid.
-	 *
-	 * @param $limit
-	 * @param $offset
-	 * @param $orderBy
-	 * @param $sord
-	 * @param $filters
-	 * @return array
-	 *  An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
-	 *  The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
-	 *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
-	 *  when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
-	 *  The 'data' key will contain the string searched by the user.
-	 * @return array
-	 *  An array of array, each array will have the data of a row.
-	 *  Example: array(array('row 1 col 1','row 1 col 2'), array('row 2 col 1','row 2 col 2'))
-	 */
-	public function getRows ($limit, $offset, $orderBy, $sord, $filters)
-	{
-		$selectColumns = Config::get('config.selectColumns');
+    /**
+     *
+     * Get the rows data to be shown in the grid.
+     *
+     * @param $limit
+     * @param $offset
+     * @param $orderBy
+     * @param $sord
+     * @param $filters
+     * @return array
+     *  An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
+     *  The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
+     *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
+     *  when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
+     *  The 'data' key will contain the string searched by the user.
+     * @return array
+     *  An array of array, each array will have the data of a row.
+     *  Example: array(array('row 1 col 1','row 1 col 2'), array('row 2 col 1','row 2 col 2'))
+     */
+    public function getRows($limit, $offset, $orderBy, $sord, $filters)
+    {
+        $selectColumns = Config::get('config.selectColumns');
 
-		if ( ! is_null($orderBy) || ! is_null($sord))
-		{
-			$this->orderBy = [[$orderBy, $sord]];
-		}
+        if (! is_null($orderBy) || ! is_null($sord)) {
+            $this->orderBy = [[$orderBy, $sord]];
+        }
 
-		if ($limit == 0)
-		{
-			$limit = 1;
-		}
+        if ($limit == 0) {
+            $limit = 1;
+        }
 
-		$orderByRaw = [];
+        $orderByRaw = [];
 
-		foreach ($this->orderBy as $orderBy)
-		{
-			array_push($orderByRaw, implode(':', $orderBy));
-		}
+        foreach ($this->orderBy as $orderBy) {
+            array_push($orderByRaw, implode(':', $orderBy));
+        }
 
-		$orderByRaw = implode(',', $orderByRaw);
+        $orderByRaw = implode(',', $orderByRaw);
 
-		$rows = $this->whereNested(function ($query) use ($filters)
-		{
-			$this->buildQuery($query, $filters);
-		})
+        $rows = $this->whereNested(function ($query) use ($filters) {
+            $this->buildQuery($query, $filters);
+        })
             ->take($limit)
-			->skip($offset)
-			->orderBy($orderByRaw)
-			->get($selectColumns);
+            ->skip($offset)
+            ->orderBy($orderByRaw)
+            ->get($selectColumns);
 
-		if ( ! is_array($rows))
-		{
-			$rows = $rows->toArray();
-		}
+        if (! is_array($rows)) {
+            $rows = $rows->toArray();
+        }
 
-		$this->setRowCheckbox($rows);
+        $this->setRowCheckbox($rows);
 
-		return $rows;
-	}
+        return $rows;
+    }
 
     /**
      * Retrieve subject via accessURI filename (extensions not included).
@@ -284,27 +268,23 @@ class Subject extends Eloquent {
      */
     protected function buildQuery(&$query, $filters)
     {
-		$projectId = (int) Route::input('projects');
-		$expeditionId = (int) Route::input('expeditions');
+        $projectId = (int) Route::input('projects');
+        $expeditionId = (int) Route::input('expeditions');
 
         $query->where('project_id', '=', $projectId);
 
-        foreach ($filters as $filter)
-        {
-            if ($filter['field'] == 'expedition_ids')
-            {
+        foreach ($filters as $filter) {
+            if ($filter['field'] == 'expedition_ids') {
                 $this->expeditionIdFilter($filter, $query, $expeditionId);
                 continue;
             }
 
-            if ($filter['op'] == 'is in')
-            {
+            if ($filter['op'] == 'is in') {
                 $query->whereIn($filter['field'], explode(',', $filter['data']));
                 continue;
             }
 
-            if ($filter['op'] == 'is not in')
-            {
+            if ($filter['op'] == 'is not in') {
                 $query->whereNotIn($filter['field'], explode(',', $filter['data']));
                 continue;
             }
@@ -315,132 +295,138 @@ class Subject extends Eloquent {
         return;
     }
 
-	/**
-	 * Filter for expedition id present or not.
-	 *
-	 * @param $filter
-	 * @param $query
-	 * @param $expeditionId
-	 */
-	protected function expeditionIdFilter($filter, &$query, $expeditionId)
-	{
-		if ($filter['data'] == "true")
-		{
-			if (empty($expeditionId))
-			{
-				$query->whereRaw(['expedition_ids' => ['$not' => ['$size' => 0]]]);
-				return;
-			}
+    /**
+     * Filter for expedition id present or not.
+     *
+     * @param $filter
+     * @param $query
+     * @param $expeditionId
+     */
+    protected function expeditionIdFilter($filter, &$query, $expeditionId)
+    {
+        if ($filter['data'] == "true") {
+            if (empty($expeditionId)) {
+                $query->whereRaw(['expedition_ids' => ['$not' => ['$size' => 0]]]);
 
-			$query->whereIn($filter['field'], [(int) $expeditionId]);
-			return;
-		}
+                return;
+            }
 
-		if (empty($expeditionId))
-		{
-			$query->where('expedition_ids', 'size', 0);
-			return;
-		}
+            $query->whereIn($filter['field'], [(int) $expeditionId]);
 
-		$query->whereNotIn($filter['field'], [(int) $expeditionId]);
-		return;
+            return;
+        }
 
-	}
+        if (empty($expeditionId)) {
+            $query->where('expedition_ids', 'size', 0);
+
+            return;
+        }
+
+        $query->whereNotIn($filter['field'], [(int) $expeditionId]);
+
+        return;
+    }
 
 
-	/**
-	 * If row has expeditionId, mark as checked
-	 *
-	 * @param $rows
-	 */
-	protected function setRowCheckbox(&$rows)
-	{
-		$expeditionId = (int) Route::input('expeditions');
-		foreach ($rows as &$row)
-		{
-			if (empty($expeditionId))
-			{
-				$row['expedition_ids'] = !empty($row['expedition_ids']) ? "Yes" : "No";
-				continue;
-			}
+    /**
+     * If row has expeditionId, mark as checked
+     *
+     * @param $rows
+     */
+    protected function setRowCheckbox(&$rows)
+    {
+        $expeditionId = (int) Route::input('expeditions');
+        foreach ($rows as &$row) {
+            if (empty($expeditionId)) {
+                $row['expedition_ids'] = ! empty($row['expedition_ids']) ? "Yes" : "No";
+                continue;
+            }
 
-			//$row['checked'] = in_array($expeditionId, $row['expedition_ids']) ? true : false;
-			$row['expedition_ids'] = in_array($expeditionId, $row['expedition_ids']) ? "Yes" : "No";
-		}
-	}
+            //$row['checked'] = in_array($expeditionId, $row['expedition_ids']) ? true : false;
+            $row['expedition_ids'] = in_array($expeditionId, $row['expedition_ids']) ? "Yes" : "No";
+        }
+    }
 
-	/**
-	 * Build column model for grid.
-	 *
-	 * @return array
-	 */
-	protected function setColModel()
-	{
-		$selectColumns = Config::get('config.selectColumns');
+    public function loadGridModel()
+    {
+        $colNames = Config::get('config.modelColumns');
+        $colModel = $this->setColModel();
 
-		foreach ($selectColumns as $column)
-		{
-			$colModel[] = $this->formatColumn($column);
-		}
+        return ['colNames' => $colNames, 'colModel' => $colModel];
+    }
 
-		return $colModel;
-	}
+    /**
+     * Build column model for grid.
+     *
+     * @return array
+     */
+    protected function setColModel()
+    {
+        $selectColumns = Config::get('config.selectColumns');
 
-	/**
-	 * Format the given column for grid model.
-	 *
-	 * @param $column
-	 * @return array
-	 */
-	protected function formatColumn($column)
-	{
-		if ($column == 'expedition_ids')
-			return $this->buildExpeditionCheckbox();
+        foreach ($selectColumns as $column) {
+            $colModel[] = $this->formatColumn($column);
+        }
 
-		$col = [
-			'name' => $column,
-			'index' => $column,
-			'key' => false,
-			'resizable' => true,
-			'search' => true,
-			'sortable' => true,
-			'editable' => false
-		];
+        return $colModel;
+    }
 
-		if ($column == 'ocr')
-		{
-			$col = array_merge($col, [
-				'title' => false,
-				'classes' => "ocrPreview"
-			]);
-		}
+    /**
+     * Format the given column for grid model.
+     *
+     * @param $column
+     * @return array
+     */
+    protected function formatColumn($column)
+    {
+        if ($column == 'expedition_ids') {
+            return $this->buildExpeditionCheckbox();
+        }
 
-		if ($column == 'accessURI')
-			$this->addUriLink($col);
+        $col = [
+            'name'      => $column,
+            'index'     => $column,
+            'key'       => false,
+            'resizable' => true,
+            'search'    => true,
+            'sortable'  => true,
+            'editable'  => false
+        ];
 
-		return $col;
-	}
+        if ($column == 'ocr') {
+            $col = array_merge($col, [
+                'title'   => false,
+                'classes' => "ocrPreview"
+            ]);
+        }
 
-	protected function addUriLink(&$col)
-	{
-		$col = array_merge($col, [
-			'classes' => "thumbPreview",
-			'formatter' => 'imagePreview'
-		]);
-	}
+        if ($column == 'accessURI') {
+            $this->addUriLink($col);
+        }
 
-	protected function buildExpeditionCheckbox()
-	{
-		return [
-			'name' => 'expedition_ids',
-			'index' => 'expedition_ids',
-			'width' => 100,
-			'align' => 'center',
-			//'formatter' => 'checkbox',
-			//'edittype' => 'checkbox',
-			//'editoptions' => ['value' => 'Yes:No', 'defaultValue' => 'No'],
-			'stype' => 'select',
-			'searchoptions' => ['sopt' => ['eq', 'ne'], 'value' => ':Any;true:Yes;false:No']
-		];
-	}
+        return $col;
+    }
+
+    protected function addUriLink(&$col)
+    {
+        $col = array_merge($col, [
+            'classes'   => "thumbPreview",
+            'formatter' => 'imagePreview'
+        ]);
+    }
+
+    protected function buildExpeditionCheckbox()
+    {
+        return [
+            'name'          => 'expedition_ids',
+            'index'         => 'expedition_ids',
+            'width'         => 100,
+            'align'         => 'center',
+            //'formatter' => 'checkbox',
+            //'edittype' => 'checkbox',
+            //'editoptions' => ['value' => 'Yes:No', 'defaultValue' => 'No'],
+            'stype'         => 'select',
+            'searchoptions' => ['sopt' => ['eq', 'ne'], 'value' => ':Any;true:Yes;false:No']
+        ];
+    }
 }

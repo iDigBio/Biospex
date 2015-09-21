@@ -26,8 +26,8 @@
 
 use Jenssegers\Mongodb\Model as Eloquent;
 
-class Occurrence extends Eloquent {
-
+class Occurrence extends Eloquent
+{
     /**
      * Redefine connection to use mongodb
      */
@@ -42,5 +42,4 @@ class Occurrence extends Eloquent {
      * set guarded properties
      */
     protected $guarded = ['_id'];
-
 }

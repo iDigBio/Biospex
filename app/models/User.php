@@ -26,8 +26,8 @@
 use Cartalyst\Sentry\Users\Eloquent\User as SentryUser;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
-class User extends SentryUser {
-
+class User extends SentryUser
+{
     use SoftDeletingTrait;
     protected $dates = ['deleted_at'];
 
@@ -43,37 +43,44 @@ class User extends SentryUser {
      */
     protected $softDelete = true;
 
-	/**
-	 * Used during phpunit tests for setting hash
-	 */
-	public static function boot ()
-	{
-		parent::boot();
+    /**
+     * Used during phpunit tests for setting hash
+     */
+    public static function boot()
+    {
+        parent::boot();
 
-		//  Used during phpunit tests for setting hash
-		self::$hasher = new Cartalyst\Sentry\Hashing\NativeHasher;
+        //  Used during phpunit tests for setting hash
+        self::$hasher = new Cartalyst\Sentry\Hashing\NativeHasher;
 
-		static::created(function ($model)
-		{
-			$profile = new Profile;
-			$profile->user_id = $model->id;
-			$profile->save();
-		});
-	}
+        static::created(function ($model) {
+            $profile = new Profile;
+            $profile->user_id = $model->id;
+            $profile->save();
+        });
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-	public function imports ()
+    public function imports()
     {
         return $this->hasMany('Import');
     }
 
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
-	 */
-	public function profile ()
-	{
-		return $this->hasOne('Profile');
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function profile()
+    {
+        return $this->hasOne('Profile');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function userGridField()
+    {
+        return $this->hasMany('UserGridField');
+    }
 }

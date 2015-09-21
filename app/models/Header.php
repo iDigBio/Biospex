@@ -25,46 +25,48 @@
  */
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
-class Header extends Eloquent{
+class Header extends Eloquent
+{
+    use SoftDeletingTrait;
 
-	use SoftDeletingTrait;
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'headers';
 
-	/**
-	 * The database table used by the model.
-	 *
-	 * @var string
-	 */
-	protected $table = 'headers';
+    /**
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
 
-	/**
-	 * @var array
-	 */
-	protected $dates = ['deleted_at'];
+    /**
+     * @var array
+     */
+    protected $fillable = [
+        'project_id',
+        'type',
+        'header'
+    ];
 
-	/**
-	 * @var array
-	 */
-	protected $fillable = array(
-		'project_id',
-		'header'
-	);
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function project()
+    {
+        return $this->belongsTo('Project');
+    }
 
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */
-	public function project()
-	{
-		return $this->belongsTo('Project');
-	}
-
-	/**
-	 * Find header by project Id
-	 *
-	 * @param $id
-	 * @return \Illuminate\Database\Eloquent\Model|null|static
-	 */
-	public function getByProjectId($id)
-	{
-		return $this->where('project_id', '=', $id)->first();
-	}
+    /**
+     * Find header by project Id
+     *
+     * @param $id
+     * @param $type
+     * @return \Illuminate\Database\Eloquent\Model|null|static
+     */
+    public function getByProjectIdType($id, $type)
+    {
+        return $this->where('project_id', '=', $id)->where('type', '=', $type)->first();
+    }
 }

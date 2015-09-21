@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Navigation.php
  *
@@ -23,8 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-class Navigation extends Eloquent {
+class Navigation extends Eloquent
+{
     /**
      * The database table used by the model.
      *
@@ -36,5 +37,4 @@ class Navigation extends Eloquent {
     {
         return Navigation::where('type', '=', $type)->orderBy('order', 'asc')->get();
     }
-
 }

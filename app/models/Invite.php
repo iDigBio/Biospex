@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invite.php
  *
@@ -23,9 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-class Invite extends Eloquent {
-
+class Invite extends Eloquent
+{
     /**
      * The database table used by the model.
      *
@@ -33,11 +33,11 @@ class Invite extends Eloquent {
      */
     protected $table = 'invites';
 
-    protected $fillable = array(
+    protected $fillable = [
         'group_id',
         'email',
         'code'
-    );
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

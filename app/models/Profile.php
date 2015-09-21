@@ -24,27 +24,27 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-class Profile extends Eloquent {
+class Profile extends Eloquent
+{
+    protected $dates = ['created_at', 'updated_at'];
 
-	protected $dates = ['created_at', 'updated_at'];
+    protected $fillable = [
+        'first_name',
+        'last_name',
+    ];
 
-	protected $fillable = array(
-		'first_name',
-		'last_name',
-	);
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'profiles';
 
-	/**
-	 * The database table used by the model.
-	 *
-	 * @var string
-	 */
-	protected $table = 'profiles';
-
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */
-	public function user ()
-	{
-		return $this->belongsTo('User');
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo('User');
+    }
 }

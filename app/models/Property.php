@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Properties.php
  *
@@ -23,49 +24,48 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
+class Property extends Eloquent
+{
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'properties';
 
-class Property extends Eloquent{
+    /**
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
 
-	/**
-	 * The database table used by the model.
-	 *
-	 * @var string
-	 */
-	protected $table = 'properties';
+    /**
+     * @var array
+     */
+    protected $fillable = [
+        'qualified',
+        'short',
+        'namespace'
+    ];
 
-	/**
-	 * @var array
-	 */
-	protected $dates = ['deleted_at'];
+    /**
+     * Find by qualified name
+     *
+     * @param $name
+     * @return mixed
+     */
+    public function findByQualified($name)
+    {
+        return $this->where('qualified', '=', $name)->first();
+    }
 
-	/**
-	 * @var array
-	 */
-	protected $fillable = array(
-		'qualified',
-		'short',
-		'namespace'
-	);
-
-	/**
-	 * Find by qualified name
-	 *
-	 * @param $name
-	 * @return mixed
-	 */
-	public function findByQualified($name)
-	{
-		return $this->where('qualified', '=', $name)->first();
-	}
-
-	/**
-	 * Find by short name
-	 *
-	 * @param $name
-	 * @return mixed
-	 */
-	public function findByShort($name)
-	{
-		return $this->where('short', '=', $name)->first();
-	}
+    /**
+     * Find by short name
+     *
+     * @param $name
+     * @return mixed
+     */
+    public function findByShort($name)
+    {
+        return $this->where('short', '=', $name)->first();
+    }
 }

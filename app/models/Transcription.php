@@ -26,7 +26,8 @@
 
 use Jenssegers\Mongodb\Model as Eloquent;
 
-class Transcription extends Eloquent {
+class Transcription extends Eloquent
+{
     /**
      * Redefine connection to use mongodb
      */
@@ -54,7 +55,7 @@ class Transcription extends Eloquent {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function project ()
+    public function project()
     {
         return $this->belongsTo('Project');
     }

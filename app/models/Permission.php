@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Permission.php
  *
@@ -23,7 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-class Permission extends Eloquent {
+class Permission extends Eloquent
+{
     /**
      * The database table used by the model.
      *
@@ -31,19 +33,16 @@ class Permission extends Eloquent {
      */
     protected $table = 'permissions';
 
-    public static function getPermissionsGroupBy ()
+    public static function getPermissionsGroupBy()
     {
         $results = Permission::all();
-        $permissions = array();
+        $permissions = [];
         foreach ($results as $result) {
             $group = $result['group'];
-            if (isset($permissions[$group]))
-            {
+            if (isset($permissions[$group])) {
                 $permissions[$group][] = $result;
-            }
-            else
-            {
-                $permissions[$group] = array($result);
+            } else {
+                $permissions[$group] = [$result];
             }
         }
 
@@ -58,12 +57,11 @@ class Permission extends Eloquent {
      */
     public static function setPermissions($data)
     {
-        $permissions = array();
+        $permissions = [];
 
         $results = Permission::all();
-        foreach ($results as $result)
-        {
-            $permissions[$result['name']] = !array_key_exists($result['name'], $data) ? 0 : $data[$result['name']];
+        foreach ($results as $result) {
+            $permissions[$result['name']] = ! array_key_exists($result['name'], $data) ? 0 : $data[$result['name']];
         }
 
         return $permissions;

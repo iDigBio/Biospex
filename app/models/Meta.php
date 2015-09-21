@@ -25,8 +25,8 @@
  */
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
-class Meta extends Eloquent {
-
+class Meta extends Eloquent
+{
     use SoftDeletingTrait;
     protected $dates = ['deleted_at'];
 
@@ -37,10 +37,10 @@ class Meta extends Eloquent {
      */
     protected $table = 'metas';
 
-    protected $fillable = array(
+    protected $fillable = [
         'project_id',
         'xml'
-    );
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
