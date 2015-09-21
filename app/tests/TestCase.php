@@ -1,14 +1,15 @@
 <?php
+
 // php artisan migrate:refresh --seed --database="setup" --env="testing"
 
-class TestCase extends Illuminate\Foundation\Testing\TestCase {
-
+class TestCase extends Illuminate\Foundation\Testing\TestCase
+{
     /**
      * Creates the application.
      *
      * @return \Symfony\Component\HttpKernel\HttpKernelInterface
      */
-    public function createApplication ()
+    public function createApplication()
     {
         $unitTesting = true;
 
@@ -17,7 +18,8 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
         return require __DIR__ . '/../../bootstrap/start.php';
     }
 
-    public function setUp() {
+    public function setUp()
+    {
         parent::setUp();
         $this->prepareForTests();
     }
@@ -50,7 +52,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
     /**
      * Single method for customizing calls during tests.
      */
-    public function __call ($method, $args)
+    public function __call($method, $args)
     {
         if (in_array($method, ['get', 'post', 'put', 'patch', 'delete'])) {
             return $this->call($method, $args[0]);
@@ -58,5 +60,4 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
 
         throw new BadMethodCallException;
     }
-
 }
