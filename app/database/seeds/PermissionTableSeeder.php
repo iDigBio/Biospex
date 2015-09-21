@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PermissionTableSeeder.php
  *
@@ -23,9 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-class PermissionTableSeeder extends Seeder {
-
+class PermissionTableSeeder extends Seeder
+{
     protected $permissions;
 
     /**
@@ -33,7 +33,7 @@ class PermissionTableSeeder extends Seeder {
      *
      * @return void
      */
-    public function run ()
+    public function run()
     {
         Eloquent::unguard();
 
@@ -50,5 +50,4 @@ class PermissionTableSeeder extends Seeder {
 
         return $items;
     }
-
 }

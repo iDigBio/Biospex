@@ -23,126 +23,126 @@
  */
 
 /** Permissions (used in table seeder */
-$items = array(
+$items = [
     // superuser
-    array(
-        'name' => 'superuser',
-        'group' => 'superuser',
+    [
+        'name'        => 'superuser',
+        'group'       => 'superuser',
         'description' => 'users.superuser',
-    ),
+    ],
 
     // project
-    array(
-        'name' => "project_create",
-        'group' => "project",
+    [
+        'name'        => "project_create",
+        'group'       => "project",
         'description' => "projects.project_create",
-    ),
-    array(
-        'name' => "project_edit",
-        'group' => "project",
+    ],
+    [
+        'name'        => "project_edit",
+        'group'       => "project",
         'description' => "projects.project_edit",
-    ),
-    array(
-        'name' => "project_view",
-        'group' => "project",
+    ],
+    [
+        'name'        => "project_view",
+        'group'       => "project",
         'description' => "projects.project_view",
-    ),
-    array(
-        'name' => "project_delete",
-        'group' => "project",
+    ],
+    [
+        'name'        => "project_delete",
+        'group'       => "project",
         'description' => "projects.project_delete",
-    ),
+    ],
 
     // expedition
-    array(
-        'name' => "expedition_create",
-        'group' => "expedition",
+    [
+        'name'        => "expedition_create",
+        'group'       => "expedition",
         'description' => "pages.expedition_create",
-    ),
-    array(
-        'name' => "expedition_edit",
-        'group' => "expedition",
+    ],
+    [
+        'name'        => "expedition_edit",
+        'group'       => "expedition",
         'description' => "pages.expedition_edit",
-    ),
-    array(
-        'name' => "expedition_view",
-        'group' => "expedition",
+    ],
+    [
+        'name'        => "expedition_view",
+        'group'       => "expedition",
         'description' => "pages.expedition_view",
-    ),
-    array(
-        'name' => "expedition_delete",
-        'group' => "expedition",
+    ],
+    [
+        'name'        => "expedition_delete",
+        'group'       => "expedition",
         'description' => "pages.expedition_delete",
-    ),
+    ],
 
     // permissions
-    array(
-        'name' => "permission_edit",
-        'group' => "permission",
+    [
+        'name'        => "permission_edit",
+        'group'       => "permission",
         'description' => "pages.permissions_edit",
-    ),
-    array(
-        'name' => "permission_view",
-        'group' => "permission",
+    ],
+    [
+        'name'        => "permission_view",
+        'group'       => "permission",
         'description' => "pages.permissions_view",
-    ),
+    ],
 
     // user
-    array(
-        'name' => "user_create",
-        'group' => "user",
+    [
+        'name'        => "user_create",
+        'group'       => "user",
         'description' => "users.user_create",
-    ),
-    array(
-        'name' => "user_edit",
-        'group' => "user",
+    ],
+    [
+        'name'        => "user_edit",
+        'group'       => "user",
         'description' => "users.user_edit",
-    ),
-    array(
-        'name' => "user_ban",
-        'group' => "user",
+    ],
+    [
+        'name'        => "user_ban",
+        'group'       => "user",
         'description' => "users.user_ban",
-    ),
-    array(
-        'name' => "user_view",
-        'group' => "user",
+    ],
+    [
+        'name'        => "user_view",
+        'group'       => "user",
         'description' => "users.user_view",
-    ),
-    array(
-        'name' => "user_delete",
-        'group' => "user",
+    ],
+    [
+        'name'        => "user_delete",
+        'group'       => "user",
         'description' => "users.user_delete",
-    ),
-    array(
-        'name' => "user_edit_permissions",
-        'group' => "user",
+    ],
+    [
+        'name'        => "user_edit_permissions",
+        'group'       => "user",
         'description' => "users.user_edit_permissions",
-    ),
-    array(
-        'name' => "user_edit_groups",
-        'group' => "user",
+    ],
+    [
+        'name'        => "user_edit_groups",
+        'group'       => "user",
         'description' => "users.user_edit_groups",
-    ),
+    ],
 
     // groups
-    array(
-        'name' => "group_create",
-        'group' => "group",
+    [
+        'name'        => "group_create",
+        'group'       => "group",
         'description' => "groups.group_create",
-    ),
-    array(
-        'name' => "group_edit",
-        'group' => "group",
+    ],
+    [
+        'name'        => "group_edit",
+        'group'       => "group",
         'description' => "groups.group_edit",
-    ),
-    array(
-        'name' => "group_view",
-        'group' => "group",
+    ],
+    [
+        'name'        => "group_view",
+        'group'       => "group",
         'description' => "groups.group_view",
-    ),
-    array(
-        'name' => "group_delete",
-        'group' => "group",
+    ],
+    [
+        'name'        => "group_delete",
+        'group'       => "group",
         'description' => "groups.group_delete",
-    ),
-);
+    ],
+];

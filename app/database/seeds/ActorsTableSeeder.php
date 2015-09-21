@@ -24,34 +24,32 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-class ActorsTableSeeder extends Seeder {
+class ActorsTableSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        Eloquent::unguard();
 
-	/**
-	 * Run the database seeds.
-	 *
-	 * @return void
-	 */
-	public function run ()
-	{
-		Eloquent::unguard();
+        $actors = $this->getActors();
 
-		$actors = $this->getActors();
+        foreach ($actors as $actor) {
+            Actor::create($actor);
+        }
+    }
 
-		foreach ($actors as $actor)
-		{
-			Actor::create($actor);
-		}
-	}
-
-	public function getActors ()
-	{
-		return [
-			[
-				'title' => "Notes From Nature",
-				'url'   => "http://www.notesfromnature.org/",
-				'class' => "NotesFromNature",
-			]
-		];
-	}
-
+    public function getActors()
+    {
+        return [
+            [
+                'title' => "Notes From Nature",
+                'url'   => "http://www.notesfromnature.org/",
+                'class' => "NotesFromNature",
+            ]
+        ];
+    }
 }

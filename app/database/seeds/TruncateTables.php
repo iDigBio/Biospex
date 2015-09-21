@@ -25,23 +25,22 @@
  */
 use Biospex\Helpers\Helper;
 
-class TruncateTables extends Seeder {
-	public function run()
-	{
-		Eloquent::unguard();
-		DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+class TruncateTables extends Seeder
+{
+    public function run()
+    {
+        Eloquent::unguard();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-		$tableNames = Schema::getConnection()->getDoctrineSchemaManager()->listTableNames();
-		foreach ($tableNames as $name)
-		{
-			//if you don't want to truncate migrations
-			if ($name == 'migrations')
-			{
-				continue;
-			}
-			DB::table($name)->truncate();
-		}
-		DB::connection('mongodb')->collection('subjects')->truncate();
+        $tableNames = Schema::getConnection()->getDoctrineSchemaManager()->listTableNames();
+        foreach ($tableNames as $name) {
+            //if you don't want to truncate migrations
+            if ($name == 'migrations') {
+                continue;
+            }
+            DB::table($name)->truncate();
+        }
+        DB::connection('mongodb')->collection('subjects')->truncate();
         DB::connection('mongodb')->collection('transcriptions')->truncate();
-	}
+    }
 }

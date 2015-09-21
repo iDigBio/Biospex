@@ -27,17 +27,16 @@
 use Illuminate\Database\Seeder;
 use Biospex\Services\Process\DarwinCore;
 
-class SubjectsTableSeeder extends Seeder {
-
-	/**
-	 * Constructor
-	 *
-	 * @param DarwinCore $process
-	 */
-    public function __construct (
+class SubjectsTableSeeder extends Seeder
+{
+    /**
+     * Constructor
+     *
+     * @param DarwinCore $process
+     */
+    public function __construct(
         DarwinCore $process
-	)
-    {
+    ) {
         $this->process = $process;
     }
 
@@ -46,17 +45,15 @@ class SubjectsTableSeeder extends Seeder {
      *
      * @return void
      */
-    public function run ()
+    public function run()
     {
         Eloquent::unguard();
 
-		$dir = 'app/database/seeds/data';
-		try
-		{
-			$this->process->process(1, $dir);
-		} catch (Exception $e)
-		{
-			die($e->getMessage() . $e->getTraceAsString());
-		}
+        $dir = 'app/database/seeds/data';
+        try {
+            $this->process->process(1, $dir);
+        } catch (Exception $e) {
+            die($e->getMessage() . $e->getTraceAsString());
+        }
     }
 }

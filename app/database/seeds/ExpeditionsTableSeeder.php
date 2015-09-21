@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ExpeditionsTableSeeder.php
  *
@@ -23,22 +24,20 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-class ExpeditionsTableSeeder extends Seeder {
-
+class ExpeditionsTableSeeder extends Seeder
+{
     private $expeditions;
 
-	public function run()
-	{
+    public function run()
+    {
         Eloquent::unguard();
 
         $this->expeditions = $this->loadData();
 
-        foreach ($this->expeditions as $expedition)
-        {
+        foreach ($this->expeditions as $expedition) {
             Expedition::create($expedition);
         }
-
-	}
+    }
 
     public function loadData()
     {

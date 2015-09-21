@@ -1,4 +1,5 @@
 <?php
+
 /**
  * GroupTableSeeder.php
  *
@@ -23,8 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-class GroupTableSeeder extends Seeder {
-
+class GroupTableSeeder extends Seeder
+{
     /**
      * Run the database seeds.
      *
@@ -34,27 +35,26 @@ class GroupTableSeeder extends Seeder {
     {
         $permissions = Config::get('config.group_permissions');
 
-        Sentry::getGroupProvider()->create(array(
+        Sentry::getGroupProvider()->create([
             'user_id'     => 1,
             'name'        => 'Admins',
-            'permissions' => array(
-             'superuser'  => 1,
-            )));
+            'permissions' => [
+                'superuser' => 1,
+            ]]);
 
-        Sentry::getGroupProvider()->create(array(
+        Sentry::getGroupProvider()->create([
             'user_id'     => 1,
             'name'        => 'Users',
-            'permissions' => $permissions));
+            'permissions' => $permissions]);
 
-        Sentry::getGroupProvider()->create(array(
+        Sentry::getGroupProvider()->create([
             'user_id'     => 2,
             'name'        => 'Herbarium',
-            'permissions' => array()));
+            'permissions' => []]);
 
-        Sentry::getGroupProvider()->create(array(
+        Sentry::getGroupProvider()->create([
             'user_id'     => 2,
             'name'        => 'Calbug',
-            'permissions' => array()));
+            'permissions' => []]);
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * UserGroupTableSeeder.php
  *
@@ -23,8 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-class UserGroupTableSeeder extends Seeder {
-
+class UserGroupTableSeeder extends Seeder
+{
     /**
      * Run the database seeds.
      *
@@ -32,25 +33,21 @@ class UserGroupTableSeeder extends Seeder {
      */
     public function run()
     {
-		$groupUser = Sentry::getGroupProvider()->findByName('Users');
-		$groupHerbarium = Sentry::getGroupProvider()->findByName('Herbarium');
-		$groupCalbug = Sentry::getGroupProvider()->findByName('Calbug');
-		$groupAdmin = Sentry::getGroupProvider()->findByName('Admins');
+        $groupUser = Sentry::getGroupProvider()->findByName('Users');
+        $groupHerbarium = Sentry::getGroupProvider()->findByName('Herbarium');
+        $groupCalbug = Sentry::getGroupProvider()->findByName('Calbug');
+        $groupAdmin = Sentry::getGroupProvider()->findByName('Admins');
 
-		$users = DB::table('users')->get();
-		foreach ($users as $user)
-		{
-			$sentryUser = Sentry::getUserProvider()->findByLogin($user->email);
-			if ($user->email == 'admin@biospex.org')
-			{
-				$sentryUser->addGroup($groupAdmin);
-			} else
-			{
-				$sentryUser->addGroup($groupUser);
-				$sentryUser->addGroup($groupHerbarium);
-				$sentryUser->addGroup($groupCalbug);
-			}
-		}
+        $users = DB::table('users')->get();
+        foreach ($users as $user) {
+            $sentryUser = Sentry::getUserProvider()->findByLogin($user->email);
+            if ($user->email == 'admin@biospex.org') {
+                $sentryUser->addGroup($groupAdmin);
+            } else {
+                $sentryUser->addGroup($groupUser);
+                $sentryUser->addGroup($groupHerbarium);
+                $sentryUser->addGroup($groupCalbug);
+            }
+        }
     }
-
 }

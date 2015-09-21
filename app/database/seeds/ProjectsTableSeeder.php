@@ -24,8 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-class ProjectsTableSeeder extends Seeder {
-
+class ProjectsTableSeeder extends Seeder
+{
     /**
      * Run the database seeds.
      *
@@ -62,10 +62,8 @@ class ProjectsTableSeeder extends Seeder {
 
         $actors = Actor::all();
         $i = 0;
-        foreach ($actors as $actor)
-        {
+        foreach ($actors as $actor) {
             $project->actors()->attach($actor->id, ['order_by' => $i++]);
         }
     }
-
 }

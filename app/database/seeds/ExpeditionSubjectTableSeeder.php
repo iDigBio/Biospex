@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ExpeditionSubjectTableSeeder.php
  *
@@ -23,7 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-class ExpeditionSubjectTableSeeder extends Seeder {
+class ExpeditionSubjectTableSeeder extends Seeder
+{
     /**
      * Run the database seeds.
      *
@@ -31,20 +33,19 @@ class ExpeditionSubjectTableSeeder extends Seeder {
      */
     public function run()
     {
-		$expeditions = Expedition::all();
+        $expeditions = Expedition::all();
 
-		foreach ($expeditions as $expedition)
-		{
-			$subjects = Subject::where('expedition_ids', 'size', 0)->get();
-			$i = 0;
-			foreach ($subjects as $subject)
-			{
-				if ($i == 300) break;
-				// add expedition ids to subjects
-				$expedition->subjects()->attach($subject);
-				$i++;
-			}
-		}
+        foreach ($expeditions as $expedition) {
+            $subjects = Subject::where('expedition_ids', 'size', 0)->get();
+            $i = 0;
+            foreach ($subjects as $subject) {
+                if ($i == 300) {
+                    break;
+                }
+                // add expedition ids to subjects
+                $expedition->subjects()->attach($subject);
+                $i++;
+            }
+        }
     }
-
 }
