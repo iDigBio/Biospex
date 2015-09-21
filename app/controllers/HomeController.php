@@ -26,8 +26,8 @@
 use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Form\Contact\ContactForm;
 
-class HomeController extends BaseController {
-
+class HomeController extends BaseController
+{
     /**
      * @var Biospex\Repo\Project\ProjectInterface
      */
@@ -47,8 +47,7 @@ class HomeController extends BaseController {
     public function __construct(
         ProjectInterface $project,
         ContactForm $contactForm
-    )
-    {
+    ) {
         $this->beforeFilter('csrf', ['on' => 'post']);
 
         $this->project = $project;
@@ -105,16 +104,15 @@ class HomeController extends BaseController {
     {
         $result = $this->contactForm->check(Input::all());
 
-        if ($result)
-        {
+        if ($result) {
             \Event::fire('user.sendcontact', [
                 'view'    => 'emails.contact',
                 'subject' => trans('emails.contact_subject'),
                 'data'    => [
-                    'first_name' => Input::get('first_name'),
-                    'last_name'  => Input::get('last_name'),
-                    'email'      => Input::get('email'),
-                    'email_message'    => Input::get('message'),
+                    'first_name'    => Input::get('first_name'),
+                    'last_name'     => Input::get('last_name'),
+                    'email'         => Input::get('email'),
+                    'email_message' => Input::get('message'),
                 ],
             ]);
 
@@ -126,6 +124,5 @@ class HomeController extends BaseController {
         Session::flash('error', trans('pages.contact_fail'));
 
         return Redirect::route('contact')->withInput()->withErrors($this->contactForm->errors());
-
     }
 }

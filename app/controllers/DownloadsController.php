@@ -27,17 +27,17 @@ use Biospex\Repo\Expedition\ExpeditionInterface;
 use Biospex\Repo\Download\DownloadInterface;
 use Cartalyst\Sentry\Sentry;
 
-class DownloadsController extends BaseController {
+class DownloadsController extends BaseController
+{
+    /**
+     * @var ExpeditionInterface
+     */
+    protected $expedition;
 
-	/**
-	 * @var ExpeditionInterface
-	 */
-	protected $expedition;
-
-	/**
-	 * @var DownloadInterface
-	 */
-	protected $download;
+    /**
+     * @var DownloadInterface
+     */
+    protected $download;
 
     /**
      * @var Sentry
@@ -51,45 +51,46 @@ class DownloadsController extends BaseController {
      * @param DownloadInterface $download
      * @param Sentry $sentry
      */
-	public function __construct (
+    public function __construct(
         ExpeditionInterface $expedition,
         DownloadInterface $download,
         Sentry $sentry
-    )
-	{
-		$this->expedition = $expedition;
-		$this->download = $download;
+    ) {
+        $this->expedition = $expedition;
+        $this->download = $download;
         $this->sentry = $sentry;
 
-		// Establish Filters
-		$this->beforeFilter('auth', ['only' => ['index']]);
-		$this->beforeFilter('csrf', ['on' => 'post']);
-		$this->beforeFilter('hasProjectAccess:expedition_view', ['only' => ['download', 'file']]);
-	}
+        // Establish Filters
+        $this->beforeFilter('auth', ['only' => ['index']]);
+        $this->beforeFilter('csrf', ['on' => 'post']);
+        $this->beforeFilter('hasProjectAccess:expedition_view', ['only' => ['download', 'file']]);
+    }
 
-	/**
-	 * Index showing downloads for Expedition.
-	 *
-	 * @param $projectId
-	 * @param $expeditionId
-	 * @return \Illuminate\View\View
-	 */
-	public function index ($projectId, $expeditionId)
-	{
+    /**
+     * Index showing downloads for Expedition.
+     *
+     * @param $projectId
+     * @param $expeditionId
+     * @return \Illuminate\View\View
+     */
+    public function index($projectId, $expeditionId)
+    {
         $user = $this->sentry->getUser();
-		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads.actor']);
-		return View::make('downloads.index', compact('expedition', 'user'));
-	}
+        $expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads.actor']);
 
-	public function show ($projectId, $expeditionId, $downloadId)
-	{
-		$download = $this->download->find($downloadId);
-		$download->count = $download->count + 1;
-		$this->download->save($download);
+        return View::make('downloads.index', compact('expedition', 'user'));
+    }
 
-		$nfnExportDir = Config::get('config.nfnExportDir');
-		$path = "$nfnExportDir/{$download->file}";
-		$headers = ['Content-Type' => 'application/x-compressed'];
-		return Response::download($path, $download->file, $headers);
-	}
+    public function show($projectId, $expeditionId, $downloadId)
+    {
+        $download = $this->download->find($downloadId);
+        $download->count = $download->count + 1;
+        $this->download->save($download);
+
+        $nfnExportDir = Config::get('config.nfnExportDir');
+        $path = "$nfnExportDir/{$download->file}";
+        $headers = ['Content-Type' => 'application/x-compressed'];
+
+        return Response::download($path, $download->file, $headers);
+    }
 }

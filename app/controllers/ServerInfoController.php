@@ -28,81 +28,80 @@ use Biospex\Services\Curl\Curl;
 
 class ServerInfoController extends BaseController
 {
-
     /**
      * Constructor
      *
      * @param Curl $curl
      */
-	public function __construct ()
-	{
-		$this->beforeFilter('auth', ['only' => ['showPhpInfo', 'clear', 'ocr']]);
+    public function __construct()
+    {
+        $this->beforeFilter('auth', ['only' => ['showPhpInfo', 'clear', 'ocr']]);
         $this->ocrDeleteUrl = \Config::get('config.ocrDeleteUrl');
-	}
+    }
 
-	/**
-	 * Test $_POST
-	 */
-	public function postTest()
-	{
-		http_response_code(200);
+    /**
+     * Test $_POST
+     */
+    public function postTest()
+    {
+        http_response_code(200);
 
-		exit;
-	}
+        exit;
+    }
 
-	/**
-	 * Test $_GET
-	 */
-	public function getTest()
-	{
-		http_response_code(200);
+    /**
+     * Test $_GET
+     */
+    public function getTest()
+    {
+        http_response_code(200);
 
-		exit;
-	}
+        exit;
+    }
 
-	/**
-	 * Display php info
-	 */
-	public function showPhpInfo ()
-	{
-		if (!Sentry::getUser()->isSuperUser())
-			return Redirect::route('login');
+    /**
+     * Display php info
+     */
+    public function showPhpInfo()
+    {
+        if (! Sentry::getUser()->isSuperUser()) {
+            return Redirect::route('login');
+        }
 
-		ob_start();
-		phpinfo();
-		$pinfo = ob_get_contents();
-		ob_end_clean();
+        ob_start();
+        phpinfo();
+        $pinfo = ob_get_contents();
+        ob_end_clean();
 
-		$info = preg_replace('%^.*<body>(.*)</body>.*$%ms', '$1', $pinfo);
+        $info = preg_replace('%^.*<body>(.*)</body>.*$%ms', '$1', $pinfo);
 
-		return View::make('info', compact(['info']));
-	}
+        return View::make('info', compact(['info']));
+    }
 
-	public function clear ()
-	{
-		if (!Sentry::getUser()->isSuperUser())
-			return Redirect::route('login');
+    public function clear()
+    {
+        if (! Sentry::getUser()->isSuperUser()) {
+            return Redirect::route('login');
+        }
 
-		Cache::flush();
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, Config::get('config.ip') . '/cache.php');
-		curl_exec($ch);
-		curl_close($ch);
+        Cache::flush();
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, Config::get('config.ip') . '/cache.php');
+        curl_exec($ch);
+        curl_close($ch);
 
-		Session::flash('success', "Cache has been flushed.");
+        Session::flash('success', "Cache has been flushed.");
 
-		return Redirect::intended('/projects');
-	}
+        return Redirect::intended('/projects');
+    }
 
     public function ocr()
     {
-        if (Request::isMethod('post') &&  ! empty(Input::get('files')))
-        {
+        if (Request::isMethod('post') && ! empty(Input::get('files'))) {
             $files = Input::get('files');
             $rc = new Curl();
             $rc->window_size = 5;
-            foreach ($files as $file)
-            {
+            foreach ($files as $file) {
                 $options = [CURLOPT_RETURNTRANSFER => true, CURLOPT_FAILONERROR, true];
                 $headers = ['Content-Type: application/x-www-form-urlencoded', 'API-KEY:t$p480UAJ5v8P=ifcE23&hpM?#+&r3'];
                 $data = "file=$file";

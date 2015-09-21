@@ -30,9 +30,9 @@ use Biospex\Repo\Group\GroupInterface;
 use Biospex\Repo\Import\ImportInterface;
 use Biospex\Repo\Actor\ActorInterface;
 
-class ProjectsController extends BaseController {
-
-	/**
+class ProjectsController extends BaseController
+{
+    /**
      * @var Biospex\Repo\Project\ProjectInterface
      */
     protected $project;
@@ -52,60 +52,58 @@ class ProjectsController extends BaseController {
      */
     protected $sentry;
 
-	/**
-	 * @var ActorInterface
-	 */
-	protected $actor;
+    /**
+     * @var ActorInterface
+     */
+    protected $actor;
 
-	/**
-	 * Instantiate a new ProjectsController
-	 *
-	 * @param Sentry $sentry
-	 * @param ProjectInterface $project
-	 * @param ProjectForm $projectForm
-	 * @param GroupInterface $group
-	 * @param Sentry $sentry
-	 * @param ImportInterface $import
-	 * @param ActorInterface $actor
-	 */
+    /**
+     * Instantiate a new ProjectsController
+     *
+     * @param Sentry $sentry
+     * @param ProjectInterface $project
+     * @param ProjectForm $projectForm
+     * @param GroupInterface $group
+     * @param Sentry $sentry
+     * @param ImportInterface $import
+     * @param ActorInterface $actor
+     */
     public function __construct(
         ProjectInterface $project,
         ProjectForm $projectForm,
         GroupInterface $group,
         Sentry $sentry,
         ImportInterface $import,
-		ActorInterface $actor
-    )
-    {
+        ActorInterface $actor
+    ) {
         $this->project = $project;
         $this->projectForm = $projectForm;
         $this->group = $group;
         $this->sentry = $sentry;
         $this->import = $import;
-		$this->actor = $actor;
+        $this->actor = $actor;
 
-		// Establish Filters
-		$this->beforeFilter('auth');
+        // Establish Filters
+        $this->beforeFilter('auth');
         $this->beforeFilter('csrf', ['on' => 'post']);
         $this->beforeFilter('hasProjectAccess:project_view', ['only' => ['show', 'advertiseDownload']]);
         $this->beforeFilter('hasProjectAccess:project_edit', ['only' => ['edit', 'update']]);
         $this->beforeFilter('hasProjectAccess:project_delete', ['only' => ['destroy']]);
-
     }
 
     /**
-	 * Display a listing of the resource.
+     * Display a listing of the resource.
      * Have to use json_encode + json_decode to fix the different array structure
      * returned by Sentry group queries.
-	 *
-	 * @return Response
-	 */
-	public function index()
+     *
+     * @return Response
+     */
+    public function index()
     {
-		$user = $this->sentry->getUser();
-		$isSuperUser = $user->isSuperUser();
-		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
-		$groups = $this->group->findAllGroupsWithProjects($allGroups);
+        $user = $this->sentry->getUser();
+        $isSuperUser = $user->isSuperUser();
+        $allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
+        $groups = $this->group->findAllGroupsWithProjects($allGroups);
 
         return View::make('projects.index', compact('groups', 'user', 'isSuperUser'));
     }
@@ -116,27 +114,27 @@ class ProjectsController extends BaseController {
      * @return \Illuminate\View\View
      */
     public function create()
-	{
-		$user = $this->sentry->getUser();
-		$isSuperUser = $user->isSuperUser();
-		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
-		$groups = $this->group->selectOptions($allGroups);
-		$actors = $this->actor->selectList();
+    {
+        $user = $this->sentry->getUser();
+        $isSuperUser = $user->isSuperUser();
+        $allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
+        $groups = $this->group->selectOptions($allGroups);
+        $actors = $this->actor->selectList();
         $statusSelect = \Config::get('config.statusSelect');
 
-		if (empty($groups))
-		{
-			Session::flash('success', trans('groups.group_required'));
-			return Redirect::action('GroupsController@create');
-		}
+        if (empty($groups)) {
+            Session::flash('success', trans('groups.group_required'));
 
-		$cancel = URL::previous();
-		$selectGroups = ['' => '--Select--'] + $groups;
+            return Redirect::action('GroupsController@create');
+        }
+
+        $cancel = URL::previous();
+        $selectGroups = ['' => '--Select--'] + $groups;
         $count = is_null(Input::old('targetCount')) ? 0 : Input::old('targetCount');
-        $create =  Route::currentRouteName() == 'projects.create' ? true : false;
+        $create = Route::currentRouteName() == 'projects.create' ? true : false;
 
-		return View::make('projects.create', compact('cancel', 'selectGroups', 'count', 'create', 'actors', 'statusSelect'));
-	}
+        return View::make('projects.create', compact('cancel', 'selectGroups', 'count', 'create', 'actors', 'statusSelect'));
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -144,23 +142,23 @@ class ProjectsController extends BaseController {
      * @return $this|\Illuminate\Http\RedirectResponse
      */
     public function store()
-	{
+    {
         // Form Processing
         $project = $this->projectForm->save(Input::all());
 
-        if($project)
-        {
+        if ($project) {
             // Success!
             Session::flash('success', trans('projects.project_created'));
-            return Redirect::action('ProjectsController@show', [$project->id]);
 
+            return Redirect::action('ProjectsController@show', [$project->id]);
         } else {
             Session::flash('error', trans('projects.project_save_error'));
+
             return Redirect::action('ProjectsController@create')
                 ->withInput()
                 ->withErrors($this->projectForm->errors());
         }
-	}
+    }
 
     /**
      * Display the specified resource.
@@ -169,14 +167,14 @@ class ProjectsController extends BaseController {
      * @return \Illuminate\View\View
      */
     public function show($id)
-	{
-		$project = $this->project->findWith($id, ['group', 'expeditions.downloads', 'expeditions.actors', 'expeditions.actorsCompletedRelation']);
-		$user = $this->sentry->getUser();
-		$isSuperUser = $user->isSuperUser();
+    {
+        $project = $this->project->findWith($id, ['group', 'expeditions.downloads', 'expeditions.actors', 'expeditions.actorsCompletedRelation']);
+        $user = $this->sentry->getUser();
+        $isSuperUser = $user->isSuperUser();
         $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
 
         return View::make('projects.show', compact('user', 'isOwner', 'project'));
-	}
+    }
 
     /**
      * Create duplicate project
@@ -186,54 +184,53 @@ class ProjectsController extends BaseController {
      */
     public function duplicate($id)
     {
-		$project = $this->project->findWith($id, ['group']);
+        $project = $this->project->findWith($id, ['group']);
 
-		$user = $this->sentry->getUser();
-		$isSuperUser = $user->isSuperUser();
-		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
-		$groups = $this->group->selectOptions($allGroups);
-		$actors = $this->actor->selectList();
+        $user = $this->sentry->getUser();
+        $isSuperUser = $user->isSuperUser();
+        $allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
+        $groups = $this->group->selectOptions($allGroups);
+        $actors = $this->actor->selectList();
         $statusSelect = \Config::get('config.statusSelect');
-		$workflowCheck = '';
+        $workflowCheck = '';
 
-		$selectGroups = ['' => '--Select--'] + $groups;
+        $selectGroups = ['' => '--Select--'] + $groups;
         $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
-        $create =  Route::currentRouteName() == 'projects.create' ? true : false;
-		$cancel = URL::previous();
+        $create = Route::currentRouteName() == 'projects.create' ? true : false;
+        $cancel = URL::previous();
 
-		return View::make('projects.clone', compact('selectGroups', 'project', 'count', 'create', 'cancel', 'actors', 'statusSelect', 'workflowCheck'));
+        return View::make('projects.clone', compact('selectGroups', 'project', 'count', 'create', 'cancel', 'actors', 'statusSelect', 'workflowCheck'));
     }
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param $id
-	 * @return \Illuminate\View\View
-	 */
-	public function edit($id)
-	{
-		$project = $this->project->findWith($id, ['group', 'actors', 'expeditions.workflowManager']);
-		$workflowCheck = '';
-		foreach ($project->expeditions as $expedition)
-		{
-			$workflowCheck = is_null($expedition->workflowManager) ? '' : 'readonly';
-		}
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param $id
+     * @return \Illuminate\View\View
+     */
+    public function edit($id)
+    {
+        $project = $this->project->findWith($id, ['group', 'actors', 'expeditions.workflowManager']);
+        $workflowCheck = '';
+        foreach ($project->expeditions as $expedition) {
+            $workflowCheck = is_null($expedition->workflowManager) ? '' : 'readonly';
+        }
 
-		$actors = $this->actor->selectList();
+        $actors = $this->actor->selectList();
         $statusSelect = \Config::get('config.statusSelect');
 
-		$user = $this->sentry->getUser();
-		$isSuperUser = $user->isSuperUser();
-		$allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
-		$groups = $this->group->selectOptions($allGroups);
+        $user = $this->sentry->getUser();
+        $isSuperUser = $user->isSuperUser();
+        $allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
+        $groups = $this->group->selectOptions($allGroups);
 
-		$selectGroups = ['' => '--Select--'] + $groups;
-		$count = is_null($project->target_fields) ? 0 : count($project->target_fields);
-		$create =  Route::currentRouteName() == 'projects.create' ? true : false;
-		$cancel = URL::previous();
+        $selectGroups = ['' => '--Select--'] + $groups;
+        $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
+        $create = Route::currentRouteName() == 'projects.create' ? true : false;
+        $cancel = URL::previous();
 
-		return View::make('projects.edit', compact('project', 'actors', 'statusSelect', 'workflowCheck', 'selectGroups', 'count', 'create', 'cancel'));
-	}
+        return View::make('projects.edit', compact('project', 'actors', 'statusSelect', 'workflowCheck', 'selectGroups', 'count', 'create', 'cancel'));
+    }
 
     /**
      * Update the specified resource in storage.
@@ -242,24 +239,24 @@ class ProjectsController extends BaseController {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update($id)
-	{
+    {
         // Form Processing
         $result = $this->projectForm->update(Input::all());
         $project = $this->project->find($id);
 
-        if($result)
-        {
+        if ($result) {
             // Success!
             Session::flash('success', trans('projects.project_updated'));
-            return Redirect::action('projects.show', [$project->id]);
 
+            return Redirect::action('projects.show', [$project->id]);
         } else {
             Session::flash('error', trans('projects.project_save_error'));
+
             return Redirect::route('projects.edit', [$project->id])
                 ->withInput()
-                ->withErrors( $this->projectForm->errors() );
+                ->withErrors($this->projectForm->errors());
         }
-	}
+    }
 
     /**
      * Advertise
@@ -268,14 +265,12 @@ class ProjectsController extends BaseController {
     {
         $project = $this->project->find($id);
 
-        if (empty($project->advertise))
-        {
+        if (empty($project->advertise)) {
             $project->advertise = json_decode(json_encode($project), true);
             $project->save();
         }
 
         return View::make('projects.advertise', compact('project'));
-
     }
 
     /**
@@ -288,10 +283,10 @@ class ProjectsController extends BaseController {
     {
         $project = $this->project->find($id);
 
-        return Response::make($project->advertise, '200', array(
-            'Content-Type' => 'application/json',
+        return Response::make($project->advertise, '200', [
+            'Content-Type'        => 'application/json',
             'Content-Disposition' => 'attachment; filename="' . $project->uuid . '.json"'
-        ));
+        ]);
     }
 
     /**
@@ -301,13 +296,12 @@ class ProjectsController extends BaseController {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
-	{
+    {
         $project = $this->project->findWith($id, ['group']);
-		$user = $this->sentry->getUser();
-		$isSuperUser = $user->isSuperUser();
+        $user = $this->sentry->getUser();
+        $isSuperUser = $user->isSuperUser();
         $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
-        if ($isOwner)
-        {
+        if ($isOwner) {
             $this->project->destroy($id);
             Session::flash('success', trans('projects.project_destroyed'));
 
@@ -315,6 +309,7 @@ class ProjectsController extends BaseController {
         }
 
         Session::flash('error', trans('projects.project_destroy_error'));
+
         return Redirect::route('projects.index');
-	}
+    }
 }

@@ -28,8 +28,8 @@ use Illuminate\Support\Facades\URL;
 use Biospex\Services\Import\ImportServiceFactory;
 use Biospex\Repo\Project\ProjectInterface;
 
-class ImportsController extends BaseController {
-
+class ImportsController extends BaseController
+{
     /**
      * @var Biospex\Repo\Project\ProjectInterface
      */
@@ -57,8 +57,7 @@ class ImportsController extends BaseController {
         ImportServiceFactory $importFactory,
         ProjectInterface $project,
         Sentry $sentry
-    )
-    {
+    ) {
         $this->project = $project;
         $this->sentry = $sentry;
         $this->importFactory = $importFactory;
@@ -79,6 +78,7 @@ class ImportsController extends BaseController {
     {
         $project = $this->project->findWith($id, ['group']);
         $cancel = URL::previous();
+
         return View::make('projects.add', compact('project', 'cancel'));
     }
 
@@ -91,18 +91,20 @@ class ImportsController extends BaseController {
     public function upload($id)
     {
         $obj = $this->importFactory->create(Input::get('class'));
-        if ( ! $obj)
-        {
+        if (! $obj) {
             Session::flash('error', trans('pages.bad_type'));
+
             return Redirect::route('projects.import', [$id]);
         }
 
         $validate = $obj->import($id);
 
-        if ( ! empty($validate))
+        if (! empty($validate)) {
             return Redirect::route('projects.import', [$id])->withErrors($validate);
+        }
 
         Session::flash('success', trans('pages.upload_trans_success'));
+
         return Redirect::route('projects.show', [$id]);
     }
 }

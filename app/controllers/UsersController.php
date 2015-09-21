@@ -37,124 +37,122 @@ use Biospex\Repo\Permission\PermissionInterface;
 use Biospex\Repo\Invite\InviteInterface;
 use Illuminate\Support\Facades\URL;
 
+class UsersController extends BaseController
+{
+    /**
+     * @var Sentry
+     */
+    protected $sentry;
 
-class UsersController extends BaseController {
+    /**
+     * @var UserInterface
+     */
+    protected $user;
 
-	/**
-	 * @var Sentry
-	 */
-	protected $sentry;
+    /**
+     * @var GroupInterface
+     */
+    protected $group;
 
-	/**
-	 * @var UserInterface
-	 */
-	protected $user;
+    /**
+     * @var RegisterForm
+     */
+    protected $registerForm;
 
-	/**
-	 * @var GroupInterface
-	 */
-	protected $group;
+    /**
+     * @var UserForm
+     */
+    protected $userForm;
 
-	/**
-	 * @var RegisterForm
-	 */
-	protected $registerForm;
+    /**
+     * @var ResendActivationForm
+     */
+    protected $resendActivationForm;
 
-	/**
-	 * @var UserForm
-	 */
-	protected $userForm;
+    /**
+     * @var ForgotPasswordForm
+     */
+    protected $forgotPasswordForm;
 
-	/**
-	 * @var ResendActivationForm
-	 */
-	protected $resendActivationForm;
+    /**
+     * @var ChangePasswordForm
+     */
+    protected $changePasswordForm;
 
-	/**
-	 * @var ForgotPasswordForm
-	 */
-	protected $forgotPasswordForm;
+    /**
+     * @var SuspendUserForm
+     */
+    protected $suspendUserForm;
 
-	/**
-	 * @var ChangePasswordForm
-	 */
-	protected $changePasswordForm;
-
-	/**
-	 * @var SuspendUserForm
-	 */
-	protected $suspendUserForm;
-
-	/**
-	 * @var PermissionInterface
-	 */
+    /**
+     * @var PermissionInterface
+     */
     protected $permission;
 
-	/**
-	 * Instantiate a new UsersController
-	 *
-	 * @param Sentry $sentry
-	 * @param Dispatcher $events
-	 * @param UserInterface $user
-	 * @param GroupInterface $group
-	 * @param RegisterForm $registerForm
-	 * @param UserForm $userForm
-	 * @param ResendActivationForm $resendActivationForm
-	 * @param ForgotPasswordForm $forgotPasswordForm
-	 * @param ChangePasswordForm $changePasswordForm
-	 * @param SuspendUserForm $suspendUserForm
-	 * @param PermissionInterface $permission
-	 * @param InviteInterface $invite
-	 */
-	public function __construct(
-		Sentry $sentry,
-		Dispatcher $events,
-		UserInterface $user,
-		GroupInterface $group,
-		RegisterForm $registerForm, 
-		UserForm $userForm,
-		ResendActivationForm $resendActivationForm,
-		ForgotPasswordForm $forgotPasswordForm,
-		ChangePasswordForm $changePasswordForm,
-		SuspendUserForm $suspendUserForm,
+    /**
+     * Instantiate a new UsersController
+     *
+     * @param Sentry $sentry
+     * @param Dispatcher $events
+     * @param UserInterface $user
+     * @param GroupInterface $group
+     * @param RegisterForm $registerForm
+     * @param UserForm $userForm
+     * @param ResendActivationForm $resendActivationForm
+     * @param ForgotPasswordForm $forgotPasswordForm
+     * @param ChangePasswordForm $changePasswordForm
+     * @param SuspendUserForm $suspendUserForm
+     * @param PermissionInterface $permission
+     * @param InviteInterface $invite
+     */
+    public function __construct(
+        Sentry $sentry,
+        Dispatcher $events,
+        UserInterface $user,
+        GroupInterface $group,
+        RegisterForm $registerForm,
+        UserForm $userForm,
+        ResendActivationForm $resendActivationForm,
+        ForgotPasswordForm $forgotPasswordForm,
+        ChangePasswordForm $changePasswordForm,
+        SuspendUserForm $suspendUserForm,
         PermissionInterface $permission,
         InviteInterface $invite
-    )
-	{
-		$this->sentry = $sentry;
-		$this->events = $events;
-		$this->user = $user;
-		$this->group = $group;
-		$this->registerForm = $registerForm;
-		$this->userForm = $userForm;
-		$this->resendActivationForm = $resendActivationForm;
-		$this->forgotPasswordForm = $forgotPasswordForm;
-		$this->changePasswordForm = $changePasswordForm;
-		$this->suspendUserForm = $suspendUserForm;
+    ) {
+        $this->sentry = $sentry;
+        $this->events = $events;
+        $this->user = $user;
+        $this->group = $group;
+        $this->registerForm = $registerForm;
+        $this->userForm = $userForm;
+        $this->resendActivationForm = $resendActivationForm;
+        $this->forgotPasswordForm = $forgotPasswordForm;
+        $this->changePasswordForm = $changePasswordForm;
+        $this->suspendUserForm = $suspendUserForm;
         $this->permission = $permission;
         $this->invite = $invite;
 
         // Establish Filters
-		$this->beforeFilter('auth', ['except' => ['register', 'activate', 'resend', 'forgot', 'reset', 'store']]);
-		$this->beforeFilter('csrf', ['on' => 'post']);
-		$this->beforeFilter('hasUserAccess:user_view', ['only' => ['show', 'index']]);
-		$this->beforeFilter('hasUserAccess:user_edit', ['only' => ['edit', 'update']]);
-		$this->beforeFilter('hasUserAccess:user_delete', ['only' => ['destroy']]);
-		$this->beforeFilter('hasUserAccess:user_create', ['only' => ['create']]);
-	}
+        $this->beforeFilter('auth', ['except' => ['register', 'activate', 'resend', 'forgot', 'reset', 'store']]);
+        $this->beforeFilter('csrf', ['on' => 'post']);
+        $this->beforeFilter('hasUserAccess:user_view', ['only' => ['show', 'index']]);
+        $this->beforeFilter('hasUserAccess:user_edit', ['only' => ['edit', 'update']]);
+        $this->beforeFilter('hasUserAccess:user_delete', ['only' => ['destroy']]);
+        $this->beforeFilter('hasUserAccess:user_create', ['only' => ['create']]);
+    }
 
 
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @return Response
-	 */
-	public function index()
-	{
-		$users = $this->sentry->findAllUsers();
-      
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Response
+     */
+    public function index()
+    {
+        $users = $this->sentry->findAllUsers();
+
         return View::make('users.index', compact('users'));
-	}
+    }
 
     /**
      * Show the form for creating a new user.
@@ -166,16 +164,16 @@ class UsersController extends BaseController {
     {
         $registration = Config::get('config.registration');
 
-        if (!$registration)
-        {   
+        if (! $registration) {
             Session::flash('error', trans('users.inactive_reg'));
+
             return Redirect::route('home');
         }
 
-        if ( ! empty($code))
-        {
-            if ( ! $invite = $this->invite->findByCode($code))
+        if (! empty($code)) {
+            if (! $invite = $this->invite->findByCode($code)) {
                 Session::flash('warning', trans('groups.invite_not_found'));
+            }
         }
         $code = isset($invite->code) ? $invite->code : null;
         $email = isset($invite->email) ? $invite->email : null;
@@ -184,97 +182,99 @@ class UsersController extends BaseController {
     }
 
     /**
-	 * Show the form for creating a new user.
-	 *
-	 * @return Response
-	 */
-	public function create()
-	{
-		$allGroups = $this->group->findAllGroups();
-		$groups = $this->group->selectOptions($allGroups, true);
+     * Show the form for creating a new user.
+     *
+     * @return Response
+     */
+    public function create()
+    {
+        $allGroups = $this->group->findAllGroups();
+        $groups = $this->group->selectOptions($allGroups, true);
         $cancel = URL::route('users.index');
 
         return View::make('users.create', compact('groups', 'cancel'));
-	}
+    }
 
-	/**
-	 * Store a newly created user.
-	 *
-	 * @return Response
-	 */
-	public function store()
-	{
+    /**
+     * Store a newly created user.
+     *
+     * @return Response
+     */
+    public function store()
+    {
         // Form Processing
         $result = $this->registerForm->save(Input::all());
 
-        if( $result['success'] )
-        {
-			// Success!
-			if (Input::exists('registeruser'))
-			{
+        if ($result['success']) {
+            // Success!
+            if (Input::exists('registeruser')) {
                 $email = $result['mailData']['email'];
-				$userId = $result['mailData']['userId'];
+                $userId = $result['mailData']['userId'];
                 $activationCode = $result['mailData']['activationCode'];
 
-				$this->events->fire('user.registered', [
-					'email'          => $email,
+                $this->events->fire('user.registered', [
+                    'email'            => $email,
                     'activateHtmlLink' => HTML::linkRoute('activate', 'Click Here', ['id' => $userId, 'code' => urlencode($activationCode)]),
                     'activateTextLink' => route('activate', ['id' => $userId, 'code' => urlencode($activationCode)])
-				]);
+                ]);
 
-				Session::flash('success', $result['message']);
-				return Redirect::action('login');
-			}
+                Session::flash('success', $result['message']);
 
-			Session::flash('success', trans('users.admin_created'));
+                return Redirect::action('login');
+            }
+
+            Session::flash('success', trans('users.admin_created'));
+
             return Redirect::action('users.edit', [$result['mailData']['userId']]);
-
         } else {
             Session::flash('error', $result['message']);
+
             return Redirect::back()->withInput()->withErrors($this->registerForm->errors());
         }
-	}
+    }
 
-	/**
-	 * Redirect to edit page.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function show($id)
-	{
+    /**
+     * Redirect to edit page.
+     *
+     * @param  int $id
+     * @return Response
+     */
+    public function show($id)
+    {
         return Redirect::action('users.edit', [$id]);
     }
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{
-		$user = $this->sentry->findUserById($id);
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int $id
+     * @return Response
+     */
+    public function edit($id)
+    {
+        $user = $this->sentry->findUserById($id);
         $currentUser = $this->sentry->getUser();
 
-        if(is_null($user) || !is_numeric($id))
-        {
+        if (is_null($user) || ! is_numeric($id)) {
             Session::flash('error', trans('pages.error_missing_variable'));
+
             return Redirect::route('home');
         }
 
         $groups = $user->groups->toArray();
-        $userGroups = array_map(function ($groups){ return $groups['name']; }, $groups);
+        $userGroups = array_map(function ($groups) {
+            return $groups['name'];
+        }, $groups);
         $allGroups = $this->group->all();
         $timezones = \Biospex\Helpers\Helper::timeZoneSelect();
 
         // Get all permissions
         $permissions = $this->permission->getPermissionsGroupBy();
         $userPermissions = $user->permissions;
-		$userEditPermissions = $currentUser->hasAccess('user_edit_permissions');
-		$userEditGroups = $currentUser->hasAccess('user_edit_groups');
-		$superUser = $currentUser->isSuperUser();
-		$cancel = $currentUser->isSuperUser() ? URL::route('users.index') : URL::route('projects.index');
+        $userEditPermissions = $currentUser->hasAccess('user_edit_permissions');
+        $userEditGroups = $currentUser->hasAccess('user_edit_groups');
+        $superUser = $currentUser->isSuperUser();
+        $cancel = $currentUser->isSuperUser() ? URL::route('users.index') : URL::route('projects.index');
 
         return View::make('users.edit', compact(
                 'user',
@@ -289,168 +289,168 @@ class UsersController extends BaseController {
                 'cancel'
             )
         );
-	}
+    }
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function update($id)
-	{
-        if(!is_numeric($id))
-        {
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  int $id
+     * @return Response
+     */
+    public function update($id)
+    {
+        if (! is_numeric($id)) {
             Session::flash('error', trans('pages.error_missing_variable'));
+
             return Redirect::route('home');
         }
 
-		// Form Processing
+        // Form Processing
         $result = $this->userForm->update(Input::all());
 
-        if( $result['success'] )
-        {
-			$this->events->fire('user.updated', ['userId' => $id]);
+        if ($result['success']) {
+            $this->events->fire('user.updated', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
-			return Redirect::action('users.edit', [$id]);
 
+            return Redirect::action('users.edit', [$id]);
         } else {
             Session::flash('error', $result['message']);
-			return Redirect::action('users.edit', [$id])
+
+            return Redirect::action('users.edit', [$id])
                 ->withInput()
-                ->withErrors( $this->userForm->errors() );
+                ->withErrors($this->userForm->errors());
         }
-	}
+    }
 
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function destroy($id)
-	{
-        if(!is_numeric($id))
-        {
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int $id
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        if (! is_numeric($id)) {
             Session::flash('error', trans('pages.error_delete_user'));
+
             return Redirect::action('UsersController@index');
         }
 
         $user = $this->sentry->findUserById($id);
 
-		if ($user)
-		{
+        if ($user) {
             $user->delete();
-			$this->events->fire('user.destroyed', ['userId' => $id]);
+            $this->events->fire('user.destroyed', ['userId' => $id]);
 
             Session::flash('success', trans('users.deleted'));
-            return Redirect::action('UsersController@index');
-        }
-        else 
-        {
-        	Session::flash('error', trans('pages.error_delete_user'));
-            return Redirect::action('UsersController@index');
-        }
-	}
 
-	/**
-	 * Activate a new user
-	 * @param  int $id   
-	 * @param  string $code 
-	 * @return Response
-	 */
-	public function activate($id, $code)
-	{
-        if(!is_numeric($id))
-        {
+            return Redirect::action('UsersController@index');
+        } else {
+            Session::flash('error', trans('pages.error_delete_user'));
+
+            return Redirect::action('UsersController@index');
+        }
+    }
+
+    /**
+     * Activate a new user
+     *
+     * @param  int $id
+     * @param  string $code
+     * @return Response
+     */
+    public function activate($id, $code)
+    {
+        if (! is_numeric($id)) {
             Session::flash('error', trans('pages.error_missing_variable'));
+
             return Redirect::route('home');
         }
 
-		$result = $this->user->activate($id, $code);
+        $result = $this->user->activate($id, $code);
 
-        if( $result['success'] )
-        {
+        if ($result['success']) {
             // Success!
             Session::flash('success', $result['message']);
-			return Redirect::route('login');
 
+            return Redirect::route('login');
         } else {
             Session::flash('error', $result['message']);
+
             return Redirect::route('home');
         }
-	}
+    }
 
-	/**
-	 * Process resend activation request
-	 * @return Response
-	 */
-	public function resend()
-	{
-		// Form Processing
-        $result = $this->resendActivationForm->resend( Input::all() );
+    /**
+     * Process resend activation request
+     *
+     * @return Response
+     */
+    public function resend()
+    {
+        // Form Processing
+        $result = $this->resendActivationForm->resend(Input::all());
 
-        if( $result['success'] )
-        {
+        if ($result['success']) {
             $email = $result['mailData']['email'];
             $userId = $result['mailData']['userId'];
             $activationCode = $result['mailData']['activationCode'];
 
             $this->events->fire('user.resend', [
-                'email'          => $email,
+                'email'            => $email,
                 'activateHtmlLink' => HTML::linkRoute('activate', 'Click Here', ['id' => $userId, 'code' => urlencode($activationCode)]),
                 'activateTextLink' => route('activate', ['id' => $userId, 'code' => urlencode($activationCode)])
             ]);
 
             // Success!
             Session::flash('success', $result['message']);
+
             return Redirect::route('home');
-        } 
-        else 
-        {
+        } else {
             Session::flash('error', $result['message']);
+
             return Redirect::route('resendActivationForm')
                 ->withInput()
-                ->withErrors( $this->resendActivationForm->errors() );
+                ->withErrors($this->resendActivationForm->errors());
         }
-	}
+    }
 
-	/**
-	 * Process Forgot Password request
-	 * @return Response
-	 */
-	public function forgot()
-	{
-		// Form Processing
-        $result = $this->forgotPasswordForm->forgot( Input::all() );
+    /**
+     * Process Forgot Password request
+     *
+     * @return Response
+     */
+    public function forgot()
+    {
+        // Form Processing
+        $result = $this->forgotPasswordForm->forgot(Input::all());
 
-        if( $result['success'] )
-        {
+        if ($result['success']) {
             $email = $result['mailData']['email'];
             $userId = $result['mailData']['userId'];
             $resetCode = $result['mailData']['resetCode'];
 
             $this->events->fire('user.forgot', [
-                'email' => $email,
+                'email'         => $email,
                 'resetHtmlLink' => HTML::linkRoute('reset', 'Click Here', ['id' => $userId, 'code' => urlencode($resetCode)]),
                 'resetTextLink' => route('reset', ['id' => $userId, 'code' => urlencode($resetCode)]),
             ]);
 
             // Success!
             Session::flash('success', $result['message']);
+
             return Redirect::route('home');
-        } 
-        else 
-        {
+        } else {
             Session::flash('error', $result['message']);
+
             return Redirect::route('forgotPasswordForm')
                 ->withInput()
-                ->withErrors( $this->forgotPasswordForm->errors() );
+                ->withErrors($this->forgotPasswordForm->errors());
         }
-	}
+    }
 
     /**
      * Process a password reset request link
@@ -460,182 +460,182 @@ class UsersController extends BaseController {
      * @return \Illuminate\Http\RedirectResponse|void
      */
     public function reset($id, $code)
-	{
-        if(!is_numeric($id))
-        {
+    {
+        if (! is_numeric($id)) {
             Session::flash('error', trans('pages.error_missing_variable'));
+
             return Redirect::route('home');
         }
 
-		$result = $this->user->resetPassword($id, $code);
+        $result = $this->user->resetPassword($id, $code);
 
-        if( $result['success'] )
-        {
-			$this->events->fire('user.newpassword', [
-				'email' => $result['mailData']['email'],
-				'newPassword' => $result['mailData']['newPassword']
-			]);
+        if ($result['success']) {
+            $this->events->fire('user.newpassword', [
+                'email'       => $result['mailData']['email'],
+                'newPassword' => $result['mailData']['newPassword']
+            ]);
 
             // Success!
             Session::flash('success', $result['message']);
-            return Redirect::route('home');
 
+            return Redirect::route('home');
         } else {
             Session::flash('error', $result['message']);
+
             return Redirect::route('home');
         }
-	}
+    }
 
-	/**
-	 * Process a password change request
-	 * @param  int $id 
-	 * @return redirect     
-	 */
-	public function change($id)
-	{
-        if(!is_numeric($id))
-        {
+    /**
+     * Process a password change request
+     *
+     * @param  int $id
+     * @return redirect
+     */
+    public function change($id)
+    {
+        if (! is_numeric($id)) {
             Session::flash('error', trans('pages.error_missing_variable'));
+
             return Redirect::route('home');
         }
 
-		$data = Input::all();
-		$data['id'] = $id;
+        $data = Input::all();
+        $data['id'] = $id;
 
-		// Form Processing
-        $result = $this->changePasswordForm->change( $data );
+        // Form Processing
+        $result = $this->changePasswordForm->change($data);
 
-        if( $result['success'] )
-        {
-			$this->events->fire('user.passwordchange', ['userId' => $id]);
+        if ($result['success']) {
+            $this->events->fire('user.passwordchange', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
-			return Redirect::action('UsersController@show', [$id]);
-        } 
-        else 
-        {
+
+            return Redirect::action('UsersController@show', [$id]);
+        } else {
             Session::flash('error', $result['message']);
-			return Redirect::action('UsersController@edit', [$id])
+
+            return Redirect::action('UsersController@edit', [$id])
                 ->withInput()
-                ->withErrors( $this->changePasswordForm->errors() );
+                ->withErrors($this->changePasswordForm->errors());
         }
-	}
+    }
 
-	/**
-	 * Process a suspend user request
-	 * @param  int $id 
-	 * @return Redirect     
-	 */
-	public function suspend($id)
-	{
-        if(!is_numeric($id))
-        {
+    /**
+     * Process a suspend user request
+     *
+     * @param  int $id
+     * @return Redirect
+     */
+    public function suspend($id)
+    {
+        if (! is_numeric($id)) {
             Session::flash('error', trans('pages.error_missing_variable'));
+
             return Redirect::route('home');
         }
 
-		// Form Processing
-        $result = $this->suspendUserForm->suspend( Input::all() );
+        // Form Processing
+        $result = $this->suspendUserForm->suspend(Input::all());
 
-        if( $result['success'] )
-        {
-			$this->events->fire('user.suspended', ['userId' => $id]);
+        if ($result['success']) {
+            $this->events->fire('user.suspended', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
-            return Redirect::action('UsersController@index');
 
+            return Redirect::action('UsersController@index');
         } else {
             Session::flash('error', $result['message']);
-			return Redirect::action('UsersController@suspend', [$id])
+
+            return Redirect::action('UsersController@suspend', [$id])
                 ->withInput()
-                ->withErrors( $this->suspendUserForm->errors() );
+                ->withErrors($this->suspendUserForm->errors());
         }
-	}
+    }
 
-	/**
-	 * Unsuspend user
-	 * @param  int $id 
-	 * @return Redirect     
-	 */
-	public function unsuspend($id)
-	{
-        if(!is_numeric($id))
-        {
+    /**
+     * Unsuspend user
+     *
+     * @param  int $id
+     * @return Redirect
+     */
+    public function unsuspend($id)
+    {
+        if (! is_numeric($id)) {
             Session::flash('error', trans('pages.error_missing_variable'));
+
             return Redirect::route('home');
         }
 
-		$result = $this->user->unSuspend($id);
+        $result = $this->user->unSuspend($id);
 
-        if( $result['success'] )
-        {
-			$this->events->fire('user.unsuspended', ['userId' => $id]);
+        if ($result['success']) {
+            $this->events->fire('user.unsuspended', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
-            return Redirect::action('UsersController@index');
 
+            return Redirect::action('UsersController@index');
         } else {
             Session::flash('error', $result['message']);
+
             return Redirect::action('UsersController@index');
         }
-	}
+    }
 
-	/**
-	 * Ban a user
-	 * @param  int $id 
-	 * @return Redirect     
-	 */
-	public function ban($id)
-	{
-        if(!is_numeric($id))
-        {
+    /**
+     * Ban a user
+     *
+     * @param  int $id
+     * @return Redirect
+     */
+    public function ban($id)
+    {
+        if (! is_numeric($id)) {
             Session::flash('error', trans('pages.error_missing_variable'));
+
             return Redirect::route('home');
         }
 
-		$result = $this->user->ban($id);
+        $result = $this->user->ban($id);
 
-        if( $result['success'] )
-        {
-			$this->events->fire('user.banned', ['userId' => $id]);
+        if ($result['success']) {
+            $this->events->fire('user.banned', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
-            return Redirect::action('UsersController@index');
 
+            return Redirect::action('UsersController@index');
         } else {
             Session::flash('error', $result['message']);
+
             return Redirect::action('UsersController@index');
         }
-	}
+    }
 
-	public function unban($id)
-	{
-        if(!is_numeric($id))
-        {
+    public function unban($id)
+    {
+        if (! is_numeric($id)) {
             Session::flash('error', trans('pages.error_missing_variable'));
+
             return Redirect::route('home');
         }
-        
-		$result = $this->user->unBan($id);
 
-        if( $result['success'] )
-        {
-			$this->events->fire('user.unbanned', ['userId' => $id]);
+        $result = $this->user->unBan($id);
+
+        if ($result['success']) {
+            $this->events->fire('user.unbanned', ['userId' => $id]);
 
             // Success!
             Session::flash('success', $result['message']);
-            return Redirect::action('UsersController@index');
 
+            return Redirect::action('UsersController@index');
         } else {
             Session::flash('error', $result['message']);
+
             return Redirect::action('UsersController@index');
         }
-	}
-
+    }
 }
-
-	

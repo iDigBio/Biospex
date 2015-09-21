@@ -33,8 +33,8 @@ use Biospex\Services\Process\DarwinCore;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Config;
 
-class ExpeditionsController extends BaseController {
-
+class ExpeditionsController extends BaseController
+{
     /**
      * @var Biospex\Repo\Expedition\ExpeditionInterface
      */
@@ -89,8 +89,7 @@ class ExpeditionsController extends BaseController {
         WorkflowManagerInterface $workflowManager,
         Sentry $sentry,
         DarwinCore $process
-    )
-    {
+    ) {
         $this->expedition = $expedition;
         $this->expeditionForm = $expeditionForm;
         $this->project = $project;
@@ -100,12 +99,12 @@ class ExpeditionsController extends BaseController {
         $this->process = $process;
 
         // Establish Filters
-		$this->beforeFilter('auth');
-		$this->beforeFilter('csrf', ['on' => 'post']);
-		$this->beforeFilter('hasProjectAccess:expedition_view', ['only' => ['show', 'index']]);
-		$this->beforeFilter('hasProjectAccess:expedition_edit', ['only' => ['edit', 'update', 'ocr']]);
-		$this->beforeFilter('hasProjectAccess:expedition_delete', ['only' => ['destroy']]);
-		$this->beforeFilter('hasProjectAccess:expedition_create', ['only' => ['create', 'store']]);
+        $this->beforeFilter('auth');
+        $this->beforeFilter('csrf', ['on' => 'post']);
+        $this->beforeFilter('hasProjectAccess:expedition_view', ['only' => ['show', 'index']]);
+        $this->beforeFilter('hasProjectAccess:expedition_edit', ['only' => ['edit', 'update', 'ocr']]);
+        $this->beforeFilter('hasProjectAccess:expedition_delete', ['only' => ['destroy']]);
+        $this->beforeFilter('hasProjectAccess:expedition_create', ['only' => ['create', 'store']]);
     }
 
     /**
@@ -114,15 +113,16 @@ class ExpeditionsController extends BaseController {
      * @param $id
      * @return \Illuminate\View\View
      */
-    public function index ($id)
+    public function index($id)
     {
-		if ( ! Request::ajax())
-			return Redirect::action('ProjectsController@show', [$id]);
+        if (! Request::ajax()) {
+            return Redirect::action('ProjectsController@show', [$id]);
+        }
 
         $user = $this->sentry->getUser();
-		$project = $this->project->findWith($id, ['expeditions.actorsCompletedRelation']);
+        $project = $this->project->findWith($id, ['expeditions.actorsCompletedRelation']);
 
-		return View::make('expeditions.index', compact('project', 'user'));
+        return View::make('expeditions.index', compact('project', 'user'));
     }
 
     /**
@@ -131,12 +131,12 @@ class ExpeditionsController extends BaseController {
      * @param $id
      * @return \Illuminate\View\View
      */
-    public function create ($id)
+    public function create($id)
     {
-		$project = $this->project->findWith($id, ['group']);
+        $project = $this->project->findWith($id, ['group']);
         $subjects = $this->subject->getUnassignedCount($id);
         $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
-		$cancel = URL::previous();
+        $cancel = URL::previous();
 
         return View::make('expeditions.create', compact('project', 'subjects', 'create', 'cancel'));
     }
@@ -146,22 +146,21 @@ class ExpeditionsController extends BaseController {
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store ()
+    public function store()
     {
         // Form Processing
         $subjects = $this->subject->getSubjectIds(Input::get('project_id'), Input::get('subjects'));
-		$input = array_merge(Input::all(), ['subject_ids' => $subjects]);
+        $input = array_merge(Input::all(), ['subject_ids' => $subjects]);
 
         $expedition = $this->expeditionForm->save($input);
 
-        if($expedition)
-        {
+        if ($expedition) {
             Session::flash('success', trans('expeditions.expedition_created'));
+
             return Redirect::action('ExpeditionsController@show', [$expedition->project_id, $expedition->id]);
-        }
-        else
-        {
+        } else {
             Session::flash('error', trans('expeditions.expedition_save_error'));
+
             return Redirect::action('ExpeditionsController@create')
                 ->withInput()
                 ->withErrors($this->expeditionForm->errors());
@@ -175,11 +174,11 @@ class ExpeditionsController extends BaseController {
      * @param $expeditionId
      * @return \Illuminate\View\View
      */
-    public function show ($projectId, $expeditionId)
+    public function show($projectId, $expeditionId)
     {
-		$expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads', 'workflowManager']);
+        $expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads', 'workflowManager']);
 
-		return View::make('expeditions.show', compact('expedition'));
+        return View::make('expeditions.show', compact('expedition'));
     }
 
     /**
@@ -189,13 +188,13 @@ class ExpeditionsController extends BaseController {
      * @param $expeditionId
      * @return \Illuminate\View\View
      */
-    public function duplicate ($projectId, $expeditionId)
+    public function duplicate($projectId, $expeditionId)
     {
-		$expedition = $this->expedition->findWith($expeditionId, ['project.group']);
+        $expedition = $this->expedition->findWith($expeditionId, ['project.group']);
         $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
-		$cancel = URL::previous();
+        $cancel = URL::previous();
 
-		return View::make('expeditions.clone', compact('expedition', 'create', 'cancel'));
+        return View::make('expeditions.clone', compact('expedition', 'create', 'cancel'));
     }
 
     /**
@@ -205,13 +204,14 @@ class ExpeditionsController extends BaseController {
      * @param $expeditionId
      * @return \Illuminate\View\View
      */
-    public function edit ($projectId, $expeditionId)
+    public function edit($projectId, $expeditionId)
     {
-		$expedition = $this->expedition->findWith($expeditionId, ['project.group']);
+        $expedition = $this->expedition->findWith($expeditionId, ['project.group']);
         $subjects = count($expedition->subject);
         $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
-		$cancel = URL::previous();
-		return View::make('expeditions.edit', compact('expedition', 'subjects', 'create', 'cancel'));
+        $cancel = URL::previous();
+
+        return View::make('expeditions.edit', compact('expedition', 'subjects', 'create', 'cancel'));
     }
 
     /**
@@ -221,22 +221,22 @@ class ExpeditionsController extends BaseController {
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update ($projectId, $expeditionId)
+    public function update($projectId, $expeditionId)
     {
         // Form Processing
         $expedition = $this->expeditionForm->update(Input::all());
 
-        if($expedition)
-        {
+        if ($expedition) {
             // Success!
             Session::flash('success', trans('expeditions.expedition_updated'));
-            return Redirect::action('projects.expeditions.show', [$projectId, $expeditionId]);
 
+            return Redirect::action('projects.expeditions.show', [$projectId, $expeditionId]);
         } else {
             Session::flash('error', trans('expeditions.expedition_save_error'));
+
             return Redirect::route('projects.expeditions.edit', [$projectId, $expeditionId])
                 ->withInput()
-                ->withErrors( $this->expeditionForm->errors() );
+                ->withErrors($this->expeditionForm->errors());
         }
     }
 
@@ -249,31 +249,25 @@ class ExpeditionsController extends BaseController {
      */
     public function process($projectId, $expeditionId)
     {
-        try
-        {
+        try {
             $this->expedition->setPass(true);
-			$expedition = $this->expedition->findWith($expeditionId, ['project.actors', 'workflowManager']);
+            $expedition = $this->expedition->findWith($expeditionId, ['project.actors', 'workflowManager']);
 
-			if ( ! is_null($expedition->workflowManager))
-			{
+            if (! is_null($expedition->workflowManager)) {
                 $workflowId = $expedition->workflowManager->id;
-				$expedition->workflowManager->stopped = 0;
+                $expedition->workflowManager->stopped = 0;
                 $expedition->workflowManager->queue = 1;
-				$this->workflowManager->save($expedition->workflowManager);
-			}
-			else
-			{
-				$workflowManager = $this->workflowManager->create(['expedition_id' => $expeditionId, 'queue' => 1]);
-				$workflowId = $workflowManager->id;
+                $this->workflowManager->save($expedition->workflowManager);
+            } else {
+                $workflowManager = $this->workflowManager->create(['expedition_id' => $expeditionId, 'queue' => 1]);
+                $workflowId = $workflowManager->id;
                 $expedition->actors()->sync($expedition->project->actors);
-			}
+            }
 
             Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $workflowId, 'class' => 'WorkflowManagerQueue'], Config::get('config.beanstalkd.workflow'));
 
             Session::flash('success', trans('expeditions.expedition_process_success'));
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             Session::flash('error', trans('expeditions.expedition_process_error'));
         }
 
@@ -282,64 +276,56 @@ class ExpeditionsController extends BaseController {
 
     public function ocr($projectId, $expeditionId)
     {
-        try
-        {
+        try {
             $expedition = $this->expedition->findWith($expeditionId, ['subjects']);
 
             $data = [];
             $count = 0;
             $this->process->setProjectId($projectId);
-            foreach ($expedition->subjects as $subject)
-            {
-                if ( ! empty($subject->ocr))
+            foreach ($expedition->subjects as $subject) {
+                if (! empty($subject->ocr)) {
                     continue;
+                }
 
                 $this->process->buildOcrQueue($data, $subject);
                 $count++;
             }
 
-            if ($count > 0 && ! \Config::get('config.disableOcr'))
-            {
+            if ($count > 0 && ! \Config::get('config.disableOcr')) {
                 $id = $this->process->saveOcrQueue($data, $count);
                 \Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $id, 'class' => 'OcrProcessQueue'], Config::get('config.beanstalkd.ocr'));
             }
 
             Session::flash('success', trans('expeditions.ocr_process_success'));
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             Session::flash('error', trans('expeditions.ocr_process_error'));
         }
 
         return Redirect::action('ExpeditionsController@show', [$projectId, $expeditionId]);
     }
 
-	/**
-	 * Stop a expedition process.
-	 *
-	 * @param $projectId
-	 * @param $expeditionId
-	 * @return \Illuminate\Http\RedirectResponse
-	 */
-	public function stop($projectId, $expeditionId)
-	{
-		$workflow = $this->workflowManager->findByExpeditionId($expeditionId);
+    /**
+     * Stop a expedition process.
+     *
+     * @param $projectId
+     * @param $expeditionId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function stop($projectId, $expeditionId)
+    {
+        $workflow = $this->workflowManager->findByExpeditionId($expeditionId);
 
-		if (is_null($workflow))
-		{
-			Session::flash('error', trans('expeditions.process_no_exists'));
-		}
-		else
-		{
-			$workflow->stopped = 1;
+        if (is_null($workflow)) {
+            Session::flash('error', trans('expeditions.process_no_exists'));
+        } else {
+            $workflow->stopped = 1;
             $workflow->queue = 0;
-			$this->workflowManager->save($workflow);
-			Session::flash('success', trans('expeditions.process_stopped'));
-		}
+            $this->workflowManager->save($workflow);
+            Session::flash('success', trans('expeditions.process_stopped'));
+        }
 
-		return Redirect::action('ExpeditionsController@show', [$projectId, $expeditionId]);
-
-	}
+        return Redirect::action('ExpeditionsController@show', [$projectId, $expeditionId]);
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -348,29 +334,24 @@ class ExpeditionsController extends BaseController {
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy ($projectId, $expeditionId)
+    public function destroy($projectId, $expeditionId)
     {
-		$workflow = $this->workflowManager->findByExpeditionId($expeditionId);
-		if ( ! is_null($workflow))
-		{
-			Session::flash('error', trans('expeditions.expedition_process_exists'));
-			return Redirect::action('projects.expeditions.show', [$projectId, $expeditionId]);
-		}
-		else
-		{
-			try
-			{
-				$subjects = $this->subject->getSubjectIds($projectId, null, $expeditionId);
-				$this->subject->detachSubjects($subjects, $expeditionId);
-				$this->expedition->destroy($expeditionId);
+        $workflow = $this->workflowManager->findByExpeditionId($expeditionId);
+        if (! is_null($workflow)) {
+            Session::flash('error', trans('expeditions.expedition_process_exists'));
 
-				Session::flash('success', trans('expeditions.expedition_deleted'));
-			}
-			catch(Exception $e)
-			{
-				Session::flash('error', trans('expeditions.expedition_destroy_error'));
-			}
-		}
+            return Redirect::action('projects.expeditions.show', [$projectId, $expeditionId]);
+        } else {
+            try {
+                $subjects = $this->subject->getSubjectIds($projectId, null, $expeditionId);
+                $this->subject->detachSubjects($subjects, $expeditionId);
+                $this->expedition->destroy($expeditionId);
+
+                Session::flash('success', trans('expeditions.expedition_deleted'));
+            } catch (Exception $e) {
+                Session::flash('error', trans('expeditions.expedition_destroy_error'));
+            }
+        }
 
         return Redirect::action('projects.show', [$projectId]);
     }

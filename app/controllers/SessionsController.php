@@ -27,25 +27,24 @@ use Illuminate\Events\Dispatcher;
 use Biospex\Repo\Session\SessionInterface;
 use Biospex\Form\Login\LoginForm;
 
-
-class SessionsController extends BaseController {
-
+class SessionsController extends BaseController
+{
     /**
      * Member Vars
      */
     protected $session;
     protected $loginForm;
 
-	/**
-	 * Constructor
-	 *
-	 * @param Dispatcher $events
-	 * @param SessionInterface $session
-	 * @param LoginForm $loginForm
-	 */
-	public function __construct (Dispatcher $events, SessionInterface $session, LoginForm $loginForm)
+    /**
+     * Constructor
+     *
+     * @param Dispatcher $events
+     * @param SessionInterface $session
+     * @param LoginForm $loginForm
+     */
+    public function __construct(Dispatcher $events, SessionInterface $session, LoginForm $loginForm)
     {
-		$this->events = $events;
+        $this->events = $events;
         $this->session = $session;
         $this->loginForm = $loginForm;
     }
@@ -53,7 +52,7 @@ class SessionsController extends BaseController {
     /**
      * Show the login form
      */
-    public function create ()
+    public function create()
     {
         return View::make('sessions.login');
     }
@@ -63,38 +62,38 @@ class SessionsController extends BaseController {
      *
      * @return Response
      */
-    public function store ()
+    public function store()
     {
         // Form Processing
         $result = $this->loginForm->save(Input::all());
 
         if ($result['success']) {
-			$this->events->fire('user.login', [
+            $this->events->fire('user.login', [
                 'userId' => $result['sessionData']['userId'],
-                'email' => $result['sessionData']['email']
-			]);
+                'email'  => $result['sessionData']['email']
+            ]);
 
             // Success!
-			return Redirect::route('projects.index');
-
+            return Redirect::route('projects.index');
         } else {
             Session::flash('error', $result['message']);
+
             return Redirect::route('login')
                 ->withInput()
                 ->withErrors($this->loginForm->errors());
         }
     }
 
-	/**
-	 * Delete user session
-	 *
-	 * @return \Illuminate\Http\RedirectResponse
-	 */
-    public function destroy ()
+    /**
+     * Delete user session
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy()
     {
         $this->session->destroy();
-		$this->events->fire('user.logout');
+        $this->events->fire('user.logout');
+
         return Redirect::route('home');
     }
-
 }

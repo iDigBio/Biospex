@@ -25,49 +25,50 @@
  */
 use Biospex\Services\Image\Thumbnail;
 
-class ImagesController extends \BaseController {
+class ImagesController extends \BaseController
+{
+    /**
+     * @var Thumbnail
+     */
+    protected $thumbnail;
 
-	/**
-	 * @var Thumbnail
-	 */
-	protected $thumbnail;
+    /**
+     * Construct
+     *
+     * @param Thumbnail $thumbnail
+     */
+    public function __construct(Thumbnail $thumbnail)
+    {
+        $this->thumbnail = $thumbnail;
+    }
 
-	/**
-	 * Construct
-	 *
-	 * @param Thumbnail $thumbnail
-	 */
-	public function __construct(Thumbnail $thumbnail)
-	{
-		$this->thumbnail = $thumbnail;
-	}
+    /**
+     * Build html used by jQuery qTip
+     *
+     * @return string
+     */
+    public function html()
+    {
+        $url = Input::get('url');
 
-	/**
-	 * Build html used by jQuery qTip
-	 *
-	 * @return string
-	 */
-	public function html()
-	{
-		$url = Input::get('url');
-		return '<div><img src="/images/preview?url='.urlencode($url).'" /></div>';
-	}
+        return '<div><img src="/images/preview?url=' . urlencode($url) . '" /></div>';
+    }
 
-	/**
-	 * Return resized image for jQuery qTip
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function preview()
-	{
-		$url = Input::get('url');
-		$thumb = $this->thumbnail->getThumbNail(urldecode($url));
+    /**
+     * Return resized image for jQuery qTip
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function preview()
+    {
+        $url = Input::get('url');
+        $thumb = $this->thumbnail->getThumbNail(urldecode($url));
         $mime = $this->thumbnail->getMimeType();
 
-		$response = Response::make($thumb, 200);
-		$response->header('content-type', $mime);
+        $response = Response::make($thumb, 200);
+        $response->header('content-type', $mime);
 
-		// We return our image here.
-		return $response;
-	}
+        // We return our image here.
+        return $response;
+    }
 }

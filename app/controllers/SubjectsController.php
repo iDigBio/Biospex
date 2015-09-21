@@ -26,83 +26,96 @@
 
 use Biospex\Services\Grid\JqGridJsonEncoder;
 use Biospex\Repo\Project\ProjectInterface;
+use Biospex\Repo\UserGridField\UserGridFieldInterface;
 use Cartalyst\Sentry\Sentry;
 
-class SubjectsController extends BaseController {
+class SubjectsController extends BaseController
+{
+    /**
+     * @var
+     */
+    protected $grid;
 
-	/**
-	 * @var
-	 */
-	protected $grid;
+    /**
+     * @var
+     */
+    protected $project;
 
-	/**
-	 * @var
-	 */
-	protected $project;
+    /**
+     * @var
+     */
+    protected $fields;
 
     /**
      * @var Sentry
      */
     protected $sentry;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param JqGridJsonEncoder $grid
-	 * @param ProjectInterface $project
+    /**
+     * Constructor.
+     *
+     * @param JqGridJsonEncoder $grid
+     * @param ProjectInterface $project
+     * @param UserGridFieldInterface $fields
      * @param Sentry $sentry
-	 */
-	public function __construct(JqGridJsonEncoder $grid, ProjectInterface $project, Sentry $sentry)
-	{
-		$this->grid = $grid;
-		$this->project = $project;
+     */
+    public function __construct(JqGridJsonEncoder $grid, ProjectInterface $project, UserGridFieldInterface $fields, Sentry $sentry)
+    {
+        $this->grid = $grid;
+        $this->project = $project;
+        $this->fields = $fields;
         $this->sentry = $sentry;
-		$this->beforeFilter('auth');
-		$this->beforeFilter('csrf', ['on' => 'post']);
-	}
+        $this->beforeFilter('auth');
+        $this->beforeFilter('csrf', ['on' => 'post']);
+    }
 
-	/**
-	 * Display subject page.
-	 *
-	 * @param $projectId
-	 * @return \Illuminate\View\View
-	 */
-	public function index($projectId)
-	{
-		$project = $this->project->find($projectId);
+    /**
+     * Display subject page.
+     *
+     * @param $projectId
+     * @return \Illuminate\View\View
+     */
+    public function index($projectId)
+    {
+        $project = $this->project->find($projectId);
         $user = $this->sentry->getUser();
         $isSuperUser = $user->isSuperUser();
         $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
 
-		return View::make('subjects.show', compact('project', 'isOwner'));
-	}
+        return View::make('subjects.show', compact('project', 'isOwner'));
+    }
 
-	/**
-	 * Load grid model and column names
-	 */
-	public function load()
-	{
-		return $this->grid->loadGridModel();
-	}
+    /**
+     * Load grid model and column names
+     */
+    public function load()
+    {
+        $userId = $this->sentry->getUser()->getId();
+        $projectId = Route::input('projects');
+        $expeditionId = Route::input('expeditions');
 
-	/**
-	 * Load grid data.
-	 *
-	 * @throws Exception
-	 */
-	public function show()
-	{
-		$this->grid->encodeRequestedData(Input::all());
-	}
+        $fields = $this->fields->findByUserProjectExpedition($userId, $projectId, $expeditionId);
 
-	/**
-	 * Store selected rows to respective expeditions.
-	 *
-	 * @return string
-	 */
-	public function store()
-	{
-		return $this->grid->updateSelectedRows(Route::input('expeditions'), Input::all());
-	}
+        return $this->grid->loadGridModel();
+    }
 
+    /**
+     * Load grid data.
+     *
+     * @throws Exception
+     */
+    public function show()
+    {
+        $this->grid->encodeRequestedData(Input::all());
+    }
+
+    /**
+     * Store selected rows to respective expeditions.
+     *
+     * @return string
+     */
+    public function store()
+    {
+        return $this->grid->updateSelectedRows(Route::input('expeditions'), Input::all());
+    }
 }
