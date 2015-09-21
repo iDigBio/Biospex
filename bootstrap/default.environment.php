@@ -26,6 +26,7 @@
 
 /**
  * Rename this file to environment.php and change the return value.
+ *
  * @see start.php
  */
 return 'local';
