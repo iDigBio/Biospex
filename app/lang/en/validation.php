@@ -120,10 +120,10 @@ return [
             'required' => 'You must specify suspension length in minutes',
         ],
         'registeruser'             => [
-            'honeypot'      => 'Form required to be submitted on time.',
+            'honeypot' => 'Form required to be submitted on time.',
         ],
         'registertime'             => [
-            'honeytime'     => 'Too much time has elapse. Please refresh form.',
+            'honeytime' => 'Too much time has elapse. Please refresh form.',
         ],
         'group'                    => [
             'required_without' => "The :attribute field is required.",

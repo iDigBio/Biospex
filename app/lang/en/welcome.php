@@ -1,11 +1,11 @@
 <?php
 /*************************************************************************
- Generated via "php artisan localization:missing" at 2015/06/05 14:49:01 
-*************************************************************************/
+ * Generated via "php artisan localization:missing" at 2015/06/05 14:49:01
+ *************************************************************************/
 
-return array (
-  //==================================== Translations ====================================//
-  'intro' => '<p>The system is pretty straightforward to use — there are just a few things you need to know.</p>
+return [
+    //==================================== Translations ====================================//
+    'intro'       => '<p>The system is pretty straightforward to use — there are just a few things you need to know.</p>
 
 <p>Specimen digitization can involve a lot of different activities, but the most common are digital imaging, label
 transcription, and georeferencing the collection locality.  The first of these is an onsite task, but the other two can
@@ -62,25 +62,25 @@ CitStitch Hackathons for helping us develop greater interoperability and coordin
 US National Science Foundation\'s Resource for Advancing Digitization of Biodiversity Research Specimens.</p>
 
 <p>Still have questions? Feel free to contact us with any questions or concerns.</p>',
-  'ready' => '<p>Ready to start? Go ahead, make your first project.</p>',
-  'welcome' => 'Welcome to Biospex!',
-  //================================== Obsolete strings ==================================//
-  'expeditions' => '<h4>Expeditions</h4>
+    'ready'       => '<p>Ready to start? Go ahead, make your first project.</p>',
+    'welcome'     => 'Welcome to Biospex!',
+    //================================== Obsolete strings ==================================//
+    'expeditions' => '<h4>Expeditions</h4>
 	                <p>Expeditions are sub sets of your data that get sent to various digitization tools. While a 
 	                project may contain tens of thouands of records, expeditions may contain only a few hundred. 
 	                You may choose to separate the expeditions based on year, taxa, location or another variable. 
 	                You may also separate at random. We recommend dividing your data into several expeditions that 
 	                are more manageable for the digitization tools and more exciting for citizen scientists.</p>',
-  'groups' => '<h4>Groups</h4>
+    'groups'      => '<h4>Groups</h4>
 	                <p>Groups let you work with other people. If you joined Biospex by invitation, then you 
 	                are part of someone else\'s group. Otherwise, we made you a group of your very own. You can invite
 	                colleagues to your own group.</p>',
-  'projects' => '<h4>Projects</h4>
+    'projects'    => '<h4>Projects</h4>
 	                <p>Projects are sets of your data that you want processed. The project also contains the 
 	                descriptions of your targets for processing. The description you provide will be used when 
 	                your data are sent out for transcription (Notes from Nature) and/or georeferencing
 					(GEOLocate) and will be seen by citizen scientists who will use this information to decide if
 					they are interested in and qualified to participate.</p>',
-  'started' => '<p>Let\'s get started.</p>
+    'started'     => '<p>Let\'s get started.</p>
 	                <p>Biospex works by using groups, projects and expeditions. Here is an introduction.</p>',
-);
+];

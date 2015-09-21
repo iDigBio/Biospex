@@ -23,10 +23,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-return array(
+return [
 
-	'invalid'   => "Invalid username or password.",
-	'notactive' => "You have not yet activated this account. <a href=':url' class='alert-link'>Resend Activation Email?</a>",
-	'suspended' => "Your account has been temporarily suspended.",
-	'banned' 	=> "You have been banned.",
-);
+    'invalid'   => "Invalid username or password.",
+    'notactive' => "You have not yet activated this account. <a href=':url' class='alert-link'>Resend Activation Email?</a>",
+    'suspended' => "Your account has been temporarily suspended.",
+    'banned'    => "You have been banned.",
+];
