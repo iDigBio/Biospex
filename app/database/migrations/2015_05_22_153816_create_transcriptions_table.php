@@ -24,33 +24,31 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTranscriptionsTable extends Migration {
-
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-        Schema::connection('mongodb')->create('transcriptions', function($collection)
-        {
+class CreateTranscriptionsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::connection('mongodb')->create('transcriptions', function ($collection) {
             $collection->unique('nfn_id');
             $collection->index('project_id');
             $collection->index('subject_id');
             $collection->index('expedition_ids');
             $collection->timestamps();
         });
-	}
+    }
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
         Schema::connection('mongodb')->drop('transcriptions');
-	}
-
+    }
 }

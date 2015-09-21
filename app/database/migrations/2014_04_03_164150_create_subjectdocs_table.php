@@ -23,35 +23,33 @@
  */
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSubjectdocsTable extends Migration {
+class CreateSubjectdocsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::connection('mongodb')->drop('subjectdocs');
 
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-		Schema::connection('mongodb')->drop('subjectdocs');
-
-        Schema::connection('mongodb')->create('subjectdocs', function($collection)
-        {
+        Schema::connection('mongodb')->create('subjectdocs', function ($collection) {
             $collection->index('project_id');
             $collection->index('subject_id');
-            $collection->unique(array('project_id', 'subject_id'));
+            $collection->unique(['project_id', 'subject_id']);
             $collection->timestamps();
             $collection->softDeletes();
         });
-	}
+    }
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
         Schema::connection('mongodb')->drop('subjectdocs');
-	}
-
+    }
 }

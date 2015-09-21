@@ -24,27 +24,27 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateProjectsTable extends Migration {
-
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-		Schema::create('projects', function(Blueprint $table) {
-			$table->increments('id');
+class CreateProjectsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('projects', function (Blueprint $table) {
+            $table->increments('id');
             $table->unsignedInteger('group_id');
             $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
             $table->string('title');
             $table->string('slug')->index();
             $table->string('contact');
             $table->string('contact_email');
-			$table->string('website');
+            $table->string('website');
             $table->string('managed');
             $table->string('description_short');
-			$table->text('description_long');
+            $table->text('description_long');
             $table->text('incentives');
             $table->string('geographic_scope');
             $table->string('taxonomic_scope');
@@ -62,22 +62,21 @@ class CreateProjectsTable extends Migration {
             $table->string("banner_content_type")->nullable();
             $table->timestamp("banner_updated_at")->nullable();
             $table->text('target_fields')->nullable();
-			$table->timestamps();
+            $table->timestamps();
             $table->softDeletes();
 
             $table->engine = 'InnoDB';
-		});
-	}
+        });
+    }
 
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
-		Schema::drop('projects');
-	}
-
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('projects');
+    }
 }

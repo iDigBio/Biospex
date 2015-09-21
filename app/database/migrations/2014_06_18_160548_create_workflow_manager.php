@@ -3,16 +3,16 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateWorkflowManager extends Migration {
-
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-        Schema::create('workflow_manager', function(Blueprint $table) {
+class CreateWorkflowManager extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('workflow_manager', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('workflow_id');
             $table->foreign('workflow_id')->references('id')->on('workflows')->onDelete('cascade');
@@ -23,16 +23,15 @@ class CreateWorkflowManager extends Migration {
 
             $table->engine = 'InnoDB';
         });
-	}
+    }
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
         Schema::drop('workflow_manager');
-	}
-
+    }
 }

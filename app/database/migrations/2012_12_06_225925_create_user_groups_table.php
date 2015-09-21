@@ -24,17 +24,16 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUserGroupsTable extends Migration {
-
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-		Schema::create('users_groups', function($table)
-		{
+class CreateUserGroupsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('users_groups', function ($table) {
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('group_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
@@ -42,18 +41,17 @@ class CreateUserGroupsTable extends Migration {
             $table->softDeletes();
 
             $table->engine = 'InnoDB';
-            $table->primary(array('user_id', 'group_id'));
-		});
-	}
+            $table->primary(['user_id', 'group_id']);
+        });
+    }
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
-		Schema::drop('users_groups');
-	}
-
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('users_groups');
+    }
 }

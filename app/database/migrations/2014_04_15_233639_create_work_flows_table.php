@@ -24,34 +24,33 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateWorkFlowsTable extends Migration {
-
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-        Schema::create('workflows', function(Blueprint $table) {
+class CreateWorkFlowsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('workflows', function (Blueprint $table) {
             $table->increments('id');
             $table->text('title');
-			$table->text('url');
+            $table->text('url');
             $table->text('class');
             $table->timestamps();
 
             $table->engine = 'InnoDB';
         });
-	}
+    }
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
         Schema::drop('workflows');
-	}
-
+    }
 }

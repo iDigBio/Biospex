@@ -24,16 +24,16 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateExpeditionsTable extends Migration {
-
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-        Schema::create('expeditions', function(Blueprint $table) {
+class CreateExpeditionsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('expeditions', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('project_id');
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
@@ -41,22 +41,21 @@ class CreateExpeditionsTable extends Migration {
             $table->text('description');
             $table->string(('keywords'));
             $table->tinyInteger('state')->default(0);
-			$table->integer('completed')->default(0);
+            $table->integer('completed')->default(0);
             $table->timestamps();
             $table->softDeletes();
 
             $table->engine = 'InnoDB';
         });
-	}
+    }
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
         Schema::drop('expeditions');
-	}
-
+    }
 }

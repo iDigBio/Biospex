@@ -3,8 +3,8 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class ChangeSubjectIndexes extends Migration {
-
+class ChangeSubjectIndexes extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -12,8 +12,7 @@ class ChangeSubjectIndexes extends Migration {
      */
     public function up()
     {
-        Schema::connection('mongodb')->collection('subjects', function(Blueprint $collection)
-        {
+        Schema::connection('mongodb')->collection('subjects', function (Blueprint $collection) {
             $collection->dropIndex('project_id');
             $collection->index(['project_id', 'occurrence.id']);
 
@@ -27,11 +26,9 @@ class ChangeSubjectIndexes extends Migration {
      */
     public function down()
     {
-        Schema::connection('mongodb')->collection('subjects', function(Blueprint $collection)
-        {
+        Schema::connection('mongodb')->collection('subjects', function (Blueprint $collection) {
             $collection->dropIndex('project_occurrence');
             $collection->index('project_id');
         });
     }
-
 }
