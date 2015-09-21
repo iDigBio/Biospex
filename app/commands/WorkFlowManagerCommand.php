@@ -26,7 +26,8 @@
 use Illuminate\Console\Command;
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
 
-class WorkFlowManagerCommand extends Command {
+class WorkFlowManagerCommand extends Command
+{
     /**
      * The console command name.
      *
@@ -41,17 +42,17 @@ class WorkFlowManagerCommand extends Command {
      */
     protected $description = "Workflow manager";
 
-	/**
-	 * Class constructor
-	 *
-	 * @param WorkflowManagerInterface $manager
-	 * @param ActorInterface $actor
-	 * @param Report $report
-	 */
+    /**
+     * Class constructor
+     *
+     * @param WorkflowManagerInterface $manager
+     * @param ActorInterface $actor
+     * @param Report $report
+     */
     public function __construct(WorkflowManagerInterface $manager)
     {
         $this->manager = $manager;
-		$this->queue = \Config::get('config.beanstalkd.workflow-manager');
+        $this->queue = \Config::get('config.beanstalkd.workflow-manager');
 
         parent::__construct();
     }
@@ -65,31 +66,32 @@ class WorkFlowManagerCommand extends Command {
     {
         $managers = $this->manager->allWith(['expedition.actors']);
 
-        if (empty($managers))
+        if (empty($managers)) {
             return;
+        }
 
-        foreach ($managers as $manager)
-		{
-			if ($this->checkProcess($manager))
-				continue;
+        foreach ($managers as $manager) {
+            if ($this->checkProcess($manager)) {
+                continue;
+            }
 
-			Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $manager->id, 'class' => 'WorkflowManagerQueue'], $this->queue);
+            Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $manager->id, 'class' => 'WorkflowManagerQueue'], $this->queue);
 
-			$manager->queue = 1;
-			$manager->save();
-		}
+            $manager->queue = 1;
+            $manager->save();
+        }
     }
 
-	/**
-	 * @param $manager
-	 * @return bool
-	 */
-	public function checkProcess ($manager)
-	{
-        if ($manager->stopped == 1 || $manager->error == 1 || $manager->queue == 1)
+    /**
+     * @param $manager
+     * @return bool
+     */
+    public function checkProcess($manager)
+    {
+        if ($manager->stopped == 1 || $manager->error == 1 || $manager->queue == 1) {
             return true;
+        }
 
         return false;
-	}
+    }
 }
-

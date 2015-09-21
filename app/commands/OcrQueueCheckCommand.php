@@ -27,8 +27,8 @@ use Illuminate\Console\Command;
 use Biospex\Repo\OcrQueue\OcrQueueInterface;
 use Biospex\Services\Report\Report;
 
-class OcrQueueCheckCommand extends Command {
-
+class OcrQueueCheckCommand extends Command
+{
     /**
      * The console command name.
      *
@@ -66,11 +66,11 @@ class OcrQueueCheckCommand extends Command {
     {
         $queues = $this->queue->allWith(['project.group.owner']);
 
-        if (empty($queues))
+        if (empty($queues)) {
             return;
+        }
 
-        foreach ($queues as $queue)
-        {
+        foreach ($queues as $queue) {
             $this->report->addError(trans('emails.error_ocr_queue',
                 [
                     'id'      => $queue->id,

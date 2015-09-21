@@ -2,8 +2,8 @@
 
 use Illuminate\Console\Command;
 
-class TestAppCommand extends Command {
-
+class TestAppCommand extends Command
+{
     /**
      * The console command name.
      */

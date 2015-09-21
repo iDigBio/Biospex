@@ -26,8 +26,8 @@
 use Illuminate\Console\Command;
 use Biospex\Repo\Import\ImportInterface;
 
-class DarwinCoreImportCommand extends Command {
-
+class DarwinCoreImportCommand extends Command
+{
     /**
      * The console command name.
      *
@@ -44,6 +44,7 @@ class DarwinCoreImportCommand extends Command {
 
     /**
      * Class constructor.
+     *
      * @param ImportInterface $import
      */
     public function __construct(ImportInterface $import)
@@ -63,8 +64,7 @@ class DarwinCoreImportCommand extends Command {
         $imports = $this->import->findByError();
 
         $count = 0;
-        foreach ($imports as $import)
-        {
+        foreach ($imports as $import) {
             Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $import->id, 'class' => 'DarwinCoreFileImportQueue'], Config::get('config.beanstalkd.import'));
             $count++;
         }

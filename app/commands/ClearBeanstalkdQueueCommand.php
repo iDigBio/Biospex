@@ -27,99 +27,97 @@ use Illuminate\Console\Command;
 //use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
+class ClearBeanstalkdQueueCommand extends Command
+{
+    /**
+     * The console command name.
+     *
+     * @var string
+     */
+    protected $name = 'queue:clear';
 
-class ClearBeanstalkdQueueCommand extends Command {
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Clear a Beanstalkd queue, by deleting all pending jobs.';
 
-	/**
-	 * The console command name.
-	 *
-	 * @var string
-	 */
-	protected $name = 'queue:clear';
+    /**
+     * All the queues defined for beanstalkd.
+     *
+     * @var array
+     */
+    protected $queues;
 
-	/**
-	 * The console command description.
-	 *
-	 * @var string
-	 */
-	protected $description = 'Clear a Beanstalkd queue, by deleting all pending jobs.';
+    /**
+     * Create a new command instance.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
-	/**
-	 * All the queues defined for beanstalkd.
-	 * @var array
-	 */
-	protected $queues;
+    /**
+     * Defines the arguments.
+     *
+     * @return array
+     */
+    public function getArguments()
+    {
+        return [
+            ['queue', InputArgument::OPTIONAL, 'The name of the queue to clear.'],
+        ];
+    }
 
-	/**
-	 * Create a new command instance.
-	 */
-	public function __construct()
-	{
-		parent::__construct();
-	}
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
+    public function fire()
+    {
+        $this->queues = Config::get('config.beanstalkd');
 
-	/**
-	 * Defines the arguments.
-	 *
-	 * @return array
-	 */
-	public function getArguments()
-	{
-		return array(
-			array('queue', InputArgument::OPTIONAL, 'The name of the queue to clear.'),
-		);
-	}
+        $queues = ($this->argument('queue')) ? $this->argument('queue') : $this->queues;
 
-	/**
-	 * Execute the console command.
-	 *
-	 * @return void
-	 */
-	public function fire()
-	{
-		$this->queues = Config::get('config.beanstalkd');
+        is_array($queues) ? $this->loopQueues($queues) : $this->clearQueue($queues);
 
-		$queues = ($this->argument('queue')) ? $this->argument('queue') : $this->queues;
+        return;
+    }
 
-		is_array($queues) ? $this->loopQueues($queues) : $this->clearQueue($queues);
+    /**
+     * Loop through queues and remove.
+     *
+     * @param $queues
+     */
+    protected function loopQueues($queues)
+    {
+        foreach ($queues as $queue) {
+            $this->clearQueue($queue);
+        }
 
-		return;
-	}
+        return;
+    }
 
-	/**
-	 * Loop through queues and remove.
-	 *
-	 * @param $queues
-	 */
-	protected function loopQueues($queues)
-	{
-		foreach ($queues as $queue)
-		{
-			$this->clearQueue($queue);
-		}
+    /**
+     * Clear Queue.
+     *
+     * @param $queue
+     */
+    protected function clearQueue($queue)
+    {
+        $this->info(sprintf('Clearing queue: %s', $queue));
+        $pheanstalk = Queue::getPheanstalk();
+        $pheanstalk->useTube($queue);
+        $pheanstalk->watch($queue);
 
-		return;
-	}
+        while ($job = $pheanstalk->reserve(0)) {
+            $pheanstalk->delete($job);
+        }
 
-	/**
-	 * Clear Queue.
-	 *
-	 * @param $queue
-	 */
-	protected function clearQueue($queue)
-	{
-		$this->info(sprintf('Clearing queue: %s', $queue));
-		$pheanstalk = Queue::getPheanstalk();
-		$pheanstalk->useTube($queue);
-		$pheanstalk->watch($queue);
+        $this->info('...cleared.');
 
-		while ($job = $pheanstalk->reserve(0)) {
-			$pheanstalk->delete($job);
-		}
-
-		$this->info('...cleared.');
-
-		return;
-	}
-
+        return;
+    }
 }

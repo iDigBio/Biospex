@@ -31,90 +31,86 @@ use Biospex\Services\Report\Report;
 
 class DownloadCleanCommand extends Command
 {
-	/**
-	 * The console command name.
-	 *
-	 * @var string
-	 */
-	protected $name = 'download:clean';
+    /**
+     * The console command name.
+     *
+     * @var string
+     */
+    protected $name = 'download:clean';
 
-	/**
-	 * The console command description.
-	 *
-	 * @var string
-	 */
-	protected $description = "Remove expired download files.";
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = "Remove expired download files.";
 
-	/**
-	 * Directory where nfn downloads are stored.
-	 *
-	 * @var string
-	 */
-	protected $nfnExportDir;
+    /**
+     * Directory where nfn downloads are stored.
+     *
+     * @var string
+     */
+    protected $nfnExportDir;
 
-	/**
-	 * Constructor
-	 *
-	 * @param Filesystem $filesystem
-	 * @param DownloadInterface $download
-	 * @param Report $report
-	 */
-	public function __construct(
-		Filesystem $filesystem,
-		DownloadInterface $download,
-		Report $report
-	)
-	{
-		parent::__construct();
+    /**
+     * Constructor
+     *
+     * @param Filesystem $filesystem
+     * @param DownloadInterface $download
+     * @param Report $report
+     */
+    public function __construct(
+        Filesystem $filesystem,
+        DownloadInterface $download,
+        Report $report
+    ) {
+        parent::__construct();
 
-		$this->filesystem = $filesystem;
-		$this->download = $download;
-		$this->report = $report;
+        $this->filesystem = $filesystem;
+        $this->download = $download;
+        $this->report = $report;
 
-		$this->nfnExportDir = Config::get('config.nfnExportDir');
-	}
+        $this->nfnExportDir = Config::get('config.nfnExportDir');
+    }
 
-	/**
-	 * Execute the console command.
-	 *
-	 * @return void
-	 */
-	public function fire()
-	{
-		$this->report->setDebug($this->argument('debug'));
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
+    public function fire()
+    {
+        $this->report->setDebug($this->argument('debug'));
 
-		$downloads = $this->download->getExpired();
+        $downloads = $this->download->getExpired();
 
-		foreach ($downloads as $download)
-		{
-			try
-			{
-				$file = $this->nfnExportDir . "/" . $download->file;
-				if ($this->filesystem->isFile($file))
-					$this->filesystem->delete($file);
+        foreach ($downloads as $download) {
+            try {
+                $file = $this->nfnExportDir . "/" . $download->file;
+                if ($this->filesystem->isFile($file)) {
+                    $this->filesystem->delete($file);
+                }
 
-				$this->download->destroy($download->id);
-			}
-			catch (Exception $e)
-			{
-				$this->report->addError("Unable to process download id: {$download->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
-				$this->report->reportSimpleError();
-				continue;
-			}
-		}
+                $this->download->destroy($download->id);
+            } catch (Exception $e) {
+                $this->report->addError("Unable to process download id: {$download->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
+                $this->report->reportSimpleError();
+                continue;
+            }
+        }
 
-		return;
-	}
+        return;
+    }
 
-	/**
-	 * Get the console command arguments.
-	 *
-	 * @return array
-	 */
-	protected function getArguments()
-	{
-		return array(
-			array('debug', InputArgument::OPTIONAL, 'Debug option. Default false.', false),
-		);
-	}
+    /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return [
+            ['debug', InputArgument::OPTIONAL, 'Debug option. Default false.', false],
+        ];
+    }
 }
