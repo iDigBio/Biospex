@@ -25,8 +25,8 @@
  */
 
 return [
-	'mailgun' => [
-		'domain' => $_ENV['mail.domain'],
-		'secret' => $_ENV['mail.secret'],
-	]
+    'mailgun' => [
+        'domain' => $_ENV['mail.domain'],
+        'secret' => $_ENV['mail.secret'],
+    ]
 ];

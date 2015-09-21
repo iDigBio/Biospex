@@ -28,10 +28,10 @@ return [
     /**
      * DCA import row types for multimedia.
      */
-    'metaFileRowTypes' => [
-       'http://rs.tdwg.org/ac/terms/multimedia' => 'multimedia_raw',
-       'http://rs.gbif.org/terms/1.0/image' => 'images',
-       'http://rs.tdwg.org/dwc/terms/occurrence' => 'occurrence'
+    'metaFileRowTypes'       => [
+        'http://rs.tdwg.org/ac/terms/multimedia'  => 'multimedia_raw',
+        'http://rs.gbif.org/terms/1.0/image'      => 'images',
+        'http://rs.tdwg.org/dwc/terms/occurrence' => 'occurrence'
     ],
 
     /*
@@ -88,9 +88,9 @@ return [
      */
     'modelColumns'           => [
         'Assigned',
-        'Id',
-        'AccessURI',
-        'Ocr'
+        'id',
+        'accessURI',
+        'ocr'
     ],
 
     /**
