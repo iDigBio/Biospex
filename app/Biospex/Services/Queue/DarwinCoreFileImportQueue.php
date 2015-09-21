@@ -35,8 +35,8 @@ use Biospex\Services\Process\Xml;
 use Biospex\Mailer\BiospexMailer;
 use Illuminate\Support\Facades\Config;
 
-class DarwinCoreFileImportQueue extends QueueAbstract{
-
+class DarwinCoreFileImportQueue extends QueueAbstract
+{
     /**
      * @var Filesystem
      */
@@ -91,6 +91,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract{
 
     /**
      * Tmp directory for extracted files
+     *
      * @var string
      */
     protected $scratchFileDir;
@@ -116,8 +117,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract{
         DarwinCore $process,
         Xml $xml,
         BiospexMailer $mailer
-    )
-    {
+    ) {
         $this->filesystem = $filesystem;
         $this->import = $import;
         $this->project = $project;
@@ -129,12 +129,14 @@ class DarwinCoreFileImportQueue extends QueueAbstract{
 
         $this->scratchDir = Config::get('config.scratchDir');
         $this->subjectImportDir = Config::get('config.subjectImportDir');
-        if ( ! $this->filesystem->isDirectory($this->subjectImportDir))
+        if (! $this->filesystem->isDirectory($this->subjectImportDir)) {
             $this->filesystem->makeDirectory($this->subjectImportDir);
+        }
     }
 
     /**
      * Fire method.
+     *
      * @param $job
      * @param $data
      * @return mixed
@@ -149,12 +151,11 @@ class DarwinCoreFileImportQueue extends QueueAbstract{
         $user = $this->sentry->findUserById($import->user_id);
         $project = $this->project->find($import->project_id);
 
-        $fileName = pathinfo($this->subjectImportDir . '/' . $import->file, PATHINFO_FILENAME );
+        $fileName = pathinfo($this->subjectImportDir . '/' . $import->file, PATHINFO_FILENAME);
         $this->scratchFileDir = $this->scratchDir . '/' . $import->id . '-' . md5($fileName);
         $zipFile = $this->subjectImportDir . '/' . $import->file;
 
-        try
-        {
+        try {
             $this->makeTmp();
             $this->unzip($zipFile);
 
@@ -169,9 +170,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract{
             $this->filesystem->delete($zipFile);
 
             $this->import->destroy($import->id);
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $import->error = 1;
             $import->save();
             $this->report->addError(trans('emails.error_import_process',
@@ -192,16 +191,16 @@ class DarwinCoreFileImportQueue extends QueueAbstract{
      */
     protected function makeTmp()
     {
-        if ( ! $this->filesystem->isDirectory($this->scratchFileDir))
-        {
-            if ( ! $this->filesystem->makeDirectory($this->scratchFileDir, 0777, true))
+        if (! $this->filesystem->isDirectory($this->scratchFileDir)) {
+            if (! $this->filesystem->makeDirectory($this->scratchFileDir, 0777, true)) {
                 throw new \Exception(trans('emails.error_create_dir', ['directory' => $this->scratchFileDir]));
+            }
         }
 
-        if ( ! $this->filesystem->isWritable($this->scratchFileDir))
-        {
-            if ( ! chmod($this->scratchFileDir, 0777))
+        if (! $this->filesystem->isWritable($this->scratchFileDir)) {
+            if (! chmod($this->scratchFileDir, 0777)) {
                 throw new \Exception(trans('emails.error_write_dir', ['directory' => $this->scratchFileDir]));
+            }
         }
 
         return;

@@ -1,11 +1,11 @@
-<?php  namespace Biospex\Services\Queue;
+<?php namespace Biospex\Services\Queue;
 
 use Biospex\Services\Process\RecordSet;
 use Biospex\Services\Report\Report;
 use Exception;
 
-class RecordSetImportQueue extends QueueAbstract {
-
+class RecordSetImportQueue extends QueueAbstract
+{
     /**
      * Url for recordset.
      *
@@ -42,6 +42,7 @@ class RecordSetImportQueue extends QueueAbstract {
 
     /**
      * Fire method
+     *
      * @param $job
      * @param $data
      */
@@ -50,15 +51,13 @@ class RecordSetImportQueue extends QueueAbstract {
         $this->job = $job;
         $this->data = $data;
 
-        try
-        {
-            if ($this->record->process($data))
+        try {
+            if ($this->record->process($data)) {
                 $this->delete();
+            }
 
             return;
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $this->report->addError(trans('emails.error_import_process',
                 ['id' => $this->data['id'], 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]
             ));

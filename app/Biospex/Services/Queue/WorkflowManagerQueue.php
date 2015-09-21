@@ -28,10 +28,11 @@ use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
 use Biospex\Services\Report\Report;
 use Illuminate\Support\Facades\App;
 
-class WorkflowManagerQueue extends QueueAbstract {
-
+class WorkflowManagerQueue extends QueueAbstract
+{
     /**
      * Illuminate\Support\Contracts\MessageProviderInterface
+     *
      * @var
      */
     protected $messages;
@@ -45,14 +46,14 @@ class WorkflowManagerQueue extends QueueAbstract {
     public function __construct(
         WorkflowManagerInterface $manager,
         Report $report
-    )
-    {
+    ) {
         $this->manager = $manager;
         $this->report = $report;
     }
 
     /**
      * Fire method.
+     *
      * @param $job
      * @param $data
      * @return mixed
@@ -64,8 +65,7 @@ class WorkflowManagerQueue extends QueueAbstract {
 
         $manager = $this->manager->findWith($this->data['id'], ['expedition.actors']);
 
-        if (empty($manager) || $this->checkProcess($manager))
-        {
+        if (empty($manager) || $this->checkProcess($manager)) {
             $this->delete();
 
             return;
@@ -84,8 +84,9 @@ class WorkflowManagerQueue extends QueueAbstract {
      */
     public function checkProcess($manager)
     {
-        if ($manager->stopped == 1 || $manager->error == 1)
+        if ($manager->stopped == 1 || $manager->error == 1) {
             return true;
+        }
 
         return false;
     }
@@ -95,19 +96,15 @@ class WorkflowManagerQueue extends QueueAbstract {
      */
     public function processActors($manager)
     {
-        foreach ($manager->expedition->actors as $actor)
-        {
-            try
-            {
+        foreach ($manager->expedition->actors as $actor) {
+            try {
                 $classNameSpace = 'Biospex\Services\Actor\\' . $actor->class;
                 $class = App::make($classNameSpace);
                 $class->setProperties($actor);
                 $class->process();
                 $manager->queue = 0;
                 $manager->save();
-            }
-            catch (\Exception $e)
-            {
+            } catch (\Exception $e) {
                 $manager->queue = 0;
                 $manager->error = 1;
                 $manager->save();

@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Actor;
+
 /**
  * ActorRepository.php
  *
@@ -27,8 +28,8 @@
 use Biospex\Repo\Repository;
 use Actor;
 
-class ActorRepository extends Repository implements ActorInterface {
-
+class ActorRepository extends Repository implements ActorInterface
+{
     /**
      * @param Actor $actor
      */
@@ -37,8 +38,8 @@ class ActorRepository extends Repository implements ActorInterface {
         $this->model = $actor;
     }
 
-	public function selectList()
-	{
-		return $this->model->selectList();
-	}
+    public function selectList()
+    {
+        return $this->model->selectList();
+    }
 }

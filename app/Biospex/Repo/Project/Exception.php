@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Project;
+
 /**
  * Exception.php
  *
@@ -24,5 +25,6 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class ProjectSaveException extends \RuntimeException {}
-
+class Exception extends \RuntimeException
+{
+}

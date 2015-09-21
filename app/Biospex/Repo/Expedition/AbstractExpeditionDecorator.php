@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Expedition;
+
 /**
  * AbstractExpeditionDecorator.php
  *
@@ -26,90 +27,89 @@
 
 abstract class AbstractExpeditionDecorator implements ExpeditionInterface
 {
+    protected $expedition;
 
-	protected $expedition;
+    public function __construct(ExpeditionInterface $expedition)
+    {
+        $this->expedition = $expedition;
+    }
 
-	public function __construct (ExpeditionInterface $expedition)
-	{
-		$this->expedition = $expedition;
-	}
+    /**
+     * Return all
+     *
+     * @param array $columns
+     * @return mixed
+     */
+    public function all($columns = ['*'])
+    {
+        return $this->expedition->all($columns);
+    }
 
-	/**
-	 * Return all
-	 *
-	 * @param array $columns
-	 * @return mixed
-	 */
-	public function all ($columns = array('*'))
-	{
-		return $this->expedition->all($columns);
-	}
+    /**
+     * Find by id
+     *
+     * @param $id
+     * @param array $columns
+     * @return mixed
+     */
+    public function find($id, $columns = ['*'])
+    {
+        return $this->expedition->find($id, $columns);
+    }
 
-	/**
-	 * Find by id
-	 *
-	 * @param $id
-	 * @param array $columns
-	 * @return mixed
-	 */
-	public function find ($id, $columns = array('*'))
-	{
-		return $this->expedition->find($id, $columns);
-	}
+    /**
+     * Create record
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function create($data = [])
+    {
+        return $this->expedition->create($data);
+    }
 
-	/**
-	 * Create record
-	 *
-	 * @param array $data
-	 * @return mixed
-	 */
-	public function create ($data = array())
-	{
-		return $this->expedition->create($data);
-	}
+    /**
+     * Update record
+     *
+     * @param array $input
+     * @return mixed
+     */
+    public function update($data = [])
+    {
+        return $this->expedition->update($data);
+    }
 
-	/**
-	 * Update record
-	 *
-	 * @param array $input
-	 * @return mixed
-	 */
-	public function update ($data = array())
-	{
-		return $this->expedition->update($data);
-	}
+    /**
+     * Destroy records
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function destroy($id)
+    {
+        return $this->expedition->destroy($id);
+    }
 
-	/**
-	 * Destroy records
-	 *
-	 * @param $id
-	 * @return mixed
-	 */
-	public function destroy ($id)
-	{
-		return $this->expedition->destroy($id);
-	}
+    /**
+     * Find with eager loading
+     *
+     * @param $id
+     * @param array $with
+     * @return mixed
+     */
+    public function findWith($id, $with = [])
+    {
+        return $this->expedition->findWith($id, $with);
+    }
 
-	/**
-	 * Find with eager loading
-	 *
-	 * @param $id
-	 * @param array $with
-	 * @return mixed
-	 */
-	public function findWith ($id, $with = array())
-	{
-		return $this->expedition->findWith($id, $with);
-	}
-
-	/**
-	 * Find by uuid.
-	 *
-	 * @param $uuid
-	 * @return mixed
-	 */
-	public function findByUuid($uuid)
-	{
-		return $this->expedition->findByUuid($uuid);
-	}
+    /**
+     * Find by uuid.
+     *
+     * @param $uuid
+     * @return mixed
+     */
+    public function findByUuid($uuid)
+    {
+        return $this->expedition->findByUuid($uuid);
+    }
 }

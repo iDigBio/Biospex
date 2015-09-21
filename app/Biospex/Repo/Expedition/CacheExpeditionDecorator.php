@@ -27,180 +27,180 @@
 
 use Biospex\Services\Cache\CacheInterface;
 
-class CacheExpeditionDecorator extends AbstractExpeditionDecorator {
+class CacheExpeditionDecorator extends AbstractExpeditionDecorator
+{
+    protected $cache;
+    protected $pass = false;
 
-	protected $cache;
-	protected $pass = false;
+    /**
+     * Constructor
+     *
+     * @param ExpeditionInterface $expedition
+     * @param CacheInterface $cache
+     */
+    public function __construct(ExpeditionInterface $expedition, CacheInterface $cache)
+    {
+        parent::__construct($expedition);
+        $this->cache = $cache;
+    }
 
-	/**
-	 * Constructor
-	 *
-	 * @param ExpeditionInterface $expedition
-	 * @param CacheInterface $cache
-	 */
-	public function __construct (ExpeditionInterface $expedition, CacheInterface $cache)
-	{
-		parent::__construct($expedition);
-		$this->cache = $cache;
-	}
+    /**
+     * All
+     *
+     * @param array $columns
+     * @return mixed
+     */
+    public function all($columns = ['*'])
+    {
+        $key = md5('expeditions.all');
 
-	/**
-	 * All
-	 *
-	 * @param array $columns
-	 * @return mixed
-	 */
-	public function all ($columns = array('*'))
-	{
-		$key = md5('expeditions.all');
+        if ($this->cache->has($key) && ! $this->pass) {
+            return $this->cache->get($key);
+        }
 
-		if ($this->cache->has($key) && ! $this->pass)
-		{
-			return $this->cache->get($key);
-		}
+        if (! $this->pass) {
+            $expeditions = $this->expedition->all();
+        }
 
-		if ( ! $this->pass)
-			$expeditions = $this->expedition->all();
+        $this->cache->put($key, $expeditions);
 
-		$this->cache->put($key, $expeditions);
+        return $expeditions;
+    }
 
-		return $expeditions;
-	}
+    /**
+     * Find
+     *
+     * @param $id
+     * @param array $columns
+     * @return mixed
+     */
+    public function find($id, $columns = ['*'])
+    {
+        $key = md5('expedition.' . $id);
 
-	/**
-	 * Find
-	 *
-	 * @param $id
-	 * @param array $columns
-	 * @return mixed
-	 */
-	public function find ($id, $columns = array('*'))
-	{
-		$key = md5('expedition.' . $id);
+        if ($this->cache->has($key) && ! $this->pass) {
+            return $this->cache->get($key);
+        }
 
-		if ($this->cache->has($key) && ! $this->pass)
-		{
-			return $this->cache->get($key);
-		}
+        $expedition = $this->expedition->find($id, $columns);
 
-		$expedition = $this->expedition->find($id, $columns);
+        if (! $this->pass) {
+            $this->cache->put($key, $expedition);
+        }
 
-		if ( ! $this->pass)
-			$this->cache->put($key, $expedition);
+        return $expedition;
+    }
 
-		return $expedition;
-	}
+    /**
+     * Create record
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function create($data = [])
+    {
+        $expedition = $this->expedition->create($data);
+        $this->cache->flush();
 
-	/**
-	 * Create record
-	 *
-	 * @param array $data
-	 * @return mixed
-	 */
-	public function create ($data = array())
-	{
-		$expedition = $this->expedition->create($data);
-		$this->cache->flush();
+        return $expedition;
+    }
 
-		return $expedition;
-	}
+    /**
+     * Update record
+     *
+     * @param array $input
+     * @return mixed
+     */
+    public function update($data = [])
+    {
+        $expedition = $this->expedition->update($data);
+        $this->cache->flush();
 
-	/**
-	 * Update record
-	 *
-	 * @param array $input
-	 * @return mixed
-	 */
-	public function update ($data = array())
-	{
-		$expedition = $this->expedition->update($data);
-		$this->cache->flush();
+        return $expedition;
+    }
 
-		return $expedition;
-	}
+    /**
+     * Destroy records
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function destroy($id)
+    {
+        $expedition = $this->expedition->destroy($id);
+        $this->cache->flush();
 
-	/**
-	 * Destroy records
-	 *
-	 * @param $id
-	 * @return mixed
-	 */
-	public function destroy ($id)
-	{
-		$expedition = $this->expedition->destroy($id);
-		$this->cache->flush();
+        return $expedition;
+    }
 
-		return $expedition;
-	}
+    /**
+     * Find with eager loading
+     *
+     * @param $id
+     * @param array $with
+     * @return mixed
+     */
+    public function findWith($id, $with = [])
+    {
+        $key = md5('expedition.' . $id . implode(".", $with));
 
-	/**
-	 * Find with eager loading
-	 *
-	 * @param $id
-	 * @param array $with
-	 * @return mixed
-	 */
-	public function findWith ($id, $with = array())
-	{
-		$key = md5('expedition.' . $id . implode(".", $with));
+        if ($this->cache->has($key) && ! $this->pass) {
+            return $this->cache->get($key);
+        }
 
-		if ($this->cache->has($key) && ! $this->pass)
-		{
-			return $this->cache->get($key);
-		}
+        $expedition = $this->expedition->findWith($id, $with);
 
-		$expedition = $this->expedition->findWith($id, $with);
+        if (! $this->pass) {
+            $this->cache->put($key, $expedition);
+        }
 
-		if ( ! $this->pass)
-			$this->cache->put($key, $expedition);
+        return $expedition;
+    }
 
-		return $expedition;
-	}
+    /**
+     * Save
+     *
+     * @param $record
+     * @return mixed
+     */
+    public function save($record)
+    {
+        $expedition = $this->expedition->save($record);
+        $this->cache->flush();
 
-	/**
-	 * Save
-	 *
-	 * @param $record
-	 * @return mixed
-	 */
-	public function save ($record)
-	{
-		$expedition = $this->expedition->save($record);
-		$this->cache->flush();
+        return $expedition;
+    }
 
-		return $expedition;
-	}
+    /**
+     * Find by uuid using cache or query.
+     *
+     * @param $uuid
+     * @return mixed
+     */
+    public function findByUuid($uuid)
+    {
+        $key = md5('expedition.' . $uuid);
 
-	/**
-	 * Find by uuid using cache or query.
-	 *
-	 * @param $uuid
-	 * @return mixed
-	 */
-	public function findByUuid($uuid)
-	{
-		$key = md5('expedition.' . $uuid);
+        if ($this->cache->has($key) && ! $this->pass) {
+            return $this->cache->get($key);
+        }
 
-		if ($this->cache->has($key) && ! $this->pass)
-		{
-			return $this->cache->get($key);
-		}
+        $project = $this->project->findByUuid($uuid);
 
-		$project = $this->project->findByUuid($uuid);
+        if (! $this->pass) {
+            $this->cache->put($key, $project);
+        }
 
-		if ( ! $this->pass)
-			$this->cache->put($key, $project);
+        return $project;
+    }
 
-		return $project;
-	}
-
-	/**
-	 * Set cache pass
-	 *
-	 * @param bool $value
-	 */
-	public function setPass ($value = false)
-	{
-		$this->pass = $value;
-	}
+    /**
+     * Set cache pass
+     *
+     * @param bool $value
+     */
+    public function setPass($value = false)
+    {
+        $this->pass = $value;
+    }
 }

@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Actor;
+
 /**
  * ActorInterface.php
  *
@@ -26,7 +27,7 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface ActorInterface extends RepositoryInterface {
-
-	public function selectList();
+interface ActorInterface extends RepositoryInterface
+{
+    public function selectList();
 }

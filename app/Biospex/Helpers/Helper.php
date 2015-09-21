@@ -27,8 +27,8 @@
 
 use Illuminate\Support\Facades\Session;
 
-class Helper {
-
+class Helper
+{
     /**
      * Encode a full url.
      *
@@ -37,14 +37,13 @@ class Helper {
      */
     public static function url_encode($url)
     {
-            $parts = parse_url($url);
-            $path_parts = array_map('rawurldecode', explode('/', $parts['path']));
+        $parts = parse_url($url);
+        $path_parts = array_map('rawurldecode', explode('/', $parts['path']));
 
-            return
-                $parts['scheme'] . '://' .
-                $parts['host'] .
-                implode('/', array_map('rawurlencode', $path_parts))
-                ;
+        return
+            $parts['scheme'] . '://' .
+            $parts['host'] .
+            implode('/', array_map('rawurlencode', $path_parts));
     }
 
     /**
@@ -111,15 +110,13 @@ class Helper {
         $timezones = \DateTimeZone::listIdentifiers(\DateTimeZone::ALL);
 
         $timezone_offsets = [];
-        foreach ($timezones as $timezone)
-        {
+        foreach ($timezones as $timezone) {
             $tz = new \DateTimeZone($timezone);
             $timezone_offsets[$timezone] = $tz->getOffset(new \DateTime);
         }
 
         $timezone_list = [];
-        foreach ($timezone_offsets as $timezone => $offset)
-        {
+        foreach ($timezone_offsets as $timezone => $offset) {
             $offset_prefix = $offset < 0 ? '-' : '+';
             $offset_formatted = gmdate('H:i', abs($offset));
 
@@ -133,8 +130,7 @@ class Helper {
 
     public static function deleteDirectoryContents($dir, $ignore = ['.gitignore'])
     {
-        if (false === file_exists($dir))
-        {
+        if (false === file_exists($dir)) {
             return false;
         }
 
@@ -144,24 +140,17 @@ class Helper {
             \RecursiveIteratorIterator::CHILD_FIRST
         );
 
-        foreach ($files as $fileinfo)
-        {
-            if ($fileinfo->isDir())
-            {
-                if (false === rmdir($fileinfo->getRealPath()))
-                {
+        foreach ($files as $fileinfo) {
+            if ($fileinfo->isDir()) {
+                if (false === rmdir($fileinfo->getRealPath())) {
                     return false;
                 }
-            }
-            else
-            {
-                if (in_array($fileinfo->getFilename(), $ignore))
-                {
+            } else {
+                if (in_array($fileinfo->getFilename(), $ignore)) {
                     continue;
                 }
 
-                if (false === unlink($fileinfo->getRealPath()))
-                {
+                if (false === unlink($fileinfo->getRealPath())) {
                     return false;
                 }
             }

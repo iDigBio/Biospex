@@ -28,8 +28,8 @@
 use Biospex\Form\Form;
 use Biospex\Validation\ValidableInterface;
 
-class ContactForm extends Form {
-
+class ContactForm extends Form
+{
     public function __construct(ValidableInterface $validator)
     {
         $this->validator = $validator;
@@ -43,10 +43,10 @@ class ContactForm extends Form {
      */
     public function check(array $input)
     {
-        if( ! $this->valid($input) )
+        if (! $this->valid($input)) {
             return false;
+        }
 
         return true;
     }
-
 }

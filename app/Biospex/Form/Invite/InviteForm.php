@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\Invite;
+
 /**
  * SendInviteForm.php
  *
@@ -27,8 +28,8 @@ use Biospex\Form\Form;
 use Biospex\Validation\ValidableInterface;
 use Biospex\Repo\Invite\InviteInterface;
 
-class InviteForm extends Form{
-
+class InviteForm extends Form
+{
     public function __construct(ValidableInterface $validator, InviteInterface $invite)
     {
         $this->validator = $validator;

@@ -1,4 +1,5 @@
-<?php  namespace Biospex\Services\Queue;
+<?php namespace Biospex\Services\Queue;
+
 /**
  * NfnResultsService.php.php
  *
@@ -31,8 +32,8 @@ use Biospex\Services\Report\TranscriptionImportReport;
 use Biospex\Services\Process\NfnTranscription;
 use Exception;
 
-class NfnTranscriptionQueue extends QueueAbstract {
-
+class NfnTranscriptionQueue extends QueueAbstract
+{
     /**
      * @var Filesystem
      */
@@ -80,20 +81,21 @@ class NfnTranscriptionQueue extends QueueAbstract {
         ImportInterface $import,
         TranscriptionImportReport $report,
         NfnTranscription $transcription
-    )
-    {
+    ) {
         $this->filesystem = $filesystem;
         $this->import = $import;
         $this->report = $report;
         $this->transcription = $transcription;
 
         $this->transcriptionImportDir = Config::get('config.transcriptionImportDir');
-        if ( ! $this->filesystem->isDirectory($this->transcriptionImportDir))
+        if (! $this->filesystem->isDirectory($this->transcriptionImportDir)) {
             $this->filesystem->makeDirectory($this->transcriptionImportDir);
+        }
     }
 
     /**
      * Fire method
+     *
      * @param $job
      * @param $data
      */
@@ -105,15 +107,12 @@ class NfnTranscriptionQueue extends QueueAbstract {
         $import = $this->import->findWith($this->data['id'], ['project', 'user']);
         $file = $this->transcriptionImportDir . '/' . $import->file;
 
-        try
-        {
+        try {
             $csv = $this->transcription->process($file);
             $this->report->complete($import->user->email, $import->project->title, $csv);
             $this->filesystem->delete($file);
             $this->import->destroy($import->id);
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $import->error = 1;
             $import->save();
             $this->report->addError(trans('emails.error_import_process',

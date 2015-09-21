@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\Login;
+
 /**
  * LoginForm.php
  *
@@ -27,13 +28,13 @@ use Biospex\Form\Form;
 use Biospex\Validation\ValidableInterface;
 use Biospex\Repo\Session\SessionInterface;
 
-class LoginForm extends Form {
-
-	public function __construct(ValidableInterface $validator, SessionInterface $session)
-	{
-		$this->validator = $validator;
-		$this->repo = $session;
-	}
+class LoginForm extends Form
+{
+    public function __construct(ValidableInterface $validator, SessionInterface $session)
+    {
+        $this->validator = $validator;
+        $this->repo = $session;
+    }
 
     /**
      * Create a new session and override the save method in Form
@@ -42,12 +43,10 @@ class LoginForm extends Form {
      */
     public function save(array $input)
     {
-        if( ! $this->valid($input) )
-        {
+        if (! $this->valid($input)) {
             return false;
         }
 
         return $this->repo->store($input);
     }
-
 }

@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Download;
+
 /**
  * DownloadInterface.php
  *
@@ -25,6 +26,7 @@
  */
 use Biospex\Repo\RepositoryInterface;
 
-interface DownloadInterface extends RepositoryInterface {
-	public function getExpired();
+interface DownloadInterface extends RepositoryInterface
+{
+    public function getExpired();
 }

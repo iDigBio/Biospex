@@ -1,4 +1,5 @@
 <?php namespace Biospex\Services\Actor;
+
 /**
  * ActorAbstract.php
  *
@@ -32,59 +33,67 @@ use Biospex\Repo\Download\DownloadInterface;
 use Biospex\Services\Report\Report;
 use Biospex\Services\Image\Image;
 
-abstract class ActorAbstract {
-
-	/**
+abstract class ActorAbstract
+{
+    /**
      * Filesystem
-	 * @var object
-	 */
-	protected $filesystem;
+     *
+     * @var object
+     */
+    protected $filesystem;
 
-	/**
+    /**
      * ExpeditionInterface
-	 * @var object
-	 */
-	protected $expedition;
+     *
+     * @var object
+     */
+    protected $expedition;
 
-	/**
+    /**
      * SubjectInterface
-	 * @var object
-	 */
-	protected $subject;
+     *
+     * @var object
+     */
+    protected $subject;
 
-	/**
+    /**
      * PropertyInterface
-	 * @var object
-	 */
-	protected $property;
+     *
+     * @var object
+     */
+    protected $property;
 
-	/**
+    /**
      * DownloadInterface
-	 * @var object
-	 */
-	protected $download;
+     *
+     * @var object
+     */
+    protected $download;
 
-	/**
+    /**
      * ReportInterface
-	 * @var object
-	 */
-	protected $report;
+     *
+     * @var object
+     */
+    protected $report;
 
-	/**
+    /**
      * ImageInterface
-	 * @var object
-	 */
-	protected $image;
+     *
+     * @var object
+     */
+    protected $image;
 
-	/**
+    /**
      * Scratch directory for processing.
      *
-	 * @var string
-	 */
-	protected $scratchDir;
+     * @var string
+     */
+    protected $scratchDir;
 
     /**
      * Constructor
+     *
      * @param Filesystem $filesystem
      * @param ExpeditionInterface $expedition
      * @param SubjectInterface $subject
@@ -95,20 +104,19 @@ abstract class ActorAbstract {
      * @param WorkflowManagerInterface $manager
      */
     public function __construct(
-		Filesystem $filesystem,
+        Filesystem $filesystem,
         ExpeditionInterface $expedition,
-		SubjectInterface $subject,
-		PropertyInterface $property,
-		DownloadInterface $download,
+        SubjectInterface $subject,
+        PropertyInterface $property,
+        DownloadInterface $download,
         Report $report,
         Image $image
-    )
-    {
-		$this->filesystem = $filesystem;
-		$this->expedition = $expedition;
-		$this->subject = $subject;
-		$this->property = $property;
-		$this->download = $download;
+    ) {
+        $this->filesystem = $filesystem;
+        $this->expedition = $expedition;
+        $this->subject = $subject;
+        $this->property = $property;
+        $this->download = $download;
         $this->report = $report;
         $this->image = $image;
         $this->scratchDir = Config::get('config.scratchDir');
@@ -116,13 +124,15 @@ abstract class ActorAbstract {
 
     /**
      * Each class needs to set properties.
+     *
      * @param $actor
      * @return mixed
      */
-	abstract protected function setProperties ($actor);
+    abstract protected function setProperties($actor);
 
     /**
      * Each class has a process to handle the states.
+     *
      * @return mixed
      */
     abstract public function process();
@@ -136,13 +146,13 @@ abstract class ActorAbstract {
      */
     protected function createDir($dir)
     {
-        if ( ! $this->filesystem->isDirectory($dir))
-        {
-            if ( ! $this->filesystem->makeDirectory($dir, 0775, true))
-				throw new \Exception(trans('emails.error_create_dir', ['directory' => $dir]));
+        if (! $this->filesystem->isDirectory($dir)) {
+            if (! $this->filesystem->makeDirectory($dir, 0775, true)) {
+                throw new \Exception(trans('emails.error_create_dir', ['directory' => $dir]));
+            }
         }
 
-		return $dir;
+        return $dir;
     }
 
     /**
@@ -153,13 +163,13 @@ abstract class ActorAbstract {
      */
     protected function writeDir($dir)
     {
-        if ( ! $this->filesystem->isWritable($dir))
-        {
-            if ( ! chmod($dir, 0775))
-				throw new \Exception(trans('emails.error_write_dir', ['directory' => $dir]));
+        if (! $this->filesystem->isWritable($dir)) {
+            if (! chmod($dir, 0775)) {
+                throw new \Exception(trans('emails.error_write_dir', ['directory' => $dir]));
+            }
         }
 
-		return;
+        return;
     }
 
     /**
@@ -171,10 +181,11 @@ abstract class ActorAbstract {
      */
     protected function saveFile($path, $contents)
     {
-        if ( ! $this->filesystem->put($path, $contents))
-			throw new \Exception(trans('emails.error_save_file', ['directory' => $path]));
+        if (! $this->filesystem->put($path, $contents)) {
+            throw new \Exception(trans('emails.error_save_file', ['directory' => $path]));
+        }
 
-		return;
+        return;
     }
 
     /**
@@ -186,8 +197,9 @@ abstract class ActorAbstract {
      */
     protected function moveFile($path, $target)
     {
-        if ( ! $this->filesystem->move($path, $target))
+        if (! $this->filesystem->move($path, $target)) {
             throw new \Exception(trans('emails.error_save_file', ['directory' => $path]));
+        }
 
         return;
     }
@@ -198,12 +210,12 @@ abstract class ActorAbstract {
      * @param $actorId
      * @param $file
      */
-    protected function createDownload ($expeditionId, $actorId, $file)
+    protected function createDownload($expeditionId, $actorId, $file)
     {
         $data = [
             'expedition_id' => $expeditionId,
-			'actor_id' => $actorId,
-            'file' => $file
+            'actor_id'      => $actorId,
+            'file'          => $file
         ];
 
         $this->download->create($data);

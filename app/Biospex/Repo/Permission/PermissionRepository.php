@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Permission;
+
 /**
  * PermissionRepository.php
  *
@@ -27,8 +28,8 @@
 use Biospex\Repo\Repository;
 use Permission;
 
-class PermissionRepository extends Repository implements PermissionInterface {
-
+class PermissionRepository extends Repository implements PermissionInterface
+{
     public function __construct(Permission $permission)
     {
         $this->model = $permission;

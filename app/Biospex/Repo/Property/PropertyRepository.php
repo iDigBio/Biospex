@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Property;
+
 /**
  * PropertyRepository.php
  *
@@ -27,35 +28,35 @@
 use Biospex\Repo\Repository;
 use Property;
 
-class PropertyRepository extends Repository implements PropertyInterface {
+class PropertyRepository extends Repository implements PropertyInterface
+{
+    /**
+     * @param Property $property
+     */
+    public function __construct(Property $property)
+    {
+        $this->model = $property;
+    }
 
-	/**
-	 * @param Property $property
-	 */
-	public function __construct(Property $property)
-	{
-		$this->model = $property;
-	}
+    /**
+     * Find by qualified name
+     *
+     * @param $name
+     * @return mixed
+     */
+    public function findByQualified($name)
+    {
+        return $this->model->findByQualified($name);
+    }
 
-	/**
-	 * Find by qualified name
-	 *
-	 * @param $name
-	 * @return mixed
-	 */
-	public function findByQualified($name)
-	{
-		return $this->model->findByQualified($name);
-	}
-
-	/**
-	 * Find by short name
-	 *
-	 * @param $name
-	 * @return mixed
-	 */
-	public function findByShort($name)
-	{
-		return $this->model->findByShort($name);
-	}
+    /**
+     * Find by short name
+     *
+     * @param $name
+     * @return mixed
+     */
+    public function findByShort($name)
+    {
+        return $this->model->findByShort($name);
+    }
 }

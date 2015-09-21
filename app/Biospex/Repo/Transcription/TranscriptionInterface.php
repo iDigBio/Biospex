@@ -1,4 +1,5 @@
-<?php  namespace Biospex\Repo\Transcription;
+<?php namespace Biospex\Repo\Transcription;
+
 /**
  * TestInterface.php
  *
@@ -26,6 +27,6 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface TranscriptionInterface extends RepositoryInterface {
-    
+interface TranscriptionInterface extends RepositoryInterface
+{
 }

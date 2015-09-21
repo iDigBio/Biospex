@@ -1,4 +1,5 @@
-<?php  namespace Biospex\Repo\Property;
+<?php namespace Biospex\Repo\Property;
+
 /**
  * PropertyInterface.php
  *
@@ -26,9 +27,9 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface PropertyInterface extends RepositoryInterface {
+interface PropertyInterface extends RepositoryInterface
+{
+    public function findByQualified($name);
 
-	public function findByQualified($name);
-
-	public function findByShort($name);
+    public function findByShort($name);
 }

@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\ResendActivation;
+
 /**
  * ResendAcitvationFormLaravelValidator.php
  *
@@ -25,15 +26,14 @@
  */
 use Biospex\Validation\AbstractLaravelValidator;
 
-class ResendActivationFormLaravelValidator extends AbstractLaravelValidator {
-	
-	/**
-	 * Validation rules
-	 *
-	 * @var Array 
-	 */
-	protected $rules = array(
-		'email' => 'required|min:4|max:32|email',
-	);
-
+class ResendActivationFormLaravelValidator extends AbstractLaravelValidator
+{
+    /**
+     * Validation rules
+     *
+     * @var Array
+     */
+    protected $rules = [
+        'email' => 'required|min:4|max:32|email',
+    ];
 }

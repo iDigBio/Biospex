@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Permission;
+
 /**
  * PermissionInterface.php
  *
@@ -26,7 +27,8 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface PermissionInterface extends RepositoryInterface {
+interface PermissionInterface extends RepositoryInterface
+{
     public function getPermissionsGroupBy();
 
     public function setPermissions(array $data);

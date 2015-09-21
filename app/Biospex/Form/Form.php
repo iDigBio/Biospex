@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form;
+
 /**
  * Form.php
  *
@@ -24,7 +25,8 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-abstract class Form {
+abstract class Form
+{
     /**
      * Form Data
      *
@@ -51,8 +53,7 @@ abstract class Form {
      */
     public function save(array $input)
     {
-        if( ! $this->valid($input) )
-        {
+        if (! $this->valid($input)) {
             return false;
         }
 
@@ -66,8 +67,7 @@ abstract class Form {
      */
     public function update(array $input)
     {
-        if( ! $this->valid($input) )
-        {
+        if (! $this->valid($input)) {
             return false;
         }
 

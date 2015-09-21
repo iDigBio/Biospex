@@ -1,4 +1,5 @@
-<?php  namespace Biospex\Services\Queue;
+<?php namespace Biospex\Services\Queue;
+
 /**
  * QueueAbstract.php
  *
@@ -24,22 +25,25 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-abstract class QueueAbstract {
-
+abstract class QueueAbstract
+{
     /**
      * Queue job.
+     *
      * @var object
      */
     protected $job;
 
     /**
      * Array containing data for queue job.
+     *
      * @var array
      */
     protected $data;
 
     /**
      * Required fire method.
+     *
      * @param $job
      * @param $data
      */
@@ -55,6 +59,7 @@ abstract class QueueAbstract {
 
     /**
      * Release a job back to the queue
+     *
      * @param null $seconds
      */
     protected function release($seconds = null)
@@ -81,5 +86,4 @@ abstract class QueueAbstract {
     {
         return $this->job->getJobId();
     }
-
 }

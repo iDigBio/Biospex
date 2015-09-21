@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Header;
+
 /**
  * HeaderInterface.php
  *
@@ -25,6 +26,7 @@
  */
 use Biospex\Repo\RepositoryInterface;
 
-interface HeaderInterface extends RepositoryInterface {
-	public function getByProjectId($id);
+interface HeaderInterface extends RepositoryInterface
+{
+    public function getByProjectIdType($id, $type);
 }

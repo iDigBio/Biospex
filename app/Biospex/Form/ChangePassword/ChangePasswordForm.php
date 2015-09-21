@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\ChangePassword;
+
 /**
  * ChangePassword.php
  *
@@ -27,28 +28,25 @@ use Biospex\Form\Form;
 use Biospex\Validation\ValidableInterface;
 use Biospex\Repo\User\UserInterface;
 
-class ChangePasswordForm extends Form{
+class ChangePasswordForm extends Form
+{
+    public function __construct(ValidableInterface $validator, UserInterface $user)
+    {
+        $this->validator = $validator;
+        $this->repo = $user;
+    }
 
-	public function __construct(ValidableInterface $validator, UserInterface $user)
-	{
-		$this->validator = $validator;
-		$this->repo = $user;
-
-	}
-
-	/**
+    /**
      * Create a new user
      *
      * @return integer
      */
     public function change(array $input)
     {
-        if( ! $this->valid($input) )
-        {
+        if (! $this->valid($input)) {
             return false;
         }
 
         return $this->repo->changePassword($input);
     }
-
 }

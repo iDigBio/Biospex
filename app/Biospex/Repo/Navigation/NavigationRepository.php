@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Navigation;
+
 /**
  * NavigationRepository.php
  *
@@ -27,8 +28,8 @@
 use Biospex\Repo\Repository;
 use Navigation;
 
-class NavigationRepository extends Repository implements NavigationInterface {
-
+class NavigationRepository extends Repository implements NavigationInterface
+{
     public function __construct(Navigation $navigation)
     {
         $this->model = $navigation;

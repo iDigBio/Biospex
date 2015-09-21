@@ -1,4 +1,5 @@
 <?php namespace Biospex\ServiceProvider;
+
 /**
  * BiospexServiceProvider.php
  *
@@ -26,8 +27,8 @@
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\AliasLoader;
 
-class BiospexServiceProvider extends ServiceProvider {
-
+class BiospexServiceProvider extends ServiceProvider
+{
     /**
      * Indicates if loading of the provider is deferred.
      *
@@ -52,12 +53,11 @@ class BiospexServiceProvider extends ServiceProvider {
         $composerServiceProvider = new ComposerServiceProvider($this->app);
         $composerServiceProvider->register();
 
-		$this->app->booting(function()
-		{
-			$loader = AliasLoader::getInstance();
-			$loader->alias('Helper', 'Biospex\Helpers\Helper');
-		});
-	}
+        $this->app->booting(function () {
+            $loader = AliasLoader::getInstance();
+            $loader->alias('Helper', 'Biospex\Helpers\Helper');
+        });
+    }
 
     /**
      * Get the services provided by the provider.
@@ -66,7 +66,6 @@ class BiospexServiceProvider extends ServiceProvider {
      */
     public function provides()
     {
-        return array();
+        return [];
     }
-
 }

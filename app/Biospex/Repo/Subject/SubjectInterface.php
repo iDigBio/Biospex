@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Subject;
+
 /**
  * SubjectInterface.php
  *
@@ -26,18 +27,19 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface SubjectInterface extends RepositoryInterface {
-	public function getUnassignedCount($id);
+interface SubjectInterface extends RepositoryInterface
+{
+    public function getUnassignedCount($id);
 
-	public function getSubjectIds($projectId, $take = null, $expeditionId = null);
+    public function getSubjectIds($projectId, $take = null, $expeditionId = null);
 
-	public function detachSubjects($ids = array(), $expeditionId);
+    public function detachSubjects($ids = [], $expeditionId);
 
-	public function loadGridModel();
+    public function loadGridModel();
 
-	public function getTotalNumberOfRows(array $filters = array());
+    public function getTotalNumberOfRows(array $filters = []);
 
-	public function getRows($limit, $offset, $orderBy = null, $sord = null, array $filters = array());
+    public function getRows($limit, $offset, $orderBy = null, $sord = null, array $filters = []);
 
     public function findByFilename($filename);
 

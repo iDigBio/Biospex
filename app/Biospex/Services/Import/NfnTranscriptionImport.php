@@ -1,4 +1,5 @@
 <?php namespace Biospex\Services\Import;
+
 /**
  * NfnTranscriptionImport.php
  *
@@ -26,8 +27,8 @@
 
 use Illuminate\Support\Facades\Queue;
 
-class NfnTranscriptionImport extends ImportServiceAbstract {
-
+class NfnTranscriptionImport extends ImportServiceAbstract
+{
     /**
      * Upload results for NfN.
      *
@@ -41,8 +42,9 @@ class NfnTranscriptionImport extends ImportServiceAbstract {
             ['file' => 'required|mimes:txt']
         );
 
-        if ($validator->fails())
+        if ($validator->fails()) {
             return $validator;
+        }
 
         $this->setDirectory('config.transcriptionImportDir');
 

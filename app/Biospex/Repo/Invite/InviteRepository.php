@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Invite;
+
 /**
  * InviteRepository.php
  *
@@ -26,8 +27,8 @@
 use Biospex\Repo\Repository;
 use Invite;
 
-class InviteRepository extends Repository implements InviteInterface {
-
+class InviteRepository extends Repository implements InviteInterface
+{
     /**
      * @param Invite $invite
      */

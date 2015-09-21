@@ -1,4 +1,6 @@
-<?php  namespace Biospex\Services\Process;
+<?php
+
+namespace Biospex\Services\Process;
 
 use League\Csv\Reader;
 use Biospex\Repo\Subject\SubjectInterface;
@@ -6,8 +8,8 @@ use Biospex\Repo\Transcription\TranscriptionInterface;
 use Validator;
 use Config;
 
-class NfnTranscription {
-
+class NfnTranscription
+{
     /**
      * @var array
      */
@@ -57,30 +59,33 @@ class NfnTranscription {
      */
     public function processRow($row, $index)
     {
-        if (empty($row[0]))
+        if (empty($row[0])) {
             return false;
+        }
 
-        if ($index == 0)
-        {
+        if ($index == 0) {
             $this->createHeader($row);
 
             return true;
         }
 
-        if (count($this->header) != count($row))
+        if (count($this->header) != count($row)) {
             throw new \Exception(trans('emails.error_csv_row_count', ['headers' => count($this->header), 'rows' => count($row)]));
+        }
 
         $combined = array_combine($this->header, $row);
 
         // Check if fsu collection and search subjects by file name
-        if ( ! $subject = $this->getSubject($combined))
+        if (! $subject = $this->getSubject($combined)) {
             return true;
+        }
 
         $addArray = ['project_id' => $subject->project_id, 'expedition_ids' => $subject->expedition_ids];
         $combined = $addArray + $combined;
 
-        if ($this->validate($combined))
+        if ($this->validate($combined)) {
             return true;
+        }
 
         $this->transcription->create($combined);
 
@@ -108,20 +113,18 @@ class NfnTranscription {
      */
     public function getSubject($combined)
     {
-        if ($this->checkCollection($combined))
-        {
+        if ($this->checkCollection($combined)) {
             $filename = strtok(trim($combined['filename']), '.');
             $subject = $this->subject->findByFilename($filename);
-        }
-        else
-        {
+        } else {
             $subject = $this->subject->find(trim($combined['subject_id']));
         }
 
-        if ( ! $subject)
+        if (! $subject) {
             $this->csv[] = $combined;
+        }
 
-        return ( ! $subject) ? false : $subject;
+        return (! $subject) ? false : $subject;
     }
 
     /**
@@ -151,8 +154,9 @@ class NfnTranscription {
         // returns true if failed.
         $fail = $validator->fails();
 
-        if ($fail)
+        if ($fail) {
             $this->csv[] = $combined;
+        }
 
         return $fail;
     }

@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\User;
+
 /**
  * UserFormLaravelValidator.php
  *
@@ -25,17 +26,16 @@
  */
 use Biospex\Validation\AbstractLaravelValidator;
 
-class UserFormLaravelValidator extends AbstractLaravelValidator {
-	
-	/**
-	 * Validation rules
-	 *
-	 * @var Array 
-	 */
-	protected $rules = array(
-		'firstName' => 'alpha',
-        'lastName' => 'alpha',
-        'email' => 'required|min:4|max:32|email|unique:users',
-	);
-
+class UserFormLaravelValidator extends AbstractLaravelValidator
+{
+    /**
+     * Validation rules
+     *
+     * @var Array
+     */
+    protected $rules = [
+        'firstName' => 'alpha',
+        'lastName'  => 'alpha',
+        'email'     => 'required|min:4|max:32|email|unique:users',
+    ];
 }

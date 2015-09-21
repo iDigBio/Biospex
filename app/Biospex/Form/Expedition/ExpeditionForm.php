@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\Expedition;
+
 /**
  * Expedition.php
  *
@@ -28,7 +29,8 @@ use Biospex\Form\Form;
 use Biospex\Validation\ValidableInterface as Validator;
 use Biospex\Repo\Expedition\ExpeditionInterface as Expedition;
 
-class ExpeditionForm extends Form {
+class ExpeditionForm extends Form
+{
     public function __construct(Validator $validator, Expedition $expedition)
     {
         $this->validator = $validator;

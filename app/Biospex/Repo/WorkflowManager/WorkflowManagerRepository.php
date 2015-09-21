@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\WorkflowManager;
+
 /**
  * WorkflowManagerRepository.php
  *
@@ -27,8 +28,8 @@
 use Biospex\Repo\Repository;
 use WorkflowManager;
 
-class WorkflowManagerRepository extends Repository implements WorkflowManagerInterface {
-
+class WorkflowManagerRepository extends Repository implements WorkflowManagerInterface
+{
     /**
      * @param WorkflowManager $model
      */
@@ -37,24 +38,24 @@ class WorkflowManagerRepository extends Repository implements WorkflowManagerInt
         $this->model = $model;
     }
 
-	/**
-	 * Find with eager loading
-	 *
-	 * @param array $with
-	 * @return mixed
-	 */
-	public function allWith($with = array())
-	{
-		return $this->model->allWith($with);
-	}
+    /**
+     * Find with eager loading
+     *
+     * @param array $with
+     * @return mixed
+     */
+    public function allWith($with = [])
+    {
+        return $this->model->allWith($with);
+    }
 
-	/**
-	 * Get workflow process by expedition id
-	 *
-	 * @param $id
-	 * @return mixed
-	 */
-	public function findByExpeditionId($id)
+    /**
+     * Get workflow process by expedition id
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function findByExpeditionId($id)
     {
         return $this->model->findByExpeditionId($id);
     }

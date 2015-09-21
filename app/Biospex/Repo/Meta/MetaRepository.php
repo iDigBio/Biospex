@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Meta;
+
 /**
  * MetaRepository.php
  *
@@ -27,8 +28,8 @@
 use Biospex\Repo\Repository;
 use Meta;
 
-class MetaRepository extends Repository implements MetaInterface {
-
+class MetaRepository extends Repository implements MetaInterface
+{
     /**
      * @param Meta $meta
      */

@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\Register;
+
 /**
  * RegisterForm.php
  *
@@ -28,12 +29,11 @@ use Biospex\Form\Form;
 use Biospex\Validation\ValidableInterface;
 use Biospex\Repo\User\UserInterface;
 
-class RegisterForm extends Form{
-
-	public function __construct(ValidableInterface $validator, UserInterface $user)
-	{
-		$this->validator = $validator;
-		$this->repo = $user;
-	}
-
+class RegisterForm extends Form
+{
+    public function __construct(ValidableInterface $validator, UserInterface $user)
+    {
+        $this->validator = $validator;
+        $this->repo = $user;
+    }
 }

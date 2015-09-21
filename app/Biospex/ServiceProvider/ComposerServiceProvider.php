@@ -1,4 +1,5 @@
 <?php namespace Biospex\ServiceProvider;
+
 /**
  * ComposerServiceProvider.php
  *
@@ -25,8 +26,8 @@
  */
 use Illuminate\Support\ServiceProvider;
 
-class ComposerServiceProvider extends ServiceProvider {
-
+class ComposerServiceProvider extends ServiceProvider
+{
     public function register()
     {
         $this->app->view->composer('layouts.default', 'Biospex\Composers\TopMenuComposer');

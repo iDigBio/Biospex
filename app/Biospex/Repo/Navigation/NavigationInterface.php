@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Navigation;
+
 /**
  * NavigationInterface.php
  *
@@ -26,6 +27,7 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface NavigationInterface extends RepositoryInterface {
+interface NavigationInterface extends RepositoryInterface
+{
     public function getMenu($type);
 }

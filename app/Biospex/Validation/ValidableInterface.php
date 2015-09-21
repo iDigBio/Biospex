@@ -1,4 +1,5 @@
 <?php namespace Biospex\Validation;
+
 /**
  * ValidableInterface.php
  *
@@ -23,22 +24,21 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-interface ValidableInterface {
+interface ValidableInterface
+{
+    public function with(array $input);
 
-	public function with(array $input);
+    /**
+     * Test if validation passes
+     *
+     * @return boolean
+     */
+    public function passes();
 
-	/**
-	 * Test if validation passes
-	 * 
-	 * @return boolean
-	 */
-	public function passes();
-
-	/**
-	 * Retreive validation errors
-	 * 
-	 * @return array
-	 */
-	public function errors();
-
+    /**
+     * Retreive validation errors
+     *
+     * @return array
+     */
+    public function errors();
 }

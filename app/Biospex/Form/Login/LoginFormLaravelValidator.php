@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\Login;
+
 /**
  * LoginFormLaravelValidator.php
  *
@@ -25,16 +26,15 @@
  */
 use Biospex\Validation\AbstractLaravelValidator;
 
-class LoginFormLaravelValidator extends AbstractLaravelValidator {
-	
-	/**
-	 * Validation rules
-	 *
-	 * @var Array 
-	 */
-	protected $rules = array(
-		'email' => 'required|min:4|max:32|email',
-		'password' => 'required|min:6'
-	);
-
+class LoginFormLaravelValidator extends AbstractLaravelValidator
+{
+    /**
+     * Validation rules
+     *
+     * @var Array
+     */
+    protected $rules = [
+        'email'    => 'required|min:4|max:32|email',
+        'password' => 'required|min:6'
+    ];
 }

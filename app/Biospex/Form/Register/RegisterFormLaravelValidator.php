@@ -26,8 +26,8 @@
  */
 use Biospex\Validation\AbstractLaravelValidator;
 
-class RegisterFormLaravelValidator extends AbstractLaravelValidator {
-
+class RegisterFormLaravelValidator extends AbstractLaravelValidator
+{
     /**
      * Validation rules
      *
@@ -44,5 +44,4 @@ class RegisterFormLaravelValidator extends AbstractLaravelValidator {
         'registeruser'          => 'honeypot',
         'registertime'          => 'required_with:registeruser|honeytime:5',
     ];
-
 }

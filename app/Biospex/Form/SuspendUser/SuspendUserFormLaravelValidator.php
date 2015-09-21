@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\SuspendUser;
+
 /**
  * SuspendUserFormLaravelValidator.php
  *
@@ -25,15 +26,14 @@
  */
 use Biospex\Validation\AbstractLaravelValidator;
 
-class SuspendUserFormLaravelValidator extends AbstractLaravelValidator {
-	
-	/**
-	 * Validation rules
-	 *
-	 * @var Array 
-	 */
-	protected $rules = array(
-		'minutes' => 'required|numeric',
-	);
-
+class SuspendUserFormLaravelValidator extends AbstractLaravelValidator
+{
+    /**
+     * Validation rules
+     *
+     * @var Array
+     */
+    protected $rules = [
+        'minutes' => 'required|numeric',
+    ];
 }

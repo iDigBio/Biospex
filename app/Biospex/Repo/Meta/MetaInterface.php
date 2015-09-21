@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Meta;
+
 /**
  * MetaInterface.php
  *
@@ -26,4 +27,6 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface MetaInterface extends RepositoryInterface {}
+interface MetaInterface extends RepositoryInterface
+{
+}

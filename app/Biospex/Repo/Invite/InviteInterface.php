@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Invite;
+
 /**
  * InviteInterface.php
  *
@@ -26,11 +27,11 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface InviteInterface extends RepositoryInterface {
+interface InviteInterface extends RepositoryInterface
+{
     public function findByCode($code);
 
     public function checkDuplicate($id, $email);
 
     public function findByGroupId($id);
-
 }

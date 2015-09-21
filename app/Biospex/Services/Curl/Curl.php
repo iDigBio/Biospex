@@ -1,5 +1,6 @@
 <?php namespace Biospex\Services\Curl;
-    /**
+
+/**
      * Curl.php
      *
      * @package    Biospex Package
@@ -29,8 +30,8 @@
  *
  * @throws CurlException
  */
-class Curl {
-
+class Curl
+{
     /**
      * @var int
      *
@@ -102,7 +103,7 @@ class Curl {
      *
      * @param null $callback
      */
-    function __construct($callback = null)
+    public function __construct($callback = null)
     {
         $this->callback = $callback;
     }
@@ -124,12 +125,9 @@ class Curl {
     public function __set($name, $value)
     {
         // append the base options & headers
-        if ($name == "options" || $name == "headers")
-        {
+        if ($name == "options" || $name == "headers") {
             $this->{$name} = $value + $this->{$name};
-        }
-        else
-        {
+        } else {
             $this->{$name} = $value;
         }
 
@@ -189,12 +187,9 @@ class Curl {
     public function execute($window_size = null)
     {
         // rolling curl window must always be greater than 1
-        if (sizeof($this->requests) == 1)
-        {
+        if (sizeof($this->requests) == 1) {
             return $this->single();
-        }
-        else
-        {
+        } else {
             // start the rolling curl. window_size is the max number of simultaneous connections
             return $this->rolling($window_size);
         }
@@ -214,11 +209,13 @@ class Curl {
         $output = curl_exec($ch);
         $info = curl_getinfo($ch);
 
-        if ( ! $this->callback)
+        if (! $this->callback) {
             return $output;
+        }
 
-        if ( ! is_callable($this->callback))
+        if (! is_callable($this->callback)) {
             return false;
+        }
 
         return call_user_func($this->callback, $output, $info, $request);
     }
@@ -233,23 +230,23 @@ class Curl {
      */
     private function rolling($window_size = null)
     {
-        if ($window_size)
+        if ($window_size) {
             $this->window_size = $window_size;
+        }
 
         // make sure the rolling window isn't greater than the # of urls
-        if (sizeof($this->requests) < $this->window_size)
+        if (sizeof($this->requests) < $this->window_size) {
             $this->window_size = sizeof($this->requests);
+        }
 
-        if ($this->window_size < 2)
-        {
+        if ($this->window_size < 2) {
             throw new CurlException("Window size must be greater than 1");
         }
 
         $master = curl_multi_init();
 
         // start the first batch of requests
-        for ($i = 0; $i < $this->window_size; $i++)
-        {
+        for ($i = 0; $i < $this->window_size; $i++) {
             $ch = curl_init();
 
             $options = $this->getOptions($this->requests[$i]);
@@ -262,23 +259,19 @@ class Curl {
             $this->requestMap[$key] = $i;
         }
 
-        do
-        {
+        do {
             while (($execrun = curl_multi_exec($master, $running)) == CURLM_CALL_MULTI_PERFORM) ;
-            if ($execrun != CURLM_OK)
-            {
+            if ($execrun != CURLM_OK) {
                 break;
             }
             // a request was just completed -- find out which one
-            while ($done = curl_multi_info_read($master))
-            {
+            while ($done = curl_multi_info_read($master)) {
                 // get the info and content returned on the request
                 $info = curl_getinfo($done['handle']);
                 $output = curl_multi_getcontent($done['handle']);
 
                 // send the return values to the callback function.
-                if (is_callable($this->callback))
-                {
+                if (is_callable($this->callback)) {
                     $key = (string) $done['handle'];
                     $request = $this->requests[$this->requestMap[$key]];
                     unset($this->requestMap[$key]);
@@ -286,8 +279,7 @@ class Curl {
                 }
 
                 // start a new request (it's important to do this before removing the old one)
-                if ($i < sizeof($this->requests) && isset($this->requests[$i]) && $i < count($this->requests))
-                {
+                if ($i < sizeof($this->requests) && isset($this->requests[$i]) && $i < count($this->requests)) {
                     $ch = curl_init();
                     $options = $this->getOptions($this->requests[$i]);
                     curl_setopt_array($ch, $options);
@@ -301,15 +293,12 @@ class Curl {
 
                 // remove the curl handle that just completed
                 curl_multi_remove_handle($master, $done['handle']);
-
             }
 
             // Block for data in / output; error handling is done by curl_multi_exec
-            if ($running)
-            {
+            if ($running) {
                 curl_multi_select($master, $this->timeout);
             }
-
         } while ($running);
         curl_multi_close($master);
 
@@ -333,20 +322,17 @@ class Curl {
         // See: https://bugs.php.net/bug.php?id=30609
         if ((ini_get('safe_mode') == 'Off' || ! ini_get('safe_mode'))
             && ini_get('open_basedir') == ''
-        )
-        {
+        ) {
             $options[CURLOPT_FOLLOWLOCATION] = 1;
             $options[CURLOPT_MAXREDIRS] = 5;
         }
         $headers = $this->__get('headers');
-        if ($request->headers)
-        {
+        if ($request->headers) {
             $headers = $request->headers + $headers;
         }
 
         // append custom options for this specific request
-        if ($request->options)
-        {
+        if ($request->options) {
             $options = $request->options + $options;
         }
 
@@ -354,13 +340,11 @@ class Curl {
         $options[CURLOPT_URL] = $request->url;
 
         // posting data w/ this request?
-        if ($request->post_data)
-        {
+        if ($request->post_data) {
             $options[CURLOPT_POST] = 1;
             $options[CURLOPT_POSTFIELDS] = $request->post_data;
         }
-        if ($headers)
-        {
+        if ($headers) {
             $options[CURLOPT_HEADER] = 0;
             $options[CURLOPT_HTTPHEADER] = $headers;
         }
@@ -368,8 +352,7 @@ class Curl {
         // Due to a bug in cURL CURLOPT_WRITEFUNCTION must be defined as the last option
         // Otherwise it doesn't register. So let's unset and set it again
         // See http://stackoverflow.com/questions/15937055/curl-writefunction-not-being-called
-        if ( ! empty($options[CURLOPT_WRITEFUNCTION]))
-        {
+        if (! empty($options[CURLOPT_WRITEFUNCTION])) {
             $writeCallback = $options[CURLOPT_WRITEFUNCTION];
             unset($options[CURLOPT_WRITEFUNCTION]);
             $options[CURLOPT_WRITEFUNCTION] = $writeCallback;

@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Import;
+
 /**
  * ImportInterface.php
  *
@@ -25,7 +26,7 @@
  */
 use Biospex\Repo\RepositoryInterface;
 
-interface ImportInterface extends RepositoryInterface {
-
+interface ImportInterface extends RepositoryInterface
+{
     public function findByError($error = 0);
 }

@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Import;
+
 /**
  * ImportRepository.php
  *
@@ -27,8 +28,8 @@
 use Biospex\Repo\Repository;
 use Import;
 
-class ImportRepository extends Repository implements ImportInterface {
-
+class ImportRepository extends Repository implements ImportInterface
+{
     /**
      * @param Import $import
      */
@@ -47,5 +48,4 @@ class ImportRepository extends Repository implements ImportInterface {
     {
         return $this->model->findByError($error);
     }
-
 }

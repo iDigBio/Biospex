@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\OcrQueue;
+
 /**
  * OcrQueueInterface.php
  *
@@ -25,4 +26,6 @@
  */
 use Biospex\Repo\RepositoryInterface;
 
-interface OcrQueueInterface extends RepositoryInterface {}
+interface OcrQueueInterface extends RepositoryInterface
+{
+}

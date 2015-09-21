@@ -1,4 +1,5 @@
 <?php namespace Biospex\Mailer;
+
 /**
  * Mailer.php
  *
@@ -25,17 +26,16 @@
  */
 use Mail;
 
-abstract class Mailer {
-
-	public function sendTo ($from, $email, $subject, $view, $data = [], $attachments = [])
-	{
-		Mail::queueOn(\Config::get('config.beanstalkd.default'), $view, $data, function ($message) use ($from, $email, $subject, $attachments)
-		{
-			$message->from($from['address'], $from['name'])->subject($subject)->to($email);
-			$size = sizeof($attachments);
-			for ($i = 0; $i < $size; $i++){
-				$message->attach($attachments[$i]);
-			}
-		});
-	}
+abstract class Mailer
+{
+    public function sendTo($from, $email, $subject, $view, $data = [], $attachments = [])
+    {
+        Mail::queueOn(\Config::get('config.beanstalkd.default'), $view, $data, function ($message) use ($from, $email, $subject, $attachments) {
+            $message->from($from['address'], $from['name'])->subject($subject)->to($email);
+            $size = sizeof($attachments);
+            for ($i = 0; $i < $size; $i++) {
+                $message->attach($attachments[$i]);
+            }
+        });
+    }
 }

@@ -29,8 +29,8 @@ use Biospex\Repo\Group\GroupInterface;
 use Biospex\Mailer\BiospexMailer;
 use League\Csv\Writer;
 
-class Report {
-
+class Report
+{
     /**
      * @var \Illuminate\Support\Contracts\MessageProviderInterface
      */
@@ -54,8 +54,7 @@ class Report {
         MessageProviderInterface $messages,
         GroupInterface $group,
         BiospexMailer $mailer
-    )
-    {
+    ) {
         $this->messages = $messages;
         $this->group = $group;
         $this->mailer = $mailer;
@@ -84,16 +83,14 @@ class Report {
     {
         $email = null;
 
-        if ( ! is_null($groupId))
-        {
+        if (! is_null($groupId)) {
             $group = $this->group->findWith($groupId, ['owner']);
             $email = $group->Owner->email;
         }
 
         $errorMessage = '';
         $messages = $this->messages->get('error');
-        foreach ($messages as $message)
-        {
+        foreach ($messages as $message) {
             $errorMessage .= "$message ";
         }
         $subject = trans('emails.error');
@@ -143,8 +140,9 @@ class Report {
     public function createAttachment($csv, $name = null)
     {
         $path = $this->exportReportsDir;
-        if ( ! \File::isDirectory($path))
+        if (! \File::isDirectory($path)) {
             \File::makeDirectory($path);
+        }
 
         $fileName = (is_null($name)) ? str_random(10) : $name . str_random(5);
         $ext = ".csv";
@@ -179,5 +177,4 @@ class Report {
 
         return;
     }
-
 }

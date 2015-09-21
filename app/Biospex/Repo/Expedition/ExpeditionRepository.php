@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Expedition;
+
 /**
  * ExpeditionRepository.php
  *
@@ -26,8 +27,8 @@
 use Expedition;
 use Biospex\Repo\Repository;
 
-class ExpeditionRepository extends Repository implements ExpeditionInterface {
-
+class ExpeditionRepository extends Repository implements ExpeditionInterface
+{
     /**
      * @var \Expedition
      */
@@ -47,22 +48,22 @@ class ExpeditionRepository extends Repository implements ExpeditionInterface {
      * @param array $data
      * @return mixed|void
      */
-    public function create($data = array())
+    public function create($data = [])
     {
         $expedition = $this->model->create($data);
-		$expedition->subjects()->sync($data['subject_ids']);
+        $expedition->subjects()->sync($data['subject_ids']);
 
         return $expedition;
     }
 
-	/**
-	 * Find by uuid
-	 *
-	 * @param $uuid
-	 * @return mixed
-	 */
-	public function findByUuid($uuid)
-	{
-		return $this->model->findByUuid($uuid);
-	}
+    /**
+     * Find by uuid
+     *
+     * @param $uuid
+     * @return mixed
+     */
+    public function findByUuid($uuid)
+    {
+        return $this->model->findByUuid($uuid);
+    }
 }

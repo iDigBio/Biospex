@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Download;
+
 /**
  * DownloadRepository.php
  *
@@ -27,8 +28,8 @@
 use Biospex\Repo\Repository;
 use Download;
 
-class DownloadRepository extends Repository implements DownloadInterface {
-
+class DownloadRepository extends Repository implements DownloadInterface
+{
     /**
      * @param Import $import
      */
@@ -37,13 +38,13 @@ class DownloadRepository extends Repository implements DownloadInterface {
         $this->model = $download;
     }
 
-	/**
-	 * Return expired downloads.
-	 *
-	 * @return mixed
-	 */
-	public function getExpired()
-	{
-		return $this->model->getExpired();
-	}
+    /**
+     * Return expired downloads.
+     *
+     * @return mixed
+     */
+    public function getExpired()
+    {
+        return $this->model->getExpired();
+    }
 }

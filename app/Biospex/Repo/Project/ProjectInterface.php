@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Project;
+
 /**
  * ProjectInterface.php
  *
@@ -25,10 +26,9 @@
  */
 use Biospex\Repo\RepositoryInterface;
 
-interface ProjectInterface extends RepositoryInterface {
-
+interface ProjectInterface extends RepositoryInterface
+{
     public function bySlug($slug);
 
-	public function findByUuid($uuid);
-
+    public function findByUuid($uuid);
 }

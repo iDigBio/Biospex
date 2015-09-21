@@ -25,7 +25,7 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-ini_set("memory_limit","7G");
+ini_set("memory_limit", "7G");
 ini_set('max_execution_time', '0');
 ini_set('max_input_time', '0');
 set_time_limit(0);
@@ -41,8 +41,8 @@ use League\Csv\Reader;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
 
-class DarwinCore {
-
+class DarwinCore
+{
     /**
      * @var SubjectInterface
      */
@@ -75,12 +75,14 @@ class DarwinCore {
 
     /**
      * Header for extension and core.
+     *
      * @var
      */
     private $importHeader = [];
 
     /**
      * Array of duplicate subjects
+     *
      * @var array
      */
     private $duplicateArray = [];
@@ -108,12 +110,14 @@ class DarwinCore {
 
     /**
      * Array of identifier columns
+     *
      * @var
      */
     private $identifiers;
 
     /**
      * Media identifier.
+     *
      * @var
      */
     private $identifierColumn;
@@ -125,6 +129,7 @@ class DarwinCore {
 
     /**
      * Queue to use when processing OCR.
+     *
      * @var
      */
     private $queue;
@@ -160,8 +165,7 @@ class DarwinCore {
         MetaInterface $meta,
         OcrQueueInterface $ocr,
         MetaFile $metaFile
-    )
-    {
+    ) {
         $this->subject = $subject;
         $this->header = $header;
         $this->property = $property;
@@ -200,6 +204,7 @@ class DarwinCore {
         // Load occurrence second to update subjects
         $type = $this->metaFile->getMediaIsCore() ? 'extension' : 'core';
         $this->loadCsv($dir, $type);
+        $this->setHeaderArray($type);
 
         return;
     }
@@ -219,8 +224,9 @@ class DarwinCore {
 
         $reader = Reader::createFromPath($file);
         $reader->setDelimiter($this->setDelimiter($type));
-        if ( ! empty($this->setEnclosure($type)))
+        if (! empty($this->setEnclosure($type))) {
             $reader->setEnclosure($this->setEnclosure($type));
+        }
         $reader->each(function ($row, $index, $iterator) use ($type, $multimedia) {
             return $this->processRow($row, $index, $type, $multimedia);
         });
@@ -240,19 +246,21 @@ class DarwinCore {
      */
     public function processRow($row, $index, $type, $multimedia)
     {
-        if (empty($row[0]))
+        if (empty($row[0])) {
             return false;
+        }
 
-        if ($index == 0)
-        {
+        if ($index == 0) {
             $this->handleHeader($row, $type);
+
             return true;
         }
 
         $row = $this->filterByIndex($row, $type);
 
-        if (count($this->importHeader[$type]) != count($row))
+        if (count($this->importHeader[$type]) != count($row)) {
             throw new \Exception(trans('emails.error_csv_row_count', ['headers' => count($this->importHeader[$type]), 'rows' => count($row)]));
+        }
 
         $combined = array_combine($this->importHeader[$type], $row);
 
@@ -291,26 +299,29 @@ class DarwinCore {
         $occurrenceId = $this->metaFile->getMediaIsCore() ? null : $data[$this->importHeader[$type][0]];
         $data['id'] = $this->metaFile->getMediaIsCore() ? $data[$this->importHeader[$type][0]] : $data[$this->identifierColumn];
 
-        if ($this->reject($data))
+        if ($this->reject($data)) {
             return;
+        }
 
         $subject = ['project_id' => $this->projectId, 'ocr' => '', 'expedition_ids' => []]
-                + array_merge($this->headerArray, $data)
-                + ['occurrence' => is_null($occurrenceId) ? '' : $occurrenceId];
+            + array_merge($this->headerArray, $data)
+            + ['occurrence' => is_null($occurrenceId) ? '' : $occurrenceId];
 
-        if ($this->validateDoc($subject))
+        if ($this->validateDoc($subject)) {
             return;
+        }
 
         $subject = $this->subject->create($subject);
 
-        if ( ! is_null($occurrenceId))
+        if (! is_null($occurrenceId)) {
             $subject->occurrence()->save(new \Occurrence(['id' => $occurrenceId]));
+        }
 
-        if ($this->disableOcr)
+        if ($this->disableOcr) {
             return;
+        }
 
         $this->buildOcrQueue($subject);
-
     }
 
     /**
@@ -321,9 +332,9 @@ class DarwinCore {
      */
     public function reject($data)
     {
-        if (empty($data['id']))
-        {
+        if (empty($data['id'])) {
             $this->rejectedMultimedia[] = $data;
+
             return true;
         }
 
@@ -347,8 +358,7 @@ class DarwinCore {
 
         $fail = $validator->fails();
 
-        if ($fail)
-        {
+        if ($fail) {
             $this->unsetSubjectVariables($subject);
             $this->duplicateArray[] = $subject;
         }
@@ -361,8 +371,9 @@ class DarwinCore {
      */
     public function pushToQueue()
     {
-        if ($this->disableOcr)
+        if ($this->disableOcr) {
             return;
+        }
 
         $id = $this->saveOcrQueue($this->ocrData, count($this->ocrData));
         Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $id, 'class' => 'OcrProcessQueue'], $this->queue);
@@ -380,11 +391,11 @@ class DarwinCore {
     {
         $subjects = $this->subject->findByProjectOccurrenceId($this->projectId, $data[$this->importHeader[$type][0]]);
 
-        if ($subjects->isEmpty())
+        if ($subjects->isEmpty()) {
             return;
+        }
 
-        foreach ($subjects as $subject)
-        {
+        foreach ($subjects as $subject) {
             $subject->occurrence()->save(new \Occurrence($data));
         }
 
@@ -418,8 +429,8 @@ class DarwinCore {
     public function saveOcrQueue($data, $count)
     {
         $queue = $this->ocr->create([
-            'project_id' => $this->projectId,
-            'data' => json_encode(['subjects' => $data]),
+            'project_id'    => $this->projectId,
+            'data'          => json_encode(['subjects' => $data]),
             'subject_count' => $count
         ]);
 
@@ -451,10 +462,10 @@ class DarwinCore {
      */
     public function buildHeaderRow($row, $type)
     {
-        foreach ($this->metaFile->getMetaFields($type) as $key => $qualified)
-        {
-            if ( ! isset($row[$key]))
+        foreach ($this->metaFile->getMetaFields($type) as $key => $qualified) {
+            if (! isset($row[$key])) {
                 throw new \Exception(trans('emails.error_csv_build_header', ['key' => $key, 'qualified' => $qualified]));
+            }
 
             $short = $this->checkProperty($qualified, $row[$key]);
             $header[$key] = $short;
@@ -472,8 +483,9 @@ class DarwinCore {
      */
     public function checkProperty($qualified, $ns_short)
     {
-        if ($qualified == 'id' || $qualified == 'coreid')
+        if ($qualified == 'id' || $qualified == 'coreid') {
             return $qualified;
+        }
 
         list($namespace, $short) = preg_match('/:/', $ns_short) ? preg_split('/:/', $ns_short) : ['', $ns_short];
 
@@ -481,13 +493,11 @@ class DarwinCore {
         $checkShort = $this->property->findByShort($short);
 
         // Return if qualified exists and short is the same.
-        if ( ! is_null($checkQualified))
-        {
+        if (! is_null($checkQualified)) {
             $short = $checkQualified->short;
         }
         // Create using new short if qualified is null and short exists.
-        elseif (is_null($checkQualified) && ! is_null($checkShort))
-        {
+        elseif (is_null($checkQualified) && ! is_null($checkShort)) {
             $short .= substr(md5(uniqid(mt_rand(), true)), 0, 4);
             $array = [
                 'qualified' => $qualified,
@@ -497,8 +507,7 @@ class DarwinCore {
             $this->property->create($array);
         }
         // Create if neither exist using same short
-        elseif (is_null($checkQualified) && is_null($checkShort))
-        {
+        elseif (is_null($checkQualified) && is_null($checkShort)) {
             $array = [
                 'qualified' => $qualified,
                 'short'     => $short,
@@ -541,11 +550,13 @@ class DarwinCore {
      */
     private function setIdentifierColumn($header, $type)
     {
-        if ( ! $this->metaFile->getMediaIsCore() && $type == 'core')
+        if (! $this->metaFile->getMediaIsCore() && $type == 'core') {
             return;
+        }
 
-        if ( ! $result = array_values(array_intersect($this->identifiers, $header)))
+        if (! $result = array_values(array_intersect($this->identifiers, $header))) {
             return;
+        }
 
         $this->identifierColumn = $result[0];
 
@@ -572,24 +583,31 @@ class DarwinCore {
      */
     public function setHeaderArray($type)
     {
-        $result = $this->header->getByProjectId($this->projectId);
+        $result = $this->header->getByProjectIdType($this->projectId, $type);
 
         $header = $this->importHeader[$type];
 
-        $headerFields = array_map(function(){}, array_flip($header));
-        if ( ! in_array('ocr', $headerFields)) $headerFields['ocr'] = '';
+        $headerFields = array_map(function () {
+        }, array_flip($header));
 
-        if (is_null($result))
-        {
+        $mediaIsCore = $this->metaFile->getMediaIsCore();
+        if (($mediaIsCore && $type == 'core') && ! in_array('ocr', $headerFields)) {
+            $headerFields['ocr'] = '';
+        }
+
+        if ((! $mediaIsCore && $type == 'extension') && ! in_array('ocr', $headerFields)) {
+            $headerFields['ocr'] = '';
+        }
+
+        if (is_null($result)) {
             $this->headerArray = $headerFields;
             $array = [
+                'type'       => $type,
                 'project_id' => $this->projectId,
                 'header'     => json_encode($this->headerArray),
             ];
             $this->header->create($array);
-        }
-        else
-        {
+        } else {
             $this->headerArray = array_merge(json_decode($result->header, true), $headerFields);
             $result->header = json_encode($this->headerArray);
             $result->save();
@@ -608,8 +626,9 @@ class DarwinCore {
     {
         $metaFields = $this->metaFile->getMetaFields();
 
-        if (isset($combined[$this->identifierColumn]) && ! empty($combined[$this->identifierColumn]))
+        if (isset($combined[$this->identifierColumn]) && ! empty($combined[$this->identifierColumn])) {
             $combined[$this->identifierColumn] = substr($combined[$this->identifierColumn], -36);
+        }
 
         $combined[$metaFields[$type][0]] = substr($combined[$metaFields[$type][0]], -36);
 
@@ -690,5 +709,4 @@ class DarwinCore {
 
         return $enclosure;
     }
-
 }

@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\Invite;
+
 /**
  * SendInviteFormLaravelValidator.php
  *
@@ -25,15 +26,14 @@
  */
 use Biospex\Validation\AbstractLaravelValidator;
 
-class InviteFormLaravelValidator extends AbstractLaravelValidator {
-
+class InviteFormLaravelValidator extends AbstractLaravelValidator
+{
     /**
      * Validation rules
      *
      * @var Array
      */
-    protected $rules = array(
+    protected $rules = [
         'email' => 'required|min:4|max:32|email',
-    );
-
+    ];
 }

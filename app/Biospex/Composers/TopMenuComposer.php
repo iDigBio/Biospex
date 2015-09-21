@@ -1,4 +1,5 @@
 <?php namespace Biospex\Composers;
+
 /**
  * TopMenuComposer.php
  *
@@ -28,29 +29,28 @@ use Menu\Menu;
 use Cartalyst\Sentry\Sentry;
 use Illuminate\Http\Request;
 
-class TopMenuComposer {
+class TopMenuComposer
+{
+    /**
+     * @var Sentry
+     */
+    protected $sentry;
 
-	/**
-	 * @var Sentry
-	 */
-	protected $sentry;
+    /**
+     * @var Request
+     */
+    protected $request;
 
-	/**
-	 * @var Request
-	 */
-	protected $request;
-
-	/**
-	 * @var array
-	 */
+    /**
+     * @var array
+     */
     protected $topmenu = [];
 
-	public function __construct (
-		Sentry $sentry,
-		Request $request
-    )
-	{
-		$this->sentry = $sentry;
+    public function __construct(
+        Sentry $sentry,
+        Request $request
+    ) {
+        $this->sentry = $sentry;
         $this->request = $request;
 
         $this->topmenu = Config::get('navigation.topmenu');
@@ -60,8 +60,9 @@ class TopMenuComposer {
     {
         $this->checkPermission();
 
-        if (empty($this->topmenu))
+        if (empty($this->topmenu)) {
             return $view->with('topmenu', null);
+        }
 
         $this->buildMenu();
 
@@ -70,31 +71,29 @@ class TopMenuComposer {
 
     protected function checkPermission()
     {
-		$user = $this->sentry->getUser();
-        foreach ($this->topmenu as $key => $item)
-        {
-            $permissions  = explode(',', $item['permission']);
-            if(is_null($user) || ! $user->hasAccess($permissions))
-                 unset($this->topmenu[$key]);
+        $user = $this->sentry->getUser();
+        foreach ($this->topmenu as $key => $item) {
+            $permissions = explode(',', $item['permission']);
+            if (is_null($user) || ! $user->hasAccess($permissions)) {
+                unset($this->topmenu[$key]);
+            }
         }
     }
 
-    public function buildMenu() {
-
-        Menu::handler('topmenu', ['class' => 'nav navbar-nav'])->hydrate(function()
-            {
-                return $this->topmenu;
-            },
-            function($children, $item)
-            {
-                if ($this->request->is($item['url'])) $item->addClass('active');
+    public function buildMenu()
+    {
+        Menu::handler('topmenu', ['class' => 'nav navbar-nav'])->hydrate(function () {
+            return $this->topmenu;
+        },
+            function ($children, $item) {
+                if ($this->request->is($item['url'])) {
+                    $item->addClass('active');
+                }
                 $children->add($item['url'], $item['label'], Menu::items($item['label']));
             });
 
-        Menu::handler('topmenu')->getItemsAtDepth(0)->map(function($item)
-        {
-            if($item->hasChildren())
-            {
+        Menu::handler('topmenu')->getItemsAtDepth(0)->map(function ($item) {
+            if ($item->hasChildren()) {
                 $item->addClass('dropdown');
 
                 $item->getChildren()

@@ -1,11 +1,11 @@
-<?php  namespace Biospex\Services\Process;
+<?php namespace Biospex\Services\Process;
 
 use Biospex\Repo\Import\ImportInterface;
 use Biospex\Services\Curl\Curl;
 use Exception;
 
-class RecordSet {
-
+class RecordSet
+{
     /**
      * Data from job queue.
      *
@@ -59,10 +59,12 @@ class RecordSet {
      */
     public function setUrl()
     {
-        if (isset($this->data['url']))
+        if (isset($this->data['url'])) {
             return $this->data['url'];
+        }
 
         $this->data['url'] = str_replace('RECORDSET_ID', $this->data['id'], $this->recordsetUrl);
+
         return $this->data['url'];
     }
 
@@ -91,13 +93,15 @@ class RecordSet {
      */
     public function response($return, $info)
     {
-        if ( ! $this->checkHttpCode($info))
+        if (! $this->checkHttpCode($info)) {
             return false;
+        }
 
         $this->response = json_decode($return);
 
-        if ($this->response->complete == true && $this->response->task_status == "SUCCESS")
+        if ($this->response->complete == true && $this->response->task_status == "SUCCESS") {
             return $this->download();
+        }
 
         $this->pushToQueue();
 
@@ -113,8 +117,9 @@ class RecordSet {
      */
     public function checkHttpCode($info)
     {
-        if ($info['http_code'] == 200)
+        if ($info['http_code'] == 200) {
             return true;
+        }
 
         $this->release(10);
 
@@ -129,10 +134,11 @@ class RecordSet {
      */
     public function download()
     {
-        $fileName =  $this->data['id'] . ".zip";
-        $filePath = $this->importDir . "/" .$fileName;
-        if ( ! file_put_contents($filePath, file_get_contents($this->response->download_url)))
+        $fileName = $this->data['id'] . ".zip";
+        $filePath = $this->importDir . "/" . $fileName;
+        if (! file_put_contents($filePath, file_get_contents($this->response->download_url))) {
             throw new \Exception(trans('emails.error_zip_download'));
+        }
 
         $import = $this->importInsert($fileName);
 
@@ -162,16 +168,16 @@ class RecordSet {
      */
     protected function checkDir()
     {
-        if ( ! \File::isDirectory($this->importDir))
-        {
-            if ( ! \File::makeDirectory($this->importDir, 0775, true))
+        if (! \File::isDirectory($this->importDir)) {
+            if (! \File::makeDirectory($this->importDir, 0775, true)) {
                 throw new \Exception(trans('emails.error_create_dir', ['directory' => $this->importDir]));
+            }
         }
 
-        if ( ! \File::isWritable($this->importDir))
-        {
-            if ( ! chmod($this->importDir, 0775))
+        if (! \File::isWritable($this->importDir)) {
+            if (! chmod($this->importDir, 0775)) {
                 throw new \Exception(trans('emails.error_write_dir', ['directory' => $this->importDir]));
+            }
         }
 
         return;
@@ -186,9 +192,9 @@ class RecordSet {
     protected function importInsert($filename)
     {
         $import = $this->import->create([
-            'user_id' => $this->data['user_id'],
+            'user_id'    => $this->data['user_id'],
             'project_id' => $this->data['project_id'],
-            'file' => $filename
+            'file'       => $filename
         ]);
 
         return $import;

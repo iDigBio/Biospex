@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\Expedition;
+
 /**
  * ExpeditionFormLaravelValidator.php
  *
@@ -26,16 +27,15 @@
 
 use Biospex\Validation\AbstractLaravelValidator;
 
-class ExpeditionFormLaravelValidator extends AbstractLaravelValidator {
-
+class ExpeditionFormLaravelValidator extends AbstractLaravelValidator
+{
     /**
      * Validation rules
      *
      * @var Array
      */
-    protected $rules = array(
-        'title' => 'required',
+    protected $rules = [
+        'title'       => 'required',
         'description' => 'required',
-    );
-
+    ];
 }

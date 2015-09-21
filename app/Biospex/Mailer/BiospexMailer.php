@@ -26,8 +26,8 @@
  */
 use Illuminate\Support\Facades\Config;
 
-class BiospexMailer extends Mailer {
-
+class BiospexMailer extends Mailer
+{
     public function __construct()
     {
         $this->adminEmail = Config::get('config.adminEmail');
@@ -36,6 +36,7 @@ class BiospexMailer extends Mailer {
 
     /**
      * Outline all the events this class will be listening for.
+     *
      * @param  [type] $events
      * @return void
      */
@@ -52,6 +53,7 @@ class BiospexMailer extends Mailer {
 
     /**
      * Send a welcome email to a new user.
+     *
      * @param $email
      * @param $userId
      * @param $activateHtmlLink
@@ -71,6 +73,7 @@ class BiospexMailer extends Mailer {
 
     /**
      * Email Password Reset info to a user.
+     *
      * @param $email
      * @param $resetHtmlLink
      * @param $resetTextLink
@@ -115,8 +118,9 @@ class BiospexMailer extends Mailer {
      */
     public function sendReport($email, $subject, $view, $data, $attachments = [])
     {
-        if (is_null($email))
+        if (is_null($email)) {
             $email = $this->adminEmail;
+        }
 
         $data['adminEmail'] = $this->adminEmail;
 
@@ -125,6 +129,7 @@ class BiospexMailer extends Mailer {
 
     /**
      * Send group invite
+     *
      * @param $email
      * @param $subject
      * @param $view
@@ -132,8 +137,9 @@ class BiospexMailer extends Mailer {
      */
     public function sendInvite($email, $subject, $view, $data)
     {
-        if (is_null($email))
+        if (is_null($email)) {
             $email = $this->adminEmail;
+        }
 
         $data['adminEmail'] = $this->adminEmail;
 
@@ -153,5 +159,4 @@ class BiospexMailer extends Mailer {
 
         return $this->sendTo($this->from, $this->adminEmail, $subject, $view, $data);
     }
-
 }

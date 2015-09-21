@@ -29,8 +29,8 @@ use Biospex\Repo\OcrQueue\OcrQueueInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Services\Report\OcrReport;
 
-class OcrProcessQueue extends QueueAbstract{
-
+class OcrProcessQueue extends QueueAbstract
+{
     /**
      * Illuminate\Support\Contracts\MessageProviderInterface
      */
@@ -48,6 +48,7 @@ class OcrProcessQueue extends QueueAbstract{
 
     /**
      * Retruned file array.
+     *
      * @var json array
      */
     protected $file;
@@ -79,6 +80,7 @@ class OcrProcessQueue extends QueueAbstract{
 
     /**
      * Configuration value for queue.
+     *
      * @var
      */
     protected $ocrQueue;
@@ -94,8 +96,7 @@ class OcrProcessQueue extends QueueAbstract{
         OcrQueueInterface $queue,
         SubjectInterface $subject,
         OcrReport $report
-    )
-    {
+    ) {
         $this->queue = $queue;
         $this->subject = $subject;
         $this->report = $report;
@@ -120,40 +121,38 @@ class OcrProcessQueue extends QueueAbstract{
 
         $this->setVars();
 
-        if ( ! $this->checkExist())
+        if (! $this->checkExist()) {
             return;
+        }
 
-        if ( ! $this->checkError())
+        if (! $this->checkError()) {
             return;
+        }
 
-        try
-        {
+        try {
             $result = empty($this->record->status) ? $this->sendFile() : $this->requestFile();
-            if ( ! $result)
+            if (! $result) {
                 return;
+            }
 
-            if ( ! $this->processFile())
+            if (! $this->processFile()) {
                 return;
+            }
 
             $csv = $this->updateSubjects();
 
             $attachment = $this->report->complete($this->email, $this->title, $csv);
 
-            if ( ! $attachment)
-            {
+            if (! $attachment) {
                 $this->record->destroy($this->record->id);
-            }
-            else
-            {
+            } else {
                 $this->updateRecord(['error' => 1, 'attachments' => json_encode($attachment)]);
             }
 
             $this->delete();
 
             return;
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $this->updateRecord(['error' => 1]);
             $this->addReportError($this->record->id, $e->getMessage());
             $this->report->reportSimpleError($this->groupId);
@@ -182,8 +181,9 @@ class OcrProcessQueue extends QueueAbstract{
      */
     private function checkExist()
     {
-        if (count($this->record))
+        if (count($this->record)) {
             return true;
+        }
 
         $this->delete();
 
@@ -197,8 +197,9 @@ class OcrProcessQueue extends QueueAbstract{
      */
     private function checkError()
     {
-        if ( ! $this->record->error)
+        if (! $this->record->error) {
             return true;
+        }
 
         return false;
     }
@@ -210,22 +211,19 @@ class OcrProcessQueue extends QueueAbstract{
      */
     private function processFile()
     {
-        if (empty($this->file->header))
-        {
+        if (empty($this->file->header)) {
             $this->queueLater();
 
             return false;
         }
 
-        if ($this->file->header->status == "in progress")
-        {
+        if ($this->file->header->status == "in progress") {
             $this->queueLater();
 
             return false;
         }
 
-        if ($this->file->header->status == "error")
-        {
+        if ($this->file->header->status == "error") {
             $this->updateRecord(['error' => 1]);
             $this->addReportError($this->record->id, trans('emails.error_ocr_header'));
             $this->report->reportSimpleError($this->groupId);
@@ -245,8 +243,7 @@ class OcrProcessQueue extends QueueAbstract{
      */
     private function updateRecord($fields)
     {
-        foreach ($fields as $key => $value)
-        {
+        foreach ($fields as $key => $value) {
             $this->record->{$key} = $value;
         }
 
@@ -261,10 +258,8 @@ class OcrProcessQueue extends QueueAbstract{
     private function updateSubjects()
     {
         $csv = [];
-        foreach ($this->file->subjects as $id => $data)
-        {
-            if ($data->ocr == "error")
-            {
+        foreach ($this->file->subjects as $id => $data) {
+            if ($data->ocr == "error") {
                 $csv[] = ['id' => $id, 'message' => implode(" -- ", $data->messages), 'url' => $data->url];
                 continue;
             }
@@ -312,14 +307,14 @@ class OcrProcessQueue extends QueueAbstract{
         $response = curl_exec($ch);
         curl_close($ch);
 
-        if ($response === false)
+        if ($response === false) {
             throw new \Exception(trans('emails.error_ocr_curl', ['id' => $this->record->id, 'message' => print_r($response, true)]));
+        }
 
         $this->updateRecord(['status' => 'in progress']);
         $this->queueLater();
 
         return false;
-
     }
 
     /**
@@ -331,8 +326,9 @@ class OcrProcessQueue extends QueueAbstract{
     private function requestFile()
     {
         $file = @file_get_contents($this->ocrGetUrl . '/' . $this->record->uuid . '.json');
-        if ($file === false)
+        if ($file === false) {
             throw new \Exception(trans('emails.error_ocr_request', ['id' => $this->record->id]));
+        }
 
         $this->file = json_decode($file);
 

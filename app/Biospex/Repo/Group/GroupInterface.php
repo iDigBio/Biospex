@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Group;
+
 /**
  * GroupInterface.php
  *
@@ -26,39 +27,38 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface GroupInterface extends RepositoryInterface {
+interface GroupInterface extends RepositoryInterface
+{
+    /**
+     * Return a specific user by a given name
+     *
+     * @param  string $name
+     * @return User
+     */
+    public function byName($name);
 
-	/**
-	 * Return a specific user by a given name
-	 * 
-	 * @param  string $name
-	 * @return User
-	 */
-	public function byName($name);
-
-	/**
-	 * Return groups as list for select options
-	 *
-	 * @param $allGroups
-	 * @param $create
-	 * @return mixed
-	 */
-	public function selectOptions ($allGroups, $create = false);
+    /**
+     * Return groups as list for select options
+     *
+     * @param $allGroups
+     * @param $create
+     * @return mixed
+     */
+    public function selectOptions($allGroups, $create = false);
 
     /**
      * Find all groups. Using this instead of Sentry all groups due to orderby requirements
      * and the different array structure returned by Sentry when admin or regular user.
      *
-	 * @param array $allGroups
+     * @param array $allGroups
      * @return mixed
      */
-	public function findAllGroupsWithProjects ($allGroups = array());
+    public function findAllGroupsWithProjects($allGroups = []);
 
-	/**
-	 * Find all groups
-	 *
-	 * @return mixed
-	 */
-	public function findAllGroups ();
-
+    /**
+     * Find all groups
+     *
+     * @return mixed
+     */
+    public function findAllGroups();
 }

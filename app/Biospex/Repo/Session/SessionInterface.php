@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Session;
+
 /**
  * SessionInterface.php
  *
@@ -24,4 +25,6 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-interface SessionInterface {}
+interface SessionInterface
+{
+}

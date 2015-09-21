@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo;
+
 /**
  * RepositoryInterface.php
  *
@@ -24,8 +25,8 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-interface RepositoryInterface {
-
+interface RepositoryInterface
+{
     public function all($columns = ['*']);
 
     public function find($id, $columns = ['*']);
@@ -39,5 +40,4 @@ interface RepositoryInterface {
     public function findWith($id, $with = []);
 
     public function save($record);
-
 }

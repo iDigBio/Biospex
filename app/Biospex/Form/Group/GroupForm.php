@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\Group;
+
 /**
  * GroupForm.php
  *
@@ -28,12 +29,11 @@ use Biospex\Form\Form;
 use Biospex\Validation\ValidableInterface;
 use Biospex\Repo\Group\GroupInterface;
 
-class GroupForm extends Form {
-
-	public function __construct(ValidableInterface $validator, GroupInterface $group)
-	{
-		$this->validator = $validator;
-		$this->repo = $group;
-	}
-
+class GroupForm extends Form
+{
+    public function __construct(ValidableInterface $validator, GroupInterface $group)
+    {
+        $this->validator = $validator;
+        $this->repo = $group;
+    }
 }

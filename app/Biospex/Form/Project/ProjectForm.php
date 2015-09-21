@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\Project;
+
 /**
  * ProjectForm.php
  *
@@ -28,8 +29,8 @@ use Biospex\Form\Form;
 use Biospex\Validation\ValidableInterface as Validator;
 use Biospex\Repo\Project\ProjectInterface as Project;
 
-class ProjectForm extends Form {
-
+class ProjectForm extends Form
+{
     public function __construct(Validator $validator, Project $project)
     {
         $this->validator = $validator;

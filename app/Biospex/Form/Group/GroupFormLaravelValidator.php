@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\Group;
+
 /**
  * GroupFormLaravelValidator.php
  *
@@ -25,15 +26,14 @@
  */
 use Biospex\Validation\AbstractLaravelValidator;
 
-class GroupFormLaravelValidator extends AbstractLaravelValidator {
-	
-	/**
-	 * Validation rules
-	 *
-	 * @var Array 
-	 */
-	protected $rules = array(
-		'name' => 'required|min:4'
-	);
-
+class GroupFormLaravelValidator extends AbstractLaravelValidator
+{
+    /**
+     * Validation rules
+     *
+     * @var Array
+     */
+    protected $rules = [
+        'name' => 'required|min:4'
+    ];
 }

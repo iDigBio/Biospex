@@ -1,4 +1,5 @@
-<?php  namespace Biospex\Services\Import;
+<?php namespace Biospex\Services\Import;
+
 /**
  * ImportServiceAbstract.php
  *
@@ -27,7 +28,8 @@
 use Cartalyst\Sentry\Sentry;
 use Biospex\Repo\Import\ImportInterface;
 
-abstract class ImportServiceAbstract {
+abstract class ImportServiceAbstract
+{
     /**
      * @var Sentry
      */
@@ -40,6 +42,7 @@ abstract class ImportServiceAbstract {
 
     /**
      * Directory for storing imported files.
+     *
      * @var string
      */
     protected $directory;
@@ -58,8 +61,7 @@ abstract class ImportServiceAbstract {
     public function __construct(
         Sentry $sentry,
         ImportInterface $import
-    )
-    {
+    ) {
         $this->sentry = $sentry;
         $this->import = $import;
     }
@@ -70,7 +72,7 @@ abstract class ImportServiceAbstract {
      * @param $id
      * @return mixed
      */
-    abstract function import($id);
+    abstract public function import($id);
 
     /**
      * Set import directory.
@@ -80,9 +82,9 @@ abstract class ImportServiceAbstract {
     protected function setDirectory($dir)
     {
         $this->directory = \Config::get($dir);
-        if ( ! \File::isDirectory($this->directory))
+        if (! \File::isDirectory($this->directory)) {
             \File::makeDirectory($this->directory);
-
+        }
     }
 
     /**
@@ -122,9 +124,9 @@ abstract class ImportServiceAbstract {
     protected function importInsert($user_id, $id, $filename)
     {
         $import = $this->import->create([
-            'user_id' => $user_id,
+            'user_id'    => $user_id,
             'project_id' => $id,
-            'file' => $filename
+            'file'       => $filename
         ]);
 
         return $import;

@@ -1,4 +1,4 @@
-<?php  namespace Biospex\Services\Report;
+<?php namespace Biospex\Services\Report;
 
 /**
  * NfnTranscriptionImportReport.php
@@ -25,8 +25,8 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class TranscriptionImportReport extends Report {
-
+class TranscriptionImportReport extends Report
+{
     /**
      * Send transcription report.
      *
@@ -38,8 +38,8 @@ class TranscriptionImportReport extends Report {
     {
         $attachments = ! empty($csv) ? $this->createAttachment($csv, 'duplicates') : [];
         $data = [
-            'importMessage' => trans('emails.import_transcription_complete', ['project' => $title]),
-            'csvMessage' => trans('emails.import_dup_rej_message'),
+            'importMessage'    => trans('emails.import_transcription_complete', ['project' => $title]),
+            'csvMessage'       => trans('emails.import_dup_rej_message'),
             'ocrImportMessage' => '',
         ];
         $subject = trans('emails.import_transcription_subject');
@@ -61,7 +61,7 @@ class TranscriptionImportReport extends Report {
     {
         $subject = trans('emails.error_import');
         $data = [
-            'importId' => $id,
+            'importId'     => $id,
             'projectTitle' => $title,
             'errorMessage' => print_r($this->messages->get('error'), true)
         ];

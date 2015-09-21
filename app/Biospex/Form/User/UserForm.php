@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\User;
+
 /**
  * UserForm.php
  *
@@ -27,14 +28,13 @@ use Biospex\Form\Form;
 use Biospex\Validation\ValidableInterface;
 use Biospex\Repo\User\UserInterface;
 
-class UserForm extends Form {
-
-	public function __construct(ValidableInterface $validator, UserInterface $user)
-	{
-		$this->validator = $validator;
-		$this->repo = $user;
-
-	}
+class UserForm extends Form
+{
+    public function __construct(ValidableInterface $validator, UserInterface $user)
+    {
+        $this->validator = $validator;
+        $this->repo = $user;
+    }
 
     /**
      * Test if form validator passes
@@ -46,5 +46,4 @@ class UserForm extends Form {
     {
         return $this->validator->with($input)->modifyRules('email', 'email', $input['id'])->passes();
     }
-
 }

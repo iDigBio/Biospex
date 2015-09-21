@@ -25,10 +25,11 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 use Illuminate\Filesystem\Filesystem;
-use Config, File;
+use Config;
+use File;
 
-class Image {
-
+class Image
+{
     /**
      * Instance of Gmagick
      */
@@ -248,7 +249,7 @@ class Image {
         $f = fopen($file, 'r');
         fseek($f, 0);
         $this->imagick = new \Imagick();
-        $this->imagick->setResourceLimit(6,1);
+        $this->imagick->setResourceLimit(6, 1);
         $this->imagick->readImageFile($f);
         $this->geometry = $this->imagick->getImageGeometry();
         fclose($f);
@@ -266,17 +267,14 @@ class Image {
      */
     public function imagickScale($target, $width = 0, $height = 0)
     {
-        try
-        {
+        try {
             $this->imagick->scaleImage($width, $height);
             $this->imagick->setImageCompression(\Imagick::COMPRESSION_JPEG);
             $this->imagick->setImageCompressionQuality(80);
             $this->imagick->writeImage($target);
 
             return;
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             \Log::error('[IMAGE SERVICE] Failed to resize image. Target: "' . $target . ' [' . $e->getMessage() . ']');
 
             return;
@@ -301,8 +299,9 @@ class Image {
      */
     protected function saveFile($path, $contents)
     {
-        if ( ! $this->filesystem->put($path, $contents))
+        if (! $this->filesystem->put($path, $contents)) {
             throw new \RuntimeException(trans('emails.error_save_file', ['directory' => $path]));
+        }
 
         return;
     }
@@ -314,10 +313,10 @@ class Image {
      */
     public function createDir($dir)
     {
-        if ( ! $this->filesystem->isDirectory($dir))
-        {
-            if ( ! $this->filesystem->makeDirectory($dir, 0775, true))
+        if (! $this->filesystem->isDirectory($dir)) {
+            if (! $this->filesystem->makeDirectory($dir, 0775, true)) {
                 throw new \RuntimeException(trans('emails.error_create_dir', ['directory' => $dir]));
+            }
         }
 
         return;
@@ -327,6 +326,4 @@ class Image {
     {
         return $this->filesystem->delete($file);
     }
-
 }
-

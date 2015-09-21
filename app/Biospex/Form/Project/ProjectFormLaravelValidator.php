@@ -27,8 +27,8 @@
 
 use Biospex\Validation\AbstractLaravelValidator;
 
-class ProjectFormLaravelValidator extends AbstractLaravelValidator {
-
+class ProjectFormLaravelValidator extends AbstractLaravelValidator
+{
     /**
      * Validation rules
      *
@@ -45,5 +45,4 @@ class ProjectFormLaravelValidator extends AbstractLaravelValidator {
         'banner'            => 'image|image_size:>=1200,>=300',
         'logo'              => 'image|image_size:<=300,<=200'
     ];
-
 }

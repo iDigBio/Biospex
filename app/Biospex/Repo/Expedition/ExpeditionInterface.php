@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Expedition;
+
 /**
  * ExpeditionInterface.php
  *
@@ -26,6 +27,7 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface ExpeditionInterface extends RepositoryInterface {
-	public function findByUuid($uuid);
+interface ExpeditionInterface extends RepositoryInterface
+{
+    public function findByUuid($uuid);
 }

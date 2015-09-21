@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\ResendActivation;
+
 /**
  * ResendActivationForm.php
  *
@@ -27,23 +28,22 @@ use Biospex\Form\Form;
 use Biospex\Validation\ValidableInterface;
 use Biospex\Repo\User\UserInterface;
 
-class ResendActivationForm extends Form {
+class ResendActivationForm extends Form
+{
+    public function __construct(ValidableInterface $validator, UserInterface $user)
+    {
+        $this->validator = $validator;
+        $this->repo = $user;
+    }
 
-	public function __construct(ValidableInterface $validator, UserInterface $user)
-	{
-		$this->validator = $validator;
-		$this->repo = $user;
-	}
-
-	/**
+    /**
      * Resend user activation
      *
      * @return integer
      */
     public function resend(array $input)
     {
-        if( ! $this->valid($input) )
-        {
+        if (! $this->valid($input)) {
             return false;
         }
 

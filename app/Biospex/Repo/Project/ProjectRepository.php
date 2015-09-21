@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Project;
+
 /**
  * ProjectRepository.php
  *
@@ -27,8 +28,8 @@
 use Biospex\Repo\Repository;
 use Project;
 
-class ProjectRepository extends Repository implements ProjectInterface {
-
+class ProjectRepository extends Repository implements ProjectInterface
+{
     /**
      * @param Project $project
      */
@@ -37,68 +38,67 @@ class ProjectRepository extends Repository implements ProjectInterface {
         $this->model = $project;
     }
 
-	/**
-	 * Find by url slug
-	 *
-	 * @param $slug
-	 * @return \Illuminate\Database\Eloquent\Builder|static
-	 */
+    /**
+     * Find by url slug
+     *
+     * @param $slug
+     * @return \Illuminate\Database\Eloquent\Builder|static
+     */
     public function bySlug($slug)
     {
         return $this->model->bySlug($slug);
     }
 
-	/**
-	 * Find by uuid
-	 *
-	 * @param $uuid
-	 * @return mixed
-	 */
-	public function findByUuid($uuid)
-	{
-		return $this->model->findByUuid($uuid);
-	}
+    /**
+     * Find by uuid
+     *
+     * @param $uuid
+     * @return mixed
+     */
+    public function findByUuid($uuid)
+    {
+        return $this->model->findByUuid($uuid);
+    }
 
-	/**
-	 * Override create for relationships and building the advertise column.
-	 * @param array $data
-	 * @return mixed
-	 */
-	public function create($data = array())
-	{
-		$project = $this->model->create($data);
+    /**
+     * Override create for relationships and building the advertise column.
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function create($data = [])
+    {
+        $project = $this->model->create($data);
         $project->advertise = $data;
         $project->save();
 
-		$actors = [];
-		foreach ($data['actor'] as $key => $actor)
-		{
-			$actors[$actor] = ['order_by' => $key];
-		}
-		$project->actors()->attach($actors);
+        $actors = [];
+        foreach ($data['actor'] as $key => $actor) {
+            $actors[$actor] = ['order_by' => $key];
+        }
+        $project->actors()->attach($actors);
 
-		return $project;
-	}
+        return $project;
+    }
 
-	/**
-	 * Override update to handle relationship
-	 *
-	 * @param array $data
-	 * @return mixed
-	 */
-	public function update($data = array())
-	{
-		$project = $this->find($data['id']);
+    /**
+     * Override update to handle relationship
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function update($data = [])
+    {
+        $project = $this->find($data['id']);
         $project->advertise = $data;
-		$project->fill($data)->save();
+        $project->fill($data)->save();
 
-		$actors = [];
-		foreach ($data['actor'] as $key => $actor)
-		{
-			$actors[$actor] = ['order_by' => $key];
-		}
-		$project->actors()->sync($actors);
+        $actors = [];
+        foreach ($data['actor'] as $key => $actor) {
+            $actors[$actor] = ['order_by' => $key];
+        }
+        $project->actors()->sync($actors);
 
-		return $project;
-	}
+        return $project;
+    }
 }

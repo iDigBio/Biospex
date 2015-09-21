@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Header;
+
 /**
  * HeaderRepository.php
  *
@@ -27,8 +28,8 @@
 use Biospex\Repo\Repository;
 use Header;
 
-class HeaderRepository extends Repository implements HeaderInterface {
-
+class HeaderRepository extends Repository implements HeaderInterface
+{
     /**
      * @param Header $header
      */
@@ -37,15 +38,15 @@ class HeaderRepository extends Repository implements HeaderInterface {
         $this->model = $header;
     }
 
-	/**
-	 * Find by project Id
-	 *
-	 * @param $id
-	 * @return \Illuminate\Database\Eloquent\Model|null|static
-	 */
-	public function getByProjectId($id)
-	{
-		return $this->model->getByProjectId($id);
-	}
-
+    /**
+     * Find by project Id
+     *
+     * @param $id
+     * @param $type
+     * @return \Illuminate\Database\Eloquent\Model|null|static
+     */
+    public function getByProjectIdType($id, $type)
+    {
+        return $this->model->getByProjectIdType($id, $type);
+    }
 }

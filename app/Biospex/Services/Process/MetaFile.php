@@ -1,14 +1,11 @@
-<?php  namespace Biospex\Services\Process;
-/**
- * Class MetaFile
- * @package Biospex\Services\Process
- */
+<?php
 
-use Biospex\Services\Process\Xml;
+namespace Biospex\Services\Process;
+
 use Biospex\Services\Report\Report;
 
-class MetaFile {
-
+class MetaFile
+{
     protected $xml;
     protected $report;
     protected $core = null;
@@ -27,6 +24,7 @@ class MetaFile {
      * Constructor
      *
      * @param Xml $xml
+     * @param Report $report
      */
     public function __construct(Xml $xml, Report $report)
     {
@@ -42,7 +40,7 @@ class MetaFile {
      * @return string
      * @throws \Exception
      */
-    public function process ($file)
+    public function process($file)
     {
         $xml = $this->xml->load($file);
 
@@ -78,12 +76,12 @@ class MetaFile {
      */
     public function loadExtensionNode()
     {
-        foreach ($this->metaFileRowTypes as $rowType => $fileName)
-        {
+        foreach ($this->metaFileRowTypes as $rowType => $fileName) {
             $query = "//ns:archive/ns:extension[contains(ns:files/ns:location, '" . $fileName . ".')]";
             $this->extension = $this->xml->xpathQuery($query, true);
-            if ($this->extension)
+            if ($this->extension) {
                 break;
+            }
         }
 
         return;
@@ -97,8 +95,9 @@ class MetaFile {
     private function checkExtensionRowType($file)
     {
         $rowType = strtolower($this->extension->attributes->getNamedItem("rowType")->nodeValue);
-        if ( isset($this->metaFileRowTypes[$rowType]))
+        if (isset($this->metaFileRowTypes[$rowType])) {
             return;
+        }
 
         $this->report->addError(trans('emails.error_rowtype_mismatch',
             ['file' => $file, 'row_type' => $rowType, 'type_file' => $this->extension->nodeValue]
@@ -127,8 +126,9 @@ class MetaFile {
     private function setCoreFile()
     {
         $this->coreFile = $this->core->nodeValue;
-        if (empty($this->coreFile))
+        if (empty($this->coreFile)) {
             throw new \Exception(trans('emails.error_core_file_missing'));
+        }
 
         return;
     }
@@ -136,7 +136,7 @@ class MetaFile {
     /**
      * Set extension file.
      */
-    private function setExtensionFile ()
+    private function setExtensionFile()
     {
         $this->extensionFile = $this->extension->nodeValue;
 
@@ -154,8 +154,9 @@ class MetaFile {
         $this->coreDelimiter = ($delimiter == "\\t") ? "\t" : $delimiter;
         $this->coreEnclosure = $this->core->attributes->getNamedItem("fieldsEnclosedBy")->nodeValue;
 
-        if (empty($this->coreDelimiter))
+        if (empty($this->coreDelimiter)) {
             throw new \Exception(trans('emails.error_csv_core_delimiter'));
+        }
 
         return;
     }
@@ -171,8 +172,9 @@ class MetaFile {
         $this->extDelimiter = ($delimiter == "\\t") ? "\t" : $delimiter;
         $this->extEnclosure = $this->extension->attributes->getNamedItem("fieldsEnclosedBy")->nodeValue;
 
-        if (empty($this->extDelimiter))
+        if (empty($this->extDelimiter)) {
             throw new \Exception(trans('emails.error_csv_ext_delimiter'));
+        }
 
         return;
     }
@@ -184,15 +186,14 @@ class MetaFile {
      */
     private function setMetaFields($type)
     {
-        foreach ($this->$type->childNodes as $child)
-        {
-            if ($child->tagName == "files")
+        foreach ($this->$type->childNodes as $child) {
+            if ($child->tagName == "files") {
                 continue;
+            }
 
             $index = $child->attributes->getNamedItem("index")->nodeValue;
 
-            if ($child->tagName == 'id' || $child->tagName == 'coreid')
-            {
+            if ($child->tagName == 'id' || $child->tagName == 'coreid') {
                 $this->metaFields[$type][$index] = $child->tagName;
                 continue;
             }
@@ -269,5 +270,4 @@ class MetaFile {
     {
         return is_null($type) ? $this->metaFields : $this->metaFields[$type];
     }
-
 }

@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\SuspendUser;
+
 /**
  * SuspendUserForm.php
  *
@@ -27,8 +28,8 @@ use Biospex\Form\Form;
 use Biospex\Validation\ValidableInterface;
 use Biospex\Repo\User\UserInterface;
 
-class SuspendUserForm extends Form{
-
+class SuspendUserForm extends Form
+{
     /**
      * @var ValidableInterface
      */
@@ -41,29 +42,27 @@ class SuspendUserForm extends Form{
 
     /**
      * Constructor.
+     *
      * @param ValidableInterface $validator
      * @param UserInterface $user
      */
-	public function __construct(ValidableInterface $validator, UserInterface $user)
-	{
-		$this->validator = $validator;
-		$this->repo = $user;
-	}
+    public function __construct(ValidableInterface $validator, UserInterface $user)
+    {
+        $this->validator = $validator;
+        $this->repo = $user;
+    }
 
-	/**
+    /**
      * Process the requested action
      *
      * @return integer
      */
     public function suspend(array $input)
     {
-
-        if( ! $this->valid($input) )
-        {
+        if (! $this->valid($input)) {
             return false;
         }
 
         return $this->user->suspend($input['id'], $input['minutes']);
     }
-
 }

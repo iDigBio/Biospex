@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\Group;
+
 /**
  * AbstractGroupDecorator.php
  *
@@ -25,89 +26,88 @@
  */
 abstract class AbstractGroupDecorator implements GroupInterface
 {
+    protected $group;
 
-	protected $group;
+    public function __construct(GroupInterface $group)
+    {
+        $this->group = $group;
+    }
 
-	public function __construct (GroupInterface $group)
-	{
-		$this->group = $group;
-	}
+    /**
+     * Return all
+     *
+     * @param array $columns
+     * @return mixed
+     */
+    public function all($columns = ['*'])
+    {
+        return $this->group->all($columns);
+    }
 
-	/**
-	 * Return all
-	 *
-	 * @param array $columns
-	 * @return mixed
-	 */
-	public function all ($columns = array('*'))
-	{
-		return $this->group->all($columns);
-	}
+    /**
+     * Find by id
+     *
+     * @param $id
+     * @param array $columns
+     * @return mixed
+     */
+    public function find($id, $columns = ['*'])
+    {
+        return $this->group->find($id, $columns);
+    }
 
-	/**
-	 * Find by id
-	 *
-	 * @param $id
-	 * @param array $columns
-	 * @return mixed
-	 */
-	public function find ($id, $columns = array('*'))
-	{
-		return $this->group->find($id, $columns);
-	}
+    /**
+     * Find all groups
+     *
+     * @return mixed
+     */
+    public function findAllGroups()
+    {
+        return $this->group->findAllGroups();
+    }
 
-	/**
-	 * Find all groups
-	 * @return mixed
-	 */
-	public function findAllGroups ()
-	{
-		return $this->group->findAllGroups();
-	}
+    /**
+     * Create record
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function create($data = [])
+    {
+        return $this->group->create($data);
+    }
 
-	/**
-	 * Create record
-	 *
-	 * @param array $data
-	 * @return mixed
-	 */
-	public function create ($data = array())
-	{
-		return $this->group->create($data);
-	}
+    /**
+     * Update record
+     *
+     * @param array $input
+     * @return mixed
+     */
+    public function update($data = [])
+    {
+        return $this->group->update($data);
+    }
 
-	/**
-	 * Update record
-	 *
-	 * @param array $input
-	 * @return mixed
-	 */
-	public function update ($data = array())
-	{
-		return $this->group->update($data);
-	}
+    /**
+     * Destroy records
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function destroy($id)
+    {
+        return $this->group->destroy($id);
+    }
 
-	/**
-	 * Destroy records
-	 *
-	 * @param $id
-	 * @return mixed
-	 */
-	public function destroy ($id)
-	{
-		return $this->group->destroy($id);
-	}
-
-	/**
-	 * Find with eager loading
-	 *
-	 * @param $id
-	 * @param array $with
-	 * @return mixed
-	 */
-	public function findWith ($id, $with = array())
-	{
-		return $this->group->findWith($id, $with);
-	}
-
+    /**
+     * Find with eager loading
+     *
+     * @param $id
+     * @param array $with
+     * @return mixed
+     */
+    public function findWith($id, $with = [])
+    {
+        return $this->group->findWith($id, $with);
+    }
 }

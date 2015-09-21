@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\WorkflowManager;
+
 /**
  * WorkflowManagerInterface.php
  *
@@ -26,19 +27,19 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface WorkflowManagerInterface extends RepositoryInterface {
-
-	/**
-	 * Return all records with relationship
-	 *
-	 * @param array $with
-	 * @return mixed
-	 */
-	public function allWith($with = array());
+interface WorkflowManagerInterface extends RepositoryInterface
+{
+    /**
+     * Return all records with relationship
+     *
+     * @param array $with
+     * @return mixed
+     */
+    public function allWith($with = []);
 
     /**
      * Get workflow process by expedition id
-     * 
+     *
      * @param $id
      * @return mixed
      */

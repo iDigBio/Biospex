@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\User;
+
 /**
  * UserInterface.php
  *
@@ -26,13 +27,17 @@
 
 use Biospex\Repo\RepositoryInterface;
 
-interface UserInterface extends RepositoryInterface {
-
+interface UserInterface extends RepositoryInterface
+{
     public function activate($id, $code);
-    public function resetPassword($id, $code);
-    public function suspend($id, $minutes);
-    public function unSuspend($id);
-    public function ban($id);
-    public function unBan($id);
 
+    public function resetPassword($id, $code);
+
+    public function suspend($id, $minutes);
+
+    public function unSuspend($id);
+
+    public function ban($id);
+
+    public function unBan($id);
 }

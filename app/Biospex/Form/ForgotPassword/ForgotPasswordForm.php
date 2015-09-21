@@ -1,4 +1,5 @@
 <?php namespace Biospex\Form\ForgotPassword;
+
 /**
  * ForgotPasswordForm.php
  *
@@ -27,28 +28,25 @@ use Biospex\Form\Form;
 use Biospex\Validation\ValidableInterface;
 use Biospex\Repo\User\UserInterface;
 
-class ForgotPasswordForm extends Form {
+class ForgotPasswordForm extends Form
+{
+    public function __construct(ValidableInterface $validator, UserInterface $user)
+    {
+        $this->validator = $validator;
+        $this->repo = $user;
+    }
 
-	public function __construct(ValidableInterface $validator, UserInterface $user)
-	{
-		$this->validator = $validator;
-		$this->repo = $user;
-
-	}
-
-	/**
+    /**
      * Create a new user
      *
      * @return integer
      */
     public function forgot(array $input)
     {
-        if( ! $this->valid($input) )
-        {
+        if (! $this->valid($input)) {
             return false;
         }
 
         return $this->repo->forgotPassword($input);
     }
-
 }

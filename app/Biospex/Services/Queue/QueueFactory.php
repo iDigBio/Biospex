@@ -1,4 +1,5 @@
-<?php  namespace Biospex\Services\Queue;
+<?php namespace Biospex\Services\Queue;
+
 /**
  * QueueFactory.php
  *
@@ -27,8 +28,8 @@
 use Illuminate\Support\Facades\App;
 use Exception;
 
-class QueueFactory {
-
+class QueueFactory
+{
     /**
      * Create queue class to run.
      *
@@ -40,14 +41,12 @@ class QueueFactory {
     {
         $class = $data['class'];
         $nameSpace = 'Biospex\Services\Queue\\';
-        if(class_exists($nameSpace . $class))
-        {
+        if (class_exists($nameSpace . $class)) {
             $obj = App::make($nameSpace . $class);
             $obj->fire($job, $data);
 
             return;
-        }
-        else {
+        } else {
             throw new Exception("Invalid queue class given.");
         }
     }

@@ -1,4 +1,5 @@
 <?php namespace Biospex\Repo\OcrQueue;
+
 /**
  * OcrQueueRepository.php
  *
@@ -27,8 +28,8 @@
 use Biospex\Repo\Repository;
 use OcrQueue;
 
-class OcrQueueRepository extends Repository implements OcrQueueInterface {
-
+class OcrQueueRepository extends Repository implements OcrQueueInterface
+{
     /**
      * @param OcrQueue $ocr
      */
@@ -36,5 +37,4 @@ class OcrQueueRepository extends Repository implements OcrQueueInterface {
     {
         $this->model = $ocr;
     }
-
 }
