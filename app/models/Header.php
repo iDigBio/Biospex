@@ -58,6 +58,11 @@ class Header extends Eloquent
         return $this->belongsTo('Project');
     }
 
+    public function getByProjectId($id)
+    {
+        return $this->where('project_id', '=', $id)->first();
+    }
+
     /**
      * Find header by project Id
      *
