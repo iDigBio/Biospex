@@ -303,7 +303,7 @@ class DarwinCore
             return;
         }
 
-        $subject = ['project_id' => $this->projectId, 'ocr' => '', 'expedition_ids' => []]
+        $subject = ['project_id' => (int)$this->projectId, 'ocr' => '', 'expedition_ids' => []]
             + array_merge($this->headerArray, $data)
             + ['occurrence' => is_null($occurrenceId) ? '' : $occurrenceId];
 
