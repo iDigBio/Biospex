@@ -583,13 +583,16 @@ class DarwinCore
      */
     public function setHeaderArray($type)
     {
-        $result = $this->header->getByProjectIdType($this->projectId, $type);
+
+        $result = $this->header->getByProjectId($this->projectId);
+        //$result = $this->header->getByProjectIdType($this->projectId, $type);
 
         $header = $this->importHeader[$type];
 
         $headerFields = array_map(function () {
         }, array_flip($header));
 
+        /*
         $mediaIsCore = $this->metaFile->getMediaIsCore();
         if (($mediaIsCore && $type == 'core') && ! in_array('ocr', $headerFields)) {
             $headerFields['ocr'] = '';
@@ -598,6 +601,7 @@ class DarwinCore
         if ((! $mediaIsCore && $type == 'extension') && ! in_array('ocr', $headerFields)) {
             $headerFields['ocr'] = '';
         }
+        */
 
         if (is_null($result)) {
             $this->headerArray = $headerFields;
