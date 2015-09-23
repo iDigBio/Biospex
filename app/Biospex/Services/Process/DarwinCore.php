@@ -606,7 +606,7 @@ class DarwinCore
         if (is_null($result)) {
             $this->headerArray = $headerFields;
             $array = [
-                'type'       => $type,
+                //'type'       => $type,
                 'project_id' => $this->projectId,
                 'header'     => json_encode($this->headerArray),
             ];
