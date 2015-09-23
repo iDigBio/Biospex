@@ -90,12 +90,13 @@ class SubjectsController extends BaseController
      */
     public function load()
     {
+        /*
         $userId = $this->sentry->getUser()->getId();
         $projectId = Route::input('projects');
         $expeditionId = Route::input('expeditions');
 
         $fields = $this->fields->findByUserProjectExpedition($userId, $projectId, $expeditionId);
-
+        */
         return $this->grid->loadGridModel();
     }
 
