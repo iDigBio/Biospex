@@ -28,5 +28,6 @@ use Biospex\Repo\RepositoryInterface;
 
 interface HeaderInterface extends RepositoryInterface
 {
+    public function getByProjectId($id);
     public function getByProjectIdType($id, $type);
 }

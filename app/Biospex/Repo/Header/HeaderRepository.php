@@ -39,6 +39,14 @@ class HeaderRepository extends Repository implements HeaderInterface
     }
 
     /**
+     * Temp until adding field selection for grid.
+     */
+    public function getByProjectId($id)
+    {
+        return $this->model->getByProjectId($id);
+    }
+
+    /**
      * Find by project Id
      *
      * @param $id
