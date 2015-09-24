@@ -44,6 +44,9 @@ class UserForm extends Form
      */
     protected function valid(array $input)
     {
-        return $this->validator->with($input)->modifyRules('email', 'email', $input['id'])->passes();
+        if (isset($input['id']))
+            return $this->validator->with($input)->modifyRules('email', 'email', $input['id'])->passes();
+
+        return $this->validator->with($input)->passes();
     }
 }

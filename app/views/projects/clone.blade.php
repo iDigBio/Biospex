@@ -23,11 +23,6 @@
     @include('partials.project-fields', compact('project'))
 
     <div class="form-group">
-        <button title="@lang('buttons.addTargetTitle')" id="add_target" class="btn btn-default btn-sm" type="button">@lang('buttons.target_add')</button>
-        <button title="@lang('buttons.removeTargetTitle')" id="remove_target" class="btn btn-default btn-sm" type="button">@lang('buttons.target_remove')</button>
-    </div>
-
-    <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             {{ Form::hidden('id', $project->id) }}
             {{ Form::hidden('targetCount', 0, array('id' => 'targetCount')) }}

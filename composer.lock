@@ -289,16 +289,16 @@
         },
         {
             "name": "codesleeve/laravel-stapler",
-            "version": "v1.0.04",
+            "version": "v1.0.05",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CodeSleeve/laravel-stapler.git",
-                "reference": "297e84cb047f1874a83f17c4eea3f0930d4bd946"
+                "reference": "79d644b495754c955f652fee8a6ca799f923bec6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CodeSleeve/laravel-stapler/zipball/297e84cb047f1874a83f17c4eea3f0930d4bd946",
-                "reference": "297e84cb047f1874a83f17c4eea3f0930d4bd946",
+                "url": "https://api.github.com/repos/CodeSleeve/laravel-stapler/zipball/79d644b495754c955f652fee8a6ca799f923bec6",
+                "reference": "79d644b495754c955f652fee8a6ca799f923bec6",
                 "shasum": ""
             },
             "require": {
@@ -335,7 +335,7 @@
                 "stapler",
                 "upload"
             ],
-            "time": "2015-07-20 04:49:58"
+            "time": "2015-09-21 00:06:39"
         },
         {
             "name": "codesleeve/sprockets",
@@ -378,28 +378,28 @@
         },
         {
             "name": "codesleeve/stapler",
-            "version": "v1.0.05",
+            "version": "v1.0.06",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CodeSleeve/stapler.git",
-                "reference": "4475ec4ca36ee14fd9b7e4ae0e026075f8704734"
+                "reference": "76d6fa48d263b70437ba92b7c2c053b79dbb5cc6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CodeSleeve/stapler/zipball/4475ec4ca36ee14fd9b7e4ae0e026075f8704734",
-                "reference": "4475ec4ca36ee14fd9b7e4ae0e026075f8704734",
+                "url": "https://api.github.com/repos/CodeSleeve/stapler/zipball/76d6fa48d263b70437ba92b7c2c053b79dbb5cc6",
+                "reference": "76d6fa48d263b70437ba92b7c2c053b79dbb5cc6",
                 "shasum": ""
             },
             "require": {
                 "doctrine/inflector": "~1",
-                "imagine/imagine": "~0.5.0",
+                "imagine/imagine": "~0.6.2",
                 "php": ">=5.4",
                 "symfony/http-foundation": "~2.3"
             },
             "require-dev": {
                 "aws/aws-sdk-php": "2.4.*@dev",
-                "illuminate/config": "~4",
-                "illuminate/database": "~4",
+                "illuminate/config": "4.*|5.*",
+                "illuminate/database": "4.*|5.*",
                 "mockery/mockery": "0.8.0"
             },
             "type": "library",
@@ -427,7 +427,7 @@
                 "s3",
                 "upload"
             ],
-            "time": "2015-04-21 16:55:09"
+            "time": "2015-09-19 01:27:59"
         },
         {
             "name": "coffeescript/coffeescript",
@@ -936,16 +936,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "v2.5.1",
+            "version": "v2.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "628c2256b646ae2417d44e063bce8aec5199d48d"
+                "reference": "01dbcbc5cd0a913d751418e635434a18a2f2a75c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/628c2256b646ae2417d44e063bce8aec5199d48d",
-                "reference": "628c2256b646ae2417d44e063bce8aec5199d48d",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/01dbcbc5cd0a913d751418e635434a18a2f2a75c",
+                "reference": "01dbcbc5cd0a913d751418e635434a18a2f2a75c",
                 "shasum": ""
             },
             "require": {
@@ -1003,7 +1003,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2015-01-12 21:52:47"
+            "time": "2015-09-16 16:29:33"
         },
         {
             "name": "doctrine/inflector",
@@ -1349,16 +1349,16 @@
         },
         {
             "name": "imagine/imagine",
-            "version": "v0.5.0",
+            "version": "0.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche123/Imagine.git",
-                "reference": "f64ec666baaa800edcbf237db41121a569230709"
+                "reference": "83ca8babede0e54f935ec09d55a726bf4b0a3f7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche123/Imagine/zipball/f64ec666baaa800edcbf237db41121a569230709",
-                "reference": "f64ec666baaa800edcbf237db41121a569230709",
+                "url": "https://api.github.com/repos/avalanche123/Imagine/zipball/83ca8babede0e54f935ec09d55a726bf4b0a3f7c",
+                "reference": "83ca8babede0e54f935ec09d55a726bf4b0a3f7c",
                 "shasum": ""
             },
             "require": {
@@ -1373,6 +1373,11 @@
                 "ext-imagick": "to use the Imagick implementation"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.7-dev"
+                }
+            },
             "autoload": {
                 "psr-0": {
                     "Imagine": "lib/"
@@ -1397,7 +1402,7 @@
                 "image manipulation",
                 "image processing"
             ],
-            "time": "2013-07-10 17:25:36"
+            "time": "2014-11-11 11:36:02"
         },
         {
             "name": "ircmaxell/password-compat",
@@ -1879,16 +1884,16 @@
         },
         {
             "name": "mcamara/laravel-localization",
-            "version": "0.15.1",
+            "version": "0.15.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mcamara/laravel-localization.git",
-                "reference": "6dfcf17fe48ceb05c76b542cde648d8b6afe9e48"
+                "reference": "9f2f7c51b2a2fd3261cc5ee1cbb9efa93fa74eb5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mcamara/laravel-localization/zipball/6dfcf17fe48ceb05c76b542cde648d8b6afe9e48",
-                "reference": "6dfcf17fe48ceb05c76b542cde648d8b6afe9e48",
+                "url": "https://api.github.com/repos/mcamara/laravel-localization/zipball/9f2f7c51b2a2fd3261cc5ee1cbb9efa93fa74eb5",
+                "reference": "9f2f7c51b2a2fd3261cc5ee1cbb9efa93fa74eb5",
                 "shasum": ""
             },
             "require": {
@@ -1923,7 +1928,7 @@
                 "localization",
                 "php"
             ],
-            "time": "2014-11-24 09:54:46"
+            "time": "2015-09-22 14:08:35"
         },
         {
             "name": "monolog/monolog",
@@ -3762,12 +3767,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/raveren/kint.git",
-                "reference": "84807eb67af45f182636e7d34c6267e7f062f9ac"
+                "reference": "9a072e1bda25cf62b809db46b505fb8d4a9dfe6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/raveren/kint/zipball/84807eb67af45f182636e7d34c6267e7f062f9ac",
-                "reference": "84807eb67af45f182636e7d34c6267e7f062f9ac",
+                "url": "https://api.github.com/repos/raveren/kint/zipball/9a072e1bda25cf62b809db46b505fb8d4a9dfe6c",
+                "reference": "9a072e1bda25cf62b809db46b505fb8d4a9dfe6c",
                 "shasum": ""
             },
             "require": {
@@ -3805,7 +3810,7 @@
                 "kint",
                 "php"
             ],
-            "time": "2015-08-13 08:23:04"
+            "time": "2015-09-22 16:42:17"
         },
         {
             "name": "symfony/class-loader",
