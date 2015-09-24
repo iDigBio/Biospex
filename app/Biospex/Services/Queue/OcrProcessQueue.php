@@ -303,11 +303,13 @@ class OcrProcessQueue extends QueueAbstract
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $response = curl_exec($ch);
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if ($response === false) {
+        if ($code != '202') {
             throw new \Exception(trans('emails.error_ocr_curl', ['id' => $this->record->id, 'message' => print_r($response, true)]));
         }
 
