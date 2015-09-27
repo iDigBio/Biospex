@@ -24,7 +24,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+ini_set("auto_detect_line_endings", "1");
 ini_set("memory_limit", "7G");
 ini_set('max_execution_time', '0');
 ini_set('max_input_time', '0');
@@ -40,6 +40,7 @@ use Biospex\Repo\OcrQueue\OcrQueueInterface;
 use League\Csv\Reader;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
+use ForceUTF8\Encoding;
 
 class DarwinCore
 {
@@ -256,11 +257,14 @@ class DarwinCore
             return true;
         }
 
+
         $row = $this->filterByIndex($row, $type);
 
         if (count($this->importHeader[$type]) != count($row)) {
             throw new \Exception(trans('emails.error_csv_row_count', ['headers' => count($this->importHeader[$type]), 'rows' => count($row)]));
         }
+
+        array_walk($row, function (&$value) { $value = Encoding::toUTF8($value); });
 
         $combined = array_combine($this->importHeader[$type], $row);
 
