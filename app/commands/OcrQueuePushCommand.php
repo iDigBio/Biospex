@@ -24,8 +24,6 @@ class OcrQueuePushCommand extends Command
      * Class constructor
      *
      * @param OcrQueueInterface $repo
-     * @internal param OcrQueueInterface $queue
-     * @internal param Report $report
      */
     public function __construct(OcrQueueInterface $repo)
     {
@@ -51,6 +49,8 @@ class OcrQueuePushCommand extends Command
         if (empty($job))
         {
             echo "Cannot retrieve ocr queued job from table." . PHP_EOL;
+
+            return;
         }
 
         if ($job->error)
