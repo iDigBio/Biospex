@@ -15,4 +15,6 @@ Artisan::resolve('ViewsCommand');
 Artisan::resolve('TestAppCommand');
 Artisan::resolve('ClearBeanstalkdQueueCommand');
 Artisan::resolve('OcrQueueCheckCommand');
+Artisan::resolve('OcrQueuePushCommand');
 Artisan::resolve('DarwinCoreImportCommand');
+Artisan::resolve('AustinCommand');
