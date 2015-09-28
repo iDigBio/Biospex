@@ -3,6 +3,7 @@
 use Illuminate\Console\Command;
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
 use Biospex\Services\Actor\NotesFromNature;
+use Biospex\Repo\Expedition\ExpeditionInterface;
 
 class TestAppCommand extends Command
 {
@@ -17,11 +18,13 @@ class TestAppCommand extends Command
     protected $description = 'Used to test code';
 
     public function __construct(
-        WorkflowManagerInterface $workflow
+        WorkflowManagerInterface $workflow,
+        ExpeditionInterface $expedition
     )
     {
         parent::__construct();
 
+        $this->expedition = $expedition;
         $this->workflow = $workflow;
     }
 
@@ -30,12 +33,16 @@ class TestAppCommand extends Command
      */
     public function fire()
     {
+        $expedition = $this->expedition->findWith("4", ['subjects']);
+        dd($expedition->subjects);
+        /*
         $manager = $this->workflow->findWith(2, ['expedition.actors']);
         foreach ($manager->expedition->actors as $actor) {
             $class = \App::make(NotesFromNature::class);
             $class->setProperties($actor);
             $class->process();
         }
+        */
 
         return;
     }
