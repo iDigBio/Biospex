@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Console\Command;
+use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
+use Biospex\Services\Actor\NotesFromNature;
 
 class TestAppCommand extends Command
 {
@@ -14,12 +16,13 @@ class TestAppCommand extends Command
      */
     protected $description = 'Used to test code';
 
-    /**
-     * Constructor
-     */
-    public function __construct()
+    public function __construct(
+        WorkflowManagerInterface $workflow
+    )
     {
         parent::__construct();
+
+        $this->workflow = $workflow;
     }
 
     /**
@@ -27,6 +30,13 @@ class TestAppCommand extends Command
      */
     public function fire()
     {
+        $manager = $this->workflow->findWith(1, ['expedition.actors']);
+        foreach ($manager->expedition->actors as $actor) {
+            $class = \App::make(NotesFromNature::class);
+            $class->setProperties($actor);
+            $class->process();
+        }
+
         return;
     }
 }
