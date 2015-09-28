@@ -34,9 +34,7 @@ class TestAppCommand extends Command
     public function fire()
     {
         $expedition = $this->expedition->findWith("4", ['subjects']);
-        $queries = \DB::getQueryLog();
-        $last_query = end($queries);
-        dd($last_query);
+        dd($expedition->subjects);
 
         /*
         $manager = $this->workflow->findWith(2, ['expedition.actors']);
