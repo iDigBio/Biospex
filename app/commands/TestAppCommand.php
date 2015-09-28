@@ -30,7 +30,7 @@ class TestAppCommand extends Command
      */
     public function fire()
     {
-        $manager = $this->workflow->findWith(1, ['expedition.actors']);
+        $manager = $this->workflow->findWith(2, ['expedition.actors']);
         foreach ($manager->expedition->actors as $actor) {
             $class = \App::make(NotesFromNature::class);
             $class->setProperties($actor);
