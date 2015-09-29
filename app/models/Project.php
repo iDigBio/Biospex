@@ -29,7 +29,7 @@ use Codesleeve\Stapler\ORM\StaplerableInterface;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 use Cviebrock\EloquentSluggable\SluggableInterface;
 use Cviebrock\EloquentSluggable\SluggableTrait;
-//use Cviebrock\EloquentTypecast\EloquentTypecastTrait;
+use Cviebrock\EloquentTypecast\EloquentTypecastTrait;
 use Biospex\Traits\UuidTrait;
 use Illuminate\Support\Facades\Config;
 use Biospex\Helpers\Helper;
@@ -40,7 +40,7 @@ class Project extends Eloquent// implements StaplerableInterface, SluggableInter
     use SoftDeletingTrait;
     //use SluggableTrait;
     use UuidTrait;
-    //use EloquentTypecastTrait;
+    use EloquentTypecastTrait;
 
     protected $castOnSet = true;
 
