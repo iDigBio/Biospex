@@ -25,19 +25,9 @@
  */
 
 use Jenssegers\Mongodb\Model as Eloquent;
-use Cviebrock\EloquentTypecast\EloquentTypecastTrait;
 
 class Subject extends Eloquent
 {
-    use EloquentTypecastTrait;
-
-    protected $castOnSet = true;
-
-    protected $cast = array(
-        'project_id' => 'integer',
-        'expedition_ids' => 'integer',
-    );
-
     /**
      * Redefine connection to use mongodb
      */
