@@ -25,7 +25,8 @@
     "ramsey/uuid": "~2.8",
     "guzzlehttp/guzzle": "~4.0",
     "league/csv": "^7.1",
-    "neitanod/forceutf8": "dev-master"
+    "neitanod/forceutf8": "dev-master",
+    "cviebrock/eloquent-typecast": "1.*"
   },
   "require-dev": {
     "barryvdh/laravel-debugbar": "1.*",

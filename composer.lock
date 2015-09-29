@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "dc88405a28a886acd5e47ffc094b4c61",
-    "content-hash": "3808ce383d2b7ab921d8a5319a6ce8b9",
+    "hash": "0c7139518e2f85728415d3ff987b671b",
+    "content-hash": "b5eb6bc579aead362520a847d94eec00",
     "packages": [
         {
             "name": "anahkiasen/html-object",
@@ -522,6 +522,61 @@
                 "slug"
             ],
             "time": "2014-11-13 20:05:40"
+        },
+        {
+            "name": "cviebrock/eloquent-typecast",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cviebrock/eloquent-typecast.git",
+                "reference": "fde16114a3c1f6dbb3602ae6b018c1cc5d53e955"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cviebrock/eloquent-typecast/zipball/fde16114a3c1f6dbb3602ae6b018c1cc5d53e955",
+                "reference": "fde16114a3c1f6dbb3602ae6b018c1cc5d53e955",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "4.*",
+                "illuminate/support": "4.*",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "laravelbook/ardent": "dev-master",
+                "orchestra/testbench": "2.*",
+                "phpunit/phpunit": "4.0.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Cviebrock\\EloquentTypecast\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Colin Viebrock",
+                    "email": "colin@viebrock.ca"
+                }
+            ],
+            "description": "Trait for Eloquent models to force type-casting on retrieved values",
+            "homepage": "https://github.com/cviebrock/eloquent-typecast",
+            "keywords": [
+                "boolean",
+                "eloquent",
+                "float",
+                "integer",
+                "json",
+                "laravel",
+                "mutator",
+                "settype",
+                "typecast"
+            ],
+            "time": "2015-01-12 16:55:53"
         },
         {
             "name": "cviebrock/image-validator",
