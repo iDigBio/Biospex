@@ -38,7 +38,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
 {
     use EloquentTrait;
     use SoftDeletingTrait;
-    use SluggableTrait;
+    //use SluggableTrait;
     use UuidTrait;
     //use EloquentTypecastTrait;
 
@@ -123,8 +123,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('logo', ['styles' => ['thumb' => '100x67']]);
-        $this->hasAttachedFile('banner', ['styles' => ['thumb' => '200x50']]);
+        //$this->hasAttachedFile('logo', ['styles' => ['thumb' => '100x67']]);
+        //$this->hasAttachedFile('banner', ['styles' => ['thumb' => '200x50']]);
 
         parent::__construct($attributes);
     }
