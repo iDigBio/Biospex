@@ -28,10 +28,9 @@
     "neitanod/forceutf8": "dev-master"
   },
   "require-dev": {
+    "barryvdh/laravel-debugbar": "1.*",
     "barryvdh/laravel-ide-helper": "1.*",
-    "way/generators": "~2.0",
-    "raveren/kint": "dev-master",
-    "barryvdh/laravel-debugbar": "1.*"
+    "raveren/kint": "dev-master"
   },
   "autoload": {
     "classmap": [
