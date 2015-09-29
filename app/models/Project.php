@@ -34,7 +34,7 @@ use Biospex\Traits\UuidTrait;
 use Illuminate\Support\Facades\Config;
 use Biospex\Helpers\Helper;
 
-class Project extends Eloquent implements StaplerableInterface, SluggableInterface
+class Project extends Eloquent// implements StaplerableInterface, SluggableInterface
 {
     use EloquentTrait;
     use SoftDeletingTrait;
