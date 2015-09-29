@@ -40,24 +40,6 @@ class TestAppCommand extends Command
      */
     public function fire()
     {
-        $subjects = $this->subject->all();
-        echo "Retrieved subjects" . PHP_EOL;
-        foreach($subjects as $subject)
-        {
-            if (count($subject->expedition_ids) > 0) {
-                echo "Looping expeditions" . PHP_EOL;
-                $array = [];
-                foreach ($subject->expedition_ids as $expedition) {
-                    $array[] = (int) $expedition;
-                }
-                $subject->expedition_ids = $array;
-            }
-
-            $subject->save();
-        }
-
-        echo "Done" . PHP_EOL;
-        /*
         //$this->project->setPass(true);
 
         Project::with('subjects')->find(1);
