@@ -33,7 +33,7 @@ class TestAppCommand extends Command
      */
     public function fire()
     {
-        $expedition = $this->expedition->findWith("4", ['subjects']);
+        $expedition = $this->expedition->findWith(4, ['subjects']);
         dd($expedition->subjects);
 
         /*
