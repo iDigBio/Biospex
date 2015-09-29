@@ -37,12 +37,9 @@ class TestAppCommand extends Command
      */
     public function fire()
     {
-        $this->project->setPass(true);
-        $project = $this->project->findWith(1, ['subjects']);
+        $expedition = $this->expedition->findWith(4, ['subjects']);
         dd(\DB::connection('mongodb')->getQueryLog());
         echo "Done" . PHP_EOL;
-        //$expedition = $this->expedition->findWith(4, ['subjects']);
-        //dd($expedition->subjects);
 
         /*
         $manager = $this->workflow->findWith(2, ['expedition.actors']);
