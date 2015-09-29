@@ -6,6 +6,7 @@ use Biospex\Services\Actor\NotesFromNature;
 use Biospex\Repo\Expedition\ExpeditionInterface;
 use Biospex\Repo\Project\ProjectInterface;
 
+
 class TestAppCommand extends Command
 {
     /**
@@ -36,8 +37,10 @@ class TestAppCommand extends Command
      */
     public function fire()
     {
-        $project = $this->project->find(1);
-        dd($project->subjects);
+        $this->project->setPass(true);
+        $project = $this->project->findWith(1, ['subjects']);
+        dd(\DB::connection('mongodb')->getQueryLog());
+        echo "Done" . PHP_EOL;
         //$expedition = $this->expedition->findWith(4, ['subjects']);
         //dd($expedition->subjects);
 
