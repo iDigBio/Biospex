@@ -248,7 +248,6 @@ class NotesFromNature extends ActorAbstract
         }
 
         dd($this->imageUriArray);
-
         exit;
 
         if (empty($this->imageUriArray)) {
