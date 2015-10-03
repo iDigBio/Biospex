@@ -1,4 +1,4 @@
-<?php namespace Biospex\Services\Queue;
+<?php namespace App\Services\Queue;
 
 /**
  * OcrService.php
@@ -25,21 +25,26 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Biospex\Repositories\Contracts\OcrQueueInterface;
-use Biospex\Repositories\Contracts\SubjectInterface;
-use Biospex\Services\Report\OcrReport;
+use App\Repositories\Contracts\OcrQueue;
+use App\Repositories\Contracts\Subject;
+use App\Services\Report\OcrReport;
 
-class OcrService {
+class OcrProcessQueue extends QueueAbstract
+{
+    /**
+     * @var OcrQueue
+     */
+    protected $queue;
 
     /**
-     * Illuminate\Support\Contracts\MessageProviderInterface
+     * @var Subject
      */
-    protected $messages;
+    protected $subject;
 
     /**
-     * Current job
+     * @var OcrReport
      */
-    protected $job;
+    protected $report;
 
     /**
      * Queue database record
@@ -95,18 +100,14 @@ class OcrService {
      * @param SubjectInterface $subject
      * @param OcrReport $report
      */
-    public function __construct(
-        OcrQueueInterface $queue,
-        SubjectInterface $subject,
-        OcrReport $report
-    )
+    public function __construct(OcrQueue $queue, Subject $subject, OcrReport $report)
     {
         $this->queue = $queue;
         $this->subject = $subject;
         $this->report = $report;
-        $this->ocrPostUrl = \Config::get('variables.ocrPostUrl');
-        $this->ocrGetUrl = \Config::get('variables.ocrGetUrl');
-        $this->ocrQueue = \Config::get('variables.beanstalkd.ocr');
+        $this->ocrPostUrl = \Config::get('config.ocr_post_url');
+        $this->ocrGetUrl = \Config::get('config.ocr_get_url');
+        $this->ocrQueue = \Config::get('config.beanstalkd.ocr');
     }
 
     /**
@@ -114,49 +115,49 @@ class OcrService {
      *
      * @param $job
      * @param $data
+     * @return mixed
      */
     public function fire($job, $data)
     {
         $this->job = $job;
-        $this->id = $data['id'];
-        $this->record = $this->queue->findWith($this->id, ['project.group.owner']);
+        $this->data = $data;
+
+        $this->record = $this->queue->findWith($this->data['id'], ['project.group.owner']);
 
         $this->setVars();
 
-        if ( ! $this->checkExist())
+        if (! $this->checkExist()) {
             return;
+        }
 
-        if ( ! $this->checkError())
+        if (! $this->checkError()) {
             return;
+        }
 
-        try
-        {
+        try {
             $result = empty($this->record->status) ? $this->sendFile() : $this->requestFile();
-            if ( ! $result)
+            if (! $result) {
                 return;
+            }
 
-            if ( ! $this->processFile())
+            if (! $this->processFile()) {
                 return;
+            }
 
             $csv = $this->updateSubjects();
 
             $attachment = $this->report->complete($this->email, $this->title, $csv);
 
-            if ( ! $attachment)
-            {
+            if (! $attachment) {
                 $this->record->destroy($this->record->id);
-            }
-            else
-            {
+            } else {
                 $this->updateRecord(['error' => 1, 'attachments' => json_encode($attachment)]);
             }
 
             $this->delete();
 
             return;
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $this->updateRecord(['error' => 1]);
             $this->addReportError($this->record->id, $e->getMessage());
             $this->report->reportSimpleError($this->groupId);
@@ -185,8 +186,9 @@ class OcrService {
      */
     private function checkExist()
     {
-        if (count($this->record))
+        if (count($this->record)) {
             return true;
+        }
 
         $this->delete();
 
@@ -200,8 +202,9 @@ class OcrService {
      */
     private function checkError()
     {
-        if ( ! $this->record->error)
+        if (! $this->record->error) {
             return true;
+        }
 
         return false;
     }
@@ -213,22 +216,19 @@ class OcrService {
      */
     private function processFile()
     {
-        if (empty($this->file->header))
-        {
+        if (empty($this->file->header)) {
             $this->queueLater();
 
             return false;
         }
 
-        if ($this->file->header->status == "in progress")
-        {
+        if ($this->file->header->status == "in progress") {
             $this->queueLater();
 
             return false;
         }
 
-        if ($this->file->header->status == "error")
-        {
+        if ($this->file->header->status == "error") {
             $this->updateRecord(['error' => 1]);
             $this->addReportError($this->record->id, trans('emails.error_ocr_header'));
             $this->report->reportSimpleError($this->groupId);
@@ -248,8 +248,7 @@ class OcrService {
      */
     private function updateRecord($fields)
     {
-        foreach ($fields as $key => $value)
-        {
+        foreach ($fields as $key => $value) {
             $this->record->{$key} = $value;
         }
 
@@ -264,10 +263,8 @@ class OcrService {
     private function updateSubjects()
     {
         $csv = [];
-        foreach ($this->file->subjects as $id => $data)
-        {
-            if ($data->ocr == "error")
-            {
+        foreach ($this->file->subjects as $id => $data) {
+            if ($data->ocr == "error") {
                 $csv[] = ['id' => $id, 'message' => implode(" -- ", $data->messages), 'url' => $data->url];
                 continue;
             }
@@ -315,14 +312,14 @@ class OcrService {
         $response = curl_exec($ch);
         curl_close($ch);
 
-        if ($response === false)
+        if ($response === false) {
             throw new \Exception(trans('emails.error_ocr_curl', ['id' => $this->record->id, 'message' => print_r($response, true)]));
+        }
 
         $this->updateRecord(['status' => 'in progress']);
         $this->queueLater();
 
         return false;
-
     }
 
     /**
@@ -334,8 +331,9 @@ class OcrService {
     private function requestFile()
     {
         $file = @file_get_contents($this->ocrGetUrl . '/' . $this->record->uuid . '.json');
-        if ($file === false)
+        if ($file === false) {
             throw new \Exception(trans('emails.error_ocr_request', ['id' => $this->record->id]));
+        }
 
         $this->file = json_decode($file);
 
@@ -362,52 +360,16 @@ class OcrService {
     }
 
     /**
-     * Delete a job from the queue
-     */
-    public function delete()
-    {
-        $this->job->delete();
-
-        return;
-    }
-
-    /**
      * Requeue if ocr process is not finished. Check count and set time for first status check.
      */
     public function queueLater()
     {
         $minutes = $this->record->tries == 0 ? round($this->record->subject_count / 15) : 2;
         $date = \Carbon::now()->addMinutes($minutes);
-        \Queue::later($date, 'Biospex\Services\Queue\OcrService', ['id' => $this->id], $this->ocrQueue);
+        \Queue::later($date, 'App\Services\Queue\QueueFactory', $this->data, $this->ocrQueue);
         $this->updateRecord(['tries' => $this->record->tries += 1]);
         $this->delete();
 
         return;
-    }
-
-    /**
-     * Release a job back to the queue
-     *
-     * @param int $seconds
-     */
-    public function release($seconds = 60)
-    {
-        $this->job->release($seconds);
-    }
-
-    /**
-     * Return number of attempts on the job
-     */
-    public function getAttempts()
-    {
-        return $this->job->attempts();
-    }
-
-    /**
-     * Get id of job
-     */
-    public function getJobId()
-    {
-        return $this->job->getJobId();
     }
 }

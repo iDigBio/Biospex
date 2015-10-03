@@ -1,4 +1,5 @@
-<?php namespace Biospex\Services\Mailer;
+<?php namespace App\Services\Mailer;
+
 /**
  * Mailer.php
  *
@@ -24,19 +25,16 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Illuminate\Support\Facades\Mail;
-
-abstract class Mailer {
-
-	public function sendTo ($from, $email, $subject, $view, $data = [], $attachments = [])
-	{
-		Mail::queue($view, $data, function ($message) use ($from, $email, $subject, $attachments)
-		{
-			$message->from($from)->subject($subject)->to($email);
-			$size = sizeof($attachments);
-			for ($i = 0; $i < $size; $i++){
-				$message->attach($attachments[$i]);
-			}
-		});
-	}
+abstract class Mailer
+{
+    public function sendTo($from, $email, $subject, $view, $data = [], $attachments = [])
+    {
+        \Mail::queueOn(\Config::get('config.beanstalkd.default'), $view, $data, function ($message) use ($from, $email, $subject, $attachments) {
+            $message->from($from['address'], $from['name'])->subject($subject)->to($email);
+            $size = sizeof($attachments);
+            for ($i = 0; $i < $size; $i++) {
+                $message->attach($attachments[$i]);
+            }
+        });
+    }
 }

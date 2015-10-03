@@ -1,96 +1,68 @@
-<?php namespace Biospex\Services\Image;
-/**
- * Thumbnail.php
- *
- * @package    Biospex Package
- * @version    1.0
- * @author     Robert Bruhn <bruhnrp@gmail.com>
- * @license    GNU General Public License, version 3
- * @copyright  (c) 2014, Biospex
- * @link       http://biospex.org
- *
- * This file is part of Biospex.
- * Biospex is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Biospex is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
- */
+<?php namespace App\Services\Image;
 
-use Biospex\Services\Curl\Curl;
-use Biospex\Services\Curl\Request;
-use Config, File;
+use App\Services\Curl\Curl;
+use App\Services\Curl\Request;
 
-class Thumbnail extends Image{
+class Thumbnail extends Image
+{
+    /**
+     * Output file path.
+     * @var
+     */
+    protected $outputFile;
 
-	/**
-	 * Output file path.
-	 * @var
-	 */
-	protected $outputFile;
+    /**
+     * Default image.
+     *
+     * @var mixed
+     */
+    protected $defaultImg;
 
-	/**
-	 * Default image.
-	 *
-	 * @var mixed
-	 */
-	protected $defaultImg;
+    /**
+     * Output directory
+     *
+     * @var string
+     */
+    protected $outputDir;
 
-	/**
-	 * Output directory
-	 *
-	 * @var string
-	 */
-	protected $outputDir;
+    /**
+     * Set variables.
+     */
+    public function setVars()
+    {
+        // We can read the output path from our configuration file.
+        $this->defaultImg = \Config::get('config.images.thumb_default_img');
+        $this->width = \Config::get('config.images.thumb_width');
+        $this->height = \Config::get('config.images.thumb_height');
+        $this->outputDir = \Config::get('config.images.thumb_output_dir') . '/' . $this->width . '_' . $this->height;
+    }
 
-	/**
-	 * Set variables.
-	 */
-	public function setVars()
-	{
-		// We can read the output path from our configuration file.
-		$this->defaultImg = Config::get('variables.images.thumbDefaultImg');
-		$this->width = Config::get('variables.images.thumbWidth');
-		$this->height = Config::get('variables.images.thumbHeight');
-		$this->outputDir = Config::get('variables.images.thumbOutputDir') . '/' . $this->width . '_' . $this->height;
-	}
-
-	/**
-	 * Resize on the fly.
-	 *
-	 * @param $url
-	 * @return string
-	 */
-	public function thumbFromUrl ($url)
-	{
-		$this->setOutPutFile($url);
+    /**
+     * Resize on the fly.
+     *
+     * @param $url
+     * @return string
+     */
+    public function thumbFromUrl($url)
+    {
+        $this->setOutPutFile($url);
         $this->createDir($this->outputDir);
 
-		if (File::isFile($this->outputFileSm))
-			return $this->outputFileSm;
+        if (File::isFile($this->outputFileSm)) {
+            return $this->outputFileSm;
+        }
 
-		try {
+        try {
             $rc = new Curl([$this, "saveThumbnail"]);
-            $rc->options = [CURLOPT_HEADER => 0, CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1];
-            $rc->window_size = 1;
-            $request = new Request($url);
-            $rc->add($request);
+            $rc->options = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1, CURLINFO_HEADER_OUT => 1];
+            $rc->get($url);
             $rc->execute();
-		}
-		catch (Exception $e)
-		{
+        } catch (Exception $e) {
             \Log::critical($e->getMessage());
-		}
+        }
 
-		return $this->outputFileSm;
-	}
+        return $this->outputFileSm;
+    }
 
     /**
      * Return thumbnail or create if not exists.
@@ -102,12 +74,11 @@ class Thumbnail extends Image{
     {
         $this->setVars();
 
-        if ( ! $file = $this->thumbFromUrl($url))
-        {
+        if (! $file = $this->thumbFromUrl($url)) {
             $file = $this->defaultImg;
         }
 
-        return File::get($file);
+        return \File::get($file);
     }
 
     /**
@@ -126,18 +97,17 @@ class Thumbnail extends Image{
         return;
     }
 
-	/**
-	 * Set output file path.
-	 *
-	 * @param $url
-	 * @return string
-	 */
-	public function setOutPutFile($url)
-	{
-		$filenameLg = md5($url) . '.jpg';
+    /**
+     * Set output file path.
+     *
+     * @param $url
+     * @return string
+     */
+    public function setOutPutFile($url)
+    {
+        $filenameLg = md5($url) . '.jpg';
         $filenameSm = md5($url) . '.small.jpg';
-		$this->outputFileLg = $this->outputDir . '/' . $filenameLg;
+        $this->outputFileLg = $this->outputDir . '/' . $filenameLg;
         $this->outputFileSm = $this->outputDir . '/' . $filenameSm;
-	}
-
+    }
 }

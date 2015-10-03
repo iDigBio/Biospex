@@ -1,6 +1,7 @@
-<?php
+<?php namespace App\Services\Cache;
+
 /**
- * BelongsToManySubjectsTrait.php
+ * Cache.php
  *
  * @package    Biospex Package
  * @version    1.0
@@ -24,18 +25,38 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Biospex\Models\Traits;
-
-
-trait BelongsToManySubjectsTrait {
+interface Cache
+{
     /**
-     * Belongs to many
-     * $expedition->subjects()->attach($subject) adds expedition ids in subjects
+     * Get
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @param string $key
+     * @return mixed
      */
-    public function subjects ()
-    {
-        return $this->belongsToMany('Biospex\Models\Subject');
-    }
+    public function get($key);
+
+    /**
+     * Put
+     *
+     * @param string $key
+     * @param mixed $value
+     * @param integer $minutes
+     * @return mixed
+     */
+    public function put($key, $value, $minutes = null);
+
+    /**
+     * Has
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function has($key);
+
+    /**
+     * Flush
+     *
+     * @return mixed
+     */
+    public function flush();
 }

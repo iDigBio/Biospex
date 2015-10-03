@@ -1,4 +1,5 @@
-<?php namespace Biospex\Services\Mailer;
+<?php namespace App\Services\Mailer;
+
 /**
  * BiospexMailer.php
  *
@@ -24,65 +25,48 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Illuminate\Support\Facades\Config;
-
-class BiospexMailer extends Mailer {
-
+class BiospexMailer extends Mailer
+{
     public function __construct()
     {
-        $this->adminEmail = Config::get('variables.adminEmail');
-    }
-
-    /**
-     * Outline all the events this class will be listening for.
-     * @param  [type] $events
-     * @return void
-     */
-    public function subscribe($events)
-    {
-        $events->listen('user.registered', 'Biospex\Mailer\BiospexMailer@welcome', 10);
-        $events->listen('user.resend', 'Biospex\Mailer\BiospexMailer@welcome', 10);
-        $events->listen('user.forgot', 'Biospex\Mailer\BiospexMailer@forgotPassword', 10);
-        $events->listen('user.newpassword', 'Biospex\Mailer\BiospexMailer@newPassword', 10);
-        $events->listen('user.sendreport', 'Biospex\Mailer\BiospexMailer@sendReport', 10);
-        $events->listen('user.sendinvite', 'Biospex\Mailer\BiospexMailer@sendInvite', 10);
-        $events->listen('user.sendcontact', 'Biospex\Mailer\BiospexMailer@sendContactForm', 10);
+        $this->emailAddress = \Config::get('mail.from');
     }
 
     /**
      * Send a welcome email to a new user.
-     * @param  string $email
-     * @param  int $userId
-     * @param  string $activationCode
-     * @return bool
+     *
+     * @param $email
+     * @param $activateHtmlLink
+     * @param $activateTextLink
      */
-    public function welcome($email, $userId, $activationCode)
+    public function welcome($email, $activateHtmlLink, $activateTextLink)
     {
         $subject = trans('users.welcome');
         $view = 'emails.welcome';
-        $data['userId'] = $userId;
-        $data['activationCode'] = $activationCode;
+        $data['activateHtmlLink'] = $activateHtmlLink;
+        $data['activateTextLink'] = $activateTextLink;
+        $data['adminEmail'] = $this->emailAddress;
         $data['email'] = $email;
 
-        return $this->sendTo($this->adminEmail, $email, $subject, $view, $data);
+        return $this->sendTo($this->emailAddress, $email, $subject, $view, $data);
     }
 
     /**
      * Email Password Reset info to a user.
-     * @param  string $email
-     * @param  int $userId
-     * @param  string $resetCode
-     * @return bool
+     * @param $email
+     * @param $resetHtmlLink
+     * @param $resetTextLink
      */
-    public function forgotPassword($email, $userId, $resetCode)
+    public function forgotPassword($email, $resetHtmlLink, $resetTextLink)
     {
         $subject = trans('users.reset_password');
         $view = 'emails.reset';
-        $data['userId'] = $userId;
-        $data['resetCode'] = $resetCode;
+        $data['resetHtmlLink'] = $resetHtmlLink;
+        $data['resetTextLink'] = $resetTextLink;
+        $data['adminEmail'] = $this->emailAddress;
         $data['email'] = $email;
 
-        return $this->sendTo($this->adminEmail, $email, $subject, $view, $data);
+        return $this->sendTo($this->emailAddress, $email, $subject, $view, $data);
     }
 
     /**
@@ -96,9 +80,10 @@ class BiospexMailer extends Mailer {
         $subject = trans('users.new_password');
         $view = 'emails.newpassword';
         $data['newPassword'] = $newPassword;
+        $data['adminEmail'] = $this->emailAddress;
         $data['email'] = $email;
 
-        return $this->sendTo($this->adminEmail, $email, $subject, $view, $data);
+        return $this->sendTo($this->emailAddress, $email, $subject, $view, $data);
     }
 
     /**
@@ -112,39 +97,31 @@ class BiospexMailer extends Mailer {
      */
     public function sendReport($email, $subject, $view, $data, $attachments = [])
     {
-        if (is_null($email))
-            $email = $this->adminEmail;
+        if (is_null($email)) {
+            $email = $this->emailAddress;
+        }
 
-        return $this->sendTo($this->adminEmail, $email, $subject, $view, $data, $attachments);
+        $data['adminEmail'] = $this->emailAddress;
+
+        return $this->sendTo($this->emailAddress, $email, $subject, $view, $data, $attachments);
     }
 
     /**
-     * Send invite
-     *
+     * Send group invite
      * @param $email
      * @param $subject
      * @param $view
      * @param $data
-     * @param string $attachment
      */
     public function sendInvite($email, $subject, $view, $data)
     {
-        if (is_null($email))
-            $email = $this->adminEmail;
+        if (is_null($email)) {
+            $email = $this->emailAddress;
+        }
 
-        return $this->sendTo($this->adminEmail, $email, $subject, $view, $data);
-    }
+        $data['adminEmail'] = $this->emailAddress;
 
-    /**
-     * Send contact form.
-     *
-     * @param $subject
-     * @param $view
-     * @param $data
-     */
-    public function sendContactForm($view, $subject, $data)
-    {
-        return $this->sendTo($this->adminEmail, $this->adminEmail, $subject, $view, $data);
+        return $this->sendTo($this->emailAddress, $email, $subject, $view, $data);
     }
 
 }

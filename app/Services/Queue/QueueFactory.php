@@ -1,10 +1,11 @@
-<?php namespace Biospex\Form\User;
+<?php  namespace App\Services\Queue;
+
 /**
- * UserForm.php
+ * QueueFactory.php
  *
  * @package    Biospex Package
  * @version    1.0
- * @author     Robert Bruhn <79e6ef82@opayq.com>
+ * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
  * @link       http://biospex.org
@@ -23,28 +24,29 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Biospex\Form\Form;
-use Biospex\Validation\ValidableInterface;
-use Biospex\Repo\User\UserInterface;
 
-class UserForm extends Form {
+use Illuminate\Support\Facades\App;
 
-	public function __construct(ValidableInterface $validator, UserInterface $user)
-	{
-		$this->validator = $validator;
-		$this->repo = $user;
-
-	}
-
+class QueueFactory
+{
     /**
-     * Test if form validator passes
+     * Create queue class to run.
      *
-     * @param array $input
-     * @return bool
+     * @param $job
+     * @param $data
+     * @throws Exception
      */
-    protected function valid(array $input)
+    public function fire($job, $data)
     {
-        return $this->validator->with($input)->modifyRules('email', 'email', $input['id'])->passes();
-    }
+        $class = $data['class'];
+        $nameSpace = 'App\Services\Queue\\';
+        if (class_exists($nameSpace . $class)) {
+            $obj = \App::make($nameSpace . $class);
+            $obj->fire($job, $data);
 
+            return;
+        } else {
+            throw new \Exception("Invalid queue class given.");
+        }
+    }
 }

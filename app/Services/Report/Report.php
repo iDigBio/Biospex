@@ -1,77 +1,39 @@
-<?php namespace Biospex\Services\Report;
-/**
- * Report.php
- *
- * @package    Biospex Package
- * @version    1.0
- * @author     Robert Bruhn <bruhnrp@gmail.com>
- * @license    GNU General Public License, version 3
- * @copyright  (c) 2014, Biospex
- * @link       http://biospex.org
- *
- * This file is part of Biospex.
- * Biospex is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Biospex is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
- */
+<?php namespace App\Services\Report;
 
 use Illuminate\Support\MessageBag;
-use Biospex\Repositories\Contracts\UserInterface;
-use Biospex\Repositories\Contracts\GroupInterface;
-use Biospex\Services\Mailer\BiospexMailer;
-use Maatwebsite\Excel\Excel;
+use App\Repositories\Contracts\Group;
+use App\Services\Mailer\BiospexMailer;
+use League\Csv\Writer;
 
-class Report {
-
+class Report
+{
     /**
-     * @var \Illuminate\Support\Contracts\MessageProviderInterface
+     * @var MessageBag
      */
     protected $messages;
 
     /**
-     * @var \Biospex\Repo\User\UserInterface
-     */
-    protected $user;
-
-    /**
-     * @var \Biospex\Mailer\BiospexMailer
+     * @var BiospexMailer
      */
     protected $mailer;
 
     /**
      * Constructor
      *
-     * @param MessageProviderInterface $messages
-     * @param UserInterface $user
-     * @param GroupInterface $group
+     * @param MessageBag $messages
+     * @param Group $group
      * @param BiospexMailer $mailer
-     * @param Excel $excel
      */
     public function __construct(
         MessageBag $messages,
-        UserInterface $user,
-        GroupInterface $group,
-        BiospexMailer $mailer,
-        Excel $excel
-    )
-    {
+        Group $group,
+        BiospexMailer $mailer
+    ) {
         $this->messages = $messages;
-        $this->user = $user;
         $this->group = $group;
         $this->mailer = $mailer;
-        $this->excel = $excel;
 
-        $this->dataDir = \Config::get('variables.dataDir');
-        $this->excelStorage = \Config::get('excel::export');
+        $this->exportReportsDir = \Config::get('config.export_reports_dir');
     }
 
     /**
@@ -95,16 +57,14 @@ class Report {
     {
         $email = null;
 
-        if ( ! is_null($groupId))
-        {
+        if (! is_null($groupId)) {
             $group = $this->group->findWith($groupId, ['owner']);
             $email = $group->Owner->email;
         }
 
         $errorMessage = '';
         $messages = $this->messages->get('error');
-        foreach ($messages as $message)
-        {
+        foreach ($messages as $message) {
             $errorMessage .= "$message ";
         }
         $subject = trans('emails.error');
@@ -153,19 +113,20 @@ class Report {
      */
     public function createAttachment($csv, $name = null)
     {
-        $path = $this->excelStorage['store']['path'] . "/";
+        $path = $this->exportReportsDir;
+        if (! \File::isDirectory($path)) {
+            \File::makeDirectory($path);
+        }
+
         $fileName = (is_null($name)) ? str_random(10) : $name . str_random(5);
         $ext = ".csv";
 
-        $this->excel->create($fileName, function ($excel) use ($csv)
-        {
-            $excel->sheet('page1', function ($sheet) use ($csv)
-            {
-                $sheet->fromArray($csv);
-            });
-        })->store('csv');
+        $header = array_keys($csv[0]);
+        $writer = Writer::createFromPath(new \SplFileObject(storage_path($path . "/" . $fileName . $ext), 'a+'), 'w');
+        $writer->insertOne($header);
+        $writer->insertAll($csv);
 
-        return [$path . $fileName . $ext];
+        return [$path . "/" . $fileName . $ext];
     }
 
     /**
@@ -190,5 +151,4 @@ class Report {
 
         return;
     }
-
 }
