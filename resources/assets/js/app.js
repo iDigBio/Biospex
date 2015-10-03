@@ -34,14 +34,38 @@ $(function(){
         $('#targetCount').val($("div.target:visible").length);
     });
 
-    $( "#formAddData" ).validate({
+    $( "#form-data" ).validate({
         rules: {
-            file: {
+            core: {
                 required: true,
                 extension: "zip"
             }
         }
     });
+    $( "#form-core-url" ).validate({
+        rules: {
+            url: {
+                required: true
+            }
+        }
+    });
+    $( "#form-trans" ).validate({
+        rules: {
+            transcription: {
+                required: true,
+                extension: "csv"
+            }
+        }
+    });
+    $( "#form-recordset" ).validate({
+        rules: {
+            recordset: {
+                required: true
+            }
+        }
+    });
+
+    $('.selectpicker').selectpicker();
 
     $("#userGroup").change(function(){
         this.value == 'new' ? $("#groupInput").show() : $("#groupInput").hide();

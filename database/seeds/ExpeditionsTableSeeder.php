@@ -26,24 +26,22 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
-use Biospex\Models\Expedition;
+use App\Models\Expedition;
 
-class ExpeditionsTableSeeder extends Seeder {
-
+class ExpeditionsTableSeeder extends Seeder
+{
     private $expeditions;
 
-	public function run()
-	{
+    public function run()
+    {
         Model::unguard();
 
         $this->expeditions = $this->loadData();
 
-        foreach ($this->expeditions as $expedition)
-        {
+        foreach ($this->expeditions as $expedition) {
             Expedition::create($expedition);
         }
-
-	}
+    }
 
     public function loadData()
     {

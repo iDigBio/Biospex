@@ -1,15 +1,9 @@
-<!DOCTYPE html>
-<html lang="en-US">
-	<head>
-		<meta charset="utf-8">
-	</head>
-	<body>
-		<h2><h2>{{ trans('emails.welcome') }}</h2></h2>
+@extends('front.layouts.email', ['adminEmail' => $adminEmail])
 
-		<p><b>Account:</b> {{{ $email }}}</p>
-		<p>To activate your account, <a href="{{ URL::action('UsersController@activate', array('id' => $userId, 'code' => urlencode($activationCode))) }}">click here.</a></p>
-		<p>Or point your browser to this address: <br /> {{ URL::action('UsersController@activate', array('id' => $userId, 'code' => urlencode($activationCode))) }} </p>
-		<p>Thank you, <br />
-			~The Admin Team</p>
-	</body>
-</html>
+{{-- Content --}}
+@section('content')
+		<h2>@lang('emails.welcome')</h2>
+		<p><b>@lang('emails.account'):</b> {{ $email }}</p>
+		<p><b>@lang('emails.activate_message_html'),</b> {!! $activateHtmlLink !!}</p>
+		<p><b>@lang('emails.activate_message_text'):</b> {!! $activateTextLink !!}</p>
+@stop

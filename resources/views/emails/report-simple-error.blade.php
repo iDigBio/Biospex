@@ -1,18 +1,12 @@
-<!DOCTYPE html>
-<html lang="en-US">
-<head>
-    <meta charset="utf-8">
-</head>
-<body>
-<h2>{{ trans('emails.error') }}</h2>
+@extends('front.layouts.email', ['adminEmail' => $adminEmail])
 
-<p>
-<blockquote>
-{{ trans('emails.error_message') }}<br />
-{{{ $errorMessage }}}
-</blockquote>
-</p>
-<p>{{ trans('emails.thank_you') }}, <br />
-    ~{{ trans('emails.signature') }}</p>
-</body>
-</html>
+{{-- Content --}}
+@section('content')
+    <h2>@lang('emails.error')</h2>
+    <p>
+    <blockquote>
+    @lang('emails.error_message')<br />
+    {{ $errorMessage }}
+    </blockquote>
+    </p>
+@stop

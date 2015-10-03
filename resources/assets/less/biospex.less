@@ -3,18 +3,30 @@
     padding-top: 60px;
   }
 }
+body.admin { padding-top: 0px; }
 body.home { padding-top: 40px; }
 .top-margin { margin-top: 50px; }
 
-#x { background: url(../../images/x.png) right -50px no-repeat; }
+.panel-heading,
+.panel-title {
+  color: #fff;
+}
+.panel {
+  .box-shadow(10px 10px 10px fade(@gray-base, 30%));
+}
+
+#x { background: url(/images/x.png) right -50px no-repeat; }
 .home h2 { color: #8dc63f; font-size: 18px; font-weight: bold; margin: 45px 0 10px 0; }
 .home label { color: #999; font-weight: normal; display: block;}
 .home input[type="text"], .home input[type="email"] { width: 200px; }
 h2.mailchimp { margin-top: 90px; }
 p a { color: #c00; }
 p a:hover { color: #f00; }
-#splash { background: url(../../images/home-map.jpg); height: 300px; width: 100%; padding: 25px 0 0 0; margin: 0; }
+#splash { background: url(/images/home-map.jpg); height: 300px; width: 100%; padding: 25px 0 0 0; margin: 0; }
 #splash h1 { color: #241d4e !important; font-size: 20px; font-weight: bold; }
+
+.form-group.required .control-label:after { content:" *"; color:#ff0000; }
+.form-group label { font-weight: bold; }
 
 #logo-list { margin-right: 0; padding: 0; }
 #logo-list li { display: inline; padding: 0; width: 80px; }

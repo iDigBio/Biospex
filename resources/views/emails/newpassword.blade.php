@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="en-US">
-	<head>
-		<meta charset="utf-8">
-	</head>
-	<body>
-		<h2>New Password</h2>
+@extends('front.layouts.email', ['adminEmail' => $adminEmail])
 
-		<p>Here is your new password:</p>
-		<p><blockquote>{{{ $newPassword }}}</blockquote></p>
-		<p>Thank you, <br />
-			~The Admin Team</p>
-	</body>
-</html>
+{{-- Content --}}
+@section('content')
+    <h2>@lang('emails.password_new')</h2>
+    <p><b>@lang('emails.password_new_text'):</b> {{ $newPassword }}</p>
+@stop

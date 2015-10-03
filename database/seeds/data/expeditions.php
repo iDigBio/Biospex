@@ -21,23 +21,23 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-$items = array(
-    array(
-        'project_id' => 1,
-        'title' => 'Example Expedition #1',
+$items = [
+    [
+        'project_id'  => 1,
+        'title'       => 'Example Expedition #1',
         'description' => 'A description of Expedition 1 would be included here.',
-        'keywords' => 'Random keywords',
-    ),
-    array(
-        'project_id' => 1,
-        'title' => 'Example Expedition #2',
+        'keywords'    => 'Random keywords',
+    ],
+    [
+        'project_id'  => 1,
+        'title'       => 'Example Expedition #2',
         'description' => 'A description of Expedition 2 would be included here.',
-        'keywords' => 'Random keywords',
-    ),
-    array(
-        'project_id' => 1,
-        'title' => 'Example Expedition #3',
+        'keywords'    => 'Random keywords',
+    ],
+    [
+        'project_id'  => 1,
+        'title'       => 'Example Expedition #3',
         'description' => 'A description of Expedition 3 would be included here.',
-        'keywords' => 'Random keywords',
-    ),
-);
+        'keywords'    => 'Random keywords',
+    ],
+];

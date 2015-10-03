@@ -25,38 +25,36 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
-class CreateGroupsTable extends Migration {
-
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-		Schema::create('groups', function($table)
-		{
-			$table->increments('id');
+class CreateGroupsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('groups', function ($table) {
+            $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-			$table->string('name');
-			$table->text('permissions')->nullable();
-			$table->timestamps();
+            $table->string('name');
+            $table->text('permissions')->nullable();
+            $table->timestamps();
             $table->softDeletes();
 
-			$table->engine = 'InnoDB';
-			$table->unique('name');
-		});
-	}
+            $table->engine = 'InnoDB';
+            $table->unique('name');
+        });
+    }
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
-		Schema::drop('groups');
-	}
-
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('groups');
+    }
 }

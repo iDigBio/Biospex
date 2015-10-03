@@ -23,126 +23,87 @@
  */
 
 /** Permissions (used in table seeder */
-$items = array(
+$items = [
     // superuser
-    array(
-        'name' => 'superuser',
-        'group' => 'superuser',
-        'description' => 'users.superuser',
-    ),
-
-    // project
-    array(
-        'name' => "project_create",
-        'group' => "project",
-        'description' => "projects.project_create",
-    ),
-    array(
-        'name' => "project_edit",
-        'group' => "project",
-        'description' => "projects.project_edit",
-    ),
-    array(
-        'name' => "project_view",
-        'group' => "project",
-        'description' => "projects.project_view",
-    ),
-    array(
-        'name' => "project_delete",
-        'group' => "project",
-        'description' => "projects.project_delete",
-    ),
-
-    // expedition
-    array(
-        'name' => "expedition_create",
-        'group' => "expedition",
-        'description' => "pages.expedition_create",
-    ),
-    array(
-        'name' => "expedition_edit",
-        'group' => "expedition",
-        'description' => "pages.expedition_edit",
-    ),
-    array(
-        'name' => "expedition_view",
-        'group' => "expedition",
-        'description' => "pages.expedition_view",
-    ),
-    array(
-        'name' => "expedition_delete",
-        'group' => "expedition",
-        'description' => "pages.expedition_delete",
-    ),
-
-    // permissions
-    array(
-        'name' => "permission_edit",
-        'group' => "permission",
-        'description' => "pages.permissions_edit",
-    ),
-    array(
-        'name' => "permission_view",
-        'group' => "permission",
-        'description' => "pages.permissions_view",
-    ),
-
-    // user
-    array(
-        'name' => "user_create",
-        'group' => "user",
-        'description' => "users.user_create",
-    ),
-    array(
-        'name' => "user_edit",
-        'group' => "user",
-        'description' => "users.user_edit",
-    ),
-    array(
-        'name' => "user_ban",
-        'group' => "user",
-        'description' => "users.user_ban",
-    ),
-    array(
-        'name' => "user_view",
-        'group' => "user",
-        'description' => "users.user_view",
-    ),
-    array(
-        'name' => "user_delete",
-        'group' => "user",
-        'description' => "users.user_delete",
-    ),
-    array(
-        'name' => "user_edit_permissions",
-        'group' => "user",
-        'description' => "users.user_edit_permissions",
-    ),
-    array(
-        'name' => "user_edit_groups",
-        'group' => "user",
-        'description' => "users.user_edit_groups",
-    ),
-
+    [
+        'name'        => 'superuser',
+        'label'       => 'Superuser',
+        'description' => 'Administrator has all permissions',
+        'policy'      => ''
+    ],
     // groups
-    array(
-        'name' => "group_create",
-        'group' => "group",
-        'description' => "groups.group_create",
-    ),
-    array(
-        'name' => "group_edit",
-        'group' => "group",
-        'description' => "groups.group_edit",
-    ),
-    array(
-        'name' => "group_view",
-        'group' => "group",
-        'description' => "groups.group_view",
-    ),
-    array(
-        'name' => "group_delete",
-        'group' => "group",
-        'description' => "groups.group_delete",
-    ),
-);
+    [
+        'name'        => "create-group",
+        'label'       => "Create Group",
+        'description' => "Enable group to create group.",
+        'policy'      => 'Group@create'
+    ],
+    [
+        'name'        => "update-group",
+        'label'       => "Update Group",
+        'description' => "Enable group to update group.",
+        'policy'      => 'Group@update'
+    ],
+    [
+        'name'        => "read-group",
+        'label'       => "Read Group",
+        'description' => "Enable group to read group.",
+        'policy'      => 'Group@read'
+    ],
+    [
+        'name'        => "delete-group",
+        'label'       => "Delete Group",
+        'description' => "Enable group to delete group.",
+        'policy'      => 'Group@delete'
+    ],
+    // project
+    [
+        'name'        => "create-project",
+        'label'       => "Create Project",
+        'description' => "Enable group to create project.",
+        'policy'      => 'Project@create'
+    ],
+    [
+        'name'        => "read-project",
+        'label'       => "Read Project",
+        'description' => "Enable group to view project.",
+        'policy'      => 'Project@read'
+    ],
+    [
+        'name'        => "update-project",
+        'label'       => "Update Project",
+        'description' => "Enable group to update project.",
+        'policy'      => 'Project@update'
+    ],
+    [
+        'name'        => "delete-project",
+        'label'       => "Delete Project",
+        'description' => "Enable group to delete project.",
+        'policy'      => 'Project@delete'
+    ],
+    // expedition
+    [
+        'name'        => "create-expedition",
+        'label'       => "Create Expedition",
+        'description' => "Enable group to create expedition.",
+        'policy'      => 'Expedition@create'
+    ],
+    [
+        'name'        => "read-expedition",
+        'label'       => "Read Expedition",
+        'description' => "Enable group to read expedition.",
+        'policy'      => 'Expedition@read'
+    ],
+    [
+        'name'        => "update-expedition",
+        'label'       => "Update Expedition",
+        'description' => "Enable group to update expedition",
+        'policy'      => 'Expedition@update'
+    ],
+    [
+        'name'        => "delete-expedition",
+        'label'       => "Delete Expedition",
+        'description' => "pages.expedition_delete",
+        'policy'      => 'Expedition@delete'
+    ],
+];

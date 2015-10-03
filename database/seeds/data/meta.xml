@@ -1,7 +1,7 @@
 <archive xmlns="http://rs.tdwg.org/dwc/text/" metadata="eml.xml">
   <core encoding="utf-8" fieldsTerminatedBy="\t" linesTerminatedBy="\n" fieldsEnclosedBy="" ignoreHeaderLines="1" rowType="http://rs.tdwg.org/dwc/terms/Occurrence">
     <files>
-      <location>occurrence-10.txt</location>
+      <location>occurrence.txt</location>
     </files>
     <id index="0" />
     <field index="1" term="http://rs.tdwg.org/dwc/terms/higherClassification"/>
@@ -61,7 +61,7 @@
   </core>
   <extension encoding="utf-8" fieldsTerminatedBy="\t" linesTerminatedBy="\n" fieldsEnclosedBy="" ignoreHeaderLines="1" rowType="http://rs.tdwg.org/ac/terms/Multimedia">
     <files>
-      <location>multimedia-10.txt</location>
+      <location>multimedia_raw.txt</location>
     </files>
     <coreid index="0" />
     <field index="1" term="http://rs.tdwg.org/ac/terms/attributionLinkURL"/>

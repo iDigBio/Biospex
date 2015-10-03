@@ -25,38 +25,37 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateNavigationsTable extends Migration {
-
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-		Schema::create('navigations', function(Blueprint $table) {
-			$table->increments('id');
-			$table->string('type', 30);
-			$table->string('name', 30);
-			$table->string('url');
+class CreateNavigationsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('navigations', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('type', 30);
+            $table->string('name', 30);
+            $table->string('url');
             $table->string('permission');
-			$table->tinyInteger('order');
+            $table->tinyInteger('order');
             $table->integer('parent_id');
-			$table->timestamps();
+            $table->timestamps();
 
             $table->engine = 'InnoDB';
-		});
-	}
+        });
+    }
 
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
-		Schema::drop('navigations');
-	}
-
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('navigations');
+    }
 }

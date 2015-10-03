@@ -25,8 +25,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
-class CreateExpeditionSubjectTable extends Migration {
-
+class CreateExpeditionSubjectTable extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -34,7 +34,7 @@ class CreateExpeditionSubjectTable extends Migration {
      */
     public function up()
     {
-        Schema::create('expedition_subject', function(Blueprint $table) {
+        Schema::create('expedition_subject', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('expedition_id');
             $table->foreign('expedition_id')->references('id')->on('expeditions')->onDelete('cascade');
@@ -56,5 +56,4 @@ class CreateExpeditionSubjectTable extends Migration {
     {
         Schema::drop('expedition_subject');
     }
-
 }

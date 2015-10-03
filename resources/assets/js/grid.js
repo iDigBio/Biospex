@@ -16,10 +16,6 @@ $(function() {
     }
 });
 
-/*global $ */
-$.jgrid.formatter.integer.thousandsSeparator = ',';
-$.jgrid.formatter.number.thousandsSeparator = ',';
-$.jgrid.formatter.currency.thousandsSeparator = ',';
 function jqGrid(project, expedition)
 {
     return function(result) {

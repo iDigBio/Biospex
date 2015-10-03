@@ -3,8 +3,8 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class DatabaseSeeder extends Seeder {
-
+class DatabaseSeeder extends Seeder
+{
     /**
      * Run the database seeds.
      *
@@ -13,7 +13,6 @@ class DatabaseSeeder extends Seeder {
     public function run()
     {
         $this->call('TruncateTables');
-        $this->call('NavigationsTableSeeder');
         $this->call('PermissionTableSeeder');
         $this->call('UserTableSeeder');
         $this->call('GroupTableSeeder');
@@ -26,5 +25,4 @@ class DatabaseSeeder extends Seeder {
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
-
 }
