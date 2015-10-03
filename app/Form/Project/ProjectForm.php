@@ -1,9 +1,10 @@
-<?php namespace Biospex\Form\Project;
+<?php namespace App\Form\Project;
+
 /**
  * ProjectForm.php
  *
  * @package    Biospex Package
- * @version    1.0
+ * @version    2.0
  * @author     Robert Bruhn <79e6ef82@opayq.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
@@ -24,15 +25,13 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Biospex\Form\Form;
-use Biospex\Validation\ValidableInterface as Validator;
-use Biospex\Repo\Project\ProjectInterface as Project;
+use App\Form\Form;
+use App\Repositories\Contracts\Project;
 
-class ProjectForm extends Form {
-
-    public function __construct(Validator $validator, Project $project)
+class ProjectForm extends Form
+{
+    public function __construct(Project $project)
     {
-        $this->validator = $validator;
         $this->repo = $project;
     }
 
@@ -43,4 +42,14 @@ class ProjectForm extends Form {
         return $input;
     }
 
+    /**
+     * Test if form validator passes
+     *
+     * @param array $input
+     * @return bool
+     */
+    protected function valid(array $input)
+    {
+        return $this->validator->with($input)->modifyRules('title', 'title', $input['id'])->passes();
+    }
 }

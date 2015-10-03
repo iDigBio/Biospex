@@ -1,53 +1,33 @@
-<?php namespace Biospex\Providers;
+<?php
+
+namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Repositories\UserRepository;
+use App\Repositories\PermissionRepository;
+use App\Repositories\InviteRepository;
+use App\Repositories\GroupRepository;
+use App\Repositories\ProjectRepository;
+use App\Repositories\AuthSession;
+use App\Repositories\ExpeditionRepository;
+use App\Repositories\Decorators\CacheGroupDecorator;
+use App\Repositories\Decorators\CacheProjectDecorator;
+use App\Repositories\Decorators\CacheExpeditionDecorator;
 
-use Biospex\Repositories\UserRepository;
-use Biospex\Repositories\PermissionRepository;
-use Biospex\Repositories\InviteRepository;
-use Biospex\Repositories\GroupRepository;
-use Biospex\Repositories\ProjectRepository;
-use Biospex\Repositories\AuthSession;
-use Biospex\Repositories\ExpeditionRepository;
+use App\Repositories\Contracts\Group as GroupContract;
+use App\Models\Group;
+use App\Repositories\Contracts\Permission as PermissionContract;
+use App\Models\Permission;
 
-use Biospex\Repositories\Decorators\CacheGroupDecorator;
-use Biospex\Repositories\Decorators\CacheProjectDecorator;
-use Biospex\Repositories\Decorators\CacheExpeditionDecorator;
+use App\Services\Cache\LaravelCache;
 
+use App\Models\Invite;
 
-use Biospex\Services\Cache\LaravelCache;
+use App\Models\Project;
+use App\Models\Expedition;
 
-
-use Biospex\Models\Permission;
-use Biospex\Models\Invite;
-use Biospex\Models\Group;
-use Biospex\Models\Project;
-use Biospex\Models\Expedition;
-
-/*
-use Biospex\Repositories\GroupRepository;
-use Biospex\Repo\Group\CacheGroupDecorator;
-use Biospex\Repo\Project\ProjectRepository;
-use Biospex\Repo\Project\CacheProjectDecorator;
-use Biospex\Repo\Expedition\ExpeditionRepository;
-use Biospex\Repo\Expedition\CacheExpeditionDecorator;
-
-use Biospex\Repo\Session\SentrySession;
-use Biospex\Repo\Permission\PermissionRepository;
-use Biospex\Repo\Invite\InviteRepository;
-
-
-use Biospex\Services\Cache\LaravelCache;
-
-use Group;
-use Project;
-use Expedition;
-
-use Invite;
-*/
-
-class RepositoriesServiceProvider extends ServiceProvider {
-
+class RepositoriesServiceProvider extends ServiceProvider
+{
     /**
      * Register the binding
      */
@@ -56,72 +36,71 @@ class RepositoriesServiceProvider extends ServiceProvider {
         $app = $this->app;
 
         // Bind the Session Repository with Sentry
-        $app->bind('Biospex\Repositories\Contracts\Auth', function($app)
-        {
+        $app->bind('App\Repositories\Contracts\Auth', function ($app) {
             return new AuthSession(
                 $app['sentry']
             );
         });
 
         // Bind the User Repository with Sentry
-        $app->bind('Biospex\Repositories\Contracts\User', function($app)
-        {
+        $app->bind('App\Repositories\Contracts\User', function ($app) {
             return new UserRepository(
                 $app['sentry'], new PermissionRepository(new Permission), new InviteRepository(new Invite)
             );
         });
 
-        // Bind the Group Repository with Sentry
-		$app->bind('Biospex\Repositories\Contracts\Group', function($app)
-		{
-			$group = new GroupRepository(
-				new Group, $app['sentry'], new PermissionRepository(new Permission)
-			);
+        $this->app->singleton(GroupContract::class, function () {
+            $group = new GroupRepository(new Group);
 
-			$cache = new CacheGroupDecorator(
-				$group, new LaravelCache($app['cache.store'], 'queries')
-			);
+            $cache = new CacheGroupDecorator($group, $this->app['cache.store'], 'model');
 
-			return $cache;
-		});
+            return $cache;
+        });
 
-		$app->bind('Biospex\Repositories\Contracts\Project', function($app)
-		{
-			$project = new ProjectRepository(new Project);
+        $this->app->singleton(PermissionContract::class, function () {
+            $permission = new PermissionRepository(new Permission);
 
-			$cache = new CacheProjectDecorator(
-				$project, new LaravelCache($app['cache.store'], 'queries')
-			);
+            $cache = new CacheGroupDecorator($permission, $this->app['cache.store'], 'model');
 
-			return $cache;
+            return $cache;
+        });
 
-		});
+        $app->bind('App\Repositories\Contracts\Project', function ($app) {
+            $project = new ProjectRepository(new Project);
 
-		$app->bind('Biospex\Repositories\Contracts\Expedition', function($app)
-		{
-			$expedition = new ExpeditionRepository(new Expedition);
+            $cache = new CacheProjectDecorator(
+                $project, new LaravelCache($app['cache.store'], 'queries')
+            );
 
-			$cache = new CacheExpeditionDecorator(
-				$expedition, new LaravelCache($app['cache.store'], 'queries')
-			);
+            return $cache;
 
-			return $cache;
-		});
+        });
 
-		$app->bind('Biospex\Repositories\Contracts\Permission', 'Biospex\Repositories\PermissionRepository');
-        $app->bind('Biospex\Repositories\Contracts\Navigation', 'Biospex\Repositories\NavigationRepository');
-        $app->bind('Biospex\Repositories\Contracts\Subject', 'Biospex\Repositories\SubjectRepository');
-        $app->bind('Biospex\Repositories\Contracts\Import', 'Biospex\Repositories\ImportRepository');
-		$app->bind('Biospex\Repositories\Contracts\Header', 'Biospex\Repositories\HeaderRepository');
-        $app->bind('Biospex\Repositories\Contracts\WorkflowManager', 'Biospex\Repositories\WorkflowManagerRepository');
-        $app->bind('Biospex\Repositories\Contracts\Actor', 'Biospex\Repositories\ActorRepository');
-        $app->bind('Biospex\Repositories\Contracts\Download', 'Biospex\Repositories\DownloadRepository');
-        $app->bind('Biospex\Repositories\Contracts\Invite', 'Biospex\Repositories\InviteRepository');
-		$app->bind('Biospex\Repositories\Contracts\Property', 'Biospex\Repositories\PropertyRepository');
-		$app->bind('Biospex\Repositories\Contracts\Meta', 'Biospex\Repositories\MetaRepository');
-		$app->bind('Biospex\Repositories\Contracts\OcrQueue', 'Biospex\Repositories\OcrQueueRepository');
+        $app->bind('App\Repositories\Contracts\Expedition', function ($app) {
+            $expedition = new ExpeditionRepository(new Expedition);
+
+            $cache = new CacheExpeditionDecorator(
+                $expedition, new LaravelCache($app['cache.store'], 'queries')
+            );
+
+            return $cache;
+        });
+
+        $app->bind('App\Repositories\Contracts\Permission', 'App\Repositories\PermissionRepository');
+        $app->bind('App\Repositories\Contracts\Navigation', 'App\Repositories\NavigationRepository');
+        $app->bind('App\Repositories\Contracts\Subject', 'App\Repositories\SubjectRepository');
+        $app->bind('App\Repositories\Contracts\Import', 'App\Repositories\ImportRepository');
+        $app->bind('App\Repositories\Contracts\Header', 'App\Repositories\HeaderRepository');
+        $app->bind('App\Repositories\Contracts\WorkflowManager', 'App\Repositories\WorkflowManagerRepository');
+        $app->bind('App\Repositories\Contracts\Actor', 'App\Repositories\ActorRepository');
+        $app->bind('App\Repositories\Contracts\Download', 'App\Repositories\DownloadRepository');
+        $app->bind('App\Repositories\Contracts\Invite', 'App\Repositories\InviteRepository');
+        $app->bind('App\Repositories\Contracts\Property', 'App\Repositories\PropertyRepository');
+        $app->bind('App\Repositories\Contracts\Meta', 'App\Repositories\MetaRepository');
+        $app->bind('App\Repositories\Contracts\OcrQueue', 'App\Repositories\OcrQueueRepository');
+        $app->bind('App\Repositories\Contracts\Transcription', 'App\Repositories\TranscriptionRepository');
+        $app->bind('App\Repositories\Contracts\UserGridField', 'App\Repositories\UserGridFieldRepository');
 
         //$app->bind('Illuminate\Support\Contracts\MessageProvider', 'Illuminate\Support\MessageBag');
     }
-
 }

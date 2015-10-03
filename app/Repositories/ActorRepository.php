@@ -1,9 +1,10 @@
-<?php namespace Biospex\Repositories;
+<?php namespace App\Repositories;
+
 /**
  * ActorRepository.php
  *
  * @package    Biospex Package
- * @version    1.0
+ * @version    2.0
  * @author     Robert Bruhn <79e6ef82@opayq.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
@@ -24,21 +25,21 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Biospex\Repositories\Contracts\ActorInterface;
-use Biospex\ModelsActor;
+use App\Repositories\Contracts\Actor;
+use App\Models\Actor as Model;
 
-class ActorRepository extends Repository implements ActorInterface {
-
+class ActorRepository extends Repository implements Actor
+{
     /**
-     * @param Actor $actor
+     * @param Model $model
      */
-    public function __construct(Actor $actor)
+    public function __construct(Model $model)
     {
-        $this->model = $actor;
+        $this->model = $model;
     }
 
-	public function selectList()
-	{
-		return $this->model->selectList();
-	}
+    public function selectList()
+    {
+        return $this->model->selectList();
+    }
 }

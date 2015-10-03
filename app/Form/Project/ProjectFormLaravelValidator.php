@@ -1,10 +1,10 @@
-<?php namespace Biospex\Form\Project;
+<?php namespace App\Form\Project;
 
 /**
  * ProjectFormLaravelValidator.php
  *
  * @package    Biospex Package
- * @version    1.0
+ * @version    2.0
  * @author     Robert Bruhn <79e6ef82@opayq.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
@@ -25,10 +25,10 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Biospex\Validation\AbstractLaravelValidator;
+use App\Validation\AbstractLaravelValidator;
 
-class ProjectFormLaravelValidator extends AbstractLaravelValidator {
-
+class ProjectFormLaravelValidator extends AbstractLaravelValidator
+{
     /**
      * Validation rules
      *
@@ -45,5 +45,4 @@ class ProjectFormLaravelValidator extends AbstractLaravelValidator {
         'banner'            => 'image|image_size:>=1200,>=300',
         'logo'              => 'image|image_size:<=300,<=200'
     ];
-
 }

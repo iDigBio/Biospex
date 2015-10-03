@@ -1,4 +1,5 @@
-<?php namespace Biospex\Repositories;
+<?php namespace App\Repositories;
+
 /**
  * ExpeditionRepository.php
  *
@@ -24,22 +25,22 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Biospex\Repositories\Contracts\ExpeditionInterface;
-use Biospex\Models\Expedition;
+use App\Repositories\Contracts\Expedition;
+use App\Models\Expedition as Model;
 
-class ExpeditionRepository extends Repository implements ExpeditionInterface {
-
+class ExpeditionRepository extends Repository implements Expedition
+{
     /**
      * @var \Expedition
      */
     protected $model;
 
     /**
-     * @param Expedition $expedition
+     * @param Model $model
      */
-    public function __construct(Expedition $expedition)
+    public function __construct(Model $model)
     {
-        $this->model = $expedition;
+        $this->model = $model;
     }
 
     /**
@@ -48,23 +49,23 @@ class ExpeditionRepository extends Repository implements ExpeditionInterface {
      * @param array $data
      * @return mixed|void
      */
-    public function create($data = array())
+    public function create($data = [])
     {
         $result = $this->model->create($data);
-		$expedition = $this->model->find($result->id);
-		$expedition->subjects()->sync($data['subject_ids']);
+        $expedition = $this->model->find($result->id);
+        $expedition->subjects()->sync($data['subject_ids']);
 
         return $expedition;
     }
 
-	/**
-	 * Find by uuid
-	 *
-	 * @param $uuid
-	 * @return mixed
-	 */
-	public function findByUuid($uuid)
-	{
-		return $this->model->findByUuid($uuid);
-	}
+    /**
+     * Find by uuid
+     *
+     * @param $uuid
+     * @return mixed
+     */
+    public function findByUuid($uuid)
+    {
+        return $this->model->findByUuid($uuid);
+    }
 }

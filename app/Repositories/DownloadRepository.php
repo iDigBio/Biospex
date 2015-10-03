@@ -1,4 +1,5 @@
-<?php namespace Biospex\Repositories;
+<?php namespace App\Repositories;
+
 /**
  * DownloadRepository.php
  *
@@ -24,26 +25,26 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Biospex\Repositories\Contracts\DownloadInterface;
-use Biospex\Models\Download;
+use App\Repositories\Contracts\Download;
+use App\Models\Download as Model;
 
-class DownloadRepository extends Repository implements DownloadInterface {
-
+class DownloadRepository extends Repository implements Download
+{
     /**
-     * @param Download $download
+     * @param Model $model
      */
-    public function __construct(Download $download)
+    public function __construct(Model $model)
     {
-        $this->model = $download;
+        $this->model = $model;
     }
 
-	/**
-	 * Return expired downloads.
-	 *
-	 * @return mixed
-	 */
-	public function getExpired()
-	{
-		return $this->model->getExpired();
-	}
+    /**
+     * Return expired downloads.
+     *
+     * @return mixed
+     */
+    public function getExpired()
+    {
+        return $this->model->getExpired();
+    }
 }

@@ -1,4 +1,5 @@
-<?php namespace Biospex\Repositories;
+<?php namespace App\Repositories;
+
 /**
  * HeaderRepository.php
  *
@@ -24,28 +25,27 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Biospex\Repositories\Contracts\HeaderInterface;
-use Biospex\Models\Header;
+use App\Repositories\Contracts\Header;
+use App\Models\Header as Model;
 
-class HeaderRepository extends Repository implements HeaderInterface {
-
+class HeaderRepository extends Repository implements Header
+{
     /**
      * @param Header $header
      */
-    public function __construct(Header $header)
+    public function __construct(Model $model)
     {
-        $this->model = $header;
+        $this->model = $model;
     }
 
-	/**
-	 * Find by project Id
-	 *
-	 * @param $id
-	 * @return \Illuminate\Database\Eloquent\Model|null|static
-	 */
-	public function getByProjectId($id)
-	{
-		return $this->model->getByProjectId($id);
-	}
-
+    /**
+     * Find by project Id
+     *
+     * @param $id
+     * @return \Illuminate\Database\Eloquent\Model|null|static
+     */
+    public function getByProjectId($id)
+    {
+        return $this->model->getByProjectId($id);
+    }
 }

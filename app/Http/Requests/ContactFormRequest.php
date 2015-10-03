@@ -1,7 +1,9 @@
-<?php  namespace Biospex\Http\Requests;
+<?php
 
-class ContactFormRequest extends Request {
+namespace App\Http\Requests;
 
+class ContactFormRequest extends Request
+{
     /**
      * Let any user submit form.
      * @return bool
@@ -26,5 +28,4 @@ class ContactFormRequest extends Request {
             'registertime' => 'required_with:registeruser|honeytime:5',
         ];
     }
-
 }

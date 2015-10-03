@@ -1,28 +1,4 @@
-<?php namespace Biospex\Models;
-/**
- * Project.php
- *
- * @package    Biospex Package
- * @version    1.0
- * @author     Robert Bruhn <79e6ef82@opayq.com>
- * @license    GNU General Public License, version 3
- * @copyright  (c) 2014, Biospex
- * @link       http://biospex.org
- *
- * This file is part of Biospex.
- * Biospex is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Biospex is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
- */
+<?php namespace App\Models;
 
 use Jenssegers\Eloquent\Model as Eloquent;
 use Codesleeve\Stapler\ORM\EloquentTrait;
@@ -30,31 +6,31 @@ use Codesleeve\Stapler\ORM\StaplerableInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Cviebrock\EloquentSluggable\SluggableInterface;
 use Cviebrock\EloquentSluggable\SluggableTrait;
-use Biospex\Models\Traits\UuidTrait;
-use Biospex\Models\Traits\BelongsToGroupTrait;
-use Biospex\Models\Traits\HasOneHeaderTrait;
-use Biospex\Models\Traits\HasManyExpeditionsTrait;
-use Biospex\Models\Traits\HasManySubjectsTrait;
-use Biospex\Models\Traits\HasManyMetasTrait;
-use Biospex\Models\Traits\HasManyImportsTrait;
-use Biospex\Models\Traits\BelongsToManyActorsTrait;
-use Biospex\Models\Traits\HasManyOcrQueuesTrait;
+use App\Models\Traits\UuidTrait;
+use App\Models\Traits\BelongsToGroupTrait;
+use App\Models\Traits\HasOneHeaderTrait;
+use App\Models\Traits\HasManyExpeditionsTrait;
+use App\Models\Traits\HasManySubjectsTrait;
+use App\Models\Traits\HasManyMetasTrait;
+use App\Models\Traits\HasManyImportsTrait;
+use App\Models\Traits\HasManyOcrQueuesTrait;
+use App\Models\Traits\HasManyUserGridFieldTrait;
 use Illuminate\Support\Facades\Input;
 
-class Project extends Eloquent implements StaplerableInterface, SluggableInterface{
-
+class Project extends Eloquent implements StaplerableInterface, SluggableInterface
+{
     use EloquentTrait;
     use SoftDeletes;
     use SluggableTrait;
-	use UuidTrait;
+    use UuidTrait;
     use BelongsToGroupTrait;
     use HasOneHeaderTrait;
     use HasManyExpeditionsTrait;
     use HasManySubjectsTrait;
     use HasManyMetasTrait;
     use HasManyImportsTrait;
-    use BelongsToManyActorsTrait;
     use HasManyOcrQueuesTrait;
+    use HasManyUserGridFieldTrait;
 
     /**
      * Sluggable trait variable.
@@ -82,31 +58,31 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      * Set database connection.
      * @var string
      */
-	protected $connection = 'mysql';
+    protected $connection = 'mysql';
 
     /**
      * Set primary key of table.
      * @var string
      */
-	protected $primaryKey = 'id';
+    protected $primaryKey = 'id';
 
     /**
      * Fillable columns.
      * @var array
      */
     protected $fillable = [
-		'uuid',
+        'uuid',
         'group_id',
         'title',
         'slug',
         'contact',
         'contact_email',
-		'organization_website',
+        'organization_website',
         'organization',
         'project_partners',
         'funding_source',
         'description_short',
-		'description_long',
+        'description_long',
         'incentives',
         'geographic_scope',
         'taxonomic_scope',
@@ -126,8 +102,9 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     /**
      * @param array $attributes
      */
-    public function __construct(array $attributes = []) {
-		$this->hasAttachedFile('logo', ['styles' => ['thumb' => '100x67']]);
+    public function __construct(array $attributes = [])
+    {
+        $this->hasAttachedFile('logo', ['styles' => ['thumb' => '100x67']]);
         $this->hasAttachedFile('banner', ['styles' => ['thumb' => '200x50']]);
 
         parent::__construct($attributes);
@@ -136,20 +113,36 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     /**
      * Boot function to add model events
      */
-    public static function boot(){
+    public static function boot()
+    {
         parent::boot();
 
-		static::bootStapler();
+        static::bootStapler();
 
-        static::saving(function($model)
-        {
-            $model->target_fields = Input::all();
+        static::saving(function ($model) {
+            $model->target_fields = \Input::all();
         });
 
-		// Delete associated subjects from expedition_subjects
-		static::deleting(function($model) {
-			$model->expeditions()->delete();
-		});
+        // Delete associated subjects from expedition_subjects
+        static::deleting(function ($model) {
+            $model->expeditions()->delete();
+        });
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function expeditions()
+    {
+        return $this->hasMany('App\Models\Expedition');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function actors()
+    {
+        return $this->belongsToMany('App\Models\Actor')->withPivot('order_by')->orderBy('order_by', 'asc')->withTimestamps();
     }
 
 
@@ -161,19 +154,19 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      */
     public function bySlug($slug)
     {
-		return $this->with(['group', 'expeditions.actorsCompletedRelation', 'expeditions.expeditionActors'])->where('slug', '=', $slug)->first();
+        return $this->with(['group', 'expeditions.actorsCompletedRelation', 'expeditions.expeditionActors'])->where('slug', '=', $slug)->first();
     }
 
-	/**
-	 * Find by uuid.
-	 *
-	 * @param $uuid
-	 * @return mixed
-	 */
-	public function findByUuid($uuid)
-	{
-		return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
-	}
+    /**
+     * Find by uuid.
+     *
+     * @param $uuid
+     * @return mixed
+     */
+    public function findByUuid($uuid)
+    {
+        return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
+    }
 
     /**
      * Mutator for target_fields
@@ -184,11 +177,11 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     {
         $target_fields = [];
 
-        if (isset($input['targetCount']) && $input['targetCount'] > 0)
-        {
-            for ($i=0; $i<$input['targetCount']; $i++)
-            {
-                if (empty($input['target_name'][$i])) continue;
+        if (isset($input['targetCount']) && $input['targetCount'] > 0) {
+            for ($i=0; $i<$input['targetCount']; $i++) {
+                if (empty($input['target_name'][$i])) {
+                    continue;
+                }
 
                 $fields = [
                     'target_core'               => $input['target_core'][$i],
@@ -200,16 +193,14 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
                 ];
                 $target_fields[$i] = $fields;
             }
-        }
-        else
-        {
+        } else {
             unset($input['target_name']);
             unset($input['target_description']);
             unset($input['target_valid_response']);
             unset($input['target_inference']);
             unset($input['target_inference_example']);
         }
-        $this->attributes['target_fields'] = ( ! empty($target_fields)) ? json_encode($target_fields) : '';
+        $this->attributes['target_fields'] = (! empty($target_fields)) ? json_encode($target_fields) : '';
     }
 
     /**
@@ -224,28 +215,6 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
-     * Accessor for created_at
-     *
-     * @param $value
-     * @return bool|string
-     */
-    public function getCreatedAtAttribute($value)
-    {
-        return date("m/d/Y", strtotime($value));
-    }
-
-    /**
-     * Accessor updated_at
-     *
-     * @param $value
-     * @return bool|string
-     */
-    public function getUpdatedAtAttribute($value)
-    {
-        return date("m/d/Y", strtotime($value));
-    }
-
-    /**
      * Set attribute for advertise.
      *
      * @param $input
@@ -255,53 +224,46 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         $extra = isset($input['advertiseExtra']) ? $input['advertiseExtra'] : '';
 
         $build = [];
-        $ppsrFields = \Config::get('variables.ppsr');
-        foreach ($ppsrFields as $field => $data)
-        {
-            foreach ($data as $type => $value)
-            {
-                if ($type == 'private')
-                {
+        $ppsrFields = \Config::get('config.ppsr');
+        foreach ($ppsrFields as $field => $data) {
+            foreach ($data as $type => $value) {
+                if ($type == 'private') {
                     $build[$field] = $this->{$value};
                 }
 
-                if ($type == 'column')
-                {
+                if ($type == 'date') {
+                    $build[$field] = format_date($this->{$value}, 'Y-m-d m:d:s');
+                }
+
+                if ($type == 'column') {
                     $build[$field] = $input[$value];
                     continue;
                 }
 
-                if ($type == 'value')
-                {
+                if ($type == 'value') {
                     $build[$field] = $value;
                     continue;
                 }
 
-                if ($type == 'array')
-                {
+                if ($type == 'array') {
                     $combined = '';
-                    foreach ($value as $col)
-                    {
+                    foreach ($value as $col) {
                         $combined .= $input[$col] . ", ";
                     }
                     $build[$field] = rtrim($combined, ', ');
                     continue;
                 }
 
-                if ($type == 'url')
-                {
-                    if ($value == 'slug')
-                    {
-                        $build[$field] = $_ENV['site.url'] . '/' . $this->{$value};
+                if ($type == 'url') {
+                    if ($value == 'slug') {
+                        $build[$field] = env('APP_URL') . '/' . $this->{$value};
                         continue;
                     }
 
-                    if ($value == 'logo')
-                    {
-                        $build[$field] = $_ENV['site.url'] . $this->{$value}->url();
+                    if ($value == 'logo') {
+                        $build[$field] = env('APP_URL') . $this->{$value}->url();
                         continue;
                     }
-
                 }
             }
         }
@@ -310,5 +272,4 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
 
         $this->attributes['advertise'] = json_encode($advertise, JSON_UNESCAPED_UNICODE);
     }
-
 }

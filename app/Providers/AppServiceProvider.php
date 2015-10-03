@@ -1,19 +1,21 @@
-<?php namespace Biospex\Providers;
+<?php namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Barryvdh\Debugbar\ServiceProvider as Debugbar;
+use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider as IdeHelper;
 
-class AppServiceProvider extends ServiceProvider {
-
-	/**
-	 * Bootstrap any application services.
-	 *
-	 * @return void
-	 */
-	public function boot()
-	{
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Bootstrap any application services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
         $this->setupBlade();
-		//
-	}
+        //
+    }
 
     /**
      * Set up blade extension.
@@ -27,21 +29,21 @@ class AppServiceProvider extends ServiceProvider {
         });
     }
 
-	/**
-	 * Register any application services.
-	 *
-	 * This service provider is a great spot to register your various container
-	 * bindings with the application. As you can see, we are registering our
-	 * "Registrar" implementation here. You can add your own bindings too!
-	 *
-	 * @return void
-	 */
-	public function register()
-	{
-		$this->app->bind(
-			'Illuminate\Contracts\Auth\Registrar',
-			'Biospex\Services\Registrar'
-		);
+    /**
+     * Register any application services.
+     *
+     * This service provider is a great spot to register your various container
+     * bindings with the application. As you can see, we are registering our
+     * "Registrar" implementation here. You can add your own bindings too!
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->bind(
+            'Illuminate\Contracts\Auth\Registrar',
+            'App\Services\Registrar'
+        );
 
         $this->app->bind('Cartalyst\Sentry\Sentry', function ($app) {
             return $app['sentry'];
@@ -50,12 +52,9 @@ class AppServiceProvider extends ServiceProvider {
         /*
          * Development Providers
          */
-        if($this->app->environment('local'))
-        {
-            $this->app->register('Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider');
-            $this->app->register('Barryvdh\Debugbar\ServiceProvider');
+        if ($this->app->environment('local')) {
+            $this->app->register(IdeHelper::class);
+            $this->app->register(Debugbar::class);
         }
-
-	}
-
+    }
 }

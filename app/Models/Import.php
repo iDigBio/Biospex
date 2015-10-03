@@ -1,9 +1,10 @@
-<?php namespace Biospex\Models;
+<?php namespace App\Models;
+
 /**
  * Import.php
  *
  * @package    Biospex Package
- * @version    1.0
+ * @version    2.0
  * @author     Robert Bruhn <79e6ef82@opayq.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
@@ -25,11 +26,11 @@
  */
 
 use Illuminate\Database\Eloquent\Model;
-use Biospex\Models\Traits\BelongsToProjectTrait;
-use Biospex\Models\BelongsToUserTrait;
+use App\Models\Traits\BelongsToProjectTrait;
+use App\Models\Traits\BelongsToUserTrait;
 
-class Import extends Model {
-
+class Import extends Model
+{
     use BelongsToProjectTrait;
     use BelongsToUserTrait;
 
@@ -48,6 +49,6 @@ class Import extends Model {
         'user_id',
         'project_id',
         'file',
-		'error'
+        'error'
     ];
 }

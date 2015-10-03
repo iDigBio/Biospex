@@ -3,7 +3,7 @@
  * BelongsToGroupTrait.php
  *
  * @package    Biospex Package
- * @version    1.0
+ * @version    2.0
  * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
@@ -24,15 +24,15 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Biospex\Models\Traits;
+namespace App\Models\Traits;
 
-
-trait BelongsToGroupTrait {
+trait BelongsToGroupTrait
+{
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function group()
     {
-        return $this->belongsTo('Biospex\Models\Group');
+        return $this->belongsTo('App\Models\Group');
     }
 }

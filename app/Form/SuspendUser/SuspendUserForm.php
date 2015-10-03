@@ -1,9 +1,10 @@
-<?php namespace Biospex\Form\SuspendUser;
+<?php namespace App\Form\SuspendUser;
+
 /**
  * SuspendUserForm.php
  *
  * @package    Biospex Package
- * @version    1.0
+ * @version    2.0
  * @author     Robert Bruhn <79e6ef82@opayq.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
@@ -23,32 +24,27 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Biospex\Form\Form;
-use Biospex\Validation\ValidableInterface;
-use Biospex\Repo\User\UserInterface;
+use App\Form\Form;
+use App\Repositories\Contracts\User;
 
-class SuspendUserForm extends Form{
+class SuspendUserForm extends Form
+{
+    public function __construct(User $user)
+    {
+        $this->repo = $user;
+    }
 
-	public function __construct(ValidableInterface $validator, UserInterface $user)
-	{
-		$this->validator = $validator;
-		$this->repo = $user;
-	}
-
-	/**
+    /**
      * Process the requested action
      *
      * @return integer
      */
     public function suspend(array $input)
     {
-
-        if( ! $this->valid($input) )
-        {
+        if (! $this->valid($input)) {
             return false;
         }
 
         return $this->user->suspend($input['id'], $input['minutes']);
     }
-
 }

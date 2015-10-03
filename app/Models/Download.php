@@ -1,9 +1,10 @@
-<?php namespace Biospex\Models;
+<?php namespace App\Models;
+
 /**
  * Download.php
  *
  * @package    Biospex Package
- * @version    1.0
+ * @version    2.0
  * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
@@ -24,12 +25,12 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Biospex\Models\Traits\BelongsToManyExpeditionsTrait;
+use App\Models\Traits\BelongsToManyExpeditionsTrait;
 use Illuminate\Database\Eloquent\Model;
-use Biospex\Models\Traits\BelongsToExpeditionTrait;
+use App\Models\Traits\BelongsToExpeditionTrait;
 
-class Download extends Model {
-
+class Download extends Model
+{
     use BelongsToExpeditionTrait;
 
     /**
@@ -45,18 +46,26 @@ class Download extends Model {
      */
     protected $fillable = [
         'expedition_id',
-		'actor_id',
+        'actor_id',
         'file',
         'count'
     ];
 
-	/**
-	 * Get expired downloads
-	 *
-	 * @return \Illuminate\Database\Eloquent\Collection|static[]
-	 */
-	public function getExpired()
-	{
-		return $this->where('count', '>', 5)->orWhere('created_at', '<', DB::raw('NOW() - INTERVAL 7 DAY'))->get();
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function expeditions()
+    {
+        return $this->belongsToMany('App\Models\Expedition');
+    }
+
+    /**
+     * Get expired downloads
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function getExpired()
+    {
+        return $this->where('count', '>', 5)->orWhere('created_at', '<', DB::raw('NOW() - INTERVAL 7 DAY'))->get();
+    }
 }

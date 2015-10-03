@@ -1,9 +1,10 @@
-<?php namespace Biospex\Models;
+<?php namespace App\Models;
+
 /**
  * Expedition.php
  *
  * @package    Biospex Package
- * @version    1.0
+ * @version    2.0
  * @author     Robert Bruhn <79e6ef82@opayq.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
@@ -26,22 +27,20 @@
 
 use Jenssegers\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Biospex\Models\Traits\UuidTrait;
-use Biospex\Models\Traits\BelongsToProjectTrait;
-use Biospex\Models\Traits\BelongsToManySubjectsTrait;
-use Biospex\Models\Traits\HasOneWorkflowManagerTrait;
-use Biospex\Models\Traits\HasManyDownloadsTrait;
-use Biospex\Models\Traits\BelongsToManyActorsTrait;
+use App\Models\Traits\UuidTrait;
+use App\Models\Traits\BelongsToProjectTrait;
+use App\Models\Traits\HasOneWorkflowManagerTrait;
+use App\Models\Traits\HasManyDownloadsTrait;
+use App\Models\Traits\HasManyUserGridFieldTrait;
 
-class Expedition extends Eloquent {
-
+class Expedition extends Eloquent
+{
     use SoftDeletes;
-	use UuidTrait;
+    use UuidTrait;
     use BelongsToProjectTrait;
-    use BelongsToManySubjectsTrait;
     use HasOneWorkflowManagerTrait;
     use HasManyDownloadsTrait;
-    use BelongsToManyActorsTrait;
+    use HasManyUserGridFieldTrait;
 
     protected $dates = ['deleted_at'];
 
@@ -52,9 +51,9 @@ class Expedition extends Eloquent {
      */
     protected $table = 'expeditions';
 
-	protected $connection = 'mysql';
+    protected $connection = 'mysql';
 
-	protected $primaryKey = 'id';
+    protected $primaryKey = 'id';
 
     /**
      * Accepted attributes
@@ -62,7 +61,7 @@ class Expedition extends Eloquent {
      * @var array
      */
     protected $fillable = [
-		'uuid',
+        'uuid',
         'project_id',
         'title',
         'description',
@@ -72,70 +71,67 @@ class Expedition extends Eloquent {
     /**
      * Boot function to add model events
      */
-    public static function boot(){
+    public static function boot()
+    {
         parent::boot();
     }
 
-
-	/**
-	 * Find by uuid.
-	 *
-	 * @param $uuid
-	 * @return mixed
-	 */
-	public function findByUuid($uuid)
-	{
-		return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
-	}
-
     /**
-     * Accessor for created_at
+     * Belongs to many
+     * $expedition->subjects()->attach($subject) adds expedition ids in subjects
      *
-     * @param $value
-     * @return bool|string
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function getCreatedAtAttribute($value)
+    public function subjects()
     {
-        return date("m/d/Y", strtotime($value));
+        return $this->belongsToMany('App\Models\Subject');
     }
 
     /**
-     * Accessor updated_at
-     *
-     * @param $value
-     * @return bool|string
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function getUpdatedAtAttribute($value)
+    public function actors()
     {
-        return date("m/d/Y", strtotime($value));
+        return $this->belongsToMany('App\Models\Actor')->withPivot('state', 'completed')->withTimestamps();
     }
 
-	/**
-	 * Get counts attribute
-	 *
-	 * @return int
-	 */
-	public function getSubjectsCountAttribute ()
-	{
-		return $this->subjects()->count();
-	}
+    /**
+     * Return completed through relationship
+     * @return mixed
+     */
+    public function actorsCompletedRelation()
+    {
+        return $this->belongsToMany('App\Models\Actor')->selectRaw('expedition_id, avg(completed) as avg')->groupBy('expedition_id');
+    }
 
-	/**
-	 * Return completed through relationship
-	 * @return mixed
-	 */
-	public function actorsCompletedRelation ()
-	{
-		return $this->belongsToMany('Actor', 'expedition_actor')->selectRaw('expedition_id, avg(completed) as avg')->groupBy('expedition_id');
-	}
+    /**
+     * Find by uuid.
+     *
+     * @param $uuid
+     * @return mixed
+     */
+    public function findByUuid($uuid)
+    {
+        return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
+    }
 
-	/**
-	 * Get completed attribute of actors
-	 *
-	 * @return int
-	 */
-	public function getActorsCompletedAttribute ()
-	{
-		return $this->actorsCompletedRelation->first() ? $this->actorsCompletedRelation->first()->avg : 0;
-	}
+    /**
+     * Get counts attribute
+     *
+     * @return int
+     */
+    public function getSubjectsCountAttribute()
+    {
+        return $this->subjects()->count();
+    }
+
+    /**
+     * Get completed attribute of actors
+     *
+     * @return int
+     */
+    public function getActorsCompletedAttribute()
+    {
+        return $this->actorsCompletedRelation->first() ? $this->actorsCompletedRelation->first()->avg : 0;
+    }
 }

@@ -1,17 +1,13 @@
-<?php namespace Biospex\Events;
+<?php
 
-use Illuminate\Queue\SerializesModels;
+namespace App\Events;
 
-class UserLoggedOutEvent extends Event {
-
-	use SerializesModels;
-
-	/**
-	 * Create a new event instance.
-	 */
-	public function __construct()
-	{
-
-	}
-
+class UserLoggedOutEvent extends Event
+{
+    /**
+     * Create a new event instance.
+     */
+    public function __construct()
+    {
+    }
 }

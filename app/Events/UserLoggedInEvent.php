@@ -1,10 +1,9 @@
-<?php namespace Biospex\Events;
+<?php
 
-use Illuminate\Queue\SerializesModels;
+namespace App\Events;
 
-class UserLoggedInEvent extends Event {
-
-	use SerializesModels;
+class UserLoggedInEvent extends Event
+{
     /**
      * @var
      */
@@ -19,10 +18,9 @@ class UserLoggedInEvent extends Event {
      *
      * @param $credentials
      */
-	public function __construct($credentials)
-	{
+    public function __construct($credentials)
+    {
         $this->userId = $credentials['userId'];
         $this->email = $credentials['email'];
     }
-
 }

@@ -1,9 +1,10 @@
-<?php namespace Biospex\Models;
+<?php namespace App\Models;
+
 /**
  * Actor.php
  *
  * @package    Biospex Package
- * @version    1.0
+ * @version    2.0
  * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
@@ -25,38 +26,49 @@
  */
 
 use Illuminate\Database\Eloquent\Model;
-use Biospex\Models\Traits\BelongsToManyProjectsTrait;
-use Biospex\Models\Traits\BelongsToManyExpeditionsTrait;
-use Biospex\Models\Traits\HasManyDownloadsTrait;
+use App\Models\Traits\HasManyDownloadsTrait;
 
 class Actor extends Model
 {
-    use BelongsToManyProjectsTrait;
-    use BelongsToManyExpeditionsTrait;
     use HasManyDownloadsTrait;
 
-	/**
-	 * The database table used by the model.
-	 *
-	 * @var string
-	 */
-	protected $table = 'actors';
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'actors';
 
-	protected $fillable = [
-		'title',
-		'url',
-		'class',
-	];
+    protected $fillable = [
+        'title',
+        'url',
+        'class',
+    ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function projects()
+    {
+        return $this->belongsToMany('App\Models\Project')->withTimestamps()->withPivot('order_by');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function expeditions()
+    {
+        return $this->belongsToMany('App\Models\Expedition')->withPivot('state', 'completed')->withTimestamps();
+    }
 
 
-	/**
-	 * Return as select list
-	 *
-	 * @return array
-	 */
-	public function selectList()
-	{
-		return $this->where('private', '=', 0)->lists('title', 'id');
-	}
-
+    /**
+     * Return as select list
+     *
+     * @return array
+     */
+    public function selectList()
+    {
+        return $this->where('private', '=', 0)->lists('title', 'id')->all();
+    }
 }

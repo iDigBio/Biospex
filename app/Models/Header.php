@@ -1,9 +1,10 @@
-<?php namespace Biospex\Models;
+<?php namespace App\Models;
+
 /**
  * Header.php
  *
  * @package    Biospex Package
- * @version    1.0
+ * @version    2.0
  * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
@@ -26,41 +27,41 @@
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
-use Biospex\Models\Traits\BelongsToProjectTrait;
+use App\Models\Traits\BelongsToProjectTrait;
 
-class Header extends Model{
-
-	use SoftDeletes;
+class Header extends Model
+{
+    use SoftDeletes;
     use BelongsToProjectTrait;
 
-	/**
-	 * The database table used by the model.
-	 *
-	 * @var string
-	 */
-	protected $table = 'headers';
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'headers';
 
-	/**
-	 * @var array
-	 */
-	protected $dates = ['deleted_at'];
+    /**
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
 
-	/**
-	 * @var array
-	 */
-	protected $fillable = array(
-		'project_id',
-		'header'
-	);
+    /**
+     * @var array
+     */
+    protected $fillable = array(
+        'project_id',
+        'header'
+    );
 
-	/**
-	 * Find header by project Id
-	 *
-	 * @param $id
-	 * @return \Illuminate\Database\Eloquent\Model|null|static
-	 */
-	public function getByProjectId($id)
-	{
-		return $this->where('project_id', '=', $id)->first();
-	}
+    /**
+     * Find header by project Id
+     *
+     * @param $id
+     * @return \Illuminate\Database\Eloquent\Model|null|static
+     */
+    public function getByProjectId($id)
+    {
+        return $this->where('project_id', '=', $id)->first();
+    }
 }

@@ -1,9 +1,10 @@
-<?php namespace Biospex\Form;
+<?php namespace App\Form;
+
 /**
  * Form.php
  *
  * @package    Biospex Package
- * @version    1.0
+ * @version    2.0
  * @author     Robert Bruhn <79e6ef82@opayq.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
@@ -24,7 +25,8 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-abstract class Form {
+abstract class Form
+{
     /**
      * Form Data
      *
@@ -35,7 +37,7 @@ abstract class Form {
     /**
      * Validator
      *
-     * @var \Biospex\Validation\ValidableInterface
+     * @var \App\Validation\ValidableInterface
      */
     protected $validator;
 
@@ -51,8 +53,7 @@ abstract class Form {
      */
     public function save(array $input)
     {
-        if( ! $this->valid($input) )
-        {
+        if (! $this->valid($input)) {
             return false;
         }
 
@@ -66,8 +67,7 @@ abstract class Form {
      */
     public function update(array $input)
     {
-        if( ! $this->valid($input) )
-        {
+        if (! $this->valid($input)) {
             return false;
         }
 

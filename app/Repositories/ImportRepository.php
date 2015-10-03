@@ -1,4 +1,5 @@
-<?php namespace Biospex\Repositories;
+<?php namespace App\Repositories;
+
 /**
  * ImportRepository.php
  *
@@ -24,17 +25,27 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Biospex\Repositories\Contracts\ImportInterface;
-use Biospex\Models\Import;
+use App\Repositories\Contracts\Import;
+use App\Models\Import as Model;
 
-class ImportRepository extends Repository implements ImportInterface {
-
+class ImportRepository extends Repository implements Import
+{
     /**
-     * @param Import $import
+     * @param Model $model
      */
-    public function __construct(Import $import)
+    public function __construct(Model $model)
     {
-        $this->model = $import;
+        $this->model = $model;
     }
 
+    /**
+     * Find by error value.
+     *
+     * @param int $error
+     * @return Import
+     */
+    public function findByError($error = 0)
+    {
+        return $this->model->findByError($error);
+    }
 }

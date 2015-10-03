@@ -1,9 +1,10 @@
-<?php namespace Biospex\Models\Traits;
+<?php namespace App\Models\Traits;
+
 /**
  * BelongsToExpeditionTrait.php
  *
  * @package    Biospex Package
- * @version    1.0
+ * @version    2.0
  * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
@@ -24,12 +25,13 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-trait BelongsToExpeditionTrait {
+trait BelongsToExpeditionTrait
+{
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function expedition()
     {
-        return $this->belongsTo('Biospex\Models\Expedition');
+        return $this->belongsTo('App\Models\Expedition');
     }
 }

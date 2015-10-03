@@ -1,9 +1,10 @@
-<?php namespace Biospex\Models;
+<?php namespace App\Models;
+
 /**
  * Invite.php
  *
  * @package    Biospex Package
- * @version    1.0
+ * @version    2.0
  * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
@@ -25,10 +26,10 @@
  */
 
 use Illuminate\Database\Eloquent\Model;
-use Biospex\Models\Traits\BelongsToGroupTrait;
+use App\Models\Traits\BelongsToGroupTrait;
 
-class Invite extends Model {
-
+class Invite extends Model
+{
     use BelongsToGroupTrait;
 
     /**

@@ -1,9 +1,10 @@
-<?php
+<?php namespace App\Models\Traits;
+
 /**
  * BelongsToUserTrait.php
  *
  * @package    Biospex Package
- * @version    1.0
+ * @version    2.0
  * @author     Robert Bruhn <bruhnrp@gmail.com>
  * @license    GNU General Public License, version 3
  * @copyright  (c) 2014, Biospex
@@ -24,15 +25,13 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Biospex\Models\Traits;
-
-
-trait BelongsToUserTrait {
+trait BelongsToUserTrait
+{
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()
     {
-        return $this->belongsTo('Biospex\Models\User');
+        return $this->belongsTo('App\Models\User');
     }
 }

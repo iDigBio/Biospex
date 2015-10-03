@@ -1,35 +1,7 @@
-<?php namespace Biospex\Repositories;
-/**
- * Repository.php
- *
- * @package    Biospex Package
- * @version    1.0
- * @author     Robert Bruhn <79e6ef82@opayq.com>
- * @license    GNU General Public License, version 3
- * @copyright  (c) 2014, Biospex
- * @link       http://biospex.org
- *
- * This file is part of Biospex.
- * Biospex is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Biospex is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
- *
- * The Abstract Repository provides default implementations of the methods expected
- * in models. The calls are based on Eloquent, so alternative models
- * would need to implement these calls and handle them appropriately.
- */
+<?php namespace App\Repositories;
 
-abstract class Repository {
-
+abstract class Repository
+{
     /**
      * @var
      */
@@ -41,21 +13,21 @@ abstract class Repository {
      * @param array $columns
      * @return mixed
      */
-    public function all($columns = ['*'])
+    public function all()
     {
-        return $this->model->all($columns);
+        return $this->model->all();
     }
 
     /**
-	 * Find by id.
+     * Find by id.
      *
      * @param $id
-	 * @param array $columns
+     * @param array $columns
      * @return mixed
      */
-    public function find($id, $columns = ['*'])
+    public function find($id)
     {
-        return $this->model->find($id, $columns);
+        return $this->model->find($id);
     }
 
     /**
@@ -64,7 +36,7 @@ abstract class Repository {
      * @param array $data
      * @return mixed
      */
-    public function create($data = [])
+    public function create($data)
     {
         return $this->model->create($data);
     }
@@ -74,7 +46,7 @@ abstract class Repository {
      * @param array $data
      * @return mixed
      */
-    public function update($data = [])
+    public function update($data)
     {
         $model = $this->find($data['id']);
         return $model->fill($data)->save();
@@ -98,7 +70,7 @@ abstract class Repository {
      * @param array $with
      * @return mixed
      */
-    public function findWith($id, $with = [])
+    public function findWith($id, $with)
     {
         $query = $this->make($with);
 
@@ -119,5 +91,4 @@ abstract class Repository {
     {
         return $record->save();
     }
-
 }
