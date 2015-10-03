@@ -6,6 +6,10 @@
   "dependencies": {
     "bootstrap": "~3.3.2",
     "bootstrap-select": "~1.6.4",
-    "font-awesome": "~4.3.0"
+    "font-awesome": "~4.3.0",
+    "jqgrid": "~4.8.2",
+    "jquery.validation": "~1.13.1",
+    "admin-lte": "~2.1.2",
+    "blockui": "*"
   }
 }

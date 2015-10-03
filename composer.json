@@ -8,10 +8,10 @@
   "license": "MIT",
   "type": "project",
   "require": {
-    "laravel/framework": "5.0.*",
-    "doctrine/dbal": "~2.4.4",
+    "laravel/framework": "5.1.*",
+    "doctrine/dbal": "~2.5.2",
     "cartalyst/sentry": "dev-feature/laravel-5",
-    "laravelcollective/html": "~5.0",
+    "laravelcollective/html": "5.1.*",
     "vespakoen/menu": "3.*",
     "mcamara/laravel-localization": "1.0.*",
     "felixkiss/uniquewith-validator": "2.*",
@@ -19,28 +19,30 @@
     "cviebrock/image-validator": "2.0.*@alpha",
     "davejamesmiller/laravel-breadcrumbs": "~3.0",
     "pda/pheanstalk": "~3.0",
-    "laravelcollective/html": "~5.0",
     "msurguy/honeypot": "dev-master",
-    "maatwebsite/excel": "~2.0.0",
     "ramsey/uuid": "~2.8",
-    "guzzlehttp/guzzle": "~5.2",
-    "jenssegers/mongodb": "~2.1",
+    "guzzlehttp/guzzle": "~5.3",
+    "jenssegers/mongodb": "2.1.*",
     "codesleeve/laravel-stapler": "dev-master",
-    "barryvdh/laravel-debugbar": "^2.0"
+    "league/csv": "^7.1",
+    "neitanod/forceutf8": "dev-master"
   },
   "require-dev": {
+    "barryvdh/laravel-debugbar": "^2.0",
+    "barryvdh/laravel-ide-helper": "^2.1",
+    "fzaninotto/faker": "~1.4",
+    "mockery/mockery": "0.9.*",
     "phpunit/phpunit": "~4.0",
-    "phpspec/phpspec": "~2.1",
-    "barryvdh/laravel-ide-helper": "^2.0"
+    "phpspec/phpspec": "~2.1"
   },
   "autoload": {
     "classmap": [
       "database"
     ],
     "psr-4": {
-      "Biospex\\": "app/"
+      "App\\": "app/"
     },
-    "files": ["app/Http/helpers.php"]
+    "files": ["app/Http/helpers.php", "app/Http/navigation.php"]
   },
   "autoload-dev": {
     "classmap": [
