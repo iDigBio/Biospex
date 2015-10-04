@@ -17,7 +17,6 @@ class RenameUserGroupToGroupUser extends Migration
         Schema::rename('ocr_queue', 'ocr_queues');
         Schema::rename('project_actor', 'actor_project');
         Schema::rename('workflow_manager', 'workflow_managers');
-        Schema::rename('user_grid_fields', 'user_grid_fields');
     }
 
     /**
