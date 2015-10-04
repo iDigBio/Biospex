@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUserGridFieldTable extends Migration
+class CreateUserGridFieldsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,7 +12,7 @@ class CreateUserGridFieldTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_grid_field', function (Blueprint $table) {
+        Schema::create('user_grid_fields', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('project_id');
@@ -26,7 +26,7 @@ class CreateUserGridFieldTable extends Migration
             $table->engine = 'InnoDB';
         });
 
-        DB::statement("ALTER TABLE user_grid_field ADD data LONGBLOB AFTER project_id");
+        DB::statement("ALTER TABLE user_grid_fields ADD data LONGBLOB AFTER project_id");
     }
 
     /**
@@ -36,6 +36,6 @@ class CreateUserGridFieldTable extends Migration
      */
     public function down()
     {
-        Schema::drop('user_grid_field');
+        Schema::drop('user_grid_fields');
     }
 }
