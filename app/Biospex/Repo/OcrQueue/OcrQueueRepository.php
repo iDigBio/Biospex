@@ -37,4 +37,8 @@ class OcrQueueRepository extends Repository implements OcrQueueInterface
     {
         $this->model = $ocr;
     }
+
+    public function findByProjectId($id){
+        return $this->model->findByProjectId($id);
+    }
 }

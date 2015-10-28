@@ -74,7 +74,9 @@ class ProjectRepository extends Repository implements ProjectInterface
 
         $actors = [];
         foreach ($data['actor'] as $key => $actor) {
-            $actors[$actor] = ['order_by' => $key];
+            if ( ! empty($actor)) {
+                $actors[$actor] = ['order_by' => $key];
+            }
         }
         $project->actors()->attach($actors);
 
@@ -95,7 +97,9 @@ class ProjectRepository extends Repository implements ProjectInterface
 
         $actors = [];
         foreach ($data['actor'] as $key => $actor) {
-            $actors[$actor] = ['order_by' => $key];
+            if ( ! empty($actor)) {
+                $actors[$actor] = ['order_by' => $key];
+            }
         }
         $project->actors()->sync($actors);
 

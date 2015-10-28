@@ -26,7 +26,6 @@
  */
 use Illuminate\Filesystem\Filesystem;
 use Config;
-use File;
 
 class Image
 {

@@ -52,7 +52,7 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
         $this->project = $project;
 
         $this->importDir = \Config::get('config.subjectImportDir');
-        if (! $this->filesystem->isDirectory($this->importDir)) {
+        if ( ! $this->filesystem->isDirectory($this->importDir)) {
             $this->filesystem->makeDirectory($this->importDir);
         }
 
@@ -101,7 +101,7 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
             throw new \Exception(trans('emails.error_zip_download'));
         }
 
-        if (! $this->checkFileType($file)) {
+        if ( ! $this->checkFileType($file)) {
             throw new \Exception(trans('emails.error_zip_type'));
         }
 
@@ -109,15 +109,11 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
             throw new \Exception(trans('emails.error_zip_save'));
         }
 
-
         $import = $this->importInsert($fileName);
 
-        $data = [
-            'id'    => $import->id,
-            'class' => 'DarwinCoreFileImportQueue'
-        ];
+        $data = ['id' => $import->id];
 
-        \Queue::push('Biospex\Services\Queue\QueueFactory', $data, $this->queue);
+        \Queue::push('Biospex\Services\Queue\DarwinCoreFileImportQueue', $data, $this->queue);
 
         return;
     }
@@ -133,7 +129,7 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
         $finfo = new \finfo(FILEINFO_MIME);
         list($mime, $char) = explode(';', $finfo->buffer($file));
         $types = ['application/zip', 'application/octet-stream'];
-        if (! in_array(trim($mime), $types)) {
+        if ( ! in_array(trim($mime), $types)) {
             return false;
         }
 

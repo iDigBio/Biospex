@@ -82,6 +82,10 @@ class Helper
      */
     public static function formatDate($date, $format = null, $tz = null)
     {
+        if (is_null($date)) {
+            return \Carbon::now();
+        }
+
         return $date->copy()->tz($tz)->format($format);
     }
 

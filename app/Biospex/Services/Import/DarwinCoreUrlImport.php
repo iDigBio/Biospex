@@ -26,11 +26,10 @@ class DarwinCoreUrlImport extends ImportServiceAbstract
         $data = [
             'id'      => $id,
             'user_id' => \Input::input('user_id'),
-            'url'     => \Input::input('data-url'),
-            'class'   => 'DarwinCoreUrlImportQueue'
+            'url'     => \Input::input('data-url')
         ];
 
-        \Queue::push('Biospex\Services\Queue\QueueFactory', $data, $this->queue);
+        \Queue::push('Biospex\Services\Queue\DarwinCoreUrlImportQueue', $data, $this->queue);
 
         return;
     }

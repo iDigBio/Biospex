@@ -30,7 +30,7 @@ use Cartalyst\Sentry\Sentry;
 use Biospex\Repo\Import\ImportInterface;
 use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Services\Report\DarwinCoreImportReport;
-use Biospex\Services\Process\DarwinCore;
+use Biospex\Services\Process\DarwinCoreImport;
 use Biospex\Services\Process\Xml;
 use Biospex\Mailer\BiospexMailer;
 use Illuminate\Support\Facades\Config;
@@ -114,7 +114,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract
         ProjectInterface $project,
         Sentry $sentry,
         DarwinCoreImportReport $report,
-        DarwinCore $process,
+        DarwinCoreImport $process,
         Xml $xml,
         BiospexMailer $mailer
     ) {
@@ -149,7 +149,13 @@ class DarwinCoreFileImportQueue extends QueueAbstract
 
         $import = $this->import->find($this->data['id']);
         $user = $this->sentry->findUserById($import->user_id);
-        $project = $this->project->find($import->project_id);
+        $project = $this->project->findWith($import->project_id, ['actors']);
+        $processOcr = false;
+        foreach($project->actors as $actor) {
+            if ($actor->class == 'Ocr') {
+                $processOcr = true;
+            }
+        }
 
         $fileName = pathinfo($this->subjectImportDir . '/' . $import->file, PATHINFO_FILENAME);
         $this->scratchFileDir = $this->scratchDir . '/' . $import->id . '-' . md5($fileName);
@@ -159,7 +165,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract
             $this->makeTmp();
             $this->unzip($zipFile);
 
-            $this->process->process($import->project_id, $this->scratchFileDir);
+            $this->process->process($import->project_id, $this->scratchFileDir, $processOcr);
 
             $duplicates = $this->process->getDuplicates();
             $rejects = $this->process->getRejectedMedia();
@@ -170,7 +176,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract
             $this->filesystem->delete($zipFile);
 
             $this->import->destroy($import->id);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $import->error = 1;
             $import->save();
             $this->report->addError(trans('emails.error_import_process',

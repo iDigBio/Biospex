@@ -52,7 +52,7 @@ class NfnTranscriptionImport extends ImportServiceAbstract
         $import = $this->importInsert($id, $filename);
         $this->setQueue('config.beanstalkd.import');
 
-        Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $import->id, 'class' => 'NfnTranscriptionQueue'], $this->queue);
+        Queue::push('Biospex\Services\Queue\NfnTranscriptionQueue', ['id' => $import->id], $this->queue);
 
         return;
     }

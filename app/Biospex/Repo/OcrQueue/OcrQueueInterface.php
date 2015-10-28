@@ -28,4 +28,5 @@ use Biospex\Repo\RepositoryInterface;
 
 interface OcrQueueInterface extends RepositoryInterface
 {
+    public function findByProjectId($id);
 }

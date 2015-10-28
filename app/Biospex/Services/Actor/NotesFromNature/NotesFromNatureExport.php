@@ -1,4 +1,6 @@
-<?php namespace Biospex\Services\Actor;
+<?php
+
+namespace Biospex\Services\Actor\NotesFromNature;
 
 /**
  * NotesFromNature.php
@@ -24,18 +26,21 @@
  * You should have received a copy of the GNU General Public License
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Biospex\Services\Curl\Curl;
-use Illuminate\Support\Facades\Config;
+use Biospex\Services\Actor\ActorInterface;
+use Illuminate\Config\Repository as Config;
+use Illuminate\Filesystem\Filesystem;
+use Biospex\Repo\Download\DownloadInterface;
+use Biospex\Repo\Expedition\ExpeditionInterface;
+use Biospex\Services\Report\Report;
+use Biospex\Services\Image\Image;
+use GuzzleHttp\Client;
+use GuzzleHttp\Pool;
+use GuzzleHttp\Event\CompleteEvent;
+use GuzzleHttp\Event\ErrorEvent;
+use Biospex\Services\Actor\ActorAbstract;
 
-class NotesFromNature extends ActorAbstract
+class NotesFromNatureExport extends ActorAbstract implements ActorInterface
 {
-    /**
-     * States of expedition corresponding to class methods.
-     *
-     * @var array
-     */
-    protected $states = [];
-
     /**
      * Actor object.
      *
@@ -117,6 +122,13 @@ class NotesFromNature extends ActorAbstract
     protected $imageUriArray;
 
     /**
+     * Array of existing images if files already retrieved
+     *
+     * @var
+     */
+    protected $existingImageUriArray;
+
+    /**
      * CSV header array associated with meta file.
      *
      * @var array
@@ -124,18 +136,18 @@ class NotesFromNature extends ActorAbstract
     protected $metaHeader = [];
 
     /**
-     * Remote image column from csv import.
-     *
-     * @var string
-     */
-    protected $accessURI = "accessURI";
-
-    /**
      * Missing image when retrieving via curl.
      *
      * @var array
      */
     protected $missingImg = [];
+
+    /**
+     * Specific record folder for building out export.
+     *
+     * @var
+     */
+    protected $folder;
 
     /**
      * Large image width for NfN.
@@ -152,68 +164,82 @@ class NotesFromNature extends ActorAbstract
     private $smallWidth = 580;
 
     /**
-     * Set properties
-     *
-     * @param $actor
-     * @return mixed
+     * @var ExpeditionInterface
      */
-    public function setProperties($actor)
-    {
-        $this->states = [
-            'export',
-            'getStatus',
-            'getResults',
-            'completed',
-            'analyze',
-        ];
+    private $expedition;
 
-        $this->actor = $actor;
-        $this->expeditionId = $actor->pivot->expedition_id;
-        $this->nfnExportDir = Config::get('config.nfnExportDir');
-        $this->createDir($this->nfnExportDir);
+    /**
+     * @var Report
+     */
+    private $report;
+
+    /**
+     * @var Image
+     */
+    private $image;
+
+    /**
+     * @var Client
+     */
+    private $client;
+
+    /**
+     * Construct
+     *
+     * @param Filesystem $filesystem
+     * @param DownloadInterface $download
+     * @param ExpeditionInterface $expedition
+     * @param Report $report
+     * @param Image $image
+     * @param Config $config
+     */
+    public function __construct(
+        Filesystem $filesystem,
+        DownloadInterface $download,
+        Config $config,
+        ExpeditionInterface $expedition,
+        Report $report,
+        Image $image
+    ) {
+        $this->filesystem = $filesystem;
+        $this->download = $download;
+        $this->config = $config;
+        $this->expedition = $expedition;
+        $this->report = $report;
+        $this->image = $image;
+        $this->client = new Client();
+
+        $this->scratchDir = $config->get('config.scratchDir');
+        $this->nfnExportDir = $config->get('config.nfnExportDir');
     }
 
     /**
      * Process current state
+     *
+     * @param $actor
+     * @return mixed|void
+     * @throws \Exception
      */
-    public function process()
+    public function process($actor)
     {
+        $this->createDir($this->nfnExportDir);
+
         $this->expedition->setPass(true);
-        $this->record = $this->expedition->findWith($this->expeditionId, ['project.group', 'subjects']);
+        $this->record = $this->expedition->findWith($actor->pivot->expedition_id, ['project.group', 'subjects']);
 
         if (empty($this->record)) {
-            $this->report->addError(trans('emails.error_process', ['id' => $this->expeditionId]));
-            $this->report->reportSimpleError($this->record->project->group->id);
-
-            return;
+            throw new \Exception(trans('emails.error_process', ['id' => $actor->pivot->expedition_id]));
         }
 
-        if (! is_callable([$this, $this->states[$this->actor->pivot->state]])) {
-            return;
-        }
-
-        call_user_func([$this, $this->states[$this->actor->pivot->state]]);
-
-        $this->actor->pivot->state = $this->actor->pivot->state + 1;
-        $this->actor->pivot->save();
-
-        $this->report->processComplete($this->record->project->group_id, $this->record->title, $this->missingImg, $this->record->id . '-missing_images');
-
-        return;
-    }
-
-    /**
-     * Export the expedition
-     */
-    public function export()
-    {
-        $this->setTitle("{$this->record->id}-" . md5($this->record->title));
+        $this->folder = "{$actor->id}-" . md5($this->record->title);
 
         $this->setRecordDir();
 
-        $this->buildImageUriArray();
+        $this->buildImageUriArray($actor);
 
-        $this->getImagesFromUri();
+        $requests = $this->buildImageRequests();
+
+        $this->getImagesFromUri($requests);
 
         $this->convert();
 
@@ -223,97 +249,153 @@ class NotesFromNature extends ActorAbstract
 
         $this->compressDirs();
 
-        $this->createDownloads();
+        $this->createDownloads($actor);
 
         $this->moveCompressedFiles();
 
         $this->filesystem->deleteDirectory($this->recordDir);
+
+        $this->processComplete();
+
+        $actor->pivot->queued = 0;
+        $actor->pivot->state = $actor->pivot->state + 1;
+        $actor->pivot->completed = 1;
+        $actor->pivot->save();
 
         return;
     }
 
     /**
      * Build array of image uris for curl.
+     *
+     * @param $actor
+     * @throws \Exception
      */
-    public function buildImageUriArray()
+    public function buildImageUriArray($actor)
     {
         foreach ($this->record->subjects as $subject) {
-            $uri = $subject->{$this->accessURI};
-            if (empty($uri)) {
-                $this->addMissingImage($subject->id);
+            if ($this->checkImageExists($subject->_id)) {
+                $this->existingImageUriArray[$subject->_id] = str_replace(" ", "%20", $subject->accessURI);
                 continue;
             }
 
-            $this->imageUriArray[$subject->_id] = str_replace(" ", "%20", $uri);
+            if ($this->checkUriExists($subject)) {
+                continue;
+            }
+
+            $this->imageUriArray[$subject->_id] = str_replace(" ", "%20", $subject->accessURI);
         }
 
-        if (empty($this->imageUriArray)) {
-            throw new \Exception(trans('emails.error_empty_image_uri', ['id' => $this->expeditionId]));
+        if (empty($this->imageUriArray) && empty($this->existingImageUriArray)) {
+            throw new \Exception(trans('emails.error_empty_image_uri', ['id' => $actor->pivot->id]));
         }
 
         return;
+    }
+
+    /**
+     * Check if image exists
+     *
+     * @param $id
+     * @return bool
+     */
+    public function checkImageExists($id)
+    {
+        return ! empty(glob($this->recordDir . '/' . $id . '.*')) ? true : false;
+    }
+
+    /**
+     * Check if image exists
+     *
+     * @param $subject
+     * @return bool
+     */
+    public function checkUriExists($subject)
+    {
+        if (empty($subject->accessURI)) {
+            $this->addMissingImage($subject->id);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Create requests
+     *
+     * @return array
+     */
+    public function buildImageRequests()
+    {
+        if (empty($this->imageUriArray)) {
+            return;
+        }
+
+        $requests = [];
+        foreach ($this->imageUriArray as $key => $uri) {
+            $requests[] = $this->client->createRequest('GET', $uri, ['headers' => ['key' => $key]]);
+        }
+
+        return $requests;
     }
 
     /**
      * Process expedition for export
+     *
+     * @param $requests
      */
-    public function getImagesFromUri()
+    public function getImagesFromUri($requests)
     {
-        $rc = new Curl([$this, "saveImage"]);
-        $rc->options = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1, CURLINFO_HEADER_OUT => 1];
+        if (empty($requests)) {
+            return;
+        }
 
-        $execute = false;
-        foreach ($this->imageUriArray as $key => $uri) {
-            $result = glob("{$this->recordDir}/$key.*");
-            if (! empty($result)) {
-                continue;
+        Pool::send($this->client, $requests, [
+            'pool_size' => 10,
+            'complete'  => function (CompleteEvent $event) {
+                $url = $event->getRequest()->getUrl();
+                $key = $event->getRequest()->getHeader('key');
+                $code = $event->getResponse()->getStatusCode();
+                $image = $event->getResponse()->getBody()->getContents();
+                $this->saveImage($code, $url, $key, $image);
+            },
+            'error'     => function (ErrorEvent $event) {
+                $this->addMissingImage($event->getRequest()->getHeader('key'), $event->getRequest()->getUrl());
             }
-
-            $rc->get($uri, ["key: $key"]);
-            $execute = true;
-        }
-
-        if ($execute) {
-            $rc->execute();
-        }
+        ]);
 
         return;
     }
 
     /**
-     * Callback function to save retrieved image from curl.
+     * Callback function to save image
      *
+     * @param $code
+     * @param $url
+     * @param $key
      * @param $image
-     * @param $info
      * @throws \Exception
      */
-    public function saveImage($image, $info)
+    public function saveImage($code, $url, $key, $image)
     {
-        if ($info['http_code'] == 200) {
-            $key = $this->getImageKey($info['request_header']);
-
-            if (empty($image)) {
-                $this->addMissingImage($key, $info['url']);
-
-                return;
-            }
-
-            $this->image->setImageSizeInfoFromString($image);
-            $ext = $this->image->getFileExtension();
-
-            if (! $ext) {
-                $this->addMissingImage($key, $info['url']);
-
-                return;
-            }
-
-            $path = "{$this->recordDir}/$key.$ext";
-            $this->saveFile($path, $image);
+        if (empty($image) || $code != 200) {
+            $this->addMissingImage($key, $url);
 
             return;
         }
 
-        $this->addMissingImage(null, $info['url']);
+        $this->image->setImageSizeInfoFromString($image);
+        $ext = $this->image->getFileExtension();
+
+        if ( ! $ext) {
+            $this->addMissingImage($key, $url);
+
+            return;
+        }
+
+        $path = "{$this->recordDir}/$key.$ext";
+        $this->saveFile($path, $image);
 
         return;
     }
@@ -324,6 +406,12 @@ class NotesFromNature extends ActorAbstract
     public function convert()
     {
         $files = $this->filesystem->files($this->recordDir);
+
+        if (empty($files)) {
+            return;
+        }
+
+        $imageUriArray = $this->mergeImageUri();
 
         foreach ($files as $file) {
             $this->image->setImagePathInfo($file);
@@ -337,7 +425,8 @@ class NotesFromNature extends ActorAbstract
             try {
                 $this->image->imagickFile($file);
             } catch (\Exception $e) {
-                $this->addMissingImage($fileName, $this->imageUriArray[$fileName]);
+                $this->addMissingImage($fileName, $imageUriArray[$fileName]);
+                echo "added missing image." . PHP_EOL;
 
                 continue;
             }
@@ -345,11 +434,11 @@ class NotesFromNature extends ActorAbstract
             $lrgFilePath = $this->recordDirTmp . "/$fileName.large.jpg";
             $smFilePath = $this->recordDirTmp . "/$fileName.small.jpg";
 
-            if (! $this->filesystem->exists($lrgFilePath)) {
+            if ( ! $this->filesystem->exists($lrgFilePath)) {
                 $this->image->imagickScale($lrgFilePath, $this->largeWidth, 0);
             }
 
-            if (! $this->filesystem->exists($smFilePath)) {
+            if ( ! $this->filesystem->exists($smFilePath)) {
                 $this->image->imagickScale($smFilePath, $this->smallWidth, 0);
             }
 
@@ -357,6 +446,26 @@ class NotesFromNature extends ActorAbstract
         }
 
         return;
+    }
+
+    /**
+     * Returns image uri array
+     * @return array
+     */
+    protected function mergeImageUri()
+    {
+        if ( ! empty($this->imageUriArray) && ! empty($this->existingImageUriArray)) {
+            return array_merge($this->imageUriArray, $this->existingImageUriArray);
+        }
+
+        if (empty($this->imageUriArray) && ! empty($this->existingImageUriArray)) {
+            return $this->existingImageUriArray;
+        }
+
+        if ( ! empty($this->imageUriArray) && empty($this->existingImageUriArray)) {
+            return $this->imageUriArray;
+        }
+
     }
 
     /**
@@ -460,7 +569,8 @@ class NotesFromNature extends ActorAbstract
 
             $metadata['total'] = $i * 2;
 
-            $this->saveFile("$directory/details.js", json_encode($metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $this->saveFile("$directory/details.js",
+                json_encode($metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         }
 
         return;
@@ -471,7 +581,7 @@ class NotesFromNature extends ActorAbstract
      */
     public function setRecordDir()
     {
-        $this->recordDir = $this->scratchDir . '/' . $this->title;
+        $this->recordDir = $this->scratchDir . '/' . $this->folder;
         $this->recordDirTmp = $this->recordDir . '/tmp';
         $this->createDir($this->recordDirTmp);
         $this->writeDir($this->recordDirTmp);
@@ -482,7 +592,7 @@ class NotesFromNature extends ActorAbstract
     public function setSplitDir()
     {
         $count = ++$this->count;
-        $this->splitDir = $this->recordDir . '/' . $this->title . '-' . $count;
+        $this->splitDir = $this->recordDir . '/' . $this->folder . '-' . $count;
         $this->createDir($this->splitDir);
         $this->writeDir($this->splitDir);
 
@@ -498,16 +608,6 @@ class NotesFromNature extends ActorAbstract
     }
 
     /**
-     * Set title for image directory.
-     *
-     * @param $title
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    /**
      * Add missing image information to array.
      *
      * @param $key
@@ -515,7 +615,7 @@ class NotesFromNature extends ActorAbstract
      */
     public function addMissingImage($key = null, $uri = null)
     {
-        if (! is_null($key) && ! is_null($uri)) {
+        if ( ! is_null($key) && ! is_null($uri)) {
             $this->missingImg[] = ['value' => $key . ' : ' . $uri];
         }
 
@@ -523,7 +623,7 @@ class NotesFromNature extends ActorAbstract
             $this->missingImg[] = ['value' => $uri];
         }
 
-        if (! is_null($key) && is_null($uri)) {
+        if ( ! is_null($key) && is_null($uri)) {
             $this->missingImg[] = ['value' => $key];
         }
 
@@ -550,13 +650,15 @@ class NotesFromNature extends ActorAbstract
 
     /**
      * Add download files to downloads table.
+     *
+     * @param $actor
      */
-    public function createDownloads()
+    public function createDownloads($actor)
     {
         $files = $this->filesystem->files($this->recordDir);
         foreach ($files as $file) {
             $baseName = pathinfo($file, PATHINFO_BASENAME);
-            $this->createDownload($this->record->id, $this->actor->id, $baseName);
+            $this->createDownload($this->record->id, $actor->id, $baseName);
         }
 
         return;
@@ -601,6 +703,22 @@ class NotesFromNature extends ActorAbstract
         exec("du -b -s {$this->recordDirTmp}", $op);
         list($size) = preg_split('/\s+/', $op[0]);
 
-        return ceil($size / ceil(number_format($size / 1073741824, 2)));
+        $gb = 1073741824;
+
+        return ($size < $gb) ? $size : ceil($size / ceil(number_format($size / $gb, 2)));
+    }
+
+    /**
+     * Report complete process.
+     */
+    protected function processComplete()
+    {
+        $group_id = $this->record->project->group_id;
+        $title = $this->record->title;
+        $missingImg = $this->missingImg;
+        $name = $this->record->id . '-missing_images';
+
+        $this->report->processComplete($group_id, $title, $missingImg, $name);
+
     }
 }

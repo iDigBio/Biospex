@@ -29,9 +29,9 @@ class RecordSetImport extends ImportServiceAbstract
         $data = [
             'id'         => $recordset,
             'user_id'    => \Input::get('user_id'),
-            'project_id' => $id,
-            'class'      => 'RecordSetImportQueue'];
-        \Queue::push('Biospex\Services\Queue\QueueFactory', $data, $this->queue);
+            'project_id' => $id
+        ];
+        \Queue::push('Biospex\Services\Queue\RecordSetImportQueue', $data, $this->queue);
 
         return;
     }

@@ -59,4 +59,8 @@ class WorkflowManagerRepository extends Repository implements WorkflowManagerInt
     {
         return $this->model->findByExpeditionId($id);
     }
+
+    public function findByExpeditionIdWith($id, $with = []) {
+        return $this->model->findByExpeditionIdWith($id, $with);
+    }
 }

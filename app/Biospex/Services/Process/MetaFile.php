@@ -2,6 +2,7 @@
 
 namespace Biospex\Services\Process;
 
+use Biospex\Repo\Meta\MetaInterface;
 use Biospex\Services\Report\Report;
 
 class MetaFile
@@ -19,18 +20,21 @@ class MetaFile
     protected $extDelimiter;
     protected $extEnclosure;
     protected $metaFields;
+    protected $meta;
 
     /**
      * Constructor
      *
+     * @param MetaInterface $meta
      * @param Xml $xml
      * @param Report $report
      */
-    public function __construct(Xml $xml, Report $report)
+    public function __construct(MetaInterface $meta, Xml $xml, Report $report)
     {
         $this->xml = $xml;
         $this->report = $report;
         $this->metaFileRowTypes = \Config::get('config.metaFileRowTypes');
+        $this->meta = $meta;
     }
 
     /**
@@ -57,6 +61,22 @@ class MetaFile
         $this->setMetaFields('extension');
 
         return $xml;
+    }
+
+    /**
+     * Save meta data for this upload.
+     *
+     * @param $projectId
+     * @param $meta
+     */
+    public function saveMetaFile($projectId, $meta)
+    {
+        $this->meta->create([
+            'project_id' => $projectId,
+            'xml'        => $meta,
+        ]);
+
+        return;
     }
 
     /**
@@ -263,11 +283,10 @@ class MetaFile
     }
 
     /**
-     * @param null $type
      * @return mixed
      */
-    public function getMetaFields($type = null)
+    public function getMetaFields()
     {
-        return is_null($type) ? $this->metaFields : $this->metaFields[$type];
+        return $this->metaFields;
     }
 }

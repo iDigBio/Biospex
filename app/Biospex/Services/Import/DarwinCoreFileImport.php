@@ -27,7 +27,7 @@ class DarwinCoreFileImport extends ImportServiceAbstract
         $import = $this->importInsert(\Input::get('user_id'), $id, $filename);
         $this->setQueue('config.beanstalkd.import');
 
-        \Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $import->id, 'class' => 'DarwinCoreFileImportQueue'], $this->queue);
+        \Queue::push('Biospex\Services\Queue\DarwinCoreFileImportQueue', ['id' => $import->id], $this->queue);
 
         return;
     }

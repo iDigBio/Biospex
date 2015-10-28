@@ -143,7 +143,7 @@ class RecordSet
         $import = $this->importInsert($fileName);
 
         unset($this->data);
-        $this->data = ['id' => $import->id, 'class' => 'DarwinCoreFileImportQueue'];
+        $this->data = ['id' => $import->id];
 
         $this->pushToQueue();
 
@@ -156,7 +156,7 @@ class RecordSet
     public function pushToQueue()
     {
         $date = \Carbon::now()->addMinutes(5);
-        \Queue::later($date, 'Biospex\Services\Queue\QueueFactory', $this->data, $this->queue);
+        \Queue::later($date, 'Biospex\Services\Queue\DarwinCoreFileImportQueue', $this->data, $this->queue);
 
         return;
     }

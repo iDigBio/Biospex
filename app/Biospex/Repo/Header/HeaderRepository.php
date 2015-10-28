@@ -45,16 +45,4 @@ class HeaderRepository extends Repository implements HeaderInterface
     {
         return $this->model->getByProjectId($id);
     }
-
-    /**
-     * Find by project Id
-     *
-     * @param $id
-     * @param $type
-     * @return \Illuminate\Database\Eloquent\Model|null|static
-     */
-    public function getByProjectIdType($id, $type)
-    {
-        return $this->model->getByProjectIdType($id, $type);
-    }
 }
