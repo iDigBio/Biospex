@@ -108,7 +108,9 @@ class Expedition extends Eloquent
      */
     public function actors()
     {
-        return $this->belongsToMany('Actor', 'expedition_actor')->withPivot('state', 'completed')->withTimestamps();
+        return $this->belongsToMany('Actor', 'expedition_actor')
+            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'error', 'queued', 'completed')
+            ->withTimestamps();
     }
 
     /**

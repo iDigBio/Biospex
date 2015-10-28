@@ -88,6 +88,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         'slug',
         'contact',
         'contact_email',
+        'contact_title',
         'organization_website',
         'organization',
         'project_partners',
@@ -107,6 +108,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         'logo',
         'banner',
         'target_fields',
+        'status',
         'advertise',
     ];
 
@@ -131,11 +133,13 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         static::bootStapler();
 
         static::creating(function ($model) {
-            $model->tag_uri = Input::all();
+            $model->target_fields = Input::all();
+            $model->advertise = $model->attributes;
         });
 
-        static::saving(function ($model) {
+        static::updating(function ($model) {
             $model->target_fields = Input::all();
+            $model->advertise = $model->attributes;
         });
 
         // Delete associated subjects from expedition_subjects
@@ -305,6 +309,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
 
         $build = [];
         $ppsrFields = Config::get('config.ppsr');
+
         foreach ($ppsrFields as $field => $data) {
             foreach ($data as $type => $value) {
                 if ($type == 'private') {
@@ -312,7 +317,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
                 }
 
                 if ($type == 'date') {
-                    $build[$field] = Helper::formatDate($this->{$value}, 'Y-m-d m:d:s');
+                    $build[$field] = isset($this->{$value}) ?
+                        Helper::formatDate($this->{$value}, 'Y-m-d m:d:s') : Helper::formatDate(null);
                 }
 
                 if ($type == 'column') {
@@ -350,6 +356,11 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
 
         $advertise = ! empty($extra) ? array_merge($build, $extra) : $build;
 
-        $this->attributes['advertise'] = json_encode($advertise, JSON_UNESCAPED_UNICODE);
+        $this->attributes['advertise'] = serialize($advertise);
+    }
+
+    public function getAdvertiseAttribute($value)
+    {
+        return unserialize($value);
     }
 }

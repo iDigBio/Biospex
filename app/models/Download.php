@@ -37,6 +37,7 @@ class Download extends Eloquent
         'expedition_id',
         'actor_id',
         'file',
+        'data',
         'count'
     ];
 

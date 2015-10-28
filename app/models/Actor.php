@@ -49,7 +49,9 @@ class Actor extends Eloquent
 
     public function expeditions()
     {
-        return $this->belongsToMany('Expedition', 'expedition_actor')->withPivot('state', 'completed')->withTimestamps();
+        return $this->belongsToMany('Expedition', 'expedition_actor')
+            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'error', 'queued', 'completed')
+            ->withTimestamps();
     }
 
     /**
@@ -67,6 +69,6 @@ class Actor extends Eloquent
      */
     public function selectList()
     {
-        return $this->where('private', '=', 0)->lists('title', 'id');
+        return $this->lists('title', 'id');
     }
 }

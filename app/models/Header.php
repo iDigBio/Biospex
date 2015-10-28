@@ -46,7 +46,6 @@ class Header extends Eloquent
      */
     protected $fillable = [
         'project_id',
-        'type',
         'header'
     ];
 
@@ -61,17 +60,5 @@ class Header extends Eloquent
     public function getByProjectId($id)
     {
         return $this->where('project_id', '=', $id)->first();
-    }
-
-    /**
-     * Find header by project Id
-     *
-     * @param $id
-     * @param $type
-     * @return \Illuminate\Database\Eloquent\Model|null|static
-     */
-    public function getByProjectIdType($id, $type)
-    {
-        return $this->where('project_id', '=', $id)->where('type', '=', $type)->first();
     }
 }

@@ -41,11 +41,8 @@ class WorkflowManager extends Eloquent
     public $timestamps = false;
 
     protected $fillable = [
-        'expedition_uuid',
         'expedition_id',
         'stopped',
-        'error',
-        'queue'
     ];
 
     /**
@@ -76,7 +73,12 @@ class WorkflowManager extends Eloquent
      */
     public function findByExpeditionId($id)
     {
-        return $this->expeditionid($id)->first();
+        return $this->expeditionId($id)->first();
+    }
+
+    public function findByExpeditionIdWith($id, $with)
+    {
+        return $this->with($with)->expeditionId($id)->get();
     }
 
     /**

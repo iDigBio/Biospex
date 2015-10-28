@@ -68,4 +68,8 @@ class OcrQueue extends Eloquent
     {
         return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
     }
+
+    public function findByProjectId($id){
+        return $this->whereProjectId($id)->first();
+    }
 }
