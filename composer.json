@@ -23,14 +23,21 @@
     "pda/pheanstalk": "~2.0",
     "msurguy/honeypot": "dev-master",
     "ramsey/uuid": "~2.8",
-    "guzzlehttp/guzzle": "~4.0",
+    "guzzlehttp/guzzle": "~5.0",
     "league/csv": "^7.1",
     "neitanod/forceutf8": "dev-master"
   },
   "require-dev": {
     "barryvdh/laravel-debugbar": "1.*",
     "barryvdh/laravel-ide-helper": "1.*",
-    "raveren/kint": "dev-master"
+    "raveren/kint": "dev-master",
+    "behat/behat": "*@stable",
+    "behat/mink": "*",
+    "behat/mink-extension": "*",
+    "behat/mink-goutte-driver": "*",
+    "phpspec/phpspec": "2.2.*",
+    "benconstable/phpspec-laravel": "~1.6.0",
+    "xethron/migrations-generator": "dev-master"
   },
   "autoload": {
     "classmap": [
@@ -60,7 +67,8 @@
     ]
   },
   "config": {
-    "preferred-install": "dist"
+    "preferred-install": "dist",
+    "bin-dir": "vendor/bin/"
   },
   "minimum-stability": "stable"
 }
