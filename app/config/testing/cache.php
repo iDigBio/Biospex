@@ -15,6 +15,6 @@ return [
     |
     */
 
-    'driver' => 'array',
+    'driver' => 'memcached',
 
 ];

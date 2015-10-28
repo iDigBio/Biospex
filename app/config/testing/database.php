@@ -5,48 +5,31 @@ return [
 
     'connections' => [
 
-        'setup'   => [
-            'driver'   => 'sqlite',
-            'database' => __DIR__ . '/../../database/stubdb.sqlite',
-            'prefix'   => '',
-            'username' => 'root',
-            'password' => 'password',
-        ],
+        'setup' => array(
+            'driver' => 'sqlite',
+            'database' => __DIR__.'/../../database/stubdb.sqlite',
+            'prefix' => '',
+        ),
 
-        'testing' => [
-            'driver'   => 'sqlite',
-            'database' => __DIR__ . '/../../database/testdb.sqlite',
-            'prefix'   => '',
-            'username' => 'root',
-            'password' => 'password',
-        ],
+        'testing' => array(
+            'driver' => 'sqlite',
+            'database' => __DIR__.'/../../database/testdb.sqlite',
+            'prefix' => '',
+        ),
 
-        'sqlite'  => [
-            'driver'   => 'sqlite',
+        'sqlite' => array(
+            'driver' => 'sqlite',
             'database' => ':memory:',
-            'prefix'   => '',
-            'username' => 'root',
-            'password' => 'password',
-        ],
-
-        'mysql'   => [
-            'driver'    => 'mysql',
-            'host'      => 'localhost',
-            'database'  => 'biospex',
-            'username'  => 'root',
-            'password'  => 'password',
-            'charset'   => 'utf8',
-            'collation' => 'utf8_unicode_ci',
-            'prefix'    => '',
-        ],
+            'prefix' => ''
+        ),
 
         'mongodb' => [
             'driver'   => 'mongodb',
             'host'     => 'localhost',
             'port'     => 27017,
-            'username' => 'biospex',
-            'password' => 'biospex',
-            'database' => 'biospex'
+            'username' => '',
+            'password' => '',
+            'database' => 'testing'
         ],
 
     ],
