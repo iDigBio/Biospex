@@ -39,6 +39,14 @@
         {{ ($errors->has('contact_email') ? $errors->first('contact_email') : '') }}
     </div>
 
+    <div class="form-group required {{ ($errors->has('contact_title')) ? 'has-error' : '' }}">
+        {{ Form::label('contact_title', trans('forms.contact_title'), array('class' => 'col-sm-2 control-label')) }}
+        <div class="col-sm-10">
+            {{ Form::text('contact_title', null, array('class' => 'form-control', 'placeholder' => trans('forms.contact_title'))) }}
+        </div>
+        {{ ($errors->has('contact_title') ? $errors->first('contact_title') : '') }}
+    </div>
+
     <div class="form-group {{ ($errors->has('organization')) ? 'has-error' : '' }}">
         {{ Form::label('organization', trans('forms.organization'), array('class' => 'col-sm-2 control-label')) }}
         <div class="col-sm-10">
@@ -234,6 +242,14 @@
             {{ Form::text('contact_email', $project->contact_email, array('class' => 'form-control', 'placeholder' => trans('forms.contact_email'))) }}
         </div>
         {{ ($errors->has('contact_email') ? $errors->first('contact_email') : '') }}
+    </div>
+
+    <div class="form-group required {{ ($errors->has('contact_title')) ? 'has-error' : '' }}">
+        {{ Form::label('contact_title', trans('forms.contact_title'), array('class' => 'col-sm-2 control-label')) }}
+        <div class="col-sm-10">
+            {{ Form::text('contact_title', $project->contact_email, array('class' => 'form-control', 'placeholder' => trans('forms.contact_title'))) }}
+        </div>
+        {{ ($errors->has('contact_title') ? $errors->first('contact_title') : '') }}
     </div>
 
     <div class="form-group {{ ($errors->has('organization')) ? 'has-error' : '' }}">

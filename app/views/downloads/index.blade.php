@@ -35,15 +35,21 @@
         </thead>
         <tbody>
         @foreach ($expedition->downloads as $download)
-            @if (File::exists(Config::get('config.nfnExportDir') . '/' . $download->file))
+            @if ( ! empty($download))
             <tr>
                 <td>{{ $download->actor->title }}</td>
                 <td>{{ $download->id }}</td>
                 <td>{{ $download->file }}</td>
-                <td>{{ Helper::humanFileSize(File::size(Config::get('config.nfnExportDir') . '/' . $download->file)) }}</td>
+                <td>
+                    @if (File::exists(Config::get('config.nfnExportDir') . '/' . $download->file))
+                        {{ Helper::humanFileSize(File::size(Config::get('config.nfnExportDir') . '/' . $download->file)) }}
+                    @else
+                        {{ Helper::humanFileSize(mb_strlen($download->data, '8bit')) }}
+                    @endif
+                </td>
                 <td>{{ Helper::formatDate($download->created_at, 'Y-m-d', $user->timezone) }}</td>
-                <td>{{ action('DownloadsController@show', [$expedition->project->id, $expedition->id, $download->id]) }}</td>
-                <td><button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ action('DownloadsController@show', [$expedition->project->id, $expedition->id, $download->id]) }}'"><span class="glyphicon glyphicon-floppy-save"></span> @lang('buttons.download') </button></td>
+                <td>{{ link_to_route('apidownloads.get.show', null, [$download->id]) }}</td>
+                <td><button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ route('apidownloads.get.show', [$download->id]) }}'"><span class="glyphicon glyphicon-floppy-save"></span> @lang('buttons.download') </button></td>
             </tr>
             @endif
         @endforeach

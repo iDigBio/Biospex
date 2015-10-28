@@ -24,7 +24,7 @@
         </tr>
         </thead>
         <tbody>
-        @foreach (json_decode($project->advertise) as $field => $value)
+        @foreach (unserialize($project->advertise) as $field => $value)
             <tr>
                 <td>{{ $field }}</td>
                 <td>{{ $value }}</td>
