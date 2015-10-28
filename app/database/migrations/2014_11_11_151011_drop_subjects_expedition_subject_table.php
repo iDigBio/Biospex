@@ -4,6 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 
 class DropSubjectsExpeditionSubjectTable extends Migration
 {
+    use \DisablesForeignKeys;
+
     /**
      * Run the migrations.
      *
@@ -11,10 +13,10 @@ class DropSubjectsExpeditionSubjectTable extends Migration
      */
     public function up()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        $this->disableForeignKeys();
         Schema::drop('subjects');
         Schema::drop('expedition_subject');
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        $this->enableForeignKeys();
     }
 
     /**
@@ -24,7 +26,7 @@ class DropSubjectsExpeditionSubjectTable extends Migration
      */
     public function down()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        $this->disableForeignKeys();
         Schema::create('subjects', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('project_id');
@@ -49,6 +51,6 @@ class DropSubjectsExpeditionSubjectTable extends Migration
         });
 
         DB::connection('mongodb')->collection('subjectdocs')->unset('expedition_ids');
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        $this->enableForeignKeys();
     }
 }

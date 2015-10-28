@@ -26,6 +26,8 @@ use Illuminate\Database\Schema\Blueprint;
 
 class FixForeignKeyCascades extends Migration
 {
+    use \DisablesForeignKeys;
+
     /**
      * Run the migrations.
      *
@@ -33,7 +35,7 @@ class FixForeignKeyCascades extends Migration
      */
     public function up()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        $this->disableForeignKeys();
 
         Schema::table('groups', function (Blueprint $table) {
             $table->dropIndex('groups_user_id_foreign');
@@ -126,7 +128,7 @@ class FixForeignKeyCascades extends Migration
             $table->foreign('group_id')->references('id')->on('groups')->onUpdate('cascade')->onDelete('cascade');
         });
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        $this->enableForeignKeys();
     }
 
 
@@ -137,7 +139,7 @@ class FixForeignKeyCascades extends Migration
      */
     public function down()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        $this->disableForeignKeys();
 
         Schema::table('groups', function (Blueprint $table) {
             $table->dropForeign('groups_user_id_foreign');
@@ -227,6 +229,6 @@ class FixForeignKeyCascades extends Migration
             $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
         });
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        $this->enableForeignKeys();
     }
 }

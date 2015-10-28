@@ -5,6 +5,8 @@ use Illuminate\Database\Migrations\Migration;
 
 class PrepareForNewActorWorkflow extends Migration
 {
+    use \DisablesForeignKeys;
+
     /**
      * Run the migrations.
      *
@@ -12,7 +14,7 @@ class PrepareForNewActorWorkflow extends Migration
      */
     public function up()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        $this->disableForeignKeys();
 
         // Rename workflows table
         if (Schema::hasTable('workflows')) {
@@ -95,7 +97,7 @@ class PrepareForNewActorWorkflow extends Migration
             });
         }
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        $this->enableForeignKeys();
     }
 
     /**
@@ -105,7 +107,7 @@ class PrepareForNewActorWorkflow extends Migration
      */
     public function down()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        $this->disableForeignKeys();
 
         // Rename tables and drop expedition_actor
         if (Schema::hasTable('actors')) {
@@ -176,6 +178,6 @@ class PrepareForNewActorWorkflow extends Migration
             });
         }
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        $this->enableForeignKeys();
     }
 }
