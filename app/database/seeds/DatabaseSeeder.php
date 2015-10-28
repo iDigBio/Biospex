@@ -2,6 +2,8 @@
 
 class DatabaseSeeder extends Seeder
 {
+    use DisablesForeignKeys;
+
     /**
      * Run the database seeds.
      *
@@ -9,6 +11,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->disableForeignKeys();
+
         $this->call('TruncateTables');
         $this->call('PermissionTableSeeder');
         $this->call('UserTableSeeder');
@@ -20,6 +24,6 @@ class DatabaseSeeder extends Seeder
         $this->call('SubjectsTableSeeder');
         $this->call('ExpeditionSubjectTableSeeder');
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        $this->enableForeignKeys();
     }
 }

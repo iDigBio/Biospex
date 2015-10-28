@@ -30,7 +30,6 @@ class TruncateTables extends Seeder
     public function run()
     {
         Eloquent::unguard();
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
         $tableNames = Schema::getConnection()->getDoctrineSchemaManager()->listTableNames();
         foreach ($tableNames as $name) {

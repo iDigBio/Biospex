@@ -1,20 +1,5 @@
 <?php
-/*
-project_id
-    Projects
-    Expeditions
-    Headers
-    Imports
-    Metas
-    Project_Actor
 
-
-expedition_id
-    Downloads
-    Expedition_Actor
-    Workflow_Manager
-
- */
 use Rhumsaa\Uuid\Uuid;
 
 class UpdateUuids extends Seeder
