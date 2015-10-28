@@ -15,6 +15,7 @@ return [
     'blog_url_format'             => 'http://blog.com',
     'contact'                     => 'Contact',
     'contact_email'               => 'Contact Email',
+    'contact_title'               => 'Contact Title',
     'description'                 => 'Description',
     'description_long'            => 'Long Description',
     'description_short'           => 'Short Description',

@@ -4,7 +4,7 @@
  *************************************************************************/
 
 return [
-  //==================================== Translations ====================================//
+    //==================================== Translations ====================================//
     'download_ready'             => 'Your file is ready for download.',
     'expedition'                 => 'Expedition',
     'expedition_created'         => 'Expedition was created successfully.',
@@ -15,12 +15,13 @@ return [
     'expedition_process_success' => 'The expedition has been added to the process queue.',
     'expedition_save_error'      => 'An error occurred when saving expedition.',
     'expedition_updated'         => 'Expedition was updated successfully.',
-    'ocr_process_error'          => 'An error occurred trying to start the OCR processing. Please notify th administration.',
+    'ocr_process_error'          => 'An error occurred trying to start the OCR processing. Please notify th administration. Error: :error',
     'ocr_process_success'        => 'OCR processing has been submitted. You will be notified by email when the process is complete.',
+    'ocr_in_queue'               => 'An Ocr job is currently being processed for this project. Unable to start a new process until finished.',
     'process_no_exists'          => 'Expedition has no processes at this time.',
     'process_stopped'            => 'Expedition process has been stopped.',
     'processing_not_started'     => 'Processing not been started.',
-  //================================== Obsolete strings ==================================//
+    //================================== Obsolete strings ==================================//
     'expedition_create'          => 'Create expedition',
     'expedition_delete'          => 'Delete expedition',
     'expedition_edit'            => 'Edit expedition',

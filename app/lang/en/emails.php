@@ -53,7 +53,9 @@ return [
     'thank_you'                     => 'Thank you',
     'welcome'                       => 'Welcome',
     'error_rowtype_mismatch'        => 'Row Type mismatch in reading meta xml file. :file :row_type :type_file',
-    'error_empty_image_uri'         => 'Image uri array empty for Expedition :id during Notes from Nature export',
+    'error_empty_image_uri'         => 'Image uri array empty for Expedition Actor :id during Notes from Nature export',
+    'manifest_vars_missing'         => 'Necessary variables for manifest are missing during process of Expedtion Id :id.',
+    'actor_factory_create_error'    => 'Actor class :class does not exist.',
     //================================== Obsolete strings ==================================//
     'error_build_image_dir'         => 'No images were retrieved during build for Expedition Id :id.',
     'error_csv_build_header'        => 'Undefined index for :key => :qualified when building header for csv import.',
@@ -64,7 +66,7 @@ return [
     'error_load_xml'                => 'Unable to load dom document for meta id :id',
     'error_move_file'               => 'Unable to move file: :directory',
     'error_ocr_queue'               => 'Process error - :id, :message, :url.',
-    'error_workflow_manager'        => 'An error occurred while processing :class using workflow id :id. Message - :error',
+    'error_workflow_actor'          => 'An error occurred while processing Expedition Actor :pivot_id. Message - :error',
     'expedition_complete_message'   => 'The expedition ":expedition" has been processed successfully. If a download file was created during this process, you may access the link on the Expedition view page. If there were errors, an attachment will be included in this email.',
     'failed_job_message'            => "Job queue :id has failed.<br />Job Data: :jobData ",
     'missing_images'                => 'The below images were unable to be found. Missing image ids were missing the url column in the csv file. Missing image urls were images we were unable to retrieve or convert.',
@@ -73,4 +75,7 @@ return [
     'missing_img_urls'              => 'Missing Image Urls',
     'subject'                       => 'Subject',
     'subjects'                      => 'Subjects',
+    'error_csv_creation'            => 'Unable to create csv file for Expedition :id export. :message',
+    'error_dwc_creation'            => 'Unable to created Darwin Core Archive for Expedition :id export.',
+    'error_zip_creation'            => 'Unable to create zip file for Expedition :id export.',
 ];
