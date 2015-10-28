@@ -265,11 +265,6 @@ class ProjectsController extends BaseController
     {
         $project = $this->project->find($id);
 
-        if (empty($project->advertise)) {
-            $project->advertise = json_decode(json_encode($project), true);
-            $project->save();
-        }
-
         return View::make('projects.advertise', compact('project'));
     }
 
@@ -283,7 +278,7 @@ class ProjectsController extends BaseController
     {
         $project = $this->project->find($id);
 
-        return Response::make($project->advertise, '200', [
+        return Response::make(json_encode(unserialize($project->advertise)), '200', [
             'Content-Type'        => 'application/json',
             'Content-Disposition' => 'attachment; filename="' . $project->uuid . '.json"'
         ]);

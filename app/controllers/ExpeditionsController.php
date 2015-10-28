@@ -29,8 +29,8 @@ use Biospex\Form\Expedition\ExpeditionForm;
 use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
-use Biospex\Services\Process\DarwinCore;
-use Illuminate\Support\Facades\Queue;
+use Biospex\Repo\OcrQueue\OcrQueueInterface;
+use Biospex\Services\Process\Ocr as OcrProcess;
 use Illuminate\Support\Facades\Config;
 
 class ExpeditionsController extends BaseController
@@ -69,6 +69,10 @@ class ExpeditionsController extends BaseController
      * @var Biospex\Services\Process\DarwinCore
      */
     protected $process;
+    /**
+     * @var OcrQueueInterface
+     */
+    protected $ocr;
 
     /**
      * Instantiate a new ExpeditionsController.
@@ -78,8 +82,11 @@ class ExpeditionsController extends BaseController
      * @param ProjectInterface $project
      * @param SubjectInterface $subject
      * @param WorkflowManagerInterface $workflowManager
+     * @param OcrQueueInterface $ocr
      * @param Sentry $sentry
-     * @param DarwinCore $process
+     * @param OcrProcess $ocrProcess
+     * @internal param DarwinCoreCsvImport $csv
+     * @internal param DarwinCore $process
      */
     public function __construct(
         ExpeditionInterface $expedition,
@@ -87,16 +94,18 @@ class ExpeditionsController extends BaseController
         ProjectInterface $project,
         SubjectInterface $subject,
         WorkflowManagerInterface $workflowManager,
+        OcrQueueInterface $ocr,
         Sentry $sentry,
-        DarwinCore $process
+        OcrProcess $ocrProcess
     ) {
         $this->expedition = $expedition;
         $this->expeditionForm = $expeditionForm;
         $this->project = $project;
         $this->subject = $subject;
         $this->workflowManager = $workflowManager;
+        $this->ocr = $ocr;
         $this->sentry = $sentry;
-        $this->process = $process;
+        $this->ocrProcess = $ocrProcess;
 
         // Establish Filters
         $this->beforeFilter('auth');
@@ -115,7 +124,7 @@ class ExpeditionsController extends BaseController
      */
     public function index($id)
     {
-        if (! Request::ajax()) {
+        if ( ! Request::ajax()) {
             return Redirect::action('ProjectsController@show', [$id]);
         }
 
@@ -241,7 +250,7 @@ class ExpeditionsController extends BaseController
     }
 
     /**
-     * Start processing expedition
+     * Start processing expedition actors
      *
      * @param $projectId
      * @param $expeditionId
@@ -253,18 +262,20 @@ class ExpeditionsController extends BaseController
             $this->expedition->setPass(true);
             $expedition = $this->expedition->findWith($expeditionId, ['project.actors', 'workflowManager']);
 
-            if (! is_null($expedition->workflowManager)) {
-                $workflowId = $expedition->workflowManager->id;
+            if ( ! is_null($expedition->workflowManager)) {
                 $expedition->workflowManager->stopped = 0;
-                $expedition->workflowManager->queue = 1;
-                $this->workflowManager->save($expedition->workflowManager);
+                $expedition->workflowManager->save();
             } else {
-                $workflowManager = $this->workflowManager->create(['expedition_id' => $expeditionId, 'queue' => 1]);
-                $workflowId = $workflowManager->id;
-                $expedition->actors()->sync($expedition->project->actors);
+                $this->workflowManager->create(['expedition_id' => $expeditionId]);
+                foreach($expedition->project->actors as $actor) {
+                    if ( ! $actor->private) {
+                        $actors[] = $actor;
+                    }
+                }
+                $expedition->actors()->sync($actors);
             }
 
-            Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $workflowId, 'class' => 'WorkflowManagerQueue'], Config::get('config.beanstalkd.workflow'));
+            Artisan::call('workflow:manage', ['expedition' => $expeditionId]);
 
             Session::flash('success', trans('expeditions.expedition_process_success'));
         } catch (Exception $e) {
@@ -276,29 +287,34 @@ class ExpeditionsController extends BaseController
 
     public function ocr($projectId, $expeditionId)
     {
-        try {
-            $expedition = $this->expedition->findWith($expeditionId, ['subjects']);
+        $queue = $this->ocr->findByProjectId($projectId);
 
-            $data = [];
-            $count = 0;
-            $this->process->setProjectId($projectId);
-            foreach ($expedition->subjects as $subject) {
-                if (! empty($subject->ocr)) {
-                    continue;
+        if (empty($queue)) {
+            try {
+                $expedition = $this->expedition->findWith($expeditionId, ['subjects']);
+
+                foreach ($expedition->subjects as $subject) {
+                    if ( ! empty($subject->ocr)) {
+                        continue;
+                    }
+                    $this->ocrProcess->buildOcrQueueData($subject);
                 }
 
-                $this->process->buildOcrQueue($data, $subject);
-                $count++;
-            }
+                $data = $this->ocrProcess->getOcrQueueData();
+                $count = $this->ocrProcess->getOcrQueueDataCount();
 
-            if ($count > 0 && ! \Config::get('config.disableOcr')) {
-                $id = $this->process->saveOcrQueue($data, $count);
-                \Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $id, 'class' => 'OcrProcessQueue'], Config::get('config.beanstalkd.ocr'));
-            }
+                if ($count > 0 && ! \Config::get('config.disableOcr')) {
+                    $id = $this->ocrProcess->saveOcrQueue($projectId, $data, $count);
+                    \Queue::push('Biospex\Services\Queue\OcrProcessQueue', ['id' => $id],
+                        Config::get('config.beanstalkd.ocr'));
+                }
 
-            Session::flash('success', trans('expeditions.ocr_process_success'));
-        } catch (Exception $e) {
-            Session::flash('error', trans('expeditions.ocr_process_error'));
+                Session::flash('success', trans('expeditions.ocr_process_success'));
+            } catch (Exception $e) {
+                Session::flash('error', trans('expeditions.ocr_process_error', ['error' => $e->getMessage()]));
+            }
+        } else {
+            Session::flash('error', trans('expeditions.ocr_in_queue'));
         }
 
         return Redirect::action('ExpeditionsController@show', [$projectId, $expeditionId]);
@@ -319,7 +335,6 @@ class ExpeditionsController extends BaseController
             Session::flash('error', trans('expeditions.process_no_exists'));
         } else {
             $workflow->stopped = 1;
-            $workflow->queue = 0;
             $this->workflowManager->save($workflow);
             Session::flash('success', trans('expeditions.process_stopped'));
         }
@@ -337,7 +352,7 @@ class ExpeditionsController extends BaseController
     public function destroy($projectId, $expeditionId)
     {
         $workflow = $this->workflowManager->findByExpeditionId($expeditionId);
-        if (! is_null($workflow)) {
+        if ( ! is_null($workflow)) {
             Session::flash('error', trans('expeditions.expedition_process_exists'));
 
             return Redirect::action('projects.expeditions.show', [$projectId, $expeditionId]);

@@ -86,7 +86,7 @@ class ServerInfoController extends BaseController
 
         Cache::flush();
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, Config::get('config.ip') . '/cache.php');
+        curl_setopt($ch, CURLOPT_URL, Config::get('site.ip') . '/cache.php');
         curl_exec($ch);
         curl_close($ch);
 
