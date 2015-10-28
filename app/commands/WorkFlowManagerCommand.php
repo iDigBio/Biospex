@@ -25,6 +25,8 @@
  */
 use Illuminate\Console\Command;
 use Biospex\Repo\WorkflowManager\WorkflowManagerInterface;
+use Symfony\Component\Console\Input\InputArgument;
+use Illuminate\Support\Facades\Queue;
 
 class WorkFlowManagerCommand extends Command
 {
@@ -43,18 +45,36 @@ class WorkFlowManagerCommand extends Command
     protected $description = "Workflow manager";
 
     /**
+     * @var WorkflowManagerInterface
+     */
+    protected $workflow;
+
+    /**
      * Class constructor
      *
-     * @param WorkflowManagerInterface $manager
-     * @param ActorInterface $actor
-     * @param Report $report
+     * @param WorkflowManagerInterface $workflow
+     * @param QueueFactory $factory
+     * @internal param WorkflowManagerInterface $manager
+     * @internal param ActorInterface $actor
+     * @internal param Report $report
      */
-    public function __construct(WorkflowManagerInterface $manager)
+    public function __construct(WorkflowManagerInterface $workflow)
     {
-        $this->manager = $manager;
-        $this->queue = \Config::get('config.beanstalkd.workflow-manager');
-
         parent::__construct();
+        $this->queue = \Config::get('config.beanstalkd.workflow');
+        $this->workflow = $workflow;
+    }
+
+    /**
+     * Defines the arguments.
+     *
+     * @return array
+     */
+    public function getArguments()
+    {
+        return [
+            ['expedition', InputArgument::OPTIONAL, 'The id of an Expedition to process.'],
+        ];
     }
 
     /**
@@ -64,34 +84,52 @@ class WorkFlowManagerCommand extends Command
      */
     public function fire()
     {
-        $managers = $this->manager->allWith(['expedition.actors']);
+        $id = $this->argument('expedition');
 
-        if (empty($managers)) {
+        if ( ! empty($id)) {
+            $workFlows = $this->workflow->findByExpeditionIdWith($id, ['expedition.actors']);
+        } else {
+            $workFlows = $this->workflow->allWith(['expedition.actors']);
+        }
+
+
+        if ($workFlows->isEmpty()) {
             return;
         }
 
-        foreach ($managers as $manager) {
-            if ($this->checkProcess($manager)) {
-                continue;
-            }
+        $actors = $this->processWorkFlows($workFlows);
 
-            Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $manager->id, 'class' => 'WorkflowManagerQueue'], $this->queue);
-
-            $manager->queue = 1;
-            $manager->save();
+        foreach ($actors as $actor) {
+            $actor->pivot->queued = 1;
+            $actor->pivot->save();
+            Queue::push('Biospex\Services\Queue\ActorQueue', serialize($actor), $this->queue);
         }
     }
 
-    /**
-     * @param $manager
-     * @return bool
-     */
-    public function checkProcess($manager)
+    protected function processWorkFlows($workFlows)
     {
-        if ($manager->stopped == 1 || $manager->error == 1 || $manager->queue == 1) {
-            return true;
+        $actors = [];
+        foreach ($workFlows as $workFlow) {
+            if ($workFlow->stopped) {
+                continue;
+            }
+
+            $this->processActors($workFlow, $actors);
         }
 
-        return false;
+        return $actors;
+    }
+
+    protected function processActors($workFlow, &$actors)
+    {
+        foreach ($workFlow->expedition->actors as $actor) {
+            if ($actor->error || $actor->queued || $actor->completed) {
+                continue;
+            }
+
+            $actors[] = $actor;
+        }
+
+        return;
     }
 }

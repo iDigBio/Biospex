@@ -60,7 +60,7 @@ class OcrQueuePushCommand extends Command
         }
 
         // Push to queue
-        \Queue::push('Biospex\Services\Queue\QueueFactory', ['id' => $job->id, 'class' => 'OcrProcessQueue'], $this->queue);
+        \Queue::push('Biospex\Services\Queue\OcrProcessQueue', ['id' => $job->id], $this->queue);
 
         return;
     }
