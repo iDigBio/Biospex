@@ -20,7 +20,7 @@ class NotesFromNature
 
     public function process($actor)
     {
-        switch($this->state[$actor->state]) {
+        switch($this->state[$actor->pivot->state]) {
             case 'export':
                 $this->nfnExport->process($actor);
                 break;
