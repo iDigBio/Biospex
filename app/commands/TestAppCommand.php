@@ -1,7 +1,6 @@
 <?php
 
 use Biospex\Repo\Header\HeaderInterface;
-use Biospex\Repo\Project\ProjectInterface;
 use Illuminate\Console\Command;
 
 
@@ -35,7 +34,7 @@ class TestAppCommand extends Command
      */
     public function fire()
     {
-        $projects = Project::with(['expeditions.subjects'])->get();
+        $projects = Project::all();
 
         foreach($projects as $project) {
             dd($project->advertise);
