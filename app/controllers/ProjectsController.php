@@ -278,6 +278,7 @@ class ProjectsController extends BaseController
     {
         $project = $this->project->find($id);
 
+        dd($project->advertise);
         $advertise = array_map('stripslashes', $project->advertise);
 
         return Response::make($advertise, '200', [
