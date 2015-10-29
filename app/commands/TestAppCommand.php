@@ -37,7 +37,6 @@ class TestAppCommand extends Command
         $projects = Project::all();
 
         foreach($projects as $project) {
-            dd($project->advertise);
             $advertise = json_decode($project->advertise);
             $project->advertise = serialize($advertise);
             $project->save();
