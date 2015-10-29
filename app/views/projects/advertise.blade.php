@@ -24,7 +24,7 @@
         </tr>
         </thead>
         <tbody>
-        @foreach ($project->advertise as $field => $value)
+        @foreach (stripslashes($project->advertise) as $field => $value)
             <tr>
                 <td>{{ $field }}</td>
                 <td>{{ $value }}</td>
