@@ -359,10 +359,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         $this->attributes['advertise'] = serialize($advertise);
     }
 
-    /*
     public function getAdvertiseAttribute($value)
     {
         return unserialize($value);
     }
-    */
 }
