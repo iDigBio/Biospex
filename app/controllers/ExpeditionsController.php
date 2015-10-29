@@ -266,7 +266,7 @@ class ExpeditionsController extends BaseController
                 $expedition->workflowManager->stopped = 0;
                 $expedition->workflowManager->save();
             } else {
-                //$this->workflowManager->create(['expedition_id' => $expeditionId]);
+                $this->workflowManager->create(['expedition_id' => $expeditionId]);
                 foreach($expedition->project->actors as $actor) {
                     if ( ! $actor->private) {
                         $actors[] = $actor->id;
