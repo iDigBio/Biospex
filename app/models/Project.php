@@ -361,6 +361,6 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
 
     public function getAdvertiseAttribute($value)
     {
-        return unserialize($value);
+        return unserialize(stripslashes($value));
     }
 }
