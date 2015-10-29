@@ -278,7 +278,9 @@ class ProjectsController extends BaseController
     {
         $project = $this->project->find($id);
 
-        return Response::make($project->advertise, '200', [
+        $advertise = array_map('stripslashes', $project->advertise);
+
+        return Response::make($advertise, '200', [
             'Content-Type'        => 'application/json',
             'Content-Disposition' => 'attachment; filename="' . $project->uuid . '.json"'
         ]);
