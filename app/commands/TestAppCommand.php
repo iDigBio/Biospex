@@ -38,6 +38,7 @@ class TestAppCommand extends Command
         $projects = Project::with(['expeditions.subjects'])->get();
 
         foreach($projects as $project) {
+            dd($project->advertise);
             $advertise = json_decode($project->advertise);
             $project->advertise = serialize($advertise);
             $project->save();
