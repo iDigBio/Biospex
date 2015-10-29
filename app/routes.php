@@ -26,7 +26,7 @@
 
 // Route Patterns
 Route::pattern('id', '[0-9]+');
-/*
+
 Route::group(
     [
         'domain' => Config::get('config.api.domain'),
@@ -35,11 +35,11 @@ Route::group(
         Route::get('/', ['as' => 'api.index', 'uses' => 'Api\\ApiController@index']);
         Route::get('downloads/{id}', ['as' => 'apidownloads.get.show', 'uses' => 'Api\\ApiDownloadsController@show']);
 });
-*/
+
 /** ADD ALL LOCALIZED ROUTES INSIDE THIS GROUP **/
 Route::group(
     [
-        //'domain' => Config::get('config.site.domain'),
+        'domain' => Config::get('config.site.domain'),
         'prefix' => Local::setLocale(),
         'before' => 'LocalRedirectFilter'
     ],
