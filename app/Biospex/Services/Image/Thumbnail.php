@@ -2,7 +2,7 @@
 
 namespace Biospex\Services\Image;
 
-use Biospex\Services\Curl\Curl;
+use GuzzleHttp\Client;
 
 class Thumbnail extends Image
 {
@@ -78,14 +78,17 @@ class Thumbnail extends Image
             return $this->outputFileSm;
         }
 
-        try {
-            $rc = new Curl([$this, "saveThumbnail"]);
-            $rc->options = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1, CURLINFO_HEADER_OUT => 1];
-            $rc->get($url);
-            $rc->execute();
-        } catch (\Exception $e) {
-            \Log::critical($e->getMessage());
-        }
+        $client = new Client();
+        $response = $client->get($url, ['future' => true]);
+        $response
+            ->then(
+                function($response) {
+                    $this->saveThumbnail($response->getBody()->getContents());
+                },
+                function ($error) {
+                    \Log::critical($error->getMessage());
+                }
+            );
 
         return $this->outputFileSm;
     }
@@ -109,9 +112,7 @@ class Thumbnail extends Image
 
     /**
      * Save thumb file.
-     *
      * @param $image
-     * @param $info
      */
     public function saveThumbnail($image)
     {
