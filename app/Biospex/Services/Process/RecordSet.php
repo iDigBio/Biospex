@@ -1,8 +1,8 @@
 <?php namespace Biospex\Services\Process;
 
 use Biospex\Repo\Import\ImportInterface;
-use Biospex\Services\Curl\Curl;
 use Exception;
+use GuzzleHttp\Client;
 
 class RecordSet
 {
@@ -76,28 +76,17 @@ class RecordSet
      */
     public function send($url)
     {
-        $rc = new Curl([$this, "response"]);
-        $rc->options = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1];
-        $rc->get($url);
-        $result = $rc->execute();
+        $client = new Client();
+        $response = $client->get($url, [
+            'headers' => ['Accept' => 'application/json']
+        ]);
 
-        return $result;
-    }
-
-    /**
-     * Process response and handle appropriately.
-     *
-     * @param $return
-     * @param $info
-     * @return bool
-     */
-    public function response($return, $info)
-    {
-        if (! $this->checkHttpCode($info)) {
+        if ($response->getStatusCode() != 200) {
+            $this->release(10);
             return false;
         }
 
-        $this->response = json_decode($return);
+        $this->response = json_decode($response->getBody()->getContents());
 
         if ($this->response->complete == true && $this->response->task_status == "SUCCESS") {
             return $this->download();
@@ -108,23 +97,6 @@ class RecordSet
         return true;
     }
 
-    /**
-     * Check the response and release if necessary.
-     * iDigBio sometimes returns 500 so release job if needed.
-     *
-     * @param $info
-     * @return bool
-     */
-    public function checkHttpCode($info)
-    {
-        if ($info['http_code'] == 200) {
-            return true;
-        }
-
-        $this->release(10);
-
-        return false;
-    }
 
     /**
      * Download zip file.
@@ -136,7 +108,7 @@ class RecordSet
     {
         $fileName = $this->data['id'] . ".zip";
         $filePath = $this->importDir . "/" . $fileName;
-        if (! file_put_contents($filePath, file_get_contents($this->response->download_url))) {
+        if ( ! file_put_contents($filePath, file_get_contents($this->response->download_url))) {
             throw new \Exception(trans('emails.error_zip_download'));
         }
 
@@ -168,14 +140,14 @@ class RecordSet
      */
     protected function checkDir()
     {
-        if (! \File::isDirectory($this->importDir)) {
-            if (! \File::makeDirectory($this->importDir, 0775, true)) {
+        if ( ! \File::isDirectory($this->importDir)) {
+            if ( ! \File::makeDirectory($this->importDir, 0775, true)) {
                 throw new \Exception(trans('emails.error_create_dir', ['directory' => $this->importDir]));
             }
         }
 
-        if (! \File::isWritable($this->importDir)) {
-            if (! chmod($this->importDir, 0775)) {
+        if ( ! \File::isWritable($this->importDir)) {
+            if ( ! chmod($this->importDir, 0775)) {
                 throw new \Exception(trans('emails.error_write_dir', ['directory' => $this->importDir]));
             }
         }
