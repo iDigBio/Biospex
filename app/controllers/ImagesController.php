@@ -63,10 +63,10 @@ class ImagesController extends \BaseController
     {
         $url = Input::get('url');
         $thumb = $this->thumbnail->getThumbNail(urldecode($url));
-        $mime = $this->thumbnail->getMimeType();
+        $info = getimagesizefromstring($thumb);
 
         $response = Response::make($thumb, 200);
-        $response->header('content-type', $mime);
+        $response->header('content-type', $info['mime']);
 
         // We return our image here.
         return $response;
