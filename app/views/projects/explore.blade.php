@@ -43,7 +43,7 @@
         <button id="savestate" class="btn btn-default">Save Grid State</button>
         <button id="loadstate" class="btn btn-default">Load Grid State</button>
     </div>
-    @include('layouts/jqgrid-modal')
+    @include('layouts/jqgrid')
 @stop
 @section('javascript')
     @parent

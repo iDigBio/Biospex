@@ -64,7 +64,7 @@
         </div>
     </div>
     {{ Form::close()}}
-    @include('layouts/jqgrid-modal')
+    @include('layouts/jqgrid')
 </div>
 
 @stop

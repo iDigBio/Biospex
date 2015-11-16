@@ -58,7 +58,7 @@
             </div>
         </div>
     </div>
-    @include('layouts/jqgrid-modal')
+    @include('layouts/jqgrid')
 @stop
 @section('javascript')
     @parent
