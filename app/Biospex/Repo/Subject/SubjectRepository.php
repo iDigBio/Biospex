@@ -72,11 +72,14 @@ class SubjectRepository extends Repository implements SubjectInterface
      * Grid: get total number of rows.
      *
      * @param array $filters
+     * @param $projectId
+     * @param null $expeditionId
+     * @param null $route
      * @return int
      */
-    public function getTotalNumberOfRows(array $filters = [])
+    public function getTotalNumberOfRows(array $filters = [], $projectId, $expeditionId = null, $route = null)
     {
-        return $this->model->getTotalNumberOfRows($filters);
+        return $this->model->getTotalNumberOfRows($filters, $projectId, $expeditionId, $route);
     }
 
     /**
