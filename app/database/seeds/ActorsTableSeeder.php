@@ -27,12 +27,12 @@ class ActorsTableSeeder extends Seeder
                 'class' => "NotesFromNature",
             ],
             [
-                'title' => "Notes From Nature 2",
+                'title' => "Notes From Nature II",
                 'url'   => "http://www.notesfromnature.org/",
                 'class' => "NotesFromNature2",
             ],
             [
-                'title' => "Ocr",
+                'title' => "OCR",
                 'url'   => "http://ocr.idiginfo.org/",
                 'class' => "Ocr",
                 'private' => 1

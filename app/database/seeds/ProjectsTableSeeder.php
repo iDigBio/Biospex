@@ -34,14 +34,9 @@ class ProjectsTableSeeder extends Seeder
             'twitter'              => '',
             'activities'           => 'Transcription',
             'language_skills'      => 'English and perhaps occasionally Spanish',
+            'workflow_id'           => 5,
             'status'               => 'starting',
 
         ]);
-
-        $actors = Actor::all();
-        $i = 0;
-        foreach ($actors as $actor) {
-            $project->actors()->attach($actor->id, ['order_by' => $i++]);
-        }
     }
 }

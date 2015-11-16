@@ -15,7 +15,7 @@ class ExpeditionSubjectTableSeeder extends Seeder
             $subjects = Subject::where('expedition_ids', 'size', 0)->get();
             $i = 0;
             foreach ($subjects as $subject) {
-                if ($i == 300) {
+                if ($i == 50) {
                     break;
                 }
                 // add expedition ids to subjects
