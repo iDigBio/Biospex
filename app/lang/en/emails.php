@@ -53,6 +53,7 @@ return [
     'thank_you'                     => 'Thank you',
     'welcome'                       => 'Welcome',
     'error_rowtype_mismatch'        => 'Row Type mismatch in reading meta xml file. :file :row_type :type_file',
+    'error_extension_file'          => 'Unable to match extension file. :file',
     'error_empty_image_uri'         => 'Image uri array empty for Expedition Actor :id during Notes from Nature export',
     'manifest_vars_missing'         => 'Necessary variables for manifest are missing during process of Expedtion Id :id.',
     'actor_factory_create_error'    => 'Actor class :class does not exist.',

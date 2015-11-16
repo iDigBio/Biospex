@@ -4,9 +4,9 @@
  *************************************************************************/
 
 return [
-  //==================================== Translations ====================================//
+    //==================================== Translations ====================================//
     'activities'                  => 'Activities',
-    'actor'                       => 'Workflow Actor',
+    'workflows'                   => 'Workflows',
     'assign_subjects'             => 'Assign Subjects',
     'assigned_subjects'           => 'Assigned Subjects',
     'banner'                      => 'Banner',
@@ -46,7 +46,7 @@ return [
     'twitter'                     => 'Twitter',
     'twitter_format'              => 'http://twitter.com/example',
     'unassigned'                  => 'Unassigned',
-  //================================== Obsolete strings ==================================//
+    //================================== Obsolete strings ==================================//
     'target'                      => 'Target Field',
     'target_core'                 => 'Darwin Core #',
     'target_description'          => 'Description',
