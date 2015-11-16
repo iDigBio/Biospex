@@ -29,5 +29,5 @@ use Biospex\Repo\RepositoryInterface;
 
 interface ActorInterface extends RepositoryInterface
 {
-    public function selectList();
+
 }

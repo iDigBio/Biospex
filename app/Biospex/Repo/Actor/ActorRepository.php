@@ -37,9 +37,4 @@ class ActorRepository extends Repository implements ActorInterface
     {
         $this->model = $actor;
     }
-
-    public function selectList()
-    {
-        return $this->model->selectList();
-    }
 }
