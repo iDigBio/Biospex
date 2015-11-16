@@ -32,11 +32,9 @@ return [
      * DCA import row types for multimedia.
      */
     'metaFileRowTypes'       => [
-        'http://rs.tdwg.org/ac/terms/multimedia'  => 'multimedia_raw',
-        'http://rs.gbif.org/terms/1.0/image'      => 'images',
-        'http://rs.tdwg.org/dwc/terms/occurrence' => 'occurrence',
-        'http://biospex.loc/media'                => 'multimedia-10',
-        'http://biospex.loc/occurrence'           => 'occurrence-10',
+        'http://rs.tdwg.org/ac/terms/multimedia'  => ['multimedia_raw', 'multimedia', 'multimedia-10'],
+        'http://rs.gbif.org/terms/1.0/image'      => ['images'],
+        'http://rs.tdwg.org/dwc/terms/occurrence' => ['occurrence', 'occurrence-10']
     ],
     /*
      * OCR
@@ -59,8 +57,8 @@ return [
     'images'                 => [
         'thumbDefaultImg'    => '/assets/default_image.jpg',
         'thumbOutputDir'     => storage_path('images'),
-        'thumbWidth'         => 150,
-        'thumbHeight'        => 150,
+        'thumbWidth'         => 300,
+        'thumbHeight'        => 300,
         'library'            => 'gmagick',
         'quality'            => 100,
         'imageTypeExtension' => [
