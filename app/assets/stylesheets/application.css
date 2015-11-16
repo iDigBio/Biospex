@@ -9,8 +9,9 @@
  * gets included (e.g. say you have require_tree . then the code will appear after all the directories 
  * but before any files alphabetically greater than 'application.css' 
  *
- *= require jquery-ui.min
  *= require ui.jqgrid
+ *= require ui.jqgrid-bootstrap
+ *= require ui.jqgrid-bootstrap-ui
  *= require ui.multiselect
  *= require jquery.qtip.min
  *= require_tree .
