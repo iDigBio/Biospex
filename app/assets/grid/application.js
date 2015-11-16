@@ -11,8 +11,6 @@
 // The available directives right now are require, require_directory, and require_tree
 //
 //= require ui.multiselect
-//= require jquery.qtip.min
 //= require grid.locale-en
 //= require jquery.jqGrid.min
-//= require jquery-blockui.min
 //= require_tree .
