@@ -108,6 +108,7 @@ class RepoServiceProvider extends ServiceProvider
         $app->bind('Biospex\Repo\Import\ImportInterface', 'Biospex\Repo\Import\ImportRepository');
         $app->bind('Biospex\Repo\Header\HeaderInterface', 'Biospex\Repo\Header\HeaderRepository');
         $app->bind('Biospex\Repo\WorkflowManager\WorkflowManagerInterface', 'Biospex\Repo\WorkflowManager\WorkflowManagerRepository');
+        $app->bind('Biospex\Repo\Workflow\WorkflowInterface', 'Biospex\Repo\Workflow\WorkflowRepository');
         $app->bind('Biospex\Repo\Actor\ActorInterface', 'Biospex\Repo\Actor\ActorRepository');
         $app->bind('Biospex\Repo\Download\DownloadInterface', 'Biospex\Repo\Download\DownloadRepository');
         $app->bind('Biospex\Repo\Invite\InviteInterface', 'Biospex\Repo\Invite\InviteRepository');
