@@ -143,11 +143,9 @@ class ExpeditionsController extends BaseController
     public function create($id)
     {
         $project = $this->project->findWith($id, ['group']);
-        $subjects = $this->subject->getUnassignedCount($id);
-        $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
         $cancel = URL::previous();
 
-        return View::make('expeditions.create', compact('project', 'subjects', 'create', 'cancel'));
+        return View::make('expeditions.create', compact('project', 'subjects', 'cancel'));
     }
 
     /**
@@ -157,11 +155,7 @@ class ExpeditionsController extends BaseController
      */
     public function store()
     {
-        // Form Processing
-        $subjects = $this->subject->getSubjectIds(Input::get('project_id'), Input::get('subjects'));
-        $input = array_merge(Input::all(), ['subject_ids' => $subjects]);
-
-        $expedition = $this->expeditionForm->save($input);
+        $expedition = $this->expeditionForm->save(Input::all());
 
         if ($expedition) {
             Session::flash('success', trans('expeditions.expedition_created'));
@@ -215,12 +209,18 @@ class ExpeditionsController extends BaseController
      */
     public function edit($projectId, $expeditionId)
     {
-        $expedition = $this->expedition->findWith($expeditionId, ['project.group']);
-        $subjects = count($expedition->subject);
-        $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
+        $this->expedition->setPass(true);
+        $expedition = $this->expedition->findWith($expeditionId, ['project.group', 'workflowManager', 'subjects']);
+        $subjectIds = [];
+        foreach ($expedition->subjects as $subject) {
+            $subjectIds[] = $subject->_id;
+        }
+
+        $showCb = is_null($expedition->workflowManager) ? 0 : 1;
+        $subjects = implode(',', $subjectIds);
         $cancel = URL::previous();
 
-        return View::make('expeditions.edit', compact('expedition', 'subjects', 'create', 'cancel'));
+        return View::make('expeditions.edit', compact('expedition', 'subjects', 'showCb', 'subjects', 'cancel'));
     }
 
     /**
@@ -233,7 +233,16 @@ class ExpeditionsController extends BaseController
     public function update($projectId, $expeditionId)
     {
         // Form Processing
-        $expedition = $this->expeditionForm->update(Input::all());
+        $this->expeditionForm->update(Input::all());
+        $expedition = $this->expedition->findWith($expeditionId, ['subjects']);
+        $existingSubjectIds = [];
+        foreach ($expedition->subjects as $subject) {
+            $existingSubjectIds[] = $subject->_id;
+        }
+        $this->subject->detachSubjects($existingSubjectIds, $expedition->id);
+
+        $subjectIds = explode(',', Input::get('subjectIds'));
+        $expedition->subjects()->attach($subjectIds);
 
         if ($expedition) {
             // Success!
@@ -260,19 +269,20 @@ class ExpeditionsController extends BaseController
     {
         try {
             $this->expedition->setPass(true);
-            $expedition = $this->expedition->findWith($expeditionId, ['project.actors', 'workflowManager']);
+            $expedition = $this->expedition->findWith($expeditionId, ['project.workflow.actors', 'workflowManager']);
 
             if ( ! is_null($expedition->workflowManager)) {
                 $expedition->workflowManager->stopped = 0;
                 $expedition->workflowManager->save();
             } else {
-                $this->workflowManager->create(['expedition_id' => $expeditionId]);
-                foreach($expedition->project->actors as $actor) {
+                foreach($expedition->project->workflow->actors as $actor) {
                     if ( ! $actor->private) {
-                        $actors[] = $actor->id;
+                        $actors[$actor->id] = ['order' => $actor->pivot->order];
                     }
                 }
+
                 $expedition->actors()->sync($actors);
+                $this->workflowManager->create(['expedition_id' => $expeditionId]);
             }
 
             Artisan::call('workflow:manage', ['expedition' => $expeditionId]);

@@ -43,18 +43,6 @@ class ImagesController extends \BaseController
     }
 
     /**
-     * Build html used by jQuery qTip
-     *
-     * @return string
-     */
-    public function html()
-    {
-        $url = Input::get('url');
-
-        return '<div><img src="/images/preview?url=' . urlencode($url) . '" /></div>';
-    }
-
-    /**
      * Return resized image for jQuery qTip
      *
      * @return \Illuminate\Http\Response
@@ -63,12 +51,7 @@ class ImagesController extends \BaseController
     {
         $url = Input::get('url');
         $thumb = $this->thumbnail->getThumbNail(urldecode($url));
-        $info = getimagesizefromstring($thumb);
 
-        $response = Response::make($thumb, 200);
-        $response->header('content-type', $info['mime']);
-
-        // We return our image here.
-        return $response;
+        return '<img src="data:image/jpeg;base64,' . base64_encode($thumb) . '" />';
     }
 }

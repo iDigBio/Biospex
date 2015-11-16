@@ -1,34 +1,12 @@
 <?php
-/**
- * ProjectsController.php
- *
- * @package    Biospex Package
- * @version    1.0
- * @author     Robert Bruhn <79e6ef82@opayq.com>
- * @license    GNU General Public License, version 3
- * @copyright  (c) 2014, Biospex
- * @link       http://biospex.org
- *
- * This file is part of Biospex.
- * Biospex is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Biospex is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
- */
+
 use Cartalyst\Sentry\Sentry;
 use Biospex\Repo\Project\ProjectInterface;
 use Biospex\Form\Project\ProjectForm;
 use Biospex\Repo\Group\GroupInterface;
 use Biospex\Repo\Import\ImportInterface;
 use Biospex\Repo\Actor\ActorInterface;
+use Biospex\Repo\Workflow\WorkflowInterface;
 
 class ProjectsController extends BaseController
 {
@@ -56,17 +34,21 @@ class ProjectsController extends BaseController
      * @var ActorInterface
      */
     protected $actor;
+    /**
+     * @var WorkflowInterface
+     */
+    protected $workflow;
 
     /**
      * Instantiate a new ProjectsController
      *
-     * @param Sentry $sentry
      * @param ProjectInterface $project
      * @param ProjectForm $projectForm
      * @param GroupInterface $group
      * @param Sentry $sentry
      * @param ImportInterface $import
      * @param ActorInterface $actor
+     * @param WorkflowInterface $workflow
      */
     public function __construct(
         ProjectInterface $project,
@@ -74,7 +56,8 @@ class ProjectsController extends BaseController
         GroupInterface $group,
         Sentry $sentry,
         ImportInterface $import,
-        ActorInterface $actor
+        ActorInterface $actor,
+        WorkflowInterface $workflow
     ) {
         $this->project = $project;
         $this->projectForm = $projectForm;
@@ -82,6 +65,7 @@ class ProjectsController extends BaseController
         $this->sentry = $sentry;
         $this->import = $import;
         $this->actor = $actor;
+        $this->workflow = $workflow;
 
         // Establish Filters
         $this->beforeFilter('auth');
@@ -119,7 +103,7 @@ class ProjectsController extends BaseController
         $isSuperUser = $user->isSuperUser();
         $allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
         $groups = $this->group->selectOptions($allGroups);
-        $actors = $this->actor->selectList();
+        $workflows = ['--Select--'] + $this->workflow->all()->lists('workflow', 'id');
         $statusSelect = \Config::get('config.statusSelect');
 
         if (empty($groups)) {
@@ -130,10 +114,8 @@ class ProjectsController extends BaseController
 
         $cancel = URL::previous();
         $selectGroups = ['' => '--Select--'] + $groups;
-        $count = is_null(Input::old('targetCount')) ? 0 : Input::old('targetCount');
-        $create = Route::currentRouteName() == 'projects.create' ? true : false;
 
-        return View::make('projects.create', compact('cancel', 'selectGroups', 'count', 'create', 'actors', 'statusSelect'));
+        return View::make('projects.create', compact('cancel', 'selectGroups', 'workflows', 'statusSelect'));
     }
 
     /**
@@ -190,16 +172,14 @@ class ProjectsController extends BaseController
         $isSuperUser = $user->isSuperUser();
         $allGroups = $isSuperUser ? $this->group->findAllGroups() : $user->getGroups();
         $groups = $this->group->selectOptions($allGroups);
-        $actors = $this->actor->selectList();
+        $workflows = ['--Select--'] + $this->workflow->all()->lists('workflow', 'id');
         $statusSelect = \Config::get('config.statusSelect');
         $workflowCheck = '';
 
         $selectGroups = ['' => '--Select--'] + $groups;
-        $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
-        $create = Route::currentRouteName() == 'projects.create' ? true : false;
         $cancel = URL::previous();
 
-        return View::make('projects.clone', compact('selectGroups', 'project', 'count', 'create', 'cancel', 'actors', 'statusSelect', 'workflowCheck'));
+        return View::make('projects.clone', compact('selectGroups', 'project', 'cancel', 'workflows', 'statusSelect', 'workflowCheck'));
     }
 
     /**
@@ -210,13 +190,13 @@ class ProjectsController extends BaseController
      */
     public function edit($id)
     {
-        $project = $this->project->findWith($id, ['group', 'actors', 'expeditions.workflowManager']);
+        $project = $this->project->findWith($id, ['group', 'expeditions.workflowManager']);
         $workflowCheck = '';
         foreach ($project->expeditions as $expedition) {
-            $workflowCheck = is_null($expedition->workflowManager) ? '' : 'readonly';
+            $workflowCheck = is_null($expedition->workflowManager) ? '' : 'disabled';
         }
 
-        $actors = $this->actor->selectList();
+        $workflows = ['--Select--'] + $this->workflow->all()->lists('workflow', 'id');
         $statusSelect = \Config::get('config.statusSelect');
 
         $user = $this->sentry->getUser();
@@ -225,11 +205,9 @@ class ProjectsController extends BaseController
         $groups = $this->group->selectOptions($allGroups);
 
         $selectGroups = ['' => '--Select--'] + $groups;
-        $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
-        $create = Route::currentRouteName() == 'projects.create' ? true : false;
         $cancel = URL::previous();
 
-        return View::make('projects.edit', compact('project', 'actors', 'statusSelect', 'workflowCheck', 'selectGroups', 'count', 'create', 'cancel'));
+        return View::make('projects.edit', compact('project', 'workflows', 'statusSelect', 'workflowCheck', 'selectGroups', 'cancel'));
     }
 
     /**
@@ -282,6 +260,23 @@ class ProjectsController extends BaseController
             'Content-Type'        => 'application/json',
             'Content-Disposition' => 'attachment; filename="' . $project->uuid . '.json"'
         ]);
+    }
+
+    /**
+     * Display project explore page
+     *
+     * @param $projectId
+     * @return \Illuminate\View\View
+     */
+    public function explore($projectId)
+    {
+        $project = $this->project->findWith($projectId);
+        $subjectAssignedCount = $this->project->getSubjectsAssignedCount($project);
+        $user = $this->sentry->getUser();
+        $isSuperUser = $user->isSuperUser();
+        $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
+
+        return View::make('projects.explore', compact('project', 'subjectAssignedCount', 'isOwner'));
     }
 
     /**
