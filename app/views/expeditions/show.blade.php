@@ -44,13 +44,23 @@
                 </div>
             </div>
 
-            <h4>{{ trans('pages.subjects_assigned') }}: <span id="subjectCount">{{ $expedition->subjectsCount }}</span></h4>
+            <h4>{{ trans_choice('pages.subjects_assigned', 1) }}: <span id="subjectCount">{{ $expedition->subjectsCount }}</span></h4>
             <div class="table-responsive" id="jqtable">
+                <input type="hidden" id="url" value="{{ URL::route('projects.grids.expeditions.limit', [$expedition->project->id, $expedition->id]) }}">
+                <input type="hidden" id="showCb" value="0">
                 <input type="hidden" id="projectId" value="{{ $expedition->project->id }}">
                 <input type="hidden" id="expeditionId" value="{{ $expedition->id }}">
-                <table id="list"></table>
+                <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
                 <div id="pager"></div>
+                <br />
+                <button id="savestate" class="btn btn-default">Save Grid State</button>
+                <button id="loadstate" class="btn btn-default">Load Grid State</button>
             </div>
         </div>
     </div>
+    @include('layouts/jqgrid-modal')
+@stop
+@section('javascript')
+    @parent
+    @javascripts('grid/application')
 @stop
