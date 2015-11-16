@@ -106,6 +106,11 @@ class WorkFlowManagerCommand extends Command
         }
     }
 
+    /**
+     * Process each workflow and actors
+     * @param $workFlows
+     * @return array
+     */
     protected function processWorkFlows($workFlows)
     {
         $actors = [];
@@ -120,10 +125,19 @@ class WorkFlowManagerCommand extends Command
         return $actors;
     }
 
+    /**
+     * Decide what actor to include in the array and being processed
+     * @param $workFlow
+     * @param $actors
+     */
     protected function processActors($workFlow, &$actors)
     {
         foreach ($workFlow->expedition->actors as $actor) {
-            if ($actor->error || $actor->queued || $actor->completed) {
+            if ($this->checkErrorQueued($actor)) {
+                return;
+            }
+
+            if ($actor->completed) {
                 continue;
             }
 
@@ -131,5 +145,15 @@ class WorkFlowManagerCommand extends Command
         }
 
         return;
+    }
+
+    /**
+     * Check if actor is in error or queued
+     * @param $actor
+     * @return bool
+     */
+    protected function checkErrorQueued($actor)
+    {
+        return ($actor->error || $actor->queued) ? true : false;
     }
 }
