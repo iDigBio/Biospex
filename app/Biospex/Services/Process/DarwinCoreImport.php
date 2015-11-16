@@ -163,4 +163,22 @@ class DarwinCoreImport
     {
         return ($type == 'core') ? $this->metaFile->getCoreEnclosure() : $this->metaFile->getExtEnclosure();
     }
+
+    /**
+     * Get duplicate records
+     * @return array
+     */
+    public function getDuplicates()
+    {
+        return $this->csv->getDuplicates();
+    }
+
+    /**
+     * Get rejected media
+     * @return array
+     */
+    public function getRejectedMedia()
+    {
+        return $this->csv->getRejectedMedia();
+    }
 }

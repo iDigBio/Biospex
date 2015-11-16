@@ -27,6 +27,7 @@
 
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\Expedition\ExpeditionInterface;
+use Biospex\Repo\Header\HeaderInterface;
 use Exception;
 
 class JqGridJsonEncoder
@@ -45,179 +46,266 @@ class JqGridJsonEncoder
      * @var Excel
      */
     protected $excel;
+    /**
+     * @var HeaderInterface
+     */
+    private $header;
+
+    private $defaultGridVisible = [
+        'id',
+        'accessURI',
+        'ocr'
+    ];
+
+    private $defaultSubGridVisible = [
+        'id',
+        'institutionCode',
+        'scientificName',
+        'recordId',
+    ];
 
     /**
      * Construct
      *
      * @param SubjectInterface $subject
      * @param ExpeditionInterface $expedition
-     * @param Excel $excel
+     * @param HeaderInterface $header
+     * @internal param Excel $excel
      */
     public function __construct(
         SubjectInterface $subject,
-        ExpeditionInterface $expedition
-    ) {
+        ExpeditionInterface $expedition,
+        HeaderInterface $header
+    )
+    {
         $this->subject = $subject;
         $this->expedition = $expedition;
+        $this->header = $header;
     }
 
     /**
      * Load grid model.
      *
+     * @param $projectId
      * @return string
      */
-    public function loadGridModel()
+    public function loadGridModel($projectId)
     {
-        return json_encode($this->subject->loadGridModel());
+        $result = $this->header->getByProjectId($projectId);
+        $headers = unserialize($result->header);
+        array_unshift($headers['image'], 'assigned', 'id');
+        array_push($headers['image'], 'ocr');
+
+        $colNames = $headers['image'];
+        $colModel = $this->setColModel($colNames);
+
+        $subColNames = $this->setColNames($headers['occurrence']);
+        $subColModel = $this->setColModel($subColNames);
+
+        $colNamesResult = array_merge($colNames, $subColNames);
+        $colModelResult = array_merge($colModel, $subColModel);
+
+        $data = [
+            'colNames' => $colNamesResult,
+            'colModel' => $colModelResult
+        ];
+
+        return json_encode($data);
+    }
+
+    public function setColNames($fields)
+    {
+        $names = [];
+        foreach ($fields as $field)
+        {
+            $names[] = 'occurrence_' . $field;
+        }
+
+        return $names;
+    }
+
+    /**
+     * Build column model for grid.
+     *
+     * @param $colNames
+     * @param bool $image
+     * @return array
+     */
+    protected function setColModel($colNames)
+    {
+        $colModel = [];
+        foreach ($colNames as $column) {
+            $colModel[] = $this->formatGridColumn($column);
+        }
+
+        return $colModel;
+    }
+
+    /**
+     * Format the given column for grid model.
+     *
+     * @param $column
+     * @return array
+     */
+    protected function formatGridColumn($column)
+    {
+        if ($column == 'assigned') {
+            return $this->buildExpeditionCheckbox();
+        }
+
+        $col = $this->setNormalColumnProperties($column);
+
+        if ($column == 'ocr') {
+            $col = array_merge($col, [
+                'title' => false,
+                'classes' => 'ocrPreview',
+                'cellattr' => 'addDataAttr'
+            ]);
+        }
+
+        if ($column == 'accessURI') {
+            $this->addUriLink($col);
+        }
+
+        return $col;
+    }
+
+    protected function setNormalColumnProperties($column, $image = true)
+    {
+        $default = $image ? $this->defaultGridVisible : $this->defaultSubGridVisible;
+
+        $col = [
+            'name' => $column,
+            'index' => $column,
+            'key' => false,
+            'resizable' => true,
+            'search' => true,
+            'sortable' => true,
+            'editable' => false,
+            'hidden' =>  in_array($column, $default) ? false : true,
+            'searchoptions' => ['sopt' => [
+                'eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn'
+            ], 'value' => ':Any;true:Yes;false:No']
+        ];
+
+        return $col;
+    }
+
+    protected function addUriLink(&$col)
+    {
+        $col = array_merge($col, [
+            'classes' => 'thumbPreview',
+            'formatter' => 'imagePreview'
+        ]);
+    }
+
+    protected function buildExpeditionCheckbox()
+    {
+        return [
+            'name' => 'expedition_ids',
+            'index' => 'expedition_ids',
+            'width' => 100,
+            'align' => 'center',
+            'hidedlg' => true,
+            'stype' => 'select',
+            'searchoptions' => ['sopt' => ['eq'], 'value' => 'all:All;true:Yes;false:No']
+        ];
     }
 
     /**
      * Echo in a jqGrid compatible format the data requested by a grid.
      *
      * @param $postedData
+     * @return string
      * @throws Exception
      */
-    public function encodeRequestedData($postedData)
+    public function encodeGridRequestedData($postedData)
     {
-        if (isset($postedData['page'])) {
-            $page = $postedData['page'];
-        } else {
-            $page = 1;
-        }
+        $projectId = (int) \Route::input('projects');
+        $expeditionId = (int) \Route::input('expeditions');
+        $route = \Route::getCurrentRoute()->getName();
 
-        if (isset($postedData['rows'])) {
-            $limit = $postedData['rows'];
-        } else {
-            $limit = null;
-        }
+        $page = $this->setPage($postedData);
 
-        if (isset($postedData['sidx'])) {
-            $sidx = $postedData['sidx'];
-        } else {
-            $sidx = null;
-        }
+        $limit = $this->setLimit($postedData);
 
-        if (isset($postedData['sord'])) {
-            $sord = $postedData['sord'];
-        }
+        $sidx = $this->setSidx($postedData);
 
-        if (isset($postedData['filters']) && ! empty($postedData['filters'])) {
-            $filters = json_decode(str_replace('\'', '"', $postedData['filters']), true);
-        }
+        $sord = $this->setSord($postedData);
 
-        if (! $sidx || empty($sidx)) {
-            $sidx = null;
-            $sord = null;
-        }
+        $filters = $this->setFilters($postedData);
 
-        if (isset($filters['rules']) && is_array($filters['rules'])) {
-            foreach ($filters['rules'] as &$filter) {
-                switch ($filter['op']) {
-                    case 'eq': //equal
-                        $filter['op'] = '=';
-                        break;
-                    case 'ne': //not equal
-                        $filter['op'] = '!=';
-                        break;
-                    case 'lt': //less
-                        $filter['op'] = '<';
-                        break;
-                    case 'le': //less or equal
-                        $filter['op'] = '<=';
-                        break;
-                    case 'gt': //greater
-                        $filter['op'] = '>';
-                        break;
-                    case 'ge': //greater or equal
-                        $filter['op'] = '>=';
-                        break;
-                    case 'bw': //begins with
-                        $filter['op'] = 'like';
-                        $filter['data'] = $filter['data'] . '%';
-                        break;
-                    case 'bn': //does not begin with
-                        $filter['op'] = 'not like';
-                        $filter['data'] = $filter['data'] . '%';
-                        break;
-                    case 'in': //is in
-                        $filter['op'] = 'is in';
-                        break;
-                    case 'ni': //is not in
-                        $filter['op'] = 'is not in';
-                        break;
-                    case 'ew': //ends with
-                        $filter['op'] = 'like';
-                        $filter['data'] = '%' . $filter['data'];
-                        break;
-                    case 'en': //does not end with
-                        $filter['op'] = 'not like';
-                        $filter['data'] = '%' . $filter['data'];
-                        break;
-                    case 'cn': //contains
-                        $filter['op'] = 'like';
-                        $filter['data'] = '%' . $filter['data'] . '%';
-                        break;
-                    case 'nc': //does not contains
-                        $filter['op'] = 'not like';
-                        $filter['data'] = '%' . $filter['data'] . '%';
-                        break;
-                }
-            }
-        } else {
-            $filters['rules'] = [];
-        }
+        $count = $this->subject->getTotalNumberOfRows($filters, $projectId, $expeditionId, $route);
 
-        $count = $this->subject->getTotalNumberOfRows($filters['rules']);
+        $limit = empty($limit) ? $count : $limit;
 
-        if (empty($limit)) {
-            $limit = $count;
-        }
-
-        if (! is_int($count)) {
+        if (!is_int($count)) {
             throw new Exception('The method getTotalNumberOfRows must return an integer');
         }
 
-        if ($count > 0) {
-            $totalPages = ceil($count / $limit);
-        } else {
-            $totalPages = 0;
-        }
+        $totalPages = $this->setTotalPages($count, $limit);
 
-        if ($page > $totalPages) {
-            $page = $totalPages;
-        }
-
-        if ($limit < 0) {
-            $limit = 0;
-        }
-
+        $page = ($page > $totalPages) ? $totalPages : $page;
+        $limit = $limit < 0 ? 0 : $limit;
         $start = $limit * $page - $limit;
-
-        if ($start < 0) {
-            $start = 0;
-        }
-
+        $start = $start < 0 ? 0 : $start;
         $limit = $limit * $page;
 
         if (empty($postedData['pivotRows'])) {
-            $rows = $this->subject->getRows($limit, $start, $sidx, $sord, $filters['rules']);
+            $rows = $this->subject->getRows($limit, $start, $sidx, $sord, $filters);
         } else {
             $rows = json_decode($postedData['pivotRows'], true);
         }
 
-        if (! is_array($rows) || (isset($rows[0]) && ! is_array($rows[0]))) {
+        if (!is_array($rows) || (isset($rows[0]) && !is_array($rows[0]))) {
             throw new Exception('The method getRows must return an array of arrays, example: array(array("column1"  =>  "1-1", "column2" => "1-2"), array("column1" => "2-1", "column2" => "2-2"))');
+        }
+
+        // Prefix occurrence fields, merge into row, unset occurrence
+        foreach ($rows as $key => $row) {
+            $row['occurrence'] = array_combine(
+                array_map(function($k){ return 'occurrence_'.$k; }, array_keys($row['occurrence'])), $row['occurrence']
+            );
+
+            $rows[$key] = array_merge($row, $row['occurrence']);
+            unset($rows[$key]['occurrence']);
         }
 
         if (isset($postedData['exportFormat'])) {
         } else {
-            echo json_encode([
-                'page'    => $page,
-                'total'   => $totalPages,
+            return json_encode([
+                'page' => $page,
+                'total' => $totalPages,
                 'records' => $count,
-                'rows'    => $rows,
+                'rows' => $rows,
             ]);
         }
+    }
+
+    /**
+     * Echo in a jqGrid compatible format the data requested by a grid.
+     *
+     * @param $postedData
+     * @param bool $subGrid
+     * @return string
+     * @throws Exception
+     */
+    public function encodeSubGridRequestedData()
+    {
+        $subjectId = \Route::input('subjects');
+
+        $row = $this->subject->find($subjectId)->first()->toArray();
+
+        if (! $row) {
+            throw new Exception('The method must return row');
+        }
+
+        return json_encode([
+            'page' => 1,
+            'total' => 1,
+            'records' => empty($row) ? 0 : 1,
+            'rows' => [$row['occurrence']],
+        ]);
     }
 
     /**
@@ -240,6 +328,72 @@ class JqGridJsonEncoder
         $count = $expedition->getSubjectsCountAttribute();
 
         return json_encode($count);
+    }
+
+    /**
+     * @param $postedData
+     * @return array
+     */
+    public function setPage($postedData)
+    {
+        return isset($postedData['page']) ? $postedData['page'] : 1;
+    }
+
+    /**
+     * @param $postedData
+     * @return array
+     */
+    public function setLimit($postedData)
+    {
+        return isset($postedData['rows']) ? $postedData['rows'] : null;
+    }
+
+    /**
+     * @param $postedData
+     * @return array
+     */
+    public function setSidx($postedData)
+    {
+        $sidx = isset($postedData['sidx']) ? $postedData['sidx'] : null;
+
+        return ( ! $sidx || empty($sidx)) ? null : $sidx;
+    }
+
+    /**
+     * @param $postedData
+     * @return array
+     */
+    public function setSord($postedData)
+    {
+        $sord = isset($postedData['sord']) ? $postedData['sord'] : null;
+
+        return ( ! $sord || empty($sord)) ? null : $sord;
+    }
+
+    /**
+     * @param $postedData
+     * @return array
+     */
+    public function setFilters($postedData)
+    {
+        return (isset($postedData['filters']) && ! empty($postedData['filters'])) ?
+            json_decode(str_replace('\'', '"', $postedData['filters']), true) : [];
+    }
+
+    /**
+     * @param $count
+     * @param $limit
+     * @return float|int
+     */
+    public function setTotalPages($count, $limit)
+    {
+        if ($count > 0) {
+            $totalPages = ceil($count / $limit);
+            return $totalPages;
+        } else {
+            $totalPages = 0;
+            return $totalPages;
+        }
     }
 
     /**

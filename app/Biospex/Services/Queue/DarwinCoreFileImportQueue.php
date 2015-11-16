@@ -149,10 +149,10 @@ class DarwinCoreFileImportQueue extends QueueAbstract
 
         $import = $this->import->find($this->data['id']);
         $user = $this->sentry->findUserById($import->user_id);
-        $project = $this->project->findWith($import->project_id, ['actors']);
+        $project = $this->project->findWith($import->project_id, ['workflow.actors']);
         $processOcr = false;
-        foreach($project->actors as $actor) {
-            if ($actor->class == 'Ocr') {
+        foreach($project->workflow->actors as $actor) {
+            if ($actor->title == 'OCR') {
                 $processOcr = true;
             }
         }

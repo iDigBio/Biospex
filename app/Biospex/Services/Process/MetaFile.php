@@ -21,6 +21,7 @@ class MetaFile
     protected $extEnclosure;
     protected $metaFields;
     protected $meta;
+    protected $file;
 
     /**
      * Constructor
@@ -46,12 +47,14 @@ class MetaFile
      */
     public function process($file)
     {
+        $this->file = $file;
+
         $xml = $this->xml->load($file);
 
         // New
         $this->loadCoreNode();
         $this->loadExtensionNode();
-        $this->checkExtensionRowType($file);
+        $this->checkExtensionRowType();
         $this->setMediaIsCore();
         $this->setCoreFile();
         $this->setExtensionFile();
@@ -96,23 +99,34 @@ class MetaFile
      */
     public function loadExtensionNode()
     {
-        foreach ($this->metaFileRowTypes as $rowType => $fileName) {
-            $query = "//ns:archive/ns:extension[contains(ns:files/ns:location, '" . $fileName . ".')]";
-            $this->extension = $this->xml->xpathQuery($query, true);
-            if ($this->extension) {
-                break;
+        foreach ($this->metaFileRowTypes as $rowType => $fileNames) {
+            foreach ($fileNames as $fileName)
+            {
+                if ($this->findExtensionFile($fileName))
+                {
+                    return;
+                }
             }
         }
+
+        $this->report->addError(trans('emails.error_extension_file', ['file' => $this->file]));
+        $this->report->reportSimpleError();
 
         return;
     }
 
+    protected function findExtensionFile($fileName)
+    {
+        $query = "//ns:archive/ns:extension[contains(ns:files/ns:location, '" . $fileName . ".')]";
+        $this->extension = $this->xml->xpathQuery($query, true);
+
+        return empty($this->extension) ? false : true;
+    }
+
     /**
-     * Check row type against file given and send warning if mismatch occurs.
-     *
-     * @param $file
+     * Check row type against file given and send warning if mismatch occurs
      */
-    private function checkExtensionRowType($file)
+    private function checkExtensionRowType()
     {
         $rowType = strtolower($this->extension->attributes->getNamedItem("rowType")->nodeValue);
         if (isset($this->metaFileRowTypes[$rowType])) {
@@ -120,7 +134,7 @@ class MetaFile
         }
 
         $this->report->addError(trans('emails.error_rowtype_mismatch',
-            ['file' => $file, 'row_type' => $rowType, 'type_file' => $this->extension->nodeValue]
+            ['file' => $this->file, 'row_type' => $rowType, 'type_file' => $this->extension->nodeValue]
         ));
         $this->report->reportSimpleError();
 

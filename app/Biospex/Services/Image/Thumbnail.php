@@ -3,6 +3,10 @@
 namespace Biospex\Services\Image;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Event\CompleteEvent;
+use GuzzleHttp\Event\ErrorEvent;
+use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Exception\RequestException;
 
 class Thumbnail extends Image
 {
@@ -71,26 +75,16 @@ class Thumbnail extends Image
      */
     public function thumbFromUrl($url)
     {
-        $this->setOutPutFile($url);
-        $this->createDir($this->outputDir);
-
-        if (\File::isFile($this->outputFileSm)) {
-            return $this->outputFileSm;
+        $client = new Client();
+        try {
+            $response = $client->get($url);
+            $this->saveThumbnail($response->getBody()->getContents());
+        } catch (BadResponseException $e) {
+            \Log::error($e->getMessage());
         }
 
-        $client = new Client();
-        $response = $client->get($url, ['future' => true]);
-        $response
-            ->then(
-                function($response) {
-                    $this->saveThumbnail($response->getBody()->getContents());
-                },
-                function ($error) {
-                    \Log::critical($error->getMessage());
-                }
-            );
-
-        return $this->outputFileSm;
+        return $this->thumbExists($this->outputFileSm) ?
+            $this->getFile($this->outputFileSm) : $this->getFile($this->defaultImg);
     }
 
     /**
@@ -102,12 +96,15 @@ class Thumbnail extends Image
     public function getThumbnail($url)
     {
         $this->setVars();
+        $this->setOutPutFile($url);
 
-        if (! $file = $this->thumbFromUrl($url)) {
-            $file = $this->defaultImg;
+        if ($this->thumbExists($this->outputFileSm)) {
+            return $this->getFile($this->outputFileSm);
         }
 
-        return \File::get($file);
+        $file =$this->thumbFromUrl($url);
+
+        return $file;
     }
 
     /**
@@ -137,5 +134,25 @@ class Thumbnail extends Image
         $filenameSm = md5($url) . '.small.jpg';
         $this->outputFileLg = $this->outputDir . '/' . $filenameLg;
         $this->outputFileSm = $this->outputDir . '/' . $filenameSm;
+    }
+
+    /**
+     * Get file
+     * @param $file
+     * @return string
+     */
+    public function getFile($file)
+    {
+        return \File::get($file);
+    }
+
+    /**
+     * Check file exists
+     * @param $file
+     * @return bool
+     */
+    public function thumbExists($file)
+    {
+        return \File::isFile($file);
     }
 }
