@@ -40,17 +40,16 @@ return [
     |
     */
     'paths'                  => [
+        'app/assets',
         'app/assets/javascripts',
         'app/assets/stylesheets',
         'app/assets/images',
         'app/assets/stylesheets/fonts',
-        'provider/assets/jqgrid',
-        'provider/assets/jqgrid/plugins',
-        'provider/assets/jquery',
-        'provider/assets/jquery/images',
-        'provider/assets/jquery-validation',
-        'provider/assets/qTip',
-        'provider/assets/bootstrap',
+        'provider/guriddo/js',
+        'provider/guriddo/js/i18n',
+        'provider/guriddo/css',
+        'provider/guriddo/plugins',
+        'provider/jquery-validation'
     ],
 
     /*
