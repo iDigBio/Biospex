@@ -217,6 +217,23 @@ class CacheProjectDecorator extends AbstractProjectDecorator
         return $project;
     }
 
+    public function getSubjectsAssignedCount($project)
+    {
+        $key = md5('project.' . $project->id . 'subjectAssignedCount');
+
+        if ($this->cache->has($key) && ! $this->pass) {
+            return $this->cache->get($key);
+        }
+
+        $count = $project->getSubjectsAssignedCount($project);
+
+        if (! $this->pass) {
+            $this->cache->put($key, $count);
+        }
+
+        return $count;
+    }
+
     public function setPass($value = false)
     {
         $this->pass = $value;

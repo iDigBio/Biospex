@@ -28,8 +28,8 @@
 use Biospex\Repo\Repository;
 use Project;
 
-class ProjectRepository extends Repository implements ProjectInterface
-{
+class ProjectRepository extends Repository implements ProjectInterface {
+
     /**
      * @param Project $project
      */
@@ -72,14 +72,6 @@ class ProjectRepository extends Repository implements ProjectInterface
         $project->advertise = $data;
         $project->save();
 
-        $actors = [];
-        foreach ($data['actor'] as $key => $actor) {
-            if ( ! empty($actor)) {
-                $actors[$actor] = ['order_by' => $key];
-            }
-        }
-        $project->actors()->attach($actors);
-
         return $project;
     }
 
@@ -95,14 +87,11 @@ class ProjectRepository extends Repository implements ProjectInterface
         $project->advertise = $data;
         $project->fill($data)->save();
 
-        $actors = [];
-        foreach ($data['actor'] as $key => $actor) {
-            if ( ! empty($actor)) {
-                $actors[$actor] = ['order_by' => $key];
-            }
-        }
-        $project->actors()->sync($actors);
-
         return $project;
+    }
+
+    public function getSubjectsAssignedCount($project)
+    {
+        return $project->getSubjectsAssignedCount();
     }
 }

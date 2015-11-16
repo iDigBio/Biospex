@@ -112,4 +112,9 @@ abstract class AbstractProjectDecorator implements ProjectInterface
     {
         return $this->project->findByUuid($uuid);
     }
+
+    public function getSubjectsAssignedCount($project)
+    {
+        return $project->getSubjectsAssignedCount();
+    }
 }
