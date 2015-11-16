@@ -53,7 +53,9 @@ class ProjectForm extends Form
     protected function valid(array $input)
     {
         if (isset($input['id']))
-         return $this->validator->with($input)->modifyRules('title', 'title', $input['id'])->passes();
+        {
+            return $this->validator->with($input)->modifyRules('title', 'title', $input['id'])->passes();
+        }
 
         return $this->validator->with($input)->passes();
     }

@@ -42,6 +42,7 @@ class ProjectFormLaravelValidator extends AbstractLaravelValidator
         'description_short' => 'required|between:6,140',
         'description_long'  => 'required',
         'keywords'          => 'required',
+        'workflow_id'       => 'required',
         'banner'            => 'image|image_size:>=1200,>=300',
         'logo'              => 'image|image_size:<=300,<=200'
     ];
