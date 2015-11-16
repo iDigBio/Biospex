@@ -105,6 +105,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         'twitter',
         'activities',
         'language_skills',
+        'workflow_id',
         'logo',
         'banner',
         'target_fields',
@@ -159,6 +160,14 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
+    public function workflow()
+    {
+        return $this->belongsTo('Workflow');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function header()
     {
         return $this->hasOne('Header');
@@ -194,14 +203,6 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     public function imports()
     {
         return $this->hasMany('Import');
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function actors()
-    {
-        return $this->belongsToMany('Actor', 'project_actor')->withPivot('order_by')->orderBy('order_by', 'asc')->withTimestamps();
     }
 
     /**
@@ -362,5 +363,20 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     public function getAdvertiseAttribute($value)
     {
         return unserialize($value);
+    }
+
+    public function getSubjectsAssignedCount($project)
+    {
+        return $project->subjectsAssignedCount;
+    }
+
+    /**
+     * Get counts attribute
+     *
+     * @return int
+     */
+    public function getSubjectsAssignedCountAttribute()
+    {
+        return $this->subjects()->whereRaw(['expedition_ids' => ['$not' => ['$size' => 0]]])->get()->count();
     }
 }
