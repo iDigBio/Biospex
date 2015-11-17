@@ -10,24 +10,26 @@ $.extend($.jgrid.cellattr, {
 
 $(function () {
     'use strict';
-    if ($(".jgrid").length) {
-        var gridId = $(".jgrid").prop('id');
-        var project = $("#projectId").val();
-        $.ajax({
-            type: "GET",
-            url: "/projects/" + project + "/grids/load",
-            dataType: "json",
-            success: jqBuildGrid(gridId)
-        });
-    }
+    var gridId = $(".jgrid").prop('id');
+    var $grid = $("#" + gridId);
+    var project = $("#projectId").val();
+    $.ajax({
+        type: "GET",
+        url: "/projects/" + project + "/grids/load",
+        dataType: "json",
+        success: jqBuildGrid($grid, gridId)
+    });
 });
 
-function jqBuildGrid(gridId) {
+function jqBuildGrid($grid, gridId) {
+    if ($('#subjectIds').length > 0) {
+        var subjectIds = $('#subjectIds').val().length == 0 ? [] : $('#subjectIds').val().split(',');
+    }
+
     return function (result) {
         var cm = result.colModel;
         mapFormatter(cm);
         var url = $('#url').val();
-        var $grid = $("#" + gridId);
         $grid.jqGrid({
             jsonReader: {
                 repeatitems: false,
@@ -61,6 +63,7 @@ function jqBuildGrid(gridId) {
             height: '100%',
             pager: "#pager",
             beforeSelectRow: function (id, event) {
+
                 if (event.target.className == 'ocrPreview') {
                     $('#model-body').html($(event.target).text());
                     return false;
@@ -91,7 +94,7 @@ function jqBuildGrid(gridId) {
             loadComplete: function () {
                 var $this = $(this);
 
-                setPreviewLinks();
+                setPreviewLinks(this.id);
 
                 if ($("#showCb").val() == 0) {
                     $this.jqGrid('hideCol', 'cb');
@@ -144,15 +147,17 @@ function jqBuildGrid(gridId) {
             buttonicon: "glyphicon glyphicon-remove",
             title: "Clear saved grid's settings",
             onClickButton: function () {
+                localStorage.clear();
                 window.location.reload();
             }
         });
 
-        $("#savestate").click(function (event) {
+        $('#savestate').click(function (event) {
             event.preventDefault();
             $.jgrid.saveState(gridId);
         });
-        $("#loadstate").click(function (event) {
+
+        $('#loadstate').click(function (event) {
             event.preventDefault();
             $.jgrid.loadState(gridId);
         });
@@ -160,6 +165,15 @@ function jqBuildGrid(gridId) {
 }
 
 function mapFormatter(column) {
+    var functionsMapping = {
+        "imagePreview": function (cellValue, opts, rowObjects) {
+            var url = encodeURIComponent(cellValue);
+            return '<a href="' + cellValue + '" target="_new">View Image</a>'
+                + '<a href="/images/preview?url=' + url + '" class="thumb-view">View Thumb</a>'
+                + '<a href="' + cellValue + '" class="url-view">View Url</a>';
+        }
+    };
+
     for (var i = 0; i < column.length; i++) {
         var col = column[i];
         if (col.hasOwnProperty("formatter") &&
@@ -169,20 +183,7 @@ function mapFormatter(column) {
     }
 }
 
-var functionsMapping = {
-    "imagePreview": function (cellValue, opts, rowObjects) {
-        var url = encodeURIComponent(cellValue);
-        return '<a href="' + cellValue + '" target="_new">View Image</a>'
-            + '<a href="/images/preview?url=' + url + '" class="thumb-view">View Thumb</a>'
-            + '<a href="' + cellValue + '" class="url-view">View Url</a>';
-    }
-};
-
-if ($('#subjectIds').length) {
-    var subjectIds = $('#subjectIds').val().length == 0 ? [] : $('#subjectIds').val().split(',');
-}
-
-var setMultipleSelect = function ($this) {
+function setMultipleSelect($this) {
     var data = subjectIds;
     for (var x = 0; x < data.length; x++) {
         var row = $this.jqGrid ('getRowData', data[x]);
@@ -190,9 +191,9 @@ var setMultipleSelect = function ($this) {
             $this.setSelection(data[x]);
         }
     }
-};
+}
 
-var updateIdsOfSelectedRows = function (id, isSelected) {
+function updateIdsOfSelectedRows(id, isSelected) {
     var index = $.inArray(id, subjectIds);
     if (!isSelected && index >= 0) {
         subjectIds = $.grep(subjectIds, function (val) {
@@ -203,10 +204,10 @@ var updateIdsOfSelectedRows = function (id, isSelected) {
     }
     $('#subjectIds').val(subjectIds);
     $('#subjectCount').html(subjectIds.length);
-};
+}
 
-var setPreviewLinks = function () {
-    $('.thumb-view').click(function (event) {
+function setPreviewLinks(id) {
+    $('#'+id).on("click", 'a.thumb-view', function (event) {
         event.preventDefault();
         $.ajax({
                 url: $(event.target).attr('href'),
@@ -219,8 +220,7 @@ var setPreviewLinks = function () {
                 $('.loading').hide();
                 $('#jqGridModal').modal('show');
             });
-    });
-    $('.url-view').click(function (event) {
+    }).on("click", 'a.url-view', function (event) {
         event.preventDefault();
         $('#model-body').html($(event.target).attr('href'));
         $('#jqGridModal').modal('show');
