@@ -55,7 +55,7 @@ return [
     ],
     /** Imagine settings */
     'images'                 => [
-        'thumbDefaultImg'    => '/assets/images/default_image.jpg',
+        'thumbDefaultImg'    => '/app/assets/images/default_image.jpg',
         'thumbOutputDir'     => storage_path('images'),
         'thumbWidth'         => 300,
         'thumbHeight'        => 300,
