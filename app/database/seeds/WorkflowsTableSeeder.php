@@ -9,6 +9,9 @@ class WorkflowsTableSeeder extends Seeder
      */
     public function run()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('workflows')->truncate();
+
         Eloquent::unguard();
 
         $workflows = [
@@ -29,6 +32,7 @@ class WorkflowsTableSeeder extends Seeder
                 $i++;
             }
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }
 
