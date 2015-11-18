@@ -19,10 +19,6 @@ $(function () {
         dataType: "json",
         success: jqBuildGrid($grid, gridId)
     });
-
-    if ($('#subjectIds').length > 0) {
-        var subjectIds = $('#subjectIds').val().length == 0 ? [] : $('#subjectIds').val().split(',');
-    }
 });
 
 function jqBuildGrid($grid, gridId) {
@@ -192,6 +188,10 @@ function setMultipleSelect($this) {
             $this.setSelection(data[x]);
         }
     }
+}
+
+if ($('#subjectIds').length > 0) {
+    var subjectIds = $('#subjectIds').val().length == 0 ? [] : $('#subjectIds').val().split(',');
 }
 
 function updateIdsOfSelectedRows(id, isSelected) {
