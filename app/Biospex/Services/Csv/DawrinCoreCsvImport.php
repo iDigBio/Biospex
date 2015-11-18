@@ -543,10 +543,10 @@ class DarwinCoreCsvImport extends CsvAbstract
             ];
             $this->header->create($insert);
         } else {
-            $existingHeader = unserialize($result->header);
+            $existingHeader = $result->header;
             $existingHeader[$type] = isset($existingHeader[$type]) ?
                 $this->combineHeader($existingHeader[$type], $header) : $existingHeader[$type] = $header;
-            $result->header = serialize($existingHeader);
+            $result->header = $existingHeader;
             $result->save();
         }
 
@@ -562,7 +562,7 @@ class DarwinCoreCsvImport extends CsvAbstract
      */
     public function combineHeader($resHeader, $newHeader)
     {
-        return array_merge($resHeader, array_diff($newHeader, $resHeader));
+        return array_unique(array_merge($resHeader, array_diff($newHeader, $resHeader)));
     }
 
     public function processOcr($loadMedia)
