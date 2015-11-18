@@ -36,7 +36,7 @@ return [
     'group_invite_message'          => 'You have been invited to join the Biospex group :group. Please :invite to register using this email address.',
     'group_invite_subject'          => 'Bisopex Group Invite',
     'import_dup_rej_message'        => 'If duplicates or rejects exist, you will find the information in an attached csv file.',
-    'import_ocr_message'            => 'OCR processing may take a longer and you will receive an email when it is complete.',
+    'import_ocr_message'            => 'OCR processing may take a little longer, and you will receive an email when it is complete.',
     'import_subject_complete'       => 'The subject import for :project has been completed.',
     'import_subject_subject'        => 'Subject Import Completed',
     'import_transcription_complete' => 'The transcription import for :project has been completed.',
@@ -57,7 +57,6 @@ return [
     'error_empty_image_uri'         => 'Image uri array empty for Expedition Actor :id during Notes from Nature export',
     'manifest_vars_missing'         => 'Necessary variables for manifest are missing during process of Expedtion Id :id.',
     'actor_factory_create_error'    => 'Actor class :class does not exist.',
-    //================================== Obsolete strings ==================================//
     'error_build_image_dir'         => 'No images were retrieved during build for Expedition Id :id.',
     'error_csv_build_header'        => 'Undefined index for :key => :qualified when building header for csv import.',
     'error_import_process'          => "Unable to process import.<br />Id: :id<br />Message: :message<br />Trace: :trace",
