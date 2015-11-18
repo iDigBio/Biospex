@@ -13,6 +13,5 @@
  *= require ui.jqgrid-bootstrap
  *= require ui.jqgrid-bootstrap-ui
  *= require ui.multiselect
- *= require jquery.qtip.min
  *= require_tree .
  */

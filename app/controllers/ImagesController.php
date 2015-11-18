@@ -43,7 +43,7 @@ class ImagesController extends \BaseController
     }
 
     /**
-     * Return resized image for jQuery qTip
+     * Return resized image
      *
      * @return \Illuminate\Http\Response
      */
