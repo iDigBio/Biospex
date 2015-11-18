@@ -19,12 +19,13 @@ $(function () {
         dataType: "json",
         success: jqBuildGrid($grid, gridId)
     });
-});
 
-function jqBuildGrid($grid, gridId) {
     if ($('#subjectIds').length > 0) {
         var subjectIds = $('#subjectIds').val().length == 0 ? [] : $('#subjectIds').val().split(',');
     }
+});
+
+function jqBuildGrid($grid, gridId) {
 
     return function (result) {
         var cm = result.colModel;
