@@ -92,7 +92,7 @@ class JqGridJsonEncoder
     public function loadGridModel($projectId)
     {
         $result = $this->header->getByProjectId($projectId);
-        $headers = unserialize($result->header);
+        $headers = $result->header;
         array_unshift($headers['image'], 'assigned', 'id');
         array_push($headers['image'], 'ocr');
 
