@@ -252,7 +252,7 @@ class NotesFromNature2Export extends ActorAbstract implements ActorInterface
     private function getHeader() {
         if (empty($this->headers)) {
             $result = $this->headerInterface->getByProjectId($this->record->project->id);
-            $this->headers = unserialize($result->header);
+            $this->headers = $result->header;
         }
 
         return $this->headers;
