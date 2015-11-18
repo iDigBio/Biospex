@@ -65,6 +65,7 @@ class Thumbnail extends Image
         $this->tnWidth = \Config::get('config.images.thumbWidth');
         $this->tnHeight = \Config::get('config.images.thumbHeight');
         $this->outputDir = \Config::get('config.images.thumbOutputDir') . '/' . $this->tnWidth . '_' . $this->tnHeight;
+        $this->createDir($this->outputDir);
     }
 
     /**
