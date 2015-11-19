@@ -539,13 +539,13 @@ class DarwinCoreCsvImport extends CsvAbstract
         if (empty($result)) {
             $insert = [
                 'project_id' => $this->projectId,
-                'header'     => serialize([$type => $header]),
+                'header'     => [$type => $header],
             ];
             $this->header->create($insert);
         } else {
             $existingHeader = $result->header;
             $existingHeader[$type] = isset($existingHeader[$type]) ?
-                $this->combineHeader($existingHeader[$type], $header) : $existingHeader[$type] = $header;
+                $this->combineHeader($existingHeader[$type], $header) : array_unique($header);
             $result->header = $existingHeader;
             $result->save();
         }
