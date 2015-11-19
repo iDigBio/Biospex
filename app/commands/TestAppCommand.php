@@ -49,7 +49,7 @@ class TestAppCommand extends Command
         if ($count > 1) {
             $subjects = Subject::where('occurrence.id', $row[0])->get();
             foreach($subjects as $subject) {
-                echo $subject->_id . " : " . $subject->occurrence->id . PHP_EOL;
+                echo $subject->_id . " : " . $subject->occurrence->id . " : " . $subject->project_id . PHP_EOL;
             }
         }
     }
