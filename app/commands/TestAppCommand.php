@@ -47,10 +47,13 @@ class TestAppCommand extends Command {
 
     public function processRow($row)
     {
+        $i = 0;
         $subjects = Subject::where('occurrence.id', $row[0])->get();
         foreach ($subjects as $subject)
         {
+            $i++;
             echo $subject->_id . " : " . $subject->occurrence->id . " : " . $subject->project_id . PHP_EOL;
         }
+        echo $i . " Total" . PHP_EOL;
     }
 }
