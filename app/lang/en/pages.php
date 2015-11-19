@@ -81,7 +81,7 @@ return [
     'signin'                     => 'Sign In',
     'sitename'                   => 'BIOSPEX',
     'subjects'                   => 'Subjects',
-    'subjects_assigned'          => 'Subjects assigned to Expedition|Subjects assigned to Expeditions',
+    'subjects_assigned'          => 'Subjects currently assigned to Expedition|Subjects currently assigned to Expeditions',
     'success'                    => 'Success',
     'title'                      => 'Title',
     'translate'                  => 'Language',
