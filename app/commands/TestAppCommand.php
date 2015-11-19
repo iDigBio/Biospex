@@ -45,9 +45,12 @@ class TestAppCommand extends Command
 
     public function processRow($row)
     {
-        $subject = Subject::where('occurrence.id', $row[0])->count();
-        if ($subject > 1) {
-            dd($subject);
+        $count = Subject::where('occurrence.id', $row[0])->count();
+        if ($count > 1) {
+            $subjects = Subject::where('occurrence.id', $row[0])->get();
+            foreach($subjects as $subject) {
+                echo $subject->_id . " : " . $subject->occurrence->id . PHP_EOL;
+            }
         }
     }
 }
