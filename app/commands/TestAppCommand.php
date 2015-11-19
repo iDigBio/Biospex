@@ -33,11 +33,13 @@ class TestAppCommand extends Command
     {
         $results = $this->headerInterface->all();
         foreach($results as $result) {
-            $header = [];
-            $header['image'] = array_unique($result->header['image']);
-            $header['occurrence'] = array_unique($result->header['occurrence']);
-            $result->header = $header;
-            $result->save();
+            foreach ($result->header['image'] as $key => $value) {
+                if ($value == 'id') {
+                    echo "unsetting id" . PHP_EOL;
+                    unset($result->header['image'][$key]);
+                }
+                $result->save();
+            }
         }
 
         return;
