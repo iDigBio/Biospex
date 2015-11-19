@@ -1,6 +1,8 @@
 <?php
 
+use Biospex\Repo\Subject\SubjectInterface;
 use Illuminate\Console\Command;
+use League\Csv\Reader;
 
 class TestAppCommand extends Command
 {
@@ -13,17 +15,12 @@ class TestAppCommand extends Command
      * The console command description.
      */
     protected $description = 'Used to test code';
-    /**
-     * @var \Biospex\Repo\Header\HeaderInterface
-     */
-    private $headerInterface;
+    protected $reader;
 
-    public function __construct(\Biospex\Repo\Header\HeaderInterface $headerInterface)
+
+    public function __construct()
     {
         parent::__construct();
-
-
-        $this->headerInterface = $headerInterface;
     }
 
     /**
@@ -31,19 +28,26 @@ class TestAppCommand extends Command
      */
     public function fire()
     {
-        $results = $this->headerInterface->all();
-        foreach($results as $result) {
-            $header = $result->header;
-            foreach ($header['image'] as $key => $value) {
-                if ($value == 'id') {
-                    echo "unsetting id" . PHP_EOL;
-                    unset($header['image'][$key]);
-                }
-                $result->header = $header;
-                $result->save();
+        $file = storage_path('images.csv');
+
+        $this->reader = Reader::createFromPath($file);
+        $this->reader->setDelimiter(",");
+
+        foreach ($this->reader->setOffset(1)->fetch() as $row) {
+            if (empty($row[0])) {
+                continue;
             }
+            $this->processRow($row);
         }
 
         return;
+    }
+
+    public function processRow($row)
+    {
+        $subject = Subject::where("project_id", 6)->where('occurrence.id', $row[0])->count();
+        if ($subject > 1) {
+            dd($subject);
+        }
     }
 }
