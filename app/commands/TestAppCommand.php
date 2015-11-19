@@ -45,7 +45,7 @@ class TestAppCommand extends Command
 
     public function processRow($row)
     {
-        $subject = Subject::where("project_id", 6)->where('occurrence.id', $row[0])->count();
+        $subject = Subject::where('occurrence.id', $row[0])->count();
         if ($subject > 1) {
             dd($subject);
         }
