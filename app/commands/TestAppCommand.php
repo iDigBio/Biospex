@@ -40,7 +40,7 @@ class TestAppCommand extends Command {
             {
                 continue;
             }
-            $subjects = Subject::where('occurrence.id', $row[0])->get();
+            $subjects = Subject::where("project_id", 6)->where('occurrence.id', $row[0])->get();
             if (count($subjects) > 1) {
                 $countArray[] = $row[0];
             }
