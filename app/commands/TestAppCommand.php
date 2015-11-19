@@ -41,6 +41,9 @@ class TestAppCommand extends Command {
                 continue;
             }
             $subjects = Subject::where('occurrence.id', $row[0])->get();
+            if (count($subjects) > 1) {
+                echo "Count is more than one for " . $row[0] . PHP_EOL;
+            }
             foreach ($subjects as $subject)
             {
                 $i++;
