@@ -33,27 +33,24 @@ class TestAppCommand extends Command {
         $this->reader = Reader::createFromPath($file);
         $this->reader->setDelimiter(",");
 
+        $i = 0;
         foreach ($this->reader->setOffset(1)->fetch() as $row)
         {
             if (empty($row[0]))
             {
                 continue;
             }
-            $this->processRow($row);
+            $subjects = Subject::where('occurrence.id', $row[0])->get();
+            foreach ($subjects as $subject)
+            {
+                $i++;
+                echo $subject->_id . " : " . $subject->occurrence->id . " : " . $subject->project_id . PHP_EOL;
+            }
+
         }
+        echo $i . " Records Found";
 
         return;
     }
 
-    public function processRow($row)
-    {
-        $i = 0;
-        $subjects = Subject::where('occurrence.id', $row[0])->get();
-        foreach ($subjects as $subject)
-        {
-            $i++;
-            echo $subject->_id . " : " . $subject->occurrence->id . " : " . $subject->project_id . PHP_EOL;
-        }
-        echo $i . " Total" . PHP_EOL;
-    }
 }
