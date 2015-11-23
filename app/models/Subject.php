@@ -68,6 +68,8 @@ class Subject extends Eloquent {
 
     protected $route;
 
+    protected $assignedRuleData;
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -234,11 +236,11 @@ class Subject extends Eloquent {
      * @return int Total number of rows
      * Total number of rows
      */
-    public function getTotalNumberOfRows($filters, $projectId, $expeditionId, $route)
+    public function getTotalNumberOfRows($filters, $route, $projectId, $expeditionId)
     {
+        $this->route = $route;
         $this->projectId = $projectId;
         $this->expeditionId = $expeditionId;
-        $this->route = $route;
 
         return intval($this->whereNested(function ($query) use ($filters)
         {
@@ -308,26 +310,41 @@ class Subject extends Eloquent {
 
         $this->setWhere($query, 'project_id', '=', $this->projectId);
 
-        // project page show all
-        // Expedition show - only those assigned projects.grids.expeditions.edit
-        // Expedition edit - show all if projects.grids.expeditions.edit
-        // Expedition edit - show only those assigned if projects.grids.expeditions
-        // Expedition create - show all
-        if ( ! empty($this->expeditionId) && $this->route == 'projects.grids.expeditions.limit')
-        {
-            $rule = ['data' => true, 'field' => 'expedition_ids'];
-            $this->setWhereForExpeditionIds($query, $rule);
-        }
-
         if (isset($filters['rules']) && is_array($filters['rules']))
         {
             $rules = $filters['rules'];
-            $query->where(function($query) use($rules) {
+            $query->where(function ($query) use ($rules)
+            {
                 $this->handleRules($query, $rules);
             });
         }
 
+        if ($this->route != 'projects.grids.explore') {
+            $this->setExpeditionWhere($query);
+        }
+
         return;
+    }
+
+    protected function setExpeditionWhere(&$query)
+    {
+        // projects.grids.explore: Project Explore (show all)
+        // projects.grids.expeditions.show: Expedition Show page (show only assigned)
+        // projects.grids.expeditions.edit: Expedition edit (show all)
+        // projects.grids.expeditions.create: Expedition create (show not assigned)
+        if ($this->route == "projects.grids.expeditions.edit")
+        {
+            if (empty($this->assignedRuleData) || $this->assignedRuleData == 'all')
+                return;
+        }
+        elseif ($this->route == "projects.grids.expeditions.show")
+        {
+            $this->setWhereIn($query, 'expedition_ids', [$this->expeditionId]);
+        }
+        elseif ($this->route == "projects.grids.expeditions.create")
+        {
+            $this->setWhere($query, 'expedition_ids', 'size', 0);
+        }
     }
 
     /**
@@ -341,7 +358,7 @@ class Subject extends Eloquent {
         {
             if ($rule['field'] == 'expedition_ids')
             {
-                $this->expeditionIdRule($query, $rule);
+                $this->assignedRule($query, $rule);
                 continue;
             }
 
@@ -376,7 +393,8 @@ class Subject extends Eloquent {
         $field = preg_match('/occurrence_/i', $rule['field']) ?
             'occurrence.' . str_replace('occurrence_', '', $rule['field']) : $rule['field'];
 
-        switch ($rule['op']) {
+        switch ($rule['op'])
+        {
             case 'bw':
                 $this->setWhere($query, $field, 'regexp', '/^' . $rule['data'] . '/i');
                 break;
@@ -431,29 +449,22 @@ class Subject extends Eloquent {
     }
 
     /**
-     * Filter for expedition id present or not. Expedition id used when viewing expedition show.
+     * Filter for if subject is assigned to an expedition.
      * data = all, true, false
      * @param $rule
      * @param $query
      *
-     * Explore page: no expedition id
-     * If true, find all subjects assigned within project
-     * If false, find all subjects not assigned to expedition
-     * if all, find all subjects
-     *
-     * Expedition page: expedition id populated
-     * If true, find all subjects assigned to expedition
-     * If false, find all subjects assigned to project not assigned to expedition
-     * If all, find all subjects
      */
-    protected function expeditionIdRule(&$query, $rule)
+    protected function assignedRule(&$query, $rule)
     {
+        $this->assignedRuleData = $rule['data'];
+
         if ($rule['data'] == 'all')
         {
             return;
         }
 
-        $this->setWhereForExpeditionIds($query, $rule);
+        $this->setWhereForAssigned($query, $rule);
 
         return;
     }
@@ -463,23 +474,15 @@ class Subject extends Eloquent {
      * @param $rule
      * @return mixed
      */
-    protected function setWhereForExpeditionIds(&$query, $rule)
+    protected function setWhereForAssigned(&$query, $rule)
     {
         if ($rule['data'] == "true")
         {
-            empty($this->expeditionId) ?
-                $this->setWhereRaw($query, $rule['field'], ['$not' => ['$size' => 0]]) :
-                $this->setWhereIn($query, $rule['field'], [$this->expeditionId]);
-
-            return $query;
+            $this->setWhereRaw($query, $rule['field'], ['$not' => ['$size' => 0]]);
         }
         else
         {
-            empty($this->expeditionId) ?
-                $this->setWhere($query, $rule['field'], 'size', 0) :
-                $this->setWhereIn($query, $rule['field'], [$this->expeditionId]);
-
-            return $query;
+            $this->setWhere($query, $rule['field'], 'size', 0);
         }
     }
 
@@ -514,13 +517,7 @@ class Subject extends Eloquent {
     {
         foreach ($rows as &$row)
         {
-            if (empty($this->expeditionId))
-            {
-                $row['expedition_ids'] = ! empty($row['expedition_ids']) ? "Yes" : "No";
-                continue;
-            }
-
-            $row['expedition_ids'] = in_array($this->expeditionId, $row['expedition_ids']) ? "Yes" : "No";
+            $row['expedition_ids'] = ! empty($row['expedition_ids']) ? "Yes" : "No";
         }
     }
 
@@ -531,9 +528,12 @@ class Subject extends Eloquent {
      */
     protected function setGroupOp($filters)
     {
-        if (isset($filters['groupOp'])) {
+        if (isset($filters['groupOp']))
+        {
             $this->groupAnd = ($filters['groupOp'] == 'AND') ? true : false;
-        } else {
+        }
+        else
+        {
             $this->groupAnd = true;
         }
     }

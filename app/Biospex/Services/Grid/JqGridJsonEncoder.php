@@ -46,6 +46,12 @@ class JqGridJsonEncoder
      * @var Excel
      */
     protected $excel;
+
+    /**
+     * @var
+     */
+    protected $route;
+
     /**
      * @var HeaderInterface
      */
@@ -87,10 +93,13 @@ class JqGridJsonEncoder
      * Load grid model.
      *
      * @param $projectId
+     * @param $route
      * @return string
      */
-    public function loadGridModel($projectId)
+    public function loadGridModel($projectId, $route)
     {
+        $this->route = $route;
+
         $result = $this->header->getByProjectId($projectId);
         $headers = $result->header;
         array_unshift($headers['image'], 'assigned', 'id');
@@ -216,15 +225,14 @@ class JqGridJsonEncoder
      * Echo in a jqGrid compatible format the data requested by a grid.
      *
      * @param $postedData
+     * @param $route
+     * @param $projectId
+     * @param null $expeditionId
      * @return string
      * @throws Exception
      */
-    public function encodeGridRequestedData($postedData)
+    public function encodeGridRequestedData($postedData, $route, $projectId, $expeditionId = null)
     {
-        $projectId = (int) \Route::input('projects');
-        $expeditionId = (int) \Route::input('expeditions');
-        $route = \Route::getCurrentRoute()->getName();
-
         $page = $this->setPage($postedData);
 
         $limit = $this->setLimit($postedData);
@@ -235,7 +243,7 @@ class JqGridJsonEncoder
 
         $filters = $this->setFilters($postedData);
 
-        $count = $this->subject->getTotalNumberOfRows($filters, $projectId, $expeditionId, $route);
+        $count = $this->subject->getTotalNumberOfRows($filters, $route, $projectId, $expeditionId);
 
         $limit = empty($limit) ? $count : $limit;
 

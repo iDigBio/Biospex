@@ -45,7 +45,7 @@
 
     <h4>{{ trans_choice('pages.subjects_assigned', 1) }}: <span id="subjectCount">0</span></h4>
     <div class="table-responsive" id="jqtable">
-        <input type="hidden" id="url" value="{{ URL::route('projects.grids.expeditions', [$project->id, 0]) }}">
+        <input type="hidden" id="url" value="{{ URL::route('projects.grids.expeditions.create', [$project->id]) }}">
         <input type="hidden" id="showCb" value="1">
         <input type="hidden" id="projectId" value="{{ $project->id }}">
         <input type="hidden" id="subjectIds" name="subjectIds" value="">

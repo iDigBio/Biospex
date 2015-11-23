@@ -109,8 +109,9 @@ Route::group(
         // Project/Grid
         Route::get('/projects/{projects}/grids/load', ['as' => 'projects.grids.load', 'uses' => 'GridsController@load']);
         Route::get('/projects/{projects}/grids/explore', ['as' => 'projects.grids.explore', 'uses' => 'GridsController@explore']);
-        Route::get('/projects/{projects}/grids/expeditions/{expeditions}', ['as' => 'projects.grids.expeditions', 'uses' => 'GridsController@expeditions']);
-        Route::get('/projects/{projects}/grids/expeditions/{expeditions}/limit', ['as' => 'projects.grids.expeditions.limit', 'uses' => 'GridsController@expeditionsEdit']);
+        Route::get('/projects/{projects}/grids/expeditions/create', ['as' => 'projects.grids.expeditions.create', 'uses' => 'GridsController@expeditionsCreate']);
+        Route::get('/projects/{projects}/grids/expeditions/{expeditions}', ['as' => 'projects.grids.expeditions.show', 'uses' => 'GridsController@expeditionsShow']);
+        Route::get('/projects/{projects}/grids/expeditions/{expeditions}/edit', ['as' => 'projects.grids.expeditions.edit', 'uses' => 'GridsController@expeditionsEdit']);
 
         // ImagesController
         Route::get('/images/preview', ['as' => 'images.preview', 'uses' => 'ImagesController@preview']);

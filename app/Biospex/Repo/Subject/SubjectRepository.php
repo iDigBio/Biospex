@@ -77,9 +77,9 @@ class SubjectRepository extends Repository implements SubjectInterface
      * @param null $route
      * @return int
      */
-    public function getTotalNumberOfRows(array $filters = [], $projectId, $expeditionId = null, $route = null)
+    public function getTotalNumberOfRows($filters = [], $route, $projectId, $expeditionId = null)
     {
-        return $this->model->getTotalNumberOfRows($filters, $projectId, $expeditionId, $route);
+        return $this->model->getTotalNumberOfRows($filters, $route, $projectId, $expeditionId);
     }
 
     /**
@@ -93,7 +93,7 @@ class SubjectRepository extends Repository implements SubjectInterface
      * @param array $filters
      * @return array
      */
-    public function getRows($limit, $offset, $orderBy = null, $sord = null, array $filters = [])
+    public function getRows($limit, $offset, $orderBy = null, $sord = null, $filters = [])
     {
         return $this->model->getRows($limit, $offset, $orderBy, $sord, $filters);
     }

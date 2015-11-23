@@ -55,6 +55,10 @@ class GridsController extends BaseController
         $this->header = $header;
         $this->beforeFilter('auth');
         $this->beforeFilter('csrf', ['on' => 'post']);
+
+        $this->projectId = (int) \Route::input('projects');
+        $this->expeditionId = (int) \Route::input('expeditions');
+        $this->route = \Route::getCurrentRoute()->getName();
     }
 
     /**
@@ -62,7 +66,7 @@ class GridsController extends BaseController
      */
     public function load()
     {
-        return $this->grid->loadGridModel(Route::input('projects'));
+        return $this->grid->loadGridModel($this->projectId, $this->route);
     }
 
     /**
@@ -72,21 +76,21 @@ class GridsController extends BaseController
      */
     public function explore()
     {
-        return $this->grid->encodeGridRequestedData(Input::all());
+        return $this->grid->encodeGridRequestedData(Input::all(), $this->route, $this->projectId, $this->expeditionId);
     }
 
-    public function expeditions()
+    public function expeditionsShow()
     {
-        return $this->grid->encodeGridRequestedData(Input::all());
+        return $this->grid->encodeGridRequestedData(Input::all(), $this->route, $this->projectId, $this->expeditionId);
     }
 
     public function expeditionsEdit()
     {
-        return $this->grid->encodeGridRequestedData(Input::all());
+        return $this->grid->encodeGridRequestedData(Input::all(), $this->route, $this->projectId, $this->expeditionId);
     }
 
     public function expeditionsCreate()
     {
-        return $this->grid->encodeGridRequestedData(Input::all());
+        return $this->grid->encodeGridRequestedData(Input::all(), $this->route, $this->projectId, $this->expeditionId);
     }
 }

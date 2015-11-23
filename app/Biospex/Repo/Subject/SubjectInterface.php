@@ -37,9 +37,9 @@ interface SubjectInterface extends RepositoryInterface
 
     public function loadGridModel();
 
-    public function getTotalNumberOfRows(array $filters = [], $projectId, $expeditionId = null, $route = null);
+    public function getTotalNumberOfRows($filters = [], $route, $projectId, $expeditionId = null);
 
-    public function getRows($limit, $offset, $orderBy = null, $sord = null, array $filters = []);
+    public function getRows($limit, $offset, $orderBy = null, $sord = null, $filters = []);
 
     public function findByFilename($filename);
 
