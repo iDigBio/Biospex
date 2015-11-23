@@ -8,26 +8,33 @@ $.extend($.jgrid.cellattr, {
     }
 });
 
+var Grid = {};
+
 $(function () {
     'use strict';
-    var gridId = $(".jgrid").prop('id');
-    var $grid = $("#" + gridId);
-    var project = $("#projectId").val();
+    Grid.loadSate = false;
+    Grid.id = $(".jgrid").prop('id');
+    Grid.obj = $("#" + Grid.id);
+    Grid.project = $("#projectId").val();
+    Grid.subjectCountObj = $('#subjectCount');
+    Grid.subjectIdsObj = $('#subjectIds');
+    Grid.subjectIds = Grid.subjectIdsObj.length > 0 ?
+        (Grid.subjectIdsObj.val().length == 0 ? [] : Grid.subjectIdsObj.val().split(',')) : '';
     $.ajax({
         type: "GET",
-        url: "/projects/" + project + "/grids/load",
+        url: "/projects/" + Grid.project + "/grids/load",
         dataType: "json",
-        success: jqBuildGrid($grid, gridId)
+        success: jqBuildGrid()
     });
 });
 
-function jqBuildGrid($grid, gridId) {
+function jqBuildGrid() {
 
     return function (result) {
         var cm = result.colModel;
         mapFormatter(cm);
         var url = $('#url').val();
-        $grid.jqGrid({
+        Grid.obj.jqGrid({
             jsonReader: {
                 repeatitems: false,
                 root: "rows",
@@ -60,45 +67,40 @@ function jqBuildGrid($grid, gridId) {
             height: '100%',
             pager: "#pager",
             beforeSelectRow: function (id, event) {
-
-                if (event.target.className == 'ocrPreview') {
-                    $('#model-body').html($(event.target).text());
-                    return false;
-                }
-
-                if (event.target.className == 'thumbPreview') {
-                    return false;
-                }
+                return handleCellSelect(id, event);
             },
             onSelectRow: function (id, isSelected) {
-                if ($("#showCb").val() == 0) {
-                    return;
+                if (switchCbColumn()) return;
+                /*
+                var elem = document.activeElement;
+                if (elem.id) {   // the checkbox has an id, so check for it
+                    if (!isSelected){
+                        // unselect the select-all if any row is deselected
+                        $('#cb_' + Grid.id).attr('checked',false);
+                    }
+                } else {
+                    // ensure that the row is not checked.
+                    $('#' + Grid.id).setSelection(id, false);
                 }
+                */
 
                 updateIdsOfSelectedRows(id, isSelected);
             },
-            onSelectAll: function (aRowids, isSelected) {
-                if ($("#showCb").val() == 0) {
-                    return;
-                }
+            onSelectAll: function (rowIds, isSelected) {
+                if (switchCbColumn()) return;
 
                 var i, count, id;
-                for (i = 0, count = aRowids.length; i < count; i++) {
-                    id = aRowids[i];
+                for (i = 0, count = rowIds.length; i < count; i++) {
+                    id = rowIds[i];
                     updateIdsOfSelectedRows(id, isSelected);
                 }
             },
             loadComplete: function () {
-                var $this = $(this);
+                setPreviewLinks();
 
-                setPreviewLinks(this.id);
+                if(switchCbColumn() || Grid.loadSate) return;
 
-                if ($("#showCb").val() == 0) {
-                    $this.jqGrid('hideCol', 'cb');
-                    return;
-                }
-
-                setMultipleSelect($this);
+                setMultipleSelect();
             }
 
         }).navGrid("#pager", {
@@ -117,7 +119,6 @@ function jqBuildGrid($grid, gridId) {
             {
                 width: 600,
                 multipleSearch: true,
-                //multipleGroup: true,
                 recreateFilter: true
             } // search options - define multiple search
         ).navButtonAdd('#pager', {
@@ -125,7 +126,7 @@ function jqBuildGrid($grid, gridId) {
             buttonicon: "glyphicon glyphicon-list",
             title: "Choose columns",
             onClickButton: function () {
-                $(this).jqGrid('columnChooser', {
+                Grid.obj.jqGrid('columnChooser', {
                     dialog_opts: {
                         modal: true,
                         width: 700,
@@ -151,16 +152,55 @@ function jqBuildGrid($grid, gridId) {
 
         $('#savestate').click(function (event) {
             event.preventDefault();
-            $.jgrid.saveState(gridId);
+            $.jgrid.saveState(Grid.id);
         });
 
         $('#loadstate').click(function (event) {
             event.preventDefault();
-            $.jgrid.loadState(gridId);
+            Grid.loadSate = true;
+            $.jgrid.loadState(Grid.id);
+            setMultipleSelect();
         });
     };
 }
 
+/**
+ * Switch checkbox column
+ * Must re-declare grid id object for loadState
+ * @returns {boolean}
+ */
+function switchCbColumn() {
+    if ($("#showCb").val() == 0) {
+        $('#' + Grid.id).jqGrid('hideCol', 'cb');
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Handle select event for preview cells
+ * @param id
+ * @param event
+ * @returns {boolean}
+ */
+function handleCellSelect(id, event){
+    if (event.target.className == 'ocrPreview') {
+        $('#model-body').html($(event.target).text());
+        return false;
+    }
+
+    if(event.target.className == 'thumbPreview') {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Map formatter
+ * @param column
+ */
 function mapFormatter(column) {
     var functionsMapping = {
         "imagePreview": function (cellValue, opts, rowObjects) {
@@ -180,35 +220,57 @@ function mapFormatter(column) {
     }
 }
 
-function setMultipleSelect($this) {
-    var data = subjectIds;
-    for (var x = 0; x < data.length; x++) {
-        var row = $this.jqGrid ('getRowData', data[x]);
-        if (row.expedition_ids == "Yes") {
-            $this.setSelection(data[x]);
+/**
+ * Set selected rows
+ * Must re-declare grid object for loadState and handle it
+ * differently due to ids not being
+ */
+function setMultipleSelect() {
+    var $grid = $('#' + Grid.id);
+    var ids = $grid.jqGrid('getDataIDs');
+    for (var x = 0; x < ids.length; x++) {
+        if ( ! Grid.loadSate) {
+            var index = $.inArray(ids[x], Grid.subjectIds);
+            if (index >= 0) {
+                var row = $grid.jqGrid('getRowData', ids[x]);
+                if (row.expedition_ids == "Yes") {
+                    $grid.setSelection(ids[x]);
+                }
+            }
+        } else {
+            if ($('#' + ids[x]).hasClass("success")) {
+                $('#' + ids[x] + ' input[type=checkbox]').prop('checked', true);
+                updateIdsOfSelectedRows(ids[x], true);
+            }
         }
     }
+    Grid.loadSate = false;
 }
 
-if ($('#subjectIds').length > 0) {
-    var subjectIds = $('#subjectIds').val().length == 0 ? [] : $('#subjectIds').val().split(',');
-}
-
+/**
+ * Update ids for selected rows
+ * @param id
+ * @param isSelected
+ */
 function updateIdsOfSelectedRows(id, isSelected) {
-    var index = $.inArray(id, subjectIds);
+    var index = $.inArray(id, Grid.subjectIds);
     if (!isSelected && index >= 0) {
-        subjectIds = $.grep(subjectIds, function (val) {
+        Grid.subjectIds = $.grep(Grid.subjectIds, function (val) {
             return val != id;
         });
     } else if (index < 0) {
-        subjectIds.push(id);
+        Grid.subjectIds.push(id);
     }
-    $('#subjectIds').val(subjectIds);
-    $('#subjectCount').html(subjectIds.length);
+    Grid.subjectIdsObj.val(Grid.subjectIds);
+    Grid.subjectCountObj.html(Grid.subjectIds.length);
 }
 
-function setPreviewLinks(id) {
-    $('#'+id).on("click", 'a.thumb-view', function (event) {
+/**
+ * Set preview links
+ * Must re-declare grid object id for loadState
+ */
+function setPreviewLinks() {
+    $('#' + Grid.id).on("click", 'a.thumb-view', function (event) {
         event.preventDefault();
         $.ajax({
                 url: $(event.target).attr('href'),
