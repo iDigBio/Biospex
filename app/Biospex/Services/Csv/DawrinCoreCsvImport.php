@@ -10,8 +10,8 @@ use Illuminate\Config\Repository as Config;
 use ForceUTF8\Encoding;
 use Validator;
 
-class DarwinCoreCsvImport extends CsvAbstract
-{
+class DarwinCoreCsvImport extends CsvAbstract {
+
     /**
      * @var Config
      */
@@ -103,7 +103,8 @@ class DarwinCoreCsvImport extends CsvAbstract
         SubjectInterface $subject,
         HeaderInterface $header,
         OcrProcess $ocrProcess
-    ) {
+    )
+    {
         $this->identifiers = $config->get('config.identifiers');
         $this->property = $property;
         $this->subject = $subject;
@@ -145,8 +146,10 @@ class DarwinCoreCsvImport extends CsvAbstract
         $this->saveHeaderArray($header, $loadMedia);
 
         $iterator = $this->iterateOverRows();
-        foreach ($iterator as $row) {
-            if (empty($row[0])) {
+        foreach ($iterator as $row)
+        {
+            if (empty($row[0]))
+            {
                 continue;
             }
             $this->processRow($header, $row, $type, $loadMedia);
@@ -171,13 +174,14 @@ class DarwinCoreCsvImport extends CsvAbstract
 
         $this->testHeaderRowCount($header, $row);
 
-        array_walk($row, function (&$value) {
+        array_walk($row, function (&$value)
+        {
             $value = Encoding::toUTF8($value);
         });
 
         $combined = array_combine($header, $row);
 
-        $this->stripUuidPrefix($combined, $type);
+        $this->setUuids($combined, $type);
 
         $loadMedia ? $this->saveSubject($header, $combined) : $this->saveOccurrence($header, $combined);
 
@@ -209,7 +213,8 @@ class DarwinCoreCsvImport extends CsvAbstract
      */
     public function testHeaderRowCount($header, $row)
     {
-        if (count($header) != count($row)) {
+        if (count($header) != count($row))
+        {
             throw new \Exception(trans('emails.error_csv_row_count', [
                 'headers' => count($header),
                 'rows'    => count($row)
@@ -244,7 +249,8 @@ class DarwinCoreCsvImport extends CsvAbstract
     public function buildHeaderUsingShortNames($row, $type)
     {
         $header = [];
-        foreach ($this->metaFields[$type] as $key => $qualified) {
+        foreach ($this->metaFields[$type] as $key => $qualified)
+        {
             $header = $this->createShortNameForHeader($row, $key, $qualified, $header);
         }
 
@@ -263,7 +269,8 @@ class DarwinCoreCsvImport extends CsvAbstract
      */
     public function createShortNameForHeader($row, $key, $qualified, $header)
     {
-        if ( ! isset($row[$key])) {
+        if ( ! isset($row[$key]))
+        {
             throw new \Exception(trans('emails.error_csv_build_header', ['key' => $key, 'qualified' => $qualified]));
         }
 
@@ -282,7 +289,8 @@ class DarwinCoreCsvImport extends CsvAbstract
      */
     public function checkProperty($qualified, $ns_short)
     {
-        if ($qualified == 'id' || $qualified == 'coreid') {
+        if ($qualified == 'id' || $qualified == 'coreid')
+        {
             return $qualified;
         }
 
@@ -324,12 +332,17 @@ class DarwinCoreCsvImport extends CsvAbstract
         $checkQualified = $this->property->findByQualified($qualified);
         $checkShort = $this->property->findByShort($short);
 
-        if ( ! is_null($checkQualified)) {
+        if ( ! is_null($checkQualified))
+        {
             $short = $checkQualified->short;
-        } elseif (is_null($checkQualified) && ! is_null($checkShort)) {
+        }
+        elseif (is_null($checkQualified) && ! is_null($checkShort))
+        {
             $short .= substr(md5(uniqid(mt_rand(), true)), 0, 4);
             $this->saveProperty($qualified, $short, $namespace);
-        } elseif (is_null($checkQualified) && is_null($checkShort)) {
+        }
+        elseif (is_null($checkQualified) && is_null($checkShort))
+        {
             $this->saveProperty($qualified, $short, $namespace);
         }
 
@@ -361,11 +374,15 @@ class DarwinCoreCsvImport extends CsvAbstract
      */
     public function setIdentifierColumn($header, $type)
     {
-        if ( ! $this->mediaIsCore && $type == 'core') {
+        if ( ! $this->mediaIsCore && $type == 'core')
+        {
             return;
         }
 
-        if ( ! $result = array_values(array_intersect($this->identifiers, $header))) {
+        $result = array_values(array_intersect($this->identifiers, $header));
+
+        if ( ! $result)
+        {
             return;
         }
 
@@ -375,20 +392,40 @@ class DarwinCoreCsvImport extends CsvAbstract
     }
 
     /**
-     * Strip prefixes from uuids
-     *
+     * Set UUID values
      * @param $combined
      * @param $type
+     * @return mixed
      */
-    public function stripUuidPrefix(&$combined, $type)
+    public function setUuids(&$combined, $type)
     {
-        if (isset($combined[$this->identifierColumn]) && ! empty($combined[$this->identifierColumn])) {
-            $combined[$this->identifierColumn] = substr($combined[$this->identifierColumn], -36);
-        }
+        return (isset($combined[$this->identifierColumn]) && ! empty($combined[$this->identifierColumn])) ?
+            $this->uuidFromIdentifier($combined) : $this->uuidFromMetaFields($combined, $type);
+    }
 
-        $combined[$this->metaFields[$type][0]] = substr($combined[$this->metaFields[$type][0]], -36);
+    /**
+     * Pull UUID from identifier values or send original if not UUID format
+     * @param $combined
+     * @return mixed
+     */
+    protected function uuidFromIdentifier(&$combined)
+    {
+        $pattern = '/\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/i';
+        return preg_match($pattern, $combined[$this->identifierColumn], $matches) ?
+            $matches[0] : $combined[$this->identifierColumn];
+    }
 
-        return;
+    /**
+     * Pull UUID from column values or send original value if not UUID format
+     * @param $combined
+     * @param $type
+     * @return mixed
+     */
+    protected function uuidFromMetaFields(&$combined, $type)
+    {
+        $pattern = '/\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/i';
+        return preg_match($pattern, $combined[$this->metaFields[$type][0]], $matches) ?
+            $matches[0] : $combined[$this->metaFields[$type][0]];
     }
 
     /**
@@ -402,7 +439,8 @@ class DarwinCoreCsvImport extends CsvAbstract
         $occurrenceId = $this->mediaIsCore ? null : $data[$header[0]];
         $data['id'] = $this->mediaIsCore ? $data[$header[0]] : $data[$this->identifierColumn];
 
-        if ($this->reject($data)) {
+        if ($this->reject($data))
+        {
             return;
         }
 
@@ -410,17 +448,20 @@ class DarwinCoreCsvImport extends CsvAbstract
 
         $subject = $fields + $data + ['occurrence' => is_null($occurrenceId) ? '' : $occurrenceId];
 
-        if ($this->validateDoc($subject)) {
+        if ($this->validateDoc($subject))
+        {
             return;
         }
 
         $subject = $this->subject->create($subject);
 
-        if ( ! is_null($occurrenceId)) {
+        if ( ! is_null($occurrenceId))
+        {
             $subject->occurrence()->save(new \Occurrence(['id' => $occurrenceId]));
         }
 
-        if ( ! $this->processOcr || $this->ocrProcess->disableOcr) {
+        if ( ! $this->processOcr || $this->ocrProcess->disableOcr)
+        {
             return;
         }
 
@@ -437,11 +478,13 @@ class DarwinCoreCsvImport extends CsvAbstract
     {
         $subjects = $this->subject->findByProjectOccurrenceId($this->projectId, $data[$header[0]]);
 
-        if ($subjects->isEmpty()) {
+        if ($subjects->isEmpty())
+        {
             return;
         }
 
-        foreach ($subjects as $subject) {
+        foreach ($subjects as $subject)
+        {
             $subject->occurrence()->save(new \Occurrence($data));
         }
 
@@ -456,7 +499,8 @@ class DarwinCoreCsvImport extends CsvAbstract
      */
     public function reject($data)
     {
-        if (empty($data['id'])) {
+        if (empty($data['id']))
+        {
             $this->rejectedMultimedia[] = $data;
 
             return true;
@@ -482,7 +526,8 @@ class DarwinCoreCsvImport extends CsvAbstract
 
         $fail = $validator->fails();
 
-        if ($fail) {
+        if ($fail)
+        {
             $this->unsetSubjectVariables($subject);
             $this->duplicateArray[] = $subject;
         }
@@ -536,13 +581,16 @@ class DarwinCoreCsvImport extends CsvAbstract
 
         $result = $this->header->getByProjectId($this->projectId);
 
-        if (empty($result)) {
+        if (empty($result))
+        {
             $insert = [
                 'project_id' => $this->projectId,
                 'header'     => [$type => $header],
             ];
             $this->header->create($insert);
-        } else {
+        }
+        else
+        {
             $existingHeader = $result->header;
             $existingHeader[$type] = isset($existingHeader[$type]) ?
                 $this->combineHeader($existingHeader[$type], $header) : array_unique($header);
@@ -567,7 +615,8 @@ class DarwinCoreCsvImport extends CsvAbstract
 
     public function processOcr($loadMedia)
     {
-        if ( ! $this->processOcr || ! $loadMedia || $this->ocrProcess->disableOcr) {
+        if ( ! $this->processOcr || ! $loadMedia || $this->ocrProcess->disableOcr)
+        {
             return;
         }
 
