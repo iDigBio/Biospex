@@ -15,12 +15,15 @@ class TestAppCommand extends Command {
      * The console command description.
      */
     protected $description = 'Used to test code';
-    protected $reader;
+    /**
+     * @var SubjectInterface
+     */
+    private $subjectInterface;
 
-
-    public function __construct()
+    public function __construct(SubjectInterface $subjectInterface)
     {
         parent::__construct();
+        $this->subjectInterface = $subjectInterface;
     }
 
     /**
