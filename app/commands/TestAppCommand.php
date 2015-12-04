@@ -1,6 +1,5 @@
 <?php
 
-use Biospex\Repo\Subject\SubjectInterface;
 use Illuminate\Console\Command;
 use League\Csv\Reader;
 
@@ -15,15 +14,11 @@ class TestAppCommand extends Command {
      * The console command description.
      */
     protected $description = 'Used to test code';
-    /**
-     * @var SubjectInterface
-     */
-    private $subjectInterface;
 
-    public function __construct(SubjectInterface $subjectInterface)
+
+    public function __construct()
     {
         parent::__construct();
-        $this->subjectInterface = $subjectInterface;
     }
 
     /**
@@ -38,6 +33,7 @@ class TestAppCommand extends Command {
 
         $header = $this->reader->fetchOne();
 
+        $i = 0;
         foreach ($this->reader->setOffset(1)->fetch() as $row)
         {
             $combined = array_combine($header, $row);
@@ -49,10 +45,13 @@ class TestAppCommand extends Command {
             $subject = array_merge(json_decode(json_encode($result), true), $combined);
             $subject['id'] = $subject['identifier'];
 
-            print_r($subject);
-            exit;
+            Subject::update($subject);
+
+            echo "Updating " . $subject['_id'] . PHP_EOL;
+            $i++;
         }
 
+        echo "Finished updating $i records" . PHP_EOL;
         return;
     }
 
