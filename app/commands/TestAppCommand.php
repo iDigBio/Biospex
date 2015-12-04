@@ -46,7 +46,7 @@ class TestAppCommand extends Command {
             if (empty($result))
                 continue;
 
-            $subject = json_decode(json_encode($result), true);
+            $subject = array_merge(json_decode(json_encode($result), true), $combined);
 
             print_r($subject);
             exit;
