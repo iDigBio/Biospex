@@ -14,11 +14,16 @@ class TestAppCommand extends Command {
      * The console command description.
      */
     protected $description = 'Used to test code';
+    /**
+     * @var \Biospex\Repo\Subject\SubjectInterface
+     */
+    private $subjectInterface;
 
 
-    public function __construct()
+    public function __construct(\Biospex\Repo\Subject\SubjectInterface $subjectInterface)
     {
         parent::__construct();
+        $this->subjectInterface = $subjectInterface;
     }
 
     /**
@@ -45,7 +50,7 @@ class TestAppCommand extends Command {
             $subject = array_merge(json_decode(json_encode($result), true), $combined);
             $subject['id'] = $subject['identifier'];
 
-            Subject::update($subject);
+            $this->subjectInterface->update($subject);
 
             echo "Updating " . $subject['_id'] . PHP_EOL;
             $i++;
