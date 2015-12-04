@@ -46,7 +46,7 @@ class TestAppCommand extends Command {
             if (empty($result))
                 continue;
 
-            $subject = get_object_vars($result);
+            $subject = json_decode(json_encode($result), true);
 
             print_r($subject);
             exit;
