@@ -43,7 +43,7 @@ class TestAppCommand extends Command {
         {
             $combined = array_combine($header, $row);
 
-            $subjects = Subject::where("project_id", 2)->where('occurrence.id', $combined['coreid'])->first();
+            $subjects = Subject::where("project_id", 2)->where('occurrence.id', $combined['coreid'])->get();
             print_r($subjects);
             exit;
 
