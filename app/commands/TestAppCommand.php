@@ -36,7 +36,7 @@ class TestAppCommand extends Command {
         $this->reader = Reader::createFromPath($file);
         $this->reader->setDelimiter(",");
 
-        $header = $this->reader->getHeaderRow();
+        $header = $this->reader->fetchOne();
 
         $i = 0;
         foreach ($this->reader->setOffset(1)->fetch() as $row)
