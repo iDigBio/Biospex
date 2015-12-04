@@ -47,6 +47,7 @@ class TestAppCommand extends Command {
                 continue;
 
             $subject = array_merge(json_decode(json_encode($result), true), $combined);
+            $subject['id'] = $subject['identifier'];
 
             print_r($subject);
             exit;
