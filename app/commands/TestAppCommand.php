@@ -36,14 +36,21 @@ class TestAppCommand extends Command {
         $this->reader = Reader::createFromPath($file);
         $this->reader->setDelimiter(",");
 
+        $header = $this->reader->getHeaderRow();
+
         $i = 0;
         foreach ($this->reader->setOffset(1)->fetch() as $row)
         {
+            $combined = array_combine($header, $row);
+
+            print_r($combined);
+            exit;
+
             if (empty($row[0]))
             {
                 continue;
             }
-            $subjects = Subject::where("project_id", 2)->where('occurrence.id', $row[0])->get();
+            $subjects = Subject::where("project_id", 2)->where('occurrence.id', $row[0])->first();
             if (count($subjects) > 1) {
                 $countArray[] = $row[0];
             }
