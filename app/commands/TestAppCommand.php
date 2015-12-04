@@ -44,7 +44,7 @@ class TestAppCommand extends Command {
             $combined = array_combine($header, $row);
 
             $subject = Subject::where("project_id", 2)->where('occurrence.id', $combined['coreid'])->first();
-            if ($subject->isEmpty())
+            if (empty($subject))
                 continue;
 
             echo $subject->_id . " : " . $subject->occurrence->id . " : " . $subject->project_id . PHP_EOL;
