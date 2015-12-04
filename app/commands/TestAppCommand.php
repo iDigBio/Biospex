@@ -38,7 +38,6 @@ class TestAppCommand extends Command {
 
         $header = $this->reader->fetchOne();
 
-        $i = 0;
         foreach ($this->reader->setOffset(1)->fetch() as $row)
         {
             $combined = array_combine($header, $row);
@@ -47,9 +46,9 @@ class TestAppCommand extends Command {
             if (empty($subject))
                 continue;
 
-            echo $subject->_id . " : " . $subject->occurrence->id . " : " . $subject->project_id . PHP_EOL;
+            print_r($subject);
+            exit;
         }
-        echo $i . " Records Found" . PHP_EOL;
 
         return;
     }
