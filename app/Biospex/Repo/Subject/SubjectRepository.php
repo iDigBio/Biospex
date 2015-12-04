@@ -38,11 +38,6 @@ class SubjectRepository extends Repository implements SubjectInterface
         $this->model = $subject;
     }
 
-    public function update($data = [])
-    {
-        return $this->model->update();
-    }
-
     public function getUnassignedCount($id)
     {
         return $this->model->getUnassignedCount($id);

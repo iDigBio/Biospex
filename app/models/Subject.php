@@ -43,6 +43,8 @@ class Subject extends Eloquent {
      */
     protected $guarded = ['_id'];
 
+    protected $fillable = ['*'];
+
     /**
      * OrderBy
      *
@@ -69,20 +71,6 @@ class Subject extends Eloquent {
     protected $route;
 
     protected $assignedRuleData;
-
-    /**
-     * Update record
-     *
-     * @param array $data
-     * @return mixed
-     * @internal param array $input
-     */
-    public function update($data)
-    {
-        $model = $this->find($data['_id']);
-
-        return $model->fill($data)->save();
-    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
