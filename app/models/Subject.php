@@ -71,6 +71,20 @@ class Subject extends Eloquent {
     protected $assignedRuleData;
 
     /**
+     * Update record
+     *
+     * @param array $data
+     * @return mixed
+     * @internal param array $input
+     */
+    public function update($data)
+    {
+        $model = $this->find($data['_id']);
+
+        return $model->fill($data)->save();
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project()

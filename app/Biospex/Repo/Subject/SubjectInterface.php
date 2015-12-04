@@ -29,6 +29,8 @@ use Biospex\Repo\RepositoryInterface;
 
 interface SubjectInterface extends RepositoryInterface
 {
+    public function update($data = []);
+
     public function getUnassignedCount($id);
 
     public function getSubjectIds($projectId, $take = null, $expeditionId = null);
