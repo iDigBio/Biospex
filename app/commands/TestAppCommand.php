@@ -43,17 +43,10 @@ class TestAppCommand extends Command {
         {
             $combined = array_combine($header, $row);
 
-            print_r($combined);
+            $subjects = Subject::where("project_id", 2)->where('occurrence.id', $combined['coreid'])->first();
+            print_r($subjects);
             exit;
 
-            if (empty($row[0]))
-            {
-                continue;
-            }
-            $subjects = Subject::where("project_id", 2)->where('occurrence.id', $row[0])->first();
-            if (count($subjects) > 1) {
-                $countArray[] = $row[0];
-            }
             foreach ($subjects as $subject)
             {
                 $i++;
@@ -62,8 +55,6 @@ class TestAppCommand extends Command {
 
         }
         echo $i . " Records Found" . PHP_EOL;
-        print_r($countArray);
-
 
         return;
     }
