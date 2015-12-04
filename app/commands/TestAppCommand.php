@@ -42,9 +42,11 @@ class TestAppCommand extends Command {
         {
             $combined = array_combine($header, $row);
 
-            $subject = Subject::where("project_id", 2)->where('occurrence.id', $combined['coreid'])->get()->toArray();
-            if (empty($subject))
+            $result = Subject::where("project_id", 2)->where('occurrence.id', $combined['coreid'])->first();
+            if (empty($result))
                 continue;
+
+            $subject = get_object_vars($result);
 
             print_r($subject);
             exit;
