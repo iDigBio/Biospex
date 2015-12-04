@@ -50,6 +50,7 @@ class TestAppCommand extends Command {
             $subject = array_merge(json_decode(json_encode($result), true), $combined);
             $subject['id'] = $subject['identifier'];
 
+
             $this->subjectInterface->update($subject);
 
             echo "Updating " . $subject['_id'] . PHP_EOL;
