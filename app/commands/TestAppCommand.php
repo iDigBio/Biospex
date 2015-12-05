@@ -47,7 +47,7 @@ class TestAppCommand extends Command {
         {
             $combined = array_combine($header, $row);
 
-            $subject = Subject::where("project_id", 2)->where('occurrence.id', $combined['coreid'])->first();
+            $subject = Subject::where("project_id", 6)->where('occurrence.id', $combined['coreid'])->first();
             if (empty($subject))
                 continue;
 
@@ -78,7 +78,7 @@ class TestAppCommand extends Command {
         {
             $combined = array_combine($header, $row);
 
-            $subjects = Subject::where("project_id", 2)->where('occurrence.id', $combined['id'])->get();
+            $subjects = Subject::where("project_id", 6)->where('occurrence.id', $combined['id'])->get();
             if (empty($subjects))
                 continue;
 
