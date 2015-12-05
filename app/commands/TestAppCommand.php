@@ -27,7 +27,7 @@ class TestAppCommand extends Command {
      */
     public function fire()
     {
-        //$this->processImages();
+        $this->processImages();
         $this->processOccurrences();
 
         return;
