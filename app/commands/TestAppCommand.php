@@ -47,6 +47,14 @@ class TestAppCommand extends Command {
             if (empty($result))
                 continue;
 
+            $result->ocr = "This is a test";
+            $result->save();
+
+            $test = Subject::where("project_id", 2)->where('occurrence.id', $combined['coreid'])->first();
+            print_r($test);
+            exit;
+
+            /*
             $subject = array_merge(json_decode(json_encode($result), true), $combined);
             $subject['id'] = $subject['identifier'];
 
@@ -54,6 +62,7 @@ class TestAppCommand extends Command {
 
             echo "Updating " . $subject['_id'] . PHP_EOL;
             $i++;
+            */
         }
 
         echo "Finished updating $i records" . PHP_EOL;
