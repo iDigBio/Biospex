@@ -55,10 +55,6 @@ class TestAppCommand extends Command {
             $subject['id'] = $subject['identifier'];
             $subject->save();
 
-            $subject = Subject::where("project_id", 2)->where('occurrence.id', $combined['coreid'])->first();
-            print_r($subject);
-            exit;
-
             echo "Updating " . $subject['_id'] . PHP_EOL;
             $i++;
         }
