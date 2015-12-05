@@ -38,21 +38,6 @@ class SubjectRepository extends Repository implements SubjectInterface
         $this->model = $subject;
     }
 
-    /**
-     * Override update to handle _id field
-     *
-     * @param array $data
-     * @return mixed
-     */
-    public function update($data = [])
-    {
-        $model = $this->find($data['_id']);
-        $test = $model->fill($data);
-        print_r($test);
-        exit;
-        return $model->fill($data)->save();
-    }
-
     public function getUnassignedCount($id)
     {
         return $this->model->getUnassignedCount($id);
