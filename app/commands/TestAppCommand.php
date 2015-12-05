@@ -43,16 +43,21 @@ class TestAppCommand extends Command {
         {
             $combined = array_combine($header, $row);
 
-            $result = Subject::where("project_id", 2)->where('occurrence.id', $combined['coreid'])->first();
-            if (empty($result))
+            $subject = Subject::where("project_id", 2)->where('occurrence.id', $combined['coreid'])->first();
+            if (empty($subject))
                 continue;
 
-            $subject = array_merge(json_decode(json_encode($result), true), $combined);
-            $subject['id'] = $subject['identifier'];
-            Subject::update($subject);
-            exit;
+            foreach ($combined as $key => $value)
+            {
+                $subject->{$key} = $value;
+            }
 
-            $this->subjectInterface->update($subject);
+            $subject['id'] = $subject['identifier'];
+            $subject->save();
+
+            $subject = Subject::where("project_id", 2)->where('occurrence.id', $combined['coreid'])->first();
+            print_r($subject);
+            exit;
 
             echo "Updating " . $subject['_id'] . PHP_EOL;
             $i++;
