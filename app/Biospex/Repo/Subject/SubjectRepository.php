@@ -46,12 +46,10 @@ class SubjectRepository extends Repository implements SubjectInterface
      */
     public function update($data = [])
     {
-        return $this->model->update($data);
-
         $model = $this->find($data['_id']);
-        print_r($model);
+        $test = $model->fill($data);
+        print_r($test);
         exit;
-
         return $model->fill($data)->save();
     }
 
