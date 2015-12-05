@@ -43,8 +43,6 @@ class Subject extends Eloquent {
      */
     protected $guarded = ['_id'];
 
-    protected $fillable = ['*'];
-
     /**
      * OrderBy
      *
