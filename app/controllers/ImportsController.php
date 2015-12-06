@@ -98,8 +98,6 @@ class ImportsController extends BaseController
         }
 
         $validate = $obj->import($id);
-        print_r($validate);
-        exit;
 
         if (! empty($validate)) {
             return Redirect::route('projects.import', [$id])->withErrors($validate);
