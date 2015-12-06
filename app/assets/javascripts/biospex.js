@@ -42,6 +42,13 @@ $(document).ready(function() {
             }
         }
     });
+    $( "#form-recordset" ).validate({
+        rules: {
+            recordset: {
+                required: true
+            }
+        }
+    });
     $( "#form-data-url" ).validate({
         rules: {
             "data-url": {
@@ -54,13 +61,6 @@ $(document).ready(function() {
             file: {
                 required: true,
                 extension: "csv"
-            }
-        }
-    });
-    $( "#form-recordset" ).validate({
-        rules: {
-            recordset: {
-                required: true
             }
         }
     });
