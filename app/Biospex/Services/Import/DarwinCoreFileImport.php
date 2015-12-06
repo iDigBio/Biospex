@@ -13,8 +13,8 @@ class DarwinCoreFileImport extends ImportServiceAbstract
     public function import($id)
     {
         $validator = \Validator::make(
-            ['file' => \Input::file('dwc')],
-            ['file' => 'required|mimes:zip']
+            ['dwc' => \Input::file('dwc')],
+            ['dwc' => 'required|mimes:zip']
         );
 
         if ($validator->fails()) {
