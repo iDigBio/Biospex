@@ -38,7 +38,7 @@ class NfnTranscriptionImport extends ImportServiceAbstract
     public function import($id)
     {
         $validator = \Validator::make(
-            ['file' => \Input::file('file')],
+            ['file' => \Input::file('transcription')],
             ['file' => 'required|mimes:txt']
         );
 
@@ -48,7 +48,7 @@ class NfnTranscriptionImport extends ImportServiceAbstract
 
         $this->setDirectory('config.transcriptionImportDir');
 
-        $filename = $this->moveFile();
+        $filename = $this->moveFile('transcription');
         $import = $this->importInsert($id, $filename);
         $this->setQueue('config.beanstalkd.import');
 

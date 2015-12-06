@@ -13,7 +13,7 @@ class DarwinCoreFileImport extends ImportServiceAbstract
     public function import($id)
     {
         $validator = \Validator::make(
-            ['file' => \Input::file('file')],
+            ['file' => \Input::file('dwc')],
             ['file' => 'required|mimes:zip']
         );
 
@@ -23,7 +23,7 @@ class DarwinCoreFileImport extends ImportServiceAbstract
 
         $this->setDirectory('config.subjectImportDir');
 
-        $filename = $this->moveFile();
+        $filename = $this->moveFile('dwc');
         $import = $this->importInsert(\Input::get('user_id'), $id, $filename);
         $this->setQueue('config.beanstalkd.import');
 

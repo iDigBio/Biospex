@@ -102,13 +102,14 @@ abstract class ImportServiceAbstract
     /**
      * Move uploaded file.
      *
+     * @param $name
      * @return mixed
      */
-    protected function moveFile()
+    protected function moveFile($name)
     {
-        $file = \Input::file('file');
+        $file = \Input::file($name);
         $filename = md5($file->getClientOriginalName()) . '.' . $file->guessExtension();
-        \Input::file('file')->move($this->directory, $filename);
+        \Input::file($name)->move($this->directory, $filename);
 
         return $filename;
     }

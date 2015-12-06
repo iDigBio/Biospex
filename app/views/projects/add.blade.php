@@ -34,12 +34,12 @@
                 ]) }}
                 <p>{{ HTML::link("#dataFileModal", 'Instructions', ['class' => 'btn btn-xs btn-info', 'data-toggle'=>'modal']) }}</p>
 
-                <div class="form-group {{ ($errors->has('file')) ? 'has-error' : '' }}">
-                    {{ Form::label('file', trans('forms.file'), ['id' => 'file', 'class' => 'col-sm-2 control-label']) }}
+                <div class="form-group {{ ($errors->has('dwc')) ? 'has-error' : '' }}">
+                    {{ Form::label('file', trans('forms.file'), ['id' => 'dwc', 'class' => 'col-sm-2 control-label']) }}
                     <div class="col-md-10">
-                        {{ Form::file('file') }}
+                        {{ Form::file('dwc') }}
                     </div>
-                    {{ ($errors->has('file') ? $errors->first('file') : '') }}
+                    {{ ($errors->has('dcw') ? $errors->first('dcw') : '') }}
                 </div>
 
                 <div class="form-group">
@@ -144,12 +144,12 @@
                     'role' => 'form'
                 ]) }}
                 <p>{{ HTML::link("#transcriptionModal", 'Instructions', ['class' => 'btn btn-xs btn-info', 'data-toggle'=>'modal']) }}</p>
-                <div class="form-group {{ ($errors->has('file')) ? 'has-error' : '' }}">
-                    {{ Form::label('file', trans('forms.file'), ['id' => 'file', 'class' => 'col-sm-2 control-label']) }}
+                <div class="form-group {{ ($errors->has('transcription')) ? 'has-error' : '' }}">
+                    {{ Form::label('file', trans('forms.file'), ['id' => 'transcription', 'class' => 'col-sm-2 control-label']) }}
                     <div class="col-sm-10">
-                        {{ Form::file('file') }}
+                        {{ Form::file('transcription') }}
                     </div>
-                    {{ ($errors->has('file') ? $errors->first('file') : '') }}
+                    {{ ($errors->has('transcription') ? $errors->first('transcription') : '') }}
                 </div>
 
                 <div class="form-group">

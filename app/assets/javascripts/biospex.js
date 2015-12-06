@@ -36,7 +36,7 @@ $(document).ready(function() {
 
     $( "#form-data" ).validate({
         rules: {
-            file: {
+            dwc: {
                 required: true,
                 extension: "zip"
             }
@@ -58,7 +58,7 @@ $(document).ready(function() {
     });
     $( "#form-trans" ).validate({
         rules: {
-            file: {
+            transcription: {
                 required: true,
                 extension: "csv"
             }
