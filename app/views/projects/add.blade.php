@@ -35,7 +35,7 @@
                 <p>{{ HTML::link("#dataFileModal", 'Instructions', ['class' => 'btn btn-xs btn-info', 'data-toggle'=>'modal']) }}</p>
 
                 <div class="form-group {{ ($errors->has('dwc')) ? 'has-error' : '' }}">
-                    {{ Form::label('file', trans('forms.file'), ['id' => 'dwc', 'class' => 'col-sm-2 control-label']) }}
+                    {{ Form::label('dwc', trans('forms.file'), ['id' => 'dwc', 'class' => 'col-sm-2 control-label']) }}
                     <div class="col-md-10">
                         {{ Form::file('dwc') }}
                     </div>
