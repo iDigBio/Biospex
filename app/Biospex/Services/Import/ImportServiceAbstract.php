@@ -108,8 +108,6 @@ abstract class ImportServiceAbstract
     protected function moveFile($name)
     {
         $file = \Input::file($name);
-        print_r($file);
-        exit;
         $filename = md5($file->getClientOriginalName()) . '.' . $file->guessExtension();
         \Input::file($name)->move($this->directory, $filename);
 
