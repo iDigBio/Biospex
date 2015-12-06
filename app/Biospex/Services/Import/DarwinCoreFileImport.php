@@ -12,6 +12,8 @@ class DarwinCoreFileImport extends ImportServiceAbstract
      */
     public function import($id)
     {
+        print_r(\Input::file('dwc'));
+        exit;
         $validator = \Validator::make(
             ['file' => \Input::file('dwc')],
             ['file' => 'required|mimes:zip']
