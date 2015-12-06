@@ -18,7 +18,8 @@ class DarwinCoreFileImport extends ImportServiceAbstract
         );
 
         if ($validator->fails()) {
-            print_r($validator->messages()->toJson());
+            //print_r($validator->messages()->toJson());
+            print_r($validator->errors());
             exit;
             return $validator;
         }
