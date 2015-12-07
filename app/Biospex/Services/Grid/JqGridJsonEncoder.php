@@ -101,15 +101,26 @@ class JqGridJsonEncoder
         $this->route = $route;
 
         $result = $this->header->getByProjectId($projectId);
-        $headers = $result->header;
-        array_unshift($headers['image'], 'assigned', 'id');
-        array_push($headers['image'], 'ocr');
+        if (empty($result)) {
+            $headers['image'] = [
+                'assigned',
+                'id',
+                'accessURI',
+                'ocr'
+            ];
+        }
+        else
+        {
+            $headers = $result->header;
+            array_unshift($headers['image'], 'assigned', 'id');
+            array_push($headers['image'], 'ocr');
+        }
 
         $colNames = $headers['image'];
         $colModel = $this->setColModel($colNames);
 
-        $subColNames = $this->setColNames($headers['occurrence']);
-        $subColModel = $this->setColModel($subColNames);
+        $subColNames = isset($headers['occurrence']) ? $this->setColNames($headers['occurrence']) : [];
+        $subColModel = isset($headers['occurrence']) ? $this->setColModel($subColNames) : [];
 
         $colNamesResult = array_merge($colNames, $subColNames);
         $colModelResult = array_merge($colModel, $subColModel);
