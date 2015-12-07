@@ -228,7 +228,6 @@
 
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            {{ Form::hidden('id', $project->id) }}
             {{ Form::hidden('targetCount', 0, array('id' => 'targetCount')) }}
             {{ Form::submit(trans('buttons.create'), array('class' => 'btn btn-primary'))}}
             {{ Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger', 'onClick' => "location.href='$cancel'"]) }}
