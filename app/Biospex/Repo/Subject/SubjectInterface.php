@@ -43,5 +43,7 @@ interface SubjectInterface extends RepositoryInterface
 
     public function findByFilename($filename);
 
+    public function findByProjectId($project_id);
+
     public function findByProjectOccurrenceId($project_id, $occurrence_id);
 }

@@ -108,6 +108,16 @@ class SubjectRepository extends Repository implements SubjectInterface
     }
 
     /**
+     * Find subjects by project id.
+     * @param $project_id
+     * @return mixed
+     */
+    public function findByProjectId($project_id)
+    {
+        return $this->model->findByProjectId($project_id);
+    }
+
+    /**
      * @param $project_id
      * @param $occurrence_id
      * @return mixed
