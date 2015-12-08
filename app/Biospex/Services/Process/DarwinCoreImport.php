@@ -43,7 +43,11 @@ class DarwinCoreImport
      */
     public $metaFields;
 
-    public $processOcr;
+    /**
+     * Bool to determine if import has ocr actor
+     * @var
+     */
+    public $ocrActor;
 
     /**
      * Construct
@@ -60,17 +64,23 @@ class DarwinCoreImport
     }
 
     /**
+     * @param bool|false $bool
+     */
+    public function setOcrActor($bool = false)
+    {
+        $this->ocrActor = $bool;
+    }
+
+    /**
      * Process Darwin Core Import
      *
      * @param $projectId
      * @param $directory
      * @param $processOcr
      */
-    public function process($projectId, $directory, $processOcr)
+    public function process($projectId, $directory)
     {
         $this->projectId = $projectId;
-
-        $this->processOcr = $processOcr;
 
         // Parse meta file, set properties, and save to database.
         $this->processMetaFile($directory);
@@ -114,7 +124,7 @@ class DarwinCoreImport
         $file = $this->setFilePath($directory, $type);
         $delimiter = $this->setDelimiter($type);
         $enclosure = $this->setEnclosure($type);
-        $this->csv->loadCsvFile($file, $delimiter, $enclosure, $type, $loadMedia, $this->processOcr);
+        $this->csv->loadCsvFile($file, $delimiter, $enclosure, $type, $loadMedia, $this->ocrActor);
     }
 
     /**
