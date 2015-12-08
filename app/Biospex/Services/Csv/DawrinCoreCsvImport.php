@@ -5,7 +5,6 @@ namespace Biospex\Services\Csv;
 use Biospex\Repo\Property\PropertyInterface;
 use Biospex\Repo\Subject\SubjectInterface;
 use Biospex\Repo\Header\HeaderInterface;
-use Biospex\Services\Process\Ocr as OcrProcess;
 use Illuminate\Config\Repository as Config;
 use ForceUTF8\Encoding;
 use Validator;
@@ -31,11 +30,6 @@ class DarwinCoreCsvImport extends CsvAbstract {
      * @var HeaderInterface
      */
     public $header;
-
-    /**
-     * @var OcrProcess
-     */
-    public $ocrProcess;
 
     /**
      * Identifier column for media in csv file
@@ -87,33 +81,24 @@ class DarwinCoreCsvImport extends CsvAbstract {
     public $duplicateArray;
 
     /**
-     * Bool to determine if ocr run on import
-     * @var
-     */
-    public $ocrActor;
-
-    /**
      * Construct
      *
      * @param Config $config
      * @param PropertyInterface $property
      * @param SubjectInterface $subject
      * @param HeaderInterface $header
-     * @param OcrProcess $ocrProcess
      */
     public function __construct(
         Config $config,
         PropertyInterface $property,
         SubjectInterface $subject,
-        HeaderInterface $header,
-        OcrProcess $ocrProcess
+        HeaderInterface $header
     )
     {
         $this->identifiers = $config->get('config.identifiers');
         $this->property = $property;
         $this->subject = $subject;
         $this->config = $config;
-        $this->ocrProcess = $ocrProcess;
         $this->header = $header;
     }
 
@@ -139,12 +124,9 @@ class DarwinCoreCsvImport extends CsvAbstract {
      * @param $enclosure
      * @param $type
      * @param $loadMedia
-     * @param $ocrActor
      */
-    public function loadCsvFile($file, $delimiter, $enclosure, $type, $loadMedia, $ocrActor)
+    public function loadCsvFile($file, $delimiter, $enclosure, $type, $loadMedia)
     {
-        $this->ocrActor = $ocrActor;
-
         $this->readerCreateFromPath($file, $delimiter, $enclosure);
 
         $header = $this->processCsvHeader($this->getHeaderRow(), $type);
@@ -159,8 +141,6 @@ class DarwinCoreCsvImport extends CsvAbstract {
             }
             $this->processRow($header, $row, $type, $loadMedia);
         }
-
-        $this->processOcr($loadMedia);
     }
 
     /**
@@ -464,13 +444,6 @@ class DarwinCoreCsvImport extends CsvAbstract {
         {
             $subject->occurrence()->save(new \Occurrence(['id' => $occurrenceId]));
         }
-
-        if ( ! $this->ocrActor || $this->ocrProcess->disableOcr)
-        {
-            return;
-        }
-
-        $this->ocrProcess->buildOcrQueueData($subject);
     }
 
     /**
@@ -616,18 +589,5 @@ class DarwinCoreCsvImport extends CsvAbstract {
     public function combineHeader($resHeader, $newHeader)
     {
         return array_unique(array_merge($resHeader, array_diff($newHeader, $resHeader)));
-    }
-
-    public function processOcr($loadMedia)
-    {
-        if ( ! $this->ocrActor || ! $loadMedia || $this->ocrProcess->disableOcr)
-        {
-            return;
-        }
-
-        $data = $this->ocrProcess->getOcrQueueData();
-        $count = $this->ocrProcess->getOcrQueueDataCount();
-        $id = $this->ocrProcess->saveOcrQueue($this->projectId, $data, $count);
-        $this->ocrProcess->pushToQueue($id);
     }
 }

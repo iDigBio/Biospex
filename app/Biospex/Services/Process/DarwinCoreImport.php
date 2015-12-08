@@ -44,12 +44,6 @@ class DarwinCoreImport
     public $metaFields;
 
     /**
-     * Bool to determine if import has ocr actor
-     * @var
-     */
-    public $ocrActor;
-
-    /**
      * Construct
      * @param MetaFile $metaFile
      * @param DarwinCoreCsvImport $csv
@@ -61,14 +55,6 @@ class DarwinCoreImport
     {
         $this->metaFile = $metaFile;
         $this->csv = $csv;
-    }
-
-    /**
-     * @param bool|false $bool
-     */
-    public function setOcrActor($bool = false)
-    {
-        $this->ocrActor = $bool;
     }
 
     /**
@@ -124,7 +110,7 @@ class DarwinCoreImport
         $file = $this->setFilePath($directory, $type);
         $delimiter = $this->setDelimiter($type);
         $enclosure = $this->setEnclosure($type);
-        $this->csv->loadCsvFile($file, $delimiter, $enclosure, $type, $loadMedia, $this->ocrActor);
+        $this->csv->loadCsvFile($file, $delimiter, $enclosure, $type, $loadMedia);
     }
 
     /**

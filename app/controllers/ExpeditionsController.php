@@ -295,6 +295,12 @@ class ExpeditionsController extends BaseController
         return Redirect::action('ExpeditionsController@show', [$projectId, $expeditionId]);
     }
 
+    /**
+     * Reprocess OCR
+     * @param $projectId
+     * @param $expeditionId
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function ocr($projectId, $expeditionId)
     {
         $queue = $this->ocr->findByProjectId($projectId);

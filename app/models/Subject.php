@@ -118,6 +118,17 @@ class Subject extends Eloquent {
     }
 
     /**
+     * Find by project id
+     *
+     * @param $project_id
+     * @return mixed
+     */
+    public function findByProjectId($project_id)
+    {
+        return $this->projectid($project_id)->get();
+    }
+
+    /**
      * Find by project id and occurrence id.
      *
      * @param $project_id

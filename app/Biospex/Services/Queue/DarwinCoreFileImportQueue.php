@@ -25,6 +25,9 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Biospex\Repo\OcrQueue\OcrQueueInterface;
+use Biospex\Repo\Subject\SubjectInterface;
+use Biospex\Services\Process\Ocr as OcrProcess;
 use Illuminate\Filesystem\Filesystem;
 use Cartalyst\Sentry\Sentry;
 use Biospex\Repo\Import\ImportInterface;
@@ -97,16 +100,35 @@ class DarwinCoreFileImportQueue extends QueueAbstract
     protected $scratchFileDir;
 
     /**
+     * @var OcrQueueInterface
+     */
+    protected $ocr;
+
+    /**
+     * @var SubjectInterface
+     */
+    protected $subjectInterface;
+
+    /**
+     * @var OcrProcess
+     */
+    protected $ocrProcess;
+
+    /**
      * Constructor
      *
-     * @param ImportInterface $import
      * @param Filesystem $filesystem
-     * @param DarwinCore $process
-     * @param Xml $xml
-     * @param Sentry $sentry
+     * @param ImportInterface $import
      * @param ProjectInterface $project
-     * @param BiospexMailer $mailer
+     * @param Sentry $sentry
      * @param DarwinCoreImportReport $report
+     * @param DarwinCoreImport|DarwinCore $process
+     * @param OcrQueueInterface $ocr
+     * @param SubjectInterface $subjectInterface
+     * @param Sentry $sentry
+     * @param OcrProcess $ocrProcess
+     * @param Xml $xml
+     * @param BiospexMailer $mailer
      */
     public function __construct(
         Filesystem $filesystem,
@@ -115,6 +137,10 @@ class DarwinCoreFileImportQueue extends QueueAbstract
         Sentry $sentry,
         DarwinCoreImportReport $report,
         DarwinCoreImport $process,
+        OcrQueueInterface $ocr,
+        SubjectInterface $subjectInterface,
+        Sentry $sentry,
+        OcrProcess $ocrProcess,
         Xml $xml,
         BiospexMailer $mailer
     ) {
@@ -124,6 +150,9 @@ class DarwinCoreFileImportQueue extends QueueAbstract
         $this->sentry = $sentry;
         $this->report = $report;
         $this->process = $process;
+        $this->subjectInterface = $subjectInterface;
+        $this->ocrProcess = $ocrProcess;
+        $this->ocr = $ocr;
         $this->xml = $xml;
         $this->mailer = $mailer;
 
@@ -150,12 +179,6 @@ class DarwinCoreFileImportQueue extends QueueAbstract
         $import = $this->import->find($this->data['id']);
         $user = $this->sentry->findUserById($import->user_id);
         $project = $this->project->findWith($import->project_id, ['workflow.actors']);
-        $ocrActor = false;
-        foreach($project->workflow->actors as $actor) {
-            if ($actor->title == 'OCR') {
-                $ocrActor = true;
-            }
-        }
 
         $fileName = pathinfo($this->subjectImportDir . '/' . $import->file, PATHINFO_FILENAME);
         $this->scratchFileDir = $this->scratchDir . '/' . $import->id . '-' . md5($fileName);
@@ -165,7 +188,6 @@ class DarwinCoreFileImportQueue extends QueueAbstract
             $this->makeTmp();
             $this->unzip($zipFile);
 
-            $this->process->setOcrActor($ocrActor);
             $this->process->process($import->project_id, $this->scratchFileDir);
 
             $duplicates = $this->process->getDuplicates();
@@ -177,6 +199,9 @@ class DarwinCoreFileImportQueue extends QueueAbstract
             $this->filesystem->delete($zipFile);
 
             $this->import->destroy($import->id);
+
+            $this->processOcr($project);
+
         } catch (\Exception $e) {
             $import->error = 1;
             $import->save();
@@ -189,6 +214,53 @@ class DarwinCoreFileImportQueue extends QueueAbstract
         $this->delete();
 
         return;
+    }
+
+    protected function processOcr($project)
+    {
+        if ($this->ocrProcess->disableOcr)
+            return;
+
+        if ( ! $this->checkOcrActor($project))
+            return;
+
+        $queue = $this->ocr->findByProjectId($project->id);
+        if ( ! empty($queue))
+            return;
+
+        $subjects = $this->subjectInterface->findByProjectId($project->id);
+        foreach ($subjects as $subject) {
+            if ( ! empty($subject->ocr)) {
+                continue;
+            }
+            $this->ocrProcess->buildOcrQueueData($subject);
+        }
+
+        $data = $this->ocrProcess->getOcrQueueData();
+        $count = $this->ocrProcess->getOcrQueueDataCount();
+
+        if ($count > 0) {
+            $id = $this->ocrProcess->saveOcrQueue($project->id, $data, $count);
+            \Queue::push('Biospex\Services\Queue\OcrProcessQueue', ['id' => $id], Config::get('config.beanstalkd.ocr'));
+        }
+
+        return;
+    }
+
+    /**
+     * Check if project has ocr actor.
+     * @param $project
+     * @return bool
+     */
+    protected function checkOcrActor($project)
+    {
+        foreach($project->workflow->actors as $actor) {
+            if ($actor->title == 'OCR') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
