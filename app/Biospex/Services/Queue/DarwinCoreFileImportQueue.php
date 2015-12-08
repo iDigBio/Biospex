@@ -150,10 +150,10 @@ class DarwinCoreFileImportQueue extends QueueAbstract
         $import = $this->import->find($this->data['id']);
         $user = $this->sentry->findUserById($import->user_id);
         $project = $this->project->findWith($import->project_id, ['workflow.actors']);
-        $processOcr = false;
+        $ocrActor = false;
         foreach($project->workflow->actors as $actor) {
             if ($actor->title == 'OCR') {
-                $processOcr = true;
+                $ocrActor = true;
             }
         }
 
@@ -165,7 +165,8 @@ class DarwinCoreFileImportQueue extends QueueAbstract
             $this->makeTmp();
             $this->unzip($zipFile);
 
-            $this->process->process($import->project_id, $this->scratchFileDir, $processOcr);
+            $this->process->setOcrActor($ocrActor);
+            $this->process->process($import->project_id, $this->scratchFileDir);
 
             $duplicates = $this->process->getDuplicates();
             $rejects = $this->process->getRejectedMedia();
