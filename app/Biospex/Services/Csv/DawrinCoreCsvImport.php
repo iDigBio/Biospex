@@ -86,7 +86,11 @@ class DarwinCoreCsvImport extends CsvAbstract {
      */
     public $duplicateArray;
 
-    public $processOcr;
+    /**
+     * Bool to determine if ocr run on import
+     * @var
+     */
+    public $ocrActor;
 
     /**
      * Construct
@@ -135,10 +139,11 @@ class DarwinCoreCsvImport extends CsvAbstract {
      * @param $enclosure
      * @param $type
      * @param $loadMedia
+     * @param $ocrActor
      */
-    public function loadCsvFile($file, $delimiter, $enclosure, $type, $loadMedia, $processOcr)
+    public function loadCsvFile($file, $delimiter, $enclosure, $type, $loadMedia, $ocrActor)
     {
-        $this->processOcr = $processOcr;
+        $this->ocrActor = $ocrActor;
 
         $this->readerCreateFromPath($file, $delimiter, $enclosure);
 
@@ -460,7 +465,7 @@ class DarwinCoreCsvImport extends CsvAbstract {
             $subject->occurrence()->save(new \Occurrence(['id' => $occurrenceId]));
         }
 
-        if ( ! $this->processOcr || $this->ocrProcess->disableOcr)
+        if ( ! $this->ocrActor || $this->ocrProcess->disableOcr)
         {
             return;
         }
@@ -615,7 +620,7 @@ class DarwinCoreCsvImport extends CsvAbstract {
 
     public function processOcr($loadMedia)
     {
-        if ( ! $this->processOcr || ! $loadMedia || $this->ocrProcess->disableOcr)
+        if ( ! $this->ocrActor || ! $loadMedia || $this->ocrProcess->disableOcr)
         {
             return;
         }
