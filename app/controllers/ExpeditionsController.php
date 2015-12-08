@@ -305,7 +305,7 @@ class ExpeditionsController extends BaseController
     {
         $queue = $this->ocr->findByProjectId($projectId);
 
-        if (empty($queue)) {
+        if (is_null($queue)) {
             try {
                 $expedition = $this->expedition->findWith($expeditionId, ['subjects']);
 

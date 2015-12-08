@@ -225,7 +225,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract
             return;
 
         $queue = $this->ocr->findByProjectId($project->id);
-        if ( ! empty($queue))
+        if ( ! is_null($queue))
             return;
 
         $subjects = $this->subjectInterface->findByProjectId($project->id);
