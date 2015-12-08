@@ -2,6 +2,7 @@
 
 use Illuminate\Console\Command;
 use League\Csv\Reader;
+use Biospex\Repo\Project\ProjectInterface;
 
 class TestAppCommand extends Command {
 
@@ -16,10 +17,15 @@ class TestAppCommand extends Command {
     protected $description = 'Used to test code';
 
     public $reader;
+    /**
+     * @var ProjectInterface
+     */
+    private $projectInterface;
 
-    public function __construct()
+    public function __construct(ProjectInterface $projectInterface)
     {
         parent::__construct();
+        $this->projectInterface = $projectInterface;
     }
 
     /**
@@ -27,8 +33,12 @@ class TestAppCommand extends Command {
      */
     public function fire()
     {
-        $this->processImages();
-        $this->processOccurrences();
+        $project = $this->projectInterface->findWith(1, ['workflow.actors']);
+        foreach($project->workflow->actors as $actor) {
+            echo $actor->title . PHP_EOL;
+        }
+        //$this->processImages();
+        //$this->processOccurrences();
 
         return;
     }
