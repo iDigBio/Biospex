@@ -28,82 +28,69 @@ $items = [
     [
         'name'        => 'superuser',
         'label'       => 'Superuser',
-        'description' => 'Administrator has all permissions',
-        'policy'      => ''
+        'description' => 'Administrator has all permissions'
     ],
     // groups
     [
         'name'        => "create-group",
         'label'       => "Create Group",
-        'description' => "Enable group to create group.",
-        'policy'      => 'Group@create'
+        'description' => "Enable group to create group."
     ],
     [
         'name'        => "update-group",
         'label'       => "Update Group",
-        'description' => "Enable group to update group.",
-        'policy'      => 'Group@update'
+        'description' => "Enable group to update group."
     ],
     [
         'name'        => "read-group",
         'label'       => "Read Group",
-        'description' => "Enable group to read group.",
-        'policy'      => 'Group@read'
+        'description' => "Enable group to read group."
     ],
     [
         'name'        => "delete-group",
         'label'       => "Delete Group",
-        'description' => "Enable group to delete group.",
-        'policy'      => 'Group@delete'
+        'description' => "Enable group to delete group."
     ],
     // project
     [
         'name'        => "create-project",
         'label'       => "Create Project",
-        'description' => "Enable group to create project.",
-        'policy'      => 'Project@create'
+        'description' => "Enable group to create project."
     ],
     [
         'name'        => "read-project",
         'label'       => "Read Project",
-        'description' => "Enable group to view project.",
-        'policy'      => 'Project@read'
+        'description' => "Enable group to view project."
     ],
     [
         'name'        => "update-project",
         'label'       => "Update Project",
-        'description' => "Enable group to update project.",
-        'policy'      => 'Project@update'
+        'description' => "Enable group to update project."
     ],
     [
         'name'        => "delete-project",
         'label'       => "Delete Project",
-        'description' => "Enable group to delete project.",
-        'policy'      => 'Project@delete'
+        'description' => "Enable group to delete project."
     ],
     // expedition
     [
         'name'        => "create-expedition",
         'label'       => "Create Expedition",
-        'description' => "Enable group to create expedition.",
-        'policy'      => 'Expedition@create'
+        'description' => "Enable group to create expedition."
     ],
     [
         'name'        => "read-expedition",
         'label'       => "Read Expedition",
-        'description' => "Enable group to read expedition.",
-        'policy'      => 'Expedition@read'
+        'description' => "Enable group to read expedition."
     ],
     [
         'name'        => "update-expedition",
         'label'       => "Update Expedition",
-        'description' => "Enable group to update expedition",
-        'policy'      => 'Expedition@update'
+        'description' => "Enable group to update expedition"
     ],
     [
         'name'        => "delete-expedition",
         'label'       => "Delete Expedition",
-        'description' => "pages.expedition_delete",
-        'policy'      => 'Expedition@delete'
+        'description' => "pages.expedition_delete"
     ],
 ];
