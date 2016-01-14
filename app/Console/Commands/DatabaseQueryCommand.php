@@ -1,6 +1,7 @@
 <?php namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseQueryCommand extends Command
 {
@@ -30,6 +31,10 @@ class DatabaseQueryCommand extends Command
      */
     public function fire()
     {
+        DB::update('UPDATE profiles INNER JOIN users ON users.id = profiles.user_id SET profiles.timezone = users.timezone');
+        DB::update('update groups set label = name');
+        DB::update('update groups set name = lower(name)');
+        DB::delete('delete from groups where name = "users"');
 
         return;
     }
