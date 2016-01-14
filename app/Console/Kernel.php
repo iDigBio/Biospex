@@ -12,13 +12,14 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\Inspire::class,
-        'App\Console\Commands\WorkFlowManagerCommand',
-        'App\Console\Commands\DownloadCleanCommand',
-        'App\Console\Commands\ViewsCommand',
-        'App\Console\Commands\TestAppCommand',
-        'App\Console\Commands\ClearBeanstalkdQueueCommand',
-        'App\Console\Commands\DarwinCoreFileImportCommand',
-        'App\Console\Commands\OcrQueuePushCommand',
+        \App\Console\Commands\WorkFlowManagerCommand::class,
+        \App\Console\Commands\DownloadCleanCommand::class,
+        \App\Console\Commands\ViewsCommand::class,
+        \App\Console\Commands\TestAppCommand::class,
+        \App\Console\Commands\ClearBeanstalkdQueueCommand::class,
+        \App\Console\Commands\DarwinCoreFileImportCommand::class,
+        \App\Console\Commands\OcrQueuePushCommand::class,
+        \App\Console\Commands\DatabaseQueryCommand::class,
     ];
 
     /**
