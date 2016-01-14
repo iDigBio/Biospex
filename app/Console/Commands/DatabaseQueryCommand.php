@@ -1,7 +1,6 @@
-<?php namespace Console\Commands;
+<?php namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-
 
 class DatabaseQueryCommand extends Command
 {
