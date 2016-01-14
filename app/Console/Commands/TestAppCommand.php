@@ -1,6 +1,10 @@
-<?php namespace App\Console\Commands;
+<?php
+
+namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+
+use App\Repositories\Contracts\Group as Group;
 
 class TestAppCommand extends Command
 {
@@ -24,6 +28,9 @@ class TestAppCommand extends Command
 
     /**
      * Fire queue.
+     *
+     * @param Mailer $mailer
+     * @param Config $config
      */
     public function fire()
     {
