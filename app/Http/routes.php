@@ -6,72 +6,82 @@ Route::pattern('id', '[0-9]+');
 /** ADD ALL LOCALIZED ROUTES INSIDE THIS GROUP **/
 Route::group(
     [
+        'middleware' => ['web'],
         'namespace' => 'Front',
         'prefix'    => Local::setLocale(),
         'before'    => 'LocalRedirectFilter'
     ],
     function () {
-        // Session Routes
+        // Begin AuthController
         Route::get('/login', [
-            'uses'       => 'AuthController@getLogin',
-            'as'         => 'auth.get.login',
-            'middleware' => 'doNotCacheResponse'
+            'uses' => 'AuthController@getLogin',
+            'as'   => 'auth.get.login',
+            //'middleware' => 'doNotCacheResponse'
         ]);
 
         Route::post('/login', [
-            'uses'       => 'AuthController@postLogin',
-            'as'         => 'auth.post.login',
-            'middleware' => 'doNotCacheResponse'
+            'uses' => 'AuthController@postLogin',
+            'as'   => 'auth.post.login',
+            //'middleware' => 'doNotCacheResponse'
         ]);
 
         Route::get('/logout', [
-            'uses'       => 'AuthController@getLogout',
-            'as'         => 'auth.get.logout',
-            'middleware' => 'doNotCacheResponse'
+            'uses' => 'AuthController@getLogout',
+            'as'   => 'auth.get.logout',
+            //'middleware' => 'doNotCacheResponse'
         ]);
 
         Route::get('register/{code?}', [
-            'uses'       => 'AuthController@getRegister',
-            'as'         => 'auth.get.register',
-            'middleware' => 'doNotCacheResponse'
+            'uses' => 'AuthController@getRegister',
+            'as'   => 'auth.get.register',
+            //'middleware' => 'doNotCacheResponse'
         ]);
 
         Route::post('register', [
-            'uses'       => 'AuthController@postRegister',
-            'as'         => 'auth.post.register',
-            'middleware' => 'doNotCacheResponse'
+            'uses' => 'AuthController@postRegister',
+            'as'   => 'auth.post.register',
+            //'middleware' => 'doNotCacheResponse'
         ]);
 
         Route::get('/users/{id}/activate/{code}', [
-            'uses' => 'AuthController@activate',
-            'as'   => 'auth.activate'
+            'uses' => 'AuthController@getActivate',
+            'as'   => 'auth.get.activate'
         ]);
 
         Route::get('resend', [
-            'uses' => 'AuthController@resendActivation',
+            'uses' => 'AuthController@getResendActivation',
             'as'   => 'auth.get.resend'
         ]);
 
         Route::post('resend', [
-            'uses' => 'AuthController@resend',
-            'as'   => 'auth.resend'
+            'uses' => 'AuthController@postResendActivation',
+            'as'   => 'auth.post.resend'
+        ]);
+        // End AuthController
+
+        // Begin PasswordController
+        Route::get('password/email', [
+            'uses' => 'PasswordController@getEmail',
+            'as'   => 'password.get.email'
         ]);
 
-        Route::get('/forgot', [
-            'uses' => 'AuthController@password',
-            'as'   => 'auth.get.password',
+        Route::post('password/email', [
+            'uses' => 'PasswordController@postEmail',
+            'as'   => 'password.post.email'
         ]);
 
-        Route::post('/forgot', [
-            'uses' => 'AuthController@forgot',
-            'as'   => 'auth.post.forgot'
+        Route::get('password/reset/{token}', [
+            'uses' => 'PasswordController@getReset',
+            'as'   => 'password.get.reset'
         ]);
 
-        Route::get('users/{id}/reset/{code}', [
-            'uses' => 'AuthController@reset',
-            'as'   => 'auth.reset'
+        Route::post('password/reset', [
+            'uses' => 'PasswordController@postReset',
+            'as'   => 'password.post.reset'
         ]);
+        // End PasswordsController
 
+        // Begin UsersController
         Route::post('users/{id}/change', [
             'uses'       => 'UsersController@change',
             'as'         => 'users.pass',
@@ -119,146 +129,124 @@ Route::group(
             'middleware' => ['sentry', 'hasAccess'],
             'hasAccess'  => 'superuser'
         ]);
+        // End UsersController
 
-        // Group Routes
+        // Begin GroupsController
         Route::get('groups', [
             'uses'       => 'GroupsController@index',
-            'as'         => 'groups.index',
-            'middleware' => ['sentry', 'hasAccess'],
-            'hasAccess'  => 'group_view'
+            'as'         => 'groups.get.index',
+            'middleware' => ['auth'],
         ]);
 
         Route::get('groups/create', [
             'uses'       => 'GroupsController@create',
-            'as'         => 'groups.create',
-            'middleware' => ['sentry', 'hasAccess'],
-            'hasAccess'  => 'group_create'
+            'as'         => 'groups.get.create',
+            'middleware' => ['auth'],
         ]);
 
         Route::post('groups', [
             'uses'       => 'GroupsController@store',
-            'as'         => 'groups.store',
-            'middleware' => ['sentry', 'hasAccess'],
-            'hasAccess'  => 'group_create'
+            'as'         => 'groups.post.store',
+            'middleware' => ['auth'],
         ]);
 
         Route::get('groups/{groups}', [
-            'uses'       => 'GroupsController@show',
-            'as'         => 'groups.show',
-            'middleware' => ['sentry', 'inGroup', 'hasAccess'],
-            'hasAccess'  => 'group_view'
+            'uses'       => 'GroupsController@read',
+            'as'         => 'groups.get.read',
+            'middleware' => ['auth', 'acl:read,App\Models\Group'],
         ]);
 
         Route::get('groups/{groups}/edit', [
             'uses'       => 'GroupsController@edit',
-            'as'         => 'groups.edit',
-            'middleware' => ['sentry', 'inGroup', 'hasAccess'],
-            'hasAccess'  => 'group_edit'
+            'as'         => 'groups.get.edit',
+            'middleware' => ['auth', 'acl:update,App\Models\Group'],
         ]);
 
         Route::put('groups/{groups}', [
             'uses'       => 'GroupsController@update',
-            'as'         => 'groups.update',
-            'middleware' => ['sentry', 'inGroup', 'hasAccess'],
-            'hasAccess'  => 'group_edit'
+            'as'         => 'groups.put.update',
+            'middleware' => ['auth', 'acl:update,App\Models\Group'],
         ]);
 
         Route::delete('groups/{groups}', [
-            'uses'       => 'GroupsController@destroy',
-            'as'         => 'groups.destroy',
-            'middleware' => ['sentry', 'inGroup', 'hasAccess'],
-            'hasAccess'  => 'group_delete'
+            'uses'       => 'GroupsController@delete',
+            'as'         => 'groups.delete.delete',
+            'middleware' => ['auth', 'acl:delete,App\Models\Group'],
         ]);
+        // End GroupsController
 
         // Group invite routes
         Route::get('groups/{groups}/invites', [
             'uses'       => 'InvitesController@index',
-            'as'         => 'groups.invites.index',
-            'middleware' => ['sentry', 'inGroup', 'hasAccess'],
-            'inGroup'    => '{groups}',
-            'hasAccess'  => 'group_view'
+            'as'         => 'invites.get.index',
+            'middleware' => ['auth', 'acl:update,App\Models\Group'],
         ]);
 
         Route::post('groups/{groups}/invites', [
             'uses'       => 'InvitesController@store',
-            'as'         => 'groups.invites.store',
-            'middleware' => ['sentry', 'inGroup', 'hasAccess'],
-            'inGroup'    => '{groups}',
-            'hasAccess'  => 'group_edit'
+            'as'         => 'invites.post.store',
+            'middleware' => ['auth', 'acl:update,App\Models\Group'],
         ]);
 
         Route::post('groups/{groups}/invites/{invites}/resend', [
             'uses'       => 'InvitesController@resend',
-            'as'         => 'groups.invites.resend',
-            'middleware' => ['sentry']
+            'as'         => 'invites.post.resend',
+            'middleware' => ['auth']
         ]);
 
         Route::delete('groups/{groups}/invites/{invites}', [
-            'uses'       => 'InvitesController@destroy',
-            'as'         => 'groups.invites.destroy',
-            'middleware' => ['sentry', 'inGroup', 'hasAccess'],
-            'inGroup'    => '{groups}',
-            'hasAccess'  => 'group_delete'
+            'uses'       => 'InvitesController@delete',
+            'as'         => 'invites.delete.delete',
+            'middleware' => ['auth'],
         ]);
 
-        // Projects
-        Route::get('projects', [
+        // Begin ProjectsController
+        Route::get('dashboard', [
             'uses'       => 'ProjectsController@index',
-            'as'         => 'projects.index',
+            'as'         => 'projects.get.index',
             'middleware' => ['auth']
         ]);
 
         Route::get('projects/create', [
             'uses'       => 'ProjectsController@create',
-            'as'         => 'projects.create',
-            'middleware' => ['sentry', 'hasAccess'],
-            'hasAccess'  => 'project_create'
+            'as'         => 'projects.get.create',
+            'middleware' => ['auth'],
         ]);
 
-        Route::put('projects', [
+        Route::post('projects/create', [
             'uses'       => 'ProjectsController@store',
-            'as'         => 'projects.store',
-            'middleware' => ['sentry', 'hasAccess'],
-            'hasAccess'  => 'project_create'
+            'as'         => 'projects.post.store',
+            'middleware' => ['auth'],
         ]);
 
         Route::get('projects/{projects}', [
-            'uses'       => 'ProjectsController@show',
-            'as'         => 'projects.show',
-            'middleware' => ['sentry', 'inGroup', 'hasAccess'],
-            'hasAccess'  => 'project_view'
+            'uses'       => 'ProjectsController@read',
+            'as'         => 'projects.get.read',
+            'middleware' => ['auth'],
         ]);
 
         Route::get('projects/{projects}/edit', [
             'uses'       => 'ProjectsController@edit',
-            'as'         => 'projects.edit',
-            'middleware' => ['sentry', 'inGroup', 'hasAccess'],
-            'inGroup'    => '{project_group}',
-            'hasAccess'  => 'project_edit'
+            'as'         => 'projects.get.edit',
+            'middleware' => ['auth'],
         ]);
 
         Route::put('projects/{projects}', [
             'uses'       => 'ProjectsController@update',
-            'as'         => 'projects.update',
-            'middleware' => ['sentry', 'inGroup', 'hasAccess'],
-            'inGroup'    => '{project_group}',
-            'hasAccess'  => 'project_edit'
+            'as'         => 'projects.put.update',
+            'middleware' => ['auth'],
         ]);
 
         Route::delete('projects/{projects}', [
-            'uses'       => 'ProjectsController@destroy',
-            'as'         => 'projects.destroy',
-            'middleware' => ['sentry', 'inGroup', 'hasAccess'],
-            'inGroup'    => '{project_group}',
-            'hasAccess'  => 'project_delete'
+            'uses'       => 'ProjectsController@delete',
+            'as'         => 'projects.delete.delete',
+            'middleware' => ['auth'],
         ]);
 
         Route::get('projects/{projects}/duplicate', [
             'uses'       => 'ProjectsController@duplicate',
             'as'         => 'projects.duplicate',
-            'middleware' => ['sentry', 'inGroup', 'hasAccess'],
-            'inGroup'    => '{project_group}',
-            'hasAccess'  => 'project_create'
+            'middleware' => ['auth'],
         ]);
 
         Route::get('projects/{projects}/advertise', [
@@ -276,6 +264,7 @@ Route::group(
             'inGroup'    => '{project_id}',
             'hasAccess'  => 'project_view'
         ]);
+        // End ProjectsController
 
         Route::get('projects/{projects}/import', [
             'uses'       => 'ImportsController@import',
@@ -434,13 +423,13 @@ Route::group(
         Route::get('contact', [
             'uses' => 'HomeController@getContact',
             'as'   => 'home.get.contact',
-            'middleware' => 'doNotCacheResponse'
+            //'middleware' => 'doNotCacheResponse'
         ]);
 
         Route::post('contact', [
             'uses' => 'HomeController@postContact',
             'as'   => 'home.post.contact',
-            'middleware' => 'doNotCacheResponse'
+            //'middleware' => 'doNotCacheResponse'
         ]);
 
         // Home and Welcome
@@ -451,12 +440,12 @@ Route::group(
 
         Route::get('help', [
             'uses' => 'HomeController@help',
-            'as'   => 'show.help'
+            'as'   => 'home.get.help'
         ]);
 
         Route::get('project/{slug}', [
             'uses' => 'HomeController@project',
-            'as'   => 'project.page'
+            'as'   => 'home.get.project'
         ]);
     }
 );
@@ -560,8 +549,12 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     ]);
 
 });
-
-Route::group(['namespace' => 'Api', 'prefix' => 'api'], function () {
-    Route::resource('api', 'ApiController');
-});
 */
+
+Route::group([
+    'middleware' => ['api'],
+    'namespace' => 'Api',
+    'prefix' => 'api'],
+    function () {
+        Route::resource('api', 'ApiController');
+});
