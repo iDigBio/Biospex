@@ -36,15 +36,20 @@ class GroupPermissionTableSeeder extends Seeder
     {
         Model::unguard();
 
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('group_permission')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
         $groups = $this->group->all();
         $permissions = $this->permission->all();
 
         foreach ($groups as $group) {
-            if ($group->name == 'admin') {
+            if ($group->name == 'admins') {
                 $group->permissions()->attach($permissions[0]->id);
                 unset($permissions[0]);
                 continue;
             } else {
+                unset($permissions[0]);
                 foreach ($permissions as $permission) {
                     $group->permissions()->attach($permission->id);
                 }
