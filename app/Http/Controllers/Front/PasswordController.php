@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Repositories\Contracts\User;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PasswordFormRequest;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PasswordController extends Controller
 {
@@ -20,13 +24,72 @@ class PasswordController extends Controller
 
     use ResetsPasswords;
 
+    protected $redirectTo = '/dashboard';
+
     /**
-     * Create a new password controller instance.
-     *
-     * @return void
+     * @var User
      */
-    public function __construct()
+    private $user;
+
+    /**
+     * PasswordController constructor.
+     * @param User $user
+     */
+    public function __construct(User $user)
     {
-        $this->middleware('guest');
+        $this->user = $user;
+    }
+
+    public function getEmail()
+    {
+        return view('front.auth.password');
+    }
+
+    /**
+     * Display the password reset view for the given token.
+     *
+     * @param null $token
+     * @return $this
+     * @throws NotFoundHttpException
+     */
+    public function getReset($token = null)
+    {
+        if (is_null($token)) {
+            throw new NotFoundHttpException;
+        }
+
+        return view('front.auth.reset')->with('token', $token);
+    }
+
+    /**
+     * Process a password change request
+     *
+     * @param PasswordFormRequest $request
+     * @return redirect
+     * @internal param int $id
+     */
+    public function pass(PasswordFormRequest $request)
+    {
+        $user = $this->user->find($request->route('id'));
+
+        if ( ! policy($user)->pass($user))
+        {
+            session_flash_push('warning', trans('pages.insufficient_permissions'));
+
+            return redirect()->route('projects.get.index');
+        }
+
+        if ( ! Hash::check($request->input('oldPassword'), $user->password))
+        {
+            session_flash_push('error', trans('users.oldpassword'));
+
+            return redirect()->route('users.get.edit', [$user->id]);
+        }
+
+        $this->resetPassword($user, $request->input('newPassword'));
+
+        session_flash_push('success', trans('users.passwordchg'));
+
+        return redirect()->route('users.get.edit', [$user->id]);
     }
 }
