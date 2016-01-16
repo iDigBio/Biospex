@@ -26,7 +26,7 @@
                 </div>
                 </div>
                 {!! Form::open([
-                'route' => ['users.update', $user->id],
+                'route' => ['users.put.update', $user->id],
                 'method' => 'put',
                 'class' => 'form-horizontal',
                 'role' => 'form'
@@ -75,7 +75,8 @@
             <div class="panel-body">
                 <h4>@lang('pages.password_change')</h4>
                 {!! Form::open([
-                    'route' => ['users.pass'],
+                    'route' => ['password.put.pass', $user->id],
+                    'method' => 'put',
                     'class' => 'form-inline',
                     'role' => 'form'
                     ]) !!}
@@ -96,9 +97,9 @@
                 {!! Form::hidden('id', $user->id) !!}
                 {!! Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary')) !!}
 
-                {{ ($errors->has('oldPassword') ? '<br />' . $errors->first('oldPassword') : '') }}
-                {{ ($errors->has('newPassword') ?  '<br />' . $errors->first('newPassword') : '') }}
-                {{ ($errors->has('newPassword_confirmation') ? '<br />' . $errors->first('newPassword_confirmation') : '') }}
+                {!! ($errors->has('oldPassword') ? '<br />' . $errors->first('oldPassword') : '') !!}
+                {!! ($errors->has('newPassword') ?  '<br />' . $errors->first('newPassword') : '') !!}
+                {!! ($errors->has('newPassword_confirmation') ? '<br />' . $errors->first('newPassword_confirmation') : '') !!}
 
                 {!! Form::close() !!}
             </div>
