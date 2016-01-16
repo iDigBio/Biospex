@@ -3,13 +3,9 @@
 namespace App\Services\Common;
 
 use App\Events\UserRegisteredEvent;
-use Cartalyst\Sentry\Groups\GroupNotFoundException;
 use Cartalyst\Sentry\Sentry;
 use App\Repositories\Contracts\Invite;
-use Cartalyst\Sentry\Users\LoginRequiredException;
-use Cartalyst\Sentry\Users\UserExistsException;
 use Illuminate\Events\Dispatcher as Event;
-use Exception;
 use Illuminate\Routing\Router;
 use Illuminate\Routing\UrlGenerator as Url;
 use Illuminate\Config\Repository;
@@ -91,19 +87,16 @@ class UserService
      *
      * @return array|bool
      */
-    public function edit()
+    public function edit($user)
     {
-        $id = $this->router->input('users');
-        $user = $this->sentry->findUserById($id);
-
-        if (is_null($user) || ! is_numeric($id)) {
+        if (is_null($user) || ! is_numeric($user->id)) {
             session_flash_push('error', trans('pages.error_missing_variable'));
 
             return false;
         }
 
         $timezones = timezone_select();
-        $cancel = $this->url->route('projects.index');
+        $cancel = $this->url->route('projects.get.index');
 
         return compact('user', 'timezones', 'cancel');
     }
@@ -112,70 +105,16 @@ class UserService
     {
         $result = $this->user->update($request->all());
 
-        if ($result['success'])
+        if ($result)
         {
-            session_flash_push('success', $result['message']);
-
-            return true;
-        }
-
-        session_flash_push('error', $result['message']);
-
-        return false;
-    }
-
-    /**
-     * Add user to User Group.
-     *
-     * @param $user
-     */
-    public function addUserToUserGroup($user)
-    {
-        $usersGroup = $this->sentry->findGroupByName('Users');
-        $user->addGroup($usersGroup);
-
-        return;
-    }
-
-    /**
-     * Add user by invite.
-     *
-     * @param $data
-     * @param $user
-     */
-    public function addGroupByInvite($data, $user)
-    {
-        $invite = $this->invite->findByCode($data['invite']);
-        if ($invite->email == $user->email) {
-            $group = $this->sentry->findGroupById($invite->group_id);
-            $user->addGroup($group);
-            $this->invite->destroy($invite->id);
+            session_flash_push('success', trans('users.updated'));
 
             return;
         }
 
-        session_flash_push('warning', trans('groups.invite_email_mismatch'));
+        session_flash_push('error', trans('users.notupdated'));
 
         return;
     }
 
-    /**
-     * Create user group based on email.
-     *
-     * @param $user
-     */
-    public function createGroupFromEmail($user)
-    {
-        $parts = explode("@", $user->email);
-        $name = preg_replace('/[^a-zA-Z0-9]/', '', $parts[0]);
-        $userGroup = $this->sentry->createGroup([
-            'user_id'     => $user->id,
-            'name'        => $name,
-            'permissions' => [],
-        ]);
-
-        $user->addGroup($userGroup);
-
-        return;
-    }
 }
