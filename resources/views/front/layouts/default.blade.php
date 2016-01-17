@@ -39,20 +39,25 @@
                 </li>
             </ul>
             @endif
-            {!! $topMenu !!}
+            @if(Auth::check())
+            <ul class="nav navbar-nav">
+                <li {{ preg_match('/groups/', Route::currentRouteName()) ? 'class="active"' : "" }}><a href="{{ route('groups.get.index') }}">Groups</a></li>
+                <li {{ preg_match('/projects/', Route::currentRouteName()) ? 'class="active"' : "" }}><a href="{{ route('projects.get.index') }}">Projects</a></li>
+            </ul>
+            @endif
             <ul class="nav navbar-nav navbar-right">
-                @if (Sentry::check())
-                <li {{ (Request::is('users/' . Session::get('userId') . '/edit') ? 'class=active' : '') }}>
-                    <a href="/users/{{ Session::get('userId') }}/edit">{{ Session::get('email') }}</a>
+                @if (Auth::check())
+                <li {{ (Request::is('users/' . Auth::getUser()->id . '/edit') ? 'class=active' : '') }}>
+                    <a href="/users/{{ Auth::getUser()->id }}/edit">{{ Auth::getUser()->email }}</a>
                 </li>
-                <li><a href="{{ route('auth.logout') }}">{{ trans('pages.logout') }}</a></li>
+                <li><a href="{{ route('auth.get.logout') }}">{{ trans('pages.logout') }}</a></li>
                 @else
                 <li
                 {{ Request::is('login') ? 'class=active' : '' }}><a href="{{ route('auth.get.login') }}">{{trans('pages.login')}}</a></li>
                 <li
                 {{ Request::is('users/create') ? 'class=active' : '' }}><a href="{{ route('auth.get.register') }}">{{trans('pages.register')}}</a></li>
                 @endif
-                <li><a href="{{ route('show.help') }}">{{ trans('pages.help') }}</a></li>
+                <li><a href="{{ route('home.get.help') }}">{{ trans('pages.help') }}</a></li>
                 <li><a href="{{ route('home.get.contact') }}">{{ trans('pages.contact') }}</a></li>
             </ul>
         </div>
