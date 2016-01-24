@@ -1,22 +1,29 @@
 <?php namespace App\Services\Image;
 
-use App\Services\Curl\Curl;
-use App\Services\Curl\Request;
+use Exception;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class Thumbnail extends Image
 {
     /**
      * Output file path.
+     *
      * @var
      */
     protected $outputFile;
 
     /**
-     * Default image.
-     *
-     * @var mixed
+     * @var
      */
-    protected $defaultImg;
+    protected $outputFileSm;
+
+    /**
+     * @var
+     */
+    protected $outputFileLg;
 
     /**
      * Output directory
@@ -26,15 +33,37 @@ class Thumbnail extends Image
     protected $outputDir;
 
     /**
+     * Default image.
+     *
+     * @var mixed
+     */
+    private $defaultImg;
+
+    /**
+     * Thumbnail width.
+     *
+     * @var
+     */
+    private $tnWidth;
+
+    /**
+     * Thumbnail height.
+     *
+     * @var
+     */
+    private $tnHeight;
+
+    /**
      * Set variables.
      */
     public function setVars()
     {
         // We can read the output path from our configuration file.
-        $this->defaultImg = \Config::get('config.images.thumb_default_img');
-        $this->width = \Config::get('config.images.thumb_width');
-        $this->height = \Config::get('config.images.thumb_height');
-        $this->outputDir = \Config::get('config.images.thumb_output_dir') . '/' . $this->width . '_' . $this->height;
+        $this->defaultImg = Config::get('config.images.thumbDefaultImg');
+        $this->tnWidth = Config::get('config.images.thumbWidth');
+        $this->tnHeight = Config::get('config.images.thumbHeight');
+        $this->outputDir = Config::get('config.images.thumbOutputDir') . '/' . $this->tnWidth . '_' . $this->tnHeight;
+        $this->createDir($this->outputDir);
     }
 
     /**
@@ -45,23 +74,16 @@ class Thumbnail extends Image
      */
     public function thumbFromUrl($url)
     {
-        $this->setOutPutFile($url);
-        $this->createDir($this->outputDir);
-
-        if (File::isFile($this->outputFileSm)) {
-            return $this->outputFileSm;
-        }
-
+        $client = new Client();
         try {
-            $rc = new Curl([$this, "saveThumbnail"]);
-            $rc->options = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1, CURLINFO_HEADER_OUT => 1];
-            $rc->get($url);
-            $rc->execute();
+            $response = $client->get($url);
+            $this->saveThumbnail($response->getBody()->getContents());
         } catch (Exception $e) {
-            \Log::critical($e->getMessage());
+            Log::error($e->getMessage());
         }
 
-        return $this->outputFileSm;
+        return $this->thumbExists($this->outputFileSm) ?
+            $this->getFile($this->outputFileSm) : $this->getFile($this->defaultImg);
     }
 
     /**
@@ -73,26 +95,28 @@ class Thumbnail extends Image
     public function getThumbnail($url)
     {
         $this->setVars();
+        $this->setOutPutFile($url);
 
-        if (! $file = $this->thumbFromUrl($url)) {
-            $file = $this->defaultImg;
+        if ($this->thumbExists($this->outputFileSm)) {
+            return $this->getFile($this->outputFileSm);
         }
 
-        return \File::get($file);
+        $file = $this->thumbFromUrl($url);
+
+        return $file;
     }
 
     /**
      * Save thumb file.
-     *
      * @param $image
-     * @param $info
      */
-    public function saveThumbnail($image, $info)
+    public function saveThumbnail($image)
     {
         $this->saveFile($this->outputFileLg, $image);
-        $this->imageMagick($this->outputFileLg);
-        $this->resize($this->outputFileSm, $this->width, 0);
+        $this->imagickFile($this->outputFileLg);
+        $this->imagickScale($this->outputFileSm, $this->tnWidth, 0);
         $this->deleteImage($this->outputFileLg);
+        $this->imagickDestroy();
 
         return;
     }
@@ -109,5 +133,27 @@ class Thumbnail extends Image
         $filenameSm = md5($url) . '.small.jpg';
         $this->outputFileLg = $this->outputDir . '/' . $filenameLg;
         $this->outputFileSm = $this->outputDir . '/' . $filenameSm;
+    }
+
+    /**
+     * Get file
+     * @param $file
+     * @return string
+     */
+    public function getFile($file)
+    {
+        $this->setImageSizeInfoFromFile($file);
+
+        return File::get($file);
+    }
+
+    /**
+     * Check file exists
+     * @param $file
+     * @return bool
+     */
+    public function thumbExists($file)
+    {
+        return File::isFile($file);
     }
 }
