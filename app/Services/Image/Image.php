@@ -1,6 +1,7 @@
 <?php namespace App\Services\Image;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Config;
 
 class Image
 {
@@ -29,13 +30,6 @@ class Image
      * @var
      */
     protected $height;
-
-    /**
-     * Mime type of image.
-     *
-     * @var
-     */
-    protected $mime;
 
     /**
      * Extension of image file.
@@ -73,7 +67,7 @@ class Image
     public function __construct(Filesystem $filesystem)
     {
         $this->filesystem = $filesystem;
-        $this->imageTypeExtension = \Config::get('config.images.imageTypeExtension');
+        $this->imageTypeExtension = Config::get('config.images.imageTypeExtension');
 
         return;
     }
@@ -126,7 +120,7 @@ class Image
      */
     protected function setMimeType($mime)
     {
-        $this->mime = $mime;
+        $this->mimeType = $mime;
 
         return;
     }
