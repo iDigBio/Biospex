@@ -9,7 +9,21 @@
     <p><strong>@lang('pages.success'):</strong> {!! $messages !!}</p>
     @endif
 </div>
-{{ Session::forget('success') }}
+{{ Session::forget('status') }}
+@endif
+
+@if ($messages = Session::get('status'))
+    <div class="alert alert-success alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        @if (is_array($messages))
+            @foreach ($messages as $message)
+                <p><strong>@lang('pages.success'):</strong> {!! $message !!}</p>
+            @endforeach
+        @else
+            <p><strong>@lang('pages.success'):</strong> {!! $messages !!}</p>
+        @endif
+    </div>
+    {{ Session::forget('status') }}
 @endif
 
 @if ($messages = Session::get('error'))

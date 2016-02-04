@@ -46,33 +46,11 @@ class ProjectRepository extends Repository implements Project
         $project->advertise = $data;
         $project->save();
 
-        $actors = [];
-        foreach ($data['actor'] as $key => $actor) {
-            $actors[$actor] = ['order_by' => $key];
-        }
-        $project->actors()->attach($actors);
-
         return $project;
     }
 
-    /**
-     * Override update to handle relationship
-     *
-     * @param array $data
-     * @return mixed
-     */
-    public function update($data = [])
+    public function getSubjectsAssignedCount($project)
     {
-        $project = $this->find($data['id']);
-        $project->advertise = $data;
-        $project->fill($data)->save();
-
-        $actors = [];
-        foreach ($data['actor'] as $key => $actor) {
-            $actors[$actor] = ['order_by' => $key];
-        }
-        $project->actors()->sync($actors);
-
-        return $project;
+        return $this->model->getSubjectsAssignedCount($project);
     }
 }

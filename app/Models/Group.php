@@ -4,17 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Traits\HasManyProjectsTrait;
+use Illuminate\Support\Facades\Config;
 
 class Group extends Model
 {
     use SoftDeletes;
-    use HasManyProjectsTrait;
 
-    /**
-     * Protect date fields.
-     * @var array
-     */
     protected $dates = ['deleted_at'];
 
     /**
@@ -48,33 +43,29 @@ class Group extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
     public function users()
     {
         return $this->belongsToMany(User::class);
     }
 
-    /**
-     * A Group may be given various permissions.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
     public function permissions()
     {
         return $this->belongsToMany(Permission::class);
     }
 
     /**
-     * Grant the given permission to a group.
+     * Return projects owned by the group
      *
-     * @param  Permission $permission
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function givePermissionTo(Permission $permission)
+    public function projects()
     {
-        return $this->permissions()->save($permission);
+        return $this->hasMany(Project::class)->orderBy('title');
+    }
+
+    public function invites()
+    {
+        return $this->hasMany(Invite::class);
     }
 
     public function findAllGroupsWithProjects($allGroups)

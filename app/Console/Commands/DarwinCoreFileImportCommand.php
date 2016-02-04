@@ -4,9 +4,13 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Repositories\Contracts\Import;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Queue;
 
 class DarwinCoreFileImportCommand extends Command
 {
+    public $import;
+
     /**
      * The console command name.
      *
@@ -23,7 +27,8 @@ class DarwinCoreFileImportCommand extends Command
 
     /**
      * Class constructor.
-     * @param Import $import
+     *
+     * @param ImportInterface $import
      */
     public function __construct(Import $import)
     {
@@ -43,7 +48,7 @@ class DarwinCoreFileImportCommand extends Command
 
         $count = 0;
         foreach ($imports as $import) {
-            Queue::push('App\Services\Queue\QueueFactory', ['id' => $import->id, 'class' => 'DarwinCoreFileImportQueue'], Config::get('config.beanstalkd.import'));
+            Queue::push('Biospex\Services\Queue\DarwinCoreFileImportQueue', ['id' => $import->id], Config::get('config.beanstalkd.import'));
             $count++;
         }
 

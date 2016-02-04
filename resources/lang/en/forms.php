@@ -1,12 +1,12 @@
 <?php
 /*************************************************************************
-Generated via "php artisan localization:missing" at 2015/06/05 14:49:01
+ * Generated via "php artisan localization:missing" at 2015/06/05 14:49:01
  *************************************************************************/
 
 return array(
     //==================================== Translations ====================================//
     'activities' => 'Activities',
-    'actor' => 'Workflow Actor',
+    'workflows' => 'Workflows',
     'assign_subjects' => 'Assign Subjects',
     'assigned_subjects' => 'Assigned Subjects',
     'banner' => 'Banner',
@@ -15,6 +15,7 @@ return array(
     'blog_url_format' => 'http://blog.com',
     'contact' => 'Contact',
     'contact_email' => 'Contact Email',
+    'contact_title'               => 'Contact Title',
     'description' => 'Description',
     'description_long' => 'Long Description',
     'description_short' => 'Short Description',
@@ -37,7 +38,7 @@ return array(
     'organization_website' => 'Organization Website',
     'organization_website_format' => 'http://yoursite.org',
     'project_partners' => 'Project Partners',
-    'recordset' => 'Record Set',
+    'recordset' => 'Id',
     'status' => 'Status',
     'taxonomic_scope' => 'Taxonomic Scope',
     'temporal_scope' => 'Temporal Scope',
@@ -46,6 +47,8 @@ return array(
     'twitter' => 'Twitter',
     'twitter_format' => 'http://twitter.com/example',
     'unassigned' => 'Unassigned',
+    'file' => "File",
+    'url' => "Url",
     //================================== Obsolete strings ==================================//
     'target' => 'Target Field',
     'target_core' => 'Darwin Core #',

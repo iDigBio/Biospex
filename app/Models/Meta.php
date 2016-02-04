@@ -2,17 +2,11 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Traits\BelongsToProjectTrait;
 
 class Meta extends Model
 {
     use SoftDeletes;
-    use BelongsToProjectTrait;
 
-    /**
-     * Protect date columns.
-     * @var array
-     */
     protected $dates = ['deleted_at'];
 
     /**
@@ -22,12 +16,16 @@ class Meta extends Model
      */
     protected $table = 'metas';
 
-    /**
-     * Fillable columns.
-     * @var array
-     */
     protected $fillable = [
         'project_id',
         'xml'
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
 }

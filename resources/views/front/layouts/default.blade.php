@@ -2,13 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="_token" content="{{ csrf_token() }}" />
     <title>
         @section('title')
         @show
     </title>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @section ('styles')
     @show
     <link href="/css/app.css" rel="stylesheet">

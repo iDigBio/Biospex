@@ -16,7 +16,6 @@ use App\Repositories\Contracts\Group as GroupContract;
 use App\Repositories\Contracts\Project as ProjectContract;
 use App\Repositories\Contracts\Expedition as ExpeditionContract;
 use App\Repositories\Contracts\Permission as PermissionContract;
-use App\Repositories\Contracts\Navigation as NavigationContract;
 use App\Repositories\Contracts\Subject as SubjectContract;
 use App\Repositories\Contracts\Import as ImportContract;
 use App\Repositories\Contracts\Header as HeaderContract;
@@ -28,13 +27,16 @@ use App\Repositories\Contracts\Property as PropertyContract;
 use App\Repositories\Contracts\Meta as MetaContract;
 use App\Repositories\Contracts\OcrQueue as OcrQueueContract;
 use App\Repositories\Contracts\Transcription as TranscriptionContract;
+use App\Repositories\Contracts\OcrCsv as OcrCsvContract;
+use App\Repositories\Contracts\UserGridField as UserGridFieldContract;
+use App\Repositories\Contracts\ExpeditionStat as ExpeditionStatContract;
+use App\Repositories\Contracts\Workflow as WorkflowContract;
 
 use App\Repositories\UserRepository;
 use App\Repositories\GroupRepository;
 use App\Repositories\ProjectRepository;
 use App\Repositories\ExpeditionRepository;
 use App\Repositories\PermissionRepository;
-use App\Repositories\NavigationRepository;
 use App\Repositories\SubjectRepository;
 use App\Repositories\ImportRepository;
 use App\Repositories\HeaderRepository;
@@ -46,6 +48,11 @@ use App\Repositories\PropertyRepository;
 use App\Repositories\MetaRepository;
 use App\Repositories\OcrQueueRepository;
 use App\Repositories\TranscriptionRepository;
+use App\Repositories\OcrCsvRepository;
+use App\Repositories\UserGridFieldRepository;
+use App\Repositories\ExpeditionStatRepository;
+use App\Repositories\WorkflowRepository;
+
 
 use App\Repositories\Decorators\CacheGroupDecorator;
 use App\Repositories\Decorators\CacheProjectDecorator;
@@ -97,7 +104,6 @@ class BiospexServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(PermissionContract::class, PermissionRepository::class);
-        $this->app->bind(NavigationContract::class, NavigationRepository::class);
         $this->app->bind(SubjectContract::class, SubjectRepository::class);
         $this->app->bind(ImportContract::class, ImportRepository::class);
         $this->app->bind(HeaderContract::class, HeaderRepository::class);
@@ -109,5 +115,9 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(MetaContract::class, MetaRepository::class);
         $this->app->bind(OcrQueueContract::class, OcrQueueRepository::class);
         $this->app->bind(TranscriptionContract::class, TranscriptionRepository::class);
+        $this->app->bind(OcrCsvContract::class, OcrCsvRepository::class);
+        $this->app->bind(UserGridFieldContract::class, UserGridFieldRepository::class);
+        $this->app->bind(ExpeditionStatContract::class, ExpeditionStatRepository::class);
+        $this->app->bind(WorkflowContract::class, WorkflowRepository::class);
     }
 }

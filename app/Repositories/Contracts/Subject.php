@@ -6,15 +6,19 @@ interface Subject extends Repository
 
     public function getSubjectIds($projectId, $take = null, $expeditionId = null);
 
-    public function detachSubjects($ids = array(), $expeditionId);
+    public function detachSubjects($ids = [], $expeditionId);
 
     public function loadGridModel();
 
-    public function getTotalNumberOfRows(array $filters = array());
+    public function getTotalNumberOfRows($filters = [], $route, $projectId, $expeditionId = null);
 
-    public function getRows($limit, $offset, $orderBy = null, $sord = null, array $filters = array());
+    public function getRows($limit, $offset, $orderBy = null, $sord = null, $filters = []);
 
     public function findByFilename($filename);
+
+    public function findByProjectId($project_id);
+
+    public function findByProjectIdOcr($project_id);
 
     public function findByProjectOccurrenceId($project_id, $occurrence_id);
 }

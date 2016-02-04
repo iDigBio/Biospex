@@ -44,7 +44,7 @@
                 {!! Form::close() !!}
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 margin-top-10">
-                        {!! link_to_route('auth.get.password', trans('pages.password_forgot')) !!} ||
+                        {!! link_to_route('password.get.email', trans('pages.password_forgot')) !!} ||
                         {!! link_to_route('auth.get.resend', trans('pages.resend_activation')) !!} ||
                         {!! link_to_route('auth.get.register', trans('pages.register')) !!}
                    </div>

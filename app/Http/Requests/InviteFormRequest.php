@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Support\Facades\Auth;
+
 class InviteFormRequest extends Request
 {
     /**
@@ -11,7 +13,7 @@ class InviteFormRequest extends Request
      */
     public function authorize()
     {
-        return \Sentry::check();
+        return Auth::check();
     }
 
     /**

@@ -1,32 +1,36 @@
 <div class="table-responsive">
-    <table class="table table-striped table-hover">
+    <table class="table table-hover">
         <thead>
         <tr>
             <th>Title</th>
             <th>Description</th>
             <th>Created</th>
             <th>Subjects</th>
-            <th>Incomplete</th>
-            <th>Complete</th>
+            <th>Transcriptions Goal</th>
+            <th>Transcriptions Completed</th>
             <th>Percent Complete</th>
         </tr>
         </thead>
         <tbody>
         @foreach ($project->expeditions as $expedition)
-                <tr>
-                    <td>{{ $expedition->title }}</td>
-                    <td>{{ $expedition->description }}</td>
-                    <td>{{ $expedition->created_at }}</td>
-                    <td>{{ $expedition->subjectsCount }}</td>
-                    <td>0</td>
-                    <td>0</td>
+            <tr>
+                <td>{{ $expedition->title }}</td>
+                <td>{{ $expedition->description }}</td>
+                <td>{{ format_date($expedition->created_at, 'Y-m-d', $user->timezone) }}</td>
+                <td>{{ $expedition->subjectsCount }}</td>
+                @if( ! $expedition->actors->isEmpty())
+                    <td>{{ $expedition->stat->transcriptions_total }}</td>
+                    <td>{{ $expedition->stat->transcriptions_completed }}</td>
                     <td class="nowrap">
-                        <span class="complete">
-                            <span class="complete{{ round_up_five($expedition->actorsCompleted) }}">&nbsp;</span>
-                        </span> {{ round_up_five($expedition->actorsCompleted) }}%
+                <span class="complete">
+                    <span class="complete{{ round_up_to_any_five($expedition->stat->percent_completed) }}">&nbsp;</span>
+                </span> {{ $expedition->stat->percent_completed }}%
                     </td>
-                </tr>
-                @endforeach
+                @else
+                    <td class="nowrap" colspan="3">{{ trans('expeditions.processing_not_started') }}</td>
+                @endif
+            </tr>
+        @endforeach
         </tbody>
     </table>
 </div>

@@ -25,14 +25,10 @@
  * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use App\Models\Traits\BelongsToManyExpeditionsTrait;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Traits\BelongsToExpeditionTrait;
 
 class Download extends Model
 {
-    use BelongsToExpeditionTrait;
-
     /**
      * The database table used by the model.
      *
@@ -40,23 +36,28 @@ class Download extends Model
      */
     protected $table = 'downloads';
 
-    /**
-     * Fillable array.
-     * @var array
-     */
     protected $fillable = [
         'expedition_id',
         'actor_id',
         'file',
+        'data',
         'count'
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function expeditions()
+    public function expedition()
     {
-        return $this->belongsToMany('App\Models\Expedition');
+        return $this->belongsTo(Expedition::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function actor()
+    {
+        return $this->belongsTo(Actor::class);
     }
 
     /**

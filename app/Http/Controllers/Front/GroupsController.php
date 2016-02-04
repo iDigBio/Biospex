@@ -1,32 +1,46 @@
-<?php
-
-namespace App\Http\Controllers\Front;
+<?php namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Services\Common\GroupService;
+use Illuminate\Http\Request;
 use App\Http\Requests\GroupFormRequest;
+use App\Repositories\Contracts\User;
+use App\Repositories\Contracts\Group;
 
 class GroupsController extends Controller
 {
     /**
-     * @var GroupService
+     * @var Group
      */
-    private $service;
+    public $group;
+
+    /**
+     * @var User
+     */
+    public $user;
+    /**
+     * @var Request
+     */
+    private $request;
 
     /**
      * Instantiate a new GroupsController
      *
-     * @param GroupService $service
-     * @param Sentry $sentry
-     * @param User $user
-     * @param Dispatcher $events
+     * @param Request $request
      * @param Group $group
-     * @param Permission $permission
+     * @param User $user
+     * @internal param Auth|AuthManager $auth
+     * @internal param Sentry $sentry
+     * @internal param User $user
+     * @internal param Dispatcher $events
+     * @internal param Group $group
+     * @internal param Permission $permission
      * @internal param GroupForm $groupForm
      */
-    public function __construct(GroupService $service)
+    public function __construct(Request $request, Group $group, User $user)
     {
-        $this->service = $service;
+        $this->group = $group;
+        $this->user = $user;
+        $this->request = $request;
     }
 
     /**
@@ -36,9 +50,9 @@ class GroupsController extends Controller
      */
     public function index()
     {
-        $vars = $this->service->index();
+        $user = $this->user->findWith($this->request->user()->id, ['groups']);
 
-        return view('front.groups.index', $vars);
+        return view('front.groups.index', compact('user'));
     }
 
     /**
@@ -48,9 +62,9 @@ class GroupsController extends Controller
      */
     public function create()
     {
-        $vars = $this->service->showForm();
+        $user = $this->request->user();
 
-        return view('front.groups.create', $vars);
+        return view('front.groups.create', compact('user'));
     }
 
     /**
@@ -61,51 +75,99 @@ class GroupsController extends Controller
      */
     public function store(GroupFormRequest $request)
     {
-        if ($this->service->store($request)) {
-            return redirect()->route('groups.index');
+        $user = $request->user();
+
+        $data = [
+            'user_id' => $user->id,
+            'name'    => $request->get('name'),
+            'label'   => $request->get('name')
+        ];
+
+        $group = $this->group->create($data);
+
+        if ($group) {
+            $user->assignGroup($group);
+            session_flash_push('success', trans('groups.created'));
+
+            return redirect()->route('groups.get.index');
         }
 
-        return redirect()->route('groups.create');
+        session_flash_push('warning', trans('groups.loginreq'));
+
+        return redirect()->route('groups.get.create');
     }
 
     /**
      * Show group page.
      *
+     * @param $id
      * @return \Illuminate\View\View
      */
-    public function show()
+    public function read($id)
     {
-        $vars = $this->service->show();
+        $user = $this->request->user();
+        $group = $this->group->findWith($id, [
+            'projects',
+            'owner.profile',
+            'users.profile'
+        ]);
 
-        return view('front.groups.show', $vars);
+        if ($user->cannot('read', $group))
+        {
+            session_flash_push('warning', trans('pages.insufficient_permissions'));
+
+            return redirect()->route('groups.get.index');
+        }
+
+        return view('front.groups.read', compact('group'));
+
     }
 
     /**
      * Show group edit form.
      *
      * @param $id
-     * @return \Illuminate\View\View
+     * @return \Illuminate\View\View1
      */
     public function edit($id)
     {
-        $vars = $this->service->edit();
+        $user = $this->request->user();
+        $group = $this->group->find($id);
 
-        return view('front.groups.edit', $vars);
+        if ($user->cannot('update', $group))
+        {
+            session_flash_push('warning', trans('pages.insufficient_permissions'));
+
+            return redirect()->route('groups.get.index');
+        }
+
+        return view('front.groups.edit', compact('group'));
     }
 
     /**
-     * Update group.
-     *
+     * Update group
      * @param GroupFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(GroupFormRequest $request)
     {
-        if ($this->service->update($request)) {
-            return redirect()->route('groups.index');
+        $user = $this->request->user();
+        $group = $this->group->find($request->get('id'));
+
+        if ($user->cannot('update', $group))
+        {
+            session_flash_push('warning', trans('pages.insufficient_permissions'));
+
+            return redirect()->route('groups.get.index');
         }
 
-        return redirect()->route('groups.edit', $request->get('id'));
+        $group->name = $group->name == 'admins' ? $group->name : $request->get('name');
+        $group->label = $group->name == 'admins' ? $group->name : $request->get('name');
+        $group->save();
+
+        session_flash_push('success', trans('groups.updated'));
+
+        return redirect()->route('groups.get.index');
     }
 
     /**
@@ -113,12 +175,21 @@ class GroupsController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy()
+    public function delete($id)
     {
-        if ($this->service->destroy()) {
-            return redirect()->route('groups.index');
+        $user = $this->auth->user();
+        $group = $this->group->find($id);
+
+        if ($user->cannot('delete', $group))
+        {
+            session_flash_push('warning', trans('pages.insufficient_permissions'));
+
+            return redirect()->route('groups.get.index');
         }
 
-        return redirect()->route('groups.index');
+        $group->delete();
+        session_flash_push('success', trans('groups.group_destroyed'));
+
+        return redirect()->route('groups.get.index');
     }
 }

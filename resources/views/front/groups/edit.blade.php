@@ -9,7 +9,7 @@
 {{-- Content --}}
 @section('content')
 <div class="row">
-{!! Breadcrumbs::render('groups.show', $group) !!}
+{!! Breadcrumbs::render('groups.get.read', $group) !!}
     <div class="row centered-form top-margin">
         <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
             <div class="panel panel-info">
@@ -18,7 +18,7 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                    'route' => ['groups.update', $group->id],
+                    'route' => ['groups.put.update', $group->id],
                     'method' => 'put',
                     'class' => 'form-horizontal',
                     'role' => 'form'
@@ -27,7 +27,7 @@
                         <div class="form-group {{ ($errors->has('name')) ? 'has-error' : '' }}">
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-users fa-lg"></i></span>
-                                {!! Form::text('name', $group->name, ['class' => 'form-control', 'placeholder' => trans('pages.name'), 'required']) !!}
+                                {!! Form::text('name', $group->label, ['class' => 'form-control', 'placeholder' => trans('pages.name'), 'required']) !!}
                             </div>
                             {{ ($errors->has('name') ?  $errors->first('name') : '') }}
                         </div>

@@ -35,21 +35,27 @@
             </thead>
             <tbody>
             @foreach ($expedition->downloads as $download)
-                @if (File::exists(Config::get('config.nfn_export_dir') . '/' . $download->file))
+                @if ( ! empty($download))
                     <tr>
                         <td>{{ $download->actor->title }}</td>
                         <td>{{ $download->id }}</td>
                         <td>{{ $download->file }}</td>
-                        <td>{{ human_file_size(File::size(Config::get('config.nfn_export_dir') . '/' . $download->file)) }}</td>
+                        <td>
+                            @if (File::exists(Config::get('config.nfn_export_dir') . '/' . $download->file))
+                                {{ human_file_size(File::size(Config::get('config.nfn_export_dir') . '/' . $download->file)) }}
+                            @else
+                                {{ human_file_size(mb_strlen($download->data, '8bit')) }}
+                            @endif
+                        </td>
                         <td>{{ format_date($download->created_at, 'Y-m-d', $user->timezone) }}</td>
-                        <td>{{ action('DownloadsController@show', [$expedition->project->id, $expedition->id, $download->id]) }}</td>
-                        <td><button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ action('DownloadsController@show', [$expedition->project->id, $expedition->id, $download->id]) }}'"><span class="glyphicon glyphicon-floppy-save"></span> @lang('buttons.download') </button></td>
+                        <td>{{ route('projects.expeditions.downloads.get.show', [$expedition->project->id, $expedition->id, $download->id]) }}</td>
+                        <td><button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ route('projects.expeditions.downloads.get.show', [$expedition->project->id, $expedition->id, $download->id]) }}'"><span class="glyphicon glyphicon-floppy-save"></span> @lang('buttons.download') </button></td>
                     </tr>
                 @endif
             @endforeach
             </tbody>
         </table>
-        <br /><button title="Back to Expedition Details" class="btn btn-info btn-xs" type="button" onClick="location.href='{{ action('ExpeditionsController@process', [$expedition->project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-eye-open"></span> Return</button>
+        <br /><button title="Back to Expedition Details" class="btn btn-info btn-xs" type="button" onClick="location.href='{{ route('projects.expeditions.get.read', [$expedition->project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-eye-open"></span> Return</button>
     </div>
 
 @stop

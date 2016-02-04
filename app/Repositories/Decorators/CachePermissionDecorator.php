@@ -3,103 +3,47 @@
 namespace app\Repositories\Decorators;
 
 use App\Repositories\Contracts\Permission;
-use App\Repositories\PermissionRepository;
-use Illuminate\Contracts\Cache\Repository as Cache;
 
-class CachePermissionDecorator implements Permission
+class CachePermissionDecorator extends CacheDecorator implements Permission
 {
+
     /**
-     * Set whether cache is bypassed.
+     * Return all records of resource.
      *
-     * @var bool
+     * @return mixed
      */
-    public $pass = false;
-
-    /**
-     * @var Permission
-     */
-    private $permission;
-
-    /**
-     * @var Cache
-     */
-    private $cache;
-    /**
-     * @var
-     */
-    private $tag;
-
-    /**
-     * @param PermissionRepository $repository
-     * @param Cache $cache
-     * @param $tag
-     * @internal param Permission $permission
-     */
-    public function __construct(PermissionRepository $repository, Cache $cache, $tag)
-    {
-
-        $this->$repository = $repository;
-        $this->cache = $cache;
-        $this->tag = $tag;
-    }
-
     public function all()
     {
-        if ($this->pass)
-            return $this->repository->all();
+        $this->setKey(__METHOD__);
 
-        $key = md5('permissions.all');
-
-        return $this->cache->tags($this->tag)->rememberForever($key, function() {
-            return $this->repository->all();
-        });
+        return parent::all();
     }
 
+    /**
+     * Find by id.
+     *
+     * @param $id
+     * @return mixed
+     */
     public function find($id)
     {
-        if ($this->pass)
-            return $this->repository->find($id);
+        $this->setKey(__METHOD__, $id);
 
-        $key = md5('permissions.' . $id);
-
-        return $this->cache->tags($this->tag)->rememberForever($key, function($id) {
-            return $this->repository->find($id);
-        });
+        return parent::find($id);
     }
 
+    /**
+     * Find using id and relationships.
+     *
+     * @param $id
+     * @param $with
+     * @return mixed
+     */
     public function findWith($id, $with)
     {
-        return;
+        $this->setKey(__METHOD__, $id . implode('.', $with));
+
+        return parent::findWith($id, $with);
     }
 
-    public function save($record)
-    {
-        return;
-    }
-
-    public function create($data)
-    {
-        return;
-    }
-
-    public function update($data)
-    {
-        return;
-    }
-
-    public function destroy($id)
-    {
-        return;
-    }
-
-    // Methods contained implemented in interface must exist here
-    public function getPermissionsGroupBy()
-    {
-        return $this->model->getPermissionsGroupBy();
-    }
-
-    public function setPermissions(array $data)
-    {
-        return $this->model->setPermissions($data);
-    }
 }

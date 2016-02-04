@@ -1,22 +1,56 @@
 <?php  namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Services\Import\ImportServiceFactory;
 use App\Repositories\Contracts\Project;
-use App\Http\Requests\ImportFormRequest;
-use App\Jobs\ImportCreateJob;
 
 class ImportsController extends Controller
 {
     /**
+     * @var ProjectInterface|Project
+     */
+    protected $project;
+
+    /**
+     * @var ImportServiceFactory
+     */
+    protected $importFactory;
+
+    /**
+     * @var Request
+     */
+    protected $request;
+
+
+    /**
+     * Instantiate a new ProjectsController.
+     *
+     * @param ImportServiceFactory $importFactory
+     * @param ProjectInterface|Project $project
+     * @param Request $request
+     * @internal param Sentry $sentry
+     */
+    public function __construct(
+        ImportServiceFactory $importFactory,
+        Project $project,
+        Request $request
+    ) {
+        $this->project = $project;
+        $this->importFactory = $importFactory;
+        $this->request = $request;
+    }
+
+    /**
      * Add data to project
      *
      * @param $id
-     * @param Project $repository
      * @return \Illuminate\View\View
      */
-    public function import($id, Project $repository)
+    public function import($id)
     {
-        $project = $repository->findWith($id, ['group']);
+        $project = $this->project->findWith($id, ['group']);
+
         return view('front.projects.add', compact('project'));
     }
 
@@ -24,20 +58,25 @@ class ImportsController extends Controller
      * Upload data file
      *
      * @param $id
-     * @param ImportFormRequest $request
-     * @param ImportServiceFactory $factory
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function upload($id, ImportFormRequest $request)
+    public function upload($id)
     {
-        $result = $this->dispatch(new ImportCreateJob($request));
-
-        if (! $result) {
+        $obj = $this->importFactory->create($this->request->input('class'));
+        if (! $obj) {
             session_flash_push('error', trans('pages.bad_type'));
-            return redirect()->route('projects.import', [$id]);
+
+            return redirect()->route('projects.get.import', [$id]);
+        }
+
+        $validate = $obj->import($id);
+
+        if (! empty($validate)) {
+            return redirect()->route('projects.get.import', [$id])->withErrors($validate);
         }
 
         session_flash_push('success', trans('pages.upload_trans_success'));
-        return redirect()->route('projects.show', [$id]);
+
+        return redirect()->route('projects.get.read', [$id]);
     }
 }

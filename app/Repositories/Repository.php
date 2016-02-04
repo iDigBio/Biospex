@@ -1,4 +1,6 @@
-<?php namespace App\Repositories;
+<?php
+
+namespace App\Repositories;
 
 abstract class Repository
 {
@@ -90,5 +92,10 @@ abstract class Repository
     public function save($record)
     {
         return $record->save();
+    }
+
+    public function lists($value, $index)
+    {
+        return $this->model->lists($value, $index)->all();
     }
 }

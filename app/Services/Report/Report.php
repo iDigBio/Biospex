@@ -1,14 +1,19 @@
 <?php namespace App\Services\Report;
 
+use Illuminate\Contracts\Config\Repository as Config;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\MessageBag;
 use App\Repositories\Contracts\Group;
 use App\Services\Mailer\BiospexMailer;
+use Illuminate\Events\Dispatcher as Event;
 use League\Csv\Writer;
+use App\Events\SendReportEvent;
+
 
 class Report
 {
     /**
-     * @var MessageBag
+     * @var MessageProviderInterface|MessageBag
      */
     protected $messages;
 
@@ -18,22 +23,48 @@ class Report
     protected $mailer;
 
     /**
+     * @var Config
+     */
+    protected $config;
+
+    /**
+     * @var Filesystem
+     */
+    protected $filesystem;
+
+    /**
+     * @var Event
+     */
+    protected $event;
+
+    /**
      * Constructor
      *
-     * @param MessageBag $messages
-     * @param Group $group
+     * @param Config $config
+     * @param Filesystem $filesystem
+     * @param MessageProviderInterface|MessageBag $messages
+     * @param Group|GroupInterface $group
      * @param BiospexMailer $mailer
+     * @param Event $event
+     * @internal param UserInterface $user
+     * @internal param Excel $excel
      */
     public function __construct(
+        Config $config,
+        Filesystem $filesystem,
         MessageBag $messages,
         Group $group,
-        BiospexMailer $mailer
+        BiospexMailer $mailer,
+        Event $event
     ) {
+        $this->filesystem = $filesystem;
+        $this->config = $config;
         $this->messages = $messages;
         $this->group = $group;
         $this->mailer = $mailer;
+        $this->event = $event;
 
-        $this->exportReportsDir = \Config::get('config.export_reports_dir');
+        $this->exportReportsDir = $this->config->get('config.export_reports_dir');
     }
 
     /**
@@ -69,9 +100,9 @@ class Report
         }
         $subject = trans('emails.error');
         $data = ['errorMessage' => $errorMessage];
-        $view = 'emails.report-simple-error';
+        $view = 'front.emails.report-simple-error';
 
-        $this->fireEvent('user.sendreport', $email, $subject, $view, $data);
+        $this->fireEvent($email, $subject, $view, $data);
 
         return;
     }
@@ -97,9 +128,9 @@ class Report
             'completeMessage' => trans('emails.expedition_complete_message',
                 ['expedition' => $title])
         ];
-        $view = 'emails.report-process-complete';
+        $view = 'front.emails.report-process-complete';
 
-        $this->fireEvent('user.sendreport', $email, $subject, $view, $data, $attachment);
+        $this->fireEvent($email, $subject, $view, $data, $attachment);
 
         return;
     }
@@ -114,15 +145,15 @@ class Report
     public function createAttachment($csv, $name = null)
     {
         $path = $this->exportReportsDir;
-        if (! \File::isDirectory($path)) {
-            \File::makeDirectory($path);
+        if (! $this->filesystem->isDirectory($path)) {
+            $this->filesystem->makeDirectory($path);
         }
 
         $fileName = (is_null($name)) ? str_random(10) : $name . str_random(5);
         $ext = ".csv";
 
         $header = array_keys($csv[0]);
-        $writer = Writer::createFromPath(new \SplFileObject(storage_path($path . "/" . $fileName . $ext), 'a+'), 'w');
+        $writer = Writer::createFromPath(new \SplFileObject($path . "/" . $fileName . $ext, 'a+'), 'w');
         $writer->insertOne($header);
         $writer->insertAll($csv);
 
@@ -131,24 +162,23 @@ class Report
 
     /**
      * Fire send report event
-     *
-     * @param $event
      * @param $email
      * @param $subject
      * @param $view
      * @param $data
      * @param array $attachments
      */
-    protected function fireEvent($event, $email, $subject, $view, $data, $attachments = [])
+    protected function fireEvent($email, $subject, $view, $data, $attachments = [])
     {
-        \Event::fire($event, [
+        $data = [
             'email'      => $email,
             'subject'    => $subject,
             'view'       => $view,
             'data'       => $data,
-            'attachment' => $attachments
-        ]);
+            'attachments' => $attachments
+        ];
 
+        $this->event->fire(new SendReportEvent($data));
         return;
     }
 }

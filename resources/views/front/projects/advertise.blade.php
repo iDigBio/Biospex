@@ -12,7 +12,7 @@
     <h4>@lang('projects.project'):</h4>
     <h2>{{ $project->title }}</h2>
     <p>@lang('pages.advertise_title')</p>
-    <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-sm" type="button" onClick="location.href='{{ route('projects.advertiseDownload', [$project->id]) }}'"><span class="fa fa-download fa-lrg"></span> @lang('buttons.download') </button>
+    <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-sm" type="button" onClick="location.href='{{ route('projects.get.advertiseDownload', [$project->id]) }}'"><span class="fa fa-download fa-lrg"></span> @lang('buttons.download') </button>
 </div>
 <div class="col-xs-12">
     <div class="panel panel-info">
@@ -29,7 +29,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach (json_decode($project->advertise) as $field => $value)
+                    @foreach ($project->advertise as $field => $value)
                         <tr>
                             <td>{{ $field }}</td>
                             <td>{{ $value }}</td>

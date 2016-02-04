@@ -16,18 +16,17 @@ trait HasGroup
     {
         return $this->belongsToMany(Group::class);
     }
+
     /**
-     * Assign the given group to the user.
-     *
-     * @param  string $group
-     * @return mixed
+     * Assign the given group to the user
+     * @param $group
+     * @return \Illuminate\Database\Eloquent\Model
      */
     public function assignGroup($group)
     {
-        return $this->groups()->save(
-            Group::whereName($group)->firstOrFail()
-        );
+        return $this->groups()->save($group);
     }
+
     /**
      * Determine if the user has the given group.
      *
@@ -39,16 +38,22 @@ trait HasGroup
         if (is_string($group)) {
             return $this->groups->contains('name', $group);
         }
-        return !! $group->intersect($this->groups)->count();
+
+        return !! $this->groups->intersect(collect([$group]))->count();
     }
+
     /**
      * Determine if the user may perform the given permission.
      *
      * @param  Permission $permission
-     * @return boolean
+     * @param $group
+     * @return bool
      */
-    public function hasPermission(Permission $permission)
+    public function hasPermission($group, $permission)
     {
-        return $this->hasGroup($permission->groups);
+        if ( ! $this->hasGroup($group))
+            return false;
+
+        return $group->permissions->contains('name', $permission);
     }
 }

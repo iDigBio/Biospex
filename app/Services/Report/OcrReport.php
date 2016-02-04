@@ -1,4 +1,5 @@
-<?php  namespace App\Services\Report;
+<?php namespace App\Services\Report;
+
 
 class OcrReport extends Report
 {
@@ -17,12 +18,12 @@ class OcrReport extends Report
 
         $data = [
             'projectTitle' => $title,
-            'mainMessage' => trans('emails.ocr_complete_message')
+            'mainMessage'  => trans('emails.ocr_complete_message')
         ];
         $subject = trans('emails.ocr_complete');
-        $view = 'emails.report-simple';
+        $view = 'front.emails.report-simple';
 
-        $this->fireEvent('user.sendreport', $email, $subject, $view, $data, $attachment);
+        $this->fireEvent($email, $subject, $view, $data, $attachment);
 
         return $count == 0 ? false : $attachment;
     }

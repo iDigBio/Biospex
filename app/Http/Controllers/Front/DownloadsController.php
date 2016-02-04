@@ -1,38 +1,62 @@
 <?php namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Config\Repository as Config;
+use Illuminate\Support\Facades\Response;
 use App\Repositories\Contracts\Expedition;
 use App\Repositories\Contracts\Download;
 
 class DownloadsController extends Controller
 {
     /**
-     * @var Expedition
+     * @var ExpeditionInterface
      */
     protected $expedition;
 
     /**
-     * @var Download
+     * @var DownloadInterface
      */
     protected $download;
 
     /**
+     * @var Request
+     */
+    protected $request;
+
+    /**
+     * @var ResponseFactory
+     */
+    protected $response;
+
+    /**
+     * @var Config
+     */
+    protected $config;
+
+    /**
      * Instantiate a new DownloadsController.
      *
-     * @param Expedition $expedition
-     * @param Download $download
+     * @param ExpeditionInterface|Expedition $expedition
+     * @param DownloadInterface|Download $download
+     * @param Request $request
+     * @param ResponseFactory $response
+     * @param Config $config
+     * @internal param Sentry $sentry
      */
     public function __construct(
         Expedition $expedition,
-        Download $download
+        Download $download,
+        Request $request,
+        ResponseFactory $response,
+        Config $config
     ) {
         $this->expedition = $expedition;
         $this->download = $download;
-
-        // Establish Filters
-        $this->beforeFilter('auth', ['only' => ['index']]);
-        $this->beforeFilter('csrf', ['on' => 'post']);
-        $this->beforeFilter('hasProjectAccess:expedition_view', ['only' => ['download', 'file']]);
+        $this->request = $request;
+        $this->response = $response;
+        $this->config = $config;
     }
 
     /**
@@ -44,20 +68,42 @@ class DownloadsController extends Controller
      */
     public function index($projectId, $expeditionId)
     {
-        $user = \Sentry::getUser();
+        $user = $this->request->user();
         $expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads.actor']);
-        return \View::make('downloads.index', compact('expedition', 'user'));
+
+        return view('front.downloads.index', compact('expedition', 'user'));
     }
 
+    /**
+     * @param $projectId
+     * @param $expeditionId
+     * @param $downloadId
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @throws \Exception
+     * @throws \Throwable
+     */
     public function show($projectId, $expeditionId, $downloadId)
     {
         $download = $this->download->find($downloadId);
         $download->count = $download->count + 1;
-        $this->download->save($download);
+        $download->save();
 
-        $nfnExportDir = \Config::get('config.nfn_export_dir');
-        $path = "$nfnExportDir/{$download->file}";
-        $headers = ['Content-Type' => 'application/x-compressed'];
-        return \Response::download($path, $download->file, $headers);
+        if ( ! empty($download->data)){
+            $headers = [
+                'Content-type' => 'application/json; charset=utf-8',
+                'Content-disposition' => 'attachment; filename="' . $download->file . '"'
+            ];
+
+            $view = view('front.manifest', unserialize($download->data))->render();
+
+            return $this->response->make(stripslashes($view), 200, $headers);
+        } else {
+
+            $nfnExportDir = $this->config->get('config.nfn_export_dir');
+            $path = $nfnExportDir . '/' . $download->file;
+            $headers = ['Content-Type' => 'application/x-compressed'];
+
+            return $this->response->download($path, $download->file, $headers);
+        }
     }
 }

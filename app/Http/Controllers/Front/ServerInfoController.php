@@ -1,22 +1,51 @@
 <?php namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Services\Curl\Curl;
+use DOMDocument;
+use GuzzleHttp\Pool;
+use Illuminate\Config\Repository as Config;
+use GuzzleHttp\Client;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ServerInfoController extends Controller
 {
     /**
+     * @var mixed
+     */
+    protected $ocrDeleteUrl;
+
+    /**
+     * @var Client
+     */
+    protected $client;
+
+    /**
+     * @var Config
+     */
+    protected $config;
+
+    /**
+     * @var Request
+     */
+    protected $request;
+
+    /**
      * Constructor
      *
-     * @param Curl $curl
+     * @param Config $config
+     * @param Request $request
+     * @internal param Curl $curl
      */
-    public function __construct()
+    public function __construct(
+        Config $config,
+        Request $request
+    )
     {
-        $this->middleware('auth', ['only' => ['showPhpInfo', 'clear', 'ocr']]);
-        $this->middleware('acl:create-project', ['only' => ['create', 'store']]);
-        $this->middleware('acl:update-project', ['only' => ['edit', 'update']]);
-        $this->middleware('acl:delete-project', ['only' => ['destroy']]);
-        $this->ocrDeleteUrl = \Config::get('config.ocr_delete_url');
+        $this->ocrDeleteUrl = $this->config->get('config.ocrDeleteUrl');
+        $this->client = New Client();
+        $this->config = $config;
+        $this->request = $request;
     }
 
     /**
@@ -44,8 +73,10 @@ class ServerInfoController extends Controller
      */
     public function showPhpInfo()
     {
-        if (!Sentry::getUser()->isSuperUser()) {
-            return Redirect::route('login');
+        $user = $this->request->user();
+
+        if ( ! $user->isAdmin('admins')) {
+            return redirect()->route('login');
         }
 
         ob_start();
@@ -55,43 +86,46 @@ class ServerInfoController extends Controller
 
         $info = preg_replace('%^.*<body>(.*)</body>.*$%ms', '$1', $pinfo);
 
-        return View::make('info', compact(['info']));
+        return view('front.info', compact(['info']));
     }
 
     public function clear()
     {
-        if (!Sentry::getUser()->isSuperUser()) {
-            return Redirect::route('login');
+        $user = $this->request->user();
+
+        if ( ! $user->isAdmin('admins')) {
+            return redirect()->route('login');
         }
 
         Cache::flush();
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, Config::get('app.ip') . '/cache.php');
-        curl_exec($ch);
-        curl_close($ch);
+        // Need to curl to server and run php script to clear memcache
 
-        Session::flash('success', "Cache has been flushed.");
+        session_flash_push('success', "Cache has been flushed.");
 
-        return Redirect::intended('/projects');
+        return redirect()->intended('/projects');
     }
 
     public function ocr()
     {
-        if (Request::isMethod('post') &&  ! empty(Input::get('files'))) {
-            $files = Input::get('files');
-            $rc = new Curl();
-            $rc->window_size = 5;
-            foreach ($files as $file) {
-                $options = [CURLOPT_RETURNTRANSFER => true, CURLOPT_FAILONERROR, true];
-                $headers = ['Content-Type: application/x-www-form-urlencoded', 'API-KEY:t$p480UAJ5v8P=ifcE23&hpM?#+&r3'];
-                $data = "file=$file";
-                $rc->post($this->ocrDeleteUrl, $data, $headers, $options);
+        if ($this->request->isMethod('post') && ! empty($this->request->get('files'))) {
+            $files = $this->request->get('files');
+            $requests = [];
+            foreach ($files as $file)
+            {
+                $options = [
+                    'headers' => ['Content-Type' => 'multipart/form-data', 'API-KEY' => 't$p480UAJ5v8P=ifcE23&hpM?#+&r3']
+                ];
+                $newRequest = $this->client->createRequest('POST', $this->config->get('config.ocrDeleteUrl'), $options);
+                $postBody = $newRequest->getBody();
+                $postBody->setField('file', $file);
+
+                $requests[] = $newRequest;
             }
 
-            $rc->execute();
+            Pool::send($this->client, $requests, ['pool_size' => 10]);
         }
 
-        $html = file_get_contents("http://ocr.dev.morphbank.net/status");
+        $html = file_get_contents($this->request->get('config.ocrGetUrl'));
 
         $dom = new DomDocument;
         libxml_use_internal_errors(true);
@@ -100,7 +134,6 @@ class ServerInfoController extends Controller
 
         $elements = $dom->getElementsByTagName('li');
 
-
-        return View::make('ocr', compact('elements'));
+        return view('front.ocr', compact('elements'));
     }
 }

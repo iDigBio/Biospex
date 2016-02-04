@@ -1,14 +1,9 @@
 <?php namespace App\Models;
 
 use Jenssegers\Mongodb\Model as Eloquent;
-use App\Models\Traits\BelongsToProjectTrait;
-use App\Models\Traits\EmbedsOneOccurrenceTrait;
 
 class Subject extends Eloquent
 {
-    use BelongsToProjectTrait;
-    use EmbedsOneOccurrenceTrait;
-
     /**
      * Redefine connection to use mongodb
      */
@@ -18,6 +13,8 @@ class Subject extends Eloquent
      * Set primary key
      */
     protected $primaryKey = '_id';
+
+    public $incrementing = false;
 
     /**
      * set guarded properties
@@ -31,19 +28,60 @@ class Subject extends Eloquent
      */
     protected $orderBy = [[]];
 
-    protected $casts = [
-        'project_id' => 'int'
-    ];
+    /**
+     * Group op value: AND/OR = true/false
+     * @var
+     */
+    protected $groupAnd;
 
     /**
-     * Project Id scope.
+     * Sets whether first filter created (where vs orWhere)
+     * @var bool
+     */
+    protected $groupOpProcessed = false;
+
+    protected $projectId;
+
+    protected $expeditionId;
+
+    protected $route;
+
+    protected $assignedRuleData;
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\EmbedsMany
+     */
+    public function occurrence()
+    {
+        return $this->embedsOne(Occurrence::class, 'occurrence');
+    }
+
+    /**
      * @param $query
      * @param $id
      * @return mixed
      */
     public function scopeProjectId($query, $id)
     {
-        return $query->where('project_id', $id);
+        return $query->where('project_id', (int) $id);
+    }
+
+    /**
+     * @param $query
+     * @param $id
+     * @return mixed
+     */
+    public function scopeSubjectId($query, $id)
+    {
+        return $query->where('_id', $id);
     }
 
     /**
@@ -55,6 +93,28 @@ class Subject extends Eloquent
     public function findById($value)
     {
         return $this->where('id', $value)->get();
+    }
+
+    /**
+     * Find by project id
+     *
+     * @param $project_id
+     * @return mixed
+     */
+    public function findByProjectId($project_id)
+    {
+        return $this->projectid($project_id)->get();
+    }
+
+    /**
+     * Find by project id and empty ocr
+     *
+     * @param $project_id
+     * @return mixed
+     */
+    public function findByProjectIdOcr($project_id)
+    {
+        return $this->projectid($project_id)->where('ocr', '')->get();
     }
 
     /**
@@ -71,6 +131,7 @@ class Subject extends Eloquent
 
     /**
      * Return count of project subjects not assigned to expeditions
+     *
      * @param $projectId
      * @return mixed
      */
@@ -83,6 +144,7 @@ class Subject extends Eloquent
 
     /**
      * Return subjects by id. Use for assigned and unassigned.
+     *
      * @param $projectId
      * @param $take
      * @param $expeditionId
@@ -90,14 +152,18 @@ class Subject extends Eloquent
      */
     public function getSubjectIds($projectId, $take, $expeditionId)
     {
-        $ids = $this->whereNested(function ($query) use ($projectId, $take, $expeditionId) {
-            if (! is_null($expeditionId)) {
+        $ids = $this->whereNested(function ($query) use ($projectId, $take, $expeditionId)
+        {
+            if ( ! is_null($expeditionId))
+            {
                 $query->where('expedition_ids', '=', (int) $expeditionId);
-            } else {
+            }
+            else
+            {
                 $query->where('expedition_ids', 'size', 0);
             }
 
-            $query->where('project_id', '=', (int) $projectId);
+            $query->where('project_id', (int) $projectId);
         })
             ->take($take)
             ->get(['_id'])
@@ -126,11 +192,14 @@ class Subject extends Eloquent
      */
     public function detachSubjects($ids, $expeditionId)
     {
-        foreach ($ids as $id) {
+        foreach ($ids as $id)
+        {
             $array = [];
             $subject = $this->find($id);
-            foreach ($subject->expedition_ids as $value) {
-                if ((int) $expeditionId != $value) {
+            foreach ($subject->expedition_ids as $value)
+            {
+                if ((int) $expeditionId != $value)
+                {
                     $array[] = $value;
                 }
             }
@@ -141,12 +210,15 @@ class Subject extends Eloquent
         return;
     }
 
-    public function loadGridModel()
+    /**
+     * Retrieve subject via accessURI filename (extensions not included).
+     *
+     * @param $filename
+     * @return mixed
+     */
+    public function findByFilename($filename)
     {
-        $colNames = \Config::get('config.model_columns');
-        $colModel = $this->setColModel();
-
-        return ['colNames' => $colNames, 'colModel' => $colModel];
+        return $this->where('accessURI', 'like', '%' . $filename . '%')->first();
     }
 
     /**
@@ -158,12 +230,20 @@ class Subject extends Eloquent
      *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
      *  when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
      *  The 'data' key will contain the string searched by the user.
-     * @return integer
-     *  Total number of rows
+     * @param $projectId
+     * @param $expeditionId
+     * @param $route
+     * @return int Total number of rows
+     * Total number of rows
      */
-    public function getTotalNumberOfRows($filters)
+    public function getTotalNumberOfRows($filters, $route, $projectId, $expeditionId)
     {
-        return intval($this->whereNested(function ($query) use ($filters) {
+        $this->route = $route;
+        $this->projectId = $projectId;
+        $this->expeditionId = $expeditionId;
+
+        return intval($this->whereNested(function ($query) use ($filters)
+        {
             $this->buildQuery($query, $filters);
         })->count());
     }
@@ -190,50 +270,32 @@ class Subject extends Eloquent
      */
     public function getRows($limit, $offset, $orderBy, $sord, $filters)
     {
-        $selectColumns = \Config::get('config.select_columns');
+        $orderByRaw = $this->setOrderBy($orderBy, $sord);
 
-        if (! is_null($orderBy) || ! is_null($sord)) {
-            $this->orderBy = [[$orderBy, $sord]];
-        }
+        $limit = ($limit == 0) ? 1 : $limit;
 
-        if ($limit == 0) {
-            $limit = 1;
-        }
-
-        $orderByRaw = [];
-
-        foreach ($this->orderBy as $orderBy) {
-            array_push($orderByRaw, implode(':', $orderBy));
-        }
-
-        $orderByRaw = implode(',', $orderByRaw);
-
-        $rows = $this->whereNested(function ($query) use ($filters) {
+        $query = $this->whereNested(function ($query) use ($filters)
+        {
             $this->buildQuery($query, $filters);
         })
             ->take($limit)
-            ->skip($offset)
-            ->orderBy($orderByRaw)
-            ->get($selectColumns);
+            ->skip($offset);
 
-        if (! is_array($rows)) {
+        foreach ($orderByRaw as $field => $sort)
+        {
+            $query->orderBy($field, $sort);
+        }
+
+        $rows = $query->get();
+
+        if ( ! is_array($rows))
+        {
             $rows = $rows->toArray();
         }
 
         $this->setRowCheckbox($rows);
 
         return $rows;
-    }
-
-    /**
-     * Retrieve subject via accessURI filename (extensions not included).
-     *
-     * @param $filename
-     * @return mixed
-     */
-    public function findByFilename($filename)
-    {
-        return $this->where('accessURI', 'like', '%' . $filename . '%')->first();
     }
 
     /**
@@ -244,61 +306,207 @@ class Subject extends Eloquent
      */
     protected function buildQuery(&$query, $filters)
     {
-        $projectId = (int) Route::input('projects');
-        $expeditionId = (int) Route::input('expeditions');
+        $this->setGroupOp($filters);
 
-        $query->where('project_id', '=', $projectId);
+        $this->setWhere($query, 'project_id', '=', $this->projectId);
 
-        foreach ($filters as $filter) {
-            if ($filter['field'] == 'expedition_ids') {
-                $this->expeditionIdFilter($filter, $query, $expeditionId);
+        if (isset($filters['rules']) && is_array($filters['rules']))
+        {
+            $rules = $filters['rules'];
+            $query->where(function ($query) use ($rules)
+            {
+                $this->handleRules($query, $rules);
+            });
+        }
+
+        if ($this->route != 'projects.grids.explore') {
+            $this->setExpeditionWhere($query);
+        }
+
+        return;
+    }
+
+    protected function setExpeditionWhere(&$query)
+    {
+        // projects.grids.explore: Project Explore (show all)
+        // projects.grids.expeditions.show: Expedition Show page (show only assigned)
+        // projects.grids.expeditions.edit: Expedition edit (show all)
+        // projects.grids.expeditions.create: Expedition create (show not assigned)
+        if ($this->route == "projects.grids.expeditions.edit")
+        {
+            if (empty($this->assignedRuleData) || $this->assignedRuleData == 'all')
+                return;
+        }
+        elseif ($this->route == "projects.grids.expeditions.show")
+        {
+            $this->setWhereIn($query, 'expedition_ids', [$this->expeditionId]);
+        }
+        elseif ($this->route == "projects.grids.expeditions.create")
+        {
+            $this->setWhere($query, 'expedition_ids', 'size', 0);
+        }
+    }
+
+    /**
+     * Handle the passed filters.
+     * @param $query
+     * @param $rules
+     */
+    protected function handleRules(&$query, $rules)
+    {
+        foreach ($rules as $rule)
+        {
+            if ($rule['field'] == 'expedition_ids')
+            {
+                $this->assignedRule($query, $rule);
                 continue;
             }
 
-            if ($filter['op'] == 'is in') {
-                $query->whereIn($filter['field'], explode(',', $filter['data']));
-                continue;
-            }
+            $this->buildWhere($query, $rule);
+        }
+    }
 
-            if ($filter['op'] == 'is not in') {
-                $query->whereNotIn($filter['field'], explode(',', $filter['data']));
-                continue;
-            }
+    /**
+     * Build where clause for query.
+     * eq: equal
+     * ne: not equal
+     * bw: begins with
+     * bn: does not begin with
+     * ew: ends with
+     * en: does not end with
+     * cn: contains
+     * nc: does not contains
+     * nu: is null
+     * nn: is not null
+     * lt: less than
+     * le: less or equal
+     * gt: greater
+     * ge: greater or equal
+     * in: is in
+     * ni: is not in
+     *
+     * @param $rule
+     * @param $query
+     */
+    protected function buildWhere(&$query, $rule)
+    {
+        $field = preg_match('/occurrence_/i', $rule['field']) ?
+            'occurrence.' . str_replace('occurrence_', '', $rule['field']) : $rule['field'];
 
-            $query->where($filter['field'], $filter['op'], $filter['data']);
+        switch ($rule['op'])
+        {
+            case 'bw':
+                $this->setWhere($query, $field, 'regexp', '/^' . $rule['data'] . '/i');
+                break;
+            case 'bn':
+                $this->setWhere($query, $field, 'regexp', '/^(?!' . $rule['data'] . ').+/i');
+                break;
+            case 'ew':
+                $this->setWhere($query, $field, 'regexp', '/^(?!' . '/' . $rule['data'] . '$/i');
+                break;
+            case 'en':
+                $this->setWhere($query, $field, 'regexp', '/.*(?<!' . $rule['data'] . ')$/i');
+                break;
+            case 'cn':
+                $this->setWhere($query, $field, 'like', '%' . $rule['data'] . '%');
+                break;
+            case 'nc':
+                $this->setWhere($query, $field, 'not regexp', '/' . $rule['data'] . '/i');
+                break;
+            case 'nu':
+                $this->setWhereNull($query, $field);
+                break;
+            case 'nn':
+                $this->setWhereNotNull($query, $field);
+                break;
+            case 'in':
+                $this->setWhereIn($query, $field, explode(',', $rule['data']));
+                break;
+            case 'ni':
+                $this->setWhereNotIn($query, $field, explode(',', $rule['data']));
+                break;
+            case 'eq':
+                $this->setWhere($query, $field, '=', $rule['data']);
+                break;
+            case 'ne':
+                $this->setWhere($query, $field, '!=', $rule['data']);
+                break;
+            case 'lt':
+                $this->setWhere($query, $field, '<', $rule['data']);
+                break;
+            case 'le':
+                $this->setWhere($query, $field, '<=', $rule['data']);
+                break;
+            case 'gt':
+                $this->setWhere($query, $field, '>', $rule['data']);
+                break;
+            case 'ge':
+                $this->setWhere($query, $field, '>=', $rule['data']);
+                break;
         }
 
         return;
     }
 
     /**
-     * Filter for expedition id present or not.
-     *
-     * @param $filter
+     * Filter for if subject is assigned to an expedition.
+     * data = all, true, false
+     * @param $rule
      * @param $query
-     * @param $expeditionId
+     *
      */
-    protected function expeditionIdFilter($filter, &$query, $expeditionId)
+    protected function assignedRule(&$query, $rule)
     {
-        if ($filter['data'] == "true") {
-            if (empty($expeditionId)) {
-                $query->whereRaw(['expedition_ids' => ['$not' => ['$size' => 0]]]);
-                return;
-            }
+        $this->assignedRuleData = $rule['data'];
 
-            $query->whereIn($filter['field'], [(int) $expeditionId]);
+        if ($rule['data'] == 'all')
+        {
             return;
         }
 
-        if (empty($expeditionId)) {
-            $query->where('expedition_ids', 'size', 0);
-            return;
-        }
+        $this->setWhereForAssigned($query, $rule);
 
-        $query->whereNotIn($filter['field'], [(int) $expeditionId]);
         return;
     }
 
+    /**
+     * @param $query
+     * @param $rule
+     * @return mixed
+     */
+    protected function setWhereForAssigned(&$query, $rule)
+    {
+        if ($rule['data'] == "true")
+        {
+            $this->setWhereRaw($query, $rule['field'], ['$not' => ['$size' => 0]]);
+        }
+        else
+        {
+            $this->setWhere($query, $rule['field'], 'size', 0);
+        }
+    }
+
+    /**
+     * @param $orderBy
+     * @param $sord
+     * @return array
+     */
+    public function setOrderBy($orderBy, $sord)
+    {
+        $orderByRaw = [];
+        if ( ! is_null($orderBy))
+        {
+            $orderBys = explode(',', $orderBy);
+            foreach ($orderBys as $order)
+            {
+                $order = trim($order);
+                list($field, $sort) = array_pad(explode(' ', $order, 2), 2, $sord);
+                $orderByRaw [trim($field)] = trim($sort);
+            }
+        }
+
+        return $orderByRaw;
+    }
 
     /**
      * If row has expeditionId, mark as checked
@@ -307,90 +515,118 @@ class Subject extends Eloquent
      */
     protected function setRowCheckbox(&$rows)
     {
-        $expeditionId = (int) Route::input('expeditions');
-        foreach ($rows as &$row) {
-            if (empty($expeditionId)) {
-                $row['expedition_ids'] = !empty($row['expedition_ids']) ? "Yes" : "No";
-                continue;
-            }
-
-            //$row['checked'] = in_array($expeditionId, $row['expedition_ids']) ? true : false;
-            $row['expedition_ids'] = in_array($expeditionId, $row['expedition_ids']) ? "Yes" : "No";
+        foreach ($rows as &$row)
+        {
+            $row['expedition_ids'] = ! empty($row['expedition_ids']) ? "Yes" : "No";
         }
     }
 
     /**
-     * Build column model for grid.
-     *
-     * @return array
+     * Set group operator.
+     * @param $filters
+     * @internal param $groupOp
      */
-    protected function setColModel()
+    protected function setGroupOp($filters)
     {
-        $selectColumns = \Config::get('config.select_columns');
-
-        foreach ($selectColumns as $column) {
-            $colModel[] = $this->formatColumn($column);
+        if (isset($filters['groupOp']))
+        {
+            $this->groupAnd = ($filters['groupOp'] == 'AND') ? true : false;
         }
-
-        return $colModel;
+        else
+        {
+            $this->groupAnd = true;
+        }
     }
 
     /**
-     * Format the given column for grid model.
-     *
-     * @param $column
-     * @return array
+     * Set groupOp process
+     * @param $bool
      */
-    protected function formatColumn($column)
+    protected function setGroupOpProcessed($bool = false)
     {
-        if ($column == 'expedition_ids') {
-            return $this->buildExpeditionCheckbox();
-        }
-
-        $col = [
-            'name' => $column,
-            'index' => $column,
-            'key' => false,
-            'resizable' => true,
-            'search' => true,
-            'sortable' => true,
-            'editable' => false
-        ];
-
-        if ($column == 'ocr') {
-            $col = array_merge($col, [
-                'title' => false,
-                'classes' => "ocrPreview"
-            ]);
-        }
-
-        if ($column == 'accessURI') {
-            $this->addUriLink($col);
-        }
-
-        return $col;
+        $this->groupOpProcessed = $bool;
     }
 
-    protected function addUriLink(&$col)
+    /**
+     * Set where/orWhere clause for query
+     * @param $query
+     * @param $field
+     * @param $op
+     * @param $data
+     */
+    protected function setWhere(&$query, $field, $op, $data)
     {
-        $col = array_merge($col, [
-            'classes' => "thumbPreview",
-            'formatter' => 'imagePreview'
-        ]);
+        ($this->groupAnd || ! $this->groupOpProcessed) ?
+            $query->where($field, $op, $data) : $query->orWhere($field, $op, $data);
+
+        $this->setGroupOpProcessed(true);
     }
 
-    protected function buildExpeditionCheckbox()
+    /**
+     * Set whereRaw/orWhereRaw for query
+     * @param $query
+     * @param $field
+     * @param $data
+     */
+    protected function setWhereRaw(&$query, $field, $data)
     {
-        return [
-            'name' => 'expedition_ids',
-            'index' => 'expedition_ids',
-            'width' => 100,
-            'align' => 'center',
-            //'formatter' => 'checkbox',
-            //'edittype' => 'checkbox',
-            //'editoptions' => ['value' => 'Yes:No', 'defaultValue' => 'No'],
-            'stype' => 'select',
-            'searchoptions' => ['sopt' => ['eq', 'ne'], 'value' => ':Any;true:Yes;false:No']
-        ];
+        ($this->groupAnd || ! $this->groupOpProcessed) ?
+            $query->whereRaw([$field => $data]) : $query->orWhereRaw([$field => $data]);
+
+        $this->setGroupOpProcessed(true);
+    }
+
+    /**
+     * Set whereIn/orWhereIn for query
+     * @param $query
+     * @param $field
+     * @param $data
+     */
+    protected function setWhereIn(&$query, $field, $data)
+    {
+        ($this->groupAnd || ! $this->groupOpProcessed) ?
+            $query->whereIn($field, $data) : $query->orWhereIn($field, $data);
+
+        $this->setGroupOpProcessed(true);
+    }
+
+    /**
+     * Set whereIn/orWhereIn for query
+     * @param $query
+     * @param $field
+     * @param $data
+     */
+    protected function setWhereNotIn(&$query, $field, $data)
+    {
+        ($this->groupAnd || ! $this->groupOpProcessed) ?
+            $query->whereNotIn($field, $data) : $query->orWhereNotIn($field, $data);
+
+        $this->setGroupOpProcessed(true);
+    }
+
+    /**
+     * Set whereNull/orWhereNull for query
+     * @param $query
+     * @param $field
+     */
+    protected function setWhereNull(&$query, $field)
+    {
+        ($this->groupAnd || ! $this->groupOpProcessed) ?
+            $query->whereNull($field) : $query->orWhereNull($field);
+
+        $this->setGroupOpProcessed(true);
+    }
+
+    /**
+     * Set whereNotNull/orWhereNotNull for query
+     * @param $query
+     * @param $field
+     */
+    protected function setWhereNotNull(&$query, $field)
+    {
+        ($this->groupAnd || ! $this->groupOpProcessed) ?
+            $query->whereNotNull($field) : $query->orWhereNotNull($field);
+
+        $this->setGroupOpProcessed(true);
     }
 }

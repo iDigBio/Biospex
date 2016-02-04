@@ -5,29 +5,32 @@ use App\Services\Mailer\BiospexMailer;
 
 class UserRegisteredEventListener
 {
+    public $mailer;
+
     /**
-     * Create the event handler.
+     * Create the event listener.
+     *
+     * @param BiospexMailer $mailer
      */
-    public function __construct()
+    public function __construct(BiospexMailer $mailer)
     {
-        //
+        $this->mailer = $mailer;
     }
 
     /**
      * Handle the event.
      *
-     * @param  UserRegisteredEvent  $event
+     * @param  SendReportEvent $event
      * @return void
      */
     public function handle(UserRegisteredEvent $event)
     {
-        $userId = $event->result['userId'];
-        $email = $event->result['email'];
-        $activationCode = $event->result['activationCode'];
-        $activateHtmlLink = link_to_route('auth.activate', 'Click Here', ['id' => $userId, 'code' => urlencode($activationCode)]);
-        $activateTextLink = route('auth.activate', ['id' => $userId, 'code' => urlencode($activationCode)]);
+        $data = [
+            'email' => $event->user->email,
+            'id' => $event->user->id,
+            'code' => urlencode($event->user->activation_code)
+        ];
 
-        $mailer = new BiospexMailer();
-        $mailer->welcome($email, $activateHtmlLink, $activateTextLink);
+       $this->mailer->sendWelcome($event->user->email, $data);
     }
 }

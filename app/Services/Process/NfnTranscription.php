@@ -1,32 +1,66 @@
 <?php  namespace App\Services\Process;
 
-use League\Csv\Reader;
 use App\Repositories\Contracts\Subject;
 use App\Repositories\Contracts\Transcription;
+use App\Services\Csv\CsvAbstract;
+use Illuminate\Config\Repository as Config;
+use Illuminate\Validation\Factory as Validation;
+use ForceUTF8\Encoding;
 
-class NfnTranscription
+class NfnTranscription extends CsvAbstract
 {
-    /**
-     * @var array
-     */
-    protected $header;
 
     /**
-     * @var array
+     * @var mixed
      */
-    protected $csv = [];
+    protected $collection;
 
     /**
-     * Constructor.
-     *
+     * @var Subject
+     */
+    protected $subject;
+
+    /**
+     * @var Transcription
+     */
+    protected $transcription;
+
+    /**
+     * @var
+     */
+    protected $csv;
+
+    /**
+     * @var Config
+     */
+    protected $config;
+
+    /**
+     * @var Validator
+     */
+    protected $factory;
+
+
+    /**
+     * Constructor
+     * NfnTranscription constructor.
      * @param Subject $subject
      * @param Transcription $transcription
+     * @param Config $config
+     * @param Validator $factory
      */
-    public function __construct(Subject $subject, Transcription $transcription)
+    public function __construct(
+        Subject $subject,
+        Transcription $transcription,
+        Config $config,
+        Validation $factory
+    )
     {
+        $this->config = $config;
+        $this->collection = $this->config->get('config.collection');
         $this->subject = $subject;
         $this->transcription = $transcription;
-        $this->collection = \Config::get('config.collection');
+        $this->factory = $factory;
     }
 
     /**
@@ -37,73 +71,104 @@ class NfnTranscription
      */
     public function process($file)
     {
-        $reader = Reader::createFromPath($file);
-        $reader->each(function ($row, $index, $iterator) {
-            return $this->processRow($row, $index);
-        });
+        $this->readerCreateFromPath($file, ",", '"');
+
+        $header = $this->prepareHeader($this->getHeaderRow());
+
+        $rows = $this->fetch();
+        foreach ($rows as $row)
+        {
+            if (empty($row[0]))
+            {
+                continue;
+            }
+            $this->processRow($header, $row);
+        }
 
         return $this->csv;
     }
 
     /**
-     * Process csv row.
-     *
+     * Prepare header
+     * @param $header
+     * @return array
+     */
+    protected function prepareHeader($header)
+    {
+        return array_replace($header, array_fill_keys(array_keys($header, 'created_at'), 'create_date'));
+    }
+
+    /**
+     * Process an individual row
+     * @param $header
      * @param $row
-     * @param $index
-     * @return bool
      * @throws \Exception
      */
-    public function processRow($row, $index)
+    public function processRow($header, $row)
     {
-        if (empty($row[0])) {
-            return false;
+        if ( ! $this->testHeaderRowCount($header, $row))
+        {
+            return;
         }
 
-        if ($index == 0) {
-            $this->createHeader($row);
+        array_walk($row, function (&$value)
+        {
+            $value = Encoding::toUTF8($value);
+        });
 
-            return true;
+        $combined = $this->combineHeaderAndRow($header, $row);
+
+        if ($this->validateTranscription($combined)) {
+            return;
         }
 
-        if (count($this->header) != count($row)) {
-            throw new \Exception(trans('emails.error_csv_row_count', ['headers' => count($this->header), 'rows' => count($row)]));
-        }
-
-        $combined = array_combine($this->header, $row);
-
-        // Check if fsu collection and search subjects by file name
         if (! $subject = $this->getSubject($combined)) {
-            return true;
+            $this->csv[] = $combined;
+
+            return;
         }
 
         $addArray = ['project_id' => $subject->project_id, 'expedition_ids' => $subject->expedition_ids];
         $combined = $addArray + $combined;
 
-        if ($this->validate($combined)) {
-            return true;
-        }
-
         $this->transcription->create($combined);
-
-        return true;
-    }
-
-    /**
-     * Build header row.
-     *
-     * @param $row
-     */
-    public function createHeader($row)
-    {
-        $row[0] = 'nfn_id';
-        $this->header = array_replace($row, array_fill_keys(array_keys($row, 'created_at'), 'create_date'));
 
         return;
     }
 
     /**
-     * Get subject from db.
-     *
+     * Test header and row count are equal for combine
+     * @param $header
+     * @param $row
+     * @return bool
+     */
+    public function testHeaderRowCount(&$header, &$row)
+    {
+        if (count($header) != count($row))
+        {
+            $this->fixHeaderAndRowCount($header, $row);
+            $combined = $this->combineHeaderAndRow($header, $row);
+            $this->csv[] = $combined;
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $header
+     * @param $row
+     * @return array
+     */
+    public function combineHeaderAndRow($header, $row)
+    {
+        return array_combine($header, $row);
+    }
+
+    /**
+     * Get subject from db
+     * If set collection exists, use filename to find subject
      * @param $combined
      * @return mixed
      */
@@ -116,11 +181,7 @@ class NfnTranscription
             $subject = $this->subject->find(trim($combined['subject_id']));
         }
 
-        if (! $subject) {
-            $this->csv[] = $combined;
-        }
-
-        return (! $subject) ? false : $subject;
+        return empty($subject) ? false : $subject;
     }
 
     /**
@@ -140,20 +201,52 @@ class NfnTranscription
      * @param $combined
      * @return mixed
      */
-    public function validate($combined)
+    public function validateTranscription($combined)
     {
-        $rules = ['nfn_id' => 'unique:transcriptions'];
-        $values = ['nfn_id' => $combined['nfn_id']];
-        $validator = \Validator::make($values, $rules);
+
+        $rules = ['id' => 'unique_with:transcriptions,id'];
+        $values = ['id' => $combined['id']];
+        $validator = $this->factory->make($values, $rules);
         $validator->getPresenceVerifier()->setConnection('mongodb');
 
         // returns true if failed.
         $fail = $validator->fails();
 
-        if ($fail) {
-            $this->csv[] = $combined;
-        }
-
         return $fail;
+    }
+
+    /**
+     * Fix header and row count so the match.
+     * @param $header
+     * @param $row
+     */
+    protected function fixHeaderAndRowCount(&$header, &$row)
+    {
+        $headerCount = count($header);
+        $rowCount = count($row);
+
+        if ($headerCount < $rowCount)
+        {
+            $count = $rowCount - $headerCount;
+            $this->addDummyValuesToArray($header, $count);
+        }
+        else
+        {
+            $count = $headerCount - $rowCount;
+            $this->addDummyValuesToArray($row, $count);
+        }
+    }
+
+    /**
+     * Loop through and add dummy value to array
+     * @param $array
+     * @param $count
+     */
+    protected function addDummyValuesToArray(&$array, $count)
+    {
+        for ($i = 0; $i < $count; $i++)
+        {
+            $array[] = 'dummy_value_' . $i;
+        }
     }
 }

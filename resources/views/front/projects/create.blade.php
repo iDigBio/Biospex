@@ -16,23 +16,22 @@
         </div>
         <div class="panel-body">
             {!! Form::open([
-            'route' => ['projects.store'],
-            'method' => 'put',
+            'route' => ['projects.post.store'],
+            'method' => 'post',
             'enctype' => 'multipart/form-data',
             'class' => 'form-horizontal',
             'role' => 'form'
             ]) !!}
 
-            <div class="form-group required {{ ($errors->has('group')) ? 'has-error' : '' }}" for="group">
-                {!! Form::label('group', trans('forms.group'), ['class' => 'col-sm-2 control-label']) !!}
+            <div class="form-group required {{ ($errors->has('group_id')) ? 'has-error' : '' }}" for="group">
+                {!! Form::label('group_id', trans('forms.group'), ['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-10">
                     {!! Form::select('group_id', $selectGroups, null, ['class' => 'selectpicker']) !!}
                 </div>
-
                 {{ ($errors->has('group_id') ? $errors->first('group_id') : '') }}
             </div>
 
-            <div class="form-group required {{ ($errors->has('status')) ? 'has-error' : '' }}" for="status">
+            <div class="form-group required {{ ($errors->has('status')) ? 'has-error' : '' }}" for="group">
                 {!! Form::label('status', trans('forms.status'), ['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-10">
                     {!! Form::select('status', $statusSelect, null, ['class' => 'selectpicker']) !!}
@@ -62,6 +61,14 @@
                     {!! Form::text('contact_email', null, ['class' => 'form-control', 'placeholder' => trans('forms.contact_email')]) !!}
                 </div>
                 {{ ($errors->has('contact_email') ? $errors->first('contact_email') : '') }}
+            </div>
+
+            <div class="form-group required {{ ($errors->has('contact_title')) ? 'has-error' : '' }}">
+                {!! Form::label('contact_title', trans('forms.contact_title'), ['class' => 'col-sm-2 control-label']) !!}
+                <div class="col-sm-10">
+                    {!! Form::text('contact_title', null, ['class' => 'form-control', 'placeholder' => trans('forms.contact_title')]) !!}
+                </div>
+                {{ ($errors->has('contact_title') ? $errors->first('contact_title') : '') }}
             </div>
 
             <div class="form-group {{ ($errors->has('organization')) ? 'has-error' : '' }}">
@@ -192,16 +199,13 @@
                 {{ ($errors->has('language_skills') ? $errors->first('language_skills') : '') }}
             </div>
 
-            @for($i = 0; $i < count($actors); $i++)
-                <?php $name = 'actor['.$i.']'; ?>
-                <div class="form-group required {{ ($errors->has($name)) ? 'has-error' : '' }}">
-                    {!! Form::label($name, trans('forms.actor'), ['class' => 'col-sm-2 control-label']) !!}
-                    <div class="col-sm-4">
-                        {!! Form::select($name, ['' => '--Select--'] + $actors, null, ['class' => 'selectpicker']) !!}
-                    </div>
-                    {{ ($errors->has($name) ? $errors->first($name) : '') }}
+            <div class="form-group required {{ ($errors->has('workflow_id')) ? 'has-error' : '' }}">
+                {!! Form::label('workflow_id', trans('forms.workflows'), ['class' => 'col-sm-2 control-label']) !!}
+                <div class="col-sm-4">
+                    {!! Form::select('workflow_id', $workflows, null, ['class' => 'selectpicker']) !!}
                 </div>
-            @endfor
+                {{ ($errors->has('workflow_id') ? $errors->first('workflow_id') : '') }}
+            </div>
 
             <div class="form-group {{ ($errors->has('logo')) ? 'has-error' : '' }}">
                 {!! Form::label('logo', trans('forms.logo'), ['class' => 'col-sm-2 control-label']) !!}
@@ -221,7 +225,6 @@
 
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    {!! Form::hidden('targetCount', 0, ['id' => 'targetCount']) !!}
                     {!! Form::submit(trans('buttons.create'), ['class' => 'btn btn-primary']) !!}
                     {!! link_to(URL::previous(), trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger']) !!}
                 </div>

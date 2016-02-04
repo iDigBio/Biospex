@@ -5,15 +5,25 @@ use App\Services\Mailer\BiospexMailer;
 
 class SendInviteEventListener
 {
+    public $mailer;
+
     /**
-     * Handle the event.
+     * Create the event listener.
      *
-     * @param  SendInviteEvent  $event
-     * @return void
+     * @param BiospexMailer $mailer
+     */
+    public function __construct(BiospexMailer $mailer)
+    {
+        $this->mailer = $mailer;
+    }
+
+    /**
+     * Handle the event
+     * @param SendInviteEvent $event
+     * @return mixed
      */
     public function handle(SendInviteEvent $event)
     {
-        $mailer = new BiospexMailer();
-        $mailer->sendInvite($event->invite['email'], $event->invite['subject'], $event->invite['view'], $event->invite['data']);
+        return $this->mailer->sendInvite($event->data);
     }
 }

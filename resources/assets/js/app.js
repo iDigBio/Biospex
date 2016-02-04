@@ -1,12 +1,12 @@
-$(function(){
+$(document).ready(function() {
 
     $('.collapse').on('shown.bs.collapse', function () {
-        $("#collapse"+this.id).removeClass("glyphicon-folder-close").addClass("glyphicon-folder-open");
+        $("#collapse"+this.id).removeClass("fa-folder").addClass("fa-folder-open");
         $("#"+this.id).load("/projects/"+this.id+"/expeditions");
     });
 
     $('.collapse').on('hidden.bs.collapse', function () {
-        $("#collapse"+this.id).removeClass("glyphicon-folder-open").addClass("glyphicon-folder-close");
+        $("#collapse"+this.id).removeClass("fa-folder-open").addClass("fa-folder");
         $( "#expeditions"+this.id).html('');
     });
 
@@ -36,15 +36,22 @@ $(function(){
 
     $( "#form-data" ).validate({
         rules: {
-            core: {
+            dwc: {
                 required: true,
                 extension: "zip"
             }
         }
     });
-    $( "#form-core-url" ).validate({
+    $( "#form-recordset" ).validate({
         rules: {
-            url: {
+            recordset: {
+                required: true
+            }
+        }
+    });
+    $( "#form-data-url" ).validate({
+        rules: {
+            "data-url": {
                 required: true
             }
         }
@@ -57,15 +64,6 @@ $(function(){
             }
         }
     });
-    $( "#form-recordset" ).validate({
-        rules: {
-            recordset: {
-                required: true
-            }
-        }
-    });
-
-    $('.selectpicker').selectpicker();
 
     $("#userGroup").change(function(){
         this.value == 'new' ? $("#groupInput").show() : $("#groupInput").hide();
@@ -86,20 +84,6 @@ $(function(){
         }
     });
 
-    $('[data-method]').not(".disabled").append(function(){
-        var methodForm = "\n"
-        methodForm += "<form action='"+$(this).attr('href')+"' method='POST' style='display:none'>\n"
-        methodForm += " <input type='hidden' name='_method' value='"+$(this).attr('data-method')+"'>\n"
-        if ($(this).attr('data-token'))
-        {
-            methodForm +="<input type='hidden' name='_token' value='"+$(this).attr('data-token')+"'>\n"
-        }
-        methodForm += "</form>\n"
-        return methodForm
-    })
-        .removeAttr('href')
-        .attr('onclick',' if ($(this).hasClass(\'action_confirm\')) { if(confirm("Are you sure you want to do this?")) { $(this).find("form").submit(); } } else { $(this).find("form").submit(); }');
-
     /*
      $('input[name="user"]').change(function(){
      $('input[class="userperm"]:checkbox').prop('checked', this.checked);
@@ -117,4 +101,20 @@ $(function(){
      $('input[class="permissionperm"]:checkbox').prop('checked', this.checked);
      });
      */
+});
+
+$(function(){
+    $('[data-method]').not(".disabled").append(function(){
+            var methodForm = "\n"
+            methodForm += "<form action='"+$(this).attr('href')+"' method='POST' style='display:none'>\n"
+            methodForm += " <input type='hidden' name='_method' value='"+$(this).attr('data-method')+"'>\n"
+            if ($(this).attr('data-token'))
+            {
+                methodForm +="<input type='hidden' name='_token' value='"+$(this).attr('data-token')+"'>\n"
+            }
+            methodForm += "</form>\n"
+            return methodForm
+        })
+        .removeAttr('href')
+        .attr('onclick',' if ($(this).hasClass(\'action_confirm\')) { if(confirm("Are you sure you want to do this?")) { $(this).find("form").submit(); } } else { $(this).find("form").submit(); }');
 });

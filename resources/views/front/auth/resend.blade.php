@@ -16,7 +16,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                'route' => 'auth.resend',
+                'route' => 'auth.post.resend',
                 'method' => 'post',
                 'class' => 'form-horizontal',
                 'role' => 'form'
@@ -37,7 +37,7 @@
                     </div>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-12 margin-top-10">
-                    {!! link_to_route('auth.login', trans('pages.back_to_login')) !!}
+                    {!! link_to_route('auth.get.login', trans('pages.back_to_login')) !!}
                 </div>
             </div>
         </div>

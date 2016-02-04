@@ -2,71 +2,83 @@
 
 namespace App\Jobs;
 
-use Illuminate\Contracts\Bus\SelfHandling;
 use App\Events\SendInviteEvent;
-use Cartalyst\Sentry\Users\UserNotFoundException;
 use App\Repositories\Contracts\Invite;
+use App\Repositories\Contracts\User;
+use Illuminate\Events\Dispatcher as Event;
 
-class InviteCreateJob extends Job implements SelfHandling
+class InviteCreateJob extends Job
 {
+    public $request;
+    public $group;
     /**
-     * Create a new job instance.
-     *
-     * @param $request
+     * @var User
      */
-    public function __construct($request)
+    private $user;
+
+    /**
+     * InviteCreateJob constructor.
+     * @param $request
+     * @param $group
+     */
+    public function __construct($request, $group)
     {
         $this->request = $request;
+        $this->group = $group;
     }
 
     /**
      * Handle the job.
      *
+     * @param User $user
      * @param Invite $invite
+     * @param Event $dispatcher
      * @return mixed
      */
-    public function handle(Invite $invite)
+    public function handle(User $user, Invite $invite, Event $dispatcher)
     {
-        $group = \Sentry::findGroupById($this->request->route('groups'));
         $emails = explode(',', $this->request->get('emails'));
+        $invites = $this->group->invites->toArray();
 
         foreach ($emails as $email) {
             $email = trim($email);
-            if ($duplicate = $invite->checkDuplicate($group->id, $email)) {
-                session_flash_push('info', trans('groups.invite_duplicate', ['group' => $group->name, 'email' => $email]));
+            if (is_int(array_search($email, array_column($invites, 'email'))))
+            {
+                session_flash_push('info', trans('groups.invite_duplicate', ['group' => $this->group->name, 'email' => $email]));
+
                 continue;
             }
 
-            try {
-                $user = \Sentry::findUserByLogin($email);
-                $user->addGroup($group);
+            $emailUser = $user->findByEmail($email);
+            if ($emailUser)
+            {
+                $emailUser->assignGroup($this->group);
                 session_flash_push('success', trans('groups.user_added', ['email' => $email]));
-            } catch (UserNotFoundException $e) {
-                // add invite
-                $code = str_random(10);
-                $data = [
-                    'group_id' => $group->id,
-                    'email'    => $email,
-                    'code'     => $code
-                ];
 
-                if (! $result = $invite->save($data)) {
-                    session_flash_push('warning', trans('groups.send_invite_error', ['group' => $group->name, 'email' => $email]));
-                } else {
-                    $newInvite = [
-                        'email'   => $email,
-                        'subject' => trans('emails.group_invite_subject'),
-                        'view'    => 'emails.group-invite',
-                        'data'    => ['group' => $group->name, 'code' => $code],
-                    ];
-
-                    \Event::fire(new SendInviteEvent($newInvite));
-
-                    session_flash_push('success', trans('groups.send_invite_success', ['group' => $group->name, 'email' => $email]));
-                }
+                continue;
             }
+
+            // add invite
+            $code = str_random(10);
+            $inviteData = [
+                'group_id' => $this->group->id,
+                'email'    => trim($email),
+                'code'     => $code
+            ];
+
+            $invite->create($inviteData);
+
+            $data = [
+                'email'   => $email,
+                'group'  => $this->group->name,
+                'code' => $code
+            ];
+
+            $dispatcher->fire(new SendInviteEvent($data));
+
+            session_flash_push('success', trans('groups.send_invite_success', ['group' => $this->group->name, 'email' => $email]));
         }
 
-        return $group->id;
+        return;
     }
 }

@@ -8,118 +8,118 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('projects.inside', $project) !!}
-
+    {!! Breadcrumbs::render('projects.get.read', $project) !!}
     <div class="jumbotron">
-        <h4>{{ trans('pages.project') }}:</h4>
+        <h4>Project:</h4>
         <h2>{{ $project->title }}</h2>
         <p>{{ $project->description_short }}</p>
     </div>
 
     <div class="row">
-        <div class="col-lg-4 col-md-4 col-sm-4">
+        <div class="col-md-4">
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <h3 class="panel-title">{{ trans('pages.upload_darwin_file') }}</h3>
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                        'route' => ['projects.upload', $project->id],
+                        'route' => ['projects.post.upload', $project->id],
                         'method' => 'post',
                         'files' => true,
                         'enctype' => 'multipart/form-data',
                         'id' => 'form-data',
-                        'class' => 'form-vertical',
+                        'class' => 'form-horizontal',
                         'role' => 'form'
                     ]) !!}
-                    <p>{!! Html::link("#coreFileModal", 'Instructions', ['class' => 'btn btn-xs btn-info', 'data-toggle'=>'modal']) !!}</p>
+                    <p>{!! link_to("#dataFileModal", 'Instructions', ['class' => 'btn btn-sm btn-info', 'data-toggle'=>'modal']) !!}</p>
 
-                    <div class="form-group {{ ($errors->has('core')) ? 'has-error' : '' }}">
-                        {!! Form::label('core', trans('forms.core_file'), ['id' => 'core', 'class' => 'control-label']) !!}
-                        {!! Form::file('core') !!}
-                        {{ ($errors->has('core') ? $errors->first('core') : '') }}
+                    <div class="form-group {{ ($errors->has('dwc')) ? 'has-error' : '' }}">
+                        {!! Form::label('dwc', trans('forms.file'), ['id' => 'dwc', 'class' => 'col-sm-2 control-label']) !!}
+                        <div class="col-md-10">
+                            {!! Form::file('dwc') !!}
+                        </div>
+                        {{ ($errors->has('dcw') ? $errors->first('dcw') : '') }}
                     </div>
 
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            {!! Form::submit(trans('buttons.upload'), ['class' => 'btn btn-xs btn-primary']) !!}
-                            {!! link_to(URL::previous(), 'Cancel', ['class' => 'btn btn-xs btn-danger']) !!}
+                        <div class="col-md-offset-2 col-md-10">
+                            {!! Form::submit(trans('buttons.upload'), ['class' => 'btn btn-sm btn-primary']) !!}
+                            {!! link_to(URL::previous(), trans('buttons.cancel'), ['class' => 'btn btn-sm btn-primary btn-danger']) !!}
                         </div>
                     </div>
-                    {!! Form::hidden('method', 'darwinCoreFileImport') !!}
-                    {!! Form::hidden('project_id', $project->id) !!}
+                    {!! Form::hidden('class', 'DarwinCoreFileImport') !!}
                     {!! Form::hidden('user_id', $project->group->user_id) !!}
                     {!! Form::close() !!}
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-4 col-md-4 col-sm-4">
+        <div class="col-md-4">
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <h3 class="panel-title">{{ trans('pages.upload_recordset') }}</h3>
                 </div>
                 <div class="panel-body">
-                    {!! Form::open(array(
-                        'route' => array('projects.upload', $project->id),
+                    {!! Form::open([
+                        'route' => ['projects.post.upload', $project->id],
                         'method' => 'post',
                         'id' => 'form-recordset',
-                        'class' => 'form-vertical',
+                        'class' => 'form-horizontal',
                         'role' => 'form'
-                    )) !!}
-                    <p>{!! Html::link("#recordsetModal", 'Instructions', ['class' => 'btn btn-xs btn-info', 'data-toggle'=>'modal']) !!}</p>
+                    ]) !!}
+                    <p>{!! link_to("#recordsetModal", 'Instructions', ['class' => 'btn btn-sm btn-info', 'data-toggle'=>'modal']) !!}</p>
 
                     <div class="form-group {{ ($errors->has('recordset')) ? 'has-error' : '' }}">
-                        {!! Form::label('recordset', trans('forms.recordset'), array('id' => 'recordset', 'class' => 'control-label')) !!}
-                        {!! Form::text('recordset', Input::old('recordset'), ['id' => 'recordset', 'class' => 'form-control input-sm', 'placeholder' => trans('pages.recordset'),]) !!}
+                        {!! Form::label('recordset', trans('forms.recordset'), ['id' => 'recordset', 'class' => 'col-sm-2 control-label']) !!}
+                        <div class="col-md-10">
+                            {!! Form::text('recordset', Input::old('recordset'), ['id' => 'recordset', 'class' => 'form-control input-sm', 'placeholder' => trans('pages.recordset'),]) !!}
+                        </div>
                         {{ ($errors->has('recordset') ? $errors->first('recordset') : '') }}
                     </div>
 
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            {!! Form::submit(trans('buttons.upload'), ['class' => 'btn btn-xs btn-primary']) !!}
-                            {!! link_to(URL::previous(), 'Cancel', ['class' => 'btn btn-xs btn-danger']) !!}
+                        <div class="col-md-offset-2 col-md-10">
+                            {!! Form::submit(trans('buttons.upload'), ['class' => 'btn btn-sm btn-primary']) !!}
+                            {!! link_to(URL::previous(), trans('buttons.cancel'), ['class' => 'btn btn-sm btn-primary btn-danger']) !!}
                         </div>
                     </div>
-                    {!! Form::hidden('method', 'recordSetImport') !!}
-                    {!! Form::hidden('project_id', $project->id) !!}
+                    {!! Form::hidden('class', 'RecordSetImport') !!}
                     {!! Form::hidden('user_id', $project->group->user_id) !!}
                     {!! Form::close() !!}
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-4 col-md-4 col-sm-4">
+        <div class="col-md-4">
             <div class="panel panel-info">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{{ trans('pages.upload_nfn_results') }}</h3>
+                    <h3 class="panel-title">{{ trans('pages.upload_darwin_url') }}</h3>
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                        'route' => ['projects.upload', $project->id],
+                        'route' => ['projects.post.upload', $project->id],
                         'method' => 'post',
-                        'files' => true,
-                        'enctype' => 'multipart/form-data',
-                        'id' => 'form-trans',
-                        'class' => 'form-vertical',
+                        'id' => 'form-data-url',
+                        'class' => 'form-horizontal',
                         'role' => 'form'
                     ]) !!}
-                    <p>{!! Html::link("#transcriptionModal", 'Instructions', ['class' => 'btn btn-xs btn-info', 'data-toggle'=>'modal']) !!}</p>
-                    <div class="form-group {{ ($errors->has('transcription')) ? 'has-error' : '' }}">
-                        {!! Form::label('transcription', trans('forms.transcription_file'), ['id' => 'transcription', 'class' => 'control-label']) !!}
-                        {!! Form::file('transcription') !!}
+                    <p>{!! link_to("#dataUrlModal", 'Instructions', ['class' => 'btn btn-sm btn-info', 'data-toggle'=>'modal']) !!}</p>
 
-                        {{ ($errors->has('transcription') ? $errors->first('transcription') : '') }}
+                    <div class="form-group {{ ($errors->has('data-url')) ? 'has-error' : '' }}">
+                        {!! Form::label('data-url', trans('forms.url'), array('id' => 'data-url', 'class' => 'col-sm-2 control-label')) !!}
+                        <div class="col-md-10">
+                            {!! Form::text('data-url', Input::old('data-url'), ['id' => 'data-url', 'class' => 'form-control input-sm', 'placeholder' => trans('pages.core_url'),]) !!}
+                        </div>
+                        {{ ($errors->has('data-url') ? $errors->first('data-url') : '') }}
                     </div>
 
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            {!! Form::submit(trans('buttons.upload'), ['class' => 'btn btn-xs btn-primary']) !!}
-                            {!! link_to(URL::previous(), 'Cancel', ['class' => 'btn btn-xs btn-danger']) !!}
+                        <div class="col-md-offset-2 col-md-10">
+                            {!! Form::submit(trans('buttons.upload'), ['class' => 'btn btn-sm btn-primary']) !!}
+                            {!! link_to(URL::previous(), trans('buttons.cancel'), ['class' => 'btn btn-sm btn-primary btn-danger']) !!}
                         </div>
                     </div>
-                    {!! Form::hidden('method', 'nfnTranscriptionImport') !!}
-                    {!! Form::hidden('project_id', $project->id) !!}
+                    {!! Form::hidden('class', 'DarwinCoreUrlImport') !!}
                     {!! Form::hidden('user_id', $project->group->user_id) !!}
                     {!! Form::close() !!}
                 </div>
@@ -127,35 +127,37 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-4 col-md-4 col-sm-4">
+        <div class="col-md-4">
             <div class="panel panel-info">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{{ trans('pages.upload_darwin_url') }}</h3>
+                    <h3 class="panel-title">{{ trans('pages.upload_nfn_results') }}</h3>
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                        'route' => ['projects.upload', $project->id],
+                        'route' => ['projects.post.upload', $project->id],
                         'method' => 'post',
-                        'id' => 'form-core-url',
-                        'class' => 'form-vertical',
+                        'files' => true,
+                        'enctype' => 'multipart/form-data',
+                        'id' => 'form-trans',
+                        'class' => 'form-horizontal',
                         'role' => 'form'
                     ]) !!}
-                    <p>{!! Html::link("#coreUrlModal", 'Instructions', ['class' => 'btn btn-xs btn-info', 'data-toggle'=>'modal']) !!}</p>
-
-                    <div class="form-group {{ ($errors->has('core-url')) ? 'has-error' : '' }}">
-                        {!! Form::label('core-url', trans('forms.core_url'), array('id' => 'core-url', 'class' => 'control-label')) !!}
-                        {!! Form::text('core-url', Input::old('core-url'), ['id' => 'url', 'class' => 'form-control input-sm', 'placeholder' => trans('pages.core_url'),]) !!}
-                        {{ ($errors->has('core-url') ? $errors->first('core-url') : '') }}
+                    <p>{!! link_to("#transcriptionModal", 'Instructions', ['class' => 'btn btn-sm btn-info', 'data-toggle'=>'modal']) !!}</p>
+                    <div class="form-group {{ ($errors->has('transcription')) ? 'has-error' : '' }}">
+                        {!! Form::label('file', trans('forms.file'), ['id' => 'transcription', 'class' => 'col-sm-2 control-label']) !!}
+                        <div class="col-sm-10">
+                            {!! Form::file('transcription') !!}
+                        </div>
+                        {{ ($errors->has('transcription') ? $errors->first('transcription') : '') }}
                     </div>
 
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            {!! Form::submit(trans('buttons.upload'), ['class' => 'btn btn-xs btn-primary']) !!}
-                            {!! link_to(URL::previous(), 'Cancel', ['class' => 'btn btn-xs btn-danger']) !!}
+                        <div class="col-md-offset-2 col-md-10">
+                            {!! Form::submit(trans('buttons.upload'), ['class' => 'btn btn-sm btn-primary']) !!}
+                            {!! link_to(URL::previous(), trans('buttons.cancel'), ['class' => 'btn btn-sm btn-primary btn-danger']) !!}
                         </div>
                     </div>
-                    {!! Form::hidden('method', 'darwinCoreUrlImport') !!}
-                    {!! Form::hidden('project_id', $project->id) !!}
+                    {!! Form::hidden('class', 'NfnTranscriptionImport') !!}
                     {!! Form::hidden('user_id', $project->group->user_id) !!}
                     {!! Form::close() !!}
                 </div>

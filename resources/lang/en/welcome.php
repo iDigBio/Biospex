@@ -62,7 +62,7 @@ CitStitch Hackathons for helping us develop greater interoperability and coordin
 US National Science Foundation\'s Resource for Advancing Digitization of Biodiversity Research Specimens.</p>
 
 <p>Still have questions? Feel free to contact us with any questions or concerns.</p>',
-    'ready' => '<p>Ready to start? Go ahead, make your first project.</p>',
+    'ready' => '<p>Ready to start? Go ahead, create your first Group.</p>',
     'welcome' => 'Welcome to Biospex!',
     //================================== Obsolete strings ==================================//
     'expeditions' => '<h4>Expeditions</h4>

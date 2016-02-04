@@ -1,6 +1,6 @@
 <?php namespace App\Models\Traits;
 
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 trait UuidTrait
 {

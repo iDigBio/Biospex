@@ -1,16 +1,14 @@
-<?php
+<?php namespace App\Events;
 
-namespace App\Events;
-
-class UserRegisteredEvent extends Event
+class UserRegisteredEvent
 {
     /**
      * Create a new event instance.
      *
-     * @param $result
+     * @param $user
      */
-    public function __construct($result)
+    public function __construct($user)
     {
-        $this->result = $result;
+        $this->user = $user;
     }
 }

@@ -6,6 +6,7 @@
 return [
     //==================================== Translations ====================================//
     'import_id'             => 'import_id',
+    'dashboard'             => 'Dashboard',
     'project'               => 'Project',
     'project_created'       => 'Project was created successfully.',
     'project_destroy_error' => 'An error occurred when deleting project.',

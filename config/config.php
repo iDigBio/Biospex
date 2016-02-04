@@ -5,6 +5,8 @@ return [
     /**
      * Site variables
      */
+    'app_url'                  => env('APP_NAME'),
+    'api_url'                  => env('API_URL'),
     'registration'             => env('APP_REGISTRATION'),
     'translate'                => env('APP_TRANSLATE'),
 
@@ -19,6 +21,7 @@ return [
     'ocr_delete_url'           => env('OCR_DELETEURL'),
     'ocr_crop'                 => env('OCR_CROP'),
     'disable_ocr'              => env('OCR_DISABLE', false),
+    'ocr_chunk'                => env('OCR_CHUNK'),
 
     /**
      * iDigBio api query url
@@ -33,10 +36,10 @@ return [
     /**
      * DCA import row types for multimedia.
      */
-    'metaFileRowTypes' => [
-        'http://rs.tdwg.org/ac/terms/multimedia' => 'multimedia_raw',
-        'http://rs.gbif.org/terms/1.0/image' => 'images',
-        'http://rs.tdwg.org/dwc/terms/occurrence' => 'occurrence'
+    'metaFileRowTypes'       => [
+        'http://rs.tdwg.org/ac/terms/multimedia'  => ['multimedia_raw', 'multimedia', 'multimedia-10'],
+        'http://rs.gbif.org/terms/1.0/image'      => ['images'],
+        'http://rs.tdwg.org/dwc/terms/occurrence' => ['occurrence_raw, occurrence', 'occurrence-10']
     ],
 
     /* Added Tubes */
@@ -47,14 +50,12 @@ return [
         'ocr'      => env('QUEUE_OCR_TUBE')
     ],
 
-    'images'                   => [
-        'thumb_default_img'    => 'images/default_image.jpg',
-        'thumb_output_dir'     => storage_path('images'),
-        'thumb_width'          => 150,
-        'thumb_height'         => 150,
-        'library'              => 'gmagick',
-        'quality'              => 100,
-        'image_type_extension' => [
+    'images'                 => [
+        'thumbDefaultImg'    => public_path('/images/default_image.jpg'),
+        'thumbOutputDir'     => storage_path('images'),
+        'thumbWidth'         => 300,
+        'thumbHeight'        => 300,
+        'imageTypeExtension' => [
             'image/jpeg' => "jpg",
             'image/png'  => "png",
             'image/tiff' => "tif",
@@ -127,23 +128,5 @@ return [
         'acting'   => 'Acting',
         'complete' => 'Complete',
         'hiatus'   => 'Hiatus'
-    ],
-
-    /**
-     * Default group permissions
-     */
-    'group_permissions'        => [
-        "project_create"    => 1,
-        "project_edit"      => 1,
-        "project_view"      => 1,
-        "project_delete"    => 1,
-        "group_create"      => 1,
-        "group_edit"        => 1,
-        "group_view"        => 1,
-        "group_delete"      => 1,
-        "expedition_create" => 1,
-        "expedition_edit"   => 1,
-        "expedition_view"   => 1,
-        "expedition_delete" => 1
     ],
 ];

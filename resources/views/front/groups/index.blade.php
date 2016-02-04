@@ -22,14 +22,18 @@
                     <th>@lang('groups.group_options')</th>
                 </thead>
                 <tbody>
-                @foreach ($groups as $group)
+                @foreach ($user->groups as $group)
                     <tr>
-                        <td>{{ $group->name }}</td>
+                        <td>{{ $group->label }}</td>
                         <td>
-                            <button title="@lang('buttons.viewTitle')" class="btn btn-default btn-primary btn-sm" type="button" onClick="location.href='{{ route('groups.show', [$group->id]) }}'"><span class="fa fa-eye fa-lrg"></span> @lang('buttons.view')</button>
-                            <button title="@lang('buttons.editTitle')" class="btn btn-default btn-warning btn-sm" {{ ($group->user_id == $user->id || $isSuperUser) ? '' : 'disabled' }} onClick="location.href='{{ route('groups.edit', array($group->id)) }}'"><span class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
-                            <button title="@lang('buttons.inviteTitle')" class="btn btn-default btn-reverse btn-sm" type="button" onClick="location.href='{{ route('groups.invites.index', [$group->id]) }}'"><span class="fa fa-users fa-lrg"></span> @lang('buttons.invite')</button>
-                            <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-sm" {{ ($group->user_id == $user->id  || $isSuperUser) ? '' : 'disabled' }} type="button" data-method="delete" data-token="{{ csrf_token() }}" href="{{ route('groups.destroy', array($group->id)) }}"><span class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
+                            <button title="@lang('buttons.viewTitle')" class="btn btn-default btn-primary btn-sm" type="button" onClick="location.href='{{ route('groups.get.read', [$group->id]) }}'"><span class="fa fa-eye fa-lrg"></span> @lang('buttons.view')</button>
+                            @can('update', $group)
+                            <button title="@lang('buttons.editTitle')" class="btn btn-default btn-warning btn-sm" type="button" onClick="location.href='{{ route('groups.get.edit', array($group->id)) }}'"><span class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
+                            <button title="@lang('buttons.inviteTitle')" class="btn btn-default btn-reverse btn-sm" type="button" onClick="location.href='{{ route('invites.get.index', [$group->id]) }}'"><span class="fa fa-users fa-lrg"></span> @lang('buttons.invite')</button>
+                            @endcan
+                            @can('delete', $group)
+                            <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-sm" type="button" data-method="delete" data-token="{{ csrf_token() }}" href="{{ route('groups.delete.delete', array($group->id)) }}"><span class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
+                            @endcan
                         </td>
                     </tr>
                 @endforeach
@@ -39,7 +43,7 @@
     </div>
     <div class="col-md-10 col-md-offset-1">
         <h4>{{ trans('groups.group_make') }}</h4>
-        <button title="@lang('buttons.createTitleG')" class="btn btn-success" onClick="location.href='{{ route('groups.create') }}'"><span class="glyphicon glyphicon-plus"></span> @lang('buttons.create')</button>
+        <button title="@lang('buttons.createTitleG')" class="btn btn-success" onClick="location.href='{{ route('groups.get.create') }}'"><span class="glyphicon glyphicon-plus"></span> @lang('buttons.create')</button>
     </div>
 </div>
 <!--  

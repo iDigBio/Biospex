@@ -1,5 +1,17 @@
-<?php namespace App\Providers;
+<?php
 
+namespace App\Providers;
+
+use App\Events\SendReportEvent;
+use App\Models\Group;
+use App\Models\Permission;
+use App\Models\Profile;
+use App\Models\User;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Support\ServiceProvider;
 use Barryvdh\Debugbar\ServiceProvider as Debugbar;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider as IdeHelper;
@@ -14,7 +26,42 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->setupBlade();
-        //
+
+        User::created(function ($user) {
+            $user->getActivationCode();
+            $profile = new Profile;
+            $profile->user_id = $user->id;
+            $profile->first_name = $this->app['request']->input('first_name');
+            $profile->last_name = $this->app['request']->input('last_name');
+            $user->profile()->save($profile);
+        });
+
+        Group::created(function ($group) {
+            $permissions = Cache::tags('model')->rememberForever('permissions.list', function() {
+                return Permission::lists('name', 'id')->all();
+            });
+            $permissions = array_keys(array_diff($permissions, ['superuser']));
+
+            $group->permissions()->attach($permissions);
+        });
+
+        Queue::failing(function (JobFailed $event) {
+            if ($event->job->getQueue() == Config::get('config.beanstalkd.default')) {
+                return;
+            }
+
+            $data = [
+                'email'   => null,
+                'subject' => trans('emails.failed_job_subject'),
+                'view'    => 'front.emails.report-failed-jobs',
+                'data'    => ['text' => trans('emails.failed_job_message', ['id' => $event->job->getJobId(), 'jobData' => $event->job->getRawBody()])],
+                'attachments' => []
+            ];
+
+            Event::fire(new SendReportEvent($data));
+
+            return;
+        });
     }
 
     /**
@@ -45,9 +92,11 @@ class AppServiceProvider extends ServiceProvider
             'App\Services\Registrar'
         );
 
+
         $this->app->bind('Cartalyst\Sentry\Sentry', function ($app) {
             return $app['sentry'];
         });
+
 
         /*
          * Development Providers

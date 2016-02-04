@@ -5,6 +5,7 @@ use App\Jobs\SendContactEmail;
 use App\Repositories\Contracts\Project;
 use App\Http\Requests\ContactFormRequest;
 use Illuminate\Contracts\Config\Repository as Config;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -17,6 +18,11 @@ class HomeController extends Controller
      */
     public function index()
     {
+        if (Auth::check())
+        {
+            return redirect()->route('projects.get.index');
+        }
+
         return view('front.home');
     }
 
@@ -65,7 +71,9 @@ class HomeController extends Controller
      */
     public function postContact(ContactFormRequest $request, Config $config)
     {
-        $this->dispatch((new SendContactEmail($request))->onQueue($config->get('config.beanstalkd.default')));
+        $data = $request->only('first_name', 'last_name', 'email', 'message');
+
+        $this->dispatch(new SendContactEmail($data));
 
         return redirect()->route('home')->with('success', trans('pages.contact_success'));
     }

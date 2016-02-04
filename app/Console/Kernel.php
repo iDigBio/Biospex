@@ -20,6 +20,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\DarwinCoreFileImportCommand::class,
         \App\Console\Commands\OcrQueuePushCommand::class,
         \App\Console\Commands\DatabaseQueryCommand::class,
+        \App\Console\Commands\AustinProcessCommand::class,
     ];
 
     /**

@@ -2,9 +2,12 @@
 
 use App\Repositories\Contracts\OcrQueue;
 use App\Services\Report\Report;
+use Illuminate\Console\Command;
 
-class OcrQueueCheck
+class OcrQueueCheckCommand extends Command
 {
+    public $queue;
+    public $report;
     /**
      * The console command name.
      *
@@ -22,7 +25,7 @@ class OcrQueueCheck
     /**
      * Class constructor
      *
-     * @param OcrQueue $queue
+     * @param OcrQueueInterface $queue
      * @param Report $report
      */
     public function __construct(OcrQueue $queue, Report $report)

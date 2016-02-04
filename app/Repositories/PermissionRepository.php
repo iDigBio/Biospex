@@ -9,15 +9,4 @@ class PermissionRepository extends Repository implements Permission
     {
         $this->model = $model;
     }
-
-    // Methods contained implemented in interface must exist here
-    public function getPermissionsGroupBy()
-    {
-        return $this->model->getPermissionsGroupBy();
-    }
-
-    public function setPermissions(array $data)
-    {
-        return $this->model->setPermissions($data);
-    }
 }

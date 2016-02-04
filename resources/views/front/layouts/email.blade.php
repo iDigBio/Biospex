@@ -12,7 +12,7 @@
 <p>
     {{ trans('emails.thank_you') }}, <br /><br />
     {{ trans('emails.signature') }}<br />
-    {{ $emailAddress  }}
+    {!! Config::get('mail.from.address') !!}
 </p>
 </body>
 </html>

@@ -1,5 +1,9 @@
 <?php namespace App\Services\Process;
 
+use DOMDocument;
+use DOMXPath;
+use Exception;
+
 class Xml
 {
     private $xml = null;
@@ -16,15 +20,15 @@ class Xml
      */
     public function load($input_xml)
     {
-        $this->xml = new \DOMDocument($this->version, $this->encoding);
+        $this->xml = new DOMDocument($this->version, $this->encoding);
         $this->xml->preserveWhiteSpace = false;
 
         $parsed = $this->xml->load($input_xml);
         if (! $parsed) {
-            throw new \Exception(trans('emails.error_loading_xml'));
+            throw new Exception(trans('emails.error_loading_xml'));
         }
 
-        $this->xpath = new \DOMXpath($this->xml);
+        $this->xpath = new DOMXpath($this->xml);
         $this->xpath->registerNamespace('ns', $this->xml->documentElement->namespaceURI);
         $this->xpath->registerNamespace('php', 'http://php.net/xpath');
         $this->xpath->registerPhpFunctions(); // Allow all PHP functions

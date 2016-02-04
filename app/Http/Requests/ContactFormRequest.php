@@ -23,9 +23,7 @@ class ContactFormRequest extends Request
             'first_name'   => 'required|alpha',
             'last_name'    => 'required|alpha',
             'email'        => 'required|min:4|max:32|email',
-            'message'      => 'required',
-            'registeruser' => 'honeypot',
-            'registertime' => 'required_with:registeruser|honeytime:5',
+            'message'      => 'required'
         ];
     }
 }

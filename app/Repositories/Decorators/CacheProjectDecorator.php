@@ -1,24 +1,9 @@
 <?php namespace App\Repositories\Decorators;
 
-use App\Services\Cache\Cache;
 use App\Repositories\Contracts\Project;
 
-class CacheProjectDecorator extends AbstractProjectDecorator
+class CacheProjectDecorator extends CacheDecorator implements Project
 {
-    protected $cache;
-    protected $pass;
-
-    /**
-     * Constructor
-     *
-     * @param Project $project
-     * @param Cache $cache
-     */
-    public function __construct(Project $project, Cache $cache)
-    {
-        parent::__construct($project);
-        $this->cache = $cache;
-    }
 
     /**
      * All
@@ -26,21 +11,11 @@ class CacheProjectDecorator extends AbstractProjectDecorator
      * @param array $columns
      * @return mixed
      */
-    public function all($columns = array('*'))
+    public function all()
     {
-        $key = md5('projects.all');
+        $this->setKey(__METHOD__);
 
-        if ($this->cache->has($key) && ! $this->pass) {
-            return $this->cache->get($key);
-        }
-
-        $projects = $this->project->all();
-
-        if (! $this->pass) {
-            $this->cache->put($key, $projects);
-        }
-
-        return $projects;
+        return parent::all();
     }
 
     /**
@@ -50,63 +25,11 @@ class CacheProjectDecorator extends AbstractProjectDecorator
      * @param array $columns
      * @return mixed
      */
-    public function find($id, $columns = array('*'))
+    public function find($id)
     {
-        $key = md5('project.' . $id);
+        $this->setKey(__METHOD__, $id);
 
-        if ($this->cache->has($key) && ! $this->pass) {
-            return $this->cache->get($key);
-        }
-
-        $project = $this->project->find($id, $columns);
-
-        if (! $this->pass) {
-            $this->cache->put($key, $project);
-        }
-
-        return $project;
-    }
-
-    /**
-     * Create record
-     *
-     * @param array $data
-     * @return mixed
-     */
-    public function create($data = array())
-    {
-        $project = $this->project->create($data);
-        $this->cache->flush();
-
-        return $project;
-    }
-
-    /**
-     * Update record
-     *
-     * @param array $input
-     * @return mixed
-     */
-    public function update($data = array())
-    {
-        $project = $this->project->update($data);
-        $this->cache->flush();
-
-        return $project;
-    }
-
-    /**
-     * Destroy records
-     *
-     * @param $id
-     * @return mixed
-     */
-    public function destroy($id)
-    {
-        $project = $this->project->destroy($id);
-        $this->cache->flush();
-
-        return $project;
+        return parent::find($id);
     }
 
     /**
@@ -116,36 +39,13 @@ class CacheProjectDecorator extends AbstractProjectDecorator
      * @param array $with
      * @return mixed
      */
-    public function findWith($id, $with = array())
+    public function findWith($id, $with)
     {
-        $key = md5('project.' . $id . implode(".", $with));
+        $this->setKey(__METHOD__, $id . implode('.', $with));
 
-        if ($this->cache->has($key) && ! $this->pass) {
-            return $this->cache->get($key);
-        }
-
-        $project = $this->project->findWith($id, $with);
-
-        if (! $this->pass) {
-            $this->cache->put($key, $project);
-        }
-
-        return $project;
+        return parent::findWith($id, $with);
     }
 
-    /**
-     * Save
-     *
-     * @param $record
-     * @return mixed
-     */
-    public function save($record)
-    {
-        $project = $this->project->save($record);
-        $this->cache->flush();
-
-        return $project;
-    }
 
     /**
      * By slug
@@ -155,19 +55,15 @@ class CacheProjectDecorator extends AbstractProjectDecorator
      */
     public function bySlug($slug)
     {
-        $key = md5('project.' . $slug);
+        $this->setKey(__METHOD__, $slug);
 
-        if ($this->cache->has($key) && ! $this->pass) {
-            return $this->cache->get($key);
+        if ( ! $this->cached) {
+            return $this->repository->bySlug($slug);
         }
 
-        $project = $this->project->bySlug($slug);
-
-        if (! $this->pass) {
-            $this->cache->put($key, $project);
-        }
-
-        return $project;
+        return $this->cache->tags($this->tag)->rememberForever($this->key, function () use ($slug) {
+            return $this->repository->findWith($slug);
+        });
     }
 
     /**
@@ -178,23 +74,27 @@ class CacheProjectDecorator extends AbstractProjectDecorator
      */
     public function findByUuid($uuid)
     {
-        $key = md5('project.' . $uuid);
+        $this->setKey(__METHOD__, $uuid);
 
-        if ($this->cache->has($key) && ! $this->pass) {
-            return $this->cache->get($key);
+        if ( ! $this->cached) {
+            return $this->repository->findByUuid($uuid);
         }
 
-        $project = $this->project->findByUuid($uuid);
-
-        if (! $this->pass) {
-            $this->cache->put($key, $project);
-        }
-
-        return $project;
+        return $this->cache->tags($this->tag)->rememberForever($this->key, function () use ($uuid) {
+            return $this->repository->findByUuid($uuid);
+        });
     }
 
-    public function setPass($value = false)
+    public function getSubjectsAssignedCount($project)
     {
-        $this->pass = $value;
+        $this->setKey(__METHOD__, $project);
+
+        if (! $this->cached) {
+            return $this->repository->getSubjectsAssignedCount($project);
+        }
+
+        return $this->cache->tags($this->tag)->rememberForever($this->key, function () use ($project) {
+            return $this->repository->getSubjectsAssignedCount($project);
+        });
     }
 }

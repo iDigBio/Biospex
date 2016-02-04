@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\User;
-use App\Services\Common\UserService;
 use App\Http\Requests\EditUserFormRequest;
 
 class UsersController extends Controller
@@ -13,27 +12,13 @@ class UsersController extends Controller
     public $user;
 
     /**
-     * @var UserService
-     */
-    public $service;
-
-    /**
-     * Instantiate a new UsersController
-     *
-     * @param UserService $service
-     * @param Dispatcher $events
+     * UsersController constructor.
      * @param User $user
-     * @param Group $group
-     * @param Permission $permission
-     * @param Invite $invite
-     * @param Router $router
      */
     public function __construct(
-        UserService $service,
         User $user
     ) {
         $this->user = $user;
-        $this->service = $service;
     }
 
     /**
@@ -48,45 +33,54 @@ class UsersController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
+     * Show the form for editing the specified resource
      * @param $id
-     * @return Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function edit($id)
     {
         $user = $this->user->find($id);
 
-        if ( ! policy($user)->edit($user))
+        if ($user->cannot('update', $user))
         {
             session_flash_push('warning', trans('pages.insufficient_permissions'));
 
             return redirect()->route('projects.get.index');
         }
 
-        $vars = $this->service->edit($user);
+        $timezones = timezone_select();
+        $cancel = route('projects.get.index');
 
-        return view('front.users.edit', $vars);
+        return view('front.users.edit', compact('user', 'timezones', 'cancel'));
     }
 
     /**
-     * Update the specified resource in storage.
-     * .
+     * Update the specified resource in storage
      * @param EditUserFormRequest $request
+     * @param $users
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(EditUserFormRequest $request)
+    public function update(EditUserFormRequest $request, $users)
     {
-        $user = $this->user->find($request->input('users'));
+        $user = $this->user->find($users);
 
-        if ( ! policy($user)->update($user))
+        if ($user->cannot('update', $user))
         {
             session_flash_push('warning', trans('pages.insufficient_permissions'));
 
             return redirect()->route('projects.get.index');
         }
 
-        $this->service->update($request);
+        $result = $this->user->update($request->all());
+
+        if ($result)
+        {
+            session_flash_push('success', trans('users.updated'));
+        }
+        else
+        {
+            session_flash_push('error', trans('users.notupdated'));
+        }
 
         return redirect()->route('users.get.edit', [$user->id]);
     }

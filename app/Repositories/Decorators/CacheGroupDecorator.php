@@ -2,125 +2,34 @@
 
 namespace App\Repositories\Decorators;
 
-use Illuminate\Contracts\Cache\Repository as Cache;
-use App\Repositories\Contracts\Group as Contract;
-use App\Repositories\GroupRepository;
+use App\Repositories\Contracts\Group;
 
-class CacheGroupDecorator implements Contract
+class CacheGroupDecorator extends CacheDecorator implements Group
 {
 
     /**
-     * @var bool
-     */
-    protected $pass = false;
-
-    /**
-     * @var Cache
-     */
-    protected $cache;
-
-    /**
-     * @var Group
-     */
-    protected $group;
-
-    /**
-     * @var
-     */
-    private $tag;
-
-    /**
-     * Constructor
+     * Retrieve all groups.
      *
-     * @param GroupRepository $repository
-     * @param Cache $cache
-     * @param $tag
-     * @internal param Group $group
-     */
-    public function __construct(GroupRepository $repository, Cache $cache, $tag)
-    {
-        $this->repository = $repository;
-        $this->cache = $cache;
-        $this->tag = $tag;
-    }
-
-    /**
-     * All
-     *
-     * @param array $columns
      * @return mixed
      */
     public function all()
     {
-        if ($this->pass)
-            return $this->repository->all();
+        $this->setKey(__METHOD__);
 
-        $key = md5('groups.all');
-
-        return $this->cache->rememberForever($key, function() {
-            return $this->repository->all();
-        });
+        return parent::all();
     }
 
     /**
-     * Find
+     * Find by id.
      *
      * @param $id
-     * @param array $columns
      * @return mixed
      */
     public function find($id)
     {
-        if ($this->pass)
-            return $this->repository->find($id);
+        $this->setKey(__METHOD__, $id);
 
-        $key = md5('groups.all');
-
-        return $this->cache->rememberForever($key, function() {
-            return $this->repository->find($id);
-        });
-    }
-
-    /**
-     * Create record
-     *
-     * @param array $data
-     * @return mixed
-     */
-    public function create($data)
-    {
-        $group = $this->group->create($data);
-        $this->cache->flush();
-
-        return $group;
-    }
-
-    /**
-     * Update record
-     *
-     * @param array $input
-     * @return mixed
-     */
-    public function update($data)
-    {
-        $group = $this->group->update($data);
-        $this->cache->flush();
-
-        return $group;
-    }
-
-    /**
-     * Destroy records
-     *
-     * @param $id
-     * @return mixed
-     */
-    public function destroy($id)
-    {
-        $group = $this->group->destroy($id);
-        $this->cache->flush();
-
-        return $group;
+        return parent::find($id);
     }
 
     /**
@@ -132,19 +41,9 @@ class CacheGroupDecorator implements Contract
      */
     public function findWith($id, $with)
     {
-        $key = md5("group.$id." . implode(".", $with));
+        $this->setKey(__METHOD__, $id . implode('.', $with));
 
-        if ($this->cache->has($key) && ! $this->pass) {
-            return $this->cache->get($key);
-        }
-
-        $group = $this->group->findWith($id, $with);
-
-        if (! $this->pass) {
-            $this->cache->put($key, $group);
-        }
-
-        return $group;
+        return parent::findWith($id, $with);
     }
 
     /**
@@ -153,99 +52,17 @@ class CacheGroupDecorator implements Contract
      * @param  string $name
      * @return Group
      */
-    public function byName($name)
+    public function findByName($name)
     {
-        $key = md5($name);
-
-        if ($this->cache->has($key) && ! $this->pass) {
-            return $this->cache->get($key);
+        if ( ! $this->cached) {
+            return $this->repository->findByName($name);
         }
 
-        $group = $this->group->byName($name);
+        $this->setKey(__METHOD__, $name);
 
-        if (! $this->pass) {
-            $this->cache->put($key, $group);
-        }
+        return $this->cache->tags($this->tag)->rememberForever($this->key, function () use ($name) {
+            return $this->repository->findByName($name);
+        });
 
-        return $group;
-    }
-
-    /**
-     * Return groups with Admins optional and without Users for select options
-     *
-     * @param bool $admins
-     * @return mixed
-     */
-    public function selectOptions($allGroups, $create = false)
-    {
-        $options = $this->group->selectOptions($allGroups, $create);
-
-        return $options;
-    }
-
-    /**
-     * Find all groups
-     * @return mixed
-     */
-    public function findAllGroups()
-    {
-        $key = md5("groups");
-
-        if ($this->cache->has($key) && ! $this->pass) {
-            return $this->cache->get($key);
-        }
-
-        $groups = $this->group->findAllGroups();
-
-        if (! $this->pass) {
-            $this->cache->put($key, $groups);
-        }
-
-        return $groups;
-    }
-
-    /**
-     * Find all the groups depending on user
-     *
-     * @param array $allGroups
-     * @return mixed
-     */
-    public function findAllGroupsWithProjects($allGroups = array())
-    {
-        foreach ($allGroups as $group) {
-            $ids[] = $group->id;
-        }
-        $key = md5('groups.' . implode(".", $ids));
-
-        if ($this->cache->has($key) && ! $this->pass) {
-            return $this->cache->get($key);
-        }
-
-        $groups = $this->group->findAllGroupsWithProjects($allGroups);
-
-        if (! $this->pass) {
-            $this->cache->put($key, $groups);
-        }
-
-        return $groups;
-    }
-
-    /**
-     * Save
-     *
-     * @param $record
-     * @return mixed
-     */
-    public function save($record)
-    {
-        $group = $this->group->save($record);
-        $this->cache->flush();
-
-        return $group;
-    }
-
-    public function setPass($value = false)
-    {
-        $this->pass = $value;
     }
 }

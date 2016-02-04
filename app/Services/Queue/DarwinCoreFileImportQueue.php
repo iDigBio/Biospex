@@ -1,15 +1,22 @@
 <?php namespace App\Services\Queue;
 
-use Illuminate\Filesystem\Filesystem;
-use App\Repositories\Contracts\Import;
-use App\Repositories\Contracts\Project;
-use App\Services\Report\DarwinCoreImportReport;
-use App\Services\Process\DarwinCore;
-use App\Services\Process\Xml;
 use App\Services\Mailer\BiospexMailer;
+use App\Repositories\Contracts\Import;
+use App\Repositories\Contracts\OcrQueue;
+use App\Repositories\Contracts\Project;
+use App\Repositories\Contracts\User;
+use App\Services\Process\DarwinCore;
+use App\Services\Process\Ocr as OcrProcess;
+use App\Services\Process\Xml;
+use App\Services\Report\DarwinCoreImportReport;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Queue;
+use Exception;
 
 class DarwinCoreFileImportQueue extends QueueAbstract
 {
+    public $subjectImportDir;
     /**
      * @var Filesystem
      */
@@ -51,48 +58,72 @@ class DarwinCoreFileImportQueue extends QueueAbstract
     protected $scratchDir;
 
     /**
-     * Directory where darwin core files are stored during processing.
-     *
-     * @var string
-     */
-    protected $subjectsImportDir;
-
-    /**
      * Tmp directory for extracted files
+     *
      * @var string
      */
     protected $scratchFileDir;
 
     /**
+     * @var OcrQueue
+     */
+    protected $ocr;
+
+    /**
+     * @var OcrProcess
+     */
+    protected $ocrProcess;
+
+    /**
+     * @var
+     */
+    protected $tube;
+
+    /**
+     * @var User
+     */
+    protected $user;
+
+    /**
      * Constructor
      *
-     * @param Import $import
      * @param Filesystem $filesystem
-     * @param DarwinCore $process
-     * @param Xml $xml
+     * @param Import $import
      * @param Project $project
-     * @param BiospexMailer $mailer
+     * @param User $user
      * @param DarwinCoreImportReport $report
+     * @param DarwinCore $process
+     * @param OcrQueue $ocr
+     * @param OcrProcess $ocrProcess
+     * @param Xml $xml
+     * @param BiospexMailer $mailer
      */
     public function __construct(
         Filesystem $filesystem,
         Import $import,
         Project $project,
+        User $user,
         DarwinCoreImportReport $report,
         DarwinCore $process,
+        OcrQueue $ocr,
+        OcrProcess $ocrProcess,
         Xml $xml,
         BiospexMailer $mailer
     ) {
         $this->filesystem = $filesystem;
         $this->import = $import;
         $this->project = $project;
+        $this->user = $user;
         $this->report = $report;
         $this->process = $process;
+        $this->ocrProcess = $ocrProcess;
+        $this->ocr = $ocr;
         $this->xml = $xml;
         $this->mailer = $mailer;
 
-        $this->scratchDir = \Config::get('config.scratchDir');
-        $this->subjectImportDir = \Config::get('config.subjectImportDir');
+        $this->tube = Config::get('config.beanstalkd.ocr');
+        $this->scratchDir = Config::get('config.scratch_dir');
+        $this->subjectImportDir = Config::get('config.subject_import_dir');
         if (! $this->filesystem->isDirectory($this->subjectImportDir)) {
             $this->filesystem->makeDirectory($this->subjectImportDir);
         }
@@ -100,6 +131,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract
 
     /**
      * Fire method.
+     *
      * @param $job
      * @param $data
      * @return mixed
@@ -111,8 +143,8 @@ class DarwinCoreFileImportQueue extends QueueAbstract
         $this->data = $data;
 
         $import = $this->import->find($this->data['id']);
-        $user = \Sentry::findUserById($import->user_id);
-        $project = $this->project->find($import->project_id);
+        $user = $this->user->find($import->user_id);
+        $project = $this->project->findWith($import->project_id, ['workflow.actors']);
 
         $fileName = pathinfo($this->subjectImportDir . '/' . $import->file, PATHINFO_FILENAME);
         $this->scratchFileDir = $this->scratchDir . '/' . $import->id . '-' . md5($fileName);
@@ -129,11 +161,14 @@ class DarwinCoreFileImportQueue extends QueueAbstract
 
             $this->report->complete($user->email, $project->title, $duplicates, $rejects);
 
+            $data = ['project_id' => $import->project_id];
+            Queue::push('App\Services\Queue\OcrProcessBuild', $data, $this->tube);
+
             $this->filesystem->deleteDirectory($this->scratchFileDir);
             $this->filesystem->delete($zipFile);
-
             $this->import->destroy($import->id);
-        } catch (\Exception $e) {
+
+        } catch (Exception $e) {
             $import->error = 1;
             $import->save();
             $this->report->addError(trans('emails.error_import_process',
@@ -156,13 +191,13 @@ class DarwinCoreFileImportQueue extends QueueAbstract
     {
         if (! $this->filesystem->isDirectory($this->scratchFileDir)) {
             if (! $this->filesystem->makeDirectory($this->scratchFileDir, 0777, true)) {
-                throw new \Exception(trans('emails.error_create_dir', ['directory' => $this->scratchFileDir]));
+                throw new Exception(trans('emails.error_create_dir', ['directory' => $this->scratchFileDir]));
             }
         }
 
         if (! $this->filesystem->isWritable($this->scratchFileDir)) {
             if (! chmod($this->scratchFileDir, 0777)) {
-                throw new \Exception(trans('emails.error_write_dir', ['directory' => $this->scratchFileDir]));
+                throw new Exception(trans('emails.error_write_dir', ['directory' => $this->scratchFileDir]));
             }
         }
 

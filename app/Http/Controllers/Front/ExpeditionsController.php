@@ -1,23 +1,29 @@
 <?php namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Queue\Queue;
+use Illuminate\Config\Repository as Config;
+use App\Http\Requests\ExpeditionFormRequest;
+use App\Services\Common\PermissionService;
 use App\Repositories\Contracts\Expedition;
 use App\Repositories\Contracts\Project;
 use App\Repositories\Contracts\Subject;
 use App\Repositories\Contracts\WorkflowManager;
-use App\Services\Process\DarwinCore;
+use Illuminate\Support\Facades\Artisan;
+use Exception;
 
 class ExpeditionsController extends Controller
 {
     /**
+     * @var Request
+     */
+    protected $request;
+
+    /**
      * @var Expedition
      */
     protected $expedition;
-
-    /**
-     * @var ExpeditionForm
-     */
-    protected $expeditionForm;
 
     /**
      * @var Project
@@ -30,32 +36,61 @@ class ExpeditionsController extends Controller
     protected $subject;
 
     /**
-     * @var App\Services\Process\DarwinCore
+     * @var WorkflowManager
      */
-    protected $process;
+    protected $workflowManager;
 
     /**
-     * Instantiate a new ExpeditionsController
+     * @var PermissionService
+     */
+    protected $permissionService;
+
+    /**
+     * @var Queue
+     */
+    protected $queue;
+
+    /**
+     * @var Config
+     */
+    protected $config;
+
+    /**
+     * Instantiate a new ExpeditionsController.
      *
+     * @param Request $request
+     * @param PermissionService $permissionService
      * @param Expedition $expedition
-     * @param ExpeditionForm $expeditionForm
      * @param Project $project
      * @param Subject $subject
      * @param WorkflowManager $workflowManager
-     * @param DarwinCore $process
+     * @param Queue $queue
+     * @param Config $config
+     * @internal param ExpeditionForm $expeditionForm
+     * @internal param OcrQueueInterface $ocr
+     * @internal param Sentry $sentry
+     * @internal param OcrProcess $ocrProcess
+     * @internal param DarwinCoreCsvImport $csv
+     * @internal param DarwinCore $process
      */
     public function __construct(
+        Request $request,
+        PermissionService $permissionService,
         Expedition $expedition,
         Project $project,
         Subject $subject,
         WorkflowManager $workflowManager,
-        DarwinCore $process
+        Queue $queue,
+        Config $config
     ) {
+        $this->request = $request;
+        $this->permissionService = $permissionService;
         $this->expedition = $expedition;
         $this->project = $project;
         $this->subject = $subject;
         $this->workflowManager = $workflowManager;
-        $this->process = $process;
+        $this->queue = $queue;
+        $this->config = $config;
     }
 
     /**
@@ -66,13 +101,14 @@ class ExpeditionsController extends Controller
      */
     public function index($id)
     {
-        if (! Request::ajax()) {
-            return Redirect::action('ProjectsController@show', [$id]);
+        if ( ! $this->request->ajax()) {
+            return redirect()->route('projects.get.read', [$id]);
         }
 
-        $project = $this->project->findWith($id, ['expeditions.actorsCompletedRelation']);
+        $user = $this->request->user();
+        $project = $this->project->findWith($id, ['expeditions.actors', 'expeditions.stat']);
 
-        return View::make('front.expeditions.index', compact('project'));
+        return view('front.expeditions.index', compact('project', 'user'));
     }
 
     /**
@@ -83,142 +119,205 @@ class ExpeditionsController extends Controller
      */
     public function create($id)
     {
-        $project = $this->project->findWith($id, ['group']);
-        $subjects = $this->subject->getUnassignedCount($id);
-        $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
-        $cancel = URL::previous();
+        $user = $this->request->user();
+        $project = $this->project->findWith($id, ['group.permissions']);
 
-        return View::make('front.expeditions.create', compact('project', 'subjects', 'create', 'cancel'));
+        if ( ! $this->permissionService->checkPermissions($user, [$project, $project->group], 'create'))
+        {
+            return redirect()->route('projects.get.index');
+        }
+;
+        return view('front.expeditions.create', compact('project'));
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
+     * Store new expedition
+     * @param ExpeditionFormRequest $request
+     * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store()
+    public function store(ExpeditionFormRequest $request, $projectId)
     {
-        // Form Processing
-        $subjects = $this->subject->getSubjectIds(Input::get('project_id'), Input::get('subjects'));
-        $input = array_merge(Input::all(), ['subject_ids' => $subjects]);
+        $user = $this->request->user();
+        $project = $this->project->findWith($projectId, ['group.permissions']);
 
-        $expedition = $this->expeditionForm->save($input);
+        if ( ! $this->permissionService->checkPermissions($user, [$project, $project->group], 'create'))
+        {
+            return redirect()->route('projects.get.index');
+        }
+
+        $expedition = $this->expedition->create($request->all());
 
         if ($expedition) {
-            Session::flash('success', trans('expeditions.expedition_created'));
-            return Redirect::action('ExpeditionsController@show', [$expedition->project_id, $expedition->id]);
-        } else {
-            Session::flash('error', trans('expeditions.expedition_save_error'));
-            return Redirect::action('ExpeditionsController@create')
-                ->withInput()
-                ->withErrors($this->expeditionForm->errors());
+            session_flash_push('success', trans('expeditions.expedition_created'));
+
+            return redirect()->route('projects.expeditions.get.read', [$projectId, $expedition->id]);
         }
+
+        session_flash_push('error', trans('expeditions.expedition_save_error'));
+        return redirect()->route('projects.get.read', [$projectId]);
     }
 
     /**
-     * Display the specified resource.
-     *
+     * Display the specified resource
      * @param $projectId
      * @param $expeditionId
-     * @return \Illuminate\View\View
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show($projectId, $expeditionId)
+    public function read($projectId, $expeditionId)
     {
         $expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads', 'workflowManager']);
 
-        return view('front.expeditions.show', compact('expedition'));
+        return view('front.expeditions.read', compact('expedition'));
     }
 
     /**
      * Clone an existing expedition
-     *
      * @param $projectId
      * @param $expeditionId
-     * @return \Illuminate\View\View
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function duplicate($projectId, $expeditionId)
     {
-        $expedition = $this->expedition->findWith($expeditionId, ['project.group']);
-        $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
-        $cancel = URL::previous();
+        $user = $this->request->user();
+        $expedition = $this->expedition->findWith($expeditionId, ['project.group.permissions']);
 
-        return View::make('front.expeditions.clone', compact('expedition', 'create', 'cancel'));
+        if ( ! $this->permissionService->checkPermissions($user, [$expedition->project, $expedition->project->group], 'create'))
+        {
+            return redirect()->route('projects.get.index');
+        }
+
+        return view('front.expeditions.clone', compact('expedition'));
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
+     * Show the form for editing the specified resource
      * @param $projectId
      * @param $expeditionId
-     * @return \Illuminate\View\View
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function edit($projectId, $expeditionId)
     {
-        $expedition = $this->expedition->findWith($expeditionId, ['project.group']);
-        $subjects = count($expedition->subject);
-        $create = Route::currentRouteName() == 'projects.expeditions.create' ? true : false;
-        $cancel = URL::previous();
-        return View::make('front.expeditions.edit', compact('expedition', 'subjects', 'create', 'cancel'));
+        $this->expedition->cached(false);
+        $user = $this->request->user();
+        $expedition = $this->expedition->findWith($expeditionId, ['project.group.permissions', 'workflowManager', 'subjects']);
+
+        if ( ! $this->permissionService->checkPermissions($user, [$expedition->project], 'update'))
+        {
+            return redirect()->route('projects.get.index');
+        }
+
+        $subjectIds = [];
+        foreach ($expedition->subjects as $subject) {
+            $subjectIds[] = $subject->_id;
+        }
+
+        $showCb = is_null($expedition->workflowManager) ? 0 : 1;
+        $subjects = implode(',', $subjectIds);
+
+        return view('front.expeditions.edit', compact('expedition', 'subjects', 'showCb', 'subjects'));
     }
 
     /**
-     * Update the specified resource in storage.
-     *
+     * Update expedition
+     * @param ExpeditionFormRequest $request
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update($projectId, $expeditionId)
+    public function update(ExpeditionFormRequest $request, $projectId, $expeditionId)
     {
-        // Form Processing
-        $expedition = $this->expeditionForm->update(Input::all());
+        $user = $this->request->user();
+        $project = $this->project->findWith($projectId, ['group.permissions']);
+
+        if ( ! $this->permissionService->checkPermissions($user, [$project], 'update'))
+        {
+            return redirect()->route('projects.get.index');
+        }
+
+        $expedition = $this->expedition->update($this->request->all());
 
         if ($expedition) {
             // Success!
-            Session::flash('success', trans('expeditions.expedition_updated'));
-            return Redirect::action('projects.expeditions.show', [$projectId, $expeditionId]);
-        } else {
-            Session::flash('error', trans('expeditions.expedition_save_error'));
-            return Redirect::route('projects.expeditions.edit', [$projectId, $expeditionId])
-                ->withInput()
-                ->withErrors($this->expeditionForm->errors());
+            session_flash_push('success', trans('expeditions.expedition_updated'));
+
+            return redirect()->route('projects.expeditions.get.read', [$projectId, $expeditionId]);
         }
+
+        session_flash_push('error', trans('expeditions.expedition_save_error'));
+
+        return redirect()->route('projects.expeditions.edit', [$projectId, $expeditionId]);
     }
 
     /**
-     * Start processing expedition
-     *
+     * Start processing expedition actors
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function process($projectId, $expeditionId)
     {
-        try {
-            $expedition = $this->expedition->findWith($expeditionId, ['project.actors', 'workflowManager']);
+        $user = $this->request->user();
+        $project = $this->project->findWith($projectId, ['group.permissions']);
 
-            if (! is_null($expedition->workflowManager)) {
-                $workflowId = $expedition->workflowManager->id;
-                $expedition->workflowManager->stopped = 0;
-                $expedition->workflowManager->queue = 1;
-                $this->workflowManager->save($expedition->workflowManager);
-            } else {
-                $workflowManager = $this->workflowManager->create(['expedition_id' => $expeditionId, 'queue' => 1]);
-                $workflowId = $workflowManager->id;
-                $expedition->actors()->sync($expedition->project->actors);
-            }
-
-            Queue::push('App\Services\Queue\WorkflowManagerService', ['id' => $workflowId], \Config::get('config.beanstalkd.workflow'));
-
-            Session::flash('success', trans('expeditions.expedition_process_success'));
-        } catch (Exception $e) {
-            Session::flash('error', trans('expeditions.expedition_process_error'));
+        if ( ! $this->permissionService->checkPermissions($user, [$project], 'update'))
+        {
+            return redirect()->route('projects.get.index');
         }
 
-        return Redirect::action('ExpeditionsController@show', [$projectId, $expeditionId]);
+        try {
+            $this->expedition->cached(true);
+            $expedition = $this->expedition->findWith($expeditionId, ['project.workflow.actors', 'workflowManager']);
+
+            if ( ! is_null($expedition->workflowManager)) {
+                $expedition->workflowManager->stopped = 0;
+                $expedition->workflowManager->save();
+            } else {
+                foreach($expedition->project->workflow->actors as $actor) {
+                    if ( ! $actor->private) {
+                        $actors[$actor->id] = ['order' => $actor->pivot->order];
+                    }
+                }
+
+                $expedition->actors()->sync($actors);
+                $this->workflowManager->create(['expedition_id' => $expeditionId]);
+            }
+
+            Artisan::call('workflow:manage', ['expedition' => $expeditionId]);
+
+            session_flash_push('success', trans('expeditions.expedition_process_success'));
+        } catch (Exception $e) {
+            session_flash_push('error', trans('expeditions.expedition_process_error', ['error' => $e->getMessage()]));
+        }
+
+        return redirect()->route('projects.expeditions.get.read', [$projectId, $expeditionId]);
     }
 
+    /**
+     * Reprocess OCR
+     * @param $projectId
+     * @param $expeditionId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function ocr($projectId, $expeditionId)
+    {
+        $user = $this->request->user();
+        $project = $this->project->findWith($projectId, ['group.permissions']);
 
+        if ( ! $this->permissionService->checkPermissions($user, [$project], 'update'))
+        {
+            return redirect()->route('projects.get.index');
+        }
+
+        $data = [
+            'project_id' => (int) $projectId,
+            'expedition_id' => (int) $expeditionId
+        ];
+        $this->queue->push('App\Services\Queue\OcrProcessBuild', $data, $this->config->get('config.beanstalkd.ocr'));
+        session_flash_push('success', trans('expeditions.ocr_process_success'));
+
+        return redirect()->route('projects.expeditions.get.read', [$projectId, $expeditionId]);
+    }
 
     /**
      * Stop a expedition process.
@@ -229,48 +328,25 @@ class ExpeditionsController extends Controller
      */
     public function stop($projectId, $expeditionId)
     {
+        $user = $this->request->user();
+        $project = $this->project->findWith($projectId, ['group.permissions']);
+
+        if ( ! $this->permissionService->checkPermissions($user, [$project], 'update'))
+        {
+            return redirect()->route('projects.get.index');
+        }
+
         $workflow = $this->workflowManager->findByExpeditionId($expeditionId);
 
         if (is_null($workflow)) {
-            Session::flash('error', trans('expeditions.process_no_exists'));
+            session_flash_push('error', trans('expeditions.process_no_exists'));
         } else {
             $workflow->stopped = 1;
-            $workflow->queue = 0;
             $this->workflowManager->save($workflow);
-            Session::flash('success', trans('expeditions.process_stopped'));
+            session_flash_push('success', trans('expeditions.process_stopped'));
         }
 
-        return Redirect::action('ExpeditionsController@show', [$projectId, $expeditionId]);
-    }
-
-    public function ocr($projectId, $expeditionId)
-    {
-        try {
-            $expedition = $this->expedition->findWith($expeditionId, ['subjects']);
-
-            $data = [];
-            $count = 0;
-            $this->process->setProjectId($projectId);
-            foreach ($expedition->subjects as $subject) {
-                if (! empty($subject->ocr)) {
-                    continue;
-                }
-
-                $this->process->buildOcrQueue($data, $subject);
-                $count++;
-            }
-
-            if ($count > 0 && ! \Config::get('config.disableOcr')) {
-                $id = $this->process->saveOcrQueue($data, $count);
-                \Queue::push('App\Services\Queue\QueueFactory', ['id' => $id, 'class' => 'OcrProcessQueue'], Config::get('config.beanstalkd.ocr'));
-            }
-
-            Session::flash('success', trans('expeditions.ocr_process_success'));
-        } catch (Exception $e) {
-            Session::flash('error', trans('expeditions.ocr_process_error'));
-        }
-
-        return Redirect::action('ExpeditionsController@show', [$projectId, $expeditionId]);
+        return redirect()->route('projects.expeditions.get.read', [$projectId, $expeditionId]);
     }
 
     /**
@@ -280,24 +356,33 @@ class ExpeditionsController extends Controller
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy($projectId, $expeditionId)
+    public function delete($projectId, $expeditionId)
     {
+        $user = $this->request->user();
+        $project = $this->project->findWith($projectId, ['group.permissions']);
+
+        if ( ! $this->permissionService->checkPermissions($user, [$project], 'delete'))
+        {
+            return redirect()->route('projects.get.index');
+        }
+
         $workflow = $this->workflowManager->findByExpeditionId($expeditionId);
-        if (! is_null($workflow)) {
-            Session::flash('error', trans('expeditions.expedition_process_exists'));
-            return Redirect::action('projects.expeditions.show', [$projectId, $expeditionId]);
+        if ( ! is_null($workflow)) {
+            session_flash_push('error', trans('expeditions.expedition_process_exists'));
+
+            return redirect()->route('projects.expeditions.get.read', [$projectId, $expeditionId]);
         } else {
             try {
                 $subjects = $this->subject->getSubjectIds($projectId, null, $expeditionId);
                 $this->subject->detachSubjects($subjects, $expeditionId);
                 $this->expedition->destroy($expeditionId);
 
-                Session::flash('success', trans('expeditions.expedition_deleted'));
+                session_flash_push('success', trans('expeditions.expedition_deleted'));
             } catch (Exception $e) {
-                Session::flash('error', trans('expeditions.expedition_destroy_error'));
+                session_flash_push('error', trans('expeditions.expedition_destroy_error'));
             }
         }
 
-        return Redirect::action('projects.show', [$projectId]);
+        return redirect()->route('projects.get.read', [$projectId]);
     }
 }

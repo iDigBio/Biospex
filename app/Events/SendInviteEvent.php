@@ -1,6 +1,4 @@
-<?php
-
-namespace App\Events;
+<?php namespace App\Events;
 
 use Illuminate\Queue\SerializesModels;
 
@@ -8,13 +6,15 @@ class SendInviteEvent extends Event
 {
     use SerializesModels;
 
+    public $data;
+
     /**
      * Create a new event instance.
      *
-     * @param $invite
+     * @param $data
      */
-    public function __construct($invite)
+    public function __construct($data)
     {
-        $this->invite = $invite;
+        $this->data = $data;
     }
 }

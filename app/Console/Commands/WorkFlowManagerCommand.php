@@ -3,9 +3,12 @@
 use Illuminate\Console\Command;
 use App\Repositories\Contracts\WorkflowManager;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Queue;
+use Symfony\Component\Console\Input\InputArgument;
 
 class WorkFlowManagerCommand extends Command
 {
+    public $tube;
     /**
      * The console command name.
      *
@@ -21,16 +24,36 @@ class WorkFlowManagerCommand extends Command
     protected $description = "Workflow manager";
 
     /**
+     * @var WorkflowManagerInterface
+     */
+    protected $workflow;
+
+    /**
      * Class constructor
      *
-     * @param WorkflowManager $manager
+     * @param WorkflowManagerInterface $workflow
+     * @param QueueFactory $factory
+     * @internal param WorkflowManagerInterface $manager
+     * @internal param ActorInterface $actor
+     * @internal param Report $report
      */
-    public function __construct(WorkflowManager $manager)
+    public function __construct(WorkflowManager $workflow)
     {
-        $this->manager = $manager;
-        $this->queue = Config::get('config.beanstalkd.workflow');
-
         parent::__construct();
+        $this->tube = Config::get('config.beanstalkd.workflow');
+        $this->workflow = $workflow;
+    }
+
+    /**
+     * Defines the arguments.
+     *
+     * @return array
+     */
+    public function getArguments()
+    {
+        return [
+            ['expedition', InputArgument::OPTIONAL, 'The id of an Expedition to process.'],
+        ];
     }
 
     /**
@@ -40,34 +63,76 @@ class WorkFlowManagerCommand extends Command
      */
     public function fire()
     {
-        $managers = $this->manager->allWith(['expedition.actors']);
+        $id = $this->argument('expedition');
 
-        if (empty($managers)) {
+        if ( ! empty($id)) {
+            $workFlows = $this->workflow->findByExpeditionIdWith($id, ['expedition.actors']);
+        } else {
+            $workFlows = $this->workflow->allWith(['expedition.actors']);
+        }
+
+
+        if ($workFlows->isEmpty()) {
             return;
         }
 
-        foreach ($managers as $manager) {
-            if ($this->checkProcess($manager)) {
-                continue;
-            }
+        $actors = $this->processWorkFlows($workFlows);
 
-            Queue::push('App\Services\Queue\QueueFactory', ['id' => $manager->id, 'class' => 'WorkflowManagerQueue'], $this->queue);
-
-            $manager->queue = 1;
-            $manager->save();
+        foreach ($actors as $actor) {
+            $actor->pivot->queued = 1;
+            $actor->pivot->save();
+            Queue::push('App\Services\Queue\ActorQueue', serialize($actor), $this->tube);
         }
     }
 
     /**
-     * @param $manager
-     * @return bool
+     * Process each workflow and actors
+     * @param $workFlows
+     * @return array
      */
-    public function checkProcess($manager)
+    protected function processWorkFlows($workFlows)
     {
-        if ($manager->stopped == 1 || $manager->error == 1 || $manager->queue == 1) {
-            return true;
+        $actors = [];
+        foreach ($workFlows as $workFlow) {
+            if ($workFlow->stopped) {
+                continue;
+            }
+
+            $this->processActors($workFlow, $actors);
         }
 
-        return false;
+        return $actors;
+    }
+
+    /**
+     * Decide what actor to include in the array and being processed
+     * @param $workFlow
+     * @param $actors
+     */
+    protected function processActors($workFlow, &$actors)
+    {
+        foreach ($workFlow->expedition->actors as $actor) {
+            if ($this->checkErrorQueued($actor)) {
+                return;
+            }
+
+            if ($actor->completed) {
+                continue;
+            }
+
+            $actors[] = $actor;
+        }
+
+        return;
+    }
+
+    /**
+     * Check if actor is in error or queued
+     * @param $actor
+     * @return bool
+     */
+    protected function checkErrorQueued($actor)
+    {
+        return ($actor->error || $actor->queued) ? true : false;
     }
 }

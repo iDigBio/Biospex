@@ -2,262 +2,81 @@
 
 namespace App\Services\Common;
 
-use Illuminate\Http\Request;
-use Illuminate\Routing\Router;
-use Illuminate\Config\Repository;
-use Illuminate\Routing\UrlGenerator;
-use Cartalyst\Sentry\Sentry;
-use App\Repositories\Contracts\Group;
-use App\Repositories\Contracts\Project;
-use App\Repositories\Contracts\Actor;
+use App\Repositories\Contracts\Workflow;
 
 class ProjectService
 {
     /**
-     * @var Sentry
+     * @var Workflow
      */
-    protected $sentry;
-
+    private $workflow;
     /**
-     * @var Request
+     * @var \App\Services\Common\PermissionService
      */
-    protected $request;
-
-    /**
-     * @var Router
-     */
-    protected $router;
-
-    /**
-     * @var UrlGenerator
-     */
-    protected $url;
-
-    /**
-     * @var Repository
-     */
-    protected $config;
-
-    /**
-     * @var Group
-     */
-    protected $group;
-
-    /**
-     * @var Project
-     */
-    protected $project;
-
-    /**
-     * @var Actor
-     */
-    protected $actor;
+    private $permission;
 
     /**
      * Construct.
      *
-     * @param Sentry $sentry
-     * @param Request $request
-     * @param Router $router
-     * @param UrlGenerator $url
-     * @param Repository $config
-     * @param Group $group
-     * @param Project $project
-     * @param Actor $actor
+     * @param Workflow $workflow
+     * @param \App\Services\Common\PermissionService $permission
+     * @internal param Request $request
+     * @internal param Router $router
+     * @internal param UrlGenerator $url
+     * @internal param Repository $config
+     * @internal param Group $group
+     * @internal param Project $project
+     * @internal param Auth $auth
+     * @internal param User $user
+     * @internal param Actor $actor
+     * @internal param Sentry $sentry
      */
     public function __construct(
-        Sentry $sentry,
-        Request $request,
-        Router $router,
-        UrlGenerator $url,
-        Repository $config,
-        Group $group,
-        Project $project,
-        Actor $actor
+        Workflow $workflow,
+        PermissionService $permission
     ) {
-        $this->sentry = $sentry;
-        $this->request = $request;
-        $this->router = $router;
-        $this->url = $url;
-        $this->config = $config;
-        $this->group = $group;
-        $this->project = $project;
-        $this->actor = $actor;
+        $this->workflow = $workflow;
+        $this->permission = $permission;
     }
 
     /**
-     * Build information for projects index page.
-     *
-     * @return array
-     */
-    public function showIndex()
-    {
-        $user = $this->sentry->getUser();
-        $isSuperUser = $user->isSuperUser();
-        $allGroups = $isSuperUser ? $this->sentry->findAllGroups() : $user->getGroups();
-        $groups = $this->group->findAllGroupsWithProjects($allGroups);
-
-        return compact('groups', 'user', 'isSuperUser');
-    }
-
-    /**
-     * Show new project form.
-     *
-     * @return array|\Illuminate\Http\RedirectResponse
-     */
-    public function createForm()
-    {
-        $vars = $this->setCommonVariables();
-        $count = is_null($this->request->old('targetCount')) ? 0 : $this->request->old('targetCount');
-
-        return array_merge($vars, ['count' => $count]);
-    }
-
-    /**
-     * Create a project.
-     *
-     * @param $request
-     * @return mixed
-     */
-    public function store($request)
-    {
-        return $this->project->create($request->all());
-    }
-
-    /**
-     * Build variables for displaying project.
-     *
-     * @return array
-     */
-    public function show()
-    {
-        $id = $this->router->input('projects');
-        $project = $this->project->findWith($id, ['group', 'expeditions.downloads', 'expeditions.actors', 'expeditions.actorsCompletedRelation']);
-        $user = $this->sentry->getUser();
-        $isOwner = ($user->id == $project->group->user_id || $user->isSuperUser()) ? true : false;
-
-        return compact('user', 'isOwner', 'project');
-    }
-
-    /**
-     * Build variables for duplicating project.
-     *
-     * @return array|\Illuminate\Http\RedirectResponse
-     */
-    public function duplicate()
-    {
-        $id = $this->router->input('projects');
-        $project = $this->project->findWith($id, ['group', 'actors']);
-
-        if ( ! $project)
-        {
-            session_flash_push('error', trans('pages.project_repo_error'));
-            return false;
-        }
-
-        $vars = $this->setCommonVariables();
-        $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
-        $workflowCheck = '';
-
-        return array_merge($vars, ['count' => $count, 'workflowCheck' => $workflowCheck]);
-    }
-
-    /**
-     * Build variables for editing project.
-     *
-     * @return array
-     */
-    public function edit()
-    {
-        $id = $this->router->input('projects');
-        $project = $this->project->findWith($id, ['group', 'actors', 'expeditions.workflowManager']);
-
-        $workflowCheck = '';
-        foreach ($project->expeditions as $expedition) {
-            $workflowCheck = is_null($expedition->workflowManager) ? '' : 'readonly';
-        }
-
-        $vars = $this->setCommonVariables();
-        $count = is_null($project->target_fields) ? 0 : count($project->target_fields);
-        $cancel = $this->url->previous();
-
-        return array_merge($vars, ['project' => $project, 'count' => $count, 'workflowCheck' => $workflowCheck, 'cancel' => $cancel]);
-    }
-
-    /**
-     * Update project.
-     *
-     * @param $request
-     * @return mixed
-     */
-    public function update($request)
-    {
-        return $this->project->update($request->all());
-    }
-
-    /**
-     * Show advertise page and populate advertise field it necessary.
-     *
-     * @return mixed
-     */
-    public function advertise()
-    {
-        $project = $this->project->find($this->router->input('projects'));
-
-        if (empty($project->advertise)) {
-            $project->advertise = json_decode(json_encode($project), true);
-            $project->save();
-        }
-
-        return $project;
-    }
-
-    /**
-     * Downlad advertise json.
-     *
-     * @return mixed
-     */
-    public function advertiseDownload()
-    {
-        return $this->project->find($this->router->input('projects'));
-    }
-
-    /**
-     * Destroy project.
-     *
+     * Check permissions.
+     * @param $user
+     * @param $classes
+     * @param $ability
      * @return bool
      */
-    public function destroy()
+    public function checkPermissions($user, $classes, $ability)
     {
-        $id = $this->router->input('projects');
-        $project = $this->project->findWith($id, ['group']);
-        $user = $this->user->getUser();
-        $isSuperUser = $user->isSuperUser();
-        $isOwner = ($user->id == $project->group->user_id || $isSuperUser) ? true : false;
-
-        if ($isOwner) {
-            $this->project->destroy($id);
-            session_flash_push('success', trans('projects.project_destroyed'));
-
-            return true;
-        }
-
-        session_flash_push('error', trans('projects.project_destroy_error'));
-
-        return false;
+        return $this->permission->checkPermissions($user, $classes, $ability);
     }
 
+    /**
+     * Check if a workflow exists
+     * @param $expeditions
+     * @return bool
+     */
+    public function checkWorkflow($expeditions)
+    {
+        foreach ($expeditions as $expedition) {
+            if ( ! is_null($expedition->workflowManager))
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
 
     /**
      * Set common variables.
      *
+     * @param $user
      * @return array|\Illuminate\Http\RedirectResponse
      */
-    protected function setCommonVariables()
+    public function setCommonVariables($user)
     {
-        $user = $this->sentry->getUser();
-        $allGroups = $user->isSuperUser() ? $this->sentry->findAllGroups() : $user->getGroups();
-        $groups = $this->group->selectOptions($allGroups);
+        $groups = $user->groups()->lists('label', 'id')->toArray();
 
         if (empty($groups)) {
             session_flash_push('success', trans('groups.group_required'));
@@ -265,11 +84,11 @@ class ProjectService
             return redirect()->route('groups.create');
         }
 
-        $actors = $this->actor->selectList();
+        $workflows = ['--Select--'] + $this->workflow->selectList('workflow', 'id');
         $statusSelect = config('config.status_select');
         $selectGroups = ['' => '--Select--'] + $groups;
 
-        return compact('actors', 'statusSelect', 'selectGroups');
+        return compact('workflows', 'statusSelect', 'selectGroups');
     }
 }
 

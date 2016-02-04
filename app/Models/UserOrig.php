@@ -6,7 +6,7 @@ namespace App\Models;
 
 
 //use Cartalyst\Sentry\Users\Eloquent\User as SentryUser;
-//use Cartalyst\Sentry\Hashing\NativeHasher;
+use Cartalyst\Sentry\Hashing\NativeHasher;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\HasManyImportsTrait;

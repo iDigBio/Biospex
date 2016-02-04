@@ -4,14 +4,16 @@ function top_menu()
 {
     return [
             // group
-            ['id' => 1, 'url' => "/groups", 'label' => trans("groups.groups"), 'permission' => 'group_view'],
-            ['id' => 2, 'url' => "/projects", 'label' => trans("projects.projects"), 'permission' => 'project_view'],
+            ['id' => 1, 'url' => "/groups", 'label' => trans("groups.groups"), 'permission' => 'read-group'],
+            ['id' => 2, 'url' => "/projects", 'label' => trans("projects.projects"), 'permission' => 'read-project'],
             // user
+            /*
             ['id' => 3, 'url' => "#users", 'label' => trans("users.users"), 'permission' => 'user_view'],
             ['id' => 4, 'url' => "/users", 'label' => trans("pages.list"), 'permission' => 'user_view', 'parent_id' => 3],
             ['id' => 5, 'url' => "/users/create", 'label' => trans("pages.create"), 'permission' => 'user_create', 'parent_id' => 3],
             // Admin
             ['id' => 6, 'url' => "/admin", 'label' => trans("users.admin"), 'permission' => 'superuser'],
+            */
     ];
 
     /*

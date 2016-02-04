@@ -81,7 +81,7 @@ class UsersController extends Controller
     {
         $allGroups = $this->group->findAllGroups();
         $groups = $this->group->selectOptions($allGroups, true);
-        $cancel = URL::route('users.index');
+        $cancel = URL::route('users.get.index');
 
         return \View::make('users.create', compact('groups', 'cancel'));
     }
@@ -97,25 +97,25 @@ class UsersController extends Controller
         $result = $this->dispatch(new PostRegistrationFormJob($request));
 
         if ($result && $request->exists('registeruser')) {
-            return \Redirect::action('login');
+            return redirect()->action('login');
         }
 
         if ($result) {
-            return \Redirect::action('users.edit', [$result['userId']]);
+            return redirect()->action('users.get.edit', [$result['userId']]);
         }
 
-        return \Redirect::back()->withInput();
+        return redirect()->back()->withInput();
     }
 
     /**
-     * \Redirect to edit page.
+     * Redirect to edit page.
      *
      * @param  int $id
      * @return Response
      */
-    public function show($id)
+    public function read($id)
     {
-        return \Redirect::action('users.edit', [$id]);
+        return redirect()->action('users.get.edit', [$id]);
     }
 
     /**
@@ -131,7 +131,7 @@ class UsersController extends Controller
         if (is_null($user) || ! is_numeric($id)) {
             \Session::flash('error', trans('pages.error_missing_variable'));
 
-            return \Redirect::route('home');
+            return redirect()->action('home');
         }
 
         $groups = $user->groups->toArray();
@@ -147,7 +147,7 @@ class UsersController extends Controller
         $userEditPermissions = $this->user->getUser()->hasAccess('user_edit_permissions');
         $userEditGroups = $this->user->getUser()->hasAccess('user_edit_groups');
         $superUser = $this->user->getUser()->isSuperUser();
-        $cancel = $this->user->getUser()->isSuperUser() ? \URL::route('users.index') : \URL::route('projects.index');
+        $cancel = $this->user->getUser()->isSuperUser() ? \URL::route('users.get.index') : \URL::route('projects.index');
 
         return \View::make('users.edit', compact(
                 'user',
@@ -181,11 +181,11 @@ class UsersController extends Controller
             // Success!
             \Session::flash('success', $result['message']);
 
-            return \Redirect::action('users.edit', [$id]);
+            return redirect()->action('users.get.edit', [$id]);
         } else {
             \Session::flash('error', $result['message']);
 
-            return \Redirect::action('users.edit', [$id])
+            return redirect()->action('users.get.edit', [$id])
                 ->withInput()
                 ->withErrors($this->userForm->errors());
         }
@@ -203,7 +203,7 @@ class UsersController extends Controller
         if (! is_numeric($id)) {
             \Session::flash('error', trans('pages.error_delete_user'));
 
-            return \Redirect::action('UsersController@index');
+            return redirect()->action('UsersController@index');
         }
 
         if ($this->user->destroy($id)) {
@@ -211,11 +211,11 @@ class UsersController extends Controller
 
             \Session::flash('success', trans('users.deleted'));
 
-            return \Redirect::action('UsersController@index');
+            return redirect()->action('UsersController@index');
         } else {
             \Session::flash('error', trans('pages.error_delete_user'));
 
-            return \Redirect::action('UsersController@index');
+            return redirect()->action('UsersController@index');
         }
     }
 
@@ -225,7 +225,7 @@ class UsersController extends Controller
      * @param  int $id
      * @return redirect
      */
-    public function change($id)
+    public function pass($id)
     {
         $data = \Input::all();
         $data['id'] = $id;
@@ -239,11 +239,11 @@ class UsersController extends Controller
             // Success!
             \Session::flash('success', $result['message']);
 
-            return \Redirect::action('UsersController@show', [$id]);
+            return redirect()->action('UsersController@read', [$id]);
         } else {
             \Session::flash('error', $result['message']);
 
-            return \Redirect::action('UsersController@edit', [$id])
+            return redirect()->action('UsersController@edit', [$id])
                 ->withInput()
                 ->withErrors($this->changePasswordForm->errors());
         }

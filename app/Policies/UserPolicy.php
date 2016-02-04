@@ -8,26 +8,29 @@ class UserPolicy
 {
     public function before($user)
     {
-       return $user->isAdmin('admins');
+        if ($user->isAdmin('admins'))
+        {
+            return true;
+        }
     }
 
     public function edit($user)
     {
-        return Auth::getUser()->id == $user->id;
+        return is_null($user) ? false : Auth::getUser()->id == $user->id;
     }
 
     public function update($user)
     {
-        return Auth::getUser()->id == $user->id;
+        return is_null($user) ? false : Auth::getUser()->id == $user->id;
     }
 
     public function pass($user)
     {
-        return Auth::getUser()->id == $user->id;
+        return is_null($user) ? false : Auth::getUser()->id == $user->id;
     }
 
     public function delete($user)
     {
-        return $user->isAdmin('superuser');
+        return is_null($user) ? false : $user->isAdmin('superuser');
     }
 }

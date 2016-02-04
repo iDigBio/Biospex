@@ -12,20 +12,18 @@ class Property extends Model
     protected $table = 'properties';
 
     /**
-     * Protect date columns.
      * @var array
      */
     protected $dates = ['deleted_at'];
 
     /**
-     * Fillable columns.
      * @var array
      */
-    protected $fillable = array(
+    protected $fillable = [
         'qualified',
         'short',
         'namespace'
-    );
+    ];
 
     /**
      * Find by qualified name

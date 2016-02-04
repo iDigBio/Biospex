@@ -1,6 +1,8 @@
 <?php namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Queue;
 use Symfony\Component\Console\Input\InputArgument;
 
 class ClearBeanstalkdQueueCommand extends Command
@@ -52,7 +54,7 @@ class ClearBeanstalkdQueueCommand extends Command
      */
     public function fire()
     {
-        $this->tubes = \Config::get('config.beanstalkd');
+        $this->tubes = Config::get('config.beanstalkd');
 
         $tubes = ($this->argument('tube')) ? $this->argument('tube') : $this->tubes;
 
@@ -83,7 +85,7 @@ class ClearBeanstalkdQueueCommand extends Command
     protected function clearQueue($tube)
     {
         $this->info(sprintf('Clearing queue: %s', $tube));
-        $pheanstalk = \Queue::getPheanstalk();
+        $pheanstalk = Queue::getPheanstalk();
         $pheanstalk->useTube($tube);
         $pheanstalk->watch($tube);
 

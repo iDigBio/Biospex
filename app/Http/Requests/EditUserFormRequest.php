@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EditUserFormRequest extends Request
 {
@@ -13,8 +13,7 @@ class EditUserFormRequest extends Request
      */
     public function authorize()
     {
-        $user = \Sentry::getUser();
-        return $user->isSuperUser() ? true : $user->id == $this->route('users') ? true : false;
+        return Auth::check();
     }
 
     /**

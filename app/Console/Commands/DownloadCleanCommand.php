@@ -1,13 +1,18 @@
 <?php namespace App\Console\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Config;
 use Symfony\Component\Console\Input\InputArgument;
 use App\Repositories\Contracts\Download;
 use App\Services\Report\Report;
 
 class DownloadCleanCommand extends Command
 {
+    public $filesystem;
+    public $download;
+    public $report;
     /**
      * The console command name.
      *
@@ -33,7 +38,7 @@ class DownloadCleanCommand extends Command
      * Constructor
      *
      * @param Filesystem $filesystem
-     * @param Download $download
+     * @param DownloadInterface $download
      * @param Report $report
      */
     public function __construct(
@@ -47,7 +52,7 @@ class DownloadCleanCommand extends Command
         $this->download = $download;
         $this->report = $report;
 
-        $this->nfnExportDir = \Config::get('config.nfn_export_dir');
+        $this->nfnExportDir = Config::get('config.nfnExportDir');
     }
 
     /**
@@ -61,10 +66,6 @@ class DownloadCleanCommand extends Command
 
         $downloads = $this->download->getExpired();
 
-        if (! \File::isDirectory($this->nfnExportDir)) {
-            \File::makeDirectory($this->nfnExportDir);
-        }
-
         foreach ($downloads as $download) {
             try {
                 $file = $this->nfnExportDir . "/" . $download->file;
@@ -73,7 +74,7 @@ class DownloadCleanCommand extends Command
                 }
 
                 $this->download->destroy($download->id);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->report->addError("Unable to process download id: {$download->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
                 $this->report->reportSimpleError();
                 continue;
@@ -90,8 +91,8 @@ class DownloadCleanCommand extends Command
      */
     protected function getArguments()
     {
-        return array(
-            array('debug', InputArgument::OPTIONAL, 'Debug option. Default false.', false),
-        );
+        return [
+            ['debug', InputArgument::OPTIONAL, 'Debug option. Default false.', false],
+        ];
     }
 }

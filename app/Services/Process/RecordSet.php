@@ -1,7 +1,12 @@
 <?php  namespace App\Services\Process;
 
 use App\Repositories\Contracts\Import;
-use App\Services\Curl\Curl;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Config;
+use Exception;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Queue;
 
 class RecordSet
 {
@@ -20,6 +25,11 @@ class RecordSet
     public $response;
 
     /**
+     * @var
+     */
+    public $tube;
+
+    /**
      * Constructor.
      *
      * @param Import $import
@@ -28,9 +38,9 @@ class RecordSet
     {
         $this->import = $import;
 
-        $this->queue = \Config::get('config.beanstalkd.import');
-        $this->recordsetUrl = \Config::get('config.recordset_url');
-        $this->importDir = \Config::get('config.subject_import_dir');
+        $this->tube = Config::get('config.beanstalkd.import');
+        $this->recordsetUrl = Config::get('config.recordset_url');
+        $this->importDir = Config::get('config.subject_import_dir');
     }
 
     /**
@@ -63,6 +73,7 @@ class RecordSet
         }
 
         $this->data['url'] = str_replace('RECORDSET_ID', $this->data['id'], $this->recordsetUrl);
+
         return $this->data['url'];
     }
 
@@ -74,87 +85,61 @@ class RecordSet
      */
     public function send($url)
     {
-        $rc = new Curl([$this, "response"]);
-        $rc->options = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_FOLLOWLOCATION => 1];
-        $rc->get($url);
-        $result = $rc->execute();
+        $client = new Client();
+        $response = $client->get($url, [
+            'headers' => ['Accept' => 'application/json']
+        ]);
 
-        return $result;
-    }
-
-    /**
-     * Process response and handle appropriately.
-     *
-     * @param $return
-     * @param $info
-     * @return bool
-     */
-    public function response($return, $info)
-    {
-        if (! $this->checkHttpCode($info)) {
-            return false;
+        if ($response->getStatusCode() != 200) {
+            return;
         }
 
-        $this->response = json_decode($return);
+        $this->response = json_decode($response->getBody()->getContents());
 
         if ($this->response->complete == true && $this->response->task_status == "SUCCESS") {
-            return $this->download();
+            $this->download();
+            $this->pushToQueue();
+
+            return;
         }
 
-        $this->pushToQueue();
+        $this->pushToQueue(true);
 
-        return true;
+        return;
     }
 
-    /**
-     * Check the response and release if necessary.
-     * iDigBio sometimes returns 500 so release job if needed.
-     *
-     * @param $info
-     * @return bool
-     */
-    public function checkHttpCode($info)
-    {
-        if ($info['http_code'] == 200) {
-            return true;
-        }
-
-        $this->release(10);
-
-        return false;
-    }
 
     /**
      * Download zip file.
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function download()
     {
-        $fileName =  $this->data['id'] . ".zip";
-        $filePath = $this->importDir . "/" .$fileName;
-        if (! file_put_contents($filePath, file_get_contents($this->response->download_url))) {
+        $fileName = $this->data['id'] . ".zip";
+        $filePath = $this->importDir . "/" . $fileName;
+        if ( ! file_put_contents($filePath, file_get_contents($this->response->download_url))) {
             throw new \Exception(trans('emails.error_zip_download'));
         }
 
         $import = $this->importInsert($fileName);
 
         unset($this->data);
-        $this->data = ['id' => $import->id, 'class' => 'DarwinCoreFileImportQueue'];
+        $this->data = ['id' => $import->id];
 
-        $this->pushToQueue();
-
-        return true;
+        return;
     }
 
     /**
      * Push to queue.
+     * @param bool $requeue
      */
-    public function pushToQueue()
+    public function pushToQueue($requeue = false)
     {
-        $date = \Carbon::now()->addMinutes(5);
-        \Queue::later($date, 'App\Services\Queue\QueueFactory', $this->data, $this->queue);
+        $class = ($requeue) ? 'App\Services\Queue\RecordSetImportQueue' : 'App\Services\Queue\DarwinCoreFileImportQueue';
+        $date = Carbon::now()->addMinutes(5);
+        Queue::later($date, $class, $this->data, $this->tube);
 
         return;
     }
@@ -166,15 +151,15 @@ class RecordSet
      */
     protected function checkDir()
     {
-        if (! \File::isDirectory($this->importDir)) {
-            if (! \File::makeDirectory($this->importDir, 0775, true)) {
-                throw new \Exception(trans('emails.error_create_dir', ['directory' => $this->importDir]));
+        if ( ! File::isDirectory($this->importDir)) {
+            if ( ! File::makeDirectory($this->importDir, 0775, true)) {
+                throw new Exception(trans('emails.error_create_dir', ['directory' => $this->importDir]));
             }
         }
 
-        if (! \File::isWritable($this->importDir)) {
-            if (! chmod($this->importDir, 0775)) {
-                throw new \Exception(trans('emails.error_write_dir', ['directory' => $this->importDir]));
+        if ( ! File::isWritable($this->importDir)) {
+            if ( ! chmod($this->importDir, 0775)) {
+                throw new Exception(trans('emails.error_write_dir', ['directory' => $this->importDir]));
             }
         }
 
@@ -190,9 +175,9 @@ class RecordSet
     protected function importInsert($filename)
     {
         $import = $this->import->create([
-            'user_id' => $this->data['user_id'],
+            'user_id'    => $this->data['user_id'],
             'project_id' => $this->data['project_id'],
-            'file' => $filename
+            'file'       => $filename
         ]);
 
         return $import;

@@ -1,38 +1,27 @@
-<?php  namespace App\Services\Queue;
+<?php namespace App\Services\Queue;
 
 use App\Services\Process\RecordSet;
 use App\Services\Report\Report;
+use Exception;
 
 class RecordSetImportQueue extends QueueAbstract
 {
     /**
-     * Url for recordset.
-     *
-     * @var string
+     * @var RecordSet
      */
-    public $recordsetUrl;
+    public $record;
 
     /**
-     * Response from curl.
-     *
-     * @var object
+     * @var Report
      */
-    public $response;
+    public $report;
+
 
     /**
-     * Import directory.
-     *
-     * @var string
+     * RecordSetImportQueue constructor.
+     * @param RecordSet $record
+     * @param Report $report
      */
-    public $importDir;
-
-    /**
-     * Beanstalkd queue.
-     *
-     * @var string
-     */
-    public $queue;
-
     public function __construct(RecordSet $record, Report $report)
     {
         $this->record = $record;
@@ -41,6 +30,7 @@ class RecordSetImportQueue extends QueueAbstract
 
     /**
      * Fire method
+     *
      * @param $job
      * @param $data
      */
@@ -50,12 +40,11 @@ class RecordSetImportQueue extends QueueAbstract
         $this->data = $data;
 
         try {
-            if ($this->record->process($data)) {
-                $this->delete();
-            }
+            $this->record->process($data);
+            $this->delete();
 
             return;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->report->addError(trans('emails.error_import_process',
                 ['id' => $this->data['id'], 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]
             ));

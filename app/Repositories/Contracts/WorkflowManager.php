@@ -8,13 +8,15 @@ interface WorkflowManager extends Repository
      * @param array $with
      * @return mixed
      */
-    public function allWith($with = array());
+    public function allWith($with = []);
 
     /**
      * Get workflow process by expedition id
-     * 
+     *
      * @param $id
      * @return mixed
      */
     public function findByExpeditionId($id);
+
+    public function findByExpeditionIdWith($id, $with = []);
 }

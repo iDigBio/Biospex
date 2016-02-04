@@ -1,9 +1,9 @@
 <?php namespace App\Repositories;
 
-use App\Repositories\Contracts\UserGridFieldInterface;
-use UserGridField as Model;
+use App\Repositories\Contracts\UserGridField;
+use App\Models\UserGridField as Model;
 
-class UserGridFieldRepository extends Repository implements UserGridFieldInterface
+class UserGridFieldRepository extends Repository implements UserGridField
 {
     /**
      * @param Model $model

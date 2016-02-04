@@ -72,15 +72,6 @@ class GroupOrig extends SentryGroup
         return $this->belongsTo('App\Models\User', 'user_id');
     }
 
-    /**
-     * Returns default permissions for Factory Muff
-     *
-     * @return array
-     */
-    public static function defaultPermissions()
-    {
-        return Config::get('config.group_permissions');
-    }
 
     public function findAllGroupsWithProjects($allGroups)
     {

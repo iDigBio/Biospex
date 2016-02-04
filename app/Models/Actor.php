@@ -26,11 +26,9 @@
  */
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Traits\HasManyDownloadsTrait;
 
 class Actor extends Model
 {
-    use HasManyDownloadsTrait;
 
     /**
      * The database table used by the model.
@@ -45,30 +43,23 @@ class Actor extends Model
         'class',
     ];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function projects()
+    public function workflows()
     {
-        return $this->belongsToMany('App\Models\Project')->withTimestamps()->withPivot('order_by');
+        return $this->belongsToMany(Workflow::class)->withPivot('order')->orderBy('order');
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
+    public function downloads()
+    {
+        return $this->hasMany(Download::class);
+    }
+
     public function expeditions()
     {
-        return $this->belongsToMany('App\Models\Expedition')->withPivot('state', 'completed')->withTimestamps();
-    }
-
-
-    /**
-     * Return as select list
-     *
-     * @return array
-     */
-    public function selectList()
-    {
-        return $this->where('private', '=', 0)->lists('title', 'id')->all();
+        return $this->belongsToMany(Expedition::class, 'actor_expedition')
+            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'error', 'queued', 'completed')
+            ->withTimestamps();
     }
 }

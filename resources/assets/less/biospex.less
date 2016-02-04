@@ -18,7 +18,7 @@ body.home { padding-top: 40px; }
 #x { background: url(/images/x.png) right -50px no-repeat; }
 .home h2 { color: #8dc63f; font-size: 18px; font-weight: bold; margin: 45px 0 10px 0; }
 .home label { color: #999; font-weight: normal; display: block;}
-.home input[type="text"], .home input[type="email"] { width: 200px; }
+.home input[type="text"], .home #mce-EMAIL { width: 200px; }
 h2.mailchimp { margin-top: 90px; }
 p a { color: #c00; }
 p a:hover { color: #f00; }
@@ -173,13 +173,49 @@ p a:hover { color: #f00; }
 .eyesright { float: right; }
 
 /** jqGrid **/
-.ui-jqgrid .ui-pg-input { height: 16px; }
-.ui-jqgrid tr.jqgrow td.textInDiv>div {
-  max-height: 40px;
+.ui-jqgrid .ui-jqgrid-view input,
+.ui-jqgrid .ui-jqgrid-view select,
+.ui-jqgrid .ui-jqgrid-view textarea,
+.ui-jqgrid .ui-jqgrid-view button {
+  font-size: .9em;
+}
+
+td span.fa-folder, span.fa-folder-open {
+  cursor: pointer;
+}
+
+td.form-view-data > span > div {
+  max-height: 150px;
   overflow: auto
 }
 
-td.form-view-data>span>div {
-  max-height: 150px;
-  overflow: auto
+#model-body img {
+  display:block;
+  margin: auto;
+}
+
+td.ocrPreview {
+  cursor: pointer;
+}
+
+.ui-jqgrid tr.ui-row-ltr td.thumbPreview {
+  text-align:center;
+  vertical-align:middle;
+}
+.ui-jqgrid tr.ui-row-ltr td.thumbPreview a {
+  display: inline-block;
+  margin: 0 10px 0 10px;
+}
+
+.ui-th-ltr {
+  background-color: @gray-lighter-light;
+  color: #000;
+}
+
+td.buttons-sm {
+  width: 410px;
+}
+
+td.buttons-xs {
+  width: 150px;
 }

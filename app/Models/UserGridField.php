@@ -26,22 +26,15 @@
  */
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Traits\BelongsToUserTrait;
-use App\Models\Traits\BelongsToProjectTrait;
-use App\Models\Traits\BelongsToExpeditionTrait;
 
-class UserGridField extends Eloquent
+class UserGridField extends Model
 {
-    use BelongsToUserTrait;
-    use BelongsToProjectTrait;
-    use BelongsToExpeditionTrait;
-
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'user_grid_fields';
+    protected $table = 'user_grid_field';
 
     /**
      * @var array
@@ -53,6 +46,30 @@ class UserGridField extends Eloquent
         'expedition_id',
         'fields'
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function expedition()
+    {
+        return $this->belongsTo(Expedition::class);
+    }
 
     public function findByUserProjectExpedition($userId, $projectId, $expeditionId)
     {

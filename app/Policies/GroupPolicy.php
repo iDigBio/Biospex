@@ -2,33 +2,65 @@
 
 namespace App\Policies;
 
-use App\Repositories\Contracts\User;
-
 class GroupPolicy
 {
-    /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function before($user)
     {
-        //
+        if ($user->isAdmin('admins'))
+        {
+            return true;
+        }
     }
 
-    public function create(User $user) {
-        return $user->hasPermission('create-group');
+    /**
+     * Check if user can create group
+     * @param $user
+     * @return bool
+     */
+    public function create($user)
+    {
+        return true;
     }
 
-    public function read(User $user) {
-        return $user->hasPermission('read-group');
+    /**
+     * Check if user can store group
+     * @param $user
+     * @return bool
+     */
+    public function store($user)
+    {
+        return true;
     }
 
-    public function update(User $user) {
-        return $user->hasPermission('update-group');
+    /**
+     * Check if user can read group
+     * @param $group
+     * @return bool
+     */
+    public function read($user, $group)
+    {
+        return $user->hasAccess($group, 'read-group');
     }
 
-    public function delete(User $user) {
-        return $user->hasPermission('delete-group');
+    /**
+     * Check if user can update group
+     * @param $user
+     * @param $group
+     * @return mixed
+     */
+    public function update($user, $group)
+    {
+        return $user->hasAccess($group, 'update-group');
+    }
+
+    /**
+     * Check if user can delete group
+     * @param $user
+     * @param $group
+     * @return bool
+     */
+    public function delete($user, $group)
+    {
+        return $user->hasAccess($group, 'delete-group') && $user->id == $group->user_id;
     }
 }

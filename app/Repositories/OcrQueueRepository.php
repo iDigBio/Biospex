@@ -12,4 +12,13 @@ class OcrQueueRepository extends Repository implements OcrQueue
     {
         $this->model = $model;
     }
+
+    public function findByProjectId($id){
+        return $this->model->findByProjectId($id);
+    }
+
+    public function getSubjectCountSum($id)
+    {
+        return $this->model->getSubjectCountsum($id);
+    }
 }

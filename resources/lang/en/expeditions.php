@@ -10,7 +10,7 @@ return array(
     'expedition_created' => 'Expedition was created successfully.',
     'expedition_deleted' => 'Expedition deleted.',
     'expedition_destroy_error' => 'An error occurred when deleting expedition.',
-    'expedition_process_error' => 'An error occurred when trying to process the expedition.',
+    'expedition_process_error' => 'An error occurred when trying to process the expedition: :error',
     'expedition_process_exists' => 'Expedition cannot be deleted while still in process.',
     'expedition_process_success' => 'The expedition has been added to the process queue.',
     'expedition_save_error' => 'An error occurred when saving expedition.',

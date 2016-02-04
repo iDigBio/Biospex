@@ -65,7 +65,6 @@
                             </div>
                         </div>
                     </div>
-                    {!! Honeypot::generate('registeruser', 'registertime') !!}
                     {!! Form::close() !!}
                 </div>
             </div>

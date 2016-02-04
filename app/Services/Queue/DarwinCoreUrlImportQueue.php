@@ -1,9 +1,13 @@
-<?php namespace Services\Queue;
+<?php namespace App\Services\Queue;
 
 use App\Repositories\Contracts\Import;
 use App\Repositories\Contracts\Project;
 use App\Services\Report\Report;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Queue;
+use Exception;
+use finfo;
 
 class DarwinCoreUrlImportQueue extends QueueAbstract
 {
@@ -11,7 +15,7 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
     protected $import;
     protected $report;
     protected $importDir;
-    protected $queue;
+    protected $tube;
     protected $project;
 
     /**
@@ -31,12 +35,12 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
         $this->report = $report;
         $this->project = $project;
 
-        $this->importDir = \Config::get('config.subjectImportDir');
+        $this->importDir = Config::get('config.subject_import_dir');
         if (! $this->filesystem->isDirectory($this->importDir)) {
             $this->filesystem->makeDirectory($this->importDir);
         }
 
-        $this->queue = \Config::get('config.beanstalkd.import');
+        $this->tube = Config::get('config.beanstalkd.import');
     }
 
     public function fire($job, $data)
@@ -46,7 +50,7 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
 
         try {
             $this->download();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $project = $this->project->findWith($this->data['project_id'], ['group']);
             $this->report->addError(trans('emails.error_import_process',
                 ['id' => $this->data['id'], 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]
@@ -72,15 +76,15 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
 
         $file = file_get_contents(url_encode($this->data['url']));
         if ($file === false) {
-            throw new \Exception(trans('emails.error_zip_download'));
+            throw new Exception(trans('emails.error_zip_download'));
         }
 
         if (! $this->checkFileType($file)) {
-            throw new \Exception(trans('emails.error_zip_type'));
+            throw new Exception(trans('emails.error_zip_type'));
         }
 
         if (file_put_contents($filePath, $file) === false) {
-            throw new \Exception(trans('emails.error_zip_save'));
+            throw new Exception(trans('emails.error_zip_save'));
         }
 
 
@@ -91,7 +95,7 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
             'class' => 'DarwinCoreFileImportQueue'
         ];
 
-        \Queue::push('App\Services\Queue\QueueFactory', $data, $this->queue);
+        Queue::push('App\Services\Queue\QueueFactory', $data, $this->tube);
 
         return;
     }
@@ -104,7 +108,7 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
      */
     protected function checkFileType($file)
     {
-        $finfo = new \finfo(FILEINFO_MIME);
+        $finfo = new finfo(FILEINFO_MIME);
         list($mime, $char) = explode(';', $finfo->buffer($file));
         $types = ['application/zip', 'application/octet-stream'];
         if (! in_array(trim($mime), $types)) {

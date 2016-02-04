@@ -1,16 +1,11 @@
 <?php namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
-use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
 use App\Services\Image\Thumbnail;
 
 class ImagesController extends Controller
 {
-    use AuthenticatesAndRegistersUsers, ThrottlesLogins;
-
     /**
      * @var Thumbnail
      */

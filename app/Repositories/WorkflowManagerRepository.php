@@ -19,7 +19,7 @@ class WorkflowManagerRepository extends Repository implements WorkflowManager
      * @param array $with
      * @return mixed
      */
-    public function allWith($with = array())
+    public function allWith($with = [])
     {
         return $this->model->allWith($with);
     }
@@ -33,5 +33,9 @@ class WorkflowManagerRepository extends Repository implements WorkflowManager
     public function findByExpeditionId($id)
     {
         return $this->model->findByExpeditionId($id);
+    }
+
+    public function findByExpeditionIdWith($id, $with = []) {
+        return $this->model->findByExpeditionIdWith($id, $with);
     }
 }

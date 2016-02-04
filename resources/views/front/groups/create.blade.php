@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-{!! Breadcrumbs::render('groups.show-with-link') !!}
+{!! Breadcrumbs::render('groups.get.read-with-link') !!}
 <div class="row centered-form top-margin">
     <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
         <div class="panel panel-info">
@@ -17,7 +17,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                'route' => 'groups.store',
+                'route' => 'groups.post.store',
                 'method' => 'post',
                 'class' => 'form-horizontal',
                 'role' => 'form'

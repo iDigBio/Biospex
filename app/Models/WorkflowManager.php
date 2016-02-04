@@ -1,12 +1,9 @@
 <?php namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Traits\BelongsToExpeditionTrait;
 
 class WorkflowManager extends Model
 {
-    use BelongsToExpeditionTrait;
-
     /**
      * The database table used by the model.
      *
@@ -21,17 +18,18 @@ class WorkflowManager extends Model
      */
     public $timestamps = false;
 
-    /**
-     * Fillable columns.
-     * @var array
-     */
     protected $fillable = [
-        'expedition_uuid',
         'expedition_id',
         'stopped',
-        'error',
-        'queue'
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function expedition()
+    {
+        return $this->belongsTo(Expedition::class);
+    }
 
     /**
      * Scope
@@ -53,7 +51,12 @@ class WorkflowManager extends Model
      */
     public function findByExpeditionId($id)
     {
-        return $this->expeditionid($id)->first();
+        return $this->expeditionId($id)->first();
+    }
+
+    public function findByExpeditionIdWith($id, $with)
+    {
+        return $this->with($with)->expeditionId($id)->get();
     }
 
     /**

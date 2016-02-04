@@ -1,28 +1,22 @@
-<?php
+<?php namespace App\Jobs;
 
-namespace App\Jobs;
-
-use App\Jobs\Job;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Bus\SelfHandling;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Contracts\Mail\Mailer;
+use App\Services\Mailer\BiospexMailer;
 use Illuminate\Contracts\Config\Repository as Config;
 
-class SendContactEmail extends Job implements SelfHandling, ShouldQueue
+class SendContactEmail extends Job
 {
-    use InteractsWithQueue, SerializesModels;
+    use SerializesModels;
+
+    public $data;
 
     /**
-     * Create a new job instance.
-     *
-     * @param Config $config
-     * @param $request
+     * SendContactEmail constructor.
+     * @param $data
      */
-    public function __construct($request)
+    public function __construct($data)
     {
-        $this->request = $request;
+        $this->data = $data;
     }
 
     /**
@@ -31,24 +25,16 @@ class SendContactEmail extends Job implements SelfHandling, ShouldQueue
      * @param Config $config
      * @param Mail|Mailer $mailer
      */
-    public function handle(Config $config, Mailer $mailer)
+    public function handle(BiospexMailer $mailer)
     {
-        $emailAddress = $config->get('mail.from');
-        $emailName = $config->get('mail.name');
-
-        $input = $this->request->only('first_name', 'last_name', 'email', 'message');
-
         $data = [
-            'firstName'    => $input['first_name'],
-            'lastName'     => $input['last_name'],
-            'email'        => $input['email'],
-            'emailMessage' => $input['message'],
-            'emailAddress' => $this->emailAddress
+            'firstName'    => $this->data['first_name'],
+            'lastName'     => $this->data['last_name'],
+            'email'        => $this->data['email'],
+            'emailMessage' => $this->data['message']
         ];
 
-        $mailer->send('emails.contact', $data, function ($m) use($emailAddress, $emailName) {
-            $m->to($emailAddress, $emailName)->subject(trans('emails.contact_subject'));
-        });
+        $mailer->sendContact($data);
 
         return;
     }

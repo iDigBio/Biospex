@@ -3,11 +3,15 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Queue;
 use Symfony\Component\Console\Input\InputArgument;
 use App\Repositories\Contracts\OcrQueue;
 
 class OcrQueuePushCommand extends Command
 {
+    public $repo;
+    public $tube;
     /**
      * The console command name.
      *
@@ -32,7 +36,7 @@ class OcrQueuePushCommand extends Command
         parent::__construct();
 
         $this->repo = $repo;
-        $this->queue = \Config::get('config.beanstalkd.ocr');
+        $this->tube = Config::get('config.beanstalkd.ocr');
     }
 
     /**
@@ -62,7 +66,7 @@ class OcrQueuePushCommand extends Command
         }
 
         // Push to queue
-        \Queue::push('App\Services\Queue\QueueFactory', ['id' => $job->id, 'class' => 'OcrProcessQueue'], $this->queue);
+        Queue::push('Biospex\Services\Queue\OcrProcessQueue', ['id' => $job->id], $this->tube);
 
         return;
     }

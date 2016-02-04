@@ -1,6 +1,6 @@
 <?php  namespace App\Services\Process;
 
-use App\Services\Process\Xml;
+use App\Repositories\Contracts\Meta;
 use App\Services\Report\Report;
 
 class MetaFile
@@ -18,18 +18,22 @@ class MetaFile
     protected $extDelimiter;
     protected $extEnclosure;
     protected $metaFields;
+    protected $meta;
+    protected $file;
 
     /**
      * Constructor
      *
+     * @param Meta $meta
      * @param Xml $xml
      * @param Report $report
      */
-    public function __construct(Xml $xml, Report $report)
+    public function __construct(Meta $meta, Xml $xml, Report $report)
     {
         $this->xml = $xml;
         $this->report = $report;
         $this->metaFileRowTypes = \Config::get('config.metaFileRowTypes');
+        $this->meta = $meta;
     }
 
     /**
@@ -41,12 +45,14 @@ class MetaFile
      */
     public function process($file)
     {
+        $this->file = $file;
+
         $xml = $this->xml->load($file);
 
         // New
         $this->loadCoreNode();
         $this->loadExtensionNode();
-        $this->checkExtensionRowType($file);
+        $this->checkExtensionRowType();
         $this->setMediaIsCore();
         $this->setCoreFile();
         $this->setExtensionFile();
@@ -56,6 +62,22 @@ class MetaFile
         $this->setMetaFields('extension');
 
         return $xml;
+    }
+
+    /**
+     * Save meta data for this upload.
+     *
+     * @param $projectId
+     * @param $meta
+     */
+    public function saveMetaFile($projectId, $meta)
+    {
+        $this->meta->create([
+            'project_id' => $projectId,
+            'xml'        => $meta,
+        ]);
+
+        return;
     }
 
     /**
@@ -75,23 +97,34 @@ class MetaFile
      */
     public function loadExtensionNode()
     {
-        foreach ($this->metaFileRowTypes as $rowType => $fileName) {
-            $query = "//ns:archive/ns:extension[contains(ns:files/ns:location, '" . $fileName . ".')]";
-            $this->extension = $this->xml->xpathQuery($query, true);
-            if ($this->extension) {
-                break;
+        foreach ($this->metaFileRowTypes as $rowType => $fileNames) {
+            foreach ($fileNames as $fileName)
+            {
+                if ($this->findExtensionFile($fileName))
+                {
+                    return;
+                }
             }
         }
+
+        $this->report->addError(trans('emails.error_extension_file', ['file' => $this->file]));
+        $this->report->reportSimpleError();
 
         return;
     }
 
+    protected function findExtensionFile($fileName)
+    {
+        $query = "//ns:archive/ns:extension[contains(ns:files/ns:location, '" . $fileName . ".')]";
+        $this->extension = $this->xml->xpathQuery($query, true);
+
+        return empty($this->extension) ? false : true;
+    }
+
     /**
-     * Check row type against file given and send warning if mismatch occurs.
-     *
-     * @param $file
+     * Check row type against file given and send warning if mismatch occurs
      */
-    private function checkExtensionRowType($file)
+    private function checkExtensionRowType()
     {
         $rowType = strtolower($this->extension->attributes->getNamedItem("rowType")->nodeValue);
         if (isset($this->metaFileRowTypes[$rowType])) {
@@ -99,7 +132,7 @@ class MetaFile
         }
 
         $this->report->addError(trans('emails.error_rowtype_mismatch',
-            ['file' => $file, 'row_type' => $rowType, 'type_file' => $this->extension->nodeValue]
+            ['file' => $this->file, 'row_type' => $rowType, 'type_file' => $this->extension->nodeValue]
         ));
         $this->report->reportSimpleError();
 
@@ -262,11 +295,10 @@ class MetaFile
     }
 
     /**
-     * @param null $type
      * @return mixed
      */
-    public function getMetaFields($type = null)
+    public function getMetaFields()
     {
-        return is_null($type) ? $this->metaFields : $this->metaFields[$type];
+        return $this->metaFields;
     }
 }

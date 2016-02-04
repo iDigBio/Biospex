@@ -1,54 +1,25 @@
 <?php namespace App\Services\Actor;
 
-use Illuminate\Filesystem\Filesystem;
-use App\Repositories\Contracts\Expedition;
-use App\Repositories\Contracts\Subject;
-use App\Repositories\Contracts\Property;
-use App\Repositories\Contracts\Download;
-use App\Services\Report\Report;
-use App\Services\Image\Image;
-
 abstract class ActorAbstract
 {
     /**
      * Filesystem
+     *
      * @var object
      */
     protected $filesystem;
 
     /**
-     * ExpeditionInterface
+     * DownloadInterface
+     *
      * @var object
-     */
-    protected $expedition;
-
-    /**
-     * SubjectInterface
-     * @var object
-     */
-    protected $subject;
-
-    /**
-     * @var Property
-     */
-    protected $property;
-
-    /**
-     * @var Download
      */
     protected $download;
 
     /**
-     * ReportInterface
-     * @var object
+     * @var Config
      */
-    protected $report;
-
-    /**
-     * ImageInterface
-     * @var object
-     */
-    protected $image;
+    protected $config;
 
     /**
      * Scratch directory for processing.
@@ -58,46 +29,12 @@ abstract class ActorAbstract
     protected $scratchDir;
 
     /**
-     * Constructor
-     * @param Filesystem $filesystem
-     * @param Expedition $expedition
-     * @param Subject $subject
-     * @param Property $property
-     * @param Download $download
-     * @param Report $report
-     * @param Image $image
-     */
-    public function __construct(
-        Filesystem $filesystem,
-        Expedition $expedition,
-        Subject $subject,
-        Property $property,
-        Download $download,
-        Report $report,
-        Image $image
-    ) {
-        $this->filesystem = $filesystem;
-        $this->expedition = $expedition;
-        $this->subject = $subject;
-        $this->property = $property;
-        $this->download = $download;
-        $this->report = $report;
-        $this->image = $image;
-        $this->scratchDir = \Config::get('config.scratch_dir');
-    }
-
-    /**
-     * Each class needs to set properties.
+     * Each class has a process to handle the states.
+     *
      * @param $actor
      * @return mixed
      */
-    abstract protected function setProperties($actor);
-
-    /**
-     * Each class has a process to handle the states.
-     * @return mixed
-     */
-    abstract public function process();
+    abstract public function process($actor);
 
     /**
      * Create directory.
@@ -106,7 +43,7 @@ abstract class ActorAbstract
      * @return mixed
      * @throws \Exception
      */
-    protected function createDir($dir)
+    public function createDir($dir)
     {
         if (! $this->filesystem->isDirectory($dir)) {
             if (! $this->filesystem->makeDirectory($dir, 0775, true)) {
@@ -123,7 +60,7 @@ abstract class ActorAbstract
      * @param $dir
      * @throws \Exception
      */
-    protected function writeDir($dir)
+    public function writeDir($dir)
     {
         if (! $this->filesystem->isWritable($dir)) {
             if (! chmod($dir, 0775)) {
@@ -141,7 +78,7 @@ abstract class ActorAbstract
      * @param $contents
      * @throws \Exception
      */
-    protected function saveFile($path, $contents)
+    public function saveFile($path, $contents)
     {
         if (! $this->filesystem->put($path, $contents)) {
             throw new \Exception(trans('emails.error_save_file', ['directory' => $path]));
@@ -157,7 +94,7 @@ abstract class ActorAbstract
      * @param $target
      * @throws \Exception
      */
-    protected function moveFile($path, $target)
+    public function moveFile($path, $target)
     {
         if (! $this->filesystem->move($path, $target)) {
             throw new \Exception(trans('emails.error_save_file', ['directory' => $path]));
@@ -171,16 +108,19 @@ abstract class ActorAbstract
      * @param $expeditionId
      * @param $actorId
      * @param $file
+     * @param null $data
+     * @return
      */
-    protected function createDownload($expeditionId, $actorId, $file)
+    public function createDownload($expeditionId, $actorId, $file, $data = null)
     {
         $data = [
             'expedition_id' => $expeditionId,
-            'actor_id' => $actorId,
-            'file' => $file
+            'actor_id'      => $actorId,
+            'file'          => $file,
+            'data'          => $data,
         ];
 
-        $this->download->create($data);
+        return $this->download->create($data);
     }
 
     /**
@@ -189,7 +129,7 @@ abstract class ActorAbstract
      * @param $header
      * @return array
      */
-    protected function parseHeader($header)
+    public function parseHeader($header)
     {
         $headers = [];
 

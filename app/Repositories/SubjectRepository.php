@@ -6,6 +6,7 @@ use App\Models\Subject as Model;
 class SubjectRepository extends Repository implements Subject
 {
     /**
+     * SubjectRepository constructor.
      * @param Model $model
      */
     public function __construct(Model $model)
@@ -47,11 +48,14 @@ class SubjectRepository extends Repository implements Subject
      * Grid: get total number of rows.
      *
      * @param array $filters
+     * @param $projectId
+     * @param null $expeditionId
+     * @param null $route
      * @return int
      */
-    public function getTotalNumberOfRows(array $filters = [])
+    public function getTotalNumberOfRows($filters = [], $route, $projectId, $expeditionId = null)
     {
-        return $this->model->getTotalNumberOfRows($filters);
+        return $this->model->getTotalNumberOfRows($filters, $route, $projectId, $expeditionId);
     }
 
     /**
@@ -65,7 +69,7 @@ class SubjectRepository extends Repository implements Subject
      * @param array $filters
      * @return array
      */
-    public function getRows($limit, $offset, $orderBy = null, $sord = null, array $filters = [])
+    public function getRows($limit, $offset, $orderBy = null, $sord = null, $filters = [])
     {
         return $this->model->getRows($limit, $offset, $orderBy, $sord, $filters);
     }
@@ -77,6 +81,26 @@ class SubjectRepository extends Repository implements Subject
     public function findByFilename($filename)
     {
         return $this->model->findByFilename($filename);
+    }
+
+    /**
+     * Find subjects by project id.
+     * @param $project_id
+     * @return mixed
+     */
+    public function findByProjectId($project_id)
+    {
+        return $this->model->findByProjectId($project_id);
+    }
+
+    /**
+     * Find subjects by project id and empty ocr.
+     * @param $project_id
+     * @return mixed
+     */
+    public function findByProjectIdOcr($project_id)
+    {
+        return $this->model->findByProjectIdOcr($project_id);
     }
 
     /**

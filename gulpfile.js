@@ -13,9 +13,10 @@ elixir(function(mix) {
         .styles([
             'css/app.css',
             'vendor/jquery-ui/themes/smoothness/jquery-ui.min.css',
-            'vendor/jquery.qtip.custom/jquery.qtip.min.css',
-            'vendor/jqgrid/css/addons/ui.multiselect.css',
-            'vendor/jqgrid/css/ui.jqgrid.css'
+            'vendor/jqgrid/css/ui.jqgrid.css',
+            'vendor/jqgrid/css/ui.jqgrid-bootstrap.css',
+            'vendor/jqgrid/css/ui.jqgrid-bootstrap-ui.css',
+            'vendor/jqgrid/plugins/ui.multiselect.css',
         ], 'public/css/app.css', assetsDir)
         .scripts([
             'vendor/jquery/dist/jquery.min.js',
@@ -23,10 +24,9 @@ elixir(function(mix) {
             'vendor/blockui/jquery.blockUI.js',
             'vendor/jquery.validation/dist/jquery.validate.min.js',
             'vendor/jquery.validation/dist/additional-methods.min.js',
-            'vendor/jqgrid/js/addons/ui.multiselect.js',
-            'vendor/jquery.qtip.custom/jquery.qtip.min.js',
-            'vendor/jqgrid/js/minified/i18n/grid.locale-en.js',
-            'vendor/jqgrid/js/minified/jquery.jqGrid.min.js',
+            'vendor/jqgrid/js/i18n/grid.locale-en.js',
+            'vendor/jqgrid/js/jquery.jqGrid.min.js',
+            'vendor/jqgrid/plugins/ui.multiselect.js',
             'vendor/bootstrap/dist/js/bootstrap.min.js',
             'vendor/bootstrap-select/dist/js/bootstrap-select.min.js',
             'js/app.js',

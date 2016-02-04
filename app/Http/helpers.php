@@ -1,4 +1,7 @@
 <?php
+use App\Models\Transcription;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Session;
 
 /**
  * Encode a full url.
@@ -14,8 +17,7 @@ function url_encode($url)
     return
         $parts['scheme'] . '://' .
         $parts['host'] .
-        implode('/', array_map('rawurlencode', $path_parts))
-        ;
+        implode('/', array_map('rawurlencode', $path_parts));
 }
 
 /**
@@ -26,9 +28,9 @@ function url_encode($url)
  */
 function session_flash_push($key, $value)
 {
-    $values = \Session::get($key, []);
+    $values = Session::get($key, []);
     $values[] = $value;
-    \Session::flash($key, $values);
+    Session::flash($key, $values);
 }
 
 /**
@@ -39,7 +41,7 @@ function session_flash_push($key, $value)
  * @param int $x
  * @return float
  */
-function round_up_five($n, $x = 5)
+function round_up_to_any_five($n, $x = 5)
 {
     return (ceil($n) % $x === 0) ? ceil($n) : round(($n + $x / 2) / $x) * $x;
 }
@@ -54,6 +56,10 @@ function round_up_five($n, $x = 5)
  */
 function format_date($date, $format = null, $tz = null)
 {
+    if (is_null($date)) {
+        return Carbon::now();
+    }
+
     return $date->copy()->tz($tz)->format($format);
 }
 
@@ -100,42 +106,81 @@ function timezone_select()
     return $timezone_list;
 }
 
-
-/**
- * Generate password - helper function
- * From http://www.phpscribble.com/i4xzZu/Generate-random-passwords-of-given-length-and-strength
- *
- * @param int $length
- * @param int $strength
- * @return string
- */
-function generate_password($length=9, $strength=4)
+function delete_directory_contents($dir, $ignore = ['.gitignore'])
 {
-    $vowels = 'aeiouy';
-    $consonants = 'bcdfghjklmnpqrstvwxz';
-    if ($strength & 1) {
-        $consonants .= 'BCDFGHJKLMNPQRSTVWXZ';
-    }
-    if ($strength & 2) {
-        $vowels .= "AEIOUY";
-    }
-    if ($strength & 4) {
-        $consonants .= '23456789';
-    }
-    if ($strength & 8) {
-        $consonants .= '@#$%';
+    if (false === file_exists($dir)) {
+        return false;
     }
 
-    $password = '';
-    $alt = time() % 2;
-    for ($i = 0; $i < $length; $i++) {
-        if ($alt == 1) {
-            $password .= $consonants[(rand() % strlen($consonants))];
-            $alt = 0;
+    /** @var SplFileInfo[] $files */
+    $files = new \RecursiveIteratorIterator(
+        new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS),
+        \RecursiveIteratorIterator::CHILD_FIRST
+    );
+
+    foreach ($files as $fileinfo) {
+        if ($fileinfo->isDir()) {
+            if (false === rmdir($fileinfo->getRealPath())) {
+                return false;
+            }
         } else {
-            $password .= $vowels[(rand() % strlen($vowels))];
-            $alt = 1;
+            if (in_array($fileinfo->getFilename(), $ignore)) {
+                continue;
+            }
+
+            if (false === unlink($fileinfo->getRealPath())) {
+                return false;
+            }
         }
     }
-    return $password;
+}
+
+/**
+ * Turn array into object.
+ *
+ * @param array $array
+ * @return object
+ */
+function array_to_object(array $array)
+{
+    foreach($array as $key => $value)
+    {
+        if(is_array($value))
+        {
+            $array[$key] = self::array_to_object($value);
+        }
+    }
+    return (object)$array;
+}
+
+/**
+ * Set count for total transcriptions. 4 per subject.
+ * @param $count
+ * @return mixed
+ */
+function transcriptions_total($count)
+{
+    return $count * 4;
+}
+
+/**
+ * Return completed transcriptions count
+ * @param $expeditionId
+ * @return mixed
+ */
+function transcriptions_completed($expeditionId)
+{
+    $transcription = new Transcription();
+    return $transcription->getCountByExpeditionId($expeditionId);
+}
+
+/**
+ * Return percentage of completed transcriptions
+ * @param $total
+ * @param $completed
+ * @return float|int
+ */
+function transcriptions_percent_completed($total, $completed)
+{
+    return ($total == 0 || $completed == 0) ? 0 : ($completed / $total) * 100;
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Support\Facades\Auth;
+
 class GroupFormRequest extends Request
 {
     /**
@@ -11,7 +13,7 @@ class GroupFormRequest extends Request
      */
     public function authorize()
     {
-        return \Sentry::check();
+        return Auth::check();
     }
 
     /**
@@ -22,7 +24,7 @@ class GroupFormRequest extends Request
     public function rules()
     {
         return [
-            'name'     => 'required|min:4|max:32|unique:groups,name,' . $this->route('groups'),
+            'name'     => 'required|min:4|max:32|unique:groups,name,' . $this->request->get('id'),
         ];
     }
 }

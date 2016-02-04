@@ -1,32 +1,10 @@
 <?php namespace App\Repositories;
 
-/**
- * ExpeditionRepository.php
- *
- * @package    Biospex Package
- * @version    1.0
- * @author     Robert Bruhn <79e6ef82@opayq.com>
- * @license    GNU General Public License, version 3
- * @copyright  (c) 2014, Biospex
- * @link       http://biospex.org
- *
- * This file is part of Biospex.
- * Biospex is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Biospex is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Biospex.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-use App\Repositories\Contracts\Expedition;
 use App\Models\Expedition as Model;
+use App\Models\ExpeditionStat;
+use App\Models\Subject;
+use App\Repositories\Contracts\Expedition;
+use Symfony\Component\Console\Helper\Helper;
 
 class ExpeditionRepository extends Repository implements Expedition
 {
@@ -51,9 +29,48 @@ class ExpeditionRepository extends Repository implements Expedition
      */
     public function create($data = [])
     {
-        $result = $this->model->create($data);
-        $expedition = $this->model->find($result->id);
-        $expedition->subjects()->sync($data['subject_ids']);
+        $expedition = $this->model->create($data);
+        $subjects = explode(',', $data['subjectIds']);
+        $expedition->subjects()->sync($subjects);
+
+        $count = count($subjects);
+        $stat = new ExpeditionStat([
+            'subject_count' => $count,
+            'transcription_total' => transcriptions_total($count),
+        ]);
+
+        $expedition->stat()->save($stat);
+
+        return $expedition;
+    }
+
+    public function update($data = [])
+    {
+        $expedition = $this->model->find($data['id']);
+        $expedition->fill($data);
+        $expedition->save();
+
+        $subjects = $expedition->subjects()->get();
+        $existingSubjectIds = [];
+        foreach ($subjects as $subject) {
+            $existingSubjectIds[] = $subject->_id;
+        }
+
+        $subjectModel = new Subject();
+        $subjectModel->detachSubjects($existingSubjectIds, $expedition->id);
+
+        $subjectIds = explode(',', $data['subjectIds']);
+        $expedition->subjects()->attach($subjectIds);
+
+        $count = count($subjectIds);
+
+        $expeditionStat = new ExpeditionStat();
+        $stat = $expeditionStat->firstOrCreate(['expedition_id' => $expedition->id]);
+        $stat->subject_count = $count;
+        $stat->transcriptions_total = transcriptions_total($count);
+        $stat->transcriptions_completed = transcriptions_completed($expedition->id);
+        $stat->percent_completed = transcriptions_percent_completed($stat->transcriptions_total, $stat->transcriptions_completed);
+        $stat->save();
 
         return $expedition;
     }
