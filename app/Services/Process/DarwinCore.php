@@ -1,4 +1,4 @@
-<?php namespace App\Services\Process;
+<?php namespace Biospex\Services\Process;
 
 ini_set("auto_detect_line_endings", "1");
 ini_set("memory_limit", "7G");
@@ -7,7 +7,7 @@ ini_set('max_input_time', '0');
 set_time_limit(0);
 ignore_user_abort(true);
 
-use App\Services\Csv\DarwinCoreCsvImport;
+use Biospex\Services\Csv\DarwinCoreCsvImport;
 
 class DarwinCore
 {

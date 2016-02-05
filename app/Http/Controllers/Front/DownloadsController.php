@@ -1,12 +1,12 @@
-<?php namespace App\Http\Controllers\Front;
+<?php namespace Biospex\Http\Controllers\Front;
 
-use App\Http\Controllers\Controller;
+use Biospex\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Support\Facades\Response;
-use App\Repositories\Contracts\Expedition;
-use App\Repositories\Contracts\Download;
+use Biospex\Repositories\Contracts\Expedition;
+use Biospex\Repositories\Contracts\Download;
 
 class DownloadsController extends Controller
 {

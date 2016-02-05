@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\Common;
+namespace Biospex\Services\Common;
 
-use App\Repositories\Contracts\Workflow;
+use Biospex\Repositories\Contracts\Workflow;
 
 class ProjectService
 {
@@ -11,7 +11,7 @@ class ProjectService
      */
     private $workflow;
     /**
-     * @var \App\Services\Common\PermissionService
+     * @var \Biospex\Services\Common\PermissionService
      */
     private $permission;
 
@@ -19,7 +19,7 @@ class ProjectService
      * Construct.
      *
      * @param Workflow $workflow
-     * @param \App\Services\Common\PermissionService $permission
+     * @param \Biospex\Services\Common\PermissionService $permission
      * @internal param Request $request
      * @internal param Router $router
      * @internal param UrlGenerator $url

@@ -1,7 +1,7 @@
-<?php namespace App\Console\Commands;
+<?php namespace Biospex\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Repositories\Contracts\WorkflowManager;
+use Biospex\Repositories\Contracts\WorkflowManager;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
 use Symfony\Component\Console\Input\InputArgument;
@@ -81,7 +81,7 @@ class WorkFlowManagerCommand extends Command
         foreach ($actors as $actor) {
             $actor->pivot->queued = 1;
             $actor->pivot->save();
-            Queue::push('App\Services\Queue\ActorQueue', serialize($actor), $this->tube);
+            Queue::push('Biospex\Services\Queue\ActorQueue', serialize($actor), $this->tube);
         }
     }
 

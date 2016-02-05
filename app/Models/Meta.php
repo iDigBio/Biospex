@@ -1,4 +1,4 @@
-<?php namespace App\Models;
+<?php namespace Biospex\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;

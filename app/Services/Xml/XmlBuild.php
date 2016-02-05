@@ -1,4 +1,4 @@
-<?php namespace App\Services\Xml;
+<?php namespace Biospex\Services\Xml;
 
 class XmlBuild
 {

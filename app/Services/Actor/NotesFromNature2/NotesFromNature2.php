@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Actor\NotesFromNature2;
+namespace Biospex\Services\Actor\NotesFromNature2;
 
 class NotesFromNature2
 {

@@ -28,17 +28,17 @@ $app = new Illuminate\Foundation\Application(
 
 $app->singleton(
     'Illuminate\Contracts\Http\Kernel',
-    'App\Http\Kernel'
+    'Biospex\Http\Kernel'
 );
 
 $app->singleton(
     'Illuminate\Contracts\Console\Kernel',
-    'App\Console\Kernel'
+    'Biospex\Console\Kernel'
 );
 
 $app->singleton(
     'Illuminate\Contracts\Debug\ExceptionHandler',
-    'App\Exceptions\Handler'
+    'Biospex\Exceptions\Handler'
 );
 
 /*

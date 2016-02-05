@@ -1,9 +1,9 @@
-<?php namespace App\Services\Queue;
+<?php namespace Biospex\Services\Queue;
 
-use App\Repositories\Contracts\OcrCsv;
-use App\Repositories\Contracts\OcrQueue;
-use App\Services\Process\Ocr;
-use App\Services\Report\OcrReport;
+use Biospex\Repositories\Contracts\OcrCsv;
+use Biospex\Repositories\Contracts\OcrQueue;
+use Biospex\Services\Process\Ocr;
+use Biospex\Services\Report\OcrReport;
 
 class OcrProcessQueue extends QueueAbstract
 {

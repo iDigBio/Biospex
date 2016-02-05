@@ -1,7 +1,7 @@
-<?php namespace App\Repositories;
+<?php namespace Biospex\Repositories;
 
-use App\Repositories\Contracts\OcrQueue;
-use App\Models\OcrQueue as Model;
+use Biospex\Repositories\Contracts\OcrQueue;
+use Biospex\Models\OcrQueue as Model;
 
 class OcrQueueRepository extends Repository implements OcrQueue
 {

@@ -1,7 +1,7 @@
-<?php namespace App\Models;
+<?php namespace Biospex\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Traits\UuidTrait;
+use Biospex\Models\Traits\UuidTrait;
 
 class OcrQueue extends Model
 {

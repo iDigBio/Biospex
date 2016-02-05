@@ -1,4 +1,4 @@
-<?php namespace App\Services\Image;
+<?php namespace Biospex\Services\Image;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;

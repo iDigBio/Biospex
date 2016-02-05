@@ -1,7 +1,7 @@
-<?php namespace App\Repositories;
+<?php namespace Biospex\Repositories;
 
-use App\Repositories\Contracts\Download;
-use App\Models\Download as Model;
+use Biospex\Repositories\Contracts\Download;
+use Biospex\Models\Download as Model;
 
 class DownloadRepository extends Repository implements Download
 {

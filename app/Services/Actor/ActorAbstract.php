@@ -1,4 +1,4 @@
-<?php namespace App\Services\Actor;
+<?php namespace Biospex\Services\Actor;
 
 abstract class ActorAbstract
 {

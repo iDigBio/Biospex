@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Manifest;
+namespace Biospex\Services\Manifest;
 
 use Illuminate\Support\Facades\Config;
 

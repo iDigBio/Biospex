@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace Biospex\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Jobs\SendLostPasswordJob;
-use App\Jobs\ResetPasswordJob;
-use App\Http\Requests\UserLoginRequest;
-use App\Jobs\UserLogInJob;
-use App\Jobs\UserLogOutJob;
+use Biospex\Http\Controllers\Controller;
+use Biospex\Jobs\SendLostPasswordJob;
+use Biospex\Jobs\ResetPasswordJob;
+use Biospex\Http\Requests\UserLoginRequest;
+use Biospex\Jobs\UserLogInJob;
+use Biospex\Jobs\UserLogOutJob;
 
 class AuthController extends Controller
 {

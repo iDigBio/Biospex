@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Providers;
+namespace Biospex\Providers;
 
-use App\Models\Group;
-use App\Models\User;
-use App\Models\Project;
-use App\Models\Expedition;
-use App\Policies\UserPolicy;
-use App\Policies\GroupPolicy;
-use App\Policies\ProjectPolicy;
-use App\Policies\ExpeditionPolicy;
+use Biospex\Models\Group;
+use Biospex\Models\User;
+use Biospex\Models\Project;
+use Biospex\Models\Expedition;
+use Biospex\Policies\UserPolicy;
+use Biospex\Policies\GroupPolicy;
+use Biospex\Policies\ProjectPolicy;
+use Biospex\Policies\ExpeditionPolicy;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 

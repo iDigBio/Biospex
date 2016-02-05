@@ -1,8 +1,8 @@
-<?php namespace App\Http\Controllers\Front;
+<?php namespace Biospex\Http\Controllers\Front;
 
-use App\Http\Controllers\Controller;
+use Biospex\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\Image\Thumbnail;
+use Biospex\Services\Image\Thumbnail;
 
 class ImagesController extends Controller
 {

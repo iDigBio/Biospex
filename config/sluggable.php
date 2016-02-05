@@ -18,7 +18,7 @@ return array(
      *
      * Defaults to null, which uses the toString() method on your model.
      */
-    'build_from' => null,
+    'build_from' => 'title',
 
     /**
      * What field to we store the slug in?  Defaults to "slug".
@@ -84,7 +84,7 @@ return array(
      * re-saved (i.e. already exists).  Defaults to false, which
      * means slugs are not updated.
      */
-    'on_update' => false,
+    'on_update' => true,
 
     /**
      * An array of slug names that can never be used for this model,

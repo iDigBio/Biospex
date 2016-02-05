@@ -1,4 +1,4 @@
-<?php namespace App\Services\Report;
+<?php namespace Biospex\Services\Report;
 
 
 class TranscriptionImportReport extends Report

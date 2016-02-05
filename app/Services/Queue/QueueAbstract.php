@@ -1,4 +1,4 @@
-<?php namespace App\Services\Queue;
+<?php namespace Biospex\Services\Queue;
 
 abstract class QueueAbstract
 {

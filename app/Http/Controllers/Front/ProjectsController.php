@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Front;
+namespace Biospex\Http\Controllers\Front;
 
-use App\Http\Controllers\Controller;
+use Biospex\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Routing\ResponseFactory;
-use App\Repositories\Contracts\User;
-use App\Repositories\Contracts\Group;
-use App\Repositories\Contracts\Project;
-use App\Http\Requests\ProjectFormRequest;
-use App\Services\Common\ProjectService;
+use Biospex\Repositories\Contracts\User;
+use Biospex\Repositories\Contracts\Group;
+use Biospex\Repositories\Contracts\Project;
+use Biospex\Http\Requests\ProjectFormRequest;
+use Biospex\Services\Common\ProjectService;
 
 class ProjectsController extends Controller
 {
@@ -131,7 +131,7 @@ class ProjectsController extends Controller
         $user = $request->user();
         $group = $this->group->findWith($request->get('group_id'), ['permissions']);
 
-        if ( ! $this->service->checkPermissions($user, [\App\Models\Project::class, $group], 'create'))
+        if ( ! $this->service->checkPermissions($user, [\Biospex\Models\Project::class, $group], 'create'))
         {
             return redirect()->route('projects.get.index');
         }

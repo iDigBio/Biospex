@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Jobs;
+namespace Biospex\Jobs;
 
-use App\Events\SendInviteEvent;
-use App\Repositories\Contracts\Invite;
-use App\Repositories\Contracts\User;
+use Biospex\Events\SendInviteEvent;
+use Biospex\Repositories\Contracts\Invite;
+use Biospex\Repositories\Contracts\User;
 use Illuminate\Events\Dispatcher as Event;
 
 class InviteCreateJob extends Job

@@ -1,6 +1,6 @@
-<?php namespace App\Repositories\Decorators;
+<?php namespace Biospex\Repositories\Decorators;
 
-use App\Repositories\Contracts\Project;
+use Biospex\Repositories\Contracts\Project;
 
 class CacheProjectDecorator extends CacheDecorator implements Project
 {
@@ -62,7 +62,7 @@ class CacheProjectDecorator extends CacheDecorator implements Project
         }
 
         return $this->cache->tags($this->tag)->rememberForever($this->key, function () use ($slug) {
-            return $this->repository->findWith($slug);
+            return $this->repository->bySlug($slug);
         });
     }
 

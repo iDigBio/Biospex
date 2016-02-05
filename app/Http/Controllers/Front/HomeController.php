@@ -1,9 +1,9 @@
-<?php namespace App\Http\Controllers\Front;
+<?php namespace Biospex\Http\Controllers\Front;
 
-use App\Http\Controllers\Controller;
-use App\Jobs\SendContactEmail;
-use App\Repositories\Contracts\Project;
-use App\Http\Requests\ContactFormRequest;
+use Biospex\Http\Controllers\Controller;
+use Biospex\Jobs\SendContactEmail;
+use Biospex\Repositories\Contracts\Project;
+use Biospex\Http\Requests\ContactFormRequest;
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,7 +37,7 @@ class HomeController extends Controller
     {
         $project = $repository->bySlug($slug);
 
-        return view('project', compact('project'));
+        return view('front.project', compact('project'));
     }
 
     /**

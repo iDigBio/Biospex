@@ -1,6 +1,6 @@
 <?php
 
-use App\Helpers\Helper;
+use Biospex\Helpers\Helper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;

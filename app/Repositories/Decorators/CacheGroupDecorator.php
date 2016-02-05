@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repositories\Decorators;
+namespace Biospex\Repositories\Decorators;
 
-use App\Repositories\Contracts\Group;
+use Biospex\Repositories\Contracts\Group;
 
 class CacheGroupDecorator extends CacheDecorator implements Group
 {

@@ -1,7 +1,7 @@
-<?php  namespace App\Repositories;
+<?php  namespace Biospex\Repositories;
 
-use App\Repositories\Contracts\Workflow;
-use App\Models\Workflow as Model;
+use Biospex\Repositories\Contracts\Workflow;
+use Biospex\Models\Workflow as Model;
 
 class WorkflowRepository extends Repository implements Workflow
 {

@@ -1,4 +1,4 @@
-<?php namespace App\Services\Mailer;
+<?php namespace Biospex\Services\Mailer;
 
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Config;

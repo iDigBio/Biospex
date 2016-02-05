@@ -1,7 +1,7 @@
-<?php namespace App\Jobs;
+<?php namespace Biospex\Jobs;
 
 use Illuminate\Queue\SerializesModels;
-use App\Services\Mailer\BiospexMailer;
+use Biospex\Services\Mailer\BiospexMailer;
 use Illuminate\Contracts\Config\Repository as Config;
 
 class SendContactEmail extends Job

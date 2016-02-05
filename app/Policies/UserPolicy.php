@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies;
+namespace Biospex\Policies;
 
 use Illuminate\Support\Facades\Auth;
 

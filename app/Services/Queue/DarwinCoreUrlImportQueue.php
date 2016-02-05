@@ -1,8 +1,8 @@
-<?php namespace App\Services\Queue;
+<?php namespace Biospex\Services\Queue;
 
-use App\Repositories\Contracts\Import;
-use App\Repositories\Contracts\Project;
-use App\Services\Report\Report;
+use Biospex\Repositories\Contracts\Import;
+use Biospex\Repositories\Contracts\Project;
+use Biospex\Services\Report\Report;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
@@ -95,7 +95,7 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
             'class' => 'DarwinCoreFileImportQueue'
         ];
 
-        Queue::push('App\Services\Queue\QueueFactory', $data, $this->tube);
+        Queue::push('Biospex\Services\Queue\QueueFactory', $data, $this->tube);
 
         return;
     }

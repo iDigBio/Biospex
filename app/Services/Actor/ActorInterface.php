@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Actor;
+namespace Biospex\Services\Actor;
 
 interface ActorInterface
 {

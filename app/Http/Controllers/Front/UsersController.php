@@ -1,8 +1,8 @@
-<?php namespace App\Http\Controllers\Front;
+<?php namespace Biospex\Http\Controllers\Front;
 
-use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\User;
-use App\Http\Requests\EditUserFormRequest;
+use Biospex\Http\Controllers\Controller;
+use Biospex\Repositories\Contracts\User;
+use Biospex\Http\Requests\EditUserFormRequest;
 
 class UsersController extends Controller
 {

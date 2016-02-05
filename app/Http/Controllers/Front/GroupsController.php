@@ -1,10 +1,10 @@
-<?php namespace App\Http\Controllers\Front;
+<?php namespace Biospex\Http\Controllers\Front;
 
-use App\Http\Controllers\Controller;
+use Biospex\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests\GroupFormRequest;
-use App\Repositories\Contracts\User;
-use App\Repositories\Contracts\Group;
+use Biospex\Http\Requests\GroupFormRequest;
+use Biospex\Repositories\Contracts\User;
+use Biospex\Repositories\Contracts\Group;
 
 class GroupsController extends Controller
 {

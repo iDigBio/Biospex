@@ -1,7 +1,7 @@
-<?php namespace App\Repositories;
+<?php namespace Biospex\Repositories;
 
-use App\Repositories\Contracts\OcrCsv;
-use App\Models\OcrCsv as Model;
+use Biospex\Repositories\Contracts\OcrCsv;
+use Biospex\Models\OcrCsv as Model;
 
 class OcrCsvRepository extends Repository implements OcrCsv
 {

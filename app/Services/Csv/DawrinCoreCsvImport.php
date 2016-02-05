@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Services\Csv;
+namespace Biospex\Services\Csv;
 
-use App\Repositories\Contracts\Header;
-use App\Repositories\Contracts\Property;
-use App\Repositories\Contracts\Subject;
+use Biospex\Repositories\Contracts\Header;
+use Biospex\Repositories\Contracts\Property;
+use Biospex\Repositories\Contracts\Subject;
 use ForceUTF8\Encoding;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Validation\Factory as Validation;
-use App\Models\Occurrence;
+use Biospex\Models\Occurrence;
 
 class DarwinCoreCsvImport extends CsvAbstract {
 

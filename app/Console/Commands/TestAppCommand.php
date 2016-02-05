@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Biospex\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\ExpeditionStat;
-use App\Repositories\Contracts\Expedition;
+use Biospex\Models\ExpeditionStat;
+use Biospex\Repositories\Contracts\Expedition;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Validator;

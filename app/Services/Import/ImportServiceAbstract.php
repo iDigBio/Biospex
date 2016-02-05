@@ -1,10 +1,10 @@
-<?php namespace App\Services\Import;
+<?php namespace Biospex\Services\Import;
 
 use Illuminate\Config\Repository as Config;
 use Illuminate\Validation\Factory as Validation;
 use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Filesystem\Filesystem;
-use App\Repositories\Contracts\Import;
+use Biospex\Repositories\Contracts\Import;
 use Illuminate\Http\Request;
 
 abstract class ImportServiceAbstract

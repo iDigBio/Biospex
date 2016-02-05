@@ -393,12 +393,3 @@ Route::group(
         ]);
     }
 );
-
-
-Route::group([
-    'middleware' => ['api'],
-    'namespace' => 'Api',
-    'prefix' => 'api'],
-    function () {
-        Route::resource('api', 'ApiController');
-});

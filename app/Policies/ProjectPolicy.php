@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies;
+namespace Biospex\Policies;
 
 class ProjectPolicy
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Services\Queue;
+namespace Biospex\Services\Queue;
 
-use App\Services\Report\Report;
-use App\Services\Actor\ActorFactory;
+use Biospex\Services\Report\Report;
+use Biospex\Services\Actor\ActorFactory;
 use Exception;
 
 class ActorQueue extends QueueAbstract

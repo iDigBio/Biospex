@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Biospex\Models;
 
 
 
@@ -9,9 +9,9 @@ namespace App\Models;
 use Cartalyst\Sentry\Hashing\NativeHasher;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Traits\HasManyImportsTrait;
-use App\Models\Traits\HasOneProfileTrait;
-use App\Models\Traits\HasManyUserGridFieldTrait;
+use Biospex\Models\Traits\HasManyImportsTrait;
+use Biospex\Models\Traits\HasOneProfileTrait;
+use Biospex\Models\Traits\HasManyUserGridFieldTrait;
 
 class UserOrig extends SentryUser
 {

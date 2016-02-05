@@ -1,4 +1,4 @@
-<?php namespace App\Models;
+<?php namespace Biospex\Models;
 
 /**
  * UserGridField.php

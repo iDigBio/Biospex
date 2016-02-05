@@ -1,9 +1,9 @@
-<?php  namespace App\Http\Controllers\Front;
+<?php  namespace Biospex\Http\Controllers\Front;
 
-use App\Http\Controllers\Controller;
+use Biospex\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\Import\ImportServiceFactory;
-use App\Repositories\Contracts\Project;
+use Biospex\Services\Import\ImportServiceFactory;
+use Biospex\Repositories\Contracts\Project;
 
 class ImportsController extends Controller
 {

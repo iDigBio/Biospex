@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\Front;
+namespace Biospex\Http\Controllers\Front;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\RegisterFormRequest;
-use App\Http\Requests\ResendActivationFormRequest;
+use Biospex\Http\Controllers\Controller;
+use Biospex\Http\Requests\RegisterFormRequest;
+use Biospex\Http\Requests\ResendActivationFormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
-use App\Jobs\RegisterUser;
+use Biospex\Jobs\RegisterUser;
 use Illuminate\Config\Repository as Config;
-use App\Repositories\Contracts\Invite;
-use App\Repositories\Contracts\User;
+use Biospex\Repositories\Contracts\Invite;
+use Biospex\Repositories\Contracts\User;
 use Illuminate\Routing\Router;
 use Illuminate\Events\Dispatcher as Event;
-use App\Events\UserRegisteredEvent;
+use Biospex\Events\UserRegisteredEvent;
 
 class AuthController extends Controller
 {

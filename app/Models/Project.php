@@ -1,4 +1,4 @@
-<?php namespace App\Models;
+<?php namespace Biospex\Models;
 
 use Illuminate\Support\Facades\Config;
 use Jenssegers\Eloquent\Model as Eloquent;
@@ -7,9 +7,7 @@ use Codesleeve\Stapler\ORM\StaplerableInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Cviebrock\EloquentSluggable\SluggableInterface;
 use Cviebrock\EloquentSluggable\SluggableTrait;
-use App\Models\Traits\UuidTrait;
-use Illuminate\Support\Facades\Input;
-use Symfony\Component\Console\Helper\Helper;
+use Biospex\Models\Traits\UuidTrait;
 
 class Project extends Eloquent implements StaplerableInterface, SluggableInterface
 {
@@ -205,7 +203,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      */
     public function bySlug($slug)
     {
-        return $this->with(['group', 'expeditions.actorsCompletedRelation', 'expeditions.actors'])->where('slug', '=', $slug)->first();
+        return $this->with(['group', 'expeditions.stat', 'expeditions.actors'])->where('slug', '=', $slug)->first();
     }
 
     /**

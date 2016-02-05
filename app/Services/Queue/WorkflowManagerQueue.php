@@ -1,7 +1,7 @@
-<?php namespace App\Services\Queue;
+<?php namespace Biospex\Services\Queue;
 
-use App\Repositories\Contracts\WorkflowManager;
-use App\Services\Report\Report;
+use Biospex\Repositories\Contracts\WorkflowManager;
+use Biospex\Services\Report\Report;
 use Exception;
 use Illuminate\Support\Facades\App;
 
@@ -78,7 +78,7 @@ class WorkflowManagerQueue extends QueueAbstract
     {
         foreach ($manager->expedition->actors as $actor) {
             try {
-                $classNameSpace = 'App\Services\Actor\\' . $actor->class;
+                $classNameSpace = 'Biospex\Services\Actor\\' . $actor->class;
                 $class = App::make($classNameSpace);
                 $class->setProperties($actor);
                 $class->process();

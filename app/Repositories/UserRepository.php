@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Repositories;
+namespace Biospex\Repositories;
 
-use App\Repositories\Contracts\User;
-use App\Models\User as Model;
+use Biospex\Repositories\Contracts\User;
+use Biospex\Models\User as Model;
 
 class UserRepository extends Repository implements User
 {

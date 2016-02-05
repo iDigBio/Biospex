@@ -1,6 +1,6 @@
-<?php namespace App\Http\Controllers\Front;
+<?php namespace Biospex\Http\Controllers\Front;
 
-use App\Http\Controllers\Controller;
+use Biospex\Http\Controllers\Controller;
 use DOMDocument;
 use GuzzleHttp\Pool;
 use Illuminate\Config\Repository as Config;

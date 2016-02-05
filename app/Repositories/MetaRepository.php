@@ -1,7 +1,7 @@
-<?php namespace App\Repositories;
+<?php namespace Biospex\Repositories;
 
-use App\Repositories\Contracts\Meta;
-use App\Models\Meta as Model;
+use Biospex\Repositories\Contracts\Meta;
+use Biospex\Models\Meta as Model;
 
 class MetaRepository extends Repository implements Meta
 {

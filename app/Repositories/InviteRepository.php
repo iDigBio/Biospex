@@ -1,7 +1,7 @@
-<?php namespace App\Repositories;
+<?php namespace Biospex\Repositories;
 
-use App\Repositories\Contracts\Invite;
-use App\Models\Invite as Model;
+use Biospex\Repositories\Contracts\Invite;
+use Biospex\Models\Invite as Model;
 
 class InviteRepository extends Repository implements Invite
 {

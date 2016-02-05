@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Services\Actor\NotesFromNature;
+namespace Biospex\Services\Actor\NotesFromNature;
 
 use Illuminate\Config\Repository as Config;
 use Illuminate\Filesystem\Filesystem;
-use App\Repositories\Contracts\Download;
-use App\Repositories\Contracts\Expedition;
-use App\Services\Report\Report;
-use App\Services\Image\Image;
-use App\Services\Actor\ActorAbstract;
-use App\Services\Actor\ActorInterface;
+use Biospex\Repositories\Contracts\Download;
+use Biospex\Repositories\Contracts\Expedition;
+use Biospex\Services\Report\Report;
+use Biospex\Services\Image\Image;
+use Biospex\Services\Actor\ActorAbstract;
+use Biospex\Services\Actor\ActorInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;

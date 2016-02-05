@@ -1,4 +1,4 @@
-<?php namespace App\Services\Common;
+<?php namespace Biospex\Services\Common;
 
 class PermissionService
 {

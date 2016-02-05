@@ -1,8 +1,8 @@
-<?php namespace App\Models;
+<?php namespace Biospex\Models;
 
 use Jenssegers\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Traits\UuidTrait;
+use Biospex\Models\Traits\UuidTrait;
 
 class Expedition extends Eloquent
 {
@@ -152,25 +152,5 @@ class Expedition extends Eloquent
     public function getSubjectsCountAttribute()
     {
         return $this->subjects()->count();
-    }
-
-    /**
-     * Return completed through relationship
-     *
-     * @return mixed
-     */
-    public function actorsCompletedRelation()
-    {
-        return $this->belongsToMany(Actor::class, 'actor_expedition')->selectRaw('expedition_id, avg(completed) as avg')->groupBy('expedition_id');
-    }
-
-    /**
-     * Get completed attribute of actors
-     *
-     * @return int
-     */
-    public function getActorsCompletedAttribute()
-    {
-        return $this->actorsCompletedRelation->first() ? $this->actorsCompletedRelation->first()->avg : 0;
     }
 }

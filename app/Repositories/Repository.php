@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories;
+namespace Biospex\Repositories;
 
 abstract class Repository
 {

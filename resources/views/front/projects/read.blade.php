@@ -68,7 +68,7 @@
                 <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs" type="button" onClick="location.href='{{ route('projects.expeditions.get.edit', [$project->id, $expedition->id]) }}'"><span class="fa fa-cog fa-lrg"></span> <!-- @lang('buttons.edit') --></button>
                 <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-xs" href="{{ route('projects.expeditions.delete.delete', [$project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="fa fa-remove fa-lrg"></span> <!-- @lang('buttons.delete') --></button>
                 @if ( ! $expedition->downloads->isEmpty())
-                <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ route('projects.expeditions.downloads.get.index', [$project->id, $expedition->id]) }}'"><span class="fa fa-download fa-lrg"></span> <!-- @lang('buttons.download') --></button>
+                    <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ route('projects.expeditions.downloads.get.index', [$project->id, $expedition->id]) }}'"><span class="fa fa-download fa-lrg"></span> <!-- @lang('buttons.download') --></button>
                 @endif
             </td>
         </tr>

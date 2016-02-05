@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Front;
+namespace Biospex\Http\Controllers\Front;
 
-use App\Http\Controllers\Controller;
+use Biospex\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Repositories\Contracts\Header;
-use App\Services\Grid\JqGridJsonEncoder;
-use App\Repositories\Contracts\Project;
+use Biospex\Repositories\Contracts\Header;
+use Biospex\Services\Grid\JqGridJsonEncoder;
+use Biospex\Repositories\Contracts\Project;
 use Cartalyst\Sentry\Sentry;
 
 class GridsController extends Controller

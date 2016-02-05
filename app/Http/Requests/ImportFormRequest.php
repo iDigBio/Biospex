@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace Biospex\Http\Requests;
 
 class ImportFormRequest extends Request
 {

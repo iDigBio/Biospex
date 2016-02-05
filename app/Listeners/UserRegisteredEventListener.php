@@ -1,7 +1,7 @@
-<?php namespace App\Listeners;
+<?php namespace Biospex\Listeners;
 
-use App\Events\UserRegisteredEvent;
-use App\Services\Mailer\BiospexMailer;
+use Biospex\Events\UserRegisteredEvent;
+use Biospex\Services\Mailer\BiospexMailer;
 
 class UserRegisteredEventListener
 {

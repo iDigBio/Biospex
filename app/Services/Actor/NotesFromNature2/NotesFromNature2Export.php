@@ -1,17 +1,17 @@
-<?php namespace App\Services\Actor\NotesFromNature2;
+<?php namespace Biospex\Services\Actor\NotesFromNature2;
 
-use App\Services\Actor\ActorAbstract;
-use App\Services\Actor\ActorInterface;
+use Biospex\Services\Actor\ActorAbstract;
+use Biospex\Services\Actor\ActorInterface;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Config\Repository as Config;
-use App\Repositories\Contracts\Download;
+use Biospex\Repositories\Contracts\Download;
 use League\Csv\Writer;
-use App\Services\Xml\XmlBuild;
-use App\Services\Manifest\Manifest;
-use App\Services\Report\Report;
-use App\Repositories\Contracts\Expedition;
-use App\Repositories\Contracts\Header;
-use App\Repositories\Contracts\Property;
+use Biospex\Services\Xml\XmlBuild;
+use Biospex\Services\Manifest\Manifest;
+use Biospex\Services\Report\Report;
+use Biospex\Repositories\Contracts\Expedition;
+use Biospex\Repositories\Contracts\Header;
+use Biospex\Repositories\Contracts\Property;
 
 class NotesFromNature2Export extends ActorAbstract implements ActorInterface
 {

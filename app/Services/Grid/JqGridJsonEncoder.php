@@ -1,8 +1,8 @@
-<?php  namespace App\Services\Grid;
+<?php  namespace Biospex\Services\Grid;
 
-use App\Repositories\Contracts\Subject;
-use App\Repositories\Contracts\Expedition;
-use App\Repositories\Contracts\Header;
+use Biospex\Repositories\Contracts\Subject;
+use Biospex\Repositories\Contracts\Expedition;
+use Biospex\Repositories\Contracts\Header;
 use Exception;
 
 class JqGridJsonEncoder

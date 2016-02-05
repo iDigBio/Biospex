@@ -1,4 +1,4 @@
-<?php namespace App\Models;
+<?php namespace Biospex\Models;
 
 /**
  * Group.php
@@ -28,7 +28,7 @@
 use Cartalyst\Sentry\Groups\Eloquent\Group as SentryGroup;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Traits\HasManyProjectsTrait;
+use Biospex\Models\Traits\HasManyProjectsTrait;
 
 class GroupOrig extends SentryGroup
 {
@@ -69,7 +69,7 @@ class GroupOrig extends SentryGroup
      */
     public function owner()
     {
-        return $this->belongsTo('App\Models\User', 'user_id');
+        return $this->belongsTo('Biospex\Models\User', 'user_id');
     }
 
 

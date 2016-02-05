@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Biospex\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
 use Symfony\Component\Console\Input\InputArgument;
-use App\Repositories\Contracts\OcrQueue;
+use Biospex\Repositories\Contracts\OcrQueue;
 
 class OcrQueuePushCommand extends Command
 {

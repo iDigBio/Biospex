@@ -1,7 +1,7 @@
-<?php  namespace App\Services\Process;
+<?php  namespace Biospex\Services\Process;
 
-use App\Repositories\Contracts\Meta;
-use App\Services\Report\Report;
+use Biospex\Repositories\Contracts\Meta;
+use Biospex\Services\Report\Report;
 
 class MetaFile
 {

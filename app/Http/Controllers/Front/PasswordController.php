@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Front;
+namespace Biospex\Http\Controllers\Front;
 
-use App\Repositories\Contracts\User;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\PasswordFormRequest;
+use Biospex\Repositories\Contracts\User;
+use Biospex\Http\Controllers\Controller;
+use Biospex\Http\Requests\PasswordFormRequest;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

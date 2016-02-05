@@ -1,7 +1,7 @@
-<?php namespace App\Repositories;
+<?php namespace Biospex\Repositories;
 
-use App\Repositories\Contracts\Project;
-use App\Models\Project as Model;
+use Biospex\Repositories\Contracts\Project;
+use Biospex\Models\Project as Model;
 
 class ProjectRepository extends Repository implements Project
 {

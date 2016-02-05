@@ -1,14 +1,14 @@
-<?php namespace App\Services\Queue;
+<?php namespace Biospex\Services\Queue;
 
-use App\Services\Mailer\BiospexMailer;
-use App\Repositories\Contracts\Import;
-use App\Repositories\Contracts\OcrQueue;
-use App\Repositories\Contracts\Project;
-use App\Repositories\Contracts\User;
-use App\Services\Process\DarwinCore;
-use App\Services\Process\Ocr as OcrProcess;
-use App\Services\Process\Xml;
-use App\Services\Report\DarwinCoreImportReport;
+use Biospex\Services\Mailer\BiospexMailer;
+use Biospex\Repositories\Contracts\Import;
+use Biospex\Repositories\Contracts\OcrQueue;
+use Biospex\Repositories\Contracts\Project;
+use Biospex\Repositories\Contracts\User;
+use Biospex\Services\Process\DarwinCore;
+use Biospex\Services\Process\Ocr as OcrProcess;
+use Biospex\Services\Process\Xml;
+use Biospex\Services\Report\DarwinCoreImportReport;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
@@ -162,7 +162,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract
             $this->report->complete($user->email, $project->title, $duplicates, $rejects);
 
             $data = ['project_id' => $import->project_id];
-            Queue::push('App\Services\Queue\OcrProcessBuild', $data, $this->tube);
+            Queue::push('Biospex\Services\Queue\OcrProcessBuild', $data, $this->tube);
 
             $this->filesystem->deleteDirectory($this->scratchFileDir);
             $this->filesystem->delete($zipFile);

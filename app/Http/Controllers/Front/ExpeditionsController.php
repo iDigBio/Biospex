@@ -1,15 +1,15 @@
-<?php namespace App\Http\Controllers\Front;
+<?php namespace Biospex\Http\Controllers\Front;
 
-use App\Http\Controllers\Controller;
+use Biospex\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Config\Repository as Config;
-use App\Http\Requests\ExpeditionFormRequest;
-use App\Services\Common\PermissionService;
-use App\Repositories\Contracts\Expedition;
-use App\Repositories\Contracts\Project;
-use App\Repositories\Contracts\Subject;
-use App\Repositories\Contracts\WorkflowManager;
+use Biospex\Http\Requests\ExpeditionFormRequest;
+use Biospex\Services\Common\PermissionService;
+use Biospex\Repositories\Contracts\Expedition;
+use Biospex\Repositories\Contracts\Project;
+use Biospex\Repositories\Contracts\Subject;
+use Biospex\Repositories\Contracts\WorkflowManager;
 use Illuminate\Support\Facades\Artisan;
 use Exception;
 
@@ -313,7 +313,7 @@ class ExpeditionsController extends Controller
             'project_id' => (int) $projectId,
             'expedition_id' => (int) $expeditionId
         ];
-        $this->queue->push('App\Services\Queue\OcrProcessBuild', $data, $this->config->get('config.beanstalkd.ocr'));
+        $this->queue->push('Biospex\Services\Queue\OcrProcessBuild', $data, $this->config->get('config.beanstalkd.ocr'));
         session_flash_push('success', trans('expeditions.ocr_process_success'));
 
         return redirect()->route('projects.expeditions.get.read', [$projectId, $expeditionId]);

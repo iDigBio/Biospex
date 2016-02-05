@@ -1,6 +1,6 @@
-<?php namespace App\Http\Controllers\Admin;
+<?php namespace Biospex\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use Biospex\Http\Controllers\Controller;
 
 /**
  * Class DashboardController

@@ -1,15 +1,15 @@
-<?php namespace App\Http\Controllers\Front;
+<?php namespace Biospex\Http\Controllers\Front;
 
-use App\Http\Controllers\Controller;
+use Biospex\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Events\Dispatcher as Event;
-use App\Services\Common\PermissionService;
-use App\Repositories\Contracts\Invite;
-use App\Repositories\Contracts\Group;
-use App\Repositories\Contracts\User;
-use App\Http\Requests\InviteFormRequest;
-use App\Jobs\InviteCreateJob;
-use App\Events\SendInviteEvent;
+use Biospex\Services\Common\PermissionService;
+use Biospex\Repositories\Contracts\Invite;
+use Biospex\Repositories\Contracts\Group;
+use Biospex\Repositories\Contracts\User;
+use Biospex\Http\Requests\InviteFormRequest;
+use Biospex\Jobs\InviteCreateJob;
+use Biospex\Events\SendInviteEvent;
 
 class InvitesController extends Controller
 {

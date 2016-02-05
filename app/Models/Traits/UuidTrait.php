@@ -1,4 +1,4 @@
-<?php namespace App\Models\Traits;
+<?php namespace Biospex\Models\Traits;
 
 use Ramsey\Uuid\Uuid;
 

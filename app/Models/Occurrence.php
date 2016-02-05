@@ -1,4 +1,4 @@
-<?php namespace App\Models;
+<?php namespace Biospex\Models;
 
 use Jenssegers\Mongodb\Model as Eloquent;
 

@@ -1,16 +1,16 @@
 <?php 
 
-namespace App\Http\Controllers\Admin;
+namespace Biospex\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\User;
-use App\Repositories\Contracts\Group;
-use App\Repositories\Contracts\Permission;
-use App\Repositories\Contracts\Invite;
-use App\Jobs\ShowRegistrationFormJob;
-use App\Jobs\PostRegistrationFormJob;
-use App\Http\Requests\RegisterFormRequest;
-use App\Services\Common\UserService;
+use Biospex\Http\Controllers\Controller;
+use Biospex\Repositories\Contracts\User;
+use Biospex\Repositories\Contracts\Group;
+use Biospex\Repositories\Contracts\Permission;
+use Biospex\Repositories\Contracts\Invite;
+use Biospex\Jobs\ShowRegistrationFormJob;
+use Biospex\Jobs\PostRegistrationFormJob;
+use Biospex\Http\Requests\RegisterFormRequest;
+use Biospex\Services\Common\UserService;
 
 class UsersController extends Controller
 {

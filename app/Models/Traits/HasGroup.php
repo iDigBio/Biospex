@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Models\Traits;
+namespace Biospex\Models\Traits;
 
-use App\Models\Group;
-use App\Models\Permission;
+use Biospex\Models\Group;
+use Biospex\Models\Permission;
 
 trait HasGroup
 {

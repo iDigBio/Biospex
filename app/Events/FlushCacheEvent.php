@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace Biospex\Events;
 
 use Cache;
 use Route;

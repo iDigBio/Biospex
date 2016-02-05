@@ -1,8 +1,8 @@
-<?php  namespace App\Services\Queue;
+<?php  namespace Biospex\Services\Queue;
 
-use App\Repositories\Contracts\Import;
-use App\Services\Report\TranscriptionImportReport;
-use App\Services\Process\NfnTranscription;
+use Biospex\Repositories\Contracts\Import;
+use Biospex\Services\Report\TranscriptionImportReport;
+use Biospex\Services\Process\NfnTranscription;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
 use Exception;

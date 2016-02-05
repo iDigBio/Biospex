@@ -1,5 +1,15 @@
-<?php namespace App\Console;
+<?php namespace Biospex\Console;
 
+use Biospex\Console\Commands\AustinProcessCommand;
+use Biospex\Console\Commands\ClearBeanstalkdQueueCommand;
+use Biospex\Console\Commands\DarwinCoreFileImportCommand;
+use Biospex\Console\Commands\DatabaseQueryCommand;
+use Biospex\Console\Commands\DownloadCleanCommand;
+use Biospex\Console\Commands\Inspire;
+use Biospex\Console\Commands\OcrQueuePushCommand;
+use Biospex\Console\Commands\TestAppCommand;
+use Biospex\Console\Commands\ViewsCommand;
+use Biospex\Console\Commands\WorkFlowManagerCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -11,16 +21,16 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        \App\Console\Commands\Inspire::class,
-        \App\Console\Commands\WorkFlowManagerCommand::class,
-        \App\Console\Commands\DownloadCleanCommand::class,
-        \App\Console\Commands\ViewsCommand::class,
-        \App\Console\Commands\TestAppCommand::class,
-        \App\Console\Commands\ClearBeanstalkdQueueCommand::class,
-        \App\Console\Commands\DarwinCoreFileImportCommand::class,
-        \App\Console\Commands\OcrQueuePushCommand::class,
-        \App\Console\Commands\DatabaseQueryCommand::class,
-        \App\Console\Commands\AustinProcessCommand::class,
+        Inspire::class,
+        WorkFlowManagerCommand::class,
+        DownloadCleanCommand::class,
+        ViewsCommand::class,
+        TestAppCommand::class,
+        ClearBeanstalkdQueueCommand::class,
+        DarwinCoreFileImportCommand::class,
+        OcrQueuePushCommand::class,
+        DatabaseQueryCommand::class,
+        AustinProcessCommand::class,
     ];
 
     /**

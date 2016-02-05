@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Actor;
+namespace Biospex\Services\Actor;
 
 use Illuminate\Support\Facades\App;
 

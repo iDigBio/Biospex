@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services\Process;
+namespace Biospex\Services\Process;
 
 use Illuminate\Config\Repository as Config;
-use App\Repositories\Contracts\OcrQueue;
-use App\Repositories\Contracts\Subject;
+use Biospex\Repositories\Contracts\OcrQueue;
+use Biospex\Repositories\Contracts\Subject;
 use Illuminate\Contracts\Queue\Queue;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -103,7 +103,7 @@ class Ocr
         $this->subject = $subject;
         $this->ocrQueue = $ocrQueue;
 
-        $this->ocrProcessQueue = 'App\Services\Queue\OcrProcessQueue';
+        $this->ocrProcessQueue = 'Biospex\Services\Queue\OcrProcessQueue';
         $this->ocrCrop = $config->get('config.ocr_crop');
         $this->ocrChunk = $config->get('config.ocr_chunk');
         $this->disableOcr = $config->get('config.disable_ocr');

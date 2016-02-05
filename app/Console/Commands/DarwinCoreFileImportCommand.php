@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Biospex\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Repositories\Contracts\Import;
+use Biospex\Repositories\Contracts\Import;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
 

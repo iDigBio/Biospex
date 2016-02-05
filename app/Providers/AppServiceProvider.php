@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Providers;
+namespace Biospex\Providers;
 
-use App\Events\SendReportEvent;
-use App\Models\Group;
-use App\Models\Permission;
-use App\Models\Profile;
-use App\Models\User;
+use Biospex\Events\SendReportEvent;
+use Biospex\Models\Group;
+use Biospex\Models\Permission;
+use Biospex\Models\Profile;
+use Biospex\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
@@ -89,7 +89,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(
             'Illuminate\Contracts\Auth\Registrar',
-            'App\Services\Registrar'
+            'Biospex\Services\Registrar'
         );
 
 

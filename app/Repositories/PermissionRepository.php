@@ -1,7 +1,7 @@
-<?php namespace App\Repositories;
+<?php namespace Biospex\Repositories;
 
-use App\Repositories\Contracts\Permission;
-use App\Models\Permission as Model;
+use Biospex\Repositories\Contracts\Permission;
+use Biospex\Models\Permission as Model;
 
 class PermissionRepository extends Repository implements Permission
 {

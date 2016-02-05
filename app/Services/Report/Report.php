@@ -1,13 +1,13 @@
-<?php namespace App\Services\Report;
+<?php namespace Biospex\Services\Report;
 
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\MessageBag;
-use App\Repositories\Contracts\Group;
-use App\Services\Mailer\BiospexMailer;
+use Biospex\Repositories\Contracts\Group;
+use Biospex\Services\Mailer\BiospexMailer;
 use Illuminate\Events\Dispatcher as Event;
 use League\Csv\Writer;
-use App\Events\SendReportEvent;
+use Biospex\Events\SendReportEvent;
 
 
 class Report
