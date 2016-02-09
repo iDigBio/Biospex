@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('projects.expeditions.get.create', $expedition->project) !!}
+    {!! Breadcrumbs::render('projects.expeditions.get.show.title', $expedition, trans('pages.edit') . ' ' . trans('expeditions.expedition')) !!}
     <div class="col-xs-12">
         <div class="panel panel-info">
             <div class="panel-heading">

@@ -8,10 +8,8 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('projects.expeditions.get.read', $expedition) !!}
-
+    {!! Breadcrumbs::render('projects.expeditions.get.show', $expedition) !!}
     <div class="jumbotron">
-        <h4>Expedition:</h4>
         <h2>{{ $expedition->title }}</h2>
         <p>{{ $expedition->description }}</p>
         <p>@lang('pages.keywords'): {{ $expedition->keywords }} </p>
