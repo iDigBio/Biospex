@@ -5,6 +5,7 @@ Route::pattern('id', '[0-9]+');
 
 Route::group(
     [
+        'domain' => env('APP_DOMAIN'),
         'middleware' => ['web'],
         'namespace' => 'Front',
         'prefix'    => Local::setLocale(),
@@ -119,6 +120,7 @@ Route::group(
 
 Route::group(
     [
+        'domain' => env('APP_DOMAIN'),
         'middleware' => ['web', 'auth'],
         'namespace' => 'Front',
         'prefix'    => Local::setLocale(),
@@ -139,8 +141,8 @@ Route::group(
         ]);
 
         Route::get('users/{users}', [
-            'uses'       => 'UsersController@read',
-            'as'         => 'users.get.read'
+            'uses'       => 'UsersController@show',
+            'as'         => 'users.get.show'
         ]);
 
         Route::get('users/{users}/edit', [
@@ -176,8 +178,8 @@ Route::group(
         ]);
 
         Route::get('groups/{groups}', [
-            'uses'       => 'GroupsController@read',
-            'as'         => 'groups.get.read'
+            'uses'       => 'GroupsController@show',
+            'as'         => 'groups.get.show'
         ]);
 
         Route::get('groups/{groups}/edit', [
@@ -218,7 +220,7 @@ Route::group(
         ]);
 
         // Begin ProjectsController
-        Route::get('dashboard', [
+        Route::get('projects', [
             'uses'       => 'ProjectsController@index',
             'as'         => 'projects.get.index'
         ]);
@@ -234,8 +236,8 @@ Route::group(
         ]);
 
         Route::get('projects/{projects}', [
-            'uses'       => 'ProjectsController@read',
-            'as'         => 'projects.get.read'
+            'uses'       => 'ProjectsController@show',
+            'as'         => 'projects.get.show'
         ]);
 
         Route::get('projects/{projects}/edit', [
@@ -287,9 +289,14 @@ Route::group(
         // End Import Controller
 
         // Begin Expeditions Controller
-        Route::get('projects/{projects}/expeditions', [
+        Route::get('expeditions', [
             'uses'       => 'ExpeditionsController@index',
-            'as'         => 'projects.expeditions.get.index'
+            'as'         => 'expeditions.get.index'
+        ]);
+
+        Route::get('projects/{projects}/expeditions', [
+            'uses'       => 'ExpeditionsController@ajax',
+            'as'         => 'projects.expeditions.get.ajax'
         ]);
 
         Route::get('projects/{projects}/expeditions/create', [
@@ -303,8 +310,8 @@ Route::group(
         ]);
 
         Route::get('projects/{projects}/expeditions/{expeditions}', [
-            'uses'       => 'ExpeditionsController@read',
-            'as'         => 'projects.expeditions.get.read'
+            'uses'       => 'ExpeditionsController@show',
+            'as'         => 'projects.expeditions.get.show'
         ]);
 
         Route::get('projects/{projects}/expeditions/{expeditions}/edit', [
@@ -359,28 +366,6 @@ Route::group(
         Route::get('/projects/{projects}/grids/expeditions/{expeditions}', ['as' => 'projects.grids.expeditions.show', 'uses' => 'GridsController@expeditionsShow']);
         Route::get('/projects/{projects}/grids/expeditions/{expeditions}/edit', ['as' => 'projects.grids.expeditions.edit', 'uses' => 'GridsController@expeditionsEdit']);
 
-
-        // Projects/Expeditions/Subjects
-        Route::get('projects/{projects}/subjects', [
-            'uses'       => 'SubjectsController@index',
-            'as'         => 'projects.subjects'
-        ]);
-
-        Route::get('projects/{projects}/subjects/load', [
-            'uses'       => 'SubjectsController@load',
-            'as'         => 'projects.subjects.load'
-        ]);
-
-        Route::get('projects/{projects}/subjects/{expeditions}', [
-            'uses'       => 'SubjectsController@show',
-            'as'         => 'projects.subjects.show'
-        ]);
-
-        Route::post('projects/{projects}/subjects/{expeditions}', [
-            'uses'       => 'SubjectsController@store',
-            'as'         => 'projects.subjects.store'
-        ]);
-
         // ImagesController
         Route::get('images/html', [
             'uses' => 'ImagesController@html',
@@ -391,5 +376,54 @@ Route::group(
             'uses' => 'ImagesController@preview',
             'as'   => 'images.preview'
         ]);
+    }
+);
+
+// Api routes
+Route::group(
+    [
+        'domain' => env('API_DOMAIN'),
+        'middleware' => ['api', 'version'],
+        'namespace' => 'Api',
+        'prefix' => '{version}'
+    ],
+    function () {
+        // Api home page
+        Route::get('/', 'ApiController@index');
+
+        // Users
+        Route::post('users', '{api-namespace}\UsersController@create');
+        Route::get('users/{id}', 'UsersController@show');
+        Route::put('users/{id}', 'UsersController@update');
+        Route::delete('users/{id}', 'UsersController@delete');
+        Route::get('users', 'UsersController@index');
+
+        // Groups
+        Route::post('groups', 'GroupsController@create');
+        Route::get('groups/{id}', 'GroupsController@show');
+        Route::put('groups/{id}', 'GroupsController@update');
+        Route::delete('groups/{id}', 'GroupsController@delete');
+        Route::get('groups', 'GroupsController@index');
+
+        // Projects
+        Route::post('projects', 'ProjectsController@create');
+        Route::get('projects/{id}', 'ProjectsController@show');
+        Route::put('projects/{id}', 'ProjectsController@update');
+        Route::delete('projects/{id}', 'ProjectsController@delete');
+        Route::get('projects', 'ProjectsController@index');
+
+        // Expeditions
+        Route::post('expeditions', 'ExpeditionsController@create');
+        Route::get('expeditions/{id}', 'ExpeditionsController@show');
+        Route::put('expeditions/{id}', 'ExpeditionsController@update');
+        Route::delete('expeditions/{id}', 'ExpeditionsController@delete');
+        Route::get('expeditions', 'ExpeditionsController@index');
+
+        // Subjects
+        Route::post('subjects', 'SubjectsController@create');
+        Route::get('subjects/{id}', 'SubjectsController@show');
+        Route::put('subjects/{id}', 'SubjectsController@update');
+        Route::delete('subjects/{id}', 'SubjectsController@delete');
+        Route::get('subjects', 'SubjectsController@index');
     }
 );
