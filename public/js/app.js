@@ -2668,16 +2668,2956 @@ d.trigger("activate.bs.scrollspy")},b.prototype.clear=function(){a(this.selector
  */
 !function(a){"use strict";function b(b){var c=[{re:/[\xC0-\xC6]/g,ch:"A"},{re:/[\xE0-\xE6]/g,ch:"a"},{re:/[\xC8-\xCB]/g,ch:"E"},{re:/[\xE8-\xEB]/g,ch:"e"},{re:/[\xCC-\xCF]/g,ch:"I"},{re:/[\xEC-\xEF]/g,ch:"i"},{re:/[\xD2-\xD6]/g,ch:"O"},{re:/[\xF2-\xF6]/g,ch:"o"},{re:/[\xD9-\xDC]/g,ch:"U"},{re:/[\xF9-\xFC]/g,ch:"u"},{re:/[\xC7-\xE7]/g,ch:"c"},{re:/[\xD1]/g,ch:"N"},{re:/[\xF1]/g,ch:"n"}];return a.each(c,function(){b=b.replace(this.re,this.ch)}),b}function c(a){var b={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#x27;","`":"&#x60;"},c="(?:"+Object.keys(b).join("|")+")",d=new RegExp(c),e=new RegExp(c,"g"),f=null==a?"":""+a;return d.test(f)?f.replace(e,function(a){return b[a]}):f}function d(b,c){var d=arguments,f=b,g=c;[].shift.apply(d);var h,i=this.each(function(){var b=a(this);if(b.is("select")){var c=b.data("selectpicker"),i="object"==typeof f&&f;if(c){if(i)for(var j in i)i.hasOwnProperty(j)&&(c.options[j]=i[j])}else{var k=a.extend({},e.DEFAULTS,a.fn.selectpicker.defaults||{},b.data(),i);b.data("selectpicker",c=new e(this,k,g))}"string"==typeof f&&(h=c[f]instanceof Function?c[f].apply(c,d):c.options[f])}});return"undefined"!=typeof h?h:i}String.prototype.includes||!function(){var a={}.toString,b=function(){try{var a={},b=Object.defineProperty,c=b(a,a,a)&&b}catch(d){}return c}(),c="".indexOf,d=function(b){if(null==this)throw TypeError();var d=String(this);if(b&&"[object RegExp]"==a.call(b))throw TypeError();var e=d.length,f=String(b),g=f.length,h=arguments.length>1?arguments[1]:void 0,i=h?Number(h):0;i!=i&&(i=0);var j=Math.min(Math.max(i,0),e);return g+j>e?!1:-1!=c.call(d,f,i)};b?b(String.prototype,"includes",{value:d,configurable:!0,writable:!0}):String.prototype.includes=d}(),String.prototype.startsWith||!function(){var a=function(){try{var a={},b=Object.defineProperty,c=b(a,a,a)&&b}catch(d){}return c}(),b={}.toString,c=function(a){if(null==this)throw TypeError();var c=String(this);if(a&&"[object RegExp]"==b.call(a))throw TypeError();var d=c.length,e=String(a),f=e.length,g=arguments.length>1?arguments[1]:void 0,h=g?Number(g):0;h!=h&&(h=0);var i=Math.min(Math.max(h,0),d);if(f+i>d)return!1;for(var j=-1;++j<f;)if(c.charCodeAt(i+j)!=e.charCodeAt(j))return!1;return!0};a?a(String.prototype,"startsWith",{value:c,configurable:!0,writable:!0}):String.prototype.startsWith=c}(),a.expr[":"].icontains=function(b,c,d){var e=a(b),f=(e.data("tokens")||e.text()).toUpperCase();return f.includes(d[3].toUpperCase())},a.expr[":"].ibegins=function(b,c,d){var e=a(b),f=(e.data("tokens")||e.text()).toUpperCase();return f.startsWith(d[3].toUpperCase())},a.expr[":"].aicontains=function(b,c,d){var e=a(b),f=(e.data("tokens")||e.data("normalizedText")||e.text()).toUpperCase();return f.includes(f,d[3])},a.expr[":"].aibegins=function(b,c,d){var e=a(b),f=(e.data("tokens")||e.data("normalizedText")||e.text()).toUpperCase();return f.startsWith(d[3].toUpperCase())};var e=function(b,c,d){d&&(d.stopPropagation(),d.preventDefault()),this.$element=a(b),this.$newElement=null,this.$button=null,this.$menu=null,this.$lis=null,this.options=c,null===this.options.title&&(this.options.title=this.$element.attr("title")),this.val=e.prototype.val,this.render=e.prototype.render,this.refresh=e.prototype.refresh,this.setStyle=e.prototype.setStyle,this.selectAll=e.prototype.selectAll,this.deselectAll=e.prototype.deselectAll,this.destroy=e.prototype.remove,this.remove=e.prototype.remove,this.show=e.prototype.show,this.hide=e.prototype.hide,this.init()};e.VERSION="1.6.5",e.DEFAULTS={noneSelectedText:"Nothing selected",noneResultsText:"No results matched {0}",countSelectedText:function(a){return 1==a?"{0} item selected":"{0} items selected"},maxOptionsText:function(a,b){return[1==a?"Limit reached ({n} item max)":"Limit reached ({n} items max)",1==b?"Group limit reached ({n} item max)":"Group limit reached ({n} items max)"]},selectAllText:"Select All",deselectAllText:"Deselect All",doneButton:!1,doneButtonText:"Close",multipleSeparator:", ",style:"btn-default",size:"auto",title:null,selectedTextFormat:"values",width:!1,container:!1,hideDisabled:!1,showSubtext:!1,showIcon:!0,showContent:!0,dropupAuto:!0,header:!1,liveSearch:!1,liveSearchPlaceholder:null,liveSearchNormalize:!1,liveSearchStyle:"contains",actionsBox:!1,iconBase:"glyphicon",tickIcon:"glyphicon-ok",maxOptions:!1,mobile:!1,selectOnTab:!1,dropdownAlignRight:!1},e.prototype={constructor:e,init:function(){var b=this,c=this.$element.attr("id");this.$element.hide(),this.multiple=this.$element.prop("multiple"),this.autofocus=this.$element.prop("autofocus"),this.$newElement=this.createView(),this.$element.after(this.$newElement),this.$button=this.$newElement.children("button"),this.$menu=this.$newElement.children(".dropdown-menu"),this.$searchbox=this.$menu.find("input"),this.options.dropdownAlignRight&&this.$menu.addClass("dropdown-menu-right"),"undefined"!=typeof c&&(this.$button.attr("data-id",c),a('label[for="'+c+'"]').click(function(a){a.preventDefault(),b.$button.focus()})),this.checkDisabled(),this.clickListener(),this.options.liveSearch&&this.liveSearchListener(),this.render(),this.liHeight(),this.setStyle(),this.setWidth(),this.options.container&&this.selectPosition(),this.$menu.data("this",this),this.$newElement.data("this",this),this.options.mobile&&this.mobile()},createDropdown:function(){var b=this.multiple?" show-tick":"",d=this.$element.parent().hasClass("input-group")?" input-group-btn":"",e=this.autofocus?" autofocus":"",f=this.options.header?'<div class="popover-title"><button type="button" class="close" aria-hidden="true">&times;</button>'+this.options.header+"</div>":"",g=this.options.liveSearch?'<div class="bs-searchbox"><input type="text" class="form-control" autocomplete="off"'+(null===this.options.liveSearchPlaceholder?"":' placeholder="'+c(this.options.liveSearchPlaceholder)+'"')+"></div>":"",h=this.multiple&&this.options.actionsBox?'<div class="bs-actionsbox"><div class="btn-group btn-group-sm btn-block"><button class="actions-btn bs-select-all btn btn-default">'+this.options.selectAllText+'</button><button class="actions-btn bs-deselect-all btn btn-default">'+this.options.deselectAllText+"</button></div></div>":"",i=this.multiple&&this.options.doneButton?'<div class="bs-donebutton"><div class="btn-group btn-block"><button class="btn btn-sm btn-default">'+this.options.doneButtonText+"</button></div></div>":"",j='<div class="btn-group bootstrap-select'+b+d+'"><button type="button" class="btn dropdown-toggle" data-toggle="dropdown"'+e+'><span class="filter-option pull-left"></span>&nbsp;<span class="caret"></span></button><div class="dropdown-menu open">'+f+g+h+'<ul class="dropdown-menu inner" role="menu"></ul>'+i+"</div></div>";return a(j)},createView:function(){var a=this.createDropdown(),b=this.createLi();return a.find("ul").append(b),a},reloadLi:function(){this.destroyLi();var a=this.createLi();this.$menu.find("ul").append(a)},destroyLi:function(){this.$menu.find("li").remove()},createLi:function(){var d=this,e=[],f=0,g=function(a,b,c,d){return"<li"+("undefined"!=typeof c&""!==c?' class="'+c+'"':"")+("undefined"!=typeof b&null!==b?' data-original-index="'+b+'"':"")+("undefined"!=typeof d&null!==d?'data-optgroup="'+d+'"':"")+">"+a+"</li>"},h=function(a,e,f,g){return'<a tabindex="0"'+("undefined"!=typeof e?' class="'+e+'"':"")+("undefined"!=typeof f?' style="'+f+'"':"")+' data-normalized-text="'+b(c(a))+'"'+("undefined"!=typeof g||null!==g?' data-tokens="'+g+'"':"")+">"+a+'<span class="'+d.options.iconBase+" "+d.options.tickIcon+' check-mark"></span></a>'};return this.$element.find("option").each(function(b){var c=a(this),i=c.attr("class")||"",j=c.attr("style"),k=c.data("content")?c.data("content"):c.html(),l=c.data("tokens")?c.data("tokens"):null,m="undefined"!=typeof c.data("subtext")?'<small class="text-muted">'+c.data("subtext")+"</small>":"",n="undefined"!=typeof c.data("icon")?'<span class="'+d.options.iconBase+" "+c.data("icon")+'"></span> ':"",o=c.is(":disabled")||c.parent().is(":disabled");if(""!==n&&o&&(n="<span>"+n+"</span>"),c.data("content")||(k=n+'<span class="text">'+k+m+"</span>"),!d.options.hideDisabled||!o)if(c.parent().is("optgroup")&&c.data("divider")!==!0){if(0===c.index()){f+=1;var p=c.parent().attr("label"),q="undefined"!=typeof c.parent().data("subtext")?'<small class="text-muted">'+c.parent().data("subtext")+"</small>":"",r=c.parent().data("icon")?'<span class="'+d.options.iconBase+" "+c.parent().data("icon")+'"></span> ':"";p=r+'<span class="text">'+p+q+"</span>",0!==b&&e.length>0&&e.push(g("",null,"divider",f+"div")),e.push(g(p,null,"dropdown-header",f))}e.push(g(h(k,"opt "+i,j,l),b,"",f))}else c.data("divider")===!0?e.push(g("",b,"divider")):c.data("hidden")===!0?e.push(g(h(k,i,j,l),b,"hidden is-hidden")):(c.prev().is("optgroup")&&e.push(g("",null,"divider",f+"div")),e.push(g(h(k,i,j,l),b)))}),this.multiple||0!==this.$element.find("option:selected").length||this.options.title||this.$element.find("option").eq(0).prop("selected",!0).attr("selected","selected"),a(e.join(""))},findLis:function(){return null==this.$lis&&(this.$lis=this.$menu.find("li")),this.$lis},render:function(b){var c=this;b!==!1&&this.$element.find("option").each(function(b){c.setDisabled(b,a(this).is(":disabled")||a(this).parent().is(":disabled")),c.setSelected(b,a(this).is(":selected"))}),this.tabIndex();var d=this.options.hideDisabled?":enabled":"",e=this.$element.find("option:selected"+d).map(function(){var b,d=a(this),e=d.data("icon")&&c.options.showIcon?'<i class="'+c.options.iconBase+" "+d.data("icon")+'"></i> ':"";return b=c.options.showSubtext&&d.data("subtext")&&!c.multiple?' <small class="text-muted">'+d.data("subtext")+"</small>":"","undefined"!=typeof d.attr("title")?d.attr("title"):d.data("content")&&c.options.showContent?d.data("content"):e+d.html()+b}).toArray(),f=this.multiple?e.join(this.options.multipleSeparator):e[0];if(this.multiple&&this.options.selectedTextFormat.indexOf("count")>-1){var g=this.options.selectedTextFormat.split(">");if(g.length>1&&e.length>g[1]||1==g.length&&e.length>=2){d=this.options.hideDisabled?", [disabled]":"";var h=this.$element.find("option").not('[data-divider="true"], [data-hidden="true"]'+d).length,i="function"==typeof this.options.countSelectedText?this.options.countSelectedText(e.length,h):this.options.countSelectedText;f=i.replace("{0}",e.length.toString()).replace("{1}",h.toString())}}void 0==this.options.title&&(this.options.title=this.$element.attr("title")),"static"==this.options.selectedTextFormat&&(f=this.options.title),f||(f="undefined"!=typeof this.options.title?this.options.title:this.options.noneSelectedText),this.$button.attr("title",a.trim(f.replace(/<[^>]*>?/g,""))),this.$button.children(".filter-option").html(f)},setStyle:function(a,b){this.$element.attr("class")&&this.$newElement.addClass(this.$element.attr("class").replace(/selectpicker|mobile-device|validate\[.*\]/gi,""));var c=a?a:this.options.style;"add"==b?this.$button.addClass(c):"remove"==b?this.$button.removeClass(c):(this.$button.removeClass(this.options.style),this.$button.addClass(c))},liHeight:function(){if(this.options.size!==!1){var a=this.$menu.parent().clone().children(".dropdown-toggle").prop("autofocus",!1).end().appendTo("body"),b=a.addClass("open").children(".dropdown-menu"),c=b.find("li").not(".divider, .dropdown-header").filter(":visible").children("a").outerHeight(),d=this.options.header?b.find(".popover-title").outerHeight():0,e=this.options.liveSearch?b.find(".bs-searchbox").outerHeight():0,f=this.options.actionsBox?b.find(".bs-actionsbox").outerHeight():0,g=this.multiple?b.find(".bs-donebutton").outerHeight():0;a.remove(),this.$newElement.data("liHeight",c).data("headerHeight",d).data("searchHeight",e).data("actionsHeight",f).data("doneButtonHeight",g)}},setSize:function(){this.findLis();var b,c,d,e=this,f=this.$menu,g=f.children(".inner"),h=this.$newElement.outerHeight(),i=this.$newElement.data("liHeight"),j=this.$newElement.data("headerHeight"),k=this.$newElement.data("searchHeight"),l=this.$newElement.data("actionsHeight"),m=this.$newElement.data("doneButtonHeight"),n=this.$lis.filter(".divider").outerHeight(!0),o=parseInt(f.css("padding-top"))+parseInt(f.css("padding-bottom"))+parseInt(f.css("border-top-width"))+parseInt(f.css("border-bottom-width")),p=this.options.hideDisabled?".disabled":"",q=a(window),r=o+parseInt(f.css("margin-top"))+parseInt(f.css("margin-bottom"))+2,s=function(){c=e.$newElement.offset().top-q.scrollTop(),d=q.height()-c-h};if(s(),this.options.header&&f.css("padding-top",0),"auto"==this.options.size){var t=function(){var a,h=e.$lis.not(".hidden");s(),b=d-r,e.options.dropupAuto&&e.$newElement.toggleClass("dropup",c>d&&b-r<f.height()),e.$newElement.hasClass("dropup")&&(b=c-r),a=h.length+h.filter(".dropdown-header").length>3?3*i+r-2:0,f.css({"max-height":b+"px",overflow:"hidden","min-height":a+j+k+l+m+"px"}),g.css({"max-height":b-j-k-l-m-o+"px","overflow-y":"auto","min-height":Math.max(a-o,0)+"px"})};t(),this.$searchbox.off("input.getSize propertychange.getSize").on("input.getSize propertychange.getSize",t),q.off("resize.getSize scroll.getSize").on("resize.getSize scroll.getSize",t)}else if(this.options.size&&"auto"!=this.options.size&&f.find("li").not(p).length>this.options.size){var u=this.$lis.not(".divider").not(p).children().slice(0,this.options.size).last().parent().index(),v=this.$lis.slice(0,u+1).filter(".divider").length;b=i*this.options.size+v*n+o,e.options.dropupAuto&&this.$newElement.toggleClass("dropup",c>d&&b<f.height()),f.css({"max-height":b+j+k+l+m+"px",overflow:"hidden"}),g.css({"max-height":b-o+"px","overflow-y":"auto"})}},setWidth:function(){if("auto"==this.options.width){this.$menu.css("min-width","0");var a=this.$newElement.clone().appendTo("body"),b=a.children(".dropdown-menu").css("width"),c=a.css("width","auto").children("button").css("width");a.remove(),this.$newElement.css("width",Math.max(parseInt(b),parseInt(c))+"px")}else"fit"==this.options.width?(this.$menu.css("min-width",""),this.$newElement.css("width","").addClass("fit-width")):this.options.width?(this.$menu.css("min-width",""),this.$newElement.css("width",this.options.width)):(this.$menu.css("min-width",""),this.$newElement.css("width",""));this.$newElement.hasClass("fit-width")&&"fit"!==this.options.width&&this.$newElement.removeClass("fit-width")},selectPosition:function(){var b,c,d=this,e="<div />",f=a(e),g=function(a){f.addClass(a.attr("class").replace(/form-control/gi,"")).toggleClass("dropup",a.hasClass("dropup")),b=a.offset(),c=a.hasClass("dropup")?0:a[0].offsetHeight,f.css({top:b.top+c,left:b.left,width:a[0].offsetWidth,position:"absolute"})};this.$newElement.on("click",function(){d.isDisabled()||(g(a(this)),f.appendTo(d.options.container),f.toggleClass("open",!a(this).hasClass("open")),f.append(d.$menu))}),a(window).on("resize scroll",function(){g(d.$newElement)}),a("html").on("click",function(b){a(b.target).closest(d.$newElement).length<1&&f.removeClass("open")})},setSelected:function(a,b){this.findLis(),this.$lis.filter('[data-original-index="'+a+'"]').toggleClass("selected",b)},setDisabled:function(a,b){this.findLis(),b?this.$lis.filter('[data-original-index="'+a+'"]').addClass("disabled").children("a").attr("href","#").attr("tabindex",-1):this.$lis.filter('[data-original-index="'+a+'"]').removeClass("disabled").children("a").removeAttr("href").attr("tabindex",0)},isDisabled:function(){return this.$element.is(":disabled")},checkDisabled:function(){var a=this;this.isDisabled()?this.$button.addClass("disabled").attr("tabindex",-1):(this.$button.hasClass("disabled")&&this.$button.removeClass("disabled"),-1!=this.$button.attr("tabindex")||this.$element.data("tabindex")||this.$button.removeAttr("tabindex")),this.$button.click(function(){return!a.isDisabled()})},tabIndex:function(){this.$element.is("[tabindex]")&&(this.$element.data("tabindex",this.$element.attr("tabindex")),this.$button.attr("tabindex",this.$element.data("tabindex")))},clickListener:function(){var b=this;this.$newElement.on("touchstart.dropdown",".dropdown-menu",function(a){a.stopPropagation()}),this.$newElement.on("click",function(){b.setSize(),b.options.liveSearch||b.multiple||setTimeout(function(){b.$menu.find(".selected a").focus()},10)}),this.$menu.on("click","li a",function(c){var d=a(this),e=d.parent().data("originalIndex"),f=b.$element.val(),g=b.$element.prop("selectedIndex");if(b.multiple&&c.stopPropagation(),c.preventDefault(),!b.isDisabled()&&!d.parent().hasClass("disabled")){var h=b.$element.find("option"),i=h.eq(e),j=i.prop("selected"),k=i.parent("optgroup"),l=b.options.maxOptions,m=k.data("maxOptions")||!1;if(b.multiple){if(i.prop("selected",!j),b.setSelected(e,!j),d.blur(),l!==!1||m!==!1){var n=l<h.filter(":selected").length,o=m<k.find("option:selected").length;if(l&&n||m&&o)if(l&&1==l)h.prop("selected",!1),i.prop("selected",!0),b.$menu.find(".selected").removeClass("selected"),b.setSelected(e,!0);else if(m&&1==m){k.find("option:selected").prop("selected",!1),i.prop("selected",!0);var p=d.data("optgroup");b.$menu.find(".selected").has('a[data-optgroup="'+p+'"]').removeClass("selected"),b.setSelected(e,!0)}else{var q="function"==typeof b.options.maxOptionsText?b.options.maxOptionsText(l,m):b.options.maxOptionsText,r=q[0].replace("{n}",l),s=q[1].replace("{n}",m),t=a('<div class="notify"></div>');q[2]&&(r=r.replace("{var}",q[2][l>1?0:1]),s=s.replace("{var}",q[2][m>1?0:1])),i.prop("selected",!1),b.$menu.append(t),l&&n&&(t.append(a("<div>"+r+"</div>")),b.$element.trigger("maxReached.bs.select")),m&&o&&(t.append(a("<div>"+s+"</div>")),b.$element.trigger("maxReachedGrp.bs.select")),setTimeout(function(){b.setSelected(e,!1)},10),t.delay(750).fadeOut(300,function(){a(this).remove()})}}}else h.prop("selected",!1),i.prop("selected",!0),b.$menu.find(".selected").removeClass("selected"),b.setSelected(e,!0);b.multiple?b.options.liveSearch&&b.$searchbox.focus():b.$button.focus(),(f!=b.$element.val()&&b.multiple||g!=b.$element.prop("selectedIndex")&&!b.multiple)&&b.$element.change()}}),this.$menu.on("click","li.disabled a, .popover-title, .popover-title :not(.close)",function(a){a.currentTarget==this&&(a.preventDefault(),a.stopPropagation(),b.options.liveSearch?b.$searchbox.focus():b.$button.focus())}),this.$menu.on("click","li.divider, li.dropdown-header",function(a){a.preventDefault(),a.stopPropagation(),b.options.liveSearch?b.$searchbox.focus():b.$button.focus()}),this.$menu.on("click",".popover-title .close",function(){b.$button.focus()}),this.$searchbox.on("click",function(a){a.stopPropagation()}),this.$menu.on("click",".actions-btn",function(c){b.options.liveSearch?b.$searchbox.focus():b.$button.focus(),c.preventDefault(),c.stopPropagation(),a(this).hasClass("bs-select-all")?b.selectAll():b.deselectAll(),b.$element.change()}),this.$element.change(function(){b.render(!1)})},liveSearchListener:function(){var d=this,e=a('<li class="no-results"></li>');this.$newElement.on("click.dropdown.data-api touchstart.dropdown.data-api",function(){d.$menu.find(".active").removeClass("active"),d.$searchbox.val()&&(d.$searchbox.val(""),d.$lis.not(".is-hidden").removeClass("hidden"),e.parent().length&&e.remove()),d.multiple||d.$menu.find(".selected").addClass("active"),setTimeout(function(){d.$searchbox.focus()},10)}),this.$searchbox.on("click.dropdown.data-api focus.dropdown.data-api touchend.dropdown.data-api",function(a){a.stopPropagation()}),this.$searchbox.on("input propertychange",function(){if(d.$searchbox.val()){var f=d.$lis.not(".is-hidden").removeClass("hidden").children("a");f=f.not(d.options.liveSearchNormalize?":a"+d._searchStyle()+"("+b(d.$searchbox.val())+")":":"+d._searchStyle()+"("+d.$searchbox.val()+")"),f.parent().addClass("hidden"),d.$lis.filter(".dropdown-header").each(function(){var b=a(this),c=b.data("optgroup");0===d.$lis.filter("[data-optgroup="+c+"]").not(b).not(".hidden").length&&(b.addClass("hidden"),d.$lis.filter("[data-optgroup="+c+"div]").addClass("hidden"))});var g=d.$lis.not(".hidden");g.each(function(b){var c=a(this);c.hasClass("divider")&&(c.index()===g.eq(0).index()||c.index()===g.last().index()||g.eq(b+1).hasClass("divider"))&&c.addClass("hidden")}),d.$lis.not(".hidden, .no-results").length?e.parent().length&&e.remove():(e.parent().length&&e.remove(),e.html(d.options.noneResultsText.replace("{0}",'"'+c(d.$searchbox.val())+'"')).show(),d.$menu.append(e))}else d.$lis.not(".is-hidden").removeClass("hidden"),e.parent().length&&e.remove();d.$lis.filter(".active").removeClass("active"),d.$lis.not(".hidden, .divider, .dropdown-header").eq(0).addClass("active").children("a").focus(),a(this).focus()})},_searchStyle:function(){var a="icontains";switch(this.options.liveSearchStyle){case"begins":case"startsWith":a="ibegins";break;case"contains":}return a},val:function(a){return"undefined"!=typeof a?(this.$element.val(a),this.render(),this.$element):this.$element.val()},selectAll:function(){this.findLis(),this.$element.find("option:enabled").not("[data-divider], [data-hidden]").prop("selected",!0),this.$lis.not(".divider, .dropdown-header, .disabled, .hidden").addClass("selected"),this.render(!1)},deselectAll:function(){this.findLis(),this.$element.find("option:enabled").not("[data-divider], [data-hidden]").prop("selected",!1),this.$lis.not(".divider, .dropdown-header, .disabled, .hidden").removeClass("selected"),this.render(!1)},keydown:function(c){var d,e,f,g,h,i,j,k,l,m=a(this),n=m.is("input")?m.parent().parent():m.parent(),o=n.data("this"),p={32:" ",48:"0",49:"1",50:"2",51:"3",52:"4",53:"5",54:"6",55:"7",56:"8",57:"9",59:";",65:"a",66:"b",67:"c",68:"d",69:"e",70:"f",71:"g",72:"h",73:"i",74:"j",75:"k",76:"l",77:"m",78:"n",79:"o",80:"p",81:"q",82:"r",83:"s",84:"t",85:"u",86:"v",87:"w",88:"x",89:"y",90:"z",96:"0",97:"1",98:"2",99:"3",100:"4",101:"5",102:"6",103:"7",104:"8",105:"9"};if(o.options.liveSearch&&(n=m.parent().parent()),o.options.container&&(n=o.$menu),d=a("[role=menu] li a",n),l=o.$menu.parent().hasClass("open"),!l&&/([0-9]|[A-z])/.test(String.fromCharCode(c.keyCode))&&(o.options.container?o.$newElement.trigger("click"):(o.setSize(),o.$menu.parent().addClass("open"),l=!0),o.$searchbox.focus()),o.options.liveSearch&&(/(^9$|27)/.test(c.keyCode.toString(10))&&l&&0===o.$menu.find(".active").length&&(c.preventDefault(),o.$menu.parent().removeClass("open"),o.$button.focus()),d=a("[role=menu] li:not(.divider):not(.dropdown-header):visible a",n),m.val()||/(38|40)/.test(c.keyCode.toString(10))||0===d.filter(".active").length&&(d=o.$newElement.find("li a"),d=d.filter(o.options.liveSearchNormalize?":a"+o._searchStyle()+"("+b(p[c.keyCode])+")":":"+o._searchStyle()+"("+p[c.keyCode]+")"))),d.length){if(/(38|40)/.test(c.keyCode.toString(10)))e=d.index(d.filter(":focus")),g=d.parent(":not(.disabled):visible").first().index(),h=d.parent(":not(.disabled):visible").last().index(),f=d.eq(e).parent().nextAll(":not(.disabled):visible").eq(0).index(),i=d.eq(e).parent().prevAll(":not(.disabled):visible").eq(0).index(),j=d.eq(f).parent().prevAll(":not(.disabled):visible").eq(0).index(),o.options.liveSearch&&(d.each(function(b){a(this).hasClass("disabled")||a(this).data("index",b)}),e=d.index(d.filter(".active")),g=d.filter(":not(.disabled):visible").first().data("index"),h=d.filter(":not(.disabled):visible").last().data("index"),f=d.eq(e).nextAll(":not(.disabled):visible").eq(0).data("index"),i=d.eq(e).prevAll(":not(.disabled):visible").eq(0).data("index"),j=d.eq(f).prevAll(":not(.disabled):visible").eq(0).data("index")),k=m.data("prevIndex"),38==c.keyCode?(o.options.liveSearch&&(e-=1),e!=j&&e>i&&(e=i),g>e&&(e=g),e==k&&(e=h)):40==c.keyCode&&(o.options.liveSearch&&(e+=1),-1==e&&(e=0),e!=j&&f>e&&(e=f),e>h&&(e=h),e==k&&(e=g)),m.data("prevIndex",e),o.options.liveSearch?(c.preventDefault(),m.hasClass("dropdown-toggle")||(d.removeClass("active"),d.eq(e).addClass("active").children("a").focus(),m.focus())):d.eq(e).focus();else if(!m.is("input")){var q,r,s=[];d.each(function(){a(this).parent().hasClass("disabled")||a.trim(a(this).text().toLowerCase()).substring(0,1)==p[c.keyCode]&&s.push(a(this).parent().index())}),q=a(document).data("keycount"),q++,a(document).data("keycount",q),r=a.trim(a(":focus").text().toLowerCase()).substring(0,1),r!=p[c.keyCode]?(q=1,a(document).data("keycount",q)):q>=s.length&&(a(document).data("keycount",0),q>s.length&&(q=1)),d.eq(s[q-1]).focus()}if((/(13|32)/.test(c.keyCode.toString(10))||/(^9$)/.test(c.keyCode.toString(10))&&o.options.selectOnTab)&&l){if(/(32)/.test(c.keyCode.toString(10))||c.preventDefault(),o.options.liveSearch)/(32)/.test(c.keyCode.toString(10))||(o.$menu.find(".active a").click(),m.focus());else{var t=a(":focus");t.click(),t.focus(),c.preventDefault()}a(document).data("keycount",0)}(/(^9$|27)/.test(c.keyCode.toString(10))&&l&&(o.multiple||o.options.liveSearch)||/(27)/.test(c.keyCode.toString(10))&&!l)&&(o.$menu.parent().removeClass("open"),o.$button.focus())}},mobile:function(){this.$element.addClass("mobile-device").appendTo(this.$newElement),this.options.container&&this.$menu.hide()},refresh:function(){this.$lis=null,this.reloadLi(),this.render(),this.setWidth(),this.setStyle(),this.checkDisabled(),this.liHeight()},hide:function(){this.$newElement.hide()},show:function(){this.$newElement.show()},remove:function(){this.$newElement.remove(),this.$element.remove()}};var f=a.fn.selectpicker;a.fn.selectpicker=d,a.fn.selectpicker.Constructor=e,a.fn.selectpicker.noConflict=function(){return a.fn.selectpicker=f,this},a(document).data("keycount",0).on("keydown",".bootstrap-select [data-toggle=dropdown], .bootstrap-select [role=menu], .bs-searchbox input",e.prototype.keydown).on("focusin.modal",".bootstrap-select [data-toggle=dropdown], .bootstrap-select [role=menu], .bs-searchbox input",function(a){a.stopPropagation()}),a(window).on("load.bs.select.data-api",function(){a(".selectpicker").each(function(){var b=a(this);d.call(b,b.data())})})}(jQuery);
 //# sourceMappingURL=bootstrap-select.js.map
+!function(a){"function"==typeof define&&define.amd?define(["jquery"],a):"object"==typeof module&&"object"==typeof module.exports?module.exports=a(require("jquery")):a(jQuery)}(function(a){return function(a){"use strict";var b=a.tablesorter={version:"2.25.3",parsers:[],widgets:[],defaults:{theme:"default",widthFixed:!1,showProcessing:!1,headerTemplate:"{content}",onRenderTemplate:null,onRenderHeader:null,cancelSelection:!0,tabIndex:!0,dateFormat:"mmddyyyy",sortMultiSortKey:"shiftKey",sortResetKey:"ctrlKey",usNumberFormat:!0,delayInit:!1,serverSideSorting:!1,resort:!0,headers:{},ignoreCase:!0,sortForce:null,sortList:[],sortAppend:null,sortStable:!1,sortInitialOrder:"asc",sortLocaleCompare:!1,sortReset:!1,sortRestart:!1,emptyTo:"bottom",stringTo:"max",duplicateSpan:!0,textExtraction:"basic",textAttribute:"data-text",textSorter:null,numberSorter:null,widgets:[],widgetOptions:{zebra:["even","odd"]},initWidgets:!0,widgetClass:"widget-{name}",initialized:null,tableClass:"",cssAsc:"",cssDesc:"",cssNone:"",cssHeader:"",cssHeaderRow:"",cssProcessing:"",cssChildRow:"tablesorter-childRow",cssInfoBlock:"tablesorter-infoOnly",cssNoSort:"tablesorter-noSort",cssIgnoreRow:"tablesorter-ignoreRow",cssIcon:"tablesorter-icon",cssIconNone:"",cssIconAsc:"",cssIconDesc:"",pointerClick:"click",pointerDown:"mousedown",pointerUp:"mouseup",selectorHeaders:"> thead th, > thead td",selectorSort:"th, td",selectorRemove:".remove-me",debug:!1,headerList:[],empties:{},strings:{},parsers:[]},css:{table:"tablesorter",cssHasChild:"tablesorter-hasChildRow",childRow:"tablesorter-childRow",colgroup:"tablesorter-colgroup",header:"tablesorter-header",headerRow:"tablesorter-headerRow",headerIn:"tablesorter-header-inner",icon:"tablesorter-icon",processing:"tablesorter-processing",sortAsc:"tablesorter-headerAsc",sortDesc:"tablesorter-headerDesc",sortNone:"tablesorter-headerUnSorted"},language:{sortAsc:"Ascending sort applied, ",sortDesc:"Descending sort applied, ",sortNone:"No sort applied, ",sortDisabled:"sorting is disabled",nextAsc:"activate to apply an ascending sort",nextDesc:"activate to apply a descending sort",nextNone:"activate to remove the sort"},regex:{templateContent:/\{content\}/g,templateIcon:/\{icon\}/g,templateName:/\{name\}/i,spaces:/\s+/g,nonWord:/\W/g,formElements:/(input|select|button|textarea)/i,chunk:/(^([+\-]?(?:\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?)?$|^0x[0-9a-f]+$|\d+)/gi,chunks:/(^\\0|\\0$)/,hex:/^0x[0-9a-f]+$/i,comma:/,/g,digitNonUS:/[\s|\.]/g,digitNegativeTest:/^\s*\([.\d]+\)/,digitNegativeReplace:/^\s*\(([.\d]+)\)/,digitTest:/^[\-+(]?\d+[)]?$/,digitReplace:/[,.'"\s]/g},string:{max:1,min:-1,emptymin:1,emptymax:-1,zero:0,none:0,"null":0,top:!0,bottom:!1},keyCodes:{enter:13},dates:{},instanceMethods:{},setup:function(c,d){if(!c||!c.tHead||0===c.tBodies.length||c.hasInitialized===!0)return void(d.debug&&(c.hasInitialized?console.warn("Stopping initialization. Tablesorter has already been initialized"):console.error("Stopping initialization! No table, thead or tbody",c)));var e="",f=a(c),g=a.metadata;c.hasInitialized=!1,c.isProcessing=!0,c.config=d,a.data(c,"tablesorter",d),d.debug&&(console[console.group?"group":"log"]("Initializing tablesorter"),a.data(c,"startoveralltimer",new Date)),d.supportsDataObject=function(a){return a[0]=parseInt(a[0],10),a[0]>1||1===a[0]&&parseInt(a[1],10)>=4}(a.fn.jquery.split(".")),d.emptyTo=d.emptyTo.toLowerCase(),d.stringTo=d.stringTo.toLowerCase(),d.last={sortList:[],clickedIndex:-1},/tablesorter\-/.test(f.attr("class"))||(e=""!==d.theme?" tablesorter-"+d.theme:""),d.table=c,d.$table=f.addClass(b.css.table+" "+d.tableClass+e).attr("role","grid"),d.$headers=f.find(d.selectorHeaders),d.namespace?d.namespace="."+d.namespace.replace(b.regex.nonWord,""):d.namespace=".tablesorter"+Math.random().toString(16).slice(2),d.$table.children().children("tr").attr("role","row"),d.$tbodies=f.children("tbody:not(."+d.cssInfoBlock+")").attr({"aria-live":"polite","aria-relevant":"all"}),d.$table.children("caption").length&&(e=d.$table.children("caption")[0],e.id||(e.id=d.namespace.slice(1)+"caption"),d.$table.attr("aria-labelledby",e.id)),d.widgetInit={},d.textExtraction=d.$table.attr("data-text-extraction")||d.textExtraction||"basic",b.buildHeaders(d),b.fixColumnWidth(c),b.addWidgetFromClass(c),b.applyWidgetOptions(c),b.setupParsers(d),d.totalRows=0,d.delayInit||b.buildCache(d),b.bindEvents(c,d.$headers,!0),b.bindMethods(d),d.supportsDataObject&&"undefined"!=typeof f.data().sortlist?d.sortList=f.data().sortlist:g&&f.metadata()&&f.metadata().sortlist&&(d.sortList=f.metadata().sortlist),b.applyWidget(c,!0),d.sortList.length>0?b.sortOn(d,d.sortList,{},!d.initWidgets):(b.setHeadersCss(d),d.initWidgets&&b.applyWidget(c,!1)),d.showProcessing&&f.unbind("sortBegin"+d.namespace+" sortEnd"+d.namespace).bind("sortBegin"+d.namespace+" sortEnd"+d.namespace,function(a){clearTimeout(d.timerProcessing),b.isProcessing(c),"sortBegin"===a.type&&(d.timerProcessing=setTimeout(function(){b.isProcessing(c,!0)},500))}),c.hasInitialized=!0,c.isProcessing=!1,d.debug&&(console.log("Overall initialization time: "+b.benchmark(a.data(c,"startoveralltimer"))),d.debug&&console.groupEnd&&console.groupEnd()),f.triggerHandler("tablesorter-initialized",c),"function"==typeof d.initialized&&d.initialized(c)},bindMethods:function(c){var d=c.$table,e=c.namespace,f="sortReset update updateRows updateAll updateHeaders addRows updateCell updateComplete sorton appendCache updateCache applyWidgetId applyWidgets refreshWidgets destroy mouseup mouseleave ".split(" ").join(e+" ");d.unbind(f.replace(b.regex.spaces," ")).bind("sortReset"+e,function(a,c){a.stopPropagation(),b.sortReset(this.config,c)}).bind("updateAll"+e,function(a,c,d){a.stopPropagation(),b.updateAll(this.config,c,d)}).bind("update"+e+" updateRows"+e,function(a,c,d){a.stopPropagation(),b.update(this.config,c,d)}).bind("updateHeaders"+e,function(a,c){a.stopPropagation(),b.updateHeaders(this.config,c)}).bind("updateCell"+e,function(a,c,d,e){a.stopPropagation(),b.updateCell(this.config,c,d,e)}).bind("addRows"+e,function(a,c,d,e){a.stopPropagation(),b.addRows(this.config,c,d,e)}).bind("updateComplete"+e,function(){this.isUpdating=!1}).bind("sorton"+e,function(a,c,d,e){a.stopPropagation(),b.sortOn(this.config,c,d,e)}).bind("appendCache"+e,function(c,d,e){c.stopPropagation(),b.appendCache(this.config,e),a.isFunction(d)&&d(this)}).bind("updateCache"+e,function(a,c,d){a.stopPropagation(),b.updateCache(this.config,c,d)}).bind("applyWidgetId"+e,function(a,c){a.stopPropagation(),b.applyWidgetId(this,c)}).bind("applyWidgets"+e,function(a,c){a.stopPropagation(),b.applyWidget(this,c)}).bind("refreshWidgets"+e,function(a,c,d){a.stopPropagation(),b.refreshWidgets(this,c,d)}).bind("removeWidget"+e,function(a,c,d){a.stopPropagation(),b.removeWidget(this,c,d)}).bind("destroy"+e,function(a,c,d){a.stopPropagation(),b.destroy(this,c,d)}).bind("resetToLoadState"+e,function(d){d.stopPropagation(),b.removeWidget(this,!0,!1),c=a.extend(!0,b.defaults,c.originalSettings),this.hasInitialized=!1,b.setup(this,c)})},bindEvents:function(c,d,e){c=a(c)[0];var f,g=c.config,h=g.namespace,i=null;e!==!0&&(d.addClass(h.slice(1)+"_extra_headers"),f=a.fn.closest?d.closest("table")[0]:d.parents("table")[0],f&&"TABLE"===f.nodeName&&f!==c&&a(f).addClass(h.slice(1)+"_extra_table")),f=(g.pointerDown+" "+g.pointerUp+" "+g.pointerClick+" sort keyup ").replace(b.regex.spaces," ").split(" ").join(h+" "),d.find(g.selectorSort).add(d.filter(g.selectorSort)).unbind(f).bind(f,function(c,e){var f,h,j,k=a(c.target),l=" "+c.type+" ";if(!(1!==(c.which||c.button)&&!l.match(" "+g.pointerClick+" | sort | keyup ")||" keyup "===l&&c.which!==b.keyCodes.enter||l.match(" "+g.pointerClick+" ")&&"undefined"!=typeof c.which||l.match(" "+g.pointerUp+" ")&&i!==c.target&&e!==!0)){if(l.match(" "+g.pointerDown+" "))return i=c.target,j=k.jquery.split("."),void("1"===j[0]&&j[1]<4&&c.preventDefault());if(i=null,b.regex.formElements.test(c.target.nodeName)||k.hasClass(g.cssNoSort)||k.parents("."+g.cssNoSort).length>0||k.parents("button").length>0)return!g.cancelSelection;g.delayInit&&b.isEmptyObject(g.cache)&&b.buildCache(g),f=a.fn.closest?a(this).closest("th, td"):/TH|TD/.test(this.nodeName)?a(this):a(this).parents("th, td"),j=d.index(f),g.last.clickedIndex=0>j?f.attr("data-column"):j,h=g.$headers[g.last.clickedIndex],h&&!h.sortDisabled&&b.initSort(g,h,c)}}),g.cancelSelection&&d.attr("unselectable","on").bind("selectstart",!1).css({"user-select":"none",MozUserSelect:"none"})},buildHeaders:function(c){var d,e,f,g;for(c.headerList=[],c.headerContent=[],c.sortVars=[],c.debug&&(f=new Date),c.columns=b.computeColumnIndex(c.$table.children("thead, tfoot").children("tr")),e=c.cssIcon?'<i class="'+(c.cssIcon===b.css.icon?b.css.icon:c.cssIcon+" "+b.css.icon)+'"></i>':"",c.$headers=a(a.map(c.$table.find(c.selectorHeaders),function(d,f){var g,h,i,j,k,l=a(d);if(!l.parent().hasClass(c.cssIgnoreRow))return g=b.getColumnData(c.table,c.headers,f,!0),c.headerContent[f]=l.html(),""===c.headerTemplate||l.find("."+b.css.headerIn).length||(j=c.headerTemplate.replace(b.regex.templateContent,l.html()).replace(b.regex.templateIcon,l.find("."+b.css.icon).length?"":e),c.onRenderTemplate&&(h=c.onRenderTemplate.apply(l,[f,j]),h&&"string"==typeof h&&(j=h)),l.html('<div class="'+b.css.headerIn+'">'+j+"</div>")),c.onRenderHeader&&c.onRenderHeader.apply(l,[f,c,c.$table]),i=parseInt(l.attr("data-column"),10),d.column=i,k=b.getData(l,g,"sortInitialOrder")||c.sortInitialOrder,c.sortVars[i]={count:-1,order:b.getOrder(k)?[1,0,2]:[0,1,2],lockedOrder:!1},k=b.getData(l,g,"lockedOrder")||!1,"undefined"!=typeof k&&k!==!1&&(c.sortVars[i].lockedOrder=!0,c.sortVars[i].order=b.getOrder(k)?[1,1,1]:[0,0,0]),c.headerList[f]=d,l.addClass(b.css.header+" "+c.cssHeader).parent().addClass(b.css.headerRow+" "+c.cssHeaderRow).attr("role","row"),c.tabIndex&&l.attr("tabindex",0),d})),c.$headerIndexed=[],g=0;g<c.columns;g++)b.isEmptyObject(c.sortVars[g])&&(c.sortVars[g]={}),d=c.$headers.filter('[data-column="'+g+'"]'),c.$headerIndexed[g]=d.length?d.not(".sorter-false").length?d.not(".sorter-false").filter(":last"):d.filter(":last"):a();c.$table.find(c.selectorHeaders).attr({scope:"col",role:"columnheader"}),b.updateHeader(c),c.debug&&(console.log("Built headers:"+b.benchmark(f)),console.log(c.$headers))},addInstanceMethods:function(c){a.extend(b.instanceMethods,c)},setupParsers:function(a,c){var d,e,f,g,h,i,j,k,l,m,n,o,p,q,r=a.table,s=0,t={};if(a.$tbodies=a.$table.children("tbody:not(."+a.cssInfoBlock+")"),p="undefined"==typeof c?a.$tbodies:c,q=p.length,0===q)return a.debug?console.warn("Warning: *Empty table!* Not building a parser cache"):"";for(a.debug&&(o=new Date,console[console.group?"group":"log"]("Detecting parsers for each column")),e={extractors:[],parsers:[]};q>s;){if(d=p[s].rows,d.length)for(h=0,g=a.columns,i=0;g>i;i++){if(j=a.$headerIndexed[h],j&&j.length&&(k=b.getColumnData(r,a.headers,h),n=b.getParserById(b.getData(j,k,"extractor")),m=b.getParserById(b.getData(j,k,"sorter")),l="false"===b.getData(j,k,"parser"),a.empties[h]=(b.getData(j,k,"empty")||a.emptyTo||(a.emptyToBottom?"bottom":"top")).toLowerCase(),a.strings[h]=(b.getData(j,k,"string")||a.stringTo||"max").toLowerCase(),l&&(m=b.getParserById("no-parser")),n||(n=!1),m||(m=b.detectParserForColumn(a,d,-1,h)),a.debug&&(t["("+h+") "+j.text()]={parser:m.id,extractor:n?n.id:"none",string:a.strings[h],empty:a.empties[h]}),e.parsers[h]=m,e.extractors[h]=n,f=j[0].colSpan-1,f>0))for(h+=f,g+=f;f+1>0;)e.parsers[h-f]=m,e.extractors[h-f]=n,f--;h++}s+=e.parsers.length?q:1}a.debug&&(b.isEmptyObject(t)?console.warn("  No parsers detected!"):console[console.table?"table":"log"](t),console.log("Completed detecting parsers"+b.benchmark(o)),console.groupEnd&&console.groupEnd()),a.parsers=e.parsers,a.extractors=e.extractors},addParser:function(a){var c,d=b.parsers.length,e=!0;for(c=0;d>c;c++)b.parsers[c].id.toLowerCase()===a.id.toLowerCase()&&(e=!1);e&&b.parsers.push(a)},getParserById:function(a){if("false"==a)return!1;var c,d=b.parsers.length;for(c=0;d>c;c++)if(b.parsers[c].id.toLowerCase()===a.toString().toLowerCase())return b.parsers[c];return!1},detectParserForColumn:function(c,d,e,f){for(var g,h,i,j=b.parsers.length,k=!1,l="",m=!0;""===l&&m;)e++,i=d[e],i&&50>e?i.className.indexOf(b.cssIgnoreRow)<0&&(k=d[e].cells[f],l=b.getElementText(c,k,f),h=a(k),c.debug&&console.log("Checking if value was empty on row "+e+", column: "+f+': "'+l+'"')):m=!1;for(;--j>=0;)if(g=b.parsers[j],g&&"text"!==g.id&&g.is&&g.is(l,c.table,k,h))return g;return b.getParserById("text")},getElementText:function(c,d,e){if(!d)return"";var f,g=c.textExtraction||"",h=d.jquery?d:a(d);return"string"==typeof g?"basic"===g&&"undefined"!=typeof(f=h.attr(c.textAttribute))?a.trim(f):a.trim(d.textContent||h.text()):"function"==typeof g?a.trim(g(h[0],c.table,e)):"function"==typeof(f=b.getColumnData(c.table,g,e))?a.trim(f(h[0],c.table,e)):a.trim(h[0].textContent||h.text())},getParsedText:function(a,c,d,e){"undefined"==typeof e&&(e=b.getElementText(a,c,d));var f=""+e,g=a.parsers[d],h=a.extractors[d];return g&&(h&&"function"==typeof h.format&&(e=h.format(e,a.table,c,d)),f="no-parser"===g.id?"":g.format(""+e,a.table,c,d),a.ignoreCase&&"string"==typeof f&&(f=f.toLowerCase())),f},buildCache:function(c,d,e){var f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B=c.table,C=c.parsers;if(c.$tbodies=c.$table.children("tbody:not(."+c.cssInfoBlock+")"),l="undefined"==typeof e?c.$tbodies:e,c.cache={},c.totalRows=0,!C)return c.debug?console.warn("Warning: *Empty table!* Not building a cache"):"";for(c.debug&&(q=new Date),c.showProcessing&&b.isProcessing(B,!0),k=0;k<l.length;k++){for(u=[],f=c.cache[k]={normalized:[]},r=l[k]&&l[k].rows.length||0,i=0;r>i;++i)if(s={child:[],raw:[]},m=a(l[k].rows[i]),n=[],m.hasClass(c.cssChildRow)&&0!==i)for(z=f.normalized.length-1,t=f.normalized[z][c.columns],t.$row=t.$row.add(m),m.prev().hasClass(c.cssChildRow)||m.prev().addClass(b.css.cssHasChild),o=m.children("th, td"),z=t.child.length,t.child[z]=[],w=0,y=c.columns,j=0;y>j;j++)p=o[j],p&&(t.child[z][j]=b.getParsedText(c,p,j),v=o[j].colSpan-1,v>0&&(w+=v,y+=v)),w++;else{for(s.$row=m,s.order=i,w=0,y=c.columns,j=0;y>j;++j){if(p=m[0].cells[j],p&&w<c.columns&&(x="undefined"!=typeof C[w],!x&&c.debug&&console.warn("No parser found for row: "+i+", column: "+j+'; cell containing: "'+a(p).text()+'"; does it have a header?'),g=b.getElementText(c,p,w),s.raw[w]=g,h=b.getParsedText(c,p,w,g),n[w]=h,x&&"numeric"===(C[w].type||"").toLowerCase()&&(u[w]=Math.max(Math.abs(h)||0,u[w]||0)),v=p.colSpan-1,v>0)){for(A=0;v>=A;)s.raw[w+A]=c.duplicateSpan||0===A?g:"",n[w+A]=c.duplicateSpan||0===A?g:"",A++;w+=v,y+=v}w++}n[c.columns]=s,f.normalized.push(n)}f.colMax=u,c.totalRows+=f.normalized.length}if(c.showProcessing&&b.isProcessing(B),c.debug){for(z=Math.min(5,c.cache[0].normalized.length),console[console.group?"group":"log"]("Building cache for "+c.totalRows+" rows (showing "+z+" rows in log)"+b.benchmark(q)),g={},j=0;j<c.columns;j++)for(w=0;z>w;w++)g["row: "+w]||(g["row: "+w]={}),g["row: "+w][c.$headerIndexed[j].text()]=c.cache[0].normalized[w][j];console[console.table?"table":"log"](g),console.groupEnd&&console.groupEnd()}a.isFunction(d)&&d(B)},getColumnText:function(c,d,e,f){c=a(c)[0];var g,h,i,j,k,l,m,n,o,p,q="function"==typeof e,r="all"===d,s={raw:[],parsed:[],$cell:[]},t=c.config;if(!b.isEmptyObject(t)){for(k=t.$tbodies.length,g=0;k>g;g++)for(i=t.cache[g].normalized,l=i.length,h=0;l>h;h++)j=i[h],(!f||j[t.columns].$row.is(f))&&(p=!0,n=r?j.slice(0,t.columns):j[d],j=j[t.columns],m=r?j.raw:j.raw[d],o=r?j.$row.children():j.$row.children().eq(d),q&&(p=e({tbodyIndex:g,rowIndex:h,parsed:n,raw:m,$row:j.$row,$cell:o})),p!==!1&&(s.parsed.push(n),s.raw.push(m),s.$cell.push(o)));return s}t.debug&&console.warn("No cache found - aborting getColumnText function!")},setHeadersCss:function(c){var d,e,f,g=c.sortList,h=g.length,i=b.css.sortNone+" "+c.cssNone,j=[b.css.sortAsc+" "+c.cssAsc,b.css.sortDesc+" "+c.cssDesc],k=[c.cssIconAsc,c.cssIconDesc,c.cssIconNone],l=["ascending","descending"],m=c.$table.find("tfoot tr").children("td, th").add(a(c.namespace+"_extra_headers")).removeClass(j.join(" "));for(c.$headers.removeClass(j.join(" ")).addClass(i).attr("aria-sort","none").find("."+b.css.icon).removeClass(k.join(" ")).addClass(k[2]),e=0;h>e;e++)if(2!==g[e][1]&&(d=c.$headers.filter(function(a){for(var d=!0,e=c.$headers.eq(a),f=parseInt(e.attr("data-column"),10),g=f+c.$headers[a].colSpan;g>f;f++)d=d?d||b.isValueInArray(f,c.sortList)>-1:!1;return d}),d=d.not(".sorter-false").filter('[data-column="'+g[e][0]+'"]'+(1===h?":last":"")),d.length)){for(f=0;f<d.length;f++)d[f].sortDisabled||d.eq(f).removeClass(i).addClass(j[g[e][1]]).attr("aria-sort",l[g[e][1]]).find("."+b.css.icon).removeClass(k[2]).addClass(k[g[e][1]]);m.length&&m.filter('[data-column="'+g[e][0]+'"]').removeClass(i).addClass(j[g[e][1]])}for(h=c.$headers.length,e=0;h>e;e++)b.setColumnAriaLabel(c,c.$headers.eq(e))},setColumnAriaLabel:function(c,d,e){if(d.length){var f=parseInt(d.attr("data-column"),10),g=d.hasClass(b.css.sortAsc)?"sortAsc":d.hasClass(b.css.sortDesc)?"sortDesc":"sortNone",h=a.trim(d.text())+": "+b.language[g];d.hasClass("sorter-false")||e===!1?h+=b.language.sortDisabled:(e=c.sortVars[f].order[(c.sortVars[f].count+1)%(c.sortReset?3:2)],h+=b.language[0===e?"nextAsc":1===e?"nextDesc":"nextNone"]),d.attr("aria-label",h)}},updateHeader:function(a){var c,d,e,f,g=a.table,h=a.$headers.length;for(c=0;h>c;c++)e=a.$headers.eq(c),f=b.getColumnData(g,a.headers,c,!0),d="false"===b.getData(e,f,"sorter")||"false"===b.getData(e,f,"parser"),b.setColumnSort(a,e,d)},setColumnSort:function(a,b,c){var d=a.table.id;b[0].sortDisabled=c,b[c?"addClass":"removeClass"]("sorter-false").attr("aria-disabled",""+c),a.tabIndex&&(c?b.removeAttr("tabindex"):b.attr("tabindex","0")),d&&(c?b.removeAttr("aria-controls"):b.attr("aria-controls",d))},updateHeaderSortCount:function(c,d){var e,f,g,h,i,j,k,l,m=d||c.sortList,n=m.length;for(c.sortList=[],h=0;n>h;h++)if(k=m[h],e=parseInt(k[0],10),e<c.columns){switch(c.sortVars[e].order||(l=c.sortVars[e].order=b.getOrder(c.sortInitialOrder)?[1,0,2]:[0,1,2],c.sortVars[e].count=0),l=c.sortVars[e].order,f=(""+k[1]).match(/^(1|d|s|o|n)/),f=f?f[0]:""){case"1":case"d":f=1;break;case"s":f=i||0;break;case"o":j=l[(i||0)%(c.sortReset?3:2)],f=0===j?1:1===j?0:2;break;case"n":f=l[++c.sortVars[e].count%(c.sortReset?3:2)];break;default:f=0}i=0===h?f:i,g=[e,parseInt(f,10)||0],c.sortList.push(g),f=a.inArray(g[1],l),c.sortVars[e].count=f>=0?f:g[1]%(c.sortReset?3:2)}},updateAll:function(a,c,d){var e=a.table;e.isUpdating=!0,b.refreshWidgets(e,!0,!0),b.buildHeaders(a),b.bindEvents(e,a.$headers,!0),b.bindMethods(a),b.commonUpdate(a,c,d)},update:function(a,c,d){var e=a.table;e.isUpdating=!0,b.updateHeader(a),b.commonUpdate(a,c,d)},updateHeaders:function(a,c){a.table.isUpdating=!0,b.buildHeaders(a),b.bindEvents(a.table,a.$headers,!0),b.resortComplete(a,c)},updateCell:function(c,d,e,f){if(b.isEmptyObject(c.cache))return b.updateHeader(c),void b.commonUpdate(c,e,f);c.table.isUpdating=!0,c.$table.find(c.selectorRemove).remove();var g,h,i,j,k,l,m=c.$tbodies,n=a(d),o=m.index(a.fn.closest?n.closest("tbody"):n.parents("tbody").filter(":first")),p=c.cache[o],q=a.fn.closest?n.closest("tr"):n.parents("tr").filter(":first");if(d=n[0],m.length&&o>=0){if(i=m.eq(o).find("tr").index(q),k=p.normalized[i],l=q[0].cells.length,l!==c.columns)for(j=0,g=!1,h=0;l>h;h++)g||q[0].cells[h]===d?g=!0:j+=q[0].cells[h].colSpan;else j=n.index();g=b.getElementText(c,d,j),k[c.columns].raw[j]=g,g=b.getParsedText(c,d,j,g),k[j]=g,k[c.columns].$row=q,"numeric"===(c.parsers[j].type||"").toLowerCase()&&(p.colMax[j]=Math.max(Math.abs(g)||0,p.colMax[j]||0)),g="undefined"!==e?e:c.resort,g!==!1?b.checkResort(c,g,f):b.resortComplete(c,f)}else c.debug&&console.error("updateCell aborted, tbody missing or not within the indicated table"),c.table.isUpdating=!1},addRows:function(c,d,e,f){var g,h,i,j,k,l,m,n,o,p,q,r,s="string"==typeof d&&1===c.$tbodies.length&&/<tr/.test(d||""),t=c.table;if(s)d=a(d),c.$tbodies.append(d);else if(!(d&&d instanceof jQuery&&(a.fn.closest?d.closest("table")[0]:d.parents("table")[0])===c.table))return c.debug&&console.error("addRows method requires (1) a jQuery selector reference to rows that have already been added to the table, or (2) row HTML string to be added to a table with only one tbody"),!1;if(t.isUpdating=!0,b.isEmptyObject(c.cache))b.updateHeader(c),b.commonUpdate(c,e,f);else{for(k=d.filter("tr").attr("role","row").length,i=c.$tbodies.index(d.parents("tbody").filter(":first")),c.parsers&&c.parsers.length||b.setupParsers(c),j=0;k>j;j++){for(n=0,m=d[j].cells.length,p=[],o={child:[],raw:[],$row:d.eq(j),order:c.cache[i].normalized.length},l=0;m>l;l++)q=d[j].cells[l],g=b.getElementText(c,q,n),o.raw[n]=g,h=b.getParsedText(c,q,n,g),p[n]=h,"numeric"===(c.parsers[n].type||"").toLowerCase()&&(c.cache[i].colMax[n]=Math.max(Math.abs(h)||0,c.cache[i].colMax[n]||0)),r=q.colSpan-1,r>0&&(n+=r),n++;p[c.columns]=o,c.cache[i].normalized.push(p)}b.checkResort(c,e,f)}},updateCache:function(a,c,d){a.parsers&&a.parsers.length||b.setupParsers(a,d),b.buildCache(a,c,d)},appendCache:function(a,c){var d,e,f,g,h,i,j,k=a.table,l=a.widgetOptions,m=a.$tbodies,n=[],o=a.cache;if(b.isEmptyObject(o))return a.appender?a.appender(k,n):k.isUpdating?a.$table.triggerHandler("updateComplete",k):"";for(a.debug&&(j=new Date),i=0;i<m.length;i++)if(f=m.eq(i),f.length){for(g=b.processTbody(k,f,!0),d=o[i].normalized,e=d.length,h=0;e>h;h++)n.push(d[h][a.columns].$row),a.appender&&(!a.pager||a.pager.removeRows&&l.pager_removeRows||a.pager.ajax)||g.append(d[h][a.columns].$row);b.processTbody(k,g,!1)}a.appender&&a.appender(k,n),a.debug&&console.log("Rebuilt table"+b.benchmark(j)),c||a.appender||b.applyWidget(k),k.isUpdating&&a.$table.triggerHandler("updateComplete",k)},commonUpdate:function(a,c,d){a.$table.find(a.selectorRemove).remove(),b.setupParsers(a),b.buildCache(a),b.checkResort(a,c,d)},initSort:function(c,d,e){if(c.table.isUpdating)return setTimeout(function(){b.initSort(c,d,e)},50);var f,g,h,i,j,k,l,m=!e[c.sortMultiSortKey],n=c.table,o=c.$headers.length,p=parseInt(a(d).attr("data-column"),10),q=c.sortVars[p].order;if(c.$table.triggerHandler("sortStart",n),c.sortVars[p].count=e[c.sortResetKey]?2:(c.sortVars[p].count+1)%(c.sortReset?3:2),c.sortRestart)for(h=0;o>h;h++)l=c.$headers.eq(h),k=parseInt(l.attr("data-column"),10),p!==k&&(m||l.hasClass(b.css.sortNone))&&(c.sortVars[k].count=-1);if(m){if(c.sortList=[],c.last.sortList=[],null!==c.sortForce)for(f=c.sortForce,g=0;g<f.length;g++)f[g][0]!==p&&c.sortList.push(f[g]);if(i=q[c.sortVars[p].count],2>i&&(c.sortList.push([p,i]),d.colSpan>1))for(g=1;g<d.colSpan;g++)c.sortList.push([p+g,i]),c.sortVars[p+g].count=a.inArray(i,q)}else if(c.sortList=a.extend([],c.last.sortList),b.isValueInArray(p,c.sortList)>=0)for(g=0;g<c.sortList.length;g++)k=c.sortList[g],k[0]===p&&(k[1]=q[c.sortVars[p].count],2===k[1]&&(c.sortList.splice(g,1),c.sortVars[p].count=-1));else if(i=q[c.sortVars[p].count],2>i&&(c.sortList.push([p,i]),d.colSpan>1))for(g=1;g<d.colSpan;g++)c.sortList.push([p+g,i]),c.sortVars[p+g].count=a.inArray(i,q);if(c.last.sortList=a.extend([],c.sortList),c.sortList.length&&c.sortAppend&&(f=a.isArray(c.sortAppend)?c.sortAppend:c.sortAppend[c.sortList[0][0]],!b.isEmptyObject(f)))for(g=0;g<f.length;g++)if(f[g][0]!==p&&b.isValueInArray(f[g][0],c.sortList)<0){if(i=f[g][1],j=(""+i).match(/^(a|d|s|o|n)/))switch(k=c.sortList[0][1],j[0]){case"d":i=1;break;case"s":i=k;break;case"o":i=0===k?1:0;break;case"n":i=(k+1)%(c.sortReset?3:2);break;default:i=0}c.sortList.push([f[g][0],i])}c.$table.triggerHandler("sortBegin",n),setTimeout(function(){b.setHeadersCss(c),b.multisort(c),b.appendCache(c),c.$table.triggerHandler("sortBeforeEnd",n),c.$table.triggerHandler("sortEnd",n)},1)},multisort:function(a){var c,d,e,f,g=a.table,h=0,i=a.textSorter||"",j=a.sortList,k=j.length,l=a.$tbodies.length;if(!a.serverSideSorting&&!b.isEmptyObject(a.cache)){for(a.debug&&(d=new Date),c=0;l>c;c++)e=a.cache[c].colMax,f=a.cache[c].normalized,f.sort(function(c,d){var f,l,m,n,o,p,q;for(f=0;k>f;f++){if(m=j[f][0],n=j[f][1],h=0===n,a.sortStable&&c[m]===d[m]&&1===k)return c[a.columns].order-d[a.columns].order;if(l=/n/i.test(b.getSortType(a.parsers,m)),l&&a.strings[m]?(l="boolean"==typeof b.string[a.strings[m]]?(h?1:-1)*(b.string[a.strings[m]]?-1:1):a.strings[m]?b.string[a.strings[m]]||0:0,o=a.numberSorter?a.numberSorter(c[m],d[m],h,e[m],g):b["sortNumeric"+(h?"Asc":"Desc")](c[m],d[m],l,e[m],m,a)):(p=h?c:d,q=h?d:c,o="function"==typeof i?i(p[m],q[m],h,m,g):"object"==typeof i&&i.hasOwnProperty(m)?i[m](p[m],q[m],h,m,g):b["sortNatural"+(h?"Asc":"Desc")](c[m],d[m],m,a)),o)return o}return c[a.columns].order-d[a.columns].order});a.debug&&console.log("Applying sort "+j.toString()+b.benchmark(d))}},resortComplete:function(b,c){b.table.isUpdating&&b.$table.triggerHandler("updateComplete",b.table),a.isFunction(c)&&c(b.table)},checkResort:function(c,d,e){var f=a.isArray(d)?d:c.sortList,g="undefined"==typeof d?c.resort:d;g===!1||c.serverSideSorting||c.table.isProcessing?(b.resortComplete(c,e),b.applyWidget(c.table,!1)):f.length?b.sortOn(c,f,function(){b.resortComplete(c,e)},!0):b.sortReset(c,function(){b.resortComplete(c,e),b.applyWidget(c.table,!1)})},sortOn:function(c,d,e,f){var g=c.table;c.$table.triggerHandler("sortStart",g),b.updateHeaderSortCount(c,d),b.setHeadersCss(c),c.delayInit&&b.isEmptyObject(c.cache)&&b.buildCache(c),c.$table.triggerHandler("sortBegin",g),b.multisort(c),b.appendCache(c,f),c.$table.triggerHandler("sortBeforeEnd",g),c.$table.triggerHandler("sortEnd",g),b.applyWidget(g),a.isFunction(e)&&e(g)},sortReset:function(c,d){c.sortList=[],b.setHeadersCss(c),b.multisort(c),b.appendCache(c),a.isFunction(d)&&d(c.table)},getSortType:function(a,b){return a&&a[b]?a[b].type||"":""},getOrder:function(a){return/^d/i.test(a)||1===a},sortNatural:function(a,c){if(a===c)return 0;var d,e,f,g,h,i,j=b.regex;if(j.hex.test(c)){if(d=parseInt(a.match(j.hex),16),e=parseInt(c.match(j.hex),16),e>d)return-1;if(d>e)return 1}for(d=a.replace(j.chunk,"\\0$1\\0").replace(j.chunks,"").split("\\0"),e=c.replace(j.chunk,"\\0$1\\0").replace(j.chunks,"").split("\\0"),i=Math.max(d.length,e.length),h=0;i>h;h++){if(f=isNaN(d[h])?d[h]||0:parseFloat(d[h])||0,g=isNaN(e[h])?e[h]||0:parseFloat(e[h])||0,isNaN(f)!==isNaN(g))return isNaN(f)?1:-1;if(typeof f!=typeof g&&(f+="",g+=""),g>f)return-1;if(f>g)return 1}return 0},sortNaturalAsc:function(a,c,d,e){if(a===c)return 0;var f=b.string[e.empties[d]||e.emptyTo];return""===a&&0!==f?"boolean"==typeof f?f?-1:1:-f||-1:""===c&&0!==f?"boolean"==typeof f?f?1:-1:f||1:b.sortNatural(a,c)},sortNaturalDesc:function(a,c,d,e){if(a===c)return 0;var f=b.string[e.empties[d]||e.emptyTo];return""===a&&0!==f?"boolean"==typeof f?f?-1:1:f||1:""===c&&0!==f?"boolean"==typeof f?f?1:-1:-f||-1:b.sortNatural(c,a)},sortText:function(a,b){return a>b?1:b>a?-1:0},getTextValue:function(a,b,c){if(c){var d,e=a?a.length:0,f=c+b;for(d=0;e>d;d++)f+=a.charCodeAt(d);return b*f}return 0},sortNumericAsc:function(a,c,d,e,f,g){if(a===c)return 0;var h=b.string[g.empties[f]||g.emptyTo];return""===a&&0!==h?"boolean"==typeof h?h?-1:1:-h||-1:""===c&&0!==h?"boolean"==typeof h?h?1:-1:h||1:(isNaN(a)&&(a=b.getTextValue(a,d,e)),isNaN(c)&&(c=b.getTextValue(c,d,e)),a-c)},sortNumericDesc:function(a,c,d,e,f,g){if(a===c)return 0;var h=b.string[g.empties[f]||g.emptyTo];return""===a&&0!==h?"boolean"==typeof h?h?-1:1:h||1:""===c&&0!==h?"boolean"==typeof h?h?1:-1:-h||-1:(isNaN(a)&&(a=b.getTextValue(a,d,e)),isNaN(c)&&(c=b.getTextValue(c,d,e)),c-a)},sortNumeric:function(a,b){return a-b},addWidget:function(a){b.widgets.push(a)},hasWidget:function(b,c){return b=a(b),b.length&&b[0].config&&b[0].config.widgetInit[c]||!1},getWidgetById:function(a){var c,d,e=b.widgets.length;for(c=0;e>c;c++)if(d=b.widgets[c],d&&d.id&&d.id.toLowerCase()===a.toLowerCase())return d},applyWidgetOptions:function(c){var d,e,f=c.config,g=f.widgets.length;if(g)for(d=0;g>d;d++)e=b.getWidgetById(f.widgets[d]),e&&e.options&&(f.widgetOptions=a.extend(!0,{},e.options,f.widgetOptions))},addWidgetFromClass:function(a){var c,d,e=a.config,f="^"+e.widgetClass.replace(b.regex.templateName,"(\\S+)+")+"$",g=new RegExp(f,"g"),h=(a.className||"").split(b.regex.spaces);if(h.length)for(c=h.length,d=0;c>d;d++)h[d].match(g)&&e.widgets.push(h[d].replace(g,"$1"))},applyWidgetId:function(c,d,e){var f,g,h,i=c.config,j=i.widgetOptions,k=b.getWidgetById(d);k&&(h=k.id,f=!1,a.inArray(h,i.widgets)<0&&i.widgets.push(h),i.debug&&(g=new Date),(e||!i.widgetInit[h])&&(i.widgetInit[h]=!0,c.hasInitialized&&b.applyWidgetOptions(c),"function"==typeof k.init&&(f=!0,i.debug&&console[console.group?"group":"log"]("Initializing "+h+" widget"),k.init(c,k,i,j))),e||"function"!=typeof k.format||(f=!0,i.debug&&console[console.group?"group":"log"]("Updating "+h+" widget"),k.format(c,i,j,!1)),i.debug&&f&&(console.log("Completed "+(e?"initializing ":"applying ")+h+" widget"+b.benchmark(g)),console.groupEnd&&console.groupEnd()))},applyWidget:function(c,d,e){c=a(c)[0];var f,g,h,i,j,k=c.config,l=[];if(d===!1||!c.hasInitialized||!c.isApplyingWidgets&&!c.isUpdating){if(k.debug&&(j=new Date),b.addWidgetFromClass(c),clearTimeout(k.timerReady),k.widgets.length){for(c.isApplyingWidgets=!0,k.widgets=a.grep(k.widgets,function(b,c){return a.inArray(b,k.widgets)===c}),h=k.widgets||[],g=h.length,f=0;g>f;f++)i=b.getWidgetById(h[f]),i&&i.id&&(i.priority||(i.priority=10),l[f]=i);for(l.sort(function(a,b){return a.priority<b.priority?-1:a.priority===b.priority?0:1}),g=l.length,k.debug&&console[console.group?"group":"log"]("Start "+(d?"initializing":"applying")+" widgets"),f=0;g>f;f++)i=l[f],i&&i.id&&b.applyWidgetId(c,i.id,d);k.debug&&console.groupEnd&&console.groupEnd(),d||"function"!=typeof e||e(c)}k.timerReady=setTimeout(function(){c.isApplyingWidgets=!1,a.data(c,"lastWidgetApplication",new Date),k.$table.triggerHandler("tablesorter-ready")},10),k.debug&&(i=k.widgets.length,console.log("Completed "+(d===!0?"initializing ":"applying ")+i+" widget"+(1!==i?"s":"")+b.benchmark(j)))}},removeWidget:function(c,d,e){c=a(c)[0];var f,g,h,i,j=c.config;if(d===!0)for(d=[],i=b.widgets.length,h=0;i>h;h++)g=b.widgets[h],g&&g.id&&d.push(g.id);else d=(a.isArray(d)?d.join(","):d||"").toLowerCase().split(/[\s,]+/);for(i=d.length,f=0;i>f;f++)g=b.getWidgetById(d[f]),h=a.inArray(d[f],j.widgets),g&&g.remove&&(j.debug&&console.log((e?"Refreshing":"Removing")+' "'+d[f]+'" widget'),g.remove(c,j,j.widgetOptions,e),j.widgetInit[d[f]]=!1),h>=0&&e!==!0&&j.widgets.splice(h,1)},refreshWidgets:function(c,d,e){c=a(c)[0];var f,g,h=c.config,i=h.widgets,j=b.widgets,k=j.length,l=[],m=function(b){a(b).triggerHandler("refreshComplete")};for(f=0;k>f;f++)g=j[f],g&&g.id&&(d||a.inArray(g.id,i)<0)&&l.push(g.id);b.removeWidget(c,l.join(","),!0),e!==!0?(b.applyWidget(c,d||!1,m),d&&b.applyWidget(c,!1,m)):m(c)},benchmark:function(a){return" ( "+((new Date).getTime()-a.getTime())+"ms )"},log:function(){console.log(arguments)},isEmptyObject:function(a){for(var b in a)return!1;return!0},isValueInArray:function(a,b){var c,d=b&&b.length||0;for(c=0;d>c;c++)if(b[c][0]===a)return c;return-1},formatFloat:function(c,d){if("string"!=typeof c||""===c)return c;var e,f=d&&d.config?d.config.usNumberFormat!==!1:"undefined"!=typeof d?d:!0;return c=f?c.replace(b.regex.comma,""):c.replace(b.regex.digitNonUS,"").replace(b.regex.comma,"."),b.regex.digitNegativeTest.test(c)&&(c=c.replace(b.regex.digitNegativeReplace,"-$1")),e=parseFloat(c),isNaN(e)?a.trim(c):e},isDigit:function(a){return isNaN(a)?b.regex.digitTest.test(a.toString().replace(b.regex.digitReplace,"")):""!==a},computeColumnIndex:function(b,c){var d,e,f,g,h,i,j,k,l,m,n=c&&c.columns||0,o=[],p=new Array(n);for(d=0;d<b.length;d++)for(i=b[d].cells,e=0;e<i.length;e++){for(h=i[e],j=h.parentNode.rowIndex,k=h.rowSpan||1,l=h.colSpan||1,"undefined"==typeof o[j]&&(o[j]=[]),f=0;f<o[j].length+1;f++)if("undefined"==typeof o[j][f]){m=f;break}for(n&&h.cellIndex===m||(h.setAttribute?h.setAttribute("data-column",m):a(h).attr("data-column",m)),f=j;j+k>f;f++)for("undefined"==typeof o[f]&&(o[f]=[]),
+p=o[f],g=m;m+l>g;g++)p[g]="x"}return p.length},fixColumnWidth:function(c){c=a(c)[0];var d,e,f,g,h,i=c.config,j=i.$table.children("colgroup");if(j.length&&j.hasClass(b.css.colgroup)&&j.remove(),i.widthFixed&&0===i.$table.children("colgroup").length){for(j=a('<colgroup class="'+b.css.colgroup+'">'),d=i.$table.width(),f=i.$tbodies.find("tr:first").children(":visible"),g=f.length,h=0;g>h;h++)e=parseInt(f.eq(h).width()/d*1e3,10)/10+"%",j.append(a("<col>").css("width",e));i.$table.prepend(j)}},getData:function(b,c,d){var e,f,g="",h=a(b);return h.length?(e=a.metadata?h.metadata():!1,f=" "+(h.attr("class")||""),"undefined"!=typeof h.data(d)||"undefined"!=typeof h.data(d.toLowerCase())?g+=h.data(d)||h.data(d.toLowerCase()):e&&"undefined"!=typeof e[d]?g+=e[d]:c&&"undefined"!=typeof c[d]?g+=c[d]:" "!==f&&f.match(" "+d+"-")&&(g=f.match(new RegExp("\\s"+d+"-([\\w-]+)"))[1]||""),a.trim(g)):""},getColumnData:function(b,c,d,e,f){if("undefined"!=typeof c&&null!==c){b=a(b)[0];var g,h,i=b.config,j=f||i.$headers,k=i.$headerIndexed&&i.$headerIndexed[d]||j.filter('[data-column="'+d+'"]:last');if(c[d])return e?c[d]:c[j.index(k)];for(h in c)if("string"==typeof h&&(g=k.filter(h).add(k.find(h)),g.length))return c[h]}},isProcessing:function(c,d,e){c=a(c);var f=c[0].config,g=e||c.find("."+b.css.header);d?("undefined"!=typeof e&&f.sortList.length>0&&(g=g.filter(function(){return this.sortDisabled?!1:b.isValueInArray(parseFloat(a(this).attr("data-column")),f.sortList)>=0})),c.add(g).addClass(b.css.processing+" "+f.cssProcessing)):c.add(g).removeClass(b.css.processing+" "+f.cssProcessing)},processTbody:function(b,c,d){if(b=a(b)[0],d)return b.isProcessing=!0,c.before('<colgroup class="tablesorter-savemyplace"/>'),a.fn.detach?c.detach():c.remove();var e=a(b).find("colgroup.tablesorter-savemyplace");c.insertAfter(e),e.remove(),b.isProcessing=!1},clearTableBody:function(b){a(b)[0].config.$tbodies.children().detach()},characterEquivalents:{a:"áàâãäąå",A:"ÁÀÂÃÄĄÅ",c:"çćč",C:"ÇĆČ",e:"éèêëěę",E:"ÉÈÊËĚĘ",i:"íìİîïı",I:"ÍÌİÎÏ",o:"óòôõöō",O:"ÓÒÔÕÖŌ",ss:"ß",SS:"ẞ",u:"úùûüů",U:"ÚÙÛÜŮ"},replaceAccents:function(a){var c,d="[",e=b.characterEquivalents;if(!b.characterRegex){b.characterRegexArray={};for(c in e)"string"==typeof c&&(d+=e[c],b.characterRegexArray[c]=new RegExp("["+e[c]+"]","g"));b.characterRegex=new RegExp(d+"]")}if(b.characterRegex.test(a))for(c in e)"string"==typeof c&&(a=a.replace(b.characterRegexArray[c],c));return a},restoreHeaders:function(c){var d,e,f=a(c)[0].config,g=f.$table.find(f.selectorHeaders),h=g.length;for(d=0;h>d;d++)e=g.eq(d),e.find("."+b.css.headerIn).length&&e.html(f.headerContent[d])},destroy:function(c,d,e){if(c=a(c)[0],c.hasInitialized){b.removeWidget(c,!0,!1);var f,g=a(c),h=c.config,i=h.debug,j=g.find("thead:first"),k=j.find("tr."+b.css.headerRow).removeClass(b.css.headerRow+" "+h.cssHeaderRow),l=g.find("tfoot:first > tr").children("th, td");d===!1&&a.inArray("uitheme",h.widgets)>=0&&(g.triggerHandler("applyWidgetId",["uitheme"]),g.triggerHandler("applyWidgetId",["zebra"])),j.find("tr").not(k).remove(),f="sortReset update updateRows updateAll updateHeaders updateCell addRows updateComplete sorton appendCache updateCache applyWidgetId applyWidgets refreshWidgets removeWidget destroy mouseup mouseleave "+"keypress sortBegin sortEnd resetToLoadState ".split(" ").join(h.namespace+" "),g.removeData("tablesorter").unbind(f.replace(b.regex.spaces," ")),h.$headers.add(l).removeClass([b.css.header,h.cssHeader,h.cssAsc,h.cssDesc,b.css.sortAsc,b.css.sortDesc,b.css.sortNone].join(" ")).removeAttr("data-column").removeAttr("aria-label").attr("aria-disabled","true"),k.find(h.selectorSort).unbind("mousedown mouseup keypress ".split(" ").join(h.namespace+" ").replace(b.regex.spaces," ")),b.restoreHeaders(c),g.toggleClass(b.css.table+" "+h.tableClass+" tablesorter-"+h.theme,d===!1),c.hasInitialized=!1,delete c.config.cache,"function"==typeof e&&e(c),i&&console.log("tablesorter has been removed")}}};a.fn.tablesorter=function(c){return this.each(function(){var d=this,e=a.extend(!0,{},b.defaults,c,b.instanceMethods);e.originalSettings=c,!d.hasInitialized&&b.buildTable&&"TABLE"!==this.nodeName?b.buildTable(d,e):b.setup(d,e)})},window.console&&window.console.log||(b.logs=[],console={},console.log=console.warn=console.error=console.table=function(){var a=arguments.length>1?arguments:arguments[0];b.logs.push({date:Date.now(),log:a})}),b.addParser({id:"no-parser",is:function(){return!1},format:function(){return""},type:"text"}),b.addParser({id:"text",is:function(){return!0},format:function(c,d){var e=d.config;return c&&(c=a.trim(e.ignoreCase?c.toLocaleLowerCase():c),c=e.sortLocaleCompare?b.replaceAccents(c):c),c},type:"text"}),b.regex.nondigit=/[^\w,. \-()]/g,b.addParser({id:"digit",is:function(a){return b.isDigit(a)},format:function(c,d){var e=b.formatFloat((c||"").replace(b.regex.nondigit,""),d);return c&&"number"==typeof e?e:c?a.trim(c&&d.config.ignoreCase?c.toLocaleLowerCase():c):c},type:"numeric"}),b.regex.currencyReplace=/[+\-,. ]/g,b.regex.currencyTest=/^\(?\d+[\u00a3$\u20ac\u00a4\u00a5\u00a2?.]|[\u00a3$\u20ac\u00a4\u00a5\u00a2?.]\d+\)?$/,b.addParser({id:"currency",is:function(a){return a=(a||"").replace(b.regex.currencyReplace,""),b.regex.currencyTest.test(a)},format:function(c,d){var e=b.formatFloat((c||"").replace(b.regex.nondigit,""),d);return c&&"number"==typeof e?e:c?a.trim(c&&d.config.ignoreCase?c.toLocaleLowerCase():c):c},type:"numeric"}),b.regex.urlProtocolTest=/^(https?|ftp|file):\/\//,b.regex.urlProtocolReplace=/(https?|ftp|file):\/\//,b.addParser({id:"url",is:function(a){return b.regex.urlProtocolTest.test(a)},format:function(c){return c?a.trim(c.replace(b.regex.urlProtocolReplace,"")):c},parsed:!0,type:"text"}),b.regex.dash=/-/g,b.regex.isoDate=/^\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}/,b.addParser({id:"isoDate",is:function(a){return b.regex.isoDate.test(a)},format:function(a,c){var d=a?new Date(a.replace(b.regex.dash,"/")):a;return d instanceof Date&&isFinite(d)?d.getTime():a},type:"numeric"}),b.regex.percent=/%/g,b.regex.percentTest=/(\d\s*?%|%\s*?\d)/,b.addParser({id:"percent",is:function(a){return b.regex.percentTest.test(a)&&a.length<15},format:function(a,c){return a?b.formatFloat(a.replace(b.regex.percent,""),c):a},type:"numeric"}),b.addParser({id:"image",is:function(a,b,c,d){return d.find("img").length>0},format:function(b,c,d){return a(d).find("img").attr(c.config.imgAttr||"alt")||b},parsed:!0,type:"text"}),b.regex.dateReplace=/(\S)([AP]M)$/i,b.regex.usLongDateTest1=/^[A-Z]{3,10}\.?\s+\d{1,2},?\s+(\d{4})(\s+\d{1,2}:\d{2}(:\d{2})?(\s+[AP]M)?)?$/i,b.regex.usLongDateTest2=/^\d{1,2}\s+[A-Z]{3,10}\s+\d{4}/i,b.addParser({id:"usLongDate",is:function(a){return b.regex.usLongDateTest1.test(a)||b.regex.usLongDateTest2.test(a)},format:function(a,c){var d=a?new Date(a.replace(b.regex.dateReplace,"$1 $2")):a;return d instanceof Date&&isFinite(d)?d.getTime():a},type:"numeric"}),b.regex.shortDateTest=/(^\d{1,2}[\/\s]\d{1,2}[\/\s]\d{4})|(^\d{4}[\/\s]\d{1,2}[\/\s]\d{1,2})/,b.regex.shortDateReplace=/[\-.,]/g,b.regex.shortDateXXY=/(\d{1,2})[\/\s](\d{1,2})[\/\s](\d{4})/,b.regex.shortDateYMD=/(\d{4})[\/\s](\d{1,2})[\/\s](\d{1,2})/,b.convertFormat=function(a,c){a=(a||"").replace(b.regex.spaces," ").replace(b.regex.shortDateReplace,"/"),"mmddyyyy"===c?a=a.replace(b.regex.shortDateXXY,"$3/$1/$2"):"ddmmyyyy"===c?a=a.replace(b.regex.shortDateXXY,"$3/$2/$1"):"yyyymmdd"===c&&(a=a.replace(b.regex.shortDateYMD,"$1/$2/$3"));var d=new Date(a);return d instanceof Date&&isFinite(d)?d.getTime():""},b.addParser({id:"shortDate",is:function(a){return a=(a||"").replace(b.regex.spaces," ").replace(b.regex.shortDateReplace,"/"),b.regex.shortDateTest.test(a)},format:function(a,c,d,e){if(a){var f=c.config,g=f.$headerIndexed[e],h=g.length&&g.data("dateFormat")||b.getData(g,b.getColumnData(c,f.headers,e),"dateFormat")||f.dateFormat;return g.length&&g.data("dateFormat",h),b.convertFormat(a,h)||a}return a},type:"numeric"}),b.regex.timeTest=/^([1-9]|1[0-2]):([0-5]\d)(\s[AP]M)$|^((?:[01]\d|[2][0-4]):[0-5]\d)$/i,b.regex.timeMatch=/([1-9]|1[0-2]):([0-5]\d)(\s[AP]M)|((?:[01]\d|[2][0-4]):[0-5]\d)/i,b.addParser({id:"time",is:function(a){return b.regex.timeTest.test(a)},format:function(a,c){var d,e=(a||"").match(b.regex.timeMatch),f=new Date(a),g=a&&(null!==e?e[0]:"00:00 AM"),h=g?new Date("2000/01/01 "+g.replace(b.regex.dateReplace,"$1 $2")):g;return h instanceof Date&&isFinite(h)?(d=f instanceof Date&&isFinite(f)?f.getTime():0,d?parseFloat(h.getTime()+"."+f.getTime()):h.getTime()):a},type:"numeric"}),b.addParser({id:"metadata",is:function(){return!1},format:function(b,c,d){var e=c.config,f=e.parserMetadataName?e.parserMetadataName:"sortValue";return a(d).metadata()[f]},type:"numeric"}),b.addWidget({id:"zebra",priority:90,format:function(b,c,d){var e,f,g,h,i,j,k,l=new RegExp(c.cssChildRow,"i"),m=c.$tbodies.add(a(c.namespace+"_extra_table").children("tbody:not(."+c.cssInfoBlock+")"));for(i=0;i<m.length;i++)for(g=0,e=m.eq(i).children("tr:visible").not(c.selectorRemove),k=e.length,j=0;k>j;j++)f=e.eq(j),l.test(f[0].className)||g++,h=g%2===0,f.removeClass(d.zebra[h?1:0]).addClass(d.zebra[h?0:1])},remove:function(a,c,d,e){if(!e){var f,g,h=c.$tbodies,i=(d.zebra||["even","odd"]).join(" ");for(f=0;f<h.length;f++)g=b.processTbody(a,h.eq(f),!0),g.children().removeClass(i),b.processTbody(a,g,!1)}}})}(jQuery),a.tablesorter});
+/*! tablesorter (FORK) - updated 01-21-2016 (v2.25.3)*/
+/* Includes widgets ( storage,uitheme,columns,filter,stickyHeaders,resizable,saveSort ) */
+(function(factory) {
+	if (typeof define === 'function' && define.amd) {
+		define(['jquery'], factory);
+	} else if (typeof module === 'object' && typeof module.exports === 'object') {
+		module.exports = factory(require('jquery'));
+	} else {
+		factory(jQuery);
+	}
+}(function($) {
+
+/*! Widget: storage - updated 3/26/2015 (v2.21.3) */
+/*global JSON:false */
+;(function ($, window, document) {
+	'use strict';
+
+	var ts = $.tablesorter || {};
+	// *** Store data in local storage, with a cookie fallback ***
+	/* IE7 needs JSON library for JSON.stringify - (http://caniuse.com/#search=json)
+	   if you need it, then include https://github.com/douglascrockford/JSON-js
+
+	   $.parseJSON is not available is jQuery versions older than 1.4.1, using older
+	   versions will only allow storing information for one page at a time
+
+	   // *** Save data (JSON format only) ***
+	   // val must be valid JSON... use http://jsonlint.com/ to ensure it is valid
+	   var val = { "mywidget" : "data1" }; // valid JSON uses double quotes
+	   // $.tablesorter.storage(table, key, val);
+	   $.tablesorter.storage(table, 'tablesorter-mywidget', val);
+
+	   // *** Get data: $.tablesorter.storage(table, key); ***
+	   v = $.tablesorter.storage(table, 'tablesorter-mywidget');
+	   // val may be empty, so also check for your data
+	   val = (v && v.hasOwnProperty('mywidget')) ? v.mywidget : '';
+	   alert(val); // 'data1' if saved, or '' if not
+	*/
+	ts.storage = function(table, key, value, options) {
+		table = $(table)[0];
+		var cookieIndex, cookies, date,
+			hasStorage = false,
+			values = {},
+			c = table.config,
+			wo = c && c.widgetOptions,
+			storageType = ( options && options.useSessionStorage ) || ( wo && wo.storage_useSessionStorage ) ?
+				'sessionStorage' : 'localStorage',
+			$table = $(table),
+			// id from (1) options ID, (2) table 'data-table-group' attribute, (3) widgetOptions.storage_tableId,
+			// (4) table ID, then (5) table index
+			id = options && options.id ||
+				$table.attr( options && options.group || wo && wo.storage_group || 'data-table-group') ||
+				wo && wo.storage_tableId || table.id || $('.tablesorter').index( $table ),
+			// url from (1) options url, (2) table 'data-table-page' attribute, (3) widgetOptions.storage_fixedUrl,
+			// (4) table.config.fixedUrl (deprecated), then (5) window location path
+			url = options && options.url ||
+				$table.attr(options && options.page || wo && wo.storage_page || 'data-table-page') ||
+				wo && wo.storage_fixedUrl || c && c.fixedUrl || window.location.pathname;
+		// https://gist.github.com/paulirish/5558557
+		if (storageType in window) {
+			try {
+				window[storageType].setItem('_tmptest', 'temp');
+				hasStorage = true;
+				window[storageType].removeItem('_tmptest');
+			} catch (error) {
+				if (c && c.debug) {
+					console.warn( storageType + ' is not supported in this browser' );
+				}
+			}
+		}
+		// *** get value ***
+		if ($.parseJSON) {
+			if (hasStorage) {
+				values = $.parseJSON( window[storageType][key] || 'null' ) || {};
+			} else {
+				// old browser, using cookies
+				cookies = document.cookie.split(/[;\s|=]/);
+				// add one to get from the key to the value
+				cookieIndex = $.inArray(key, cookies) + 1;
+				values = (cookieIndex !== 0) ? $.parseJSON(cookies[cookieIndex] || 'null') || {} : {};
+			}
+		}
+		// allow value to be an empty string too
+		if ((value || value === '') && window.JSON && JSON.hasOwnProperty('stringify')) {
+			// add unique identifiers = url pathname > table ID/index on page > data
+			if (!values[url]) {
+				values[url] = {};
+			}
+			values[url][id] = value;
+			// *** set value ***
+			if (hasStorage) {
+				window[storageType][key] = JSON.stringify(values);
+			} else {
+				date = new Date();
+				date.setTime(date.getTime() + (31536e+6)); // 365 days
+				document.cookie = key + '=' + (JSON.stringify(values)).replace(/\"/g, '\"') + '; expires=' + date.toGMTString() + '; path=/';
+			}
+		} else {
+			return values && values[url] ? values[url][id] : '';
+		}
+	};
+
+})(jQuery, window, document);
+
+/*! Widget: uitheme - updated 3/26/2015 (v2.21.3) */
+;(function ($) {
+	'use strict';
+	var ts = $.tablesorter || {};
+
+	ts.themes = {
+		'bootstrap' : {
+			table        : 'table table-bordered table-striped',
+			caption      : 'caption',
+			// header class names
+			header       : 'bootstrap-header', // give the header a gradient background (theme.bootstrap_2.css)
+			sortNone     : '',
+			sortAsc      : '',
+			sortDesc     : '',
+			active       : '', // applied when column is sorted
+			hover        : '', // custom css required - a defined bootstrap style may not override other classes
+			// icon class names
+			icons        : '', // add 'icon-white' to make them white; this icon class is added to the <i> in the header
+			iconSortNone : 'bootstrap-icon-unsorted', // class name added to icon when column is not sorted
+			iconSortAsc  : 'icon-chevron-up glyphicon glyphicon-chevron-up', // class name added to icon when column has ascending sort
+			iconSortDesc : 'icon-chevron-down glyphicon glyphicon-chevron-down', // class name added to icon when column has descending sort
+			filterRow    : '', // filter row class
+			footerRow    : '',
+			footerCells  : '',
+			even         : '', // even row zebra striping
+			odd          : ''  // odd row zebra striping
+		},
+		'jui' : {
+			table        : 'ui-widget ui-widget-content ui-corner-all', // table classes
+			caption      : 'ui-widget-content',
+			// header class names
+			header       : 'ui-widget-header ui-corner-all ui-state-default', // header classes
+			sortNone     : '',
+			sortAsc      : '',
+			sortDesc     : '',
+			active       : 'ui-state-active', // applied when column is sorted
+			hover        : 'ui-state-hover',  // hover class
+			// icon class names
+			icons        : 'ui-icon', // icon class added to the <i> in the header
+			iconSortNone : 'ui-icon-carat-2-n-s', // class name added to icon when column is not sorted
+			iconSortAsc  : 'ui-icon-carat-1-n', // class name added to icon when column has ascending sort
+			iconSortDesc : 'ui-icon-carat-1-s', // class name added to icon when column has descending sort
+			filterRow    : '',
+			footerRow    : '',
+			footerCells  : '',
+			even         : 'ui-widget-content', // even row zebra striping
+			odd          : 'ui-state-default'   // odd row zebra striping
+		}
+	};
+
+	$.extend(ts.css, {
+		wrapper : 'tablesorter-wrapper' // ui theme & resizable
+	});
+
+	ts.addWidget({
+		id: 'uitheme',
+		priority: 10,
+		format: function(table, c, wo) {
+			var i, hdr, icon, time, $header, $icon, $tfoot, $h, oldtheme, oldremove, oldIconRmv, hasOldTheme,
+				themesAll = ts.themes,
+				$table = c.$table.add( $( c.namespace + '_extra_table' ) ),
+				$headers = c.$headers.add( $( c.namespace + '_extra_headers' ) ),
+				theme = c.theme || 'jui',
+				themes = themesAll[theme] || {},
+				remove = $.trim( [ themes.sortNone, themes.sortDesc, themes.sortAsc, themes.active ].join( ' ' ) ),
+				iconRmv = $.trim( [ themes.iconSortNone, themes.iconSortDesc, themes.iconSortAsc ].join( ' ' ) );
+			if (c.debug) { time = new Date(); }
+			// initialization code - run once
+			if (!$table.hasClass('tablesorter-' + theme) || c.theme !== c.appliedTheme || !wo.uitheme_applied) {
+				wo.uitheme_applied = true;
+				oldtheme = themesAll[c.appliedTheme] || {};
+				hasOldTheme = !$.isEmptyObject(oldtheme);
+				oldremove =  hasOldTheme ? [ oldtheme.sortNone, oldtheme.sortDesc, oldtheme.sortAsc, oldtheme.active ].join( ' ' ) : '';
+				oldIconRmv = hasOldTheme ? [ oldtheme.iconSortNone, oldtheme.iconSortDesc, oldtheme.iconSortAsc ].join( ' ' ) : '';
+				if (hasOldTheme) {
+					wo.zebra[0] = $.trim( ' ' + wo.zebra[0].replace(' ' + oldtheme.even, '') );
+					wo.zebra[1] = $.trim( ' ' + wo.zebra[1].replace(' ' + oldtheme.odd, '') );
+					c.$tbodies.children().removeClass( [ oldtheme.even, oldtheme.odd ].join(' ') );
+				}
+				// update zebra stripes
+				if (themes.even) { wo.zebra[0] += ' ' + themes.even; }
+				if (themes.odd) { wo.zebra[1] += ' ' + themes.odd; }
+				// add caption style
+				$table.children('caption')
+					.removeClass(oldtheme.caption || '')
+					.addClass(themes.caption);
+				// add table/footer class names
+				$tfoot = $table
+					// remove other selected themes
+					.removeClass( (c.appliedTheme ? 'tablesorter-' + (c.appliedTheme || '') : '') + ' ' + (oldtheme.table || '') )
+					.addClass('tablesorter-' + theme + ' ' + (themes.table || '')) // add theme widget class name
+					.children('tfoot');
+				c.appliedTheme = c.theme;
+
+				if ($tfoot.length) {
+					$tfoot
+						// if oldtheme.footerRow or oldtheme.footerCells are undefined, all class names are removed
+						.children('tr').removeClass(oldtheme.footerRow || '').addClass(themes.footerRow)
+						.children('th, td').removeClass(oldtheme.footerCells || '').addClass(themes.footerCells);
+				}
+				// update header classes
+				$headers
+					.removeClass( (hasOldTheme ? [ oldtheme.header, oldtheme.hover, oldremove ].join(' ') : '') || '' )
+					.addClass(themes.header)
+					.not('.sorter-false')
+					.unbind('mouseenter.tsuitheme mouseleave.tsuitheme')
+					.bind('mouseenter.tsuitheme mouseleave.tsuitheme', function(event) {
+						// toggleClass with switch added in jQuery 1.3
+						$(this)[ event.type === 'mouseenter' ? 'addClass' : 'removeClass' ](themes.hover || '');
+					});
+
+				$headers.each(function(){
+					var $this = $(this);
+					if (!$this.find('.' + ts.css.wrapper).length) {
+						// Firefox needs this inner div to position the icon & resizer correctly
+						$this.wrapInner('<div class="' + ts.css.wrapper + '" style="position:relative;height:100%;width:100%"></div>');
+					}
+				});
+				if (c.cssIcon) {
+					// if c.cssIcon is '', then no <i> is added to the header
+					$headers
+						.find('.' + ts.css.icon)
+						.removeClass(hasOldTheme ? [ oldtheme.icons, oldIconRmv ].join(' ') : '')
+						.addClass(themes.icons || '');
+				}
+				if ($table.hasClass('hasFilters')) {
+					$table.children('thead').children('.' + ts.css.filterRow)
+						.removeClass(hasOldTheme ? oldtheme.filterRow || '' : '')
+						.addClass(themes.filterRow || '');
+				}
+			}
+			for (i = 0; i < c.columns; i++) {
+				$header = c.$headers
+					.add($(c.namespace + '_extra_headers'))
+					.not('.sorter-false')
+					.filter('[data-column="' + i + '"]');
+				$icon = (ts.css.icon) ? $header.find('.' + ts.css.icon) : $();
+				$h = $headers.not('.sorter-false').filter('[data-column="' + i + '"]:last');
+				if ($h.length) {
+					$header.removeClass(remove);
+					$icon.removeClass(iconRmv);
+					if ($h[0].sortDisabled) {
+						// no sort arrows for disabled columns!
+						$icon.removeClass(themes.icons || '');
+					} else {
+						hdr = themes.sortNone;
+						icon = themes.iconSortNone;
+						if ($h.hasClass(ts.css.sortAsc)) {
+							hdr = [ themes.sortAsc, themes.active ].join(' ');
+							icon = themes.iconSortAsc;
+						} else if ($h.hasClass(ts.css.sortDesc)) {
+							hdr = [ themes.sortDesc, themes.active ].join(' ');
+							icon = themes.iconSortDesc;
+						}
+						$header.addClass(hdr);
+						$icon.addClass(icon || '');
+					}
+				}
+			}
+			if (c.debug) {
+				console.log('Applying ' + theme + ' theme' + ts.benchmark(time));
+			}
+		},
+		remove: function(table, c, wo, refreshing) {
+			if (!wo.uitheme_applied) { return; }
+			var $table = c.$table,
+				theme = c.appliedTheme || 'jui',
+				themes = ts.themes[ theme ] || ts.themes.jui,
+				$headers = $table.children('thead').children(),
+				remove = themes.sortNone + ' ' + themes.sortDesc + ' ' + themes.sortAsc,
+				iconRmv = themes.iconSortNone + ' ' + themes.iconSortDesc + ' ' + themes.iconSortAsc;
+			$table.removeClass('tablesorter-' + theme + ' ' + themes.table);
+			wo.uitheme_applied = false;
+			if (refreshing) { return; }
+			$table.find(ts.css.header).removeClass(themes.header);
+			$headers
+				.unbind('mouseenter.tsuitheme mouseleave.tsuitheme') // remove hover
+				.removeClass(themes.hover + ' ' + remove + ' ' + themes.active)
+				.filter('.' + ts.css.filterRow)
+				.removeClass(themes.filterRow);
+			$headers.find('.' + ts.css.icon).removeClass(themes.icons + ' ' + iconRmv);
+		}
+	});
+
+})(jQuery);
+
+/*! Widget: columns */
+;(function ($) {
+	'use strict';
+	var ts = $.tablesorter || {};
+
+	ts.addWidget({
+		id: 'columns',
+		priority: 30,
+		options : {
+			columns : [ 'primary', 'secondary', 'tertiary' ]
+		},
+		format: function(table, c, wo) {
+			var $tbody, tbodyIndex, $rows, rows, $row, $cells, remove, indx,
+			$table = c.$table,
+			$tbodies = c.$tbodies,
+			sortList = c.sortList,
+			len = sortList.length,
+			// removed c.widgetColumns support
+			css = wo && wo.columns || [ 'primary', 'secondary', 'tertiary' ],
+			last = css.length - 1;
+			remove = css.join(' ');
+			// check if there is a sort (on initialization there may not be one)
+			for (tbodyIndex = 0; tbodyIndex < $tbodies.length; tbodyIndex++ ) {
+				$tbody = ts.processTbody(table, $tbodies.eq(tbodyIndex), true); // detach tbody
+				$rows = $tbody.children('tr');
+				// loop through the visible rows
+				$rows.each(function() {
+					$row = $(this);
+					if (this.style.display !== 'none') {
+						// remove all columns class names
+						$cells = $row.children().removeClass(remove);
+						// add appropriate column class names
+						if (sortList && sortList[0]) {
+							// primary sort column class
+							$cells.eq(sortList[0][0]).addClass(css[0]);
+							if (len > 1) {
+								for (indx = 1; indx < len; indx++) {
+									// secondary, tertiary, etc sort column classes
+									$cells.eq(sortList[indx][0]).addClass( css[indx] || css[last] );
+								}
+							}
+						}
+					}
+				});
+				ts.processTbody(table, $tbody, false);
+			}
+			// add classes to thead and tfoot
+			rows = wo.columns_thead !== false ? [ 'thead tr' ] : [];
+			if (wo.columns_tfoot !== false) {
+				rows.push('tfoot tr');
+			}
+			if (rows.length) {
+				$rows = $table.find( rows.join(',') ).children().removeClass(remove);
+				if (len) {
+					for (indx = 0; indx < len; indx++) {
+						// add primary. secondary, tertiary, etc sort column classes
+						$rows.filter('[data-column="' + sortList[indx][0] + '"]').addClass(css[indx] || css[last]);
+					}
+				}
+			}
+		},
+		remove: function(table, c, wo) {
+			var tbodyIndex, $tbody,
+				$tbodies = c.$tbodies,
+				remove = (wo.columns || [ 'primary', 'secondary', 'tertiary' ]).join(' ');
+			c.$headers.removeClass(remove);
+			c.$table.children('tfoot').children('tr').children('th, td').removeClass(remove);
+			for (tbodyIndex = 0; tbodyIndex < $tbodies.length; tbodyIndex++ ) {
+				$tbody = ts.processTbody(table, $tbodies.eq(tbodyIndex), true); // remove tbody
+				$tbody.children('tr').each(function() {
+					$(this).children().removeClass(remove);
+				});
+				ts.processTbody(table, $tbody, false); // restore tbody
+			}
+		}
+	});
+
+})(jQuery);
+
+/*! Widget: filter - updated 1/21/2016 (v2.25.3) *//*
+ * Requires tablesorter v2.8+ and jQuery 1.7+
+ * by Rob Garrison
+ */
+;( function ( $ ) {
+	'use strict';
+	var tsf, tsfRegex,
+		ts = $.tablesorter || {},
+		tscss = ts.css,
+		tskeyCodes = ts.keyCodes;
+
+	$.extend( tscss, {
+		filterRow      : 'tablesorter-filter-row',
+		filter         : 'tablesorter-filter',
+		filterDisabled : 'disabled',
+		filterRowHide  : 'hideme'
+	});
+
+	$.extend( tskeyCodes, {
+		backSpace : 8,
+		escape : 27,
+		space : 32,
+		left : 37,
+		down : 40
+	});
+
+	ts.addWidget({
+		id: 'filter',
+		priority: 50,
+		options : {
+			filter_childRows     : false, // if true, filter includes child row content in the search
+			filter_childByColumn : false, // ( filter_childRows must be true ) if true = search child rows by column; false = search all child row text grouped
+			filter_childWithSibs : true,  // if true, include matching child row siblings
+			filter_columnFilters : true,  // if true, a filter will be added to the top of each table column
+			filter_columnAnyMatch: true,  // if true, allows using '#:{query}' in AnyMatch searches ( column:query )
+			filter_cellFilter    : '',    // css class name added to the filter cell ( string or array )
+			filter_cssFilter     : '',    // css class name added to the filter row & each input in the row ( tablesorter-filter is ALWAYS added )
+			filter_defaultFilter : {},    // add a default column filter type '~{query}' to make fuzzy searches default; '{q1} AND {q2}' to make all searches use a logical AND.
+			filter_excludeFilter : {},    // filters to exclude, per column
+			filter_external      : '',    // jQuery selector string ( or jQuery object ) of external filters
+			filter_filteredRow   : 'filtered', // class added to filtered rows; needed by pager plugin
+			filter_formatter     : null,  // add custom filter elements to the filter row
+			filter_functions     : null,  // add custom filter functions using this option
+			filter_hideEmpty     : true,  // hide filter row when table is empty
+			filter_hideFilters   : false, // collapse filter row when mouse leaves the area
+			filter_ignoreCase    : true,  // if true, make all searches case-insensitive
+			filter_liveSearch    : true,  // if true, search column content while the user types ( with a delay )
+			filter_onlyAvail     : 'filter-onlyAvail', // a header with a select dropdown & this class name will only show available ( visible ) options within the drop down
+			filter_placeholder   : { search : '', select : '' }, // default placeholder text ( overridden by any header 'data-placeholder' setting )
+			filter_reset         : null,  // jQuery selector string of an element used to reset the filters
+			filter_resetOnEsc    : true,  // Reset filter input when the user presses escape - normalized across browsers
+			filter_saveFilters   : false, // Use the $.tablesorter.storage utility to save the most recent filters
+			filter_searchDelay   : 300,   // typing delay in milliseconds before starting a search
+			filter_searchFiltered: true,  // allow searching through already filtered rows in special circumstances; will speed up searching in large tables if true
+			filter_selectSource  : null,  // include a function to return an array of values to be added to the column filter select
+			filter_startsWith    : false, // if true, filter start from the beginning of the cell contents
+			filter_useParsedData : false, // filter all data using parsed content
+			filter_serversideFiltering : false, // if true, must perform server-side filtering b/c client-side filtering is disabled, but the ui and events will still be used.
+			filter_defaultAttrib : 'data-value', // data attribute in the header cell that contains the default filter value
+			filter_selectSourceSeparator : '|' // filter_selectSource array text left of the separator is added to the option value, right into the option text
+		},
+		format: function( table, c, wo ) {
+			if ( !c.$table.hasClass( 'hasFilters' ) ) {
+				tsf.init( table, c, wo );
+			}
+		},
+		remove: function( table, c, wo, refreshing ) {
+			var tbodyIndex, $tbody,
+				$table = c.$table,
+				$tbodies = c.$tbodies,
+				events = 'addRows updateCell update updateRows updateComplete appendCache filterReset filterEnd search '
+					.split( ' ' ).join( c.namespace + 'filter ' );
+			$table
+				.removeClass( 'hasFilters' )
+				// add filter namespace to all BUT search
+				.unbind( events.replace( ts.regex.spaces, ' ' ) )
+				// remove the filter row even if refreshing, because the column might have been moved
+				.find( '.' + tscss.filterRow ).remove();
+			if ( refreshing ) { return; }
+			for ( tbodyIndex = 0; tbodyIndex < $tbodies.length; tbodyIndex++ ) {
+				$tbody = ts.processTbody( table, $tbodies.eq( tbodyIndex ), true ); // remove tbody
+				$tbody.children().removeClass( wo.filter_filteredRow ).show();
+				ts.processTbody( table, $tbody, false ); // restore tbody
+			}
+			if ( wo.filter_reset ) {
+				$( document ).undelegate( wo.filter_reset, 'click' + c.namespace + 'filter' );
+			}
+		}
+	});
+
+	tsf = ts.filter = {
+
+		// regex used in filter 'check' functions - not for general use and not documented
+		regex: {
+			regex     : /^\/((?:\\\/|[^\/])+)\/([mig]{0,3})?$/, // regex to test for regex
+			child     : /tablesorter-childRow/, // child row class name; this gets updated in the script
+			filtered  : /filtered/, // filtered (hidden) row class name; updated in the script
+			type      : /undefined|number/, // check type
+			exact     : /(^[\"\'=]+)|([\"\'=]+$)/g, // exact match (allow '==')
+			operators : /[<>=]/g, // replace operators
+			query     : '(q|query)', // replace filter queries
+			wild01    : /\?/g, // wild card match 0 or 1
+			wild0More : /\*/g, // wild care match 0 or more
+			quote     : /\"/g,
+			isNeg1    : /(>=?\s*-\d)/,
+			isNeg2    : /(<=?\s*\d)/
+		},
+		// function( c, data ) { }
+		// c = table.config
+		// data.$row = jQuery object of the row currently being processed
+		// data.$cells = jQuery object of all cells within the current row
+		// data.filters = array of filters for all columns ( some may be undefined )
+		// data.filter = filter for the current column
+		// data.iFilter = same as data.filter, except lowercase ( if wo.filter_ignoreCase is true )
+		// data.exact = table cell text ( or parsed data if column parser enabled; may be a number & not a string )
+		// data.iExact = same as data.exact, except lowercase ( if wo.filter_ignoreCase is true; may be a number & not a string )
+		// data.cache = table cell text from cache, so it has been parsed ( & in all lower case if c.ignoreCase is true )
+		// data.cacheArray = An array of parsed content from each table cell in the row being processed
+		// data.index = column index; table = table element ( DOM )
+		// data.parsed = array ( by column ) of boolean values ( from filter_useParsedData or 'filter-parsed' class )
+		types: {
+			or : function( c, data, vars ) {
+				// look for "|", but not if it is inside of a regular expression
+				if ( ( tsfRegex.orTest.test( data.iFilter ) || tsfRegex.orSplit.test( data.filter ) ) &&
+					// this test for regex has potential to slow down the overall search
+					!tsfRegex.regex.test( data.filter ) ) {
+					var indx, filterMatched, query, regex,
+						// duplicate data but split filter
+						data2 = $.extend( {}, data ),
+						filter = data.filter.split( tsfRegex.orSplit ),
+						iFilter = data.iFilter.split( tsfRegex.orSplit ),
+						len = filter.length;
+					for ( indx = 0; indx < len; indx++ ) {
+						data2.nestedFilters = true;
+						data2.filter = '' + ( tsf.parseFilter( c, filter[ indx ], data ) || '' );
+						data2.iFilter = '' + ( tsf.parseFilter( c, iFilter[ indx ], data ) || '' );
+						query = '(' + ( tsf.parseFilter( c, data2.filter, data ) || '' ) + ')';
+						try {
+							// use try/catch, because query may not be a valid regex if "|" is contained within a partial regex search,
+							// e.g "/(Alex|Aar" -> Uncaught SyntaxError: Invalid regular expression: /(/(Alex)/: Unterminated group
+							regex = new RegExp( data.isMatch ? query : '^' + query + '$', c.widgetOptions.filter_ignoreCase ? 'i' : '' );
+							// filterMatched = data2.filter === '' && indx > 0 ? true
+							// look for an exact match with the 'or' unless the 'filter-match' class is found
+							filterMatched = regex.test( data2.exact ) || tsf.processTypes( c, data2, vars );
+							if ( filterMatched ) {
+								return filterMatched;
+							}
+						} catch ( error ) {
+							return null;
+						}
+					}
+					// may be null from processing types
+					return filterMatched || false;
+				}
+				return null;
+			},
+			// Look for an AND or && operator ( logical and )
+			and : function( c, data, vars ) {
+				if ( tsfRegex.andTest.test( data.filter ) ) {
+					var indx, filterMatched, result, query, regex,
+						// duplicate data but split filter
+						data2 = $.extend( {}, data ),
+						filter = data.filter.split( tsfRegex.andSplit ),
+						iFilter = data.iFilter.split( tsfRegex.andSplit ),
+						len = filter.length;
+					for ( indx = 0; indx < len; indx++ ) {
+						data2.nestedFilters = true;
+						data2.filter = '' + ( tsf.parseFilter( c, filter[ indx ], data ) || '' );
+						data2.iFilter = '' + ( tsf.parseFilter( c, iFilter[ indx ], data ) || '' );
+						query = ( '(' + ( tsf.parseFilter( c, data2.filter, data ) || '' ) + ')' )
+							// replace wild cards since /(a*)/i will match anything
+							.replace( tsfRegex.wild01, '\\S{1}' ).replace( tsfRegex.wild0More, '\\S*' );
+						try {
+							// use try/catch just in case RegExp is invalid
+							regex = new RegExp( data.isMatch ? query : '^' + query + '$', c.widgetOptions.filter_ignoreCase ? 'i' : '' );
+							// look for an exact match with the 'and' unless the 'filter-match' class is found
+							result = ( regex.test( data2.exact ) || tsf.processTypes( c, data2, vars ) );
+							if ( indx === 0 ) {
+								filterMatched = result;
+							} else {
+								filterMatched = filterMatched && result;
+							}
+						} catch ( error ) {
+							return null;
+						}
+					}
+					// may be null from processing types
+					return filterMatched || false;
+				}
+				return null;
+			},
+			// Look for regex
+			regex: function( c, data ) {
+				if ( tsfRegex.regex.test( data.filter ) ) {
+					var matches,
+						// cache regex per column for optimal speed
+						regex = data.filter_regexCache[ data.index ] || tsfRegex.regex.exec( data.filter ),
+						isRegex = regex instanceof RegExp;
+					try {
+						if ( !isRegex ) {
+							// force case insensitive search if ignoreCase option set?
+							// if ( c.ignoreCase && !regex[2] ) { regex[2] = 'i'; }
+							data.filter_regexCache[ data.index ] = regex = new RegExp( regex[1], regex[2] );
+						}
+						matches = regex.test( data.exact );
+					} catch ( error ) {
+						matches = false;
+					}
+					return matches;
+				}
+				return null;
+			},
+			// Look for operators >, >=, < or <=
+			operators: function( c, data ) {
+				// ignore empty strings... because '' < 10 is true
+				if ( tsfRegex.operTest.test( data.iFilter ) && data.iExact !== '' ) {
+					var cachedValue, result, txt,
+						table = c.table,
+						parsed = data.parsed[ data.index ],
+						query = ts.formatFloat( data.iFilter.replace( tsfRegex.operators, '' ), table ),
+						parser = c.parsers[ data.index ] || {},
+						savedSearch = query;
+					// parse filter value in case we're comparing numbers ( dates )
+					if ( parsed || parser.type === 'numeric' ) {
+						txt = $.trim( '' + data.iFilter.replace( tsfRegex.operators, '' ) );
+						result = tsf.parseFilter( c, txt, data, true );
+						query = ( typeof result === 'number' && result !== '' && !isNaN( result ) ) ? result : query;
+					}
+					// iExact may be numeric - see issue #149;
+					// check if cached is defined, because sometimes j goes out of range? ( numeric columns )
+					if ( ( parsed || parser.type === 'numeric' ) && !isNaN( query ) &&
+						typeof data.cache !== 'undefined' ) {
+						cachedValue = data.cache;
+					} else {
+						txt = isNaN( data.iExact ) ? data.iExact.replace( ts.regex.nondigit, '' ) : data.iExact;
+						cachedValue = ts.formatFloat( txt, table );
+					}
+					if ( tsfRegex.gtTest.test( data.iFilter ) ) {
+						result = tsfRegex.gteTest.test( data.iFilter ) ? cachedValue >= query : cachedValue > query;
+					} else if ( tsfRegex.ltTest.test( data.iFilter ) ) {
+						result = tsfRegex.lteTest.test( data.iFilter ) ? cachedValue <= query : cachedValue < query;
+					}
+					// keep showing all rows if nothing follows the operator
+					if ( !result && savedSearch === '' ) {
+						result = true;
+					}
+					return result;
+				}
+				return null;
+			},
+			// Look for a not match
+			notMatch: function( c, data ) {
+				if ( tsfRegex.notTest.test( data.iFilter ) ) {
+					var indx,
+						txt = data.iFilter.replace( '!', '' ),
+						filter = tsf.parseFilter( c, txt, data ) || '';
+					if ( tsfRegex.exact.test( filter ) ) {
+						// look for exact not matches - see #628
+						filter = filter.replace( tsfRegex.exact, '' );
+						return filter === '' ? true : $.trim( filter ) !== data.iExact;
+					} else {
+						indx = data.iExact.search( $.trim( filter ) );
+						return filter === '' ? true : !( c.widgetOptions.filter_startsWith ? indx === 0 : indx >= 0 );
+					}
+				}
+				return null;
+			},
+			// Look for quotes or equals to get an exact match; ignore type since iExact could be numeric
+			exact: function( c, data ) {
+				/*jshint eqeqeq:false */
+				if ( tsfRegex.exact.test( data.iFilter ) ) {
+					var txt = data.iFilter.replace( tsfRegex.exact, '' ),
+						filter = tsf.parseFilter( c, txt, data ) || '';
+					return data.anyMatch ? $.inArray( filter, data.rowArray ) >= 0 : filter == data.iExact;
+				}
+				return null;
+			},
+			// Look for a range ( using ' to ' or ' - ' ) - see issue #166; thanks matzhu!
+			range : function( c, data ) {
+				if ( tsfRegex.toTest.test( data.iFilter ) ) {
+					var result, tmp, range1, range2,
+						table = c.table,
+						index = data.index,
+						parsed = data.parsed[index],
+						// make sure the dash is for a range and not indicating a negative number
+						query = data.iFilter.split( tsfRegex.toSplit );
+
+					tmp = query[0].replace( ts.regex.nondigit, '' ) || '';
+					range1 = ts.formatFloat( tsf.parseFilter( c, tmp, data ), table );
+					tmp = query[1].replace( ts.regex.nondigit, '' ) || '';
+					range2 = ts.formatFloat( tsf.parseFilter( c, tmp, data ), table );
+					// parse filter value in case we're comparing numbers ( dates )
+					if ( parsed || c.parsers[ index ].type === 'numeric' ) {
+						result = c.parsers[ index ].format( '' + query[0], table, c.$headers.eq( index ), index );
+						range1 = ( result !== '' && !isNaN( result ) ) ? result : range1;
+						result = c.parsers[ index ].format( '' + query[1], table, c.$headers.eq( index ), index );
+						range2 = ( result !== '' && !isNaN( result ) ) ? result : range2;
+					}
+					if ( ( parsed || c.parsers[ index ].type === 'numeric' ) && !isNaN( range1 ) && !isNaN( range2 ) ) {
+						result = data.cache;
+					} else {
+						tmp = isNaN( data.iExact ) ? data.iExact.replace( ts.regex.nondigit, '' ) : data.iExact;
+						result = ts.formatFloat( tmp, table );
+					}
+					if ( range1 > range2 ) {
+						tmp = range1; range1 = range2; range2 = tmp; // swap
+					}
+					return ( result >= range1 && result <= range2 ) || ( range1 === '' || range2 === '' );
+				}
+				return null;
+			},
+			// Look for wild card: ? = single, * = multiple, or | = logical OR
+			wild : function( c, data ) {
+				if ( tsfRegex.wildOrTest.test( data.iFilter ) ) {
+					var query = '' + ( tsf.parseFilter( c, data.iFilter, data ) || '' );
+					// look for an exact match with the 'or' unless the 'filter-match' class is found
+					if ( !tsfRegex.wildTest.test( query ) && data.nestedFilters ) {
+						query = data.isMatch ? query : '^(' + query + ')$';
+					}
+					// parsing the filter may not work properly when using wildcards =/
+					try {
+						return new RegExp(
+							query.replace( tsfRegex.wild01, '\\S{1}' ).replace( tsfRegex.wild0More, '\\S*' ),
+							c.widgetOptions.filter_ignoreCase ? 'i' : ''
+						)
+						.test( data.exact );
+					} catch ( error ) {
+						return null;
+					}
+				}
+				return null;
+			},
+			// fuzzy text search; modified from https://github.com/mattyork/fuzzy ( MIT license )
+			fuzzy: function( c, data ) {
+				if ( tsfRegex.fuzzyTest.test( data.iFilter ) ) {
+					var indx,
+						patternIndx = 0,
+						len = data.iExact.length,
+						txt = data.iFilter.slice( 1 ),
+						pattern = tsf.parseFilter( c, txt, data ) || '';
+					for ( indx = 0; indx < len; indx++ ) {
+						if ( data.iExact[ indx ] === pattern[ patternIndx ] ) {
+							patternIndx += 1;
+						}
+					}
+					return patternIndx === pattern.length;
+				}
+				return null;
+			}
+		},
+		init: function( table, c, wo ) {
+			// filter language options
+			ts.language = $.extend( true, {}, {
+				to  : 'to',
+				or  : 'or',
+				and : 'and'
+			}, ts.language );
+
+			var options, string, txt, $header, column, filters, val, fxn, noSelect;
+			c.$table.addClass( 'hasFilters' );
+			c.lastSearch = [];
+
+			// define timers so using clearTimeout won't cause an undefined error
+			wo.filter_searchTimer = null;
+			wo.filter_initTimer = null;
+			wo.filter_formatterCount = 0;
+			wo.filter_formatterInit = [];
+			wo.filter_anyColumnSelector = '[data-column="all"],[data-column="any"]';
+			wo.filter_multipleColumnSelector = '[data-column*="-"],[data-column*=","]';
+
+			val = '\\{' + tsfRegex.query + '\\}';
+			$.extend( tsfRegex, {
+				child : new RegExp( c.cssChildRow ),
+				filtered : new RegExp( wo.filter_filteredRow ),
+				alreadyFiltered : new RegExp( '(\\s+(' + ts.language.or + '|-|' + ts.language.to + ')\\s+)', 'i' ),
+				toTest : new RegExp( '\\s+(-|' + ts.language.to + ')\\s+', 'i' ),
+				toSplit : new RegExp( '(?:\\s+(?:-|' + ts.language.to + ')\\s+)', 'gi' ),
+				andTest : new RegExp( '\\s+(' + ts.language.and + '|&&)\\s+', 'i' ),
+				andSplit : new RegExp( '(?:\\s+(?:' + ts.language.and + '|&&)\\s+)', 'gi' ),
+				orTest : new RegExp( '(\\||\\s+' + ts.language.or + '\\s+)', 'i' ),
+				orSplit : new RegExp( '(?:\\s+(?:' + ts.language.or + ')\\s+|\\|)', 'gi' ),
+				iQuery : new RegExp( val, 'i' ),
+				igQuery : new RegExp( val, 'ig' ),
+				operTest : /^[<>]=?/,
+				gtTest  : />/,
+				gteTest : />=/,
+				ltTest  : /</,
+				lteTest : /<=/,
+				notTest : /^\!/,
+				wildOrTest : /[\?\*\|]/,
+				wildTest : /\?\*/,
+				fuzzyTest : /^~/,
+				exactTest : /[=\"\|!]/
+			});
+
+			// don't build filter row if columnFilters is false or all columns are set to 'filter-false'
+			// see issue #156
+			val = c.$headers.filter( '.filter-false, .parser-false' ).length;
+			if ( wo.filter_columnFilters !== false && val !== c.$headers.length ) {
+				// build filter row
+				tsf.buildRow( table, c, wo );
+			}
+
+			txt = 'addRows updateCell update updateRows updateComplete appendCache filterReset filterEnd search '
+				.split( ' ' ).join( c.namespace + 'filter ' );
+			c.$table.bind( txt, function( event, filter ) {
+				val = wo.filter_hideEmpty &&
+					$.isEmptyObject( c.cache ) &&
+					!( c.delayInit && event.type === 'appendCache' );
+				// hide filter row using the 'filtered' class name
+				c.$table.find( '.' + tscss.filterRow ).toggleClass( wo.filter_filteredRow, val ); // fixes #450
+				if ( !/(search|filter)/.test( event.type ) ) {
+					event.stopPropagation();
+					tsf.buildDefault( table, true );
+				}
+				if ( event.type === 'filterReset' ) {
+					c.$table.find( '.' + tscss.filter ).add( wo.filter_$externalFilters ).val( '' );
+					tsf.searching( table, [] );
+				} else if ( event.type === 'filterEnd' ) {
+					tsf.buildDefault( table, true );
+				} else {
+					// send false argument to force a new search; otherwise if the filter hasn't changed,
+					// it will return
+					filter = event.type === 'search' ? filter :
+						event.type === 'updateComplete' ? c.$table.data( 'lastSearch' ) : '';
+					if ( /(update|add)/.test( event.type ) && event.type !== 'updateComplete' ) {
+						// force a new search since content has changed
+						c.lastCombinedFilter = null;
+						c.lastSearch = [];
+					}
+					// pass true ( skipFirst ) to prevent the tablesorter.setFilters function from skipping the first
+					// input ensures all inputs are updated when a search is triggered on the table
+					// $( 'table' ).trigger( 'search', [...] );
+					tsf.searching( table, filter, true );
+				}
+				return false;
+			});
+
+			// reset button/link
+			if ( wo.filter_reset ) {
+				if ( wo.filter_reset instanceof $ ) {
+					// reset contains a jQuery object, bind to it
+					wo.filter_reset.click( function() {
+						c.$table.triggerHandler( 'filterReset' );
+					});
+				} else if ( $( wo.filter_reset ).length ) {
+					// reset is a jQuery selector, use event delegation
+					$( document )
+						.undelegate( wo.filter_reset, 'click' + c.namespace + 'filter' )
+						.delegate( wo.filter_reset, 'click' + c.namespace + 'filter', function() {
+							// trigger a reset event, so other functions ( filter_formatter ) know when to reset
+							c.$table.triggerHandler( 'filterReset' );
+						});
+				}
+			}
+			if ( wo.filter_functions ) {
+				for ( column = 0; column < c.columns; column++ ) {
+					fxn = ts.getColumnData( table, wo.filter_functions, column );
+					if ( fxn ) {
+						// remove 'filter-select' from header otherwise the options added here are replaced with
+						// all options
+						$header = c.$headerIndexed[ column ].removeClass( 'filter-select' );
+						// don't build select if 'filter-false' or 'parser-false' set
+						noSelect = !( $header.hasClass( 'filter-false' ) || $header.hasClass( 'parser-false' ) );
+						options = '';
+						if ( fxn === true && noSelect ) {
+							tsf.buildSelect( table, column );
+						} else if ( typeof fxn === 'object' && noSelect ) {
+							// add custom drop down list
+							for ( string in fxn ) {
+								if ( typeof string === 'string' ) {
+									options += options === '' ?
+										'<option value="">' +
+											( $header.data( 'placeholder' ) ||
+												$header.attr( 'data-placeholder' ) ||
+												wo.filter_placeholder.select ||
+												''
+											) +
+										'</option>' : '';
+									val = string;
+									txt = string;
+									if ( string.indexOf( wo.filter_selectSourceSeparator ) >= 0 ) {
+										val = string.split( wo.filter_selectSourceSeparator );
+										txt = val[1];
+										val = val[0];
+									}
+									options += '<option ' +
+										( txt === val ? '' : 'data-function-name="' + string + '" ' ) +
+										'value="' + val + '">' + txt + '</option>';
+								}
+							}
+							c.$table
+								.find( 'thead' )
+								.find( 'select.' + tscss.filter + '[data-column="' + column + '"]' )
+								.append( options );
+							txt = wo.filter_selectSource;
+							fxn = typeof txt === 'function' ? true : ts.getColumnData( table, txt, column );
+							if ( fxn ) {
+								// updating so the extra options are appended
+								tsf.buildSelect( c.table, column, '', true, $header.hasClass( wo.filter_onlyAvail ) );
+							}
+						}
+					}
+				}
+			}
+			// not really updating, but if the column has both the 'filter-select' class &
+			// filter_functions set to true, it would append the same options twice.
+			tsf.buildDefault( table, true );
+
+			tsf.bindSearch( table, c.$table.find( '.' + tscss.filter ), true );
+			if ( wo.filter_external ) {
+				tsf.bindSearch( table, wo.filter_external );
+			}
+
+			if ( wo.filter_hideFilters ) {
+				tsf.hideFilters( c );
+			}
+
+			// show processing icon
+			if ( c.showProcessing ) {
+				txt = 'filterStart filterEnd '.split( ' ' ).join( c.namespace + 'filter ' );
+				c.$table
+					.unbind( txt.replace( ts.regex.spaces, ' ' ) )
+					.bind( txt, function( event, columns ) {
+					// only add processing to certain columns to all columns
+					$header = ( columns ) ?
+						c.$table
+							.find( '.' + tscss.header )
+							.filter( '[data-column]' )
+							.filter( function() {
+								return columns[ $( this ).data( 'column' ) ] !== '';
+							}) : '';
+					ts.isProcessing( table, event.type === 'filterStart', columns ? $header : '' );
+				});
+			}
+
+			// set filtered rows count ( intially unfiltered )
+			c.filteredRows = c.totalRows;
+
+			// add default values
+			txt = 'tablesorter-initialized pagerBeforeInitialized '.split( ' ' ).join( c.namespace + 'filter ' );
+			c.$table
+			.unbind( txt.replace( ts.regex.spaces, ' ' ) )
+			.bind( txt, function() {
+				// redefine 'wo' as it does not update properly inside this callback
+				var wo = this.config.widgetOptions;
+				filters = tsf.setDefaults( table, c, wo ) || [];
+				if ( filters.length ) {
+					// prevent delayInit from triggering a cache build if filters are empty
+					if ( !( c.delayInit && filters.join( '' ) === '' ) ) {
+						ts.setFilters( table, filters, true );
+					}
+				}
+				c.$table.triggerHandler( 'filterFomatterUpdate' );
+				// trigger init after setTimeout to prevent multiple filterStart/End/Init triggers
+				setTimeout( function() {
+					if ( !wo.filter_initialized ) {
+						tsf.filterInitComplete( c );
+					}
+				}, 100 );
+			});
+			// if filter widget is added after pager has initialized; then set filter init flag
+			if ( c.pager && c.pager.initialized && !wo.filter_initialized ) {
+				c.$table.triggerHandler( 'filterFomatterUpdate' );
+				setTimeout( function() {
+					tsf.filterInitComplete( c );
+				}, 100 );
+			}
+		},
+		// $cell parameter, but not the config, is passed to the filter_formatters,
+		// so we have to work with it instead
+		formatterUpdated: function( $cell, column ) {
+			// prevent error if $cell is undefined - see #1056
+			var wo = $cell && $cell.closest( 'table' )[0].config.widgetOptions;
+			if ( wo && !wo.filter_initialized ) {
+				// add updates by column since this function
+				// may be called numerous times before initialization
+				wo.filter_formatterInit[ column ] = 1;
+			}
+		},
+		filterInitComplete: function( c ) {
+			var indx, len,
+				wo = c.widgetOptions,
+				count = 0,
+				completed = function() {
+					wo.filter_initialized = true;
+					c.$table.triggerHandler( 'filterInit', c );
+					tsf.findRows( c.table, c.$table.data( 'lastSearch' ) || [] );
+				};
+			if ( $.isEmptyObject( wo.filter_formatter ) ) {
+				completed();
+			} else {
+				len = wo.filter_formatterInit.length;
+				for ( indx = 0; indx < len; indx++ ) {
+					if ( wo.filter_formatterInit[ indx ] === 1 ) {
+						count++;
+					}
+				}
+				clearTimeout( wo.filter_initTimer );
+				if ( !wo.filter_initialized && count === wo.filter_formatterCount ) {
+					// filter widget initialized
+					completed();
+				} else if ( !wo.filter_initialized ) {
+					// fall back in case a filter_formatter doesn't call
+					// $.tablesorter.filter.formatterUpdated( $cell, column ), and the count is off
+					wo.filter_initTimer = setTimeout( function() {
+						completed();
+					}, 500 );
+				}
+			}
+		},
+		// encode or decode filters for storage; see #1026
+		processFilters: function( filters, encode ) {
+			var indx,
+				mode = encode ? encodeURIComponent : decodeURIComponent,
+				len = filters.length;
+			for ( indx = 0; indx < len; indx++ ) {
+				if ( filters[ indx ] ) {
+					filters[ indx ] = mode( filters[ indx ] );
+				}
+			}
+			return filters;
+		},
+		setDefaults: function( table, c, wo ) {
+			var isArray, saved, indx, col, $filters,
+				// get current ( default ) filters
+				filters = ts.getFilters( table ) || [];
+			if ( wo.filter_saveFilters && ts.storage ) {
+				saved = ts.storage( table, 'tablesorter-filters' ) || [];
+				isArray = $.isArray( saved );
+				// make sure we're not just getting an empty array
+				if ( !( isArray && saved.join( '' ) === '' || !isArray ) ) {
+					filters = tsf.processFilters( saved );
+				}
+			}
+			// if no filters saved, then check default settings
+			if ( filters.join( '' ) === '' ) {
+				// allow adding default setting to external filters
+				$filters = c.$headers.add( wo.filter_$externalFilters )
+					.filter( '[' + wo.filter_defaultAttrib + ']' );
+				for ( indx = 0; indx <= c.columns; indx++ ) {
+					// include data-column='all' external filters
+					col = indx === c.columns ? 'all' : indx;
+					filters[ indx ] = $filters
+						.filter( '[data-column="' + col + '"]' )
+						.attr( wo.filter_defaultAttrib ) || filters[indx] || '';
+				}
+			}
+			c.$table.data( 'lastSearch', filters );
+			return filters;
+		},
+		parseFilter: function( c, filter, data, parsed ) {
+			return parsed || data.parsed[ data.index ] ?
+				c.parsers[ data.index ].format( filter, c.table, [], data.index ) :
+				filter;
+		},
+		buildRow: function( table, c, wo ) {
+			var $filter, col, column, $header, makeSelect, disabled, name, ffxn, tmp,
+				// c.columns defined in computeThIndexes()
+				cellFilter = wo.filter_cellFilter,
+				columns = c.columns,
+				arry = $.isArray( cellFilter ),
+				buildFilter = '<tr role="row" class="' + tscss.filterRow + ' ' + c.cssIgnoreRow + '">';
+			for ( column = 0; column < columns; column++ ) {
+				if ( c.$headerIndexed[ column ].length ) {
+					// account for entire column set with colspan. See #1047
+					tmp = c.$headerIndexed[ column ] && c.$headerIndexed[ column ][0].colSpan || 0;
+					if ( tmp > 1 ) {
+						buildFilter += '<td data-column="' + column + '-' + ( column + tmp - 1 ) + '" colspan="' + tmp + '"';
+					} else {
+						buildFilter += '<td data-column="' + column + '"';
+					}
+					if ( arry ) {
+						buildFilter += ( cellFilter[ column ] ? ' class="' + cellFilter[ column ] + '"' : '' );
+					} else {
+						buildFilter += ( cellFilter !== '' ? ' class="' + cellFilter + '"' : '' );
+					}
+					buildFilter += '></td>';
+				}
+			}
+			c.$filters = $( buildFilter += '</tr>' )
+				.appendTo( c.$table.children( 'thead' ).eq( 0 ) )
+				.children( 'td' );
+			// build each filter input
+			for ( column = 0; column < columns; column++ ) {
+				disabled = false;
+				// assuming last cell of a column is the main column
+				$header = c.$headerIndexed[ column ];
+				if ( $header && $header.length ) {
+					// $filter = c.$filters.filter( '[data-column="' + column + '"]' );
+					$filter = tsf.getColumnElm( c, c.$filters, column );
+					ffxn = ts.getColumnData( table, wo.filter_functions, column );
+					makeSelect = ( wo.filter_functions && ffxn && typeof ffxn !== 'function' ) ||
+						$header.hasClass( 'filter-select' );
+					// get data from jQuery data, metadata, headers option or header class name
+					col = ts.getColumnData( table, c.headers, column );
+					disabled = ts.getData( $header[0], col, 'filter' ) === 'false' ||
+						ts.getData( $header[0], col, 'parser' ) === 'false';
+
+					if ( makeSelect ) {
+						buildFilter = $( '<select>' ).appendTo( $filter );
+					} else {
+						ffxn = ts.getColumnData( table, wo.filter_formatter, column );
+						if ( ffxn ) {
+							wo.filter_formatterCount++;
+							buildFilter = ffxn( $filter, column );
+							// no element returned, so lets go find it
+							if ( buildFilter && buildFilter.length === 0 ) {
+								buildFilter = $filter.children( 'input' );
+							}
+							// element not in DOM, so lets attach it
+							if ( buildFilter && ( buildFilter.parent().length === 0 ||
+								( buildFilter.parent().length && buildFilter.parent()[0] !== $filter[0] ) ) ) {
+								$filter.append( buildFilter );
+							}
+						} else {
+							buildFilter = $( '<input type="search">' ).appendTo( $filter );
+						}
+						if ( buildFilter ) {
+							tmp = $header.data( 'placeholder' ) ||
+								$header.attr( 'data-placeholder' ) ||
+								wo.filter_placeholder.search || '';
+							buildFilter.attr( 'placeholder', tmp );
+						}
+					}
+					if ( buildFilter ) {
+						// add filter class name
+						name = ( $.isArray( wo.filter_cssFilter ) ?
+							( typeof wo.filter_cssFilter[column] !== 'undefined' ? wo.filter_cssFilter[column] || '' : '' ) :
+							wo.filter_cssFilter ) || '';
+						// copy data-column from table cell (it will include colspan)
+						buildFilter.addClass( tscss.filter + ' ' + name ).attr( 'data-column', $filter.attr( 'data-column' ) );
+						if ( disabled ) {
+							buildFilter.attr( 'placeholder', '' ).addClass( tscss.filterDisabled )[0].disabled = true;
+						}
+					}
+				}
+			}
+		},
+		bindSearch: function( table, $el, internal ) {
+			table = $( table )[0];
+			$el = $( $el ); // allow passing a selector string
+			if ( !$el.length ) { return; }
+			var tmp,
+				c = table.config,
+				wo = c.widgetOptions,
+				namespace = c.namespace + 'filter',
+				$ext = wo.filter_$externalFilters;
+			if ( internal !== true ) {
+				// save anyMatch element
+				tmp = wo.filter_anyColumnSelector + ',' + wo.filter_multipleColumnSelector;
+				wo.filter_$anyMatch = $el.filter( tmp );
+				if ( $ext && $ext.length ) {
+					wo.filter_$externalFilters = wo.filter_$externalFilters.add( $el );
+				} else {
+					wo.filter_$externalFilters = $el;
+				}
+				// update values ( external filters added after table initialization )
+				ts.setFilters( table, c.$table.data( 'lastSearch' ) || [], internal === false );
+			}
+			// unbind events
+			tmp = ( 'keypress keyup keydown search change input '.split( ' ' ).join( namespace + ' ' ) );
+			$el
+			// use data attribute instead of jQuery data since the head is cloned without including
+			// the data/binding
+			.attr( 'data-lastSearchTime', new Date().getTime() )
+			.unbind( tmp.replace( ts.regex.spaces, ' ' ) )
+			.bind( 'keydown' + namespace, function( event ) {
+				if ( event.which === tskeyCodes.escape && !wo.filter_resetOnEsc ) {
+					// prevent keypress event
+					return false;
+				}
+			})
+			.bind( 'keyup' + namespace, function( event ) {
+				var column = parseInt( $( this ).attr( 'data-column' ), 10 );
+				$( this ).attr( 'data-lastSearchTime', new Date().getTime() );
+				// emulate what webkit does.... escape clears the filter
+				if ( event.which === tskeyCodes.escape ) {
+					// make sure to restore the last value on escape
+					this.value = wo.filter_resetOnEsc ? '' : c.lastSearch[column];
+				// live search
+				} else if ( wo.filter_liveSearch === false ) {
+					return;
+					// don't return if the search value is empty ( all rows need to be revealed )
+				} else if ( this.value !== '' && (
+					// liveSearch can contain a min value length; ignore arrow and meta keys, but allow backspace
+					( typeof wo.filter_liveSearch === 'number' && this.value.length < wo.filter_liveSearch ) ||
+					// let return & backspace continue on, but ignore arrows & non-valid characters
+					( event.which !== tskeyCodes.enter && event.which !== tskeyCodes.backSpace &&
+						( event.which < tskeyCodes.space || ( event.which >= tskeyCodes.left && event.which <= tskeyCodes.down ) ) ) ) ) {
+					return;
+				}
+				// change event = no delay; last true flag tells getFilters to skip newest timed input
+				tsf.searching( table, true, true );
+			})
+			// include change for select - fixes #473
+			.bind( 'search change keypress input '.split( ' ' ).join( namespace + ' ' ), function( event ) {
+				// don't get cached data, in case data-column changes dynamically
+				var column = parseInt( $( this ).attr( 'data-column' ), 10 );
+				// don't allow 'change' event to process if the input value is the same - fixes #685
+				if ( wo.filter_initialized && ( event.which === tskeyCodes.enter || event.type === 'search' ||
+					// only "input" event fires in MS Edge when clicking the "x" to clear the search
+					( event.type === 'change' || event.type === 'input' ) && this.value !== c.lastSearch[column] ) ) {
+					event.preventDefault();
+					// init search with no delay
+					$( this ).attr( 'data-lastSearchTime', new Date().getTime() );
+					tsf.searching( table, event.type !== 'keypress', true );
+				}
+			});
+		},
+		searching: function( table, filter, skipFirst ) {
+			var wo = table.config.widgetOptions;
+			clearTimeout( wo.filter_searchTimer );
+			if ( typeof filter === 'undefined' || filter === true ) {
+				// delay filtering
+				wo.filter_searchTimer = setTimeout( function() {
+					tsf.checkFilters( table, filter, skipFirst );
+				}, wo.filter_liveSearch ? wo.filter_searchDelay : 10 );
+			} else {
+				// skip delay
+				tsf.checkFilters( table, filter, skipFirst );
+			}
+		},
+		checkFilters: function( table, filter, skipFirst ) {
+			var c = table.config,
+				wo = c.widgetOptions,
+				filterArray = $.isArray( filter ),
+				filters = ( filterArray ) ? filter : ts.getFilters( table, true ),
+				combinedFilters = ( filters || [] ).join( '' ); // combined filter values
+			// prevent errors if delay init is set
+			if ( $.isEmptyObject( c.cache ) ) {
+				// update cache if delayInit set & pager has initialized ( after user initiates a search )
+				if ( c.delayInit && c.pager && c.pager.initialized ) {
+					ts.updateCache( c, function() {
+						tsf.checkFilters( table, false, skipFirst );
+					});
+				}
+				return;
+			}
+			// add filter array back into inputs
+			if ( filterArray ) {
+				ts.setFilters( table, filters, false, skipFirst !== true );
+				if ( !wo.filter_initialized ) { c.lastCombinedFilter = ''; }
+			}
+			if ( wo.filter_hideFilters ) {
+				// show/hide filter row as needed
+				c.$table
+					.find( '.' + tscss.filterRow )
+					.triggerHandler( combinedFilters === '' ? 'mouseleave' : 'mouseenter' );
+			}
+			// return if the last search is the same; but filter === false when updating the search
+			// see example-widget-filter.html filter toggle buttons
+			if ( c.lastCombinedFilter === combinedFilters && filter !== false ) {
+				return;
+			} else if ( filter === false ) {
+				// force filter refresh
+				c.lastCombinedFilter = null;
+				c.lastSearch = [];
+			}
+			// define filter inside it is false
+			filters = filters || [];
+			// convert filters to strings - see #1070
+			filters = Array.prototype.map ?
+				filters.map( String ) :
+				// for IE8 & older browsers - maybe not the best method
+				filters.join( '\ufffd' ).split( '\ufffd' );
+
+			if ( wo.filter_initialized ) {
+				c.$table.triggerHandler( 'filterStart', [ filters ] );
+			}
+			if ( c.showProcessing ) {
+				// give it time for the processing icon to kick in
+				setTimeout( function() {
+					tsf.findRows( table, filters, combinedFilters );
+					return false;
+				}, 30 );
+			} else {
+				tsf.findRows( table, filters, combinedFilters );
+				return false;
+			}
+		},
+		hideFilters: function( c, $table ) {
+			var timer,
+				$row = ( $table || c.$table ).find( '.' + tscss.filterRow ).addClass( tscss.filterRowHide );
+			$row
+				.bind( 'mouseenter mouseleave', function( e ) {
+					// save event object - http://bugs.jquery.com/ticket/12140
+					var event = e,
+						$filterRow = $( this );
+					clearTimeout( timer );
+					timer = setTimeout( function() {
+						if ( /enter|over/.test( event.type ) ) {
+							$filterRow.removeClass( tscss.filterRowHide );
+						} else {
+							// don't hide if input has focus
+							// $( ':focus' ) needs jQuery 1.6+
+							if ( $( document.activeElement ).closest( 'tr' )[0] !== $filterRow[0] ) {
+								// don't hide row if any filter has a value
+								if ( c.lastCombinedFilter === '' ) {
+									$filterRow.addClass( tscss.filterRowHide );
+								}
+							}
+						}
+					}, 200 );
+				})
+				.find( 'input, select' ).bind( 'focus blur', function( e ) {
+					var event = e,
+						$row = $( this ).closest( 'tr' );
+					clearTimeout( timer );
+					timer = setTimeout( function() {
+						clearTimeout( timer );
+						// don't hide row if any filter has a value
+						if ( ts.getFilters( c.$table ).join( '' ) === '' ) {
+							$row.toggleClass( tscss.filterRowHide, event.type !== 'focus' );
+						}
+					}, 200 );
+				});
+		},
+		defaultFilter: function( filter, mask ) {
+			if ( filter === '' ) { return filter; }
+			var regex = tsfRegex.iQuery,
+				maskLen = mask.match( tsfRegex.igQuery ).length,
+				query = maskLen > 1 ? $.trim( filter ).split( /\s/ ) : [ $.trim( filter ) ],
+				len = query.length - 1,
+				indx = 0,
+				val = mask;
+			if ( len < 1 && maskLen > 1 ) {
+				// only one 'word' in query but mask has >1 slots
+				query[1] = query[0];
+			}
+			// replace all {query} with query words...
+			// if query = 'Bob', then convert mask from '!{query}' to '!Bob'
+			// if query = 'Bob Joe Frank', then convert mask '{q} OR {q}' to 'Bob OR Joe OR Frank'
+			while ( regex.test( val ) ) {
+				val = val.replace( regex, query[indx++] || '' );
+				if ( regex.test( val ) && indx < len && ( query[indx] || '' ) !== '' ) {
+					val = mask.replace( regex, val );
+				}
+			}
+			return val;
+		},
+		getLatestSearch: function( $input ) {
+			if ( $input ) {
+				return $input.sort( function( a, b ) {
+					return $( b ).attr( 'data-lastSearchTime' ) - $( a ).attr( 'data-lastSearchTime' );
+				});
+			}
+			return $input || $();
+		},
+		findRange: function( c, val, ignoreRanges ) {
+			// look for multiple columns '1-3,4-6,8' in data-column
+			var temp, ranges, range, start, end, singles, i, indx, len,
+				columns = [];
+			if ( /^[0-9]+$/.test( val ) ) {
+				// always return an array
+				return [ parseInt( val, 10 ) ];
+			}
+			// process column range
+			if ( !ignoreRanges && /-/.test( val ) ) {
+				ranges = val.match( /(\d+)\s*-\s*(\d+)/g );
+				len = ranges ? ranges.length : 0;
+				for ( indx = 0; indx < len; indx++ ) {
+					range = ranges[indx].split( /\s*-\s*/ );
+					start = parseInt( range[0], 10 ) || 0;
+					end = parseInt( range[1], 10 ) || ( c.columns - 1 );
+					if ( start > end ) {
+						temp = start; start = end; end = temp; // swap
+					}
+					if ( end >= c.columns ) {
+						end = c.columns - 1;
+					}
+					for ( ; start <= end; start++ ) {
+						columns.push( start );
+					}
+					// remove processed range from val
+					val = val.replace( ranges[ indx ], '' );
+				}
+			}
+			// process single columns
+			if ( !ignoreRanges && /,/.test( val ) ) {
+				singles = val.split( /\s*,\s*/ );
+				len = singles.length;
+				for ( i = 0; i < len; i++ ) {
+					if ( singles[ i ] !== '' ) {
+						indx = parseInt( singles[ i ], 10 );
+						if ( indx < c.columns ) {
+							columns.push( indx );
+						}
+					}
+				}
+			}
+			// return all columns
+			if ( !columns.length ) {
+				for ( indx = 0; indx < c.columns; indx++ ) {
+					columns.push( indx );
+				}
+			}
+			return columns;
+		},
+		getColumnElm: function( c, $elements, column ) {
+			// data-column may contain multiple columns '1-3,5-6,8'
+			// replaces: c.$filters.filter( '[data-column="' + column + '"]' );
+			return $elements.filter( function() {
+				var cols = tsf.findRange( c, $( this ).attr( 'data-column' ) );
+				return $.inArray( column, cols ) > -1;
+			});
+		},
+		multipleColumns: function( c, $input ) {
+			// look for multiple columns '1-3,4-6,8' in data-column
+			var wo = c.widgetOptions,
+				// only target 'all' column inputs on initialization
+				// & don't target 'all' column inputs if they don't exist
+				targets = wo.filter_initialized || !$input.filter( wo.filter_anyColumnSelector ).length,
+				val = $.trim( tsf.getLatestSearch( $input ).attr( 'data-column' ) || '' );
+			return tsf.findRange( c, val, !targets );
+		},
+		processTypes: function( c, data, vars ) {
+			var ffxn,
+				filterMatched = null,
+				matches = null;
+			for ( ffxn in tsf.types ) {
+				if ( $.inArray( ffxn, vars.excludeMatch ) < 0 && matches === null ) {
+					matches = tsf.types[ffxn]( c, data, vars );
+					if ( matches !== null ) {
+						filterMatched = matches;
+					}
+				}
+			}
+			return filterMatched;
+		},
+		processRow: function( c, data, vars ) {
+			var result, filterMatched,
+				fxn, ffxn, txt,
+				wo = c.widgetOptions,
+				showRow = true,
+
+				// if wo.filter_$anyMatch data-column attribute is changed dynamically
+				// we don't want to do an "anyMatch" search on one column using data
+				// for the entire row - see #998
+				columnIndex = wo.filter_$anyMatch && wo.filter_$anyMatch.length ?
+					// look for multiple columns '1-3,4-6,8'
+					tsf.multipleColumns( c, wo.filter_$anyMatch ) :
+					[];
+
+			data.$cells = data.$row.children();
+
+			if ( data.anyMatchFlag && columnIndex.length > 1 ) {
+				data.anyMatch = true;
+				data.isMatch = true;
+				data.rowArray = data.$cells.map( function( i ) {
+					if ( $.inArray( i, columnIndex ) > -1 ) {
+						if ( data.parsed[ i ] ) {
+							txt = data.cacheArray[ i ];
+						} else {
+							txt = data.rawArray[ i ];
+							txt = $.trim( wo.filter_ignoreCase ? txt.toLowerCase() : txt );
+							if ( c.sortLocaleCompare ) {
+								txt = ts.replaceAccents( txt );
+							}
+						}
+						return txt;
+					}
+				}).get();
+				data.filter = data.anyMatchFilter;
+				data.iFilter = data.iAnyMatchFilter;
+				data.exact = data.rowArray.join( ' ' );
+				data.iExact = wo.filter_ignoreCase ? data.exact.toLowerCase() : data.exact;
+				data.cache = data.cacheArray.slice( 0, -1 ).join( ' ' );
+
+				vars.excludeMatch = vars.noAnyMatch;
+				filterMatched = tsf.processTypes( c, data, vars );
+				if ( filterMatched !== null ) {
+					showRow = filterMatched;
+				} else {
+					if ( wo.filter_startsWith ) {
+						showRow = false;
+						// data.rowArray may not contain all columns
+						columnIndex = Math.min( c.columns, data.rowArray.length );
+						while ( !showRow && columnIndex > 0 ) {
+							columnIndex--;
+							showRow = showRow || data.rowArray[ columnIndex ].indexOf( data.iFilter ) === 0;
+						}
+					} else {
+						showRow = ( data.iExact + data.childRowText ).indexOf( data.iFilter ) >= 0;
+					}
+				}
+				data.anyMatch = false;
+				// no other filters to process
+				if ( data.filters.join( '' ) === data.filter ) {
+					return showRow;
+				}
+			}
+
+			for ( columnIndex = 0; columnIndex < c.columns; columnIndex++ ) {
+				data.filter = data.filters[ columnIndex ];
+				data.index = columnIndex;
+
+				// filter types to exclude, per column
+				vars.excludeMatch = vars.excludeFilter[ columnIndex ];
+
+				// ignore if filter is empty or disabled
+				if ( data.filter ) {
+					data.cache = data.cacheArray[ columnIndex ];
+					result = data.rawArray[ columnIndex ] || '';
+					data.exact = c.sortLocaleCompare ? ts.replaceAccents( result ) : result; // issue #405
+					data.iExact = !tsfRegex.type.test( typeof data.exact ) && wo.filter_ignoreCase ?
+						data.exact.toLowerCase() : data.exact;
+
+					data.isMatch = c.$headerIndexed[ data.index ].hasClass( 'filter-match' );
+
+					result = showRow; // if showRow is true, show that row
+
+					// in case select filter option has a different value vs text 'a - z|A through Z'
+					ffxn = wo.filter_columnFilters ?
+						c.$filters.add( c.$externalFilters )
+							.filter( '[data-column="' + columnIndex + '"]' )
+							.find( 'select option:selected' )
+							.attr( 'data-function-name' ) || '' : '';
+					// replace accents - see #357
+					if ( c.sortLocaleCompare ) {
+						data.filter = ts.replaceAccents( data.filter );
+					}
+
+					// replace column specific default filters - see #1088
+					if ( wo.filter_defaultFilter && tsfRegex.iQuery.test( vars.defaultColFilter[ columnIndex ] ) ) {
+						data.filter = tsf.defaultFilter( data.filter, vars.defaultColFilter[ columnIndex ] );
+					}
+
+					// data.iFilter = case insensitive ( if wo.filter_ignoreCase is true ),
+					// data.filter = case sensitive
+					data.iFilter = wo.filter_ignoreCase ? ( data.filter || '' ).toLowerCase() : data.filter;
+					fxn = vars.functions[ columnIndex ];
+					filterMatched = null;
+					if ( fxn ) {
+						if ( fxn === true ) {
+							// default selector uses exact match unless 'filter-match' class is found
+							filterMatched = data.isMatch ?
+								// data.iExact may be a number
+								( '' + data.iExact ).search( data.iFilter ) >= 0 :
+								data.filter === data.exact;
+						} else if ( typeof fxn === 'function' ) {
+							// filter callback( exact cell content, parser normalized content,
+							// filter input value, column index, jQuery row object )
+							filterMatched = fxn( data.exact, data.cache, data.filter, columnIndex, data.$row, c, data );
+						} else if ( typeof fxn[ ffxn || data.filter ] === 'function' ) {
+							// selector option function
+							txt = ffxn || data.filter;
+							filterMatched =
+								fxn[ txt ]( data.exact, data.cache, data.filter, columnIndex, data.$row, c, data );
+						}
+					}
+					if ( filterMatched === null ) {
+						// cycle through the different filters
+						// filters return a boolean or null if nothing matches
+						filterMatched = tsf.processTypes( c, data, vars );
+						if ( filterMatched !== null ) {
+							result = filterMatched;
+						// Look for match, and add child row data for matching
+						} else {
+							txt = ( data.iExact + data.childRowText ).indexOf( tsf.parseFilter( c, data.iFilter, data ) );
+							result = ( ( !wo.filter_startsWith && txt >= 0 ) || ( wo.filter_startsWith && txt === 0 ) );
+						}
+					} else {
+						result = filterMatched;
+					}
+					showRow = ( result ) ? showRow : false;
+				}
+			}
+			return showRow;
+		},
+		findRows: function( table, filters, combinedFilters ) {
+			if ( table.config.lastCombinedFilter === combinedFilters ||
+				!table.config.widgetOptions.filter_initialized ) {
+				return;
+			}
+			var len, norm_rows, rowData, $rows, $row, rowIndex, tbodyIndex, $tbody, columnIndex,
+				isChild, childRow, lastSearch, showRow, showParent, time, val, indx,
+				notFiltered, searchFiltered, query, injected, res, id, txt,
+				storedFilters = $.extend( [], filters ),
+				c = table.config,
+				wo = c.widgetOptions,
+				// data object passed to filters; anyMatch is a flag for the filters
+				data = {
+					anyMatch: false,
+					filters: filters,
+					// regex filter type cache
+					filter_regexCache : []
+				},
+				vars = {
+					// anyMatch really screws up with these types of filters
+					noAnyMatch: [ 'range', 'notMatch',  'operators' ],
+					// cache filter variables that use ts.getColumnData in the main loop
+					functions : [],
+					excludeFilter : [],
+					defaultColFilter : [],
+					defaultAnyFilter : ts.getColumnData( table, wo.filter_defaultFilter, c.columns, true ) || ''
+				};
+
+			// parse columns after formatter, in case the class is added at that point
+			data.parsed = [];
+			for ( columnIndex = 0; columnIndex < c.columns; columnIndex++ ) {
+				data.parsed[ columnIndex ] = wo.filter_useParsedData ||
+					// parser has a "parsed" parameter
+					( c.parsers && c.parsers[ columnIndex ] && c.parsers[ columnIndex ].parsed ||
+					// getData may not return 'parsed' if other 'filter-' class names exist
+					// ( e.g. <th class="filter-select filter-parsed"> )
+					ts.getData && ts.getData( c.$headerIndexed[ columnIndex ],
+						ts.getColumnData( table, c.headers, columnIndex ), 'filter' ) === 'parsed' ||
+					c.$headerIndexed[ columnIndex ].hasClass( 'filter-parsed' ) );
+
+				vars.functions[ columnIndex ] =
+					ts.getColumnData( table, wo.filter_functions, columnIndex );
+				vars.defaultColFilter[ columnIndex ] =
+					ts.getColumnData( table, wo.filter_defaultFilter, columnIndex ) || '';
+				vars.excludeFilter[ columnIndex ] =
+					( ts.getColumnData( table, wo.filter_excludeFilter, columnIndex, true ) || '' ).split( /\s+/ );
+			}
+
+			if ( c.debug ) {
+				console.log( 'Filter: Starting filter widget search', filters );
+				time = new Date();
+			}
+			// filtered rows count
+			c.filteredRows = 0;
+			c.totalRows = 0;
+			// combindedFilters are undefined on init
+			combinedFilters = ( storedFilters || [] ).join( '' );
+
+			for ( tbodyIndex = 0; tbodyIndex < c.$tbodies.length; tbodyIndex++ ) {
+				$tbody = ts.processTbody( table, c.$tbodies.eq( tbodyIndex ), true );
+				// skip child rows & widget added ( removable ) rows - fixes #448 thanks to @hempel!
+				// $rows = $tbody.children( 'tr' ).not( c.selectorRemove );
+				columnIndex = c.columns;
+				// convert stored rows into a jQuery object
+				norm_rows = c.cache[ tbodyIndex ].normalized;
+				$rows = $( $.map( norm_rows, function( el ) {
+					return el[ columnIndex ].$row.get();
+				}) );
+
+				if ( combinedFilters === '' || wo.filter_serversideFiltering ) {
+					$rows
+						.removeClass( wo.filter_filteredRow )
+						.not( '.' + c.cssChildRow )
+						.css( 'display', '' );
+				} else {
+					// filter out child rows
+					$rows = $rows.not( '.' + c.cssChildRow );
+					len = $rows.length;
+
+					if ( ( wo.filter_$anyMatch && wo.filter_$anyMatch.length ) ||
+						typeof filters[c.columns] !== 'undefined' ) {
+						data.anyMatchFlag = true;
+						data.anyMatchFilter = '' + (
+							filters[ c.columns ] ||
+							wo.filter_$anyMatch && tsf.getLatestSearch( wo.filter_$anyMatch ).val() ||
+							''
+						);
+						if ( wo.filter_columnAnyMatch ) {
+							// specific columns search
+							query = data.anyMatchFilter.split( tsfRegex.andSplit );
+							injected = false;
+							for ( indx = 0; indx < query.length; indx++ ) {
+								res = query[ indx ].split( ':' );
+								if ( res.length > 1 ) {
+									// make the column a one-based index ( non-developers start counting from one :P )
+									id = parseInt( res[0], 10 ) - 1;
+									if ( id >= 0 && id < c.columns ) { // if id is an integer
+										filters[ id ] = res[1];
+										query.splice( indx, 1 );
+										indx--;
+										injected = true;
+									}
+								}
+							}
+							if ( injected ) {
+								data.anyMatchFilter = query.join( ' && ' );
+							}
+						}
+					}
+
+					// optimize searching only through already filtered rows - see #313
+					searchFiltered = wo.filter_searchFiltered;
+					lastSearch = c.lastSearch || c.$table.data( 'lastSearch' ) || [];
+					if ( searchFiltered ) {
+						// cycle through all filters; include last ( columnIndex + 1 = match any column ). Fixes #669
+						for ( indx = 0; indx < columnIndex + 1; indx++ ) {
+							val = filters[indx] || '';
+							// break out of loop if we've already determined not to search filtered rows
+							if ( !searchFiltered ) { indx = columnIndex; }
+							// search already filtered rows if...
+							searchFiltered = searchFiltered && lastSearch.length &&
+								// there are no changes from beginning of filter
+								val.indexOf( lastSearch[indx] || '' ) === 0 &&
+								// if there is NOT a logical 'or', or range ( 'to' or '-' ) in the string
+								!tsfRegex.alreadyFiltered.test( val ) &&
+								// if we are not doing exact matches, using '|' ( logical or ) or not '!'
+								!tsfRegex.exactTest.test( val ) &&
+								// don't search only filtered if the value is negative
+								// ( '> -10' => '> -100' will ignore hidden rows )
+								!( tsfRegex.isNeg1.test( val ) || tsfRegex.isNeg2.test( val ) ) &&
+								// if filtering using a select without a 'filter-match' class ( exact match ) - fixes #593
+								!( val !== '' && c.$filters && c.$filters.filter( '[data-column="' + indx + '"]' ).find( 'select' ).length &&
+									!c.$headerIndexed[indx].hasClass( 'filter-match' ) );
+						}
+					}
+					notFiltered = $rows.not( '.' + wo.filter_filteredRow ).length;
+					// can't search when all rows are hidden - this happens when looking for exact matches
+					if ( searchFiltered && notFiltered === 0 ) { searchFiltered = false; }
+					if ( c.debug ) {
+						console.log( 'Filter: Searching through ' +
+							( searchFiltered && notFiltered < len ? notFiltered : 'all' ) + ' rows' );
+					}
+					if ( data.anyMatchFlag ) {
+						if ( c.sortLocaleCompare ) {
+							// replace accents
+							data.anyMatchFilter = ts.replaceAccents( data.anyMatchFilter );
+						}
+						if ( wo.filter_defaultFilter && tsfRegex.iQuery.test( vars.defaultAnyFilter ) ) {
+							data.anyMatchFilter = tsf.defaultFilter( data.anyMatchFilter, vars.defaultAnyFilter );
+							// clear search filtered flag because default filters are not saved to the last search
+							searchFiltered = false;
+						}
+						// make iAnyMatchFilter lowercase unless both filter widget & core ignoreCase options are true
+						// when c.ignoreCase is true, the cache contains all lower case data
+						data.iAnyMatchFilter = !( wo.filter_ignoreCase && c.ignoreCase ) ?
+							data.anyMatchFilter :
+							data.anyMatchFilter.toLowerCase();
+					}
+
+					// loop through the rows
+					for ( rowIndex = 0; rowIndex < len; rowIndex++ ) {
+
+						txt = $rows[ rowIndex ].className;
+						// the first row can never be a child row
+						isChild = rowIndex && tsfRegex.child.test( txt );
+						// skip child rows & already filtered rows
+						if ( isChild || ( searchFiltered && tsfRegex.filtered.test( txt ) ) ) {
+							continue;
+						}
+
+						data.$row = $rows.eq( rowIndex );
+						data.cacheArray = norm_rows[ rowIndex ];
+						rowData = data.cacheArray[ c.columns ];
+						data.rawArray = rowData.raw;
+						data.childRowText = '';
+
+						if ( !wo.filter_childByColumn ) {
+							txt = '';
+							// child row cached text
+							childRow = rowData.child;
+							// so, if 'table.config.widgetOptions.filter_childRows' is true and there is
+							// a match anywhere in the child row, then it will make the row visible
+							// checked here so the option can be changed dynamically
+							for ( indx = 0; indx < childRow.length; indx++ ) {
+								txt += ' ' + childRow[indx].join( ' ' ) || '';
+							}
+							data.childRowText = wo.filter_childRows ?
+								( wo.filter_ignoreCase ? txt.toLowerCase() : txt ) :
+								'';
+						}
+
+						showRow = false;
+						showParent = tsf.processRow( c, data, vars );
+						$row = rowData.$row;
+
+						// don't pass reference to val
+						val = showParent ? true : false;
+						childRow = rowData.$row.filter( ':gt(0)' );
+						if ( wo.filter_childRows && childRow.length ) {
+							if ( wo.filter_childByColumn ) {
+								if ( !wo.filter_childWithSibs ) {
+									// hide all child rows
+									childRow.addClass( wo.filter_filteredRow );
+									// if only showing resulting child row, only include parent
+									$row = $row.eq( 0 );
+								}
+								// cycle through each child row
+								for ( indx = 0; indx < childRow.length; indx++ ) {
+									data.$row = childRow.eq( indx );
+									data.cacheArray = rowData.child[ indx ];
+									data.rawArray = data.cacheArray;
+									val = tsf.processRow( c, data, vars );
+									// use OR comparison on child rows
+									showRow = showRow || val;
+									if ( !wo.filter_childWithSibs && val ) {
+										childRow.eq( indx ).removeClass( wo.filter_filteredRow );
+									}
+								}
+							}
+							// keep parent row match even if no child matches... see #1020
+							showRow = showRow || showParent;
+						} else {
+							showRow = val;
+						}
+						$row
+							.toggleClass( wo.filter_filteredRow, !showRow )[0]
+							.display = showRow ? '' : 'none';
+					}
+				}
+				c.filteredRows += $rows.not( '.' + wo.filter_filteredRow ).length;
+				c.totalRows += $rows.length;
+				ts.processTbody( table, $tbody, false );
+			}
+			c.lastCombinedFilter = combinedFilters; // save last search
+			// don't save 'filters' directly since it may have altered ( AnyMatch column searches )
+			c.lastSearch = storedFilters;
+			c.$table.data( 'lastSearch', storedFilters );
+			if ( wo.filter_saveFilters && ts.storage ) {
+				ts.storage( table, 'tablesorter-filters', tsf.processFilters( storedFilters, true ) );
+			}
+			if ( c.debug ) {
+				console.log( 'Completed filter widget search' + ts.benchmark(time) );
+			}
+			if ( wo.filter_initialized ) {
+				c.$table.triggerHandler( 'filterBeforeEnd', c );
+				c.$table.triggerHandler( 'filterEnd', c );
+			}
+			setTimeout( function() {
+				ts.applyWidget( c.table ); // make sure zebra widget is applied
+			}, 0 );
+		},
+		getOptionSource: function( table, column, onlyAvail ) {
+			table = $( table )[0];
+			var c = table.config,
+				wo = c.widgetOptions,
+				arry = false,
+				source = wo.filter_selectSource,
+				last = c.$table.data( 'lastSearch' ) || [],
+				fxn = typeof source === 'function' ? true : ts.getColumnData( table, source, column );
+
+			if ( onlyAvail && last[column] !== '' ) {
+				onlyAvail = false;
+			}
+
+			// filter select source option
+			if ( fxn === true ) {
+				// OVERALL source
+				arry = source( table, column, onlyAvail );
+			} else if ( fxn instanceof $ || ( $.type( fxn ) === 'string' && fxn.indexOf( '</option>' ) >= 0 ) ) {
+				// selectSource is a jQuery object or string of options
+				return fxn;
+			} else if ( $.isArray( fxn ) ) {
+				arry = fxn;
+			} else if ( $.type( source ) === 'object' && fxn ) {
+				// custom select source function for a SPECIFIC COLUMN
+				arry = fxn( table, column, onlyAvail );
+			}
+			if ( arry === false ) {
+				// fall back to original method
+				arry = tsf.getOptions( table, column, onlyAvail );
+			}
+
+			return tsf.processOptions( table, column, arry );
+
+		},
+		processOptions: function( table, column, arry ) {
+			if ( !$.isArray( arry ) ) {
+				return false;
+			}
+			table = $( table )[0];
+			var cts, txt, indx, len, parsedTxt, str,
+				c = table.config,
+				validColumn = typeof column !== 'undefined' && column !== null && column >= 0 && column < c.columns,
+				parsed = [];
+			// get unique elements and sort the list
+			// if $.tablesorter.sortText exists ( not in the original tablesorter ),
+			// then natural sort the list otherwise use a basic sort
+			arry = $.grep( arry, function( value, indx ) {
+				if ( value.text ) {
+					return true;
+				}
+				return $.inArray( value, arry ) === indx;
+			});
+			if ( validColumn && c.$headerIndexed[ column ].hasClass( 'filter-select-nosort' ) ) {
+				// unsorted select options
+				return arry;
+			} else {
+				len = arry.length;
+				// parse select option values
+				for ( indx = 0; indx < len; indx++ ) {
+					txt = arry[ indx ];
+					// check for object
+					str = txt.text ? txt.text : txt;
+					// sortNatural breaks if you don't pass it strings
+					parsedTxt = ( validColumn && c.parsers && c.parsers.length &&
+						c.parsers[ column ].format( str, table, [], column ) || str ).toString();
+					parsedTxt = c.widgetOptions.filter_ignoreCase ? parsedTxt.toLowerCase() : parsedTxt;
+					// parse array data using set column parser; this DOES NOT pass the original
+					// table cell to the parser format function
+					if ( txt.text ) {
+						txt.parsed = parsedTxt;
+						parsed.push( txt );
+					} else {
+						parsed.push({
+							text : txt,
+							// check parser length - fixes #934
+							parsed : parsedTxt
+						});
+					}
+				}
+				// sort parsed select options
+				cts = c.textSorter || '';
+				parsed.sort( function( a, b ) {
+					var x = a.parsed,
+						y = b.parsed;
+					if ( validColumn && typeof cts === 'function' ) {
+						// custom OVERALL text sorter
+						return cts( x, y, true, column, table );
+					} else if ( validColumn && typeof cts === 'object' && cts.hasOwnProperty( column ) ) {
+						// custom text sorter for a SPECIFIC COLUMN
+						return cts[column]( x, y, true, column, table );
+					} else if ( ts.sortNatural ) {
+						// fall back to natural sort
+						return ts.sortNatural( x, y );
+					}
+					// using an older version! do a basic sort
+					return true;
+				});
+				// rebuild arry from sorted parsed data
+				arry = [];
+				len = parsed.length;
+				for ( indx = 0; indx < len; indx++ ) {
+					arry.push( parsed[indx] );
+				}
+				return arry;
+			}
+		},
+		getOptions: function( table, column, onlyAvail ) {
+			table = $( table )[0];
+			var rowIndex, tbodyIndex, len, row, cache, indx, child, childLen,
+				c = table.config,
+				wo = c.widgetOptions,
+				arry = [];
+			for ( tbodyIndex = 0; tbodyIndex < c.$tbodies.length; tbodyIndex++ ) {
+				cache = c.cache[tbodyIndex];
+				len = c.cache[tbodyIndex].normalized.length;
+				// loop through the rows
+				for ( rowIndex = 0; rowIndex < len; rowIndex++ ) {
+					// get cached row from cache.row ( old ) or row data object
+					// ( new; last item in normalized array )
+					row = cache.row ?
+						cache.row[ rowIndex ] :
+						cache.normalized[ rowIndex ][ c.columns ].$row[0];
+					// check if has class filtered
+					if ( onlyAvail && row.className.match( wo.filter_filteredRow ) ) {
+						continue;
+					}
+					// get non-normalized cell content
+					if ( wo.filter_useParsedData ||
+						c.parsers[column].parsed ||
+						c.$headerIndexed[column].hasClass( 'filter-parsed' ) ) {
+						arry.push( '' + cache.normalized[ rowIndex ][ column ] );
+						// child row parsed data
+						if ( wo.filter_childRows && wo.filter_childByColumn ) {
+							childLen = cache.normalized[ rowIndex ][ c.columns ].$row.length - 1;
+							for ( indx = 0; indx < childLen; indx++ ) {
+								arry.push( '' + cache.normalized[ rowIndex ][ c.columns ].child[ indx ][ column ] );
+							}
+						}
+					} else {
+						// get raw cached data instead of content directly from the cells
+						arry.push( cache.normalized[ rowIndex ][ c.columns ].raw[ column ] );
+						// child row unparsed data
+						if ( wo.filter_childRows && wo.filter_childByColumn ) {
+							childLen = cache.normalized[ rowIndex ][ c.columns ].$row.length;
+							for ( indx = 1; indx < childLen; indx++ ) {
+								child =  cache.normalized[ rowIndex ][ c.columns ].$row.eq( indx ).children().eq( column );
+								arry.push( '' + ts.getElementText( c, child, column ) );
+							}
+						}
+					}
+				}
+			}
+			return arry;
+		},
+		buildSelect: function( table, column, arry, updating, onlyAvail ) {
+			table = $( table )[0];
+			column = parseInt( column, 10 );
+			if ( !table.config.cache || $.isEmptyObject( table.config.cache ) ) {
+				return;
+			}
+
+			var indx, val, txt, t, $filters, $filter, option,
+				c = table.config,
+				wo = c.widgetOptions,
+				node = c.$headerIndexed[ column ],
+				// t.data( 'placeholder' ) won't work in jQuery older than 1.4.3
+				options = '<option value="">' +
+					( node.data( 'placeholder' ) ||
+						node.attr( 'data-placeholder' ) ||
+						wo.filter_placeholder.select || ''
+					) + '</option>',
+				// Get curent filter value
+				currentValue = c.$table
+					.find( 'thead' )
+					.find( 'select.' + tscss.filter + '[data-column="' + column + '"]' )
+					.val();
+
+			// nothing included in arry ( external source ), so get the options from
+			// filter_selectSource or column data
+			if ( typeof arry === 'undefined' || arry === '' ) {
+				arry = tsf.getOptionSource( table, column, onlyAvail );
+			}
+
+			if ( $.isArray( arry ) ) {
+				// build option list
+				for ( indx = 0; indx < arry.length; indx++ ) {
+					option = arry[ indx ];
+					if ( option.text ) {
+						// OBJECT!! add data-function-name in case the value is set in filter_functions
+						option['data-function-name'] = typeof option.value === 'undefined' ? option.text : option.value;
+
+						// support jQuery < v1.8, otherwise the below code could be shortened to
+						// options += $( '<option>', option )[ 0 ].outerHTML;
+						options += '<option';
+						for ( val in option ) {
+							if ( option.hasOwnProperty( val ) && val !== 'text' ) {
+								options += ' ' + val + '="' + option[ val ] + '"';
+							}
+						}
+						if ( !option.value ) {
+							options += ' value="' + option.text + '"';
+						}
+						options += '>' + option.text + '</option>';
+						// above code is needed in jQuery < v1.8
+
+						// make sure we don't turn an object into a string (objects without a "text" property)
+					} else if ( '' + option !== '[object Object]' ) {
+						txt = option = ( '' + option ).replace( tsfRegex.quote, '&quot;' );
+						val = txt;
+						// allow including a symbol in the selectSource array
+						// 'a-z|A through Z' so that 'a-z' becomes the option value
+						// and 'A through Z' becomes the option text
+						if ( txt.indexOf( wo.filter_selectSourceSeparator ) >= 0 ) {
+							t = txt.split( wo.filter_selectSourceSeparator );
+							val = t[0];
+							txt = t[1];
+						}
+						// replace quotes - fixes #242 & ignore empty strings
+						// see http://stackoverflow.com/q/14990971/145346
+						options += option !== '' ?
+							'<option ' +
+								( val === txt ? '' : 'data-function-name="' + option + '" ' ) +
+								'value="' + val + '">' + txt +
+							'</option>' : '';
+					}
+				}
+				// clear arry so it doesn't get appended twice
+				arry = [];
+			}
+
+			// update all selects in the same column ( clone thead in sticky headers &
+			// any external selects ) - fixes 473
+			$filters = ( c.$filters ? c.$filters : c.$table.children( 'thead' ) )
+				.find( '.' + tscss.filter );
+			if ( wo.filter_$externalFilters ) {
+				$filters = $filters && $filters.length ?
+					$filters.add( wo.filter_$externalFilters ) :
+					wo.filter_$externalFilters;
+			}
+			$filter = $filters.filter( 'select[data-column="' + column + '"]' );
+
+			// make sure there is a select there!
+			if ( $filter.length ) {
+				$filter[ updating ? 'html' : 'append' ]( options );
+				if ( !$.isArray( arry ) ) {
+					// append options if arry is provided externally as a string or jQuery object
+					// options ( default value ) was already added
+					$filter.append( arry ).val( currentValue );
+				}
+				$filter.val( currentValue );
+			}
+		},
+		buildDefault: function( table, updating ) {
+			var columnIndex, $header, noSelect,
+				c = table.config,
+				wo = c.widgetOptions,
+				columns = c.columns;
+			// build default select dropdown
+			for ( columnIndex = 0; columnIndex < columns; columnIndex++ ) {
+				$header = c.$headerIndexed[columnIndex];
+				noSelect = !( $header.hasClass( 'filter-false' ) || $header.hasClass( 'parser-false' ) );
+				// look for the filter-select class; build/update it if found
+				if ( ( $header.hasClass( 'filter-select' ) ||
+					ts.getColumnData( table, wo.filter_functions, columnIndex ) === true ) && noSelect ) {
+					tsf.buildSelect( table, columnIndex, '', updating, $header.hasClass( wo.filter_onlyAvail ) );
+				}
+			}
+		}
+	};
+
+	// filter regex variable
+	tsfRegex = tsf.regex;
+
+	ts.getFilters = function( table, getRaw, setFilters, skipFirst ) {
+		var i, $filters, $column, cols,
+			filters = false,
+			c = table ? $( table )[0].config : '',
+			wo = c ? c.widgetOptions : '';
+		if ( ( getRaw !== true && wo && !wo.filter_columnFilters ) ||
+			// setFilters called, but last search is exactly the same as the current
+			// fixes issue #733 & #903 where calling update causes the input values to reset
+			( $.isArray(setFilters) && setFilters.join('') === c.lastCombinedFilter ) ) {
+			return $( table ).data( 'lastSearch' );
+		}
+		if ( c ) {
+			if ( c.$filters ) {
+				$filters = c.$filters.find( '.' + tscss.filter );
+			}
+			if ( wo.filter_$externalFilters ) {
+				$filters = $filters && $filters.length ?
+					$filters.add( wo.filter_$externalFilters ) :
+					wo.filter_$externalFilters;
+			}
+			if ( $filters && $filters.length ) {
+				filters = setFilters || [];
+				for ( i = 0; i < c.columns + 1; i++ ) {
+					cols = ( i === c.columns ?
+						// 'all' columns can now include a range or set of columms ( data-column='0-2,4,6-7' )
+						wo.filter_anyColumnSelector + ',' + wo.filter_multipleColumnSelector :
+						'[data-column="' + i + '"]' );
+					$column = $filters.filter( cols );
+					if ( $column.length ) {
+						// move the latest search to the first slot in the array
+						$column = tsf.getLatestSearch( $column );
+						if ( $.isArray( setFilters ) ) {
+							// skip first ( latest input ) to maintain cursor position while typing
+							if ( skipFirst && $column.length > 1 ) {
+								$column = $column.slice( 1 );
+							}
+							if ( i === c.columns ) {
+								// prevent data-column='all' from filling data-column='0,1' ( etc )
+								cols = $column.filter( wo.filter_anyColumnSelector );
+								$column = cols.length ? cols : $column;
+							}
+							$column
+								.val( setFilters[ i ] )
+								// must include a namespace here; but not c.namespace + 'filter'?
+								.trigger( 'change' + c.namespace );
+						} else {
+							filters[i] = $column.val() || '';
+							// don't change the first... it will move the cursor
+							if ( i === c.columns ) {
+								// don't update range columns from 'all' setting
+								$column
+									.slice( 1 )
+									.filter( '[data-column*="' + $column.attr( 'data-column' ) + '"]' )
+									.val( filters[ i ] );
+							} else {
+								$column
+									.slice( 1 )
+									.val( filters[ i ] );
+							}
+						}
+						// save any match input dynamically
+						if ( i === c.columns && $column.length ) {
+							wo.filter_$anyMatch = $column;
+						}
+					}
+				}
+			}
+		}
+		if ( filters.length === 0 ) {
+			filters = false;
+		}
+		return filters;
+	};
+
+	ts.setFilters = function( table, filter, apply, skipFirst ) {
+		var c = table ? $( table )[0].config : '',
+			valid = ts.getFilters( table, true, filter, skipFirst );
+		// default apply to "true"
+		if ( typeof apply === 'undefined' ) {
+			apply = true;
+		}
+		if ( c && apply ) {
+			// ensure new set filters are applied, even if the search is the same
+			c.lastCombinedFilter = null;
+			c.lastSearch = [];
+			tsf.searching( c.table, filter, skipFirst );
+			c.$table.triggerHandler( 'filterFomatterUpdate' );
+		}
+		return !!valid;
+	};
+
+})( jQuery );
+
+/*! Widget: stickyHeaders - updated 10/31/2015 (v2.24.0) *//*
+ * Requires tablesorter v2.8+ and jQuery 1.4.3+
+ * by Rob Garrison
+ */
+;(function ($, window) {
+	'use strict';
+	var ts = $.tablesorter || {};
+
+	$.extend(ts.css, {
+		sticky    : 'tablesorter-stickyHeader', // stickyHeader
+		stickyVis : 'tablesorter-sticky-visible',
+		stickyHide: 'tablesorter-sticky-hidden',
+		stickyWrap: 'tablesorter-sticky-wrapper'
+	});
+
+	// Add a resize event to table headers
+	ts.addHeaderResizeEvent = function(table, disable, settings) {
+		table = $(table)[0]; // make sure we're using a dom element
+		if ( !table.config ) { return; }
+		var defaults = {
+				timer : 250
+			},
+			options = $.extend({}, defaults, settings),
+			c = table.config,
+			wo = c.widgetOptions,
+			checkSizes = function( triggerEvent ) {
+				var index, headers, $header, sizes, width, height,
+					len = c.$headers.length;
+				wo.resize_flag = true;
+				headers = [];
+				for ( index = 0; index < len; index++ ) {
+					$header = c.$headers.eq( index );
+					sizes = $header.data( 'savedSizes' ) || [ 0, 0 ]; // fixes #394
+					width = $header[0].offsetWidth;
+					height = $header[0].offsetHeight;
+					if ( width !== sizes[0] || height !== sizes[1] ) {
+						$header.data( 'savedSizes', [ width, height ] );
+						headers.push( $header[0] );
+					}
+				}
+				if ( headers.length && triggerEvent !== false ) {
+					c.$table.triggerHandler( 'resize', [ headers ] );
+				}
+				wo.resize_flag = false;
+			};
+		checkSizes( false );
+		clearInterval(wo.resize_timer);
+		if (disable) {
+			wo.resize_flag = false;
+			return false;
+		}
+		wo.resize_timer = setInterval(function() {
+			if (wo.resize_flag) { return; }
+			checkSizes();
+		}, options.timer);
+	};
+
+	// Sticky headers based on this awesome article:
+	// http://css-tricks.com/13465-persistent-headers/
+	// and https://github.com/jmosbech/StickyTableHeaders by Jonas Mosbech
+	// **************************
+	ts.addWidget({
+		id: 'stickyHeaders',
+		priority: 60, // sticky widget must be initialized after the filter widget!
+		options: {
+			stickyHeaders : '',       // extra class name added to the sticky header row
+			stickyHeaders_attachTo : null, // jQuery selector or object to attach sticky header to
+			stickyHeaders_xScroll : null, // jQuery selector or object to monitor horizontal scroll position (defaults: xScroll > attachTo > window)
+			stickyHeaders_yScroll : null, // jQuery selector or object to monitor vertical scroll position (defaults: yScroll > attachTo > window)
+			stickyHeaders_offset : 0, // number or jquery selector targeting the position:fixed element
+			stickyHeaders_filteredToTop: true, // scroll table top into view after filtering
+			stickyHeaders_cloneId : '-sticky', // added to table ID, if it exists
+			stickyHeaders_addResizeEvent : true, // trigger 'resize' event on headers
+			stickyHeaders_includeCaption : true, // if false and a caption exist, it won't be included in the sticky header
+			stickyHeaders_zIndex : 2 // The zIndex of the stickyHeaders, allows the user to adjust this to their needs
+		},
+		format: function(table, c, wo) {
+			// filter widget doesn't initialize on an empty table. Fixes #449
+			if ( c.$table.hasClass('hasStickyHeaders') || ($.inArray('filter', c.widgets) >= 0 && !c.$table.hasClass('hasFilters')) ) {
+				return;
+			}
+			var index, len, $t,
+				$table = c.$table,
+				// add position: relative to attach element, hopefully it won't cause trouble.
+				$attach = $(wo.stickyHeaders_attachTo),
+				namespace = c.namespace + 'stickyheaders ',
+				// element to watch for the scroll event
+				$yScroll = $(wo.stickyHeaders_yScroll || wo.stickyHeaders_attachTo || window),
+				$xScroll = $(wo.stickyHeaders_xScroll || wo.stickyHeaders_attachTo || window),
+				$thead = $table.children('thead:first'),
+				$header = $thead.children('tr').not('.sticky-false').children(),
+				$tfoot = $table.children('tfoot'),
+				$stickyOffset = isNaN(wo.stickyHeaders_offset) ? $(wo.stickyHeaders_offset) : '',
+				stickyOffset = $stickyOffset.length ? $stickyOffset.height() || 0 : parseInt(wo.stickyHeaders_offset, 10) || 0,
+				// is this table nested? If so, find parent sticky header wrapper (div, not table)
+				$nestedSticky = $table.parent().closest('.' + ts.css.table).hasClass('hasStickyHeaders') ?
+					$table.parent().closest('table.tablesorter')[0].config.widgetOptions.$sticky.parent() : [],
+				nestedStickyTop = $nestedSticky.length ? $nestedSticky.height() : 0,
+				// clone table, then wrap to make sticky header
+				$stickyTable = wo.$sticky = $table.clone()
+					.addClass('containsStickyHeaders ' + ts.css.sticky + ' ' + wo.stickyHeaders + ' ' + c.namespace.slice(1) + '_extra_table' )
+					.wrap('<div class="' + ts.css.stickyWrap + '">'),
+				$stickyWrap = $stickyTable.parent()
+					.addClass(ts.css.stickyHide)
+					.css({
+						position   : $attach.length ? 'absolute' : 'fixed',
+						padding    : parseInt( $stickyTable.parent().parent().css('padding-left'), 10 ),
+						top        : stickyOffset + nestedStickyTop,
+						left       : 0,
+						visibility : 'hidden',
+						zIndex     : wo.stickyHeaders_zIndex || 2
+					}),
+				$stickyThead = $stickyTable.children('thead:first'),
+				$stickyCells,
+				laststate = '',
+				spacing = 0,
+				setWidth = function($orig, $clone){
+					var index, width, border, $cell, $this,
+						$cells = $orig.filter(':visible'),
+						len = $cells.length;
+					for ( index = 0; index < len; index++ ) {
+						$cell = $clone.filter(':visible').eq(index);
+						$this = $cells.eq(index);
+						// code from https://github.com/jmosbech/StickyTableHeaders
+						if ($this.css('box-sizing') === 'border-box') {
+							width = $this.outerWidth();
+						} else {
+							if ($cell.css('border-collapse') === 'collapse') {
+								if (window.getComputedStyle) {
+									width = parseFloat( window.getComputedStyle($this[0], null).width );
+								} else {
+									// ie8 only
+									border = parseFloat( $this.css('border-width') );
+									width = $this.outerWidth() - parseFloat( $this.css('padding-left') ) - parseFloat( $this.css('padding-right') ) - border;
+								}
+							} else {
+								width = $this.width();
+							}
+						}
+						$cell.css({
+							'width': width,
+							'min-width': width,
+							'max-width': width
+						});
+					}
+				},
+				resizeHeader = function() {
+					stickyOffset = $stickyOffset.length ? $stickyOffset.height() || 0 : parseInt(wo.stickyHeaders_offset, 10) || 0;
+					spacing = 0;
+					$stickyWrap.css({
+						left : $attach.length ? parseInt($attach.css('padding-left'), 10) || 0 :
+								$table.offset().left - parseInt($table.css('margin-left'), 10) - $xScroll.scrollLeft() - spacing,
+						width: $table.outerWidth()
+					});
+					setWidth( $table, $stickyTable );
+					setWidth( $header, $stickyCells );
+				},
+				scrollSticky = function( resizing ) {
+					if (!$table.is(':visible')) { return; } // fixes #278
+					// Detect nested tables - fixes #724
+					nestedStickyTop = $nestedSticky.length ? $nestedSticky.offset().top - $yScroll.scrollTop() + $nestedSticky.height() : 0;
+					var offset = $table.offset(),
+						yWindow = $.isWindow( $yScroll[0] ), // $.isWindow needs jQuery 1.4.3
+						xWindow = $.isWindow( $xScroll[0] ),
+						// scrollTop = ( $attach.length ? $attach.offset().top : $yScroll.scrollTop() ) + stickyOffset + nestedStickyTop,
+						scrollTop = ( $attach.length ? ( yWindow ? $yScroll.scrollTop() : $yScroll.offset().top ) : $yScroll.scrollTop() ) + stickyOffset + nestedStickyTop,
+						tableHeight = $table.height() - ($stickyWrap.height() + ($tfoot.height() || 0)),
+						isVisible = ( scrollTop > offset.top ) && ( scrollTop < offset.top + tableHeight ) ? 'visible' : 'hidden',
+						cssSettings = { visibility : isVisible };
+
+					if ($attach.length) {
+						cssSettings.top = yWindow ? scrollTop - $attach.offset().top : $attach.scrollTop();
+					}
+					if (xWindow) {
+						// adjust when scrolling horizontally - fixes issue #143
+						cssSettings.left = $table.offset().left - parseInt($table.css('margin-left'), 10) - $xScroll.scrollLeft() - spacing;
+					}
+					if ($nestedSticky.length) {
+						cssSettings.top = ( cssSettings.top || 0 ) + stickyOffset + nestedStickyTop;
+					}
+					$stickyWrap
+						.removeClass( ts.css.stickyVis + ' ' + ts.css.stickyHide )
+						.addClass( isVisible === 'visible' ? ts.css.stickyVis : ts.css.stickyHide )
+						.css(cssSettings);
+					if (isVisible !== laststate || resizing) {
+						// make sure the column widths match
+						resizeHeader();
+						laststate = isVisible;
+					}
+				};
+			// only add a position relative if a position isn't already defined
+			if ($attach.length && !$attach.css('position')) {
+				$attach.css('position', 'relative');
+			}
+			// fix clone ID, if it exists - fixes #271
+			if ($stickyTable.attr('id')) { $stickyTable[0].id += wo.stickyHeaders_cloneId; }
+			// clear out cloned table, except for sticky header
+			// include caption & filter row (fixes #126 & #249) - don't remove cells to get correct cell indexing
+			$stickyTable.find('thead:gt(0), tr.sticky-false').hide();
+			$stickyTable.find('tbody, tfoot').remove();
+			$stickyTable.find('caption').toggle(wo.stickyHeaders_includeCaption);
+			// issue #172 - find td/th in sticky header
+			$stickyCells = $stickyThead.children().children();
+			$stickyTable.css({ height:0, width:0, margin: 0 });
+			// remove resizable block
+			$stickyCells.find('.' + ts.css.resizer).remove();
+			// update sticky header class names to match real header after sorting
+			$table
+				.addClass('hasStickyHeaders')
+				.bind('pagerComplete' + namespace, function() {
+					resizeHeader();
+				});
+
+			ts.bindEvents(table, $stickyThead.children().children('.' + ts.css.header));
+
+			// add stickyheaders AFTER the table. If the table is selected by ID, the original one (first) will be returned.
+			$table.after( $stickyWrap );
+
+			// onRenderHeader is defined, we need to do something about it (fixes #641)
+			if (c.onRenderHeader) {
+				$t = $stickyThead.children('tr').children();
+				len = $t.length;
+				for ( index = 0; index < len; index++ ) {
+					// send second parameter
+					c.onRenderHeader.apply( $t.eq( index ), [ index, c, $stickyTable ] );
+				}
+			}
+
+			// make it sticky!
+			$xScroll.add($yScroll)
+				.unbind( ('scroll resize '.split(' ').join( namespace )).replace(/\s+/g, ' ') )
+				.bind('scroll resize '.split(' ').join( namespace ), function( event ) {
+					scrollSticky( event.type === 'resize' );
+				});
+			c.$table
+				.unbind('stickyHeadersUpdate' + namespace)
+				.bind('stickyHeadersUpdate' + namespace, function(){
+					scrollSticky( true );
+				});
+
+			if (wo.stickyHeaders_addResizeEvent) {
+				ts.addHeaderResizeEvent(table);
+			}
+
+			// look for filter widget
+			if ($table.hasClass('hasFilters') && wo.filter_columnFilters) {
+				// scroll table into view after filtering, if sticky header is active - #482
+				$table.bind('filterEnd' + namespace, function() {
+					// $(':focus') needs jQuery 1.6+
+					var $td = $(document.activeElement).closest('td'),
+						column = $td.parent().children().index($td);
+					// only scroll if sticky header is active
+					if ($stickyWrap.hasClass(ts.css.stickyVis) && wo.stickyHeaders_filteredToTop) {
+						// scroll to original table (not sticky clone)
+						window.scrollTo(0, $table.position().top);
+						// give same input/select focus; check if c.$filters exists; fixes #594
+						if (column >= 0 && c.$filters) {
+							c.$filters.eq(column).find('a, select, input').filter(':visible').focus();
+						}
+					}
+				});
+				ts.filter.bindSearch( $table, $stickyCells.find('.' + ts.css.filter) );
+				// support hideFilters
+				if (wo.filter_hideFilters) {
+					ts.filter.hideFilters(c, $stickyTable);
+				}
+			}
+
+			$table.triggerHandler('stickyHeadersInit');
+
+		},
+		remove: function(table, c, wo) {
+			var namespace = c.namespace + 'stickyheaders ';
+			c.$table
+				.removeClass('hasStickyHeaders')
+				.unbind( ('pagerComplete filterEnd stickyHeadersUpdate '.split(' ').join(namespace)).replace(/\s+/g, ' ') )
+				.next('.' + ts.css.stickyWrap).remove();
+			if (wo.$sticky && wo.$sticky.length) { wo.$sticky.remove(); } // remove cloned table
+			$(window)
+				.add(wo.stickyHeaders_xScroll)
+				.add(wo.stickyHeaders_yScroll)
+				.add(wo.stickyHeaders_attachTo)
+				.unbind( ('scroll resize '.split(' ').join(namespace)).replace(/\s+/g, ' ') );
+			ts.addHeaderResizeEvent(table, false);
+		}
+	});
+
+})(jQuery, window);
+
+/*! Widget: resizable - updated 11/4/2015 (v2.24.3) */
+/*jshint browser:true, jquery:true, unused:false */
+;(function ($, window) {
+	'use strict';
+	var ts = $.tablesorter || {};
+
+	$.extend(ts.css, {
+		resizableContainer : 'tablesorter-resizable-container',
+		resizableHandle    : 'tablesorter-resizable-handle',
+		resizableNoSelect  : 'tablesorter-disableSelection',
+		resizableStorage   : 'tablesorter-resizable'
+	});
+
+	// Add extra scroller css
+	$(function(){
+		var s = '<style>' +
+			'body.' + ts.css.resizableNoSelect + ' { -ms-user-select: none; -moz-user-select: -moz-none;' +
+				'-khtml-user-select: none; -webkit-user-select: none; user-select: none; }' +
+			'.' + ts.css.resizableContainer + ' { position: relative; height: 1px; }' +
+			// make handle z-index > than stickyHeader z-index, so the handle stays above sticky header
+			'.' + ts.css.resizableHandle + ' { position: absolute; display: inline-block; width: 8px;' +
+				'top: 1px; cursor: ew-resize; z-index: 3; user-select: none; -moz-user-select: none; }' +
+			'</style>';
+		$(s).appendTo('body');
+	});
+
+	ts.resizable = {
+		init : function( c, wo ) {
+			if ( c.$table.hasClass( 'hasResizable' ) ) { return; }
+			c.$table.addClass( 'hasResizable' );
+
+			var noResize, $header, column, storedSizes, tmp,
+				$table = c.$table,
+				$parent = $table.parent(),
+				marginTop = parseInt( $table.css( 'margin-top' ), 10 ),
+
+			// internal variables
+			vars = wo.resizable_vars = {
+				useStorage : ts.storage && wo.resizable !== false,
+				$wrap : $parent,
+				mouseXPosition : 0,
+				$target : null,
+				$next : null,
+				overflow : $parent.css('overflow') === 'auto' ||
+					$parent.css('overflow') === 'scroll' ||
+					$parent.css('overflow-x') === 'auto' ||
+					$parent.css('overflow-x') === 'scroll',
+				storedSizes : []
+			};
+
+			// set default widths
+			ts.resizableReset( c.table, true );
+
+			// now get measurements!
+			vars.tableWidth = $table.width();
+			// attempt to autodetect
+			vars.fullWidth = Math.abs( $parent.width() - vars.tableWidth ) < 20;
+
+			/*
+			// Hacky method to determine if table width is set to 'auto'
+			// http://stackoverflow.com/a/20892048/145346
+			if ( !vars.fullWidth ) {
+				tmp = $table.width();
+				$header = $table.wrap('<span>').parent(); // temp variable
+				storedSizes = parseInt( $table.css( 'margin-left' ), 10 ) || 0;
+				$table.css( 'margin-left', storedSizes + 50 );
+				vars.tableWidth = $header.width() > tmp ? 'auto' : tmp;
+				$table.css( 'margin-left', storedSizes ? storedSizes : '' );
+				$header = null;
+				$table.unwrap('<span>');
+			}
+			*/
+
+			if ( vars.useStorage && vars.overflow ) {
+				// save table width
+				ts.storage( c.table, 'tablesorter-table-original-css-width', vars.tableWidth );
+				tmp = ts.storage( c.table, 'tablesorter-table-resized-width' ) || 'auto';
+				ts.resizable.setWidth( $table, tmp, true );
+			}
+			wo.resizable_vars.storedSizes = storedSizes = ( vars.useStorage ?
+				ts.storage( c.table, ts.css.resizableStorage ) :
+				[] ) || [];
+			ts.resizable.setWidths( c, wo, storedSizes );
+			ts.resizable.updateStoredSizes( c, wo );
+
+			wo.$resizable_container = $( '<div class="' + ts.css.resizableContainer + '">' )
+				.css({ top : marginTop })
+				.insertBefore( $table );
+			// add container
+			for ( column = 0; column < c.columns; column++ ) {
+				$header = c.$headerIndexed[ column ];
+				tmp = ts.getColumnData( c.table, c.headers, column );
+				noResize = ts.getData( $header, tmp, 'resizable' ) === 'false';
+				if ( !noResize ) {
+					$( '<div class="' + ts.css.resizableHandle + '">' )
+						.appendTo( wo.$resizable_container )
+						.attr({
+							'data-column' : column,
+							'unselectable' : 'on'
+						})
+						.data( 'header', $header )
+						.bind( 'selectstart', false );
+				}
+			}
+			ts.resizable.setHandlePosition( c, wo );
+			ts.resizable.bindings( c, wo );
+		},
+
+		updateStoredSizes : function( c, wo ) {
+			var column, $header,
+				len = c.columns,
+				vars = wo.resizable_vars;
+			vars.storedSizes = [];
+			for ( column = 0; column < len; column++ ) {
+				$header = c.$headerIndexed[ column ];
+				vars.storedSizes[ column ] = $header.is(':visible') ? $header.width() : 0;
+			}
+		},
+
+		setWidth : function( $el, width, overflow ) {
+			// overflow tables need min & max width set as well
+			$el.css({
+				'width' : width,
+				'min-width' : overflow ? width : '',
+				'max-width' : overflow ? width : ''
+			});
+		},
+
+		setWidths : function( c, wo, storedSizes ) {
+			var column, $temp,
+				vars = wo.resizable_vars,
+				$extra = $( c.namespace + '_extra_headers' ),
+				$col = c.$table.children( 'colgroup' ).children( 'col' );
+			storedSizes = storedSizes || vars.storedSizes || [];
+			// process only if table ID or url match
+			if ( storedSizes.length ) {
+				for ( column = 0; column < c.columns; column++ ) {
+					// set saved resizable widths
+					ts.resizable.setWidth( c.$headerIndexed[ column ], storedSizes[ column ], vars.overflow );
+					if ( $extra.length ) {
+						// stickyHeaders needs to modify min & max width as well
+						$temp = $extra.eq( column ).add( $col.eq( column ) );
+						ts.resizable.setWidth( $temp, storedSizes[ column ], vars.overflow );
+					}
+				}
+				$temp = $( c.namespace + '_extra_table' );
+				if ( $temp.length && !ts.hasWidget( c.table, 'scroller' ) ) {
+					ts.resizable.setWidth( $temp, c.$table.outerWidth(), vars.overflow );
+				}
+			}
+		},
+
+		setHandlePosition : function( c, wo ) {
+			var startPosition,
+				hasScroller = ts.hasWidget( c.table, 'scroller' ),
+				tableHeight = c.$table.height(),
+				$handles = wo.$resizable_container.children(),
+				handleCenter = Math.floor( $handles.width() / 2 );
+
+			if ( hasScroller ) {
+				tableHeight = 0;
+				c.$table.closest( '.' + ts.css.scrollerWrap ).children().each(function(){
+					var $this = $(this);
+					// center table has a max-height set
+					tableHeight += $this.filter('[style*="height"]').length ? $this.height() : $this.children('table').height();
+				});
+			}
+			// subtract out table left position from resizable handles. Fixes #864
+			startPosition = c.$table.position().left;
+			$handles.each( function() {
+				var $this = $(this),
+					column = parseInt( $this.attr( 'data-column' ), 10 ),
+					columns = c.columns - 1,
+					$header = $this.data( 'header' );
+				if ( !$header ) { return; } // see #859
+				if ( !$header.is(':visible') ) {
+					$this.hide();
+				} else if ( column < columns || column === columns && wo.resizable_addLastColumn ) {
+					$this.css({
+						display: 'inline-block',
+						height : tableHeight,
+						left : $header.position().left - startPosition + $header.outerWidth() - handleCenter
+					});
+				}
+			});
+		},
+
+		// prevent text selection while dragging resize bar
+		toggleTextSelection : function( c, wo, toggle ) {
+			var namespace = c.namespace + 'tsresize';
+			wo.resizable_vars.disabled = toggle;
+			$( 'body' ).toggleClass( ts.css.resizableNoSelect, toggle );
+			if ( toggle ) {
+				$( 'body' )
+					.attr( 'unselectable', 'on' )
+					.bind( 'selectstart' + namespace, false );
+			} else {
+				$( 'body' )
+					.removeAttr( 'unselectable' )
+					.unbind( 'selectstart' + namespace );
+			}
+		},
+
+		bindings : function( c, wo ) {
+			var namespace = c.namespace + 'tsresize';
+			wo.$resizable_container.children().bind( 'mousedown', function( event ) {
+				// save header cell and mouse position
+				var column,
+					vars = wo.resizable_vars,
+					$extras = $( c.namespace + '_extra_headers' ),
+					$header = $( event.target ).data( 'header' );
+
+				column = parseInt( $header.attr( 'data-column' ), 10 );
+				vars.$target = $header = $header.add( $extras.filter('[data-column="' + column + '"]') );
+				vars.target = column;
+
+				// if table is not as wide as it's parent, then resize the table
+				vars.$next = event.shiftKey || wo.resizable_targetLast ?
+					$header.parent().children().not( '.resizable-false' ).filter( ':last' ) :
+					$header.nextAll( ':not(.resizable-false)' ).eq( 0 );
+
+				column = parseInt( vars.$next.attr( 'data-column' ), 10 );
+				vars.$next = vars.$next.add( $extras.filter('[data-column="' + column + '"]') );
+				vars.next = column;
+
+				vars.mouseXPosition = event.pageX;
+				ts.resizable.updateStoredSizes( c, wo );
+				ts.resizable.toggleTextSelection(c, wo, true );
+			});
+
+			$( document )
+				.bind( 'mousemove' + namespace, function( event ) {
+					var vars = wo.resizable_vars;
+					// ignore mousemove if no mousedown
+					if ( !vars.disabled || vars.mouseXPosition === 0 || !vars.$target ) { return; }
+					if ( wo.resizable_throttle ) {
+						clearTimeout( vars.timer );
+						vars.timer = setTimeout( function() {
+							ts.resizable.mouseMove( c, wo, event );
+						}, isNaN( wo.resizable_throttle ) ? 5 : wo.resizable_throttle );
+					} else {
+						ts.resizable.mouseMove( c, wo, event );
+					}
+				})
+				.bind( 'mouseup' + namespace, function() {
+					if (!wo.resizable_vars.disabled) { return; }
+					ts.resizable.toggleTextSelection( c, wo, false );
+					ts.resizable.stopResize( c, wo );
+					ts.resizable.setHandlePosition( c, wo );
+				});
+
+			// resizeEnd event triggered by scroller widget
+			$( window ).bind( 'resize' + namespace + ' resizeEnd' + namespace, function() {
+				ts.resizable.setHandlePosition( c, wo );
+			});
+
+			// right click to reset columns to default widths
+			c.$table
+				.bind( 'columnUpdate' + namespace, function() {
+					ts.resizable.setHandlePosition( c, wo );
+				})
+				.find( 'thead:first' )
+				.add( $( c.namespace + '_extra_table' ).find( 'thead:first' ) )
+				.bind( 'contextmenu' + namespace, function() {
+					// $.isEmptyObject() needs jQuery 1.4+; allow right click if already reset
+					var allowClick = wo.resizable_vars.storedSizes.length === 0;
+					ts.resizableReset( c.table );
+					ts.resizable.setHandlePosition( c, wo );
+					wo.resizable_vars.storedSizes = [];
+					return allowClick;
+				});
+
+		},
+
+		mouseMove : function( c, wo, event ) {
+			if ( wo.resizable_vars.mouseXPosition === 0 || !wo.resizable_vars.$target ) { return; }
+			// resize columns
+			var column,
+				total = 0,
+				vars = wo.resizable_vars,
+				$next = vars.$next,
+				tar = vars.storedSizes[ vars.target ],
+				leftEdge = event.pageX - vars.mouseXPosition;
+			if ( vars.overflow ) {
+				if ( tar + leftEdge > 0 ) {
+					vars.storedSizes[ vars.target ] += leftEdge;
+					ts.resizable.setWidth( vars.$target, vars.storedSizes[ vars.target ], true );
+					// update the entire table width
+					for ( column = 0; column < c.columns; column++ ) {
+						total += vars.storedSizes[ column ];
+					}
+					ts.resizable.setWidth( c.$table.add( $( c.namespace + '_extra_table' ) ), total );
+				}
+				if ( !$next.length ) {
+					// if expanding right-most column, scroll the wrapper
+					vars.$wrap[0].scrollLeft = c.$table.width();
+				}
+			} else if ( vars.fullWidth ) {
+				vars.storedSizes[ vars.target ] += leftEdge;
+				vars.storedSizes[ vars.next ] -= leftEdge;
+				ts.resizable.setWidths( c, wo );
+			} else {
+				vars.storedSizes[ vars.target ] += leftEdge;
+				ts.resizable.setWidths( c, wo );
+			}
+			vars.mouseXPosition = event.pageX;
+			// dynamically update sticky header widths
+			c.$table.triggerHandler('stickyHeadersUpdate');
+		},
+
+		stopResize : function( c, wo ) {
+			var vars = wo.resizable_vars;
+			ts.resizable.updateStoredSizes( c, wo );
+			if ( vars.useStorage ) {
+				// save all column widths
+				ts.storage( c.table, ts.css.resizableStorage, vars.storedSizes );
+				ts.storage( c.table, 'tablesorter-table-resized-width', c.$table.width() );
+			}
+			vars.mouseXPosition = 0;
+			vars.$target = vars.$next = null;
+			// will update stickyHeaders, just in case, see #912
+			c.$table.triggerHandler('stickyHeadersUpdate');
+		}
+	};
+
+	// this widget saves the column widths if
+	// $.tablesorter.storage function is included
+	// **************************
+	ts.addWidget({
+		id: 'resizable',
+		priority: 40,
+		options: {
+			resizable : true, // save column widths to storage
+			resizable_addLastColumn : false,
+			resizable_widths : [],
+			resizable_throttle : false, // set to true (5ms) or any number 0-10 range
+			resizable_targetLast : false,
+			resizable_fullWidth : null
+		},
+		init: function(table, thisWidget, c, wo) {
+			ts.resizable.init( c, wo );
+		},
+		remove: function( table, c, wo, refreshing ) {
+			if (wo.$resizable_container) {
+				var namespace = c.namespace + 'tsresize';
+				c.$table.add( $( c.namespace + '_extra_table' ) )
+					.removeClass('hasResizable')
+					.children( 'thead' )
+					.unbind( 'contextmenu' + namespace );
+
+				wo.$resizable_container.remove();
+				ts.resizable.toggleTextSelection( c, wo, false );
+				ts.resizableReset( table, refreshing );
+				$( document ).unbind( 'mousemove' + namespace + ' mouseup' + namespace );
+			}
+		}
+	});
+
+	ts.resizableReset = function( table, refreshing ) {
+		$( table ).each(function(){
+			var index, $t,
+				c = this.config,
+				wo = c && c.widgetOptions,
+				vars = wo.resizable_vars;
+			if ( table && c && c.$headerIndexed.length ) {
+				// restore the initial table width
+				if ( vars.overflow && vars.tableWidth ) {
+					ts.resizable.setWidth( c.$table, vars.tableWidth, true );
+					if ( vars.useStorage ) {
+						ts.storage( table, 'tablesorter-table-resized-width', 'auto' );
+					}
+				}
+				for ( index = 0; index < c.columns; index++ ) {
+					$t = c.$headerIndexed[ index ];
+					if ( wo.resizable_widths && wo.resizable_widths[ index ] ) {
+						ts.resizable.setWidth( $t, wo.resizable_widths[ index ], vars.overflow );
+					} else if ( !$t.hasClass( 'resizable-false' ) ) {
+						// don't clear the width of any column that is not resizable
+						ts.resizable.setWidth( $t, '', vars.overflow );
+					}
+				}
+
+				// reset stickyHeader widths
+				c.$table.triggerHandler( 'stickyHeadersUpdate' );
+				if ( ts.storage && !refreshing ) {
+					ts.storage( this, ts.css.resizableStorage, {} );
+				}
+			}
+		});
+	};
+
+})( jQuery, window );
+
+/*! Widget: saveSort - updated 10/31/2015 (v2.24.0) *//*
+* Requires tablesorter v2.16+
+* by Rob Garrison
+*/
+;(function ($) {
+	'use strict';
+	var ts = $.tablesorter || {};
+
+	// this widget saves the last sort only if the
+	// saveSort widget option is true AND the
+	// $.tablesorter.storage function is included
+	// **************************
+	ts.addWidget({
+		id: 'saveSort',
+		priority: 20,
+		options: {
+			saveSort : true
+		},
+		init: function(table, thisWidget, c, wo) {
+			// run widget format before all other widgets are applied to the table
+			thisWidget.format(table, c, wo, true);
+		},
+		format: function(table, c, wo, init) {
+			var stored, time,
+				$table = c.$table,
+				saveSort = wo.saveSort !== false, // make saveSort active/inactive; default to true
+				sortList = { 'sortList' : c.sortList };
+			if (c.debug) {
+				time = new Date();
+			}
+			if ($table.hasClass('hasSaveSort')) {
+				if (saveSort && table.hasInitialized && ts.storage) {
+					ts.storage( table, 'tablesorter-savesort', sortList );
+					if (c.debug) {
+						console.log('saveSort widget: Saving last sort: ' + c.sortList + ts.benchmark(time));
+					}
+				}
+			} else {
+				// set table sort on initial run of the widget
+				$table.addClass('hasSaveSort');
+				sortList = '';
+				// get data
+				if (ts.storage) {
+					stored = ts.storage( table, 'tablesorter-savesort' );
+					sortList = (stored && stored.hasOwnProperty('sortList') && $.isArray(stored.sortList)) ? stored.sortList : '';
+					if (c.debug) {
+						console.log('saveSort: Last sort loaded: "' + sortList + '"' + ts.benchmark(time));
+					}
+					$table.bind('saveSortReset', function(event) {
+						event.stopPropagation();
+						ts.storage( table, 'tablesorter-savesort', '' );
+					});
+				}
+				// init is true when widget init is run, this will run this widget before all other widgets have initialized
+				// this method allows using this widget in the original tablesorter plugin; but then it will run all widgets twice.
+				if (init && sortList && sortList.length > 0) {
+					c.sortList = sortList;
+				} else if (table.hasInitialized && sortList && sortList.length > 0) {
+					// update sort change
+					ts.sortOn( c, sortList );
+				}
+			}
+		},
+		remove: function(table, c) {
+			c.$table.removeClass('hasSaveSort');
+			// clear storage
+			if (ts.storage) { ts.storage( table, 'tablesorter-savesort', '' ); }
+		}
+	});
+
+})(jQuery);
+
+return $.tablesorter;
+}));
+
 $(document).ready(function() {
 
     $('.collapse').on('shown.bs.collapse', function () {
         $("#collapse"+this.id).removeClass("fa-folder").addClass("fa-folder-open");
         $("#"+this.id).load("/projects/"+this.id+"/expeditions");
+        $(this).closest('tr').show();
     });
 
     $('.collapse').on('hidden.bs.collapse', function () {
         $("#collapse"+this.id).removeClass("fa-folder-open").addClass("fa-folder");
         $( "#expeditions"+this.id).html('');
+        $(this).closest('tr').hide();
+    });
+
+    $(".table-sort").tablesorter({
+        // this will apply the bootstrap theme if "uitheme" widget is included
+        // the widgetOptions.uitheme is no longer required to be set
+        theme : "bootstrap",
+
+        widthFixed: false,
+
+        headerTemplate : '{content} {icon}', // new in v2.7. Needed to add the bootstrap icon!
+
+        // widget code contained in the jquery.tablesorter.widgets.js file
+        // use the zebra stripe widget if you plan on hiding any rows (filter widget)
+        widgets : [ "uitheme", "zebra" ],
+
+        widgetOptions : {
+            // using the default zebra striping class name, so it actually isn't included in the theme variable above
+            // this is ONLY needed for bootstrap theming if you are using the filter widget, because rows are hidden
+            zebra : ["even", "odd"],
+            // reset filters button
+            filter_reset : ".reset",
+            // extra css class name (string or array) added to the filter element (input or select)
+            filter_cssFilter: "form-control",
+        }
     });
 
     $('#add_target').on('click', function() {
