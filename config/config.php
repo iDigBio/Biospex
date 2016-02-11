@@ -5,7 +5,7 @@ return [
     /**
      * Site variables
      */
-    'app_url'                  => env('APP_NAME'),
+    'app_url'                  => env('APP_URL'),
     'api_url'                  => env('API_URL'),
     'registration'             => env('APP_REGISTRATION'),
     'translate'                => env('APP_TRANSLATE'),
