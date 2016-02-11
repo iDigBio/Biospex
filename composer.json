@@ -25,7 +25,8 @@
     "jenssegers/mongodb": "2.2.*",
     "codesleeve/laravel-stapler": "dev-master",
     "league/csv": "8.0.*",
-    "neitanod/forceutf8": "1.4.*"
+    "neitanod/forceutf8": "1.4.*",
+    "dingo/api": "1.0.*@dev"
   },
   "require-dev": {
     "symfony/dom-crawler": "~3.0",
