@@ -103,7 +103,7 @@ class GroupsController extends Controller
      * @param $id
      * @return \Illuminate\View\View
      */
-    public function read($id)
+    public function show($id)
     {
         $user = $this->request->user();
         $group = $this->group->findWith($id, [
@@ -119,7 +119,7 @@ class GroupsController extends Controller
             return redirect()->route('groups.get.index');
         }
 
-        return view('front.groups.read', compact('group'));
+        return view('front.groups.show', compact('group'));
 
     }
 

@@ -77,6 +77,6 @@ class ImportsController extends Controller
 
         session_flash_push('success', trans('pages.upload_trans_success'));
 
-        return redirect()->route('projects.get.read', [$id]);
+        return redirect()->route('projects.get.show', [$id]);
     }
 }

@@ -27,7 +27,7 @@ class UsersController extends Controller
      * @param  int $id
      * @return Response
      */
-    public function read($id)
+    public function show($id)
     {
         return redirect()->route('users.get.edit', [$id]);
     }

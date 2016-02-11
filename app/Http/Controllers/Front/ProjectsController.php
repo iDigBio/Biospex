@@ -102,7 +102,7 @@ class ProjectsController extends Controller
      * @param $id
      * @return \Illuminate\View\View
      */
-    public function read($id)
+    public function show($id)
     {
         $user = $this->request->user();
         $project = $this->project->findWith($id, [
@@ -117,7 +117,7 @@ class ProjectsController extends Controller
             return redirect()->route('projects.get.index');
         }
 
-        return view('front.projects.read', compact('user', 'project'));
+        return view('front.projects.show', compact('user', 'project'));
     }
 
     /**
@@ -140,7 +140,7 @@ class ProjectsController extends Controller
 
         if ($project) {
             session_flash_push('success', trans('projects.project_created'));
-            return redirect()->route('projects.get.read', [$project->id]);
+            return redirect()->route('projects.get.show', [$project->id]);
         }
 
         session_flash_push('error', trans('projects.project_save_error'));
@@ -162,7 +162,7 @@ class ProjectsController extends Controller
         {
             session_flash_push('error', trans('pages.project_repo_error'));
 
-            return redirect()->route('projects.get.read', [$id]);
+            return redirect()->route('projects.get.show', [$id]);
         }
 
         $common = $this->service->setCommonVariables($user);
@@ -216,7 +216,7 @@ class ProjectsController extends Controller
 
         session_flash_push('success', trans('projects.project_updated'));
 
-        return redirect()->route('projects.get.read', [$project->id]);
+        return redirect()->route('projects.get.show', [$project->id]);
     }
 
     /**

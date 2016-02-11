@@ -24,7 +24,7 @@ class PasswordController extends Controller
 
     use ResetsPasswords;
 
-    protected $redirectTo = '/dashboard';
+    protected $redirectTo = '/projects';
 
     /**
      * @var User

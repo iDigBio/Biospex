@@ -28,7 +28,7 @@ class AuthController extends Controller
     /**
      * @var string
      */
-    protected $redirectPath = '/dashboard';
+    protected $redirectPath = '/projects';
 
     /**
      * @var Config
@@ -127,7 +127,7 @@ class AuthController extends Controller
             $dispatcher->fire(new UserRegisteredEvent($user));
             session_flash_push('success', trans('users.created'));
 
-            return redirect()->route('auth.get.login');
+            return redirect()->route('home');
         }
 
         return redirect()->back()->withInput();

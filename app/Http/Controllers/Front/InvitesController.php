@@ -75,7 +75,7 @@ class InvitesController extends Controller
 
         if ( ! $this->permission->checkPermissions($user, [$group], 'update'))
         {
-            return redirect()->route('groups.get.read', [$id]);
+            return redirect()->route('groups.get.show', [$id]);
         }
 
         return view('front.invites.index', compact('group'));
@@ -95,7 +95,7 @@ class InvitesController extends Controller
 
         if ( ! $this->permission->checkPermissions($user, [$group], 'update'))
         {
-            return redirect()->route('groups.get.read', [$id]);
+            return redirect()->route('groups.get.show', [$id]);
         }
 
         $this->dispatch(new InviteCreateJob($request, $group));
@@ -117,7 +117,7 @@ class InvitesController extends Controller
 
         if ( ! $this->permission->checkPermissions($user, [$group], 'update'))
         {
-            return redirect()->route('groups.get.read', [$id]);
+            return redirect()->route('groups.get.show', [$id]);
         }
 
         $invite = $this->invite->find($inviteId);
@@ -152,7 +152,7 @@ class InvitesController extends Controller
 
         if ( ! $this->permission->checkPermissions($user, [$group], 'delete'))
         {
-            return redirect()->route('groups.get.read', [$id]);
+            return redirect()->route('groups.get.show', [$id]);
         }
 
         if ($this->invite->destroy($inviteId)) {
