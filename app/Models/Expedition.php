@@ -1,5 +1,6 @@
 <?php namespace Biospex\Models;
 
+use Illuminate\Support\Facades\DB;
 use Jenssegers\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Biospex\Models\Traits\UuidTrait;
@@ -152,5 +153,37 @@ class Expedition extends Eloquent
     public function getSubjectsCountAttribute()
     {
         return $this->subjects()->count();
+    }
+
+    /**
+     * Get all expeditions for user
+     * @param $id
+     * @return mixed
+     */
+    public function getAllExpeditions($id)
+    {
+        return $this->leftJoin('expedition_stats', 'expedition_stats.expedition_id', '=', 'expeditions.id')
+            ->leftJoin('downloads', 'downloads.expedition_id', '=', 'expeditions.id')
+            ->leftJoin('actor_expedition', 'actor_expedition.expedition_id', '=', 'expeditions.id')
+            ->leftJoin('projects', 'projects.id', '=', 'expeditions.project_id')
+            ->leftJoin('groups', 'groups.id', '=', 'projects.group_id')
+            ->leftJoin('group_user', 'group_user.group_id', '=', 'groups.id')
+            ->select(
+                'expeditions.id as expedition_id',
+                'expeditions.title as expedition_title',
+                'expeditions.description as expedition_description',
+                'expeditions.created_at as expedition_created_at',
+                'expedition_stats.subject_count',
+                'expedition_stats.transcriptions_total',
+                'expedition_stats.transcriptions_completed',
+                'expedition_stats.percent_completed',
+                'downloads.id as downloads_id',
+                'projects.id as project_id',
+                'projects.title as project_title',
+                'groups.id as group_id',
+                'groups.label as group_label',
+                'actor_expedition.id as actor_expedition_id')
+            ->where('group_user.user_id', '=', $id)
+            ->get();
     }
 }
