@@ -1,6 +1,8 @@
 <?php namespace Biospex\Http\Controllers\Front;
 
 use Biospex\Http\Controllers\Controller;
+use Biospex\Repositories\Contracts\Group;
+use Biospex\Repositories\Contracts\User;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Config\Repository as Config;
@@ -21,6 +23,11 @@ class ExpeditionsController extends Controller
     protected $request;
 
     /**
+     * @var Group
+     */
+    protected $group;
+
+    /**
      * @var Expedition
      */
     protected $expedition;
@@ -34,6 +41,11 @@ class ExpeditionsController extends Controller
      * @var Subject
      */
     protected $subject;
+
+    /**
+     * @var User
+     */
+    protected $user;
 
     /**
      * @var WorkflowManager
@@ -55,14 +67,17 @@ class ExpeditionsController extends Controller
      */
     protected $config;
 
+
     /**
      * Instantiate a new ExpeditionsController.
      *
      * @param Request $request
      * @param PermissionService $permissionService
+     * @param Group $group
      * @param Expedition $expedition
      * @param Project $project
      * @param Subject $subject
+     * @param User $user
      * @param WorkflowManager $workflowManager
      * @param Queue $queue
      * @param Config $config
@@ -76,9 +91,11 @@ class ExpeditionsController extends Controller
     public function __construct(
         Request $request,
         PermissionService $permissionService,
+        Group $group,
         Expedition $expedition,
         Project $project,
         Subject $subject,
+        User $user,
         WorkflowManager $workflowManager,
         Queue $queue,
         Config $config
@@ -91,6 +108,20 @@ class ExpeditionsController extends Controller
         $this->workflowManager = $workflowManager;
         $this->queue = $queue;
         $this->config = $config;
+        $this->group = $group;
+        $this->user = $user;
+    }
+
+    /**
+     * Display all expeditions for user
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function index()
+    {
+        $user = $this->user->find($this->request->user()->id);
+        $results = $this->expedition->getAllExpeditions($user->id);
+
+        return view('front.expeditions.index', compact('results', 'user'));
     }
 
     /**
@@ -99,16 +130,16 @@ class ExpeditionsController extends Controller
      * @param $id
      * @return \Illuminate\View\View
      */
-    public function index($id)
+    public function ajax($id)
     {
         if ( ! $this->request->ajax()) {
-            return redirect()->route('projects.get.read', [$id]);
+            return redirect()->route('projects.get.show', [$id]);
         }
 
         $user = $this->request->user();
         $project = $this->project->findWith($id, ['expeditions.actors', 'expeditions.stat']);
 
-        return view('front.expeditions.index', compact('project', 'user'));
+        return view('front.expeditions.ajax', compact('project', 'user'));
     }
 
     /**
@@ -151,11 +182,11 @@ class ExpeditionsController extends Controller
         if ($expedition) {
             session_flash_push('success', trans('expeditions.expedition_created'));
 
-            return redirect()->route('projects.expeditions.get.read', [$projectId, $expedition->id]);
+            return redirect()->route('projects.expeditions.get.show', [$projectId, $expedition->id]);
         }
 
         session_flash_push('error', trans('expeditions.expedition_save_error'));
-        return redirect()->route('projects.get.read', [$projectId]);
+        return redirect()->route('projects.get.show', [$projectId]);
     }
 
     /**
@@ -164,11 +195,11 @@ class ExpeditionsController extends Controller
      * @param $expeditionId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function read($projectId, $expeditionId)
+    public function show($projectId, $expeditionId)
     {
         $expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads', 'workflowManager']);
 
-        return view('front.expeditions.read', compact('expedition'));
+        return view('front.expeditions.show', compact('expedition'));
     }
 
     /**
@@ -241,7 +272,7 @@ class ExpeditionsController extends Controller
             // Success!
             session_flash_push('success', trans('expeditions.expedition_updated'));
 
-            return redirect()->route('projects.expeditions.get.read', [$projectId, $expeditionId]);
+            return redirect()->route('projects.expeditions.get.show', [$projectId, $expeditionId]);
         }
 
         session_flash_push('error', trans('expeditions.expedition_save_error'));
@@ -290,7 +321,7 @@ class ExpeditionsController extends Controller
             session_flash_push('error', trans('expeditions.expedition_process_error', ['error' => $e->getMessage()]));
         }
 
-        return redirect()->route('projects.expeditions.get.read', [$projectId, $expeditionId]);
+        return redirect()->route('projects.expeditions.get.show', [$projectId, $expeditionId]);
     }
 
     /**
@@ -316,7 +347,7 @@ class ExpeditionsController extends Controller
         $this->queue->push('Biospex\Services\Queue\OcrProcessBuild', $data, $this->config->get('config.beanstalkd.ocr'));
         session_flash_push('success', trans('expeditions.ocr_process_success'));
 
-        return redirect()->route('projects.expeditions.get.read', [$projectId, $expeditionId]);
+        return redirect()->route('projects.expeditions.get.show', [$projectId, $expeditionId]);
     }
 
     /**
@@ -346,7 +377,7 @@ class ExpeditionsController extends Controller
             session_flash_push('success', trans('expeditions.process_stopped'));
         }
 
-        return redirect()->route('projects.expeditions.get.read', [$projectId, $expeditionId]);
+        return redirect()->route('projects.expeditions.get.show', [$projectId, $expeditionId]);
     }
 
     /**
@@ -370,7 +401,7 @@ class ExpeditionsController extends Controller
         if ( ! is_null($workflow)) {
             session_flash_push('error', trans('expeditions.expedition_process_exists'));
 
-            return redirect()->route('projects.expeditions.get.read', [$projectId, $expeditionId]);
+            return redirect()->route('projects.expeditions.get.show', [$projectId, $expeditionId]);
         } else {
             try {
                 $subjects = $this->subject->getSubjectIds($projectId, null, $expeditionId);
@@ -383,6 +414,6 @@ class ExpeditionsController extends Controller
             }
         }
 
-        return redirect()->route('projects.get.read', [$projectId]);
+        return redirect()->route('projects.get.show', [$projectId]);
     }
 }
