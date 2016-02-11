@@ -1,69 +1,66 @@
 <?php
-
-Breadcrumbs::register('projects', function ($breadcrumbs) {
-    $breadcrumbs->push('Dashboard', route('projects.get.index'));
-});
-
+// Group Pages
 Breadcrumbs::register('groups', function ($breadcrumbs) {
     $breadcrumbs->push('Groups', route('groups.get.index'));
 });
 
-Breadcrumbs::register('groups.get.read-with-link', function ($breadcrumbs) {
-    $breadcrumbs->push('Groups', route('groups.get.index'));
-    $breadcrumbs->push('');
-});
-
-Breadcrumbs::register('groups.get.read', function ($breadcrumbs, $group) {
+Breadcrumbs::register('groups.get.show', function ($breadcrumbs, $group) {
     $breadcrumbs->parent('groups');
-    $breadcrumbs->push($group->label, route('groups.get.read', $group->id));
+    $breadcrumbs->push($group->label, route('groups.get.show', $group->id));
 });
 
-Breadcrumbs::register('projects.get.read', function ($breadcrumbs, $project) {
-    $breadcrumbs->parent('groups.get.read', $project->group);
-    $breadcrumbs->push($project->title);
-});
-
-Breadcrumbs::register('projects.get.read-with-link', function ($breadcrumbs, $project) {
-    $breadcrumbs->parent('groups.get.read', $project->group);
-    $breadcrumbs->push($project->title, route('projects.get.read', $project->id));
-});
-
-Breadcrumbs::register('projects.inside', function ($breadcrumbs, $project) {
-    $breadcrumbs->parent('projects.get.read-with-link', $project);
-    $breadcrumbs->push('');
-});
-
-Breadcrumbs::register('projects.get.create', function ($breadcrumbs) {
-    $breadcrumbs->parent('projects');
+Breadcrumbs::register('groups.get.show.create', function ($breadcrumbs) {
+    $breadcrumbs->parent('groups');
     $breadcrumbs->push(Lang::get('pages.create'));
 });
 
-Breadcrumbs::register('projects.expeditions.get.read', function ($breadcrumbs, $expedition) {
-    $breadcrumbs->parent('projects.get.read-with-link', $expedition->project);
-    $breadcrumbs->push($expedition->title);
+Breadcrumbs::register('groups.get.show.edit', function ($breadcrumbs, $group) {
+    $breadcrumbs->parent('groups');
+    $breadcrumbs->push($group->label, route('groups.get.show', $group->id));
+    $breadcrumbs->push(Lang::get('pages.edit'));
 });
 
-Breadcrumbs::register('projects.expeditions.show-with-link', function ($breadcrumbs, $expedition) {
-    $breadcrumbs->parent('projects.get.read-with-link', $expedition->project);
-    $breadcrumbs->push($expedition->title, route('projects.expeditions.get.read', [$expedition->project->id, $expedition->id]));
+Breadcrumbs::register('groups.get.show.invite', function ($breadcrumbs, $group) {
+    $breadcrumbs->parent('groups');
+    $breadcrumbs->push($group->label, route('groups.get.show', $group->id));
+    $breadcrumbs->push(Lang::get('pages.invite'));
 });
 
-Breadcrumbs::register('projects.expeditions.get.create', function ($breadcrumbs, $project) {
-    $breadcrumbs->parent('projects.get.read-with-link', $project);
-    $breadcrumbs->push('');
+
+// Project Pages
+Breadcrumbs::register('projects', function ($breadcrumbs) {
+    $breadcrumbs->push('Projects', route('projects.get.index'));
 });
 
-Breadcrumbs::register('projects.expeditions.inside', function ($breadcrumbs, $expedition) {
-    $breadcrumbs->parent('projects.expeditions.show-with-link', $expedition);
-    $breadcrumbs->push('');
+Breadcrumbs::register('projects.title', function ($breadcrumbs, $title) {
+    $breadcrumbs->push('Projects', route('projects.get.index'));
+    $breadcrumbs->push($title);
 });
 
-Breadcrumbs::register('projects.expeditions.inside', function ($breadcrumbs, $expedition) {
-    $breadcrumbs->parent('projects.expeditions.show-with-link', $expedition);
-    $breadcrumbs->push('');
+Breadcrumbs::register('projects.get.show', function ($breadcrumbs, $project) {
+    $breadcrumbs->parent('projects');
+    $breadcrumbs->push($project->group->label, route('groups.get.show', $project->group->id));
+    $breadcrumbs->push($project->title);
 });
 
-Breadcrumbs::register('projects.subjects', function ($breadcrumbs, $project) {
-    $breadcrumbs->parent('projects.get.read-with-link', $project);
-    $breadcrumbs->push('Subjects');
+Breadcrumbs::register('projects.get.show.title', function ($breadcrumbs, $project, $title) {
+    $breadcrumbs->parent('projects');
+    $breadcrumbs->push($project->group->label, route('groups.get.show', $project->group->id));
+    $breadcrumbs->push($project->title, route('projects.get.show', $project->id));
+    $breadcrumbs->push($title);
+});
+
+// Expedition Pages
+Breadcrumbs::register('projects.expeditions.get.show', function ($breadcrumbs, $expedition, $link = false) {
+    $breadcrumbs->parent('projects');
+    $breadcrumbs->push($expedition->project->group->label, route('groups.get.show', $expedition->project->group->id));
+    $breadcrumbs->push($expedition->project->title, route('projects.get.show', $expedition->project->id));
+    ($link) ?
+        $breadcrumbs->push($expedition->title, route('projects.expeditions.get.show', [$expedition->project->id, $expedition->id]))
+            : $breadcrumbs->push($expedition->title);
+});
+
+Breadcrumbs::register('projects.expeditions.get.show.title', function ($breadcrumbs, $expedition, $title) {
+    $breadcrumbs->parent('projects.expeditions.get.show', $expedition, true);
+    $breadcrumbs->push($title);
 });

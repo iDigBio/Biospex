@@ -63,6 +63,13 @@ function format_date($date, $format = null, $tz = null)
     return $date->copy()->tz($tz)->format($format);
 }
 
+function convert_time_zone($data, $format = null, $tz = null)
+{
+    $userTime = new DateTime($data, new DateTimeZone('UTC'));
+    $userTime->setTimezone(new DateTimeZone($tz));
+    return $userTime->format($format);
+}
+
 /**
  * Give file size in humna readable form.
  *
