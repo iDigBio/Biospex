@@ -10,12 +10,13 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Biospex\Models\Traits\HasGroup;
+use Biospex\Models\Traits\UuidTrait;
 
 class User extends Model implements AuthenticatableContract,
     AuthorizableContract,
     CanResetPasswordContract
 {
-    use Authenticatable, Authorizable, CanResetPassword, HasGroup;
+    use Authenticatable, Authorizable, CanResetPassword, HasGroup, UuidTrait;
 
     /**
      * The database table used by the model.
@@ -29,7 +30,7 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
-    protected $fillable = ['name', 'email', 'password'];
+    protected $fillable = ['uuid', 'name', 'email', 'password'];
 
     /**
      * The attributes excluded from the model's JSON form.

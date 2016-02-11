@@ -26,9 +26,12 @@
  */
 
 use Illuminate\Database\Eloquent\Model;
+use Biospex\Models\Traits\UuidTrait;
 
 class Download extends Model
 {
+    use UuidTrait;
+
     /**
      * The database table used by the model.
      *
@@ -37,6 +40,7 @@ class Download extends Model
     protected $table = 'downloads';
 
     protected $fillable = [
+        'uuid',
         'expedition_id',
         'actor_id',
         'file',

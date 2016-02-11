@@ -85,4 +85,9 @@ class ExpeditionRepository extends Repository implements Expedition
     {
         return $this->model->findByUuid($uuid);
     }
+
+    public function getAllExpeditions($id)
+    {
+        return $this->model->getAllExpeditions($id);
+    }
 }

@@ -4,11 +4,11 @@ namespace Biospex\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Config;
+use Biospex\Models\Traits\UuidTrait;
 
 class Group extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, UuidTrait;
 
     protected $dates = ['deleted_at'];
 
@@ -28,6 +28,7 @@ class Group extends Model
      * @var array
      */
     protected $fillable = [
+        'uuid',
         'user_id',
         'name',
         'permissions',

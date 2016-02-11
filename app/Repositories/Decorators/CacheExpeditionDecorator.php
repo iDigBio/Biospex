@@ -62,4 +62,17 @@ class CacheExpeditionDecorator extends CacheDecorator implements Expedition
             return $this->repository->findByUuid($uuid);
         });
     }
+
+    public function getAllExpeditions($id)
+    {
+        if ( ! $this->cached) {
+            return $this->repository->getAllExpeditions($id);
+        }
+
+        $this->setKey(__METHOD__, $id);
+
+        return $this->cache->tags($this->tag)->rememberForever($this->key, function () use ($id) {
+            return $this->repository->getAllExpeditions($id);
+        });
+    }
 }

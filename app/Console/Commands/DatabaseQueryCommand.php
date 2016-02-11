@@ -57,19 +57,20 @@ class DatabaseQueryCommand extends Command
 
         $users = $this->user->all();
         foreach ($users as $user) {
-            $user->uuid = Uuid::uuid4()->__toString();
+            $user->uuid = ! empty($user->uuid) ? $user->uuid : Uuid::uuid4()->__toString();
             $user->save();
         }
 
         $groups = $this->group->all();
         foreach ($groups as $group) {
-            $group->uuid = Uuid::uuid4()->__toString();
+            $group->label = ucfirst($group->label);
+            $group->uuid = ! empty($group->uuid) ? $group->uuid : Uuid::uuid4()->__toString();
             $group->save();
         }
 
         $downloads = $this->download->all();
         foreach ($downloads as $download) {
-            $download->uuid = Uuid::uuid4()->__toString();
+            $download->uuid = ! empty($download->uuid) ? $download->uuid : Uuid::uuid4()->__toString();
             $download->save();
         }
 
