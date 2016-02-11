@@ -16,7 +16,7 @@
     </div>
 </div>
 
-<div id="coreFileModal" class="modal fade">
+<div id="dataFileModal" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -33,7 +33,7 @@
     </div>
 </div>
 
-<div id="coreUrlModal" class="modal fade">
+<div id="dataUrlModal" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">

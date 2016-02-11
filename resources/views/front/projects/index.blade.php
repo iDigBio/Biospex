@@ -8,7 +8,6 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('projects') !!}
     @if ($user->groups->isEmpty())
         <div class="col-md-10 col-md-offset-1">
             <h3>{{ trans('welcome.welcome') }}</h3>
@@ -24,21 +23,21 @@
         </div>
     @else
         <div class="jumbotron">
-            <h3>{{ trans('projects.projects') }}</h3>
+            <h3>{{ trans('projects.projects') }}
             <button title="@lang('buttons.createTitleP')" class="btn btn-success"
                     onClick="location.href='{{ route('projects.get.create') }}'"><span
                         class="fa fa-plus fa-lg"></span> @lang('buttons.create')</button>
+            </h3>
         </div>
         <div class="col-md-12">
             <div class="table-responsive">
-                <table class="table">
+                <table class="table-sort">
                     <thead>
                     <tr>
-                        <th></th>
+                        <th class="sorter-false"></th>
                         <th>@lang('pages.title')</th>
-                        <th>@lang('pages.description')</th>
                         <th>@lang('pages.group')</th>
-                        <th class="nowrap">@lang('projects.project_options')</th>
+                        <th class="nowrap sorter-false">@lang('projects.project_options')</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -47,14 +46,13 @@
                             <tr>
                                 <td><span id="collapse{{ $project->id }}" class="fa fa-folder fa-2x pointer"
                                           data-toggle="collapse" data-target="#{{ $project->id }}"></span></td>
-                                <td><a href="{{ route('projects.get.read', [$project->id]) }}">{{ $project->title }}</a>
+                                <td><a href="{{ route('projects.get.show', [$project->id]) }}">{{ $project->title }}</a>
                                 </td>
-                                <td>{{ $project->description_short }} </td>
-                                <td><a href="{{ route('groups.get.read', [$group->id]) }}">{{ $group->name }}</a></td>
+                                <td><a href="{{ route('groups.get.show', [$group->id]) }}">{{ $group->name }}</a></td>
                                 <td class="buttons-sm">
                                     <button title="@lang('buttons.viewTitle')" class="btn btn-primary btn-xs"
                                             type="button"
-                                            onClick="location.href='{{ route('projects.get.read', [$project->id]) }}'"><span
+                                            onClick="location.href='{{ route('projects.get.show', [$project->id]) }}'"><span
                                                 class="fa fa-eye fa-lg"></span> @lang('buttons.view')</button>
                                     <button title="@lang('buttons.dataTitle')" class="btn btn-inverse btn-xs"
                                             type="button"
@@ -81,7 +79,7 @@
                                     @endif
                                 </td>
                             </tr>
-                            <tr>
+                            <tr style="display: none">
                                 <td></td>
                                 <td colspan="4">
                                     <span id="{{ $project->id }}" class="collapse out"></span></td>

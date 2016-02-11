@@ -7,9 +7,8 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('projects.subjects', $project) !!}
+    {!! Breadcrumbs::render('projects.get.show.title', $project, 'Explore') !!}
     <div class="jumbotron">
-        <h4>@lang('pages.project'):</h4>
         <h2>{{ $project->title }}</h2>
         <p>{{ $project->description_short }}</p>
 

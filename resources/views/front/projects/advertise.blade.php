@@ -7,9 +7,8 @@
 
 {{-- Content --}}
 @section('content')
-{!! Breadcrumbs::render('projects.inside', $project) !!}
+    {!! Breadcrumbs::render('projects.get.show.title', $project, trans('pages.advertise_title')) !!}
 <div class="jumbotron">
-    <h4>@lang('projects.project'):</h4>
     <h2>{{ $project->title }}</h2>
     <p>@lang('pages.advertise_title')</p>
     <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-sm" type="button" onClick="location.href='{{ route('projects.get.advertiseDownload', [$project->id]) }}'"><span class="fa fa-download fa-lrg"></span> @lang('buttons.download') </button>

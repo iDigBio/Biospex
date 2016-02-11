@@ -8,9 +8,8 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('groups.get.read', $group) !!}
+    {!! Breadcrumbs::render('groups.get.show', $group) !!}
     <div class="jumbotron">
-        <h4>Group:</h4>
         <h2>{{ $group->label }}</h2>
     </div>
 
@@ -55,7 +54,7 @@
                 <td>
                     <ul>
                         @foreach ($group->projects as $project)
-                            <li>{!! link_to_route('projects.get.read', $project->title, $project->id) !!}</li>
+                            <li>{!! link_to_route('projects.get.show', $project->title, $project->id) !!}</li>
                         @endforeach
                     </ul>
                 </td>

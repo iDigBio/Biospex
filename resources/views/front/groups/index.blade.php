@@ -9,9 +9,7 @@
 {{-- Content --}}
 @section('content')
 <div class="row">
-{!! Breadcrumbs::render('groups') !!}
     <div class="jumbotron">
-        <h3>{{ trans('groups.your_groups') }}</h3>
         <p>{{ trans('groups.group_explained') }}</p>
     </div>
     <div class="col-md-10 col-md-offset-1">
@@ -26,7 +24,7 @@
                     <tr>
                         <td>{{ $group->label }}</td>
                         <td>
-                            <button title="@lang('buttons.viewTitle')" class="btn btn-default btn-primary btn-sm" type="button" onClick="location.href='{{ route('groups.get.read', [$group->id]) }}'"><span class="fa fa-eye fa-lrg"></span> @lang('buttons.view')</button>
+                            <button title="@lang('buttons.viewTitle')" class="btn btn-default btn-primary btn-sm" type="button" onClick="location.href='{{ route('groups.get.show', [$group->id]) }}'"><span class="fa fa-eye fa-lrg"></span> @lang('buttons.view')</button>
                             @can('update', $group)
                             <button title="@lang('buttons.editTitle')" class="btn btn-default btn-warning btn-sm" type="button" onClick="location.href='{{ route('groups.get.edit', array($group->id)) }}'"><span class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
                             <button title="@lang('buttons.inviteTitle')" class="btn btn-default btn-reverse btn-sm" type="button" onClick="location.href='{{ route('invites.get.index', [$group->id]) }}'"><span class="fa fa-users fa-lrg"></span> @lang('buttons.invite')</button>

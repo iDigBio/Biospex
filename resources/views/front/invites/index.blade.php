@@ -8,9 +8,9 @@
 
 {{-- Content --}}
 @section('content')
-{!! Breadcrumbs::render('groups.get.read', $group) !!}
+{!! Breadcrumbs::render('groups.get.show.invite', $group) !!}
 <div class="jumbotron">
-    <h2>{{ trans('pages.group') }}: {{ $group->label }}</h2>
+    <h2>{{ $group->label }}</h2>
     <p>{{ trans('groups.invite_explained') }}</p>
 </div>
 
