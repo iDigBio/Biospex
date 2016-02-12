@@ -10,6 +10,5 @@ _ide_helper.php
 /config/debugbar.php
 behat.yml
 .env.behat
-
-
+codeception.yml
 tests/_output/*
