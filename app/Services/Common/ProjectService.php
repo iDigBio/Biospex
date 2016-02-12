@@ -10,34 +10,15 @@ class ProjectService
      * @var Workflow
      */
     private $workflow;
-    /**
-     * @var \Biospex\Services\Common\PermissionService
-     */
-    private $permission;
 
     /**
      * ProjectService constructor.
      * @param Workflow $workflow
-     * @param PermissionService $permission
      */
     public function __construct(
-        Workflow $workflow,
-        PermissionService $permission
+        Workflow $workflow
     ) {
         $this->workflow = $workflow;
-        $this->permission = $permission;
-    }
-
-    /**
-     * Check permissions.
-     * @param $user
-     * @param $classes
-     * @param $ability
-     * @return bool
-     */
-    public function checkPermissions($user, $classes, $ability)
-    {
-        return $this->permission->checkPermissions($user, $classes, $ability);
     }
 
     /**

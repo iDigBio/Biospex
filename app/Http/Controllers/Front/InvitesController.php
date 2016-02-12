@@ -3,7 +3,6 @@
 use Biospex\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Events\Dispatcher as Event;
-use Biospex\Services\Common\PermissionService;
 use Biospex\Repositories\Contracts\Invite;
 use Biospex\Repositories\Contracts\Group;
 use Biospex\Repositories\Contracts\User;
@@ -24,11 +23,6 @@ class InvitesController extends Controller
     public $group;
 
     /**
-     * @var PermissionService
-     */
-    public $permission;
-
-    /**
      * @var Request
      */
     public $request;
@@ -39,22 +33,18 @@ class InvitesController extends Controller
     public $user;
 
     /**
-     * Instantiate a new InvitesController
-     *
-     * @param PermissionService $permission
+     * InvitesController constructor.
      * @param Request $request
      * @param Invite $invite
      * @param Group $group
      * @param User $user
      */
     public function __construct(
-        PermissionService $permission,
         Request $request,
         Invite $invite,
         Group $group,
         User $user
     ) {
-        $this->permission = $permission;
         $this->request = $request;
         $this->invite = $invite;
         $this->group = $group;
@@ -73,7 +63,7 @@ class InvitesController extends Controller
         $this->group->cached(false);
         $group = $this->group->findWith($id, ['invites']);
 
-        if ( ! $this->permission->checkPermissions($user, [$group], 'update'))
+        if ( ! $this->checkPermissions($user, [$group], 'update'))
         {
             return redirect()->route('groups.get.show', [$id]);
         }
@@ -93,7 +83,7 @@ class InvitesController extends Controller
         $user = $this->request->user();
         $group = $this->group->findWith($id, ['invites']);
 
-        if ( ! $this->permission->checkPermissions($user, [$group], 'update'))
+        if ( ! $this->checkPermissions($user, [$group], 'update'))
         {
             return redirect()->route('groups.get.show', [$id]);
         }
@@ -115,7 +105,7 @@ class InvitesController extends Controller
         $user = $this->request->user();
         $group = $this->group->find($id);
 
-        if ( ! $this->permission->checkPermissions($user, [$group], 'update'))
+        if ( ! $this->checkPermissions($user, [$group], 'update'))
         {
             return redirect()->route('groups.get.show', [$id]);
         }
@@ -150,7 +140,7 @@ class InvitesController extends Controller
         $user = $this->request->user();
         $group = $this->group->find($id);
 
-        if ( ! $this->permission->checkPermissions($user, [$group], 'delete'))
+        if ( ! $this->checkPermissions($user, [$group], 'delete'))
         {
             return redirect()->route('groups.get.show', [$id]);
         }

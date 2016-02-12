@@ -111,7 +111,7 @@ class ProjectsController extends Controller
             'expeditions.stat'
         ]);
 
-        if ( ! $this->service->checkPermissions($user, [$project], 'read'))
+        if ( ! $this->checkPermissions($user, [$project], 'read'))
         {
             return redirect()->route('projects.get.index');
         }
@@ -130,7 +130,7 @@ class ProjectsController extends Controller
         $user = $request->user();
         $group = $this->group->findWith($request->get('group_id'), ['permissions']);
 
-        if ( ! $this->service->checkPermissions($user, [\Biospex\Models\Project::class, $group], 'create'))
+        if ( ! $this->checkPermissions($user, [\Biospex\Models\Project::class, $group], 'create'))
         {
             return redirect()->route('projects.get.index');
         }
@@ -181,7 +181,7 @@ class ProjectsController extends Controller
         $user = $this->request->user();
         $project = $this->project->findWith($id, ['group.permissions', 'expeditions.workflowManager']);
 
-        if ( ! $this->service->checkPermissions($user, [$project], 'update'))
+        if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
             return redirect()->route('projects.get.index');
         }
@@ -205,7 +205,7 @@ class ProjectsController extends Controller
         $user = $request->user();
         $project = $this->project->find($request->input('id'));
 
-        if ( ! $this->service->checkPermissions($user, [$project], 'update'))
+        if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
             return redirect()->route('projects.get.index');
         }
@@ -228,7 +228,7 @@ class ProjectsController extends Controller
         $user = $this->request->user();
         $project = $this->project->findWith($id, ['group']);
 
-        if ( ! $this->service->checkPermissions($user, [$project], 'read'))
+        if ( ! $this->checkPermissions($user, [$project], 'read'))
         {
             return redirect()->route('projects.get.index');
         }
@@ -252,7 +252,7 @@ class ProjectsController extends Controller
         $user = $this->request->user();
         $project = $this->project->findWith($id, ['group']);
 
-        if ( ! $this->service->checkPermissions($user, [$project], 'read'))
+        if ( ! $this->checkPermissions($user, [$project], 'read'))
         {
             return redirect()->route('projects.get.index');
         }
@@ -274,7 +274,7 @@ class ProjectsController extends Controller
         $user = $this->request->user();
         $project = $this->project->findWith($id, ['group']);
 
-        if ( ! $this->service->checkPermissions($user, [$project], 'read'))
+        if ( ! $this->checkPermissions($user, [$project], 'read'))
         {
             return redirect()->route('projects.get.index');
         }
@@ -295,7 +295,7 @@ class ProjectsController extends Controller
         $user = $this->request->user();
         $project = $this->project->findWith($id, ['group']);
 
-        if ( ! $this->service->checkPermissions($user, [$project], 'delete'))
+        if ( ! $this->checkPermissions($user, [$project], 'delete'))
         {
             return redirect()->route('projects.get.index');
         }

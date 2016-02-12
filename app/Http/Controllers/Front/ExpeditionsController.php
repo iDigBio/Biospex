@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Config\Repository as Config;
 use Biospex\Http\Requests\ExpeditionFormRequest;
-use Biospex\Services\Common\PermissionService;
 use Biospex\Repositories\Contracts\Expedition;
 use Biospex\Repositories\Contracts\Project;
 use Biospex\Repositories\Contracts\Subject;
@@ -53,11 +52,6 @@ class ExpeditionsController extends Controller
     protected $workflowManager;
 
     /**
-     * @var PermissionService
-     */
-    protected $permissionService;
-
-    /**
      * @var Queue
      */
     protected $queue;
@@ -71,7 +65,6 @@ class ExpeditionsController extends Controller
     /**
      * ExpeditionsController constructor.
      * @param Request $request
-     * @param PermissionService $permissionService
      * @param Group $group
      * @param Expedition $expedition
      * @param Project $project
@@ -83,7 +76,6 @@ class ExpeditionsController extends Controller
      */
     public function __construct(
         Request $request,
-        PermissionService $permissionService,
         Group $group,
         Expedition $expedition,
         Project $project,
@@ -94,7 +86,6 @@ class ExpeditionsController extends Controller
         Config $config
     ) {
         $this->request = $request;
-        $this->permissionService = $permissionService;
         $this->expedition = $expedition;
         $this->project = $project;
         $this->subject = $subject;
@@ -146,7 +137,7 @@ class ExpeditionsController extends Controller
         $user = $this->request->user();
         $project = $this->project->findWith($id, ['group.permissions']);
 
-        if ( ! $this->permissionService->checkPermissions($user, [$project, $project->group], 'create'))
+        if ( ! $this->checkPermissions($user, [$project, $project->group], 'create'))
         {
             return redirect()->route('projects.get.index');
         }
@@ -165,7 +156,7 @@ class ExpeditionsController extends Controller
         $user = $this->request->user();
         $project = $this->project->findWith($projectId, ['group.permissions']);
 
-        if ( ! $this->permissionService->checkPermissions($user, [$project, $project->group], 'create'))
+        if ( ! $this->checkPermissions($user, [$project, $project->group], 'create'))
         {
             return redirect()->route('projects.get.index');
         }
@@ -206,7 +197,7 @@ class ExpeditionsController extends Controller
         $user = $this->request->user();
         $expedition = $this->expedition->findWith($expeditionId, ['project.group.permissions']);
 
-        if ( ! $this->permissionService->checkPermissions($user, [$expedition->project, $expedition->project->group], 'create'))
+        if ( ! $this->checkPermissions($user, [$expedition->project, $expedition->project->group], 'create'))
         {
             return redirect()->route('projects.get.index');
         }
@@ -226,7 +217,7 @@ class ExpeditionsController extends Controller
         $user = $this->request->user();
         $expedition = $this->expedition->findWith($expeditionId, ['project.group.permissions', 'workflowManager', 'subjects']);
 
-        if ( ! $this->permissionService->checkPermissions($user, [$expedition->project], 'update'))
+        if ( ! $this->checkPermissions($user, [$expedition->project], 'update'))
         {
             return redirect()->route('projects.get.index');
         }
@@ -254,7 +245,7 @@ class ExpeditionsController extends Controller
         $user = $this->request->user();
         $project = $this->project->findWith($projectId, ['group.permissions']);
 
-        if ( ! $this->permissionService->checkPermissions($user, [$project], 'update'))
+        if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
             return redirect()->route('projects.get.index');
         }
@@ -284,7 +275,7 @@ class ExpeditionsController extends Controller
         $user = $this->request->user();
         $project = $this->project->findWith($projectId, ['group.permissions']);
 
-        if ( ! $this->permissionService->checkPermissions($user, [$project], 'update'))
+        if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
             return redirect()->route('projects.get.index');
         }
@@ -328,7 +319,7 @@ class ExpeditionsController extends Controller
         $user = $this->request->user();
         $project = $this->project->findWith($projectId, ['group.permissions']);
 
-        if ( ! $this->permissionService->checkPermissions($user, [$project], 'update'))
+        if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
             return redirect()->route('projects.get.index');
         }
@@ -355,7 +346,7 @@ class ExpeditionsController extends Controller
         $user = $this->request->user();
         $project = $this->project->findWith($projectId, ['group.permissions']);
 
-        if ( ! $this->permissionService->checkPermissions($user, [$project], 'update'))
+        if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
             return redirect()->route('projects.get.index');
         }
@@ -385,7 +376,7 @@ class ExpeditionsController extends Controller
         $user = $this->request->user();
         $project = $this->project->findWith($projectId, ['group.permissions']);
 
-        if ( ! $this->permissionService->checkPermissions($user, [$project], 'delete'))
+        if ( ! $this->checkPermissions($user, [$project], 'delete'))
         {
             return redirect()->route('projects.get.index');
         }
