@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Biospex\Repositories\Contracts\Header;
 use Biospex\Services\Grid\JqGridJsonEncoder;
 use Biospex\Repositories\Contracts\Project;
-use Cartalyst\Sentry\Sentry;
 
 class GridsController extends Controller
 {
@@ -26,11 +25,6 @@ class GridsController extends Controller
      * @var
      */
     protected $fields;
-
-    /**
-     * @var Sentry
-     */
-    protected $sentry;
 
     /**
      * @var HeaderInterface
@@ -57,27 +51,21 @@ class GridsController extends Controller
     private $request;
 
     /**
-     * Constructor.
-     *
+     * GridsController constructor.
      * @param JqGridJsonEncoder $grid
-     * @param ProjectInterface|Project $project
-     * @param Sentry $sentry
-     * @param HeaderInterface|Header $header
+     * @param Project $project
+     * @param Header $header
      * @param Request $request
-     * @internal param UserGridFieldInterface $fields
-     * @internal param Router $router
      */
     public function __construct(
         JqGridJsonEncoder $grid,
         Project $project,
-        Sentry $sentry,
         Header $header,
         Request $request
     )
     {
         $this->grid = $grid;
         $this->project = $project;
-        $this->sentry = $sentry;
         $this->header = $header;
         $this->request = $request;
 

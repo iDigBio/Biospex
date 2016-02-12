@@ -16,20 +16,9 @@ class ProjectService
     private $permission;
 
     /**
-     * Construct.
-     *
+     * ProjectService constructor.
      * @param Workflow $workflow
-     * @param \Biospex\Services\Common\PermissionService $permission
-     * @internal param Request $request
-     * @internal param Router $router
-     * @internal param UrlGenerator $url
-     * @internal param Repository $config
-     * @internal param Group $group
-     * @internal param Project $project
-     * @internal param Auth $auth
-     * @internal param User $user
-     * @internal param Actor $actor
-     * @internal param Sentry $sentry
+     * @param PermissionService $permission
      */
     public function __construct(
         Workflow $workflow,

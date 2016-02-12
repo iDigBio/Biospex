@@ -73,8 +73,7 @@ class ProjectsController extends Controller
      * Display a listing of the resource.
      * Have to use json_encode + json_decode to fix the different array structure
      * returned by Sentry group queries.
-     *
-     * @return Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
     {

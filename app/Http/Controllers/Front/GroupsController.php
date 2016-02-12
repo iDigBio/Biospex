@@ -23,18 +23,10 @@ class GroupsController extends Controller
     private $request;
 
     /**
-     * Instantiate a new GroupsController
-     *
+     * GroupsController constructor.
      * @param Request $request
      * @param Group $group
      * @param User $user
-     * @internal param Auth|AuthManager $auth
-     * @internal param Sentry $sentry
-     * @internal param User $user
-     * @internal param Dispatcher $events
-     * @internal param Group $group
-     * @internal param Permission $permission
-     * @internal param GroupForm $groupForm
      */
     public function __construct(Request $request, Group $group, User $user)
     {

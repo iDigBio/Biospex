@@ -92,12 +92,6 @@ class AppServiceProvider extends ServiceProvider
             'Biospex\Services\Registrar'
         );
 
-
-        $this->app->bind('Cartalyst\Sentry\Sentry', function ($app) {
-            return $app['sentry'];
-        });
-
-
         /*
          * Development Providers
          */

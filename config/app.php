@@ -141,8 +141,6 @@ return [
          * Vendor Providers
          */
         Collective\Html\HtmlServiceProvider::class,
-        Cartalyst\Sentry\SentryServiceProvider::class,
-        Menu\MenuServiceProvider::class,
         Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
         Felixkiss\UniqueWithValidator\UniqueWithValidatorServiceProvider::class,
         Cviebrock\EloquentSluggable\SluggableServiceProvider::class,
@@ -213,8 +211,6 @@ return [
         /*
          * Other aliases
          */
-        'Sentry'      => Cartalyst\Sentry\Facades\Laravel\Sentry::class,
-        'Menu'        => Menu\Menu::class,
         'Local'       => Mcamara\LaravelLocalization\Facades\LaravelLocalization::class,
         'Breadcrumbs' => DaveJamesMiller\Breadcrumbs\Facade::class,
         'Form'        => Collective\Html\FormFacade::class,

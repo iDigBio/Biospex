@@ -24,12 +24,10 @@ class ImportsController extends Controller
 
 
     /**
-     * Instantiate a new ProjectsController.
-     *
+     * ImportsController constructor.
      * @param ImportServiceFactory $importFactory
-     * @param ProjectInterface|Project $project
+     * @param Project $project
      * @param Request $request
-     * @internal param Sentry $sentry
      */
     public function __construct(
         ImportServiceFactory $importFactory,

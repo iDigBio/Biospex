@@ -69,8 +69,7 @@ class ExpeditionsController extends Controller
 
 
     /**
-     * Instantiate a new ExpeditionsController.
-     *
+     * ExpeditionsController constructor.
      * @param Request $request
      * @param PermissionService $permissionService
      * @param Group $group
@@ -81,12 +80,6 @@ class ExpeditionsController extends Controller
      * @param WorkflowManager $workflowManager
      * @param Queue $queue
      * @param Config $config
-     * @internal param ExpeditionForm $expeditionForm
-     * @internal param OcrQueueInterface $ocr
-     * @internal param Sentry $sentry
-     * @internal param OcrProcess $ocrProcess
-     * @internal param DarwinCoreCsvImport $csv
-     * @internal param DarwinCore $process
      */
     public function __construct(
         Request $request,

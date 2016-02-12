@@ -2,6 +2,8 @@
 
 namespace Biospex\Http\Requests;
 
+use Illuminate\Support\Facades\Auth;
+
 class ImportFormRequest extends Request
 {
     /**
@@ -11,7 +13,7 @@ class ImportFormRequest extends Request
      */
     public function authorize()
     {
-        return \Sentry::check();
+        return Auth::check();
     }
 
     /**

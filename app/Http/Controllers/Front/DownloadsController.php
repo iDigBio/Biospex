@@ -4,7 +4,6 @@ use Biospex\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Config\Repository as Config;
-use Illuminate\Support\Facades\Response;
 use Biospex\Repositories\Contracts\Expedition;
 use Biospex\Repositories\Contracts\Download;
 
@@ -43,7 +42,6 @@ class DownloadsController extends Controller
      * @param Request $request
      * @param ResponseFactory $response
      * @param Config $config
-     * @internal param Sentry $sentry
      */
     public function __construct(
         Expedition $expedition,
