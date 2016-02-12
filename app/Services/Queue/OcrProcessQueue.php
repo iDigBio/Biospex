@@ -80,9 +80,9 @@ class OcrProcessQueue extends QueueAbstract
         }
 
         try {
-            if (empty($record->status)) {
+            if ( ! $record->status) {
                 $this->ocrProcess->sendOcrFile($record);
-                $record->status = 'in progress';
+                $record->status = 1;
                 $this->queueLater($record);
 
                 return;
