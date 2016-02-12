@@ -154,7 +154,7 @@ function array_to_object(array $array)
     {
         if(is_array($value))
         {
-            $array[$key] = self::array_to_object($value);
+            $array[$key] = array_to_object($value);
         }
     }
     return (object)$array;
