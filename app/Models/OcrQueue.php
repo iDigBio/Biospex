@@ -12,7 +12,7 @@ class OcrQueue extends Model
      *
      * @var string
      */
-    protected $table = 'ocr_queue';
+    protected $table = 'ocr_queues';
 
     /**
      * @var array
