@@ -94,7 +94,7 @@ class OcrProcessBuild extends QueueAbstract
         }
 
         $projectId = (int)$data['project_id'];
-        $expeditionId = null; // isset($data['expedition_id']) ? (int) $data['expedition_id'] : null;
+        $expeditionId = isset($data['expedition_id']) ? (int) $data['expedition_id'] : null;
 
 
         if (!$this->checkProjectProcessing($projectId)) {
