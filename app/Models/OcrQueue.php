@@ -67,8 +67,8 @@ class OcrQueue extends Model
         return $query->where('status', null)->where('error', 0)->first();
     }
 
-    public function getSubjectCountSum($id)
+    public function getSubjectRemainingSum($id)
     {
-        return $this->sum('subject_count')->where('id', '<', $id);
+        return (int) $this->where('id', '<', $id)->sum('subject_remaining');
     }
 }
