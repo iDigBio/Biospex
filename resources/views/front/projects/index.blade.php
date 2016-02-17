@@ -70,7 +70,7 @@
                                             type="button"
                                             onClick="location.href='{{ route('projects.get.edit', [$project->id]) }}'"><span
                                                 class="fa fa-cog fa-lg"></span> @lang('buttons.edit')</button>
-                                    @if ($user->id == $group->user_id)
+                                    @if ($user->id == $group->user_id || $isSuperUser)
                                         <button title="@lang('buttons.deleteTitle')"
                                                 class="btn btn-default btn-danger action_confirm btn-xs"
                                                 href="{{ route('projects.delete.delete', [$project->id]) }}"
