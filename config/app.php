@@ -150,6 +150,8 @@ return [
         Codesleeve\LaravelStapler\Providers\L5ServiceProvider::class,
         Msurguy\Honeypot\HoneypotServiceProvider::class,
         Dingo\Api\Provider\LaravelServiceProvider::class,
+        Way\Generators\GeneratorsServiceProvider::class,
+        Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class,
         //Spatie\ResponseCache\ResponseCacheServiceProvider::class, "spatie/laravel-responsecache": "^1.1"
 
         /*

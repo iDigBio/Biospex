@@ -198,7 +198,6 @@ class OcrProcessQueue extends QueueAbstract
     private function queueLater($record, $file = false)
     {
         $record->subject_remaining = $this->ocrProcess->calculateSubjectRemaining($record, $file);
-        $record->tries = $record->tries += 1;
         $this->updateRecord($record);
         $count = $this->ocrProcess->getSubjectRemainingSum($record);
         $date = $this->ocrProcess->setQueueLaterTime($count);

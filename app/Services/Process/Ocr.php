@@ -369,7 +369,7 @@ class Ocr
      */
     public function getSubjectRemainingSum($record)
     {
-        $count = (int)$this->ocrQueue->getSubjectRemainingSum($record->id);
+        $count = $this->ocrQueue->getSubjectRemainingSum($record->id);
 
         return $count == 0 ? $record->subject_count : $count;
     }
@@ -381,7 +381,7 @@ class Ocr
      */
     public function calculateSubjectRemaining($record, $file)
     {
-        return !$file ? $record->subject_count : ($record->subject_count - $file->header->complete);
+        return ! $file ? $record->subject_count : ($record->subject_count - $file->header->complete);
     }
 
     /**
