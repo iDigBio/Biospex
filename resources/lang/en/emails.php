@@ -27,7 +27,7 @@ return [
     'error_ocr_curl'                => 'Ocr Queue error sending file for record :id. Message: :message',
     'error_ocr_header'              => 'Ocr header response reported error while processing file.',
     'error_ocr_request'             => 'Ocr failed when requesting file for record :id.',
-    'error_ocr_stuck_queue'         => 'The queue job with id of :id has :tries tries and may need some oversight.',
+    'error_ocr_stuck_queue'         => 'The queue job with id of :id has been stuck in the queue.',
     'error_process'                 => 'Expedition id :id could not be found during processing.',
     'error_save_file'               => 'Unable to save file: :directory',
     'error_write_dir'               => 'Unable to make directory writable: :directory',
