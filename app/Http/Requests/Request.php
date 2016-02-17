@@ -26,7 +26,8 @@ abstract class Request extends FormRequest
      */
     protected function alterInput()
     {
-        if (is_callable([$this, 'inputChange'])) {
+        // Normally would use is_callable but it returns true. Need to investigate
+        if (method_exists($this, 'inputChange')) {
             return $this->container->call([$this, 'inputChange']);
         }
 
