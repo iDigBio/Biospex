@@ -12,7 +12,7 @@ class AddSubjectRemainingToOcrQueueTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::table('ocr_queues', function (Blueprint $table) {
+		Schema::table('ocr_queue', function (Blueprint $table) {
 			$table->integer('subject_remaining')->after('subject_count')->default(0);
 		});
 	}
@@ -24,7 +24,7 @@ class AddSubjectRemainingToOcrQueueTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::table('ocr_queues', function (Blueprint $table) {
+		Schema::table('ocr_queue', function (Blueprint $table) {
 			$table->dropColumn('subject_remaining');
 		});
 	}
