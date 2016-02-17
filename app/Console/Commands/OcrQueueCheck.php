@@ -53,7 +53,7 @@ class OcrQueueCheckCommand extends Command
             $this->report->addError(trans('emails.error_ocr_queue',
                 [
                     'id'      => $queue->id,
-                    'message' => trans('emails.error_ocr_stuck_queue', ['id' => $queue->id, 'tries' => $queue->tries]),
+                    'message' => trans('emails.error_ocr_stuck_queue', ['id' => $queue->id]),
                     'url'     => ''
                 ]));
         }
