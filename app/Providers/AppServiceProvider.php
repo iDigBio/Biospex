@@ -15,6 +15,8 @@ use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Support\ServiceProvider;
 use Barryvdh\Debugbar\ServiceProvider as Debugbar;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider as IdeHelper;
+use Way\Generators\GeneratorsServiceProvider;
+use Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -98,6 +100,8 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('local')) {
             $this->app->register(IdeHelper::class);
             $this->app->register(Debugbar::class);
+            $this->app->register(GeneratorsServiceProvider::class);
+            $this->app->register(MigrationsGeneratorServiceProvider::class);
         }
     }
 }
