@@ -48,7 +48,7 @@
                                           data-toggle="collapse" data-target="#{{ $project->id }}"></span></td>
                                 <td><a href="{{ route('projects.get.show', [$project->id]) }}">{{ $project->title }}</a>
                                 </td>
-                                <td><a href="{{ route('groups.get.show', [$group->id]) }}">{{ $group->name }}</a></td>
+                                <td><a href="{{ route('groups.get.show', [$group->id]) }}">{{ $group->label }}</a></td>
                                 <td class="buttons-sm">
                                     <button title="@lang('buttons.viewTitle')" class="btn btn-primary btn-xs"
                                             type="button"
