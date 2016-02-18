@@ -2,14 +2,29 @@
   "name": "Biospex",
   "description": "Use BIOSPEX to provision, advertise, and lead public Biodiversity Specimen Digitization Expeditions",
   "license": "MIT",
-  "private": true,
   "dependencies": {
-    "bootstrap": "~3.3.2",
-    "bootstrap-select": "~1.6.4",
-    "font-awesome": "~4.3.0",
-    "jqgrid": "~3.6",
-    "jquery.validation": "~1.13.1",
-    "admin-lte": "~2.1.2",
-    "blockui": "*"
-  }
+    "jqGrid": "jqgrid#~5.0.2",
+    "AdminLTE": "admin-lte#2.3.2",
+    "bootstrap": "3.3.6",
+    "bootstrap-select": "2.0.0-beta1",
+    "jquery": "2.2.0",
+    "jquery-ui": "1.11.4",
+    "jquery-validation": "1.14.0",
+    "font-awesome": "4.5.0",
+    "tablesorter": "jquery.tablesorter#^2.25.4",
+    "ui-multiselect": "^1.4.1"
+  },
+  "homepage": "https://github.com/iDigBio/Biospex",
+  "authors": [
+    "Robert <bruhnrp@gmail.com>"
+  ],
+  "main": "",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
 }
