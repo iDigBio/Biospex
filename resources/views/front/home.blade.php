@@ -11,7 +11,7 @@
 
 <div id="splash">
     <div class="container">
-        <img src="../images/logo.png" alt="biospex"/>
+        <img src="../img/logo.png" alt="biospex"/>
 
         <h1>Use BIOSPEX to provision, advertise, and lead<br/>public Biodiversity Specimen Digitization Expeditions</h1>
     </div>

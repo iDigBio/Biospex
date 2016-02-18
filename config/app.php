@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'debug'           => env('APP_DEBUG'),
+    'debug' => env('APP_DEBUG'),
 
     /*
     |--------------------------------------------------------------------------
@@ -27,8 +27,8 @@ return [
     |
     */
 
-    'url'             => env('APP_URL'),
-    'ip'              => env('APP_IP'),
+    'url' => env('APP_URL'),
+    'ip'  => env('APP_IP'),
 
     /*
     |--------------------------------------------------------------------------
@@ -41,7 +41,7 @@ return [
     |
     */
 
-    'timezone'        => env('APP_TIMEZONE'),
+    'timezone' => env('APP_TIMEZONE'),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,7 +54,7 @@ return [
     |
     */
 
-    'locale'          => env('APP_LOCAL'),
+    'locale' => env('APP_LOCAL'),
 
     /*
     |--------------------------------------------------------------------------
@@ -80,9 +80,9 @@ return [
     |
     */
 
-    'key'             => env('APP_KEY', 'SomeRandomString'),
+    'key' => env('APP_KEY', 'SomeRandomString'),
 
-    'cipher'          => 'AES-256-CBC',
+    'cipher' => 'AES-256-CBC',
 
     /*
     |--------------------------------------------------------------------------
@@ -97,7 +97,7 @@ return [
     |
     */
 
-    'log'             => 'daily',
+    'log' => 'daily',
 
     /*
     |--------------------------------------------------------------------------
@@ -110,7 +110,7 @@ return [
     |
     */
 
-    'providers'       => [
+    'providers' => [
 
         /*
          * Laravel Framework Service Providers...
@@ -173,7 +173,7 @@ return [
     |
     */
 
-    'aliases'         => [
+    'aliases' => [
 
         'App'         => Illuminate\Support\Facades\App::class,
         'Artisan'     => Illuminate\Support\Facades\Artisan::class,

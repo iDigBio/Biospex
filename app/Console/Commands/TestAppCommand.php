@@ -2,13 +2,10 @@
 
 namespace Biospex\Console\Commands;
 
+use Biospex\Repositories\Contracts\OcrQueue;
+use Biospex\Services\Process\Ocr;
 use Illuminate\Console\Command;
-use Biospex\Models\ExpeditionStat;
-use Biospex\Repositories\Contracts\Expedition;
-
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Factory as Validation;
+use Biospex\Repositories\Contracts\Subject;
 
 class TestAppCommand extends Command
 {
@@ -21,18 +18,25 @@ class TestAppCommand extends Command
      * The console command description.
      */
     protected $description = 'Used to test code';
+
+    private $subject;
+    private $ocr;
     /**
-     * @var Validation
+     * @var OcrQueue
      */
-    private $factory;
+    private $ocrQueue;
 
     /**
      * Constructor
+     * @param Subject $subject
+     * @param Ocr $ocr
      */
-    public function __construct(Validation $factory)
+    public function __construct(Subject $subject, Ocr $ocr, OcrQueue $ocrQueue)
     {
         parent::__construct();
-        $this->factory = $factory;
+        $this->subject = $subject;
+        $this->ocr = $ocr;
+        $this->ocrQueue = $ocrQueue;
     }
 
     /**
@@ -43,56 +47,15 @@ class TestAppCommand extends Command
      */
     public function fire()
     {
+        $record = $this->ocrQueue->find(3);
+        $count = $this->ocrQueue->getSubjectRemainingSum($record->id);
+        dd($count);
 
-        $verifier = App::make('validation.presence');
-
-        $verifier->setConnection('mongodb');
-
-        $rules = ['id' => 'unique_with:transcriptions,id'];
-        $values = ['id' => '562d9e34f3cdc400ac00f077'];
-
-        $validator = Validator::make($values, $rules);
-
-        $validator->setPresenceVerifier($verifier);
-
-        dd($validator->fails());
-
-        /*
-        $rules = ['project_id' => 'unique_with:subjects,id'];
-        $values = ['project_id' => 1, 'id' => '58697'];
-
-        $validator = $this->factory->make($values, $rules);
-        $validator->getPresenceVerifier()->setConnection('mongodb');
-        */
-
-        /*
-        $rules = ['id' => 'unique_with:transcriptions,id'];
-        $values = ['id' => '562d9e34f3cdc400ac00f077'];
-        $validator = $this->factory->make($values, $rules);
-        $validator->getPresenceVerifier()->setConnection('mongodb');
-        */
-
-        dd($validator->fails());
-
-        //$this->runStatUpdate();
-
-        return;
-    }
-
-    public function runStatUpdate(Expedition $expedition)
-    {
-        $expeditions = $expedition->all();
-        foreach ($expeditions as $expedition) {
-            $subjects = $expedition->subjects()->get();
-            $count = count($subjects);
-
-            $expeditionStat = new ExpeditionStat();
-            $stat = $expeditionStat->firstOrCreate(['expedition_id' => $expedition->id]);
-            $stat->subject_count = $count;
-            $stat->transcriptions_total = transcriptions_total($count);
-            $stat->transcriptions_completed = transcriptions_completed($expedition->id);
-            $stat->percent_completed = transcriptions_percent_completed($stat->transcriptions_total, $stat->transcriptions_completed);
-            $stat->save();
+        $subjects = $this->subject->findByProjectId(6);
+        foreach($subjects as $subject)
+        {
+            $subject->ocr = '';
+            $subject->save();
         }
 
         return;

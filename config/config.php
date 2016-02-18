@@ -51,8 +51,8 @@ return [
     ],
 
     'images'                 => [
-        'thumbDefaultImg'    => public_path('/images/default_image.jpg'),
-        'thumbOutputDir'     => storage_path('images'),
+        'thumbDefaultImg'    => public_path('/img/default_image.jpg'),
+        'thumbOutputDir'     => storage_path('img'),
         'thumbWidth'         => 300,
         'thumbHeight'        => 300,
         'imageTypeExtension' => [

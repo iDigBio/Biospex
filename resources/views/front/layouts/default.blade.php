@@ -24,7 +24,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ route('home') }}"><img src="/images/biospex.png" alt="{{ trans('pages.sitename') }}" /></a>
+            <a class="navbar-brand" href="{{ route('home') }}"><img src="/img/biospex.png" alt="{{ trans('pages.sitename') }}" /></a>
         </div>
         <div class="collapse navbar-collapse">
             @if (config('config.translate'))
