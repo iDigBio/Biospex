@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
         if (env('APP_ENV') === 'production')
             return;
 
+
         $this->call('TruncateTables');
         $this->call('PermissionTableSeeder');
         $this->call('UserTableSeeder');
