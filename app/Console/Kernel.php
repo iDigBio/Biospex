@@ -1,0 +1,46 @@
+<?php namespace App\Console;
+
+use App\Console\Commands\AustinProcessCommand;
+use App\Console\Commands\ClearBeanstalkdQueueCommand;
+use App\Console\Commands\DarwinCoreFileImportCommand;
+use App\Console\Commands\DatabaseQueryCommand;
+use App\Console\Commands\DownloadCleanCommand;
+use App\Console\Commands\Inspire;
+use App\Console\Commands\OcrQueuePushCommand;
+use App\Console\Commands\TestAppCommand;
+use App\Console\Commands\ViewsCommand;
+use App\Console\Commands\WorkFlowManagerCommand;
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+
+class Kernel extends ConsoleKernel
+{
+    /**
+     * The Artisan commands provided by your application.
+     *
+     * @var array
+     */
+    protected $commands = [
+        Inspire::class,
+        WorkFlowManagerCommand::class,
+        DownloadCleanCommand::class,
+        ViewsCommand::class,
+        TestAppCommand::class,
+        ClearBeanstalkdQueueCommand::class,
+        DarwinCoreFileImportCommand::class,
+        OcrQueuePushCommand::class,
+        DatabaseQueryCommand::class,
+        AustinProcessCommand::class,
+    ];
+
+    /**
+     * Define the application's command schedule.
+     *
+     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @return void
+     */
+    protected function schedule(Schedule $schedule)
+    {
+        $schedule->command('inspire')->hourly();
+    }
+}
