@@ -12,8 +12,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        if (env('APP_ENV') === 'production')
-            return;
+        if (env('APP_ENV') === 'local')
+            echo env('APP_ENV') . PHP_EOL;
+
+        return;
 
 
         $this->call('TruncateTables');
