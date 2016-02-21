@@ -1,8 +1,8 @@
 <?php
 
-namespace Biospex\Services\Common;
+namespace App\Services\Common;
 
-use Biospex\Repositories\Contracts\Workflow;
+use App\Repositories\Contracts\Workflow;
 
 class ProjectService
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace Biospex\Jobs;
+namespace App\Jobs;
 
 use Illuminate\Queue\SerializesModels;
-use Biospex\Repositories\Contracts\User;
-use Biospex\Repositories\Contracts\Invite;
-use Biospex\Repositories\Contracts\Group;
+use App\Repositories\Contracts\User;
+use App\Repositories\Contracts\Invite;
+use App\Repositories\Contracts\Group;
 
 class RegisterUser extends Job
 {

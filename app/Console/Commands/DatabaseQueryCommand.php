@@ -1,8 +1,8 @@
-<?php namespace Biospex\Console\Commands;
+<?php namespace App\Console\Commands;
 
-use Biospex\Repositories\Contracts\Download;
-use Biospex\Repositories\Contracts\Group;
-use Biospex\Repositories\Contracts\User;
+use App\Repositories\Contracts\Download;
+use App\Repositories\Contracts\Group;
+use App\Repositories\Contracts\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;

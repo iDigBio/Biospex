@@ -1,9 +1,9 @@
-<?php namespace Biospex\Services\Queue;
+<?php namespace App\Services\Queue;
 
-use Biospex\Repositories\Contracts\OcrCsv;
-use Biospex\Repositories\Contracts\OcrQueue;
-use Biospex\Services\Process\Ocr;
-use Biospex\Services\Report\OcrReport;
+use App\Repositories\Contracts\OcrCsv;
+use App\Repositories\Contracts\OcrQueue;
+use App\Services\Process\Ocr;
+use App\Services\Report\OcrReport;
 
 class OcrProcessQueue extends QueueAbstract
 {
@@ -131,7 +131,7 @@ class OcrProcessQueue extends QueueAbstract
         } catch (\Exception $e) {
             $record->error = 1;
             $this->updateRecord($record);
-            $this->addReportError($record->id, $e->getTraceAsString());
+            $this->addReportError($record->id, $e->getMessage() . ': ' . $e->getTraceAsString());
             $this->report->reportSimpleError($record->project->group->id);
             $this->delete();
 
@@ -227,7 +227,7 @@ class OcrProcessQueue extends QueueAbstract
     protected function setCsvAttachmentArray($record, &$csv)
     {
         $subjects = ! empty($record->ocrCsv->subjects) ? json_decode($record->ocrCsv->subjects, true) : [];
-        $csv = array_merge($subjects, $csv);
+        $csv = is_null($subjects) ? $csv : array_merge($subjects, $csv);
         $record->ocrCsv->subjects = json_encode($csv);
         $record->ocrCsv->save();
 

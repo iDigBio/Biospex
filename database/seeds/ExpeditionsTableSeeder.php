@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
-use Biospex\Models\Expedition;
+use App\Models\Expedition;
 
 class ExpeditionsTableSeeder extends Seeder
 {

@@ -1,12 +1,12 @@
 <?php
 
-namespace Biospex\Console\Commands;
+namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
 use Symfony\Component\Console\Input\InputArgument;
-use Biospex\Repositories\Contracts\OcrQueue;
+use App\Repositories\Contracts\OcrQueue;
 
 class OcrQueuePushCommand extends Command
 {
@@ -66,7 +66,7 @@ class OcrQueuePushCommand extends Command
         }
 
         // Push to queue
-        Queue::push('Biospex\Services\Queue\OcrProcessQueue', ['id' => $job->id], $this->tube);
+        Queue::push('App\Services\Queue\OcrProcessQueue', ['id' => $job->id], $this->tube);
 
         return;
     }

@@ -1,7 +1,7 @@
-<?php namespace Biospex\Repositories;
+<?php namespace App\Repositories;
 
-use Biospex\Repositories\Contracts\Subject;
-use Biospex\Models\Subject as Model;
+use App\Repositories\Contracts\Subject;
+use App\Models\Subject as Model;
 
 class SubjectRepository extends Repository implements Subject
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Biospex\Exceptions;
+namespace App\Exceptions;
 
 class LoginRequiredException extends \UnexpectedValueException {}
 class UserExistsException extends \UnexpectedValueException {}

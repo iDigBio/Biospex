@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
-use Biospex\Models\Actor;
+use App\Models\Actor;
 
 class ProjectsTableSeeder extends Seeder
 {

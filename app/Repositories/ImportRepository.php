@@ -1,7 +1,7 @@
-<?php namespace Biospex\Repositories;
+<?php namespace App\Repositories;
 
-use Biospex\Repositories\Contracts\Import;
-use Biospex\Models\Import as Model;
+use App\Repositories\Contracts\Import;
+use App\Models\Import as Model;
 
 class ImportRepository extends Repository implements Import
 {

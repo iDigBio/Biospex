@@ -1,10 +1,10 @@
 <?php
 
-use Biospex\Models\Expedition;
-use Biospex\Models\Group;
-use Biospex\Models\Profile;
-use Biospex\Models\Project;
-use Biospex\Models\User;
+use App\Models\Expedition;
+use App\Models\Group;
+use App\Models\Profile;
+use App\Models\Project;
+use App\Models\User;
 use Faker\Generator;
 
 $factory->define(User::class, function (Generator $faker) {

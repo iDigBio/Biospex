@@ -1,4 +1,4 @@
-<?php namespace Biospex\Models;
+<?php namespace App\Models;
 
 use Illuminate\Support\Facades\Config;
 use Jenssegers\Eloquent\Model as Eloquent;
@@ -7,7 +7,7 @@ use Codesleeve\Stapler\ORM\StaplerableInterface;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Cviebrock\EloquentSluggable\SluggableInterface;
 use Cviebrock\EloquentSluggable\SluggableTrait;
-use Biospex\Models\Traits\UuidTrait;
+use App\Models\Traits\UuidTrait;
 
 class Project extends Eloquent implements StaplerableInterface, SluggableInterface
 {

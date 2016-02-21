@@ -1,6 +1,6 @@
 <?php
 
-namespace Biospex\Services\Hash;
+namespace App\Services\Hash;
 
 class Sha256Hasher extends BaseHasher implements HasherContract
 {

@@ -1,4 +1,4 @@
-<?php namespace Biospex\Services\Image;
+<?php namespace App\Services\Image;
 
 use Exception;
 use GuzzleHttp\Client;

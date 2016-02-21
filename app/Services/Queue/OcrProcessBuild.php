@@ -1,11 +1,11 @@
-<?php namespace Biospex\Services\Queue;
+<?php namespace App\Services\Queue;
 
 use Illuminate\Config\Repository as Config;
 use Illuminate\Database\DatabaseManager as DB;
-use Biospex\Repositories\Contracts\OcrCsv;
-use Biospex\Repositories\Contracts\OcrQueue;
-use Biospex\Repositories\Contracts\Project;
-use Biospex\Services\Process\Ocr;
+use App\Repositories\Contracts\OcrCsv;
+use App\Repositories\Contracts\OcrQueue;
+use App\Repositories\Contracts\Project;
+use App\Services\Process\Ocr;
 use MongoCollection;
 
 class OcrProcessBuild extends QueueAbstract

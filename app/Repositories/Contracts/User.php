@@ -1,4 +1,4 @@
-<?php namespace Biospex\Repositories\Contracts;
+<?php namespace App\Repositories\Contracts;
 
 interface User extends Repository
 {

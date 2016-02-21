@@ -1,6 +1,6 @@
 <?php
 
-use Biospex\Repositories\Contracts\User;
+use App\Repositories\Contracts\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 

@@ -1,6 +1,6 @@
-<?php namespace Biospex\Repositories\Decorators;
+<?php namespace App\Repositories\Decorators;
 
-use Biospex\Repositories\Contracts\Expedition;
+use App\Repositories\Contracts\Expedition;
 
 class CacheExpeditionDecorator extends CacheDecorator implements Expedition
 {

@@ -1,4 +1,4 @@
-<?php namespace Biospex\Services\Import;
+<?php namespace App\Services\Import;
 
 use Illuminate\Support\Facades\App;
 
@@ -12,7 +12,7 @@ class ImportServiceFactory
      */
     public function create($class)
     {
-        $nameSpace = 'Biospex\Services\Import\\';
+        $nameSpace = 'App\Services\Import\\';
         if (class_exists($nameSpace . $class)) {
             return App::make($nameSpace . $class);
         }

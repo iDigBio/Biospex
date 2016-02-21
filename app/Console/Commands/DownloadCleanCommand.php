@@ -1,12 +1,12 @@
-<?php namespace Biospex\Console\Commands;
+<?php namespace App\Console\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\Console\Input\InputArgument;
-use Biospex\Repositories\Contracts\Download;
-use Biospex\Services\Report\Report;
+use App\Repositories\Contracts\Download;
+use App\Services\Report\Report;
 
 class DownloadCleanCommand extends Command
 {

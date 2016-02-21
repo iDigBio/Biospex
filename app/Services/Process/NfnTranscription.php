@@ -1,8 +1,8 @@
-<?php  namespace Biospex\Services\Process;
+<?php  namespace App\Services\Process;
 
-use Biospex\Repositories\Contracts\Subject;
-use Biospex\Repositories\Contracts\Transcription;
-use Biospex\Services\Csv\CsvAbstract;
+use App\Repositories\Contracts\Subject;
+use App\Repositories\Contracts\Transcription;
+use App\Services\Csv\CsvAbstract;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Validation\Factory as Validation;
 use ForceUTF8\Encoding;

@@ -1,7 +1,7 @@
-<?php namespace Biospex\Console\Commands;
+<?php namespace App\Console\Commands;
 
-use Biospex\Repositories\Contracts\OcrQueue;
-use Biospex\Services\Report\Report;
+use App\Repositories\Contracts\OcrQueue;
+use App\Services\Report\Report;
 use Illuminate\Console\Command;
 
 class OcrQueueCheckCommand extends Command

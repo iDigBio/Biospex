@@ -1,4 +1,4 @@
-<?php namespace Biospex\Services\Import;
+<?php namespace App\Services\Import;
 
 class DarwinCoreUrlImport extends ImportServiceAbstract
 {
@@ -27,7 +27,7 @@ class DarwinCoreUrlImport extends ImportServiceAbstract
             'url'     => $this->request->input('data-url')
         ];
 
-        $this->queue->push('Biospex\Services\Queue\DarwinCoreUrlImportQueue', $data, $this->tube);
+        $this->queue->push('App\Services\Queue\DarwinCoreUrlImportQueue', $data, $this->tube);
 
         return;
     }

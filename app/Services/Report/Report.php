@@ -1,13 +1,13 @@
-<?php namespace Biospex\Services\Report;
+<?php namespace App\Services\Report;
 
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\MessageBag;
-use Biospex\Repositories\Contracts\Group;
-use Biospex\Services\Mailer\BiospexMailer;
+use App\Repositories\Contracts\Group;
+use App\Services\Mailer\BiospexMailer;
 use Illuminate\Events\Dispatcher as Event;
 use League\Csv\Writer;
-use Biospex\Events\SendReportEvent;
+use App\Events\SendReportEvent;
 
 
 class Report
@@ -100,7 +100,7 @@ class Report
         }
         $subject = trans('emails.error');
         $data = ['errorMessage' => $errorMessage];
-        $view = 'front.emails.report-simple-error';
+        $view = 'frontend.emails.report-simple-error';
 
         $this->fireEvent($email, $subject, $view, $data);
 
@@ -128,7 +128,7 @@ class Report
             'completeMessage' => trans('emails.expedition_complete_message',
                 ['expedition' => $title])
         ];
-        $view = 'front.emails.report-process-complete';
+        $view = 'frontend.emails.report-process-complete';
 
         $this->fireEvent($email, $subject, $view, $data, $attachment);
 

@@ -1,4 +1,4 @@
-<?php namespace Biospex\Services\Mailer;
+<?php namespace App\Services\Mailer;
 
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Config;
@@ -51,7 +51,7 @@ class BiospexMailer
      */
     public function sendWelcome($email, $data)
     {
-        return $this->send($email, trans('users.welcome'), 'front.emails.welcome', $data);
+        return $this->send($email, trans('users.welcome'), 'frontend.emails.welcome', $data);
     }
 
     /**
@@ -62,7 +62,7 @@ class BiospexMailer
     public function sendContact($data)
     {
         $subject = trans('emails.contact_subject');
-        $view = 'front.emails.contact';
+        $view = 'frontend.emails.contact';
 
         return $this->send($this->emailAddress['address'], $subject, $view, $data);
     }
@@ -93,7 +93,7 @@ class BiospexMailer
     public function sendInvite($data)
     {
         $subject = trans('emails.group_invite_subject');
-        $view = 'front.emails.group-invite';
+        $view = 'frontend.emails.group-invite';
 
         return $this->send($data['email'], $subject, $view, $data);
     }

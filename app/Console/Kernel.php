@@ -1,15 +1,15 @@
-<?php namespace Biospex\Console;
+<?php namespace App\Console;
 
-use Biospex\Console\Commands\AustinProcessCommand;
-use Biospex\Console\Commands\ClearBeanstalkdQueueCommand;
-use Biospex\Console\Commands\DarwinCoreFileImportCommand;
-use Biospex\Console\Commands\DatabaseQueryCommand;
-use Biospex\Console\Commands\DownloadCleanCommand;
-use Biospex\Console\Commands\Inspire;
-use Biospex\Console\Commands\OcrQueuePushCommand;
-use Biospex\Console\Commands\TestAppCommand;
-use Biospex\Console\Commands\ViewsCommand;
-use Biospex\Console\Commands\WorkFlowManagerCommand;
+use App\Console\Commands\AustinProcessCommand;
+use App\Console\Commands\ClearBeanstalkdQueueCommand;
+use App\Console\Commands\DarwinCoreFileImportCommand;
+use App\Console\Commands\DatabaseQueryCommand;
+use App\Console\Commands\DownloadCleanCommand;
+use App\Console\Commands\Inspire;
+use App\Console\Commands\OcrQueuePushCommand;
+use App\Console\Commands\TestAppCommand;
+use App\Console\Commands\ViewsCommand;
+use App\Console\Commands\WorkFlowManagerCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 

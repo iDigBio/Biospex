@@ -1,10 +1,10 @@
 <?php
 
-namespace Biospex\Models;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Biospex\Models\Traits\UuidTrait;
+use App\Models\Traits\UuidTrait;
 
 class Group extends Model
 {

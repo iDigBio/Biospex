@@ -1,4 +1,4 @@
-<?php namespace Biospex\Console\Commands;
+<?php namespace App\Console\Commands;
 
 // Set so MAC csv line endings are detected correctly
 ini_set("auto_detect_line_endings", "1");

@@ -1,7 +1,7 @@
-<?php namespace Biospex\Repositories;
+<?php namespace App\Repositories;
 
-use Biospex\Repositories\Contracts\Header;
-use Biospex\Models\Header as Model;
+use App\Repositories\Contracts\Header;
+use App\Models\Header as Model;
 
 class HeaderRepository extends Repository implements Header
 {

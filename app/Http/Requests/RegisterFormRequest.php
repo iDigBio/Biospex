@@ -1,6 +1,6 @@
 <?php
 
-namespace Biospex\Http\Requests;
+namespace App\Http\Requests;
 
 class RegisterFormRequest extends Request
 {

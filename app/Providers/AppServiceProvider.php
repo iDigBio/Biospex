@@ -1,12 +1,12 @@
 <?php
 
-namespace Biospex\Providers;
+namespace App\Providers;
 
-use Biospex\Events\SendReportEvent;
-use Biospex\Models\Group;
-use Biospex\Models\Permission;
-use Biospex\Models\Profile;
-use Biospex\Models\User;
+use App\Events\SendReportEvent;
+use App\Models\Group;
+use App\Models\Permission;
+use App\Models\Profile;
+use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
@@ -55,7 +55,7 @@ class AppServiceProvider extends ServiceProvider
             $data = [
                 'email'   => null,
                 'subject' => trans('emails.failed_job_subject'),
-                'view'    => 'front.emails.report-failed-jobs',
+                'view'    => 'frontend.emails.report-failed-jobs',
                 'data'    => ['text' => trans('emails.failed_job_message', ['id' => $event->job->getJobId(), 'jobData' => $event->job->getRawBody()])],
                 'attachments' => []
             ];
@@ -91,7 +91,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(
             'Illuminate\Contracts\Auth\Registrar',
-            'Biospex\Services\Registrar'
+            'App\Services\Registrar'
         );
 
         /*

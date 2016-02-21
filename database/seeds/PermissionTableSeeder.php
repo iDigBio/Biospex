@@ -23,7 +23,7 @@ class PermissionTableSeeder extends Seeder
         $this->permissions = $this->loadData();
 
         foreach ($this->permissions as $permission) {
-            \Biospex\Models\Permission::create($permission);
+            \App\Models\Permission::create($permission);
         }
     }
 

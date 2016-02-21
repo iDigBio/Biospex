@@ -1,5 +1,5 @@
 <?php
-use Biospex\Models\Transcription;
+use App\Models\Transcription;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
 

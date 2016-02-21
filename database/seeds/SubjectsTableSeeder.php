@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use Biospex\Services\Process\DarwinCore;
+use App\Services\Process\DarwinCore;
 
 class SubjectsTableSeeder extends Seeder
 {

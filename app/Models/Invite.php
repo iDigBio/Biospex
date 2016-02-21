@@ -1,6 +1,6 @@
 <?php
 
-namespace Biospex\Models;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

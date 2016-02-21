@@ -1,4 +1,4 @@
-<?php namespace Biospex\Events;
+<?php namespace App\Events;
 
 class UserRegisteredEvent
 {

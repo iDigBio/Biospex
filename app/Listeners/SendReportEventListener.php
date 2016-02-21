@@ -1,7 +1,7 @@
-<?php namespace Biospex\Listeners;
+<?php namespace App\Listeners;
 
-use Biospex\Events\SendReportEvent;
-use Biospex\Services\Mailer\BiospexMailer;
+use App\Events\SendReportEvent;
+use App\Services\Mailer\BiospexMailer;
 
 class SendReportEventListener
 {

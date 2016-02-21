@@ -1,7 +1,7 @@
-<?php namespace Biospex\Repositories;
+<?php namespace App\Repositories;
 
-use Biospex\Repositories\Contracts\UserGridField;
-use Biospex\Models\UserGridField as Model;
+use App\Repositories\Contracts\UserGridField;
+use App\Models\UserGridField as Model;
 
 class UserGridFieldRepository extends Repository implements UserGridField
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Biospex\Jobs;
+namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
 

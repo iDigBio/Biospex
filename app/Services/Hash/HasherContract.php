@@ -1,6 +1,6 @@
 <?php
 
-namespace Biospex\Services\Hash;
+namespace App\Services\Hash;
 
 interface HasherContract
 {

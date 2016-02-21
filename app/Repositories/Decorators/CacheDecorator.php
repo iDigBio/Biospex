@@ -1,6 +1,6 @@
 <?php
 
-namespace Biospex\Repositories\Decorators;
+namespace App\Repositories\Decorators;
 
 use Illuminate\Contracts\Cache\Repository as Cache;
 

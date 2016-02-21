@@ -1,10 +1,10 @@
 <?php
 
-namespace Biospex\Services\Process;
+namespace App\Services\Process;
 
 use Illuminate\Config\Repository as Config;
-use Biospex\Repositories\Contracts\OcrQueue;
-use Biospex\Repositories\Contracts\Subject;
+use App\Repositories\Contracts\OcrQueue;
+use App\Repositories\Contracts\Subject;
 use Illuminate\Contracts\Queue\Queue;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -103,7 +103,7 @@ class Ocr
         $this->subject = $subject;
         $this->ocrQueue = $ocrQueue;
 
-        $this->ocrProcessQueue = 'Biospex\Services\Queue\OcrProcessQueue';
+        $this->ocrProcessQueue = 'App\Services\Queue\OcrProcessQueue';
         $this->ocrCrop = $config->get('config.ocr_crop');
         $this->ocrChunk = $config->get('config.ocr_chunk');
         $this->disableOcr = $config->get('config.disable_ocr');
@@ -378,10 +378,11 @@ class Ocr
      * Calculate remaining count
      * @param $record
      * @param $file
+     * @return mixed
      */
     public function calculateSubjectRemaining($record, $file)
     {
-        return ! $file ? $record->subject_count : ($record->subject_count - $file->header->complete);
+        return ! $file ? $record->subject_count : max(0, ($record->subject_count - $file->header->complete));
     }
 
     /**
@@ -391,8 +392,8 @@ class Ocr
      */
     public function setQueueLaterTime($count)
     {
-        $minutes = $count == 0 ? 0 : round($count / 15);
+        $seconds = $count == 0 ? 0 : round($count * 15);
 
-        return Carbon::now()->addMinutes($minutes);
+        return Carbon::now()->addSeconds($seconds);
     }
 }

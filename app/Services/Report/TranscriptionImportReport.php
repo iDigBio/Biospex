@@ -1,4 +1,4 @@
-<?php namespace Biospex\Services\Report;
+<?php namespace App\Services\Report;
 
 
 class TranscriptionImportReport extends Report
@@ -19,7 +19,7 @@ class TranscriptionImportReport extends Report
             'ocrImportMessage' => '',
         ];
         $subject = trans('emails.import_transcription_subject');
-        $view = 'front.emails.report-import';
+        $view = 'frontend.emails.report-import';
 
         $this->fireEvent($email, $subject, $view, $data, $attachments);
 
@@ -41,7 +41,7 @@ class TranscriptionImportReport extends Report
             'projectTitle' => $title,
             'errorMessage' => print_r($this->messages->get('error'), true)
         ];
-        $view = 'front.emails.reporterror';
+        $view = 'frontend.emails.reporterror';
 
         $this->fireEvent($email, $subject, $view, $data);
     }

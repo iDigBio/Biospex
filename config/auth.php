@@ -67,7 +67,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => Biospex\Models\User::class,
+            'model' => App\Models\User::class,
         ],
 
         // 'users' => [
@@ -98,7 +98,7 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
-            'email' => 'front.emails.password',
+            'email' => 'frontend.emails.password',
             'table' => 'password_resets',
             'expire' => 60,
         ],

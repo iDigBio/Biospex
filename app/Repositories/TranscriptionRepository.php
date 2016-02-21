@@ -1,7 +1,7 @@
-<?php  namespace Biospex\Repositories;
+<?php  namespace App\Repositories;
 
-use Biospex\Repositories\Contracts\Transcription;
-use Biospex\Models\Transcription as Model;
+use App\Repositories\Contracts\Transcription;
+use App\Models\Transcription as Model;
 
 class TranscriptionRepository extends Repository implements Transcription
 {

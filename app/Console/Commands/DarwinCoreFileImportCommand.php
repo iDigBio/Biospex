@@ -1,9 +1,9 @@
 <?php
 
-namespace Biospex\Console\Commands;
+namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Biospex\Repositories\Contracts\Import;
+use App\Repositories\Contracts\Import;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
 
@@ -48,7 +48,7 @@ class DarwinCoreFileImportCommand extends Command
 
         $count = 0;
         foreach ($imports as $import) {
-            Queue::push('Biospex\Services\Queue\DarwinCoreFileImportQueue', ['id' => $import->id], Config::get('config.beanstalkd.import'));
+            Queue::push('App\Services\Queue\DarwinCoreFileImportQueue', ['id' => $import->id], Config::get('config.beanstalkd.import'));
             $count++;
         }
 

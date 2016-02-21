@@ -1,4 +1,4 @@
-<?php namespace Biospex\Services\Import;
+<?php namespace App\Services\Import;
 
 
 class DarwinCoreFileImport extends ImportServiceAbstract
@@ -25,7 +25,7 @@ class DarwinCoreFileImport extends ImportServiceAbstract
         $import = $this->importInsert($this->request->input('user_id'), $id, $filename);
         $this->setTube('config.beanstalkd.import');
 
-        $this->queue->push('Biospex\Services\Queue\DarwinCoreFileImportQueue', ['id' => $import->id], $this->tube);
+        $this->queue->push('App\Services\Queue\DarwinCoreFileImportQueue', ['id' => $import->id], $this->tube);
 
         return;
     }

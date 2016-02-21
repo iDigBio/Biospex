@@ -1,6 +1,6 @@
 <?php
 
-namespace Biospex\Services\Hash;
+namespace App\Services\Hash;
 
 class WhirlpoolHasher extends BaseHasher implements HasherContract
 {

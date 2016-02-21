@@ -30,7 +30,7 @@ return [
     ],
 
     'stripe' => [
-        'model'  => 'Biospex\Models\User',
+        'model'  => 'App\Models\User',
         'secret' => '',
     ],
 

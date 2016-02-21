@@ -1,6 +1,6 @@
-<?php  namespace Biospex\Services\Process;
+<?php  namespace App\Services\Process;
 
-use Biospex\Repositories\Contracts\Import;
+use App\Repositories\Contracts\Import;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
 use Exception;
@@ -137,7 +137,7 @@ class RecordSet
      */
     public function pushToQueue($requeue = false)
     {
-        $class = ($requeue) ? 'Biospex\Services\Queue\RecordSetImportQueue' : 'Biospex\Services\Queue\DarwinCoreFileImportQueue';
+        $class = ($requeue) ? 'App\Services\Queue\RecordSetImportQueue' : 'App\Services\Queue\DarwinCoreFileImportQueue';
         $date = Carbon::now()->addMinutes(5);
         Queue::later($date, $class, $this->data, $this->tube);
 

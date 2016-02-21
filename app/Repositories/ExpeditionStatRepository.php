@@ -1,7 +1,7 @@
-<?php namespace Biospex\Repositories;
+<?php namespace App\Repositories;
 
-use Biospex\Repositories\Contracts\ExpeditionStat;
-use Biospex\Models\Expedition as Model;
+use App\Repositories\Contracts\ExpeditionStat;
+use App\Models\Expedition as Model;
 
 class ExpeditionStatRepository extends Repository implements ExpeditionStat
 {

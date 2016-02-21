@@ -1,7 +1,7 @@
-<?php namespace Biospex\Services\Queue;
+<?php namespace App\Services\Queue;
 
-use Biospex\Services\Process\RecordSet;
-use Biospex\Services\Report\Report;
+use App\Services\Process\RecordSet;
+use App\Services\Report\Report;
 use Exception;
 
 class RecordSetImportQueue extends QueueAbstract

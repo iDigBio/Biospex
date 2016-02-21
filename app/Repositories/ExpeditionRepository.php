@@ -1,9 +1,9 @@
-<?php namespace Biospex\Repositories;
+<?php namespace App\Repositories;
 
-use Biospex\Models\Expedition as Model;
-use Biospex\Models\ExpeditionStat;
-use Biospex\Models\Subject;
-use Biospex\Repositories\Contracts\Expedition;
+use App\Models\Expedition as Model;
+use App\Models\ExpeditionStat;
+use App\Models\Subject;
+use App\Repositories\Contracts\Expedition;
 use Symfony\Component\Console\Helper\Helper;
 
 class ExpeditionRepository extends Repository implements Expedition

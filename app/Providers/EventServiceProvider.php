@@ -1,16 +1,16 @@
 <?php
 
-namespace Biospex\Providers;
+namespace App\Providers;
 
-use Biospex\Events\FlushCacheEvent;
+use App\Events\FlushCacheEvent;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Biospex\Events\SendReportEvent;
-use Biospex\Listeners\SendReportEventListener;
-use Biospex\Events\SendInviteEvent;
-use Biospex\Listeners\SendInviteEventListener;
-use Biospex\Events\UserRegisteredEvent;
-use Biospex\Listeners\UserRegisteredEventListener;
+use App\Events\SendReportEvent;
+use App\Listeners\SendReportEventListener;
+use App\Events\SendInviteEvent;
+use App\Listeners\SendInviteEventListener;
+use App\Events\UserRegisteredEvent;
+use App\Listeners\UserRegisteredEventListener;
 
 class EventServiceProvider extends ServiceProvider
 {

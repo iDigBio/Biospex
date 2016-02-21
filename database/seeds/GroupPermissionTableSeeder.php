@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
-use Biospex\Repositories\Contracts\Group;
-use Biospex\Repositories\Contracts\Permission;
+use App\Repositories\Contracts\Group;
+use App\Repositories\Contracts\Permission;
 
 class GroupPermissionTableSeeder extends Seeder
 {

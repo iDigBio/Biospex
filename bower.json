@@ -1,6 +1,6 @@
 {
   "name": "Biospex",
-  "description": "Use BIOSPEX to provision, advertise, and lead public Biodiversity Specimen Digitization Expeditions",
+  "description": "use App to provision, advertise, and lead public Biodiversity Specimen Digitization Expeditions",
   "license": "MIT",
   "dependencies": {
     "jqGrid": "jqgrid#~5.0.2",

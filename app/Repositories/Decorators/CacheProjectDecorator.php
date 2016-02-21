@@ -1,6 +1,6 @@
-<?php namespace Biospex\Repositories\Decorators;
+<?php namespace App\Repositories\Decorators;
 
-use Biospex\Repositories\Contracts\Project;
+use App\Repositories\Contracts\Project;
 
 class CacheProjectDecorator extends CacheDecorator implements Project
 {

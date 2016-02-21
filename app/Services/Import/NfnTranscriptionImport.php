@@ -1,4 +1,4 @@
-<?php namespace Biospex\Services\Import;
+<?php namespace App\Services\Import;
 
 class NfnTranscriptionImport extends ImportServiceAbstract
 {
@@ -25,7 +25,7 @@ class NfnTranscriptionImport extends ImportServiceAbstract
         $import = $this->importInsert($this->request->input('user_id'), $id, $filename);
         $this->setTube('config.beanstalkd.import');
 
-        $this->queue->push('Biospex\Services\Queue\NfnTranscriptionQueue', ['id' => $import->id], $this->tube);
+        $this->queue->push('App\Services\Queue\NfnTranscriptionQueue', ['id' => $import->id], $this->tube);
 
         return;
     }

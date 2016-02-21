@@ -54,7 +54,7 @@
       "database"
     ],
     "psr-4": {
-      "Biospex\\": "app/"
+      "App\\": "app/"
     },
     "files": ["app/Http/helpers.php", "app/Http/navigation.php"]
   },

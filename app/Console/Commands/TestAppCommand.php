@@ -1,11 +1,11 @@
 <?php
 
-namespace Biospex\Console\Commands;
+namespace App\Console\Commands;
 
-use Biospex\Repositories\Contracts\OcrQueue;
-use Biospex\Services\Process\Ocr;
+use App\Repositories\Contracts\OcrQueue;
+use App\Services\Process\Ocr;
 use Illuminate\Console\Command;
-use Biospex\Repositories\Contracts\Subject;
+use App\Repositories\Contracts\Subject;
 
 class TestAppCommand extends Command
 {

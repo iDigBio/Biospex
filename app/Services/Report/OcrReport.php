@@ -1,4 +1,4 @@
-<?php namespace Biospex\Services\Report;
+<?php namespace App\Services\Report;
 
 
 class OcrReport extends Report
@@ -21,7 +21,7 @@ class OcrReport extends Report
             'mainMessage'  => trans('emails.ocr_complete_message')
         ];
         $subject = trans('emails.ocr_complete');
-        $view = 'front.emails.report-simple';
+        $view = 'frontend.emails.report-simple';
 
         $this->fireEvent($email, $subject, $view, $data, $attachment);
 

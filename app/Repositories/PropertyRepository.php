@@ -1,7 +1,7 @@
-<?php namespace Biospex\Repositories;
+<?php namespace App\Repositories;
 
-use Biospex\Repositories\Contracts\Property;
-use Biospex\Models\Property as Model;
+use App\Repositories\Contracts\Property;
+use App\Models\Property as Model;
 
 class PropertyRepository extends Repository implements Property
 {

@@ -1,4 +1,4 @@
-<?php namespace Biospex\Services\Import;
+<?php namespace App\Services\Import;
 
 class RecordSetImport extends ImportServiceAbstract
 {
@@ -29,7 +29,7 @@ class RecordSetImport extends ImportServiceAbstract
             'user_id'    => $this->request->input('user_id'),
             'project_id' => $id
         ];
-        $this->queue->push('Biospex\Services\Queue\RecordSetImportQueue', $data, $this->tube);
+        $this->queue->push('App\Services\Queue\RecordSetImportQueue', $data, $this->tube);
 
         return;
     }

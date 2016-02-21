@@ -1,7 +1,7 @@
-<?php namespace Biospex\Repositories;
+<?php namespace App\Repositories;
 
-use Biospex\Repositories\Contracts\Actor;
-use Biospex\Models\Actor as Model;
+use App\Repositories\Contracts\Actor;
+use App\Models\Actor as Model;
 
 class ActorRepository extends Repository implements Actor
 {

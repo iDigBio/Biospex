@@ -1,8 +1,8 @@
 <?php
 
-namespace Biospex\Repositories\Decorators;
+namespace App\Repositories\Decorators;
 
-use Biospex\Repositories\Contracts\User;
+use App\Repositories\Contracts\User;
 
 class CacheUserDecorator extends CacheDecorator implements User
 {

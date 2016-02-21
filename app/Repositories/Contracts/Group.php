@@ -1,6 +1,6 @@
 <?php
 
-namespace Biospex\Repositories\Contracts;
+namespace App\Repositories\Contracts;
 
 interface Group extends Repository
 {

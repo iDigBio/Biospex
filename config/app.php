@@ -155,11 +155,11 @@ return [
         /*
          * Biospex Providers
          */
-        Biospex\Providers\AppServiceProvider::class,
-        Biospex\Providers\AuthServiceProvider::class,
-        Biospex\Providers\EventServiceProvider::class,
-        Biospex\Providers\RouteServiceProvider::class,
-        Biospex\Providers\BiospexServiceProvider::class,
+        App\Providers\AppServiceProvider::class,
+        App\Providers\AuthServiceProvider::class,
+        App\Providers\EventServiceProvider::class,
+        App\Providers\RouteServiceProvider::class,
+        App\Providers\BiospexServiceProvider::class,
     ],
 
     /*

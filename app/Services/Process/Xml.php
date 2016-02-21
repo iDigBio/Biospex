@@ -1,4 +1,4 @@
-<?php namespace Biospex\Services\Process;
+<?php namespace App\Services\Process;
 
 use DOMDocument;
 use DOMXPath;

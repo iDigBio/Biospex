@@ -1,6 +1,6 @@
 <?php
 
-namespace Biospex\Services\Csv;
+namespace App\Services\Csv;
 
 use League\Csv\Writer;
 use League\Csv\Reader;

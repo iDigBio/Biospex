@@ -2,7 +2,7 @@
 
 namespace app\Repositories\Decorators;
 
-use Biospex\Repositories\Contracts\Permission;
+use App\Repositories\Contracts\Permission;
 
 class CachePermissionDecorator extends CacheDecorator implements Permission
 {

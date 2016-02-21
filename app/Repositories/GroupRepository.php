@@ -1,9 +1,9 @@
 <?php
 
-namespace Biospex\Repositories;
+namespace App\Repositories;
 
-use Biospex\Repositories\Contracts\Group;
-use Biospex\Models\Group as Model;
+use App\Repositories\Contracts\Group;
+use App\Models\Group as Model;
 
 class GroupRepository extends Repository implements Group
 {

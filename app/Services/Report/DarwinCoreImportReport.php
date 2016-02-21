@@ -1,4 +1,4 @@
-<?php namespace Biospex\Services\Report;
+<?php namespace App\Services\Report;
 
 class DarwinCoreImportReport extends Report
 {
@@ -23,7 +23,7 @@ class DarwinCoreImportReport extends Report
             'ocrImportMessage' => trans('emails.import_ocr_message'),
         ];
         $subject = trans('emails.import_subject_subject');
-        $view = 'front.emails.report-import';
+        $view = 'frontend.emails.report-import';
 
         $this->fireEvent($email, $subject, $view, $data, $attachments);
     }
@@ -43,7 +43,7 @@ class DarwinCoreImportReport extends Report
             'projectTitle' => $title,
             'errorMessage' => print_r($this->messages->get('error'), true)
         ];
-        $view = 'front.emails.reporterror';
+        $view = 'frontend.emails.reporterror';
 
         $this->fireEvent($email, $subject, $view, $data);
     }

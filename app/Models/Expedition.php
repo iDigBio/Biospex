@@ -1,9 +1,9 @@
-<?php namespace Biospex\Models;
+<?php namespace App\Models;
 
 use Illuminate\Support\Facades\DB;
 use Jenssegers\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Biospex\Models\Traits\UuidTrait;
+use App\Models\Traits\UuidTrait;
 
 class Expedition extends Eloquent
 {

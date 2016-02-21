@@ -1,8 +1,8 @@
 <?php
 
-namespace Biospex\Http\Controllers\Api;
+namespace App\Http\Controllers\Api;
 
-use Biospex\Http\Controllers\Controller;
+use App\Http\Controllers\Controller;
 
 class ApiController extends Controller
 {
