@@ -77,6 +77,11 @@ class AuthController extends Controller
             return redirect()->route('home');
         }
 
+        if ($user->isAdmin('admins'))
+        {
+            return redirect()->route('dashboard.get.index');
+        }
+
         return redirect()->intended($this->redirectPath());
     }
 
