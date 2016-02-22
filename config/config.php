@@ -52,7 +52,7 @@ return [
 
     'images'                 => [
         'thumbDefaultImg'    => public_path('/img/default_image.jpg'),
-        'thumbOutputDir'     => storage_path('img'),
+        'thumbOutputDir'     => storage_path('images'),
         'thumbWidth'         => 300,
         'thumbHeight'        => 300,
         'imageTypeExtension' => [
