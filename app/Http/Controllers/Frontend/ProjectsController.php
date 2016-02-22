@@ -111,11 +111,6 @@ class ProjectsController extends Controller
             'expeditions.stat'
         ]);
 
-        if ( ! $this->checkPermissions($user, [$project], 'read'))
-        {
-            return redirect()->route('projects.get.index');
-        }
-
         return view('frontend.projects.show', compact('user', 'project'));
     }
 

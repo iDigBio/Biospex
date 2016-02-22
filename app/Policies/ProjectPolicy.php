@@ -6,7 +6,7 @@ class ProjectPolicy
 {
     public function before($user)
     {
-        if ($user->isAdmin('admins')) {
+        if ($user->isAdmin()) {
             return;
         }
     }

@@ -146,9 +146,9 @@ class User extends Model implements AuthenticatableContract,
      * @param $group
      * @return bool
      */
-    public function isAdmin($group)
+    public function isAdmin()
     {
-        return $this->hasGroup($group);
+        return $this->hasGroup(env('ADMIN_GROUP'));
     }
 
     public function hasAccess($group, $permission)

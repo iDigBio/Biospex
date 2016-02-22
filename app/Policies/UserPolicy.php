@@ -8,7 +8,7 @@ class UserPolicy
 {
     public function before($user)
     {
-        if ($user->isAdmin('admins'))
+        if ($user->isAdmin())
         {
             return true;
         }

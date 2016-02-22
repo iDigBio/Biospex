@@ -7,7 +7,7 @@ Route::pattern('id', '[0-9]+');
 Route::group(
     [
         'domain'     => env('APP_DOMAIN'),
-        'middleware' => ['admin'],
+        'middleware' => ['web', 'auth'],
         'namespace'  => 'Backend',
         'prefix' => 'admin'
     ],
@@ -131,7 +131,7 @@ Route::group(
 
         Route::group(
             [
-                'middleware' => ['auth'],
+                'middleware' => ['auth', 'admin'],
             ],
             function ()
             {

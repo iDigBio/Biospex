@@ -44,9 +44,6 @@
                 <li {{ preg_match('/groups/', Route::currentRouteName()) ? 'class="active"' : "" }}><a href="{{ route('groups.get.index') }}">Groups</a></li>
                 <li {{ preg_match('/projects/', Route::currentRouteName()) ? 'class="active"' : "" }}><a href="{{ route('projects.get.index') }}">Projects</a></li>
                 <li {{ preg_match('/expeditions/', Route::currentRouteName()) ? 'class="active"' : "" }}><a href="{{ route('expeditions.get.index') }}">Expeditions</a></li>
-                @can('read', Auth::getUser())
-                <li {{ preg_match('/dashboard/', Route::currentRouteName()) ? 'class="active"' : "" }}><a href="{{ route('dashboard.get.index') }}">Administration</a></li>
-                @endcan
             </ul>
             @endif
             <ul class="nav navbar-nav navbar-right">
