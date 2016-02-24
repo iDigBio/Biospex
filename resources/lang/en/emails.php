@@ -36,7 +36,7 @@ return [
     'group_invite_message'          => 'You have been invited to join the Biospex group :group. Please :link to register using this email address.',
     'group_invite_subject'          => 'Bisopex Group Invite',
     'import_dup_rej_message'        => 'If duplicates or rejects exist, you will find the information in an attached csv file.',
-    'import_ocr_message'            => 'OCR processing may take a longer and you will receive an email when it is complete.',
+    'import_ocr_message'            => 'OCR processing may take longer, and you will receive an email when it is complete.',
     'import_subject_complete'       => 'The subject import for :project has been completed.',
     'import_subject_subject'        => 'Subject Import Completed',
     'import_transcription_complete' => 'The transcription import for :project has been completed.',
