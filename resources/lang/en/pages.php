@@ -93,7 +93,7 @@ return [
     'upload_nfn_desc' => 'Only CSV files from Notes from Nature accepted.',
     'upload_nfn_results' => 'Import Notes From Nature Results',
     'upload_recordset' => 'Import Using Record Set Id',
-    'upload_trans_success' => 'Upload was successful. You will receive an email when your import data has been processed.',
+    'upload_trans_success' => 'Upload was successful. You will receive an email when your import data have been processed.',
     'recordset_id_required' => "Recordset Id or URL required.",
     'warning' => 'Warning',
     'your' => 'Your',
