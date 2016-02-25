@@ -393,7 +393,7 @@ class Ocr
      */
     public function setQueueLaterTime($count)
     {
-        $seconds = $count == 0 ? 0 : round($count * 10);
+        $seconds = $count == 0 ? 0 : round($count * $this->ocrSeconds);
 
         return Carbon::now()->addSeconds($seconds);
     }
