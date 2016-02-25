@@ -126,7 +126,7 @@ return [
 
     'status_select' => [
         'starting' => 'Starting',
-        'acting'   => 'Acting',
+        'active'   => 'Active',
         'complete' => 'Complete',
         'hiatus'   => 'Hiatus'
     ],
