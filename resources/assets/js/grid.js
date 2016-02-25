@@ -11,21 +11,23 @@ $.extend($.jgrid.cellattr, {
 var Grid = {};
 
 $(function () {
-    'use strict';
-    Grid.loadSate = false;
-    Grid.id = $(".jgrid").prop('id');
-    Grid.obj = $("#" + Grid.id);
-    Grid.project = $("#projectId").val();
-    Grid.subjectCountObj = $('#subjectCount');
-    Grid.subjectIdsObj = $('#subjectIds');
-    Grid.subjectIds = Grid.subjectIdsObj.length > 0 ?
-        (Grid.subjectIdsObj.val().length == 0 ? [] : Grid.subjectIdsObj.val().split(',')) : '';
-    $.ajax({
-        type: "GET",
-        url: "/projects/" + Grid.project + "/grids/load",
-        dataType: "json",
-        success: jqBuildGrid()
-    });
+    if ($("#jqGridModal").length > 0) {
+        'use strict';
+        Grid.loadSate = false;
+        Grid.id = $(".jgrid").prop('id');
+        Grid.obj = $("#" + Grid.id);
+        Grid.project = $("#projectId").val();
+        Grid.subjectCountObj = $('#subjectCount');
+        Grid.subjectIdsObj = $('#subjectIds');
+        Grid.subjectIds = Grid.subjectIdsObj.length > 0 ?
+            (Grid.subjectIdsObj.val().length == 0 ? [] : Grid.subjectIdsObj.val().split(',')) : '';
+        $.ajax({
+            type: "GET",
+            url: "/projects/" + Grid.project + "/grids/load",
+            dataType: "json",
+            success: jqBuildGrid()
+        });
+    }
 });
 
 function jqBuildGrid() {
