@@ -26,5 +26,5 @@ return array(
     'expedition_edit' => 'Edit expedition',
     'expedition_view' => 'View expedition',
     'process_destroy_error' => 'Expedition process could not be stopped.',
-    'projects' => 'Expeditions',
+    'expeditions' => 'Expeditions',
 );
