@@ -42,7 +42,4 @@
     </div>
     @include('frontend/layouts/jqgrid')
 @stop
-@section('javascript')
-    @parent
-    @javascripts('grid/application')
-@stop
+
