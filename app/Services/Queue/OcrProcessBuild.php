@@ -87,7 +87,7 @@ class OcrProcessBuild extends QueueAbstract
     {
         $this->job = $job;
 
-        if ($this->ocr->disableOcr) {
+        if ($this->ocr->ocrDisable) {
             $this->delete();
 
             return;
