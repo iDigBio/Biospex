@@ -200,7 +200,7 @@ td.ocrPreview {
 }
 .ui-jqgrid tr.ui-row-ltr td.thumbPreview a {
   display: inline-block;
-  margin: 0 10px 0 10px;
+  margin: 0 5px 0 5px;
 }
 
 .ui-th-ltr {
