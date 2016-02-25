@@ -207,8 +207,8 @@ function mapFormatter(column) {
     var functionsMapping = {
         "imagePreview": function (cellValue, opts, rowObjects) {
             var url = encodeURIComponent(cellValue);
-            return '<a href="' + cellValue + '" target="_new">View Image</a>'
-                + '<a href="/images/preview?url=' + url + '" class="thumb-view">View Thumb</a>'
+            return '<a href="' + cellValue + '" target="_new">View Image</a>&nbsp;&nbsp;'
+                + '<a href="/images/preview?url=' + url + '" class="thumb-view">View Thumb</a>&nbsp;&nbsp;'
                 + '<a href="' + cellValue + '" class="url-view">View Url</a>';
         }
     };
