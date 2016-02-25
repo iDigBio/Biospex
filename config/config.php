@@ -5,10 +5,10 @@ return [
     /**
      * Site variables
      */
-    'app_url'                  => env('APP_URL'),
-    'api_url'                  => env('API_URL'),
-    'registration'             => env('APP_REGISTRATION'),
-    'translate'                => env('APP_TRANSLATE'),
+    'app_url'      => env('APP_URL'),
+    'api_url'      => env('API_URL'),
+    'registration' => env('APP_REGISTRATION'),
+    'translate'    => env('APP_TRANSLATE'),
 
     'scratch_dir'              => storage_path('scratch'),
     'nfn_export_dir'           => storage_path('exports/nfn'),
@@ -16,41 +16,42 @@ return [
     'transcription_import_dir' => storage_path('imports/transcriptions'),
     'export_reports_dir'       => storage_path('exports/report'),
 
-    'ocr_post_url'             => env('OCR_POSTURL'),
-    'ocr_get_url'              => env('OCR_GETURL'),
-    'ocr_delete_url'           => env('OCR_DELETEURL'),
-    'ocr_crop'                 => env('OCR_CROP'),
-    'disable_ocr'              => env('OCR_DISABLE', false),
-    'ocr_chunk'                => env('OCR_CHUNK'),
+    'ocr_post_url'     => env('OCR_POSTURL'),
+    'ocr_get_url'      => env('OCR_GETURL'),
+    'ocr_delete_url'   => env('OCR_DELETEURL'),
+    'ocr_crop'         => env('OCR_CROP'),
+    'ocr_disable'      => env('OCR_DISABLE', false),
+    'ocr_chunk'        => env('OCR_CHUNK'),
+    'ocr_seconds'      => env('OCR_SECONDS'),
 
     /**
      * iDigBio api query url
      */
-    'recordset_url'            => 'https://beta-api.idigbio.org/v2/download/?rq={"recordset":"RECORDSET_ID"}',
+    'recordset_url'    => 'https://beta-api.idigbio.org/v2/download/?rq={"recordset":"RECORDSET_ID"}',
 
     /**
      * Match used in Notes From Nature transcription import for matching.
      */
-    'collection'               => env('APP_nfncollection'),
+    'collection'       => env('APP_nfncollection'),
 
     /**
      * DCA import row types for multimedia.
      */
-    'metaFileRowTypes'       => [
+    'metaFileRowTypes' => [
         'http://rs.tdwg.org/ac/terms/multimedia'  => ['multimedia_raw', 'multimedia', 'multimedia-10'],
         'http://rs.gbif.org/terms/1.0/image'      => ['images'],
         'http://rs.tdwg.org/dwc/terms/occurrence' => ['occurrence_raw, occurrence', 'occurrence-10']
     ],
 
     /* Added Tubes */
-    'beanstalkd'               => [
+    'beanstalkd'       => [
         'default'  => env('QUEUE_DEFAULT_TUBE'),
         'import'   => env('QUEUE_SUBJECTS_TUBE'),
         'workflow' => env('QUEUE_WORKFLOW_TUBE'),
         'ocr'      => env('QUEUE_OCR_TUBE')
     ],
 
-    'images'                 => [
+    'images'         => [
         'thumbDefaultImg'    => public_path('/img/default_image.jpg'),
         'thumbOutputDir'     => storage_path('images'),
         'thumbWidth'         => 300,
@@ -64,13 +65,13 @@ return [
     ],
 
     /** Min and max logo and banner sizes used in Project model for Codesleve Stapler */
-    'logo'                     => '300x200',
-    'banner'                   => '1200x300',
+    'logo'           => '300x200',
+    'banner'         => '1200x300',
 
     /**
      * Possible identifiers in subject uploads.
      */
-    'identifiers'              => [
+    'identifiers'    => [
         'identifier',
         'providerManagedID',
         'uuid',
@@ -80,7 +81,7 @@ return [
     /**
      * Visible columns in jqGrid.
      */
-    'model_columns'            => [
+    'model_columns'  => [
         'Assigned',
         'Id',
         'AccessURI',
@@ -90,7 +91,7 @@ return [
     /**
      * Columns used in select statement for grid.
      */
-    'select_columns'           => [
+    'select_columns' => [
         'expedition_ids',
         'id',
         'accessURI',
@@ -100,7 +101,7 @@ return [
     /**
      * Default advertise fields for PPSR_CORE
      */
-    'ppsr'                     => [
+    'ppsr'           => [
         'ProjectGUID'             => ['private' => 'uuid'],
         'ProjectName'             => ['column' => 'title'],
         'ProjectDataProvider'     => ['value' => env('APP_NAME')],
@@ -123,7 +124,7 @@ return [
         'projectImage'            => ['url' => 'logo'],
     ],
 
-    'status_select'            => [
+    'status_select' => [
         'starting' => 'Starting',
         'acting'   => 'Acting',
         'complete' => 'Complete',
