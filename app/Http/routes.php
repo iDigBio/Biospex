@@ -20,6 +20,15 @@ Route::group(
             'as'   => 'dashboard.get.index'
         ]);
 
+        Route::get('ocr', [
+           'uses' => 'DashboardController@ocr',
+            'as' => 'ocr.get.index'
+        ]);
+
+        Route::post('ocr', [
+            'uses' => 'DashboardController@ocr',
+            'as' => 'ocr.post.index'
+        ]);
     });
 
 Route::group(
@@ -131,7 +140,7 @@ Route::group(
 
         Route::group(
             [
-                'middleware' => ['auth', 'admin'],
+                'middleware' => ['auth'],// ['auth', 'admin'],
             ],
             function ()
             {

@@ -7,10 +7,6 @@ body.admin { padding-top: 0px; }
 body.home { padding-top: 40px; }
 .top-margin { margin-top: 50px; }
 
-.panel-heading,
-.panel-title {
-  color: #fff;
-}
 .panel {
   .box-shadow(10px 10px 10px fade(#232322, 30%));
 }

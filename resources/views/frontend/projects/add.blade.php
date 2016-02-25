@@ -18,7 +18,7 @@
         <div class="col-md-4">
             <div class="panel panel-info">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{{ trans('pages.upload_darwin_file') }}</h3>
+                    <h3>{{ trans('pages.upload_darwin_file') }}</h3>
                 </div>
                 <div class="panel-body">
                     {!! Form::open([

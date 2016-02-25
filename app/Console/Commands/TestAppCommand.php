@@ -47,10 +47,6 @@ class TestAppCommand extends Command
      */
     public function fire()
     {
-        $record = $this->ocrQueue->find(3);
-        $count = $this->ocrQueue->getSubjectRemainingSum($record->id);
-        dd($count);
-
         $subjects = $this->subject->findByProjectId(6);
         foreach($subjects as $subject)
         {
