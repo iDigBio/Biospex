@@ -7730,7 +7730,7 @@ button.list-group-item-danger.active:focus {
   border-color: #d6e9c6;
 }
 .panel-success > .panel-heading {
-  color: #93c54b;
+  color: #ffffff;
   background-color: #93c54b;
   border-color: #d6e9c6;
 }
@@ -7739,7 +7739,7 @@ button.list-group-item-danger.active:focus {
 }
 .panel-success > .panel-heading .badge {
   color: #93c54b;
-  background-color: #93c54b;
+  background-color: #ffffff;
 }
 .panel-success > .panel-footer + .panel-collapse > .panel-body {
   border-bottom-color: #d6e9c6;
@@ -7748,7 +7748,7 @@ button.list-group-item-danger.active:focus {
   border-color: #29abe0;
 }
 .panel-info > .panel-heading {
-  color: #29abe0;
+  color: #ffffff;
   background-color: #29abe0;
   border-color: #29abe0;
 }
@@ -7757,7 +7757,7 @@ button.list-group-item-danger.active:focus {
 }
 .panel-info > .panel-heading .badge {
   color: #29abe0;
-  background-color: #29abe0;
+  background-color: #ffffff;
 }
 .panel-info > .panel-footer + .panel-collapse > .panel-body {
   border-bottom-color: #29abe0;
@@ -7766,7 +7766,7 @@ button.list-group-item-danger.active:focus {
   border-color: #faebcc;
 }
 .panel-warning > .panel-heading {
-  color: #f47c3c;
+  color: #ffffff;
   background-color: #f47c3c;
   border-color: #faebcc;
 }
@@ -7775,7 +7775,7 @@ button.list-group-item-danger.active:focus {
 }
 .panel-warning > .panel-heading .badge {
   color: #f47c3c;
-  background-color: #f47c3c;
+  background-color: #ffffff;
 }
 .panel-warning > .panel-footer + .panel-collapse > .panel-body {
   border-bottom-color: #faebcc;
@@ -7784,7 +7784,7 @@ button.list-group-item-danger.active:focus {
   border-color: #ebccd1;
 }
 .panel-danger > .panel-heading {
-  color: #d9534f;
+  color: #ffffff;
   background-color: #d9534f;
   border-color: #ebccd1;
 }
@@ -7793,7 +7793,7 @@ button.list-group-item-danger.active:focus {
 }
 .panel-danger > .panel-heading .badge {
   color: #d9534f;
-  background-color: #d9534f;
+  background-color: #ffffff;
 }
 .panel-danger > .panel-footer + .panel-collapse > .panel-body {
   border-bottom-color: #ebccd1;
@@ -8737,14 +8737,6 @@ button.close {
     display: none !important;
   }
 }
-/*
-@gray-base:              #000;
-@gray-darker:            #3E3F3A;
-@gray-dark:              #8E8C84;
-@gray:                   #98978B;
-@gray-light:             #C1C1B9;
-@gray-lighter:           #D6D5D1;
-*/
 .bootstrap-select {
   /*width: 220px\9; IE8 and below*/
   width: 220px \0;
