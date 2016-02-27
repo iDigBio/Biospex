@@ -132,8 +132,8 @@ function jqBuildGrid() {
                     dialog_opts: {
                         modal: true,
                         width: 700,
-                        show: 'blind',
-                        hide: 'explode'
+                        //show: 'blind',
+                        //hide: 'explode'
                     },
                     done: function (perm) {
                         if (perm) {
