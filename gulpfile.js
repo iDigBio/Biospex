@@ -14,10 +14,10 @@ elixir(function (mix) {
     mix.styles([
             'css/biospex.css',
             'vendor/jquery-ui/themes/smoothness/jquery-ui.min.css',
-            'vendor/jqGrid/css/ui.jqgrid.css',
+            //'vendor/jqGrid/css/ui.jqgrid.css',
             'vendor/jqGrid/css/ui.jqgrid-bootstrap.css',
-            'vendor/jqGrid/css/ui.jqgrid-bootstrap-ui.css',
-            'vendor/ui-multiselect/jquery.multiselect.css',
+            //'vendor/jqGrid/css/ui.jqgrid-bootstrap-ui.css',
+            'vendor/jquery-ui-multiselect-widget/jquery.multiselect.css',
             'vendor/tablesorter/dist/css/theme.bootstrap.min.css',
         ], 'public/css/biospex.css', assetsDir)
         .scripts([
@@ -27,7 +27,7 @@ elixir(function (mix) {
             'vendor/jquery-validation/dist/additional-methods.min.js',
             'vendor/jqGrid/js/i18n/grid.locale-en.js',
             'vendor/jqGrid/js/jquery.jqGrid.min.js',
-            'vendor/ui-multiselect/src/jquery.multiselect.js',
+            'vendor/jquery-ui-multiselect-widget/src/jquery.multiselect.js',
             'vendor/tablesorter/dist/js/jquery.tablesorter.min.js',
             'vendor/tablesorter/dist/js/jquery.tablesorter.widgets.js',
             'js/biospex.js',
