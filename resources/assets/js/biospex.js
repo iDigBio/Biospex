@@ -109,24 +109,6 @@ $(document).ready(function() {
             });
         }
     });
-
-    /*
-     $('input[name="user"]').change(function(){
-     $('input[class="userperm"]:checkbox').prop('checked', this.checked);
-     });
-     $('input[name="group"]').change(function(){
-     $('input[class="groupperm"]:checkbox').prop('checked', this.checked);
-     });
-     $('input[name="project"]').change(function(){
-     $('input[class="projectperm"]:checkbox').prop('checked', this.checked);
-     });
-     $('input[name="navigation"]').change(function(){
-     $('input[class="navigationperm"]:checkbox').prop('checked', this.checked);
-     });
-     $('input[name="permission"]').change(function(){
-     $('input[class="permissionperm"]:checkbox').prop('checked', this.checked);
-     });
-     */
 });
 
 $(function(){
