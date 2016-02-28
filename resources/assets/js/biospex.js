@@ -91,6 +91,7 @@ $(document).ready(function() {
         }
     });
 
+
     $("#userGroup").change(function(){
         this.value == 'new' ? $("#groupInput").show() : $("#groupInput").hide();
     });
