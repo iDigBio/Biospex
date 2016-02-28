@@ -129,12 +129,9 @@ function jqBuildGrid() {
             title: "Choose columns",
             onClickButton: function () {
                 Grid.obj.jqGrid('columnChooser', {
-                    dialog_opts: {
-                        modal: true,
-                        width: 700,
-                        //show: 'blind',
-                        //hide: 'explode'
-                    },
+                    classname: "columnChooser",
+                    modal: true,
+                    width: 500,
                     done: function (perm) {
                         if (perm) {
                             this.jqGrid("remapColumns", perm, true);
