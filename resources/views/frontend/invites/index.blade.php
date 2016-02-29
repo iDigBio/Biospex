@@ -43,7 +43,7 @@
             {!! Form::close() !!}
 
             @if ( ! $group->invites->isEmpty())
-                <h4 class="top-margin">@lang('groups.existing_invites')</h4>
+                <h4 class="">@lang('groups.existing_invites')</h4>
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>

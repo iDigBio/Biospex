@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-    <div class="row centered-form top-margin">
+    <div class="row centered-form top-buffer">
         <div class="col-xs-12 col-md-8 col-md-offset-2">
             <div class="panel panel-info">
                 <div class="panel-heading">

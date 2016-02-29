@@ -10,7 +10,7 @@
 @section('content')
 <div class="row">
 {!! Breadcrumbs::render('groups.get.show.edit', $group) !!}
-    <div class="row centered-form top-margin">
+    <div class="row centered-form ">
         <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
             <div class="panel panel-info">
                 <div class="panel-heading">
