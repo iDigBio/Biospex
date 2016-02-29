@@ -1,25 +1,32 @@
-@media (min-width: 979px) {
-  body {
-    padding-top: 60px;
-  }
+.container {
+    padding-top: 50px;
 }
-body.admin { padding-top: 0px; }
-body.home { padding-top: 40px; }
-.top-margin { margin-top: 50px; }
+
+.top-buffer {
+    margin-top: 50px;
+}
 
 .panel {
   .box-shadow(10px 10px 10px fade(#232322, 30%));
 }
 
-#x { background: url(/img/x.png) right -50px no-repeat; }
+#home-content {
+    background: url(/img/x.png) right -50px no-repeat;
+    width: 1170px;
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
 .home h2 { color: #8dc63f; font-size: 18px; font-weight: bold; margin: 45px 0 10px 0; }
 .home label { color: #999; font-weight: normal; display: block;}
 .home input[type="text"], .home #mce-EMAIL { width: 200px; }
 h2.mailchimp { margin-top: 90px; }
 p a { color: #c00; }
 p a:hover { color: #f00; }
-#splash { background: url(/img/home-map.jpg); height: 300px; width: 100%; padding: 25px 0 0 0; margin: 0; }
-#splash h1 { color: #241d4e !important; font-size: 20px; font-weight: bold; }
+#splash { background: url(/img/home-map.jpg); height: 300px; width: 100%; padding: 25px 0 0 0; margin: 40px 0px 0px 0px; }
+#splash img { margin-left: 90px; }
+#splash h1 { color: #241d4e !important; font-size: 20px; font-weight: bold; margin-left: 90px; }
 
 .form-group.required .control-label:after { content:" *"; color:#ff0000; }
 .form-group label { font-weight: bold; }
