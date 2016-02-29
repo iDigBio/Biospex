@@ -113,7 +113,7 @@ function jqBuildGrid() {
                 refresh: true,
                 closeOnEscape: true,
                 closeAfterSearch: true,
-                overlay: 0
+                overlay: true
             },
             {}, // edit options
             {}, // add options
