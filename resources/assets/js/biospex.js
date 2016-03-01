@@ -1,15 +1,16 @@
 $(document).ready(function() {
 
-    $('.collapse').on('shown.bs.collapse', function () {
-        $("#collapse"+this.id).removeClass("fa-folder").addClass("fa-folder-open");
-        $("#"+this.id).load("/projects/"+this.id+"/expeditions");
-        $(this).closest('tr').show();
-    });
-
-    $('.collapse').on('hidden.bs.collapse', function () {
-        $("#collapse"+this.id).removeClass("fa-folder-open").addClass("fa-folder");
-        $( "#expeditions"+this.id).html('');
-        $(this).closest('tr').hide();
+    $('.toggle').on('click', function () {
+        if ($(this).hasClass('fa-folder')) {
+            $(this).removeClass("fa-folder").addClass("fa-folder-open");
+            var curRow = $(this).closest('tr');
+            var newRow = '<tr class="ajax-rows"><td></td><td colspan="4"><span id="row'+this.id+'"></span></td></tr>';
+            curRow.after(newRow);
+            $("#row"+this.id).load("/projects/"+this.id+"/expeditions");
+        } else {
+            $(this).removeClass("fa-folder-open").addClass("fa-folder");
+            $(this).closest('tr').next('tr').remove();
+        }
     });
 
     $(".table-sort").tablesorter({
@@ -34,6 +35,11 @@ $(document).ready(function() {
             // extra css class name (string or array) added to the filter element (input or select)
             filter_cssFilter: "form-control",
         }
+    });
+
+    $(".table-sort").bind("sortStart",function() {
+        $('.ajax-rows').remove();
+        $('.toggle').removeClass("fa-folder-open").addClass("fa-folder");
     });
 
     $('#add_target').on('click', function() {
