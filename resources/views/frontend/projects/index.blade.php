@@ -30,7 +30,7 @@
             </h3>
         </div>
         <div class="col-md-12">
-            <div class="table-responsive">
+
                 <table class="table-sort">
                     <thead>
                     <tr>
@@ -43,9 +43,8 @@
                     <tbody>
                     @foreach ($user->groups as $group)
                         @foreach ($group->projects as $project)
-                            <tr>
-                                <td><span id="collapse{{ $project->id }}" class="fa fa-folder fa-2x pointer"
-                                          data-toggle="collapse" data-target="#{{ $project->id }}"></span></td>
+                            <tr id="test{{ $project->id }}">
+                                <td class="folder-space"><span id="{{ $project->id }}" class="toggle fa fa-folder fa-2x pointer"></span></td>
                                 <td><a href="{{ route('projects.get.show', [$project->id]) }}">{{ $project->title }}</a>
                                 </td>
                                 <td><a href="{{ route('groups.get.show', [$group->id]) }}">{{ $group->label }}</a></td>
@@ -79,16 +78,11 @@
                                     @endif
                                 </td>
                             </tr>
-                            <tr style="display: none">
-                                <td></td>
-                                <td colspan="4">
-                                    <span id="{{ $project->id }}" class="collapse out"></span></td>
-                            </tr>
                         @endforeach
                     @endforeach
                     </tbody>
                 </table>
-            </div>
+
         </div>
     @endif
 @stop
