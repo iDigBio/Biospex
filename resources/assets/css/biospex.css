@@ -222,3 +222,7 @@ td.buttons-sm {
 td.buttons-xs {
   width: 150px;
 }
+
+td.folder-space {
+  width: 50px;
+}
