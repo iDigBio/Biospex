@@ -19,7 +19,7 @@
 @if (Route::currentRouteName() == 'home')
     @yield('homepage')
 @else
-    <div class="container">
+    <div class="container-fluid">
     @include('frontend.layouts.notifications')
     @yield('content')
     </div>
