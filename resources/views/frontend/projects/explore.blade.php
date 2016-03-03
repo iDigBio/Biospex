@@ -9,7 +9,7 @@
 @section('content')
     {!! Breadcrumbs::render('projects.get.show.title', $project, 'Explore') !!}
     <div class="jumbotron">
-        <h2>{{ $project->title }}</h2>
+        <h3>{{ $project->title }}</h3>
         <p>{{ $project->description_short }}</p>
 
     </div>

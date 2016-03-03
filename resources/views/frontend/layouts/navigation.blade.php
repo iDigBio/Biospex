@@ -30,12 +30,13 @@
             </ul>
         @endif
         @if(Auth::check())
+            {{ Route::currentRouteName()  }}
             <ul class="nav navbar-nav">
-                <li {{ preg_match('/groups/', Route::currentRouteName()) ? 'class="active"' : "" }}><a
+                <li class="{{ (Route::currentRouteName() == 'groups.get.index') ? 'active' : '' }}"><a
                             href="{{ route('groups.get.index') }}">Groups</a></li>
-                <li {{ preg_match('/projects/', Route::currentRouteName()) ? 'class="active"' : "" }}><a
+                <li class="{{ (Route::currentRouteName() == 'projects.get.index') ? 'active' : '' }}"><a
                             href="{{ route('projects.get.index') }}">Projects</a></li>
-                <li {{ preg_match('/expeditions/', Route::currentRouteName()) ? 'class="active"' : "" }}><a
+                <li class="{{ (Route::currentRouteName() == 'expeditions.get.index') ? 'active' : '' }}"><a
                             href="{{ route('expeditions.get.index') }}">Expeditions</a></li>
             </ul>
         @endif

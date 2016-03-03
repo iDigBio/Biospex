@@ -10,7 +10,7 @@
 @section('content')
     {!! Breadcrumbs::render('groups.get.show', $group) !!}
     <div class="jumbotron">
-        <h2>{{ $group->label }}</h2>
+        <h3>{{ $group->label }}</h3>
     </div>
 
     <div class="panel panel-primary">

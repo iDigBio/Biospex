@@ -178,6 +178,28 @@ p a:hover { color: #f00; }
   font-size: .9em;
 }
 
+
+.ui-jqgrid tr.ui-row-ltr td.thumbPreview {
+  text-align:center;
+  vertical-align:middle;
+}
+.ui-jqgrid tr.ui-row-ltr td.thumbPreview a {
+  display: inline-block;
+  margin: 0 5px 0 5px;
+}
+
+.ui-th-column {
+    text-align: center;
+}
+.ui-th-ltr {
+  background-color: #E4E4E0;
+  color: #000;
+}
+
+table.th-center th {
+  text-align: center;
+}
+
 td span.fa-folder, span.fa-folder-open {
   cursor: pointer;
 }
@@ -194,20 +216,6 @@ td.form-view-data > span > div {
 
 td.ocrPreview {
   cursor: pointer;
-}
-
-.ui-jqgrid tr.ui-row-ltr td.thumbPreview {
-  text-align:center;
-  vertical-align:middle;
-}
-.ui-jqgrid tr.ui-row-ltr td.thumbPreview a {
-  display: inline-block;
-  margin: 0 5px 0 5px;
-}
-
-.ui-th-ltr {
-  background-color: #E4E4E0;
-  color: #000;
 }
 
 td.buttons-sm {

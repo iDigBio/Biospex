@@ -9,11 +9,11 @@
 {{-- Content --}}
 @section('content')
     <div class="jumbotron">
-        <h2>Expeditions</h2>
+        <h3>Expeditions</h3>
     </div>
 
     <div class="table-responsive">
-        <table class="table table-sort dataTable">
+        <table class="table table-sort dataTable th-center">
             <thead>
             <tr>
                 <th>Title</th>
@@ -49,7 +49,7 @@
                         <td class="nowrap" colspan="3">{{ trans('expeditions.processing_not_started') }}</td>
                     @endif
                     <td class="buttons-xs">
-                        <button title="@lang('buttons.viewTitle')" class="btn btn-info btn-xs" type="button" onClick="location.href='{{ route('projects.expeditions.get.show', [$expedition->project_id, $expedition->expedition_id]) }}'"><span class="fa fa-search fa-lrg"></span> <!-- @lang('buttons.view') --></button>
+                        <button title="@lang('buttons.viewTitle')" class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ route('projects.expeditions.get.show', [$expedition->project_id, $expedition->expedition_id]) }}'"><span class="fa fa-eye fa-lrg"></span> <!-- @lang('buttons.view') --></button>
                         <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ route('projects.expeditions.get.duplicate', [$expedition->project_id, $expedition->expedition_id]) }}'"><span class="fa fa-copy fa-lrg"></span> <!-- @lang('buttons.duplicate') --></button>
                         <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs" type="button" onClick="location.href='{{ route('projects.expeditions.get.edit', [$expedition->project_id, $expedition->expedition_id]) }}'"><span class="fa fa-cog fa-lrg"></span> <!-- @lang('buttons.edit') --></button>
                         <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-xs" href="{{ route('projects.expeditions.delete.delete', [$expedition->project_id, $expedition->expedition_id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="fa fa-remove fa-lrg"></span> <!-- @lang('buttons.delete') --></button>

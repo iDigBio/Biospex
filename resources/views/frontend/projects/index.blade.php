@@ -29,9 +29,9 @@
                         class="fa fa-plus fa-lg"></span> @lang('buttons.create')</button>
             </h3>
         </div>
-        <div class="col-md-12">
+        <div class="table-responsive">
 
-                <table class="table-sort">
+                <table class="table-sort th-center">
                     <thead>
                     <tr>
                         <th class="sorter-false"></th>

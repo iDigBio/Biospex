@@ -9,7 +9,7 @@
 @section('content')
     {!! Breadcrumbs::render('projects.get.show', $project) !!}
     <div class="jumbotron">
-        <h2>{{ $project->title }}</h2>
+        <h3>{{ $project->title }}</h3>
         <p>{{ $project->description_short }}</p>
     </div>
 
@@ -28,7 +28,7 @@
                         class="fa fa-copy fa-lrg"></span> @lang('buttons.duplicate')</button>
             <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm" type="button"
                     onClick="location.href='{{ route('projects.get.edit', [$project->id]) }}'"><span
-                        class="fa fa-edit fa-lrg"></span> @lang('buttons.edit')</button>
+                        class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
             @can('delete', $project)
             <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-sm"
                     href="{{ route('projects.delete.delete', [$project->id]) }}" data-token="{{ Session::getToken() }}"
@@ -47,7 +47,7 @@
                     class="fa fa-plus fa-lrg"></span> @lang('buttons.create')</button>
     </h3>
     <div class="table-responsive">
-        <table class="table table-sort dataTable">
+        <table class="table table-sort dataTable th-center">
             <thead>
             <tr>
                 <th>Title</th>
@@ -79,9 +79,9 @@
                         <td class="nowrap" colspan="3">{{ trans('expeditions.processing_not_started') }}</td>
                     @endif
                     <td class="buttons-xs">
-                        <button title="@lang('buttons.viewTitle')" class="btn btn-info btn-xs" type="button"
+                        <button title="@lang('buttons.viewTitle')" class="btn btn-primary btn-xs" type="button"
                                 onClick="location.href='{{ route('projects.expeditions.get.show', [$project->id, $expedition->id]) }}'">
-                            <span class="fa fa-search fa-lrg"></span> <!-- @lang('buttons.view') --></button>
+                            <span class="fa fa-eye fa-lrg"></span> <!-- @lang('buttons.view') --></button>
                         <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-xs" type="button"
                                 onClick="location.href='{{ route('projects.expeditions.get.duplicate', [$project->id, $expedition->id]) }}'">
                             <span class="fa fa-copy fa-lrg"></span> <!-- @lang('buttons.duplicate') --></button>

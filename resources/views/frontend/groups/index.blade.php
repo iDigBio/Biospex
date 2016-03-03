@@ -8,22 +8,24 @@
 
 {{-- Content --}}
 @section('content')
-<div class="row">
     <div class="jumbotron">
-        <p>{{ trans('groups.group_explained') }}</p>
+        <h3>{{ trans('groups.groups') }}
+            <button title="@lang('buttons.createTitleG')" class="btn btn-success"
+                    onClick="location.href='{{ route('groups.get.create') }}'"><span
+                        class="fa fa-plus fa-lg"></span> @lang('buttons.create')</button>
+        </h3>
     </div>
-    <div class="col-md-10 col-md-offset-1">
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
+    <div class="col-md-12">
+            <table class="table-sort th-center">
                 <thead>
                     <th>@lang('pages.name')</th>
-                    <th>@lang('groups.group_options')</th>
+                    <th class="nowrap sorter-false">@lang('groups.group_options')</th>
                 </thead>
                 <tbody>
                 @foreach ($user->groups as $group)
                     <tr>
                         <td>{{ $group->label }}</td>
-                        <td>
+                        <td class="buttons-sm">
                             <button title="@lang('buttons.viewTitle')" class="btn btn-default btn-primary btn-sm" type="button" onClick="location.href='{{ route('groups.get.show', [$group->id]) }}'"><span class="fa fa-eye fa-lrg"></span> @lang('buttons.view')</button>
                             @can('update', $group)
                             <button title="@lang('buttons.editTitle')" class="btn btn-default btn-warning btn-sm" type="button" onClick="location.href='{{ route('groups.get.edit', array($group->id)) }}'"><span class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
@@ -37,13 +39,8 @@
                 @endforeach
                 </tbody>
             </table>
-        </div>
     </div>
-    <div class="col-md-10 col-md-offset-1">
-        <h4>{{ trans('groups.group_make') }}</h4>
-        <button title="@lang('buttons.createTitleG')" class="btn btn-success" onClick="location.href='{{ route('groups.get.create') }}'"><span class="glyphicon glyphicon-plus"></span> @lang('buttons.create')</button>
-    </div>
-</div>
+
 <!--  
 	The delete button uses Resftulizer.js to restfully submit with "Delete".  The "action_confirm" class triggers an optional confirm dialog.
 	Also, I have hardcoded adding the "disabled" class to the Admin group - deleting your own admin access causes problems.

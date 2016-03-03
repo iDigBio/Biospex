@@ -33,7 +33,7 @@
                 <div class="form-group required {{ ($errors->has('description')) ? 'has-error' : '' }}">
                     {!! Form::label('description', trans('forms.description'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-10">
-                        {!! Form::textarea('description', $expedition->description, ['class' => 'form-control', 'placeholder' => trans('forms.description')]) !!}
+                        {!! Form::text('description', $expedition->description, ['class' => 'form-control', 'placeholder' => trans('forms.description')]) !!}
                     </div>
                     {{ ($errors->has('description') ? $errors->first('description') : '') }}
                 </div>

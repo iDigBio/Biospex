@@ -12,7 +12,7 @@
     <div class="col-xs-12">
         <div class="panel panel-info">
             <div class="panel-heading">
-                <h3 class="panel-title">{{ trans('pages.create') }} {{ trans('expeditions.expedition') }}</h3>
+                <h3 class="panel-title">{{ trans('pages.edit') }} {{ trans('expeditions.expedition') }}</h3>
             </div>
             <div class="panel-body">
                 {!! Form::open([
@@ -33,7 +33,7 @@
                 <div class="form-group required {{ ($errors->has('description')) ? 'has-error' : '' }}">
                     {!! Form::label('description', trans('forms.description'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-10">
-                        {!! Form::textarea('description', $expedition->description, ['class' => 'form-control', 'placeholder' => trans('forms.description')]) !!}
+                        {!! Form::text('description', $expedition->description, ['class' => 'form-control', 'placeholder' => trans('forms.description')]) !!}
                     </div>
                     {{ ($errors->has('description') ? $errors->first('description') : '') }}
                 </div>
