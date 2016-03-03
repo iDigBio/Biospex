@@ -3887,10 +3887,6 @@ $(document).ready(function() {
             $(this).removeClass("fa-folder-open").addClass("fa-folder");
             $(this).closest('tr').next('tr').remove();
         }
-        // var newRow = '<tr><td></td><td colspan="4"><span id="row{{ $project->id }}" class="collapse out"></span></td> </tr>';
-        //$("#collapse"+this.id).removeClass("fa-folder").addClass("fa-folder-open");
-        //$("#"+this.id).load("/projects/"+this.id+"/expeditions");
-        //$(this).closest('tr').show();
     });
 
     $(".table-sort").tablesorter({
