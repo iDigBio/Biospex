@@ -12,11 +12,6 @@
 
 #home-content {
     background: url(/img/x.png) right -50px no-repeat;
-    width: 1170px;
-    margin-right: auto;
-    margin-left: auto;
-    padding-left: 15px;
-    padding-right: 15px;
 }
 .home h2 { color: #8dc63f; font-size: 18px; font-weight: bold; margin: 45px 0 10px 0; }
 .home label { color: #999; font-weight: normal; display: block;}
