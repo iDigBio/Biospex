@@ -8,13 +8,13 @@
 
 {{-- Content --}}
 @section('homepage')
-        <div class="row" id="splash">
+        <div id="splash">
             <img src="/img/logo.png" alt="biospex"/>
             <h1>Use BIOSPEX to provision, advertise, and lead<br/>public Biodiversity Specimen Digitization
                 Expeditions
             </h1>
         </div>
-        <div class="row" id="home-content">
+        <div id="home-content">
             <!-- Notifications -->
             @include('frontend.layouts.notifications')
                     <!-- ./ notifications -->
