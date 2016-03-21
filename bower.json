@@ -3,7 +3,7 @@
   "description": "use App to provision, advertise, and lead public Biodiversity Specimen Digitization Expeditions",
   "license": "MIT",
   "dependencies": {
-    "jqGrid": "jqgrid#~5.0.2",
+    "jqGrid": "jqgrid#~5.1.0",
     "AdminLTE": "admin-lte#2.3.2",
     "bootstrap": "3.3.6",
     "bootstrap-select": "2.0.0-beta1",
@@ -11,7 +11,7 @@
     "jquery-ui": "1.11.4",
     "jquery-validation": "1.15.0",
     "font-awesome": "4.5.0",
-    "tablesorter": "jquery.tablesorter#^2.25.4",
+    "tablesorter": "jquery.tablesorter#^2.25.5",
     "jquery-ui-multiselect-widget": "https://github.com/ehynds/jquery-ui-multiselect-widget.git#1.13"
   },
   "homepage": "https://github.com/iDigBio/Biospex",
