@@ -25,7 +25,6 @@
 		<!-- Notifications -->
 		<!-- ./ notifications -->
 		<!-- Content -->
-		<div class="row">
 			<h1 class="banner">{{ $project->title }}</h1>
 
 			<div class="col-md-7">
@@ -87,7 +86,6 @@
 					<dd>{{ $project->language_skills }}&nbsp;</dd>
 				</dl>
 			</div>
-		</div>
 		<!-- ./ content -->
 	</div>
 </div>
