@@ -22,7 +22,6 @@ return [
     'ocr_crop'         => env('OCR_CROP'),
     'ocr_disable'      => env('OCR_DISABLE', false),
     'ocr_chunk'        => env('OCR_CHUNK'),
-    'ocr_seconds'      => env('OCR_SECONDS'),
     'ocr_api_key'      => env('OCR_API_KEY'),
 
     /**

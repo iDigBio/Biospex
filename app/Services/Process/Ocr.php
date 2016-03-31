@@ -109,7 +109,6 @@ class Ocr
         $this->ocrCrop = $config->get('config.ocr_crop');
         $this->ocrChunk = $config->get('config.ocr_chunk');
         $this->ocrDisable = $config->get('config.ocr_disable');
-        $this->ocrSeconds = $config->get('config.ocr_seconds');
         $this->ocrTube = $config->get('config.beanstalkd.ocr');
         $this->ocrPostUrl = $config->get('config.ocr_post_url');
         $this->ocrGetUrl = $config->get('config.ocr_get_url');
@@ -385,19 +384,6 @@ class Ocr
     public function calculateSubjectRemaining($record, $file)
     {
         return ! $file ? $record->subject_count : max(0, ($record->subject_count - $file->header->complete));
-    }
-
-    /**
-     * Set additional queue time
-     *
-     * @param $count
-     * @return static
-     */
-    public function setQueueLaterTime($count)
-    {
-        $seconds = $count == 0 ? 0 : round($count * $this->ocrSeconds);
-
-        return Carbon::now()->addSeconds($seconds);
     }
 
     /**
