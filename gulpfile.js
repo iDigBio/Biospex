@@ -12,13 +12,13 @@ elixir(function (mix) {
     mix.less('app.less', 'public/css/bootstrap.css', {paths: lessPaths});
 
     mix.styles([
-            'css/biospex.css',
             'vendor/jquery-ui/themes/smoothness/jquery-ui.min.css',
             //'vendor/jqGrid/css/ui.jqgrid.css',
             'vendor/jqGrid/css/ui.jqgrid-bootstrap.css',
             //'vendor/jqGrid/css/ui.jqgrid-bootstrap-ui.css',
             'vendor/jquery-ui-multiselect-widget/jquery.multiselect.css',
             'vendor/tablesorter/dist/css/theme.bootstrap.min.css',
+            'css/biospex.css',
         ], 'public/css/biospex.css', assetsDir)
         .scripts([
             'vendor/jquery/dist/jquery.min.js',
@@ -31,7 +31,7 @@ elixir(function (mix) {
             'vendor/tablesorter/dist/js/jquery.tablesorter.min.js',
             'vendor/tablesorter/dist/js/jquery.tablesorter.widgets.js',
             'js/biospex.js',
-            'js/grid.js'
+            'js/grid.js',
         ], 'public/js/biospex.js', assetsDir);
 
     mix.scripts([

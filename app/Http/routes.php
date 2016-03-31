@@ -29,6 +29,11 @@ Route::group(
             'uses' => 'DashboardController@ocr',
             'as' => 'ocr.post.index'
         ]);
+
+        Route::get('phpinfo', [
+            'uses' => 'DashboardController@phpinfo',
+            'as' => 'phpinfo.get.index'
+        ]);
     });
 
 Route::group(

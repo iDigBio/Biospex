@@ -116,6 +116,14 @@ $(document).ready(function() {
             });
         }
     });
+
+    $('#processes').click(function() {
+        $('#processModal')
+            .prop('class', 'modal fade') // revert to default
+            .addClass('left');
+        $('#processModal').modal('show');
+    });
+
 });
 
 $(function(){

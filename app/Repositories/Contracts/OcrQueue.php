@@ -5,4 +5,6 @@ interface OcrQueue extends Repository
     public function findByProjectId($id);
 
     public function getSubjectRemainingSum($id);
+
+    public function allWith($with = []);
 }

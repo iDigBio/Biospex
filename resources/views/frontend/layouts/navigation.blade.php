@@ -13,7 +13,6 @@
                                                                     alt="{{ trans('pages.sitename') }}"/></a>
         </div>
     </div>
-
     <div class="collapse navbar-collapse">
         @if (config('config.translate'))
             <ul class="nav navbar-nav">

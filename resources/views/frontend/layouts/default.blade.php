@@ -20,18 +20,18 @@
     @yield('homepage')
 @else
     <div class="container-fluid">
-    @include('frontend.layouts.notifications')
-    @yield('content')
+        @include('frontend.layouts.notifications')
+        @yield('content')
     </div>
-@endif
+    @endif
 
-@include('frontend.layouts.footer')
-        <!-- ./ footer -->
-<script src="/js/biospex.js"></script>
-<script src="/js/bootstrap.js"></script>
-<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-<!--[if lt IE 9]>
-<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-<![endif]-->
+    @include('frontend.layouts.footer')
+            <!-- ./ footer -->
+    <script src="/js/biospex.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 </body>
 </html>

@@ -15,14 +15,17 @@ Requirements
  - Beanstalkd
  - Supervisord
  - Mailgun or some other email configuration
+ - Redis: sudo apt-get install redis-server
+ - PHPRedis: sudo apt-get install php5-redis
+ - NPM: npm install express ioredis socket.io --save
 
 
 Installation
 ------------
 
 1. Clone the repo
-2. Copy and rename ```.env.example.php``` to ```.env.php```.
-3. Set variables in ```.env.php```.
+2. Copy and rename ```.env.example``` to ```.env```.
+3. Set variables in ```.env```.
 6. Run ```php composer.phar install```
 7. Run the migrations: ```php artisan migrate```
 8. Seed the Database: ```php artisan db:seed```
@@ -33,23 +36,5 @@ Notes
 2. Add cron jobs for workflow manager (hourly), download clean (midnight), ocr polling.
   1. 0 * * * * /usr/bin/php /home/biospex/artisan workflow:manage >> /home/biospex/app/storage/logs/workflow.manage.log 2>&1
   2. 00 00 * * * /usr/bin/php /home/biospex/artisan download:clean >> /home/biospex/app/storage/logs/download.clean.log 2>&1
-3. Add logrotate
-  1. /etc/logrotate.d/apache2
-```Nix
-/home/biospex/app/storage/logs/*.log {
-    daily
-    missingok
-    rotate 3
-    compress
-    delaycompress
-    notifempty
-    create 644 www-data www-data
-    sharedscripts
-    dateext
-    dateformat -web01-%Y-%m-%d-%s
-}
-```
-4. Edit /etc/default/beanstalkd and add or uncomment START=yes to start Beanstalkd upon server startup/reboot.
-
-
+3. Edit /etc/default/beanstalkd and add or uncomment START=yes to start Beanstalkd upon server startup/reboot.
 

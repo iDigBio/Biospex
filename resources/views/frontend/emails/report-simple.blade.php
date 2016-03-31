@@ -1,4 +1,4 @@
-@extends('layouts.email')
+@extends('frontend.layouts.email')
 
 {{-- Content --}}
 @section('content')

@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\Queue;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Exception;
+use Illuminate\Support\Facades\Artisan;
 
 class Ocr
 {
@@ -85,6 +86,7 @@ class Ocr
 
     /**
      * Ocr constructor.
+     *
      * @param Config $config
      * @param OcrQueue $ocrQueue
      * @param Subject $subject
@@ -134,10 +136,10 @@ class Ocr
     public function buildOcrQueueData($subject)
     {
         $this->ocrData[$subject->_id] = [
-            'crop' => $this->ocrCrop,
-            'ocr' => '',
+            'crop'   => $this->ocrCrop,
+            'ocr'    => '',
             'status' => 'pending',
-            'url' => $subject->accessURI
+            'url'    => $subject->accessURI
         ];
 
         return;
@@ -145,6 +147,7 @@ class Ocr
 
     /**
      * Save ocr queue
+     *
      * @param $projectId
      * @param $ocrCsv
      * @param $data
@@ -156,12 +159,12 @@ class Ocr
     {
         $queue = null;
         $queue = $this->ocrQueue->create([
-            'project_id' => $projectId,
-            'ocr_csv_id' => $ocrCsv,
-            'data' => json_encode(['subjects' => $data]),
-            'subject_count' => $count,
+            'project_id'        => $projectId,
+            'ocr_csv_id'        => $ocrCsv,
+            'data'              => json_encode(['subjects' => $data]),
+            'subject_count'     => $count,
             'subject_remaining' => $count,
-            'batch' => $batch
+            'batch'             => $batch
         ]);
 
         return $queue;
@@ -169,24 +172,26 @@ class Ocr
 
     /**
      * Check tube for existing jobs
+     *
      * @return bool
      */
     public function checkOcrQueueForJobs()
     {
         $pheanstalk = $this->queue->getPheanstalk();
-        $stats = (array)$pheanstalk->statsTube($this->ocrTube);
+        $stats = (array) $pheanstalk->statsTube($this->ocrTube);
 
         $keyArray = [
-            'current-jobs-urgent' => null,
-            'current-jobs-ready' => null,
+            'current-jobs-urgent'   => null,
+            'current-jobs-ready'    => null,
             'current-jobs-reserved' => null,
-            'current-jobs-delayed' => null,
-            'current-jobs-buried' => null
+            'current-jobs-delayed'  => null,
+            'current-jobs-buried'   => null
         ];
 
         $filtered = array_intersect_key($stats, $keyArray);
 
-        foreach ($filtered as $stat) {
+        foreach ($filtered as $stat)
+        {
             if ($stat > 0)
                 return true;
         }
@@ -208,6 +213,7 @@ class Ocr
 
     /**
      * Queue later
+     *
      * @param $date
      * @param $data
      */
@@ -220,11 +226,12 @@ class Ocr
 
     /**
      * Chunk array for processing
+     *
      * @return array
      */
     public function getChunkQueueData()
     {
-        return !empty($this->ocrData) ? array_chunk($this->ocrData, $this->ocrChunk, true) : [];
+        return ! empty($this->ocrData) ? array_chunk($this->ocrData, $this->ocrChunk, true) : [];
     }
 
     /**
@@ -239,11 +246,11 @@ class Ocr
         $options = [
             'multipart' => [
                 [
-                    'name' => 'response',
+                    'name'     => 'response',
                     'contents' => 'http'
                 ],
                 [
-                    'name' => 'file',
+                    'name'     => 'file',
                     'contents' => $record->data,
                     'filename' => $record->uuid . '.json',
                 ]
@@ -251,7 +258,8 @@ class Ocr
 
         $response = $this->client->request('POST', $this->ocrPostUrl, $options);
 
-        if ($response->getStatusCode() != '202') {
+        if ($response->getStatusCode() != '202')
+        {
             throw new Exception(trans('emails.error_ocr_curl',
                 ['id' => $record->id, 'message' => print_r($response->getBody(), true)]));
         }
@@ -262,12 +270,12 @@ class Ocr
     /**
      * Request file from ocr server
      *
-     * @param $uuid
+     * @param $file
      * @return string
      */
-    public function requestOcrFile($uuid)
+    public function requestOcrFile($file)
     {
-        $response = $this->client->get($this->ocrGetUrl . '/' . $uuid . '.json');
+        $response = $this->client->get($this->ocrGetUrl . '/' . $file);
 
         $file = json_decode($response->getBody()->getContents());
 
@@ -283,7 +291,8 @@ class Ocr
     public function processOcrFile($file)
     {
 
-        if ($file->header->status == "error") {
+        if ($file->header->status == "error")
+        {
             $this->updateRecord(['error' => 1]);
             $this->addReportError($this->record->id, trans('emails.error_ocr_header'));
             $this->report->reportSimpleError($this->groupId);
@@ -303,26 +312,18 @@ class Ocr
      */
     public function checkOcrFileHeaderExists($file)
     {
-        if (!isset($file->header) || empty($file->header)) {
-            return false;
-        }
-
-        return true;
+        return ( ! isset($file->header) || empty($file->header)) ? false : true;
     }
 
     /**
-     * Check if ocr file status for progress
+     * Check ocr file status for progress
      *
      * @param $file
      * @return bool
      */
     public function checkOcrFileInProgress($file)
     {
-        if ($file->header->status == "in progress") {
-            return false;
-        }
-
-        return true;
+        return ($file->header->status == "in progress") ? true : false;
     }
 
     /**
@@ -333,11 +334,7 @@ class Ocr
      */
     public function checkOcrFileError($file)
     {
-        if ($file->header->status == "error") {
-            return false;
-        }
-
-        return true;
+        return ($file->header->status == "error") ? false : true;
     }
 
     /**
@@ -349,8 +346,10 @@ class Ocr
     public function updateSubjectsFromOcrFile($file)
     {
         $csv = [];
-        foreach ($file->subjects as $id => $data) {
-            if ($data->ocr == "error") {
+        foreach ($file->subjects as $id => $data)
+        {
+            if ($data->ocr == "error")
+            {
                 $csv[] = ['id' => $id, 'message' => implode(" -- ", $data->messages), 'url' => $data->url];
                 continue;
             }
@@ -365,6 +364,7 @@ class Ocr
 
     /**
      * Get count of remaining subjects
+     *
      * @param $record
      * @return mixed
      */
@@ -377,6 +377,7 @@ class Ocr
 
     /**
      * Calculate remaining count
+     *
      * @param $record
      * @param $file
      * @return mixed
@@ -388,6 +389,7 @@ class Ocr
 
     /**
      * Set additional queue time
+     *
      * @param $count
      * @return static
      */
@@ -396,5 +398,16 @@ class Ocr
         $seconds = $count == 0 ? 0 : round($count * $this->ocrSeconds);
 
         return Carbon::now()->addSeconds($seconds);
+    }
+
+    /**
+     * Send request to delete json files on ocr server.
+     * @param $files
+     */
+    public function deleteJsonFiles($files)
+    {
+        Artisan::call('ocrfile:delete', ['files' => $files]);
+        
+        return;
     }
 }

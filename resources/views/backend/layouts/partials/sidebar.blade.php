@@ -35,6 +35,7 @@
             <!-- Optionally, you can add icons to the links -->
             <li class="active"><i class="fa fa-link"></i>{{ link_to_route('dashboard.get.index', 'Dashboard') }}</li>
             <li class="active"><i class="fa fa-link"></i>{{ link_to_route('ocr.get.index', 'OCR') }}</li>
+            <li class="active"><i class="fa fa-link"></i>{{ link_to_route('phpinfo.get.index', 'PHPInfo') }}</li>
 
             <li><a href="#"><i class='fa fa-link'></i> <span>Another Link</span></a></li>
             <li class="treeview">

@@ -23,6 +23,7 @@ return [
     'ocr_disable'      => env('OCR_DISABLE', false),
     'ocr_chunk'        => env('OCR_CHUNK'),
     'ocr_seconds'      => env('OCR_SECONDS'),
+    'ocr_api_key'      => env('OCR_API_KEY'),
 
     /**
      * iDigBio api query url
@@ -46,9 +47,10 @@ return [
     /* Added Tubes */
     'beanstalkd'       => [
         'default'  => env('QUEUE_DEFAULT_TUBE'),
-        'import'   => env('QUEUE_SUBJECTS_TUBE'),
+        'import'   => env('QUEUE_IMPORT_TUBE'),
         'workflow' => env('QUEUE_WORKFLOW_TUBE'),
-        'ocr'      => env('QUEUE_OCR_TUBE')
+        'ocr'      => env('QUEUE_OCR_TUBE'),
+        'event'    => env('QUEUE_EVENT_TUBE')
     ],
 
     'images'         => [

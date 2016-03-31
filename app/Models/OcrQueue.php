@@ -23,6 +23,7 @@ class OcrQueue extends Model
         'uuid',
         'data',
         'subject_count',
+        'subject_remaining',
         'tries',
         'batch',
         'status',
@@ -61,10 +62,10 @@ class OcrQueue extends Model
         return $this->whereProjectId($id)->first();
     }
 
-    public function findFirstQueueRecord($with)
+    public function allWith($with)
     {
         $query = $this->with($with);
-        return $query->where('status', null)->where('error', 0)->first();
+        return $query->where('error', 0)->where('status', '<', 2)->orderBy('id', 'asc')->get();
     }
 
     public function getSubjectRemainingSum($id)

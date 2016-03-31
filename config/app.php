@@ -130,7 +130,7 @@ return [
         Illuminate\Pagination\PaginationServiceProvider::class,
         Illuminate\Pipeline\PipelineServiceProvider::class,
         Illuminate\Queue\QueueServiceProvider::class,
-        Illuminate\Redis\RedisServiceProvider::class,
+        //Illuminate\Redis\RedisServiceProvider::class,
         Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,
         Illuminate\Session\SessionServiceProvider::class,
         Illuminate\Translation\TranslationServiceProvider::class,
@@ -150,7 +150,7 @@ return [
         Codesleeve\LaravelStapler\Providers\L5ServiceProvider::class,
         Msurguy\Honeypot\HoneypotServiceProvider::class,
         Dingo\Api\Provider\LaravelServiceProvider::class,
-        //Spatie\ResponseCache\ResponseCacheServiceProvider::class, "spatie/laravel-responsecache": "^1.1"
+        Vetruvet\PhpRedis\PhpRedisServiceProvider::class,
 
         /*
          * Biospex Providers
@@ -197,7 +197,7 @@ return [
         'Password'    => Illuminate\Support\Facades\Password::class,
         'Queue'       => Illuminate\Support\Facades\Queue::class,
         'Redirect'    => Illuminate\Support\Facades\Redirect::class,
-        'Redis'       => Illuminate\Support\Facades\Redis::class,
+        'PHPRedis'    => Illuminate\Support\Facades\Redis::class,
         'Request'     => Illuminate\Support\Facades\Request::class,
         'Response'    => Illuminate\Support\Facades\Response::class,
         'Route'       => Illuminate\Support\Facades\Route::class,

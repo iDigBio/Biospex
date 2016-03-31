@@ -229,3 +229,8 @@ td.buttons-xs {
 td.folder-space {
   width: 50px;
 }
+
+.modal.fade:not(.in).left .modal-dialog {
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+}

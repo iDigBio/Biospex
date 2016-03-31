@@ -118,9 +118,7 @@ class OcrProcessBuild extends QueueAbstract
 
         foreach ($data as $key => $chunk) {
             $batch = ($key == $lastKey) ? 1 : 0;
-            $record = $this->ocr->saveOcrQueue($projectId, $ocrCsv->id, $chunk, count($chunk), $batch);
-            $date = $this->ocr->setQueueLaterTime(0);
-            $this->ocr->queueLater($date, ['id' => $record->id]);
+            $this->ocr->saveOcrQueue($projectId, $ocrCsv->id, $chunk, count($chunk), $batch);
         }
 
         $this->delete();

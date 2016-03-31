@@ -21,4 +21,9 @@ class OcrQueueRepository extends Repository implements OcrQueue
     {
         return $this->model->getSubjectRemainingSum($id);
     }
+
+    public function allWith($with = [])
+    {
+        return $this->model->allWith($with);
+    }
 }
