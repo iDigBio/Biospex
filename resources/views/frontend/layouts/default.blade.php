@@ -18,6 +18,8 @@
 
 @if (Route::currentRouteName() == 'home')
     @yield('homepage')
+@elseif(Route::currentRouteName() == 'home.get.project')
+    @yield('project')
 @else
     <div class="container-fluid">
         @include('frontend.layouts.notifications')
