@@ -29,13 +29,9 @@ class WorkFlowManagerCommand extends Command
     protected $workflow;
 
     /**
-     * Class constructor
+     * WorkFlowManagerCommand constructor.
      *
-     * @param WorkflowManagerInterface $workflow
-     * @param QueueFactory $factory
-     * @internal param WorkflowManagerInterface $manager
-     * @internal param ActorInterface $actor
-     * @internal param Report $report
+     * @param WorkflowManager $workflow
      */
     public function __construct(WorkflowManager $workflow)
     {
