@@ -26,4 +26,9 @@ class OcrQueueRepository extends Repository implements OcrQueue
     {
         return $this->model->findFirstWith($with);
     }
+
+    public function findAllWith(array $with)
+    {
+        return $this->model->findAllWith($with);
+    }
 }

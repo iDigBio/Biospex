@@ -68,6 +68,12 @@ class OcrQueue extends Model
         return $query->where('error', 0)->where('status', '<', 2)->orderBy('id', 'asc')->first();
     }
 
+    public function findAllWith($with)
+    {
+        $query = $this->with($with);
+        return $query->where('error', 0)->where('status', '<', 2)->orderBy('id', 'asc')->get();
+    }
+
     public function getSubjectRemainingSum($id)
     {
         return (int) $this->where('id', '<', $id)->sum('subject_remaining');
