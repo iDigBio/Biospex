@@ -11,6 +11,7 @@ use App\Repositories\Contracts\Expedition;
 use App\Repositories\Contracts\Project;
 use App\Repositories\Contracts\Subject;
 use App\Repositories\Contracts\WorkflowManager;
+use App\Services\Process\Ocr;
 use Illuminate\Support\Facades\Artisan;
 use Exception;
 
@@ -60,10 +61,15 @@ class ExpeditionsController extends Controller
      * @var Config
      */
     protected $config;
+    /**
+     * @var Ocr
+     */
+    private $ocr;
 
 
     /**
      * ExpeditionsController constructor.
+     *
      * @param Request $request
      * @param Group $group
      * @param Expedition $expedition
@@ -73,6 +79,7 @@ class ExpeditionsController extends Controller
      * @param WorkflowManager $workflowManager
      * @param Queue $queue
      * @param Config $config
+     * @param Ocr $ocr
      */
     public function __construct(
         Request $request,
@@ -83,7 +90,8 @@ class ExpeditionsController extends Controller
         User $user,
         WorkflowManager $workflowManager,
         Queue $queue,
-        Config $config
+        Config $config,
+        Ocr $ocr
     ) {
         $this->request = $request;
         $this->expedition = $expedition;
@@ -94,6 +102,7 @@ class ExpeditionsController extends Controller
         $this->config = $config;
         $this->group = $group;
         $this->user = $user;
+        $this->ocr = $ocr;
     }
 
     /**
@@ -323,12 +332,9 @@ class ExpeditionsController extends Controller
         {
             return redirect()->route('projects.get.index');
         }
-
-        $data = [
-            'project_id' => (int) $projectId,
-            'expedition_id' => (int) $expeditionId
-        ];
-        $this->queue->push('App\Services\Queue\OcrProcessBuild', $data, $this->config->get('config.beanstalkd.ocr'));
+        
+        $this->ocr->build($project, $expeditionId);
+        
         session_flash_push('success', trans('expeditions.ocr_process_success'));
 
         return redirect()->route('projects.expeditions.get.show', [$projectId, $expeditionId]);
