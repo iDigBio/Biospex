@@ -62,10 +62,10 @@ class OcrQueue extends Model
         return $this->whereProjectId($id)->first();
     }
 
-    public function allWith($with)
+    public function findFirstWith($with)
     {
         $query = $this->with($with);
-        return $query->where('error', 0)->where('status', '<', 2)->orderBy('id', 'asc')->get();
+        return $query->where('error', 0)->where('status', '<', 2)->orderBy('id', 'asc')->first();
     }
 
     public function getSubjectRemainingSum($id)
