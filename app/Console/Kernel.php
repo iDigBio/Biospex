@@ -32,7 +32,7 @@ class Kernel extends ConsoleKernel
         DarwinCoreFileImportCommand::class,
         OcrQueuePushCommand::class,
         DatabaseQueryCommand::class,
-        OcrProcessPollCommand::class,
+        OcrProcessCommand::class,
         OcrDeleteFile::class,
         AustinProcessCommand::class,
     ];
