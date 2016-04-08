@@ -8,7 +8,6 @@
 {{-- Content --}}
 @section('content')
     {!! Breadcrumbs::render('projects.get.show.title', $project, 'Explore') !!}
-    @include('frontend.partials.process-modal')
     <div class="jumbotron">
         <h3>{{ $project->title }}</h3>
         <p>{{ $project->description_short }}</p>
