@@ -46,6 +46,12 @@ Route::group(
     ],
     function ()
     {
+        // Ajax poll event
+        Route::get('poll', [
+            'uses' => 'ServerInfoController@pollOcr',
+            'as'   => 'server.get.pollOcr'
+        ]);
+        
         // Contact form
         Route::get('contact', [
             'uses' => 'HomeController@getContact',
