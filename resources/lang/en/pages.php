@@ -98,6 +98,7 @@ return [
     'warning' => 'Warning',
     'your' => 'Your',
     'core_url' => 'Darwin Core File Url',
+    'process_warning' => 'Processing stats refresh every 5 minutes.',
     //================================== Obsolete strings ==================================//
     'admin' => 'Admin',
     'advertise' => 'Advertise',
