@@ -98,7 +98,11 @@ return [
     'warning' => 'Warning',
     'your' => 'Your',
     'core_url' => 'Darwin Core File Url',
+    'processes' => 'Processes',
+    'process_title' => ':type Processes',
+    'no_processes' => 'No processes running at this time.',
     'process_warning' => 'Ocr processing stats refresh every 5 minutes.',
+    'retrieve_process' => 'Retrieving :type processes...',
     //================================== Obsolete strings ==================================//
     'admin' => 'Admin',
     'advertise' => 'Advertise',
