@@ -37,6 +37,8 @@
                             href="{{ route('projects.get.index') }}">Projects</a></li>
                 <li class="{{ (Route::currentRouteName() == 'expeditions.get.index') ? 'active' : '' }}"><a
                             href="{{ route('expeditions.get.index') }}">Expeditions</a></li>
+                <li class=""><a class="noClick" href="#" data-toggle="modal" data-target="#processModal">Processes</a>
+                </li>
             </ul>
         @endif
         <ul class="nav navbar-nav pull-right">
