@@ -26,7 +26,7 @@
         @yield('content')
     </div>
     @endif
-
+    @include('frontend.partials.process-modal')
     @include('frontend.layouts.footer')
             <!-- ./ footer -->
     <script src="/js/biospex.js"></script>
