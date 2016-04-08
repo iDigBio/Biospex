@@ -7,7 +7,7 @@ use App\Console\Commands\DatabaseQueryCommand;
 use App\Console\Commands\DownloadCleanCommand;
 use App\Console\Commands\Inspire;
 use App\Console\Commands\OcrDeleteFile;
-use App\Console\Commands\OcrProcessPollCommand;
+use App\Console\Commands\OcrProcessCommand;
 use App\Console\Commands\OcrQueuePushCommand;
 use App\Console\Commands\TestAppCommand;
 use App\Console\Commands\ViewsCommand;

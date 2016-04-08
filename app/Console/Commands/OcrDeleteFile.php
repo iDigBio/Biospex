@@ -67,12 +67,10 @@ class OcrDeleteFile extends Command
             'concurrency' => 10,
             'fulfilled'   => function ($response, $file)
             {
-                \Log::alert($file);
                 session_flash_push('success', "Deleted " . $file . " successfully.");
             },
             'rejected'    => function ($reason, $file)
             {
-                \Log::alert("fail");
                 session_flash_push('error', "Unable to delete file " . $file);
             },
         ]);

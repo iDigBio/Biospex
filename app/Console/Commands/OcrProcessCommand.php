@@ -5,19 +5,19 @@ namespace App\Console\Commands;
 use App\Events\PollOcrEvent;
 use App\Repositories\Contracts\OcrCsv;
 use App\Repositories\Contracts\OcrQueue;
-use App\Services\Process\Ocr;
+use App\Services\Process\OcrRequest;
 use App\Services\Report\OcrReport;
+use Illuminate\Events\Dispatcher;
 use Illuminate\Console\Command;
 
-class OcrProcessPollCommand extends Command
+class OcrProcessCommand extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'ocrprocess:poll';
+    protected $signature = 'ocrprocess:records';
 
     /**
      * The console command description.
@@ -25,11 +25,11 @@ class OcrProcessPollCommand extends Command
      * @var string
      */
     protected $description = 'Polls Ocr server for file status and fires polling event';
-
+    
     /**
-     * @var Ocr
+     * @var OcrRequest
      */
-    private $ocr;
+    private $ocrRequest;
 
     /**
      * @var OcrQueue
@@ -45,28 +45,36 @@ class OcrProcessPollCommand extends Command
      * @var OcrCsv
      */
     private $ocrCsv;
+    
+    /**
+     * @var Dispatcher
+     */
+    private $dispatcher;
 
     /**
-     * Create a new command instance.
+     * OcrProcessCommand constructor.
      *
-     * @param Ocr $ocr
+     * @param OcrRequest $ocrRequest
      * @param OcrQueue $ocrQueue
      * @param OcrReport $ocrReport
      * @param OcrCsv $ocrCsv
+     * @param Dispatcher $dispatcher
      */
     public function __construct(
-        Ocr $ocr,
+        OcrRequest $ocrRequest,
         OcrQueue $ocrQueue,
         OcrReport $ocrReport,
-        OcrCsv $ocrCsv
+        OcrCsv $ocrCsv,
+        Dispatcher $dispatcher
     )
     {
         parent::__construct();
 
-        $this->ocr = $ocr;
+        $this->ocrRequest = $ocrRequest;
         $this->ocrQueue = $ocrQueue;
         $this->ocrReport = $ocrReport;
         $this->ocrCsv = $ocrCsv;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -75,35 +83,21 @@ class OcrProcessPollCommand extends Command
      */
     public function handle()
     {
-        $records = $this->ocrQueue->allWith(['project.group.owner', 'ocrCsv']);
-        if ($records->isEmpty())
+        $record = $this->ocrQueue->findFirstWith(['project.group.owner', 'ocrCsv']);
+
+        try
         {
-            return;
+            $this->processRecord($record);
+        }
+        catch (\Exception $e)
+        {
+            $record->error = 1;
+            $record->save();
+            $this->addReportError($record->id, $e->getMessage() . ': ' . $e->getTraceAsString());
+            $this->ocrReport->reportSimpleError($record->project->group->id);
         }
 
-        $firstRecord = $records->first();
-        $records = $records->each(function ($record, $key) use ($firstRecord)
-        {
-            if ($record->id == $firstRecord->id)
-            {
-                try
-                {
-                    \Log::alert("process");
-                    return $this->processRecord($record);
-                }
-                catch (\Exception $e)
-                {
-                    $record->error = 1;
-                    $record->save();
-                    $this->addReportError($record->id, $e->getMessage() . ': ' . $e->getTraceAsString());
-                    $this->ocrReport->reportSimpleError($record->project->group->id);
-                }
-            }
-
-            return;
-        });
-
-        $this->dispatcher->fire(new PollOcrEvent($records));
+        $this->dispatcher->fire(new PollOcrEvent($this->ocrQueue));
     }
 
     /**
@@ -113,58 +107,65 @@ class OcrProcessPollCommand extends Command
      * @return string|void
      * @throws \Exception
      */
-    private function processRecord(&$record)
+    private function processRecord($record)
     {
+        if ($record === null)
+        {
+            return;
+        }
+        
         if ( ! $record->status)
         {
-            $this->ocr->sendOcrFile($record);
+            $this->ocrRequest->sendOcrFile($record);
 
             $record->status = 1;
             $record->save();
-            \Log::alert("status = 1");
+            
+            \Log::alert("Sent file");
 
             return;
         }
 
-        $file = $this->ocr->requestOcrFile($record->uuid . '.json');
-        \Log::alert("get file");
+        $file = $this->ocrRequest->requestOcrFile($record->uuid);
 
-        if ( ! $this->ocr->checkOcrFileHeaderExists($file))
+        \Log::alert("Requested file");
+
+        if ( ! $this->ocrRequest->checkOcrFileHeaderExists($file))
         {
-            \Log::alert("header exist");
+            \Log::alert("Header does not exist");
             return;
         }
-
-        if ($this->ocr->checkOcrFileInProgress($file))
+        
+        
+        if ($this->ocrRequest->checkOcrFileInProgress($file))
         {
+            \Log::alert("Updating subjects");
             $this->updateSubjectRemaining($record, $file);
-            \Log::alert("file progress");
+            
             return;
         }
 
-        if ( ! $this->ocr->checkOcrFileError($file))
+        if ($this->ocrRequest->checkOcrFileError($file))
         {
+            \Log::alert("Ocr File Error");
+            
             $record->error = 1;
             $record->save();
             $this->addReportError($record->id, trans('emails.error_ocr_header'));
             $this->ocrReport->reportSimpleError($record->project->group->id);
 
-            \Log::alert("ocr file error");
-
             return;
         }
 
+        \Log::alert("Updating subjects");
         $this->updateSubjectRemaining($record, $file);
 
-        $csv = $this->ocr->updateSubjectsFromOcrFile($file);
-        \Log::alert("updated subjects");
+        $csv = $this->ocrRequest->updateSubjectsFromOcrFile($file);
 
         $this->setOcrCsv($record, $csv);
-        \Log::alert("set ocr csv");
 
         $record->status = 2;
         $record->save();
-        \Log::alert("save status = 2");
 
         if ($record->batch)
         {
@@ -172,10 +173,7 @@ class OcrProcessPollCommand extends Command
             $this->ocrCsv->destroy($record->ocrCsv->id);
         }
 
-        $this->ocr->deleteJsonFiles([$record->uuid . ".json"]);
-        \Log::alert("delete file");
-
-        return;
+        $this->ocrRequest->deleteJsonFiles([$record->uuid . '.json']);
     }
 
     /**
@@ -191,10 +189,8 @@ class OcrProcessPollCommand extends Command
             [
                 'id'      => $id,
                 'message' => $messages,
-                'url'     => ! empty($url) ? $url : ''
+                'url'     => $url,
             ]));
-
-        return;
     }
 
     /**
@@ -205,12 +201,10 @@ class OcrProcessPollCommand extends Command
      */
     private function setOcrCsv(&$record, $csv)
     {
-        $subjects = ! empty($record->ocrCsv->subjects) ? json_decode($record->ocrCsv->subjects, true) : [];
-        $csv = is_null($subjects) ? $csv : array_merge($subjects, $csv);
+        $subjects = $record->ocrCsv->subjects === '' ? [] : json_decode($record->ocrCsv->subjects, true);
+        $csv = $subjects === null ? $csv : array_merge($subjects, $csv);
         $record->ocrCsv->subjects = json_encode($csv);
         $record->ocrCsv->save();
-
-        return;
     }
 
     /**
@@ -223,8 +217,6 @@ class OcrProcessPollCommand extends Command
         $email = $record->project->group->owner->email;
         $title = $record->project->title;
         $this->ocrReport->complete($email, $title, json_decode($record->ocrCsv->subjects, true));
-
-        return;
     }
 
     /**
@@ -233,12 +225,9 @@ class OcrProcessPollCommand extends Command
      * @param $record
      * @param $file
      */
-    private function updateSubjectRemaining(&$record, $file)
+    private function updateSubjectRemaining($record, $file)
     {
-        \Log::alert("update remaining count");
-        $record->subject_remaining = max(0, ($record->subject_count - $file->header->complete));
+        $record->subject_remaining = max(0, $record->subject_count - $file->header->complete);
         $record->save();
-
-        return;
     }
 }
