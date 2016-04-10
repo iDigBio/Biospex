@@ -1,12 +1,15 @@
 <?php namespace App\Http\Controllers\Frontend;
 
+use App\Events\PollOcrEvent;
 use App\Http\Controllers\Controller;
+use App\Repositories\Contracts\OcrQueue;
 use DOMDocument;
 use GuzzleHttp\Pool;
-use Illuminate\Config\Repository as Config;
+use Illuminate\Support\Facades\Config;
 use GuzzleHttp\Client;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Events\Dispatcher;
 
 class ServerInfoController extends Controller
 {
@@ -26,26 +29,14 @@ class ServerInfoController extends Controller
     protected $config;
 
     /**
-     * @var Request
-     */
-    protected $request;
-
-    /**
      * Constructor
      *
-     * @param Config $config
-     * @param Request $request
      * @internal param Curl $curl
      */
-    public function __construct(
-        Config $config,
-        Request $request
-    )
+    public function __construct()
     {
-        $this->ocrDeleteUrl = $this->config->get('config.ocrDeleteUrl');
+        $this->ocrDeleteUrl = Config::get('config.ocrDeleteUrl');
         $this->client = New Client();
-        $this->config = $config;
-        $this->request = $request;
     }
 
     /**
@@ -73,7 +64,7 @@ class ServerInfoController extends Controller
      */
     public function showPhpInfo()
     {
-        $user = $this->request->user();
+        $user = Request::user();
 
         if ( ! $user->isAdmin('admins')) {
             return redirect()->route('login');
@@ -81,17 +72,17 @@ class ServerInfoController extends Controller
 
         ob_start();
         phpinfo();
-        $pinfo = ob_get_contents();
+        $phpinfo = ob_get_contents();
         ob_end_clean();
 
-        $info = preg_replace('%^.*<body>(.*)</body>.*$%ms', '$1', $pinfo);
+        $info = preg_replace('%^.*<body>(.*)</body>.*$%ms', '$1', $phpinfo);
 
-        return view('frontend.info', compact(['info']));
+        return view('frontend.info', compact('info'));
     }
 
     public function clear()
     {
-        $user = $this->request->user();
+        $user = Request::user();
 
         if ( ! $user->isAdmin('admins')) {
             return redirect()->route('login');
@@ -107,15 +98,15 @@ class ServerInfoController extends Controller
 
     public function ocr()
     {
-        if ($this->request->isMethod('post') && ! empty($this->request->get('files'))) {
-            $files = $this->request->get('files');
+        if (Request::isMethod('post') && ! empty(Request::get('files'))) {
+            $files = Request::get('files');
             $requests = [];
             foreach ($files as $file)
             {
                 $options = [
                     'headers' => ['Content-Type' => 'multipart/form-data', 'API-KEY' => 't$p480UAJ5v8P=ifcE23&hpM?#+&r3']
                 ];
-                $newRequest = $this->client->createRequest('POST', $this->config->get('config.ocrDeleteUrl'), $options);
+                $newRequest = $this->client->createRequest('POST', Config::get('config.ocrDeleteUrl'), $options);
                 $postBody = $newRequest->getBody();
                 $postBody->setField('file', $file);
 
@@ -125,7 +116,7 @@ class ServerInfoController extends Controller
             Pool::send($this->client, $requests, ['pool_size' => 10]);
         }
 
-        $html = file_get_contents($this->request->get('config.ocrGetUrl'));
+        $html = file_get_contents(Request::get('config.ocrGetUrl'));
 
         $dom = new DomDocument;
         libxml_use_internal_errors(true);
@@ -135,5 +126,13 @@ class ServerInfoController extends Controller
         $elements = $dom->getElementsByTagName('li');
 
         return view('frontend.ocr', compact('elements'));
+    }
+    
+    public function pollOcr(Dispatcher $dispatcher, OcrQueue $ocrQueue)
+    {
+        if (Request::ajax()) {
+
+            $dispatcher->fire(new PollOcrEvent($ocrQueue));
+        }
     }
 }

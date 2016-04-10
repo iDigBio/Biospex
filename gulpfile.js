@@ -13,9 +13,7 @@ elixir(function (mix) {
 
     mix.styles([
             'vendor/jquery-ui/themes/smoothness/jquery-ui.min.css',
-            //'vendor/jqGrid/css/ui.jqgrid.css',
             'vendor/jqGrid/css/ui.jqgrid-bootstrap.css',
-            //'vendor/jqGrid/css/ui.jqgrid-bootstrap-ui.css',
             'vendor/jquery-ui-multiselect-widget/jquery.multiselect.css',
             'vendor/tablesorter/dist/css/theme.bootstrap.min.css',
             'css/biospex.css',

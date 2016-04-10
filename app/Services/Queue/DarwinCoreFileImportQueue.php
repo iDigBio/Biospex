@@ -1,21 +1,23 @@
 <?php namespace App\Services\Queue;
 
+use App\Jobs\BuildOcrBatches;
 use App\Services\Mailer\BiospexMailer;
 use App\Repositories\Contracts\Import;
 use App\Repositories\Contracts\OcrQueue;
 use App\Repositories\Contracts\Project;
 use App\Repositories\Contracts\User;
 use App\Services\Process\DarwinCore;
-use App\Services\Process\Ocr as OcrProcess;
 use App\Services\Process\Xml;
 use App\Services\Report\DarwinCoreImportReport;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Queue;
 use Exception;
 
 class DarwinCoreFileImportQueue extends QueueAbstract
 {
+    use DispatchesJobs;
+    
     public $subjectImportDir;
     /**
      * @var Filesystem
@@ -65,21 +67,6 @@ class DarwinCoreFileImportQueue extends QueueAbstract
     protected $scratchFileDir;
 
     /**
-     * @var OcrQueue
-     */
-    protected $ocr;
-
-    /**
-     * @var OcrProcess
-     */
-    protected $ocrProcess;
-
-    /**
-     * @var
-     */
-    protected $tube;
-
-    /**
      * @var User
      */
     protected $user;
@@ -93,8 +80,6 @@ class DarwinCoreFileImportQueue extends QueueAbstract
      * @param User $user
      * @param DarwinCoreImportReport $report
      * @param DarwinCore $process
-     * @param OcrQueue $ocr
-     * @param OcrProcess $ocrProcess
      * @param Xml $xml
      * @param BiospexMailer $mailer
      */
@@ -105,8 +90,6 @@ class DarwinCoreFileImportQueue extends QueueAbstract
         User $user,
         DarwinCoreImportReport $report,
         DarwinCore $process,
-        OcrQueue $ocr,
-        OcrProcess $ocrProcess,
         Xml $xml,
         BiospexMailer $mailer
     ) {
@@ -116,12 +99,9 @@ class DarwinCoreFileImportQueue extends QueueAbstract
         $this->user = $user;
         $this->report = $report;
         $this->process = $process;
-        $this->ocrProcess = $ocrProcess;
-        $this->ocr = $ocr;
         $this->xml = $xml;
         $this->mailer = $mailer;
 
-        $this->tube = Config::get('config.beanstalkd.ocr');
         $this->scratchDir = Config::get('config.scratch_dir');
         $this->subjectImportDir = Config::get('config.subject_import_dir');
         if (! $this->filesystem->isDirectory($this->subjectImportDir)) {
@@ -161,8 +141,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract
 
             $this->report->complete($user->email, $project->title, $duplicates, $rejects);
 
-            $data = ['project_id' => $import->project_id];
-            Queue::push('App\Services\Queue\OcrProcessBuild', $data, $this->tube);
+            $this->dispatch((new BuildOcrBatches($project))->onQueue(Config::get('config.beanstalkd.ocr')));
 
             $this->filesystem->deleteDirectory($this->scratchFileDir);
             $this->filesystem->delete($zipFile);

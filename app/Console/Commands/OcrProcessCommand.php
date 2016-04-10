@@ -121,34 +121,26 @@ class OcrProcessCommand extends Command
             $record->status = 1;
             $record->save();
             
-            \Log::alert("Sent file");
-
             return;
         }
 
         $file = $this->ocrRequest->requestOcrFile($record->uuid);
 
-        \Log::alert("Requested file");
-
         if ( ! $this->ocrRequest->checkOcrFileHeaderExists($file))
         {
-            \Log::alert("Header does not exist");
             return;
         }
         
         
         if ($this->ocrRequest->checkOcrFileInProgress($file))
         {
-            \Log::alert("Updating subjects");
             $this->updateSubjectRemaining($record, $file);
             
             return;
         }
 
         if ($this->ocrRequest->checkOcrFileError($file))
-        {
-            \Log::alert("Ocr File Error");
-            
+        {            
             $record->error = 1;
             $record->save();
             $this->addReportError($record->id, trans('emails.error_ocr_header'));
@@ -157,7 +149,6 @@ class OcrProcessCommand extends Command
             return;
         }
 
-        \Log::alert("Updating subjects");
         $this->updateSubjectRemaining($record, $file);
 
         $csv = $this->ocrRequest->updateSubjectsFromOcrFile($file);

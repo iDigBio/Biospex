@@ -4033,6 +4033,11 @@ $(document).ready(function() {
         $('#processModal').modal('show');
     });
 
+    $('a.noClick').click(function(event){
+        $.get( "/poll");
+        event.preventDefault();
+    });
+
 });
 
 $(function(){
