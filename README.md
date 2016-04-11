@@ -17,7 +17,7 @@ Requirements
  - Mailgun or some other email configuration
  - Redis: sudo apt-get install redis-server
  - PHPRedis: sudo apt-get install php5-redis
- - Nodejs: sudo apt-get install nodejs (create symlink:
+ - Nodejs: ```sudo apt-get install nodejs```
  - NPM: npm -g install express ioredis socket.io forever --save
 
 
@@ -39,5 +39,5 @@ Notes
     - 00 00 * * * /usr/bin/php /home/biospex/artisan download:clean >> /home/biospex/app/storage/logs/download.clean.log 2>&1
     - */5 * * * * /usr/bin/php /vagrant/biospex-2.0/artisan ocrprocess:records >> /var/log/ocrprocess.poll.log 2>&1
 3. Edit /etc/default/beanstalkd and add or uncomment START=yes to start Beanstalkd upon server startup/reboot.
-4. Create upstart script and place in /etc/init (biospex-socket.conf)
-
+4. Create upstart script and place in /etc/init (resources/upstart/biospex-socket-*.conf)
+5. ```sudo initctl reload-configuration```
