@@ -8,7 +8,6 @@ return [
     'app_url' => env('APP_URL'),
     'api_url' => env('API_URL'),
     'app_ip' => env('APP_IP'),
-    'app_ip_url' => env('APP_IP_URL'),
     'registration' => env('APP_REGISTRATION'),
     'translate' => env('APP_TRANSLATE'),
 

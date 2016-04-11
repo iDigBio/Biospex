@@ -6,7 +6,7 @@ use App\Events\PollEvent;
 use App\Events\PollOcrEvent;
 use App\Repositories\Contracts\OcrCsv;
 use App\Repositories\Contracts\OcrQueue;
-use App\Services\Process\Ocr;
+use App\Services\Process\OcrRequest;
 use App\Services\Report\OcrReport;
 use Illuminate\Console\Command;
 use App\Repositories\Contracts\Subject;
@@ -48,20 +48,25 @@ class TestAppCommand extends Command
     
     public $data = [];
     public $channels = [];
+    /**
+     * @var OcrRequest
+     */
+    private $ocrRequest;
 
     /**
      * Constructor
      *
      * @param Subject $subject
-     * @param Ocr $ocr
+     * @param OcrRequest $ocrRequest
      * @param OcrQueue $ocrQueue
      * @param OcrReport $ocrReport
      * @param OcrCsv $ocrCsv
      * @param Dispatcher $dispatcher
+     * @internal param Ocr $ocr
      */
     public function __construct(
         Subject $subject,
-        Ocr $ocr,
+        OcrRequest $ocrRequest,
         OcrQueue $ocrQueue,
         OcrReport $ocrReport,
         OcrCsv $ocrCsv,
@@ -70,11 +75,12 @@ class TestAppCommand extends Command
     {
         parent::__construct();
         $this->subject = $subject;
-        $this->ocr = $ocr;
+        $this->ocr = $ocrRequest;
         $this->ocrQueue = $ocrQueue;
         $this->ocrReport = $ocrReport;
         $this->ocrCsv = $ocrCsv;
         $this->dispatcher = $dispatcher;
+        $this->ocrRequest = $ocrRequest;
     }
 
     /**
