@@ -59,8 +59,6 @@ class ClearBeanstalkdQueueCommand extends Command
         $tubes = ($this->argument('tube')) ? $this->argument('tube') : $this->tubes;
 
         is_array($tubes) ? $this->loopQueues($tubes) : $this->clearQueue($tubes);
-
-        return;
     }
 
     /**
@@ -73,8 +71,6 @@ class ClearBeanstalkdQueueCommand extends Command
         foreach ($tubes as $tube) {
             $this->clearQueue($tube);
         }
-
-        return;
     }
 
     /**
@@ -94,7 +90,5 @@ class ClearBeanstalkdQueueCommand extends Command
         }
 
         $this->info('...cleared.');
-
-        return;
     }
 }
