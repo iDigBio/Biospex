@@ -54,7 +54,7 @@ class PollOcrEvent extends Event implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return ['ocr'];
+        return [Config::get('config.ocr_poll_channel')];
     }
 
     private function buildData()
