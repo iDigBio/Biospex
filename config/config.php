@@ -10,8 +10,6 @@ return [
     'app_ip' => env('APP_IP'),
     'registration' => env('APP_REGISTRATION'),
     'translate' => env('APP_TRANSLATE'),
-    'redis_ip' => env('REDIS_IP'),
-    'redis_port' => env('REDIS_PORT'),
 
     'scratch_dir' => storage_path('scratch'),
     'nfn_export_dir' => storage_path('exports/nfn'),
