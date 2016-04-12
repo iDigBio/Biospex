@@ -24,6 +24,7 @@ return [
     'ocr_disable' => env('OCR_DISABLE', false),
     'ocr_chunk' => env('OCR_CHUNK'),
     'ocr_api_key' => env('OCR_API_KEY'),
+    'ocr_poll_channel' => env('OCR_POLL_CHANNEL'),
 
     /**
      * iDigBio api query url
