@@ -27,7 +27,7 @@
 <script src="/node/socket.io/socket.io.js"></script>
 @if (Auth::check())
     <script>
-        var socket = io('http://localhost:8080');
+        var socket = io('http://{{ Config::get('config.app_domain') }}/node');
         <?php
         $groups = Auth::getUser()->groups()->get();
         $uuids = $groups->map(function ($item, $key) {
