@@ -4,7 +4,7 @@ var io = require('socket.io')(server);
 io.on('connection', function(){});
 var Redis = require('ioredis');
 var redis = new Redis();
-server.listen(3000);
+server.listen(8080);
 
 redis.psubscribe('*', function(err, count) {});
 
