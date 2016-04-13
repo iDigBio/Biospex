@@ -24,10 +24,10 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<script src="http://{!! Config::get('config.app_ip') !!}:8080/socket.io/socket.io.js"></script>
+<script src="/node/socket.io/socket.io.js"></script>
 @if (Auth::check())
     <script>
-        var socket = io('http://{!! Config::get('config.app_ip') !!}:8080');
+        var socket = io('{{ Config::get('config.app_domain') }}:8080');
         <?php
         $groups = Auth::getUser()->groups()->get();
         $uuids = $groups->map(function ($item, $key) {
