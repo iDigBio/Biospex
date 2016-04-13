@@ -34,7 +34,7 @@
             return $item['uuid'];
         });
         ?>
-        socket.on("{!! Config::get('ocr_poll_channel') !!}:app.polling", function (message) {
+        socket.on("{!! Config::get('config.ocr_poll_channel') !!}:app.polling", function (message) {
             var html = '{!! trans('pages.no_processes') !!}';
             var uuids = {!! json_encode($uuids) !!};
 

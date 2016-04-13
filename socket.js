@@ -1,15 +1,10 @@
-
 var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+io.on('connection', function(){});
 var Redis = require('ioredis');
 var redis = new Redis();
-
-http.listen(3000, function() {
-    console.log('Server is running!');
-});
-
-io.on('connection', function(socket) {});
+server.listen(3000);
 
 redis.psubscribe('*', function(err, count) {});
 
