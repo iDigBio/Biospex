@@ -24,7 +24,7 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<script src="http://{!! Config::get('config.app_ip') !!}:3000/socket.io/socket.io.js"></script>
+<script src="http://localhost:3000/socket.io/socket.io.js"></script>
 @if (Auth::check())
     <script>
         var socket = io('http://{!! Config::get('config.app_ip') !!}:3000');
