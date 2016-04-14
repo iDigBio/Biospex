@@ -54,36 +54,30 @@ class ClearBeanstalkdQueueCommand extends Command
      */
     public function fire()
     {
-        $this->tubes = Config::get('config.beanstalkd');
+        $this->tubes = $this->argument('tube') === null ? Config::get('config.beanstalkd') : $this->argument('tube');
 
-        $tubes = ($this->argument('tube')) ? $this->argument('tube') : $this->tubes;
-
-        is_array($tubes) ? $this->loopQueues($tubes) : $this->clearQueue($tubes);
+        is_array($this->tubes) ? $this->loopQueues() : $this->clearQueue();
     }
 
     /**
      * Loop through queues and remove.
-     *
-     * @param $tubes
      */
-    protected function loopQueues($tubes)
+    protected function loopQueues()
     {
-        foreach ($tubes as $tube) {
+        foreach ($this->tubes as $tube) {
             $this->clearQueue($tube);
         }
     }
 
     /**
      * Clear Queue.
-     *
-     * @param $queue
      */
-    protected function clearQueue($tube)
+    protected function clearQueue()
     {
-        $this->info(sprintf('Clearing queue: %s', $tube));
+        $this->info(sprintf('Clearing queue: %s', $this->tube));
         $pheanstalk = Queue::getPheanstalk();
-        $pheanstalk->useTube($tube);
-        $pheanstalk->watch($tube);
+        $pheanstalk->useTube($this->tube);
+        $pheanstalk->watch($this->tube);
 
         while ($job = $pheanstalk->reserve(0)) {
             $pheanstalk->delete($job);
