@@ -72,12 +72,12 @@ class ClearBeanstalkdQueueCommand extends Command
     /**
      * Clear Queue.
      */
-    protected function clearQueue()
+    protected function clearQueue($tube)
     {
-        $this->info(sprintf('Clearing queue: %s', $this->tube));
+        $this->info(sprintf('Clearing queue: %s', $tube));
         $pheanstalk = Queue::getPheanstalk();
-        $pheanstalk->useTube($this->tube);
-        $pheanstalk->watch($this->tube);
+        $pheanstalk->useTube($tube);
+        $pheanstalk->watch($tube);
 
         while ($job = $pheanstalk->reserve(0)) {
             $pheanstalk->delete($job);
