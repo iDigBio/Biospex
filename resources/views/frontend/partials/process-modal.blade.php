@@ -24,7 +24,7 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<script src="http://{{ Config::get('config.app_nodejs_domain') }}/socket.io/socket.io.js" type="application/javascript"></script>
+<script src="http://{{ Config::get('config.app_nodejs_domain') }}/socket.io/socket.io.js"></script>
 @if (Auth::check())
     <script>
         var socket = io('http://{{ Config::get('config.app_nodejs_domain') }}:8080');
