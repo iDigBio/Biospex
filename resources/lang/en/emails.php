@@ -31,6 +31,7 @@ return [
     'error_process'                 => 'Expedition id :id could not be found during processing.',
     'error_save_file'               => 'Unable to save file: :directory',
     'error_write_dir'               => 'Unable to make directory writable: :directory',
+    'error_workflow_actor'          => 'An error occurred while processing Expedition Actor :pivot_id. Message - :error',
     'expedition_complete'           => 'Biospex process completed: :expedition',
     'failed_job_subject'            => 'Failed Job Report.',
     'group_invite_message'          => 'You have been invited to join the Biospex group :group. Please :link to register using this email address.',
