@@ -2,14 +2,21 @@
 
 namespace App\Policies;
 
+use Illuminate\Support\Facades\Cache;
+
 class GroupPolicy
 {
     public function before($user)
     {
-        if ($user->isAdmin())
-        {
+        $key = md5(__METHOD__ . $user->uuid);
+        $isAdmin = Cache::remember($key, 60, function() use ($user) {
+            return $user->isAdmin();
+        });
+
+        if ($isAdmin) {
             return true;
         }
+
     }
 
     /**
@@ -61,6 +68,9 @@ class GroupPolicy
      */
     public function delete($user, $group)
     {
-        return $user->hasAccess($group, 'delete-group') && $user->id == $group->user_id;
+        $key = md5(__METHOD__ . $user->uuid . $group->uuid);
+        return Cache::remember($key, 60, function() use ($user, $group) {
+            return $user->hasAccess($group, 'delete-group') && $user->id === $group->user_id;
+        });
     }
 }

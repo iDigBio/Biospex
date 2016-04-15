@@ -2,17 +2,26 @@
 
 namespace App\Policies;
 
+use Illuminate\Support\Facades\Cache;
+
 class ProjectPolicy
 {
+
     public function before($user)
     {
-        if ($user->isAdmin()) {
-            return;
+        $key = md5(__METHOD__ . $user->uuid);
+        $isAdmin = Cache::remember($key, 60, function() use($user) {
+            return $user->isAdmin();
+        });
+
+        if ($isAdmin) {
+            return true;
         }
     }
 
     public function create($user, $project, $group)
     {
+
         return $user->hasAccess($group, 'create-project');
     }
 
@@ -33,6 +42,6 @@ class ProjectPolicy
 
     public function delete($user, $project)
     {
-        return $user->id == $project->group->user_id;
+        return $user->id === $project->group->user_id;
     }
 }
