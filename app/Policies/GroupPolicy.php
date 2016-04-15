@@ -46,7 +46,10 @@ class GroupPolicy
      */
     public function read($user, $group)
     {
-        return $user->hasAccess($group, 'read-group');
+        $key = md5(__METHOD__ . $user->uuid . $group->uuid);
+        return Cache::remember($key, 60, function() use ($user, $group) {
+            return $user->hasAccess($group, 'read-group') && $user->id === $group->user_id;
+        });
     }
 
     /**
@@ -57,7 +60,10 @@ class GroupPolicy
      */
     public function update($user, $group)
     {
-        return $user->hasAccess($group, 'update-group');
+        $key = md5(__METHOD__ . $user->uuid . $group->uuid);
+        return Cache::remember($key, 60, function() use ($user, $group) {
+            return $user->hasAccess($group, 'update-group') && $user->id === $group->user_id;
+        });
     }
 
     /**
