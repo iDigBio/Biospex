@@ -74,6 +74,6 @@ return [
     |
     */
 
-    'prefix' => env('laravel', 'APP_DOMAIN'),
+    'prefix' => env('APP_DOMAIN', 'laravel'),
 
 ];
