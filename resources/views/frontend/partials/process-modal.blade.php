@@ -6,16 +6,12 @@
                 <h2 class="modal-title">@lang('pages.processes')</h2>
             </div>
             <div class="modal-body">
-                @if (Auth::check())
-                    <div><h4>@lang('pages.process_title', ['type' => 'OCR'])</h4></div>
-                    <div id="processHtml">@lang('pages.retrieve_process', ['type' => 'OCR'])</div>
-                @endif
+                <div><h4>@lang('pages.process_title', ['type' => 'OCR'])</h4></div>
+                <div id="processHtml">@lang('pages.retrieve_process', ['type' => 'OCR'])</div>
             </div>
             <div class="modal-body">
-                @if (Auth::check())
-                    <div><h4>@lang('pages.process_title', ['type' => 'Import'])</h4></div>
-                    <div id="importHtml">@lang('pages.no_processes')</div>
-                @endif
+                <div><h4>@lang('pages.process_title', ['type' => 'Import'])</h4></div>
+                <div id="importHtml">@lang('pages.no_processes')</div>
             </div>
             <div class="modal-footer">
                 <span class="text-danger pull-left">@lang('pages.process_warning')</span>
@@ -24,44 +20,45 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<script src="http://{{ Config::get('config.app_nodejs_domain') }}/socket.io/socket.io.js"></script>
-@if (Auth::check())
-    <script>
-        var socket = io('http://{{ Config::get('config.app_nodejs_domain') }}:8080');
-        <?php
-        $groups = Auth::getUser()->groups()->get();
-        $uuids = $groups->map(function ($item, $key) {
-            return $item['uuid'];
-        });
-        ?>
-        socket.on("{!! Config::get('config.ocr_poll_channel') !!}:app.polling", function (message) {
-            var html = '{!! trans('pages.no_processes') !!}';
-            var uuids = {!! json_encode($uuids) !!};
+<script src="http://{{ config('config.app_nodejs_domain') }}/socket.io/socket.io.js"></script>
+<script>
+    var socket = io('http://{{ config('config.app_nodejs_domain') }}:8080');
+    <?php
+    $groups = Cache::remember(Request::user()->id, 60, function() {
+        return Auth::getUser()->groups()->get();
+    });
 
-            if (jQuery.isEmptyObject(message)) {
-                $("#processHtml").text(html);
+    $uuids = $groups->map(function ($item, $key) {
+        return $item['uuid'];
+    });
+    ?>
+    socket.on("{!! config('config.ocr_poll_channel') !!}:app.polling", function (message) {
+        var html = '{!! trans('pages.no_processes') !!}';
+        var uuids = {!! json_encode($uuids) !!};
 
-                return;
+        if (jQuery.isEmptyObject(message)) {
+            $("#processHtml").text(html);
+
+            return;
+        }
+
+        var processHtml = '';
+        var data = message.data;
+
+        $.each(data, function (index) {
+            if ($.inArray(data[index].groupUuid, uuids) == -1) {
+                return true;
             }
-
-            var processHtml = '';
-            var data = message.data;
-
-            $.each(data, function (index){
-                if( $.inArray(data[index].groupUuid, uuids) == -1 ) {
-                    return true;
-                }
-                processHtml += '<div class="processes"><span class="title">' + data[index].projectTitle + '</span><br />' +
-                        'Ocr Batch #' + data[index].batchId + ' - ';
-                processHtml += data[index].groupSubjectRemaining + " out of " + data[index].groupSubjectCount + " remaining to be processed";
-                if (data[index].totalSubjectsAhead > 0) {
-                    processHtml += '<br />' + data[index].totalSubjectsAhead + ' subjects being processed before this batch begins';
-                }
-                processHtml += '</div>';
-            });
-
-            $("#processHtml").html(processHtml.length > 0 ? processHtml : html);
+            processHtml += '<div class="processes"><span class="title">' + data[index].projectTitle + '</span><br />' +
+                    'Ocr Batch #' + data[index].batchId + ' - ';
+            processHtml += data[index].groupSubjectRemaining + " out of " + data[index].groupSubjectCount + " remaining to be processed";
+            if (data[index].totalSubjectsAhead > 0) {
+                processHtml += '<br />' + data[index].totalSubjectsAhead + ' subjects being processed before this batch begins';
+            }
+            processHtml += '</div>';
         });
 
-    </script>
-@endif
+        $("#processHtml").html(processHtml.length > 0 ? processHtml : html);
+    });
+
+</script>
