@@ -149,6 +149,11 @@ Route::group(
         ]);
         // End PasswordsController
 
+        Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}', [
+            'uses' => 'DownloadsController@show',
+            'as'   => 'projects.expeditions.downloads.get.show',
+        ]);
+
         Route::group(
             [
                 'middleware' => ['auth'],// ['auth', 'admin'],
@@ -380,11 +385,6 @@ Route::group(
                 Route::get('projects/{projects}/expeditions/{expeditions}/ocr', [
                     'uses' => 'ExpeditionsController@ocr',
                     'as'   => 'projects.expeditions.get.ocr'
-                ]);
-
-                Route::get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}', [
-                    'uses' => 'DownloadsController@show',
-                    'as'   => 'projects.expeditions.downloads.get.show',
                 ]);
 
                 // Project/Grid
