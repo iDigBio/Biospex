@@ -4026,6 +4026,7 @@ $(document).ready(function() {
         }
     });
 
+    /*
     $('#processes').click(function() {
         $('#processModal')
             .prop('class', 'modal fade') // revert to default
@@ -4037,6 +4038,7 @@ $(document).ready(function() {
         $.get( "/poll");
         event.preventDefault();
     });
+    */
 
 });
 
