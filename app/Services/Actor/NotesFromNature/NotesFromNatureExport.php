@@ -2,14 +2,16 @@
 
 namespace App\Services\Actor\NotesFromNature;
 
+ini_set('memory_limit', '1024M');
+
 use Illuminate\Config\Repository as Config;
-use Illuminate\Filesystem\Filesystem;
 use App\Repositories\Contracts\Download;
 use App\Repositories\Contracts\Expedition;
 use App\Services\Report\Report;
 use App\Services\Image\Image;
 use App\Services\Actor\ActorAbstract;
 use App\Services\Actor\ActorInterface;
+use App\Services\Common\BiospexFilesystem;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
@@ -159,17 +161,16 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
     private $client;
 
     /**
-     * Construct
-     *
-     * @param Filesystem $filesystem
-     * @param DownloadInterface $download
-     * @param ExpeditionInterface $expedition
+     * NotesFromNatureExport constructor.
+     * @param BiospexFilesystem $filesystem
+     * @param Download $download
+     * @param Config $config
+     * @param Expedition $expedition
      * @param Report $report
      * @param Image $image
-     * @param Config $config
      */
     public function __construct(
-        Filesystem $filesystem,
+        BiospexFilesystem $filesystem,
         Download $download,
         Config $config,
         Expedition $expedition,
@@ -274,7 +275,7 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
      */
     public function checkImageExists($id)
     {
-        return ! empty(glob($this->recordDir . '/' . $id . '.*')) ? true : false;
+        return count($this->filesystem->glob($this->recordDir . '/' . $id . '.*')) > 0;
     }
 
     /**

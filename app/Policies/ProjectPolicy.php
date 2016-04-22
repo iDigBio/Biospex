@@ -21,12 +21,15 @@ class ProjectPolicy
 
     public function create($user, $project, $group)
     {
-
-        return $user->hasAccess($group, 'create-project');
+        $key = md5(__METHOD__ . $user->uuid . $group->uuid);
+        return Cache::remember($key, 60, function() use ($user, $group) {
+            return $user->hasAccess($group, 'create-group');
+        });
     }
 
     public function read($user, $project)
     {
+        
         if ($user->id == $project->group->user_id)
         {
             return true;

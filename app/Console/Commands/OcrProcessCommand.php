@@ -91,8 +91,7 @@ class OcrProcessCommand extends Command
         }
         catch (\Exception $e)
         {
-            $record->error = 1;
-            $record->save();
+            $this->ocrQueue->updateOcrError($record->ocr_csv_id);
             $this->addReportError($record->id, $e->getMessage() . ': ' . $e->getTraceAsString());
             $this->ocrReport->reportSimpleError($record->project->group->id);
         }

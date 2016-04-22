@@ -9,4 +9,6 @@ interface OcrQueue extends Repository
     public function findFirstWith(array $with);
 
     public function findAllWith(array $with);
+    
+    public function updateOcrError($id);
 }

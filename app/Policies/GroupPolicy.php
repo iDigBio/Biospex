@@ -48,7 +48,7 @@ class GroupPolicy
     {
         $key = md5(__METHOD__ . $user->uuid . $group->uuid);
         return Cache::remember($key, 60, function() use ($user, $group) {
-            return $user->hasAccess($group, 'read-group') && $user->id === $group->user_id;
+            return $user->hasAccess($group, 'read-group');
         });
     }
 
@@ -62,7 +62,7 @@ class GroupPolicy
     {
         $key = md5(__METHOD__ . $user->uuid . $group->uuid);
         return Cache::remember($key, 60, function() use ($user, $group) {
-            return $user->hasAccess($group, 'update-group') && $user->id === $group->user_id;
+            return $user->hasAccess($group, 'update-group');
         });
     }
 

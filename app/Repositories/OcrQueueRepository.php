@@ -31,4 +31,9 @@ class OcrQueueRepository extends Repository implements OcrQueue
     {
         return $this->model->findAllWith($with);
     }
+
+    public function updateOcrError($id)
+    {
+        return $this->model->updateOcrError($id);
+    }
 }

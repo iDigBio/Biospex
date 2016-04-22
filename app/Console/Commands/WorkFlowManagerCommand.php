@@ -118,8 +118,6 @@ class WorkFlowManagerCommand extends Command
 
             $actors[] = $actor;
         }
-
-        return;
     }
 
     /**
@@ -129,6 +127,6 @@ class WorkFlowManagerCommand extends Command
      */
     protected function checkErrorQueued($actor)
     {
-        return ($actor->error || $actor->queued) ? true : false;
+        return ($actor->error || $actor->queued);
     }
 }

@@ -78,4 +78,9 @@ class OcrQueue extends Model
     {
         return (int) $this->where('id', '<', $id)->sum('subject_remaining');
     }
+    
+    public function updateOcrError($id)
+    {
+        return $this->where('ocr_csv_id', '=', $id)->update(['error' => 1]);
+    }
 }

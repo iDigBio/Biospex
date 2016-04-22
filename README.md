@@ -11,12 +11,11 @@ Requirements
  - Mongodb
  - Composer
  - Mongo PECL Extension
- - PHP sudo apt-get install -qq php5-cli php5-fpm php5-mysql php5-pgsql php5-sqlite php5-mongo php5-curl php5-gd php5-gmp php5-mcrypt php5-memcached php5-imagick php5-intl php5-xdebug
+ - PHP sudo apt-get install -qq php5-cli php5-fpm php5-mysql php5-pgsql php5-sqlite php5-mongo php5-curl php5-gd php5-gmp php5-mcrypt php5-memcached php5-imagick php5-intl php5-xdebug php5-redis
  - Beanstalkd
  - Supervisord
  - Mailgun or some other email configuration
  - Redis: sudo apt-get install redis-server
- - PHPRedis: sudo apt-get install php5-redis
  - Nodejs: ```sudo apt-get install nodejs```
  - NPM: npm -g install express ioredis socket.io forever --save
 

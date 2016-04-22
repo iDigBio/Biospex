@@ -67,8 +67,6 @@ abstract class ActorAbstract
                 throw new \Exception(trans('emails.error_write_dir', ['directory' => $dir]));
             }
         }
-
-        return;
     }
 
     /**
@@ -80,11 +78,9 @@ abstract class ActorAbstract
      */
     public function saveFile($path, $contents)
     {
-        if (! $this->filesystem->put($path, $contents)) {
+        if ( ! $this->filesystem->put($path, $contents)) {
             throw new \Exception(trans('emails.error_save_file', ['directory' => $path]));
         }
-
-        return;
     }
 
     /**
@@ -99,8 +95,6 @@ abstract class ActorAbstract
         if (! $this->filesystem->move($path, $target)) {
             throw new \Exception(trans('emails.error_save_file', ['directory' => $path]));
         }
-
-        return;
     }
 
     /** Create download file.

@@ -3,14 +3,17 @@
 namespace App\Console\Commands;
 
 use App\Events\PollEvent;
-use App\Events\PollOcrEvent;
+use App\Repositories\Contracts\Expedition;
 use App\Repositories\Contracts\OcrCsv;
 use App\Repositories\Contracts\OcrQueue;
+use App\Repositories\Contracts\WorkflowManager;
+use App\Services\Actor\NotesFromNature\NotesFromNatureExport;
 use App\Services\Process\OcrRequest;
 use App\Services\Report\OcrReport;
 use Illuminate\Console\Command;
 use App\Repositories\Contracts\Subject;
 use Illuminate\Events\Dispatcher;
+use App\Services\Common\BiospexFilesystem;
 
 class TestAppCommand extends Command
 {
@@ -52,25 +55,49 @@ class TestAppCommand extends Command
      * @var OcrRequest
      */
     private $ocrRequest;
+    /**
+     * @var Expedition
+     */
+    private $expedition;
+    /**
+     * @var WorkflowManager
+     */
+    private $workflow;
+    /**
+     * @var NotesFromNatureExport
+     */
+    private $export;
+    /**
+     * @var Filesystem
+     */
+    private $filesystem;
 
     /**
      * Constructor
      *
      * @param Subject $subject
+     * @param Expedition $expedition
      * @param OcrRequest $ocrRequest
      * @param OcrQueue $ocrQueue
      * @param OcrReport $ocrReport
      * @param OcrCsv $ocrCsv
      * @param Dispatcher $dispatcher
+     * @param WorkflowManager $workflow
+     * @param NotesFromNatureExport $export
+     * @param BiospexFilesystem $filesystem
      * @internal param Ocr $ocr
      */
     public function __construct(
         Subject $subject,
+        Expedition $expedition,
         OcrRequest $ocrRequest,
         OcrQueue $ocrQueue,
         OcrReport $ocrReport,
         OcrCsv $ocrCsv,
-        Dispatcher $dispatcher
+        Dispatcher $dispatcher,
+        WorkflowManager $workflow,
+        NotesFromNatureExport $export,
+        BiospexFilesystem $filesystem
     )
     {
         parent::__construct();
@@ -81,6 +108,11 @@ class TestAppCommand extends Command
         $this->ocrCsv = $ocrCsv;
         $this->dispatcher = $dispatcher;
         $this->ocrRequest = $ocrRequest;
+        $this->expedition = $expedition;
+        $this->workflow = $workflow;
+
+        $this->export = $export;
+        $this->filesystem = $filesystem;
     }
 
     /**
@@ -88,6 +120,39 @@ class TestAppCommand extends Command
      */
     public function fire()
     {
+        // return count($this->filesystem->glob($this->recordDir . '/' . $id . '.*')) > 0;
+        
+        $path = '/vagrant/biospex-2.0/storage/scratch/1-8c6b410c42da62d37e7aabc00a61e258/';
+        $id = '5715116ac46988ff1a8b4dfd';
+        
+        $files = $this->filesystem->directoryFilesByRegex($path, '/\.(jpg|jpeg|png|gif|tif|tiff)$/i');
+        //$files = $this->filesystem->directoryFiles($path);
+        $i = 0;
+        foreach ($files as $fileinfo)
+        {
+            echo $i++ . PHP_EOL;
+            echo $fileinfo->getPathname() . PHP_EOL;
+        }
+
+        exit;
+        // Via command line
+        // works
+        //php -r 'var_dump(glob("/vagrant/biospex-2.0/storage/scratch/1-8c6b410c42da62d37e7aabc00a61e258/5715116ac46988ff1a8b4b8f.jpg"));'
+    
+    
+        exit;
+        $workFlows = $this->workflow->findByExpeditionIdWith(11, ['expedition.actors']);
+        foreach($workFlows as $workFlow)
+        {
+            foreach ($workFlow->expedition->actors as $actor)
+            {
+                $actual = $actor;
+            }
+        }
+        
+        $this->export->process($actual);
+        
+        return;
 
         /* Empty ocr values 
         $subjects = $this->subject->findByProjectId(6);
