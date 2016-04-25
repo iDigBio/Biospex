@@ -141,7 +141,7 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
     private $smallWidth = 580;
 
     /**
-     * @var ExpeditionInterface
+     * @var Expedition
      */
     private $expedition;
 
@@ -232,11 +232,9 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
         $this->processComplete();
 
         $actor->pivot->queued = 0;
-        $actor->pivot->state = $actor->pivot->state + 1;
+        ++$actor->pivot->state;
         $actor->pivot->completed = 1;
         $actor->pivot->save();
-
-        return;
     }
 
     /**
@@ -249,7 +247,7 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
     {
         foreach ($this->record->subjects as $subject) {
             if ($this->checkImageExists($subject->_id)) {
-                $this->existingImageUriArray[$subject->_id] = str_replace(" ", "%20", $subject->accessURI);
+                $this->existingImageUriArray[$subject->_id] = str_replace(' ', '%20', $subject->accessURI);
                 continue;
             }
 
@@ -257,14 +255,13 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
                 continue;
             }
 
-            $this->imageUriArray[$subject->_id] = str_replace(" ", "%20", $subject->accessURI);
+            $this->imageUriArray[$subject->_id] = str_replace(' ', '%20', $subject->accessURI);
         }
 
         if (empty($this->imageUriArray) && empty($this->existingImageUriArray)) {
             throw new \Exception(trans('emails.error_empty_image_uri', ['id' => $actor->pivot->id]));
         }
 
-        return;
     }
 
     /**
@@ -325,8 +322,6 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
         $promise = $pool->promise();
 
         $promise->wait();
-
-        return;
     }
 
     /**
@@ -385,7 +380,6 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
                 $this->image->imagickFile($file);
             } catch (\Exception $e) {
                 $this->addMissingImage($fileName, $imageUriArray[$fileName]);
-                echo "added missing image." . PHP_EOL;
 
                 continue;
             }
@@ -464,8 +458,6 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
         }
 
         $this->filesystem->deleteDirectory($this->recordDirTmp);
-
-        return;
     }
 
     /**
@@ -531,8 +523,6 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
             $this->saveFile("$directory/details.js",
                 json_encode($metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         }
-
-        return;
     }
 
     /**
@@ -544,8 +534,6 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
         $this->recordDirTmp = $this->recordDir . '/tmp';
         $this->createDir($this->recordDirTmp);
         $this->writeDir($this->recordDirTmp);
-
-        return;
     }
 
     public function setSplitDir()
@@ -562,8 +550,6 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
         $this->smFilePath = $this->splitDir . '/small';
         $this->createDir($this->smFilePath);
         $this->writeDir($this->smFilePath);
-
-        return;
     }
 
     /**
@@ -584,8 +570,6 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
         if ( ! is_null($index) && is_null($uri)) {
             $this->missingImg[] = ['value' => $index];
         }
-
-        return;
     }
 
     /**
@@ -602,8 +586,6 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
             $this->filesystem->delete("$directory.tar");
             $this->filesystem->deleteDirectory($directory);
         }
-
-        return;
     }
 
     /**
@@ -618,8 +600,6 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
             $baseName = pathinfo($file, PATHINFO_BASENAME);
             $this->createDownload($this->record->id, $actor->id, $baseName);
         }
-
-        return;
     }
 
     /**
@@ -634,8 +614,6 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
             $baseName = pathinfo($file, PATHINFO_BASENAME);
             $this->moveFile($file, "{$this->nfnExportDir}/$baseName");
         }
-
-        return;
     }
 
     /**
