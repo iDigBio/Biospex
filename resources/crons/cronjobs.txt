@@ -1,0 +1,5 @@
+0 * * * * /usr/bin/php /data/web/biospex/production/artisan workflow:manage >> /var/log/apache2/workflow.manage.log 2>&1
+00 00 * * * /usr/bin/php /data/web/biospex/production/artisan download:clean >> /var/log/apache2/download.clean.log 2>&1
+00 00 * * * /usr/bin/php /data/web/biospex/production/artisan ocrqueue:check >> /var/log/apache2/ocrqueue.check.log 2>&1
+
+*/5 * * * * /usr/bin/php /data/web/biospex/production/artisan ocrprocess:records >> /var/log/apache2/ocrprocess-prod.poll.log 2>&1
