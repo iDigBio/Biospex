@@ -31,6 +31,6 @@ class Workflow extends Model
 
     public function selectList($value, $id)
     {
-        return $this->lists($value, $id)->toArray();
+        return $this->orderBy($value)->lists($value, $id)->toArray();
     }
 }
