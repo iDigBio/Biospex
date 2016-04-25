@@ -38,4 +38,15 @@ class Actor extends Model
             ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'error', 'queued', 'completed')
             ->withTimestamps();
     }
+
+    /**
+     * Find record using title
+     * 
+     * @param $value
+     * @return mixed
+     */
+    public function findByTitle($value)
+    {
+        return $this->where('title', '=', $value)->first();
+    }
 }

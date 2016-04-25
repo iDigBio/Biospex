@@ -12,4 +12,14 @@ class ActorRepository extends Repository implements Actor
     {
         $this->model = $model;
     }
+
+    /**
+     * Find record using title
+     * @param $value
+     * @return mixed
+     */
+    public function findByTitle($value)
+    {
+        return $this->model->findByTitle($value);
+    }
 }

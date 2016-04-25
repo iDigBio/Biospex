@@ -2,4 +2,5 @@
 
 interface Actor extends Repository
 {
+    public function findByTitle($value);
 }

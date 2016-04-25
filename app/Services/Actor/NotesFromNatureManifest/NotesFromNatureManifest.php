@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\Actor\NotesFromNature2;
+namespace App\Services\Actor\NotesFromNatureManifest;
 
-class NotesFromNature2
+class NotesFromNatureManifest
 {
     /**
      * @var
@@ -13,7 +13,7 @@ class NotesFromNature2
         'export'
     ];
 
-    public function __construct(NotesFromNature2Export $nfnExport)
+    public function __construct(NotesFromNatureManifestExport $nfnExport)
     {
         $this->nfnExport = $nfnExport;
     }

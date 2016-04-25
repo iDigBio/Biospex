@@ -10,6 +10,7 @@ use App\Console\Commands\OcrDeleteFile;
 use App\Console\Commands\OcrProcessCommand;
 use App\Console\Commands\OcrQueuePushCommand;
 use App\Console\Commands\TestAppCommand;
+use App\Console\Commands\UpdateQueries;
 use App\Console\Commands\ViewsCommand;
 use App\Console\Commands\WorkFlowManagerCommand;
 use Illuminate\Console\Scheduling\Schedule;
@@ -35,6 +36,7 @@ class Kernel extends ConsoleKernel
         OcrProcessCommand::class,
         OcrDeleteFile::class,
         AustinProcessCommand::class,
+        UpdateQueries::class
     ];
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Actor\NotesFromNature;
+namespace App\Services\Actor\NotesFromNatureOrig;
 
 ini_set('memory_limit', '1024M');
 
@@ -16,7 +16,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 
-class NotesFromNatureExport extends ActorAbstract implements ActorInterface
+class NotesFromNatureOrigExport extends ActorAbstract implements ActorInterface
 {
     /**
      * Actor object.
@@ -161,7 +161,7 @@ class NotesFromNatureExport extends ActorAbstract implements ActorInterface
     private $client;
 
     /**
-     * NotesFromNatureExport constructor.
+     * NotesFromNatureOrigExport constructor.
      * @param BiospexFilesystem $filesystem
      * @param Download $download
      * @param Config $config

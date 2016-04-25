@@ -1,4 +1,4 @@
-<?php namespace App\Services\Actor\NotesFromNature2;
+<?php namespace App\Services\Actor\NotesFromNatureManifest;
 
 use App\Services\Actor\ActorAbstract;
 use App\Services\Actor\ActorInterface;
@@ -13,7 +13,7 @@ use App\Repositories\Contracts\Expedition;
 use App\Repositories\Contracts\Header;
 use App\Repositories\Contracts\Property;
 
-class NotesFromNature2Export extends ActorAbstract implements ActorInterface
+class NotesFromNatureManifestExport extends ActorAbstract implements ActorInterface
 {
     protected $actor;
     protected $expeditionId;
