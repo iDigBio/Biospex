@@ -26,7 +26,9 @@
         @yield('content')
     </div>
     @endif
-
+    @if (Auth::check())
+    @include('frontend.partials.process-modal')
+    @endif
     @include('frontend.layouts.footer')
             <!-- ./ footer -->
     <script src="/js/biospex.js"></script>
