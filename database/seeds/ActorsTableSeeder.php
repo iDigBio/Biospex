@@ -5,6 +5,7 @@ use Illuminate\Database\Seeder;
 
 class ActorsTableSeeder extends Seeder
 {
+
     /**
      * Run the database seeds.
      *
@@ -16,7 +17,8 @@ class ActorsTableSeeder extends Seeder
 
         $actors = $this->getActors();
 
-        foreach ($actors as $actor) {
+        foreach ($actors as $actor)
+        {
             App\Models\Actor::create($actor);
         }
     }
@@ -25,9 +27,25 @@ class ActorsTableSeeder extends Seeder
     {
         return [
             [
-                'title' => "Notes From Nature",
+                'title' => "Notes From Nature Original",
                 'url'   => "http://www.notesfromnature.org/",
-                'class' => "NotesFromNature",
+                'class' => "NotesFromNatureOrig",
+            ],
+            [
+                'title' => "Notes From Nature Manifest",
+                'url'   => "http://www.notesfromnature.org/",
+                'class' => "NotesFromNatureManifest",
+            ],
+            [
+                'title' => "Notes From Nature CSV",
+                'url'   => "http://www.notesfromnature.org/",
+                'class' => "NotesFromNatureCsv",
+            ],
+            [
+                'title'   => "OCR",
+                'url'     => "http://ocr.idiginfo.org",
+                'class'   => "Ocr",
+                'private' => 1
             ]
         ];
     }
