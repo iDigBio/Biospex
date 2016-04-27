@@ -84,7 +84,7 @@ class OcrProcessCommand extends Command
     public function handle()
     {
         $record = $this->ocrQueue->findFirstWith(['project.group.owner', 'ocrCsv']);
-        if ($record->isEmpty())
+        if (empty($record))
         {
             return;
         }
