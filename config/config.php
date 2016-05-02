@@ -102,6 +102,11 @@ return [
         'accessURI',
         'ocr'
     ],
+    
+    'nfnImageSize' => [
+        'largeWidth' => env('NFN_LRG_WIDTH'),
+        'smallWidth' => env('NFN_SM_WIDTH'),
+    ],
 
     'nfnCsvMap' => [
         'subjectId' => '_id',
