@@ -44,43 +44,12 @@ class UpdateQueries extends Command
      */
     public function fire()
     {
-        DB::statement("UPDATE actors SET title = 'Notes From Nature Original', class = 'NotesFromNatureOrig' WHERE actors.id = 1");
-        DB::statement("UPDATE `actors` SET `title` = 'Notes From Nature Manifest', `class` = 'NotesFromNatureManifest' WHERE `actors`.`id` = 2");
-        DB::statement("UPDATE workflows SET workflow = 'Notes From Nature Original' WHERE workflows.id = 2");
-        DB::statement("UPDATE `workflows` SET `workflow` = 'Notes From Nature Manifest' WHERE `workflows`.`id` = 3");
-        DB::statement("UPDATE `workflows` SET `workflow` = 'OCR -> Notes From Nature Original' WHERE `workflows`.`id` = 4");
-        DB::statement("UPDATE `workflows` SET `workflow` = 'OCR -> Notes From Nature Manifest' WHERE `workflows`.`id` = 5");
-        
-        $actorData = [
-            'title' => 'Notes From Nature CSV',
-            'url' => 'http://www.notesfromnature.org/',
-            'class' => 'NotesFromNatureCsv'  
-        ];
-        
-        $actorNew = $this->actor->create($actorData);
-        $ocrRecord = $this->actor->findByTitle('OCR');
-        
-        $workflowData = [
-            [
-                'workflow' => 'NotesFromNatureCsv'
-            ],
-            [
-                'workflow' => 'OCR -> Notes From Nature Csv'
-            ]
-        ];
-
-        foreach ($workflowData as $key => $data)
-        {
-            $workflow = $this->workflow->create($data);
-            if ($key === 0)
-            {
-                $workflow->actors()->attach($actorNew->id);
-            }
-            else
-            {
-                $workflow->actors()->attach([$ocrRecord->id => ['order' => 0], $actorNew->id => ['order' => 1] ]);
-            }
-        }
+        DB::statement("UPDATE actors SET title = 'Notes From Nature Legacy', class = 'NfnLegacy' WHERE actors.id = 1");
+        DB::statement("UPDATE actors SET title = 'Notes From Nature Panoptes', class = 'NfnPanoptes' WHERE actors.id = 2");
+        DB::statement("UPDATE workflows SET workflow = 'Notes From Nature Legacy' WHERE workflows.id = 2");
+        DB::statement("UPDATE workflows SET workflow = 'Notes From Nature Panoptes' WHERE workflows.id = 3");
+        DB::statement("UPDATE workflows SET workflow = 'OCR -> Notes From Nature Legacy' WHERE workflows.id = 4");
+        DB::statement("UPDATE workflows SET workflow = 'OCR -> Notes From Nature Panoptes' WHERE workflows.id = 5");
     }
 
 }
