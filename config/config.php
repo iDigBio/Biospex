@@ -103,6 +103,16 @@ return [
         'ocr'
     ],
 
+    'nfnCsvMap' => [
+        'subjectId' => '_id',
+        'imageName' => '',
+        'imageUrl' => 'accessUri',
+        'references' => ['refrences'],
+        'catalogCode' => [],
+        'collectionCode' => [],
+        'catalogNumber' => [],
+    ],
+
     /**
      * Default advertise fields for PPSR_CORE
      */
