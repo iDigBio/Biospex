@@ -2,6 +2,7 @@
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 
 class Image
 {
@@ -68,8 +69,6 @@ class Image
     {
         $this->filesystem = $filesystem;
         $this->imageTypeExtension = Config::get('config.images.imageTypeExtension');
-
-        return;
     }
 
     /**
@@ -121,8 +120,6 @@ class Image
     protected function setMimeType($mime)
     {
         $this->mimeType = $mime;
-
-        return;
     }
 
     /**
@@ -133,8 +130,6 @@ class Image
     public function setExtension($mime = null)
     {
         $this->extension = is_null($mime) ? $this->pathinfo['extension'] : $this->imageTypeExtension[$mime];
-
-        return;
     }
 
     /**
@@ -221,8 +216,6 @@ class Image
         $this->imagick->readImageFile($f);
         $this->geometry = $this->imagick->getImageGeometry();
         fclose($f);
-
-        return;
     }
 
     /**
@@ -243,7 +236,7 @@ class Image
 
             return;
         } catch (\Exception $e) {
-            \Log::error('[IMAGE SERVICE] Failed to resize image. Target: "' . $target . ' [' . $e->getMessage() . ']');
+            Log::error('[IMAGE SERVICE] Failed to resize image. Target: "' . $target . ' [' . $e->getMessage() . ']');
 
             return;
         }
@@ -270,8 +263,6 @@ class Image
         if (! $this->filesystem->put($path, $contents)) {
             throw new \RuntimeException(trans('emails.error_save_file', ['directory' => $path]));
         }
-
-        return;
     }
 
     /**
@@ -286,8 +277,6 @@ class Image
                 throw new \RuntimeException(trans('emails.error_create_dir', ['directory' => $dir]));
             }
         }
-
-        return;
     }
 
     public function deleteImage($file)
