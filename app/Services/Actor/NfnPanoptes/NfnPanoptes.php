@@ -13,16 +13,16 @@ class NfnPanoptes
         'export'
     ];
 
-    public function __construct(NfnPanoptesExport $nfnExport)
+    public function __construct(NfnPanoptesExport $export)
     {
-        $this->nfnExport = $nfnExport;
+        $this->export = $export;
     }
 
     public function process($actor)
     {
         switch($this->state[$actor->pivot->state]) {
             case 'export':
-                $this->nfnExport->process($actor);
+                $this->export->process($actor);
                 break;
             default:
                 break;
