@@ -27,7 +27,5 @@ class NfnLegacy
             default:
                 break;
         }
-
-        return;
     }
 }
