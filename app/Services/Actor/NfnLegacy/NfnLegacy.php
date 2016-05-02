@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\Actor\NotesFromNatureOrig;
+namespace App\Services\Actor\NfnLegacy;
 
-class NotesFromNatureOrig
+class NfnLegacy
 {
     /**
      * @var
@@ -13,7 +13,7 @@ class NotesFromNatureOrig
         'export'
     ];
 
-    public function __construct(NotesFromNatureOrigExport $nfnExport)
+    public function __construct(NfnLegacyExport $nfnExport)
     {
         $this->nfnExport = $nfnExport;
     }

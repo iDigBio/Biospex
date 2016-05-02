@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Actor\NotesFromNatureOrig;
+namespace App\Services\Actor\NfnLegacy;
 
 ini_set('memory_limit', '1024M');
 
@@ -16,7 +16,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 
-class NotesFromNatureOrigExport extends ActorAbstract implements ActorInterface
+class NfnLegacyExport extends ActorAbstract implements ActorInterface
 {
     /**
      * Actor object.
