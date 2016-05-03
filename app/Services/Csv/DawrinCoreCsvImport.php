@@ -9,8 +9,9 @@ use ForceUTF8\Encoding;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Validation\Factory as Validation;
 use App\Models\Occurrence;
+use App\Services\Csv\Csv;
 
-class DarwinCoreCsvImport extends CsvAbstract {
+class DarwinCoreCsvImport {
 
     /**
      * @var Config
@@ -90,6 +91,11 @@ class DarwinCoreCsvImport extends CsvAbstract {
      * @var mixed
      */
     public $identifiers;
+    
+    /**
+     * @var \App\Services\Csv\Csv
+     */
+    public $csv;
 
     /**
      * Construct
@@ -99,13 +105,15 @@ class DarwinCoreCsvImport extends CsvAbstract {
      * @param Subject $subject
      * @param Header $header
      * @param Validation $factory
+     * @param \App\Services\Csv\Csv $csv
      */
     public function __construct(
         Config $config,
         Property $property,
         Subject $subject,
         Header $header,
-        Validation $factory
+        Validation $factory,
+        Csv $csv
     )
     {
         $this->identifiers = $config->get('config.identifiers');
@@ -114,6 +122,7 @@ class DarwinCoreCsvImport extends CsvAbstract {
         $this->config = $config;
         $this->header = $header;
         $this->factory = $factory;
+        $this->csv = $csv;
     }
 
     /**
@@ -141,12 +150,12 @@ class DarwinCoreCsvImport extends CsvAbstract {
      */
     public function loadCsvFile($file, $delimiter, $enclosure, $type, $loadMedia)
     {
-        $this->readerCreateFromPath($file, $delimiter, $enclosure);
+        $this->csv->readerCreateFromPath($file, $delimiter, $enclosure);
 
-        $header = $this->processCsvHeader($this->getHeaderRow(), $type);
+        $header = $this->processCsvHeader($this->csv->getHeaderRow(), $type);
         $this->saveHeaderArray($header, $loadMedia);
 
-        $rows = $this->fetch();
+        $rows = $this->csv->fetch();
         foreach ($rows as $row)
         {
             if (empty($row[0]))
