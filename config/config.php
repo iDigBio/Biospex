@@ -111,11 +111,10 @@ return [
     'nfnCsvMap' => [
         'subjectId' => '_id',
         'imageName' => '',
-        'imageUrl' => 'accessUri',
-        'references' => ['refrences'],
-        'catalogCode' => [],
-        'collectionCode' => [],
-        'catalogNumber' => [],
+        'imageUrl' => 'accessURI',
+        '#references' => ['occurrence' => 'references'],
+        '#collectionCode' => ['occurrence' => 'collectionCode'],
+        '#catalogNumber' => ['occurrence' => 'catalogNumber'],
     ],
 
     /**
