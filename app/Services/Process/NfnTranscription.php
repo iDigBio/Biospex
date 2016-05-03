@@ -2,12 +2,12 @@
 
 use App\Repositories\Contracts\Subject;
 use App\Repositories\Contracts\Transcription;
-use App\Services\Csv\CsvAbstract;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Validation\Factory as Validation;
 use ForceUTF8\Encoding;
+use App\Services\Csv\Csv;
 
-class NfnTranscription extends CsvAbstract
+class NfnTranscription
 {
 
     /**
@@ -42,18 +42,19 @@ class NfnTranscription extends CsvAbstract
 
 
     /**
-     * Constructor
      * NfnTranscription constructor.
      * @param Subject $subject
      * @param Transcription $transcription
      * @param Config $config
-     * @param Validator $factory
+     * @param Validation $factory
+     * @param Csv $csv
      */
     public function __construct(
         Subject $subject,
         Transcription $transcription,
         Config $config,
-        Validation $factory
+        Validation $factory,
+        Csv $csv
     )
     {
         $this->config = $config;
@@ -61,6 +62,7 @@ class NfnTranscription extends CsvAbstract
         $this->subject = $subject;
         $this->transcription = $transcription;
         $this->factory = $factory;
+        $this->csv = $csv;
     }
 
     /**
@@ -71,11 +73,11 @@ class NfnTranscription extends CsvAbstract
      */
     public function process($file)
     {
-        $this->readerCreateFromPath($file, ",", '"');
+        $this->csv->readerCreateFromPath($file, ",", '"');
 
-        $header = $this->prepareHeader($this->getHeaderRow());
+        $header = $this->prepareHeader($this->csv->getHeaderRow());
 
-        $rows = $this->fetch();
+        $rows = $this->csv->fetch();
         foreach ($rows as $row)
         {
             if (empty($row[0]))
