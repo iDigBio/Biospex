@@ -85,7 +85,7 @@ class NotesFromNatureManifestExport extends ActorAbstract implements ActorInterf
         $this->createDir($this->nfnExportDir);
         $this->expeditionId = $actor->pivot->expedition_id;
 
-        $this->expedition->cached(true);
+        $this->expedition->cached(false);
         $this->record = $this->expedition->findWith($this->expeditionId, ['project.group', 'subjects']);
 
         if (empty($this->record)) {
