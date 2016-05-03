@@ -202,7 +202,7 @@
                 <div class="form-group required {{ ($errors->has('workflow_id')) ? 'has-error' : '' }}">
                     {!! Form::label('workflow_id', trans('forms.workflows'), array('class' => 'col-sm-2 control-label')) !!}
                     <div class="col-sm-4">
-                        {!! Form::select('workflow_id', $workflows, $project->workflow_id, ['class' => 'selectpicker']) !!}
+                        {!! Form::select('workflow_id', $workflows, $project->workflow_id, ['class' => 'selectpicker', 'data-width' => 'fit']) !!}
                     </div>
                     {{ ($errors->has('workflow_id') ? $errors->first('workflow_id') : '') }}
                 </div>
