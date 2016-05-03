@@ -72,12 +72,8 @@ class DarwinCore
         // Load media first to create subjects
         $this->processCsvFile($directory);
 
-        //$this->setHeaderArray();
-
         // Load occurrences
         $this->processCsvFile($directory, false);
-
-        return;
 
     }
 
@@ -118,7 +114,7 @@ class DarwinCore
      */
     public function setFileType($loadMedia)
     {
-        return ($loadMedia == true) ? ($this->mediaIsCore ? 'core' : 'extension') : ($this->mediaIsCore ? 'extension' : 'core');
+        return ($loadMedia === true) ? ($this->mediaIsCore ? 'core' : 'extension') : ($this->mediaIsCore ? 'extension' : 'core');
     }
 
     /**
@@ -129,10 +125,10 @@ class DarwinCore
      */
     public function setFilePath($directory, $type)
     {
-        if ($type == 'core') {
-            $file = $directory . "/" . $this->metaFile->getCoreFile();
+        if ($type === 'core') {
+            $file = $directory . '/' . $this->metaFile->getCoreFile();
         } else {
-            $file = $directory . "/" . $this->metaFile->getExtensionFile();
+            $file = $directory . '/' . $this->metaFile->getExtensionFile();
         }
 
         return $file;
@@ -145,7 +141,7 @@ class DarwinCore
      */
     public function setDelimiter($type)
     {
-        return ($type == 'core') ? $this->metaFile->getCoreDelimiter() : $this->metaFile->getExtDelimiter();
+        return ($type === 'core') ? $this->metaFile->getCoreDelimiter() : $this->metaFile->getExtDelimiter();
     }
 
     /**
@@ -155,7 +151,7 @@ class DarwinCore
      */
     public function setEnclosure($type)
     {
-        return ($type == 'core') ? $this->metaFile->getCoreEnclosure() : $this->metaFile->getExtEnclosure();
+        return ($type === 'core') ? $this->metaFile->getCoreEnclosure() : $this->metaFile->getExtEnclosure();
     }
 
     /**
