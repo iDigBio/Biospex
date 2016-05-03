@@ -6,14 +6,15 @@ use Illuminate\Support\MessageBag;
 use App\Repositories\Contracts\Group;
 use App\Services\Mailer\BiospexMailer;
 use Illuminate\Events\Dispatcher as Event;
-use League\Csv\Writer;
 use App\Events\SendReportEvent;
+use App\Services\Csv\Csv;
 
 
 class Report
 {
+
     /**
-     * @var MessageProviderInterface|MessageBag
+     * @var MessageBag
      */
     protected $messages;
 
@@ -36,18 +37,21 @@ class Report
      * @var Event
      */
     protected $event;
+    
+    /**
+     * @var Csv
+     */
+    public $csv;
 
     /**
-     * Constructor
-     *
+     * Report constructor.
      * @param Config $config
      * @param Filesystem $filesystem
-     * @param MessageProviderInterface|MessageBag $messages
-     * @param Group|GroupInterface $group
+     * @param MessageBag $messages
+     * @param Group $group
      * @param BiospexMailer $mailer
      * @param Event $event
-     * @internal param UserInterface $user
-     * @internal param Excel $excel
+     * @param Csv $csv
      */
     public function __construct(
         Config $config,
@@ -55,8 +59,10 @@ class Report
         MessageBag $messages,
         Group $group,
         BiospexMailer $mailer,
-        Event $event
-    ) {
+        Event $event,
+        Csv $csv
+    )
+    {
         $this->filesystem = $filesystem;
         $this->config = $config;
         $this->messages = $messages;
@@ -65,6 +71,7 @@ class Report
         $this->event = $event;
 
         $this->exportReportsDir = $this->config->get('config.export_reports_dir');
+        $this->csv = $csv;
     }
 
     /**
@@ -88,14 +95,16 @@ class Report
     {
         $email = null;
 
-        if (! is_null($groupId)) {
+        if (!is_null($groupId))
+        {
             $group = $this->group->findWith($groupId, ['owner']);
             $email = $group->Owner->email;
         }
 
         $errorMessage = '';
         $messages = $this->messages->get('error');
-        foreach ($messages as $message) {
+        foreach ($messages as $message)
+        {
             $errorMessage .= "$message ";
         }
         $subject = trans('emails.error');
@@ -103,8 +112,6 @@ class Report
         $view = 'frontend.emails.report-simple-error';
 
         $this->fireEvent($email, $subject, $view, $data);
-
-        return;
     }
 
     /**
@@ -131,8 +138,6 @@ class Report
         $view = 'frontend.emails.report-process-complete';
 
         $this->fireEvent($email, $subject, $view, $data, $attachment);
-
-        return;
     }
 
     /**
@@ -145,19 +150,19 @@ class Report
     public function createAttachment($csv, $name = null)
     {
         $path = $this->exportReportsDir;
-        if (! $this->filesystem->isDirectory($path)) {
+        if (!$this->filesystem->isDirectory($path))
+        {
             $this->filesystem->makeDirectory($path);
         }
 
         $fileName = (is_null($name)) ? str_random(10) : $name . str_random(5);
-        $ext = ".csv";
+        $ext = '.csv';
+        
+        $this->csv->writerCreateFromPath($path . '/' . $fileName . $ext);
+        $this->csv->insertOne(array_keys($csv[0]));
+        $this->csv->insertAll($csv);
 
-        $header = array_keys($csv[0]);
-        $writer = Writer::createFromPath(new \SplFileObject($path . "/" . $fileName . $ext, 'a+'), 'w');
-        $writer->insertOne($header);
-        $writer->insertAll($csv);
-
-        return [$path . "/" . $fileName . $ext];
+        return [$path . '/' . $fileName . $ext];
     }
 
     /**
@@ -171,14 +176,13 @@ class Report
     protected function fireEvent($email, $subject, $view, $data, $attachments = [])
     {
         $data = [
-            'email'      => $email,
-            'subject'    => $subject,
-            'view'       => $view,
-            'data'       => $data,
+            'email'       => $email,
+            'subject'     => $subject,
+            'view'        => $view,
+            'data'        => $data,
             'attachments' => $attachments
         ];
 
         $this->event->fire(new SendReportEvent($data));
-        return;
     }
 }
