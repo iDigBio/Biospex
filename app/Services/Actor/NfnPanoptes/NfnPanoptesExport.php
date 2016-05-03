@@ -4,189 +4,119 @@ namespace App\Services\Actor\NfnPanoptes;
 
 ini_set('memory_limit', '1024M');
 
+use App\Services\Actor\ActorAbstract;
+use App\Services\Actor\ActorInterface;
 use Illuminate\Config\Repository as Config;
 use App\Repositories\Contracts\Download;
 use App\Repositories\Contracts\Expedition;
 use App\Services\Report\Report;
 use App\Services\Image\Image;
-use App\Services\Actor\ActorAbstract;
-use App\Services\Actor\ActorInterface;
-use App\Services\Common\BiospexFilesystem;
+use Illuminate\Filesystem\Filesystem;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
+use App\Services\Csv\Csv;
 
 class NfnPanoptesExport extends ActorAbstract implements ActorInterface
 {
-    /**
-     * Actor object.
-     *
-     * @var object
-     */
-    protected $actor;
-
-    /**
-     * Expedition Id
-     *
-     * @var int
-     */
-    protected $expeditionId;
-
     /**
      * Current expedition being processed.
      *
      * @var object
      */
-    protected $record;
+    public $record;
 
     /** Notes from Nature export directory */
-    protected $nfnExportDir;
+    public $nfnExportDir;
 
     /**
      * Full path to temp directory named after expedition title with md5 hash.
      *
      * @var string
      */
-    protected $recordDir;
+    public $recordDir;
 
     /**
      * Full path to temp directory inside $recordDir for image conversions.
      *
      * @var
      */
-    protected $recordDirTmp;
-
-    /**
-     * Directories built based on 1GB file sizes or less.
-     *
-     * @var
-     */
-    protected $splitDir;
-
-    /**
-     * Count of chunk directory.
-     *
-     * @var
-     */
-    protected $count = 0;
-
-    /**
-     * Path to large images inside temp folder.
-     *
-     * @var string
-     */
-    protected $lrgFilePath;
-
-    /**
-     * Path to small images inside temp folder.
-     *
-     * @var string
-     */
-    protected $smFilePath;
-
-    /**
-     * Title of temp folder and tar file.
-     *
-     * @var string
-     */
-    public $title;
-
-    /**
-     * Array of image urls from subjects.
-     *
-     * @var array
-     */
-    protected $imageUriArray;
-
-    /**
-     * Array of existing images if files already retrieved
-     *
-     * @var
-     */
-    protected $existingImageUriArray;
-
-    /**
-     * CSV header array associated with meta file.
-     *
-     * @var array
-     */
-    protected $metaHeader = [];
+    public $recordDirTmp;
 
     /**
      * Missing image when retrieving via curl.
      *
      * @var array
      */
-    protected $missingImg = [];
-
-    /**
-     * Specific record folder for building out export.
-     *
-     * @var
-     */
-    protected $folder;
-
-    /**
-     * Large image width for NfN.
-     *
-     * @var int
-     */
-    private $largeWidth = 1540;
-
-    /**
-     * Small image width for NfN.
-     *
-     * @var int
-     */
-    private $smallWidth = 580;
+    public $missingImg = [];
 
     /**
      * @var Expedition
      */
-    private $expedition;
+    public $expedition;
 
     /**
      * @var Report
      */
-    private $report;
+    public $report;
 
     /**
      * @var Image
      */
-    private $image;
+    public $image;
 
     /**
      * @var Client
      */
-    private $client;
+    public $client;
+
+    /**
+     * @var mixed
+     */
+    public $nfnCsvMap;
+
+    /**
+     * @var array
+     */
+    public $csvExport = [];
+
+    /**
+     * @var Csv
+     */
+    public $csv;
 
     /**
      * NotesFromNatureOrigExport constructor.
-     * @param BiospexFilesystem $filesystem
+     * @param Filesystem $filesystem
      * @param Download $download
      * @param Config $config
      * @param Expedition $expedition
      * @param Report $report
      * @param Image $image
+     * @param Csv $csv
      */
     public function __construct(
-        BiospexFilesystem $filesystem,
+        Filesystem $filesystem,
         Download $download,
         Config $config,
         Expedition $expedition,
         Report $report,
-        Image $image
-    ) {
+        Image $image,
+        Csv $csv
+    )
+    {
         $this->filesystem = $filesystem;
         $this->download = $download;
         $this->config = $config;
         $this->expedition = $expedition;
         $this->report = $report;
         $this->image = $image;
+        $this->csv = $csv;
         $this->client = new Client();
 
         $this->scratchDir = $config->get('config.scratch_dir');
         $this->nfnExportDir = $config->get('config.nfn_export_dir');
+        $this->nfnCsvMap = $config->get('config.nfnCsvMap');
     }
 
     /**
@@ -200,37 +130,36 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
     {
         $this->createDir($this->nfnExportDir);
 
-        $this->expedition->cached(true);
+        $this->expedition->cached(false);
+        
         $this->record = $this->expedition->findWith($actor->pivot->expedition_id, ['project.group', 'subjects']);
 
-        if (empty($this->record)) {
+        if ($this->record === null)
+        {
             throw new \Exception(trans('emails.error_process', ['id' => $actor->pivot->expedition_id]));
         }
 
-        $this->folder = "{$actor->id}-" . md5($this->record->title);
+        $this->setRecordDir($actor->id. '-' . md5($this->record->title));
 
-        $this->setRecordDir();
-
-        $this->buildImageUriArray($actor);
+        $this->buildCsvArray();
 
         $this->getImagesFromUri();
 
         $this->convert();
+        
+        $this->createCsv();
+        
+        $tarGzFile = $this->compressDir();
+        
+        $this->createDownloads($actor, $tarGzFile);
 
-        $this->splitDirectories();
+        $this->moveCompressedFiles($tarGzFile);
 
-        $this->buildDetails();
-
-        $this->compressDirs();
-
-        $this->createDownloads($actor);
-
-        $this->moveCompressedFiles();
-
+        $this->filesystem->deleteDirectory($this->recordDirTmp);
         $this->filesystem->deleteDirectory($this->recordDir);
-
+        
         $this->processComplete();
-
+        
         $actor->pivot->queued = 0;
         ++$actor->pivot->state;
         $actor->pivot->completed = 1;
@@ -238,30 +167,76 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
     }
 
     /**
-     * Build array of image uris for curl.
-     *
-     * @param $actor
-     * @throws \Exception
+     * Build csvExport array for export.
      */
-    public function buildImageUriArray($actor)
+    public function buildCsvArray()
     {
-        foreach ($this->record->subjects as $subject) {
-            if ($this->checkImageExists($subject->_id)) {
-                $this->existingImageUriArray[$subject->_id] = str_replace(' ', '%20', $subject->accessURI);
+        foreach ($this->record->subjects as $subject)
+        {
+            $this->csvExport[] = $this->mapNfnCsvColumns($subject);
+        }
+    }
+
+    /**
+     * Map nfn csvExport values from configuration
+     * @param $subject
+     * @return array
+     */
+    public function mapNfnCsvColumns($subject)
+    {
+        $csvArray = [];
+        foreach ($this->nfnCsvMap as $key => $item)
+        {
+            if ( ! is_array($item))
+            {
+                $csvArray[$key] = $item === '' ? '' : $subject->{$item};
+
                 continue;
             }
 
-            if ($this->checkUriExists($subject)) {
-                continue;
+            foreach ($item as $doc => $value)
+            {
+                $csvArray[$key] = isset($subject->{$doc}->{$value}) ? $subject->{$doc}->{$value} : '';
             }
-
-            $this->imageUriArray[$subject->_id] = str_replace(' ', '%20', $subject->accessURI);
         }
 
-        if (empty($this->imageUriArray) && empty($this->existingImageUriArray)) {
-            throw new \Exception(trans('emails.error_empty_image_uri', ['id' => $actor->pivot->id]));
-        }
+        return $csvArray;
+    }
 
+    /**
+     * Process expedition for export
+     */
+    public function getImagesFromUri()
+    {
+        $requests = function ($csvExport)
+        {
+            foreach ($csvExport as $index => $row)
+            {
+
+                if ($this->checkUriExists($row) || $this->checkImageDoesNotExists($row['subjectId']))
+                {
+                    yield $index => new Request('GET', str_replace(' ', '%20', $row['imageUrl']));
+                }
+            }
+        };
+
+        $pool = new Pool($this->client, $requests($this->csvExport), [
+            'concurrency' => 10,
+            'fulfilled'   => function ($response, $index)
+            {
+                $code = $response->getStatusCode();
+                $image = $response->getBody();
+                $this->saveImage($code, $index, $image);
+            },
+            'rejected'    => function ($reason, $index)
+            {
+                $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageUrl']);
+            }
+        ]);
+
+        $promise = $pool->promise();
+
+        $promise->wait();
     }
 
     /**
@@ -270,58 +245,25 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
      * @param $id
      * @return bool
      */
-    public function checkImageExists($id)
+    public function checkImageDoesNotExists($id)
     {
-        return count($this->filesystem->glob($this->recordDir . '/' . $id . '.*')) > 0;
+        return count($this->filesystem->glob($this->recordDir . '/' . $id . '.*')) === 0;
     }
 
     /**
      * Check if image exists
-     *
-     * @param $subject
+     * @param $row
      * @return bool
      */
-    public function checkUriExists($subject)
+    public function checkUriExists($row)
     {
-        if (empty($subject->accessURI)) {
-            $this->addMissingImage($subject->id);
-
-            return true;
+        if (empty($row['imageUrl'])) {
+            $this->addMissingImage($row['subjectId']);
+            
+            return false;
         }
 
-        return false;
-    }
-
-    /**
-     * Process expedition for export
-     */
-    public function getImagesFromUri()
-    {
-        if (empty($this->imageUriArray)) {
-            return;
-        }
-
-        $requests = function ($uriArray) {
-            foreach ($uriArray as $index => $url) {
-                yield $index => new Request('GET', $url);
-            }
-        };
-
-        $pool = new Pool($this->client, $requests($this->imageUriArray), [
-            'concurrency' => 10,
-            'fulfilled' => function ($response, $index) {
-                $code = $response->getStatusCode();
-                $image = $response->getBody();
-                $this->saveImage($code, $index, $image);
-            },
-            'rejected' => function ($reason, $index) {
-                $this->addMissingImage($index, $this->imageUriArray[$index]);
-            }
-        ]);
-
-        $promise = $pool->promise();
-
-        $promise->wait();
+        return true;
     }
 
     /**
@@ -333,8 +275,9 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
      */
     public function saveImage($code, $index, $image)
     {
-        if (empty($image) || $code != 200) {
-            $this->addMissingImage($index, $this->imageUriArray[$index]);
+        if ($image ==='' || $code !== 200)
+        {
+            $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageUrl']);
 
             return;
         }
@@ -342,16 +285,18 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
         $this->image->setImageSizeInfoFromString($image);
         $ext = $this->image->getFileExtension();
 
-        if ( ! $ext) {
-            $this->addMissingImage($index, $this->imageUriArray[$index]);
+        if ( ! $ext)
+        {
+            $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageUrl']);
 
             return;
         }
 
-        $path = "{$this->recordDir}/$index.$ext";
-        $this->saveFile($path, $image);
+        $fileName = $this->csvExport[$index]['subjectId'] . '.' . $ext;
+        $this->csvExport[$index]['imageName'] = $fileName;
+        $path = $this->recordDir . '/' . $fileName;
 
-        return;
+        $this->saveFile($path, $image);
     }
 
     /**
@@ -361,196 +306,68 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
     {
         $files = $this->filesystem->files($this->recordDir);
 
-        if (empty($files)) {
+        if (count($files) === 0)
+        {
             return;
         }
 
-        $imageUriArray = $this->mergeImageUri();
-
-        foreach ($files as $file) {
+        foreach ($files as $file)
+        {
             $this->image->setImagePathInfo($file);
 
-            if ($this->image->getMimeType() === false) {
+            if ($this->image->getMimeType() === false)
+            {
                 continue;
             }
 
             $fileName = $this->image->getFileName();
+            $ext = $this->image->getFileExtension();
 
-            try {
+            try
+            {
                 $this->image->imagickFile($file);
-            } catch (\Exception $e) {
-                $this->addMissingImage($fileName, $imageUriArray[$fileName]);
+            }
+            catch (\Exception $e)
+            {
+                $key = array_search($fileName, array_column($this->csvExport, 'subjectId'), true);
+                $this->addMissingImage($fileName, $this->csvExport[$key]['imageUrl']);
 
                 continue;
             }
 
-            $lrgFilePath = $this->recordDirTmp . "/$fileName.large.jpg";
-            $smFilePath = $this->recordDirTmp . "/$fileName.small.jpg";
+            $imgFilePath = $this->recordDirTmp . '/' . $fileName . '.' . $ext;
 
-            if ( ! $this->filesystem->exists($lrgFilePath)) {
-                $this->image->imagickScale($lrgFilePath, $this->largeWidth, 0);
-            }
-
-            if ( ! $this->filesystem->exists($smFilePath)) {
-                $this->image->imagickScale($smFilePath, $this->smallWidth, 0);
+            if (!$this->filesystem->exists($imgFilePath))
+            {
+                $this->image->imagickScale($imgFilePath, $this->config->get('config.nfnImageSize.largeWidth'), 0);
             }
 
             $this->image->imagickDestroy();
         }
-
-        return;
     }
 
     /**
-     * Returns image uri array
-     * @return array
+     * Create csv file
      */
-    protected function mergeImageUri()
+    public function createCsv()
     {
-        if ( ! empty($this->imageUriArray) && ! empty($this->existingImageUriArray)) {
-            return array_merge($this->imageUriArray, $this->existingImageUriArray);
-        }
-
-        if (empty($this->imageUriArray) && ! empty($this->existingImageUriArray)) {
-            return $this->existingImageUriArray;
-        }
-
-        if ( ! empty($this->imageUriArray) && empty($this->existingImageUriArray)) {
-            return $this->imageUriArray;
-        }
-
+        $this->csv->writerCreateFromPath($this->recordDirTmp . '/' . $this->record->uuid . '.csv');
+        $this->csv->insertOne(array_keys($this->csvExport[0]));
+        $this->csv->insertAll($this->csvExport);
     }
 
     /**
-     * Split tmp directory into separate directories based on size.
+     * @param $folder
+     * @throws \Exception
      */
-    public function splitDirectories()
+    public function setRecordDir($folder)
     {
-        $size = 0;
-        $this->setSplitDir();
-        $limit = $this->getDirectorySize();
-        $files = $this->filesystem->files($this->recordDir);
-
-        foreach ($files as $file) {
-            $this->image->setImagePathInfo($file);
-
-            if ($this->image->getMimeType() === false) {
-                continue;
-            }
-
-            $fileName = $this->image->getFileName();
-            $baseName = $this->image->getBaseName();
-
-            $lrgFilePath = $this->recordDirTmp . "/$fileName.large.jpg";
-            $smFilePath = $this->recordDirTmp . "/$fileName.small.jpg";
-
-            $size += filesize($lrgFilePath);
-            $size += filesize($smFilePath);
-
-            $this->filesystem->move($lrgFilePath, $this->lrgFilePath . "/$fileName.large.jpg");
-            $this->filesystem->move($smFilePath, $this->smFilePath . "/$fileName.small.jpg");
-            $this->filesystem->move($file, $this->splitDir . "/$baseName");
-
-            if ($size >= $limit) {
-                $this->setSplitDir();
-                $size = 0;
-            }
-        }
-
-        $this->filesystem->deleteDirectory($this->recordDirTmp);
-    }
-
-    /**
-     * Build detail.js file.
-     */
-    public function buildDetails()
-    {
-        $directories = $this->filesystem->directories($this->recordDir);
-
-        $metadata = [];
-        $metadata['sourceDir'] = $this->recordDir;
-        $metadata['targetDir'] = $this->recordDir;
-        $metadata['created_at'] = date('l jS F Y', time());
-        $metadata['highResDir'] = $this->recordDir . '/large';
-        $metadata['lowResDir'] = $this->recordDir . '/small';
-        $metadata['highResWidth'] = $this->largeWidth;
-        $metadata['lowResWidth'] = $this->smallWidth;
-
-        foreach ($directories as $directory) {
-            $data = [];
-            $metadata['total'] = 0;
-            $metadata['images'] = [];
-
-            $files = $this->filesystem->files($directory);
-
-            $i = 0;
-            foreach ($files as $file) {
-                // Original Image info.
-                $this->image->setImagePathInfo($file);
-                $baseName = $this->image->getBaseName();
-                $fileName = $this->image->getFileName();
-                $extension = $this->image->getFileExtension();
-                $this->image->setImageSizeInfoFromFile($file);
-
-                // Set array for original image.
-                $data['identifier'] = $fileName;
-                $data['original']['path'] = [$fileName, ".$extension"];
-                $data['original']['name'] = $baseName;
-                $data['original']['width'] = $this->image->getImageWidth();
-                $data['original']['height'] = $this->image->getImageHeight();
-
-                // Set array for large image.
-                $this->image->setImageSizeInfoFromFile("$directory/large/$fileName.large.$extension");
-                $data['large']['name'] = "large/$fileName.large.$extension";
-                $data['large']['width'] = $this->image->getImageWidth();
-                $data['large']['height'] = $this->image->getImageHeight();
-
-                // Set array for small image.
-                $this->image->setImageSizeInfoFromFile("$directory/small/$fileName.small.$extension");
-                $data['small']['name'] = "small/$fileName.small.$extension";
-                $data['small']['width'] = $this->image->getImageWidth();
-                $data['small']['height'] = $this->image->getImageHeight();
-
-                $metadata['images'][] = $data;
-
-                $this->filesystem->delete($file);
-
-                $i++;
-            }
-
-            $metadata['total'] = $i * 2;
-
-            $this->saveFile("$directory/details.js",
-                json_encode($metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-        }
-    }
-
-    /**
-     * Set tmp directory used.
-     */
-    public function setRecordDir()
-    {
-        $this->recordDir = $this->scratchDir . '/' . $this->folder;
-        $this->recordDirTmp = $this->recordDir . '/tmp';
+        $this->recordDir = $this->scratchDir . '/' . $folder;
+        $this->recordDirTmp = $this->recordDir . '/' . $this->record->uuid;
         $this->createDir($this->recordDirTmp);
         $this->writeDir($this->recordDirTmp);
     }
 
-    public function setSplitDir()
-    {
-        $count = ++$this->count;
-        $this->splitDir = $this->recordDir . '/' . $this->folder . '-' . $count;
-        $this->createDir($this->splitDir);
-        $this->writeDir($this->splitDir);
-
-        $this->lrgFilePath = $this->splitDir . '/large';
-        $this->createDir($this->lrgFilePath);
-        $this->writeDir($this->lrgFilePath);
-
-        $this->smFilePath = $this->splitDir . '/small';
-        $this->createDir($this->smFilePath);
-        $this->writeDir($this->smFilePath);
-    }
 
     /**
      * Add missing image information to array
@@ -559,15 +376,18 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
      */
     public function addMissingImage($index = null, $uri = null)
     {
-        if ( ! is_null($index) && ! is_null($uri)) {
+        if (!is_null($index) && !is_null($uri))
+        {
             $this->missingImg[] = ['value' => $index . ' : ' . $uri];
         }
 
-        if (is_null($index) && ! is_null($uri)) {
+        if (is_null($index) && !is_null($uri))
+        {
             $this->missingImg[] = ['value' => $uri];
         }
 
-        if ( ! is_null($index) && is_null($uri)) {
+        if (!is_null($index) && is_null($uri))
+        {
             $this->missingImg[] = ['value' => $index];
         }
     }
@@ -575,60 +395,39 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
     /**
      * Compress directory.
      */
-    public function compressDirs()
+    public function compressDir()
     {
-        $directories = $this->filesystem->directories($this->recordDir);
-        foreach ($directories as $directory) {
-            $a = new \PharData("$directory.tar");
-            $a->buildFromDirectory($directory);
-            $a->compress(\Phar::GZ);
-            unset($a);
-            $this->filesystem->delete("$directory.tar");
-            $this->filesystem->deleteDirectory($directory);
-        }
+        $tarFile = $this->recordDirTmp . '.tar';
+        $a = new \PharData($tarFile);
+        $a->buildFromDirectory($this->recordDirTmp);
+        $a->compress(\Phar::GZ);
+        unset($a);
+        $this->filesystem->delete($tarFile);
+        $this->filesystem->deleteDirectory($this->recordDirTmp);
+        
+        return $tarFile . '.gz';
     }
 
     /**
-     * Add download files to downloads table.
-     *
+     * Create download
      * @param $actor
+     * @param $file
      */
-    public function createDownloads($actor)
+    public function createDownloads($actor, $file)
     {
-        $files = $this->filesystem->files($this->recordDir);
-        foreach ($files as $file) {
-            $baseName = pathinfo($file, PATHINFO_BASENAME);
-            $this->createDownload($this->record->id, $actor->id, $baseName);
-        }
+        $baseName = pathinfo($file, PATHINFO_BASENAME);
+        $this->createDownload($this->record->id, $actor->id, $baseName);
     }
 
     /**
-     * Move tar files to export folder.
-     *
+     * Move tar.gz file to export folder.
+     * @param $file
      * @throws \Exception
      */
-    public function moveCompressedFiles()
+    public function moveCompressedFiles($file)
     {
-        $files = $this->filesystem->files($this->recordDir);
-        foreach ($files as $file) {
-            $baseName = pathinfo($file, PATHINFO_BASENAME);
-            $this->moveFile($file, "{$this->nfnExportDir}/$baseName");
-        }
-    }
-
-    /**
-     * Set directory sizes for download files.
-     *
-     * @return float
-     */
-    protected function getDirectorySize()
-    {
-        exec("du -b -s {$this->recordDirTmp}", $op);
-        list($size) = preg_split('/\s+/', $op[0]);
-
-        $gb = 1073741824;
-
-        return ($size < $gb) ? $size : ceil($size / ceil(number_format($size / $gb, 2)));
+        $baseName = pathinfo($file, PATHINFO_BASENAME);
+        $this->moveFile($file, "{$this->nfnExportDir}/$baseName");
     }
 
     /**
