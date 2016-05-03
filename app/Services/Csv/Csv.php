@@ -5,7 +5,7 @@ namespace App\Services\Csv;
 use League\Csv\Writer;
 use League\Csv\Reader;
 
-abstract class CsvAbstract
+class Csv
 {
     /**
      * @var
@@ -34,11 +34,11 @@ abstract class CsvAbstract
 
     /**
      * Create writer from file path
-     * @param $file
+     * @param $filePath
      */
-    public function writerCreateFromPath($file)
+    public function writerCreateFromPath($filePath)
     {
-        $this->writer = Writer::createFromPath($file, 'w');
+        $this->writer = Writer::createFromPath(new \SplFileObject($filePath, 'a+'), 'w');
     }
 
     /**
@@ -57,5 +57,23 @@ abstract class CsvAbstract
     public function getHeaderRow()
     {
         return $this->reader->fetchOne();
+    }
+
+    /**
+     * Insert one row
+     * @param $row
+     */
+    public function insertOne($row)
+    {
+        $this->writer->insertOne($row);
+    }
+
+    /**
+     * Insert all rows
+     * @param $rows
+     */
+    public function insertAll($rows)
+    {
+        $this->writer->insertAll($rows);
     }
 }
