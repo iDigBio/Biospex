@@ -11,7 +11,7 @@ use App\Services\Report\Report;
 use App\Services\Image\Image;
 use App\Services\Actor\ActorAbstract;
 use App\Services\Actor\ActorInterface;
-use App\Services\Common\BiospexFilesystem;
+use Illuminate\Filesystem\Filesystem;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
@@ -162,7 +162,7 @@ class NfnLegacyExport extends ActorAbstract implements ActorInterface
 
     /**
      * NotesFromNatureOrigExport constructor.
-     * @param BiospexFilesystem $filesystem
+     * @param Filesystem $filesystem
      * @param Download $download
      * @param Config $config
      * @param Expedition $expedition
@@ -170,7 +170,7 @@ class NfnLegacyExport extends ActorAbstract implements ActorInterface
      * @param Image $image
      */
     public function __construct(
-        BiospexFilesystem $filesystem,
+        Filesystem $filesystem,
         Download $download,
         Config $config,
         Expedition $expedition,
@@ -200,7 +200,7 @@ class NfnLegacyExport extends ActorAbstract implements ActorInterface
     {
         $this->createDir($this->nfnExportDir);
 
-        $this->expedition->cached(true);
+        $this->expedition->cached(false);
         $this->record = $this->expedition->findWith($actor->pivot->expedition_id, ['project.group', 'subjects']);
 
         if (empty($this->record)) {
