@@ -247,7 +247,7 @@ class ExpeditionsController extends Controller
         }
 
         try {
-            $this->expedition->cached(true);
+            $this->expedition->cached(false);
             $expedition = $this->expedition->findWith($expeditionId, ['project.workflow.actors', 'workflowManager']);
 
             if ( ! is_null($expedition->workflowManager)) {
