@@ -2,16 +2,17 @@
 
 namespace App\Jobs;
 
-use App\Events\PollOcrEvent;
-use App\Models\Project;
-use App\Repositories\Contracts\OcrCsv;
-use App\Repositories\Contracts\OcrQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
+use App\Models\Project;
+use App\Events\PollOcrEvent;
+use App\Repositories\Contracts\OcrCsv;
+use App\Repositories\Contracts\OcrQueue;
 use MongoCollection;
 
 class BuildOcrBatches extends Job implements ShouldQueue
@@ -44,22 +45,22 @@ class BuildOcrBatches extends Job implements ShouldQueue
      * @param Project $project
      * @param $expeditionId
      */
-    public function __construct($project, $expeditionId = null)
+    public function __construct(Project $project, $expeditionId = null)
     {
-
         $this->project = $project;
         $this->expeditionId = $expeditionId === null ? null : (int) $expeditionId;
-
-        $this->ocrQueue = app(OcrQueue::class);
     }
 
     /**
      * Execute the job.
      *
-     * @return void
+     * @param OcrQueue $ocrQueue
+     * @param OcrCsv $ocrCsv
      */
-    public function handle()
+    public function handle(OcrQueue $ocrQueue, OcrCsv $ocrCsv)
     {
+        $this->ocrQueue = $ocrQueue;
+        
         if (Config::get('config.ocr_disable'))
         {
             return;
@@ -69,23 +70,23 @@ class BuildOcrBatches extends Job implements ShouldQueue
         {
             return;
         }
-
+     
         if ( ! $this->checkOcrProcessing())
         {
             return;
         }
 
         $this->buildOcrSubjectsArray();
-
+     
         $data = $this->getChunkQueueData();
-
+     
         if (count($data) === 0)
         {
             return;
         }
 
         $lastKey = array_search(end($data), $data, true);
-        $ocrCsv = app(OcrCsv::class)->create(['subjects' => '']);
+        $ocrCsv = $ocrCsv->create(['subjects' => '']);
 
         foreach ($data as $key => $chunk)
         {
@@ -104,6 +105,7 @@ class BuildOcrBatches extends Job implements ShouldQueue
 
         app(Dispatcher::class)->fire(new PollOcrEvent($this->ocrQueue));
     }
+    
 
     /**
      * Check if project has ocr actor.
