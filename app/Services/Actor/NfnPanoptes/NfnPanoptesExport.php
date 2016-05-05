@@ -194,9 +194,14 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
                 continue;
             }
 
+            $csvArray[$key] = '';
             foreach ($item as $doc => $value)
             {
-                $csvArray[$key] = isset($subject->{$doc}->{$value}) ? $subject->{$doc}->{$value} : '';
+                if (isset($subject->{$doc}->{$value}))
+                {
+                    $csvArray[$key] = $subject->{$doc}->{$value};
+                    break;
+                }
             }
         }
 
