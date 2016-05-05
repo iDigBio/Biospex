@@ -79,6 +79,5 @@ class InviteCreateJob extends Job
             session_flash_push('success', trans('groups.send_invite_success', ['group' => $this->group->name, 'email' => $email]));
         }
 
-        return;
     }
 }
