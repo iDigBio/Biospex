@@ -261,6 +261,9 @@ function updateIdsOfSelectedRows(id, isSelected) {
         Grid.subjectIds.push(id);
     }
     Grid.subjectIdsObj.val(Grid.subjectIds);
+    if (Grid.subjectIds.length > 1000) {
+        $('#max').addClass('red');
+    }
     Grid.subjectCountObj.html(Grid.subjectIds.length);
 }
 
