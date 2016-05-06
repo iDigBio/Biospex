@@ -4089,6 +4089,7 @@ $(function () {
         Grid.id = $(".jgrid").prop('id');
         Grid.obj = $("#" + Grid.id);
         Grid.project = $("#projectId").val();
+        Grid.subjectCountHtmlObj = $('#subjectCountHtml');
         Grid.subjectCountObj = $('#subjectCount');
         Grid.subjectIdsObj = $('#subjectIds');
         Grid.subjectIds = Grid.subjectIdsObj.length > 0 ?
@@ -4333,7 +4334,11 @@ function updateIdsOfSelectedRows(id, isSelected) {
         Grid.subjectIds.push(id);
     }
     Grid.subjectIdsObj.val(Grid.subjectIds);
-    Grid.subjectCountObj.html(Grid.subjectIds.length);
+    if (Grid.subjectIds.length > 1000) {
+        $('#max').addClass('red');
+    }
+    Grid.subjectCountHtmlObj.html(Grid.subjectIds.length);
+    Grid.subjectCountObj.val(Grid.subjectIds.length);
 }
 
 /**

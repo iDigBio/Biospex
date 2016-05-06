@@ -1167,6 +1167,7 @@ p a:hover { color: #f00; }
   color: #000;
 }
 
+
 table.th-center th {
   text-align: center;
 }
@@ -1211,6 +1212,10 @@ td.folder-space {
 }
 .navbar-default .navbar-nav > li > a.noClick:focus {
     background-color: inherit;
+}
+
+.red {
+    color: #FF0000;
 }
 
 .processes span.title { font-weight: bold; }
