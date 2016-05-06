@@ -32,11 +32,10 @@ class ExpeditionRepository extends Repository implements Expedition
         $expedition = $this->model->create($data);
         $subjects = explode(',', $data['subjectIds']);
         $expedition->subjects()->sync($subjects);
-
-        $count = count($subjects);
+        
         $stat = new ExpeditionStat([
-            'subject_count' => $count,
-            'transcription_total' => transcriptions_total($count),
+            'subject_count' => $data['subjectCount'],
+            'transcription_total' => transcriptions_total($data['subjectCount']),
         ]);
 
         $expedition->stat()->save($stat);
@@ -62,12 +61,10 @@ class ExpeditionRepository extends Repository implements Expedition
         $subjectIds = explode(',', $data['subjectIds']);
         $expedition->subjects()->attach($subjectIds);
 
-        $count = count($subjectIds);
-
         $expeditionStat = new ExpeditionStat();
         $stat = $expeditionStat->firstOrCreate(['expedition_id' => $expedition->id]);
-        $stat->subject_count = $count;
-        $stat->transcriptions_total = transcriptions_total($count);
+        $stat->subject_count = $data['subjectCount'];
+        $stat->transcriptions_total = transcriptions_total($data['subjectCount']);
         $stat->transcriptions_completed = transcriptions_completed($expedition->id);
         $stat->percent_completed = transcriptions_percent_completed($stat->transcriptions_total, $stat->transcriptions_completed);
         $stat->save();
