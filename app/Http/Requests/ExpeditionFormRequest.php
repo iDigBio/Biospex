@@ -16,7 +16,8 @@ class ExpeditionFormRequest extends Request
         $rules = [
             'title' => 'required|between:6,140|unique:expeditions,title,' . $this->route('expeditions'),
             'description' => 'required|between:6,140',
-            'keywords' => 'required'
+            'keywords' => 'required',
+            'subjectCount' => 'integer|max:1000'
         ];
 
         return $rules;
