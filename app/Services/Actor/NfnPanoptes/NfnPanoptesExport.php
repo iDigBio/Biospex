@@ -141,7 +141,7 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
 
         $this->setRecordDir($actor->id. '-' . md5($this->record->title));
 
-        $this->buildCsvArray();
+        $this->buildCsvArray($actor->pivot->expedition_id);
 
         $this->getImagesFromUri();
 
@@ -168,25 +168,32 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
 
     /**
      * Build csvExport array for export.
+     * @param $expeditionId
      */
-    public function buildCsvArray()
+    public function buildCsvArray($expeditionId)
     {
         foreach ($this->record->subjects as $subject)
         {
-            $this->csvExport[] = $this->mapNfnCsvColumns($subject);
+            $this->csvExport[] = $this->mapNfnCsvColumns($subject, $expeditionId);
         }
     }
 
     /**
      * Map nfn csvExport values from configuration
      * @param $subject
+     * @param $expeditionId
      * @return array
      */
-    public function mapNfnCsvColumns($subject)
+    public function mapNfnCsvColumns($subject, $expeditionId)
     {
         $csvArray = [];
         foreach ($this->nfnCsvMap as $key => $item)
         {
+            if ($key === 'expedition_id')
+            {
+                $csvArray[$key] = $expeditionId;
+                continue;
+            }
             if ( ! is_array($item))
             {
                 $csvArray[$key] = $item === '' ? '' : $subject->{$item};
