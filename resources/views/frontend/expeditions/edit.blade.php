@@ -46,7 +46,7 @@
                     {{ ($errors->has('keywords') ? $errors->first('keywords') : '') }}
                 </div>
 
-                <h4>{{ trans_choice('pages.subjects_assigned', 1) }}: <span id="subjectCount">{{ $expedition->subjectsCount }}</span></h4>
+                <h4>{{ trans_choice('pages.subjects_assigned', 1) }} {{ trans('pages.subjects_assigned_max') }}: <span id="subjectCount">{{ $expedition->subjectsCount }}</span></h4>
                 <div class="table-responsive" id="jqtable">
                     @if($showCb)
                         <input type="hidden" id="showCb" value="0">
