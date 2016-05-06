@@ -46,11 +46,12 @@
                     {{ ($errors->has('keywords') ? $errors->first('keywords') : '') }}
                 </div>
 
-                <h4>{{ trans_choice('pages.subjects_assigned', 1) }} <span id="max">{{ trans('pages.subjects_assigned_max') }}</span>: <span id="subjectCount">0</span></h4>
+                <h4>{{ trans_choice('pages.subjects_assigned', 1) }} <span id="max">{{ trans('pages.subjects_assigned_max') }}</span>: <span id="subjectCountHtml">0</span></h4>
                 <div class="table-responsive" id="jqtable">
                     <input type="hidden" id="url" value="{{ URL::route('projects.grids.expeditions.create', [$expedition->project->id]) }}">
                     <input type="hidden" id="showCb" value="1">
                     <input type="hidden" id="projectId" value="{{ $expedition->project->id }}">
+                    <input type="hidden" id="subjectCount" name="subjectCount" value="">
                     <input type="hidden" id="subjectIds" name="subjectIds" value="">
                     <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
                     <div id="pager"></div>
