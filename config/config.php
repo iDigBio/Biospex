@@ -116,6 +116,7 @@ return [
         '#institutionCode' => ['occurrence' => 'institutionCode'],
         '#collectionCode' => ['occurrence' => 'collectionCode'],
         '#catalogNumber' => ['occurrence' => 'catalogNumber'],
+        '#expeditionId' => '',
     ],
 
     /**
