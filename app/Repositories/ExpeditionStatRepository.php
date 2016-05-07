@@ -6,11 +6,6 @@ use App\Models\Expedition as Model;
 class ExpeditionStatRepository extends Repository implements ExpeditionStat
 {
     /**
-     * @var \Expedition
-     */
-    protected $model;
-
-    /**
      * ExpeditionStatRepository constructor.
      * @param Model $model
      */

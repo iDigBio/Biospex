@@ -7,12 +7,11 @@ abstract class Repository
     /**
      * @var
      */
-    protected $model;
+    public $model;
 
     /**
      * Return all
-     *
-     * @param array $columns
+     * 
      * @return mixed
      */
     public function all()
@@ -21,10 +20,20 @@ abstract class Repository
     }
 
     /**
-     * Find by id.
-     *
+     * Return all with relationships
+     * 
+     * @param $with
+     * @return mixed
+     */
+    public function allWith($with)
+    {
+        return $this->model->with($with)->get();
+    }
+
+    /**
+     * Find by id
+     * 
      * @param $id
-     * @param array $columns
      * @return mixed
      */
     public function find($id)

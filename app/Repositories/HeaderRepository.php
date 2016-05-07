@@ -5,8 +5,10 @@ use App\Models\Header as Model;
 
 class HeaderRepository extends Repository implements Header
 {
+
     /**
-     * @param Header $header
+     * HeaderRepository constructor.
+     * @param Model $model
      */
     public function __construct(Model $model)
     {

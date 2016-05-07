@@ -3,6 +3,8 @@
 interface Repository
 {
     public function all();
+    
+    public function allWith($with);
 
     public function find($id);
 

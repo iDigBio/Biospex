@@ -3,14 +3,6 @@
 interface WorkflowManager extends Repository
 {
     /**
-     * Return all records with relationship
-     *
-     * @param array $with
-     * @return mixed
-     */
-    public function allWith($with = []);
-
-    /**
      * Get workflow process by expedition id
      *
      * @param $id
@@ -18,5 +10,12 @@ interface WorkflowManager extends Repository
      */
     public function findByExpeditionId($id);
 
-    public function findByExpeditionIdWith($id, $with = []);
+    /**
+     * Find using expedition id with relationships
+     * 
+     * @param $id
+     * @param array $with
+     * @return mixed
+     */
+    public function findByExpeditionIdWith($id, $with);
 }

@@ -14,17 +14,6 @@ class WorkflowManagerRepository extends Repository implements WorkflowManager
     }
 
     /**
-     * Find with eager loading
-     *
-     * @param array $with
-     * @return mixed
-     */
-    public function allWith($with = [])
-    {
-        return $this->model->allWith($with);
-    }
-
-    /**
      * Get workflow process by expedition id
      *
      * @param $id
@@ -35,7 +24,14 @@ class WorkflowManagerRepository extends Repository implements WorkflowManager
         return $this->model->findByExpeditionId($id);
     }
 
-    public function findByExpeditionIdWith($id, $with = []) {
+    /**
+     * Find by expedition id with relationship
+     * 
+     * @param $id
+     * @param array $with
+     * @return mixed
+     */
+    public function findByExpeditionIdWith($id, $with) {
         return $this->model->findByExpeditionIdWith($id, $with);
     }
 }

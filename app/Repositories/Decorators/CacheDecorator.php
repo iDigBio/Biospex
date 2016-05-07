@@ -6,9 +6,8 @@ use Illuminate\Contracts\Cache\Repository as Cache;
 
 class CacheDecorator
 {
+
     /**
-     * Repository.
-     *
      * @var
      */
     protected $repository;
@@ -24,18 +23,22 @@ class CacheDecorator
     protected $tag;
 
     /**
-     * Cache key.
      * @var
      */
     protected $key;
 
     /**
      * Use cached data.
-     *
      * @var bool
      */
     protected $cached = true;
 
+    /**
+     * CacheDecorator constructor.
+     * @param Cache $cache
+     * @param $repository
+     * @param $tag
+     */
     public function __construct(Cache $cache, $repository, $tag)
     {
         $this->repository = $repository;
@@ -45,7 +48,6 @@ class CacheDecorator
 
     /**
      * Set cache bypass.
-     *
      * @param bool|true $bool
      */
     public function cached($bool = true)
@@ -55,23 +57,23 @@ class CacheDecorator
 
     /**
      * Build cache key.
-     *
      * @param $method
      * @param null $serial
      * @return string
      */
     protected function setKey($method, $serial = null)
     {
-        $this->key = md5($method . serialize($serial));
+        $this->key = md5(get_class($this->repository) . '::' . $method . serialize($serial));
     }
 
     /**
      * Retrieve all records for resource.
-     *
      * @return mixed
      */
     public function all()
     {
+        $this->setKey(__METHOD__);
+        
         if ( ! $this->cached) {
             return $this->repository->all();
         }
@@ -82,13 +84,32 @@ class CacheDecorator
     }
 
     /**
+     * Returns all with relationships.
+     * @param $with
+     * @return mixed
+     */
+    public function allWith($with)
+    {
+        $this->setKey(__METHOD__, $with);
+        
+        if ( ! $this->cached) {
+            return $this->repository->allWith($with);
+        }
+        
+        return $this->cache->tags($this->tag)->rememberForever($this->key, function () use ($with) {
+            return $this->repository->allWith($with);
+        });
+    }
+
+    /**
      * Find resource using id.
-     *
      * @param $id
      * @return mixed
      */
     public function find($id)
     {
+        $this->setKey(__METHOD__, $id);
+        
         if ( ! $this->cached) {
             return $this->repository->find($id);
         }
@@ -99,14 +120,15 @@ class CacheDecorator
     }
 
     /**
-     * Find with eager loading
-     *
+     * Find with eager loading.
      * @param $id
      * @param array $with
      * @return mixed
      */
     public function findWith($id, $with)
     {
+        $this->setKey(__METHOD__, $id . implode('.', $with));
+        
         if ( ! $this->cached) {
             return $this->repository->findWith($id, $with);
         }
@@ -124,10 +146,7 @@ class CacheDecorator
      */
     public function save($record)
     {
-        $group = $this->repository->save($record);
-        $this->cache->tags($this->tag)->flush();
-
-        return $group;
+        return $this->repository->save($record);
     }
 
     /**
@@ -138,10 +157,7 @@ class CacheDecorator
      */
     public function create($data)
     {
-        $record = $this->repository->create($data);
-        $this->cache->tags($this->tag)->flush();
-
-        return $record;
+        return $this->repository->create($data);
     }
 
     /**
@@ -152,10 +168,7 @@ class CacheDecorator
      */
     public function update($data)
     {
-        $record = $this->repository->update($data);
-        $this->cache->tags($this->tag)->flush();
-
-        return $record;
+        return $this->repository->update($data);
     }
 
 
@@ -167,9 +180,6 @@ class CacheDecorator
      */
     public function destroy($id)
     {
-        $record = $this->repository->destroy($id);
-        $this->cache->tags($this->tag)->flush();
-
-        return $record;
+        return $this->repository->destroy($id);
     }
 }
