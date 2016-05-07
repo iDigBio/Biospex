@@ -14,7 +14,7 @@ class WorkFlowManagerCommand extends Command
      *
      * @var string
      */
-    protected $name = 'workflow:manage';
+    protected $signature = 'workflow:manage';
 
     /**
      * The console command description.
@@ -57,7 +57,7 @@ class WorkFlowManagerCommand extends Command
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
         $id = $this->argument('expedition');
 

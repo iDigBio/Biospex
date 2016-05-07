@@ -17,7 +17,7 @@ class AustinProcessCommand extends Command
     /**
      * The console command name.
      */
-    protected $name = 'image:image';
+    protected $signature = 'image:image';
 
     /**
      * The console command description.
@@ -62,9 +62,9 @@ class AustinProcessCommand extends Command
     }
 
     /**
-     * Fire queue.
+     * handle queue.
      */
-    public function fire()
+    public function handle()
     {
         $rows = $this->loadCsv();
         $this->buildUris($rows);

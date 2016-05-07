@@ -13,7 +13,7 @@ class OcrQueueCheckCommand extends Command
      *
      * @var string
      */
-    protected $name = 'ocrqueue:check';
+    protected $signature = 'ocrqueue:check';
 
     /**
      * The console command description.
@@ -41,11 +41,11 @@ class OcrQueueCheckCommand extends Command
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
         $queues = $this->queue->allWith(['project.group.owner']);
 
-        if (empty($queues)) {
+        if ($queues->isEmpty()) {
             return;
         }
 
@@ -59,7 +59,5 @@ class OcrQueueCheckCommand extends Command
         }
 
         $this->report->reportSimpleError();
-
-        return;
     }
 }

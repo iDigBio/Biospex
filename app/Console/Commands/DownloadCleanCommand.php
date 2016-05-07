@@ -18,7 +18,7 @@ class DownloadCleanCommand extends Command
      *
      * @var string
      */
-    protected $name = 'download:clean';
+    protected $signature = 'download:clean';
 
     /**
      * The console command description.
@@ -60,7 +60,7 @@ class DownloadCleanCommand extends Command
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
         $this->report->setDebug($this->argument('debug'));
 

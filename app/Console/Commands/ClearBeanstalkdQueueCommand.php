@@ -12,7 +12,7 @@ class ClearBeanstalkdQueueCommand extends Command
      *
      * @var string
      */
-    protected $name = 'queue:clear';
+    protected $signature = 'queue:clear';
 
     /**
      * The console command description.
@@ -52,7 +52,7 @@ class ClearBeanstalkdQueueCommand extends Command
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
         $this->tubes = $this->argument('tube') === null ? Config::get('config.beanstalkd') : $this->argument('tube');
 

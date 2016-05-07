@@ -16,7 +16,7 @@ class DarwinCoreFileImportCommand extends Command
      *
      * @var string
      */
-    protected $name = 'dwc:import';
+    protected $signature = 'dwc:import';
 
     /**
      * The console command description.
@@ -42,7 +42,7 @@ class DarwinCoreFileImportCommand extends Command
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
         $imports = $this->import->findByError();
 

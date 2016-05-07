@@ -17,7 +17,7 @@ class OcrQueuePushCommand extends Command
      *
      * @var string
      */
-    protected $name = 'ocrqueue:push';
+    protected $signature = 'ocrqueue:push';
 
     /**
      * The console command description.
@@ -44,7 +44,7 @@ class OcrQueuePushCommand extends Command
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
         // Get the name arguments and the age option from the input instance.
         $id = $this->argument('id');

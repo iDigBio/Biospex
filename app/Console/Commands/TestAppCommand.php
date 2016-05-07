@@ -15,7 +15,7 @@ class TestAppCommand extends Command
     /**
      * The console command name.
      */
-    protected $name = 'test:test';
+    protected $signature = 'test:test';
 
     /**
      * The console command description.
@@ -44,9 +44,9 @@ class TestAppCommand extends Command
     }
 
     /**
-     * Fire
+     * handle
      */
-    public function fire()
+    public function handle()
     {
         
         /*

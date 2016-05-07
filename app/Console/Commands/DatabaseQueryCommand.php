@@ -12,7 +12,7 @@ class DatabaseQueryCommand extends Command
     /**
      * The console command name.
      */
-    protected $name = 'db:query';
+    protected $signature = 'db:query';
 
     /**
      * The console command description.
@@ -43,12 +43,9 @@ class DatabaseQueryCommand extends Command
     }
 
     /**
-     * Fire queue.
-     *
-     * @param Mailer $mailer
-     * @param Config $config
+     * Handle command
      */
-    public function fire()
+    public function handle()
     {
         DB::update('UPDATE profiles INNER JOIN users ON users.id = profiles.user_id SET profiles.timezone = users.timezone');
         DB::update('update groups set label = name');

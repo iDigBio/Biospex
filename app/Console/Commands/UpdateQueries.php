@@ -12,7 +12,7 @@ class UpdateQueries extends Command
     /**
      * The console command name.
      */
-    protected $name = 'update:queries';
+    protected $signature = 'update:queries';
 
     /**
      * The console command description.
@@ -40,9 +40,9 @@ class UpdateQueries extends Command
     }
 
     /**
-     * Fire
+     * handle
      */
-    public function fire()
+    public function handle()
     {
         DB::statement("UPDATE actors SET title = 'Notes From Nature Legacy', class = 'NfnLegacy' WHERE actors.id = 1");
         DB::statement("UPDATE actors SET title = 'Notes From Nature Panoptes', class = 'NfnPanoptes' WHERE actors.id = 2");
