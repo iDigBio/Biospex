@@ -59,7 +59,7 @@ class PollOcrEvent extends Event implements ShouldBroadcast
 
     private function buildData()
     {
-        $records = $this->ocrQueue->findAllWith(['project.group']);
+        $records = $this->ocrQueue->allWith(['project.group']);
 
         if ($records->isEmpty())
         {
