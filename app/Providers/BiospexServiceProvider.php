@@ -28,7 +28,6 @@ use App\Repositories\Contracts\Meta as MetaContract;
 use App\Repositories\Contracts\OcrQueue as OcrQueueContract;
 use App\Repositories\Contracts\Transcription as TranscriptionContract;
 use App\Repositories\Contracts\OcrCsv as OcrCsvContract;
-use App\Repositories\Contracts\UserGridField as UserGridFieldContract;
 use App\Repositories\Contracts\ExpeditionStat as ExpeditionStatContract;
 use App\Repositories\Contracts\Workflow as WorkflowContract;
 
@@ -49,7 +48,6 @@ use App\Repositories\MetaRepository;
 use App\Repositories\OcrQueueRepository;
 use App\Repositories\TranscriptionRepository;
 use App\Repositories\OcrCsvRepository;
-use App\Repositories\UserGridFieldRepository;
 use App\Repositories\ExpeditionStatRepository;
 use App\Repositories\WorkflowRepository;
 
@@ -116,7 +114,6 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(OcrQueueContract::class, OcrQueueRepository::class);
         $this->app->bind(TranscriptionContract::class, TranscriptionRepository::class);
         $this->app->bind(OcrCsvContract::class, OcrCsvRepository::class);
-        $this->app->bind(UserGridFieldContract::class, UserGridFieldRepository::class);
         $this->app->bind(ExpeditionStatContract::class, ExpeditionStatRepository::class);
         $this->app->bind(WorkflowContract::class, WorkflowRepository::class);
     }
