@@ -68,7 +68,7 @@ class OcrQueue extends Model
         return $query->where('status', '<=', 1)->where('error', 0)->orderBy('id', 'asc')->first();
     }
 
-    public function findAllWith($with)
+    public function allWith($with)
     {
         $query = $this->with($with);
         return $query->where('status', '<', 2)->where('error', 0)->orderBy('id', 'asc')->get();

@@ -67,14 +67,6 @@ class User extends Model implements AuthenticatableContract,
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function userGridField()
-    {
-        return $this->hasMany(UserGridField::class);
-    }
-
-    /**
      * Find user by email.
      *
      * @param $email

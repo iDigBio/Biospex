@@ -188,14 +188,6 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function userGridField()
-    {
-        return $this->hasMany(UserGridField::class);
-    }
-
-    /**
      * Get project by slug
      *
      * @param $slug

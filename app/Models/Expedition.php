@@ -1,6 +1,5 @@
 <?php namespace App\Models;
 
-use Illuminate\Support\Facades\DB;
 use Jenssegers\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UuidTrait;
@@ -97,14 +96,6 @@ class Expedition extends Eloquent
         return $this->belongsToMany(Actor::class, 'actor_expedition')
             ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'error', 'queued', 'completed', 'order')
             ->orderBy('order');
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function userGridField()
-    {
-        return $this->hasMany(UserGridField::class);
     }
 
     /**

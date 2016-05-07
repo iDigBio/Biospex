@@ -54,19 +54,15 @@ class WorkflowManager extends Model
         return $this->expeditionId($id)->first();
     }
 
+    /**
+     * Find expedition with relationships
+     * 
+     * @param $id
+     * @param $with
+     * @return mixed
+     */
     public function findByExpeditionIdWith($id, $with)
     {
         return $this->with($with)->expeditionId($id)->get();
-    }
-
-    /**
-     * Get all with relationship.
-     *
-     * @param $with
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
-     */
-    public function allWith($with)
-    {
-        return $this->with($with)->get();
     }
 }
