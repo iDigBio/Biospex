@@ -125,8 +125,10 @@ class MoveMaxSubjects extends Command
         }
     }
 
-    public function createData($expedition, $chunk, $i = 0)
+    public function createData($expedition, array $chunk, $i = 0)
     {
+        $count = count($chunk);
+
         echo 'Create data with chunk count ' . count($chunk) . PHP_EOL;
         $data = [
             'project_id' => $this->projectId,
@@ -134,7 +136,7 @@ class MoveMaxSubjects extends Command
             'description' => $expedition->description,
             'keywords' => $expedition->keywords,
             'subjectIds' => implode(',', $chunk),
-            'subjectCount' => count($chunk)
+            'subjectCount' => $count
         ];
 
         $data = $i === 0 ? array_merge($data, ['id' => $expedition->id]) : $data;
