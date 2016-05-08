@@ -227,7 +227,7 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
 
                 if ($this->checkUriExists($row) || $this->checkImageDoesNotExists($row['subjectId']))
                 {
-                    yield $index => new Request('GET', str_replace(' ', '%20', $row['imageUrl']));
+                    yield $index => new Request('GET', str_replace(' ', '%20', $row['imageURL']));
                 }
             }
         };
@@ -242,7 +242,7 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
             },
             'rejected'    => function ($reason, $index)
             {
-                $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageUrl']);
+                $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageURL']);
             }
         ]);
 
@@ -269,7 +269,7 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
      */
     public function checkUriExists($row)
     {
-        if (empty($row['imageUrl'])) {
+        if (empty($row['imageURL'])) {
             $this->addMissingImage($row['subjectId']);
             
             return false;
@@ -289,7 +289,7 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
     {
         if ($image ==='' || $code !== 200)
         {
-            $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageUrl']);
+            $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageURL']);
 
             return;
         }
@@ -299,7 +299,7 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
 
         if ( ! $ext)
         {
-            $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageUrl']);
+            $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageURL']);
 
             return;
         }
@@ -342,7 +342,7 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
             catch (\Exception $e)
             {
                 $key = array_search($fileName, array_column($this->csvExport, 'subjectId'), true);
-                $this->addMissingImage($fileName, $this->csvExport[$key]['imageUrl']);
+                $this->addMissingImage($fileName, $this->csvExport[$key]['imageURL']);
 
                 continue;
             }
