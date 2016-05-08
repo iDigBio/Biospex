@@ -18,7 +18,7 @@ class DownloadCleanCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'download:clean';
+    protected $signature = 'download:clean {debug?}';
 
     /**
      * The console command description.
@@ -81,18 +81,5 @@ class DownloadCleanCommand extends Command
             }
         }
 
-        return;
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['debug', InputArgument::OPTIONAL, 'Debug option. Default false.', false],
-        ];
     }
 }

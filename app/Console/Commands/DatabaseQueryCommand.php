@@ -71,6 +71,5 @@ class DatabaseQueryCommand extends Command
             $download->save();
         }
 
-        return;
     }
 }

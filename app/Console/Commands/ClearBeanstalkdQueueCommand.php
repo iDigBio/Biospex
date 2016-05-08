@@ -12,7 +12,7 @@ class ClearBeanstalkdQueueCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'queue:clear';
+    protected $signature = 'queue:clear {tube?}';
 
     /**
      * The console command description.
@@ -34,19 +34,7 @@ class ClearBeanstalkdQueueCommand extends Command
     {
         parent::__construct();
     }
-
-    /**
-     * Defines the arguments.
-     *
-     * @return array
-     */
-    public function getArguments()
-    {
-        return array(
-            array('tube', InputArgument::OPTIONAL, 'The name of the tube to clear.'),
-        );
-    }
-
+    
     /**
      * Execute the console command.
      *

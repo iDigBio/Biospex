@@ -54,6 +54,5 @@ class DarwinCoreFileImportCommand extends Command
 
         echo $count . " Imports added to Queue." . PHP_EOL;
 
-        return;
     }
 }

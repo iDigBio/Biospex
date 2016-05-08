@@ -98,8 +98,6 @@ class AustinProcessCommand extends Command
             $this->rows[$key] = $row;
             $this->rows[$key]['accessURI'] = $uri;
         }
-
-        return;
     }
 
     public function sendRequest()
@@ -138,8 +136,6 @@ class AustinProcessCommand extends Command
                 $value = Encoding::toUTF8($value);
             }
         );
-
-        return;
     }
 
     public function buildUri($number)
@@ -171,7 +167,6 @@ class AustinProcessCommand extends Command
 
         echo "Image for " . $this->rows[$index]['catalogNumber'] . " is found." . PHP_EOL;
 
-        return;
     }
 
     public function addToImageCsvArray($index)
@@ -237,6 +232,5 @@ class AustinProcessCommand extends Command
             $writer->insertAll($this->imageCsv);
         }
 
-        return;
     }
 }

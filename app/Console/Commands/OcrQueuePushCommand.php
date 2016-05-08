@@ -17,7 +17,7 @@ class OcrQueuePushCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'ocrqueue:push';
+    protected $signature = 'ocrqueue:push {id}';
 
     /**
      * The console command description.
@@ -68,18 +68,6 @@ class OcrQueuePushCommand extends Command
         // Push to queue
         Queue::push('App\Services\Queue\OcrProcessQueue', ['id' => $job->id], $this->tube);
 
-        return;
     }
 
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['id', InputArgument::REQUIRED, 'Id of job from ocr_queue table.'],
-        ];
-    }
 }

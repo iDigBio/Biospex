@@ -14,7 +14,7 @@ class WorkFlowManagerCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'workflow:manage';
+    protected $signature = 'workflow:manage {expedition?}';
 
     /**
      * The console command description.
@@ -39,18 +39,7 @@ class WorkFlowManagerCommand extends Command
         $this->tube = Config::get('config.beanstalkd.workflow');
         $this->workflow = $workflow;
     }
-
-    /**
-     * Defines the arguments.
-     *
-     * @return array
-     */
-    public function getArguments()
-    {
-        return [
-            ['expedition', InputArgument::OPTIONAL, 'The id of an Expedition to process.'],
-        ];
-    }
+    
 
     /**
      * Execute the console command.
