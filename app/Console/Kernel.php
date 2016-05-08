@@ -7,6 +7,7 @@ use App\Console\Commands\DatabaseQueryCommand;
 use App\Console\Commands\DownloadCleanCommand;
 use App\Console\Commands\Inspire;
 use App\Console\Commands\MoveMaxSubjects;
+use App\Console\Commands\MoveTranscriptions;
 use App\Console\Commands\OcrDeleteFile;
 use App\Console\Commands\OcrProcessCommand;
 use App\Console\Commands\OcrQueuePushCommand;
@@ -38,7 +39,8 @@ class Kernel extends ConsoleKernel
         OcrDeleteFile::class,
         AustinProcessCommand::class,
         UpdateQueries::class,
-        MoveMaxSubjects::class
+        MoveMaxSubjects::class,
+        MoveTranscriptions::class
     ];
 
     /**

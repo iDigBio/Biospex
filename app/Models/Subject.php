@@ -207,7 +207,6 @@ class Subject extends Eloquent
             $subject->save();
         }
 
-        return;
     }
 
     /**
@@ -241,11 +240,13 @@ class Subject extends Eloquent
         $this->route = $route;
         $this->projectId = $projectId;
         $this->expeditionId = $expeditionId;
-
-        return intval($this->whereNested(function ($query) use ($filters)
+        
+        $count = $this->whereNested(function ($query) use ($filters)
         {
             $this->buildQuery($query, $filters);
-        })->count());
+        })->count();
+
+        return (int) $count;
     }
 
 
