@@ -35,7 +35,6 @@ class Kernel extends ConsoleKernel
         ClearBeanstalkdQueueCommand::class,
         DarwinCoreFileImportCommand::class,
         OcrQueuePushCommand::class,
-        DatabaseQueryCommand::class,
         OcrProcessCommand::class,
         OcrDeleteFile::class,
         AustinProcessCommand::class,
