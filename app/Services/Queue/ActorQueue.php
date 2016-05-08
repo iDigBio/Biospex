@@ -34,7 +34,7 @@ class ActorQueue extends QueueAbstract
             $actor->pivot->queued = 0;
             $actor->pivot->error = 1;
             $actor->pivot->save();
-            $this->createError($actor->pivot->id, $e);
+            $this->createError($actor->pivot->expedition_id, $e);
         }
 
         $this->delete();
