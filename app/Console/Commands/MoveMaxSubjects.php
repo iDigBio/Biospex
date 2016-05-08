@@ -57,9 +57,6 @@ class MoveMaxSubjects extends Command
      */
     public function handle()
     {
-        $expeditions = $this->expedition->where('project_id', 1)->get();
-        
-        dd($expeditions);
         $projects = Project::all();
 
         foreach ($projects as $project)
@@ -86,8 +83,7 @@ class MoveMaxSubjects extends Command
     {
         foreach ($expeditions as $expedition)
         {
-            echo "Getting subjects" . PHP_EOL;
-
+            echo $expedition->title . PHP_EOL;
             $this->setVariables($expedition);
             $this->processExpedition($expedition);
         }
@@ -95,6 +91,7 @@ class MoveMaxSubjects extends Command
 
     public function setVariables($expedition)
     {
+        echo 'Getting subjects' . PHP_EOL;
         $this->subjects = Subject::where('expedition_ids', '=', (int) $expedition->id)->get();
         $this->ids = array_column($this->subjects->toArray(), '_id');
         $this->subjectChunk = array_chunk($this->ids, 1000, true);
@@ -102,16 +99,18 @@ class MoveMaxSubjects extends Command
 
     public function processExpedition($expedition)
     {
-        echo '  ' . $expedition->title . ' Subjects: ' . count($this->subjects) . PHP_EOL;
+        echo 'Processing ' . $expedition->title . ' Subjects: ' . count($this->subjects) . PHP_EOL;
         
         $count = count($this->subjectChunk);
         
         if ($count > 1)
         {
+            echo 'Splitting expedition' . PHP_EOL;
             $this->splitExpeditions($expedition, $count);
         }
         else
         {
+            echo 'Saving original expedition' . PHP_EOL;
             $data = $this->createData($expedition, $this->subjectChunk[0]);
             $this->saveExpedition($data);
         }
@@ -121,13 +120,14 @@ class MoveMaxSubjects extends Command
     {
         for ($i = 0; $i < $count; $i++)
         {
-            $data = $this->createData($expedition, $this->subjectChunk[$i]);
+            $data = $this->createData($expedition, $this->subjectChunk[$i], $i);
             $this->saveExpedition($data);
         }
     }
 
-    public function createData($expedition, $chunk)
+    public function createData($expedition, $chunk, $i = 0)
     {
+        echo 'Create data with chunk count ' . count($chunk) . PHP_EOL;
         $data = [
             'project_id' => $this->projectId,
             'title' => $expedition->title . ' ' . str_random(10),
@@ -137,13 +137,22 @@ class MoveMaxSubjects extends Command
             'subjectCount' => count($chunk)
         ];
 
-        $data = isset($expedition->id) ? array_merge($data, ['id' => $expedition->id]) : $data;
+        $data = $i === 0 ? array_merge($data, ['id' => $expedition->id]) : $data;
 
         return $data;
     }
 
     public function saveExpedition($data)
     {
-        array_key_exists('id', $data) ? $this->expedition->update($data) : $this->expedition->create($data);
+        if (array_key_exists('id', $data))
+        {
+            echo 'Updating Expedition' . PHP_EOL;
+            $this->expedition->update($data);
+        }
+        else
+        {
+            echo 'Creating Expedition' . PHP_EOL;
+            $this->expedition->create($data);
+        }
     }
 }

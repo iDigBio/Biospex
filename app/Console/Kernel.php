@@ -12,6 +12,7 @@ use App\Console\Commands\OcrDeleteFile;
 use App\Console\Commands\OcrProcessCommand;
 use App\Console\Commands\OcrQueuePushCommand;
 use App\Console\Commands\TestAppCommand;
+use App\Console\Commands\UpdateExpeditionStats;
 use App\Console\Commands\UpdateQueries;
 use App\Console\Commands\ViewsCommand;
 use App\Console\Commands\WorkFlowManagerCommand;
@@ -40,7 +41,8 @@ class Kernel extends ConsoleKernel
         AustinProcessCommand::class,
         UpdateQueries::class,
         MoveMaxSubjects::class,
-        MoveTranscriptions::class
+        MoveTranscriptions::class,
+        UpdateExpeditionStats::class
     ];
 
     /**

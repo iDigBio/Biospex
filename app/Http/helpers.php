@@ -167,7 +167,7 @@ function array_to_object(array $array)
  */
 function transcriptions_total($count)
 {
-    return $count * 4;
+    return (int) $count * 4;
 }
 
 /**

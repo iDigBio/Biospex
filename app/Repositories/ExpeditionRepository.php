@@ -30,7 +30,7 @@ class ExpeditionRepository extends Repository implements Expedition
         
         $stat = new ExpeditionStat([
             'subject_count' => $data['subjectCount'],
-            'transcription_total' => transcriptions_total($data['subjectCount']),
+            'transcriptions_total' => transcriptions_total($data['subjectCount']),
         ]);
 
         $expedition->stat()->save($stat);
