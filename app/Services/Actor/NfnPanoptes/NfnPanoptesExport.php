@@ -189,7 +189,7 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
         $csvArray = [];
         foreach ($this->nfnCsvMap as $key => $item)
         {
-            if ($key === 'expeditionId')
+            if ($key === '#expeditionId')
             {
                 $csvArray[$key] = $expeditionId;
                 continue;
