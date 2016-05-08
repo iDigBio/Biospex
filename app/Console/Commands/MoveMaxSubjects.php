@@ -103,6 +103,11 @@ class MoveMaxSubjects extends Command
         
         $count = count($this->subjectChunk);
         
+        if ($count === 0)
+        {
+            return;
+        }
+        
         if ($count > 1)
         {
             echo 'Splitting expedition' . PHP_EOL;
