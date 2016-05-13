@@ -5,11 +5,13 @@ use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\OcrQueue;
 use DOMDocument;
 use GuzzleHttp\Pool;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Facades\Config;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Events\Dispatcher;
+use MongoCollection;
 
 class ServerInfoController extends Controller
 {
@@ -134,5 +136,10 @@ class ServerInfoController extends Controller
 
             $dispatcher->fire(new PollOcrEvent($ocrQueue));
         }
+    }
+
+    public function test()
+    {
+        
     }
 }
