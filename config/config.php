@@ -96,12 +96,18 @@ return [
     /**
      * Columns used in select statement for grid.
      */
-    'select_columns' => [
-        'expedition_ids',
+    'defaultGridVisible' => [
         'id',
         'accessURI',
         'ocr'
     ],
+    'defaultSubGridVisible' => [
+        'id',
+        'institutionCode',
+        'scientificName',
+        'recordId',
+    ],
+
     
     'nfnImageSize' => [
         'largeWidth' => env('NFN_LRG_WIDTH'),
