@@ -1,5 +1,7 @@
 <?php  namespace App\Services\Grid;
 
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Route;
 use App\Repositories\Contracts\Subject;
 use App\Repositories\Contracts\Expedition;
 use App\Repositories\Contracts\Header;
@@ -7,18 +9,24 @@ use Exception;
 
 class JqGridJsonEncoder
 {
+
     /**
-     * @var SubjectInterface
+     * @var Subject
      */
     protected $subject;
 
     /**
-     * @var ExpeditionInterface
+     * @var Expedition
      */
     protected $expedition;
 
     /**
-     * @var Excel
+     * @var Header
+     */
+    protected $header;
+    
+    /**
+     * @var
      */
     protected $excel;
 
@@ -28,30 +36,20 @@ class JqGridJsonEncoder
     protected $route;
 
     /**
-     * @var HeaderInterface
+     * @var
      */
-    private $header;
-
-    private $defaultGridVisible = [
-        'id',
-        'accessURI',
-        'ocr'
-    ];
-
-    private $defaultSubGridVisible = [
-        'id',
-        'institutionCode',
-        'scientificName',
-        'recordId',
-    ];
+    protected $defaultGridVisible;
 
     /**
-     * Construct
-     *
-     * @param SubjectInterface $subject
-     * @param ExpeditionInterface $expedition
-     * @param HeaderInterface $header
-     * @internal param Excel $excel
+     * @var
+     */
+    protected $defaultSubGridVisible;
+
+    /**
+     * JqGridJsonEncoder constructor.
+     * @param Subject $subject
+     * @param Expedition $expedition
+     * @param Header $header
      */
     public function __construct(
         Subject $subject,
@@ -62,6 +60,9 @@ class JqGridJsonEncoder
         $this->subject = $subject;
         $this->expedition = $expedition;
         $this->header = $header;
+        
+        $this->defaultGridVisible = Config::get('config.defaultGridVisible');
+        $this->defaultSubGridVisible = Config::get('config.defaultSubGridVisible');
     }
 
     /**
@@ -113,7 +114,7 @@ class JqGridJsonEncoder
         $names = [];
         foreach ($fields as $field)
         {
-            $names[] = 'occurrence_' . $field;
+            $names[] = 'occurrence.' . $field;
         }
 
         return $names;
@@ -121,9 +122,7 @@ class JqGridJsonEncoder
 
     /**
      * Build column model for grid.
-     *
      * @param $colNames
-     * @param bool $image
      * @return array
      */
     protected function setColModel($colNames)
@@ -144,13 +143,13 @@ class JqGridJsonEncoder
      */
     protected function formatGridColumn($column)
     {
-        if ($column == 'assigned') {
+        if ($column === 'assigned') {
             return $this->buildExpeditionCheckbox();
         }
 
         $col = $this->setNormalColumnProperties($column);
 
-        if ($column == 'ocr') {
+        if ($column === 'ocr') {
             $col = array_merge($col, [
                 'title' => false,
                 'classes' => 'ocrPreview',
@@ -158,8 +157,8 @@ class JqGridJsonEncoder
             ]);
         }
 
-        if ($column == 'accessURI') {
-            $this->addUriLink($col);
+        if ($column === 'accessURI') {
+            $col = $this->addUriLink($col);
         }
 
         return $col;
@@ -186,14 +185,24 @@ class JqGridJsonEncoder
         return $col;
     }
 
-    protected function addUriLink(&$col)
+    /**
+     * Add uri link.
+     * @param $col
+     * @return array
+     */
+    protected function addUriLink($col)
     {
-        $col = array_merge($col, [
+        return array_merge($col, [
             'classes' => 'thumbPreview',
             'formatter' => 'imagePreview'
         ]);
+        
     }
 
+    /**
+     * Build expedition checkbox.
+     * @return array
+     */
     protected function buildExpeditionCheckbox()
     {
         return [
@@ -231,7 +240,7 @@ class JqGridJsonEncoder
 
         $count = $this->subject->getTotalNumberOfRows($filters, $route, $projectId, $expeditionId);
 
-        $limit = empty($limit) ? $count : $limit;
+        $limit = count($limit) === 0 ? $count : $limit;
 
         if (!is_int($count)) {
             throw new Exception('The method getTotalNumberOfRows must return an integer');
@@ -243,7 +252,7 @@ class JqGridJsonEncoder
         $limit = $limit < 0 ? 0 : $limit;
         $start = $limit * $page - $limit;
         $start = $start < 0 ? 0 : $start;
-        $limit = $limit * $page;
+        $limit *= $page;
 
         if (empty($postedData['pivotRows'])) {
             $rows = $this->subject->getRows($limit, $start, $sidx, $sord, $filters);
@@ -258,7 +267,7 @@ class JqGridJsonEncoder
         // Prefix occurrence fields, merge into row, unset occurrence
         foreach ($rows as $key => $row) {
             $row['occurrence'] = array_combine(
-                array_map(function($k){ return 'occurrence_'.$k; }, array_keys($row['occurrence'])), $row['occurrence']
+                array_map(function($k){ return 'occurrence.'.$k; }, array_keys($row['occurrence'])), $row['occurrence']
             );
 
             $rows[$key] = array_merge($row, $row['occurrence']);
@@ -278,15 +287,12 @@ class JqGridJsonEncoder
 
     /**
      * Echo in a jqGrid compatible format the data requested by a grid.
-     *
-     * @param $postedData
-     * @param bool $subGrid
      * @return string
      * @throws Exception
      */
     public function encodeSubGridRequestedData()
     {
-        $subjectId = \Route::input('subjects');
+        $subjectId = Route::input('subjects');
 
         $row = $this->subject->find($subjectId)->first()->toArray();
 
@@ -297,7 +303,7 @@ class JqGridJsonEncoder
         return json_encode([
             'page' => 1,
             'total' => 1,
-            'records' => empty($row) ? 0 : 1,
+            'records' => count($row) === 0 ? 0 : 1,
             'rows' => [$row['occurrence']],
         ]);
     }
@@ -313,7 +319,7 @@ class JqGridJsonEncoder
     {
         $expedition = $this->expedition->find($id);
 
-        if ($data['selected'] == "true") {
+        if ($data['selected'] === 'true') {
             $expedition->subjects()->sync($data['ids'], false);
         } else {
             $this->subject->detachSubjects($data['ids'], $id);
@@ -400,7 +406,7 @@ class JqGridJsonEncoder
      */
     protected function num_to_letter($num, $uppercase = false)
     {
-        $num -= 1;
+        --$num;
 
         $letter = chr(($num % 26) + 97);
         $letter .= (floor($num / 26) > 0) ? str_repeat($letter, floor($num / 26)) : '';
