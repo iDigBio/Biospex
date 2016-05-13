@@ -57,7 +57,7 @@ class Subject extends Eloquent
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\EmbedsMany
+     * @return \Jenssegers\Mongodb\Relations\EmbedsOne
      */
     public function occurrence()
     {
@@ -154,7 +154,7 @@ class Subject extends Eloquent
     {
         $ids = $this->whereNested(function ($query) use ($projectId, $take, $expeditionId)
         {
-            if ( ! is_null($expeditionId))
+            if ($expeditionId !== null)
             {
                 $query->where('expedition_ids', '=', (int) $expeditionId);
             }
@@ -198,7 +198,7 @@ class Subject extends Eloquent
             $subject = $this->find($id);
             foreach ($subject->expedition_ids as $value)
             {
-                if ((int) $expeditionId != $value)
+                if ((int) $expeditionId !== (int) $value)
                 {
                     $array[] = $value;
                 }
@@ -273,7 +273,7 @@ class Subject extends Eloquent
     {
         $orderByRaw = $this->setOrderBy($orderBy, $sord);
 
-        $limit = ($limit == 0) ? 1 : $limit;
+        $limit = ($limit === 0) ? 1 : $limit;
 
         $query = $this->whereNested(function ($query) use ($filters)
         {
@@ -288,6 +288,7 @@ class Subject extends Eloquent
         }
 
         $rows = $query->get();
+
 
         if ( ! is_array($rows))
         {
@@ -320,11 +321,9 @@ class Subject extends Eloquent
             });
         }
 
-        if ($this->route != 'projects.grids.explore') {
+        if ($this->route !== 'projects.grids.explore') {
             $this->setExpeditionWhere($query);
         }
-
-        return;
     }
 
     protected function setExpeditionWhere(&$query)
@@ -333,16 +332,16 @@ class Subject extends Eloquent
         // projects.grids.expeditions.show: Expedition Show page (show only assigned)
         // projects.grids.expeditions.edit: Expedition edit (show all)
         // projects.grids.expeditions.create: Expedition create (show not assigned)
-        if ($this->route == "projects.grids.expeditions.edit")
+        if ($this->route === 'projects.grids.expeditions.edit')
         {
-            if (empty($this->assignedRuleData) || $this->assignedRuleData == 'all')
+            if ($this->assignedRuleData === '' || $this->assignedRuleData === 'all')
                 return;
         }
-        elseif ($this->route == "projects.grids.expeditions.show")
+        elseif ($this->route === 'projects.grids.expeditions.show')
         {
             $this->setWhereIn($query, 'expedition_ids', [$this->expeditionId]);
         }
-        elseif ($this->route == "projects.grids.expeditions.create")
+        elseif ($this->route === 'projects.grids.expeditions.create')
         {
             $this->setWhere($query, 'expedition_ids', 'size', 0);
         }
@@ -357,7 +356,7 @@ class Subject extends Eloquent
     {
         foreach ($rules as $rule)
         {
-            if ($rule['field'] == 'expedition_ids')
+            if ($rule['field'] === 'expedition_ids')
             {
                 $this->assignedRule($query, $rule);
                 continue;
@@ -391,62 +390,58 @@ class Subject extends Eloquent
      */
     protected function buildWhere(&$query, $rule)
     {
-        $field = preg_match('/occurrence_/i', $rule['field']) ?
-            'occurrence.' . str_replace('occurrence_', '', $rule['field']) : $rule['field'];
-
         switch ($rule['op'])
         {
             case 'bw':
-                $this->setWhere($query, $field, 'regexp', '/^' . $rule['data'] . '/i');
+                $this->setWhere($query, $rule['field'], 'regexp', '/^' . $rule['data'] . '/i');
                 break;
             case 'bn':
-                $this->setWhere($query, $field, 'regexp', '/^(?!' . $rule['data'] . ').+/i');
+                $this->setWhere($query, $rule['field'], 'regexp', '/^(?!' . $rule['data'] . ').+/i');
                 break;
             case 'ew':
-                $this->setWhere($query, $field, 'regexp', '/^(?!' . '/' . $rule['data'] . '$/i');
+                $this->setWhere($query, $rule['field'], 'regexp', '/^(?!' . '/' . $rule['data'] . '$/i');
                 break;
             case 'en':
-                $this->setWhere($query, $field, 'regexp', '/.*(?<!' . $rule['data'] . ')$/i');
+                $this->setWhere($query, $rule['field'], 'regexp', '/.*(?<!' . $rule['data'] . ')$/i');
                 break;
             case 'cn':
-                $this->setWhere($query, $field, 'like', '%' . $rule['data'] . '%');
+                $this->setWhere($query, $rule['field'], 'like', '%' . $rule['data'] . '%');
                 break;
             case 'nc':
-                $this->setWhere($query, $field, 'not regexp', '/' . $rule['data'] . '/i');
+                $this->setWhere($query, $rule['field'], 'not regexp', '/' . $rule['data'] . '/i');
                 break;
             case 'nu':
-                $this->setWhereNull($query, $field);
+                $this->setWhereNull($query, $rule['field']);
                 break;
             case 'nn':
-                $this->setWhereNotNull($query, $field);
+                $this->setWhereNotNull($query, $rule['field']);
                 break;
             case 'in':
-                $this->setWhereIn($query, $field, explode(',', $rule['data']));
+                $this->setWhereIn($query, $rule['field'], explode(',', $rule['data']));
                 break;
             case 'ni':
-                $this->setWhereNotIn($query, $field, explode(',', $rule['data']));
+                $this->setWhereNotIn($query, $rule['field'], explode(',', $rule['data']));
                 break;
             case 'eq':
-                $this->setWhere($query, $field, '=', $rule['data']);
+                $this->setWhere($query, $rule['field'], '=', $rule['data']);
                 break;
             case 'ne':
-                $this->setWhere($query, $field, '!=', $rule['data']);
+                $this->setWhere($query, $rule['field'], '!=', $rule['data']);
                 break;
             case 'lt':
-                $this->setWhere($query, $field, '<', $rule['data']);
+                $this->setWhere($query, $rule['field'], '<', $rule['data']);
                 break;
             case 'le':
-                $this->setWhere($query, $field, '<=', $rule['data']);
+                $this->setWhere($query, $rule['field'], '<=', $rule['data']);
                 break;
             case 'gt':
-                $this->setWhere($query, $field, '>', $rule['data']);
+                $this->setWhere($query, $rule['field'], '>', $rule['data']);
                 break;
             case 'ge':
-                $this->setWhere($query, $field, '>=', $rule['data']);
+                $this->setWhere($query, $rule['field'], '>=', $rule['data']);
                 break;
         }
 
-        return;
     }
 
     /**
@@ -460,14 +455,12 @@ class Subject extends Eloquent
     {
         $this->assignedRuleData = $rule['data'];
 
-        if ($rule['data'] == 'all')
+        if ($rule['data'] === 'all')
         {
             return;
         }
 
         $this->setWhereForAssigned($query, $rule);
-
-        return;
     }
 
     /**
@@ -477,7 +470,7 @@ class Subject extends Eloquent
      */
     protected function setWhereForAssigned(&$query, $rule)
     {
-        if ($rule['data'] == "true")
+        if ($rule['data'] === 'true')
         {
             $this->setWhereRaw($query, $rule['field'], ['$not' => ['$size' => 0]]);
         }
@@ -495,13 +488,13 @@ class Subject extends Eloquent
     public function setOrderBy($orderBy, $sord)
     {
         $orderByRaw = [];
-        if ( ! is_null($orderBy))
+        if ($orderBy !== null)
         {
             $orderBys = explode(',', $orderBy);
             foreach ($orderBys as $order)
             {
                 $order = trim($order);
-                list($field, $sort) = array_pad(explode(' ', $order, 2), 2, $sord);
+                list($field, $sort) = array_pad(explode(' ', $order, 2), 2, $sord);                
                 $orderByRaw [trim($field)] = trim($sort);
             }
         }
@@ -518,7 +511,7 @@ class Subject extends Eloquent
     {
         foreach ($rows as &$row)
         {
-            $row['expedition_ids'] = ! empty($row['expedition_ids']) ? "Yes" : "No";
+            $row['expedition_ids'] = ! empty($row['expedition_ids']) ? 'Yes' : 'No';
         }
     }
 
@@ -529,13 +522,11 @@ class Subject extends Eloquent
      */
     protected function setGroupOp($filters)
     {
+        $this->groupAnd = true;
+
         if (isset($filters['groupOp']))
         {
-            $this->groupAnd = ($filters['groupOp'] == 'AND') ? true : false;
-        }
-        else
-        {
-            $this->groupAnd = true;
+            $this->groupAnd = ($filters['groupOp'] === 'AND');
         }
     }
 
