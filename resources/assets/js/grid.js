@@ -58,7 +58,6 @@ function jqBuildGrid() {
             rowList: [10, 20, 50, 100, 500, 1000],
             multiSort: true,
             sortable: true,
-            sortname: 'id',
             sortorder: 'asc',
             mulitpleSearch: true,
             multiselect: true,
