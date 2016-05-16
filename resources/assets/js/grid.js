@@ -73,18 +73,6 @@ function jqBuildGrid() {
             },
             onSelectRow: function (id, isSelected) {
                 if (switchCbColumn()) return;
-                /*
-                 var elem = document.activeElement;
-                 if (elem.id) {   // the checkbox has an id, so check for it
-                 if (!isSelected){
-                 // unselect the select-all if any row is deselected
-                 $('#cb_' + Grid.id).attr('checked',false);
-                 }
-                 } else {
-                 // ensure that the row is not checked.
-                 $('#' + Grid.id).setSelection(id, false);
-                 }
-                 */
 
                 updateIdsOfSelectedRows(id, isSelected);
             },
