@@ -66,7 +66,7 @@
                 <div class="form-group required {{ ($errors->has('contact_title')) ? 'has-error' : '' }}">
                     {!! Form::label('contact_title', trans('forms.contact_title'), array('class' => 'col-sm-2 control-label')) !!}
                     <div class="col-sm-10">
-                        {!! Form::text('contact_title', $project->contact_email, array('class' => 'form-control', 'placeholder' => trans('forms.contact_title'))) !!}
+                        {!! Form::text('contact_title', $project->contact_title, array('class' => 'form-control', 'placeholder' => trans('forms.contact_title'))) !!}
                     </div>
                     {{ ($errors->has('contact_title') ? $errors->first('contact_title') : '') }}
                 </div>
