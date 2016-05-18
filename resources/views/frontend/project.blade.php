@@ -63,8 +63,14 @@
             <dd class="firstdl">{{ $project->organization }}&nbsp;</dd>
             <dt>Contact</dt>
             <dd><a href="mailto:{{ $project->contact_email }}">{{ $project->contact }}</a>&nbsp;</dd>
+            <dt>Contact Title</dt>
+            <dd>{{ $project->contact_title }}&nbsp;</dd>
             <dt>Organization Website</dt>
             <dd><a href="{{ $project->organization_website }}">{{ $project->organization_website }}</a>&nbsp;</dd>
+            <dt>Project Partners</dt>
+            <dd>{{ $project->project_partners }}&nbsp;</dd>
+            <dt>Funding Source</dt>
+            <dd>{{ $project->funding_source }}&nbsp;</dd>
             <dt>Incentives</dt>
             <dd>{{ $project->incentives }}&nbsp;</dd>
             <dt>Geographic Scope</dt>
@@ -75,6 +81,14 @@
             <dd>{{ $project->temporal_scope }}&nbsp;</dd>
             <dt>Language Skills Required</dt>
             <dd>{{ $project->language_skills }}&nbsp;</dd>
+            <dt>Activities</dt>
+            <dd>{{ $project->activities }}&nbsp;</dd>
+            <dt>Keywords</dt>
+            <dd>{{ $project->keywords }}&nbsp;</dd>
+            <dt>Facebook</dt>
+            <dd><a href="{{ $project->facebook }}">{{ $project->facebook }}</a>&nbsp;</dd>
+            <dt>Twitter</dt>
+            <dd><a href="http://twitter.com/{{ $project->twitter }}" target="_blank">{{ $project->twitter }}</a>&nbsp;</dd>
         </dl>
     </div>
     <!-- ./ content -->
