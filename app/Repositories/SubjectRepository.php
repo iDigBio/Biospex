@@ -114,13 +114,13 @@ class SubjectRepository extends Repository implements Subject
     }
 
     /**
-     * Find subjects using expedition id.
+     * Get subject count using expedition id.
      * 
      * @param $expeditionId
      * @return mixed
      */
-    public function findByExpeditionId($expeditionId)
+    public function getCountByExpeditionId($expeditionId)
     {
-        return $this->model->findByExpeditionId($expeditionId);
+        return $this->model->getCountByExpeditionId($expeditionId);
     }
 }
