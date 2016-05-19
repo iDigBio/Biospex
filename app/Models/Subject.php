@@ -130,14 +130,14 @@ class Subject extends Eloquent
     }
 
     /**
-     * Find by expedition id.
+     * Get count by expedition id.
      * 
      * @param $expeditionId
      * @return mixed
      */
-    public function findByExpeditionId($expeditionId)
+    public function getCountByExpeditionId($expeditionId)
     {
-        return $this->where('expedition_ids', '=', $expeditionId)->get();
+        return $this->where('expedition_ids', '=', $expeditionId)->count();
     }
 
     /**
