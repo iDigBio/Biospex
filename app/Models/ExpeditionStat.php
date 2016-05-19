@@ -49,7 +49,7 @@ class ExpeditionStat extends Model
      */
     public function findByExpeditionId($expeditionId)
     {
-        return $this->where('expedition_id', '=', $expeditionId)->get();
+        return $this->where('expedition_id', '=', $expeditionId)->first();
     }
 
 }
