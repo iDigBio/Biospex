@@ -34,8 +34,8 @@ function session_flash_push($key, $value)
 }
 
 /**
- * Round up to an integer, then to the nearest multiple of 5
- * Used for scaling project page percent complete
+ * Round up to an integer, then to the nearest multiple of 5.
+ * Used for scaling project page percent complete.
  *
  * @param $n
  * @param int $x
@@ -71,7 +71,7 @@ function convert_time_zone($data, $format = null, $tz = null)
 }
 
 /**
- * Give file size in humna readable form.
+ * Give file size in human readable form.
  *
  * @param $bytes
  * @param int $decimals
@@ -86,7 +86,7 @@ function human_file_size($bytes, $decimals = 2)
 }
 
 /**
- * Return timezone array for select box
+ * Return timezone array for select box.
  *
  * @return array
  */
@@ -113,7 +113,14 @@ function timezone_select()
     return $timezone_list;
 }
 
-function delete_directory_contents($dir, $ignore = ['.gitignore'])
+/**
+ * Delete directory contents.
+ * 
+ * @param $dir
+ * @param array $ignore
+ * @return bool
+ */
+function delete_directory_contents($dir, array $ignore = ['.gitignore'])
 {
     if (false === file_exists($dir)) {
         return false;
@@ -162,6 +169,7 @@ function array_to_object(array $array)
 
 /**
  * Set count for total transcriptions. 4 per subject.
+ * 
  * @param $count
  * @return mixed
  */
@@ -171,7 +179,8 @@ function transcriptions_total($count)
 }
 
 /**
- * Return completed transcriptions count
+ * Return completed transcriptions count.
+ * 
  * @param $expeditionId
  * @return mixed
  */
@@ -182,12 +191,13 @@ function transcriptions_completed($expeditionId)
 }
 
 /**
- * Return percentage of completed transcriptions
+ * Return percentage of completed transcriptions.
+ * 
  * @param $total
  * @param $completed
  * @return float|int
  */
 function transcriptions_percent_completed($total, $completed)
 {
-    return ($total == 0 || $completed == 0) ? 0 : ($completed / $total) * 100;
+    return ($total === 0 || $completed === 0) ? 0 : ($completed / $total) * 100;
 }
