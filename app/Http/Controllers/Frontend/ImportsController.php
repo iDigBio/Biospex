@@ -7,8 +7,9 @@ use App\Repositories\Contracts\Project;
 
 class ImportsController extends Controller
 {
+
     /**
-     * @var ProjectInterface|Project
+     * @var Project
      */
     protected $project;
 
@@ -69,7 +70,7 @@ class ImportsController extends Controller
 
         $validate = $obj->import($id);
 
-        if (! empty($validate)) {
+        if ( ! empty($validate)) {
             return redirect()->route('projects.get.import', [$id])->withErrors($validate);
         }
 
