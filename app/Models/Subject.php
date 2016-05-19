@@ -130,6 +130,17 @@ class Subject extends Eloquent
     }
 
     /**
+     * Find by expedition id.
+     * 
+     * @param $expeditionId
+     * @return mixed
+     */
+    public function findByExpeditionId($expeditionId)
+    {
+        return $this->where('expedition_ids', '=', $expeditionId)->get();
+    }
+
+    /**
      * Return count of project subjects not assigned to expeditions
      *
      * @param $projectId
