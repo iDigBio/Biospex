@@ -27,7 +27,7 @@ class GridsController extends Controller
     protected $fields;
 
     /**
-     * @var HeaderInterface
+     * @var Header
      */
     protected $header;
 
