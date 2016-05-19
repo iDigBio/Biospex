@@ -21,7 +21,8 @@ class ExpeditionStat extends Model
         'subject_count',
         'transcriptions_total',
         'transcriptions_completed',
-        'percentage_completed'
+        'percentage_completed',
+        'start_date'
     ];
 
     /**
