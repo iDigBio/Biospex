@@ -1,14 +1,18 @@
 <?php  namespace App\Services\Queue;
 
+use App\Jobs\UpdateExpeditionStat;
 use App\Repositories\Contracts\Import;
 use App\Services\Report\TranscriptionImportReport;
 use App\Services\Process\NfnTranscription;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\Config;
 use Exception;
 
 class NfnTranscriptionQueue extends QueueAbstract
 {
+    use DispatchesJobs;
+    
     /**
      * @var Filesystem
      */
@@ -83,6 +87,10 @@ class NfnTranscriptionQueue extends QueueAbstract
 
         try {
             $csv = $this->transcription->process($file);
+            $expeditionId = $this->transcription->getExpeditionId();
+            
+            $this->dispatch((new UpdateExpeditionStat($expeditionId))->onQueue(Config::get('config.beanstalkd.import')));
+            
             $this->report->complete($import->user->email, $import->project->title, $csv);
             $this->filesystem->delete($file);
             $this->import->destroy($import->id);
@@ -98,7 +106,6 @@ class NfnTranscriptionQueue extends QueueAbstract
         }
 
         $this->delete();
-
-        return;
+        
     }
 }
