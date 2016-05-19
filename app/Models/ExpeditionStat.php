@@ -41,4 +41,15 @@ class ExpeditionStat extends Model
         return $this->belongsTo(Expedition::class);
     }
 
+    /**
+     * Find by expedition id.
+     * 
+     * @param $expeditionId
+     * @return mixed
+     */
+    public function findByExpeditionId($expeditionId)
+    {
+        return $this->where('expedition_id', '=', $expeditionId)->get();
+    }
+
 }
