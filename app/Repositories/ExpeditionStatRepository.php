@@ -1,7 +1,7 @@
 <?php namespace App\Repositories;
 
 use App\Repositories\Contracts\ExpeditionStat;
-use App\Models\Expedition as Model;
+use App\Models\ExpeditionStat as Model;
 
 class ExpeditionStatRepository extends Repository implements ExpeditionStat
 {
@@ -12,6 +12,17 @@ class ExpeditionStatRepository extends Repository implements ExpeditionStat
     public function __construct(Model $model)
     {
         $this->model = $model;
+    }
+
+    /**
+     * Find by expedition id.
+     * 
+     * @param $expeditionId
+     * @return mixed
+     */
+    public function findByExpeditionId($expeditionId)
+    {
+        return $this->model->findByExpeditionId($expeditionId);
     }
 }
 
