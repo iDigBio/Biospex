@@ -28,7 +28,7 @@ class NfnTranscription
     /**
      * @var
      */
-    protected $csv;
+    protected $csv = [];
 
     /**
      * @var Config
@@ -39,6 +39,11 @@ class NfnTranscription
      * @var Validator
      */
     protected $factory;
+
+    /**
+     * @var
+     */
+    protected $expeditionId;
 
 
     /**
@@ -73,7 +78,7 @@ class NfnTranscription
      */
     public function process($file)
     {
-        $this->csv->readerCreateFromPath($file, ",", '"');
+        $this->csv->readerCreateFromPath($file, ',', '"');
 
         $header = $this->prepareHeader($this->csv->getHeaderRow());
 
@@ -108,64 +113,39 @@ class NfnTranscription
      */
     public function processRow($header, $row)
     {
-        if ( ! $this->testHeaderRowCount($header, $row))
+        if (count($header) !== count($row))
         {
+            $this->fixHeaderAndRowCount($header, $row);
+            $combined = array_combine($header, $row);
+            $this->csv[] = $combined;
+
             return;
         }
 
-        array_walk($row, function (&$value)
+        array_walk($row, function ($value)
         {
-            $value = Encoding::toUTF8($value);
+            return Encoding::toUTF8($value);
         });
 
-        $combined = $this->combineHeaderAndRow($header, $row);
+        $combined = array_combine($header, $row);
 
         if ($this->validateTranscription($combined)) {
             return;
         }
 
-        if (! $subject = $this->getSubject($combined)) {
+        if ( ! $subject = $this->getSubject($combined)) {
             $this->csv[] = $combined;
 
             return;
         }
+        
+        $this->setExpeditionId($combined['#expeditionId']);
 
         $addArray = ['project_id' => $subject->project_id, 'expedition_ids' => $subject->expedition_ids];
-        $combined = $addArray + $combined;
+        $combined = array_merge($addArray, $combined);
 
         $this->transcription->create($combined);
 
-        return;
-    }
-
-    /**
-     * Test header and row count are equal for combine
-     * @param $header
-     * @param $row
-     * @return bool
-     */
-    public function testHeaderRowCount(&$header, &$row)
-    {
-        if (count($header) != count($row))
-        {
-            $this->fixHeaderAndRowCount($header, $row);
-            $combined = $this->combineHeaderAndRow($header, $row);
-            $this->csv[] = $combined;
-
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * @param $header
-     * @param $row
-     * @return array
-     */
-    public function combineHeaderAndRow($header, $row)
-    {
-        return array_combine($header, $row);
     }
 
     /**
@@ -194,7 +174,7 @@ class NfnTranscription
      */
     public function checkCollection($combined)
     {
-        return strtolower(trim($combined['collection'])) == $this->collection;
+        return strtolower(trim($combined['collection'])) === $this->collection;
     }
 
     /**
@@ -212,9 +192,8 @@ class NfnTranscription
         $validator->getPresenceVerifier()->setConnection('mongodb');
 
         // returns true if failed.
-        $fail = $validator->fails();
+        return $validator->fails();
 
-        return $fail;
     }
 
     /**
@@ -250,5 +229,25 @@ class NfnTranscription
         {
             $array[] = 'dummy_value_' . $i;
         }
+    }
+
+    /**
+     * Set expedition id.
+     * 
+     * @param $id
+     */
+    public function setExpeditionId($id)
+    {
+        $this->expeditionId = (int) $id;
+    }
+
+    /**
+     * Get expedition id.
+     * 
+     * @return mixed
+     */
+    public function getExpeditionId()
+    {
+        return $this->expeditionId;
     }
 }
