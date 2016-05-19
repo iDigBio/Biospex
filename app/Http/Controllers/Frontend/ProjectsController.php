@@ -144,8 +144,9 @@ class ProjectsController extends Controller
 
     /**
      * Create duplicate project
-     *
-     * @return \Illuminate\View\View
+     * 
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function duplicate($id)
     {
@@ -260,9 +261,9 @@ class ProjectsController extends Controller
 
     /**
      * Display project explore page
-     *
-     * @param $projectId
-     * @return \Illuminate\View\View
+     * 
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function explore($id)
     {

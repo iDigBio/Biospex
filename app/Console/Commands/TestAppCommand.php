@@ -17,7 +17,7 @@ class TestAppCommand extends Command
      * The console command description.
      */
     protected $description = 'Used to test code';
-    
+
     /**
      * TestAppCommand constructor.
      */

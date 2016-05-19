@@ -23,7 +23,6 @@ class TranscriptionImportReport extends Report
 
         $this->fireEvent($email, $subject, $view, $data, $attachments);
 
-        return;
     }
 
     /**

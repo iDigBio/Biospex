@@ -36,7 +36,7 @@ class UpdateExpeditionStat extends Job implements ShouldQueue
      */
     public function handle(Subject $subject, ExpeditionStat $expeditionStat)
     {
-        $stat = $expeditionStat->find($this->expeditionId);
+        $stat = $expeditionStat->findByExpeditionId($this->expeditionId);
         $count = $subject->getCountByExpeditionId($this->expeditionId);
 
         $stat->subject_count = $count;
