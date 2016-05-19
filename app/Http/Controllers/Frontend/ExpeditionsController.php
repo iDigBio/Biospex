@@ -317,7 +317,7 @@ class ExpeditionsController extends Controller
 
         $workflow = $this->workflowManager->findByExpeditionId($expeditionId);
 
-        if (is_null($workflow)) {
+        if ($workflow === null) {
             session_flash_push('error', trans('expeditions.process_no_exists'));
         } else {
             $workflow->stopped = 1;
