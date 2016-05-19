@@ -21,4 +21,6 @@ interface Subject extends Repository
     public function findByProjectIdOcr($project_id);
 
     public function findByProjectOccurrenceId($project_id, $occurrence_id);
+
+    public function findByExpeditionId($expeditionId);
 }

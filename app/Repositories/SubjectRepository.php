@@ -112,4 +112,15 @@ class SubjectRepository extends Repository implements Subject
     {
         return $this->model->findByProjectOccurrenceId($project_id, $occurrence_id);
     }
+
+    /**
+     * Find subjects using expedition id.
+     * 
+     * @param $expeditionId
+     * @return mixed
+     */
+    public function findByExpeditionId($expeditionId)
+    {
+        return $this->model->findByExpeditionId($expeditionId);
+    }
 }
