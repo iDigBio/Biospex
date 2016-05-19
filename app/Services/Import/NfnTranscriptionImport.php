@@ -27,6 +27,5 @@ class NfnTranscriptionImport extends ImportServiceAbstract
 
         $this->queue->push('App\Services\Queue\NfnTranscriptionQueue', ['id' => $import->id], $this->tube);
 
-        return;
     }
 }
