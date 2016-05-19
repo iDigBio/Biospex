@@ -90,7 +90,7 @@
             <div class="form-group {{ ($errors->has('project_partners')) ? 'has-error' : '' }}">
                 {!! Form::label('project_partners', trans('forms.project_partners'), ['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-10">
-                    {!! Form::text('project_partners', null, ['class' => 'form-control', 'placeholder' => trans('forms.project_partners')]) !!}
+                    {!! Form::textarea('project_partners', null, ['class' => 'form-control', 'placeholder' => trans('forms.project_partners')]) !!}
                 </div>
                 {{ ($errors->has('project_partners') ? $errors->first('project_partners') : '') }}
             </div>
@@ -98,7 +98,7 @@
             <div class="form-group {{ ($errors->has('funding_source')) ? 'has-error' : '' }}">
                 {!! Form::label('funding_source', trans('forms.funding_source'), ['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-10">
-                    {!! Form::text('funding_source', null, ['class' => 'form-control', 'placeholder' => trans('forms.funding_source')]) !!}
+                    {!! Form::textarea('funding_source', null, ['class' => 'form-control', 'placeholder' => trans('forms.funding_source')]) !!}
                 </div>
                 {{ ($errors->has('funding_source') ? $errors->first('funding_source') : '') }}
             </div>
