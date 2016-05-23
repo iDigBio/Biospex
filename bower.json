@@ -12,8 +12,7 @@
     "jquery-validation": "1.15.0",
     "font-awesome": "4.5.0",
     "tablesorter": "jquery.tablesorter#^2.25.6",
-    "jquery-ui-multiselect-widget": "https://github.com/ehynds/jquery-ui-multiselect-widget.git#1.13",
-    "bootstrap-offcanvas": "^2.2.0"
+    "jquery-ui-multiselect-widget": "https://github.com/ehynds/jquery-ui-multiselect-widget.git#1.13"
   },
   "homepage": "https://github.com/iDigBio/Biospex",
   "authors": [
