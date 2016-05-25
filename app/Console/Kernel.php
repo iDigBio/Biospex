@@ -39,9 +39,6 @@ class Kernel extends ConsoleKernel
         OcrDeleteFile::class,
         AustinProcessCommand::class,
         UpdateQueries::class,
-        MoveMaxSubjects::class,
-        MoveTranscriptions::class,
-        UpdateExpeditionStats::class
     ];
 
     /**

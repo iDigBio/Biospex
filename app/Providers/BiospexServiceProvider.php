@@ -60,6 +60,8 @@ class BiospexServiceProvider extends ServiceProvider
 {
     public function register()
     {
+        $this->app->register(ApiRouteServiceProvider::class);
+        
         $this->registerRepositories();
     }
 

@@ -18,7 +18,8 @@ class Csv
     public $writer;
 
     /**
-     * Create reader using file path
+     * Create reader using file path.
+     * 
      * @param $file
      * @param string $delimiter
      * @param string $enclosure
@@ -33,7 +34,8 @@ class Csv
     }
 
     /**
-     * Create writer from file path
+     * Create writer from file path.
+     * 
      * @param $filePath
      */
     public function writerCreateFromPath($filePath)
@@ -42,7 +44,8 @@ class Csv
     }
 
     /**
-     * Fetch rows
+     * Fetch rows.
+     * 
      * @return mixed
      */
     public function fetch()
@@ -51,7 +54,18 @@ class Csv
     }
 
     /**
-     * Return header row
+     * Fetch all rows.
+     * 
+     * @return mixed
+     */
+    public function fetchAll()
+    {
+        return $this->reader->fetchAll();
+    }
+
+    /**
+     * Return header row.
+     * 
      * @return mixed
      */
     public function getHeaderRow()
@@ -60,7 +74,8 @@ class Csv
     }
 
     /**
-     * Insert one row
+     * Insert one row.
+     * 
      * @param $row
      */
     public function insertOne($row)
@@ -69,7 +84,8 @@ class Csv
     }
 
     /**
-     * Insert all rows
+     * Insert all rows.
+     * 
      * @param $rows
      */
     public function insertAll($rows)

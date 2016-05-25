@@ -1,13 +1,17 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: Robert
+ * Date: 5/23/2016
+ * Time: 3:38 PM
+ */
 
-namespace App\Http\Controllers\Api;
-
-use Illuminate\Http\Request;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-class ProjectsController extends Controller
+class TranscriptionsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -42,12 +46,10 @@ class ProjectsController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * 
+     * @return string
      */
-    public function update(Request $request, $id)
+    public function update()
     {
         return "update";
     }

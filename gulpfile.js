@@ -16,7 +16,7 @@ elixir(function (mix) {
             'vendor/jqGrid/css/ui.jqgrid-bootstrap.css',
             'vendor/jquery-ui-multiselect-widget/jquery.multiselect.css',
             'vendor/tablesorter/dist/css/theme.bootstrap.min.css',
-            'css/biospex.css',
+            'css/biospex.css'
         ], 'public/css/biospex.css', assetsDir)
         .scripts([
             'vendor/jquery/dist/jquery.min.js',
@@ -28,18 +28,23 @@ elixir(function (mix) {
             'vendor/jquery-ui-multiselect-widget/src/jquery.multiselect.js',
             'vendor/tablesorter/dist/js/jquery.tablesorter.min.js',
             'vendor/tablesorter/dist/js/jquery.tablesorter.widgets.js',
+            'vendor/amcharts3/amcharts/amcharts.js',
+            'vendor/amcharts3/amcharts/serial.js',
+            'vendor/amcharts3/amcharts/plugins/dataloader/dataloader.min.js',
+            'vendor/amcharts3/amcharts/plugins/responsive/responsive.min.js',
+            'js/amchart.js',
             'js/biospex.js',
-            'js/grid.js',
+            'js/grid.js'
         ], 'public/js/biospex.js', assetsDir);
 
     mix.scripts([
         'vendor/bootstrap/dist/js/bootstrap.min.js',
-        'vendor/bootstrap-select/dist/js/bootstrap-select.min.js',
+        'vendor/bootstrap-select/dist/js/bootstrap-select.min.js'
     ], 'public/js/bootstrap.js', assetsDir);
 
     mix.styles([
             "vendor/AdminLTE/dist/css/AdminLTE.min.css",
-            "vendor/AdminLTE/dist/css/skins/skin-blue.min.css",
+            "vendor/AdminLTE/dist/css/skins/skin-blue.min.css"
         ], 'public/css/admin.css', assetsDir)
         .scripts([
             'vendor/AdminLTE/dist/js/app.min.js'
@@ -48,7 +53,8 @@ elixir(function (mix) {
     mix.copy(assetsDir + 'vendor/font-awesome/fonts', 'public/fonts')
         .copy(assetsDir + 'vendor/jquery-ui/themes/smoothness/images', 'public/css/images')
         .copy(assetsDir + 'vendor/AdminLTE/dist/js/pages', 'public/js/pages')
-        .copy(assetsDir + 'vendor/AdminLTE/dist/img', 'public/img');
+        .copy(assetsDir + 'vendor/AdminLTE/dist/img', 'public/img')
+        .copy(assetsDir + 'vendor/amcharts3/amcharts/images', 'public/amcharts/images');
 });
 
 

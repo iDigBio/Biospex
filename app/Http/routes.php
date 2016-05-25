@@ -9,7 +9,7 @@ Route::group(
         'domain'     => env('APP_DOMAIN'),
         'middleware' => ['web', 'auth'],
         'namespace'  => 'Backend',
-        'prefix' => 'admin'
+        'prefix'     => 'admin'
     ],
     function ()
     {
@@ -21,18 +21,18 @@ Route::group(
         ]);
 
         Route::get('ocr', [
-           'uses' => 'DashboardController@ocr',
-            'as' => 'ocr.get.index'
+            'uses' => 'DashboardController@ocr',
+            'as'   => 'ocr.get.index'
         ]);
 
         Route::post('ocr', [
             'uses' => 'DashboardController@ocr',
-            'as' => 'ocr.post.index'
+            'as'   => 'ocr.post.index'
         ]);
 
         Route::get('phpinfo', [
             'uses' => 'DashboardController@phpinfo',
-            'as' => 'phpinfo.get.index'
+            'as'   => 'phpinfo.get.index'
         ]);
     });
 
@@ -51,13 +51,13 @@ Route::group(
             'uses' => 'ServerInfoController@test',
             'as'   => 'server.get.test'
         ]);
-        
+
         // Ajax poll event
         Route::get('poll', [
             'uses' => 'ServerInfoController@pollOcr',
             'as'   => 'server.get.pollOcr'
         ]);
-        
+
         // Contact form
         Route::get('contact', [
             'uses' => 'HomeController@getContact',
@@ -412,55 +412,5 @@ Route::group(
                 ]);
             }
         );
-    }
-);
-
-
-// Api routes
-Route::group(
-    [
-        'domain'     => env('API_DOMAIN'),
-        'middleware' => ['api', 'version'],
-        'namespace'  => 'Api'
-    ],
-    function ()
-    {
-        // Api home page
-        Route::get('/', 'ApiController@index');
-
-        // Users
-        Route::post('users', 'UsersController@create');
-        Route::get('users/{id}', 'UsersController@show');
-        Route::put('users/{id}', 'UsersController@update');
-        Route::delete('users/{id}', 'UsersController@delete');
-        Route::get('users', 'UsersController@index');
-
-        // Groups
-        Route::post('groups', 'GroupsController@create');
-        Route::get('groups/{id}', 'GroupsController@show');
-        Route::put('groups/{id}', 'GroupsController@update');
-        Route::delete('groups/{id}', 'GroupsController@delete');
-        Route::get('groups', 'GroupsController@index');
-
-        // Projects
-        Route::post('projects', 'ProjectsController@create');
-        Route::get('projects/{id}', 'ProjectsController@show');
-        Route::put('projects/{id}', 'ProjectsController@update');
-        Route::delete('projects/{id}', 'ProjectsController@delete');
-        Route::get('projects', 'ProjectsController@index');
-
-        // Expeditions
-        Route::post('expeditions', 'ExpeditionsController@create');
-        Route::get('expeditions/{id}', 'ExpeditionsController@show');
-        Route::put('expeditions/{id}', 'ExpeditionsController@update');
-        Route::delete('expeditions/{id}', 'ExpeditionsController@delete');
-        Route::get('expeditions', 'ExpeditionsController@index');
-
-        // Subjects
-        Route::post('subjects', 'SubjectsController@create');
-        Route::get('subjects/{id}', 'SubjectsController@show');
-        Route::put('subjects/{id}', 'SubjectsController@update');
-        Route::delete('subjects/{id}', 'SubjectsController@delete');
-        Route::get('subjects', 'SubjectsController@index');
     }
 );
