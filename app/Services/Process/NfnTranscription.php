@@ -141,7 +141,7 @@ class NfnTranscription
         
         $this->setExpeditionId($combined['#expeditionId']);
 
-        $addArray = ['project_id' => $subject->project_id, 'expedition_ids' => $subject->expedition_ids];
+        $addArray = ['project_id' => $subject->project_id, 'expedition_id' => $this->getExpeditionId()];
         $combined = array_merge($addArray, $combined);
 
         $this->transcription->create($combined);
