@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Robert
- * Date: 5/23/2016
- * Time: 3:38 PM
- */
 
 namespace App\Http\Controllers\Api\V1;
 
@@ -46,7 +40,7 @@ class TranscriptionsController extends Controller
 
     /**
      * Update the specified resource in storage.
-     * 
+     *
      * @return string
      */
     public function update()
