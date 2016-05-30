@@ -24,11 +24,7 @@
 <script>
     var socket = io('http://{{ config('config.app_nodejs_domain') }}:8080');
     <?php
-    $groups = Cache::remember(Request::user()->id, 60, function() {
-        return Auth::getUser()->groups()->get();
-    });
-
-    $uuids = $groups->map(function ($item, $key) {
+    $uuids = session()->get('groups')->map(function ($item, $key) {
         return $item['uuid'];
     });
     ?>
