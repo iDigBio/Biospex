@@ -1,12 +1,18 @@
 <?php namespace App\Repositories;
 
 use App\Repositories\Contracts\Permission;
-use App\Models\Permission as Model;
+use App\Repositories\Contracts\CacheableInterface;
+use App\Repositories\Traits\CacheableRepository;
 
-class PermissionRepository extends Repository implements Permission
+class PermissionRepository extends Repository implements Permission, CacheableInterface
 {
-    public function __construct(Model $model)
+    use CacheableRepository;
+
+    /**
+     * @return mixed
+     */
+    public function model()
     {
-        $this->model = $model;
+        return \App\Models\Permission::class;
     }
 }

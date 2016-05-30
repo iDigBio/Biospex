@@ -1,18 +1,22 @@
-<?php namespace App\Repositories;
+<?php 
+
+namespace App\Repositories;
 
 use App\Repositories\Contracts\OcrCsv;
-use App\Models\OcrCsv as Model;
+use App\Repositories\Contracts\CacheableInterface;
+use App\Repositories\Traits\CacheableRepository;
 
-class OcrCsvRepository extends Repository implements OcrCsv
+class OcrCsvRepository extends Repository implements OcrCsv, CacheableInterface
 {
 
+    use CacheableRepository;
+
     /**
-     * OcrCsvRepository constructor.
-     * @param Model $model
+     * @return mixed
      */
-    public function __construct(Model $model)
+    public function model()
     {
-        $this->model = $model;
+        return \App\Models\OcrCsv::class;
     }
 
     public function createOrFirst($attributes)

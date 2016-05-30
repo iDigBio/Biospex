@@ -1,16 +1,19 @@
 <?php namespace App\Repositories;
 
 use App\Repositories\Contracts\Project;
-use App\Models\Project as Model;
+use App\Repositories\Contracts\CacheableInterface;
+use App\Repositories\Traits\CacheableRepository;
 
-class ProjectRepository extends Repository implements Project
+class ProjectRepository extends Repository implements Project, CacheableInterface
 {
+    use CacheableRepository;
+
     /**
-     * @param Model $model
+     * @return mixed
      */
-    public function __construct(Model $model)
+    public function model()
     {
-        $this->model = $model;
+        return \App\Models\Project::class;
     }
 
     /**
@@ -35,22 +38,4 @@ class ProjectRepository extends Repository implements Project
         return $this->model->findByUuid($uuid);
     }
 
-    /**
-     * Override create for relationships and building the advertise column.
-     * @param array $data
-     * @return mixed
-     */
-    public function create($data = [])
-    {
-        $project = $this->model->create($data);
-        $project->advertise = $data;
-        $project->save();
-
-        return $project;
-    }
-
-    public function getSubjectsAssignedCount($project)
-    {
-        return $this->model->getSubjectsAssignedCount($project);
-    }
 }

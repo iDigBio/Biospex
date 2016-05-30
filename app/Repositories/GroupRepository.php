@@ -3,18 +3,19 @@
 namespace App\Repositories;
 
 use App\Repositories\Contracts\Group;
-use App\Models\Group as Model;
+use App\Repositories\Contracts\CacheableInterface;
+use App\Repositories\Traits\CacheableRepository;
 
-class GroupRepository extends Repository implements Group
+class GroupRepository extends Repository implements Group, CacheableInterface
 {
+    use CacheableRepository;
+
     /**
-     * Construct a new Group Object
-     *
-     * @param Model $model
+     * @return mixed
      */
-    public function __construct(Model $model)
+    public function model()
     {
-        $this->model = $model;
+        return \App\Models\Group::class;
     }
 
     /**

@@ -1,16 +1,21 @@
-<?php namespace App\Repositories;
+<?php 
+
+namespace App\Repositories;
 
 use App\Repositories\Contracts\Import;
-use App\Models\Import as Model;
+use App\Repositories\Contracts\CacheableInterface;
+use App\Repositories\Traits\CacheableRepository;
 
-class ImportRepository extends Repository implements Import
+class ImportRepository extends Repository implements Import, CacheableInterface
 {
+    use CacheableRepository;
+
     /**
-     * @param Model $model
+     * @return mixed
      */
-    public function __construct(Model $model)
+    public function model()
     {
-        $this->model = $model;
+        return \App\Models\Import::class;
     }
 
     /**

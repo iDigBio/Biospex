@@ -1,16 +1,21 @@
-<?php namespace App\Repositories;
+<?php 
+
+namespace App\Repositories;
 
 use App\Repositories\Contracts\OcrQueue;
-use App\Models\OcrQueue as Model;
+use App\Repositories\Contracts\CacheableInterface;
+use App\Repositories\Traits\CacheableRepository;
 
-class OcrQueueRepository extends Repository implements OcrQueue
+class OcrQueueRepository extends Repository implements OcrQueue, CacheableInterface
 {
+    use CacheableRepository;
+
     /**
-     * @param Model $model
+     * @return mixed
      */
-    public function __construct(Model $model)
+    public function model()
     {
-        $this->model = $model;
+        return \App\Models\OcrQueue::class;
     }
 
     /**

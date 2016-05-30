@@ -1,17 +1,20 @@
 <?php namespace App\Repositories;
 
+use App\Models\Project;
 use App\Repositories\Contracts\Subject;
-use App\Models\Subject as Model;
+use App\Repositories\Contracts\CacheableInterface;
+use App\Repositories\Traits\CacheableRepository;
 
-class SubjectRepository extends Repository implements Subject
+class SubjectRepository extends Repository implements Subject, CacheableInterface
 {
+    use CacheableRepository;
+
     /**
-     * SubjectRepository constructor.
-     * @param Model $model
+     * @return mixed
      */
-    public function __construct(Model $model)
+    public function model()
     {
-        $this->model = $model;
+        return \App\Models\Subject::class;
     }
 
     public function getUnassignedCount($id)

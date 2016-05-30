@@ -1,19 +1,21 @@
 <?php namespace App\Repositories;
 
-use App\Models\Expedition as Model;
-use App\Models\ExpeditionStat;
 use App\Models\Subject;
+use App\Models\ExpeditionStat;
 use App\Repositories\Contracts\Expedition;
-use Symfony\Component\Console\Helper\Helper;
+use App\Repositories\Contracts\CacheableInterface;
+use App\Repositories\Traits\CacheableRepository;
 
-class ExpeditionRepository extends Repository implements Expedition
+class ExpeditionRepository extends Repository implements Expedition, CacheableInterface
 {
+    use CacheableRepository;
+
     /**
-     * @param Model $model
+     * @return mixed
      */
-    public function __construct(Model $model)
+    public function model()
     {
-        $this->model = $model;
+        return \App\Models\Expedition::class;
     }
 
     /**

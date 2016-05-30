@@ -1,18 +1,22 @@
-<?php  namespace App\Repositories;
+<?php  
+
+namespace App\Repositories;
 
 use App\Repositories\Contracts\Transcription;
-use App\Models\Transcription as Model;
+use App\Repositories\Contracts\CacheableInterface;
+use App\Repositories\Traits\CacheableRepository;
 
-class TranscriptionRepository extends Repository implements Transcription
+class TranscriptionRepository extends Repository implements Transcription, CacheableInterface
 {
 
+    use CacheableRepository;
+
     /**
-     * TranscriptionRepository constructor.
-     * @param Model $model
+     * @return mixed
      */
-    public function __construct(Model $model)
+    public function model()
     {
-        $this->model = $model;
+        return \App\Models\Transcription::class;
     }
 
     /**

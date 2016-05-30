@@ -1,18 +1,20 @@
 <?php namespace App\Repositories;
 
 use App\Repositories\Contracts\Header;
-use App\Models\Header as Model;
+use App\Repositories\Contracts\CacheableInterface;
+use App\Repositories\Traits\CacheableRepository;
 
-class HeaderRepository extends Repository implements Header
+class HeaderRepository extends Repository implements Header, CacheableInterface
 {
 
+    use CacheableRepository;
+
     /**
-     * HeaderRepository constructor.
-     * @param Model $model
+     * @return mixed
      */
-    public function __construct(Model $model)
+    public function model()
     {
-        $this->model = $model;
+        return \App\Models\Header::class;
     }
 
     /**

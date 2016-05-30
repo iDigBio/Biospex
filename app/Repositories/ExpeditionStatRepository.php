@@ -1,17 +1,21 @@
-<?php namespace App\Repositories;
+<?php 
+
+namespace App\Repositories;
 
 use App\Repositories\Contracts\ExpeditionStat;
-use App\Models\ExpeditionStat as Model;
+use App\Repositories\Contracts\CacheableInterface;
+use App\Repositories\Traits\CacheableRepository;
 
-class ExpeditionStatRepository extends Repository implements ExpeditionStat
+class ExpeditionStatRepository extends Repository implements ExpeditionStat, CacheableInterface
 {
+    use CacheableRepository;
+
     /**
-     * ExpeditionStatRepository constructor.
-     * @param Model $model
+     * @return mixed
      */
-    public function __construct(Model $model)
+    public function model()
     {
-        $this->model = $model;
+        return \App\Models\ExpeditionStat::class;
     }
 
     /**

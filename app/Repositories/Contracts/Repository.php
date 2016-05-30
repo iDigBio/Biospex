@@ -2,19 +2,39 @@
 
 interface Repository
 {
-    public function all();
+    public function get(array $columns = ['*']);
+
+    public function first(array $columns = ['*']);
     
-    public function allWith($with);
+    public function all(array $columns = ['*']);
+    
+    public function find($id, array $columns = ['*']);
+    
+    public function lists($value, $index);
 
-    public function find($id);
+    public function create(array $attributes);
 
-    public function create($data);
+    public function update(array $attributes, $id);
 
-    public function update($data);
-
-    public function destroy($id);
-
-    public function findWith($id, $with);
+    public function delete($id);
 
     public function save($record);
+    
+    public function with(array $with = []);
+    
+    public function where(array $where = []);
+
+    public function whereIn($field, array $values);
+
+    public function whereNotIn($field, array $values);
+
+    public function whereHas($relation, array $where = []);
+
+    public function orWhereHas($relation, array $where = []);
+
+    public function whereRaw(array $where = []);
+
+    public function orderBy($column, $sort = 'asc');
+
+    public function limitOffset($limit, $offset = 0);
 }

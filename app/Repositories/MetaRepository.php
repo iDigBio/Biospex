@@ -1,15 +1,20 @@
-<?php namespace App\Repositories;
+<?php 
+
+namespace App\Repositories;
 
 use App\Repositories\Contracts\Meta;
-use App\Models\Meta as Model;
+use App\Repositories\Contracts\CacheableInterface;
+use App\Repositories\Traits\CacheableRepository;
 
-class MetaRepository extends Repository implements Meta
+class MetaRepository extends Repository implements Meta, CacheableInterface
 {
+    use CacheableRepository;
+
     /**
-     * @param Model $model
+     * @return mixed
      */
-    public function __construct(Model $model)
+    public function model()
     {
-        $this->model = $model;
+        return \App\Models\Meta::class;
     }
 }

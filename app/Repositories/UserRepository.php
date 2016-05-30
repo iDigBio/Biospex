@@ -3,18 +3,19 @@
 namespace App\Repositories;
 
 use App\Repositories\Contracts\User;
-use App\Models\User as Model;
+use App\Repositories\Contracts\CacheableInterface;
+use App\Repositories\Traits\CacheableRepository;
 
-class UserRepository extends Repository implements User
+class UserRepository extends Repository implements User, CacheableInterface
 {
+    use CacheableRepository;
+    
     /**
-     * Construct a new User Object
-     *
-     * @param Model $model
+     * @return mixed
      */
-    public function __construct(Model $model)
+    public function model()
     {
-        $this->model = $model;
+        return \App\Models\User::class;
     }
 
     public function findByEmail($email)

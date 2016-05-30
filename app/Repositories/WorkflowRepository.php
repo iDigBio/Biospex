@@ -1,13 +1,21 @@
-<?php  namespace App\Repositories;
+<?php  
+
+namespace App\Repositories;
 
 use App\Repositories\Contracts\Workflow;
-use App\Models\Workflow as Model;
+use App\Repositories\Contracts\CacheableInterface;
+use App\Repositories\Traits\CacheableRepository;
 
-class WorkflowRepository extends Repository implements Workflow
+class WorkflowRepository extends Repository implements Workflow, CacheableInterface
 {
-    public function __construct(Model $model)
+    use CacheableRepository;
+
+    /**
+     * @return mixed
+     */
+    public function model()
     {
-        $this->model = $model;
+        return \App\Models\Workflow::class;
     }
 
     public function selectList($value, $id)

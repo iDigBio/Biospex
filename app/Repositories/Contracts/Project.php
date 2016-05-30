@@ -6,5 +6,4 @@ interface Project extends Repository
 
     public function findByUuid($uuid);
 
-    public function getSubjectsAssignedCount($project);
 }

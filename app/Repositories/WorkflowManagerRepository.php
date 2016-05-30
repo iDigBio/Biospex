@@ -1,16 +1,21 @@
-<?php namespace App\Repositories;
+<?php 
+
+namespace App\Repositories;
 
 use App\Repositories\Contracts\WorkflowManager;
-use App\Models\WorkflowManager as Model;
+use App\Repositories\Contracts\CacheableInterface;
+use App\Repositories\Traits\CacheableRepository;
 
-class WorkflowManagerRepository extends Repository implements WorkflowManager
+class WorkflowManagerRepository extends Repository implements WorkflowManager, CacheableInterface
 {
+    use CacheableRepository;
+
     /**
-     * @param WorkflowManager $model
+     * @return mixed
      */
-    public function __construct(Model $model)
+    public function model()
     {
-        $this->model = $model;
+        return \App\Models\WorkflowManager::class;
     }
 
     /**
