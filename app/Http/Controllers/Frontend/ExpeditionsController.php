@@ -1,4 +1,6 @@
-<?php namespace App\Http\Controllers\Frontend;
+<?php 
+
+namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BuildOcrBatches;
@@ -9,6 +11,7 @@ use App\Repositories\Contracts\Project;
 use App\Repositories\Contracts\Subject;
 use App\Repositories\Contracts\WorkflowManager;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
 use Exception;
@@ -39,6 +42,11 @@ class ExpeditionsController extends Controller
      * @var WorkflowManager
      */
     protected $workflowManager;
+    
+    /**
+     * @var Request
+     */
+    protected $request;
 
 
     /**
@@ -62,14 +70,18 @@ class ExpeditionsController extends Controller
     }
 
     /**
-     * Display all expeditions for user
-     * @param User $userContract
-     * @return mixed
+     * Display all expeditions for user.
+     * 
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * TODO: Fix query so it can be cached in normal fashion.
      */
-    public function index(User $userContract)
+    public function index()
     {
-        $user = $userContract->find(Request::user()->id);
-        $results = $this->expedition->getAllExpeditions(Request::user()->id);
+        $user = Request::user();
+        $results = Cache::remember(md5(Request::url() . $user->id), 60, function () use($user)
+        {
+            return $this->expedition->getAllExpeditions($user->id);
+        });
 
         return view('frontend.expeditions.index', compact('results', 'user'));
     }
@@ -87,7 +99,7 @@ class ExpeditionsController extends Controller
         }
 
         $user = Request::user();
-        $project = $this->project->findWith($id, ['expeditions.actors', 'expeditions.stat']);
+        $project = $this->project->with(['expeditions.actors', 'expeditions.stat'])->find($id);
 
         return view('frontend.expeditions.ajax', compact('project', 'user'));
     }
@@ -101,7 +113,7 @@ class ExpeditionsController extends Controller
     public function create($id)
     {
         $user = Request::user();
-        $project = $this->project->findWith($id, ['group.permissions']);
+        $project = $this->project->with(['group.permissions'])->find($id);
 
         if ( ! $this->checkPermissions($user, [$project, $project->group], 'create'))
         {
@@ -120,13 +132,13 @@ class ExpeditionsController extends Controller
     public function store(ExpeditionFormRequest $request, $projectId)
     {
         $user = Request::user();
-        $project = $this->project->findWith($projectId, ['group.permissions']);
+        $project = $this->project->with(['group.permissions'])->find($projectId);
 
         if ( ! $this->checkPermissions($user, [$project, $project->group], 'create'))
         {
             return redirect()->route('projects.get.index');
         }
-
+        
         $expedition = $this->expedition->create($request->all());
 
         if ($expedition) {
@@ -147,7 +159,7 @@ class ExpeditionsController extends Controller
      */
     public function show($projectId, $expeditionId)
     {
-        $expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads', 'workflowManager']);
+        $expedition = $this->expedition->with(['project.group', 'downloads', 'workflowManager'])->find($expeditionId);
 
         return view('frontend.expeditions.show', compact('expedition'));
     }
@@ -161,7 +173,7 @@ class ExpeditionsController extends Controller
     public function duplicate($projectId, $expeditionId)
     {
         $user = Request::user();
-        $expedition = $this->expedition->findWith($expeditionId, ['project.group.permissions']);
+        $expedition = $this->expedition->with(['project.group.permissions'])->find($expeditionId);
 
         if ( ! $this->checkPermissions($user, [$expedition->project, $expedition->project->group], 'create'))
         {
@@ -179,9 +191,8 @@ class ExpeditionsController extends Controller
      */
     public function edit($projectId, $expeditionId)
     {
-        $this->expedition->cached(false);
         $user = Request::user();
-        $expedition = $this->expedition->findWith($expeditionId, ['project.group.permissions', 'workflowManager', 'subjects']);
+        $expedition = $this->expedition->skipCache()->with(['project.group.permissions', 'workflowManager', 'subjects'])->find($expeditionId);
 
         if ( ! $this->checkPermissions($user, [$expedition->project], 'update'))
         {
@@ -209,14 +220,14 @@ class ExpeditionsController extends Controller
     public function update(ExpeditionFormRequest $request, $projectId, $expeditionId)
     {
         $user = Request::user();
-        $project = $this->project->findWith($projectId, ['group.permissions']);
+        $project = $this->project->with(['group.permissions'])->find($projectId);
 
         if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
             return redirect()->route('projects.get.index');
         }
 
-        $expedition = $this->expedition->update(Request::all());
+        $expedition = $this->expedition->update($request->all(), $expeditionId);
 
         if ($expedition) {
             // Success!
@@ -239,7 +250,7 @@ class ExpeditionsController extends Controller
     public function process($projectId, $expeditionId)
     {
         $user = Request::user();
-        $project = $this->project->findWith($projectId, ['group.permissions']);
+        $project = $this->project->with(['group.permissions'])->find($projectId);
 
         if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
@@ -247,8 +258,7 @@ class ExpeditionsController extends Controller
         }
 
         try {
-            $this->expedition->cached(false);
-            $expedition = $this->expedition->findWith($expeditionId, ['project.workflow.actors', 'workflowManager']);
+            $expedition = $this->expedition->skipCache(['project.workflow.actors', 'workflowManager'])->with()->find($expeditionId);
 
             if ( ! is_null($expedition->workflowManager)) {
                 $expedition->workflowManager->stopped = 0;
@@ -284,7 +294,7 @@ class ExpeditionsController extends Controller
     {
         $user = Request::user();
 
-        $project = $this->project->findWith($projectId, ['group.permissions', 'workflow.actors']);
+        $project = $this->project->with(['group.permissions', 'workflow.actors'])->find($projectId);
 
         if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
@@ -308,14 +318,14 @@ class ExpeditionsController extends Controller
     public function stop($projectId, $expeditionId)
     {
         $user = Request::user();
-        $project = $this->project->findWith($projectId, ['group.permissions']);
+        $project = $this->project->with(['group.permissions'])->find($projectId);
 
         if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
             return redirect()->route('projects.get.index');
         }
 
-        $workflow = $this->workflowManager->findByExpeditionId($expeditionId);
+        $workflow = $this->workflowManager->where(['expedition_id' => $expeditionId])->get();
 
         if ($workflow === null) {
             session_flash_push('error', trans('expeditions.process_no_exists'));
@@ -345,7 +355,7 @@ class ExpeditionsController extends Controller
             return redirect()->route('projects.get.index');
         }
 
-        $workflow = $this->workflowManager->findByExpeditionId($expeditionId);
+        $workflow = $this->workflowManager->where(['expedition_id' => $expeditionId])->first();
         if ( $workflow !== null) {
             session_flash_push('error', trans('expeditions.expedition_process_exists'));
 

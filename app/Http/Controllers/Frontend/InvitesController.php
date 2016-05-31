@@ -1,7 +1,9 @@
-<?php namespace App\Http\Controllers\Frontend;
+<?php 
+
+namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Events\Dispatcher as Event;
 use App\Repositories\Contracts\Invite;
 use App\Repositories\Contracts\Group;
@@ -23,29 +25,22 @@ class InvitesController extends Controller
     public $group;
 
     /**
-     * @var Request
-     */
-    public $request;
-
-    /**
      * @var User
      */
     public $user;
 
     /**
      * InvitesController constructor.
-     * @param Request $request
+     * 
      * @param Invite $invite
      * @param Group $group
      * @param User $user
      */
     public function __construct(
-        Request $request,
         Invite $invite,
         Group $group,
         User $user
     ) {
-        $this->request = $request;
         $this->invite = $invite;
         $this->group = $group;
         $this->user = $user;
@@ -59,9 +54,8 @@ class InvitesController extends Controller
      */
     public function index($id)
     {
-        $user = $this->request->user();
-        $this->group->cached(false);
-        $group = $this->group->findWith($id, ['invites']);
+        $user = Request::user();
+        $group = $this->group->skipCache()->with(['invites'])->find($id);
 
         if ( ! $this->checkPermissions($user, [$group], 'update'))
         {
@@ -80,7 +74,7 @@ class InvitesController extends Controller
      */
     public function store(InviteFormRequest $request, $id)
     {
-        $user = $this->request->user();
+        $user = Request::user();
         $group = $this->group->findWith($id, ['invites']);
 
         if ( ! $this->checkPermissions($user, [$group], 'update'))
@@ -102,7 +96,7 @@ class InvitesController extends Controller
      */
     public function resend(Event $dispatcher, $id, $inviteId)
     {
-        $user = $this->request->user();
+        $user = Request::user();
         $group = $this->group->find($id);
 
         if ( ! $this->checkPermissions($user, [$group], 'update'))
@@ -137,7 +131,7 @@ class InvitesController extends Controller
      */
     public function delete($id, $inviteId)
     {
-        $user = $this->request->user();
+        $user = Request::user();
         $group = $this->group->find($id);
 
         if ( ! $this->checkPermissions($user, [$group], 'delete'))
@@ -145,7 +139,7 @@ class InvitesController extends Controller
             return redirect()->route('groups.get.show', [$id]);
         }
 
-        if ($this->invite->destroy($inviteId)) {
+        if ($this->invite->delete($inviteId)) {
             session_flash_push('success', trans('groups.invite_destroyed'));
         } else {
             session_flash_push('error', trans('groups.invite_destroyed_failed'));

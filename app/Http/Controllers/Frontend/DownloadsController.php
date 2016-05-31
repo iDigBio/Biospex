@@ -1,4 +1,6 @@
-<?php namespace App\Http\Controllers\Frontend;
+<?php 
+
+namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -9,13 +11,14 @@ use App\Repositories\Contracts\Download;
 
 class DownloadsController extends Controller
 {
+
     /**
-     * @var ExpeditionInterface
+     * @var Expedition
      */
     protected $expedition;
 
     /**
-     * @var DownloadInterface
+     * @var Download
      */
     protected $download;
 
@@ -35,10 +38,10 @@ class DownloadsController extends Controller
     protected $config;
 
     /**
-     * Instantiate a new DownloadsController.
-     *
-     * @param ExpeditionInterface|Expedition $expedition
-     * @param DownloadInterface|Download $download
+     * DownloadsController constructor.
+     * 
+     * @param Expedition $expedition
+     * @param Download $download
      * @param Request $request
      * @param ResponseFactory $response
      * @param Config $config
@@ -67,7 +70,7 @@ class DownloadsController extends Controller
     public function index($projectId, $expeditionId)
     {
         $user = $this->request->user();
-        $expedition = $this->expedition->findWith($expeditionId, ['project.group', 'downloads.actor']);
+        $expedition = $this->expedition->with(['project.group', 'downloads.actor'])->find($expeditionId);
 
         return view('frontend.downloads.index', compact('expedition', 'user'));
     }
@@ -84,7 +87,7 @@ class DownloadsController extends Controller
     {
         $download = $this->download->find($downloadId);
         $download->count = $download->count + 1;
-        $download->save();
+        $this->download->update($download->toArray(), $download->id);
 
         if ( ! empty($download->data)){
             $headers = [

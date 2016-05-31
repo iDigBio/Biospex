@@ -1,4 +1,6 @@
-<?php namespace App\Http\Controllers\Frontend;
+<?php 
+
+namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\SendContactEmail;
@@ -35,7 +37,7 @@ class HomeController extends Controller
      */
     public function project($slug, Project $repository)
     {
-        $project = $repository->bySlug($slug);
+        $project = $repository->with(['group', 'expeditions.stat', 'expeditions.actors'])->where(['slug' => $slug])->first();
 
         return view('frontend.project', compact('project'));
     }

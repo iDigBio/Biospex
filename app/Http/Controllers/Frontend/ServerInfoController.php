@@ -1,4 +1,6 @@
-<?php namespace App\Http\Controllers\Frontend;
+<?php 
+
+namespace App\Http\Controllers\Frontend;
 
 use App\Events\PollOcrEvent;
 use App\Http\Controllers\Controller;

@@ -1,7 +1,9 @@
-<?php namespace App\Http\Controllers\Frontend;
+<?php
 
+namespace App\Http\Controllers\Frontend;
+
+use Illuminate\Support\Facades\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Requests\GroupFormRequest;
 use App\Repositories\Contracts\User;
 use App\Repositories\Contracts\Group;
@@ -17,22 +19,17 @@ class GroupsController extends Controller
      * @var User
      */
     public $user;
-    /**
-     * @var Request
-     */
-    private $request;
 
     /**
      * GroupsController constructor.
-     * @param Request $request
+     *
      * @param Group $group
      * @param User $user
      */
-    public function __construct(Request $request, Group $group, User $user)
+    public function __construct(Group $group, User $user)
     {
         $this->group = $group;
         $this->user = $user;
-        $this->request = $request;
     }
 
     /**
@@ -42,7 +39,7 @@ class GroupsController extends Controller
      */
     public function index()
     {
-        $user = $this->user->findWith($this->request->user()->id, ['groups']);
+        $user = $this->user->with(['groups'])->find(Request::user()->id);
 
         return view('frontend.groups.index', compact('user'));
     }
@@ -54,7 +51,7 @@ class GroupsController extends Controller
      */
     public function create()
     {
-        $user = $this->request->user();
+        $user = Request::user();
 
         return view('frontend.groups.create', compact('user'));
     }
@@ -67,7 +64,7 @@ class GroupsController extends Controller
      */
     public function store(GroupFormRequest $request)
     {
-        $user = $request->user();
+        $user = Request::user();
 
         $data = [
             'user_id' => $user->id,
@@ -97,12 +94,13 @@ class GroupsController extends Controller
      */
     public function show($id)
     {
-        $user = $this->request->user();
-        $group = $this->group->findWith($id, [
+        $user = Request::user();
+        $with = [
             'projects',
             'owner.profile',
             'users.profile'
-        ]);
+        ];
+        $group = $this->group->with($with)->find($id);
 
         if ($user->cannot('read', $group))
         {
@@ -116,14 +114,14 @@ class GroupsController extends Controller
     }
 
     /**
-     * Show group edit form.
+     * Show group edit form..
      *
      * @param $id
-     * @return \Illuminate\View\View1
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function edit($id)
     {
-        $user = $this->request->user();
+        $user = Request::user();
         $group = $this->group->find($id);
 
         if ($user->cannot('update', $group))
@@ -143,7 +141,7 @@ class GroupsController extends Controller
      */
     public function update(GroupFormRequest $request)
     {
-        $user = $this->request->user();
+        $user = Request::user();
         $group = $this->group->find($request->get('id'));
 
         if ($user->cannot('update', $group))
@@ -153,9 +151,9 @@ class GroupsController extends Controller
             return redirect()->route('groups.get.index');
         }
 
-        $group->name = $group->name == 'admins' ? $group->name : $request->get('name');
-        $group->label = $group->name == 'admins' ? $group->name : $request->get('name');
-        $group->save();
+        $group->name = $group->name === 'admins' ? $group->name : $request->get('name');
+        $group->label = $group->name === 'admins' ? $group->name : $request->get('name');
+        $this->group->update($group->toArray(), $group->id);
 
         session_flash_push('success', trans('groups.updated'));
 
@@ -165,11 +163,12 @@ class GroupsController extends Controller
     /**
      * Remove group.
      *
+     * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
     public function delete($id)
     {
-        $user = $this->auth->user();
+        $user = Request::user();
         $group = $this->group->find($id);
 
         if ($user->cannot('delete', $group))
@@ -179,7 +178,8 @@ class GroupsController extends Controller
             return redirect()->route('groups.get.index');
         }
 
-        $group->delete();
+        $this->group->delete($group->id);
+        
         session_flash_push('success', trans('groups.group_destroyed'));
 
         return redirect()->route('groups.get.index');

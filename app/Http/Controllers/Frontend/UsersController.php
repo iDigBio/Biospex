@@ -1,4 +1,6 @@
-<?php namespace App\Http\Controllers\Frontend;
+<?php
+
+namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\User;
@@ -22,10 +24,10 @@ class UsersController extends Controller
     }
 
     /**
-     * \Redirect to edit page.
+     * Redirect to edit page.
      *
-     * @param  int $id
-     * @return Response
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function show($id)
     {
@@ -33,7 +35,8 @@ class UsersController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource
+     * Show the form for editing the specified resource.
+     *
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
@@ -71,7 +74,7 @@ class UsersController extends Controller
             return redirect()->route('projects.get.index');
         }
 
-        $result = $this->user->update($request->all());
+        $result = $this->user->update($request->all(), $user->id);
 
         if ($result)
         {

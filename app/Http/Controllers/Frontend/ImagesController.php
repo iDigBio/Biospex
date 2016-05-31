@@ -1,7 +1,9 @@
-<?php namespace App\Http\Controllers\Frontend;
+<?php 
+
+namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request;
 use App\Services\Image\Thumbnail;
 
 class ImagesController extends Controller
@@ -12,23 +14,16 @@ class ImagesController extends Controller
     protected $thumbnail;
 
     /**
-     * @var Request
-     */
-    protected $request;
-
-    /**
      * Construct
      *
      * @param Thumbnail $thumbnail
      * @param Request $request
      */
     public function __construct(
-        Thumbnail $thumbnail,
-        Request $request
+        Thumbnail $thumbnail
     )
     {
         $this->thumbnail = $thumbnail;
-        $this->request = $request;
     }
 
     /**
@@ -38,8 +33,8 @@ class ImagesController extends Controller
      */
     public function preview()
     {
-        $url = $this->request->input('url');
-        $thumb = $this->thumbnail->getThumbNail(urldecode($url));
+        $url = Request::input('url');
+        $thumb = $this->thumbnail->getThumbaail(urldecode($url));
 
         return '<img src="data:image/jpeg;base64,' . base64_encode($thumb) . '" />';
     }

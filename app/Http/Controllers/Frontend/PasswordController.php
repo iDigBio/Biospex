@@ -62,11 +62,10 @@ class PasswordController extends Controller
     }
 
     /**
-     * Process a password change request
-     *
+     * Process a password change request.
+     * 
      * @param PasswordFormRequest $request
-     * @return redirect
-     * @internal param int $id
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function pass(PasswordFormRequest $request)
     {

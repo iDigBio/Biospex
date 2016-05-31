@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterFormRequest;
 use App\Http\Requests\ResendActivationFormRequest;
+use App\Repositories\Contracts\Group;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
@@ -45,29 +46,37 @@ class AuthController extends Controller
      * @var Router
      */
     public $route;
+    /**
+     * @var Group
+     */
+    private $group;
 
     /**
      * AuthController constructor.
      * @param Config $config
      * @param User $user
      * @param Router $route
+     * @param Group $group
      */
     public function __construct(
         Config $config,
         User $user,
-        Router $route
+        Router $route,
+        Group $group
     )
     {
         $this->config = $config;
         $this->user = $user;
         $this->route = $route;
+        $this->group = $group;
     }
 
     /**
      * Authenticate user
+     *
      * @param $request
      * @param $user
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function authenticated($request, $user)
     {
@@ -76,6 +85,9 @@ class AuthController extends Controller
             Auth::logout();
             return redirect()->route('home');
         }
+
+        $groups = $this->group->whereHas('users', ['user_id' => $user->id])->get();
+        $request->session()->put('groups', $groups);
 
         if ($user->isAdmin('admins'))
         {
@@ -86,11 +98,12 @@ class AuthController extends Controller
     }
 
     /**
-     * Show the application registration form
-     * @param Invite $inviteRepo
+     * Show the application registration form.
+     *
+     * @param Invite $repository
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function getRegister(Invite $inviteRepo)
+    public function getRegister(Invite $repository)
     {
         $registration = $this->config->get('config.registration');
         if (!$registration) {
@@ -99,7 +112,7 @@ class AuthController extends Controller
 
         $code = $this->route->input('code');
 
-        $invite = $inviteRepo->findByCode($code);
+        $invite = $repository->where(['code' => $code])->first();
 
         if (!empty($code) && !$invite) {
             session_flash_push('warning', trans('groups.invite_not_found'));
@@ -173,7 +186,7 @@ class AuthController extends Controller
      */
     public function postResendActivation(ResendActivationFormRequest $request, Event $dispatcher)
     {
-        $user = $this->user->findByEmail($request->only('email'));
+        $user = $this->user->where(['email' => $request->only('email')])->first();
 
         if ( ! $user)
         {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\Contracts\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Repositories\Contracts\User;
@@ -77,9 +78,9 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        $user = $this->user->findWith($this->request->user()->id, ['groups.projects']);
+        $groups = $this->group->with(['projects'])->whereHas('users', ['user_id' => $this->request->user()->id])->get();
 
-        return view('frontend.projects.index', compact('user'));
+        return view('frontend.projects.index', compact('groups'));
     }
 
     /**
@@ -89,8 +90,7 @@ class ProjectsController extends Controller
      */
     public function create()
     {
-        $user = $this->request->user();
-        $vars = $this->service->setCommonVariables($user);
+        $vars = $this->service->setCommonVariables($this->request->user());
 
         return view('frontend.projects.create', $vars);
     }
@@ -104,12 +104,13 @@ class ProjectsController extends Controller
     public function show($id)
     {
         $user = $this->request->user();
-        $project = $this->project->findWith($id, [
+        $with = [
             'group.permissions',
             'expeditions.downloads',
             'expeditions.actors',
             'expeditions.stat'
-        ]);
+        ];
+        $project = $this->project->with($with)->find($id);
 
         return view('frontend.projects.show', compact('user', 'project'));
     }
@@ -123,7 +124,7 @@ class ProjectsController extends Controller
     public function store(ProjectFormRequest $request)
     {
         $user = $request->user();
-        $group = $this->group->findWith($request->get('group_id'), ['permissions']);
+        $group = $this->group->with(['permissions'])->find($request->get('group_id'));
 
         if ( ! $this->checkPermissions($user, [\App\Models\Project::class, $group], 'create'))
         {
@@ -151,7 +152,7 @@ class ProjectsController extends Controller
     public function duplicate($id)
     {
         $user = $this->request->user();
-        $project = $this->project->findWith($id, ['group', 'expeditions.workflowManager']);
+        $project = $this->project->with(['group', 'expeditions.workflowManager'])->find($id);
 
         if ( ! $project)
         {
@@ -175,7 +176,7 @@ class ProjectsController extends Controller
     public function edit($id)
     {
         $user = $this->request->user();
-        $project = $this->project->findWith($id, ['group.permissions', 'expeditions.workflowManager']);
+        $project = $this->project->with(['group.permissions', 'expeditions.workflowManager'])->find($id);
 
         if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
@@ -206,8 +207,7 @@ class ProjectsController extends Controller
             return redirect()->route('projects.get.index');
         }
 
-        $project->advertise = $request->all();
-        $project->fill($request->all())->save();
+        $this->project->update($request->all(), $project->id);
 
         session_flash_push('success', trans('projects.project_updated'));
 
@@ -222,7 +222,7 @@ class ProjectsController extends Controller
     public function advertise($id)
     {
         $user = $this->request->user();
-        $project = $this->project->findWith($id, ['group']);
+        $project = $this->project->with(['group'])->find($id);
 
         if ( ! $this->checkPermissions($user, [$project], 'read'))
         {
@@ -230,8 +230,7 @@ class ProjectsController extends Controller
         }
 
         if (empty($project->advertise)) {
-            $project->advertise = json_decode(json_encode($project), true);
-            $project->save();
+            $project = $this->project->update($project->toArray(), $project->id);
         }
 
         return view('frontend.projects.advertise', compact('project'));
@@ -246,7 +245,7 @@ class ProjectsController extends Controller
     public function advertiseDownload($id)
     {
         $user = $this->request->user();
-        $project = $this->project->findWith($id, ['group']);
+        $project = $this->project->with(['group'])->find($id);
 
         if ( ! $this->checkPermissions($user, [$project], 'read'))
         {
@@ -260,22 +259,26 @@ class ProjectsController extends Controller
     }
 
     /**
-     * Display project explore page
+     * Display project explore page.
      * 
+     * @param Subject $subject
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function explore($id)
+    public function explore(Subject $subject, $id)
     {
         $user = $this->request->user();
-        $project = $this->project->findWith($id, ['group']);
+        $project = $this->project->with(['group'])->find($id);
 
         if ( ! $this->checkPermissions($user, [$project], 'read'))
         {
             return redirect()->route('projects.get.index');
         }
 
-        $subjectAssignedCount = $this->project->getSubjectsAssignedCount($project);
+        $subjectAssignedCount = $subject->skipCache()
+            ->where(['project_id' => $id])
+            ->whereRaw(['expedition_ids' => ['$not' => ['$size' => 0]]])
+            ->get()->count();
 
         return view('frontend.projects.explore', compact('project', 'subjectAssignedCount'));
     }
@@ -289,7 +292,7 @@ class ProjectsController extends Controller
     public function delete($id)
     {
         $user = $this->request->user();
-        $project = $this->project->findWith($id, ['group']);
+        $project = $this->project->with(['group'])->find($id);
 
         if ( ! $this->checkPermissions($user, [$project], 'delete'))
         {
