@@ -2,14 +2,7 @@
 
 namespace App\Providers;
 
-use App\Repositories\Decorators\CacheUserDecorator;
 use Illuminate\Support\ServiceProvider;
-
-use App\Models\User;
-use App\Models\Group;
-use App\Models\Project;
-use App\Models\Expedition;
-use App\Models\Permission;
 
 use App\Repositories\Contracts\User as UserContract;
 use App\Repositories\Contracts\Group as GroupContract;
@@ -52,57 +45,23 @@ use App\Repositories\ExpeditionStatRepository;
 use App\Repositories\WorkflowRepository;
 
 
-use App\Repositories\Decorators\CacheGroupDecorator;
-use App\Repositories\Decorators\CacheProjectDecorator;
-use App\Repositories\Decorators\CacheExpeditionDecorator;
-
 class BiospexServiceProvider extends ServiceProvider
 {
+    
     public function register()
     {
         $this->app->register(ApiRouteServiceProvider::class);
-        
+
         $this->registerRepositories();
     }
 
     protected function registerRepositories()
     {
-        $this->app->singleton(UserContract::class, function () {
-            $user = new UserRepository(new User);
-            $cache = new CacheUserDecorator($this->app['cache.store'], $user, 'model');
-
-            return $cache;
-        });
-
-        $this->app->singleton(GroupContract::class, function () {
-            $group = new GroupRepository(new Group);
-            $cache = new CacheGroupDecorator($this->app['cache.store'], $group, 'model');
-
-            return $cache;
-        });
-
-        $this->app->singleton(PermissionContract::class, function () {
-            $permission = new PermissionRepository(new Permission);
-            $cache = new CacheGroupDecorator($this->app['cache.store'], $permission, 'model');
-
-            return $cache;
-        });
-
-        $this->app->bind(ProjectContract::class, function () {
-            $project = new ProjectRepository(new Project);
-            $cache = new CacheProjectDecorator($this->app['cache.store'], $project, 'model');
-
-            return $cache;
-
-        });
-
-        $this->app->bind(ExpeditionContract::class, function () {
-            $expedition = new ExpeditionRepository(new Expedition);
-            $cache = new CacheExpeditionDecorator($this->app['cache.store'], $expedition, 'model');
-
-            return $cache;
-        });
-
+        $this->app->bind(UserContract::class, UserRepository::class);
+        $this->app->bind(GroupContract::class, GroupRepository::class);
+        $this->app->bind(PermissionContract::class, PermissionRepository::class);
+        $this->app->bind(ProjectContract::class, ProjectRepository::class);
+        $this->app->bind(ExpeditionContract::class, ExpeditionRepository::class);
         $this->app->bind(PermissionContract::class, PermissionRepository::class);
         $this->app->bind(SubjectContract::class, SubjectRepository::class);
         $this->app->bind(ImportContract::class, ImportRepository::class);

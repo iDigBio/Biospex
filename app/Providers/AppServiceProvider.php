@@ -2,11 +2,6 @@
 
 namespace App\Providers;
 
-use App\Events\SendReportEvent;
-use App\Models\Group;
-use App\Models\Permission;
-use App\Models\Profile;
-use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +10,11 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Support\ServiceProvider;
+use App\Events\SendReportEvent;
+use App\Models\Group;
+use App\Models\Permission;
+use App\Models\Profile;
+use App\Models\User;
 use Barryvdh\Debugbar\ServiceProvider as Debugbar;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider as IdeHelper;
 use Way\Generators\GeneratorsServiceProvider;
@@ -24,13 +24,13 @@ class AppServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.
-     *
+     * creating, created, updating, updated, saving, saved, deleting, deleted, restoring, restored
      * @return void
      */
     public function boot()
     {
         $this->setupBlade();
-
+        
         User::created(function ($user) {
             $user->getActivationCode();
             $profile = new Profile;
@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
             $profile->last_name = $this->app['request']->input('last_name');
             $user->profile()->save($profile);
         });
-
+        
         Group::created(function ($group) {
             $permissions = Cache::tags('model')->rememberForever('permissions.list', function() {
                 return Permission::lists('name', 'id')->all();
@@ -48,7 +48,7 @@ class AppServiceProvider extends ServiceProvider
 
             $group->permissions()->attach($permissions);
         });
-
+        
         Queue::failing(function (JobFailed $event) {
             if ($event->job->getQueue() == Config::get('config.beanstalkd.default')) {
                 return;
