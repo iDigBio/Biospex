@@ -43,7 +43,7 @@ return [
     'forgot_your_pass' => 'Forgot your Password?',
     'fyi' => 'FYI',
     'group' => 'Group',
-    'help' => 'Help',
+    'faq' => 'FAQ',
     'home' => 'Home',
     'id' => 'Id',
     'invite' => "Invite",

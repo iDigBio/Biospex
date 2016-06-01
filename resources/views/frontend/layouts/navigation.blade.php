@@ -55,7 +55,7 @@
                         {{ Request::is('users/create') ? 'class=active' : '' }}><a
                             href="{{ route('auth.get.register') }}">{{trans('pages.register')}}</a></li>
             @endif
-            <li><a href="{{ route('home.get.help') }}">{{ trans('pages.help') }}</a></li>
+            <li><a href="{{ route('home.get.faq') }}">{{ trans('pages.faq') }}</a></li>
             <li><a href="{{ route('home.get.contact') }}">{{ trans('pages.contact') }}</a></li>
         </ul>
     </div>
