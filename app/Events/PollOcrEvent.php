@@ -13,17 +13,12 @@ class PollOcrEvent extends Event implements ShouldBroadcast
     use SerializesModels;
 
     public $data = [];
-    
-    private $ocrQueue;
 
     /**
      * PollOcrEvent constructor.
-     *
-     * @param OcrQueue $ocrQueue
      */
-    public function __construct(OcrQueue $ocrQueue)
+    public function __construct()
     {
-        $this->ocrQueue = $ocrQueue;
         $this->buildData();
     }
 
@@ -59,7 +54,9 @@ class PollOcrEvent extends Event implements ShouldBroadcast
 
     private function buildData()
     {
-        $records = $this->ocrQueue->allWith(['project.group']);
+        $repository = app(OcrQueue::class);
+
+        $records = $repository->skipCache()->with(['project.group'])->get();
 
         if ($records->isEmpty())
         {
