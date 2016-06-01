@@ -23,9 +23,9 @@ class OcrQueueCheckCommand extends Command
     protected $description = "Check ocr queue table for invalid records";
 
     /**
-     * Class constructor
-     *
-     * @param OcrQueueInterface $queue
+     * OcrQueueCheckCommand constructor.
+     * 
+     * @param OcrQueue $queue
      * @param Report $report
      */
     public function __construct(OcrQueue $queue, Report $report)
@@ -43,7 +43,7 @@ class OcrQueueCheckCommand extends Command
      */
     public function handle()
     {
-        $queues = $this->queue->allWith(['project.group.owner']);
+        $queues = $this->queue->skipCache()->with(['project.group.owner'])->get();
 
         if ($queues->isEmpty()) {
             return;

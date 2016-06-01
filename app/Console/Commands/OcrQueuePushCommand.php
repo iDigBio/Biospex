@@ -27,9 +27,9 @@ class OcrQueuePushCommand extends Command
     protected $description = "Push ocr job to queue and run.";
 
     /**
-     * Class constructor
-     *
-     * @param OcrQueueInterface $repo
+     * OcrQueuePushCommand constructor.
+     * 
+     * @param OcrQueue $repo
      */
     public function __construct(OcrQueue $repo)
     {
@@ -50,7 +50,7 @@ class OcrQueuePushCommand extends Command
         $id = $this->argument('id');
 
         // Retrieve record and update error column if needed
-        $job = $this->repo->find($id);
+        $job = $this->repo->skipCache()->find($id);
 
         if (empty($job))
         {

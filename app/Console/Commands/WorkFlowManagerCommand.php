@@ -1,14 +1,14 @@
-<?php namespace App\Console\Commands;
+<?php 
+
+namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Repositories\Contracts\WorkflowManager;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
-use Symfony\Component\Console\Input\InputArgument;
 
 class WorkFlowManagerCommand extends Command
-{
-    public $tube;
+{    
     /**
      * The console command name.
      *
@@ -24,9 +24,14 @@ class WorkFlowManagerCommand extends Command
     protected $description = "Workflow manager";
 
     /**
-     * @var WorkflowManagerInterface
+     * @var WorkflowManager
      */
     protected $workflow;
+
+    /**
+     * @var
+     */
+    public $tube;
 
     /**
      * WorkFlowManagerCommand constructor.
@@ -51,9 +56,9 @@ class WorkFlowManagerCommand extends Command
         $id = $this->argument('expedition');
 
         if ( ! empty($id)) {
-            $workFlows = $this->workflow->findByExpeditionIdWith($id, ['expedition.actors']);
+            $workFlows = $this->workflow->skipCache()->with(['expedition.actors'])->where(['expedition_id' => $id])->get();
         } else {
-            $workFlows = $this->workflow->allWith(['expedition.actors']);
+            $workFlows = $this->workflow->skipCache()->with(['expedition.actors'])->get();
         }
 
 

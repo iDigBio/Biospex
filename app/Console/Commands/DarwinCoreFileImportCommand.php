@@ -26,9 +26,9 @@ class DarwinCoreFileImportCommand extends Command
     protected $description = "Command to re-queue dwc import after a failure.";
 
     /**
-     * Class constructor.
-     *
-     * @param ImportInterface $import
+     * DarwinCoreFileImportCommand constructor.
+     * 
+     * @param Import $import
      */
     public function __construct(Import $import)
     {
@@ -44,7 +44,7 @@ class DarwinCoreFileImportCommand extends Command
      */
     public function handle()
     {
-        $imports = $this->import->findByError();
+        $imports = $this->import->skipCache()->where(['error' => 0])->get();
 
         $count = 0;
         foreach ($imports as $import) {

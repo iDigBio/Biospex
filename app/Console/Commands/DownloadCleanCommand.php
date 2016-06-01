@@ -1,10 +1,12 @@
-<?php namespace App\Console\Commands;
+<?php 
 
+namespace App\Console\Commands;
+
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
-use Symfony\Component\Console\Input\InputArgument;
 use App\Repositories\Contracts\Download;
 use App\Services\Report\Report;
 
@@ -35,10 +37,10 @@ class DownloadCleanCommand extends Command
     protected $nfnExportDir;
 
     /**
-     * Constructor
-     *
+     * DownloadCleanCommand constructor.
+     * 
      * @param Filesystem $filesystem
-     * @param DownloadInterface $download
+     * @param Download $download
      * @param Report $report
      */
     public function __construct(
@@ -64,7 +66,7 @@ class DownloadCleanCommand extends Command
     {
         $this->report->setDebug($this->argument('debug'));
 
-        $downloads = $this->download->getExpired();
+        $downloads = $this->download->skipCache()->where([['count', '>', 5]])->orWhere([['created_at', '<', Carbon::now()->subDays(7)]])->get();
 
         foreach ($downloads as $download) {
             try {
@@ -73,7 +75,7 @@ class DownloadCleanCommand extends Command
                     $this->filesystem->delete($file);
                 }
 
-                $this->download->destroy($download->id);
+                $this->download->delete($download->id);
             } catch (Exception $e) {
                 $this->report->addError("Unable to process download id: {$download->id}. " . $e->getMessage() . " " . $e->getTraceAsString());
                 $this->report->reportSimpleError();

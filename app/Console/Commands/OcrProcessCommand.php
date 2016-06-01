@@ -83,8 +83,9 @@ class OcrProcessCommand extends Command
      */
     public function handle()
     {
-        $record = $this->ocrQueue->findFirstWith(['project.group.owner', 'ocrCsv']);
-        if (empty($record))
+        $record = $this->ocrQueue->skipCache()->with(['project.group.owner', 'ocrCsv'])->where([['status', '<=', 1], 'error' => 0])->orderBy(['id' => 'asc'])->first();
+        
+        if ($record === null)
         {
             return;
         }
@@ -95,12 +96,13 @@ class OcrProcessCommand extends Command
         }
         catch (\Exception $e)
         {
-            $this->ocrQueue->updateOcrError($record->ocr_csv_id);
+            $record->error = 1;
+            $this->ocrQueue->update($record->toArray(), $record->id);
             $this->addReportError($record->id, $e->getMessage() . ': ' . $e->getTraceAsString());
             $this->ocrReport->reportSimpleError($record->project->group->id);
         }
 
-        $this->dispatcher->fire(new PollOcrEvent($this->ocrQueue));
+        $this->dispatcher->fire(new PollOcrEvent());
     }
 
     /**
@@ -122,7 +124,7 @@ class OcrProcessCommand extends Command
             $this->ocrRequest->sendOcrFile($record);
 
             $record->status = 1;
-            $record->save();
+            $this->ocrQueue->update($record->toArray(), $record->id);
             
             return;
         }
@@ -145,7 +147,7 @@ class OcrProcessCommand extends Command
         if ($this->ocrRequest->checkOcrFileError($file))
         {            
             $record->error = 1;
-            $record->save();
+            $this->ocrQueue->update($record->toArray(), $record->id);
             $this->addReportError($record->id, trans('emails.error_ocr_header'));
             $this->ocrReport->reportSimpleError($record->project->group->id);
 
@@ -159,12 +161,12 @@ class OcrProcessCommand extends Command
         $this->setOcrCsv($record, $csv);
 
         $record->status = 2;
-        $record->save();
+        $this->ocrQueue->update($record->toArray(), $record->id);
 
         if ($record->batch)
         {
             $this->sendReport($record);
-            $this->ocrCsv->destroy($record->ocrCsv->id);
+            $this->ocrCsv->delete($record->ocrCsv->id);
         }
 
         $this->ocrRequest->deleteJsonFiles([$record->uuid . '.json']);
@@ -222,6 +224,6 @@ class OcrProcessCommand extends Command
     private function updateSubjectRemaining($record, $file)
     {
         $record->subject_remaining = max(0, $record->subject_count - $file->header->complete);
-        $record->save();
+        $this->ocrQueue->update($record->toArray(), $record->id);
     }
 }

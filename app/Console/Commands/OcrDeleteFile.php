@@ -7,7 +7,6 @@ use Illuminate\Config\Repository as Config;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
-use Illuminate\Support\Facades\Log;
 
 
 class OcrDeleteFile extends Command
