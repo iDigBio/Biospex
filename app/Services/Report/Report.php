@@ -82,8 +82,6 @@ class Report
     public function addError($error)
     {
         $this->messages->add('error', $error);
-
-        return;
     }
 
     /**
@@ -95,10 +93,10 @@ class Report
     {
         $email = null;
 
-        if (!is_null($groupId))
+        if ($groupId !== null)
         {
-            $group = $this->group->findWith($groupId, ['owner']);
-            $email = $group->Owner->email;
+            $group = $this->group->with(['owner'])->find($groupId);
+            $email = $group->owner->email;
         }
 
         $errorMessage = '';
@@ -124,7 +122,7 @@ class Report
      */
     public function processComplete($groupId, $title, $csv = null, $name = null)
     {
-        $group = $this->group->findWith($groupId, ['owner']);
+        $group = $this->group->with(['owner'])->find($groupId);
         $email = $group->Owner->email;
 
         $count = count($csv);
@@ -155,7 +153,7 @@ class Report
             $this->filesystem->makeDirectory($path);
         }
 
-        $fileName = (is_null($name)) ? str_random(10) : $name . str_random(5);
+        $fileName = ($name === null) ? str_random(10) : $name . str_random(5);
         $ext = '.csv';
         
         $this->csv->writerCreateFromPath($path . '/' . $fileName . $ext);

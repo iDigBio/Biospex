@@ -100,8 +100,6 @@ abstract class ImportServiceAbstract
     protected function setTube($queue)
     {
         $this->tube = $this->config->get($queue);
-
-        return;
     }
 
     /**

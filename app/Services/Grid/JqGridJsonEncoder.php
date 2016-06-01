@@ -76,7 +76,7 @@ class JqGridJsonEncoder
     {
         $this->route = $route;
 
-        $result = $this->header->getByProjectId($projectId);
+        $result = $this->header->skipCache()->where(['project_id' => $projectId])->first();
         if (empty($result)) {
             $headers['image'] = [
                 'assigned',
@@ -294,7 +294,7 @@ class JqGridJsonEncoder
     {
         $subjectId = Route::input('subjects');
 
-        $row = $this->subject->find($subjectId)->first()->toArray();
+        $row = $this->subject->skipCache()->where(['_id' => $subjectId])->first()->toArray();
 
         if (! $row) {
             throw new Exception('The method must return row');
@@ -317,7 +317,7 @@ class JqGridJsonEncoder
      */
     public function updateSelectedRows($id, $data)
     {
-        $expedition = $this->expedition->find($id);
+        $expedition = $this->expedition->skipCache()->find($id);
 
         if ($data['selected'] === 'true') {
             $expedition->subjects()->sync($data['ids'], false);

@@ -27,7 +27,6 @@ class NotesFromNatureManifest
             default:
                 break;
         }
-
-        return;
+;
     }
 }

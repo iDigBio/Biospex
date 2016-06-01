@@ -27,6 +27,5 @@ class DarwinCoreFileImport extends ImportServiceAbstract
 
         $this->queue->push('App\Services\Queue\DarwinCoreFileImportQueue', ['id' => $import->id], $this->tube);
 
-        return;
     }
 }

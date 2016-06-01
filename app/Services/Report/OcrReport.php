@@ -25,6 +25,6 @@ class OcrReport extends Report
 
         $this->fireEvent($email, $subject, $view, $data, $attachment);
 
-        return $count == 0 ? false : $attachment;
+        return $count === 0 ? false : $attachment;
     }
 }

@@ -50,7 +50,5 @@ class RecordSetImportQueue extends QueueAbstract
             ));
             $this->report->reportSimpleError();
         }
-
-        return;
     }
 }

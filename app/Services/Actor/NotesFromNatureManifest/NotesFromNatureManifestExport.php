@@ -39,17 +39,17 @@ class NotesFromNatureManifestExport extends ActorAbstract implements ActorInterf
     protected $report;
 
     /**
-     * @var ExpeditionInterface
+     * @var Expedition
      */
     protected $expedition;
 
     /**
-     * @var HeaderInterface
+     * @var Header
      */
     protected $header;
 
     /**
-     * @var PropertyInterface
+     * @var Property
      */
     protected $property;
 
@@ -84,9 +84,8 @@ class NotesFromNatureManifestExport extends ActorAbstract implements ActorInterf
     {
         $this->createDir($this->nfnExportDir);
         $this->expeditionId = $actor->pivot->expedition_id;
-
-        $this->expedition->cached(false);
-        $this->record = $this->expedition->findWith($this->expeditionId, ['project.group', 'subjects']);
+        
+        $this->record = $this->expedition->skipCache()->with(['project.group', 'subjects'])->find($this->expeditionId);
 
         if (empty($this->record)) {
             $this->report->addError(trans('emails.error_process', ['id' => $this->expeditionId]));
@@ -255,7 +254,7 @@ class NotesFromNatureManifestExport extends ActorAbstract implements ActorInterf
 
     private function getHeader() {
         if (empty($this->headers)) {
-            $result = $this->header->getByProjectId($this->record->project->id);
+            $result = $this->header->skipCache()->where(['project_id' => $this->record->project->id])->first();
             $this->headers = $result->header;
         }
 
@@ -301,7 +300,7 @@ class NotesFromNatureManifestExport extends ActorAbstract implements ActorInterf
             ];
         }
 
-        $term = $this->property->findByShort($field);
+        $term = $this->property->skipCache()->where(['short' => $field])->first();
 
         return [
             'name'       => 'field',

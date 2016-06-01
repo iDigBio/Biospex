@@ -1,4 +1,4 @@
-<?php  namespace App\Services\Process;
+<?php namespace App\Services\Process;
 
 use App\Repositories\Contracts\Import;
 use Carbon\Carbon;
@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Queue;
 
 class RecordSet
 {
+
     /**
      * Data from job queue.
      *
@@ -68,7 +69,8 @@ class RecordSet
      */
     public function setUrl()
     {
-        if (isset($this->data['url'])) {
+        if (isset($this->data['url']))
+        {
             return $this->data['url'];
         }
 
@@ -90,13 +92,15 @@ class RecordSet
             'headers' => ['Accept' => 'application/json']
         ]);
 
-        if ($response->getStatusCode() != 200) {
+        if ($response->getStatusCode() != 200)
+        {
             return;
         }
 
         $this->response = json_decode($response->getBody()->getContents());
 
-        if ($this->response->complete == true && $this->response->task_status == "SUCCESS") {
+        if ($this->response->complete == true && $this->response->task_status == "SUCCESS")
+        {
             $this->download();
             $this->pushToQueue();
 
@@ -105,7 +109,6 @@ class RecordSet
 
         $this->pushToQueue(true);
 
-        return;
     }
 
 
@@ -117,9 +120,10 @@ class RecordSet
      */
     public function download()
     {
-        $fileName = $this->data['id'] . ".zip";
-        $filePath = $this->importDir . "/" . $fileName;
-        if ( ! file_put_contents($filePath, file_get_contents($this->response->download_url))) {
+        $fileName = $this->data['id'] . '.zip';
+        $filePath = $this->importDir . '/' . $fileName;
+        if (!file_put_contents($filePath, file_get_contents($this->response->download_url)))
+        {
             throw new \Exception(trans('emails.error_zip_download'));
         }
 
@@ -127,8 +131,6 @@ class RecordSet
 
         unset($this->data);
         $this->data = ['id' => $import->id];
-
-        return;
     }
 
     /**
@@ -140,8 +142,6 @@ class RecordSet
         $class = ($requeue) ? 'App\Services\Queue\RecordSetImportQueue' : 'App\Services\Queue\DarwinCoreFileImportQueue';
         $date = Carbon::now()->addMinutes(5);
         Queue::later($date, $class, $this->data, $this->tube);
-
-        return;
     }
 
     /**
@@ -151,14 +151,18 @@ class RecordSet
      */
     protected function checkDir()
     {
-        if ( ! File::isDirectory($this->importDir)) {
-            if ( ! File::makeDirectory($this->importDir, 0775, true)) {
+        if (!File::isDirectory($this->importDir))
+        {
+            if (!File::makeDirectory($this->importDir, 0775, true))
+            {
                 throw new Exception(trans('emails.error_create_dir', ['directory' => $this->importDir]));
             }
         }
 
-        if ( ! File::isWritable($this->importDir)) {
-            if ( ! chmod($this->importDir, 0775)) {
+        if (!File::isWritable($this->importDir))
+        {
+            if (!chmod($this->importDir, 0775))
+            {
                 throw new Exception(trans('emails.error_write_dir', ['directory' => $this->importDir]));
             }
         }

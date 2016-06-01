@@ -98,6 +98,11 @@ class DarwinCoreCsvImport {
     public $csv;
 
     /**
+     * @var int
+     */
+    public $subjectCount = 0;
+
+    /**
      * Construct
      *
      * @param Config $config
@@ -229,7 +234,6 @@ class DarwinCoreCsvImport {
             ]));
         }
 
-        return;
     }
 
     /**
@@ -241,9 +245,7 @@ class DarwinCoreCsvImport {
      */
     public function filterByMetaFileIndex($row, $type)
     {
-        $result = array_intersect_key($row, $this->metaFields[$type]);
-
-        return $result;
+        return array_intersect_key($row, $this->metaFields[$type]);
     }
 
     /**
@@ -297,7 +299,7 @@ class DarwinCoreCsvImport {
      */
     public function checkProperty($qualified, $ns_short)
     {
-        if ($qualified == 'id' || $qualified == 'coreid')
+        if ($qualified === 'id' || $qualified === 'coreid')
         {
             return $qualified;
         }
@@ -317,7 +319,7 @@ class DarwinCoreCsvImport {
      */
     protected function splitNameSpaceShort($ns_short)
     {
-        list($namespace, $short) = preg_match('/:/', $ns_short) ? preg_split('/:/', $ns_short) : ['', $ns_short];
+        list($namespace, $short) = preg_match('/:/', $ns_short) ? explode(':', $ns_short) : ['', $ns_short];
 
         return [$namespace, $short];
     }
@@ -337,19 +339,19 @@ class DarwinCoreCsvImport {
      */
     protected function setShortNameForQualifiedName($qualified, $short, $namespace)
     {
-        $checkQualified = $this->property->findByQualified($qualified);
-        $checkShort = $this->property->findByShort($short);
+        $checkQualified = $this->property->skipCache()->where(['qualified' => $qualified])->first();
+        $checkShort = $this->property->skipCache()->where(['short' => $short])->first();
 
-        if ( ! is_null($checkQualified))
+        if ($checkQualified !== null)
         {
             $short = $checkQualified->short;
         }
-        elseif (is_null($checkQualified) && ! is_null($checkShort))
+        elseif ($checkQualified === null && $checkShort !== null)
         {
-            $short .= substr(md5(uniqid(mt_rand(), true)), 0, 4);
+            $short .= md5(str_random(4));
             $this->saveProperty($qualified, $short, $namespace);
         }
-        elseif (is_null($checkQualified) && is_null($checkShort))
+        elseif ($checkQualified === null && $checkShort === null)
         {
             $this->saveProperty($qualified, $short, $namespace);
         }
@@ -382,7 +384,7 @@ class DarwinCoreCsvImport {
      */
     public function setIdentifierColumn($header, $type)
     {
-        if ( ! $this->mediaIsCore && $type == 'core')
+        if ( ! $this->mediaIsCore && $type === 'core')
         {
             return;
         }
@@ -396,7 +398,6 @@ class DarwinCoreCsvImport {
 
         $this->identifierColumn = $result[0];
 
-        return;
     }
 
     /**
@@ -463,10 +464,12 @@ class DarwinCoreCsvImport {
 
         $subject = $this->subject->create($subject);
 
-        if ( ! is_null($occurrenceId))
+        if ($occurrenceId !== null)
         {
             $subject->occurrence()->save(new Occurrence(['id' => $occurrenceId]));
         }
+        
+        $this->subjectCount++;
     }
 
     /**
@@ -477,7 +480,7 @@ class DarwinCoreCsvImport {
      */
     public function saveOccurrence($header, $data)
     {
-        $subjects = $this->subject->findByProjectOccurrenceId($this->projectId, $data[$header[0]]);
+        $subjects = $this->subject->skipCache()->where(['project_id'=> $this->projectId, 'occurrence.id' => $data[$header[0]]])->get();
 
         if ($subjects->isEmpty())
         {
@@ -489,7 +492,6 @@ class DarwinCoreCsvImport {
             $subject->occurrence()->save(new Occurrence($data));
         }
 
-        return;
     }
 
     /**
@@ -543,10 +545,7 @@ class DarwinCoreCsvImport {
      */
     public function unsetSubjectVariables(&$subject)
     {
-        unset($subject['project_id']);
-        unset($subject['ocr']);
-        unset($subject['expedition_ids']);
-        unset($subject['occurrence']);
+        unset($subject['project_id'], $subject['ocr'], $subject['expedition_ids'], $subject['occurrence']);
     }
 
     /**
@@ -580,7 +579,7 @@ class DarwinCoreCsvImport {
     {
         $type = $loadMedia ? 'image' : 'occurrence';
 
-        $result = $this->header->getByProjectId($this->projectId);
+        $result = $this->header->skipCache()->where(['project_id' => $this->projectId])->first();
 
         if (empty($result))
         {
@@ -596,10 +595,9 @@ class DarwinCoreCsvImport {
             $existingHeader[$type] = isset($existingHeader[$type]) ?
                 $this->combineHeader($existingHeader[$type], $header) : array_unique($header);
             $result->header = $existingHeader;
-            $result->save();
+            $this->header->update($result->toArray(), $result->id);
         }
 
-        return;
     }
 
     /**

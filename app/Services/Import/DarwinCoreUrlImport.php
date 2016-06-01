@@ -29,6 +29,5 @@ class DarwinCoreUrlImport extends ImportServiceAbstract
 
         $this->queue->push('App\Services\Queue\DarwinCoreUrlImportQueue', $data, $this->tube);
 
-        return;
     }
 }

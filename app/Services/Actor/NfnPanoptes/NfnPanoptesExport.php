@@ -130,9 +130,7 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
     {
         $this->createDir($this->nfnExportDir);
 
-        $this->expedition->cached(false);
-        
-        $this->record = $this->expedition->findWith($actor->pivot->expedition_id, ['project.group', 'subjects']);
+        $this->record = $this->expedition->skipCache()->with(['project.group', 'subjects'])->find($actor->pivot->expedition_id);
 
         if ($this->record === null)
         {
@@ -388,18 +386,15 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
      */
     public function addMissingImage($index = null, $uri = null)
     {
-        if (!is_null($index) && !is_null($uri))
-        {
+        if (($index !== null) && !($uri !== null)) {
             $this->missingImg[] = ['value' => $index . ' : ' . $uri];
         }
 
-        if (is_null($index) && !is_null($uri))
-        {
+        if (($index === null) && ($uri !== null)) {
             $this->missingImg[] = ['value' => $uri];
         }
 
-        if (!is_null($index) && is_null($uri))
-        {
+        if (($index !== null) && ($uri === null)) {
             $this->missingImg[] = ['value' => $index];
         }
     }

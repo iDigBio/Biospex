@@ -1,10 +1,14 @@
-<?php  namespace App\Services\Process;
+<?php 
+
+namespace App\Services\Process;
 
 use App\Repositories\Contracts\Meta;
 use App\Services\Report\Report;
+use Illuminate\Support\Facades\Config;
 
 class MetaFile
 {
+
     protected $xml;
     protected $report;
     protected $core = null;
@@ -32,7 +36,7 @@ class MetaFile
     {
         $this->xml = $xml;
         $this->report = $report;
-        $this->metaFileRowTypes = \Config::get('config.metaFileRowTypes');
+        $this->metaFileRowTypes = Config::get('config.metaFileRowTypes');
         $this->meta = $meta;
     }
 
@@ -76,8 +80,6 @@ class MetaFile
             'project_id' => $projectId,
             'xml'        => $meta,
         ]);
-
-        return;
     }
 
     /**
@@ -85,10 +87,8 @@ class MetaFile
      */
     public function loadCoreNode()
     {
-        $query = "//ns:archive/ns:core";
+        $query = '//ns:archive/ns:core';
         $this->core = $this->xml->xpathQuery($query, true);
-
-        return;
     }
 
     /**
@@ -97,7 +97,8 @@ class MetaFile
      */
     public function loadExtensionNode()
     {
-        foreach ($this->metaFileRowTypes as $rowType => $fileNames) {
+        foreach ($this->metaFileRowTypes as $rowType => $fileNames)
+        {
             foreach ($fileNames as $fileName)
             {
                 if ($this->findExtensionFile($fileName))
@@ -110,7 +111,6 @@ class MetaFile
         $this->report->addError(trans('emails.error_extension_file', ['file' => $this->file]));
         $this->report->reportSimpleError();
 
-        return;
     }
 
     protected function findExtensionFile($fileName)
@@ -126,8 +126,9 @@ class MetaFile
      */
     private function checkExtensionRowType()
     {
-        $rowType = strtolower($this->extension->attributes->getNamedItem("rowType")->nodeValue);
-        if (isset($this->metaFileRowTypes[$rowType])) {
+        $rowType = strtolower($this->extension->attributes->getNamedItem('rowType')->nodeValue);
+        if (isset($this->metaFileRowTypes[$rowType]))
+        {
             return;
         }
 
@@ -136,7 +137,6 @@ class MetaFile
         ));
         $this->report->reportSimpleError();
 
-        return;
     }
 
     /**
@@ -144,10 +144,9 @@ class MetaFile
      */
     private function setMediaIsCore()
     {
-        $rowType = $this->core->attributes->getNamedItem("rowType")->nodeValue;
+        $rowType = $this->core->attributes->getNamedItem('rowType')->nodeValue;
         $this->mediaIsCore = preg_match('/occurrence/i', $rowType) ? false : true;
 
-        return;
     }
 
     /**
@@ -158,11 +157,10 @@ class MetaFile
     private function setCoreFile()
     {
         $this->coreFile = $this->core->nodeValue;
-        if (empty($this->coreFile)) {
+        if (empty($this->coreFile))
+        {
             throw new \Exception(trans('emails.error_core_file_missing'));
         }
-
-        return;
     }
 
     /**
@@ -171,8 +169,6 @@ class MetaFile
     private function setExtensionFile()
     {
         $this->extensionFile = $this->extension->nodeValue;
-
-        return;
     }
 
     /**
@@ -182,15 +178,14 @@ class MetaFile
      */
     private function setCoreCsvSettings()
     {
-        $delimiter = $this->core->attributes->getNamedItem("fieldsTerminatedBy")->nodeValue;
-        $this->coreDelimiter = ($delimiter == "\\t") ? "\t" : $delimiter;
-        $this->coreEnclosure = $this->core->attributes->getNamedItem("fieldsEnclosedBy")->nodeValue;
+        $delimiter = $this->core->attributes->getNamedItem('fieldsTerminatedBy')->nodeValue;
+        $this->coreDelimiter = ($delimiter === "\\t") ? "\t" : $delimiter;
+        $this->coreEnclosure = $this->core->attributes->getNamedItem('fieldsEnclosedBy')->nodeValue;
 
-        if (empty($this->coreDelimiter)) {
+        if (empty($this->coreDelimiter))
+        {
             throw new \Exception(trans('emails.error_csv_core_delimiter'));
         }
-
-        return;
     }
 
     /**
@@ -200,15 +195,14 @@ class MetaFile
      */
     private function setExtensionCsvSettings()
     {
-        $delimiter = $this->extension->attributes->getNamedItem("fieldsTerminatedBy")->nodeValue;
-        $this->extDelimiter = ($delimiter == "\\t") ? "\t" : $delimiter;
-        $this->extEnclosure = $this->extension->attributes->getNamedItem("fieldsEnclosedBy")->nodeValue;
+        $delimiter = $this->extension->attributes->getNamedItem('fieldsTerminatedBy')->nodeValue;
+        $this->extDelimiter = ($delimiter === "\\t") ? "\t" : $delimiter;
+        $this->extEnclosure = $this->extension->attributes->getNamedItem('fieldsEnclosedBy')->nodeValue;
 
-        if (empty($this->extDelimiter)) {
+        if (empty($this->extDelimiter))
+        {
             throw new \Exception(trans('emails.error_csv_ext_delimiter'));
         }
-
-        return;
     }
 
     /**
@@ -218,24 +212,26 @@ class MetaFile
      */
     private function setMetaFields($type)
     {
-        foreach ($this->$type->childNodes as $child) {
-            if ($child->tagName == "files") {
+        foreach ($this->$type->childNodes as $child)
+        {
+            if ($child->tagName === 'files')
+            {
                 continue;
             }
 
-            $index = $child->attributes->getNamedItem("index")->nodeValue;
+            $index = $child->attributes->getNamedItem('index')->nodeValue;
 
-            if ($child->tagName == 'id' || $child->tagName == 'coreid') {
+            if ($child->tagName === 'id' || $child->tagName === 'coreid')
+            {
                 $this->metaFields[$type][$index] = $child->tagName;
                 continue;
             }
 
-            $qualified = $child->attributes->getNamedItem("term")->nodeValue;
+            $qualified = $child->attributes->getNamedItem('term')->nodeValue;
 
             $this->metaFields[$type][$index] = $qualified;
         }
 
-        return;
     }
 
     /**

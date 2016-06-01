@@ -3,7 +3,6 @@
 use App\Jobs\BuildOcrBatches;
 use App\Services\Mailer\BiospexMailer;
 use App\Repositories\Contracts\Import;
-use App\Repositories\Contracts\OcrQueue;
 use App\Repositories\Contracts\Project;
 use App\Repositories\Contracts\User;
 use App\Services\Process\DarwinCore;
@@ -16,8 +15,9 @@ use Exception;
 
 class DarwinCoreFileImportQueue extends QueueAbstract
 {
+
     use DispatchesJobs;
-    
+
     public $subjectImportDir;
     /**
      * @var Filesystem
@@ -92,7 +92,8 @@ class DarwinCoreFileImportQueue extends QueueAbstract
         DarwinCore $process,
         Xml $xml,
         BiospexMailer $mailer
-    ) {
+    )
+    {
         $this->filesystem = $filesystem;
         $this->import = $import;
         $this->project = $project;
@@ -104,7 +105,8 @@ class DarwinCoreFileImportQueue extends QueueAbstract
 
         $this->scratchDir = Config::get('config.scratch_dir');
         $this->subjectImportDir = Config::get('config.subject_import_dir');
-        if (! $this->filesystem->isDirectory($this->subjectImportDir)) {
+        if (!$this->filesystem->isDirectory($this->subjectImportDir))
+        {
             $this->filesystem->makeDirectory($this->subjectImportDir);
         }
     }
@@ -122,15 +124,16 @@ class DarwinCoreFileImportQueue extends QueueAbstract
         $this->job = $job;
         $this->data = $data;
 
-        $import = $this->import->find($this->data['id']);
-        $user = $this->user->find($import->user_id);
-        $project = $this->project->findWith($import->project_id, ['workflow.actors']);
+        $import = $this->import->skipCache()->find($this->data['id']);
+        $user = $this->user->skipCache()->find($import->user_id);
+        $project = $this->project->skipCache()->with(['workflow.actors'])->find($import->project_id);
 
         $fileName = pathinfo($this->subjectImportDir . '/' . $import->file, PATHINFO_FILENAME);
         $this->scratchFileDir = $this->scratchDir . '/' . $import->id . '-' . md5($fileName);
         $zipFile = $this->subjectImportDir . '/' . $import->file;
 
-        try {
+        try
+        {
             $this->makeTmp();
             $this->unzip($zipFile);
 
@@ -141,15 +144,20 @@ class DarwinCoreFileImportQueue extends QueueAbstract
 
             $this->report->complete($user->email, $project->title, $duplicates, $rejects);
 
-            $this->dispatch((new BuildOcrBatches($project))->onQueue(Config::get('config.beanstalkd.ocr')));
+            if ($this->process->getSubjectCount() > 0)
+            {
+                $this->dispatch((new BuildOcrBatches($project))->onQueue(Config::get('config.beanstalkd.ocr')));
+            }
 
             $this->filesystem->deleteDirectory($this->scratchFileDir);
             $this->filesystem->delete($zipFile);
-            $this->import->destroy($import->id);
+            $this->import->delete($import->id);
 
-        } catch (Exception $e) {
+        }
+        catch (Exception $e)
+        {
             $import->error = 1;
-            $import->save();
+            $this->import->update($import->toArray(), $import->id);
             $this->report->addError(trans('emails.error_import_process',
                 ['id' => $import->id, 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]
             ));
@@ -157,8 +165,6 @@ class DarwinCoreFileImportQueue extends QueueAbstract
         }
 
         $this->delete();
-
-        return;
     }
 
     /**
@@ -168,19 +174,21 @@ class DarwinCoreFileImportQueue extends QueueAbstract
      */
     protected function makeTmp()
     {
-        if (! $this->filesystem->isDirectory($this->scratchFileDir)) {
-            if (! $this->filesystem->makeDirectory($this->scratchFileDir, 0777, true)) {
+        if (!$this->filesystem->isDirectory($this->scratchFileDir))
+        {
+            if (!$this->filesystem->makeDirectory($this->scratchFileDir, 0777, true))
+            {
                 throw new Exception(trans('emails.error_create_dir', ['directory' => $this->scratchFileDir]));
             }
         }
 
-        if (! $this->filesystem->isWritable($this->scratchFileDir)) {
-            if (! chmod($this->scratchFileDir, 0777)) {
+        if (!$this->filesystem->isWritable($this->scratchFileDir))
+        {
+            if (!chmod($this->scratchFileDir, 0777))
+            {
                 throw new Exception(trans('emails.error_write_dir', ['directory' => $this->scratchFileDir]));
             }
         }
-
-        return;
     }
 
     /**
@@ -193,7 +201,5 @@ class DarwinCoreFileImportQueue extends QueueAbstract
     public function unzip($zipFile)
     {
         shell_exec("unzip $zipFile -d $this->scratchFileDir");
-
-        return;
     }
 }

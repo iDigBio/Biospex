@@ -131,7 +131,7 @@ class OcrRequest
 
             $subject = $this->subject->find($id);
             $subject->ocr = $data->ocr;
-            $subject->save();
+            $this->subject->update($subject->toArray(), $subject->_id);
         }
 
         return $csv;

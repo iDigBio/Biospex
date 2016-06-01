@@ -31,6 +31,5 @@ class RecordSetImport extends ImportServiceAbstract
         ];
         $this->queue->push('App\Services\Queue\RecordSetImportQueue', $data, $this->tube);
 
-        return;
     }
 }

@@ -1,4 +1,6 @@
-<?php namespace App\Services\Process;
+<?php 
+
+namespace App\Services\Process;
 
 ini_set("auto_detect_line_endings", "1");
 ini_set("memory_limit", "7G");
@@ -19,7 +21,7 @@ class DarwinCore
 
     /**
      * DarwinCoreCsv Class
-     * @var DarwinCoreCsv
+     * @var DarwinCoreCsvImport
      */
     public $csv;
 
@@ -114,7 +116,14 @@ class DarwinCore
      */
     public function setFileType($loadMedia)
     {
-        return ($loadMedia === true) ? ($this->mediaIsCore ? 'core' : 'extension') : ($this->mediaIsCore ? 'extension' : 'core');
+        if ($loadMedia === true)
+        {
+            return $this->mediaIsCore ? 'core' : 'extension';
+        }
+        else
+        {
+            return $this->mediaIsCore ? 'extension' : 'core';
+        }
     }
 
     /**
@@ -170,5 +179,13 @@ class DarwinCore
     public function getRejectedMedia()
     {
         return $this->csv->getRejectedMedia();
+    }
+
+    /**
+     * @return int
+     */
+    public function getSubjectCount()
+    {
+        return $this->csv->subjectCount;
     }
 }

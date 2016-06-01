@@ -1,4 +1,6 @@
-<?php  namespace App\Services\Process;
+<?php
+
+namespace App\Services\Process;
 
 use App\Repositories\Contracts\Subject;
 use App\Repositories\Contracts\Transcription;
@@ -36,7 +38,7 @@ class NfnTranscription
     protected $config;
 
     /**
-     * @var Validator
+     * @var Validation
      */
     protected $factory;
 
@@ -158,9 +160,9 @@ class NfnTranscription
     {
         if ($this->checkCollection($combined)) {
             $filename = strtok(trim($combined['filename']), '.');
-            $subject = $this->subject->findByFilename($filename);
+            $subject = $this->subject->skipCache()->where(['accessURI', 'like', '%' . $filename . '%'])->first();
         } else {
-            $subject = $this->subject->find(trim($combined['subject_id']));
+            $subject = $this->subject->skipCache()->find(trim($combined['subject_id']));
         }
 
         return empty($subject) ? false : $subject;

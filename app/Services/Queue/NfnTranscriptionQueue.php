@@ -82,7 +82,7 @@ class NfnTranscriptionQueue extends QueueAbstract
         $this->job = $job;
         $this->data = $data;
 
-        $import = $this->import->findWith($this->data['id'], ['project', 'user']);
+        $import = $this->import->with(['project', 'user'])->find($this->data['id']);
         $file = $this->transcriptionImportDir . '/' . $import->file;
 
         try {
@@ -93,10 +93,10 @@ class NfnTranscriptionQueue extends QueueAbstract
             
             $this->report->complete($import->user->email, $import->project->title, $csv);
             $this->filesystem->delete($file);
-            $this->import->destroy($import->id);
+            $this->import->delete($import->id);
         } catch (Exception $e) {
             $import->error = 1;
-            $import->save();
+            $this->import->update($import->toArray(), $import->id);
             $this->report->addError(trans('emails.error_import_process',
                 ['id' => $import->id, 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]
             ));
