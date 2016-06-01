@@ -133,6 +133,7 @@ class AuthController extends Controller
     public function postRegister(RegisterFormRequest $request, Event $dispatcher)
     {
         $user = $this->dispatch(new RegisterUser($request));
+        
         if ($user)
         {
             $dispatcher->fire(new UserRegisteredEvent($user));

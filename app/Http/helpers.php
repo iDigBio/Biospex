@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Transcription;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
 
@@ -187,8 +186,8 @@ function transcriptions_total($count)
  */
 function transcriptions_completed($expeditionId)
 {
-    $transcription = new Transcription();
-    return $transcription->getCountByExpeditionId($expeditionId);
+    $transcription = app(\App\Repositories\Contracts\Transcription::class);
+    return $transcription->where(['expedition_id' => $expeditionId])->count();
 }
 
 /**

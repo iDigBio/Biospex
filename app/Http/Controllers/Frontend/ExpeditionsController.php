@@ -124,7 +124,8 @@ class ExpeditionsController extends Controller
     }
 
     /**
-     * Store new expedition
+     * Store new expedition.
+     *
      * @param ExpeditionFormRequest $request
      * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
@@ -348,7 +349,7 @@ class ExpeditionsController extends Controller
     public function delete($projectId, $expeditionId)
     {
         $user = Request::user();
-        $project = $this->project->findWith($projectId, ['group.permissions']);
+        $project = $this->project->with([['group.permissions']])->find($projectId);
 
         if ( ! $this->checkPermissions($user, [$project], 'delete'))
         {
@@ -364,7 +365,7 @@ class ExpeditionsController extends Controller
             try {
                 $subjects = $this->subject->getSubjectIds($projectId, null, $expeditionId);
                 $this->subject->detachSubjects($subjects, $expeditionId);
-                $this->expedition->destroy($expeditionId);
+                $this->expedition->delete($expeditionId);
 
                 session_flash_push('success', trans('expeditions.expedition_deleted'));
             } catch (Exception $e) {

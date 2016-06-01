@@ -278,7 +278,7 @@ class ProjectsController extends Controller
         $subjectAssignedCount = $subject->skipCache()
             ->where(['project_id' => $id])
             ->whereRaw(['expedition_ids' => ['$not' => ['$size' => 0]]])
-            ->get()->count();
+            ->count();
 
         return view('frontend.projects.explore', compact('project', 'subjectAssignedCount'));
     }
@@ -299,7 +299,7 @@ class ProjectsController extends Controller
             return redirect()->route('projects.get.index');
         }
 
-        $this->project->destroy($id);
+        $this->project->delete($id);
         session_flash_push('success', trans('projects.project_destroyed'));
 
         return redirect()->route('projects.get.index');

@@ -152,7 +152,8 @@ class GroupsController extends Controller
         }
 
         $group->name = $group->name === 'admins' ? $group->name : $request->get('name');
-        $group->label = $group->name === 'admins' ? $group->name : $request->get('name');
+        $group->label = $group->label === 'Admins' ? $group->label : $request->get('name');
+        
         $this->group->update($group->toArray(), $group->id);
 
         session_flash_push('success', trans('groups.updated'));

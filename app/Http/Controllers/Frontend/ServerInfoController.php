@@ -4,16 +4,13 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Events\PollOcrEvent;
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\OcrQueue;
 use DOMDocument;
 use GuzzleHttp\Pool;
-use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Facades\Config;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Events\Dispatcher;
-use MongoCollection;
 
 class ServerInfoController extends Controller
 {
@@ -132,11 +129,10 @@ class ServerInfoController extends Controller
         return view('frontend.ocr', compact('elements'));
     }
     
-    public function pollOcr(Dispatcher $dispatcher, OcrQueue $ocrQueue)
+    public function pollOcr(Dispatcher $dispatcher)
     {
         if (Request::ajax()) {
-
-            $dispatcher->fire(new PollOcrEvent($ocrQueue));
+            $dispatcher->fire(new PollOcrEvent());
         }
     }
 

@@ -75,7 +75,7 @@ class InvitesController extends Controller
     public function store(InviteFormRequest $request, $id)
     {
         $user = Request::user();
-        $group = $this->group->findWith($id, ['invites']);
+        $group = $this->group->with(['invites'])->find($id);
 
         if ( ! $this->checkPermissions($user, [$group], 'update'))
         {

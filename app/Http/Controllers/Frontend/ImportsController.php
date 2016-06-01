@@ -50,7 +50,7 @@ class ImportsController extends Controller
      */
     public function import($id)
     {
-        $project = $this->project->findWith($id, ['group']);
+        $project = $this->project->with(['group'])->find($id);
 
         return view('frontend.projects.add', compact('project'));
     }
