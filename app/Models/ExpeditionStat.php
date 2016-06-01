@@ -1,4 +1,6 @@
-<?php namespace App\Models;
+<?php 
+
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -40,16 +42,4 @@ class ExpeditionStat extends Model
     {
         return $this->belongsTo(Expedition::class);
     }
-
-    /**
-     * Find by expedition id.
-     * 
-     * @param $expeditionId
-     * @return mixed
-     */
-    public function findByExpeditionId($expeditionId)
-    {
-        return $this->where('expedition_id', '=', $expeditionId)->first();
-    }
-
 }

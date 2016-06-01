@@ -1,4 +1,6 @@
-<?php namespace App\Models;
+<?php 
+
+namespace App\Models;
 
 use Illuminate\Support\Facades\Config;
 use Jenssegers\Eloquent\Model as Eloquent;
@@ -90,6 +92,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     ];
 
     /**
+     * Project constructor.
+     * 
      * @param array $attributes
      */
     public function __construct(array $attributes = [])
@@ -124,6 +128,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
+     * Group relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function group()
@@ -132,6 +138,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
+     * Workflow relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function workflow()
@@ -140,6 +148,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
+     * Header relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function header()
@@ -148,6 +158,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
+     * Expedition relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function expeditions()
@@ -156,6 +168,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
+     * Subject relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function subjects()
@@ -164,6 +178,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
+     * Meta relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function metas()
@@ -172,6 +188,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
+     * Imports relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function imports()
@@ -180,24 +198,15 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
+     * OcrQueue relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function ocrQueue()
     {
         return $this->hasMany(OcrQueue::class);
     }
-
-    /**
-     * Get project by slug
-     *
-     * @param $slug
-     * @return \Illuminate\Database\Eloquent\Builder|static
-     */
-    public function bySlug($slug)
-    {
-        return $this->with(['group', 'expeditions.stat', 'expeditions.actors'])->where('slug', '=', $slug)->first();
-    }
-
+    
     /**
      * Find by uuid.
      *
@@ -220,7 +229,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
-     * Mutator for target_fields
+     * Mutator for target_fields.
      *
      * @param $input
      */
@@ -255,7 +264,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
-     * Accessor for target_fields
+     * Accessor for target_fields.
      *
      * @param $value
      * @return mixed
@@ -273,32 +282,32 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     public function setAdvertiseAttribute($input)
     {
         $extra = isset($input['advertiseExtra']) ? $input['advertiseExtra'] : '';
-
+        
         $build = [];
         $ppsrFields = Config::get('config.ppsr');
 
         foreach ($ppsrFields as $field => $data) {
             foreach ($data as $type => $value) {
-                if ($type == 'private') {
+                if ($type === 'private') {
                     $build[$field] = $this->{$value};
                 }
 
-                if ($type == 'date') {
+                if ($type === 'date') {
                     $build[$field] = isset($this->{$value}) ?
                         format_date($this->{$value}, 'Y-m-d m:d:s') : format_date(null);
                 }
 
-                if ($type == 'column') {
+                if ($type === 'column') {
                     $build[$field] = $input[$value];
                     continue;
                 }
 
-                if ($type == 'value') {
+                if ($type === 'value') {
                     $build[$field] = $value;
                     continue;
                 }
 
-                if ($type == 'array') {
+                if ($type === 'array') {
                     $combined = '';
                     foreach ($value as $col) {
                         $combined .= $input[$col] . ", ";
@@ -307,13 +316,13 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
                     continue;
                 }
 
-                if ($type == 'url') {
-                    if ($value == 'slug') {
+                if ($type === 'url') {
+                    if ($value === 'slug') {
                         $build[$field] = $_ENV['APP_URL'] . '/' . $this->{$value};
                         continue;
                     }
 
-                    if ($value == 'logo') {
+                    if ($value === 'logo') {
                         $build[$field] = $_ENV['APP_URL'] . $this->{$value}->url();
                         continue;
                     }
@@ -329,20 +338,5 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     public function getAdvertiseAttribute($value)
     {
         return unserialize($value);
-    }
-
-    public function getSubjectsAssignedCount($project)
-    {
-        return $project->subjectsAssignedCount;
-    }
-
-    /**
-     * Get counts attribute
-     *
-     * @return int
-     */
-    public function getSubjectsAssignedCountAttribute()
-    {
-        return $this->subjects()->whereRaw(['expedition_ids' => ['$not' => ['$size' => 0]]])->get()->count();
     }
 }

@@ -1,4 +1,6 @@
-<?php namespace App\Models;
+<?php 
+
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,26 +26,4 @@ class Property extends Model
         'short',
         'namespace'
     ];
-
-    /**
-     * Find by qualified name
-     *
-     * @param $name
-     * @return mixed
-     */
-    public function findByQualified($name)
-    {
-        return $this->where('qualified', '=', $name)->first();
-    }
-
-    /**
-     * Find by short name
-     *
-     * @param $name
-     * @return mixed
-     */
-    public function findByShort($name)
-    {
-        return $this->where('short', '=', $name)->first();
-    }
 }

@@ -8,7 +8,7 @@ use App\Models\Permission;
 trait HasGroup
 {
     /**
-     * A user may have multiple groups.
+     * Group relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
@@ -18,7 +18,8 @@ trait HasGroup
     }
 
     /**
-     * Assign the given group to the user
+     * Assign the given group to the user.
+     * 
      * @param $group
      * @return \Illuminate\Database\Eloquent\Model
      */
@@ -52,8 +53,10 @@ trait HasGroup
     public function hasPermission($group, $permission)
     {
         if ( ! $this->hasGroup($group))
+        {
             return false;
-
+        }
+        
         return $group->permissions->contains('name', $permission);
     }
 }

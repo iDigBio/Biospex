@@ -1,4 +1,6 @@
-<?php namespace App\Models;
+<?php 
+
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +30,8 @@ class Header extends Model
     ];
 
     /**
+     * Project relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project()
@@ -36,17 +40,8 @@ class Header extends Model
     }
 
     /**
-     * Get header by project id
-     * @param $id
-     * @return \Illuminate\Database\Eloquent\Model|null|static
-     */
-    public function getByProjectId($id)
-    {
-        return $this->where('project_id', '=', $id)->first();
-    }
-
-    /**
-     * Accessor for header column
+     * Accessor for header column.
+     * 
      * @param $value
      * @return mixed
      */
@@ -56,7 +51,8 @@ class Header extends Model
     }
 
     /**
-     * Mutator for header column
+     * Mutator for header column.
+     * 
      * @param $value
      */
     public function setHeaderAttribute($value)

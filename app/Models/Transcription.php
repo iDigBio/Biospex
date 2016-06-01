@@ -80,27 +80,5 @@ class Transcription extends Eloquent
     {
         return $value->toDateTime()->format('Y-m-d H:i:s');
     }
-
-    /**
-     * Get count using expedition id.
-     * 
-     * @param $expeditionId
-     * @return mixed
-     */
-    public function getCountByExpeditionId($expeditionId)
-    {
-        return $this->where('expedition_id', $expeditionId)->count();
-    }
-
-    /**
-     * Get earliest finished date of transcriptions.
-     * 
-     * @param $project_id
-     * @param $expedition_id
-     * @return mixed
-     */
-    public function getEarliestDate($project_id, $expedition_id)
-    {
-        return $this->where('project_id', $project_id)->where('expedition_id', $expedition_id)->orderBy('finished_at', 'asc')->first();
-    }
+    
 }

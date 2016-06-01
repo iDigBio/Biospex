@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Permission extends Model
 {
     /**
-     * A permission can be applied to Group.
+     * Group relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */

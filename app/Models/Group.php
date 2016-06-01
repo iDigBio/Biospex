@@ -31,11 +31,12 @@ class Group extends Model
         'uuid',
         'user_id',
         'name',
+        'label',
         'permissions',
     ];
 
     /**
-     * Returns owner of the group
+     * User as owner relationship
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -44,18 +45,28 @@ class Group extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /**
+     * Users relationship.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function users()
     {
         return $this->belongsToMany(User::class);
     }
 
+    /**
+     * Permissions relationship.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function permissions()
     {
         return $this->belongsToMany(Permission::class);
     }
 
     /**
-     * Return projects owned by the group
+     * Projects relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -64,17 +75,35 @@ class Group extends Model
         return $this->hasMany(Project::class)->orderBy('title');
     }
 
+    /**
+     * Invites relationship.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function invites()
     {
         return $this->hasMany(Invite::class);
     }
 
-    public function findAllGroupsWithProjects($allGroups)
+    /**
+     * Set name attribute.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function setNameAttribute($value)
     {
-        foreach ($allGroups as $group) {
-            $ids[] = $group->id;
-        }
+        $this->attributes['name'] = strtolower($value);
+    }
 
-        return $groups = $this->has(Project::class)->whereIn('id', $ids)->orderBy('name')->get();
+    /**
+     * Set label attribute.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function setLabelAttribute($value)
+    {
+        $this->attributes['label'] = ucwords($value);
     }
 }

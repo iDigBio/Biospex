@@ -51,6 +51,8 @@ class User extends Model implements AuthenticatableContract,
     protected $hashableAttributes = ['password'];
 
     /**
+     * Import relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function imports()
@@ -59,22 +61,13 @@ class User extends Model implements AuthenticatableContract,
     }
 
     /**
+     * Profile relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function profile()
     {
         return $this->hasOne(Profile::class);
-    }
-
-    /**
-     * Find user by email.
-     *
-     * @param $email
-     * @return mixed
-     */
-    public function findByEmail($email)
-    {
-        return $this->whereEmail($email)->first();
     }
 
     /**

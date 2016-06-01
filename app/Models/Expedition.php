@@ -1,4 +1,6 @@
-<?php namespace App\Models;
+<?php 
+
+namespace App\Models;
 
 use Jenssegers\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,6 +11,9 @@ class Expedition extends Eloquent
     use SoftDeletes;
     use UuidTrait;
 
+    /**
+     * @var array
+     */
     protected $dates = ['deleted_at'];
 
     /**
@@ -18,8 +23,14 @@ class Expedition extends Eloquent
      */
     protected $table = 'expeditions';
 
+    /**
+     * @var string
+     */
     protected $connection = 'mysql';
 
+    /**
+     * @var string
+     */
     protected $primaryKey = 'id';
 
     /**
@@ -34,17 +45,9 @@ class Expedition extends Eloquent
         'description',
         'keywords',
     ];
-
+    
     /**
-     * Boot function to add model events
-     */
-    public static function boot()
-    {
-        parent::boot();
-    }
-
-    /**
-     * Belongs to relationship
+     * Project relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -54,6 +57,8 @@ class Expedition extends Eloquent
     }
 
     /**
+     * ExpeditionStat relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function stat()
@@ -62,7 +67,7 @@ class Expedition extends Eloquent
     }
 
     /**
-     * Belongs to many
+     * Subject relationship.
      * $expedition->subjects()->attach($subject) adds expedition ids in subjects
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -73,6 +78,8 @@ class Expedition extends Eloquent
     }
 
     /**
+     * WorkflowManager relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function workflowManager()
@@ -81,6 +88,8 @@ class Expedition extends Eloquent
     }
 
     /**
+     * Download relationship.
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function downloads()
@@ -89,6 +98,8 @@ class Expedition extends Eloquent
     }
 
     /**
+     * Actor relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function actors()
@@ -127,7 +138,7 @@ class Expedition extends Eloquent
      */
     public function getUuidAttribute($value)
     {
-        if (is_null($value)) {
+        if ($value === null) {
             return;
         }
 
@@ -137,7 +148,7 @@ class Expedition extends Eloquent
     }
 
     /**
-     * Get counts attribute
+     * Get counts attribute.
      *
      * @return int
      */
@@ -147,7 +158,8 @@ class Expedition extends Eloquent
     }
 
     /**
-     * Get all expeditions for user
+     * Get all expeditions for user.
+     * 
      * @param $id
      * @return mixed
      */

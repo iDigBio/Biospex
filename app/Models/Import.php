@@ -1,4 +1,6 @@
-<?php namespace App\Models;
+<?php 
+
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,6 +21,8 @@ class Import extends Model
     ];
 
     /**
+     * Project relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project()
@@ -27,21 +31,12 @@ class Import extends Model
     }
 
     /**
+     * User relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Find by error.
-     *
-     * @param $error
-     * @return mixed
-     */
-    public function findByError($error)
-    {
-        return $this->where('error', '=', $error)->get();
     }
 }

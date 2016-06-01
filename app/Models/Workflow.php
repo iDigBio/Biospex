@@ -1,4 +1,6 @@
-<?php namespace App\Models;
+<?php 
+
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,9 +13,14 @@ class Workflow extends Model
      */
     protected $table = 'workflows';
 
+    /**
+     * @var array
+     */
     protected $fillable = ['workflow'];
 
     /**
+     * Actor relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function actors()
@@ -22,15 +29,12 @@ class Workflow extends Model
     }
 
     /**
+     * Project relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project()
     {
         return $this->hasMany(Project::class);
-    }
-
-    public function selectList($value, $id)
-    {
-        return $this->orderBy($value)->lists($value, $id)->toArray();
     }
 }

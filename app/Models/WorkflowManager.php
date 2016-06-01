@@ -42,27 +42,4 @@ class WorkflowManager extends Model
     {
         return $query->where('expedition_id', '=', $id);
     }
-
-    /**
-     * Get workflow process by expedition id
-     *
-     * @param $id
-     * @return mixed
-     */
-    public function findByExpeditionId($id)
-    {
-        return $this->expeditionId($id)->first();
-    }
-
-    /**
-     * Find expedition with relationships
-     * 
-     * @param $id
-     * @param $with
-     * @return mixed
-     */
-    public function findByExpeditionIdWith($id, $with)
-    {
-        return $this->with($with)->expeditionId($id)->get();
-    }
 }

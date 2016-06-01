@@ -96,51 +96,6 @@ class Subject extends Eloquent
     }
 
     /**
-     * Find by project id
-     *
-     * @param $project_id
-     * @return mixed
-     */
-    public function findByProjectId($project_id)
-    {
-        return $this->projectid($project_id)->get();
-    }
-
-    /**
-     * Find by project id and empty ocr
-     *
-     * @param $project_id
-     * @return mixed
-     */
-    public function findByProjectIdOcr($project_id)
-    {
-        return $this->projectid($project_id)->where('ocr', '')->get();
-    }
-
-    /**
-     * Find by project id and occurrence id.
-     *
-     * @param $project_id
-     * @param $occurrence_id
-     * @return mixed
-     */
-    public function findByProjectOccurrenceId($project_id, $occurrence_id)
-    {
-        return $this->projectid($project_id)->where('occurrence.id', $occurrence_id)->get();
-    }
-
-    /**
-     * Get count by expedition id.
-     * 
-     * @param $expeditionId
-     * @return mixed
-     */
-    public function getCountByExpeditionId($expeditionId)
-    {
-        return $this->where('expedition_ids', '=', $expeditionId)->count();
-    }
-
-    /**
      * Return count of project subjects not assigned to expeditions
      *
      * @param $projectId
@@ -219,18 +174,7 @@ class Subject extends Eloquent
         }
 
     }
-
-    /**
-     * Retrieve subject via accessURI filename (extensions not included).
-     *
-     * @param $filename
-     * @return mixed
-     */
-    public function findByFilename($filename)
-    {
-        return $this->where('accessURI', 'like', '%' . $filename . '%')->first();
-    }
-
+    
     /**
      * Calculate the number of rows. It's used for paging the result.
      *

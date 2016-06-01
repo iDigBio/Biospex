@@ -1,4 +1,6 @@
-<?php namespace App\Models;
+<?php 
+
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,12 +21,19 @@ class Actor extends Model
         'private'
     ];
 
+    /**
+     * Workflow relationship.
+     * 
+     * @return mixed
+     */
     public function workflows()
     {
         return $this->belongsToMany(Workflow::class)->withPivot('order')->orderBy('order');
     }
 
     /**
+     * Download relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function downloads()
@@ -32,21 +41,15 @@ class Actor extends Model
         return $this->hasMany(Download::class);
     }
 
+    /**
+     * Expedition relationship.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function expeditions()
     {
         return $this->belongsToMany(Expedition::class, 'actor_expedition')
             ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'error', 'queued', 'completed')
             ->withTimestamps();
-    }
-
-    /**
-     * Find record using title
-     * 
-     * @param $value
-     * @return mixed
-     */
-    public function findByTitle($value)
-    {
-        return $this->where('title', '=', $value)->first();
     }
 }

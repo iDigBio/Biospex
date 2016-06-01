@@ -57,30 +57,4 @@ class OcrQueue extends Model
     {
         return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
     }
-
-    public function findByProjectId($id){
-        return $this->whereProjectId($id)->first();
-    }
-
-    public function findFirstWith($with)
-    {
-        $query = $this->with($with);
-        return $query->where('status', '<=', 1)->where('error', 0)->orderBy('id', 'asc')->first();
-    }
-
-    public function allWith($with)
-    {
-        $query = $this->with($with);
-        return $query->where('status', '<', 2)->where('error', 0)->orderBy('id', 'asc')->get();
-    }
-
-    public function getSubjectRemainingSum($id)
-    {
-        return (int) $this->where('id', '<', $id)->sum('subject_remaining');
-    }
-    
-    public function updateOcrError($id)
-    {
-        return $this->where('ocr_csv_id', '=', $id)->update(['error' => 1]);
-    }
 }

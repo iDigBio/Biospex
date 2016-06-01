@@ -1,4 +1,6 @@
-<?php namespace App\Models;
+<?php 
+
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,15 +22,12 @@ class OcrCsv extends Model
     ];
 
     /**
+     * OcrQueue relationship.
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function ocrQueue()
     {
         return $this->hasMany(OcrQueue::class);
-    }
-
-    public function createOrFirst($attributes)
-    {
-        return $this->firstOrCreate($attributes);
     }
 }
