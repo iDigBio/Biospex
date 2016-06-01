@@ -2,5 +2,4 @@
 
 interface Header extends Repository
 {
-    public function getByProjectId($id);
 }

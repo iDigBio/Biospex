@@ -2,5 +2,4 @@
 
 interface User extends Repository
 {
-    public function findByEmail($email);
 }

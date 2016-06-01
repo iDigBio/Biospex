@@ -2,5 +2,4 @@
 
 interface Download extends Repository
 {
-    public function getExpired();
 }

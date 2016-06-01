@@ -16,15 +16,5 @@ class HeaderRepository extends Repository implements Header, CacheableInterface
     {
         return \App\Models\Header::class;
     }
-
-    /**
-     * Find by project Id
-     *
-     * @param $id
-     * @return \Illuminate\Database\Eloquent\Model|null|static
-     */
-    public function getByProjectId($id)
-    {
-        return $this->model->getByProjectId($id);
-    }
+    
 }

@@ -17,10 +17,5 @@ class WorkflowRepository extends Repository implements Workflow, CacheableInterf
     {
         return \App\Models\Workflow::class;
     }
-
-    public function selectList($value, $id)
-    {
-        return $this->model->selectList($value, $id);
-    }
 }
 

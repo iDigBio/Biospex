@@ -17,15 +17,4 @@ class ImportRepository extends Repository implements Import, CacheableInterface
     {
         return \App\Models\Import::class;
     }
-
-    /**
-     * Find by error value.
-     *
-     * @param int $error
-     * @return Import
-     */
-    public function findByError($error = 0)
-    {
-        return $this->model->findByError($error);
-    }
 }

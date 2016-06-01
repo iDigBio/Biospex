@@ -3,5 +3,4 @@
 interface ExpeditionStat extends Repository
 {
 
-    public function findByExpeditionId($expeditionId);
 }

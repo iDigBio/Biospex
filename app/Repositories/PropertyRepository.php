@@ -17,26 +17,4 @@ class PropertyRepository extends Repository implements Property, CacheableInterf
     {
         return \App\Models\Property::class;
     }
-
-    /**
-     * Find by qualified name
-     *
-     * @param $name
-     * @return mixed
-     */
-    public function findByQualified($name)
-    {
-        return $this->model->findByQualified($name);
-    }
-
-    /**
-     * Find by short name
-     *
-     * @param $name
-     * @return mixed
-     */
-    public function findByShort($name)
-    {
-        return $this->model->findByShort($name);
-    }
 }

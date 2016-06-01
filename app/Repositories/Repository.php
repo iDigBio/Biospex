@@ -40,7 +40,17 @@ abstract class Repository
      */
     public function makeModel()
     {
-        return $this->model = $this->app->make($this->model());
+        $model = $this->app->make($this->model());
+        
+        return $this->model = $model;
+    }
+
+    /**
+     * Reset the model.
+     */
+    public function resetModel()
+    {
+        $this->makeModel();
     }
 
     /**
@@ -51,7 +61,11 @@ abstract class Repository
      */
     public function get(array $columns = ['*'])
     {
-        return $this->model->get($columns);
+        $result = $this->model->get($columns);
+        
+        $this->resetModel();
+        
+        return $result;
     }
 
     /**
@@ -62,7 +76,11 @@ abstract class Repository
      */
     public function first(array $columns = ['*'])
     {
-        return $this->model->first($columns);
+        $result =$this->model->first($columns);
+
+        $this->resetModel();
+
+        return $result;
     }
 
     /**
@@ -73,7 +91,11 @@ abstract class Repository
      */
     public function all(array $columns = ['*'])
     {
-        return $this->model->all($columns);
+        $result = $this->model->all($columns);
+
+        $this->resetModel();
+
+        return $result;
     }
 
     /**
@@ -85,7 +107,11 @@ abstract class Repository
      */
     public function find($id, array $columns = ['*'])
     {
-        return $this->model->find($id, $columns);
+        $result = $this->model->find($id, $columns);
+
+        $this->resetModel();
+
+        return $result;
     }
 
     /**
@@ -97,7 +123,25 @@ abstract class Repository
      */
     public function lists($value, $index)
     {
-        return $this->model->lists($value, $index);
+        $result = $this->model->lists($value, $index);
+
+        $this->resetModel();
+
+        return $result;
+    }
+
+    /**
+     * Return count of records.
+     *
+     * @return mixed
+     */
+    public function count()
+    {
+        $result =  $this->model->count();
+
+        $this->resetModel();
+
+        return $result;
     }
 
     /**
@@ -109,8 +153,11 @@ abstract class Repository
     public function create(array $attributes)
     {
         $model = $this->model->newInstance($attributes);
+        $model->save();
 
-        return $model->save();
+        $this->resetModel();
+
+        return $model;
     }
 
     /**
@@ -123,8 +170,11 @@ abstract class Repository
     public function update(array $attributes, $id)
     {
         $model = $this->model->findOrFail($id);
+        $model->fill($attributes)->save();
 
-        return $model->fill($attributes)->save();
+        $this->resetModel();
+
+        return $model;
     }
 
     /**
@@ -137,6 +187,8 @@ abstract class Repository
     {
         $model = $this->find($id);
 
+        $this->resetModel();
+
         return $model->delete();
     }
 
@@ -148,7 +200,11 @@ abstract class Repository
      */
     public function save($record)
     {
-        return $record->save();
+        $record->save();
+
+        $this->resetModel();
+        
+        return $record;
     }
 
     /**
@@ -175,36 +231,56 @@ abstract class Repository
     {
         $this->model = $this->model->whereNested(function ($query) use ($where)
         {
-            $this->buildWhere($query, $where);
+            $this->buildWhereClause($query, $where);
         });
         
         return $this;
     }
 
     /**
-     * Find data by multiple values in one field.
+     * Set orWhere clause.
      *
-     * @param $field
-     * @param array $values
+     * @param array $where
      * @return $this
      */
-    public function whereIn($field, array $values)
+    public function orWhere(array $where = [])
     {
-        $this->model = $this->model->whereIn($field, $values);
+        $this->model = $this->model->whereNested(function ($query) use ($where)
+        {
+            $this->buildWhereClause($query, $where, 'orWhere');
+        });
 
         return $this;
     }
 
     /**
-     * Find data by excluding multiple values in one field.
+     * Find data using whereIn.
      *
-     * @param $field
-     * @param array $values
+     * @param array $where
      * @return $this
      */
-    public function whereNotIn($field, array $values)
+    public function whereIn(array $where = [])
     {
-        $this->model = $this->model->whereNotIn($field, $values);
+        $this->model = $this->model->whereNested(function ($query) use ($where)
+        {
+            $this->buildWhereClause($query, $where, 'whereIn');
+        });
+
+        return $this;
+    }
+
+    /**
+     * Find data using whereNotIn.
+     *
+     * @param array $where
+     * @return $this
+     */
+    public function whereNotIn(array $where = [])
+    {
+        $this->model = $this->model->whereNested(function ($query) use ($where)
+        {
+            $this->buildWhereClause($query, $where, 'whereNotIn');
+        });
 
         return $this;
     }
@@ -219,7 +295,7 @@ abstract class Repository
     public function whereHas($relation, array $where = [])
     {
         $this->model = $this->model->whereHas($relation, function ($query) use ($where) {
-            $this->buildWhere($query, $where);
+            $this->buildWhereClause($query, $where);
         });
         
         return $this;
@@ -235,7 +311,7 @@ abstract class Repository
     public function orWhereHas($relation, array $where = [])
     {
         $this->model = $this->model->orWhereHas($relation, function ($query) use ($where) {
-            $this->buildWhere($query, $where);
+            $this->buildWhereClause($query, $where, 'orWhere');
         });
 
         return $this;
@@ -249,21 +325,56 @@ abstract class Repository
      */
     public function whereRaw(array $where = [])
     {
-        $this->model = $this->model->whereRaw($where);
-        
+        $this->model = $this->model->whereRaw(function ($query) use ($where) {
+            $this->buildWhereClause($query, $where, 'whereRaw');
+        });
+                
         return $this;
     }
 
     /**
-     * Set order by.
-     *
-     * @param $column
-     * @param string $sort
+     * Find records using whereDate.
+     * 
+     * @param array $where
      * @return $this
      */
-    public function orderBy($column, $sort = 'asc')
+    public function whereDate(array $where = [])
     {
-        $this->model = $this->model->orderBy($column, $sort);
+        $this->model = $this->model->whereDate(function ($query) use ($where) {
+            $this->buildWhereClause($query, $where, 'whereDate');
+        });
+
+        return $this;
+    }
+
+    /**
+     * Find records using orWhereDate.
+     * 
+     * @param array $where
+     * @return $this
+     */
+    public function orWhereDate(array $where = [])
+    {
+        $this->model = $this->model->orWhereDate(function ($query) use ($where) {
+            $this->buildWhereClause($query, $where, 'orWhereDate');
+        });
+
+        return $this;
+    }
+
+
+    /**
+     * Set order by.
+     *
+     * @param array $order_by
+     * @return $this
+     */
+    public function orderBy(array $order_by = [])
+    {
+        foreach ($order_by as $column => $sort)
+        {
+            $this->model = $this->model->orderBy($column, $sort);
+        }
 
         return $this;
     }
@@ -287,19 +398,20 @@ abstract class Repository
      *
      * @param $query
      * @param $where
+     * @param $type
      */
-    protected function buildWhere(&$query, $where)
+    protected function buildWhereClause(&$query, $where, $type = 'where')
     {
         foreach ($where as $field => $value)
         {
             if (is_array($value))
             {
                 list($field, $condition, $val) = $value;
-                $query->where($field, $condition, $val);
+                $query->{$type}($field, $condition, $val);
             }
             else
             {
-                $query->where($field, '=', $value);
+                $query->{$type}($field, '=', $value);
             }
         }
     }

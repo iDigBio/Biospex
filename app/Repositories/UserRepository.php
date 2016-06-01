@@ -17,9 +17,4 @@ class UserRepository extends Repository implements User, CacheableInterface
     {
         return \App\Models\User::class;
     }
-
-    public function findByEmail($email)
-    {
-        return $this->model->findByEmail($email);
-    }
 }

@@ -17,16 +17,5 @@ class ExpeditionStatRepository extends Repository implements ExpeditionStat, Cac
     {
         return \App\Models\ExpeditionStat::class;
     }
-
-    /**
-     * Find by expedition id.
-     * 
-     * @param $expeditionId
-     * @return mixed
-     */
-    public function findByExpeditionId($expeditionId)
-    {
-        return $this->model->findByExpeditionId($expeditionId);
-    }
 }
 

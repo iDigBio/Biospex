@@ -17,14 +17,4 @@ class DownloadRepository extends Repository implements Download, CacheableInterf
     {
         return \App\Models\Download::class;
     }
-
-    /**
-     * Return expired downloads.
-     *
-     * @return mixed
-     */
-    public function getExpired()
-    {
-        return $this->model->getExpired();
-    }
 }

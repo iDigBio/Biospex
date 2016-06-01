@@ -18,11 +18,6 @@ class OcrCsvRepository extends Repository implements OcrCsv, CacheableInterface
     {
         return \App\Models\OcrCsv::class;
     }
-
-    public function createOrFirst($attributes)
-    {
-        return $this->model->createOrFirst($attributes);
-    }
 }
 
 

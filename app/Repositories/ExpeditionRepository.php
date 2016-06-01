@@ -19,20 +19,31 @@ class ExpeditionRepository extends Repository implements Expedition, CacheableIn
     }
 
     /**
-     * Override parent create to allow sync
-     *
-     * @param array $data
-     * @return mixed|void
+     * Return all expeditions for given user id.
+     * 
+     * @param $id
+     * @return mixed
      */
-    public function create($data = [])
+    public function getAllExpeditions($id)
     {
-        $expedition = $this->model->create($data);
-        $subjects = explode(',', $data['subjectIds']);
+        return $this->model->getAllExpeditions($id);
+    }
+
+    /**
+     * Override parent create to allow sync.
+     * 
+     * @param array $attributes
+     * @return mixed
+     */
+    public function create(array $attributes)
+    {
+        $expedition = $this->model->create($attributes);
+        $subjects = explode(',', $attributes['subjectIds']);
         $expedition->subjects()->sync($subjects);
-        
+
         $stat = new ExpeditionStat([
-            'subject_count' => $data['subjectCount'],
-            'transcriptions_total' => transcriptions_total($data['subjectCount']),
+            'subject_count' => $attributes['subjectCount'],
+            'transcriptions_total' => transcriptions_total($attributes['subjectCount']),
         ]);
 
         $expedition->stat()->save($stat);
@@ -40,10 +51,10 @@ class ExpeditionRepository extends Repository implements Expedition, CacheableIn
         return $expedition;
     }
 
-    public function update($data = [])
+    public function update(array $attributes, $id)
     {
-        $expedition = $this->model->find($data['id']);
-        $expedition->fill($data);
+        $expedition = $this->model->find($id);
+        $expedition->fill($attributes);
         $expedition->save();
 
         $subjects = $expedition->subjects()->get();
@@ -55,33 +66,17 @@ class ExpeditionRepository extends Repository implements Expedition, CacheableIn
         $subjectModel = new Subject();
         $subjectModel->detachSubjects($existingSubjectIds, $expedition->id);
 
-        $subjectIds = explode(',', $data['subjectIds']);
+        $subjectIds = explode(',', $attributes['subjectIds']);
         $expedition->subjects()->attach($subjectIds);
 
         $expeditionStat = new ExpeditionStat();
         $stat = $expeditionStat->firstOrCreate(['expedition_id' => $expedition->id]);
-        $stat->subject_count = $data['subjectCount'];
-        $stat->transcriptions_total = transcriptions_total($data['subjectCount']);
+        $stat->subject_count = $attributes['subjectCount'];
+        $stat->transcriptions_total = transcriptions_total($attributes['subjectCount']);
         $stat->transcriptions_completed = transcriptions_completed($expedition->id);
         $stat->percent_completed = transcriptions_percent_completed($stat->transcriptions_total, $stat->transcriptions_completed);
         $stat->save();
 
         return $expedition;
-    }
-
-    /**
-     * Find by uuid
-     *
-     * @param $uuid
-     * @return mixed
-     */
-    public function findByUuid($uuid)
-    {
-        return $this->model->findByUuid($uuid);
-    }
-
-    public function getAllExpeditions($id)
-    {
-        return $this->model->getAllExpeditions($id);
     }
 }

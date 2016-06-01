@@ -12,6 +12,8 @@ interface Repository
     
     public function lists($value, $index);
 
+    public function count();
+
     public function create(array $attributes);
 
     public function update(array $attributes, $id);
@@ -23,10 +25,12 @@ interface Repository
     public function with(array $with = []);
     
     public function where(array $where = []);
+    
+    public function orWhere(array $where = []);
 
-    public function whereIn($field, array $values);
+    public function whereIn(array $where = []);
 
-    public function whereNotIn($field, array $values);
+    public function whereNotIn(array $where = []);
 
     public function whereHas($relation, array $where = []);
 
@@ -34,7 +38,7 @@ interface Repository
 
     public function whereRaw(array $where = []);
 
-    public function orderBy($column, $sort = 'asc');
+    public function orderBy(array $order_by = []);
 
     public function limitOffset($limit, $offset = 0);
 }
