@@ -32,7 +32,5 @@ class SendReportEventListener
         $attachments = $event->data['attachments'];
 
         $this->mailer->sendReport($email, $subject, $view, $data, $attachments);
-
-        return;
     }
 }

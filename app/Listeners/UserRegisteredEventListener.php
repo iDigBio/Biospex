@@ -1,4 +1,6 @@
-<?php namespace App\Listeners;
+<?php 
+
+namespace App\Listeners;
 
 use App\Events\UserRegisteredEvent;
 use App\Services\Mailer\BiospexMailer;
@@ -19,9 +21,8 @@ class UserRegisteredEventListener
 
     /**
      * Handle the event.
-     *
-     * @param  SendReportEvent $event
-     * @return void
+     * 
+     * @param UserRegisteredEvent $event
      */
     public function handle(UserRegisteredEvent $event)
     {
