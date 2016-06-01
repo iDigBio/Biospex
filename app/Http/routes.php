@@ -78,9 +78,9 @@ Route::group(
         // End Home and Welcome
 
         // Begin Help
-        Route::get('help', [
-            'uses' => 'HomeController@help',
-            'as'   => 'home.get.help'
+        Route::get('faq', [
+            'uses' => 'HomeController@faq',
+            'as'   => 'home.get.faq'
         ]);
         // End Help
 

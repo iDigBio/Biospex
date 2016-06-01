@@ -43,13 +43,13 @@ class HomeController extends Controller
     }
 
     /**
-     * Show help page
-     *
-     * @Get("help", as="help");
+     * Show faq page.
+     * 
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function help()
+    public function faq()
     {
-        return view('frontend.help');
+        return view('frontend.faq');
     }
 
     /**
