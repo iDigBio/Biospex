@@ -44,6 +44,7 @@ return [
     'fyi' => 'FYI',
     'group' => 'Group',
     'faq' => 'FAQ',
+    'faq_title' => 'Frequently Asked Questions',
     'home' => 'Home',
     'id' => 'Id',
     'invite' => "Invite",

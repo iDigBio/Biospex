@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\SendContactEmail;
+use App\Repositories\Contracts\Faq;
 use App\Repositories\Contracts\Project;
 use App\Http\Requests\ContactFormRequest;
 use Illuminate\Contracts\Config\Repository as Config;
@@ -13,8 +14,6 @@ class HomeController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * Get("/", as="home")
      *
      * @return Response
      */
@@ -44,18 +43,21 @@ class HomeController extends Controller
 
     /**
      * Show faq page.
-     * 
+     *
+     * @param Faq $faq
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function faq()
+    public function faq(Faq $faq)
     {
-        return view('frontend.faq');
+        $questions = [
+            'question' => ['question' => 'What is Biospex?', 'answer' => 'Biospex is a tool for developing expeditions.']
+        ];
+        
+        return view('frontend.faq', compact('questions'));
     }
 
     /**
      * Display contact form.
-     *
-     * @Get("contact", as="contact")
      *
      * @return \Illuminate\View\View
      */
