@@ -46,7 +46,7 @@
                     {{ ($errors->has('keywords') ? $errors->first('keywords') : '') }}
                 </div>
 
-                <h4>{{ trans_choice('pages.subjects_assigned', 1) }} <span id="max">{{ trans('pages.subjects_assigned') }} </span>: <span id="subjectCountHtml">0</span></h4>
+                <h4>{{ trans_choice('pages.subjects_assigned', 1) }} <span id="max">{{ trans('pages.subjects_assigned_max') }} </span>: <span id="subjectCountHtml">0</span></h4>
                 <div id="jqtable">
                     <input type="hidden" id="url" value="{{ URL::route('projects.grids.expeditions.create', [$project->id]) }}">
                     <input type="hidden" id="showCb" value="1">

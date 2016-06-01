@@ -14,21 +14,30 @@ class UserGroupTableSeeder extends Seeder
     public function run()
     {
         Model::unguard();
-
-        $groupUser = Sentry::getGroupProvider()->findByName('Users');
-        $groupHerbarium = Sentry::getGroupProvider()->findByName('Herbarium');
-        $groupCalbug = Sentry::getGroupProvider()->findByName('Calbug');
-        $groupAdmin = Sentry::getGroupProvider()->findByName('Admins');
-
-        $users = DB::table('users')->get();
+        
+        $groupRepo = app(\App\Repositories\Contracts\Group::class);
+        $userRepo = app(\App\Repositories\Contracts\User::class);
+        
+        $names = ['Users',  'Herbarium', 'Calbug', 'Admins'];
+        $groups = [];
+        
+        foreach ($names as $name)
+        {
+            $groups[$name] = $groupRepo->where(['name' => $name])->first();
+        }
+        
+        $users = $userRepo->all();
         foreach ($users as $user) {
-            $sentryUser = Sentry::getUserProvider()->findByLogin($user->email);
-            if ($user->email == 'admin@biospex.org') {
-                $sentryUser->addGroup($groupAdmin);
-            } else {
-                $sentryUser->addGroup($groupUser);
-                $sentryUser->addGroup($groupHerbarium);
-                $sentryUser->addGroup($groupCalbug);
+            foreach ($names as $name)
+            {
+                if ($name === 'Admins' && $user->email === 'biospex@gmail.com')
+                {
+                    $user->assignGroup($groups[$name]);
+                }
+                else
+                {
+                    $user->assignGroup($groups[$name]);
+                }
             }
         }
     }

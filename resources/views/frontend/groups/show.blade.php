@@ -47,7 +47,11 @@
                 <td>
                     <ul>
                         @foreach ($group->users as $user)
+                            @if (null === $user->profile->first_name && null === $user->profile->last_name)
+                                <li>{!! Html::mailto($user->email, $user->email) !!}</li>
+                            @else
                             <li>{!! Html::mailto($user->email, $user->profile->first_name.' '.$user->profile->last_name) !!}</li>
+                            @endif
                         @endforeach
                     </ul>
                 </td>
