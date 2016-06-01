@@ -3,7 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
 @parent
-{{trans('pages.help')}}
+{{trans('pages.faq')}}
 @stop
 
 {{-- Content --}}
