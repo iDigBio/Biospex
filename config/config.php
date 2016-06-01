@@ -27,6 +27,9 @@ return [
     'ocr_chunk' => env('OCR_CHUNK'),
     'ocr_api_key' => env('OCR_API_KEY'),
     'ocr_poll_channel' => env('OCR_POLL_CHANNEL'),
+    
+    'cache_enabled' => env('CACHE_ENABLED', true),
+    'cache_minutes' => env('CACHE_MINUTES', 60),
 
     /**
      * iDigBio api query url
