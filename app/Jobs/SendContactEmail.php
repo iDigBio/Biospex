@@ -1,4 +1,6 @@
-<?php namespace App\Jobs;
+<?php 
+
+namespace App\Jobs;
 
 use Illuminate\Queue\SerializesModels;
 use App\Services\Mailer\BiospexMailer;
@@ -21,9 +23,8 @@ class SendContactEmail extends Job
 
     /**
      * Execute the job.
-     *
-     * @param Config $config
-     * @param Mail|Mailer $mailer
+     * 
+     * @param BiospexMailer $mailer
      */
     public function handle(BiospexMailer $mailer)
     {
@@ -35,8 +36,6 @@ class SendContactEmail extends Job
         ];
 
         $mailer->sendContact($data);
-
-        return;
     }
 
 }

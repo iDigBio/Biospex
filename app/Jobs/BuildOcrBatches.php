@@ -8,7 +8,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
 use App\Models\Project;
 use App\Events\PollOcrEvent;
 use App\Repositories\Contracts\OcrCsv;
@@ -52,12 +51,12 @@ class BuildOcrBatches extends Job implements ShouldQueue
     }
 
     /**
-     * Execute the job.
-     *
+     * Handle Job.
+     * 
      * @param OcrQueue $ocrQueue
-     * @param OcrCsv $ocrCsv
+     * @param OcrCsv $ocrCsvRepo
      */
-    public function handle(OcrQueue $ocrQueue, OcrCsv $ocrCsv)
+    public function handle(OcrQueue $ocrQueue, OcrCsv $ocrCsvRepo)
     {
         $this->ocrQueue = $ocrQueue;
         
@@ -86,7 +85,7 @@ class BuildOcrBatches extends Job implements ShouldQueue
         }
 
         $lastKey = array_search(end($data), $data, true);
-        $ocrCsv = $ocrCsv->create(['subjects' => '']);
+        $ocrCsv = $ocrCsvRepo->create(['subjects' => '']);
 
         foreach ($data as $key => $chunk)
         {
@@ -130,7 +129,7 @@ class BuildOcrBatches extends Job implements ShouldQueue
      */
     protected function checkOcrProcessing()
     {
-        $queue = $this->ocrQueue->findByProjectId($this->project->id);
+        $queue = $this->ocrQueue->skipCache()->where(['project_id' => $this->project->id])->first();
 
         return null === $queue;
     }

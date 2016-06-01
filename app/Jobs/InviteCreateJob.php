@@ -49,7 +49,7 @@ class InviteCreateJob extends Job
                 continue;
             }
 
-            $emailUser = $user->findByEmail($email);
+            $emailUser = $user->skipCache()->where(['email' => $email])->first();
             if ($emailUser)
             {
                 $emailUser->assignGroup($this->group);

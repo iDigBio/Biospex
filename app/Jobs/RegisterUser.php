@@ -6,6 +6,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Repositories\Contracts\User;
 use App\Repositories\Contracts\Invite;
 use App\Repositories\Contracts\Group;
+use Illuminate\Support\Facades\Log;
 
 class RegisterUser extends Job
 {
@@ -38,11 +39,11 @@ class RegisterUser extends Job
             $user = $userRepo->create($input);
 
             if ( ! empty($input['invite'])) {
-                $result = $inviteRepo->findByCode($input['invite']);
-                if ($result->email == $user->email) {
-                    $group = $groupRepo->find($result->group_id);
+                $result = $inviteRepo->skipCache()->where(['code' => $input['invite']])->first();
+                if ($result->email === $user->email) {
+                    $group = $groupRepo->skipCache()->find($result->group_id);
                     $user->assignGroup($group);
-                    $inviteRepo->destroy($result->id);
+                    $inviteRepo->delete($result->id);
                 }
             }
 
@@ -50,6 +51,7 @@ class RegisterUser extends Job
         }
         catch(\Exception $e)
         {
+            Log::error($e->getMessage() . ' ' . $e->getFile() . ' ' . $e->getLine());
             return false;
         }
     }

@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Repositories\Contracts\ExpeditionStat;
 use App\Repositories\Contracts\Subject;
 use App\Repositories\Contracts\Transcription;
-use Carbon\Carbon;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -45,9 +44,9 @@ class UpdateExpeditionStat extends Job implements ShouldQueue
      */
     public function handle(Subject $subject, ExpeditionStat $expeditionStat, Transcription $transcription)
     {
-        $stat = $expeditionStat->findByExpeditionId($this->expeditionId);
-        $count = $subject->getCountByExpeditionId($this->expeditionId);
-
+        $stat = $expeditionStat->skipCache()->where(['expedition_id' => $this->expeditionId])->first();
+        $count = $subject->skipCache()->where(['expedition_ids' => $this->expeditionId])->count();
+        
         $stat->subject_count = $count;
         $stat->transcriptions_total = transcriptions_total($count);
         $stat->transcriptions_completed = transcriptions_completed($this->expeditionId);
@@ -63,7 +62,7 @@ class UpdateExpeditionStat extends Job implements ShouldQueue
      */
     private function getEarliestDate(Transcription $transcription)
     {
-        $record = $transcription->getEarliestDate($this->projectId, $this->expeditionId);
+        $record = $transcription->skipCache()->where(['project_id' => $this->projectId, 'expedition_id' => $this->expeditionId])->orderBy(['finished_at' => 'asc'])->first();
         
         if ($record === null)
         {
