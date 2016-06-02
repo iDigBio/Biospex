@@ -47,7 +47,7 @@
                 <li><a href="{{ route('home.get.vision') }}">{{ trans('pages.vision_menu') }}</a></li>
                 <li><a href="{{ route('home.get.faq') }}">{{ trans('pages.faq') }}</a></li>
                 <li><a href="{{ route('home.get.contact') }}">{{ trans('pages.contact') }}</a></li>
-                <li><a href="{{ route('home.get.about') }}">{{ trans('pages.about_menu') }}</a></li>
+                <li><a href="{{ route('home.get.team') }}">{{ trans('pages.team_menu') }}</a></li>
             </ul>
         @endif
         <ul class="nav navbar-nav pull-right">

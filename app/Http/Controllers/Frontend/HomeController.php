@@ -76,9 +76,9 @@ class HomeController extends Controller
         return redirect()->route('home')->with('success', trans('pages.contact_success'));
     }
 
-    public function about()
+    public function team()
     {
-        return view('frontend.about');
+        return view('frontend.team');
     }
 
     public function vision()

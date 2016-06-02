@@ -3,31 +3,18 @@
 {{-- Web site Title --}}
 @section('title')
     @parent
-    @lang('pages.about')
+    @lang('pages.team_biospex')
 @stop
 
 {{-- Content --}}
 @section('content')
     <div class="row centered-form top-buffer">
         <div class="col-md-8 col-md-offset-2">
-            <h3>{{ trans('pages.about') }}</h3>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <p>Biospex about text.... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.
-                Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.
-                Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum
-                lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per
-                inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc.</p>
+            <h3>{{ trans('pages.team_biospex') }}</h3>
         </div>
     </div>
 
     <div class="row centered-form">
-        <div class="col-md-8 col-md-offset-2">
-            <h3>{{ trans('pages.team_biospex') }}</h3>
-        </div>
-
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-info flex-col">
                 <div class="panel-heading"><h3 class="panel-title">Principle Investigators</h3></div>

@@ -92,9 +92,9 @@ Route::group(
         // End Vision
 
         // Begin About
-        Route::get('about', [
-            'uses' => 'HomeController@about',
-            'as'   => 'home.get.about'
+        Route::get('team', [
+            'uses' => 'HomeController@team',
+            'as'   => 'home.get.team'
         ]);
         // End Team
 
