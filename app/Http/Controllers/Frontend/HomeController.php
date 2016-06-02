@@ -86,4 +86,9 @@ class HomeController extends Controller
     {
         return view('frontend.team');
     }
+
+    public function vision()
+    {
+        return view('frontend.vision');
+    }
 }

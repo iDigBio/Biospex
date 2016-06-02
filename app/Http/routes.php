@@ -83,8 +83,15 @@ Route::group(
             'as'   => 'home.get.faq'
         ]);
         // End Help
+        
+        // Begin Vision
+        Route::get('ourvision', [
+            'uses' => 'HomeController@vision',
+            'as'   => 'home.get.vision'
+        ]);
+        // End Vision
 
-        // Begin Team
+        // Begin About
         Route::get('team', [
             'uses' => 'HomeController@team',
             'as'   => 'home.get.team'

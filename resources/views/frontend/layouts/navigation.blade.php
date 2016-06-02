@@ -38,7 +38,16 @@
                 <li class="{{ (Route::currentRouteName() == 'expeditions.get.index') ? 'active' : '' }}"><a
                             href="{{ route('expeditions.get.index') }}">Expeditions</a></li>
                 <li class=""><a class="noClick" href="#" data-toggle="modal" data-target="#processModal">Processes</a>
+                <li><a href="{{ route('home.get.faq') }}">{{ trans('pages.faq') }}</a></li>
+                <li><a href="{{ route('home.get.contact') }}">{{ trans('pages.contact') }}</a></li>
                 </li>
+            </ul>
+        @else
+            <ul class="nav navbar-nav">
+                <li><a href="{{ route('home.get.vision') }}">{{ trans('pages.vision_menu') }}</a></li>
+                <li><a href="{{ route('home.get.faq') }}">{{ trans('pages.faq') }}</a></li>
+                <li><a href="{{ route('home.get.contact') }}">{{ trans('pages.contact') }}</a></li>
+                <li><a href="{{ route('home.get.team') }}">{{ trans('pages.team_menu') }}</a></li>
             </ul>
         @endif
         <ul class="nav navbar-nav pull-right">
@@ -55,9 +64,6 @@
                         {{ Request::is('users/create') ? 'class=active' : '' }}><a
                             href="{{ route('auth.get.register') }}">{{trans('pages.register')}}</a></li>
             @endif
-            <li><a href="{{ route('home.get.faq') }}">{{ trans('pages.faq') }}</a></li>
-            <li><a href="{{ route('home.get.contact') }}">{{ trans('pages.contact') }}</a></li>
-                <li><a href="{{ route('home.get.team') }}">{{ trans('pages.team_menu') }}</a></li>
         </ul>
     </div>
     <!--/.nav-collapse -->

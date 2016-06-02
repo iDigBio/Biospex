@@ -12,3 +12,4 @@ behat.yml
 .env.behat
 codeception.yml
 tests/_output/*
+/public/test
