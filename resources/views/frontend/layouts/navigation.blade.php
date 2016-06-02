@@ -57,6 +57,7 @@
             @endif
             <li><a href="{{ route('home.get.faq') }}">{{ trans('pages.faq') }}</a></li>
             <li><a href="{{ route('home.get.contact') }}">{{ trans('pages.contact') }}</a></li>
+                <li><a href="{{ route('home.get.team') }}">{{ trans('pages.team_menu') }}</a></li>
         </ul>
     </div>
     <!--/.nav-collapse -->

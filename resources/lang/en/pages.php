@@ -105,6 +105,8 @@ return [
     'no_processes' => 'No processes running at this time.',
     'process_warning' => 'Ocr processing stats refresh every 5 minutes.',
     'retrieve_process' => 'Retrieving :type processes...',
+    'team' => 'Biospex Team',
+    'team_menu' => 'Team',
     //================================== Obsolete strings ==================================//
     'admin' => 'Admin',
     'advertise' => 'Advertise',

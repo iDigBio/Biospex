@@ -84,6 +84,13 @@ Route::group(
         ]);
         // End Help
 
+        // Begin Team
+        Route::get('team', [
+            'uses' => 'HomeController@team',
+            'as'   => 'home.get.team'
+        ]);
+        // End Team
+
         // Begin Project Slug
         Route::get('project/{slug}', [
             'uses' => 'HomeController@project',
