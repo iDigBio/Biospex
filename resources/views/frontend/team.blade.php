@@ -26,14 +26,14 @@
                             State
                             University
                         </li>
-                        <li><strong>Email: {{ Html::mailto('amast@bio.fsu.edu', 'amast@bio.fsu.edu') }}</strong></li>
+                        <li><strong>Email: </strong>{{ Html::mailto('amast@bio.fsu.edu', 'amast@bio.fsu.edu') }}</li>
                         <li>&nbsp;</li>
                         <li><strong>Name: </strong>Greg Ricarrdi</li>
                         <li><strong>Institution: </strong>Director, Institute for Digital Information and
                             Scientific
                             Communication, Florida State University
                         </li>
-                        <li><strong>Email: {{ Html::mailto('griccardi@fsu.edu', 'griccardi@fsu.edu') }}</strong></li>
+                        <li><strong>Email: </strong>{{ Html::mailto('griccardi@fsu.edu', 'griccardi@fsu.edu') }}</li>
                     </ul>
                 </div>
             </div>
