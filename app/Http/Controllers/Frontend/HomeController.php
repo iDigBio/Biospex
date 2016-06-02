@@ -14,8 +14,6 @@ class HomeController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * Get("/", as="home")
-     *
      * @return Response
      */
     public function index()
@@ -55,8 +53,6 @@ class HomeController extends Controller
     /**
      * Display contact form.
      *
-     * @Get("contact", as="contact")
-     *
      * @return \Illuminate\View\View
      */
     public function getContact()
@@ -80,8 +76,13 @@ class HomeController extends Controller
         return redirect()->route('home')->with('success', trans('pages.contact_success'));
     }
 
-    public function team()
+    public function about()
     {
-        return view('frontend.team');
+        return view('frontend.about');
+    }
+
+    public function vision()
+    {
+        return view('frontend.vision');
     }
 }

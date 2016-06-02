@@ -4465,8 +4465,8 @@ var chart = AmCharts.makeChart("chartdiv", {
         includeHidden: true
     }],
     "dataLoader": {
-        "url": "/wedigbio_transcription_center.csv",
-        "format": "csv",
+        "url": "/chart_data.json",
+        "format": "json",
         "showErrors": true,
         "postProcess": function (data, config, chart) {
             var graphs = []
