@@ -88,7 +88,7 @@ class RouteServiceProvider extends ServiceProvider
                         'as'   => 'password.put.pass'
                     ]);
 
-                    $dir = app_path('Http/Routes/Frontend/Auth');
+                    $dir = app_path('Http/Routes/Frontend/WebAuth');
                     $this->require_files($dir, $router);
                 }
             );
