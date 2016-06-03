@@ -30,17 +30,23 @@ class ProjectPolicy
     public function read($user, $project)
     {
         
-        if ($user->id == $project->group->user_id)
+        if ($user->id === $project->group->user_id)
         {
             return true;
         }
 
-        return $user->hasAccess($project->group, 'read-project');
+        $key = md5(__METHOD__ . $user->uuid . $project->group->uuid);
+        return Cache::remember($key, 60, function() use ($user, $project) {
+            return $user->hasAccess($project->group, 'read-project');
+        });
     }
 
     public function update($user, $project)
     {
-        return $user->hasAccess($project->group, 'update-project');
+        $key = md5(__METHOD__ . $user->uuid . $project->group->uuid);
+        return Cache::remember($key, 60, function() use ($user, $project) {
+            return $user->hasAccess($project->group, 'update-project');
+        });
     }
 
     public function delete($user, $project)
