@@ -15,8 +15,8 @@ class CreateFaqsTable extends Migration
     {
         Schema::create('faqs', function ($table) {
             $table->increments('id');
-            $table->unsignedInteger('category_id');
-            $table->foreign('category_id')->references('id')->on('faq_categories')->onDelete('cascade');
+            $table->unsignedInteger('faq_category_id');
+            $table->foreign('faq_category_id')->references('id')->on('faq_categories')->onDelete('cascade');
             $table->string('question', 500);
             $table->string('answer', 5000);
             $table->timestamps();

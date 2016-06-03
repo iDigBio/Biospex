@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Events\Dispatcher;
 
-class ServerInfoController extends Controller
+class ServerController extends Controller
 {
     /**
      * @var mixed

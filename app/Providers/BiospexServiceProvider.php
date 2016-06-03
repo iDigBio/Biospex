@@ -24,6 +24,7 @@ use App\Repositories\Contracts\OcrCsv as OcrCsvContract;
 use App\Repositories\Contracts\ExpeditionStat as ExpeditionStatContract;
 use App\Repositories\Contracts\Workflow as WorkflowContract;
 use App\Repositories\Contracts\Faq as FaqContract;
+use App\Repositories\Contracts\FaqCategory as FaqCategoryContract;
 
 use App\Repositories\UserRepository;
 use App\Repositories\GroupRepository;
@@ -45,6 +46,7 @@ use App\Repositories\OcrCsvRepository;
 use App\Repositories\ExpeditionStatRepository;
 use App\Repositories\WorkflowRepository;
 use App\Repositories\FaqRepository;
+use App\Repositories\FaqCategoryRepository;
 
 
 class BiospexServiceProvider extends ServiceProvider
@@ -53,7 +55,6 @@ class BiospexServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->register(ApiRouteServiceProvider::class);
-
         $this->registerRepositories();
     }
 
@@ -80,5 +81,6 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(ExpeditionStatContract::class, ExpeditionStatRepository::class);
         $this->app->bind(WorkflowContract::class, WorkflowRepository::class);
         $this->app->bind(FaqContract::class, FaqRepository::class);
+        $this->app->bind(FaqCategoryContract::class, FaqCategoryRepository::class);
     }
 }

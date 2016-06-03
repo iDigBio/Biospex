@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use DirectoryIterator;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Dingo\Api\Routing\Router as ApiRouter;
 use Illuminate\Routing\Router;
@@ -32,9 +33,27 @@ class ApiRouteServiceProvider extends ServiceProvider
                 'namespace' => 'App\Http\Controllers\Api\v1'
             ], function ($api)
             {
-                require app_path('Http/api_v1_routes.php');# here we load the api v1 routes
+                $dir = app_path('Http/Routes/Api/v1');
+                $this->require_files($dir, $api);
             });
         });
+    }
+
+    /**
+     * Load required files.
+     *
+     * @param $dir
+     * @param $api
+     */
+    protected function require_files($dir, $api)
+    {
+        foreach (new DirectoryIterator($dir) as $file)
+        {
+            if (!$file->isDot() && !$file->isDir())
+            {
+                require $dir . '/' . $file->getFilename();
+            }
+        }
     }
 }
 

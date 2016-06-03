@@ -49,11 +49,9 @@ class HomeController extends Controller
      */
     public function faq(Faq $faq)
     {
-        $questions = [
-            'question' => ['question' => 'What is Biospex?', 'answer' => 'Biospex is a tool for developing expeditions.']
-        ];
-        
-        return view('frontend.faq', compact('questions'));
+        $faqs = $faq->orderBy(['id' => 'asc'])->get();
+                
+        return view('frontend.faq', compact('faqs'));
     }
 
     /**
