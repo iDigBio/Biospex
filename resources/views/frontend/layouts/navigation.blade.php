@@ -38,14 +38,14 @@
                 <li class="{{ (Route::currentRouteName() == 'expeditions.get.index') ? 'active' : '' }}"><a
                             href="{{ route('expeditions.get.index') }}">Expeditions</a></li>
                 <li class=""><a class="noClick" href="#" data-toggle="modal" data-target="#processModal">Processes</a>
-                <li><a href="{{ route('home.get.faq') }}">{{ trans('pages.faq') }}</a></li>
+                <li><a href="{{ route('faq.get.index') }}">{{ trans('pages.faq') }}</a></li>
                 <li><a href="{{ route('home.get.contact') }}">{{ trans('pages.contact') }}</a></li>
                 </li>
             </ul>
         @else
             <ul class="nav navbar-nav">
                 <li><a href="{{ route('home.get.vision') }}">{{ trans('pages.vision_menu') }}</a></li>
-                <li><a href="{{ route('home.get.faq') }}">{{ trans('pages.faq') }}</a></li>
+                <li><a href="{{ route('faq.get.index') }}">{{ trans('pages.faq') }}</a></li>
                 <li><a href="{{ route('home.get.contact') }}">{{ trans('pages.contact') }}</a></li>
                 <li><a href="{{ route('home.get.team') }}">{{ trans('pages.team_menu') }}</a></li>
             </ul>
@@ -56,6 +56,9 @@
                     <a href="/users/{{ Auth::getUser()->id }}/edit">{{ Auth::getUser()->email }}</a>
                 </li>
                 <li><a href="{{ route('auth.get.logout') }}">{{ trans('pages.logout') }}</a></li>
+                @can('admin', Auth::getUser())
+                    <li><a href="{{ route('dashboard.get.index') }}">{{ trans('pages.admin') }}</a></li>
+                @endcan
             @else
                 <li
                         {{ Request::is('login') ? 'class=active' : '' }}><a
