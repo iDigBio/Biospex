@@ -15,7 +15,7 @@ class CreateFaqCategoriesTable extends Migration
     {
         Schema::create('faq_categories', function ($table) {
             $table->increments('id');
-            $table->string('name');
+            $table->string('name')->unique();
             $table->string('label');
             $table->timestamps();
         });
