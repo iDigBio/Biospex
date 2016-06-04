@@ -57,7 +57,7 @@
                 </li>
                 <li><a href="{{ route('auth.get.logout') }}">{{ trans('pages.logout') }}</a></li>
                 @can('admin', Auth::getUser())
-                    <li><a href="{{ route('dashboard.get.index') }}">{{ trans('pages.admin') }}</a></li>
+                    <li><a href="{{ route('admin.dashboard.index') }}">{{ trans('pages.admin') }}</a></li>
                 @endcan
             @else
                 <li
