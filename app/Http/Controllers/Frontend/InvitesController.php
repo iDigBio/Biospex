@@ -59,7 +59,7 @@ class InvitesController extends Controller
 
         if ( ! $this->checkPermissions($user, [$group], 'update'))
         {
-            return redirect()->route('groups.get.show', [$id]);
+            return redirect()->route('web.groups.show', [$id]);
         }
 
         return view('frontend.invites.index', compact('group'));
@@ -79,12 +79,12 @@ class InvitesController extends Controller
 
         if ( ! $this->checkPermissions($user, [$group], 'update'))
         {
-            return redirect()->route('groups.get.show', [$id]);
+            return redirect()->route('web.groups.show', [$id]);
         }
 
         $this->dispatch(new InviteCreateJob($request, $group));
 
-        return redirect()->route('invites.get.index', [$group->id]);
+        return redirect()->route('web.invites.index', [$group->id]);
     }
 
     /**
@@ -101,7 +101,7 @@ class InvitesController extends Controller
 
         if ( ! $this->checkPermissions($user, [$group], 'update'))
         {
-            return redirect()->route('groups.get.show', [$id]);
+            return redirect()->route('web.groups.show', [$id]);
         }
 
         $invite = $this->invite->find($inviteId);
@@ -120,7 +120,7 @@ class InvitesController extends Controller
             session_flash_push('warning', trans('groups.send_invite_error', ['group' => $group->name, 'email' => $invite->email]));
         }
 
-        return redirect()->route('invites.get.index', [$group->id]);
+        return redirect()->route('web.invites.index', [$group->id]);
     }
 
     /**
@@ -136,7 +136,7 @@ class InvitesController extends Controller
 
         if ( ! $this->checkPermissions($user, [$group], 'delete'))
         {
-            return redirect()->route('groups.get.show', [$id]);
+            return redirect()->route('web.groups.show', [$id]);
         }
 
         if ($this->invite->delete($inviteId)) {
@@ -145,6 +145,6 @@ class InvitesController extends Controller
             session_flash_push('error', trans('groups.invite_destroyed_failed'));
         }
 
-        return redirect()->route('invites.get.index', [$id]);
+        return redirect()->route('web.invites.index', [$id]);
     }
 }

@@ -78,12 +78,12 @@ class GroupsController extends Controller
             $user->assignGroup($group);
             session_flash_push('success', trans('groups.created'));
 
-            return redirect()->route('groups.get.index');
+            return redirect()->route('web.groups.index');
         }
 
         session_flash_push('warning', trans('groups.loginreq'));
 
-        return redirect()->route('groups.get.create');
+        return redirect()->route('web.groups.create');
     }
 
     /**
@@ -106,7 +106,7 @@ class GroupsController extends Controller
         {
             session_flash_push('warning', trans('pages.insufficient_permissions'));
 
-            return redirect()->route('groups.get.index');
+            return redirect()->route('web.groups.index');
         }
 
         return view('frontend.groups.show', compact('group'));
@@ -128,7 +128,7 @@ class GroupsController extends Controller
         {
             session_flash_push('warning', trans('pages.insufficient_permissions'));
 
-            return redirect()->route('groups.get.index');
+            return redirect()->route('web.groups.index');
         }
 
         return view('frontend.groups.edit', compact('group'));
@@ -148,7 +148,7 @@ class GroupsController extends Controller
         {
             session_flash_push('warning', trans('pages.insufficient_permissions'));
 
-            return redirect()->route('groups.get.index');
+            return redirect()->route('web.groups.index');
         }
 
         $group->name = $group->name === 'admins' ? $group->name : $request->get('name');
@@ -158,7 +158,7 @@ class GroupsController extends Controller
 
         session_flash_push('success', trans('groups.updated'));
 
-        return redirect()->route('groups.get.index');
+        return redirect()->route('web.groups.index');
     }
 
     /**
@@ -176,13 +176,13 @@ class GroupsController extends Controller
         {
             session_flash_push('warning', trans('pages.insufficient_permissions'));
 
-            return redirect()->route('groups.get.index');
+            return redirect()->route('web.groups.index');
         }
 
         $this->group->delete($group->id);
         
         session_flash_push('success', trans('groups.group_destroyed'));
 
-        return redirect()->route('groups.get.index');
+        return redirect()->route('web.groups.index');
     }
 }

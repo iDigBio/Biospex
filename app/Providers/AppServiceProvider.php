@@ -17,6 +17,7 @@ use App\Models\Profile;
 use App\Models\User;
 use Barryvdh\Debugbar\ServiceProvider as Debugbar;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider as IdeHelper;
+use Sven\ArtisanView\ArtisanViewServiceProvider;
 use Way\Generators\GeneratorsServiceProvider;
 use Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider;
 
@@ -134,6 +135,7 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(Debugbar::class);
             $this->app->register(GeneratorsServiceProvider::class);
             $this->app->register(MigrationsGeneratorServiceProvider::class);
+            $this->app->register(ArtisanViewServiceProvider::class);
         }
     }
 }

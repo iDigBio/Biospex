@@ -22,7 +22,7 @@
                                     <span class="sr-only">Toggle Dropdown</span>
                                 </button>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="{{ route('admin.faq.create') }}">Add Question</a></li>
+                                    <li><a href="{{ route('admin.faqs.create') }}">Add Question</a></li>
                                     <li><a href="#">Edit Category</a></li>
                                     <li><a href="#" class="action_confirm" data-token="{{ Session::getToken() }}"
                                            data-method="delete">Delete Category</a></li>
@@ -52,12 +52,12 @@
                             </td>
                             <td>
                                 <div class="btn-toolbar">
-                                    <a href="{{ route('admin.faq.index', [1, 1]) }}"
+                                    <a href="{{ route('admin.faqs.index', [1, 1]) }}"
                                        title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs"
                                        role="button"><span
                                                 class="fa fa-wrench fa-sm"></span> <!-- @lang('buttons.edit') -->
                                     </a>
-                                    <a href="{{ route('admin.faq.index', [1,1]) }}"
+                                    <a href="{{ route('admin.faqs.index', [1,1]) }}"
                                        title="@lang('buttons.deleteTitle')"
                                        class="btn btn-danger action_confirm btn-xs" role="button"
                                        data-token="{{ Session::getToken() }}" data-method="delete"><span
@@ -78,12 +78,12 @@
                             <td>
                                 <div class="input-group input-group-sm" style="width: 150px;">
                                     <div class="btn-toolbar">
-                                        <a href="{{ route('admin.faq.index', [1, 1]) }}"
+                                        <a href="{{ route('admin.faqs.index', [1, 1]) }}"
                                            title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs"
                                            role="button"><span
                                                     class="fa fa-wrench fa-sm"></span> <!-- @lang('buttons.edit') -->
                                         </a>
-                                        <a href="{{ route('admin.faq.index', [1,1]) }}"
+                                        <a href="{{ route('admin.faqs.index', [1,1]) }}"
                                            title="@lang('buttons.deleteTitle')"
                                            class="btn btn-danger action_confirm btn-xs" role="button"
                                            data-token="{{ Session::getToken() }}" data-method="delete"><span
@@ -105,12 +105,12 @@
                             <td>
                                 <div class="input-group input-group-sm" style="width: 150px;">
                                     <div class="btn-toolbar">
-                                        <a href="{{ route('admin.faq.index', [1, 1]) }}"
+                                        <a href="{{ route('admin.faqs.index', [1, 1]) }}"
                                            title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs"
                                            role="button"><span
                                                     class="fa fa-wrench fa-sm"></span> <!-- @lang('buttons.edit') -->
                                         </a>
-                                        <a href="{{ route('admin.faq.index', [1,1]) }}"
+                                        <a href="{{ route('admin.faqs.index', [1,1]) }}"
                                            title="@lang('buttons.deleteTitle')"
                                            class="btn btn-danger action_confirm btn-xs" role="button"
                                            data-token="{{ Session::getToken() }}" data-method="delete"><span
@@ -132,12 +132,12 @@
                             <td>
                                 <div class="input-group input-group-sm" style="width: 150px;">
                                     <div class="btn-toolbar">
-                                        <a href="{{ route('admin.faq.index', [1, 1]) }}"
+                                        <a href="{{ route('admin.faqs.index', [1, 1]) }}"
                                            title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs"
                                            role="button"><span
                                                     class="fa fa-wrench fa-sm"></span> <!-- @lang('buttons.edit') -->
                                         </a>
-                                        <a href="{{ route('admin.faq.index', [1,1]) }}"
+                                        <a href="{{ route('admin.faqs.index', [1,1]) }}"
                                            title="@lang('buttons.deleteTitle')"
                                            class="btn btn-danger action_confirm btn-xs" role="button"
                                            data-token="{{ Session::getToken() }}" data-method="delete"><span

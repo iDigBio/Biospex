@@ -38,7 +38,8 @@ elixir(function (mix) {
         .styles([
             'vendor/AdminLTE/dist/css/AdminLTE.min.css',
             'vendor/AdminLTE/dist/css/skins/skin-blue.min.css',
-            'vendor/AdminLTE/plugins/iCheck/square/blue.css'
+            'vendor/AdminLTE/plugins/iCheck/square/blue.css',
+            'css/adminlte.css'
         ], 'public/adminlte/css/main.css', assetsDir)
         .scripts([
             'vendor/AdminLTE/dist/js/app.min.js',

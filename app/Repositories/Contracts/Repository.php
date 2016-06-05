@@ -38,6 +38,8 @@ interface Repository
 
     public function whereRaw(array $where = []);
 
+    public function groupBy($value);
+
     public function orderBy(array $order_by = []);
 
     public function limitOffset($limit, $offset = 0);

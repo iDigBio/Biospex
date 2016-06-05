@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-{!! Breadcrumbs::render('groups.get.show.invite', $group) !!}
+{!! Breadcrumbs::render('web.groups.show.invite', $group) !!}
 <div class="jumbotron">
     <h2>{{ $group->label }}</h2>
     <p>{{ trans('groups.invite_explained') }}</p>
@@ -21,7 +21,7 @@
         </div>
         <div class="panel-body">
             {!! Form::open([
-                'route' => ['invites.post.store', $group->id],
+                'route' => ['web.invites.store', $group->id],
                 'method' => 'post',
                 'class' => 'form-inline',
                 'role' => 'form'
@@ -57,8 +57,8 @@
                             <tr>
                                 <td>{{ $invite->email }} </td>
                                 <td class="nowrap">
-                                    <button class="btn btn-primary btn-sm" type="button" href="{!! route('invites.post.resend', [$invite->group_id, $invite->id]) !!}'" data-token="{{ csrf_token() }}" data-method="post"><span class="fa fa-envelope fa-lrg"></span> @lang('buttons.resend')</button>
-                                    <button class="btn btn-default btn-danger action_confirm btn-sm" href="{{ route('invites.delete.delete', [$invite->group_id, $invite->id]) }}" data-token="{{ csrf_token() }}" data-method="delete"><span class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
+                                    <button class="btn btn-primary btn-sm" type="button" href="{!! route('web.invites.resend', [$invite->group_id, $invite->id]) !!}'" data-token="{{ csrf_token() }}" data-method="post"><span class="fa fa-envelope fa-lrg"></span> @lang('buttons.resend')</button>
+                                    <button class="btn btn-default btn-danger action_confirm btn-sm" href="{{ route('web.invites.delete', [$invite->group_id, $invite->id]) }}" data-token="{{ csrf_token() }}" data-method="delete"><span class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
                                 </td>
                             </tr>
                         @endforeach

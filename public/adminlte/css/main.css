@@ -68,4 +68,11 @@
         background-size: 240px 24px;
     }
 }
+
+#toast-container > div {
+    opacity: .95;
+    -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=95);
+    filter: alpha(opacity=95);
+}
+
 /*# sourceMappingURL=main.css.map */

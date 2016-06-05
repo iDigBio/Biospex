@@ -25,16 +25,33 @@
             <li>
                 {!! Html::linkWithIcon(route('admin.dashboard.index'), 'Dashboard', [], ['before' => 'fa fa-dashboard']) !!}
             </li>
-            <li>
-                {!! Html::linkWithIcon(route('admin.ocr.index'), 'OCR', [], ['before' => 'fa fa-file-image-o']) !!}
+
+            <li class="treeview">
+                {!! Html::linkWithIcon('#', 'Groups', [], ['before' => 'fa fa-group', 'after' => 'fa fa-angle-left pull-right']) !!}
+                <ul class="treeview-menu" role="directory" style="display: none;">
+                    <li class="{!! Html::active('admin.groups.index') !!}">{!! Html::linkWithIcon(route('admin.groups.index'), 'Show Groups', [], ['before' => 'fa fa-circle-o']) !!}</li>
+                    <li>{!! Html::linkWithIcon(route('admin.groups.create'), 'Create Group', [], ['before' => 'fa fa-circle-o']) !!}</li>
+                </ul>
             </li>
 
             <li class="treeview">
-                {!! Html::linkWithIcon('#', 'FAQ', [], ['before' => 'fa fa-server', 'after' => 'fa fa-angle-left pull-right']) !!}
+                {!! Html::linkWithIcon('#', 'Projects', [], ['before' => 'fa fa-folder-o', 'after' => 'fa fa-angle-left pull-right']) !!}
                 <ul class="treeview-menu" role="directory" style="display: none;">
-                    <li class="{!! Html::active('admin.faqs.index') !!}">{!! Html::linkWithIcon(route('admin.faqs.index'), 'Show FAQs', ['role' => 'test'], ['before' => 'fa fa-circle-o']) !!}</li>
+                    <li class="{!! Html::active('admin.projects.index') !!}">{!! Html::linkWithIcon(route('admin.projects.index'), 'Show Projects', [], ['before' => 'fa fa-circle-o']) !!}</li>
+                    <li>{!! Html::linkWithIcon(route('admin.projects.create'), 'Create Project', [], ['before' => 'fa fa-circle-o']) !!}</li>
+                </ul>
+            </li>
+
+            <li class="treeview">
+                {!! Html::linkWithIcon('#', 'FAQs', [], ['before' => 'fa fa-server', 'after' => 'fa fa-angle-left pull-right']) !!}
+                <ul class="treeview-menu" role="directory" style="display: none;">
+                    <li class="{!! Html::active('admin.faqs.index') !!}">{!! Html::linkWithIcon(route('admin.faqs.index'), 'Show FAQs', [], ['before' => 'fa fa-circle-o']) !!}</li>
                     <li>{!! Html::linkWithIcon(route('admin.faqs.create'), 'Create FAQ', [], ['before' => 'fa fa-circle-o']) !!}</li>
                 </ul>
+            </li>
+
+            <li>
+                {!! Html::linkWithIcon(route('admin.ocr.index'), 'OCR', [], ['before' => 'fa fa-file-image-o']) !!}
             </li>
 
             <li class="treeview">

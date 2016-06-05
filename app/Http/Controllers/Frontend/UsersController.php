@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\User;
 use App\Http\Requests\EditUserFormRequest;
+use Illuminate\Http\Request;
 
 class UsersController extends Controller
 {
+
     /**
      * @var User
      */
@@ -17,10 +19,18 @@ class UsersController extends Controller
      * UsersController constructor.
      * @param User $user
      */
-    public function __construct(
-        User $user
-    ) {
+    public function __construct(User $user)
+    {
         $this->user = $user;
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function index(Request $request)
+    {
+        return redirect()->route('web.users.edit', [$request->user()->id]);
     }
 
     /**
@@ -31,7 +41,7 @@ class UsersController extends Controller
      */
     public function show($id)
     {
-        return redirect()->route('users.get.edit', [$id]);
+        return redirect()->route('web.users.edit', [$id]);
     }
 
     /**
@@ -48,11 +58,11 @@ class UsersController extends Controller
         {
             session_flash_push('warning', trans('pages.insufficient_permissions'));
 
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         $timezones = timezone_select();
-        $cancel = route('projects.get.index');
+        $cancel = route('web.projects.index');
 
         return view('frontend.users.edit', compact('user', 'timezones', 'cancel'));
     }
@@ -71,7 +81,7 @@ class UsersController extends Controller
         {
             session_flash_push('warning', trans('pages.insufficient_permissions'));
 
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         $result = $this->user->update($request->all(), $user->id);
@@ -89,6 +99,6 @@ class UsersController extends Controller
             session_flash_push('error', trans('users.notupdated'));
         }
 
-        return redirect()->route('users.get.edit', [$user->id]);
+        return redirect()->route('web.users.edit', [$user->id]);
     }
 }

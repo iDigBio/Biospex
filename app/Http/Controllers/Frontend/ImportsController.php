@@ -67,17 +67,17 @@ class ImportsController extends Controller
         if (! $obj) {
             session_flash_push('error', trans('pages.bad_type'));
 
-            return redirect()->route('projects.get.import', [$id]);
+            return redirect()->route('web.imports.import', [$id]);
         }
 
         $validate = $obj->import($id);
 
         if ( ! empty($validate)) {
-            return redirect()->route('projects.get.import', [$id])->withErrors($validate);
+            return redirect()->route('web.imports.import', [$id])->withErrors($validate);
         }
 
         session_flash_push('success', trans('pages.upload_trans_success'));
 
-        return redirect()->route('projects.get.show', [$id]);
+        return redirect()->route('web.projects.show', [$id]);
     }
 }

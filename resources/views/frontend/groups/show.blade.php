@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('groups.get.show', $group) !!}
+    {!! Breadcrumbs::render('web.groups.show', $group) !!}
     <div class="jumbotron">
         <h3>{{ $group->label }}</h3>
     </div>
@@ -17,16 +17,16 @@
         <div style="padding: 10px;">
         @can('update', $group)
         <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm"
-                onClick="location.href='{{ route('groups.get.edit', array($group->id)) }}'"><span
+                onClick="location.href='{{ route('web.groups.edit', array($group->id)) }}'"><span
                     class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
         <button title="@lang('buttons.inviteTitle')" class="btn btn-default btn-reverse btn-sm" type="button"
-                onClick="location.href='{{ route('invites.get.index', [$group->id]) }}'"><span
+                onClick="location.href='{{ route('web.invites.index', [$group->id]) }}'"><span
                     class="fa fa-users fa-lrg"></span> @lang('buttons.invite')</button>
         @endcan
         @can('delete', $group)
         <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-sm"
                 type="button" data-method="delete" data-token="{{ csrf_token() }}"
-                href="{{ route('groups.delete.delete', array($group->id)) }}"><span
+                href="{{ route('web.groups.delete', array($group->id)) }}"><span
                     class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
         @endcan
         </div>
@@ -58,7 +58,7 @@
                 <td>
                     <ul>
                         @foreach ($group->projects as $project)
-                            <li>{!! link_to_route('projects.get.show', $project->title, $project->id) !!}</li>
+                            <li>{!! link_to_route('web.projects.show', $project->title, $project->id) !!}</li>
                         @endforeach
                     </ul>
                 </td>

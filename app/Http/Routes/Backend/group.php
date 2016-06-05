@@ -3,36 +3,36 @@
 // Begin GroupsController
 $router->get('groups', [
     'uses' => 'GroupsController@index',
-    'as'   => 'web.groups.index'
+    'as'   => 'admin.groups.index'
 ]);
 
 $router->get('groups/create', [
     'uses' => 'GroupsController@create',
-    'as'   => 'web.groups.create'
+    'as'   => 'admin.groups.create'
 ]);
 
 $router->post('groups', [
     'uses' => 'GroupsController@store',
-    'as'   => 'web.groups.store'
+    'as'   => 'admin.groups.store'
 ]);
 
 $router->get('groups/{groups}', [
     'uses' => 'GroupsController@show',
-    'as'   => 'web.groups.show'
+    'as'   => 'admin.groups.show'
 ]);
 
 $router->get('groups/{groups}/edit', [
     'uses' => 'GroupsController@edit',
-    'as'   => 'web.groups.edit'
+    'as'   => 'admin.groups.edit'
 ]);
 
 $router->put('groups/{groups}', [
     'uses' => 'GroupsController@update',
-    'as'   => 'web.groups.update'
+    'as'   => 'admin.groups.update'
 ]);
 
 $router->delete('groups/{groups}', [
     'uses' => 'GroupsController@delete',
-    'as'   => 'web.groups.delete'
+    'as'   => 'admin.groups.delete'
 ]);
 // End GroupsController

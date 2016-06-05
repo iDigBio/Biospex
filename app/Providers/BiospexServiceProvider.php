@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\Toastr\Toastr;
 use Illuminate\Support\ServiceProvider;
 
 use App\Repositories\Contracts\User as UserContract;
@@ -51,6 +52,10 @@ use App\Repositories\FaqCategoryRepository;
 
 class BiospexServiceProvider extends ServiceProvider
 {
+    public function boot()
+    {
+        require base_path().'/resources/macros/macros.php';
+    }
     
     public function register()
     {

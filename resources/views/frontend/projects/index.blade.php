@@ -17,7 +17,7 @@
             {!! trans('welcome.intro') !!}
             {!! trans('welcome.ready') !!}
             <button class="btn btn-success" title="@lang('buttons.createTitleG')"
-                    onClick="location.href='{{ route('groups.get.create') }}'"><span
+                    onClick="location.href='{{ route('web.groups.create') }}'"><span
                         class="glyphicon glyphicon-plus"></span> @lang('buttons.create')</button>
 
         </div>
@@ -25,7 +25,7 @@
         <div class="jumbotron">
             <h3>{{ trans('projects.projects') }}
                 <button title="@lang('buttons.createTitleP')" class="btn btn-success"
-                        onClick="location.href='{{ route('projects.get.create') }}'"><span
+                        onClick="location.href='{{ route('web.projects.create') }}'"><span
                             class="fa fa-plus fa-lg"></span> @lang('buttons.create')</button>
             </h3>
         </div>
@@ -46,17 +46,17 @@
                         <tr id="test{{ $project->id }}">
                             <td class="folder-space"><span id="{{ $project->id }}"
                                                            class="toggle fa fa-folder fa-2x pointer"></span></td>
-                            <td><a href="{{ route('projects.get.show', [$project->id]) }}">{{ $project->title }}</a>
+                            <td><a href="{{ route('web.projects.show', [$project->id]) }}">{{ $project->title }}</a>
                             </td>
-                            <td><a href="{{ route('groups.get.show', [$group->id]) }}">{{ $group->label }}</a></td>
+                            <td><a href="{{ route('web.groups.show', [$group->id]) }}">{{ $group->label }}</a></td>
                             <td class="buttons-sm">
                                 <button title="@lang('buttons.viewTitle')" class="btn btn-primary btn-xs"
                                         type="button"
-                                        onClick="location.href='{{ route('projects.get.show', [$project->id]) }}'"><span
+                                        onClick="location.href='{{ route('web.projects.show', [$project->id]) }}'"><span
                                             class="fa fa-eye fa-lg"></span> @lang('buttons.view')</button>
                                 <button title="@lang('buttons.dataTitle')" class="btn btn-inverse btn-xs"
                                         type="button"
-                                        onClick="location.href='{{ route('projects.get.import', [$project->id]) }}'">
+                                        onClick="location.href='{{ route('web.imports.import', [$project->id]) }}'">
                                     <span class="fa fa-plus fa-lg"></span> @lang('buttons.data')</button>
                                 <button title="@lang('buttons.dataViewTitle')" class="btn btn-info btn-xs"
                                         type="button"
@@ -64,16 +64,16 @@
                                     <span class="fa fa-search fa-lg"></span> @lang('buttons.dataView')</button>
                                 <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-xs"
                                         type="button"
-                                        onClick="location.href='{{ route('projects.get.duplicate', [$project->id]) }}'">
+                                        onClick="location.href='{{ route('web.projects.duplicate', [$project->id]) }}'">
                                     <span class="fa fa-share-alt fa-lg"></span> @lang('buttons.duplicate')</button>
                                 <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs"
                                         type="button"
-                                        onClick="location.href='{{ route('projects.get.edit', [$project->id]) }}'"><span
+                                        onClick="location.href='{{ route('web.projects.edit', [$project->id]) }}'"><span
                                             class="fa fa-cog fa-lg"></span> @lang('buttons.edit')</button>
                                 @can('delete', $group)
                                     <button title="@lang('buttons.deleteTitle')"
                                             class="btn btn-default btn-danger action_confirm btn-xs"
-                                            href="{{ route('projects.delete.delete', [$project->id]) }}"
+                                            href="{{ route('web.projects.delete', [$project->id]) }}"
                                             data-token="{{ Session::getToken() }}" data-method="delete"><span
                                                 class="fa fa-remove fa-lg"></span> @lang('buttons.delete')</button>
                                 @endcan

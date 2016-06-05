@@ -26,7 +26,7 @@
                 </div>
                 </div>
                 {!! Form::open([
-                'route' => ['users.put.update', $user->id],
+                'route' => ['web.users.update', $user->id],
                 'method' => 'put',
                 'class' => 'form-horizontal',
                 'role' => 'form'

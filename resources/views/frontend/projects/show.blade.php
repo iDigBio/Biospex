@@ -7,7 +7,7 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('projects.get.show', $project) !!}
+    {!! Breadcrumbs::render('web.projects.show', $project) !!}
     <div class="jumbotron">
         <h3>{{ $project->title }}</h3>
         <p>{{ $project->description_short }}</p>
@@ -18,32 +18,32 @@
             <p class="eyesright"><strong>@lang('pages.project_url')
                     :</strong> {!! link_to_route('home.get.project', $project->title, [$project->slug]) !!}</p>
             <button title="@lang('buttons.dataTitle')" class="btn btn-inverse btn-sm" type="button"
-                    onClick="location.href='{{ route('projects.get.import', [$project->id]) }}'"><span
+                    onClick="location.href='{{ route('web.imports.import', [$project->id]) }}'"><span
                         class="fa fa-plus fa-lrg"></span> @lang('buttons.data')</button>
             <button title="@lang('buttons.dataViewTitle')" class="btn btn-info btn-sm" type="button"
                     onClick="location.href='{{ route('projects.get.explore', [$project->id]) }}'"><span
                         class="fa fa-search fa-lrg"></span> @lang('buttons.dataView')</button>
             <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-sm" type="button"
-                    onClick="location.href='{{ route('projects.get.duplicate', [$project->id]) }}'"><span
+                    onClick="location.href='{{ route('web.projects.duplicate', [$project->id]) }}'"><span
                         class="fa fa-copy fa-lrg"></span> @lang('buttons.duplicate')</button>
             <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm" type="button"
-                    onClick="location.href='{{ route('projects.get.edit', [$project->id]) }}'"><span
+                    onClick="location.href='{{ route('web.projects.edit', [$project->id]) }}'"><span
                         class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
             @can('delete', $project)
             <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-sm"
-                    href="{{ route('projects.delete.delete', [$project->id]) }}" data-token="{{ Session::getToken() }}"
+                    href="{{ route('web.projects.delete', [$project->id]) }}" data-token="{{ Session::getToken() }}"
                     data-method="delete"><span class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
             </td>
             @endcan
             <button title="@lang('buttons.advertiseTitle')" class="btn btn-success btn-sm" type="button"
-                    onClick="location.href='{{ route('projects.get.advertise', [$project->id]) }}'"><span
+                    onClick="location.href='{{ route('web.advertises.index', [$project->id]) }}'"><span
                         class="fa fa-globe fa-lrg"></span> @lang('buttons.advertise')</button>
         </div>
     </div>
 
     <h3>{{ trans('pages.expeditions') }}
         <button class="btn btn-success" title="@lang('buttons.createTitleE')"
-                onClick="location.href='{{ URL::route('projects.expeditions.get.create', [$project->id]) }}'"><span
+                onClick="location.href='{{ URL::route('web.expeditions.create', [$project->id]) }}'"><span
                     class="fa fa-plus fa-lrg"></span> @lang('buttons.create')</button>
     </h3>
     <div class="table-responsive">
@@ -80,22 +80,22 @@
                     @endif
                     <td class="buttons-xs">
                         <button title="@lang('buttons.viewTitle')" class="btn btn-primary btn-xs" type="button"
-                                onClick="location.href='{{ route('projects.expeditions.get.show', [$project->id, $expedition->id]) }}'">
+                                onClick="location.href='{{ route('web.expeditions.show', [$project->id, $expedition->id]) }}'">
                             <span class="fa fa-eye fa-lrg"></span> <!-- @lang('buttons.view') --></button>
                         <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-xs" type="button"
-                                onClick="location.href='{{ route('projects.expeditions.get.duplicate', [$project->id, $expedition->id]) }}'">
+                                onClick="location.href='{{ route('web.expeditions.duplicate', [$project->id, $expedition->id]) }}'">
                             <span class="fa fa-copy fa-lrg"></span> <!-- @lang('buttons.duplicate') --></button>
                         <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs" type="button"
-                                onClick="location.href='{{ route('projects.expeditions.get.edit', [$project->id, $expedition->id]) }}'">
+                                onClick="location.href='{{ route('web.expeditions.edit', [$project->id, $expedition->id]) }}'">
                             <span class="fa fa-cog fa-lrg"></span> <!-- @lang('buttons.edit') --></button>
                         <button title="@lang('buttons.deleteTitle')"
                                 class="btn btn-default btn-danger action_confirm btn-xs"
-                                href="{{ route('projects.expeditions.delete.delete', [$project->id, $expedition->id]) }}"
+                                href="{{ route('web.expeditions.delete', [$project->id, $expedition->id]) }}"
                                 data-token="{{ Session::getToken() }}" data-method="delete"><span
                                     class="fa fa-remove fa-lrg"></span> <!-- @lang('buttons.delete') --></button>
                         @if ( ! $expedition->downloads->isEmpty())
                             <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button"
-                                    onClick="location.href='{{ route('projects.expeditions.downloads.get.index', [$project->id, $expedition->id]) }}'">
+                                    onClick="location.href='{{ route('web.downloads.index', [$project->id, $expedition->id]) }}'">
                                 <span class="fa fa-download fa-lrg"></span> <!-- @lang('buttons.download') --></button>
                         @endif
                     </td>

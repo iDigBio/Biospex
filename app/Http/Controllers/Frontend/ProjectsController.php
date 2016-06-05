@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\Subject;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Repositories\Contracts\User;
 use App\Repositories\Contracts\Group;
 use App\Repositories\Contracts\Project;
@@ -40,26 +39,20 @@ class ProjectsController extends Controller
     public $project;
 
     /**
-     * @var ResponseFactory
-     */
-    private $response;
-
-    /**
      * ProjectsController constructor.
+     *
      * @param ProjectService $service
      * @param User $user
      * @param Group $group
      * @param Project $project
      * @param Request $request
-     * @param ResponseFactory $response
      */
     public function __construct(
         ProjectService $service,
         User $user,
         Group $group,
         Project $project,
-        Request $request,
-        ResponseFactory $response
+        Request $request
     )
     {
         $this->service = $service;
@@ -67,7 +60,6 @@ class ProjectsController extends Controller
         $this->request = $request;
         $this->group = $group;
         $this->project = $project;
-        $this->response = $response;
     }
 
     /**
@@ -128,14 +120,14 @@ class ProjectsController extends Controller
 
         if ( ! $this->checkPermissions($user, [\App\Models\Project::class, $group], 'create'))
         {
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         $project = $this->project->create($request->all());
 
         if ($project) {
             session_flash_push('success', trans('projects.project_created'));
-            return redirect()->route('projects.get.show', [$project->id]);
+            return redirect()->route('web.projects.show', [$project->id]);
         }
 
         session_flash_push('error', trans('projects.project_save_error'));
@@ -158,7 +150,7 @@ class ProjectsController extends Controller
         {
             session_flash_push('error', trans('pages.project_repo_error'));
 
-            return redirect()->route('projects.get.show', [$id]);
+            return redirect()->route('web.projects.show', [$id]);
         }
 
         $common = $this->service->setCommonVariables($user);
@@ -180,7 +172,7 @@ class ProjectsController extends Controller
 
         if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         $workflowCheck = $this->service->checkWorkflow($project->expeditions);
@@ -204,58 +196,14 @@ class ProjectsController extends Controller
 
         if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         $this->project->update($request->all(), $project->id);
 
         session_flash_push('success', trans('projects.project_updated'));
 
-        return redirect()->route('projects.get.show', [$project->id]);
-    }
-
-    /**
-     * Show advertise page.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function advertise($id)
-    {
-        $user = $this->request->user();
-        $project = $this->project->with(['group'])->find($id);
-
-        if ( ! $this->checkPermissions($user, [$project], 'read'))
-        {
-            return redirect()->route('projects.get.index');
-        }
-
-        if (empty($project->advertise)) {
-            $project = $this->project->update($project->toArray(), $project->id);
-        }
-
-        return view('frontend.projects.advertise', compact('project'));
-    }
-
-    /**
-     * Advertise download
-     *
-     * @param $id
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
-     */
-    public function advertiseDownload($id)
-    {
-        $user = $this->request->user();
-        $project = $this->project->with(['group'])->find($id);
-
-        if ( ! $this->checkPermissions($user, [$project], 'read'))
-        {
-            return redirect()->route('projects.get.index');
-        }
-
-        return $this->response->make(json_encode($project->advertise, JSON_UNESCAPED_SLASHES), '200', [
-            'Content-Type'        => 'application/json',
-            'Content-Disposition' => 'attachment; filename="' . $project->uuid . '.json"'
-        ]);
+        return redirect()->route('web.projects.show', [$project->id]);
     }
 
     /**
@@ -272,7 +220,7 @@ class ProjectsController extends Controller
 
         if ( ! $this->checkPermissions($user, [$project], 'read'))
         {
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         $subjectAssignedCount = $subject->skipCache()
@@ -296,12 +244,12 @@ class ProjectsController extends Controller
 
         if ( ! $this->checkPermissions($user, [$project], 'delete'))
         {
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         $this->project->delete($id);
         session_flash_push('success', trans('projects.project_destroyed'));
 
-        return redirect()->route('projects.get.index');
+        return redirect()->route('web.projects.index');
     }
 }

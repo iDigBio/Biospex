@@ -75,20 +75,20 @@ class PasswordController extends Controller
         {
             session_flash_push('warning', trans('pages.insufficient_permissions'));
 
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         if ( ! Hash::check($request->input('oldPassword'), $user->password))
         {
             session_flash_push('error', trans('users.oldpassword'));
 
-            return redirect()->route('users.get.edit', [$user->id]);
+            return redirect()->route('web.users.edit', [$user->id]);
         }
 
         $this->resetPassword($user, $request->input('newPassword'));
 
         session_flash_push('success', trans('users.passwordchg'));
 
-        return redirect()->route('users.get.edit', [$user->id]);
+        return redirect()->route('web.users.edit', [$user->id]);
     }
 }

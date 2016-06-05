@@ -57,6 +57,6 @@ desired effect
 @section('scripts')
     @include('backend.layouts.partials.scripts')
 @show
-
+{!! Toastr::render() !!}
 </body>
 </html>

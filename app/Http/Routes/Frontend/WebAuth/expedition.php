@@ -2,60 +2,60 @@
 // Begin Expeditions Controller
 $router->get('expeditions', [
     'uses' => 'ExpeditionsController@index',
-    'as'   => 'expeditions.get.index'
+    'as'   => 'web.expeditions.index'
 ]);
 
 $router->get('projects/{projects}/expeditions', [
     'uses' => 'ExpeditionsController@ajax',
-    'as'   => 'projects.expeditions.get.ajax'
+    'as'   => 'web.expeditions.get.ajax'
 ]);
 
 $router->get('projects/{projects}/expeditions/create', [
     'uses' => 'ExpeditionsController@create',
-    'as'   => 'projects.expeditions.get.create'
+    'as'   => 'web.expeditions.create'
 ]);
 
 $router->post('projects/{projects}/expeditions', [
     'uses' => 'ExpeditionsController@store',
-    'as'   => 'projects.expeditions.post.store'
+    'as'   => 'web.expeditions.store'
 ]);
 
 $router->get('projects/{projects}/expeditions/{expeditions}', [
     'uses' => 'ExpeditionsController@show',
-    'as'   => 'projects.expeditions.get.show'
+    'as'   => 'web.expeditions.show'
 ]);
 
 $router->get('projects/{projects}/expeditions/{expeditions}/edit', [
     'uses' => 'ExpeditionsController@edit',
-    'as'   => 'projects.expeditions.get.edit'
+    'as'   => 'web.expeditions.edit'
 ]);
 
 $router->put('projects/{projects}/expeditions/{expeditions}', [
     'uses' => 'ExpeditionsController@update',
-    'as'   => 'projects.expeditions.put.update'
+    'as'   => 'web.expeditions.update'
 ]);
 
 $router->delete('projects/{projects}/expeditions/{expeditions}', [
     'uses' => 'ExpeditionsController@delete',
-    'as'   => 'projects.expeditions.delete.delete'
+    'as'   => 'web.expeditions.delete'
 ]);
 
 $router->get('projects/{projects}/expeditions/{expeditions}/duplicate', [
     'uses' => 'ExpeditionsController@duplicate',
-    'as'   => 'projects.expeditions.get.duplicate'
+    'as'   => 'web.expeditions.duplicate'
 ]);
 
 $router->get('projects/{projects}/expeditions/{expeditions}/process', [
     'uses' => 'ExpeditionsController@process',
-    'as'   => 'projects.expeditions.get.process'
+    'as'   => 'web.expeditions.process'
 ]);
 
 $router->delete('projects/{projects}/expeditions/{expeditions}/stop', [
     'uses' => 'ExpeditionsController@stop',
-    'as'   => 'projects.expeditions.delete.stop'
+    'as'   => 'web.expeditions.stop'
 ]);
 
 $router->get('projects/{projects}/expeditions/{expeditions}/ocr', [
     'uses' => 'ExpeditionsController@ocr',
-    'as'   => 'projects.expeditions.get.ocr'
+    'as'   => 'web.expeditions.ocr'
 ]);

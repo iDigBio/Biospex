@@ -3,10 +3,10 @@
 // Begin Faq
 $router->get('faq', [
     'uses' => 'FaqsController@index',
-    'as'   => 'faq.get.index'
+    'as'   => 'web.faqs.index'
 ]);
 $router->get('faq/{category}', [
     'uses' => 'FaqController@show',
-    'as'   => 'faq.get.show'
+    'as'   => 'web.faqs.show'
 ]);
 // End Faq

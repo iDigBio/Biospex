@@ -10,6 +10,20 @@ use Illuminate\Routing\Router;
 class ApiRouteServiceProvider extends ServiceProvider
 {
 
+    /**
+     * This namespace is applied to the controller routes in your routes file.
+     *
+     * In addition, it is set as the URL generator's root namespace.
+     *
+     * @var string
+     */
+    protected $namespace = 'App\Http\Controllers\Api';
+
+    /**
+     * @var string
+     */
+    protected $routes = 'Http/Routes/Api/';
+
     /** This is not quite interesting since it's like laravel ...
      * @param Router $router
      */
@@ -30,10 +44,10 @@ class ApiRouteServiceProvider extends ServiceProvider
         {
             $api->group([
                 'middleware' => 'api',
-                'namespace' => 'App\Http\Controllers\Api\v1'
+                'namespace' => $this->namespace . '\v1'
             ], function ($api)
             {
-                $dir = app_path('Http/Routes/Api/v1');
+                $dir = app_path($this->routes . '/v1');
                 $this->require_files($dir, $api);
             });
         });

@@ -2,5 +2,5 @@
 
 $router->get('dashboard', [
     'uses' => 'DashboardController@index',
-    'as'   => 'dashboard.get.index'
+    'as'   => 'admin.dashboard.index'
 ]);

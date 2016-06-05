@@ -2,26 +2,26 @@
 // Begin UsersController
 $router->get('users', [
     'uses' => 'UsersController@index',
-    'as'   => 'users.get.index'
+    'as'   => 'web.users.index'
 ]);
 
 $router->get('users/{users}', [
     'uses' => 'UsersController@show',
-    'as'   => 'users.get.show'
+    'as'   => 'web.users.show'
 ]);
 
 $router->get('users/{users}/edit', [
     'uses' => 'UsersController@edit',
-    'as'   => 'users.get.edit'
+    'as'   => 'web.users.edit'
 ]);
 
 $router->put('users/{users}', [
     'uses' => 'UsersController@update',
-    'as'   => 'users.put.update'
+    'as'   => 'web.users.update'
 ]);
 
 $router->delete('users/{users}', [
     'uses' => 'UsersController@destroy',
-    'as'   => 'users.delete.delete'
+    'as'   => 'web.users.delete'
 ]);
 // End UsersController

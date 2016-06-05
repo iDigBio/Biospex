@@ -276,27 +276,27 @@ class Subject extends Eloquent
             });
         }
 
-        if ($this->route !== 'projects.grids.explore') {
+        if ($this->route !== 'web.grids.explore') {
             $this->setExpeditionWhere($query);
         }
     }
 
     protected function setExpeditionWhere(&$query)
     {
-        // projects.grids.explore: Project Explore (show all)
-        // projects.grids.expeditions.show: Expedition Show page (show only assigned)
-        // projects.grids.expeditions.edit: Expedition edit (show all)
-        // projects.grids.expeditions.create: Expedition create (show not assigned)
-        if ($this->route === 'projects.grids.expeditions.edit')
+        // web.grids.explore: Project Explore (show all)
+        // web.grids.show: Expedition Show page (show only assigned)
+        // web.grids.edit: Expedition edit (show all)
+        // web.grids.create: Expedition create (show not assigned)
+        if ($this->route === 'web.grids.edit')
         {
             if ($this->assignedRuleData === '' || $this->assignedRuleData === 'all')
                 return;
         }
-        elseif ($this->route === 'projects.grids.expeditions.show')
+        elseif ($this->route === 'web.grids.show')
         {
             $this->setWhereIn($query, 'expedition_ids', [$this->expeditionId]);
         }
-        elseif ($this->route === 'projects.grids.expeditions.create')
+        elseif ($this->route === 'web.grids.create')
         {
             $this->setWhere($query, 'expedition_ids', 'size', 0);
         }

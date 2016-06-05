@@ -362,6 +362,18 @@ abstract class Repository
         return $this;
     }
 
+    /**
+     * Group by.
+     * 
+     * @param array $value
+     * @return $this
+     */
+    public function groupBy($value)
+    {
+        $this->model = $this->model->groupBy($value);
+        
+        return $this;
+    }
 
     /**
      * Set order by.

@@ -21,7 +21,7 @@ class HomeController extends Controller
     {
         if (Auth::check())
         {
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         return view('frontend.home');

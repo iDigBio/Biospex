@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('projects.expeditions.get.show.title', $expedition, 'Downloads') !!}
+    {!! Breadcrumbs::render('web.expeditions.show.title', $expedition, 'Downloads') !!}
 
     <div class="jumbotron">
         <h2>{{ $expedition->title }}</h2>
@@ -21,9 +21,9 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-sm" type="button" onClick="location.href='{{ route('projects.expeditions.get.duplicate', [$expedition->project->id, $expedition->id]) }}'"><span class="fa fa-copy fa-lrg"></span> @lang('buttons.duplicate')</button>
-                            <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm" onClick="location.href='{{ route('projects.expeditions.get.edit', [$expedition->project->id, $expedition->id]) }}'"><span class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
-                            <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-sm" href="{{ route('projects.expeditions.delete.delete', [$expedition->project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
+                            <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-sm" type="button" onClick="location.href='{{ route('web.expeditions.duplicate', [$expedition->project->id, $expedition->id]) }}'"><span class="fa fa-copy fa-lrg"></span> @lang('buttons.duplicate')</button>
+                            <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm" onClick="location.href='{{ route('web.expeditions.edit', [$expedition->project->id, $expedition->id]) }}'"><span class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
+                            <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-sm" href="{{ route('web.expeditions.delete', [$expedition->project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
                         </div>
                     </div>
                 </div>
@@ -68,7 +68,7 @@
                     @endforeach
                     </tbody>
                 </table>
-                <br /><button title="Back to Expedition Details" class="btn btn-info btn-xs" type="button" onClick="location.href='{{ route('projects.expeditions.get.show', [$expedition->project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-eye-open"></span> Return</button>
+                <br /><button title="Back to Expedition Details" class="btn btn-info btn-xs" type="button" onClick="location.href='{{ route('web.expeditions.show', [$expedition->project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-eye-open"></span> Return</button>
             </div>
         </div>
     </div>

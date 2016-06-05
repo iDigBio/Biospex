@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('projects.get.show.title', $project, 'Import') !!}
+    {!! Breadcrumbs::render('web.projects.show.title', $project, 'Import') !!}
     <div class="jumbotron">
         <h3>{{ $project->title }}</h3>
         <p>{{ $project->description_short }}</p>
@@ -22,7 +22,7 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                        'route' => ['projects.post.upload', $project->id],
+                        'route' => ['web.imports.upload', $project->id],
                         'method' => 'post',
                         'files' => true,
                         'enctype' => 'multipart/form-data',
@@ -60,7 +60,7 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                        'route' => ['projects.post.upload', $project->id],
+                        'route' => ['web.imports.upload', $project->id],
                         'method' => 'post',
                         'id' => 'form-recordset',
                         'class' => 'form-horizontal',
@@ -96,7 +96,7 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                        'route' => ['projects.post.upload', $project->id],
+                        'route' => ['web.imports.upload', $project->id],
                         'method' => 'post',
                         'id' => 'form-data-url',
                         'class' => 'form-horizontal',
@@ -133,7 +133,7 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                        'route' => ['projects.post.upload', $project->id],
+                        'route' => ['web.imports.upload', $project->id],
                         'method' => 'post',
                         'files' => true,
                         'enctype' => 'multipart/form-data',

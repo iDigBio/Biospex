@@ -4,51 +4,82 @@
     OCR
 @endsection
 
-@section('contentheader_title', 'Manage FAQs')
+@section('contentheader_title', 'Create Category or FAQ')
 
 
 @section('main-content')
-    <!-- Horizontal Form -->
-    <div class="box box-info">
-        <div class="box-header with-border">
-            <h3 class="box-title">Faq Form</h3>
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Add Category</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <!-- form start -->
+                    {!! Form::open([
+                        'route' => ['admin.faqs.category.store'],
+                        'method' => 'post',
+                        'role' => 'form'
+                    ]) !!}
+                        <div class="box-body">
+                            <div class="form-group required {{ ($errors->has('name')) ? 'has-error' : '' }}" for="name">
+                                {!! Form::label('name', 'Name', ['class' => 'col-sm-2 control-label']) !!}
+                                <div class="col-sm-10">
+                                    {!! Form::text('name', null, array('class' => 'form-control', 'placeholder' => 'Name')) !!}
+                                </div>
+                                {{ ($errors->has('name') ? $errors->first('name') : '') }}
+                            </div>
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-footer">
+                            {{ Form::submit('Submit', ['class' => 'btn btn-primary']) }}
+                        </div>
+                    {{ Form::close() }}
+                </div>
+                <!-- /.box -->
+            </div>
+            <!--/.col (left) -->
+            <!-- right column -->
+            <div class="col-md-6">
+                <!-- Horizontal Form -->
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Create FAQ</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <!-- form start -->
+                    <form class="form-horizontal">
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label for="question" class="col-sm-2 control-label">Question</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="question" placeholder="Question">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="answer" class="col-sm-2 control-label">Answer</label>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control" rows="3" placeholder="Enter question..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-footer">
+                            <button type="submit" class="btn btn-primary pull-right">Submit</button>
+                        </div>
+                        <!-- /.box-footer -->
+                    </form>
+                </div>
+                <!-- /.box -->
+            </div>
+            <!--/.col (right) -->
         </div>
-        <!-- /.box-header -->
-        <!-- form start -->
-        <form class="form-horizontal">
-            <div class="box-body">
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">Category</label>
-                    <div class="col-sm-10">
-                        <select class="form-control">
-                            <option>option 1</option>
-                            <option>option 2</option>
-                            <option>option 3</option>
-                            <option>option 4</option>
-                            <option>option 5</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="inputEmail3" class="col-sm-2 control-label">Question</label>
-                    <div class="col-sm-10">
-                        <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
-
-                    <div class="col-sm-10">
-                        <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
-                    </div>
-                </div>
-            </div>
-            <!-- /.box-body -->
-            <div class="box-footer">
-                <button type="submit" class="btn btn-default">Cancel</button>
-                <button type="submit" class="btn btn-info pull-right">Sign in</button>
-            </div>
-            <!-- /.box-footer -->
-        </form>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
     </div>
 @endsection
