@@ -10,7 +10,7 @@ interface Repository
     
     public function find($id, array $columns = ['*']);
     
-    public function lists($value, $index);
+    public function pluck($value, $index);
 
     public function count();
 

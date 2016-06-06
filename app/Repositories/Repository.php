@@ -121,9 +121,9 @@ abstract class Repository
      * @param $index
      * @return mixed
      */
-    public function lists($value, $index)
+    public function pluck($value, $index)
     {
-        $result = $this->model->lists($value, $index);
+        $result = $this->model->pluck($value, $index);
 
         $this->resetModel();
 

@@ -18,7 +18,7 @@ class GroupsController extends Controller
     {
         $user = $request->user();
 
-        return view('backend.group.index', compact('user'));
+        return view('backend.groups.index', compact('user'));
     }
 
     /**
@@ -31,7 +31,7 @@ class GroupsController extends Controller
     {
         $user = $request->user();
 
-        return view('backend.group.create', compact('user'));
+        return view('backend.groups.create', compact('user'));
     }
 
     /**
@@ -56,7 +56,7 @@ class GroupsController extends Controller
     {
         $user = $request->user();
 
-        return view('backend.group.show', compact('user'));
+        return view('backend.groups.show', compact('user'));
     }
 
     /**
@@ -70,7 +70,7 @@ class GroupsController extends Controller
     {
         $user = $request->user();
 
-        return view('backend.group.edit');
+        return view('backend.groups.edit');
     }
 
     /**

@@ -22,7 +22,7 @@ class ServerController extends Controller
     {
         $user = $repo->with(['profile'])->find($request->user()->id);
 
-        return view('backend.server.index', compact('user'));
+        return view('backend.servers.index', compact('user'));
     }
 
     /**
@@ -64,7 +64,7 @@ class ServerController extends Controller
         $phpInfo = $matches[1];
 
 
-        return view('backend.server.show', compact('user', 'phpInfo'));
+        return view('backend.servers.show', compact('user', 'phpInfo'));
     }
 
     /**

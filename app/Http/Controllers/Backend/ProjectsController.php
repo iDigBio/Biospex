@@ -18,7 +18,7 @@ class ProjectsController extends Controller
     {
         $user = $request->user();
 
-        return view('backend.project.index', compact('user'));
+        return view('backend.projects.index', compact('user'));
     }
 
     /**
@@ -31,7 +31,7 @@ class ProjectsController extends Controller
     {
         $user = $request->user();
 
-        return view('backend.project.create', compact('user'));
+        return view('backend.projects.create', compact('user'));
     }
 
     /**
@@ -56,7 +56,7 @@ class ProjectsController extends Controller
     {
         $user = $request->user();
 
-        return view('backend.project.show', compact('user'));
+        return view('backend.projects.show', compact('user'));
     }
 
     /**
@@ -70,7 +70,7 @@ class ProjectsController extends Controller
     {
         $user = $request->user();
 
-        return view('backend.project.edit');
+        return view('backend.projects.edit');
     }
 
     /**
