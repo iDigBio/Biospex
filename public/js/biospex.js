@@ -4429,7 +4429,7 @@ var chart = AmCharts.makeChart("chartdiv", {
         gridAlpha: 0.07,
         axisColor: "#DADADA",
         startOnAxis: true,
-        title: "Hours elapsed"
+        title: "Days elapsed"
     },
     chartCursor: {
         cursorAlpha: 1

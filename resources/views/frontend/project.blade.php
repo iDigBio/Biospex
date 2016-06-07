@@ -97,6 +97,9 @@
                 </dl>
             </div>
         </div>
+        <div class="row">
+            <div id="chartdiv" class="col-md-12" style="width: 100%; height: 600px"></div>
+        </div>
         <!-- ./ content -->
     </div>
 @stop
