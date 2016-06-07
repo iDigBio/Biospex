@@ -39,8 +39,8 @@ class FaqsController extends Controller
      */
     public function index()
     {
-        $categories = $this->category->with(['faqs'])->orderBy(['id' => 'asc'])->get();
+        $categories = $this->category->skipCache()->with(['faqs'])->orderBy(['id' => 'asc'])->groupBy('id')->get();
 
-        return view('frontend.faq.index', compact('categories'));
+        return view('frontend.faqs.index', compact('categories'));
     }
 }

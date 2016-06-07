@@ -12,36 +12,27 @@
         <h3>{{ trans('pages.faq_title') }}</h3>
     </div>
     <div class="row">
-        <div class="col-sm-10">
-            <hr/>
-            <div class="col-xs-2">
+        <div class="col-sm-10 col-sm-offset-1">
+            <hr />
+            <div class="col-xs-2"> <!-- required for floating -->
+                <!-- Nav tabs -->
                 <ul class="nav nav-tabs tabs-left sideways">
-                    @if( ! $categories->isEmpty())
-                        @foreach($categories as $category)
-                            @include('frontend.partials.faq-tab-loop')
-                        @endforeach
-                    @endif
+                    @foreach($categories as $category)
+                        <li class="{{ $category->id === 1 ? 'active' : '' }}">
+                            <a href="#{{ $category->name }}" data-toggle="tab">{{ $category->label }}</a>
+                        </li>
+                    @endforeach
                 </ul>
             </div>
 
             <div class="col-xs-8">
                 <!-- Tab panes -->
                 <div class="tab-content">
-                    @if( ! $categories->isEmpty())
-                        <div class="tab-pane {{ $category->id === 1 ? 'active' : '' }}" id="{{ $category->name }}">
-                            <div id="accordion" role="tablist" aria-multiselectable="true">
-                                @foreach($categories as $category)
-                                    @foreach($category->faqs as $faq)
-                                        @include('frontend.partials.faq-content-loop')
-                                    @endforeach
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
+                    @foreach($categories as $category)
+                        @include('frontend.partials.faq-tab-loop')
+                    @endforeach
+
                 </div>
             </div>
-
         </div>
-
-    </div>
 @stop

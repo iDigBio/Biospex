@@ -4,3 +4,7 @@
     -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=95);
     filter: alpha(opacity=95);
 }
+
+td.button-fix {
+    width: 70px;
+}

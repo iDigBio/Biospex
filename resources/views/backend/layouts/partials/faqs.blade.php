@@ -1,7 +1,7 @@
 <tr>
     <td>{{ $faq->question }}</td>
     <td>{{ $faq->answer }}</td>
-    <td>
+    <td class="button-fix">
         <div class="btn-toolbar">
             <a href="{{ route('admin.faqs.edit', ['category' => $category->id, 'faq' => $faq->id]) }}"
                title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs"

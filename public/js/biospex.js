@@ -4675,7 +4675,6 @@ $(document).ready(function() {
         $.get( "/poll");
         event.preventDefault();
     });
-
 });
 
 $(function(){

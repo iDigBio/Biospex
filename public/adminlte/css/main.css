@@ -75,4 +75,7 @@
     filter: alpha(opacity=95);
 }
 
+td.button-fix {
+    width: 70px;
+}
 /*# sourceMappingURL=main.css.map */
