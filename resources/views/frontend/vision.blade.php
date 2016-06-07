@@ -30,13 +30,10 @@
             &nbsp;
         </div>
         <div class="grid_6" style="text-align: center;">
-            <img src="/vision/images/biospex_logo.png"/>
-            <p>Use BIOSPEX to provision, advertise, and lead public<br/><strong>Biodiversity Specimen Digitization
-                    Expeditions</strong></p>
             <br/>
-            <p style="font-family: 'Neucha', cursive; font-size: 20px;color: #333;">See how BIOSPEX will help liberate
-                data from museum cabinets</p>
-
+            <p style="font-family: 'Neucha', cursive; font-size: 20px;color: #333;">
+                See how BIOSPEX will help liberate data from museum cabinets with existing and future partnerships.
+            </p>
         </div>
 
         <div class="grid_3">
@@ -167,7 +164,7 @@
         </div>
         <div class="grid_6" style="text-align: center; padding: 140px 0 140px;">
             <ul class="navigation">
-                <li data-slide="5"><h2>AB<span>O</span>UT</h2></li>
+                <li data-slide="5"><h2>NE<span>X</span>T</h2></li>
             </ul>
         </div>
 
@@ -179,11 +176,21 @@
     <div style="background: url(/vision/images/biospex_red.png) 10% 0 no-repeat; padding-top: 370px; padding-bottom: 50px;">
         <div class="container clearfix">
             <div>
-                <p>Biospex about text.... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.
-                    Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.
-                    Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum
-                    lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per
-                    inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc.</p>
+                <p>
+                    BIOSPEX works when it empowers YOU to do important crowdsourced work and gets the resultant
+                    biodiversity data back in the hands of the world’s specimen curators, natural resource managers,
+                    conservation biologists, educators, and policy makers. If you are new to BIOSPEX, establish an
+                    account, read the FAQs, and experiment with creation of biodiversity specimen digitization
+                    expeditions. Our plan is to establish a framework for interoperability across any relevant actors in
+                    this domain, but in the short-term we have funding from the U.S. National Science Foundation to make
+                    BIOSPEX work well with specimen data management systems that can export and ingest Darwin Core
+                    Archives (the standard interchange format in this domain) and the transcription crowdsourcing
+                    platform Notes from Nature. We are actively planning interoperability with a crowdsourcing
+                    georeferencing platform to produce a completed pipeline involving label transcription from digital
+                    images followed by georeferencing of locality data in those transcriptions followed by the return of
+                    data to you and the curators of the relevant physical specimens, all within the engaging framework
+                    of biodiversity specimen digitization expeditions.
+                </p>
                 @include('frontend.layouts.footer')
             </div>
         </div>

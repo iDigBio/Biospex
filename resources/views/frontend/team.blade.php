@@ -43,12 +43,12 @@
     <div class="row centered-form">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-info flex-col">
-                <div class="panel-heading"><h3 class="panel-title">What to Label??</h3></div>
+                <div class="panel-heading"><h3 class="panel-title">Education and Outreach Coordinator</h3></div>
                 <div class="panel-body flex-grow">
                     <ul class="list-unstyled">
                         <ul class="list-unstyled">
                             <li><strong>Name: </strong>Libby Ellwood</li>
-                            <li><strong>Institution: </strong>Florida State University</li>
+                            <li><strong>Institution: </strong>Postdoctoral Scholar, Department of Biological Science, Florida State University</li>
                             <li>
                                 <strong>Email: </strong>{{ Html::mailto('eellwood@bio.fsu.edu', 'eellwood@bio.fsu.edu') }}
                             </li>
@@ -66,7 +66,7 @@
                     <ul class="list-unstyled">
                         <ul class="list-unstyled">
                             <li><strong>Name: </strong>Robert Bruhn</li>
-                            <li><strong>Institution: </strong>Florida State University</li>
+                            <li><strong>Institution: </strong>Institute for Digital Information and Scientific Communication, Florida State University</li>
                             <li><strong>Email: </strong>{{ Html::mailto('bruhnrp@yahoo.com', 'bruhnrp@yahoo.com') }}
                             </li>
                         </ul>
