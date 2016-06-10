@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\SendContactEmail;
+use App\Repositories\Contracts\AmChart;
 use App\Repositories\Contracts\Faq;
 use App\Repositories\Contracts\Project;
 use App\Http\Requests\ContactFormRequest;
@@ -36,9 +37,23 @@ class HomeController extends Controller
      */
     public function project($slug, Project $repository)
     {
-        $project = $repository->with(['group', 'expeditions.stat', 'expeditions.actors'])->where(['slug' => $slug])->first();
+        $project = $repository->with(['group', 'expeditions.stat', 'expeditions.actors', 'amChart'])->where(['slug' => $slug])->first();
 
         return view('frontend.project', compact('project'));
+    }
+
+    /**
+     * Load AmChart for project home page.
+     *
+     * @param AmChart $chart
+     * @param $projectId
+     * @return mixed
+     */
+    public function loadAmChart(AmChart $chart, $projectId)
+    {
+        $record = $chart->skipCache()->where(['project_id' => (int) $projectId])->first();
+
+        return json_decode($record->data);
     }
 
     /**
