@@ -97,9 +97,12 @@
                 </dl>
             </div>
         </div>
+        @if ($project->amChart !== null)
         <div class="row">
+            <input type="hidden" id="projectId" value="{{ $project->id }}" />
             <div id="chartdiv" class="col-md-12" style="width: 100%; height: 600px"></div>
         </div>
+        @endif
         <!-- ./ content -->
     </div>
 @stop
