@@ -70,7 +70,6 @@ class UpdateExpeditionStat extends Job implements ShouldQueue
         }
 
         $date = new \DateTime($record->finished_at);
-        $date->sub(new \DateInterval('PT1H'));
         
         return $date->format('Y-m-d H:i:s');
         
