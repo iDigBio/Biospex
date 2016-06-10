@@ -333,6 +333,32 @@ abstract class Repository
     }
 
     /**
+     * Build where null query.
+     * 
+     * @param $column
+     * @return $this
+     */
+    public function whereNull($column)
+    {
+        $this->model = $this->model->whereNull($column);
+        
+        return $this;
+    }
+
+    /**
+     * Build where not null query.
+     * 
+     * @param $column
+     * @return $this
+     */
+    public function whereNotNull($column)
+    {
+        $this->model = $this->model->whereNotNull($column);
+        
+        return $this;
+    }
+
+    /**
      * Find records using whereDate.
      * 
      * @param array $where
@@ -359,6 +385,27 @@ abstract class Repository
             $this->buildWhereClause($query, $where, 'orWhereDate');
         });
 
+        return $this;
+    }
+
+    /**
+     * Find where model has relationships.
+     * 
+     * @param $relation
+     * @param null $condition
+     * @param null $value
+     * @return $this
+     */
+    public function has($relation, $condition = null, $value = null)
+    {
+        if (null === $condition)
+        {
+            $this->model = $this->model->has($relation);
+        }
+        else{
+            $this->model = $this->model->has($relation, $condition, $value);
+        }
+        
         return $this;
     }
 
