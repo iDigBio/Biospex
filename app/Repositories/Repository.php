@@ -178,6 +178,20 @@ abstract class Repository
     }
 
     /**
+     * Update or Create.
+     * 
+     * @param array $attributes
+     * @return mixed
+     */
+    public function updateOrCreate(array $attributes)
+    {
+        $model = $this->model->firstOrNew($attributes);
+        $model->fill($attributes)->save();
+        
+        return $model;
+    }
+
+    /**
      * Destroy records.
      *
      * @param $id

@@ -18,6 +18,8 @@ interface Repository
 
     public function update(array $attributes, $id);
 
+    public function updateOrCreate(array $attributes);
+
     public function delete($id);
 
     public function save($record);
