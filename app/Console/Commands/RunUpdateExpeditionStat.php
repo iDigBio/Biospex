@@ -6,6 +6,7 @@ use App\Jobs\UpdateExpeditionStat;
 use App\Repositories\Contracts\Project;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\Log;
 
 class RunUpdateExpeditionStat extends Command
 {
@@ -91,6 +92,7 @@ class RunUpdateExpeditionStat extends Command
      */
     protected function setJob($projectId, $expeditionId)
     {
+        Log::alert('Dispatching ' . $projectId . ' ' . $expeditionId);
         $this->dispatch((new UpdateExpeditionStat($projectId, $expeditionId))->onQueue('job'));
     }
 }
