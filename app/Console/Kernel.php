@@ -9,6 +9,7 @@ use App\Console\Commands\Inspire;
 use App\Console\Commands\OcrDeleteFile;
 use App\Console\Commands\OcrProcessCommand;
 use App\Console\Commands\OcrQueuePushCommand;
+use App\Console\Commands\RunUpdateExpeditionStat;
 use App\Console\Commands\TestAppCommand;
 use App\Console\Commands\UpdateQueries;
 use App\Console\Commands\ViewsCommand;
@@ -37,6 +38,7 @@ class Kernel extends ConsoleKernel
         AustinProcessCommand::class,
         UpdateQueries::class,
         RunAmChartData::class,
+        RunUpdateExpeditionStat::class,
     ];
 
     /**
