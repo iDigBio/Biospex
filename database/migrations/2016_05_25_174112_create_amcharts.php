@@ -16,8 +16,6 @@ class CreateAmcharts extends Migration
 
         Schema::connection('mongodb')->create('amcharts', function ($collection) {
             $collection->index('project_id');
-            $collection->index('expedition_id');
-            $collection->index(['project_id', 'expedition_id']);
             $collection->timestamps();
             $collection->softDeletes();
         });
