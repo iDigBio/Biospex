@@ -6,6 +6,7 @@ use App\Jobs\UpdateExpeditionStat;
 use App\Repositories\Contracts\Project;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
 class RunUpdateExpeditionStat extends Command
