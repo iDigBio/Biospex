@@ -63,7 +63,17 @@ class Expedition extends Eloquent
      */
     public function stat()
     {
-        return$this->hasOne(ExpeditionStat::class);
+        return $this->hasOne(ExpeditionStat::class);
+    }
+
+    /**
+     * Return expedition stat where not null.
+     * 
+     * @return mixed
+     */
+    public function statWithStartDate()
+    {
+        return $this->hasOne(ExpeditionStat::class)->whereNotNull('start_date');
     }
 
     /**
