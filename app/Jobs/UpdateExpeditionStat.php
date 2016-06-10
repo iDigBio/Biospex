@@ -8,6 +8,7 @@ use App\Repositories\Contracts\Transcription;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
 
 class UpdateExpeditionStat extends Job implements ShouldQueue
 {
@@ -31,8 +32,8 @@ class UpdateExpeditionStat extends Job implements ShouldQueue
      */
     public function __construct($projectId, $expeditionId)
     {
-        $this->projectId = $projectId;
-        $this->expeditionId = $expeditionId;
+        $this->projectId = (int) $projectId;
+        $this->expeditionId = (int) $expeditionId;
     }
 
     /**
@@ -53,6 +54,7 @@ class UpdateExpeditionStat extends Job implements ShouldQueue
         $stat->percent_completed = transcriptions_percent_completed($stat->transcriptions_total, $stat->transcriptions_completed);
         $stat->start_date = (null === $stat->start_date) ? $this->getEarliestDate($transcription) : $stat->start_date;
 
+        Log::alert('Updating ' . $stat->id);
         $stat->save();
     }
 
