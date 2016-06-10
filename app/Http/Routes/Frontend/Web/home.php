@@ -39,3 +39,10 @@ $router->get('project/{slug}', [
     'as'   => 'home.get.project'
 ]);
 // End Project Slug
+
+// Begin Project Slug
+$router->get('project/{project}/chart', [
+    'uses' => 'HomeController@loadAmChart',
+    'as'   => 'home.get.chart'
+]);
+// End Project Slug
