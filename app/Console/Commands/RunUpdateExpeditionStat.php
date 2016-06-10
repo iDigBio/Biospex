@@ -93,6 +93,6 @@ class RunUpdateExpeditionStat extends Command
     protected function setJob($projectId, $expeditionId)
     {
         Log::alert('Dispatching ' . $projectId . ' ' . $expeditionId);
-        $this->dispatch((new UpdateExpeditionStat($projectId, $expeditionId))->onQueue('job'));
+        $this->dispatch((new UpdateExpeditionStat($projectId, $expeditionId))->onQueue(Config::get('config.beanstalkd.job')));
     }
 }

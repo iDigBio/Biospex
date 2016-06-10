@@ -6,6 +6,7 @@ use App\Jobs\BuildAmChartData;
 use App\Repositories\Contracts\Project;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\Config;
 
 class RunAmChartData extends Command
 {
@@ -37,7 +38,7 @@ class RunAmChartData extends Command
 
         foreach ($projects as $project)
         {
-            $this->dispatch((new BuildAmChartData($project->id))->onQueue('job'));
+            $this->dispatch((new BuildAmChartData($project->id))->onQueue(Config::get('config.beanstalkd.job')));
         }
     }
 }
