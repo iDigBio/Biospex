@@ -38,6 +38,16 @@ interface Repository
 
     public function whereRaw(array $where = []);
 
+    public function whereNull($column);
+
+    public function whereNotNull($column);
+
+    public function whereDate(array $where = []);
+
+    public function orWhereDate(array $where = []);
+
+    public function has($relation, $condition = null, $value = null);
+
     public function groupBy($value);
 
     public function orderBy(array $order_by = []);
