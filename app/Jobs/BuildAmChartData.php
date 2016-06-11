@@ -245,27 +245,19 @@ class BuildAmChartData extends Job implements ShouldQueue
      */
     private function addMissingTranscriptionResults($results, $day)
     {
-        try
+        $missing = array_diff_key($this->expeditions, $results);
+        $previousDay = $day - 1;
+        foreach ($missing as $expedition => $values)
         {
-
-            $missing = array_diff_key($this->expeditions, $results);
-            $previousDay = $day - 1;
-            foreach ($missing as $expedition => $values)
+            if ($day === 0)
             {
-                if ($day === 0)
-                {
-                    $this->transcriptions[$day][$expedition] = $this->buildResultSet($expedition, $values[0], $day);
-                    continue;
-                }
-
-                $previous = $this->transcriptions[$previousDay][$expedition];
-                $previous['day'] = $day;
-                $this->transcriptions[$day][$expedition] = $previous;
+                $this->transcriptions[$day][$expedition] = $this->buildResultSet($expedition, $values[0], $day);
+                continue;
             }
-        }
-        catch(\Exception $e)
-        {
-            Log::alert(print_r($e->getMessage(), true));
+
+            $previous = $this->transcriptions[$previousDay][$expedition];
+            $previous['day'] = $day;
+            $this->transcriptions[$day][$expedition] = $previous;
         }
     }
 }
