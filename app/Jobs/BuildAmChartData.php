@@ -15,6 +15,7 @@ use MongoCollection;
 
 class BuildAmChartData extends Job implements ShouldQueue
 {
+
     use InteractsWithQueue, SerializesModels;
 
     /**
@@ -53,7 +54,7 @@ class BuildAmChartData extends Job implements ShouldQueue
 
         foreach ($project->expeditions as $expedition)
         {
-            if ( ! isset($expedition->stat->start_date))
+            if (!isset($expedition->stat->start_date))
             {
                 continue;
             }
@@ -204,7 +205,8 @@ class BuildAmChartData extends Job implements ShouldQueue
      */
     public function sort($a, $b)
     {
-        if ($a['day'] === $b['day']) {
+        if ($a['day'] === $b['day'])
+        {
             return 0;
         }
 
@@ -243,27 +245,19 @@ class BuildAmChartData extends Job implements ShouldQueue
      */
     private function addMissingTranscriptionResults($results, $day)
     {
-        try
+        $missing = array_diff_key($this->expeditions, $results);
+        $previousDay = $day - 1;
+        foreach ($missing as $expedition => $values)
         {
-            $missing = array_diff_key($this->expeditions, $results);
-            foreach ($missing as $expedition => $values)
+            if ($day === 0)
             {
-                if ($day === 0)
-                {
-                    $this->transcriptions[$day][$expedition] = $this->buildResultSet($expedition, $values[0], $day);
-                    continue;
-                }
-
-                $previousDay = $day - 1;
-                // Get previous values and continue them for this day
-                Log::alert('Building data for ' . $previousDay . ' Day: ' . $day . ' Expedition: ' . $expedition);
-                $previous = $this->transcriptions[$previousDay][$expedition];
-                $previous['day'] = $day;
-                $this->transcriptions[$day][$expedition] = $previous;
+                $this->transcriptions[$day][$expedition] = $this->buildResultSet($expedition, $values[0], $day);
+                continue;
             }
-        }
-        catch (\Exception $e) {
-            Log::alert(print_r($results, true));
+
+            $previous = $this->transcriptions[$previousDay][$expedition];
+            $previous['day'] = $day;
+            $this->transcriptions[$day][$expedition] = $previous;
         }
     }
 }
