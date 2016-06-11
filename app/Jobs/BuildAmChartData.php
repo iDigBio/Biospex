@@ -252,12 +252,17 @@ class BuildAmChartData extends Job implements ShouldQueue
                 continue;
             }
 
-            $previousDay = $day - 1;
-            // Get previous values and continue them for this day
-            Log::alert('Building data for ' . $previousDay . ' Day: ' . $day . ' Expedition: ' . $expedition);
-            $previous = $this->transcriptions[$previousDay][$expedition];
-            $previous['day'] = $day;
-            $this->transcriptions[$day][$expedition] = $previous;
+            try {
+                $previousDay = $day - 1;
+                // Get previous values and continue them for this day
+                Log::alert('Building data for ' . $previousDay . ' Day: ' . $day . ' Expedition: ' . $expedition);
+                $previous = $this->transcriptions[$previousDay][$expedition];
+                $previous['day'] = $day;
+                $this->transcriptions[$day][$expedition] = $previous;
+            }
+            catch (\Exception $e) {
+                Log::alert(print_r($results, true));
+            }
         }
     }
 }
