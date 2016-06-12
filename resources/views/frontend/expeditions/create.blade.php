@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('projects.get.show.title', $project, trans('pages.create') . ' ' . trans('expeditions.expedition')) !!}
+    {!! Breadcrumbs::render('web.projects.show.title', $project, trans('pages.create') . ' ' . trans('expeditions.expedition')) !!}
     <div class="col-xs-12">
         <div class="panel panel-info">
             <div class="panel-heading">
@@ -16,7 +16,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                'route' => ['projects.expeditions.post.store', $project->id],
+                'route' => ['web.expeditions.store', $project->id],
                 'method' => 'post',
                 'class' => 'form-horizontal',
                 'role' => 'form'
@@ -48,7 +48,7 @@
 
                 <h4>{{ trans_choice('pages.subjects_assigned', 1) }} <span id="max">{{ trans('pages.subjects_assigned_max') }} </span>: <span id="subjectCountHtml">0</span></h4>
                 <div id="jqtable">
-                    <input type="hidden" id="url" value="{{ URL::route('projects.grids.expeditions.create', [$project->id]) }}">
+                    <input type="hidden" id="url" value="{{ URL::route('web.grids.create', [$project->id]) }}">
                     <input type="hidden" id="showCb" value="1">
                     <input type="hidden" id="projectId" value="{{ $project->id }}">
                     <input type="hidden" id="subjectCount" name="subjectCount" value="">

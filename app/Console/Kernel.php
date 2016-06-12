@@ -1,18 +1,16 @@
 <?php namespace App\Console;
 
 use App\Console\Commands\AustinProcessCommand;
+use App\Console\Commands\RunAmChartData;
 use App\Console\Commands\ClearBeanstalkdQueueCommand;
 use App\Console\Commands\DarwinCoreFileImportCommand;
-use App\Console\Commands\DatabaseQueryCommand;
 use App\Console\Commands\DownloadCleanCommand;
 use App\Console\Commands\Inspire;
-use App\Console\Commands\MoveMaxSubjects;
-use App\Console\Commands\MoveTranscriptions;
 use App\Console\Commands\OcrDeleteFile;
 use App\Console\Commands\OcrProcessCommand;
 use App\Console\Commands\OcrQueuePushCommand;
+use App\Console\Commands\RunUpdateExpeditionStat;
 use App\Console\Commands\TestAppCommand;
-use App\Console\Commands\UpdateExpeditionStats;
 use App\Console\Commands\UpdateQueries;
 use App\Console\Commands\ViewsCommand;
 use App\Console\Commands\WorkFlowManagerCommand;
@@ -39,6 +37,8 @@ class Kernel extends ConsoleKernel
         OcrDeleteFile::class,
         AustinProcessCommand::class,
         UpdateQueries::class,
+        RunAmChartData::class,
+        RunUpdateExpeditionStat::class,
     ];
 
     /**

@@ -3,34 +3,47 @@
 namespace App\Policies;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class UserPolicy
 {
     public function before($user)
     {
-        if ($user->isAdmin())
-        {
+        $key = md5(__METHOD__ . $user->uuid);
+        $isAdmin = Cache::remember($key, 60, function() use ($user) {
+            return $user->isAdmin();
+        });
+
+        if ($isAdmin) {
             return true;
         }
     }
 
+    public function admin()
+    {
+        return false;
+    }
+
     public function edit($user)
     {
-        return is_null($user) ? false : Auth::getUser()->id == $user->id;
+        return $user === null ? false : Auth::getUser()->id === $user->id;
     }
 
     public function update($user)
     {
-        return is_null($user) ? false : Auth::getUser()->id == $user->id;
+        return $user === null ? false : Auth::getUser()->id === $user->id;
     }
 
     public function pass($user)
     {
-        return is_null($user) ? false : Auth::getUser()->id == $user->id;
+        return $user === null ? false : Auth::getUser()->id === $user->id;
     }
 
     public function delete($user)
     {
-        return is_null($user) ? false : $user->isAdmin('superuser');
+        $key = md5(__METHOD__ . $user->uuid);
+        return Cache::remember($key, 60, function() use ($user) {
+            return $user === null ? false : $user->isAdmin('superuser');
+        });
     }
 }

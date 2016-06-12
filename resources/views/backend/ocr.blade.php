@@ -16,7 +16,7 @@
 
                     <div class="panel-body">
                         {!!  Form::open([
-                        'route' => ['ocr.post.index'],
+                        'route' => ['admin.ocr.store'],
                         'method' => 'post',
                         'class' => 'form-horizontal',
                         'role' => 'form'

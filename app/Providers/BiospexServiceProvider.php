@@ -23,6 +23,9 @@ use App\Repositories\Contracts\Transcription as TranscriptionContract;
 use App\Repositories\Contracts\OcrCsv as OcrCsvContract;
 use App\Repositories\Contracts\ExpeditionStat as ExpeditionStatContract;
 use App\Repositories\Contracts\Workflow as WorkflowContract;
+use App\Repositories\Contracts\Faq as FaqContract;
+use App\Repositories\Contracts\FaqCategory as FaqCategoryContract;
+use App\Repositories\Contracts\AmChart as AmChartContract;
 
 use App\Repositories\UserRepository;
 use App\Repositories\GroupRepository;
@@ -43,15 +46,21 @@ use App\Repositories\TranscriptionRepository;
 use App\Repositories\OcrCsvRepository;
 use App\Repositories\ExpeditionStatRepository;
 use App\Repositories\WorkflowRepository;
+use App\Repositories\FaqRepository;
+use App\Repositories\FaqCategoryRepository;
+use App\Repositories\AmChartRepository;
 
 
 class BiospexServiceProvider extends ServiceProvider
 {
+    public function boot()
+    {
+        require base_path().'/resources/macros/macros.php';
+    }
     
     public function register()
     {
         $this->app->register(ApiRouteServiceProvider::class);
-
         $this->registerRepositories();
     }
 
@@ -77,5 +86,8 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(OcrCsvContract::class, OcrCsvRepository::class);
         $this->app->bind(ExpeditionStatContract::class, ExpeditionStatRepository::class);
         $this->app->bind(WorkflowContract::class, WorkflowRepository::class);
+        $this->app->bind(FaqContract::class, FaqRepository::class);
+        $this->app->bind(FaqCategoryContract::class, FaqCategoryRepository::class);
+        $this->app->bind(AmChartContract::class, AmChartRepository::class);
     }
 }

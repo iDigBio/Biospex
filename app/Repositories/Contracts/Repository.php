@@ -10,13 +10,15 @@ interface Repository
     
     public function find($id, array $columns = ['*']);
     
-    public function lists($value, $index);
+    public function pluck($value, $index);
 
     public function count();
 
     public function create(array $attributes);
 
     public function update(array $attributes, $id);
+
+    public function updateOrCreate(array $attributes, array $values);
 
     public function delete($id);
 
@@ -37,6 +39,18 @@ interface Repository
     public function orWhereHas($relation, array $where = []);
 
     public function whereRaw(array $where = []);
+
+    public function whereNull($column);
+
+    public function whereNotNull($column);
+
+    public function whereDate(array $where = []);
+
+    public function orWhereDate(array $where = []);
+
+    public function has($relation, $condition = null, $value = null);
+
+    public function groupBy($value);
 
     public function orderBy(array $order_by = []);
 

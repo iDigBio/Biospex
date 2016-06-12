@@ -128,7 +128,6 @@ class User extends Model implements AuthenticatableContract,
     /**
      * Check if user is admin group.
      *
-     * @param $group
      * @return bool
      */
     public function isAdmin()
@@ -136,6 +135,13 @@ class User extends Model implements AuthenticatableContract,
         return $this->hasGroup(env('ADMIN_GROUP'));
     }
 
+    /**
+     * Check permissions.
+     *
+     * @param $group
+     * @param $permission
+     * @return bool
+     */
     public function hasAccess($group, $permission)
     {
         return $this->hasPermission($group, $permission);

@@ -29,7 +29,7 @@ desired effect
 |               | sidebar-mini                            |
 |---------------------------------------------------------|
 -->
-<body class="skin-blue sidebar-mini">
+<body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
     @include('backend.layouts.partials.mainheader')
@@ -57,6 +57,6 @@ desired effect
 @section('scripts')
     @include('backend.layouts.partials.scripts')
 @show
-
+{!! Toastr::render() !!}
 </body>
 </html>

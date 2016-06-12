@@ -55,7 +55,7 @@ class ProjectService
      */
     public function setCommonVariables($user)
     {
-        $groups = $this->group->whereHas('users', ['user_id' => $user->id])->lists('label', 'id')->toArray();
+        $groups = $this->group->whereHas('users', ['user_id' => $user->id])->pluck('label', 'id')->toArray();
 
         if (empty($groups)) {
             session_flash_push('success', trans('groups.group_required'));
@@ -63,7 +63,7 @@ class ProjectService
             return redirect()->route('groups.create');
         }
 
-        $workflows = ['--Select--'] + $this->workflow->orderBy(['workflow' => 'asc'])->lists('workflow', 'id')->toArray();
+        $workflows = ['--Select--'] + $this->workflow->orderBy(['workflow' => 'asc'])->pluck('workflow', 'id')->toArray();
         $statusSelect = config('config.status_select');
         $selectGroups = ['' => '--Select--'] + $groups;
 

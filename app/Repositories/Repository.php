@@ -121,9 +121,9 @@ abstract class Repository
      * @param $index
      * @return mixed
      */
-    public function lists($value, $index)
+    public function pluck($value, $index)
     {
-        $result = $this->model->lists($value, $index);
+        $result = $this->model->pluck($value, $index);
 
         $this->resetModel();
 
@@ -174,6 +174,21 @@ abstract class Repository
 
         $this->resetModel();
 
+        return $model;
+    }
+
+    /**
+     * Update or Create.
+     * 
+     * @param array $attributes
+     * @param array $values
+     * @return mixed
+     */
+    public function updateOrCreate(array $attributes, array $values)
+    {
+        $model = $this->model->firstOrNew($attributes);
+        $model->fill($values)->save();
+        
         return $model;
     }
 
@@ -333,6 +348,32 @@ abstract class Repository
     }
 
     /**
+     * Build where null query.
+     * 
+     * @param $column
+     * @return $this
+     */
+    public function whereNull($column)
+    {
+        $this->model = $this->model->whereNull($column);
+        
+        return $this;
+    }
+
+    /**
+     * Build where not null query.
+     * 
+     * @param $column
+     * @return $this
+     */
+    public function whereNotNull($column)
+    {
+        $this->model = $this->model->whereNotNull($column);
+        
+        return $this;
+    }
+
+    /**
      * Find records using whereDate.
      * 
      * @param array $where
@@ -362,6 +403,39 @@ abstract class Repository
         return $this;
     }
 
+    /**
+     * Find where model has relationships.
+     * 
+     * @param $relation
+     * @param null $condition
+     * @param null $value
+     * @return $this
+     */
+    public function has($relation, $condition = null, $value = null)
+    {
+        if (null === $condition)
+        {
+            $this->model = $this->model->has($relation);
+        }
+        else{
+            $this->model = $this->model->has($relation, $condition, $value);
+        }
+        
+        return $this;
+    }
+
+    /**
+     * Group by.
+     * 
+     * @param array $value
+     * @return $this
+     */
+    public function groupBy($value)
+    {
+        $this->model = $this->model->groupBy($value);
+        
+        return $this;
+    }
 
     /**
      * Set order by.

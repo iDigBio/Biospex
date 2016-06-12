@@ -1,4 +1,4 @@
-var chart = AmCharts.makeChart("chartdiv", {
+AmCharts.makeChart("chartdiv", {
     type: "serial",
     titles: [{
         size: 15,
@@ -7,12 +7,12 @@ var chart = AmCharts.makeChart("chartdiv", {
     path: "/amcharts",
     fontSize: 12,
     marginTop: 10,
-    categoryField: 'hour',
+    categoryField: 'day',
     categoryAxis: {
         gridAlpha: 0.07,
         axisColor: "#DADADA",
         startOnAxis: true,
-        title: "Hours elapsed"
+        title: "Days elapsed"
     },
     chartCursor: {
         cursorAlpha: 1
@@ -38,7 +38,7 @@ var chart = AmCharts.makeChart("chartdiv", {
         includeHidden: true
     }],
     "dataLoader": {
-        "url": "/chart_data.json",
+        "url": "/project/" + $("#projectId").val() + "/chart",
         "format": "json",
         "showErrors": true,
         "postProcess": function (data, config, chart) {
@@ -46,21 +46,21 @@ var chart = AmCharts.makeChart("chartdiv", {
                 , hidden_graphs = []
                 , collections = []
                 , chartData = []
-                , current_hour;
+                , current_day;
             //prepare the data for consumption by amcharts
             for (var i = 0; i < data.length; i++) {
                 var item = data[i]
-                    , collection = item.col0
-                    , count = item.col1
-                    , hour = item.col2
+                    , collection = item.collection
+                    , count = item.count
+                    , day = item.day
                     , obj;
                 if (collection != "" && typeof(collection) != 'undefined'){
                     if (collections.indexOf(collection) === -1 && collection != "") collections.push(collection);
-                    if (current_hour != hour && typeof(hour) != "undefined") {
+                    if (current_day != day && typeof(day) != "undefined") {
                         if (obj) chartData.push(obj);
                         obj = {};
-                        current_hour = hour;
-                        obj["hour"] = hour;
+                        current_day = day;
+                        obj["day"] = day;
                     }
                     if (typeof(count) != 'undefined'){
                         obj[collection] = count;
@@ -92,7 +92,7 @@ var chart = AmCharts.makeChart("chartdiv", {
                         hidden: false,
                         visibleInLegend: false,
                         categoryBalloonAlpha: 0,
-//                                cursorAlpha: 0,
+                        //cursorAlpha: 0,
                         lineAlpha: 0,
                         lineColor: '',
                         valueField: col,
@@ -118,9 +118,10 @@ var chart = AmCharts.makeChart("chartdiv", {
         }
     },
     legend: {
+        maxColumns: 1,
         position: "bottom",
         labelText: "[[title]]",
-        valueText: "[[value]] transcriptions of [[total]] total in [[category]] hour(s)",
+        valueText: "[[value]] transcriptions of [[total]] total in [[category]] day(s)",
         valueWidth: 100,
         valueAlign: "left",
         equalWidths: true,

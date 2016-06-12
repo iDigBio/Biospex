@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\SendContactEmail;
+use App\Repositories\Contracts\AmChart;
+use App\Repositories\Contracts\Faq;
 use App\Repositories\Contracts\Project;
 use App\Http\Requests\ContactFormRequest;
 use Illuminate\Contracts\Config\Repository as Config;
@@ -14,15 +16,13 @@ class HomeController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * Get("/", as="home")
-     *
      * @return Response
      */
     public function index()
     {
         if (Auth::check())
         {
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         return view('frontend.home');
@@ -37,25 +37,40 @@ class HomeController extends Controller
      */
     public function project($slug, Project $repository)
     {
-        $project = $repository->with(['group', 'expeditions.stat', 'expeditions.actors'])->where(['slug' => $slug])->first();
+        $project = $repository->with(['group', 'expeditions.stat', 'expeditions.actors', 'amChart'])->where(['slug' => $slug])->first();
 
         return view('frontend.project', compact('project'));
     }
 
     /**
-     * Show help page
+     * Load AmChart for project home page.
      *
-     * @Get("help", as="help");
+     * @param AmChart $chart
+     * @param $projectId
+     * @return mixed
      */
-    public function help()
+    public function loadAmChart(AmChart $chart, $projectId)
     {
-        return view('frontend.help');
+        $record = $chart->skipCache()->where(['project_id' => (int) $projectId])->first();
+
+        return json_decode($record->data);
+    }
+
+    /**
+     * Show faq page.
+     *
+     * @param Faq $faq
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function faq(Faq $faq)
+    {
+        $faqs = $faq->orderBy(['id' => 'asc'])->get();
+                
+        return view('frontend.faq', compact('faqs'));
     }
 
     /**
      * Display contact form.
-     *
-     * @Get("contact", as="contact")
      *
      * @return \Illuminate\View\View
      */
@@ -78,5 +93,15 @@ class HomeController extends Controller
         $this->dispatch(new SendContactEmail($data));
 
         return redirect()->route('home')->with('success', trans('pages.contact_success'));
+    }
+
+    public function team()
+    {
+        return view('frontend.team');
+    }
+
+    public function vision()
+    {
+        return view('frontend.vision');
     }
 }

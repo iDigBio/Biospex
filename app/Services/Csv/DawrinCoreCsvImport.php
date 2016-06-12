@@ -9,7 +9,6 @@ use ForceUTF8\Encoding;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Validation\Factory as Validation;
 use App\Models\Occurrence;
-use App\Services\Csv\Csv;
 
 class DarwinCoreCsvImport {
 

@@ -206,6 +206,16 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     {
         return $this->hasMany(OcrQueue::class);
     }
+
+    /**
+     * AmChart relationship.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function amChart()
+    {
+        return $this->hasOne(AmChart::class);
+    }
     
     /**
      * Find by uuid.

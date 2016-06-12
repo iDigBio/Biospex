@@ -9,14 +9,9 @@ class GroupPolicy
     public function before($user)
     {
         $key = md5(__METHOD__ . $user->uuid);
-        $isAdmin = Cache::remember($key, 60, function() use ($user) {
+        return Cache::remember($key, 60, function() use ($user) {
             return $user->isAdmin();
         });
-
-        if ($isAdmin) {
-            return true;
-        }
-
     }
 
     /**

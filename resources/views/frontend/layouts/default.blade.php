@@ -1,18 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="_token" content="{{ csrf_token() }}"/>
-    <title>
-        @section('title')
-        @show
-    </title>
-    @section ('styles')
-    @show
-    <link href="/css/bootstrap.css" rel="stylesheet">
-    <link href="/css/biospex.css" rel="stylesheet">
-</head>
+
+@section('htmlheader')
+    @include('frontend.layouts.partials.htmlheader')
+@show
+
 <body class="{{ Route::currentRouteName() }}">
 @include('frontend.layouts.navigation')
 
@@ -25,17 +17,16 @@
         @include('frontend.layouts.notifications')
         @yield('content')
     </div>
-    @endif
-    @if (Auth::check())
+@endif
+@if (Auth::check())
     @include('frontend.partials.process-modal')
-    @endif
-    @include('frontend.layouts.footer')
-            <!-- ./ footer -->
-    <script src="/js/biospex.js"></script>
-    <script src="/js/bootstrap.js"></script>
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+@endif
+@include('frontend.layouts.footer')
+<!-- ./ footer -->
+
+@section('scripts')
+    @include('frontend.layouts.partials.scripts')
+@show
+
 </body>
 </html>

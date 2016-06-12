@@ -16,7 +16,7 @@
         </div>
         <div class="panel-body">
             {!! Form::open([
-            'route' => ['projects.post.store'],
+            'route' => ['web.projects.store'],
             'method' => 'post',
             'enctype' => 'multipart/form-data',
             'class' => 'form-horizontal',

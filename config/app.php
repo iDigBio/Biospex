@@ -159,7 +159,8 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\BiospexServiceProvider::class
+        App\Providers\BiospexServiceProvider::class,
+        App\Providers\ToastrServiceProvider::class
     ],
 
     /*
@@ -217,6 +218,7 @@ return [
         'Html'        => Collective\Html\HtmlFacade::class,
         'Honeypot'    => Msurguy\Honeypot\HoneypotFacade::class,
         'Gate'        => Illuminate\Support\Facades\Gate::class,
+        'Toastr'      => App\Facades\Toastr::class
     ],
 
 ];

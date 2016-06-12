@@ -1,12 +1,35 @@
 <?php
 
 use App\Models\Expedition;
+use App\Models\Faq;
+use App\Models\FaqCategory;
 use App\Models\Group;
 use App\Models\Profile;
 use App\Models\Project;
 use App\Models\User;
 use Faker\Generator;
 
+
+
+$factory->define(Faq::class, function ($faker) {
+    return [
+        'faq_category_id' => factory(FaqCategory::class)->make()->id,
+        'question' => $faker->sentence(5),
+        'answer' => $faker->sentence(20),
+        
+    ];
+});
+
+$factory->define(FaqCategory::class, function ($faker) {
+    $name = $faker->unique()->words($nb = 3, $variableNbWords = true);
+    return [
+        'name' => $name,
+        'label' => $name
+    ];
+});
+
+
+/*
 $factory->define(User::class, function (Generator $faker) {
     return [
         'uuid' => $faker->uuid,
@@ -66,3 +89,4 @@ $factory->define(Expedition::class, function (Generator $faker) {
         'keywords' => $faker->word . ', ' . $faker->word . ', ' .$faker->word,
     ];
 });
+*/

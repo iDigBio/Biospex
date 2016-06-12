@@ -95,7 +95,7 @@ class ExpeditionsController extends Controller
     public function ajax($id)
     {
         if ( ! Request::ajax()) {
-            return redirect()->route('projects.get.show', [$id]);
+            return redirect()->route('web.projects.show', [$id]);
         }
 
         $user = Request::user();
@@ -117,7 +117,7 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions($user, [$project, $project->group], 'create'))
         {
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 ;
         return view('frontend.expeditions.create', compact('project'));
@@ -137,7 +137,7 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions($user, [$project, $project->group], 'create'))
         {
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
         
         $expedition = $this->expedition->create($request->all());
@@ -145,11 +145,11 @@ class ExpeditionsController extends Controller
         if ($expedition) {
             session_flash_push('success', trans('expeditions.expedition_created'));
 
-            return redirect()->route('projects.expeditions.get.show', [$projectId, $expedition->id]);
+            return redirect()->route('web.expeditions.show', [$projectId, $expedition->id]);
         }
 
         session_flash_push('error', trans('expeditions.expedition_save_error'));
-        return redirect()->route('projects.get.show', [$projectId]);
+        return redirect()->route('web.projects.show', [$projectId]);
     }
 
     /**
@@ -178,7 +178,7 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions($user, [$expedition->project, $expedition->project->group], 'create'))
         {
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         return view('frontend.expeditions.clone', compact('expedition'));
@@ -197,7 +197,7 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions($user, [$expedition->project], 'update'))
         {
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         $subjectIds = [];
@@ -225,7 +225,7 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         $expedition = $this->expedition->update($request->all(), $expeditionId);
@@ -234,7 +234,7 @@ class ExpeditionsController extends Controller
             // Success!
             session_flash_push('success', trans('expeditions.expedition_updated'));
 
-            return redirect()->route('projects.expeditions.get.show', [$projectId, $expeditionId]);
+            return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
         }
 
         session_flash_push('error', trans('expeditions.expedition_save_error'));
@@ -255,7 +255,7 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         try {
@@ -282,7 +282,7 @@ class ExpeditionsController extends Controller
             session_flash_push('error', trans('expeditions.expedition_process_error', ['error' => $e->getMessage()]));
         }
 
-        return redirect()->route('projects.expeditions.get.show', [$projectId, $expeditionId]);
+        return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
     }
 
     /**
@@ -299,14 +299,14 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         $this->dispatch((new BuildOcrBatches($project, $expeditionId))->onQueue(Config::get('config.beanstalkd.ocr')));        
         
         session_flash_push('success', trans('expeditions.ocr_process_success'));
 
-        return redirect()->route('projects.expeditions.get.show', [$projectId, $expeditionId]);
+        return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
     }
 
     /**
@@ -323,7 +323,7 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         $workflow = $this->workflowManager->where(['expedition_id' => $expeditionId])->get();
@@ -336,7 +336,7 @@ class ExpeditionsController extends Controller
             session_flash_push('success', trans('expeditions.process_stopped'));
         }
 
-        return redirect()->route('projects.expeditions.get.show', [$projectId, $expeditionId]);
+        return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
     }
 
     /**
@@ -353,14 +353,14 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions($user, [$project], 'delete'))
         {
-            return redirect()->route('projects.get.index');
+            return redirect()->route('web.projects.index');
         }
 
         $workflow = $this->workflowManager->where(['expedition_id' => $expeditionId])->first();
         if ( $workflow !== null) {
             session_flash_push('error', trans('expeditions.expedition_process_exists'));
 
-            return redirect()->route('projects.expeditions.get.show', [$projectId, $expeditionId]);
+            return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
         } else {
             try {
                 $subjects = $this->subject->getSubjectIds($projectId, null, $expeditionId);
@@ -373,6 +373,6 @@ class ExpeditionsController extends Controller
             }
         }
 
-        return redirect()->route('projects.get.show', [$projectId]);
+        return redirect()->route('web.projects.show', [$projectId]);
     }
 }

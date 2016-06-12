@@ -89,11 +89,6 @@ class AuthController extends Controller
         $groups = $this->group->whereHas('users', ['user_id' => $user->id])->get();
         $request->session()->put('groups', $groups);
 
-        if ($user->isAdmin('admins'))
-        {
-            return redirect()->route('dashboard.get.index');
-        }
-
         return redirect()->intended($this->redirectPath());
     }
 

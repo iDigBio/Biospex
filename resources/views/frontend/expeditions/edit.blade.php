@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('projects.expeditions.get.show.title', $expedition, trans('pages.edit') . ' ' . trans('expeditions.expedition')) !!}
+    {!! Breadcrumbs::render('web.expeditions.show.title', $expedition, trans('pages.edit') . ' ' . trans('expeditions.expedition')) !!}
     <div class="col-xs-12">
         <div class="panel panel-info">
             <div class="panel-heading">
@@ -16,7 +16,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                'route' => ['projects.expeditions.put.update', $expedition->project->id, $expedition->id],
+                'route' => ['web.expeditions.update', $expedition->project->id, $expedition->id],
                 'method' => 'put',
                 'class' => 'form-horizontal',
                 'role' => 'form'
@@ -53,7 +53,7 @@
                     @else
                         <input type="hidden" id="showCb" value="1">
                     @endif
-                    <input type="hidden" id="url" value="{{ URL::route('projects.grids.expeditions.edit', [$expedition->project->id, $expedition->id]) }}">
+                    <input type="hidden" id="url" value="{{ URL::route('web.grids.edit', [$expedition->project->id, $expedition->id]) }}">
                     <input type="hidden" id="projectId" value="{{ $expedition->project->id }}">
                     <input type="hidden" id="expeditionId" value="{{ $expedition->id }}">
                     <input type="hidden" id="subjectCount" name="subjectCount" value="{{ $expedition->subjectsCount }}">

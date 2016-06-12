@@ -3,28 +3,23 @@ var elixir = require('laravel-elixir');
 var assetsDir = './resources/assets/';
 
 var lessPaths = [
-    assetsDir + "vendor/bootstrap/less",
-    assetsDir + "vendor/font-awesome/less",
-    assetsDir + "vendor/bootstrap-select/less"
+    assetsDir + "vendor/bootstrap/less"
 ];
 
 elixir(function (mix) {
-    mix.less('app.less', 'public/css/bootstrap.css', {paths: lessPaths});
-
-    mix.styles([
-            'vendor/jquery-ui/themes/smoothness/jquery-ui.min.css',
-            'vendor/jqGrid/css/ui.jqgrid-bootstrap.css',
+    mix.less('app.less', 'resources/assets/css/bootstrap.css', {paths: lessPaths})
+        .styles([
+            'css/bootstrap.css',
             'vendor/jquery-ui-multiselect-widget/jquery.multiselect.css',
+            'vendor/bootstrap-select/dist/css/bootstrap-select.min.css',
             'vendor/tablesorter/dist/css/theme.bootstrap.min.css',
+            'vendor/jqGrid/css/ui.jqgrid-bootstrap.css',
             'css/biospex.css'
         ], 'public/css/biospex.css', assetsDir)
         .scripts([
-            'vendor/jquery/dist/jquery.min.js',
-            'vendor/jquery-ui/jquery-ui.min.js',
+            'vendor/bootstrap-select/dist/js/bootstrap-select.min.js',
             'vendor/jquery-validation/dist/jquery.validate.min.js',
             'vendor/jquery-validation/dist/additional-methods.min.js',
-            'vendor/jqGrid/js/i18n/grid.locale-en.js',
-            'vendor/jqGrid/js/jquery.jqGrid.min.js',
             'vendor/jquery-ui-multiselect-widget/src/jquery.multiselect.js',
             'vendor/tablesorter/dist/js/jquery.tablesorter.min.js',
             'vendor/tablesorter/dist/js/jquery.tablesorter.widgets.js',
@@ -32,28 +27,28 @@ elixir(function (mix) {
             'vendor/amcharts3/amcharts/serial.js',
             'vendor/amcharts3/amcharts/plugins/dataloader/dataloader.min.js',
             'vendor/amcharts3/amcharts/plugins/responsive/responsive.min.js',
+            'vendor/jqGrid/js/i18n/grid.locale-en.js',
+            'vendor/jqGrid/js/jquery.jqGrid.min.js',
             'js/amchart.js',
             'js/biospex.js',
+            'js/delete.warning.js',
             'js/grid.js'
-        ], 'public/js/biospex.js', assetsDir);
+        ], 'public/js/biospex.js', assetsDir)
 
-    mix.scripts([
-        'vendor/bootstrap/dist/js/bootstrap.min.js',
-        'vendor/bootstrap-select/dist/js/bootstrap-select.min.js'
-    ], 'public/js/bootstrap.js', assetsDir);
-
-    mix.styles([
-            "vendor/AdminLTE/dist/css/AdminLTE.min.css",
-            "vendor/AdminLTE/dist/css/skins/skin-blue.min.css"
-        ], 'public/css/admin.css', assetsDir)
+        .styles([
+            'vendor/AdminLTE/dist/css/AdminLTE.min.css',
+            'vendor/AdminLTE/dist/css/skins/skin-blue.min.css',
+            'vendor/AdminLTE/plugins/iCheck/square/blue.css',
+            'css/adminlte.css'
+        ], 'public/adminlte/css/main.css', assetsDir)
         .scripts([
-            'vendor/AdminLTE/dist/js/app.min.js'
-        ], 'public/js/admin.js', assetsDir);
+            'vendor/AdminLTE/dist/js/app.min.js',
+            'js/adminlte.js',
+            'js/delete.warning.js'
+        ], 'public/adminlte/js/main.js', assetsDir)
 
-    mix.copy(assetsDir + 'vendor/font-awesome/fonts', 'public/fonts')
-        .copy(assetsDir + 'vendor/jquery-ui/themes/smoothness/images', 'public/css/images')
-        .copy(assetsDir + 'vendor/AdminLTE/dist/js/pages', 'public/js/pages')
-        .copy(assetsDir + 'vendor/AdminLTE/dist/img', 'public/img')
+        .copy(assetsDir + 'vendor/bootstrap/fonts', 'public/fonts')
+        .copy(assetsDir + 'vendor/AdminLTE/dist/img', 'public/adminlte/img')
         .copy(assetsDir + 'vendor/amcharts3/amcharts/images', 'public/amcharts/images');
 });
 

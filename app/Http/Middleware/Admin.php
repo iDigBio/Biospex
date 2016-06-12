@@ -17,7 +17,7 @@ class Admin
     public function handle($request, Closure $next)
     {
         if ($request->user()->isAdmin()) {
-            return redirect()->route('dashboard.get.index');
+            return redirect()->route('admin.dashboard.index');
         }
 
         return $next($request);
