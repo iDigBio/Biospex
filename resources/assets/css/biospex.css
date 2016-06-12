@@ -11,7 +11,7 @@
 }
 
 #home-content {
-    background: url(/img/x.png) right -50px no-repeat;
+    background: url(/img/x-reverse.png) no-repeat center top -1px;
 }
 .home h2 { color: #8dc63f; font-size: 18px; font-weight: bold; margin: 45px 0 10px 0; }
 .home label { color: #999; font-weight: normal; display: block;}
