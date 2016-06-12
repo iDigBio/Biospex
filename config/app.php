@@ -218,7 +218,7 @@ return [
         'Html'        => Collective\Html\HtmlFacade::class,
         'Honeypot'    => Msurguy\Honeypot\HoneypotFacade::class,
         'Gate'        => Illuminate\Support\Facades\Gate::class,
-        'Toastr'      => App\Facades\Toastr::class
+        'Toastr'      => App\Facades\Toastr::class,
     ],
 
 ];
