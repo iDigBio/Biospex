@@ -18,7 +18,7 @@ interface Repository
 
     public function update(array $attributes, $id);
 
-    public function updateOrCreate(array $attributes);
+    public function updateOrCreate(array $attributes, array $values);
 
     public function delete($id);
 

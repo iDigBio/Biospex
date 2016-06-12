@@ -181,12 +181,13 @@ abstract class Repository
      * Update or Create.
      * 
      * @param array $attributes
+     * @param array $values
      * @return mixed
      */
-    public function updateOrCreate(array $attributes)
+    public function updateOrCreate(array $attributes, array $values)
     {
         $model = $this->model->firstOrNew($attributes);
-        $model->fill($attributes)->save();
+        $model->fill($values)->save();
         
         return $model;
     }
