@@ -19,27 +19,33 @@ class BuildAmChartData extends Job implements ShouldQueue
     use InteractsWithQueue, SerializesModels;
 
     /**
+     * Id of project being processed.
+     *
      * @var
      */
-    protected $projectId;
+    protected $id;
 
     /**
+     * Hold ids of expeditions for comparison with results.
+     *
      * @var array
      */
     protected $expeditions = [];
 
     /**
+     * Array to hold all transcription results.
+     *
      * @var array
      */
     protected $transcriptions = [];
 
     /**
      * BuildAmChartData constructor.
-     * @param $projectId
+     * @param $id
      */
-    public function __construct($projectId)
+    public function __construct($id)
     {
-        $this->projectId = $projectId;
+        $this->id = $id;
     }
 
     /**
@@ -50,46 +56,52 @@ class BuildAmChartData extends Job implements ShouldQueue
      */
     public function handle(Project $repo, AmChart $chart)
     {
-        $project = $repo->skipCache()->with(['expeditions.stat'])->find($this->projectId, ['id']);
+        $project = $repo->skipCache()->with(['expeditions.stat'])->find($this->id, ['id']);
 
+        $this->processProject($project);
+
+        $this->fixMissingTranscriptionDays();
+
+        $this->fixMissingResultsInTranscriptions();
+
+        $content = call_user_func_array('array_merge', $this->transcriptions);
+
+        $chart->updateOrCreate(['project_id' => $this->id], ['data' => json_encode($content)]);
+    }
+
+    /**
+     * @param $project
+     */
+    protected function processProject($project)
+    {
         foreach ($project->expeditions as $expedition)
         {
-            if (!isset($expedition->stat->start_date))
+            if ( ! isset($expedition->stat->start_date))
             {
                 continue;
             }
 
-            // Save for using later when building missing data for json
-            $this->expeditions[$expedition->id] = [$expedition->title, $expedition->stat->start_date];
-
-            $resultSet = $this->processExpedition($project->id, $expedition);
+            $resultSet = $this->processExpedition($expedition);
 
             $this->setTranscriptions($resultSet);
         }
-
-        $this->processTranscriptions();
-
-        $content = call_user_func_array('array_merge', $this->transcriptions);
-
-        $chart->updateOrCreate(['project_id' => $project->id, 'data' => json_encode($content)]);
     }
 
     /**
      * Process each expedition's transcriptions.
      *
-     * @param $projectId
      * @param $expedition
-     * @return array
+     * @return mixed|void
      */
-    public function processExpedition($projectId, $expedition)
+    public function processExpedition($expedition)
     {
-        $results = $this->getData($projectId, $expedition->id);
+        $this->expeditions[$expedition->id] = [$expedition->title, $expedition->stat->start_date];
+
+        $results = $this->getData($expedition->id);
 
         $resultSet = $this->processResultData($expedition, $results);
 
-        uasort($resultSet, [$this, 'sort']);
-
-        $this->fixCount($resultSet);
+        $this->aggregateResultCount($resultSet);
 
         return $resultSet;
     }
@@ -99,21 +111,24 @@ class BuildAmChartData extends Job implements ShouldQueue
      * @param $results
      * @return mixed
      */
-    private function processResultData($expedition, $results)
+    protected function processResultData($expedition, $results)
     {
         $resultSet = [];
         foreach ($results as $result)
         {
-            $year = $result['_id']['year'];
-            $month = $result['_id']['month'];
-            $day = $result['_id']['day'];
-            $date = $year . '-' . $month . '-' . $day;
+            $date = $result['_id']['year'] . '-' . $result['_id']['month'] . '-' . $result['_id']['day'];
             $total = $result['total'];
-
             $day = $this->calculateDay($expedition->stat->start_date, $date);
 
             $resultSet[$day] = $this->buildResultSet($expedition->id, $expedition->title, $day, $total);
         }
+
+        if ( ! array_key_exists(0, $resultSet))
+        {
+            $resultSet[0] = $this->buildResultSet($expedition->id, $expedition->title, 0, 0);
+        }
+
+        uasort($resultSet, [$this, 'sort']);
 
         return $resultSet;
     }
@@ -132,16 +147,18 @@ class BuildAmChartData extends Job implements ShouldQueue
     }
 
     /**
+     * Build result set into proper format for am chart.
+     *
      * @param $id
      * @param $title
      * @param $day
      * @param int $total
      * @return array
      */
-    private function buildResultSet($id, $title, $day, $total = 0)
+    protected function buildResultSet($id, $title, $day, $total = 0)
     {
         return [
-            'expedition' => $id,
+            'expedition' => (int) $id,
             'collection' => $title,
             'count'      => $total,
             'day'        => (int) $day
@@ -166,18 +183,17 @@ class BuildAmChartData extends Job implements ShouldQueue
     /**
      * Get data from MongoDB Transcriptions.
      *
-     * @param $projectId
      * @param $expeditionId
      * @return mixed
      */
-    public function getData($projectId, $expeditionId)
+    public function getData($expeditionId)
     {
         $client = DB::connection('mongodb')->getMongoClient('mongodb');
         $db = $client->selectDB(Config::get('database.connections.mongodb.database'));
         $collection = new MongoCollection($db, 'transcriptions');
 
         $ops = [
-            ['$match' => ['project_id' => $projectId, 'expedition_id' => $expeditionId]],
+            ['$match' => ['project_id' => $this->id, 'expedition_id' => $expeditionId]],
             [
                 '$group' => [
                     '_id'   => [
@@ -218,7 +234,7 @@ class BuildAmChartData extends Job implements ShouldQueue
      *
      * @param $resultSet
      */
-    public function fixCount(&$resultSet)
+    public function aggregateResultCount(&$resultSet)
     {
         $total = 0;
         foreach ($resultSet as $key => $value)
@@ -231,35 +247,107 @@ class BuildAmChartData extends Job implements ShouldQueue
     /**
      * Loop through transcriptions array and fill in missing pieces for the charting.
      */
-    public function processTranscriptions()
+    public function fixMissingTranscriptionDays()
+    {
+        $min = 0;
+        $max = max(array_keys($this->transcriptions));
+        $this->transcriptions += array_fill_keys(range($min, $max), '');
+        ksort($this->transcriptions);
+
+        foreach ($this->transcriptions as $day => $results)
+        {
+            if ( ! is_array($results))
+            {
+                $this->findPreviousTranscription($day);
+            }
+        }
+
+        ksort($this->transcriptions);
+    }
+
+    /**
+     * Fix missing results inside each day.
+     */
+    protected function fixMissingResultsInTranscriptions()
     {
         foreach ($this->transcriptions as $day => $results)
         {
-            $this->addMissingTranscriptionResults($results, $day);
+            $missing = array_diff_key($this->expeditions, $results);
+            if (count($missing) > 0)
+            {
+                $this->processMissingResults($missing, $day);
+            }
+        }
+    }
+
+    /**
+     * Find previous day with results and copy forward.
+     *
+     * @param $day
+     * @return mixed
+     */
+    protected function findPreviousTranscription($day)
+    {
+        $i = $day;
+        while ($day >= 0)
+        {
+            if (is_array($this->transcriptions[$day]))
+            {
+                $results = $this->transcriptions[$day];
+                $this->transcriptions[$i] = $this->fixDay($results, $day);
+
+                break;
+            }
+            $day--;
+        }
+    }
+
+    /**
+     * @param $missing
+     * @param $day
+     */
+    protected function processMissingResults($missing, $day)
+    {
+        foreach ($missing as $expedition => $value)
+        {
+            $this->findPreviousResult($day, $expedition);
+        }
+    }
+
+    /**
+     * Find previous result to cary forward in current day.
+     *
+     * @param $day
+     * @param $expedition
+     */
+    protected function findPreviousResult($day, $expedition)
+    {
+        $i = $day;
+        while ($day >= 0)
+        {
+            if (array_key_exists($expedition, $this->transcriptions[$day]))
+            {
+                $result = $this->transcriptions[$day][$expedition];
+                $result['day'] = $day + 1;
+                $this->transcriptions[$i][$expedition] = $result;
+
+                break;
+            }
+            $day--;
         }
     }
 
     /**
      * @param $results
      * @param $day
+     * @return mixed
      */
-    private function addMissingTranscriptionResults($results, $day)
+    protected function fixDay($results, $day)
     {
-        Log::alert(print_r($results, true));
-        $missing = array_diff_key($this->expeditions, $results);
-        $previousDay = $day - 1;
-        foreach ($missing as $expedition => $values)
+        foreach ($results as $key => $result)
         {
-            if ($day === 0)
-            {
-                $this->transcriptions[$day][$expedition] = $this->buildResultSet($expedition, $values[0], $day);
-                continue;
-            }
-
-            Log::alert('Building previous day ' . $previousDay . ' From day' . $day . ' expedition ' . $expedition);
-            $previous = $this->transcriptions[$previousDay][$expedition];
-            $previous['day'] = $day;
-            $this->transcriptions[$day][$expedition] = $previous;
+            $results[$key]['day'] = $day + 1;
         }
+        return $results;
     }
 }
