@@ -37,7 +37,7 @@ class HomeController extends Controller
      */
     public function project($slug, Project $repository)
     {
-        $project = $repository->with(['group', 'expeditions.stat', 'expeditions.actors', 'amChart'])->where(['slug' => $slug])->first();
+        $project = $repository->skipCache()->with(['group', 'expeditions.stat', 'expeditions.actors', 'amChart'])->where(['slug' => $slug])->first();
 
         return view('frontend.project', compact('project'));
     }
