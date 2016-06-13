@@ -58,6 +58,7 @@
             </div>
         </div>
     </div>
+
     <div class="row centered-form">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-info flex-col">
@@ -68,6 +69,24 @@
                             <li><strong>Name: </strong>Robert Bruhn</li>
                             <li><strong>Institution: </strong>Institute for Digital Information and Scientific Communication, Florida State University</li>
                             <li><strong>Email: </strong>{{ Html::mailto('bruhnrp@yahoo.com', 'bruhnrp@yahoo.com') }}
+                            </li>
+                        </ul>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row centered-form">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-info flex-col">
+                <div class="panel-heading"><h3 class="panel-title">Past Team Members</h3></div>
+                <div class="panel-body flex-grow">
+                    <ul class="list-unstyled">
+                        <ul class="list-unstyled">
+                            <li><strong>Name: </strong>Jermey Spinks</li>
+                            <li><strong>Institution: </strong>Institute for Digital Information and Scientific Communication, Florida State University</li>
+                            <li><strong>Email: </strong>{{ Html::mailto('jeremy@jellybean-design.com', 'jeremy@jellybean-design.com') }}
                             </li>
                         </ul>
                     </ul>
