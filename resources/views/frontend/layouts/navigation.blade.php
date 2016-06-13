@@ -9,7 +9,7 @@
         </button>
         &nbsp;
         <div class="btn-group">
-            <a class="navbar-brand" href="{{ route('home') }}"><img src="/img/biospex.png"
+            <a class="navbar-brand" href="{{ route('home') }}"><img src="/img/biospex-header-logo.jpg"
                                                                     alt="{{ trans('pages.sitename') }}"/></a>
         </div>
     </div>
