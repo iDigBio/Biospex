@@ -20,7 +20,7 @@ return [
     'clone' => 'Clone',
     'close' => 'Close',
     'contact' => 'Contact',
-    'contact_biospex' => 'Contact Biospex Team',
+    'contact_biospex' => 'Contact BIOSPEX Team',
     'contact_fail' => 'Errors occurred while sending the contact form.',
     'contact_success' => 'Your message has been sent. Thank you.',
     'create' => 'Create',
@@ -106,7 +106,7 @@ return [
     'process_warning' => 'Ocr processing stats refresh every 5 minutes.',
     'retrieve_process' => 'Retrieving :type processes...',
     'team_menu' => 'Team',
-    'team_biospex' => 'Biospex Team',
+    'team_biospex' => 'BIOSPEX Team',
     'vision_menu' => 'Our Vision',
     //================================== Obsolete strings ==================================//
     'admin' => 'Admin',

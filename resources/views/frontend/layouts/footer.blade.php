@@ -14,6 +14,6 @@
 	        <li><a href="http://nsf.gov"><img alt="National Science Foundation logo" class="logo-center" src="/img/nsf.png" style="width: 60px; height: 60px; " /></a></li>
         </ul>
         
-        <p class="small">Biospex is funded by a grant from the National Science Foundation’s Advances in Biological Informatics Program (Award Number 1458550). iDigBio is funded by a grant from the National Science Foundation's Advancing Digitization of Biodiversity Collections Program (Cooperative Agreement EF-1115210). Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.</p>
+        <p class="small">BIOSPEX is funded by a grant from the National Science Foundation’s Advances in Biological Informatics Program (Award Number 1458550). iDigBio is funded by a grant from the National Science Foundation's Advancing Digitization of Biodiversity Collections Program (Cooperative Agreement EF-1115210). Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.</p>
     <!-- ./ footer -->
 </div>

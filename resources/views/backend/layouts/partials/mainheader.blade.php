@@ -6,7 +6,7 @@
         <!-- mini logo for sidebar mini 50x50 pixels -->
         <span class="logo-mini"><b>BSPX</b></span>
         <!-- logo for regular state and mobile devices -->
-        <span class="logo-lg"><b>Biospex</b></span>
+        <span class="logo-lg"><b>BIOSPEX</b></span>
     </a>
 
     <!-- Header Navbar -->

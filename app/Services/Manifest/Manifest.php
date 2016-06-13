@@ -61,12 +61,12 @@ class Manifest
             'parentType'              => 'digitization project',
             'parentIdentifier'        => $record->project->uuid,
             'parentTitle'             => $record->project->title,
-            'parentProvider'          => 'Biospex',
+            'parentProvider'          => 'BIOSPEX',
             'parentDescription'       => $record->project->description_short,
             // TODO short
             'parentUrl'               => Config::get('config.app_url') . '/' . $record->project->slug,
             'ppsrFields'              => $record->project->advertise,
-            'manifestComment'         => 'Notes from Nature transcription for Biospex Expedition.'
+            'manifestComment'         => 'Notes from Nature transcription for BIOSPEX Expedition.'
         ];
 
         return $variables;

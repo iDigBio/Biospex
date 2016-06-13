@@ -28,12 +28,12 @@
                     <p>The world's 3 billion biodiversity research specimens provide the historical baseline for
                         understanding the patterns of Life's diversity and distribution today and projecting future
                         changes to it. But information about the majority of these specimens languishes in cabinets.
-                        Biospex is a basecamp for launching, advertising, and managing targeted efforts to digitize
+                        BIOSPEX is a basecamp for launching, advertising, and managing targeted efforts to digitize
                         these
                         specimens. We recognize that motivations to digitize the data can vary a lot, from the museum
                         curator to the descendants of a collector reconstructing their ancestor's steps to an
                         environmental
-                        group interested in the health of a local water body. Biospex enables each of these to package
+                        group interested in the health of a local water body. BIOSPEX enables each of these to package
                         their projects in one or a series of digitization expeditions, launch the expeditions at
                         crowdsourcing
                         tools, and widely recruit others to participate. In the end, you can download the new data AND
@@ -88,9 +88,8 @@
                             <h3 class="panel-title">The Buzz</h3>
                         </div>
                         <div class="panel-body">
-                            <a class="twitter-timeline"  href="https://twitter.com/search?q=%23biospex%20%23WeDigFLPlants" data-widget-id="742050505711595520">Tweets about #biospex #WeDigFLPlants</a>
+                            <a class="twitter-timeline"  href="https://twitter.com/hashtag/BIOSPEX" data-widget-id="742050505711595520">#BIOSPEX Tweets</a>
                             <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-
                         </div>
                     </div>
                 </div>

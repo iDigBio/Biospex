@@ -1,4 +1,4 @@
-Biospex
+BIOSPEX
 =======
 
 Public Participation Manager
