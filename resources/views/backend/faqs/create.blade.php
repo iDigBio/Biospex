@@ -77,7 +77,7 @@
                             <div class="form-group required {{ ($errors->has('answer')) ? 'has-error' : '' }}">
                                 {!! Form::label('answer', 'Answer', ['class' => 'col-sm-2 control-label']) !!}
                                 <div class="col-sm-10">
-                                    {!! Form::textarea('answer', null, ['class' => 'form-control', 'placeholder' => 'Answer']) !!}
+                                    {!! Form::textarea('answer', null, ['class' => 'form-control ckeditor', 'placeholder' => 'Answer']) !!}
                                 </div>
                                 {{ ($errors->has('answer') ? $errors->first('answer') : '') }}
                             </div>

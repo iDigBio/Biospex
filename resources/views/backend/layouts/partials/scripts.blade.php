@@ -10,6 +10,12 @@
 <!-- AdminLTE App -->
 <script src="{{ asset('/adminlte/js/main.js') }}" type="text/javascript"></script>
 
+<script src="/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>
+<script src="/vendor/unisharp/laravel-ckeditor/adapters/jquery.js"></script>
+<script>
+    $('.ckeditor').ckeditor();
+    // $('.textarea').ckeditor(); // if class is prefered.
+</script>
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
       Both of these plugins are recommended to enhance the
       user experience. Slimscroll is required when using the

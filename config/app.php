@@ -151,6 +151,7 @@ return [
         Msurguy\Honeypot\HoneypotServiceProvider::class,
         Dingo\Api\Provider\LaravelServiceProvider::class,
         Vetruvet\PhpRedis\PhpRedisServiceProvider::class,
+        Unisharp\Ckeditor\ServiceProvider::class,
 
         /*
          * Biospex Providers
