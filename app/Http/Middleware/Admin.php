@@ -6,18 +6,17 @@ use Closure;
 
 class Admin
 {
+
     /**
-     * Handle authorization
+     * Handle is user is not in admin group
      * @param $request
      * @param Closure $next
-     * @param $ability
-     * @param null $model
-     * @return mixed
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function handle($request, Closure $next)
     {
-        if ($request->user()->isAdmin()) {
-            return redirect()->route('admin.dashboard.index');
+        if ( ! $request->user()->isAdmin()) {
+            return redirect()->route('web.projects.index');
         }
 
         return $next($request);
