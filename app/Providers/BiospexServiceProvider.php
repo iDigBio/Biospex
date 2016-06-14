@@ -26,6 +26,8 @@ use App\Repositories\Contracts\Workflow as WorkflowContract;
 use App\Repositories\Contracts\Faq as FaqContract;
 use App\Repositories\Contracts\FaqCategory as FaqCategoryContract;
 use App\Repositories\Contracts\AmChart as AmChartContract;
+use App\Repositories\Contracts\TeamCategory as TeamCategoryContract;
+use App\Repositories\Contracts\Team as TeamContract;
 
 use App\Repositories\UserRepository;
 use App\Repositories\GroupRepository;
@@ -49,6 +51,8 @@ use App\Repositories\WorkflowRepository;
 use App\Repositories\FaqRepository;
 use App\Repositories\FaqCategoryRepository;
 use App\Repositories\AmChartRepository;
+use App\Repositories\TeamCategoryRepository;
+use App\Repositories\TeamRepository;
 
 
 class BiospexServiceProvider extends ServiceProvider
@@ -88,5 +92,7 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(FaqContract::class, FaqRepository::class);
         $this->app->bind(FaqCategoryContract::class, FaqCategoryRepository::class);
         $this->app->bind(AmChartContract::class, AmChartRepository::class);
+        $this->app->bind(TeamCategoryContract::class, TeamCategoryRepository::class);
+        $this->app->bind(TeamContract::class, TeamRepository::class);
     }
 }
