@@ -24,7 +24,6 @@
     "codesleeve/laravel-stapler": "dev-master",
     "league/csv": "8.0.*",
     "neitanod/forceutf8": "1.4.*",
-    "dingo/api": "1.0.*@dev",
     "vetruvet/laravel-phpredis": "1.*",
     "unisharp/laravel-ckeditor": "^4.5"
   },

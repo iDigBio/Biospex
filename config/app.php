@@ -149,7 +149,6 @@ return [
         Jenssegers\Mongodb\MongodbServiceProvider::class,
         Codesleeve\LaravelStapler\Providers\L5ServiceProvider::class,
         Msurguy\Honeypot\HoneypotServiceProvider::class,
-        Dingo\Api\Provider\LaravelServiceProvider::class,
         Vetruvet\PhpRedis\PhpRedisServiceProvider::class,
         Unisharp\Ckeditor\ServiceProvider::class,
 
