@@ -34,7 +34,7 @@ class ImagesController extends Controller
     public function preview()
     {
         $url = Request::input('url');
-        $thumb = $this->thumbnail->getThumbaail(urldecode($url));
+        $thumb = $this->thumbnail->getThumbnail(urldecode($url));
 
         return '<img src="data:image/jpeg;base64,' . base64_encode($thumb) . '" />';
     }
