@@ -44,7 +44,7 @@ class RouteServiceProvider extends ServiceProvider
                 [
                     'domain'     => env('APP_DOMAIN'),
                     'prefix'     => 'admin',
-                    'middleware' => ['web', 'auth'],
+                    'middleware' => ['web', 'auth', 'admin'],
                     'namespace'  => 'Backend'
                 ],
                 function () use ($router)
