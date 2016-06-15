@@ -2,7 +2,8 @@
 
 namespace App\Http\Requests;
 
-class FaqFormRequest extends Request
+
+class TeamFormRequest extends Request
 {
 
     /**
@@ -24,8 +25,10 @@ class FaqFormRequest extends Request
     {
         return [
             'faq_category_id' => 'required',
-            'question'        => 'required',
-            'answer'          => 'required'
+            'first_name'      => 'required',
+            'last_name'       => 'required',
+            'email'           => 'required|min:4|max:32|email|unique:teams',
+            'institution'     => 'required|min:4|max:60'
         ];
     }
 }

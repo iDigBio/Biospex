@@ -45,8 +45,16 @@
             <li class="treeview">
                 {!! Html::linkWithIcon('#', 'FAQs', [], ['before' => 'fa fa-server', 'after' => 'fa fa-angle-left pull-right']) !!}
                 <ul class="treeview-menu" role="directory" style="display: none;">
-                    <li class="{!! Html::active('admin.faqs.index') !!}">{!! Html::linkWithIcon(route('admin.faqs.index'), 'Show FAQs', [], ['before' => 'fa fa-circle-o']) !!}</li>
+                    <li class="{!! Html::active('admin.faqs.index') !!}">{!! Html::linkWithIcon(route('admin.faqs.index'), 'FAQs', [], ['before' => 'fa fa-circle-o']) !!}</li>
                     <li>{!! Html::linkWithIcon(route('admin.faqs.create'), 'Create FAQ', [], ['before' => 'fa fa-circle-o']) !!}</li>
+                </ul>
+            </li>
+
+            <li class="treeview">
+                {!! Html::linkWithIcon('#', 'Team', [], ['before' => 'fa fa-server', 'after' => 'fa fa-angle-left pull-right']) !!}
+                <ul class="treeview-menu" role="directory" style="display: none;">
+                    <li class="{!! Html::active('admin.teams.index') !!}">{!! Html::linkWithIcon(route('admin.teams.index'), 'Team Members', [], ['before' => 'fa fa-circle-o']) !!}</li>
+                    <li>{!! Html::linkWithIcon(route('admin.teams.create'), 'Create Team Info', [], ['before' => 'fa fa-circle-o']) !!}</li>
                 </ul>
             </li>
 

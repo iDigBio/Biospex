@@ -144,11 +144,15 @@ class FaqsController extends Controller
         $result ? Toastr::success('FAQ has been updated successfully.', 'FAQ Update')
             : Toastr::error('FAQ could not be updated.', 'FAQ Update');
 
-        return redirect()->route('admin.faqs.edit', [$categoryId, $faqId]);
+        return redirect()->route('admin.faqs.index');
     }
 
     /**
-     *
+     * Update category.
+     * 
+     * @param FaqCategoryFormRequest $request
+     * @param $categoryId
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function updateCategory(FaqCategoryFormRequest $request, $categoryId)
     {
@@ -157,7 +161,7 @@ class FaqsController extends Controller
         $result ? Toastr::success('Category has been updated successfully.', 'Category Update')
             : Toastr::error('Category could not be updated.', 'Category Update');
 
-        return redirect()->route('admin.faqs.edit', [$categoryId, 0]);
+        return redirect()->route('admin.faqs.index');
     }
 
     /**

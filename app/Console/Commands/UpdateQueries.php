@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\Contracts\Team;
+use App\Repositories\Contracts\TeamCategory;
 use Illuminate\Console\Command;
 use App\Repositories\Contracts\Actor;
 use App\Repositories\Contracts\Workflow;
@@ -9,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class UpdateQueries extends Command
 {
+
     /**
      * The console command name.
      */
@@ -19,24 +22,22 @@ class UpdateQueries extends Command
      */
     protected $description = 'Used for custom queries when updating database';
     /**
-     * @var Actor
+     * @var TeamCategory
      */
-    private $actor;
+    private $category;
     /**
-     * @var Workflow
+     * @var Team
      */
-    private $workflow;
+    private $team;
 
     /**
      * UpdateQueries constructor.
-     * @param Actor $actor
-     * @param Workflow $workflow
      */
-    public function __construct(Actor $actor, Workflow $workflow)
+    public function __construct(TeamCategory $category, Team $team)
     {
         parent::__construct();
-        $this->actor = $actor;
-        $this->workflow = $workflow;
+        $this->category = $category;
+        $this->team = $team;
     }
 
     /**
@@ -44,12 +45,88 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
-        DB::statement("UPDATE actors SET title = 'Notes From Nature Legacy', class = 'NfnLegacy' WHERE actors.id = 1");
-        DB::statement("UPDATE actors SET title = 'Notes From Nature Panoptes', class = 'NfnPanoptes' WHERE actors.id = 2");
-        DB::statement("UPDATE workflows SET workflow = 'Notes From Nature Legacy' WHERE workflows.id = 2");
-        DB::statement("UPDATE workflows SET workflow = 'Notes From Nature Panoptes' WHERE workflows.id = 3");
-        DB::statement("UPDATE workflows SET workflow = 'OCR -> Notes From Nature Legacy' WHERE workflows.id = 4");
-        DB::statement("UPDATE workflows SET workflow = 'OCR -> Notes From Nature Panoptes' WHERE workflows.id = 5");
+        $categories = $this->getData();
+
+        foreach ($categories as $category)
+        {
+            $result = $this->category->create($category);
+
+            foreach ($category['members'] as $member)
+            {
+                $attributes = ['email' => $member['email']];
+                $member['team_category_id'] = $result->id;
+                $this->team->updateOrCreate($attributes, $member);
+            }
+        }
+    }
+
+    /**
+     * Get data for building team.
+     * 
+     * @return array
+     */
+    protected function getData()
+    {
+        return
+            [
+                [
+                    'name'    => 'principle-investigators',
+                    'label'   => 'Principle Investigators',
+                    'members' => [
+                        [
+                            'first_name'  => 'Austin',
+                            'last_name'   => 'Mast',
+                            'institution' => 'Associate Professor, Department of Biological Science, Florida State University',
+                            'email'       => 'amast@bio.fsu.edu'
+                        ],
+                        [
+                            'first_name'  => 'Greg',
+                            'last_name'   => 'Ricarrdi',
+                            'institution' => 'Director, Institute for Digital Information and Scientific Communication, Florida State University',
+                            'email'       => 'griccardi@fsu.edu'
+                        ],
+                    ]
+                ],
+                [
+                    'name'    => 'education-and-outreach-coordinator',
+                    'label'   => 'Education and Outreach Coordinator',
+                    'members' => [
+                        [
+                            'first_name'  => 'Libby',
+                            'last_name'   => 'Ellwood',
+                            'institution' => 'Postdoctoral Scholar, Department of Biological Science, Florida State University',
+                            'email'       => 'eellwood@bio.fsu.edu'
+                        ],
+
+                    ]
+                ],
+                [
+                    'name'    => 'developers',
+                    'label'   => 'Developers',
+                    'members' => [
+                        [
+                            'first_name'  => 'Robert',
+                            'last_name'   => 'Bruhn',
+                            'institution' => 'Institute for Digital Information and Scientific Communication, Florida State University',
+                            'email'       => 'bruhnrp@yahoo.com'
+                        ],
+
+                    ]
+                ],
+                [
+                    'name'    => 'past-team-members',
+                    'label'   => 'Past Team Members',
+                    'members' => [
+                        [
+                            'first_name'  => 'Jermey',
+                            'last_name'   => 'Spinks',
+                            'institution' => 'Institute for Digital Information and Scientific Communication, Florida State University',
+                            'email'       => 'jeremy@jellybean-design.com'
+                        ],
+
+                    ]
+                ],
+            ];
     }
 
 }

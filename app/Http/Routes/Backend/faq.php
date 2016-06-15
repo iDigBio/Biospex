@@ -4,7 +4,7 @@ $router->get('faq', [
     'as'   => 'admin.faqs.index'
 ]);
 
-$router->get('faq/create/{category?}', [
+$router->get('faq/create/{categories?}', [
     'uses' => 'FaqsController@create',
     'as'   => 'admin.faqs.create'
 ]);
@@ -24,22 +24,22 @@ $router->get('faq/{faq}', [
     'as'   => 'admin.faqs.show'
 ]);
 
-$router->get('faq/{category}/{faq?}/edit', [
+$router->get('faq/{categories}/{faqs?}/edit', [
     'uses' => 'FaqsController@edit',
     'as'   => 'admin.faqs.edit'
 ]);
 
-$router->put('faq/{category}/{faq}', [
+$router->put('faq/{categories}/{faqs}', [
     'uses' => 'FaqsController@update',
     'as'   => 'admin.faqs.update'
 ]);
 
-$router->put('faq/{category}', [
+$router->put('faq/{categories}', [
     'uses' => 'FaqsController@updateCategory',
     'as'   => 'admin.faqs.categories.update'
 ]);
 
-$router->delete('faq/{category}/{faq?}/edit', [
+$router->delete('faq/{categories}/{faqs?}/edit', [
     'uses' => 'FaqsController@delete',
     'as'   => 'admin.faqs.delete'
 ]);

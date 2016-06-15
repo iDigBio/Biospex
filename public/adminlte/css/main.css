@@ -78,4 +78,16 @@
 td.button-fix {
     width: 70px;
 }
+
+h5.widget-user-email a {
+    color: #ffffff;
+}
+
+.action-fix{
+    bottom: 15px;
+    position: relative;
+    top: 10px;
+    left: 10px;
+
+}
 /*# sourceMappingURL=main.css.map */

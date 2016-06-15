@@ -27,4 +27,14 @@ class GroupFormRequest extends Request
             'name'     => 'required|min:4|max:32|unique:groups,name,' . $this->request->get('id'),
         ];
     }
+
+    /**
+     * Change input before validation.
+     */
+    public function inputChange()
+    {
+        $this->replace(['name' => strtolower(str_replace(' ', '-', $this->only('name')))]);
+        
+        return $this->all();
+    }
 }
