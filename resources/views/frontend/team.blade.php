@@ -17,7 +17,7 @@
     <div class="row centered-form">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-info flex-col">
-                <div class="panel-heading"><h3 class="panel-title">Principle Investigators</h3></div>
+                <div class="panel-heading"><h3 class="panel-title">Principal Investigators</h3></div>
                 <div class="panel-body flex-grow">
                     <ul class="list-unstyled">
                         <li><strong>Name: </strong>Austin Mast</li>

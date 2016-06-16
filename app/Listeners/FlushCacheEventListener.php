@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Events;
+namespace App\Listeners;
 
-use Cache;
-use Route;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Route;
 
-class FlushCacheEvent extends Event
+class FlushCacheEventListener
 {
     /**
-     * Create a new event instance.
+     * Create a new event listener.
      */
     public function __construct()
     {

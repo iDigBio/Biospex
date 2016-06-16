@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
-use App\Events\FlushCacheEvent;
+use App\Events\PollOcrEvent;
+use App\Listeners\FlushCacheEventListener;
+use App\Listeners\PollOcrEventListener;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Events\SendReportEvent;
@@ -21,10 +23,10 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         'eloquent.saved: *' => [
-            FlushCacheEvent::class
+            FlushCacheEventListener::class
         ],
         'eloquent.deleted: *' => [
-            FlushCacheEvent::class
+            FlushCacheEventListener::class
         ],
         SendReportEvent::class => [
             SendReportEventListener::class

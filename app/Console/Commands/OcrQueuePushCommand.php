@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
-use Symfony\Component\Console\Input\InputArgument;
 use App\Repositories\Contracts\OcrQueue;
 
 class OcrQueuePushCommand extends Command

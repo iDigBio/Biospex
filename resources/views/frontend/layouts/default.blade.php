@@ -19,7 +19,7 @@
     </div>
 @endif
 @if (Auth::check())
-    @include('frontend.partials.process-modal')
+    @include('frontend.layouts.partials.process-modal')
 @endif
 @include('frontend.layouts.footer')
 <!-- ./ footer -->

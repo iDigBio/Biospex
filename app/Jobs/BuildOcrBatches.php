@@ -2,13 +2,13 @@
 
 namespace App\Jobs;
 
+use App\Repositories\Contracts\Project;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Config;
-use App\Models\Project;
 use App\Events\PollOcrEvent;
 use App\Repositories\Contracts\OcrCsv;
 use App\Repositories\Contracts\OcrQueue;
@@ -19,9 +19,9 @@ class BuildOcrBatches extends Job implements ShouldQueue
     use InteractsWithQueue, SerializesModels;
 
     /**
-     * @var Project
+     * @var
      */
-    private $project;
+    private $projectId;
 
     /**
      * @var
@@ -31,35 +31,28 @@ class BuildOcrBatches extends Job implements ShouldQueue
     /**
      * @var
      */
-    private $ocrQueue;
-
-    /**
-     * @var
-     */
     private $ocrData;
 
     /**
-     * Create a new job instance.
+     * BuildOcrBatches constructor.
      *
-     * @param Project $project
-     * @param $expeditionId
+     * @param $projectId
+     * @param null $expeditionId
      */
-    public function __construct(Project $project, $expeditionId = null)
+    public function __construct($projectId, $expeditionId = null)
     {
-        $this->project = $project;
+        $this->projectId = (int) $projectId;
         $this->expeditionId = $expeditionId === null ? null : (int) $expeditionId;
     }
 
     /**
      * Handle Job.
-     * 
-     * @param OcrQueue $ocrQueue
+     *
+     * @param OcrQueue $ocrQueueRepo
      * @param OcrCsv $ocrCsvRepo
      */
-    public function handle(OcrQueue $ocrQueue, OcrCsv $ocrCsvRepo)
-    {
-        $this->ocrQueue = $ocrQueue;
-        
+    public function handle(OcrQueue $ocrQueueRepo, OcrCsv $ocrCsvRepo)
+    {        
         if (Config::get('config.ocr_disable'))
         {
             return;
@@ -70,11 +63,6 @@ class BuildOcrBatches extends Job implements ShouldQueue
             return;
         }
      
-        if ( ! $this->checkOcrProcessing())
-        {
-            return;
-        }
-
         $this->buildOcrSubjectsArray();
      
         $data = $this->getChunkQueueData();
@@ -92,8 +80,8 @@ class BuildOcrBatches extends Job implements ShouldQueue
             $batch = ($key === $lastKey) ? 1 : 0;
             $count = count($chunk);
 
-            $this->ocrQueue->create([
-                'project_id'        => $this->project->id,
+            $ocrQueueRepo->create([
+                'project_id'        => $this->projectId,
                 'ocr_csv_id'        => $ocrCsv->id,
                 'data'              => json_encode(['subjects' => $chunk]),
                 'subject_count'     => $count,
@@ -102,17 +90,20 @@ class BuildOcrBatches extends Job implements ShouldQueue
             ]);
         }
 
-        app(Dispatcher::class)->fire(new PollOcrEvent($this->ocrQueue));
+        app(Dispatcher::class)->fire(new PollOcrEvent());
     }
-    
+
 
     /**
      * Check if project has ocr actor.
+     * 
      * @return bool
      */
     protected function checkOcrActorExists()
     {
-        foreach ($this->project->workflow->actors as $actor)
+        $project = app(Project::class)->skipCache()->with(['workflow.actors'])->find($this->projectId);
+        
+        foreach ($project->workflow->actors as $actor)
         {
             if (strtolower($actor->title) === 'ocr')
             {
@@ -124,28 +115,20 @@ class BuildOcrBatches extends Job implements ShouldQueue
     }
 
     /**
-     * Check whether we should be processing this ocr request.
-     * @return bool
-     */
-    protected function checkOcrProcessing()
-    {
-        $queue = $this->ocrQueue->skipCache()->where(['project_id' => $this->project->id])->first();
-
-        return null === $queue;
-    }
-
-    /**
      * Build the ocr subject array
      */
     protected function buildOcrSubjectsArray()
     {
-        $cursor = $this->setCursor();
+        $collection = $this->setCollection();
+        $query = null === $this->expeditionId ?
+            ['project_id' => $this->projectId, 'ocr' => ''] :
+            ['project_id' => $this->projectId, 'expedition_ids' => $this->expeditionId, 'ocr' => ''];
 
-        foreach ($cursor as $id => $doc)
+        $results = $collection->find($query);
+
+        foreach ($results as $doc)
         {
-            $doc['_id'] = $id;
-            $subject = array_to_object($doc);
-            $this->buildOcrQueueData($subject);
+            $this->buildOcrQueueData($doc);
         }
     }
 
@@ -153,32 +136,26 @@ class BuildOcrBatches extends Job implements ShouldQueue
      * Query MongoDB and return cursor
      * @return bool
      */
-    protected function setCursor()
+    protected function setCollection()
     {
         $databaseManager = app(DatabaseManager::class);
         $db = $databaseManager->connection('mongodb')->getMongoClient()->selectDB(Config::get('database.connections.mongodb.database'));
 
-        $collection = new MongoCollection($db, 'subjects');
-        $query = null === $this->expeditionId ?
-            ['project_id' => $this->project->id, 'ocr' => ''] :
-            ['project_id' => $this->project->id, 'expedition_ids' => $this->expeditionId, 'ocr' => ''];
-
-        return $collection->find($query);
+        return new MongoCollection($db, 'subjects');
     }
 
     /**
      * Build the ocr and send to the queue.
      *
-     * @param $subject
-     * @return array
+     * @param $doc
      */
-    protected function buildOcrQueueData($subject)
+    protected function buildOcrQueueData($doc)
     {
-        $this->ocrData[$subject->_id] = [
+        $this->ocrData[$doc['_id']] = [
             'crop'   => Config::get('config.ocr_crop'),
             'ocr'    => '',
             'status' => 'pending',
-            'url'    => $subject->accessURI
+            'url'    => $doc['accessURI']
         ];
     }
 
