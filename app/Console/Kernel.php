@@ -1,6 +1,7 @@
 <?php namespace App\Console;
 
 use App\Console\Commands\AustinProcessCommand;
+use App\Console\Commands\ClearOcrResults;
 use App\Console\Commands\RunAmChartData;
 use App\Console\Commands\ClearBeanstalkdQueueCommand;
 use App\Console\Commands\DarwinCoreFileImportCommand;
@@ -39,6 +40,7 @@ class Kernel extends ConsoleKernel
         UpdateQueries::class,
         RunAmChartData::class,
         RunUpdateExpeditionStat::class,
+        ClearOcrResults::class,
     ];
 
     /**

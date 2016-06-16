@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BuildOcrBatches;
+use App\Repositories\Contracts\OcrQueue;
 use App\Repositories\Contracts\User;
 use App\Http\Requests\ExpeditionFormRequest;
 use App\Repositories\Contracts\Expedition;
@@ -286,25 +287,36 @@ class ExpeditionsController extends Controller
     }
 
     /**
-     * Reprocess OCR
+     * Reprocess OCR.
+     * 
+     * @param OcrQueue $queue
      * @param $projectId
      * @param $expeditionId
      * @return mixed
      */
-    public function ocr($projectId, $expeditionId)
+    public function ocr(OcrQueue $queue, $projectId, $expeditionId)
     {
         $user = Request::user();
 
-        $project = $this->project->with(['group.permissions', 'workflow.actors'])->find($projectId);
+        $project = $this->project->with(['group.permissions'])->find($projectId);
 
         if ( ! $this->checkPermissions($user, [$project], 'update'))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $this->dispatch((new BuildOcrBatches($project, $expeditionId))->onQueue(Config::get('config.beanstalkd.ocr')));        
+        $queueCheck = $queue->skipCache()->where(['project_id' => $this->projectId])->first();
         
-        session_flash_push('success', trans('expeditions.ocr_process_success'));
+        if ($queueCheck === null)
+        {
+            $this->dispatch((new BuildOcrBatches($project->id, $expeditionId))->onQueue(Config::get('config.beanstalkd.ocr')));
+
+            session_flash_push('success', trans('expeditions.ocr_process_success'));
+        }
+        else
+        {
+            session_flash_push('warning', trans('expeditions.ocr_process_error'));
+        }
 
         return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
     }
