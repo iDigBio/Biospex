@@ -1,45 +1,53 @@
 <?php
-$router->get('team', [
+
+// Index
+$router->get('teams', [
     'uses' => 'TeamsController@index',
     'as'   => 'admin.teams.index'
 ]);
 
-$router->get('team/create/{categories?}', [
+// Begin Teams
+$router->get('teams/{categories}', [
     'uses' => 'TeamsController@create',
     'as'   => 'admin.teams.create'
 ]);
 
-$router->post('team/create', [
+$router->post('teams/{categories?}', [
     'uses' => 'TeamsController@store',
     'as'   => 'admin.teams.store'
 ]);
 
-$router->post('team/createCategory', [
-    'uses' => 'TeamsController@storeCategory',
-    'as'   => 'admin.teams.category.store'
-]);
-
-$router->get('team/{teams}', [
-    'uses' => 'TeamsController@show',
-    'as'   => 'admin.teams.show'
-]);
-
-$router->get('team/{categories}/{teams?}/edit', [
+$router->get('teams/{categories}/{teams}', [
     'uses' => 'TeamsController@edit',
     'as'   => 'admin.teams.edit'
 ]);
 
-$router->put('team/{categories}/{teams}', [
+$router->put('teams/{categories}/{teams}', [
     'uses' => 'TeamsController@update',
     'as'   => 'admin.teams.update'
 ]);
 
-$router->put('team/{categories}', [
+
+$router->delete('teams/{categories}/{teams}', [
+    'uses' => 'TeamsController@delete',
+    'as'   => 'admin.teams.delete'
+]);
+// End Teams
+
+
+// Begin Categories
+$router->get('teams/{categories}/{teams}/categories', [
+    'uses' => 'TeamsController@editCategory',
+    'as'   => 'admin.teams.categories.edit'
+]);
+
+$router->put('teams/{categories}/{teams}/categories', [
     'uses' => 'TeamsController@updateCategory',
     'as'   => 'admin.teams.categories.update'
 ]);
 
-$router->delete('team/{categories}/{teams?}/edit', [
-    'uses' => 'TeamsController@delete',
-    'as'   => 'admin.teams.delete'
+$router->post('teams/create/category', [
+    'uses' => 'TeamsController@storeCategory',
+    'as'   => 'admin.teams.category.store'
 ]);
+// End Categories

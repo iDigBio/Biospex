@@ -29,7 +29,7 @@ Html::macro('linkWithIcon', function ($url, $text, $attributes = [], $icons = []
 
 Html::macro('active', function ($route)
 {
-    return Request::route()->getName() === $route ? 'active' : '';
+    return strpos(Request::route()->getName(), $route) !== false ? 'active' : '';
 });
 
 Html::macro('collapse', function ($routes)

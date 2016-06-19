@@ -12,7 +12,7 @@ $router->get('faqs/{categories}', [
     'as'   => 'admin.faqs.create'
 ]);
 
-$router->post('faqs/{categories}', [
+$router->post('faqs/{categories?}', [
     'uses' => 'FaqsController@store',
     'as'   => 'admin.faqs.store'
 ]);

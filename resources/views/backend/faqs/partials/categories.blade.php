@@ -1,4 +1,4 @@
-<div class="box box-primary collapsed-box">
+<div class="box box-info collapsed-box">
     <div class="box-header with-border">
         <h3 class="box-title" data-widget="collapse">{{ $category->label }} <i class="fa fa-plus btn-box-tool"></i></h3>
         <div class="box-tools">

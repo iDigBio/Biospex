@@ -24,11 +24,11 @@ class TeamFormRequest extends Request
     public function rules()
     {
         return [
-            'faq_category_id' => 'required',
-            'first_name'      => 'required',
-            'last_name'       => 'required',
-            'email'           => 'required|min:4|max:32|email|unique:teams',
-            'institution'     => 'required|min:4|max:60'
+            'team_category_id' => 'required',
+            'first_name'       => 'required',
+            'last_name'        => 'required',
+            'email'            => 'required|min:4|max:32|email|unique:teams,email,' . $this->route('teams'),
+            'institution'      => 'required|min:4|max:60'
         ];
     }
 }

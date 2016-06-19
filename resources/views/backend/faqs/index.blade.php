@@ -1,7 +1,7 @@
 @extends('backend.layouts.app')
 
 @section('htmlheader_title')
-    OCR
+    Manage FAQs
 @endsection
 
 @section('contentheader_title', 'Manage FAQs')
@@ -123,7 +123,7 @@
         <div class="row">
             <div class="col-xs-12">
                 @foreach($categories as $category)
-                    @include('backend.faqs.partials.faqcategories')
+                    @include('backend.faqs.partials.categories')
                 @endforeach
             </div>
         </div>

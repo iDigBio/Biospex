@@ -42,23 +42,19 @@
                 </ul>
             </li>
 
-            <li>
+            <li class="{!! Html::active('admin.faqs.') !!}">
                 {!! Html::linkWithIcon(route('admin.faqs.index'), 'FAQs', [], ['before' => 'fa fa-server']) !!}
             </li>
 
-            <li class="treeview">
-                {!! Html::linkWithIcon('#', 'Team', [], ['before' => 'fa fa-server', 'after' => 'fa fa-angle-left pull-right']) !!}
-                <ul class="treeview-menu" role="directory" style="display: none;">
-                    <li class="{!! Html::active('admin.teams.index') !!}">{!! Html::linkWithIcon(route('admin.teams.index'), 'Team Members', [], ['before' => 'fa fa-circle-o']) !!}</li>
-                    <li>{!! Html::linkWithIcon(route('admin.teams.create'), 'Create Team Info', [], ['before' => 'fa fa-circle-o']) !!}</li>
-                </ul>
+            <li class="{!! Html::active('admin.teams.') !!}">
+                {!! Html::linkWithIcon(route('admin.teams.index'), 'Teams', [], ['before' => 'fa fa-users']) !!}
             </li>
 
-            <li>
+            <li class="{!! Html::active('admin.translations.') !!}">
                 {!! Html::linkWithIcon(route('admin.translations.index'), 'Translations', [], ['before' => 'fa fa-language']) !!}
             </li>
 
-            <li>
+            <li class="{!! Html::active('admin.ocr') !!}">
                 {!! Html::linkWithIcon(route('admin.ocr.index'), 'OCR', [], ['before' => 'fa fa-file-image-o']) !!}
             </li>
 

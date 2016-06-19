@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 class TeamCategoryFormRequest extends Request
 {
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,10 +27,15 @@ class TeamCategoryFormRequest extends Request
         ];
     }
 
-    public function inputChange()
+    /**
+     * Override parent alterInput.
+     *
+     * @return array
+     */
+    public function alterInput()
     {
-        $this->replace(['name' => strtolower(str_replace(' ', '-', $this->input('name')))]);
-        
+        $this->replace(['name' => strtolower(str_replace(' ', '-', $this->get('name')))]);
+
         return $this->all();
     }
 }

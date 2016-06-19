@@ -78,16 +78,15 @@ class FaqsController extends Controller
      * Create FAQ.
      *
      * @param FaqFormRequest $request
-     * @param $categoryId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(FaqFormRequest $request, $categoryId)
+    public function store(FaqFormRequest $request)
     {
         $faq = $this->faq->create($request->all());
 
         $faq ? Toastr::success('FAQ has been created successfully.', 'FAQ Create') : Toastr::error('FAQ could not be saved.', 'FAQ Create');
 
-        return redirect()->route('admin.faqs.create', $categoryId);
+        return redirect()->route('admin.faqs.create', $request->get('faq_category_id'));
     }
 
     /**
