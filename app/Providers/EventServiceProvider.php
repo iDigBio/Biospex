@@ -2,9 +2,7 @@
 
 namespace App\Providers;
 
-use App\Events\PollOcrEvent;
 use App\Listeners\FlushCacheEventListener;
-use App\Listeners\PollOcrEventListener;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Events\SendReportEvent;
