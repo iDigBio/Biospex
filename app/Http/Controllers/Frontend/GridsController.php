@@ -71,7 +71,6 @@ class GridsController extends Controller
 
         $this->projectId = (int) $this->request->route('projects');
         $this->expeditionId = (int) $this->request->route('expeditions');
-        $this->route = $this->request->route()->getName();
     }
 
     /**
@@ -79,7 +78,7 @@ class GridsController extends Controller
      */
     public function load()
     {
-        return $this->grid->loadGridModel($this->projectId, $this->route);
+        return $this->grid->loadGridModel($this->projectId, $this->request->route()->getName());
     }
 
     /**
@@ -89,22 +88,22 @@ class GridsController extends Controller
      */
     public function explore()
     {
-        return $this->grid->encodeGridRequestedData($this->request->all(), $this->route, $this->projectId, $this->expeditionId);
+        return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
     }
 
     public function expeditionsShow()
     {
-        return $this->grid->encodeGridRequestedData($this->request->all(), $this->route, $this->projectId, $this->expeditionId);
+        return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
     }
 
     public function expeditionsEdit()
     {
-        return $this->grid->encodeGridRequestedData($this->request->all(), $this->route, $this->projectId, $this->expeditionId);
+        return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
     }
 
     public function expeditionsCreate()
     {
-        return $this->grid->encodeGridRequestedData($this->request->all(), $this->route, $this->projectId, $this->expeditionId);
+        return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
     }
 }
 
