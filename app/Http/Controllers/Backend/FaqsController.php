@@ -22,63 +22,72 @@ class FaqsController extends Controller
      * @var FaqCategory
      */
     private $category;
+    /**
+     * @var User
+     */
+    private $user;
 
     /**
      * FaqController constructor.
      *
      * @param FaqCategory $category
      * @param Faq $faq
+     * @param User $user
      */
-    public function __construct(FaqCategory $category, Faq $faq)
+    public function __construct(FaqCategory $category, Faq $faq, User $user)
     {
-        $this->faq = $faq;
         $this->category = $category;
+        $this->faq = $faq;
+        $this->user = $user;
     }
 
     /**
      * Show Faq list by category.
-     *
+     * 
      * @param Request $request
-     * @param User $repo
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Request $request, User $repo)
+    public function index(Request $request)
     {
-        $user = $repo->with(['profile'])->find($request->user()->id);
+        $user = $this->user->with(['profile'])->find($request->user()->id);
+        $select = [null => 'Please Select'] + $this->category->pluck('label', 'id')->toArray();
         $categories = $this->category->with(['faqs'])->groupBy('id')->get();
+        $categoryId = null;
+        $faqId = null;
 
-        return view('backend.faqs.index', compact('user', 'categories'));
+        return view('backend.faqs.index', compact('user', 'categories', 'select', 'categoryId', 'faqId'));
     }
 
     /**
      * Show create forms for categories and faq.
      *
      * @param Request $request
-     * @param User $repo
-     * @param null $category
+     * @param $categoryId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function create(Request $request, User $repo, $category = null)
+    public function create(Request $request, $categoryId)
     {
-        $user = $repo->with(['profile'])->find($request->user()->id);
-        $categories = [null => 'Please Select'] + $this->category->pluck('label', 'id')->toArray();
+        $user = $this->user->with(['profile'])->find($request->user()->id);
+        $select = [null => 'Please Select'] + $this->category->pluck('label', 'id')->toArray();
+        $categories = $this->category->with(['faqs'])->groupBy('id')->get();
 
-        return view('backend.faqs.create', compact('user', 'categories', 'category'));
+        return view('backend.faqs.index', compact('user', 'categories', 'select', 'categoryId'));
     }
 
     /**
      * Create FAQ.
      *
      * @param FaqFormRequest $request
+     * @param $categoryId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(FaqFormRequest $request)
+    public function store(FaqFormRequest $request, $categoryId)
     {
         $faq = $this->faq->create($request->all());
 
         $faq ? Toastr::success('FAQ has been created successfully.', 'FAQ Create') : Toastr::error('FAQ could not be saved.', 'FAQ Create');
 
-        return redirect()->route('admin.faqs.index');
+        return redirect()->route('admin.faqs.create', $categoryId);
     }
 
     /**
@@ -93,38 +102,30 @@ class FaqsController extends Controller
 
         $category ? Toastr::success('Category has been created successfully.', 'Category Create') : Toastr::error('Category could not be saved.', 'Category Create');
 
-        return redirect()->route('admin.faqs.create', $category->id);
-    }
-
-    /**
-     *
-     */
-    public function show()
-    {
-
+        return redirect()->route('admin.faqs.index', $category->id);
     }
 
     /**
      * Edit Category or Faq.
      *
      * @param Request $request
-     * @param User $repo
      * @param $categoryId
      * @param $faqId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit(Request $request, User $repo, $categoryId, $faqId)
+    public function edit(Request $request, $categoryId, $faqId)
     {
-        $user = $repo->with(['profile'])->find($request->user()->id);
-        $categories = [null => 'Please Select'] + $this->category->pluck('label', 'id')->toArray();
-        $category = $this->category->find($categoryId);
+        $user = $this->user->with(['profile'])->find($request->user()->id);
+        $select = [null => 'Please Select'] + $this->category->pluck('label', 'id')->toArray();
+        $categories = $this->category->with(['faqs'])->groupBy('id')->get();
         $faq = $this->faq->find($faqId);
 
-        return view('backend.faqs.edit', compact('user', 'categories', 'category', 'faq'));
+        return view('backend.faqs.index', compact('user', 'categories', 'select', 'categoryId', 'faq'));
     }
 
     /**
-     * Update FAQ
+     * Update FAQ.
+     *
      * @param FaqFormRequest $request
      * @param $categoryId
      * @param $faqId
@@ -132,19 +133,30 @@ class FaqsController extends Controller
      */
     public function update(FaqFormRequest $request, $categoryId, $faqId)
     {
-        if ((int) $faqId === 0)
-        {
-            Toastr::warning('FAQ Id needed in order to update.', 'FAQ Update Warning');
-
-            return redirect()->route('admin.faqs.index');
-        }
-
         $result = $this->faq->update($request->all(), $faqId);
 
         $result ? Toastr::success('FAQ has been updated successfully.', 'FAQ Update')
             : Toastr::error('FAQ could not be updated.', 'FAQ Update');
 
         return redirect()->route('admin.faqs.index');
+    }
+
+    /**
+     * Edit Category.
+     *
+     * @param Request $request
+     * @param $categoryId
+     * @param $faqId
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function editCategory(Request $request, $categoryId, $faqId)
+    {
+        $user = $this->user->with(['profile'])->find($request->user()->id);
+        $select = [null => 'Please Select'] + $this->category->pluck('label', 'id')->toArray();
+        $categories = $this->category->with(['faqs'])->groupBy('id')->get();
+        $category = $this->category->find($categoryId);
+
+        return view('backend.faqs.index', compact('user', 'select', 'category', 'categories', 'categoryId', 'faqId'));
     }
 
     /**
@@ -189,5 +201,4 @@ class FaqsController extends Controller
 
         return redirect()->route('admin.faqs.index');
     }
-
 }
