@@ -26,13 +26,6 @@ $router->get('ourvision', [
 ]);
 // End Vision
 
-// Begin About
-$router->get('team', [
-    'uses' => 'HomeController@team',
-    'as'   => 'home.get.team'
-]);
-// End Team
-
 // Begin Project Slug
 $router->get('project/{slug}', [
     'uses' => 'HomeController@project',

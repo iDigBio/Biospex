@@ -342,3 +342,15 @@ td.folder-space {
     margin-right: 0;
     display:block;
 }
+
+h5.panel-user-username {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 25px;
+    font-weight: 300;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+h6.panel-user-email a {
+    color: #ffffff;
+}
