@@ -48,6 +48,6 @@ class FaqCategory extends Model
      */
     public function setLabelAttribute($value)
     {
-        $this->attributes['label'] = ucwords($value);
+        $this->attributes['label'] = ucwords(str_replace('-', ' ', $value));
     }
 }
