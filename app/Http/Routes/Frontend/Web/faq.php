@@ -6,7 +6,7 @@ $router->get('faq', [
     'as'   => 'web.faqs.index'
 ]);
 $router->get('faq/{category}', [
-    'uses' => 'FaqController@show',
+    'uses' => 'FaqsController@show',
     'as'   => 'web.faqs.show'
 ]);
 // End Faq
