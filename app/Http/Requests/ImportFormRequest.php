@@ -34,21 +34,18 @@ class ImportFormRequest extends Request
                 return ['recordset' => 'required|alpha_dash'];
             default:break;
         }
-
-        return;
     }
 
-    public function inputChange()
+    public function alterInput()
     {
-        $input = $this->all();
-
+        $replace = '';
         // Alter record set if available
-        if (isset($input['recordset'])) {
-            $input['recordset'] = strstr($input['recordset'], '/') ?
-                trim(strrchr($input['recordset'], "/"), "/") : trim($input['recordset']);
+        if ($this->input('recordset') !== null) {
+            $replace = strstr($this->input('recordset'), '/') ?
+                trim(strrchr($this->input('recordset'), '/'), '/') : trim($this->input('recordset'));
         }
 
-        $this->replace($input);
+        $this->replace(['recordset' => $replace]);
 
         return $this->all();
     }

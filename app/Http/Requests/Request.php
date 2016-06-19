@@ -15,22 +15,17 @@ abstract class Request extends FormRequest
     public function validator($factory)
     {
         return $factory->make(
-            $this->alterInput(), $this->container->call([$this, 'rules']), $this->messages()
+            $this->alterInput(), $this->container->call([$this, 'rules']), $this->messages(), $this->attributes()
         );
     }
 
     /**
-     * Alter the form input.
+     * Alter the form input if child class implements method.
      *
      * @return array
      */
     protected function alterInput()
     {
-        // Normally would use is_callable but it returns true. Need to investigate
-        if (method_exists($this, 'inputChange')) {
-            return $this->container->call([$this, 'inputChange']);
-        }
-
         return $this->all();
     }
 }

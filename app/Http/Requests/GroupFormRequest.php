@@ -31,7 +31,7 @@ class GroupFormRequest extends Request
     /**
      * Change input before validation.
      */
-    public function inputChange()
+    public function alterInput()
     {
         $this->replace(['name' => strtolower(str_replace(' ', '-', $this->only('name')))]);
         

@@ -31,7 +31,7 @@ class FaqCategoryFormRequest extends Request
     /**
      * Alter input before validation.
      */
-    public function inputChange()
+    public function alterInput()
     {
         $this->replace(['name' => strtolower(str_replace(' ', '-', $this->input('name')))]);
 
