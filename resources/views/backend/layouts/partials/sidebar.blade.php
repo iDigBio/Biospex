@@ -42,12 +42,8 @@
                 </ul>
             </li>
 
-            <li class="treeview">
-                {!! Html::linkWithIcon('#', 'FAQs', [], ['before' => 'fa fa-server', 'after' => 'fa fa-angle-left pull-right']) !!}
-                <ul class="treeview-menu" role="directory" style="display: none;">
-                    <li class="{!! Html::active('admin.faqs.index') !!}">{!! Html::linkWithIcon(route('admin.faqs.index'), 'FAQs', [], ['before' => 'fa fa-circle-o']) !!}</li>
-                    <li>{!! Html::linkWithIcon(route('admin.faqs.create'), 'Create FAQ', [], ['before' => 'fa fa-circle-o']) !!}</li>
-                </ul>
+            <li>
+                {!! Html::linkWithIcon(route('admin.faqs.index'), 'FAQs', [], ['before' => 'fa fa-server']) !!}
             </li>
 
             <li class="treeview">

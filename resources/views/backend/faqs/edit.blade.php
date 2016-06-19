@@ -31,8 +31,8 @@
                             {!! Form::label('name', 'Name', ['class' => 'col-sm-2 control-label']) !!}
                             <div class="col-sm-10">
                                 {!! Form::text('name', $category->label, ['class' => 'form-control', 'placeholder' => 'Name']) !!}
+                                {{ ($errors->has('name') ? $errors->first('name') : '') }}
                             </div>
-                            {{ ($errors->has('name') ? $errors->first('name') : '') }}
                         </div>
                     </div>
                     <!-- /.box-body -->
@@ -64,22 +64,22 @@
                             {!! Form::label('faq_category_id', 'Category', ['class' => 'col-sm-2 control-label']) !!}
                             <div class="col-sm-10">
                                 {!! Form::select('faq_category_id', $categories, $category->id, ['class' => 'form-control']) !!}
+                                {{ ($errors->has('faq_category_id') ? $errors->first('faq_category_id') : '') }}
                             </div>
-                            {{ ($errors->has('faq_category_id') ? $errors->first('faq_category_id') : '') }}
                         </div>
                         <div class="form-group required {{ ($errors->has('question')) ? 'has-error' : '' }}" for="question">
                             {!! Form::label('question', 'Question', ['class' => 'col-sm-2 control-label']) !!}
                             <div class="col-sm-10">
                                 {!! Form::text('question', $faq === null ? '': $faq->question, ['class' => 'form-control', 'placeholder' => 'Question']) !!}
+                                {{ ($errors->has('question') ? $errors->first('question') : '') }}
                             </div>
-                            {{ ($errors->has('question') ? $errors->first('question') : '') }}
                         </div>
                         <div class="form-group required {{ ($errors->has('answer')) ? 'has-error' : '' }}">
                             {!! Form::label('answer', 'Answer', ['class' => 'col-sm-2 control-label']) !!}
                             <div class="col-sm-10">
                                 {!! Form::textarea('answer', $faq === null ? '': $faq->answer, ['class' => 'form-control ckeditor', 'placeholder' => 'Answer']) !!}
+                                {{ ($errors->has('answer') ? $errors->first('answer') : '') }}
                             </div>
-                            {{ ($errors->has('answer') ? $errors->first('answer') : '') }}
                         </div>
                     </div>
                     <!-- /.box-body -->

@@ -61,36 +61,36 @@
                     ]) !!}
                         <div class="box-body">
                             <div class="form-group required {{ ($errors->has('team_category_id')) ? 'has-error' : '' }}" for="team_category_id">
-                                {!! Form::label('team_category_id', 'Category', ['class' => 'col-sm-2 control-label']) !!}
-                                <div class="col-sm-10">
+                                {!! Form::label('team_category_id', 'Category', ['class' => 'col-sm-3 control-label']) !!}
+                                <div class="col-sm-9">
                                     {!! Form::select('team_category_id', $categories, $category, ['class' => 'form-control']) !!}
                                     {{ ($errors->has('team_category_id') ? $errors->first('team_category_id') : '') }}
                                 </div>
                             </div>
                             <div class="form-group required {{ ($errors->has('first_name')) ? 'has-error' : '' }}" for="first_name">
-                                {!! Form::label('first_name', 'First Name', ['class' => 'col-sm-2 control-label']) !!}
-                                <div class="col-sm-10">
+                                {!! Form::label('first_name', 'First Name', ['class' => 'col-sm-3 control-label']) !!}
+                                <div class="col-sm-9">
                                     {!! Form::text('first_name', null, ['class' => 'form-control', 'placeholder' => 'First Name']) !!}
                                     {{ ($errors->has('first_name') ? $errors->first('first_name') : '') }}
                                 </div>
                             </div>
                             <div class="form-group required {{ ($errors->has('last_name')) ? 'has-error' : '' }}" for="last_name">
-                                {!! Form::label('last_name', 'Last Name', ['class' => 'col-sm-2 control-label']) !!}
-                                <div class="col-sm-10">
+                                {!! Form::label('last_name', 'Last Name', ['class' => 'col-sm-3 control-label']) !!}
+                                <div class="col-sm-9">
                                     {!! Form::text('last_name', null, ['class' => 'form-control', 'placeholder' => 'Last Name']) !!}
                                     {{ ($errors->has('last_name') ? $errors->first('last_name') : '') }}
                                 </div>
                             </div>
                             <div class="form-group required {{ ($errors->has('email')) ? 'has-error' : '' }}" for="email">
-                                {!! Form::label('email', 'Email', ['class' => 'col-sm-2 control-label']) !!}
-                                <div class="col-sm-10">
+                                {!! Form::label('email', 'Email', ['class' => 'col-sm-3 control-label']) !!}
+                                <div class="col-sm-9">
                                     {!! Form::text('email', null, ['class' => 'form-control', 'placeholder' => 'Email']) !!}
                                     {{ ($errors->has('email') ? $errors->first('email') : '') }}
                                 </div>
                             </div>
                             <div class="form-group required {{ ($errors->has('institution')) ? 'has-error' : '' }}" for="institution">
-                                {!! Form::label('institution', 'Institution', ['class' => 'col-sm-2 control-label']) !!}
-                                <div class="col-sm-10">
+                                {!! Form::label('institution', 'Institution', ['class' => 'col-sm-3 control-label']) !!}
+                                <div class="col-sm-9">
                                     {!! Form::text('institution', null, ['class' => 'form-control', 'placeholder' => 'Institution']) !!}
                                     {{ ($errors->has('institution') ? $errors->first('institution') : '') }}
                                 </div>

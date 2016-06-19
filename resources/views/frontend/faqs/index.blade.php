@@ -29,7 +29,7 @@
                 <!-- Tab panes -->
                 <div class="tab-content">
                     @foreach($categories as $category)
-                        @include('frontend.layouts.partials.faq-tab-loop')
+                        @include('frontend.faqs.partials.faq-tab-loop')
                     @endforeach
 
                 </div>

@@ -44,7 +44,7 @@
         <div class="form-group">
             <select name="group" id="group" class="form-control group-select">
                 @foreach($groups as $key => $value)
-                    <option value="{{  $key }}"{{  $key == $group ? ' selected':'' }}>{{  $value }}</option>
+                    <option data-route="{{ $key === '' ? route('admin.translations.index') : route('admin.translations.view') }}" value="{{  $key }}"{{  $key == $group ? ' selected':'' }}>{{  $value }}</option>
                 @endforeach
             </select>
         </div>
@@ -84,7 +84,8 @@
                 @endforeach
                 @if($deleteEnabled)
                     <td>
-                        <a href="{{ route('admin.translations.delete', [$group, $key]) }}" class="delete-key" data-confirm="Are you sure you want to delete the translations for '{{  $key }}?"><span class="glyphicon glyphicon-trash"></span></a>
+
+                        {!! Html::linkWithIcon(route('admin.translations.delete', [$group, $key]), '<span class="glyphicon glyphicon-trash"></span>', ['class' => 'delete-key', 'data-confirm' => 'Are you sure you want to delete the translations for '.  $key . '?']) !!}
                     </td>
                 @endif
             </tr>

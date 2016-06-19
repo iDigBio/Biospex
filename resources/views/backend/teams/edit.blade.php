@@ -1,10 +1,10 @@
 @extends('backend.layouts.app')
 
 @section('htmlheader_title')
-    Edit Category or FAQ
+    Edit Team Category or Team Member
 @endsection
 
-@section('contentheader_title', 'Edit Category or Team Member')
+@section('contentheader_title', 'Edit Teams Category or Team Member')
 
 
 @section('main-content')
@@ -16,7 +16,7 @@
                 <!-- general form elements -->
                 <div class="box box-primary">
                     <div class="box-header with-border">
-                        <h3 class="box-title">Edit Category</h3>
+                        <h3 class="box-title">Edit Team Category</h3>
                     </div>
                     <!-- /.box-header -->
                     <!-- form start -->
@@ -30,9 +30,9 @@
                         <div class="form-group required {{ ($errors->has('name')) ? 'has-error' : '' }}" for="name">
                             {!! Form::label('name', 'Name', ['class' => 'col-sm-2 control-label']) !!}
                             <div class="col-sm-10">
-                                {!! Form::text('name', $category->label, ['class' => 'form-control', 'placeholder' => 'Name']) !!}
+                                {!! Form::text('name', $category->label, array('class' => 'form-control', 'placeholder' => 'Name')) !!}
+                                {{ ($errors->has('name') ? $errors->first('name') : '') }}
                             </div>
-                            {{ ($errors->has('name') ? $errors->first('name') : '') }}
                         </div>
                     </div>
                     <!-- /.box-body -->
@@ -49,7 +49,7 @@
                 <!-- Horizontal Form -->
                 <div class="box box-primary">
                     <div class="box-header with-border">
-                        <h3 class="box-title">Edit FAQ</h3>
+                        <h3 class="box-title">Edit Team Member</h3>
                     </div>
                     <!-- /.box-header -->
                     <!-- form start -->
@@ -61,25 +61,39 @@
                     ]) !!}
                     <div class="box-body">
                         <div class="form-group required {{ ($errors->has('team_category_id')) ? 'has-error' : '' }}" for="team_category_id">
-                            {!! Form::label('team_category_id', 'Category', ['class' => 'col-sm-2 control-label']) !!}
-                            <div class="col-sm-10">
+                            {!! Form::label('team_category_id', 'Category', ['class' => 'col-sm-3 control-label']) !!}
+                            <div class="col-sm-9">
                                 {!! Form::select('team_category_id', $categories, $category->id, ['class' => 'form-control']) !!}
+                                {{ ($errors->has('team_category_id') ? $errors->first('team_category_id') : '') }}
                             </div>
-                            {{ ($errors->has('team_category_id') ? $errors->first('team_category_id') : '') }}
                         </div>
-                        <div class="form-group required {{ ($errors->has('question')) ? 'has-error' : '' }}" for="question">
-                            {!! Form::label('question', 'Question', ['class' => 'col-sm-2 control-label']) !!}
-                            <div class="col-sm-10">
-                                {!! Form::text('question', $team === null ? '': $team->question, ['class' => 'form-control', 'placeholder' => 'Question']) !!}
+                        <div class="form-group required {{ ($errors->has('first_name')) ? 'has-error' : '' }}" for="first_name">
+                            {!! Form::label('first_name', 'First Name', ['class' => 'col-sm-3 control-label']) !!}
+                            <div class="col-sm-9">
+                                {!! Form::text('first_name', $team === null ? '': $team->first_name, ['class' => 'form-control', 'placeholder' => 'First Name']) !!}
+                                {{ ($errors->has('first_name') ? $errors->first('first_name') : '') }}
                             </div>
-                            {{ ($errors->has('question') ? $errors->first('question') : '') }}
                         </div>
-                        <div class="form-group required {{ ($errors->has('answer')) ? 'has-error' : '' }}">
-                            {!! Form::label('answer', 'Answer', ['class' => 'col-sm-2 control-label']) !!}
-                            <div class="col-sm-10">
-                                {!! Form::textarea('answer', $team === null ? '': $team->answer, ['class' => 'form-control ckeditor', 'placeholder' => 'Answer']) !!}
+                        <div class="form-group required {{ ($errors->has('last_name')) ? 'has-error' : '' }}" for="last_name">
+                            {!! Form::label('last_name', 'Last Name', ['class' => 'col-sm-3 control-label']) !!}
+                            <div class="col-sm-9">
+                                {!! Form::text('last_name', $team === null ? '': $team->last_name, ['class' => 'form-control', 'placeholder' => 'Last Name']) !!}
+                                {{ ($errors->has('last_name') ? $errors->first('last_name') : '') }}
                             </div>
-                            {{ ($errors->has('answer') ? $errors->first('answer') : '') }}
+                        </div>
+                        <div class="form-group required {{ ($errors->has('email')) ? 'has-error' : '' }}" for="email">
+                            {!! Form::label('email', 'Email', ['class' => 'col-sm-3 control-label']) !!}
+                            <div class="col-sm-9">
+                                {!! Form::text('email', $team === null ? '': $team->email, ['class' => 'form-control', 'placeholder' => 'Email']) !!}
+                                {{ ($errors->has('email') ? $errors->first('email') : '') }}
+                            </div>
+                        </div>
+                        <div class="form-group required {{ ($errors->has('institution')) ? 'has-error' : '' }}" for="institution">
+                            {!! Form::label('institution', 'Institution', ['class' => 'col-sm-3 control-label']) !!}
+                            <div class="col-sm-9">
+                                {!! Form::text('institution', $team === null ? '': $team->institution, ['class' => 'form-control', 'placeholder' => 'Institution']) !!}
+                                {{ ($errors->has('institution') ? $errors->first('institution') : '') }}
+                            </div>
                         </div>
                     </div>
                     <!-- /.box-body -->

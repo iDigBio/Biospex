@@ -20,3 +20,13 @@ h5.widget-user-email a {
     left: 10px;
 
 }
+
+.form-group.required .control-label:after { content:" *"; color:#ff0000; }
+
+a.status-1 {
+    font-weight: bold;
+}
+
+.btn-box-tool:hover {
+    cursor: pointer;
+}
