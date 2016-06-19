@@ -43,8 +43,9 @@ elixir(function (mix) {
         ], 'public/adminlte/css/main.css', assetsDir)
         .scripts([
             'vendor/AdminLTE/dist/js/app.min.js',
-            'js/adminlte.js',
-            'js/delete.warning.js'
+            'vendor/jquery-ujs/src/rails.js',
+            'js/delete-form.js',
+            'js/adminlte.js'
         ], 'public/adminlte/js/main.js', assetsDir)
 
         .copy(assetsDir + 'vendor/bootstrap/fonts', 'public/fonts')
