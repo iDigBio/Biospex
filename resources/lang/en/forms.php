@@ -52,4 +52,5 @@ return array (
   'target_inference_example' => 'Example of permitted inference method',
   'target_name' => 'Name',
   'target_valid_response' => 'Valid responses',
+  'owner' => 'Group Owner',
 );

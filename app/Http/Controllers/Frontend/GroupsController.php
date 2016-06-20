@@ -122,7 +122,8 @@ class GroupsController extends Controller
     public function edit($id)
     {
         $user = Request::user();
-        $group = $this->group->find($id);
+        $group = $this->group->with(['users'])->find($id);
+        $users = $group->users->toArray();
 
         if ($user->cannot('update', $group))
         {
@@ -131,7 +132,7 @@ class GroupsController extends Controller
             return redirect()->route('web.groups.index');
         }
 
-        return view('frontend.groups.edit', compact('group'));
+        return view('frontend.groups.edit', compact('group', 'users'));
     }
 
     /**
