@@ -76,6 +76,10 @@ class GroupsController extends Controller
 
         if ($group) {
             $user->assignGroup($group);
+
+            $groups = $this->group->whereHas('users', ['user_id' => $user->id])->get();
+            Request::session()->put('groups', $groups);
+
             session_flash_push('success', trans('groups.created'));
 
             return redirect()->route('web.groups.index');
@@ -156,6 +160,9 @@ class GroupsController extends Controller
         
         $this->group->update($group->toArray(), $group->id);
 
+        $groups = $this->group->whereHas('users', ['user_id' => $user->id])->get();
+        Request::session()->put('groups', $groups);
+
         session_flash_push('success', trans('groups.updated'));
 
         return redirect()->route('web.groups.index');
@@ -180,6 +187,9 @@ class GroupsController extends Controller
         }
 
         $this->group->delete($group->id);
+
+        $groups = $this->group->whereHas('users', ['user_id' => $user->id])->get();
+        Request::session()->put('groups', $groups);
         
         session_flash_push('success', trans('groups.group_destroyed'));
 
