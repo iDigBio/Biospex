@@ -36,7 +36,7 @@ class DarwinCoreFileImportCommand extends Command
         parent::__construct();
 
         $this->import = $import;
-        $this->tube = Config::get('config.beanstalkd.ocr');
+        $this->tube = Config::get('config.beanstalkd.import');
     }
 
     /**
