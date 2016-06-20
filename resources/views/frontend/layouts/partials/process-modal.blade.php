@@ -24,9 +24,14 @@
 <script>
     var socket = io('http://{{ config('config.app_nodejs_domain') }}:8080');
     <?php
-    $uuids = session()->get('groups')->map(function ($item, $key) {
-        return $item['uuid'];
-    });
+    $uuids = [];
+    $groups = session()->get('groups');
+    if ( ! $groups->isEmpty())
+    {
+        $uuids = $groups->map(function ($item, $key) {
+            return $item['uuid'];
+        });
+    }
     ?>
     socket.on("{!! config('config.ocr_poll_channel') !!}:app.polling", function (message) {
         var html = '{!! trans('pages.no_processes') !!}';
