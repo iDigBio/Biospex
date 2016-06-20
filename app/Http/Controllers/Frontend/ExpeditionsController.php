@@ -361,7 +361,7 @@ class ExpeditionsController extends Controller
     public function delete($projectId, $expeditionId)
     {
         $user = Request::user();
-        $project = $this->project->with([['group.permissions']])->find($projectId);
+        $project = $this->project->with(['group.permissions'])->find($projectId);
 
         if ( ! $this->checkPermissions($user, [$project], 'delete'))
         {
