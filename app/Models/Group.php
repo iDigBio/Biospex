@@ -35,6 +35,24 @@ class Group extends Model
         'permissions',
     ];
 
+    /*
+    public static function boot()
+    {
+        parent::boot();
+
+        // cause a delete of a product to cascade to children so they are also deleted
+        static::deleted(function($group)
+        {
+            $group->projects()->delete();
+        });
+
+        static::restored(function($group)
+        {
+            $group->projects()->restore();
+        });
+    }
+    */
+
     /**
      * User as owner relationship
      *
