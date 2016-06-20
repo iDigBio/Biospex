@@ -146,7 +146,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract
 
             if ($this->process->getSubjectCount() > 0)
             {
-                $this->dispatch((new BuildOcrBatches($project))->onQueue(Config::get('config.beanstalkd.ocr')));
+                $this->dispatch((new BuildOcrBatches($project->id))->onQueue(Config::get('config.beanstalkd.ocr')));
             }
 
             $this->filesystem->deleteDirectory($this->scratchFileDir);
