@@ -72,9 +72,10 @@
                                             class="fa fa-cog fa-lg"></span> @lang('buttons.edit')</button>
                                 @can('delete', $group)
                                     <button title="@lang('buttons.deleteTitle')"
-                                            class="btn btn-default btn-danger action_confirm btn-xs"
-                                            href="{{ route('web.projects.delete', [$project->id]) }}"
-                                            data-token="{{ Session::getToken() }}" data-method="delete"><span
+                                            class="btn btn-danger btn-xs delete-form"
+                                            data-method="delete"
+                                            data-confirm="Are you sure you wish to delete?"
+                                            data-href="{{ route('web.projects.delete', [$project->id]) }}"><span
                                                 class="fa fa-remove fa-lg"></span> @lang('buttons.delete')</button>
                                 @endcan
                             </td>

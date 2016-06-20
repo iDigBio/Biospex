@@ -49,12 +49,26 @@
                         <td class="nowrap" colspan="3">{{ trans('expeditions.processing_not_started') }}</td>
                     @endif
                     <td class="buttons-xs">
-                        <button title="@lang('buttons.viewTitle')" class="btn btn-primary btn-xs" type="button" onClick="location.href='{{ route('web.expeditions.show', [$expedition->project_id, $expedition->expedition_id]) }}'"><span class="fa fa-eye fa-lrg"></span> <!-- @lang('buttons.view') --></button>
-                        <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ route('web.expeditions.duplicate', [$expedition->project_id, $expedition->expedition_id]) }}'"><span class="fa fa-copy fa-lrg"></span> <!-- @lang('buttons.duplicate') --></button>
-                        <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs" type="button" onClick="location.href='{{ route('web.expeditions.edit', [$expedition->project_id, $expedition->expedition_id]) }}'"><span class="fa fa-cog fa-lrg"></span> <!-- @lang('buttons.edit') --></button>
-                        <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-xs" href="{{ route('web.expeditions.delete', [$expedition->project_id, $expedition->expedition_id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="fa fa-remove fa-lrg"></span> <!-- @lang('buttons.delete') --></button>
+                        <button title="@lang('buttons.viewTitle')" class="btn btn-primary btn-xs" type="button"
+                                onClick="location.href='{{ route('web.expeditions.show', [$expedition->project_id, $expedition->expedition_id]) }}'">
+                            <span class="fa fa-eye fa-lrg"></span> <!-- @lang('buttons.view') --></button>
+                        <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-xs" type="button"
+                                onClick="location.href='{{ route('web.expeditions.duplicate', [$expedition->project_id, $expedition->expedition_id]) }}'">
+                            <span class="fa fa-copy fa-lrg"></span> <!-- @lang('buttons.duplicate') --></button>
+                        <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs" type="button"
+                                onClick="location.href='{{ route('web.expeditions.edit', [$expedition->project_id, $expedition->expedition_id]) }}'">
+                            <span class="fa fa-cog fa-lrg"></span> <!-- @lang('buttons.edit') --></button>
+                        <button title="@lang('buttons.deleteTitle')"
+                                class="btn btn-danger btn-xs delete-form" type="button"
+                                data-method="delete"
+                                data-confirm="Are you sure you wish to delete?"
+                                data-href="{{ route('web.expeditions.delete', [$expedition->project_id, $expedition->expedition_id]) }}"><span
+                                    class="fa fa-remove fa-lrg"></span> <!-- @lang('buttons.delete') --></button>
+
                         @if ( ! is_null($expedition->downloads_id))
-                            <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ route('web.downloads.index', [$expedition->project_id, $expedition->expedition_id]) }}'"><span class="fa fa-download fa-lrg"></span> <!-- @lang('buttons.download') --></button>
+                            <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button"
+                                    onClick="location.href='{{ route('web.downloads.index', [$expedition->project_id, $expedition->expedition_id]) }}'">
+                                <span class="fa fa-download fa-lrg"></span> <!-- @lang('buttons.download') --></button>
                         @endif
                     </td>
                 </tr>

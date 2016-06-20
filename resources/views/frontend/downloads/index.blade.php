@@ -21,9 +21,19 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-sm" type="button" onClick="location.href='{{ route('web.expeditions.duplicate', [$expedition->project->id, $expedition->id]) }}'"><span class="fa fa-copy fa-lrg"></span> @lang('buttons.duplicate')</button>
-                            <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm" onClick="location.href='{{ route('web.expeditions.edit', [$expedition->project->id, $expedition->id]) }}'"><span class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
-                            <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-sm" href="{{ route('web.expeditions.delete', [$expedition->project->id, $expedition->id]) }}" data-token="{{ Session::getToken() }}" data-method="delete"><span class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
+                            <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-sm" type="button"
+                                    onClick="location.href='{{ route('web.expeditions.duplicate', [$expedition->project->id, $expedition->id]) }}'">
+                                <span class="fa fa-copy fa-lrg"></span> @lang('buttons.duplicate')</button>
+                            <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm"
+                                    onClick="location.href='{{ route('web.expeditions.edit', [$expedition->project->id, $expedition->id]) }}'">
+                                <span class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
+                            <button title="@lang('buttons.deleteTitle')"
+                                    class="btn btn-danger btn-sm delete-form" type="button"
+                                    data-method="delete"
+                                    data-confirm="Are you sure you wish to delete?"
+                                    data=href="{{ route('web.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"><span
+                                        class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
+
                         </div>
                     </div>
                 </div>
@@ -62,13 +72,23 @@
                                 </td>
                                 <td>{{ format_date($download->created_at, 'Y-m-d', $user->timezone) }}</td>
                                 <td>{{ route('projects.expeditions.downloads.get.show', [$expedition->project->id, $expedition->id, $download->id]) }}</td>
-                                <td><button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button" onClick="location.href='{{ route('projects.expeditions.downloads.get.show', [$expedition->project->id, $expedition->id, $download->id]) }}'"><span class="glyphicon glyphicon-floppy-save"></span> @lang('buttons.download') </button></td>
+                                <td>
+                                    <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs"
+                                            type="button"
+                                            onClick="location.href='{{ route('projects.expeditions.downloads.get.show', [$expedition->project->id, $expedition->id, $download->id]) }}'">
+                                        <span class="glyphicon glyphicon-floppy-save"></span> @lang('buttons.download')
+                                    </button>
+                                </td>
                             </tr>
                         @endif
                     @endforeach
                     </tbody>
                 </table>
-                <br /><button title="Back to Expedition Details" class="btn btn-info btn-xs" type="button" onClick="location.href='{{ route('web.expeditions.show', [$expedition->project->id, $expedition->id]) }}'"><span class="glyphicon glyphicon-eye-open"></span> Return</button>
+                <br/>
+                <button title="Back to Expedition Details" class="btn btn-info btn-xs" type="button"
+                        onClick="location.href='{{ route('web.expeditions.show', [$expedition->project->id, $expedition->id]) }}'">
+                    <span class="glyphicon glyphicon-eye-open"></span> Return
+                </button>
             </div>
         </div>
     </div>

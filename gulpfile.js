@@ -29,9 +29,10 @@ elixir(function (mix) {
             'vendor/amcharts3/amcharts/plugins/responsive/responsive.min.js',
             'vendor/jqGrid/js/i18n/grid.locale-en.js',
             'vendor/jqGrid/js/jquery.jqGrid.min.js',
+            'vendor/jquery-ujs/src/rails.js',
             'js/amchart.js',
             'js/biospex.js',
-            'js/delete.warning.js',
+            'js/delete-form.js',
             'js/grid.js'
         ], 'public/js/biospex.js', assetsDir)
 

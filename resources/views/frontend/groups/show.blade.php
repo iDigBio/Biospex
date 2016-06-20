@@ -15,20 +15,21 @@
 
     <div class="panel panel-primary">
         <div style="padding: 10px;">
-        @can('update', $group)
-        <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm"
-                onClick="location.href='{{ route('web.groups.edit', array($group->id)) }}'"><span
-                    class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
-        <button title="@lang('buttons.inviteTitle')" class="btn btn-default btn-reverse btn-sm" type="button"
-                onClick="location.href='{{ route('web.invites.index', [$group->id]) }}'"><span
-                    class="fa fa-users fa-lrg"></span> @lang('buttons.invite')</button>
-        @endcan
-        @can('delete', $group)
-        <button title="@lang('buttons.deleteTitle')" class="btn btn-default btn-danger action_confirm btn-sm"
-                type="button" data-method="delete" data-token="{{ csrf_token() }}"
-                href="{{ route('web.groups.delete', array($group->id)) }}"><span
-                    class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
-        @endcan
+            @can('update', $group)
+                <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm"
+                        onClick="location.href='{{ route('web.groups.edit', array($group->id)) }}'"><span
+                            class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
+                <button title="@lang('buttons.inviteTitle')" class="btn btn-default btn-reverse btn-sm" type="button"
+                        onClick="location.href='{{ route('web.invites.index', [$group->id]) }}'"><span
+                            class="fa fa-users fa-lrg"></span> @lang('buttons.invite')</button>
+            @endcan
+            @can('delete', $group)
+                <button title="@lang('buttons.deleteTitle')" class="btn btn-danger btn-sm delete-form" type="button"
+                        data-method="delete"
+                        data-confirm="Are you sure you wish to delete?"
+                        data-href="{{ route('web.groups.delete', array($group->id)) }}"><span
+                            class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
+            @endcan
         </div>
     </div>
 
@@ -50,7 +51,7 @@
                             @if (null === $user->profile->first_name && null === $user->profile->last_name)
                                 <li>{!! Html::mailto($user->email, $user->email) !!}</li>
                             @else
-                            <li>{!! Html::mailto($user->email, $user->profile->first_name.' '.$user->profile->last_name) !!}</li>
+                                <li>{!! Html::mailto($user->email, $user->profile->first_name.' '.$user->profile->last_name) !!}</li>
                             @endif
                         @endforeach
                     </ul>

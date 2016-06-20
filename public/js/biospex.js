@@ -4415,6 +4415,562 @@ y.formatter&&"select"===y.formatter&&(r={});break;case"custom":try{if(!y.editopt
 $(this).hasClass("sgcollapsed")){if(g=$(c).triggerHandler("jqGridSubGridBeforeExpand",[e+"_"+d,d]),g=g===!1||"stop"===g?!1:!0,g&&$.isFunction(c.p.subGridBeforeExpand)&&(g=c.p.subGridBeforeExpand.call(c,e+"_"+d,d)),g===!1)return!1;c.p.subGridOptions.reloadOnExpand===!0||c.p.subGridOptions.reloadOnExpand===!1&&!h.hasClass("ui-subgrid")?(f=a>=1?"<td colspan='"+a+"'>&#160;</td>":"",$(b).after("<tr role='row' id='"+e+"_"+d+"_expandedContent' class='ui-subgrid ui-sg-expanded'>"+f+"<td class='"+j.content+" subgrid-cell'><span class='"+j.icon_base+" "+c.p.subGridOptions.openicon+"'></span></td><td colspan='"+parseInt(c.p.colNames.length-1-o,10)+"' class='"+j.content+" subgrid-data'><div id="+e+"_"+d+" class='tablediv'></div></td></tr>"),$(c).triggerHandler("jqGridSubGridRowExpanded",[e+"_"+d,d]),$.isFunction(c.p.subGridRowExpanded)?c.p.subGridRowExpanded.call(c,e+"_"+d,d):n(b)):h.show().removeClass("ui-sg-collapsed").addClass("ui-sg-expanded"),$(this).html("<a style='cursor:pointer;' class='ui-sghref'><span class='"+j.icon_base+" "+c.p.subGridOptions.minusicon+"'></span></a>").removeClass("sgcollapsed").addClass("sgexpanded"),c.p.subGridOptions.selectOnExpand&&$(c).jqGrid("setSelection",d)}else if($(this).hasClass("sgexpanded")){if(g=$(c).triggerHandler("jqGridSubGridRowColapsed",[e+"_"+d,d]),g=g===!1||"stop"===g?!1:!0,g&&$.isFunction(c.p.subGridRowColapsed)&&(g=c.p.subGridRowColapsed.call(c,e+"_"+d,d)),g===!1)return!1;c.p.subGridOptions.reloadOnExpand===!0?h.remove(".ui-subgrid"):h.hasClass("ui-subgrid")&&h.hide().addClass("ui-sg-collapsed").removeClass("ui-sg-expanded"),$(this).html("<a style='cursor:pointer;' class='ui-sghref'><span class='"+j.icon_base+" "+c.p.subGridOptions.plusicon+"'></span></a>").removeClass("sgexpanded").addClass("sgcollapsed"),c.p.subGridOptions.selectOnCollapse&&$(c).jqGrid("setSelection",d)}return!1})}r++}c.p.subGridOptions.expandOnLoad===!0&&$(c.rows).filter(".jqgrow").each(function(a,b){$(b.cells[0]).click()}),c.subGridXml=function(a,b){l(a,b)},c.subGridJson=function(a,b){m(a,b)}}})},expandSubGridRow:function(a){return this.each(function(){var b=this;if((b.grid||a)&&b.p.subGrid===!0){var c=$(this).jqGrid("getInd",a,!0);if(c){var d=$("td.sgcollapsed",c)[0];d&&$(d).trigger("click")}}})},collapseSubGridRow:function(a){return this.each(function(){var b=this;if((b.grid||a)&&b.p.subGrid===!0){var c=$(this).jqGrid("getInd",a,!0);if(c){var d=$("td.sgexpanded",c)[0];d&&$(d).trigger("click")}}})},toggleSubGridRow:function(a){return this.each(function(){var b=this;if((b.grid||a)&&b.p.subGrid===!0){var c=$(this).jqGrid("getInd",a,!0);if(c){var d=$("td.sgcollapsed",c)[0];d?$(d).trigger("click"):(d=$("td.sgexpanded",c)[0],d&&$(d).trigger("click"))}}})}}),$.jgrid.extend({setTreeNode:function(a,b){return this.each(function(){var c=this;if(c.grid&&c.p.treeGrid)for(var d,e,f,g,h,i,j,k,l=c.p.expColInd,m=c.p.treeReader.expanded_field,n=c.p.treeReader.leaf_field,o=c.p.treeReader.level_field,p=c.p.treeReader.icon_field,q=c.p.treeReader.loaded,r=$.jgrid.styleUI[c.p.styleUI||"jQueryUI"].common;b>a;){var s,t=$.jgrid.stripPref(c.p.idPrefix,c.rows[a].id),u=c.p._index[t];j=c.p.data[u],"nested"===c.p.treeGridModel&&(j[n]||(d=parseInt(j[c.p.treeReader.left_field],10),e=parseInt(j[c.p.treeReader.right_field],10),j[n]=e===d+1?"true":"false",c.rows[a].cells[c.p._treeleafpos].innerHTML=j[n])),f=parseInt(j[o],10),0===c.p.tree_root_level?(g=f+1,h=f):(g=f,h=f-1),i="<div class='tree-wrap tree-wrap-"+c.p.direction+"' style='width:"+18*g+"px;'>",i+="<div style='"+("rtl"===c.p.direction?"right:":"left:")+18*h+"px;' class='"+r.icon_base+" ",void 0!==j[q]&&("true"===j[q]||j[q]===!0?j[q]=!0:j[q]=!1),"true"===j[n]||j[n]===!0?(i+=(void 0!==j[p]&&""!==j[p]?j[p]:c.p.treeIcons.leaf)+" tree-leaf treeclick",j[n]=!0,k="leaf"):(j[n]=!1,k=""),j[m]=("true"===j[m]||j[m]===!0?!0:!1)&&(j[q]||void 0===j[q]),i+=j[m]===!1?j[n]===!0?"'":c.p.treeIcons.plus+" tree-plus treeclick'":j[n]===!0?"'":c.p.treeIcons.minus+" tree-minus treeclick'",i+="></div></div>",$(c.rows[a].cells[l]).wrapInner("<span class='cell-wrapper"+k+"'></span>").prepend(i),f!==parseInt(c.p.tree_root_level,10)&&(s=$(c).jqGrid("isVisibleNode",j),s||$(c.rows[a]).css("display","none")),$(c.rows[a].cells[l]).find("div.treeclick").bind("click",function(a){var b=a.target||a.srcElement,d=$.jgrid.stripPref(c.p.idPrefix,$(b,c.rows).closest("tr.jqgrow")[0].id),e=c.p._index[d];return c.p.data[e][n]||(c.p.data[e][m]?($(c).jqGrid("collapseRow",c.p.data[e]),$(c).jqGrid("collapseNode",c.p.data[e])):($(c).jqGrid("expandRow",c.p.data[e]),$(c).jqGrid("expandNode",c.p.data[e]))),!1}),c.p.ExpandColClick===!0&&$(c.rows[a].cells[l]).find("span.cell-wrapper").css("cursor","pointer").bind("click",function(a){var b=a.target||a.srcElement,d=$.jgrid.stripPref(c.p.idPrefix,$(b,c.rows).closest("tr.jqgrow")[0].id),e=c.p._index[d];return c.p.data[e][n]||(c.p.data[e][m]?($(c).jqGrid("collapseRow",c.p.data[e]),$(c).jqGrid("collapseNode",c.p.data[e])):($(c).jqGrid("expandRow",c.p.data[e]),$(c).jqGrid("expandNode",c.p.data[e]))),$(c).jqGrid("setSelection",d),!1}),a++}})},setTreeGrid:function(){return this.each(function(){var a,b,c,d,e=this,f=0,g=!1,h=[],i=$.jgrid.styleUI[e.p.styleUI||"jQueryUI"].treegrid;if(e.p.treeGrid){e.p.treedatatype||$.extend(e.p,{treedatatype:e.p.datatype}),e.p.loadonce&&(e.p.treedatatype="local"),e.p.subGrid=!1,e.p.altRows=!1,e.p.pgbuttons=!1,e.p.pginput=!1,e.p.gridview=!0,null===e.p.rowTotal&&(e.p.rowNum=1e4),e.p.multiselect=!1,e.p.rowList=[],e.p.expColInd=0,a=i.icon_plus,"jQueryUI"===e.p.styleUI&&(a+="rtl"===e.p.direction?"w":"e"),e.p.treeIcons=$.extend({plus:a,minus:i.icon_minus,leaf:i.icon_leaf},e.p.treeIcons||{}),"nested"===e.p.treeGridModel?e.p.treeReader=$.extend({level_field:"level",left_field:"lft",right_field:"rgt",leaf_field:"isLeaf",expanded_field:"expanded",loaded:"loaded",icon_field:"icon"},e.p.treeReader):"adjacency"===e.p.treeGridModel&&(e.p.treeReader=$.extend({level_field:"level",parent_id_field:"parent",leaf_field:"isLeaf",expanded_field:"expanded",loaded:"loaded",icon_field:"icon"},e.p.treeReader));for(c in e.p.colModel)if(e.p.colModel.hasOwnProperty(c)){b=e.p.colModel[c].name,b!==e.p.ExpandColumn||g||(g=!0,e.p.expColInd=f),f++;for(d in e.p.treeReader)e.p.treeReader.hasOwnProperty(d)&&e.p.treeReader[d]===b&&h.push(b)}$.each(e.p.treeReader,function(a,b){b&&-1===$.inArray(b,h)&&("leaf_field"===a&&(e.p._treeleafpos=f),f++,e.p.colNames.push(b),e.p.colModel.push({name:b,width:1,hidden:!0,sortable:!1,resizable:!1,hidedlg:!0,editable:!0,search:!1}))})}})},expandRow:function(a){this.each(function(){var b=this;if(b.grid&&b.p.treeGrid){var c=$(b).jqGrid("getNodeChildren",a),d=b.p.treeReader.expanded_field,e=a[b.p.localReader.id],f=$.isFunction(b.p.beforeExpandTreeGridRow)?b.p.beforeExpandTreeGridRow.call(b,e,a,c):!0;f!==!1&&($(c).each(function(){var a=b.p.idPrefix+$.jgrid.getAccessor(this,b.p.localReader.id);$($(b).jqGrid("getGridRowById",a)).css("display",""),this[d]&&$(b).jqGrid("expandRow",this)}),$.isFunction(b.p.afterExpandTreeGridRow)&&b.p.afterExpandTreeGridRow.call(b,e,a,c))}})},collapseRow:function(a){this.each(function(){var b=this;if(b.grid&&b.p.treeGrid){var c=$(b).jqGrid("getNodeChildren",a),d=b.p.treeReader.expanded_field,e=a[b.p.localReader.id],f=$.isFunction(b.p.beforeCollapseTreeGridRow)?b.p.beforeCollapseTreeGridRow.call(b,e,a,c):!0;f!==!1&&($(c).each(function(){var a=b.p.idPrefix+$.jgrid.getAccessor(this,b.p.localReader.id);$($(b).jqGrid("getGridRowById",a)).css("display","none"),this[d]&&$(b).jqGrid("collapseRow",this)}),$.isFunction(b.p.afterCollapseTreeGridRow)&&b.p.afterCollapseTreeGridRow.call(b,e,a,c))}})},getRootNodes:function(a){var b=[];return this.each(function(){var c,d,e,f=this;if(f.grid&&f.p.treeGrid)switch("boolean"!=typeof a&&(a=!1),e=a?$(f).jqGrid("getRowData",null,!0):f.p.data,f.p.treeGridModel){case"nested":c=f.p.treeReader.level_field,$(e).each(function(){parseInt(this[c],10)===parseInt(f.p.tree_root_level,10)&&(a?b.push(f.p.data[f.p._index[this[f.p.keyName]]]):b.push(this))});break;case"adjacency":d=f.p.treeReader.parent_id_field,$(e).each(function(){(null===this[d]||"null"===String(this[d]).toLowerCase())&&(a?b.push(f.p.data[f.p._index[this[f.p.keyName]]]):b.push(this))})}}),b},getNodeDepth:function(a){var b=null;return this.each(function(){if(this.grid&&this.p.treeGrid){var c=this;switch(c.p.treeGridModel){case"nested":var d=c.p.treeReader.level_field;b=parseInt(a[d],10)-parseInt(c.p.tree_root_level,10);break;case"adjacency":b=$(c).jqGrid("getNodeAncestors",a).length}}}),b},getNodeParent:function(a){var b=null;return this.each(function(){var c=this;if(c.grid&&c.p.treeGrid)switch(c.p.treeGridModel){case"nested":var d=c.p.treeReader.left_field,e=c.p.treeReader.right_field,f=c.p.treeReader.level_field,g=parseInt(a[d],10),h=parseInt(a[e],10),i=parseInt(a[f],10);$(this.p.data).each(function(){return parseInt(this[f],10)===i-1&&parseInt(this[d],10)<g&&parseInt(this[e],10)>h?(b=this,!1):void 0});break;case"adjacency":for(var j=c.p.treeReader.parent_id_field,k=c.p.localReader.id,l=a[k],m=c.p._index[l];m--;)if(c.p.data[m][k]===$.jgrid.stripPref(c.p.idPrefix,a[j])){b=c.p.data[m];break}}}),b},getNodeChildren:function(a,b){var c=[];return this.each(function(){var d=this;if(d.grid&&d.p.treeGrid){var e,f,g=b?this.rows.length:this.p.data.length;switch(d.p.treeGridModel){case"nested":var h=d.p.treeReader.left_field,i=d.p.treeReader.right_field,j=d.p.treeReader.level_field,k=parseInt(a[h],10),l=parseInt(a[i],10),m=parseInt(a[j],10);for(e=0;g>e;e++)f=b?d.p.data[d.p._index[this.rows[e].id]]:d.p.data[e],f&&parseInt(f[j],10)===m+1&&parseInt(f[h],10)>k&&parseInt(f[i],10)<l&&c.push(f);break;case"adjacency":var n=d.p.treeReader.parent_id_field,o=d.p.localReader.id;for(e=0;g>e;e++)f=b?d.p.data[d.p._index[this.rows[e].id]]:d.p.data[e],f&&String(f[n])===$.jgrid.stripPref(d.p.idPrefix,a[o])&&c.push(f)}}}),c},getFullTreeNode:function(a,b){var c=[];return this.each(function(){var d,e=this,f=e.p.treeReader.expanded_field;if(e.grid&&e.p.treeGrid)switch((null==b||"boolean"!=typeof b)&&(b=!1),e.p.treeGridModel){case"nested":var g=e.p.treeReader.left_field,h=e.p.treeReader.right_field,i=e.p.treeReader.level_field,j=parseInt(a[g],10),k=parseInt(a[h],10),l=parseInt(a[i],10);$(this.p.data).each(function(){parseInt(this[i],10)>=l&&parseInt(this[g],10)>=j&&parseInt(this[g],10)<=k&&(b&&(this[f]=!0),c.push(this))});break;case"adjacency":if(a){c.push(a);var m=e.p.treeReader.parent_id_field,n=e.p.localReader.id;$(this.p.data).each(function(a){for(d=c.length,a=0;d>a;a++)if($.jgrid.stripPref(e.p.idPrefix,c[a][n])===this[m]){b&&(this[f]=!0),c.push(this);break}})}}}),c},getNodeAncestors:function(a,b,c){var d=[];return void 0===b&&(b=!1),this.each(function(){if(this.grid&&this.p.treeGrid){c=void 0===c?!1:this.p.treeReader.expanded_field;for(var e=$(this).jqGrid("getNodeParent",a);e;){if(c)try{e[c]=!0}catch(f){}b?d.unshift(e):d.push(e),e=$(this).jqGrid("getNodeParent",e)}}}),d},isVisibleNode:function(a){var b=!0;return this.each(function(){var c=this;if(c.grid&&c.p.treeGrid){var d=$(c).jqGrid("getNodeAncestors",a),e=c.p.treeReader.expanded_field;$(d).each(function(){return b=b&&this[e],b?void 0:!1})}}),b},isNodeLoaded:function(a){var b;return this.each(function(){var c=this;if(c.grid&&c.p.treeGrid){var d=c.p.treeReader.leaf_field,e=c.p.treeReader.loaded;b=void 0!==a?void 0!==a[e]?a[e]:a[d]||$(c).jqGrid("getNodeChildren",a).length>0?!0:!1:!1}}),b},reloadNode:function(a){return this.each(function(){if(this.grid&&this.p.treeGrid){var b=this.p.localReader.id,c=this.p.selrow;$(this).jqGrid("delChildren",a[b]);var d=this.p.treeReader.expanded_field,e=this.p.treeReader.parent_id_field,f=this.p.treeReader.loaded,g=this.p.treeReader.level_field,h=this.p.treeReader.left_field,i=this.p.treeReader.right_field,j=$.jgrid.getAccessor(a,this.p.localReader.id),k=$("#"+j,this.grid.bDiv)[0];a[d]=!0,$("div.treeclick",k).removeClass(this.p.treeIcons.plus+" tree-plus").addClass(this.p.treeIcons.minus+" tree-minus"),this.p.treeANode=k.rowIndex,this.p.datatype=this.p.treedatatype,"nested"===this.p.treeGridModel?$(this).jqGrid("setGridParam",{postData:{nodeid:j,n_left:a[h],n_right:a[i],n_level:a[g]}}):$(this).jqGrid("setGridParam",{postData:{nodeid:j,parentid:a[e],n_level:a[g]}}),$(this).trigger("reloadGrid"),a[f]=!0,"nested"===this.p.treeGridModel?$(this).jqGrid("setGridParam",{selrow:c,postData:{nodeid:"",n_left:"",n_right:"",n_level:""}}):$(this).jqGrid("setGridParam",{selrow:c,postData:{nodeid:"",parentid:"",n_level:""}})}})},expandNode:function(a){return this.each(function(){if(this.grid&&this.p.treeGrid){var b=this.p.treeReader.expanded_field,c=this.p.treeReader.parent_id_field,d=this.p.treeReader.loaded,e=this.p.treeReader.level_field,f=this.p.treeReader.left_field,g=this.p.treeReader.right_field;if(!a[b]){var h=$.jgrid.getAccessor(a,this.p.localReader.id),i=$("#"+this.p.idPrefix+$.jgrid.jqID(h),this.grid.bDiv)[0],j=this.p._index[h],k=$.isFunction(this.p.beforeExpandTreeGridNode)?this.p.beforeExpandTreeGridNode.call(this,h,a):!0;if(k===!1)return;$(this).jqGrid("isNodeLoaded",this.p.data[j])?(a[b]=!0,$("div.treeclick",i).removeClass(this.p.treeIcons.plus+" tree-plus").addClass(this.p.treeIcons.minus+" tree-minus")):this.grid.hDiv.loading||(a[b]=!0,$("div.treeclick",i).removeClass(this.p.treeIcons.plus+" tree-plus").addClass(this.p.treeIcons.minus+" tree-minus"),this.p.treeANode=i.rowIndex,this.p.datatype=this.p.treedatatype,"nested"===this.p.treeGridModel?$(this).jqGrid("setGridParam",{postData:{nodeid:h,n_left:a[f],n_right:a[g],n_level:a[e]}}):$(this).jqGrid("setGridParam",{postData:{nodeid:h,parentid:a[c],n_level:a[e]}}),$(this).trigger("reloadGrid"),a[d]=!0,"nested"===this.p.treeGridModel?$(this).jqGrid("setGridParam",{postData:{nodeid:"",n_left:"",n_right:"",n_level:""}}):$(this).jqGrid("setGridParam",{postData:{nodeid:"",parentid:"",n_level:""}})),$.isFunction(this.p.afterExpandTreeGridNode)&&this.p.afterExpandTreeGridNode.call(this,h,a)}}})},collapseNode:function(a){return this.each(function(){if(this.grid&&this.p.treeGrid){var b=this.p.treeReader.expanded_field;if(a[b]){var c=$.jgrid.getAccessor(a,this.p.localReader.id),d=$.isFunction(this.p.beforeCollapseTreeGridNode)?this.p.beforeCollapseTreeGridNode.call(this,c,a):!0,e=$("#"+this.p.idPrefix+$.jgrid.jqID(c),this.grid.bDiv)[0];if(a[b]=!1,d===!1)return;$("div.treeclick",e).removeClass(this.p.treeIcons.minus+" tree-minus").addClass(this.p.treeIcons.plus+" tree-plus"),$.isFunction(this.p.afterCollapseTreeGridNode)&&this.p.afterCollapseTreeGridNode.call(this,c,a)}}})},SortTree:function(a,b,c,d){return this.each(function(){if(this.grid&&this.p.treeGrid){var e,f,g,h,i,j=[],k=this,l=$(this).jqGrid("getRootNodes",k.p.search);for(h=$.jgrid.from.call(this,l),h.orderBy(a,b,c,d),i=h.select(),e=0,f=i.length;f>e;e++)g=i[e],j.push(g),$(this).jqGrid("collectChildrenSortTree",j,g,a,b,c,d);$.each(j,function(a){var b=$.jgrid.getAccessor(this,k.p.localReader.id);$("#"+$.jgrid.jqID(k.p.id)+" tbody tr:eq("+a+")").after($("tr#"+$.jgrid.jqID(b),k.grid.bDiv))}),h=null,i=null,j=null}})},searchTree:function(a){var b,c,d,e,f,g,h=a.length||0,i=[],j=[],k=[];return this.each(function(){if(this.grid&&this.p.treeGrid&&h)for(b=this.p.localReader.id;h--;)if(i=$(this).jqGrid("getNodeAncestors",a[h],!0,!0),i.push(a[h]),c=i[0][b],-1===$.inArray(c,j))j.push(c),k=k.concat(i);else for(f=0,d=i.length;d>f;f++){var l=!1;for(g=0,e=k.length;e>g;g++)if(i[f][b]===k[g][b]){l=!0;break}l||k.push(i[f])}}),k},collectChildrenSortTree:function(a,b,c,d,e,f){return this.each(function(){if(this.grid&&this.p.treeGrid){var g,h,i,j,k,l;for(j=$(this).jqGrid("getNodeChildren",b,this.p.search),k=$.jgrid.from.call(this,j),k.orderBy(c,d,e,f),l=k.select(),g=0,h=l.length;h>g;g++)i=l[g],a.push(i),$(this).jqGrid("collectChildrenSortTree",a,i,c,d,e,f)}})},setTreeRow:function(a,b){var c=!1;return this.each(function(){var d=this;d.grid&&d.p.treeGrid&&(c=$(d).jqGrid("setRowData",a,b))}),c},delTreeNode:function(a){return this.each(function(){var b,c,d,e,f,g=this,h=g.p.localReader.id,i=g.p.treeReader.left_field,j=g.p.treeReader.right_field;if(g.grid&&g.p.treeGrid){var k=g.p._index[a];if(void 0!==k){c=parseInt(g.p.data[k][j],10),d=c-parseInt(g.p.data[k][i],10)+1;var l=$(g).jqGrid("getFullTreeNode",g.p.data[k]);if(l.length>0)for(b=0;b<l.length;b++)$(g).jqGrid("delRowData",l[b][h]);if("nested"===g.p.treeGridModel){if(e=$.jgrid.from.call(g,g.p.data).greater(i,c,{stype:"integer"}).select(),e.length)for(f in e)e.hasOwnProperty(f)&&(e[f][i]=parseInt(e[f][i],10)-d);if(e=$.jgrid.from.call(g,g.p.data).greater(j,c,{stype:"integer"}).select(),e.length)for(f in e)e.hasOwnProperty(f)&&(e[f][j]=parseInt(e[f][j],10)-d)}}}})},delChildren:function(a){return this.each(function(){var b,c,d,e,f=this,g=f.p.localReader.id,h=f.p.treeReader.left_field,i=f.p.treeReader.right_field;if(f.grid&&f.p.treeGrid){var j=f.p._index[a];if(void 0!==j){b=parseInt(f.p.data[j][i],10),c=b-parseInt(f.p.data[j][h],10)+1;var k=$(f).jqGrid("getFullTreeNode",f.p.data[j]);if(k.length>0)for(var l=0;l<k.length;l++)k[l][g]!==a&&$(f).jqGrid("delRowData",k[l][g]);if("nested"===f.p.treeGridModel){if(d=$.jgrid.from(f.p.data).greater(h,b,{stype:"integer"}).select(),d.length)for(e in d)d.hasOwnProperty(e)&&(d[e][h]=parseInt(d[e][h],10)-c);if(d=$.jgrid.from(f.p.data).greater(i,b,{stype:"integer"}).select(),d.length)for(e in d)d.hasOwnProperty(e)&&(d[e][i]=parseInt(d[e][i],10)-c)}}}})},addChildNode:function(a,b,c,d){var e=this[0];if(c){var f,g,h,i,j,k,l,m,n=e.p.treeReader.expanded_field,o=e.p.treeReader.leaf_field,p=e.p.treeReader.level_field,q=e.p.treeReader.parent_id_field,r=e.p.treeReader.left_field,s=e.p.treeReader.right_field,t=e.p.treeReader.loaded,u=0,v=b;if(void 0===d&&(d=!1),null==a){if(j=e.p.data.length-1,j>=0)for(;j>=0;)u=Math.max(u,parseInt(e.p.data[j][e.p.localReader.id],10)),j--;a=u+1}var w=$(e).jqGrid("getInd",b);if(l=!1,void 0===b||null===b||""===b)b=null,v=null,f="last",i=e.p.tree_root_level,j=e.p.data.length+1;else{f="after",g=e.p._index[b],h=e.p.data[g],b=h[e.p.localReader.id],i=parseInt(h[p],10)+1;var x=$(e).jqGrid("getFullTreeNode",h);x.length?(j=x[x.length-1][e.p.localReader.id],v=j,j=$(e).jqGrid("getInd",v)+1):j=$(e).jqGrid("getInd",b)+1,h[o]&&(l=!0,h[n]=!0,$(e.rows[w]).find("span.cell-wrapperleaf").removeClass("cell-wrapperleaf").addClass("cell-wrapper").end().find("div.tree-leaf").removeClass(e.p.treeIcons.leaf+" tree-leaf").addClass(e.p.treeIcons.minus+" tree-minus"),e.p.data[g][o]=!1,h[t]=!0)}if(k=j+1,void 0===c[n]&&(c[n]=!1),void 0===c[t]&&(c[t]=!1),c[p]=i,void 0===c[o]&&(c[o]=!0),"adjacency"===e.p.treeGridModel&&(c[q]=b),"nested"===e.p.treeGridModel){var y,z,A;if(null!==b){if(m=parseInt(h[s],10),y=$.jgrid.from.call(e,e.p.data),y=y.greaterOrEquals(s,m,{stype:"integer"}),z=y.select(),z.length)for(A in z)z.hasOwnProperty(A)&&(z[A][r]=z[A][r]>m?parseInt(z[A][r],10)+2:z[A][r],z[A][s]=z[A][s]>=m?parseInt(z[A][s],10)+2:z[A][s]);c[r]=m,c[s]=m+1}else{if(m=parseInt($(e).jqGrid("getCol",s,!1,"max"),10),z=$.jgrid.from.call(e,e.p.data).greater(r,m,{stype:"integer"}).select(),z.length)for(A in z)z.hasOwnProperty(A)&&(z[A][r]=parseInt(z[A][r],10)+2);if(z=$.jgrid.from.call(e,e.p.data).greater(s,m,{stype:"integer"}).select(),z.length)for(A in z)z.hasOwnProperty(A)&&(z[A][s]=parseInt(z[A][s],10)+2);c[r]=m+1,c[s]=m+2}}(null===b||$(e).jqGrid("isNodeLoaded",h)||l)&&($(e).jqGrid("addRowData",a,c,f,v),$(e).jqGrid("setTreeNode",j,k)),h&&!h[n]&&d&&$(e.rows[w]).find("div.treeclick").click()}}}),$.fn.jqDrag=function(a){return i(this,a,"d")},$.fn.jqResize=function(a,b){return i(this,a,"r",b)},$.jqDnR={dnr:{},e:0,drag:function(a){return"d"==M.k?E.css({left:M.X+a.pageX-M.pX,top:M.Y+a.pageY-M.pY}):(E.css({width:Math.max(a.pageX-M.pX+M.W,0),height:Math.max(a.pageY-M.pY+M.H,0)}),M1&&E1.css({width:Math.max(a.pageX-M1.pX+M1.W,0),height:Math.max(a.pageY-M1.pY+M1.H,0)})),!1},stop:function(){$(document).unbind("mousemove",J.drag).unbind("mouseup",J.stop)}};var J=$.jqDnR,M=J.dnr,E=J.e,E1,M1,i=function(a,b,c,d){return a.each(function(){b=b?$(b,a):a,b.bind("mousedown",{e:a,k:c},function(a){var b=a.data,c={};if(E=b.e,E1=d?$(d):!1,"relative"!=E.css("position"))try{E.position(c)}catch(e){}if(M={X:c.left||f("left")||0,Y:c.top||f("top")||0,W:f("width")||E[0].scrollWidth||0,H:f("height")||E[0].scrollHeight||0,pX:a.pageX,pY:a.pageY,k:b.k},M1=E1&&"d"!=b.k?{X:c.left||f1("left")||0,Y:c.top||f1("top")||0,W:E1[0].offsetWidth||f1("width")||0,H:E1[0].offsetHeight||f1("height")||0,pX:a.pageX,pY:a.pageY,k:b.k}:!1,$("input.hasDatepicker",E[0])[0])try{$("input.hasDatepicker",E[0]).datepicker("hide")}catch(g){}return $(document).mousemove($.jqDnR.drag).mouseup($.jqDnR.stop),!1})})},f=function(a){return parseInt(E.css(a),10)||!1},f1=function(a){return parseInt(E1.css(a),10)||!1};$.fn.tinyDraggable=function(a){var b=$.extend({handle:0,exclude:0},a);return this.each(function(){var a,c,d=$(this),e=b.handle?$(b.handle,d):d;e.on({mousedown:function(e){if(!b.exclude||!~$.inArray(e.target,$(b.exclude,d))){e.preventDefault();var f=d.offset();a=e.pageX-f.left,c=e.pageY-f.top,$(document).on("mousemove.drag",function(b){d.offset({top:b.pageY-c,left:b.pageX-a})})}},mouseup:function(a){$(document).off("mousemove.drag")}})})},$.fn.jqm=function(a){var b={overlay:50,closeoverlay:!0,overlayClass:"jqmOverlay",closeClass:"jqmClose",trigger:".jqModal",ajax:F,ajaxText:"",target:F,modal:F,toTop:F,onShow:F,onHide:F,onLoad:F};return this.each(function(){return this._jqm?H[this._jqm].c=$.extend({},H[this._jqm].c,a):(s++,this._jqm=s,H[s]={c:$.extend(b,$.jqm.params,a),a:F,w:$(this).addClass("jqmID"+s),s:s},void(b.trigger&&$(this).jqmAddTrigger(b.trigger)))})},$.fn.jqmAddClose=function(a){return hs(this,a,"jqmHide")},$.fn.jqmAddTrigger=function(a){return hs(this,a,"jqmShow")},$.fn.jqmShow=function(a){return this.each(function(){$.jqm.open(this._jqm,a)})},$.fn.jqmHide=function(a){return this.each(function(){$.jqm.close(this._jqm,a)})},$.jqm={hash:{},open:function(a,b){var c=H[a],d=c.c,f="."+d.closeClass,g=parseInt(c.w.css("z-index"));g=g>0?g:3e3;var h=$("<div></div>").css({height:"100%",width:"100%",position:"fixed",left:0,top:0,"z-index":g-1,opacity:d.overlay/100});if(c.a)return F;if(c.t=b,c.a=!0,c.w.css("z-index",g),d.modal?(A[0]||setTimeout(function(){new L("bind")},1),A.push(a)):d.overlay>0?d.closeoverlay&&c.w.jqmAddClose(h):h=F,c.o=h?h.addClass(d.overlayClass).prependTo("body"):F,d.ajax){var i=d.target||c.w,j=d.ajax;i="string"==typeof i?$(i,c.w):$(i),j="@"===j.substr(0,1)?$(b).attr(j.substring(1)):j,i.html(d.ajaxText).load(j,function(){d.onLoad&&d.onLoad.call(this,c),f&&c.w.jqmAddClose($(f,c.w)),e(c)})}else f&&c.w.jqmAddClose($(f,c.w));return d.toTop&&c.o&&c.w.before('<span id="jqmP'+c.w[0]._jqm+'"></span>').insertAfter(c.o),d.onShow?d.onShow(c):c.w.show(),e(c),F},close:function(a){var b=H[a];return b.a?(b.a=F,A[0]&&(A.pop(),A[0]||new L("unbind")),b.c.toTop&&b.o&&$("#jqmP"+b.w[0]._jqm).after(b.w).remove(),b.c.onHide?b.c.onHide(b):(b.w.hide(),b.o&&b.o.remove()),F):F},params:{}};var s=0,H=$.jqm.hash,A=[],F=!1,e=function(a){void 0===a.c.focusField&&(a.c.focusField=0),a.c.focusField>=0&&f(a)},f=function(a){try{$(":input:visible",a.w)[parseInt(a.c.focusField,10)].focus()}catch(b){}},L=function(a){$(document)[a]("keypress",m)[a]("keydown",m)[a]("mousedown",m)},m=function(a){var b=H[A[A.length-1]],c=!$(a.target).parents(".jqmID"+b.s)[0];return c&&($(".jqmID"+b.s).each(function(){var b=$(this),d=b.offset();return d.top<=a.pageY&&a.pageY<=d.top+b.height()&&d.left<=a.pageX&&a.pageX<=d.left+b.width()?(c=!1,!1):void 0}),f(b)),!c},hs=function(a,b,c){return a.each(function(){var a=this._jqm;$(b).each(function(){this[c]||(this[c]=[],$(this).click(function(){for(var a in{jqmShow:1,jqmHide:1})for(var b in this[a])H[this[a][b]]&&H[this[a][b]].w[a](this);return F})),this[c].push(a)})})};$.fmatter={},$.extend($.fmatter,{isBoolean:function(a){return"boolean"==typeof a},isObject:function(a){return a&&("object"==typeof a||$.isFunction(a))||!1},isString:function(a){return"string"==typeof a},isNumber:function(a){return"number"==typeof a&&isFinite(a)},isValue:function(a){return this.isObject(a)||this.isString(a)||this.isNumber(a)||this.isBoolean(a)},isEmpty:function(a){return!this.isString(a)&&this.isValue(a)?!1:this.isValue(a)?(a=$.trim(a).replace(/\&nbsp\;/gi,"").replace(/\&#160\;/gi,""),""===a):!0}}),$.fn.fmatter=function(a,b,c,d,e){var f=b;c=$.extend({},$.jgrid.getRegional(this,"formatter"),c);try{f=$.fn.fmatter[a].call(this,b,c,d,e)}catch(g){}return f},$.fmatter.util={NumberFormat:function(a,b){if($.fmatter.isNumber(a)||(a*=1),$.fmatter.isNumber(a)){var c,d=0>a,e=String(a),f=b.decimalSeparator||".";if($.fmatter.isNumber(b.decimalPlaces)){var g=b.decimalPlaces,h=Math.pow(10,g);if(e=String(Math.round(a*h)/h),c=e.lastIndexOf("."),g>0)for(0>c?(e+=f,c=e.length-1):"."!==f&&(e=e.replace(".",f));e.length-1-c<g;)e+="0"}if(b.thousandsSeparator){var i=b.thousandsSeparator;c=e.lastIndexOf(f),c=c>-1?c:e.length;var j,k=e.substring(c),l=-1;for(j=c;j>0;j--)l++,l%3===0&&j!==c&&(!d||j>1)&&(k=i+k),k=e.charAt(j-1)+k;e=k}return e=b.prefix?b.prefix+e:e,e=b.suffix?e+b.suffix:e}return a}},$.fn.fmatter.defaultFormat=function(a,b){return $.fmatter.isValue(a)&&""!==a?a:b.defaultValue||"&#160;"},$.fn.fmatter.email=function(a,b){return $.fmatter.isEmpty(a)?$.fn.fmatter.defaultFormat(a,b):'<a href="mailto:'+a+'">'+a+"</a>"},$.fn.fmatter.checkbox=function(a,b){var c,d=$.extend({},b.checkbox);void 0!==b.colModel&&void 0!==b.colModel.formatoptions&&(d=$.extend({},d,b.colModel.formatoptions)),c=d.disabled===!0?'disabled="disabled"':"",($.fmatter.isEmpty(a)||void 0===a)&&(a=$.fn.fmatter.defaultFormat(a,d)),a=String(a),a=(a+"").toLowerCase();var e=a.search(/(false|f|0|no|n|off|undefined)/i)<0?" checked='checked' ":"";return'<input type="checkbox" '+e+' value="'+a+'" offval="no" '+c+"/>"},$.fn.fmatter.link=function(a,b){var c={target:b.target},d="";return void 0!==b.colModel&&void 0!==b.colModel.formatoptions&&(c=$.extend({},c,b.colModel.formatoptions)),c.target&&(d="target="+c.target),$.fmatter.isEmpty(a)?$.fn.fmatter.defaultFormat(a,b):"<a "+d+' href="'+a+'">'+a+"</a>"},$.fn.fmatter.showlink=function(a,b){var c,d={baseLinkUrl:b.baseLinkUrl,showAction:b.showAction,addParam:b.addParam||"",target:b.target,idName:b.idName},e="";return void 0!==b.colModel&&void 0!==b.colModel.formatoptions&&(d=$.extend({},d,b.colModel.formatoptions)),d.target&&(e="target="+d.target),c=d.baseLinkUrl+d.showAction+"?"+d.idName+"="+b.rowId+d.addParam,$.fmatter.isString(a)||$.fmatter.isNumber(a)?"<a "+e+' href="'+c+'">'+a+"</a>":$.fn.fmatter.defaultFormat(a,b)},$.fn.fmatter.integer=function(a,b){var c=$.extend({},b.integer);return void 0!==b.colModel&&void 0!==b.colModel.formatoptions&&(c=$.extend({},c,b.colModel.formatoptions)),$.fmatter.isEmpty(a)?c.defaultValue:$.fmatter.util.NumberFormat(a,c)},$.fn.fmatter.number=function(a,b){var c=$.extend({},b.number);return void 0!==b.colModel&&void 0!==b.colModel.formatoptions&&(c=$.extend({},c,b.colModel.formatoptions)),$.fmatter.isEmpty(a)?c.defaultValue:$.fmatter.util.NumberFormat(a,c)},$.fn.fmatter.currency=function(a,b){var c=$.extend({},b.currency);return void 0!==b.colModel&&void 0!==b.colModel.formatoptions&&(c=$.extend({},c,b.colModel.formatoptions)),$.fmatter.isEmpty(a)?c.defaultValue:$.fmatter.util.NumberFormat(a,c)},$.fn.fmatter.date=function(a,b,c,d){var e=$.extend({},b.date);return void 0!==b.colModel&&void 0!==b.colModel.formatoptions&&(e=$.extend({},e,b.colModel.formatoptions)),e.reformatAfterEdit||"edit"!==d?$.fmatter.isEmpty(a)?$.fn.fmatter.defaultFormat(a,b):$.jgrid.parseDate.call(this,e.srcformat,a,e.newformat,e):$.fn.fmatter.defaultFormat(a,b)},$.fn.fmatter.select=function(a,b){a=String(a);var c,d,e=!1,f=[];if(void 0!==b.colModel.formatoptions?(e=b.colModel.formatoptions.value,c=void 0===b.colModel.formatoptions.separator?":":b.colModel.formatoptions.separator,d=void 0===b.colModel.formatoptions.delimiter?";":b.colModel.formatoptions.delimiter):void 0!==b.colModel.editoptions&&(e=b.colModel.editoptions.value,c=void 0===b.colModel.editoptions.separator?":":b.colModel.editoptions.separator,d=void 0===b.colModel.editoptions.delimiter?";":b.colModel.editoptions.delimiter),e){var g,h=(null!=b.colModel.editoptions&&b.colModel.editoptions.multiple===!0)==!0?!0:!1,i=[];if(h&&(i=a.split(","),i=$.map(i,function(a){return $.trim(a)})),$.fmatter.isString(e)){var j,k=e.split(d),l=0;for(j=0;j<k.length;j++)if(g=k[j].split(c),g.length>2&&(g[1]=$.map(g,function(a,b){return b>0?a:void 0}).join(c)),h)$.inArray(g[0],i)>-1&&(f[l]=g[1],l++);else if($.trim(g[0])===$.trim(a)){f[0]=g[1];break}}else $.fmatter.isObject(e)&&(h?f=$.map(i,function(a){return e[a]}):f[0]=e[a]||"")}return a=f.join(", "),""===a?$.fn.fmatter.defaultFormat(a,b):a},$.fn.fmatter.rowactions=function(a){var b=$(this).closest("tr.jqgrow"),c=b.attr("id"),d=$(this).closest("table.ui-jqgrid-btable").attr("id").replace(/_frozen([^_]*)$/,"$1"),e=$("#"+d),f=e[0],g=f.p,h=g.colModel[$.jgrid.getCellIndex(this)],i=h.frozen?$("tr#"+c+" td:eq("+$.jgrid.getCellIndex(this)+") > div",e):$(this).parent(),j={extraparam:{}},k=function(a,b){$.isFunction(j.afterSave)&&j.afterSave.call(f,a,b),i.find("div.ui-inline-edit,div.ui-inline-del").show(),i.find("div.ui-inline-save,div.ui-inline-cancel").hide()},l=function(a){$.isFunction(j.afterRestore)&&j.afterRestore.call(f,a),i.find("div.ui-inline-edit,div.ui-inline-del").show(),i.find("div.ui-inline-save,div.ui-inline-cancel").hide()};void 0!==h.formatoptions&&(j=$.extend(j,h.formatoptions)),void 0!==g.editOptions&&(j.editOptions=g.editOptions),void 0!==g.delOptions&&(j.delOptions=g.delOptions),b.hasClass("jqgrid-new-row")&&(j.extraparam[g.prmNames.oper]=g.prmNames.addoper);var m={keys:j.keys,oneditfunc:j.onEdit,successfunc:j.onSuccess,url:j.url,extraparam:j.extraparam,aftersavefunc:k,errorfunc:j.onError,afterrestorefunc:l,restoreAfterError:j.restoreAfterError,mtype:j.mtype};switch(a){case"edit":e.jqGrid("editRow",c,m),i.find("div.ui-inline-edit,div.ui-inline-del").hide(),i.find("div.ui-inline-save,div.ui-inline-cancel").show(),e.triggerHandler("jqGridAfterGridComplete");break;case"save":e.jqGrid("saveRow",c,m)&&(i.find("div.ui-inline-edit,div.ui-inline-del").show(),i.find("div.ui-inline-save,div.ui-inline-cancel").hide(),e.triggerHandler("jqGridAfterGridComplete"));break;case"cancel":e.jqGrid("restoreRow",c,l),i.find("div.ui-inline-edit,div.ui-inline-del").show(),i.find("div.ui-inline-save,div.ui-inline-cancel").hide(),e.triggerHandler("jqGridAfterGridComplete");break;case"del":e.jqGrid("delGridRow",c,j.delOptions);break;case"formedit":e.jqGrid("setSelection",c),e.jqGrid("editGridRow",c,j.editOptions)}},$.fn.fmatter.actions=function(a,b){var c,d={keys:!1,editbutton:!0,delbutton:!0,editformbutton:!1},e=b.rowId,f="",g=$.jgrid.getRegional(this,"nav"),h=$.jgrid.styleUI[b.styleUI||"jQueryUI"].fmatter,i=$.jgrid.styleUI[b.styleUI||"jQueryUI"].common;if(void 0!==b.colModel.formatoptions&&(d=$.extend(d,b.colModel.formatoptions)),void 0===e||$.fmatter.isEmpty(e))return"";var j="onmouseover=jQuery(this).addClass('"+i.hover+"'); onmouseout=jQuery(this).removeClass('"+i.hover+"');  ";return d.editformbutton?(c="id='jEditButton_"+e+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'formedit'); "+j,f+="<div title='"+g.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+c+"><span class='"+i.icon_base+" "+h.icon_edit+"'></span></div>"):d.editbutton&&(c="id='jEditButton_"+e+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'edit'); "+j,f+="<div title='"+g.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+c+"><span class='"+i.icon_base+" "+h.icon_edit+"'></span></div>"),d.delbutton&&(c="id='jDeleteButton_"+e+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'del'); "+j,f+="<div title='"+g.deltitle+"' style='float:left;' class='ui-pg-div ui-inline-del' "+c+"><span class='"+i.icon_base+" "+h.icon_del+"'></span></div>"),c="id='jSaveButton_"+e+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'save'); "+j,f+="<div title='"+g.savetitle+"' style='float:left;display:none' class='ui-pg-div ui-inline-save' "+c+"><span class='"+i.icon_base+" "+h.icon_save+"'></span></div>",
 c="id='jCancelButton_"+e+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'cancel'); "+j,f+="<div title='"+g.canceltitle+"' style='float:left;display:none;' class='ui-pg-div ui-inline-cancel' "+c+"><span class='"+i.icon_base+" "+h.icon_cancel+"'></span></div>","<div style='margin-left:8px;'>"+f+"</div>"},$.unformat=function(a,b,c,d){var e,f,g=b.colModel.formatter,h=b.colModel.formatoptions||{},i=/([\.\*\_\'\(\)\{\}\+\?\\])/g,j=b.colModel.unformat||$.fn.fmatter[g]&&$.fn.fmatter[g].unformat;if(void 0!==j&&$.isFunction(j))e=j.call(this,$(a).text(),b,a);else if(void 0!==g&&$.fmatter.isString(g)){var k,l=$.jgrid.getRegional(this,"formatter")||{};switch(g){case"integer":h=$.extend({},l.integer,h),f=h.thousandsSeparator.replace(i,"\\$1"),k=new RegExp(f,"g"),e=$(a).text().replace(k,"");break;case"number":h=$.extend({},l.number,h),f=h.thousandsSeparator.replace(i,"\\$1"),k=new RegExp(f,"g"),e=$(a).text().replace(k,"").replace(h.decimalSeparator,".");break;case"currency":h=$.extend({},l.currency,h),f=h.thousandsSeparator.replace(i,"\\$1"),k=new RegExp(f,"g"),e=$(a).text(),h.prefix&&h.prefix.length&&(e=e.substr(h.prefix.length)),h.suffix&&h.suffix.length&&(e=e.substr(0,e.length-h.suffix.length)),e=e.replace(k,"").replace(h.decimalSeparator,".");break;case"checkbox":var m=b.colModel.editoptions?b.colModel.editoptions.value.split(":"):["Yes","No"];e=$("input",a).is(":checked")?m[0]:m[1];break;case"select":e=$.unformat.select(a,b,c,d);break;case"actions":return"";default:e=$(a).text()}}return void 0!==e?e:d===!0?$(a).text():$.jgrid.htmlDecode($(a).html())},$.unformat.select=function(a,b,c,d){var e=[],f=$(a).text();if(d===!0)return f;var g=$.extend({},void 0!==b.colModel.formatoptions?b.colModel.formatoptions:b.colModel.editoptions),h=void 0===g.separator?":":g.separator,i=void 0===g.delimiter?";":g.delimiter;if(g.value){var j,k=g.value,l=g.multiple===!0?!0:!1,m=[];if(l&&(m=f.split(","),m=$.map(m,function(a){return $.trim(a)})),$.fmatter.isString(k)){var n,o=k.split(i),p=0;for(n=0;n<o.length;n++)if(j=o[n].split(h),j.length>2&&(j[1]=$.map(j,function(a,b){return b>0?a:void 0}).join(h)),l)$.inArray($.trim(j[1]),m)>-1&&(e[p]=j[0],p++);else if($.trim(j[1])===$.trim(f)){e[0]=j[0];break}}else($.fmatter.isObject(k)||$.isArray(k))&&(l||(m[0]=f),e=$.map(m,function(a){var b;return $.each(k,function(c,d){return d===a?(b=c,!1):void 0}),void 0!==b?b:void 0}));return e.join(", ")}return f||""},$.unformat.date=function(a,b){var c=$.jgrid.getRegional(this,"formatter.date")||{};return void 0!==b.formatoptions&&(c=$.extend({},c,b.formatoptions)),$.fmatter.isEmpty(a)?$.fn.fmatter.defaultFormat(a,b):$.jgrid.parseDate.call(this,c.newformat,a,c.srcformat,c)};var dragging,placeholders=$();$.fn.html5sortable=function(a){var b=String(a);return a=$.extend({connectWith:!1},a),this.each(function(){if(/^enable|disable|destroy$/.test(b)){var c=$(this).children($(this).data("items")).attr("draggable","enable"===b);return void("destroy"===b&&c.add(this).removeData("connectWith items").off("dragstart.h5s dragend.h5s selectstart.h5s dragover.h5s dragenter.h5s drop.h5s"))}var d,e,c=$(this).children(a.items),f=$("<"+(/^ul|ol$/i.test(this.tagName)?"li":/^tbody$/i.test(this.tagName)?"tr":"div")+' class="sortable-placeholder '+a.placeholderClass+'">').html("&nbsp;");c.find(a.handle).mousedown(function(){d=!0}).mouseup(function(){d=!1}),$(this).data("items",a.items),placeholders=placeholders.add(f),a.connectWith&&$(a.connectWith).add(this).data("connectWith",a.connectWith),c.attr("draggable","true").on("dragstart.h5s",function(b){if(a.handle&&!d)return!1;d=!1;var c=b.originalEvent.dataTransfer;c.effectAllowed="move",c.setData("Text","dummy"),e=(dragging=$(this)).addClass("sortable-dragging").index()}).on("dragend.h5s",function(){dragging&&(dragging.removeClass("sortable-dragging").show(),placeholders.detach(),e!==dragging.index()&&dragging.parent().trigger("sortupdate",{item:dragging,startindex:e,endindex:dragging.index()}),dragging=null)}).not("a[href], img").on("selectstart.h5s",function(){return this.dragDrop&&this.dragDrop(),!1}).end().add([this,f]).on("dragover.h5s dragenter.h5s drop.h5s",function(b){return c.is(dragging)||a.connectWith===$(dragging).parent().data("connectWith")?"drop"===b.type?(b.stopPropagation(),placeholders.filter(":visible").after(dragging),dragging.trigger("dragend.h5s"),!1):(b.preventDefault(),b.originalEvent.dataTransfer.dropEffect="move",c.is(this)?(a.forcePlaceholderSize&&f.height(dragging.outerHeight()),dragging.hide(),$(this)[f.index()<$(this).index()?"after":"before"](f),placeholders.not(f).detach()):placeholders.is(this)||$(this).children(a.items).length||(placeholders.detach(),$(this).append(f)),!1):!0})})},window.jqGridUtils={stringify:function(a){return JSON.stringify(a,function(a,b){return"function"==typeof b?b.toString():b})},parse:function(str){return JSON.parse(str,function(key,value){return"string"==typeof value&&-1!==value.indexOf("function")?eval("("+value+")"):value})},encode:function(a){return String(a).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")},jsonToXML:function(a,b){var c=$.extend({xmlDecl:'<?xml version="1.0" encoding="UTF-8" ?>\n',attr_prefix:"-",encode:!0},b||{}),d=this,e=function(a,b){return"#text"===a?c.encode?d.encode(b):b:"function"==typeof b?"<"+a+"><![CDATA["+b+"]]></"+a+">\n":""===b?"<"+a+">__EMPTY_STRING_</"+a+">\n":"<"+a+">"+(c.encode?d.encode(b):b)+"</"+a+">\n"},f=function(a,b){for(var c=[],d=0;d<b.length;d++){var h=b[d];"undefined"==typeof h||null==h?c[c.length]="<"+a+" />":"object"==typeof h&&h.constructor==Array?c[c.length]=f(a,h):"object"==typeof h?c[c.length]=g(a,h):c[c.length]=e(a,h)}return c.length||(c[0]="<"+a+">__EMPTY_ARRAY_</"+a+">\n"),c.join("")},g=function(a,b){var h=[],i=[];for(var j in b)if(b.hasOwnProperty(j)){var k=b[j];j.charAt(0)!==c.attr_prefix?null==k?h[h.length]="<"+j+" />":"object"==typeof k&&k.constructor===Array?h[h.length]=f(j,k):"object"==typeof k?h[h.length]=g(j,k):h[h.length]=e(j,k):i[i.length]=" "+j.substring(1)+'="'+(c.encode?d.encode(k):k)+'"'}var l=i.join(""),m=h.join("");return null==a||(m=h.length>0?m.match(/\n/)?"<"+a+l+">\n"+m+"</"+a+">\n":"<"+a+l+">"+m+"</"+a+">\n":"<"+a+l+" />\n"),m},h=g(null,a);return c.xmlDecl+h},xmlToJSON:function(root,options){var o=$.extend({force_array:[],attr_prefix:"-"},options||{});if(root){var __force_array={};if(o.force_array)for(var i=0;i<o.force_array.length;i++)__force_array[o.force_array[i]]=1;"string"==typeof root&&(root=$.parseXML(root)),root.documentElement&&(root=root.documentElement);var addNode=function(hash,key,cnts,val){if("string"==typeof val)if(-1!==val.indexOf("function"))val=eval("("+val+")");else switch(val){case"__EMPTY_ARRAY_":val=[];break;case"__EMPTY_STRING_":val="";break;case"false":val=!1;break;case"true":val=!0}__force_array[key]?(1===cnts&&(hash[key]=[]),hash[key][hash[key].length]=val):1===cnts?hash[key]=val:2===cnts?hash[key]=[hash[key],val]:hash[key][hash[key].length]=val},parseElement=function(a){if(7!==a.nodeType){if(3===a.nodeType||4===a.nodeType){var b=a.nodeValue.match(/[^\x00-\x20]/);if(null==b)return;return a.nodeValue}var c,d,e,f,g={};if(a.attributes&&a.attributes.length)for(c={},d=0;d<a.attributes.length;d++)e=a.attributes[d].nodeName,"string"==typeof e&&(f=a.attributes[d].nodeValue,f&&(e=o.attr_prefix+e,"undefined"==typeof g[e]&&(g[e]=0),g[e]++,addNode(c,e,g[e],f)));if(a.childNodes&&a.childNodes.length){var h=!0;for(c&&(h=!1),d=0;d<a.childNodes.length&&h;d++){var i=a.childNodes[d].nodeType;3!==i&&4!==i&&(h=!1)}if(h)for(c||(c=""),d=0;d<a.childNodes.length;d++)c+=a.childNodes[d].nodeValue;else for(c||(c={}),d=0;d<a.childNodes.length;d++)e=a.childNodes[d].nodeName,"string"==typeof e&&(f=parseElement(a.childNodes[d]),f&&("undefined"==typeof g[e]&&(g[e]=0),g[e]++,addNode(c,e,g[e],f)))}return c}},json=parseElement(root);if(__force_array[root.nodeName]&&(json=[json]),11!==root.nodeType){var tmp={};tmp[root.nodeName]=json,json=tmp}return json}}}});
 //# sourceMappingURL=jquery.jqGrid.min.js.map
+(function($, undefined) {
+
+/**
+ * Unobtrusive scripting adapter for jQuery
+ * https://github.com/rails/jquery-ujs
+ *
+ * Requires jQuery 1.8.0 or later.
+ *
+ * Released under the MIT license
+ *
+ */
+
+  // Cut down on the number of issues from people inadvertently including jquery_ujs twice
+  // by detecting and raising an error when it happens.
+  'use strict';
+
+  if ( $.rails !== undefined ) {
+    $.error('jquery-ujs has already been loaded!');
+  }
+
+  // Shorthand to make it a little easier to call public rails functions from within rails.js
+  var rails;
+  var $document = $(document);
+
+  $.rails = rails = {
+    // Link elements bound by jquery-ujs
+    linkClickSelector: 'a[data-confirm], a[data-method], a[data-remote]:not([disabled]), a[data-disable-with], a[data-disable]',
+
+    // Button elements bound by jquery-ujs
+    buttonClickSelector: 'button[data-remote]:not([form]):not(form button), button[data-confirm]:not([form]):not(form button)',
+
+    // Select elements bound by jquery-ujs
+    inputChangeSelector: 'select[data-remote], input[data-remote], textarea[data-remote]',
+
+    // Form elements bound by jquery-ujs
+    formSubmitSelector: 'form',
+
+    // Form input elements bound by jquery-ujs
+    formInputClickSelector: 'form input[type=submit], form input[type=image], form button[type=submit], form button:not([type]), input[type=submit][form], input[type=image][form], button[type=submit][form], button[form]:not([type])',
+
+    // Form input elements disabled during form submission
+    disableSelector: 'input[data-disable-with]:enabled, button[data-disable-with]:enabled, textarea[data-disable-with]:enabled, input[data-disable]:enabled, button[data-disable]:enabled, textarea[data-disable]:enabled',
+
+    // Form input elements re-enabled after form submission
+    enableSelector: 'input[data-disable-with]:disabled, button[data-disable-with]:disabled, textarea[data-disable-with]:disabled, input[data-disable]:disabled, button[data-disable]:disabled, textarea[data-disable]:disabled',
+
+    // Form required input elements
+    requiredInputSelector: 'input[name][required]:not([disabled]), textarea[name][required]:not([disabled])',
+
+    // Form file input elements
+    fileInputSelector: 'input[type=file]:not([disabled])',
+
+    // Link onClick disable selector with possible reenable after remote submission
+    linkDisableSelector: 'a[data-disable-with], a[data-disable]',
+
+    // Button onClick disable selector with possible reenable after remote submission
+    buttonDisableSelector: 'button[data-remote][data-disable-with], button[data-remote][data-disable]',
+
+    // Up-to-date Cross-Site Request Forgery token
+    csrfToken: function() {
+     return $('meta[name=csrf-token]').attr('content');
+    },
+
+    // URL param that must contain the CSRF token
+    csrfParam: function() {
+     return $('meta[name=csrf-param]').attr('content');
+    },
+
+    // Make sure that every Ajax request sends the CSRF token
+    CSRFProtection: function(xhr) {
+      var token = rails.csrfToken();
+      if (token) xhr.setRequestHeader('X-CSRF-Token', token);
+    },
+
+    // Make sure that all forms have actual up-to-date tokens (cached forms contain old ones)
+    refreshCSRFTokens: function(){
+      $('form input[name="' + rails.csrfParam() + '"]').val(rails.csrfToken());
+    },
+
+    // Triggers an event on an element and returns false if the event result is false
+    fire: function(obj, name, data) {
+      var event = $.Event(name);
+      obj.trigger(event, data);
+      return event.result !== false;
+    },
+
+    // Default confirm dialog, may be overridden with custom confirm dialog in $.rails.confirm
+    confirm: function(message) {
+      return confirm(message);
+    },
+
+    // Default ajax function, may be overridden with custom function in $.rails.ajax
+    ajax: function(options) {
+      return $.ajax(options);
+    },
+
+    // Default way to get an element's href. May be overridden at $.rails.href.
+    href: function(element) {
+      return element[0].href;
+    },
+
+    // Checks "data-remote" if true to handle the request through a XHR request.
+    isRemote: function(element) {
+      return element.data('remote') !== undefined && element.data('remote') !== false;
+    },
+
+    // Submits "remote" forms and links with ajax
+    handleRemote: function(element) {
+      var method, url, data, withCredentials, dataType, options;
+
+      if (rails.fire(element, 'ajax:before')) {
+        withCredentials = element.data('with-credentials') || null;
+        dataType = element.data('type') || ($.ajaxSettings && $.ajaxSettings.dataType);
+
+        if (element.is('form')) {
+          method = element.data('ujs:submit-button-formmethod') || element.attr('method');
+          url = element.data('ujs:submit-button-formaction') || element.attr('action');
+          data = $(element[0]).serializeArray();
+          // memoized value from clicked submit button
+          var button = element.data('ujs:submit-button');
+          if (button) {
+            data.push(button);
+            element.data('ujs:submit-button', null);
+          }
+          element.data('ujs:submit-button-formmethod', null);
+          element.data('ujs:submit-button-formaction', null);
+        } else if (element.is(rails.inputChangeSelector)) {
+          method = element.data('method');
+          url = element.data('url');
+          data = element.serialize();
+          if (element.data('params')) data = data + '&' + element.data('params');
+        } else if (element.is(rails.buttonClickSelector)) {
+          method = element.data('method') || 'get';
+          url = element.data('url');
+          data = element.serialize();
+          if (element.data('params')) data = data + '&' + element.data('params');
+        } else {
+          method = element.data('method');
+          url = rails.href(element);
+          data = element.data('params') || null;
+        }
+
+        options = {
+          type: method || 'GET', data: data, dataType: dataType,
+          // stopping the "ajax:beforeSend" event will cancel the ajax request
+          beforeSend: function(xhr, settings) {
+            if (settings.dataType === undefined) {
+              xhr.setRequestHeader('accept', '*/*;q=0.5, ' + settings.accepts.script);
+            }
+            if (rails.fire(element, 'ajax:beforeSend', [xhr, settings])) {
+              element.trigger('ajax:send', xhr);
+            } else {
+              return false;
+            }
+          },
+          success: function(data, status, xhr) {
+            element.trigger('ajax:success', [data, status, xhr]);
+          },
+          complete: function(xhr, status) {
+            element.trigger('ajax:complete', [xhr, status]);
+          },
+          error: function(xhr, status, error) {
+            element.trigger('ajax:error', [xhr, status, error]);
+          },
+          crossDomain: rails.isCrossDomain(url)
+        };
+
+        // There is no withCredentials for IE6-8 when
+        // "Enable native XMLHTTP support" is disabled
+        if (withCredentials) {
+          options.xhrFields = {
+            withCredentials: withCredentials
+          };
+        }
+
+        // Only pass url to `ajax` options if not blank
+        if (url) { options.url = url; }
+
+        return rails.ajax(options);
+      } else {
+        return false;
+      }
+    },
+
+    // Determines if the request is a cross domain request.
+    isCrossDomain: function(url) {
+      var originAnchor = document.createElement('a');
+      originAnchor.href = location.href;
+      var urlAnchor = document.createElement('a');
+
+      try {
+        urlAnchor.href = url;
+        // This is a workaround to a IE bug.
+        urlAnchor.href = urlAnchor.href;
+
+        // If URL protocol is false or is a string containing a single colon
+        // *and* host are false, assume it is not a cross-domain request
+        // (should only be the case for IE7 and IE compatibility mode).
+        // Otherwise, evaluate protocol and host of the URL against the origin
+        // protocol and host.
+        return !(((!urlAnchor.protocol || urlAnchor.protocol === ':') && !urlAnchor.host) ||
+          (originAnchor.protocol + '//' + originAnchor.host ===
+            urlAnchor.protocol + '//' + urlAnchor.host));
+      } catch (e) {
+        // If there is an error parsing the URL, assume it is crossDomain.
+        return true;
+      }
+    },
+
+    // Handles "data-method" on links such as:
+    // <a href="/users/5" data-method="delete" rel="nofollow" data-confirm="Are you sure?">Delete</a>
+    handleMethod: function(link) {
+      var href = rails.href(link),
+        method = link.data('method'),
+        target = link.attr('target'),
+        csrfToken = rails.csrfToken(),
+        csrfParam = rails.csrfParam(),
+        form = $('<form method="post" action="' + href + '"></form>'),
+        metadataInput = '<input name="_method" value="' + method + '" type="hidden" />';
+
+      if (csrfParam !== undefined && csrfToken !== undefined && !rails.isCrossDomain(href)) {
+        metadataInput += '<input name="' + csrfParam + '" value="' + csrfToken + '" type="hidden" />';
+      }
+
+      if (target) { form.attr('target', target); }
+
+      form.hide().append(metadataInput).appendTo('body');
+      form.submit();
+    },
+
+    // Helper function that returns form elements that match the specified CSS selector
+    // If form is actually a "form" element this will return associated elements outside the from that have
+    // the html form attribute set
+    formElements: function(form, selector) {
+      return form.is('form') ? $(form[0].elements).filter(selector) : form.find(selector);
+    },
+
+    /* Disables form elements:
+      - Caches element value in 'ujs:enable-with' data store
+      - Replaces element text with value of 'data-disable-with' attribute
+      - Sets disabled property to true
+    */
+    disableFormElements: function(form) {
+      rails.formElements(form, rails.disableSelector).each(function() {
+        rails.disableFormElement($(this));
+      });
+    },
+
+    disableFormElement: function(element) {
+      var method, replacement;
+
+      method = element.is('button') ? 'html' : 'val';
+      replacement = element.data('disable-with');
+
+      if (replacement !== undefined) {
+        element.data('ujs:enable-with', element[method]());
+        element[method](replacement);
+      }
+
+      element.prop('disabled', true);
+      element.data('ujs:disabled', true);
+    },
+
+    /* Re-enables disabled form elements:
+      - Replaces element text with cached value from 'ujs:enable-with' data store (created in `disableFormElements`)
+      - Sets disabled property to false
+    */
+    enableFormElements: function(form) {
+      rails.formElements(form, rails.enableSelector).each(function() {
+        rails.enableFormElement($(this));
+      });
+    },
+
+    enableFormElement: function(element) {
+      var method = element.is('button') ? 'html' : 'val';
+      if (element.data('ujs:enable-with') !== undefined) {
+        element[method](element.data('ujs:enable-with'));
+        element.removeData('ujs:enable-with'); // clean up cache
+      }
+      element.prop('disabled', false);
+      element.removeData('ujs:disabled');
+    },
+
+   /* For 'data-confirm' attribute:
+      - Fires `confirm` event
+      - Shows the confirmation dialog
+      - Fires the `confirm:complete` event
+
+      Returns `true` if no function stops the chain and user chose yes; `false` otherwise.
+      Attaching a handler to the element's `confirm` event that returns a `falsy` value cancels the confirmation dialog.
+      Attaching a handler to the element's `confirm:complete` event that returns a `falsy` value makes this function
+      return false. The `confirm:complete` event is fired whether or not the user answered true or false to the dialog.
+   */
+    allowAction: function(element) {
+      var message = element.data('confirm'),
+          answer = false, callback;
+      if (!message) { return true; }
+
+      if (rails.fire(element, 'confirm')) {
+        try {
+          answer = rails.confirm(message);
+        } catch (e) {
+          (console.error || console.log).call(console, e.stack || e);
+        }
+        callback = rails.fire(element, 'confirm:complete', [answer]);
+      }
+      return answer && callback;
+    },
+
+    // Helper function which checks for blank inputs in a form that match the specified CSS selector
+    blankInputs: function(form, specifiedSelector, nonBlank) {
+      var foundInputs = $(),
+        input,
+        valueToCheck,
+        radiosForNameWithNoneSelected,
+        radioName,
+        selector = specifiedSelector || 'input,textarea',
+        requiredInputs = form.find(selector),
+        checkedRadioButtonNames = {};
+
+      requiredInputs.each(function() {
+        input = $(this);
+        if (input.is('input[type=radio]')) {
+
+          // Don't count unchecked required radio as blank if other radio with same name is checked,
+          // regardless of whether same-name radio input has required attribute or not. The spec
+          // states https://www.w3.org/TR/html5/forms.html#the-required-attribute
+          radioName = input.attr('name');
+
+          // Skip if we've already seen the radio with this name.
+          if (!checkedRadioButtonNames[radioName]) {
+
+            // If none checked
+            if (form.find('input[type=radio]:checked[name="' + radioName + '"]').length === 0) {
+              radiosForNameWithNoneSelected = form.find(
+                'input[type=radio][name="' + radioName + '"]');
+              foundInputs = foundInputs.add(radiosForNameWithNoneSelected);
+            }
+
+            // We only need to check each name once.
+            checkedRadioButtonNames[radioName] = radioName;
+          }
+        } else {
+          valueToCheck = input.is('input[type=checkbox],input[type=radio]') ? input.is(':checked') : !!input.val();
+          if (valueToCheck === nonBlank) {
+            foundInputs = foundInputs.add(input);
+          }
+        }
+      });
+      return foundInputs.length ? foundInputs : false;
+    },
+
+    // Helper function which checks for non-blank inputs in a form that match the specified CSS selector
+    nonBlankInputs: function(form, specifiedSelector) {
+      return rails.blankInputs(form, specifiedSelector, true); // true specifies nonBlank
+    },
+
+    // Helper function, needed to provide consistent behavior in IE
+    stopEverything: function(e) {
+      $(e.target).trigger('ujs:everythingStopped');
+      e.stopImmediatePropagation();
+      return false;
+    },
+
+    //  Replace element's html with the 'data-disable-with' after storing original html
+    //  and prevent clicking on it
+    disableElement: function(element) {
+      var replacement = element.data('disable-with');
+
+      if (replacement !== undefined) {
+        element.data('ujs:enable-with', element.html()); // store enabled state
+        element.html(replacement);
+      }
+
+      element.bind('click.railsDisable', function(e) { // prevent further clicking
+        return rails.stopEverything(e);
+      });
+      element.data('ujs:disabled', true);
+    },
+
+    // Restore element to its original state which was disabled by 'disableElement' above
+    enableElement: function(element) {
+      if (element.data('ujs:enable-with') !== undefined) {
+        element.html(element.data('ujs:enable-with')); // set to old enabled state
+        element.removeData('ujs:enable-with'); // clean up cache
+      }
+      element.unbind('click.railsDisable'); // enable element
+      element.removeData('ujs:disabled');
+    }
+  };
+
+  if (rails.fire($document, 'rails:attachBindings')) {
+
+    $.ajaxPrefilter(function(options, originalOptions, xhr){ if ( !options.crossDomain ) { rails.CSRFProtection(xhr); }});
+
+    // This event works the same as the load event, except that it fires every
+    // time the page is loaded.
+    //
+    // See https://github.com/rails/jquery-ujs/issues/357
+    // See https://developer.mozilla.org/en-US/docs/Using_Firefox_1.5_caching
+    $(window).on('pageshow.rails', function () {
+      $($.rails.enableSelector).each(function () {
+        var element = $(this);
+
+        if (element.data('ujs:disabled')) {
+          $.rails.enableFormElement(element);
+        }
+      });
+
+      $($.rails.linkDisableSelector).each(function () {
+        var element = $(this);
+
+        if (element.data('ujs:disabled')) {
+          $.rails.enableElement(element);
+        }
+      });
+    });
+
+    $document.delegate(rails.linkDisableSelector, 'ajax:complete', function() {
+        rails.enableElement($(this));
+    });
+
+    $document.delegate(rails.buttonDisableSelector, 'ajax:complete', function() {
+        rails.enableFormElement($(this));
+    });
+
+    $document.delegate(rails.linkClickSelector, 'click.rails', function(e) {
+      var link = $(this), method = link.data('method'), data = link.data('params'), metaClick = e.metaKey || e.ctrlKey;
+      if (!rails.allowAction(link)) return rails.stopEverything(e);
+
+      if (!metaClick && link.is(rails.linkDisableSelector)) rails.disableElement(link);
+
+      if (rails.isRemote(link)) {
+        if (metaClick && (!method || method === 'GET') && !data) { return true; }
+
+        var handleRemote = rails.handleRemote(link);
+        // Response from rails.handleRemote() will either be false or a deferred object promise.
+        if (handleRemote === false) {
+          rails.enableElement(link);
+        } else {
+          handleRemote.fail( function() { rails.enableElement(link); } );
+        }
+        return false;
+
+      } else if (method) {
+        rails.handleMethod(link);
+        return false;
+      }
+    });
+
+    $document.delegate(rails.buttonClickSelector, 'click.rails', function(e) {
+      var button = $(this);
+
+      if (!rails.allowAction(button) || !rails.isRemote(button)) return rails.stopEverything(e);
+
+      if (button.is(rails.buttonDisableSelector)) rails.disableFormElement(button);
+
+      var handleRemote = rails.handleRemote(button);
+      // Response from rails.handleRemote() will either be false or a deferred object promise.
+      if (handleRemote === false) {
+        rails.enableFormElement(button);
+      } else {
+        handleRemote.fail( function() { rails.enableFormElement(button); } );
+      }
+      return false;
+    });
+
+    $document.delegate(rails.inputChangeSelector, 'change.rails', function(e) {
+      var link = $(this);
+      if (!rails.allowAction(link) || !rails.isRemote(link)) return rails.stopEverything(e);
+
+      rails.handleRemote(link);
+      return false;
+    });
+
+    $document.delegate(rails.formSubmitSelector, 'submit.rails', function(e) {
+      var form = $(this),
+        remote = rails.isRemote(form),
+        blankRequiredInputs,
+        nonBlankFileInputs;
+
+      if (!rails.allowAction(form)) return rails.stopEverything(e);
+
+      // Skip other logic when required values are missing or file upload is present
+      if (form.attr('novalidate') === undefined) {
+        if (form.data('ujs:formnovalidate-button') === undefined) {
+          blankRequiredInputs = rails.blankInputs(form, rails.requiredInputSelector, false);
+          if (blankRequiredInputs && rails.fire(form, 'ajax:aborted:required', [blankRequiredInputs])) {
+            return rails.stopEverything(e);
+          }
+        } else {
+          // Clear the formnovalidate in case the next button click is not on a formnovalidate button
+          // Not strictly necessary to do here, since it is also reset on each button click, but just to be certain
+          form.data('ujs:formnovalidate-button', undefined);
+        }
+      }
+
+      if (remote) {
+        nonBlankFileInputs = rails.nonBlankInputs(form, rails.fileInputSelector);
+        if (nonBlankFileInputs) {
+          // Slight timeout so that the submit button gets properly serialized
+          // (make it easy for event handler to serialize form without disabled values)
+          setTimeout(function(){ rails.disableFormElements(form); }, 13);
+          var aborted = rails.fire(form, 'ajax:aborted:file', [nonBlankFileInputs]);
+
+          // Re-enable form elements if event bindings return false (canceling normal form submission)
+          if (!aborted) { setTimeout(function(){ rails.enableFormElements(form); }, 13); }
+
+          return aborted;
+        }
+
+        rails.handleRemote(form);
+        return false;
+
+      } else {
+        // Slight timeout so that the submit button gets properly serialized
+        setTimeout(function(){ rails.disableFormElements(form); }, 13);
+      }
+    });
+
+    $document.delegate(rails.formInputClickSelector, 'click.rails', function(event) {
+      var button = $(this);
+
+      if (!rails.allowAction(button)) return rails.stopEverything(event);
+
+      // Register the pressed submit button
+      var name = button.attr('name'),
+        data = name ? {name:name, value:button.val()} : null;
+
+      var form = button.closest('form');
+      if (form.length === 0) {
+        form = $('#' + button.attr('form'));
+      }
+      form.data('ujs:submit-button', data);
+
+      // Save attributes from button
+      form.data('ujs:formnovalidate-button', button.attr('formnovalidate'));
+      form.data('ujs:submit-button-formaction', button.attr('formaction'));
+      form.data('ujs:submit-button-formmethod', button.attr('formmethod'));
+    });
+
+    $document.delegate(rails.formSubmitSelector, 'ajax:send.rails', function(event) {
+      if (this === event.target) rails.disableFormElements($(this));
+    });
+
+    $document.delegate(rails.formSubmitSelector, 'ajax:complete.rails', function(event) {
+      if (this === event.target) rails.enableFormElements($(this));
+    });
+
+    $(function(){
+      rails.refreshCSRFTokens();
+    });
+  }
+
+})( jQuery );
+
 AmCharts.makeChart("chartdiv", {
     type: "serial",
     titles: [{
@@ -4677,19 +5233,17 @@ $(document).ready(function() {
     });
 });
 
-$(function(){
-    $('[data-method]').not(".disabled").append(function(){
-        var methodForm = "\n";
-        methodForm += "<form action='"+$(this).attr('href')+"' method='POST' style='display:none'>\n";
-        methodForm += " <input type='hidden' name='_method' value='"+$(this).attr('data-method')+"'>\n";
-        methodForm +="<input type='hidden' name='_token' value='"+$('meta[property="csrf-token"]').attr('content')+"'>\n";
-        methodForm += "</form>\n";
+$('.delete-form').append(function () {
+    var methodForm = "\n";
+    var url = $(this)[0].hasAttribute("data-href") ? $(this).data('href') : $(this).attr('href');
+    methodForm += "<form action='" + url + "' method='POST' style='display:none'>\n";
+    methodForm += "<input type='hidden' name='_method' value='" + $(this).data('method') + "'>\n";
+    methodForm += "<input type='hidden' name='_token' value='" + $('meta[name=csrf-token]').attr('content') + "'>\n";
+    methodForm += "</form>\n";
 
-        return methodForm
-    })
-    .removeAttr('href')
-    .attr('onclick',' if ($(this).attr(\'data-confirm\')) { if(confirm("Are you sure you want to delete?")) { $(this).find("form").submit(); } } else { $(this).find("form").submit(); }')
-});
+    return methodForm
+})
+    .attr('onclick', '$(this).find("form").submit();');
 
 $.jgrid.defaults.width = 780;
 $.jgrid.defaults.responsive = true;
