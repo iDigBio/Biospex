@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Queue;
 
 class DarwinCoreFileImportCommand extends Command
 {
-    public $import;
+    private $import;
+    private $tube;
 
     /**
      * The console command name.
@@ -35,6 +36,7 @@ class DarwinCoreFileImportCommand extends Command
         parent::__construct();
 
         $this->import = $import;
+        $this->tube = Config::get('config.beanstalkd.ocr');
     }
 
     /**
@@ -48,7 +50,7 @@ class DarwinCoreFileImportCommand extends Command
 
         $count = 0;
         foreach ($imports as $import) {
-            Queue::push('App\Services\Queue\DarwinCoreFileImportQueue', ['id' => $import->id], Config::get('config.beanstalkd.import'));
+            Queue::push('App\Services\Queue\DarwinCoreFileImportQueue', ['id' => $import->id], $this->tube);
             $count++;
         }
 
