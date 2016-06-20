@@ -33,7 +33,7 @@ class GroupFormRequest extends Request
      */
     public function alterInput()
     {
-        $this->replace(['name' => strtolower(str_replace(' ', '-', $this->only('name')))]);
+        $this->replace(['name' => strtolower(str_replace(' ', '-', $this->get('name')))]);
         
         return $this->all();
     }
