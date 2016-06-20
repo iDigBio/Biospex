@@ -53,7 +53,7 @@
                                 <button title="@lang('buttons.stopTitle')"
                                         class="btn btn-sm btn-danger delete-form" type="button"
                                         data-method="delete"
-                                        data-confirm="Are you sure you wish to delete?"
+                                        data-confirm="Are you sure you wish to stop the process?"
                                         data-href="{{ route('web.expeditions.stop', [$expedition->project->id, $expedition->id]) }}"><span
                                             class="fa fa-stop fa-lrg"></span> @lang('buttons.stop')</button>
                         </div>
