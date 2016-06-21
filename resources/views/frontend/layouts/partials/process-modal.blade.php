@@ -25,7 +25,7 @@
     var socket = io('http://{{ config('config.app_nodejs_domain') }}:8080');
     <?php
     $uuids = [];
-    $groups = session()->get('groups');
+    $groups = Auth::user()->groups;
     if ( ! $groups->isEmpty())
     {
         $uuids = $groups->map(function ($item, $key) {
