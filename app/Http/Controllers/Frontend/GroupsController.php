@@ -107,7 +107,7 @@ class GroupsController extends Controller
         ];
         $group = $this->group->with($with)->find($id);
 
-        if ($user->cannot('read', $group))
+        if ($user->cannot('show', $group))
         {
             session_flash_push('warning', trans('pages.insufficient_permissions'));
 
