@@ -41,6 +41,17 @@ class FaqCategory extends Model
     }
 
     /**
+     * Get name attribute.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function getNameAttribute($value)
+    {
+        return strtolower(str_replace(' ', '-', $value));
+    }
+
+    /**
      * Set label attribute.
      *
      * @param  string  $value
@@ -49,5 +60,16 @@ class FaqCategory extends Model
     public function setLabelAttribute($value)
     {
         $this->attributes['label'] = ucwords(str_replace('-', ' ', $value));
+    }
+
+    /**
+     * Get label attribute.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function getLabelAttribute($value)
+    {
+        return ucwords(str_replace('-', ' ', $value));
     }
 }
