@@ -111,7 +111,7 @@ class Group extends Model
      */
     public function setNameAttribute($value)
     {
-        $this->attributes['name'] = strtolower(str_replace_array(' ', '-', $value));
+        $this->attributes['name'] = strtolower(str_replace(' ', '-', $value));
     }
 
     /**
@@ -122,7 +122,7 @@ class Group extends Model
      */
     public function getNameAttribute($value)
     {
-        return strtolower(str_replace_array(' ', '-', $value));
+        return strtolower(str_replace(' ', '-', $value));
     }
 
     /**
