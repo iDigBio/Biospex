@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
 use App\Repositories\Contracts\User;
 use App\Repositories\Contracts\Group;
+use Illuminate\Support\Facades\Session;
 
 class GroupsController extends Controller
 {
