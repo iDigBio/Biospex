@@ -111,7 +111,18 @@ class Group extends Model
      */
     public function setNameAttribute($value)
     {
-        $this->attributes['name'] = strtolower($value);
+        $this->attributes['name'] = strtolower(str_replace_array(' ', '-', $value));
+    }
+
+    /**
+     * Get name attribute.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function getNameAttribute($value)
+    {
+        return strtolower(str_replace_array(' ', '-', $value));
     }
 
     /**
@@ -122,6 +133,17 @@ class Group extends Model
      */
     public function setLabelAttribute($value)
     {
-        $this->attributes['label'] = ucwords($value);
+        $this->attributes['label'] = ucwords(str_replace('-', ' ' ,$value));
+    }
+
+    /**
+     * Get label attribute.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function getLabelAttribute($value)
+    {
+        return ucwords(str_replace('-', ' ' ,$value));
     }
 }
