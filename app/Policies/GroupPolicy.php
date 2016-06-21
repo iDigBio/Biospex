@@ -9,9 +9,13 @@ class GroupPolicy
     public function before($user)
     {
         $key = md5(__METHOD__ . $user->uuid);
-        return Cache::remember($key, 60, function() use ($user) {
+        $isAdmin = Cache::remember($key, 60, function() use ($user) {
             return $user->isAdmin();
         });
+
+        if ($isAdmin) {
+            return true;
+        }
     }
 
     /**
@@ -39,7 +43,7 @@ class GroupPolicy
      * @param $group
      * @return bool
      */
-    public function read($user, $group)
+    public function show($user, $group)
     {
         $key = md5(__METHOD__ . $user->uuid . $group->uuid);
         return Cache::remember($key, 60, function() use ($user, $group) {
