@@ -5,13 +5,13 @@ return [
     /**
      * Site variables
      */
-    'app_url'           => env('APP_URL'),
-    'api_url'           => env('API_URL'),
-    'app_domain'        => env('APP_DOMAIN'),
-    'app_nodejs_domain' => env('APP_NODEJS_DOMAIN'),
-    'app_ip'            => env('APP_IP'),
-    'registration'      => env('APP_REGISTRATION'),
-    'translate'         => env('APP_TRANSLATE'),
+    'app_url'        => env('APP_URL'),
+    'api_url'        => env('API_URL'),
+    'app_domain'     => env('APP_DOMAIN'),
+    'app_nodejs_url' => env('APP_NODEJS_URL'),
+    'app_ip'         => env('APP_IP'),
+    'registration'   => env('APP_REGISTRATION'),
+    'translate'      => env('APP_TRANSLATE'),
 
     'scratch_dir'              => storage_path('scratch'),
     'nfn_export_dir'           => storage_path('exports/nfn'),

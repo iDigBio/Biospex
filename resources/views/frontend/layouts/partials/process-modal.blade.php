@@ -20,9 +20,9 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<script src="https://{{ config('config.app_nodejs_domain') }}/socket.io/socket.io.js"></script>
+<script src="{{ config('config.app_nodejs_url') }}/socket.io/socket.io.js"></script>
 <script>
-    var socket = io('https://{{ config('config.app_nodejs_domain') }}:8080');
+    var socket = io('{{ config('config.app_nodejs_url') }}:8080');
     <?php
     $uuids = [];
     $groups = Auth::user()->groups;
