@@ -1,4 +1,4 @@
-var app = require('express')();
+//var app = require('express')();
 var fs = require('fs');
 
 var options = {
@@ -7,7 +7,7 @@ var options = {
     ca: fs.readFileSync('/etc/letsencrypt/live/biospex.org/fullchain.pem')
 };
 
-var server = require('https').createServer(app);
+var server = require('https').createServer(options);
 var io = require('socket.io')(server);
 io.on('connection', function(){});
 server.listen(8080);
