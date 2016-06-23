@@ -20,7 +20,7 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<script src="http://{{ config('config.app_nodejs_domain') }}/socket.io/socket.io.js"></script>
+<script src="https://{{ config('config.app_nodejs_domain') }}/socket.io/socket.io.js"></script>
 <script>
     var socket = io('https://{{ config('config.app_nodejs_domain') }}:8080');
     <?php
