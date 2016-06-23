@@ -1,21 +1,17 @@
-var https = require('https');
+var app = require('express')();
 var fs = require('fs');
 var Redis = require('ioredis');
 
-var port = 443; // This is the port of service
 var options = {
     key: fs.readFileSync('/etc/letsencrypt/live/biospex.org/privkey.pem'),
     cert: fs.readFileSync('/etc/letsencrypt/live/biospex.org/cert.pem'),
-    ca: fs.readFileSync( '/etc/letsencrypt/live/biospex.org/fullchain.pem')
+    requestCert: true
+    //ca: fs.readFileSync( '/etc/letsencrypt/live/biospex.org/fullchain.pem')
 };
 
-var server = https.createServer( options );
-
-var io = require('socket.io')( server );
-io.on('connection', function(){});
-
-// Now listen in the specified Port
-server.listen( port );
+var server = require('https').createServer(options, app);
+var io = require('socket.io').listen(server);
+server.listen(8080);
 
 var redisService = new Redis();
 
