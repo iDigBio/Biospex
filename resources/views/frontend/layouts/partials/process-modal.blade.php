@@ -22,7 +22,7 @@
 </div><!-- /.modal -->
 <script src="{{ config('config.app_nodejs_url') }}/socket.io/socket.io.js"></script>
 <script>
-    var socket = io('{{ config('config.app_nodejs_url') }}:443');
+    var socket = io('{{ config('config.app_nodejs_url') }}:8080', {secure: true});
     <?php
     $uuids = [];
     $groups = Auth::user()->groups;

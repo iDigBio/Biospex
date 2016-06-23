@@ -2,7 +2,7 @@ var https = require('https');
 var fs = require('fs');
 var Redis = require('ioredis');
 
-var port = 443; // This is the port of service
+var port = 8080; // This is the port of service
 var options = {
     key: fs.readFileSync('/etc/letsencrypt/live/biospex.org/privkey.pem'),
     cert: fs.readFileSync('/etc/letsencrypt/live/biospex.org/cert.pem'),
