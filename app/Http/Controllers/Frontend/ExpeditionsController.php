@@ -305,7 +305,7 @@ class ExpeditionsController extends Controller
             return redirect()->route('web.projects.index');
         }
 
-        $queueCheck = $queue->skipCache()->where(['project_id' => $this->projectId])->first();
+        $queueCheck = $queue->skipCache()->where(['project_id' => $projectId])->first();
         
         if ($queueCheck === null)
         {
