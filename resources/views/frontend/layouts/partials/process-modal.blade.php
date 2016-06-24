@@ -22,7 +22,7 @@
 </div><!-- /.modal -->
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
-    var socket = io('http://144.174.39.33:8080');
+    var socket = io('https://idiginfo.org:8080');
     //var socket = io.connect(':8080', {secure: true});
     <?php
     $uuids = [];
