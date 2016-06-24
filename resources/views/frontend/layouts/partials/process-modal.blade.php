@@ -22,7 +22,7 @@
 </div><!-- /.modal -->
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
-    var socket = io('{{ config('config.app_nodejs_url') }}:8080');
+    var socket = io('{{ config('config.app_nodejs_url') }}:443');
     //var socket = io.connect(':8080', {secure: true});
     <?php
     $uuids = [];
