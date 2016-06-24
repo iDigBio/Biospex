@@ -40,9 +40,15 @@
                                         class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
                         </div>
                         <div class="col-md-2">
-                            <button title="@lang('buttons.ocrTitle')" class="btn btn-success btn-sm" type="button"
-                                    onClick="location.href='{{ route('web.expeditions.ocr', [$expedition->project->id, $expedition->id]) }}'">
-                                <span class="fa fa-repeat fa-lrg"></span> @lang('buttons.ocr')</button>
+                            @if (count($expedition->project->ocrQueue) === 0)
+                                <button title="@lang('buttons.ocrTitle')" class="btn btn-success btn-sm" type="button"
+                                        onClick="location.href='{{ route('web.expeditions.ocr', [$expedition->project->id, $expedition->id]) }}'">
+                                    <span class="fa fa-repeat fa-lrg"></span> @lang('buttons.ocr')</button>
+                            @else
+                                <button title="@lang('buttons.ocrTitle')" class="btn btn-success btn-sm" type="button" disabled
+                                        onClick="location.href='{{ route('web.expeditions.ocr', [$expedition->project->id, $expedition->id]) }}'">
+                                    <span class="fa fa-repeat fa-lrg"></span> @lang('buttons.ocrDisabled')</button>
+                            @endif
                         </div>
                         <div class="col-md-2">
                             @if (is_null($expedition->workflowManager) || $expedition->workflowManager->stopped == 1)

@@ -47,5 +47,5 @@ return array (
   'join' => 'Join',
   'login' => 'Login',
   'password_forgot' => 'Forgot Password',
-  'test' => 'This is a test',
+  'ocrDisabled' => 'OCR is processing',
 );
