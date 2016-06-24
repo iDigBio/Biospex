@@ -151,7 +151,7 @@ class BuildOcrBatches extends Job implements ShouldQueue
      */
     protected function buildOcrQueueData($doc)
     {
-        $this->ocrData[$doc['_id']] = [
+        $this->ocrData[(string) $doc['_id']] = [
             'crop'   => Config::get('config.ocr_crop'),
             'ocr'    => '',
             'status' => 'pending',
