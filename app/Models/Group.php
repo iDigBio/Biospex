@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UuidTrait;
+use Illuminate\Support\Facades\Event;
 
 class Group extends Model
 {
@@ -35,11 +36,19 @@ class Group extends Model
         'permissions',
     ];
 
-    /*
-    public static function boot()
-    {
+    public static function boot() {
+
         parent::boot();
 
+        static::saved(function() {
+            Event::fire('group.saved');
+        });
+
+        static::deleted(function() {
+            Event::fire('group.deleted');
+        });
+        
+        /*
         // cause a delete of a product to cascade to children so they are also deleted
         static::deleted(function($group)
         {
@@ -50,8 +59,8 @@ class Group extends Model
         {
             $group->projects()->restore();
         });
+         */
     }
-    */
 
     /**
      * User as owner relationship

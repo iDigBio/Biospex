@@ -22,17 +22,9 @@
 </div><!-- /.modal -->
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
-    var socket = io('{{ config('config.app_nodejs_url') }}:443');
-    //var socket = io.connect(':8080', {secure: true});
+    var socket = io('{{ config('config.app_nodejs_url') }}');
     <?php
-    $uuids = [];
-    $groups = Auth::user()->groups;
-    if ( ! $groups->isEmpty())
-    {
-        $uuids = $groups->map(function ($item, $key) {
-            return $item['uuid'];
-        });
-    }
+    $uuids = Session::get('user-groups');
     ?>
     socket.on("{!! config('config.ocr_poll_channel') !!}:app.polling", function (message) {
         var html = '{!! trans('pages.no_processes') !!}';
