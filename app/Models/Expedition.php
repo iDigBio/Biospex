@@ -194,7 +194,7 @@ class Expedition extends Eloquent
                 'projects.id as project_id',
                 'projects.title as project_title',
                 'groups.id as group_id',
-                'groups.label as group_label',
+                'groups.name as group_name',
                 'actor_expedition.id as actor_expedition_id')
             ->where('group_user.user_id', '=', $id)
             ->get();
