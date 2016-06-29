@@ -32,21 +32,13 @@ class Group extends Model
         'uuid',
         'user_id',
         'name',
-        'label',
         'permissions',
     ];
 
+    
     public static function boot() {
 
         parent::boot();
-
-        static::saved(function() {
-            Event::fire('group.saved');
-        });
-
-        static::deleted(function() {
-            Event::fire('group.deleted');
-        });
         
         /*
         // cause a delete of a product to cascade to children so they are also deleted
@@ -110,49 +102,5 @@ class Group extends Model
     public function invites()
     {
         return $this->hasMany(Invite::class);
-    }
-
-    /**
-     * Set name attribute.
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name'] = strtolower(str_replace(' ', '-', $value));
-    }
-
-    /**
-     * Get name attribute.
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function getNameAttribute($value)
-    {
-        return strtolower(str_replace(' ', '-', $value));
-    }
-
-    /**
-     * Set label attribute.
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function setLabelAttribute($value)
-    {
-        $this->attributes['label'] = ucwords(str_replace('-', ' ' ,$value));
-    }
-
-    /**
-     * Get label attribute.
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function getLabelAttribute($value)
-    {
-        return ucwords(str_replace('-', ' ' ,$value));
     }
 }

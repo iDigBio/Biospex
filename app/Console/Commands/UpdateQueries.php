@@ -2,12 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\Contracts\Team;
+use App\Repositories\Contracts\FaqCategory;
+use App\Repositories\Contracts\Group;
 use App\Repositories\Contracts\TeamCategory;
 use Illuminate\Console\Command;
-use App\Repositories\Contracts\Actor;
-use App\Repositories\Contracts\Workflow;
-use Illuminate\Support\Facades\DB;
+
 
 class UpdateQueries extends Command
 {
@@ -22,22 +21,28 @@ class UpdateQueries extends Command
      */
     protected $description = 'Used for custom queries when updating database';
     /**
+     * @var FaqCategory
+     */
+    private $faqCategory;
+    /**
      * @var TeamCategory
      */
-    private $category;
+    private $teamCategory;
     /**
-     * @var Team
+     * @var Group
      */
-    private $team;
+    private $group;
+
 
     /**
      * UpdateQueries constructor.
      */
-    public function __construct(TeamCategory $category, Team $team)
+    public function __construct(FaqCategory $faqCategory, TeamCategory $teamCategory, Group $group)
     {
         parent::__construct();
-        $this->category = $category;
-        $this->team = $team;
+        $this->faqCategory = $faqCategory;
+        $this->teamCategory = $teamCategory;
+        $this->group = $group;
     }
 
     /**
@@ -45,88 +50,28 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
-        $categories = $this->getData();
-
-        foreach ($categories as $category)
+        $groups = $this->group->skipCache()->all();
+        foreach ($groups as $group)
         {
-            $result = $this->category->create($category);
+            $group->name = $group->name === 'admins' ? 'Admin' : ucwords(str_replace('-', ' ', $group->name));
+            echo $group->name . PHP_EOL;
+            $this->group->update(['name' => $group->name], $group->id);
+        }
+        
+        $faqs = $this->faqCategory->skipCache()->all();
+        foreach ($faqs as $faq)
+        {
+            $faq->name = ucwords(str_replace('-', ' ', $faq->name));
+            echo $faq->name . PHP_EOL;
+            $this->faqCategory->update(['name' => $faq->name], $faq->id);
+        }
 
-            foreach ($category['members'] as $member)
-            {
-                $attributes = ['email' => $member['email']];
-                $member['team_category_id'] = $result->id;
-                $this->team->updateOrCreate($attributes, $member);
-            }
+        $teams = $this->teamCategory->skipCache()->all();
+        foreach ($teams as $team)
+        {
+            $team->name = ucwords(str_replace('-', ' ', $team->name));
+            echo $team->name . PHP_EOL;
+            $this->teamCategory->update(['name' => $team->name], $team->id);
         }
     }
-
-    /**
-     * Get data for building team.
-     * 
-     * @return array
-     */
-    protected function getData()
-    {
-        return
-            [
-                [
-                    'name'    => 'principle-investigators',
-                    'label'   => 'Principle Investigators',
-                    'members' => [
-                        [
-                            'first_name'  => 'Austin',
-                            'last_name'   => 'Mast',
-                            'institution' => 'Associate Professor, Department of Biological Science, Florida State University',
-                            'email'       => 'amast@bio.fsu.edu'
-                        ],
-                        [
-                            'first_name'  => 'Greg',
-                            'last_name'   => 'Ricarrdi',
-                            'institution' => 'Director, Institute for Digital Information and Scientific Communication, Florida State University',
-                            'email'       => 'griccardi@fsu.edu'
-                        ],
-                    ]
-                ],
-                [
-                    'name'    => 'education-and-outreach-coordinator',
-                    'label'   => 'Education and Outreach Coordinator',
-                    'members' => [
-                        [
-                            'first_name'  => 'Libby',
-                            'last_name'   => 'Ellwood',
-                            'institution' => 'Postdoctoral Scholar, Department of Biological Science, Florida State University',
-                            'email'       => 'eellwood@bio.fsu.edu'
-                        ],
-
-                    ]
-                ],
-                [
-                    'name'    => 'developers',
-                    'label'   => 'Developers',
-                    'members' => [
-                        [
-                            'first_name'  => 'Robert',
-                            'last_name'   => 'Bruhn',
-                            'institution' => 'Institute for Digital Information and Scientific Communication, Florida State University',
-                            'email'       => 'bruhnrp@yahoo.com'
-                        ],
-
-                    ]
-                ],
-                [
-                    'name'    => 'past-team-members',
-                    'label'   => 'Past Team Members',
-                    'members' => [
-                        [
-                            'first_name'  => 'Jermey',
-                            'last_name'   => 'Spinks',
-                            'institution' => 'Institute for Digital Information and Scientific Communication, Florida State University',
-                            'email'       => 'jeremy@jellybean-design.com'
-                        ],
-
-                    ]
-                ],
-            ];
-    }
-
 }

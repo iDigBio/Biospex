@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-xs-12">
-        <h2 class="page-header pull-left">{{ $category->label }}</h2>
+        <h2 class="page-header pull-left">{{ $category->name }}</h2>
         <div class="box-tools ">
             <div class="input-group">
                 <div class="btn-group action-fix">

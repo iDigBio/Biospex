@@ -10,14 +10,14 @@
 @section('content')
     {!! Breadcrumbs::render('web.groups.show.invite', $group) !!}
     <div class="jumbotron">
-        <h2>{{ $group->label }}</h2>
+        <h2>{{ $group->name }}</h2>
         <p>{{ trans('groups.invite_explained') }}</p>
     </div>
 
     <div class="col-xs-12">
         <div class="panel panel-info">
             <div class="panel-heading">
-                <h3 class="panel-title">{{ trans('groups.invite_title', ['group' => $group->label]) }}</h3>
+                <h3 class="panel-title">{{ trans('groups.invite_title', ['group' => $group->name]) }}</h3>
             </div>
             <div class="panel-body">
                 {!! Form::open([

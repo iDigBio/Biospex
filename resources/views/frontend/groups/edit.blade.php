@@ -27,7 +27,7 @@
                         <div class="form-group {{ ($errors->has('name')) ? 'has-error' : '' }}">
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-users fa-lg"></i></span>
-                                {!! Form::text('name', $group->label, ['class' => 'form-control', 'placeholder' => trans('pages.name'), 'required']) !!}
+                                {!! Form::text('name', old('name') ?: $group->name, ['class' => 'form-control', 'placeholder' => trans('pages.name'), 'required']) !!}
                             </div>
                             {{ ($errors->has('name') ?  $errors->first('name') : '') }}
                         </div>

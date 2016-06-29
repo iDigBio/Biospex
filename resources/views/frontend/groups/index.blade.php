@@ -24,7 +24,7 @@
             <tbody>
             @foreach ($user->groups as $group)
                 <tr>
-                    <td>{{ $group->label }}</td>
+                    <td>{{ $group->name }}</td>
                     <td class="buttons-sm">
                         <button title="@lang('buttons.viewTitle')" class="btn btn-default btn-primary btn-sm"
                                 type="button" onClick="location.href='{{ route('web.groups.show', [$group->id]) }}'">

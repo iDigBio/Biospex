@@ -1,6 +1,6 @@
 <div class="box box-info collapsed-box">
     <div class="box-header with-border">
-        <h3 class="box-title" data-widget="collapse">{{ $category->label }} <i class="fa fa-plus btn-box-tool"></i></h3>
+        <h3 class="box-title" data-widget="collapse">{{ $category->name }} <i class="fa fa-plus btn-box-tool"></i></h3>
         <div class="box-tools">
             <div class="input-group input-group-sm" style="width: 150px;">
                 <div class="btn-group">

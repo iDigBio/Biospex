@@ -19,7 +19,7 @@
                 <ul class="nav nav-tabs tabs-left sideways">
                     @foreach($categories as $category)
                         <li class="{{ $category->id === 1 ? 'active' : '' }}">
-                            <a href="#{{ $category->name }}" data-toggle="tab">{{ $category->label }}</a>
+                            <a href="#{{ $category->name }}" data-toggle="tab">{{ $category->name }}</a>
                         </li>
                     @endforeach
                 </ul>

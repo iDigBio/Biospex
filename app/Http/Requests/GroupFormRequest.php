@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 class GroupFormRequest extends Request
 {
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -24,17 +25,7 @@ class GroupFormRequest extends Request
     public function rules()
     {
         return [
-            'name'     => 'required|min:4|max:32|unique:groups,name,' . $this->request->get('id'),
+            'name' => 'required|min:4|max:32|unique:groups,name,' . $this->request->get('id'),
         ];
-    }
-
-    /**
-     * Change input before validation.
-     */
-    public function alterInput()
-    {
-        $this->replace(['name' => strtolower(str_replace(' ', '-', $this->get('name')))]);
-        
-        return $this->all();
     }
 }
