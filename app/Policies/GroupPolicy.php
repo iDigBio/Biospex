@@ -9,13 +9,11 @@ class GroupPolicy
     public function before($user)
     {
         $key = md5(__METHOD__ . $user->uuid);
-        $isAdmin = Cache::remember($key, 60, function() use ($user) {
+        $access = Cache::remember($key, 60, function() use ($user) {
             return $user->isAdmin();
         });
-
-        if ($isAdmin) {
-            return true;
-        }
+        
+        return $access ? true : null;
     }
 
     /**
@@ -39,16 +37,20 @@ class GroupPolicy
     }
 
     /**
-     * Check if user can read group
+     * Check if user can read group.
+     *
+     * @param $user
      * @param $group
-     * @return bool
+     * @return bool|string
      */
     public function show($user, $group)
     {
         $key = md5(__METHOD__ . $user->uuid . $group->uuid);
-        return Cache::remember($key, 60, function() use ($user, $group) {
+        $access = Cache::remember($key, 60, function() use ($user, $group) {
             return $user->hasAccess($group, 'read-group');
         });
+
+        return $access ? true : null;
     }
 
     /**
@@ -60,9 +62,11 @@ class GroupPolicy
     public function update($user, $group)
     {
         $key = md5(__METHOD__ . $user->uuid . $group->uuid);
-        return Cache::remember($key, 60, function() use ($user, $group) {
+        $access = Cache::remember($key, 60, function() use ($user, $group) {
             return $user->hasAccess($group, 'update-group');
         });
+
+        return $access ? true : null;
     }
 
     /**
@@ -74,8 +78,10 @@ class GroupPolicy
     public function delete($user, $group)
     {
         $key = md5(__METHOD__ . $user->uuid . $group->uuid);
-        return Cache::remember($key, 60, function() use ($user, $group) {
+        $access = Cache::remember($key, 60, function() use ($user, $group) {
             return $user->hasAccess($group, 'delete-group') && $user->id === $group->user_id;
         });
+
+        return $access ? true : null;
     }
 }
