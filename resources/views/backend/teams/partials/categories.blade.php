@@ -2,18 +2,21 @@
     <div class="col-xs-12">
         <h2 class="page-header pull-left">{{ $category->name }}</h2>
         <div class="box-tools ">
-            <div class="input-group">
-                <div class="btn-group action-fix">
-                    <button type="button" class="btn btn-sm btn-primary">Actions</button>
-                    <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">
-                        <span class="caret"></span>
-                        <span class="sr-only">Toggle Dropdown</span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li>{{ link_to_route('admin.teams.create', 'Add Member', [$category->id]) }}</li>
-                        <li>{{ link_to_route('admin.teams.categories.edit', 'Edit Category', [$category->id, 0]) }}</li>
-                        <li>{{ link_to_route('admin.teams.delete', 'Delete Category', [$category->id, 0], ['data-method' => 'delete', 'rel' => 'nofollow', 'data-confirm' => 'Are you sure you want to delete this category?']) }}</li>
-                    </ul>
+            <div class="input-group input-group-sm action-fix" style="width: 150px;">
+                <div class="btn-toolbar">
+                    <button title="@lang('buttons.create')" class="btn btn-primary btn-sm" type="button"
+                            onClick="location.href='{{ route('admin.teams.create', [$category->id]) }}'">
+                        <span class="fa fa-plus fa-sm"></span></button>
+
+                    <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm" type="button"
+                            onClick="location.href='{{ route('admin.teams.categories.edit', [$category->id, 0]) }}'"><span
+                                class="fa fa-cog fa-sm"></span></button>
+
+                    <button title="@lang('buttons.deleteTitle')" class="btn btn-danger btn-sm" type="button"
+                            data-toggle="confirmation" data-placement="left"
+                            data-href="{{ route('admin.teams.delete', [$category->id, 0]) }}"
+                            data-method="delete">
+                        <span class="fa fa-remove fa-sm"></span></button>
                 </div>
             </div>
         </div>

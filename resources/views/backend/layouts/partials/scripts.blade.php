@@ -9,11 +9,10 @@
         crossorigin="anonymous"></script>
 <!-- Toastr -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.2/toastr.min.js"></script>
+<script src="/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>
+<script src="/vendor/unisharp/laravel-ckeditor/adapters/jquery.js"></script>
+
+@yield('scripts')
 
 <!-- AdminLTE App -->
 <script src="{{ asset('/adminlte/js/main.js') }}" type="text/javascript"></script>
-
-<script src="/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>
-<script src="/vendor/unisharp/laravel-ckeditor/adapters/jquery.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-

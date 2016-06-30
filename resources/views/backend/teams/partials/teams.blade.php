@@ -23,8 +23,9 @@
                         <span class="fa fa-wrench fa-sm"></span> <!-- @lang('buttons.edit') --></button>
 
                     <button title="@lang('buttons.deleteTitle')" class="btn btn-danger delete-form btn-xs"
+                            data-toggle="confirmation" data-placement="left"
                             data-href="{{ route('admin.teams.delete', [$category->id, $team->id]) }}"
-                            data-confirm="Are you sure you wish to delete?" data-method="delete">
+                            data-method="delete">
                         <span class="fa fa-remove fa-sm"></span> <!-- @lang('buttons.delete') --></button>
                 </div>
             </div>

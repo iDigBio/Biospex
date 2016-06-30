@@ -3,17 +3,20 @@
         <h3 class="box-title" data-widget="collapse">{{ $category->name }} <i class="fa fa-plus btn-box-tool"></i></h3>
         <div class="box-tools">
             <div class="input-group input-group-sm" style="width: 150px;">
-                <div class="btn-group">
-                    <button type="button" class="btn btn-sm">Actions</button>
-                    <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
-                        <span class="caret"></span>
-                        <span class="sr-only">Toggle Dropdown</span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li>{{ link_to_route('admin.faqs.create', 'Add Question', [$category->id]) }}</li>
-                        <li>{{ link_to_route('admin.faqs.categories.edit', 'Edit Category', [$category->id, 0]) }}</li>
-                        <li>{{ link_to_route('admin.faqs.delete', 'Delete Category', [$category->id, 0], ['data-method' => 'delete', 'data-confirm' => 'Are you sure you wish to delete?', 'rel' => 'nofollow']) }}</li>
-                    </ul>
+                <div class="btn-toolbar">
+                    <button title="@lang('buttons.create')" class="btn btn-primary btn-sm" type="button"
+                            onClick="location.href='{{ route('admin.faqs.create', [$category->id]) }}'">
+                        <span class="fa fa-plus fa-sm"></span></button>
+
+                    <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm" type="button"
+                            onClick="location.href='{{ route('admin.faqs.categories.edit', [$category->id, 0]) }}'"><span
+                                class="fa fa-cog fa-sm"></span></button>
+
+                    <button title="@lang('buttons.deleteTitle')" class="btn btn-danger btn-sm" type="button"
+                            data-toggle="confirmation" data-placement="left"
+                            data-href="{{ route('admin.faqs.delete', [$category->id, 0]) }}"
+                            data-method="delete">
+                        <span class="fa fa-remove fa-sm"></span></button>
                 </div>
             </div>
         </div>
