@@ -59,7 +59,7 @@
     "psr-4": {
       "App\\": "app/"
     },
-    "files": ["app/Http/helpers.php", "app/Http/navigation.php"]
+    "files": ["app/Http/helpers.php"]
   },
   "autoload-dev": {
     "classmap": [
