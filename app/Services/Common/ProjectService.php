@@ -55,7 +55,7 @@ class ProjectService
      */
     public function setCommonVariables($user)
     {
-        $groups = $this->group->whereHas('users', ['user_id' => $user->id])->pluck('label', 'id')->toArray();
+        $groups = $this->group->whereHas('users', ['user_id' => $user->id])->pluck('name', 'id')->toArray();
 
         if (empty($groups)) {
             session_flash_push('success', trans('groups.group_required'));

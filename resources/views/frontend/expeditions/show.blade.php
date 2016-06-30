@@ -33,9 +33,9 @@
                                     onClick="location.href='{{ route('web.expeditions.edit', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
                             <button title="@lang('buttons.deleteTitle')"
-                                    class="btn btn-danger btn-sm delete-form" type="button"
+                                    class="btn btn-danger btn-sm" type="button"
                                     data-method="delete"
-                                    data-confirm="Are you sure you wish to delete?"
+                                    data-toggle="confirmation" data-placement="left"
                                     data-href="{{ route('web.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"><span
                                         class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
                         </div>
@@ -57,9 +57,9 @@
                                     <span class="fa fa-play fa-lrg"></span> @lang('buttons.process')</button>
                             @else
                                 <button title="@lang('buttons.stopTitle')"
-                                        class="btn btn-sm btn-danger delete-form" type="button"
+                                        class="btn btn-sm btn-danger" type="button"
                                         data-method="delete"
-                                        data-confirm="Are you sure you wish to stop the process?"
+                                        data-toggle="confirmation" data-placement="left"
                                         data-href="{{ route('web.expeditions.stop', [$expedition->project->id, $expedition->id]) }}"><span
                                             class="fa fa-stop fa-lrg"></span> @lang('buttons.stop')</button>
                         </div>

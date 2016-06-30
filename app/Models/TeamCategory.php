@@ -14,10 +14,7 @@ class TeamCategory extends Model
      */
     protected $table = 'team_categories';
 
-    protected $fillable = [
-        'name',
-        'label'
-    ];
+    protected $fillable = ['name'];
 
     /**
      * Faq relationship.

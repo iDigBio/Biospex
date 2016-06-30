@@ -14,10 +14,7 @@ class FaqCategory extends Model
      */
     protected $table = 'faq_categories';
 
-    protected $fillable = [
-        'name',
-        'label'
-    ];
+    protected $fillable = ['name'];
 
     /**
      * Faq relationship.
