@@ -22,7 +22,7 @@
                             onClick="location.href='{{ route('admin.teams.edit', [$category->id, $team->id]) }}'">
                         <span class="fa fa-wrench fa-sm"></span> <!-- @lang('buttons.edit') --></button>
 
-                    <button title="@lang('buttons.deleteTitle')" class="btn btn-danger delete-form btn-xs"
+                    <button title="@lang('buttons.deleteTitle')" class="btn btn-danger btn-xs"
                             data-toggle="confirmation" data-placement="left"
                             data-href="{{ route('admin.teams.delete', [$category->id, $team->id]) }}"
                             data-method="delete">
