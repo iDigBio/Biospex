@@ -2,7 +2,7 @@
 
 // Begin NfN
 $router->get('nfn', [
-    'uses' => 'NfNAppController@index',
+    'uses' => 'NfnAppController@index',
     'as'   => 'web.nfn.index'
 ]);
 // End NfN
