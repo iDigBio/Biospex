@@ -29,31 +29,22 @@ class TestAppCommand extends Command
 
     public function fire()
     {
-        $tokenUrl = 'https://panoptes-staging.zooniverse.org/oauth/authorize?response_type=token&client_id=24ad5676d5d25c6aa850dc5d5f63ec8c03dbc7ae113b6442b8571fce6c5b974c&redirect_uri=https://dev.biospex.org/nfn';
+        $projectUrl = 'https://panoptes-staging.zooniverse.org/api/workflows/2318';
+        $tokenUrl = 'https://panoptes-staging.zooniverse.org/oauth/authorize?response_type=token&client_id=535759b966935c297be11913acee7a9ca17c025f9f15520e7504728e71110a27&redirect_uri=https://dev.biospex.org/nfn';
         $signInUrl = 'https://panoptes-staging.zooniverse.org/users/sign_in';
 
         $client = new \GuzzleHttp\Client(['cookies' => true, 'allow_redirects' => true]);
 
-        $client->request('POST', $signInUrl, [
+        $postResponse = $client->request('POST', $signInUrl, [
             'Content-Type' => 'application/x-www-form-urlencoded',
             'form_params' => [
                 'user[login]'    => 'biospex',
                 'user[password]' => 'DD22edippizhpdxazRXO'
             ]
         ]);
-        
-        //dd($postResponse->getHeader('Set-Cookie'));
 
+        //
         echo 'Sent post request' . PHP_EOL;
-        
-        /**
-         * First parameter is for cookie "strictness"
-         */
-        //$cookie_jar = new \GuzzleHttp\Cookie\CookieJar;
-        //$cookie_jar->extractCookies($postRequest, $postResponse);
-        //dd($cookie_jar);
-        
-        //echo 'Created cookie jar' . PHP_EOL;
         
         $tokenResponse = $client->request('GET', $tokenUrl, [
             'Accept'     => 'application/vnd.api+json; version=1',
@@ -61,6 +52,8 @@ class TestAppCommand extends Command
         ]);
 
         echo 'Sent token request and retrieving response' . PHP_EOL;
+        
+        dd($tokenResponse->getBody()) . PHP_EOL;
     }
 
 }
