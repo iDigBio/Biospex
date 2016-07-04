@@ -3,7 +3,7 @@
 return array (
   'addTargetTitle' => 'Add a set of target fields to this project',
   'advertise' => 'Advertise',
-  'advertiseTitle' => 'Advertise this project in external sites',
+  'advertiseTitle' => 'Advertise this project in external websites',
   'ban' => 'Ban',
   'cancel' => 'Cancel',
   'create' => 'Create',
