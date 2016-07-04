@@ -12,7 +12,9 @@ class DropLabelFromTeamCategories extends Migration
      */
     public function up()
     {
-        //
+        Schema::table('team_categories', function (Blueprint $table) {
+            $table->dropColumn('label');
+        });
     }
 
     /**
@@ -22,6 +24,8 @@ class DropLabelFromTeamCategories extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('team_categories', function (Blueprint $table) {
+            $table->string('label')->after('name');
+        });
     }
 }
