@@ -41,7 +41,7 @@ class PrepareForNewActorWorkflow extends Migration
         // Add private to actors table
         if (! Schema::hasColumn('actors', 'private')) {
             Schema::table('actors', function (Blueprint $table) {
-                $table->tinyInteger('private')->default(0)->after('class');;
+                $table->tinyInteger('private')->default(0)->after('class');
             });
         }
 
