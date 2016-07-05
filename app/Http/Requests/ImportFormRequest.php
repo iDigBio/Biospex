@@ -38,14 +38,19 @@ class ImportFormRequest extends Request
 
     public function alterInput()
     {
-        $replace = '';
+        $input = $this->all();
+        
         // Alter record set if available
-        if ($this->input('recordset') !== null) {
-            $replace = strstr($this->input('recordset'), '/') ?
+        if (null !== $this->input('recordset')) {
+            $input['recordset'] = strstr($this->input('recordset'), '/') ?
                 trim(strrchr($this->input('recordset'), '/'), '/') : trim($this->input('recordset'));
         }
+        else
+        {
+            $input['recordset'] = $this->input('recordset');
+        }
 
-        $this->replace(['recordset' => $replace]);
+        $this->replace($input);
 
         return $this->all();
     }
