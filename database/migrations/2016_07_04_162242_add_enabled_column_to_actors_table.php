@@ -13,7 +13,8 @@ class AddEnabledColumnToActorsTable extends Migration
     public function up()
     {
         Schema::table('actors', function (Blueprint $table) {
-            $table->tinyInteger('disabled')->default(0)->after('private');
+            $table->tinyInteger('enabled')->default(0)->after('private');
+            $table->index('enabled');
         });
     }
 
@@ -25,7 +26,7 @@ class AddEnabledColumnToActorsTable extends Migration
     public function down()
     {
         Schema::table('actors', function (Blueprint $table) {
-            $table->dropColumn('disabled');
+            $table->dropColumn('enabled');
         });
     }
 }
