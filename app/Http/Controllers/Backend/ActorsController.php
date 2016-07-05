@@ -48,6 +48,16 @@ class ActorsController extends Controller
     }
 
     /**
+     * Redirect show route.
+     * 
+     * @return mixed
+     */
+    public function show()
+    {
+        return redirect()->route('admin.actors.index');
+    }
+    
+    /**
      * Create form.
      *
      * @param Request $request
