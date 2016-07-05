@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddEnabledColumnToActorsTable extends Migration
+class AddEnabledColumnToWorkflowsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,9 +12,10 @@ class AddEnabledColumnToActorsTable extends Migration
      */
     public function up()
     {
-        Schema::table('actors', function (Blueprint $table) {
-            $table->tinyInteger('enabled')->default(0)->after('private');
+        Schema::table('workflows', function (Blueprint $table) {
+            $table->tinyInteger('enabled')->default(0)->after('workflow');
             $table->index('enabled');
+            $table->softDeletes();
         });
     }
 
@@ -25,8 +26,9 @@ class AddEnabledColumnToActorsTable extends Migration
      */
     public function down()
     {
-        Schema::table('actors', function (Blueprint $table) {
+        Schema::table('workflows', function (Blueprint $table) {
             $table->dropColumn('enabled');
+            $table->dropSoftDeletes();
         });
     }
 }

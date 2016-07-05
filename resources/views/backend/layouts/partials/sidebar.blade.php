@@ -42,8 +42,12 @@
                 </ul>
             </li>
 
+            <li class="{!! Html::active('admin.actors.') !!}">
+                {!! Html::linkWithIcon(route('admin.actors.index'), 'Actors', [], ['before' => 'fa fa-cubes']) !!}
+            </li>
+
             <li class="{!! Html::active('admin.faqs.') !!}">
-                {!! Html::linkWithIcon(route('admin.faqs.index'), 'FAQs', [], ['before' => 'fa fa-server']) !!}
+                {!! Html::linkWithIcon(route('admin.faqs.index'), 'FAQs', [], ['before' => 'fa fa-question-circle-o']) !!}
             </li>
 
             <li class="{!! Html::active('admin.teams.') !!}">

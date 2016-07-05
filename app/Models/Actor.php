@@ -18,8 +18,7 @@ class Actor extends Model
         'title',
         'url',
         'class',
-        'private',
-        'enabled'
+        'private'
     ];
 
     /**
@@ -29,7 +28,7 @@ class Actor extends Model
      */
     public function workflows()
     {
-        return $this->belongsToMany(Workflow::class)->withPivot('order')->where('enabled', 1)->orderBy('order');
+        return $this->belongsToMany(Workflow::class)->withPivot('order')->orderBy('order');
     }
 
     /**

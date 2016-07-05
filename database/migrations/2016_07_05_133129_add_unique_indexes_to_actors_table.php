@@ -18,6 +18,7 @@ class AddUniqueIndexesToActorsTable extends Migration
             $table->string('class', 30)->change();
             $table->unique('class');
             $table->string('url')->change();
+            $table->softDeletes();
         });
     }
 
@@ -31,6 +32,7 @@ class AddUniqueIndexesToActorsTable extends Migration
         Schema::table('actors', function (Blueprint $table) {
             $table->dropUnique('actors_title_unique');
             $table->dropUnique('actors_class_unique');
+            $table->dropSoftDeletes();
         });
     }
 }
