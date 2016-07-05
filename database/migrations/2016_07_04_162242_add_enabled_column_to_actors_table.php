@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddDisabledColumnToActorsTable extends Migration
+class AddEnabledColumnToActorsTable extends Migration
 {
     /**
      * Run the migrations.
