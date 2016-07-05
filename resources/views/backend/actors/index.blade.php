@@ -33,22 +33,21 @@
                             'class' => 'form-horizontal'
                         ]) !!}
                         <div class="box-body">
-                            <div class="form-group required {{ ($errors->has('title')) ? 'has-error' : '' }}"
-                                 for="question">
+                            <div class="form-group required {{ ($errors->has('title')) ? 'has-error' : '' }}" for="title">
                                 {!! Form::label('title', 'Title', ['class' => 'col-sm-2 control-label']) !!}
                                 <div class="col-sm-10">
                                     {!! Form::text('title', isset($actor->title) ? $actor->title : null, ['class' => 'form-control', 'placeholder' => 'Title']) !!}
                                     {{ ($errors->has('title') ? $errors->first('title') : '') }}
                                 </div>
                             </div>
-                            <div class="form-group required {{ ($errors->has('url')) ? 'has-error' : '' }}">
+                            <div class="form-group required {{ ($errors->has('url')) ? 'has-error' : '' }}" for="url">
                                 {!! Form::label('url', 'Url', ['class' => 'col-sm-2 control-label']) !!}
                                 <div class="col-sm-10">
                                     {!! Form::text('url', isset($actor->url) ? $actor->url : null, ['class' => 'form-control', 'placeholder' => 'Url']) !!}
                                     {{ ($errors->has('url') ? $errors->first('url') : '') }}
                                 </div>
                             </div>
-                            <div class="form-group required {{ ($errors->has('class')) ? 'has-error' : '' }}">
+                            <div class="form-group required {{ ($errors->has('class')) ? 'has-error' : '' }}" for="class">
                                 {!! Form::label('class', 'Class Name', ['class' => 'col-sm-2 control-label']) !!}
                                 <div class="col-sm-10">
                                     {!! Form::text('class', isset($actor->class) ? $actor->class : null, ['class' => 'form-control', 'placeholder' => 'Class Name']) !!}
