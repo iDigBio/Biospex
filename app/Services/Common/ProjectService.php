@@ -63,7 +63,7 @@ class ProjectService
             return redirect()->route('groups.create');
         }
 
-        $workflows = ['--Select--'] + $this->workflow->orderBy(['workflow' => 'asc'])->pluck('workflow', 'id')->toArray();
+        $workflows = ['--Select--'] + $this->workflow->where(['enabled' => 1])->orderBy(['title' => 'asc'])->pluck('title', 'id')->toArray();
         $statusSelect = config('config.status_select');
         $selectGroups = ['' => '--Select--'] + $groups;
 
