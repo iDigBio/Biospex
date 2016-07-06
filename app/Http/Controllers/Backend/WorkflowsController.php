@@ -148,11 +148,11 @@ class WorkflowsController extends Controller
         return redirect()->route('admin.workflows.index');
     }
 
-
+    
     public function forceDelete($id)
     {
         $workflow = $this->workflow->find($id);
-
+        
         $result = $workflow->forceDelete();
 
         // Force deleting all related models...
