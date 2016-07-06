@@ -1,3 +1,7 @@
+<div class="alert alert-warning alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    <p><strong>@lang('pages.warning'):</strong> OCR is temporarily disabled while work on the server is being performed. Services will be available once the issues are resolved.</p>
+</div>
 @if ($messages = Session::get('success'))
 <div class="alert alert-success alert-dismissable">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
