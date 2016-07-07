@@ -101,7 +101,7 @@ class ActorsController extends Controller
         $user = $this->user->with(['profile'])->find($request->user()->id);
         $actors = $this->actor->all();
         $actor = $this->actor->find($id);
-        $trashed = $this->actor->trashed()->get();
+        $trashed = $this->actor->trashed();
 
         return view('backend.actors.index', compact('user', 'actors', 'actor', 'trashed'));
     }
