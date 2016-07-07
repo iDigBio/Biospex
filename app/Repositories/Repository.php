@@ -509,9 +509,11 @@ abstract class Repository
      */
     public function trashed()
     {
-        $this->model = $this->model->onlyTrashed();
+        $result = $this->model->onlyTrashed()->get();
 
-        return $this;
+        $this->resetModel();
+
+        return $result;
     }
 
     /**

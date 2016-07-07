@@ -52,7 +52,7 @@ class WorkflowsController extends Controller
     {
         $user = $this->user->with(['profile'])->find($request->user()->id);
         $workflows = $this->workflow->all();
-        $trashed = $this->workflow->trashed()->get();
+        $trashed = $this->workflow->trashed();
         $actors = $this->actor->all();
 
         return view('backend.workflows.index', compact('user', 'workflows', 'trashed', 'actors'));
@@ -69,7 +69,7 @@ class WorkflowsController extends Controller
     {
         $user = $this->user->with(['profile'])->find($request->user()->id);
         $workflows = $this->workflow->all();
-        $trashed = $this->workflow->trashed()->get();
+        $trashed = $this->workflow->trashed();
         $actors = $this->actor->all();
         $workflow = $this->workflow->with(['actors'])->find($id);
 
