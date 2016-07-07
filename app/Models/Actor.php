@@ -1,11 +1,13 @@
-<?php 
+<?php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Actor extends Model
 {
+    use SoftDeletes;
 
     /**
      * The database table used by the model.
@@ -22,8 +24,26 @@ class Actor extends Model
     ];
 
     /**
+     * Boot method for model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        self::deleting(function ($actor)
+        {
+            $actor->workflows()->delete();
+        });
+
+        self::restored(function ($actor)
+        {
+            $actor->workflows()->restore();
+        });
+    }
+
+    /**
      * Workflow relationship.
-     * 
+     *
      * @return mixed
      */
     public function workflows()
@@ -33,7 +53,7 @@ class Actor extends Model
 
     /**
      * Download relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function downloads()
@@ -43,7 +63,7 @@ class Actor extends Model
 
     /**
      * Expedition relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function expeditions()

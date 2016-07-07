@@ -46,6 +46,10 @@
                 {!! Html::linkWithIcon(route('admin.actors.index'), 'Actors', [], ['before' => 'fa fa-cubes']) !!}
             </li>
 
+            <li class="{!! Html::active('admin.workflows.') !!}">
+                {!! Html::linkWithIcon(route('admin.workflows.index'), 'Workflows', [], ['before' => 'fa fa-sitemap']) !!}
+            </li>
+
             <li class="{!! Html::active('admin.faqs.') !!}">
                 {!! Html::linkWithIcon(route('admin.faqs.index'), 'FAQs', [], ['before' => 'fa fa-question-circle-o']) !!}
             </li>

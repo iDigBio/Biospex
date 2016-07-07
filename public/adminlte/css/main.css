@@ -100,4 +100,22 @@ a.status-1 {
 .btn-box-tool:hover {
     cursor: pointer;
 }
+
+
+ul.source, ul.target {
+    min-height: 50px;
+    margin: 0px 25px 10px 0px;
+    padding: 2px;
+    border-width: 1px;
+    border-style: solid;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    list-style-type: none;
+    list-style-position: inside;
+}
+
+.red {
+    color: #FF0000;
+}
 /*# sourceMappingURL=main.css.map */

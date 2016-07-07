@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Workflow extends Model
 {
+    use SoftDeletes;
+
     /**
      * The database table used by the model.
      *
@@ -16,7 +19,7 @@ class Workflow extends Model
     /**
      * @var array
      */
-    protected $fillable = ['workflow', 'enabled'];
+    protected $fillable = ['title', 'enabled'];
 
     /**
      * Actor relationship.
@@ -25,7 +28,7 @@ class Workflow extends Model
      */
     public function actors()
     {
-        return $this->belongsToMany(Actor::class)->withPivot('order')->where('enabled', 1)->orderBy('order');
+        return $this->belongsToMany(Actor::class)->withPivot('order')->orderBy('order');
     }
 
     /**

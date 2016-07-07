@@ -93,5 +93,15 @@ return array (
     array (
       'required_without' => 'The :attribute field is required.',
     ),
+    'actors' => 
+    array (
+      '*' => 
+      array (
+        'id' => 
+        array (
+          'required' => 'Actors are required for workflows.',
+        ),
+      ),
+    ),
   ),
 );
