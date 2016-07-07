@@ -9,6 +9,6 @@
 
 @section('main-content')
     @include('backend.workflows.partials.form')
-    @include('backend.backend.workflows.partials.workflows')
-    @include('backend.backend.workflows.partials.trashed')
+    @include('backend.workflows.partials.workflows')
+    @include('backend.workflows.partials.trashed')
 @endsection
