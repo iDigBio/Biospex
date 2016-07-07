@@ -6,16 +6,15 @@
 
 @section('contentheader_title', 'Manage FAQs')
 
-
 @section('main-content')
-        @include('backend.faqs.partials.forms')
-        <div class="row">
-            <div class="col-xs-12">
-                @foreach($categories as $category)
-                    @include('backend.faqs.partials.categories')
-                @endforeach
-            </div>
+    @include('backend.faqs.partials.forms')
+    <div class="row">
+        <div class="col-xs-12">
+            @foreach($categories as $category)
+                @include('backend.faqs.partials.categories')
+            @endforeach
         </div>
+    </div>
 @endsection
 
 @section('scripts')
