@@ -1,4 +1,4 @@
-@foreach($workflows as $workflow)
+@foreach($trashed as $workflow)
     <tr>
         <td>{{ $workflow->title }}</td>
         <td>
@@ -16,7 +16,7 @@
 
                 <button title="@lang('buttons.deleteTitle')" class="btn btn-danger btn-xs" type="button"
                         data-toggle="confirmation" data-placement="left"
-                        data-href="{{ route('admin.workflows.delete', [$workflow->id]) }}"
+                        data-href="{{ route('admin.workflows.trash', [$workflow->id]) }}"
                         data-method="delete">
                     <span class="fa fa-remove fa-sm"></span> <!-- @lang('buttons.delete') --></button>
             </div>

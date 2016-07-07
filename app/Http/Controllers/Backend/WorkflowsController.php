@@ -52,9 +52,10 @@ class WorkflowsController extends Controller
     {
         $user = $this->user->with(['profile'])->find($request->user()->id);
         $workflows = $this->workflow->all();
+        $trashed = $this->workflow->trashed()->get();
         $actors = $this->actor->all();
 
-        return view('backend.workflows.index', compact('user', 'workflows', 'actors'));
+        return view('backend.workflows.index', compact('user', 'workflows', 'trashed', 'actors'));
     }
 
     /**
@@ -68,10 +69,11 @@ class WorkflowsController extends Controller
     {
         $user = $this->user->with(['profile'])->find($request->user()->id);
         $workflows = $this->workflow->all();
+        $trashed = $this->workflow->trashed()->get();
         $actors = $this->actor->all();
         $workflow = $this->workflow->with(['actors'])->find($id);
 
-        return view('backend.workflows.index', compact('user', 'workflows', 'actors', 'workflow'));
+        return view('backend.workflows.index', compact('user', 'workflows', 'trashed', 'actors', 'workflow'));
     }
 
     /**
@@ -139,6 +141,7 @@ class WorkflowsController extends Controller
      */
     public function delete($id)
     {
+        $this->workflow->update(['enabled' => 0], $id);
         $result = $this->workflow->delete($id);
 
         $result ? Toastr::success('Workflow has been deleted.', 'Workflow Delete')
@@ -148,15 +151,15 @@ class WorkflowsController extends Controller
         return redirect()->route('admin.workflows.index');
     }
 
-    
-    public function forceDelete($id)
+    /**
+     * Force delete soft deleted records.
+     * 
+     * @param $id
+     * @return mixed
+     */
+    public function trash($id)
     {
-        $workflow = $this->workflow->find($id);
-        
-        $result = $workflow->forceDelete();
-
-        // Force deleting all related models...
-        //$flight->history()->forceDelete();
+        $result = $this->workflow->forceDelete($id);
 
         $result ? Toastr::success('Workflow has been forcefully deleted.', 'Workflow Delete')
             : Toastr::error('Workflow could not be forcefully deleted.', 'Workflow Delete');

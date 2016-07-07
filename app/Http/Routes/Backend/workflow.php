@@ -36,6 +36,11 @@ $router->delete('workflows/{workflows}', [
     'as'   => 'admin.workflows.delete'
 ]);
 
+$router->delete('workflows/{workflows}/trash', [
+    'uses' => 'WorkflowsController@trash',
+    'as'   => 'admin.workflows.trash'
+]);
+
 $router->get('workflows/{workflows}/enable', [
     'uses' => 'WorkflowsController@enable',
     'as'   => 'admin.workflows.enable'

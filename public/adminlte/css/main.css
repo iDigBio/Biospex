@@ -118,4 +118,11 @@ ul.source, ul.target {
 .red {
     color: #FF0000;
 }
+
+table td.status {
+    width: 30px;
+}
+table td.tools {
+    width: 30px;
+}
 /*# sourceMappingURL=main.css.map */
