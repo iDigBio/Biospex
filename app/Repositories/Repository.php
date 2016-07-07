@@ -188,6 +188,8 @@ abstract class Repository
     {
         $model = $this->model->firstOrNew($attributes);
         $model->fill($values)->save();
+
+        $this->resetModel();
         
         return $model;
     }
@@ -521,7 +523,7 @@ abstract class Repository
     public function forceDelete($id)
     {
         $model = $this->model->onlyTrashed()->find($id);
-
+        
         $this->resetModel();
 
         return $model->forceDelete();

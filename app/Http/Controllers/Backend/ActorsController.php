@@ -43,8 +43,9 @@ class ActorsController extends Controller
     {
         $user = $this->user->with(['profile'])->find($request->user()->id);
         $actors = $this->actor->all();
+        $trashed = $this->actor->trashed()->get();
         
-        return view('backend.actors.index', compact('user', 'actors'));
+        return view('backend.actors.index', compact('user', 'actors', 'trashed'));
     }
 
     /**
@@ -67,8 +68,9 @@ class ActorsController extends Controller
     {
         $user = $this->user->with(['profile'])->find($request->user()->id);
         $actors = $this->actor->all();
+        $trashed = $this->actor->trashed()->get();
 
-        return view('backend.actors.index', compact('user', 'actors'));
+        return view('backend.actors.index', compact('user', 'actors', 'trashed'));
     }
 
     /**
@@ -99,8 +101,9 @@ class ActorsController extends Controller
         $user = $this->user->with(['profile'])->find($request->user()->id);
         $actors = $this->actor->all();
         $actor = $this->actor->find($id);
+        $trashed = $this->actor->trashed()->get();
 
-        return view('backend.actors.index', compact('user', 'actors', 'actor'));
+        return view('backend.actors.index', compact('user', 'actors', 'actor', 'trashed'));
     }
 
     /**
@@ -133,6 +136,22 @@ class ActorsController extends Controller
         $result ? Toastr::success('The actor has been deleted.', 'Actor Delete')
                 : Toastr::error('Actor could not be deleted.', 'Actor Delete');
 
+        return redirect()->route('admin.actors.index');
+    }
+
+    /**
+     * Force delete soft deleted records.
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function trash($id)
+    {
+        $result = $this->actor->forceDelete($id);
+
+        $result ? Toastr::success('Actor has been forcefully deleted.', 'Actor Destroy')
+            : Toastr::error('Actor could not be forcefully deleted.', 'Actor Destroy');
+        
         return redirect()->route('admin.actors.index');
     }
 }

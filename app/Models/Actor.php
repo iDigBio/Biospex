@@ -24,6 +24,13 @@ class Actor extends Model
     ];
 
     /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
+
+    /**
      * Boot method for model.
      */
     protected static function boot()
@@ -48,7 +55,7 @@ class Actor extends Model
      */
     public function workflows()
     {
-        return $this->belongsToMany(Workflow::class)->withPivot('order')->orderBy('order');
+        return $this->belongsToMany(Workflow::class)->withPivot('order');
     }
 
     /**

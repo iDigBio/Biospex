@@ -36,4 +36,9 @@ $router->delete('actors/{actors}', [
     'as'   => 'admin.actors.delete'
 ]);
 
+$router->delete('actors/{actors}/trash', [
+    'uses' => 'ActorsController@trash',
+    'as'   => 'admin.actors.trash'
+]);
+
 // End ActorsController

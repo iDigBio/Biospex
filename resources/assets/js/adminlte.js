@@ -8,7 +8,9 @@ $(function () {
         .closest('li')
         .addClass('active');
 
-    $('.ckeditor').ckeditor();
+    if ($('ckeditor').length > 1) {
+        CKEDITOR.replace('ckeditor');
+    }
 
     $(".source li").draggable({
         addClasses: false,
@@ -48,5 +50,11 @@ $(function () {
                 $('#workflow').append($('<input>').attr({'type': 'hidden', 'name': 'actors[' + i + '][id]'}).val(id));
             });
         }
+    });
+
+    //iCheck for checkbox and radio inputs
+    $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
+        checkboxClass: 'icheckbox_minimal-blue',
+        radioClass: 'iradio_minimal-blue'
     });
 });

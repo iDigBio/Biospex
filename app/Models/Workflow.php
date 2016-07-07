@@ -22,6 +22,13 @@ class Workflow extends Model
     protected $fillable = ['title', 'enabled'];
 
     /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
+
+    /**
      * Actor relationship.
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
