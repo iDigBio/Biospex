@@ -123,9 +123,13 @@ return [
         'imageName'        => '',
         'imageURL'         => 'accessURI',
         'references'       => ['occurrence' => 'references'],
+        '#scientificName'  => ['occurrence' => 'scientificName'],
         '#institutionCode' => ['occurrence' => 'institutionCode'],
         '#collectionCode'  => ['occurrence' => 'collectionCode'],
         '#catalogNumber'   => ['occurrence' => 'catalogNumber'],
+        '#country'         => ['occurrence' => 'country'],
+        '#stateProvince'   => ['occurrence' => 'stateProvince'],
+        '#county'          => ['occurrence' => 'county'],
         '#expeditionId'    => '',
     ],
 
