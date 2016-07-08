@@ -105,7 +105,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract
 
         $this->scratchDir = Config::get('config.scratch_dir');
         $this->subjectImportDir = Config::get('config.subject_import_dir');
-        if (!$this->filesystem->isDirectory($this->subjectImportDir))
+        if ( ! $this->filesystem->isDirectory($this->subjectImportDir))
         {
             $this->filesystem->makeDirectory($this->subjectImportDir);
         }
@@ -144,7 +144,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract
 
             $this->report->complete($user->email, $project->title, $duplicates, $rejects);
 
-            if ($this->process->getSubjectCount() > 0)
+            if ($project->workflow->actors->contains('title', 'OCR'))
             {
                 $this->dispatch((new BuildOcrBatches($project->id))->onQueue(Config::get('config.beanstalkd.ocr')));
             }
@@ -174,17 +174,17 @@ class DarwinCoreFileImportQueue extends QueueAbstract
      */
     protected function makeTmp()
     {
-        if (!$this->filesystem->isDirectory($this->scratchFileDir))
+        if ( ! $this->filesystem->isDirectory($this->scratchFileDir))
         {
-            if (!$this->filesystem->makeDirectory($this->scratchFileDir, 0777, true))
+            if ( ! $this->filesystem->makeDirectory($this->scratchFileDir, 0777, true))
             {
                 throw new Exception(trans('emails.error_create_dir', ['directory' => $this->scratchFileDir]));
             }
         }
 
-        if (!$this->filesystem->isWritable($this->scratchFileDir))
+        if ( ! $this->filesystem->isWritable($this->scratchFileDir))
         {
-            if (!chmod($this->scratchFileDir, 0777))
+            if ( ! chmod($this->scratchFileDir, 0777))
             {
                 throw new Exception(trans('emails.error_write_dir', ['directory' => $this->scratchFileDir]));
             }
