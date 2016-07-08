@@ -58,11 +58,10 @@ class DarwinCore
     }
 
     /**
-     * Process Darwin Core Import
-     *
+     * Process Darwin Core Import.
+     * 
      * @param $projectId
      * @param $directory
-     * @param $processOcr
      */
     public function process($projectId, $directory)
     {
