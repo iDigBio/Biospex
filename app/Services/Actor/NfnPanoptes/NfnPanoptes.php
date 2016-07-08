@@ -20,12 +20,8 @@ class NfnPanoptes
 
     public function process($actor)
     {
-        switch($this->state[$actor->pivot->state]) {
-            case 'export':
-                $this->export->process($actor);
-                break;
-            default:
-                break;
+        if ($this->state[$actor->pivot->state] === 'export') {
+            $this->export->process($actor);
         }
     }
 }

@@ -87,13 +87,6 @@ class NotesFromNatureManifestExport extends ActorAbstract implements ActorInterf
         
         $this->record = $this->expedition->skipCache()->with(['project.group', 'subjects'])->find($this->expeditionId);
 
-        if (empty($this->record)) {
-            $this->report->addError(trans('emails.error_process', ['id' => $this->expeditionId]));
-            $this->report->reportSimpleError($this->record->project->group->id);
-
-            return;
-        }
-
         $this->folder = "{$actor->id}-" . md5($this->record->title);
 
         $this->setBuildDirectory();
@@ -116,14 +109,13 @@ class NotesFromNatureManifestExport extends ActorAbstract implements ActorInterf
 
         $this->filesystem->deleteDirectory($this->buildDirectory);
 
-        $actor->pivot->state = $actor->pivot->state + 1;
+        ++$actor->pivot->state;
         $actor->pivot->queued = 0;
         $actor->pivot->completed = 1;
         $actor->pivot->save();
 
         $this->processComplete($this->record->project->group_id, $this->record->title);
 
-        return;
     }
 
     /**

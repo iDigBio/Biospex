@@ -202,10 +202,6 @@ class NfnLegacyExport extends ActorAbstract implements ActorInterface
 
         $this->record = $this->expedition->skipCache()->with(['project.group', 'subjects'])->find($actor->pivot->expedition_id);
 
-        if (empty($this->record)) {
-            throw new \Exception(trans('emails.error_process', ['id' => $actor->pivot->expedition_id]));
-        }
-
         $this->folder = "{$actor->id}-" . md5($this->record->title);
 
         $this->setRecordDir();
