@@ -26,27 +26,27 @@
                     {!! Form::label('title', trans('forms.title'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-10">
                         {!! Form::text('title', $expedition->title, ['class' => 'form-control', 'placeholder' => trans('forms.title')]) !!}
+                        {{ ($errors->has('title') ? $errors->first('title') : '') }}
                     </div>
-                    {{ ($errors->has('title') ? $errors->first('title') : '') }}
                 </div>
 
                 <div class="form-group required {{ ($errors->has('description')) ? 'has-error' : '' }}">
                     {!! Form::label('description', trans('forms.description'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-10">
                         {!! Form::text('description', $expedition->description, ['class' => 'form-control', 'placeholder' => trans('forms.description')]) !!}
+                        {{ ($errors->has('description') ? $errors->first('description') : '') }}
                     </div>
-                    {{ ($errors->has('description') ? $errors->first('description') : '') }}
                 </div>
 
                 <div class="form-group required {{ ($errors->has('keywords')) ? 'has-error' : '' }}">
                     {!! Form::label('keywords', trans('forms.keywords'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-10">
                         {!! Form::text('keywords', $expedition->keywords, ['class' => 'form-control', 'placeholder' => trans('forms.keywords')]) !!}
+                        {{ ($errors->has('keywords') ? $errors->first('keywords') : '') }}
                     </div>
-                    {{ ($errors->has('keywords') ? $errors->first('keywords') : '') }}
                 </div>
 
-                <h4>{{ trans_choice('pages.subjects_assigned', 1) }} <span id="max">{{ trans('pages.subjects_assigned_max') }}</span>: <span id="subjectCountHtml">{{ $expedition->subjectsCount }}</span></h4>
+                <h4>{{ trans_choice('pages.subjects_assigned', 1) }} <span id="max">{{ trans('pages.subjects_assigned_max', ['count' => Config::get('config.expedition_size')]) }}</span>: <span id="subjectCountHtml">{{ $expedition->subjectsCount }}</span></h4>
                 <div class="table-responsive" id="jqtable">
                     @if($showCb)
                         <input type="hidden" id="showCb" value="0">
@@ -57,6 +57,7 @@
                     <input type="hidden" id="projectId" value="{{ $expedition->project->id }}">
                     <input type="hidden" id="expeditionId" value="{{ $expedition->id }}">
                     <input type="hidden" id="subjectCount" name="subjectCount" value="{{ $expedition->subjectsCount }}">
+                    <input type="hidden" id="maxCount" name="maxCount" value="{{ Config::get('config.expedition_size') }}">
                     <input type="hidden" id="subjectIds" name="subjectIds" value="{{ $subjects }}">
                     <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
                     <div id="pager"></div>

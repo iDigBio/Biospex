@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Config;
 use Illuminate\Support\Facades\Auth;
 
 class ExpeditionFormRequest extends Request
@@ -17,7 +18,7 @@ class ExpeditionFormRequest extends Request
             'title' => 'required|between:6,140|unique:expeditions,title,' . $this->route('expeditions'),
             'description' => 'required|between:6,140',
             'keywords' => 'required',
-            'subjectCount' => 'integer|max:1000'
+            'subjectCount' => 'integer|max:' . Config::get('config.expedition_size')
         ];
 
         return $rules;

@@ -81,7 +81,7 @@ return array (
   'sitename' => 'BIOSPEX',
   'subjects' => 'Subjects',
   'subjects_assigned' => 'Subjects currently assigned to Expedition|Subjects currently assigned to Expeditions',
-  'subjects_assigned_max' => '(1000 max. per Expedition)',
+  'subjects_assigned_max' => '(:count max. per Expedition)',
   'success' => 'Success',
   'title' => 'Title',
   'translate' => 'Language',
