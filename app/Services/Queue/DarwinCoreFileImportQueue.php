@@ -144,7 +144,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract
 
             $this->report->complete($user->email, $project->title, $duplicates, $rejects);
 
-            if ($project->workflow->actors->contains('title', 'OCR'))
+            if ($project->workflow->actors->contains('title', 'OCR') && $this->process->getSubjectCount() > 0)
             {
                 $this->dispatch((new BuildOcrBatches($project->id))->onQueue(Config::get('config.beanstalkd.ocr')));
             }
