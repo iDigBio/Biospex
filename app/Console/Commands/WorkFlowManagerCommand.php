@@ -26,7 +26,7 @@ class WorkFlowManagerCommand extends Command
     /**
      * @var WorkflowManager
      */
-    protected $workflow;
+    protected $manager;
 
     /**
      * @var
@@ -36,13 +36,13 @@ class WorkFlowManagerCommand extends Command
     /**
      * WorkFlowManagerCommand constructor.
      *
-     * @param WorkflowManager $workflow
+     * @param WorkflowManager $manager
      */
-    public function __construct(WorkflowManager $workflow)
+    public function __construct(WorkflowManager $manager)
     {
         parent::__construct();
-        $this->tube = Config::get('config.beanstalkd.workflow');
-        $this->workflow = $workflow;
+        $this->tube = Config::get('config.beanstalkd.manager');
+        $this->manager = $manager;
     }
     
 
@@ -55,18 +55,17 @@ class WorkFlowManagerCommand extends Command
     {
         $id = $this->argument('expedition');
 
-        if ( ! empty($id)) {
-            $workFlows = $this->workflow->skipCache()->with(['expedition.actors'])->where(['expedition_id' => $id])->get();
+        if ( null !== $id) {
+            $managers = $this->manager->skipCache()->with(['expedition.actors'])->where(['expedition_id' => $id])->get();
         } else {
-            $workFlows = $this->workflow->skipCache()->with(['expedition.actors'])->get();
+            $managers = $this->manager->skipCache()->with(['expedition.actors'])->get();
         }
 
-
-        if ($workFlows->isEmpty()) {
+        if ($managers->isEmpty()) {
             return;
         }
 
-        $actors = $this->processWorkFlows($workFlows);
+        $actors = $this->processWorkFlows($managers);
 
         foreach ($actors as $actor) {
             $actor->pivot->queued = 1;
@@ -77,31 +76,32 @@ class WorkFlowManagerCommand extends Command
 
     /**
      * Process each workflow and actors
-     * @param $workFlows
+     * @param $managers
      * @return array
      */
-    protected function processWorkFlows($workFlows)
+    protected function processWorkFlows($managers)
     {
         $actors = [];
-        foreach ($workFlows as $workFlow) {
-            if ($workFlow->stopped) {
+        foreach ($managers as $manager) {
+            if ($manager->stopped) {
                 continue;
             }
 
-            $this->processActors($workFlow, $actors);
+            $this->processActors($manager, $actors);
         }
 
         return $actors;
     }
 
     /**
-     * Decide what actor to include in the array and being processed
-     * @param $workFlow
+     * Decide what actor to include in the array and being processed.
+     * 
+     * @param $manager
      * @param $actors
      */
-    protected function processActors($workFlow, &$actors)
+    protected function processActors($manager, &$actors)
     {
-        foreach ($workFlow->expedition->actors as $actor) {
+        foreach ($manager->expedition->actors as $actor) {
             if ($this->checkErrorQueued($actor)) {
                 return;
             }
