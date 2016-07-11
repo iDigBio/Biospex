@@ -28,8 +28,8 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-users fa-lg"></i></span>
                                     {!! Form::text('name', old('name') ?: $group->name, ['class' => 'form-control', 'placeholder' => trans('pages.name')]) !!}
-                                    {{ ($errors->has('name') ?  $errors->first('name') : '') }}
                                 </div>
+                                {{ ($errors->has('name') ?  $errors->first('name') : '') }}
                             </div>
                         </div>
                         <div class="col-xs-12">
@@ -37,8 +37,8 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-user fa-lg"></i></span>
                                     {!! Form::select('owner', $users, $group->owner->id, ['class' => 'selectpicker form-control']) !!}
-                                    {{ ($errors->has('owner') ? $errors->first('owner') : '') }}
                                 </div>
+                                {{ ($errors->has('owner') ? $errors->first('owner') : '') }}
                             </div>
                         </div>
                         {!! Form::submit(trans('buttons.update'), ['class' => 'btn btn-primary']) !!}
