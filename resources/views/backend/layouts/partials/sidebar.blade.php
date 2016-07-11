@@ -69,7 +69,8 @@
             <li class="treeview">
                 {!! Html::linkWithIcon('#', 'Server', [], ['before' => 'fa fa-server', 'after' => 'fa fa-angle-left pull-right']) !!}
                 <ul class="treeview-menu" style="display: none;">
-                    <li>{!! Html::linkWithIcon(route('admin.server.show'), 'PHP Info', [], ['before' => 'fa fa-circle-o']) !!}</li>
+                    <li class="{!! Html::active('admin.notices.') !!}">{!! Html::linkWithIcon(route('admin.notices.index'), 'Notices', [], ['before' => 'fa fa-newspaper-o']) !!}</li>
+                    <li class="{!! Html::active('admin.server.') !!}">{!! Html::linkWithIcon(route('admin.server.show'), 'PHP Info', [], ['before' => 'fa fa-circle-o']) !!}</li>
                 </ul>
             </li>
         </ul><!-- /.sidebar-menu -->

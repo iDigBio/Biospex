@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Http\Requests\Request;
 
-class WorkflowFormRequest extends Request
+class NoticeFormRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,7 @@ class WorkflowFormRequest extends Request
     public function rules()
     {
         return [
-            'title' => 'required|between:3,60|unique:workflows,title,' . $this->route('workflows'),
-            'actors.*.id' => 'required'
+            'message' => 'required'
         ];
     }
 }

@@ -28,6 +28,7 @@ use App\Repositories\Contracts\FaqCategory as FaqCategoryContract;
 use App\Repositories\Contracts\AmChart as AmChartContract;
 use App\Repositories\Contracts\TeamCategory as TeamCategoryContract;
 use App\Repositories\Contracts\Team as TeamContract;
+use App\Repositories\Contracts\Notice as NoticeContract;
 
 use App\Repositories\UserRepository;
 use App\Repositories\GroupRepository;
@@ -53,13 +54,17 @@ use App\Repositories\FaqCategoryRepository;
 use App\Repositories\AmChartRepository;
 use App\Repositories\TeamCategoryRepository;
 use App\Repositories\TeamRepository;
-
+use App\Repositories\NoticeRepository;
 
 class BiospexServiceProvider extends ServiceProvider
 {
     public function boot()
     {
         require base_path().'/resources/macros/macros.php';
+        
+        view()->composer(
+            'frontend.layouts.notifications', 'App\Http\ViewComposers\NoticesComposer'
+        );
     }
     
     public function register()
@@ -94,5 +99,6 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(AmChartContract::class, AmChartRepository::class);
         $this->app->bind(TeamCategoryContract::class, TeamCategoryRepository::class);
         $this->app->bind(TeamContract::class, TeamRepository::class);
+        $this->app->bind(NoticeContract::class, NoticeRepository::class);
     }
 }
