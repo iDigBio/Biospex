@@ -32,7 +32,8 @@ class NoticesComposer
      */
     public function compose(View $view)
     {
-        $notices = Auth::check() ? $this->notice->where(['enabled' => 1])->get() : null;
+        $notices = $this->notice->where(['enabled' => 1])->get();
+        $notices = $notices->isEmpty() ? null : $notices;
 
         $view->with('notices', $notices);
     }
