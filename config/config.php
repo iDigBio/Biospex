@@ -134,6 +134,13 @@ return [
         '#expeditionId'    => '',
     ],
 
+    'nfnApi' => [
+        'auth' => env('NFN_API_AUTH'),
+        'uri' => env('NFN_API_URI'),
+        'clientId' => env('NFN_API_CLIENT_ID'),
+        'clientSecret' => env('NFN_API_CLIENT_SECRET')
+    ],
+
     /**
      * Default advertise fields for PPSR_CORE
      */
