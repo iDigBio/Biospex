@@ -76,7 +76,7 @@ abstract class Repository
      */
     public function first(array $columns = ['*'])
     {
-        $result =$this->model->first($columns);
+        $result = $this->model->first($columns);
 
         $this->resetModel();
 
@@ -188,6 +188,8 @@ abstract class Repository
     {
         $model = $this->model->firstOrNew($attributes);
         $model->fill($values)->save();
+
+        $this->resetModel();
         
         return $model;
     }
@@ -498,5 +500,34 @@ abstract class Repository
     public function getWith()
     {
         return $this->withRelations;
+    }
+
+    /**
+     * Get only trashed.
+     * 
+     * @return $this
+     */
+    public function trashed()
+    {
+        $result = $this->model->onlyTrashed()->get();
+
+        $this->resetModel();
+
+        return $result;
+    }
+
+    /**
+     * Force delete model.
+     * 
+     * @param $id
+     * @return mixed
+     */
+    public function forceDelete($id)
+    {
+        $model = $this->model->onlyTrashed()->find($id);
+        
+        $this->resetModel();
+
+        return $model->forceDelete();
     }
 }

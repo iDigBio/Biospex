@@ -10,15 +10,14 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>BIOSPEX : Lead Public Digitization Expeditions</title>
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,600|Neucha' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,600|Neucha' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="/vision/css/normalize.css" type="text/css" media="screen">
     <link rel="stylesheet" href="/vision/css/grid.css" type="text/css" media="screen">
     <link rel="stylesheet" href="/vision/css/style.css" type="text/css" media="screen">
-    <link href="/css/bootstrap.css" rel="stylesheet">
     <link href="/css/biospex.css" rel="stylesheet">
     <!-- <link rel="stylesheet" href="css/style.min.css" type="text/css" media="screen"> -->
     <!--[if IE]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 </head>
 <body>
 @include('frontend.layouts.navigation')
@@ -50,7 +49,7 @@
 </div>
 
 <div class="slide" id="slide2" data-slide="2" data-stellar-background-ratio="0.5">
-    <div class="container clearfix" style="background: url(images/dotted-2.png) 50% bottom no-repeat;">
+    <div class="container clearfix" style="background: url(/vision/images/dotted-2.png) 50% bottom no-repeat;">
 
         <div class="grid_4">
             <div class="x"><span>#</span>1</div>
@@ -95,7 +94,7 @@
 
 
 <div class="slide" id="slide3" data-slide="3" data-stellar-background-ratio="0.5">
-    <div class="container clearfix" style="background: url(images/dotted-3.png) 50% bottom no-repeat;">
+    <div class="container clearfix" style="background: url(/vision/images/dotted-3.png) 50% bottom no-repeat;">
 
         <div class="grid_4">
             <div class="x"><span>#</span>1</div>
@@ -133,7 +132,7 @@
 
 
 <div class="slide" id="slide4" data-slide="4" data-stellar-background-ratio="0.5">
-    <div class="container clearfix" style="background: url(images/dotted-2.png) 50% 350px no-repeat; padding: 140px 0;">
+    <div class="container clearfix" style="background: url(/vision/images/dotted-2.png) 50% 350px no-repeat; padding: 140px 0;">
 
         <div class="grid_4">
             <div class="x"><span>#</span>1</div>
@@ -197,7 +196,7 @@
     </div>
 </div>
 
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="/vision/js/jquery.stellar.min.js"></script>
 <script type="text/javascript" src="/vision/js/waypoints.min.js"></script>
 <script type="text/javascript" src="/vision/js/jquery.easing.1.3.js"></script>

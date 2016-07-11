@@ -44,7 +44,7 @@ trait CacheableRepository
     public function createCacheKey($method, $args = null)
     {
         $serialized = md5(serialize($args) . $this->serializeWith());
-                
+                        
         return sprintf('%s@%s-%s', get_called_class(), $method, $serialized);
     }
 
@@ -209,6 +209,28 @@ trait CacheableRepository
         return $this->getCacheRepository()->remember($key, $minutes, function () use ($value, $index)
         {
             return parent::lists($value, $index);
+        });
+    }
+
+    /**
+     * Retrieve records using get.
+     *
+     * @return mixed
+     */
+    public function trashed()
+    {
+        if ($this->cacheSkip)
+        {
+            return parent::trashed();
+        }
+
+        $key = $this->createCacheKey('trashed');
+
+        $minutes = $this->getCacheMinutes();
+
+        return $this->getCacheRepository()->remember($key, $minutes, function ()
+        {
+            return parent::trashed();
         });
     }
 

@@ -29,24 +29,23 @@ elixir(function (mix) {
             'vendor/amcharts3/amcharts/plugins/responsive/responsive.min.js',
             'vendor/jqGrid/js/i18n/grid.locale-en.js',
             'vendor/jqGrid/js/jquery.jqGrid.min.js',
-            'vendor/jquery-ujs/src/rails.js',
+            'vendor/bs-confirmation/bootstrap-confirmation.min.js',
             'js/amchart.js',
-            'js/biospex.js',
             'js/delete-form.js',
+            'js/biospex.js',
             'js/grid.js'
         ], 'public/js/biospex.js', assetsDir)
 
         .styles([
             'vendor/AdminLTE/dist/css/AdminLTE.min.css',
             'vendor/AdminLTE/dist/css/skins/skin-blue.min.css',
-            'vendor/AdminLTE/plugins/iCheck/square/blue.css',
             'css/adminlte.css'
         ], 'public/adminlte/css/main.css', assetsDir)
         .scripts([
             'vendor/AdminLTE/dist/js/app.min.js',
-            'vendor/jquery-ujs/src/rails.js',
-            'js/delete-form.js',
-            'js/adminlte.js'
+            'vendor/bs-confirmation/bootstrap-confirmation.min.js',
+            'js/adminlte.js',
+            'js/delete-form.js'
         ], 'public/adminlte/js/main.js', assetsDir)
 
         .copy(assetsDir + 'vendor/bootstrap/fonts', 'public/fonts')

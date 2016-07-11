@@ -54,9 +54,7 @@ desired effect
 
 </div><!-- ./wrapper -->
 
-@section('scripts')
     @include('backend.layouts.partials.scripts')
-@show
 {!! Toastr::render() !!}
 </body>
 </html>

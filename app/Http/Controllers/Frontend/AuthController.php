@@ -85,9 +85,8 @@ class AuthController extends Controller
             Auth::logout();
             return redirect()->route('home');
         }
-
-        $groups = $this->group->whereHas('users', ['user_id' => $user->id])->get();
-        $request->session()->put('groups', $groups);
+        
+        
 
         return redirect()->intended($this->redirectPath());
     }

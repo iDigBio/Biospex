@@ -58,11 +58,6 @@ class BuildOcrBatches extends Job implements ShouldQueue
             return;
         }
 
-        if ( ! $this->checkOcrActorExists())
-        {
-            return;
-        }
-     
         $this->buildOcrSubjectsArray();
      
         $data = $this->getChunkQueueData();
@@ -91,27 +86,6 @@ class BuildOcrBatches extends Job implements ShouldQueue
         }
 
         app(Dispatcher::class)->fire(new PollOcrEvent());
-    }
-
-
-    /**
-     * Check if project has ocr actor.
-     * 
-     * @return bool
-     */
-    protected function checkOcrActorExists()
-    {
-        $project = app(Project::class)->skipCache()->with(['workflow.actors'])->find($this->projectId);
-        
-        foreach ($project->workflow->actors as $actor)
-        {
-            if (strtolower($actor->title) === 'ocr')
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -151,7 +125,7 @@ class BuildOcrBatches extends Job implements ShouldQueue
      */
     protected function buildOcrQueueData($doc)
     {
-        $this->ocrData[$doc['_id']] = [
+        $this->ocrData[(string) $doc['_id']] = [
             'crop'   => Config::get('config.ocr_crop'),
             'ocr'    => '',
             'status' => 'pending',

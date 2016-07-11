@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UuidTrait;
+use Illuminate\Support\Facades\Event;
 
 class Group extends Model
 {
@@ -31,15 +32,15 @@ class Group extends Model
         'uuid',
         'user_id',
         'name',
-        'label',
         'permissions',
     ];
 
-    /*
-    public static function boot()
-    {
-        parent::boot();
+    
+    public static function boot() {
 
+        parent::boot();
+        
+        /*
         // cause a delete of a product to cascade to children so they are also deleted
         static::deleted(function($group)
         {
@@ -50,8 +51,8 @@ class Group extends Model
         {
             $group->projects()->restore();
         });
+         */
     }
-    */
 
     /**
      * User as owner relationship
@@ -101,27 +102,5 @@ class Group extends Model
     public function invites()
     {
         return $this->hasMany(Invite::class);
-    }
-
-    /**
-     * Set name attribute.
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name'] = strtolower($value);
-    }
-
-    /**
-     * Set label attribute.
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function setLabelAttribute($value)
-    {
-        $this->attributes['label'] = ucwords($value);
     }
 }

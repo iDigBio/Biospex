@@ -48,7 +48,7 @@
                                                            class="toggle fa fa-folder fa-2x pointer"></span></td>
                             <td><a href="{{ route('web.projects.show', [$project->id]) }}">{{ $project->title }}</a>
                             </td>
-                            <td><a href="{{ route('web.groups.show', [$group->id]) }}">{{ $group->label }}</a></td>
+                            <td><a href="{{ route('web.groups.show', [$group->id]) }}">{{ $group->name }}</a></td>
                             <td class="buttons-sm">
                                 <button title="@lang('buttons.viewTitle')" class="btn btn-primary btn-xs"
                                         type="button"
@@ -72,9 +72,9 @@
                                             class="fa fa-cog fa-lg"></span> @lang('buttons.edit')</button>
                                 @can('delete', $group)
                                     <button title="@lang('buttons.deleteTitle')"
-                                            class="btn btn-danger btn-xs delete-form"
+                                            class="btn btn-danger btn-xs"
                                             data-method="delete"
-                                            data-confirm="Are you sure you wish to delete?"
+                                            data-toggle="confirmation" data-placement="left"
                                             data-href="{{ route('web.projects.delete', [$project->id]) }}"><span
                                                 class="fa fa-remove fa-lg"></span> @lang('buttons.delete')</button>
                                 @endcan

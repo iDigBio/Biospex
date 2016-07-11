@@ -3,57 +3,83 @@
 namespace App\Jobs;
 
 use App\Events\SendInviteEvent;
+use App\Repositories\Contracts\Group;
 use App\Repositories\Contracts\Invite;
 use App\Repositories\Contracts\User;
-use Illuminate\Events\Dispatcher as Event;
+use Illuminate\Events\Dispatcher;
 
 class InviteCreateJob extends Job
 {
-    public $request;
-    public $group;
+
+    /**
+     * @var
+     */
+    private $request;
+
+    /**
+     * @var
+     */
+    private $groupId;
+
     /**
      * @var User
      */
     private $user;
 
     /**
+     * @var
+     */
+    private $dispatcher;
+
+    /**
      * InviteCreateJob constructor.
      * @param $request
-     * @param $group
+     * @param $groupId
      */
-    public function __construct($request, $group)
+    public function __construct($request, $groupId)
     {
         $this->request = $request;
-        $this->group = $group;
+        $this->groupId = $groupId;
+        $this->dispatcher = app(Dispatcher::class);
     }
 
     /**
-     * Handle the job.
+     * Handle job.
      *
-     * @param User $user
-     * @param Invite $invite
-     * @param Event $dispatcher
-     * @return mixed
+     * @param User $userRepo
+     * @param Invite $inviteRepo
+     * @param Group $groupRepo
      */
-    public function handle(User $user, Invite $invite, Event $dispatcher)
+    public function handle(User $userRepo, Invite $inviteRepo, Group $groupRepo)
     {
-        $emails = explode(',', $this->request->get('emails'));
-        $invites = $this->group->invites->toArray();
+        $invites = $this->request->get('invites');
+        $group = $groupRepo->skipCache()->find($this->groupId);
+        $existing = $inviteRepo->skipCache()->with(['group'])->where(['group_id' => $group->id])->get();
 
-        foreach ($emails as $email) {
-            $email = trim($email);
-            if (is_int(array_search($email, array_column($invites, 'email'))))
+        foreach ($invites as $invite) {
+            $email = trim($invite['email']);
+
+            $filtered = $existing->where('email', $email)->first();
+            if ($filtered !== null)
             {
-                session_flash_push('info', trans('groups.invite_duplicate', ['group' => $this->group->name, 'email' => $email]));
+                $this->createEvent($email, $group->name, $filtered->code);
+                session_flash_push('success', trans('groups.send_invite_success', ['group' => $group->name, 'email' => $email]));
 
                 continue;
             }
 
-            $emailUser = $user->skipCache()->where(['email' => $email])->first();
-            if ($emailUser)
+            $user = $userRepo->skipCache()->where(['email' => $email])->first();
+            if ($user)
             {
-                $emailUser->assignGroup($this->group);
-                session_flash_push('success', trans('groups.user_added', ['email' => $email]));
+                if ($user->hasGroup($group))
+                {
+                    session_flash_push('success', trans('groups.user_already_added', ['email' => $email]));
+                }
+                else
+                {
+                    $user->assignGroup($group);
+                    session_flash_push('success', trans('groups.user_added', ['email' => $email]));
+                }
 
                 continue;
             }
@@ -61,23 +87,35 @@ class InviteCreateJob extends Job
             // add invite
             $code = str_random(10);
             $inviteData = [
-                'group_id' => $this->group->id,
+                'group_id' => $this->groupId,
                 'email'    => trim($email),
                 'code'     => $code
             ];
 
-            $invite->create($inviteData);
+            $inviteRepo->create($inviteData);
 
-            $data = [
-                'email'   => $email,
-                'group'  => $this->group->name,
-                'code' => $code
-            ];
+            $this->createEvent($email, $group->name, $code);
 
-            $dispatcher->fire(new SendInviteEvent($data));
-
-            session_flash_push('success', trans('groups.send_invite_success', ['group' => $this->group->name, 'email' => $email]));
+            session_flash_push('success', trans('groups.send_invite_success', ['group' => $group->name, 'email' => $email]));
         }
 
+    }
+
+    /**
+     * Create event data and fire.
+     *
+     * @param $email
+     * @param $groupName
+     * @param $code
+     */
+    private function createEvent($email, $groupName, $code)
+    {
+        $data = [
+            'email'   => $email,
+            'group'  => $groupName,
+            'code' => $code
+        ];
+
+        $this->dispatcher->fire(new SendInviteEvent($data));
     }
 }

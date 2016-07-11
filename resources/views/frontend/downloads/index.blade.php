@@ -27,12 +27,11 @@
                             <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm"
                                     onClick="location.href='{{ route('web.expeditions.edit', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
-                            <button title="@lang('buttons.deleteTitle')"
-                                    class="btn btn-danger btn-sm delete-form" type="button"
-                                    data-method="delete"
-                                    data-confirm="Are you sure you wish to delete?"
-                                    data=href="{{ route('web.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"><span
-                                        class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
+                            <button title="@lang('buttons.deleteTitle')" class="btn btn-danger btn-sm" type="button"
+                                    data-toggle="confirmation" data-placement="left"
+                                    data-href="{{ route('web.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"
+                                    data-method="delete">
+                                <span class="fa fa-remove fa-lrg"></span> <!-- @lang('buttons.delete') --></button>
 
                         </div>
                     </div>

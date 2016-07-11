@@ -22,19 +22,9 @@ class FaqCategoryFormRequest extends Request
     public function rules()
     {
         $rules = [
-            'name' => 'required|between:6,20|unique:faq_categories,name,' . $this->route('categories')
+            'name' => 'required|between:3,60|unique:faq_categories,name,' . $this->route('categories')
         ];
 
         return $rules;
-    }
-
-    /**
-     * Alter input before validation.
-     */
-    public function alterInput()
-    {
-        $this->replace(['name' => strtolower(str_replace(' ', '-', $this->input('name')))]);
-
-        return $this->all();
     }
 }

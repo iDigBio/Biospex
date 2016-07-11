@@ -10,13 +10,11 @@ class UserPolicy
     public function before($user)
     {
         $key = md5(__METHOD__ . $user->uuid);
-        $isAdmin = Cache::remember($key, 60, function() use ($user) {
+        $access = Cache::remember($key, 60, function() use ($user) {
             return $user->isAdmin();
         });
 
-        if ($isAdmin) {
-            return true;
-        }
+        return $access ? true : null;
     }
 
     public function admin()
@@ -42,8 +40,10 @@ class UserPolicy
     public function delete($user)
     {
         $key = md5(__METHOD__ . $user->uuid);
-        return Cache::remember($key, 60, function() use ($user) {
+        $access = Cache::remember($key, 60, function() use ($user) {
             return $user === null ? false : $user->isAdmin('superuser');
         });
+
+        return $access ? true : null;
     }
 }

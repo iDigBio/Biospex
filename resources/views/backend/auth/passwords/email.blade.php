@@ -56,8 +56,6 @@
 
     </div><!-- /.login-box -->
 
-    @include('layouts.partials.scripts_auth')
-
     <script>
         $(function () {
             $('input').iCheck({

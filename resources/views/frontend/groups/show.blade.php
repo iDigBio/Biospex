@@ -10,7 +10,7 @@
 @section('content')
     {!! Breadcrumbs::render('web.groups.show', $group) !!}
     <div class="jumbotron">
-        <h3>{{ $group->label }}</h3>
+        <h3>{{ $group->name }}</h3>
     </div>
 
     <div class="panel panel-primary">
@@ -24,9 +24,9 @@
                             class="fa fa-users fa-lrg"></span> @lang('buttons.invite')</button>
             @endcan
             @can('delete', $group)
-                <button title="@lang('buttons.deleteTitle')" class="btn btn-danger btn-sm delete-form" type="button"
+                <button title="@lang('buttons.deleteTitle')" class="btn btn-danger btn-sm" type="button"
                         data-method="delete"
-                        data-confirm="Are you sure you wish to delete?"
+                        data-toggle="confirmation" data-placement="left"
                         data-href="{{ route('web.groups.delete', array($group->id)) }}"><span
                             class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
             @endcan

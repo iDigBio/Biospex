@@ -20,13 +20,11 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<script src="http://{{ config('config.app_nodejs_domain') }}/socket.io/socket.io.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
-    var socket = io('http://{{ config('config.app_nodejs_domain') }}:8080');
+    var socket = io('{{ config('config.app_nodejs_url') }}');
     <?php
-    $uuids = session()->get('groups')->map(function ($item, $key) {
-        return $item['uuid'];
-    });
+    $uuids = Session::get('user-groups');
     ?>
     socket.on("{!! config('config.ocr_poll_channel') !!}:app.polling", function (message) {
         var html = '{!! trans('pages.no_processes') !!}';

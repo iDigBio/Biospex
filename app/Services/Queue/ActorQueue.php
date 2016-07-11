@@ -17,12 +17,24 @@ class ActorQueue extends QueueAbstract
      */
     protected $actorFactory;
 
+    /**
+     * ActorQueue constructor.
+     * 
+     * @param Report $report
+     * @param ActorFactory $actorFactory
+     */
     public function __construct(Report $report, ActorFactory $actorFactory)
     {
         $this->report = $report;
         $this->actorFactory = $actorFactory;
     }
 
+    /**
+     * Fire the job.
+     * 
+     * @param $job
+     * @param $data
+     */
     public function fire($job, $data)
     {
         $this->job = $job;

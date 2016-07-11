@@ -7,9 +7,10 @@
                     onClick="location.href='{{ route('admin.faqs.edit', [$category->id, $faq->id]) }}'">
                 <span class="fa fa-wrench fa-sm"></span> <!-- @lang('buttons.edit') --></button>
 
-            <button title="@lang('buttons.deleteTitle')" class="btn btn-danger delete-form btn-xs"
+            <button title="@lang('buttons.deleteTitle')" class="btn btn-danger btn-xs" type="button"
+                    data-toggle="confirmation" data-placement="left"
                     data-href="{{ route('admin.faqs.delete', [$category->id, $faq->id]) }}"
-                    data-confirm="Are you sure you wish to delete?" data-method="delete">
+                    data-method="delete">
                 <span class="fa fa-remove fa-sm"></span> <!-- @lang('buttons.delete') --></button>
         </div>
     </td>

@@ -14,10 +14,7 @@ class FaqCategory extends Model
      */
     protected $table = 'faq_categories';
 
-    protected $fillable = [
-        'name',
-        'label'
-    ];
+    protected $fillable = ['name'];
 
     /**
      * Faq relationship.
@@ -27,27 +24,5 @@ class FaqCategory extends Model
     public function faqs()
     {
         return $this->hasMany(Faq::class);
-    }
-    
-    /**
-     * Set name attribute.
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name'] = strtolower(str_replace(' ', '-', $value));
-    }
-
-    /**
-     * Set label attribute.
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function setLabelAttribute($value)
-    {
-        $this->attributes['label'] = ucwords(str_replace('-', ' ', $value));
     }
 }

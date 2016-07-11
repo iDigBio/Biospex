@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Listeners\FlushCacheEventListener;
+use App\Listeners\GroupEventListener;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Events\SendReportEvent;
@@ -42,7 +43,9 @@ class EventServiceProvider extends ServiceProvider
      *
      * @var array
      */
-    protected $subscribe = [];
+    protected $subscribe = [
+        GroupEventListener::class
+    ];
 
     /**
      * Register any other events for your application.

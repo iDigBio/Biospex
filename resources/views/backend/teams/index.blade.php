@@ -38,7 +38,7 @@
                                 <div class="form-group required {{ ($errors->has('name')) ? 'has-error' : '' }}" for="name">
                                     {!! Form::label('name', 'Name', ['class' => 'col-sm-2 control-label']) !!}
                                     <div class="col-sm-10">
-                                        {!! Form::text('name', isset($category->label) ? $category->label : null, array('class' => 'form-control', 'placeholder' => 'Name')) !!}
+                                        {!! Form::text('name', isset($category->name) ? $category->name : null, array('class' => 'form-control', 'placeholder' => 'Name')) !!}
                                         {{ ($errors->has('name') ? $errors->first('name') : '') }}
                                     </div>
                                 </div>

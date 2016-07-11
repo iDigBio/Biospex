@@ -59,7 +59,7 @@ class ClearOcrResults extends Command
         foreach ($result as $doc)
         {
             $doc['ocr'] = '';
-            $collection->update(['_id' => $doc['_id']], $doc);
+            $collection->update(['_id' => (string) $doc['_id']], $doc);
         }
     }
 

@@ -13,19 +13,15 @@ class NfnLegacy
         'export'
     ];
 
-    public function __construct(NfnLegacyExport $nfnExport)
+    public function __construct(NfnLegacyExport $export)
     {
-        $this->nfnExport = $nfnExport;
+        $this->export = $export;
     }
 
     public function process($actor)
     {
-        switch($this->state[$actor->pivot->state]) {
-            case 'export':
-                $this->nfnExport->process($actor);
-                break;
-            default:
-                break;
+        if ($this->state[$actor->pivot->state] === 'export') {
+            $this->export->process($actor);
         }
     }
 }

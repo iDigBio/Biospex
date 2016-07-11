@@ -14,10 +14,7 @@ class TeamCategory extends Model
      */
     protected $table = 'team_categories';
 
-    protected $fillable = [
-        'name',
-        'label'
-    ];
+    protected $fillable = ['name'];
 
     /**
      * Faq relationship.
@@ -27,27 +24,5 @@ class TeamCategory extends Model
     public function teams()
     {
         return $this->hasMany(Team::class);
-    }
-    
-    /**
-     * Set name attribute.
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name'] = strtolower(str_replace(' ', '-', $value));
-    }
-
-    /**
-     * Set label attribute.
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function setLabelAttribute($value)
-    {
-        $this->attributes['label'] = ucwords(str_replace('-', ' ', $value));
     }
 }

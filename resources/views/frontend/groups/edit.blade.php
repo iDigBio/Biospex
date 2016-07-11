@@ -27,17 +27,10 @@
                         <div class="form-group {{ ($errors->has('name')) ? 'has-error' : '' }}">
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-users fa-lg"></i></span>
-                                {!! Form::text('name', $group->label, ['class' => 'form-control', 'placeholder' => trans('pages.name'), 'required']) !!}
-                                {{ ($errors->has('name') ?  $errors->first('name') : '') }}
+                                {!! Form::text('name', old('name') ?: $group->name, ['class' => 'form-control', 'placeholder' => trans('pages.name'), 'required']) !!}
                             </div>
+                            {{ ($errors->has('name') ?  $errors->first('name') : '') }}
                         </div>
-                    </div>
-                    <div class="form-group required {{ ($errors->has('user_id')) ? 'has-error' : '' }}" for="user_id">
-                        {!! Form::label('user_id', trans('forms.owner'), ['class' => 'col-sm-2 control-label']) !!}
-                        <div class="col-sm-10">
-                            {!! Form::select('user_id', $users, $group->user_id, ['class' => 'selectpicker']) !!}
-                        </div>
-                        {{ ($errors->has('user_id') ? $errors->first('user_id') : '') }}
                     </div>
                     {!! Form::hidden('id', $group->id) !!}
                     {!! Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary')) !!}

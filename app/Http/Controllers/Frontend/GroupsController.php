@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
 use App\Repositories\Contracts\User;
 use App\Repositories\Contracts\Group;
+use Illuminate\Support\Facades\Session;
 
 class GroupsController extends Controller
 {
@@ -66,16 +68,15 @@ class GroupsController extends Controller
     {
         $user = Request::user();
 
-        $data = [
-            'user_id' => $user->id,
-            'name'    => $request->get('name'),
-            'label'   => $request->get('name')
-        ];
-
-        $group = $this->group->create($data);
+        $group = $this->group->create(['user_id' => $user->id, 'name'    => $request->get('name')]);
 
         if ($group) {
             $user->assignGroup($group);
+
+            $groups = $this->group->whereHas('users', ['user_id' => $user->id])->get();
+            Request::session()->put('groups', $groups);
+            Event::fire('group.saved');
+
             session_flash_push('success', trans('groups.created'));
 
             return redirect()->route('web.groups.index');
@@ -102,7 +103,7 @@ class GroupsController extends Controller
         ];
         $group = $this->group->with($with)->find($id);
 
-        if ($user->cannot('read', $group))
+        if ($user->cannot('show', $group))
         {
             session_flash_push('warning', trans('pages.insufficient_permissions'));
 
@@ -143,6 +144,7 @@ class GroupsController extends Controller
     public function update(GroupFormRequest $request)
     {
         $user = Request::user();
+
         $group = $this->group->find($request->get('id'));
 
         if ($user->cannot('update', $group))
@@ -152,10 +154,13 @@ class GroupsController extends Controller
             return redirect()->route('web.groups.index');
         }
 
-        $group->name = $group->name === 'admins' ? $group->name : $request->get('name');
-        $group->label = $group->label === 'Admins' ? $group->label : $request->get('name');
+        $group->name = $group->name === env('ADMIN_GROUP') ? $group->name : $request->get('name');
         
         $this->group->update($group->toArray(), $group->id);
+
+        $groups = $this->group->whereHas('users', ['user_id' => $user->id])->get();
+        Request::session()->put('groups', $groups);
+        Event::fire('group.saved');
 
         session_flash_push('success', trans('groups.updated'));
 
@@ -181,6 +186,10 @@ class GroupsController extends Controller
         }
 
         $this->group->delete($group->id);
+
+        $groups = $this->group->whereHas('users', ['user_id' => $user->id])->get();
+        Request::session()->put('groups', $groups);
+        Event::fire('group.deleted');
         
         session_flash_push('success', trans('groups.group_destroyed'));
 

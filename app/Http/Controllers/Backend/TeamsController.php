@@ -59,7 +59,7 @@ class TeamsController extends Controller
     public function index(Request $request)
     {
         $user = $this->user->with(['profile'])->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->category->pluck('label', 'id')->toArray();
+        $select = [null => 'Please Select'] + $this->category->pluck('name', 'id')->toArray();
         $categories = $this->category->with(['teams'])->groupBy('id')->get();
         $categoryId = null;
         $teamId = null;
@@ -77,7 +77,7 @@ class TeamsController extends Controller
     public function create(Request $request, $categoryId)
     {
         $user = $this->user->with(['profile'])->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->category->pluck('label', 'id')->toArray();
+        $select = [null => 'Please Select'] + $this->category->pluck('name', 'id')->toArray();
         $categories = $this->category->with(['teams'])->groupBy('id')->get();
 
         return view('backend.teams.index', compact('user', 'categories', 'select', 'categoryId'));
@@ -108,7 +108,7 @@ class TeamsController extends Controller
      */
     public function storeCategory(TeamCategoryFormRequest $request)
     {
-        $category = $this->category->create(['name' => $request->get('name'), 'label' => $request->get('name')]);
+        $category = $this->category->create(['name' => $request->get('name')]);
 
         $category ?
             Toastr::success('Team category has been created successfully.', 'Team Category Create') :
@@ -128,7 +128,7 @@ class TeamsController extends Controller
     public function edit(Request $request, $categoryId, $teamId)
     {
         $user = $this->user->with(['profile'])->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->category->pluck('label', 'id')->toArray();
+        $select = [null => 'Please Select'] + $this->category->pluck('name', 'id')->toArray();
         $categories = $this->category->with(['teams'])->groupBy('id')->get();
         $team = $this->team->find($teamId);
 
@@ -164,7 +164,7 @@ class TeamsController extends Controller
     public function editCategory(Request $request, $categoryId, $teamId)
     {
         $user = $this->user->with(['profile'])->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->category->pluck('label', 'id')->toArray();
+        $select = [null => 'Please Select'] + $this->category->pluck('name', 'id')->toArray();
         $categories = $this->category->with(['teams'])->groupBy('id')->get();
         $category = $this->category->find($categoryId);
 
@@ -180,7 +180,7 @@ class TeamsController extends Controller
      */
     public function updateCategory(TeamCategoryFormRequest $request, $categoryId)
     {
-        $category = $this->category->update(['name' => $request->get('name'), 'label' => $request->get('name')], $categoryId);
+        $category = $this->category->update(['name' => $request->get('name')], $categoryId);
 
         $category ? Toastr::success('Team category has been updated successfully.', 'Team Category Update')
             : Toastr::error('Team category could not be updated.', 'Team Category Update');

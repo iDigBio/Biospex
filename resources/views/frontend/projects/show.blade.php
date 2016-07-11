@@ -30,9 +30,9 @@
                     onClick="location.href='{{ route('web.projects.edit', [$project->id]) }}'"><span
                         class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
             @can('delete', $project)
-                <button title="@lang('buttons.deleteTitle')" class="btn btn-danger btn-sm delete-form"
+                <button title="@lang('buttons.deleteTitle')" class="btn btn-danger btn-sm"
                         data-method="delete"
-                        data-confirm="Are you sure you wish to delete?"
+                        data-toggle="confirmation" data-placement="left"
                         data-href="{{ route('web.projects.delete', [$project->id]) }}"><span
                             class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
                 </td>
@@ -91,9 +91,9 @@
                                 onClick="location.href='{{ route('web.expeditions.edit', [$project->id, $expedition->id]) }}'">
                             <span class="fa fa-cog fa-lrg"></span> <!-- @lang('buttons.edit') --></button>
                         <button title="@lang('buttons.deleteTitle')"
-                                class="btn btn-danger btn-xs delete-form"
+                                class="btn btn-danger btn-xs"
                                 data-method="delete"
-                                data-confirm="Are you sure you wish to delete?"
+                                data-toggle="confirmation" data-placement="left"
                                 data-href="{{ route('web.expeditions.delete', [$project->id, $expedition->id]) }}"><span
                                     class="fa fa-remove fa-lrg"></span> <!-- @lang('buttons.delete') --></button>
 

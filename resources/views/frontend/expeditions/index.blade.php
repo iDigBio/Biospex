@@ -61,7 +61,7 @@
                         <button title="@lang('buttons.deleteTitle')"
                                 class="btn btn-danger btn-xs delete-form" type="button"
                                 data-method="delete"
-                                data-confirm="Are you sure you wish to delete?"
+                                data-toggle="confirmation" data-placement="left"
                                 data-href="{{ route('web.expeditions.delete', [$expedition->project_id, $expedition->expedition_id]) }}"><span
                                     class="fa fa-remove fa-lrg"></span> <!-- @lang('buttons.delete') --></button>
 

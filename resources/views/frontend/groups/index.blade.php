@@ -24,7 +24,7 @@
             <tbody>
             @foreach ($user->groups as $group)
                 <tr>
-                    <td>{{ $group->label }}</td>
+                    <td>{{ $group->name }}</td>
                     <td class="buttons-sm">
                         <button title="@lang('buttons.viewTitle')" class="btn btn-default btn-primary btn-sm"
                                 type="button" onClick="location.href='{{ route('web.groups.show', [$group->id]) }}'">
@@ -41,9 +41,9 @@
                         @endcan
                         @can('delete', $group)
                             <button title="@lang('buttons.deleteTitle')"
-                                    class="btn btn-danger btn-sm delete-form" type="button"
+                                    class="btn btn-danger btn-sm" type="button"
                                     data-method="delete"
-                                    data-confirm="Are you sure you wish to delete?"
+                                    data-toggle="confirmation" data-placement="left"
                                     data-href="{{ route('web.groups.delete', array($group->id)) }}"><span
                                         class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
                         @endcan

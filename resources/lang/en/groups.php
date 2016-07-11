@@ -25,7 +25,6 @@ return array (
   'invite_destroyed_failed' => 'invite_destroyed_failed',
   'invite_duplicate' => 'Invite to :group already exists for :email.',
   'invite_email_mismatch' => 'The email entered did not match the invite. contact the administration.',
-  'invite_emails' => 'Email Address(es)',
   'invite_explained' => 'Enter the email address(es) of people you want to invite to this group. BIOSPEX will send them an invitation code and instructions on creating an account if necessary.',
   'invite_not_found' => 'Your invite was unable to be found. Please contact the administration.',
   'invite_options' => 'Options',
@@ -35,7 +34,6 @@ return array (
   'notfound' => 'Group not found',
   'send_invite_error' => 'Unable to sent invite to :group for :email.',
   'send_invite_success' => 'Invite to :group for :email sent successfully.',
-  'separate_emails' => 'Separate multiple addresses with a comma',
   'updated' => 'Group has been updated',
   'updateproblem' => 'There was a problem updating the group',
   'user_added' => 'User with email :email has been added to group.',
@@ -50,4 +48,7 @@ return array (
   'invite_fail' => 'Unable to add you to the group :group. Please contact the administration.',
   'useradderror' => 'Error adding user to new group',
   'group_notfound' => 'Group could not be found.',
+  'invite_email' => 'Enter Email',
+  'invite_form_text' => 'Enter email to invite. Click the plus button to add multiple emails.',
+  'user_already_added' => 'User with email :email is already in your group.',
 );

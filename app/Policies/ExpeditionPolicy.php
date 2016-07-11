@@ -9,17 +9,21 @@ class ExpeditionPolicy
     public function before($user)
     {
         $key = md5(__METHOD__ . $user->uuid);
-        return Cache::remember($key, 60, function() use ($user) {
+        $access = Cache::remember($key, 60, function() use ($user) {
             return $user->isAdmin();
         });
+
+        return $access ? true : null;
     }
 
     public function store($user, $expedition, $group)
     {
         $key = md5(__METHOD__ . $user->uuid . $group->uuid);
-        return Cache::remember($key, 60, function() use ($user, $group) {
+        $access = Cache::remember($key, 60, function() use ($user, $group) {
             return $user->hasAccess($group, 'create-project');
         });
+
+        return $access ? true : null;
     }
 
     public function read($user, $expedition)
@@ -30,17 +34,21 @@ class ExpeditionPolicy
         }
 
         $key = md5(__METHOD__ . $user->uuid . $expedition->project->group->uuid);
-        return Cache::remember($key, 60, function() use ($user, $expedition) {
+        $access = Cache::remember($key, 60, function() use ($user, $expedition) {
             return $user->hasAccess($expedition->project->group, 'read-project');
         });
+
+        return $access ? true : null;
     }
 
     public function update($user, $expedition)
     {
         $key = md5(__METHOD__ . $user->uuid . $expedition->project->group->uuid);
-        return Cache::remember($key, 60, function() use ($user, $expedition) {
+        $access = Cache::remember($key, 60, function() use ($user, $expedition) {
             return $user->hasAccess($expedition->project->group, 'update-project');
         });
+
+        return $access ? true : null;
     }
 
     public function delete($user, $expedition)

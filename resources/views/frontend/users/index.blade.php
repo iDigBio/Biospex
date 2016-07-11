@@ -45,9 +45,9 @@
                                             onClick="location.href='{{ action('UsersController@unban', array($user->id)) }}'">@lang('buttons.unban')</button>
                                 @endif
 
-                                <button class="btn btn-danger delete-form"
+                                <button class="btn btn-danger"
                                         data-method="delete"
-                                        data-confirm="Are you sure you wish to delete?"
+                                        data-toggle="confirmation" data-placement="left"
                                         data-href="{{ action('UsersController@destroy', array($user->id)) }}">@lang('buttons.delete')</button>
                             </td>
                         </tr>

@@ -10,35 +10,47 @@
 @section('content')
     {!! Breadcrumbs::render('web.groups.show.invite', $group) !!}
     <div class="jumbotron">
-        <h2>{{ $group->label }}</h2>
+        <h2>{{ $group->name }}</h2>
         <p>{{ trans('groups.invite_explained') }}</p>
     </div>
 
-    <div class="col-xs-12">
+    <div class="col-xs-8 col-lg-offset-2">
         <div class="panel panel-info">
             <div class="panel-heading">
-                <h3 class="panel-title">{{ trans('groups.invite_title', ['group' => $group->label]) }}</h3>
+                <h3 class="panel-title">{{ trans('groups.invite_title', ['group' => $group->name]) }}</h3>
             </div>
             <div class="panel-body">
                 {!! Form::open([
                     'route' => ['web.invites.store', $group->id],
                     'method' => 'post',
-                    'class' => 'form-inline',
+                    'class' => 'form-horizontal',
                     'role' => 'form'
                 ]) !!}
-                @if (Session::get('errors'))
-                    @foreach (Session::get('errors')->get('emails') as $error)
-                        {{ $error }}<br/>
+                @if ($errors->any())
+                    @foreach($errors->all() as $error)
+                        <div class="red">{{$error}}</div>
                     @endforeach
                 @endif
-                <div class="input-group col-xs-8 {{ ($errors->has('emails')) ? 'has-error' : '' }}">
-                    {!! Form::text('emails', null, ['class' => 'form-control', 'placeholder' => trans('groups.invite_emails')]) !!}
-                    <span class="input-group-btn">
-                {!! Form::button('<i class="fa fa-envelope fa-lrg"></i> ' . trans('buttons.invite'), ['type' => 'submit', 'class' => 'btn btn-primary']) !!}
-                </span>
+                <div class="form-group col-xs-12">
+                    <em>{{ trans('groups.invite_form_text') }} </em>
                 </div>
-                <div class="form-group row">
-                    <em>{{ trans('groups.separate_emails') }} </em>
+                <div class="controls">
+                    <div class="entry">
+                        <div class="form-group col-xs-6 pull-left">
+                            <div class="input-group">
+                                {!! Form::text('invites[][email]', null, ['class' => 'form-control', 'placeholder' => trans('groups.invite_email')]) !!}
+                                <span class="input-group-btn">
+                        {!! Form::button('<i class="fa fa-plus fa-lrg"></i> ', ['type' => 'button', 'class' => 'btn btn-success btn-add']) !!}
+                        </span>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-6">
+                        {!! Form::button('<i class="fa fa-envelope fa-lrg"></i> ' . trans('buttons.invite'), ['type' => 'submit', 'class' => 'btn btn-primary']) !!}
+                    </div>
                 </div>
                 {!! Form::close() !!}
 
@@ -62,9 +74,9 @@
                                                 data-token="{{ csrf_token() }}" data-method="post"><span
                                                     class="fa fa-envelope fa-lrg"></span> @lang('buttons.resend')
                                         </button>
-                                        <button class="btn btn-danger btn-sm delete-form" type="button"
+                                        <button class="btn btn-danger btn-sm" type="button"
                                                 data-method="delete"
-                                                data-confirm="Are you sure you wish to delete?"
+                                                data-toggle="confirmation" data-placement="left"
                                                 data-href="{{ route('web.invites.delete', [$invite->group_id, $invite->id]) }}"><span
                                                     class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
                                     </td>

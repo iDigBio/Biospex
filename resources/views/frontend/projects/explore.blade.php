@@ -31,9 +31,9 @@
                     onClick="location.href='{{ route('web.projects.edit', [$project->id]) }}'"><span
                         class="fa fa-edit fa-lrg"></span> @lang('buttons.edit')</button>
             @can('delete', $project)
-                <button title="@lang('buttons.deleteTitle')" class="btn btn-danger btn-sm delete-form"
+                <button title="@lang('buttons.deleteTitle')" class="btn btn-danger btn-sm"
                         data-method="delete"
-                        data-confirm="Are you sure you wish to delete?"
+                        data-toggle="confirmation" data-placement="left"
                         data-href="{{ route('web.projects.delete', [$project->id]) }}"><span
                             class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')
                 </button>

@@ -50,7 +50,7 @@ class FaqsController extends Controller
     public function index(Request $request)
     {
         $user = $this->user->with(['profile'])->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->category->pluck('label', 'id')->toArray();
+        $select = [null => 'Please Select'] + $this->category->pluck('name', 'id')->toArray();
         $categories = $this->category->with(['faqs'])->groupBy('id')->get();
         $categoryId = null;
         $faqId = null;
@@ -68,7 +68,7 @@ class FaqsController extends Controller
     public function create(Request $request, $categoryId)
     {
         $user = $this->user->with(['profile'])->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->category->pluck('label', 'id')->toArray();
+        $select = [null => 'Please Select'] + $this->category->pluck('name', 'id')->toArray();
         $categories = $this->category->with(['faqs'])->groupBy('id')->get();
 
         return view('backend.faqs.index', compact('user', 'categories', 'select', 'categoryId'));
@@ -97,7 +97,7 @@ class FaqsController extends Controller
      */
     public function storeCategory(FaqCategoryFormRequest $request)
     {
-        $category = $this->category->create(['name' => $request->get('name'), 'label' => $request->get('name')]);
+        $category = $this->category->create(['name' => $request->get('name')]);
 
         $category ? Toastr::success('Category has been created successfully.', 'Category Create') : Toastr::error('Category could not be saved.', 'Category Create');
 
@@ -115,7 +115,7 @@ class FaqsController extends Controller
     public function edit(Request $request, $categoryId, $faqId)
     {
         $user = $this->user->with(['profile'])->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->category->pluck('label', 'id')->toArray();
+        $select = [null => 'Please Select'] + $this->category->pluck('name', 'id')->toArray();
         $categories = $this->category->with(['faqs'])->groupBy('id')->get();
         $faq = $this->faq->find($faqId);
 
@@ -151,7 +151,7 @@ class FaqsController extends Controller
     public function editCategory(Request $request, $categoryId, $faqId)
     {
         $user = $this->user->with(['profile'])->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->category->pluck('label', 'id')->toArray();
+        $select = [null => 'Please Select'] + $this->category->pluck('name', 'id')->toArray();
         $categories = $this->category->with(['faqs'])->groupBy('id')->get();
         $category = $this->category->find($categoryId);
 
@@ -167,7 +167,7 @@ class FaqsController extends Controller
      */
     public function updateCategory(FaqCategoryFormRequest $request, $categoryId)
     {
-        $result = $this->category->update(['name' => $request->get('name'), 'label' => $request->get('name')], $categoryId);
+        $result = $this->category->update(['name' => $request->get('name')], $categoryId);
 
         $result ? Toastr::success('Category has been updated successfully.', 'Category Update')
             : Toastr::error('Category could not be updated.', 'Category Update');

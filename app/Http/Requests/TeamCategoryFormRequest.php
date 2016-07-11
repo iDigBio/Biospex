@@ -23,19 +23,7 @@ class TeamCategoryFormRequest extends Request
     public function rules()
     {
         return [
-            'name' => 'required|between:6,50|unique:team_categories,name,' . $this->route('categories'),
+            'name' => 'required|between:3,30|unique:team_categories,name,' . $this->route('categories'),
         ];
-    }
-
-    /**
-     * Override parent alterInput.
-     *
-     * @return array
-     */
-    public function alterInput()
-    {
-        $this->replace(['name' => strtolower(str_replace(' ', '-', $this->get('name')))]);
-
-        return $this->all();
     }
 }

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Http\Controllers\Frontend;
 
@@ -19,6 +19,7 @@ use Exception;
 
 class ExpeditionsController extends Controller
 {
+
     /**
      * @var Expedition
      */
@@ -43,7 +44,7 @@ class ExpeditionsController extends Controller
      * @var WorkflowManager
      */
     protected $workflowManager;
-    
+
     /**
      * @var Request
      */
@@ -63,7 +64,8 @@ class ExpeditionsController extends Controller
         Project $project,
         Subject $subject,
         WorkflowManager $workflowManager
-    ) {
+    )
+    {
         $this->expedition = $expedition;
         $this->project = $project;
         $this->subject = $subject;
@@ -72,14 +74,14 @@ class ExpeditionsController extends Controller
 
     /**
      * Display all expeditions for user.
-     * 
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      * TODO: Fix query so it can be cached in normal fashion.
      */
     public function index()
     {
         $user = Request::user();
-        $results = Cache::remember(md5(Request::url() . $user->id), 60, function () use($user)
+        $results = Cache::remember(md5(Request::url() . $user->id), 60, function () use ($user)
         {
             return $this->expedition->getAllExpeditions($user->id);
         });
@@ -95,7 +97,8 @@ class ExpeditionsController extends Controller
      */
     public function ajax($id)
     {
-        if ( ! Request::ajax()) {
+        if ( ! Request::ajax())
+        {
             return redirect()->route('web.projects.show', [$id]);
         }
 
@@ -119,8 +122,7 @@ class ExpeditionsController extends Controller
         if ( ! $this->checkPermissions($user, [$project, $project->group], 'create'))
         {
             return redirect()->route('web.projects.index');
-        }
-;
+        };
         return view('frontend.expeditions.create', compact('project'));
     }
 
@@ -140,10 +142,11 @@ class ExpeditionsController extends Controller
         {
             return redirect()->route('web.projects.index');
         }
-        
+
         $expedition = $this->expedition->create($request->all());
 
-        if ($expedition) {
+        if ($expedition)
+        {
             session_flash_push('success', trans('expeditions.expedition_created'));
 
             return redirect()->route('web.expeditions.show', [$projectId, $expedition->id]);
@@ -161,7 +164,7 @@ class ExpeditionsController extends Controller
      */
     public function show($projectId, $expeditionId)
     {
-        $expedition = $this->expedition->with(['project.group', 'downloads', 'workflowManager'])->find($expeditionId);
+        $expedition = $this->expedition->with(['project.group', 'project.ocrQueue', 'downloads', 'workflowManager'])->find($expeditionId);
 
         return view('frontend.expeditions.show', compact('expedition'));
     }
@@ -202,7 +205,8 @@ class ExpeditionsController extends Controller
         }
 
         $subjectIds = [];
-        foreach ($expedition->subjects as $subject) {
+        foreach ($expedition->subjects as $subject)
+        {
             $subjectIds[] = $subject->_id;
         }
 
@@ -231,7 +235,8 @@ class ExpeditionsController extends Controller
 
         $expedition = $this->expedition->update($request->all(), $expeditionId);
 
-        if ($expedition) {
+        if ($expedition)
+        {
             // Success!
             session_flash_push('success', trans('expeditions.expedition_updated'));
 
@@ -259,19 +264,28 @@ class ExpeditionsController extends Controller
             return redirect()->route('web.projects.index');
         }
 
-        try {
+        try
+        {
             $expedition = $this->expedition->skipCache(['project.workflow.actors', 'workflowManager'])->with()->find($expeditionId);
 
-            if ( ! is_null($expedition->workflowManager)) {
+            if (null !== $expedition->workflowManager)
+            {
                 $expedition->workflowManager->stopped = 0;
                 $expedition->workflowManager->save();
-            } else {
-                foreach($expedition->project->workflow->actors as $actor) {
-                    if ( ! $actor->private) {
-                        $actors[$actor->id] = ['order' => $actor->pivot->order];
+            }
+            else
+            {
+                $actors = [];
+                foreach ($expedition->project->workflow->actors as $actor)
+                {
+                    if ($actor->private)
+                    {
+                        continue;
                     }
-                }
 
+                    $actors[$actor->id] = ['order' => $actor->pivot->order];
+                }
+                
                 $expedition->actors()->sync($actors);
                 $this->workflowManager->create(['expedition_id' => $expeditionId]);
             }
@@ -279,7 +293,9 @@ class ExpeditionsController extends Controller
             Artisan::call('workflow:manage', ['expedition' => $expeditionId]);
 
             session_flash_push('success', trans('expeditions.expedition_process_success'));
-        } catch (Exception $e) {
+        }
+        catch (Exception $e)
+        {
             session_flash_push('error', trans('expeditions.expedition_process_error', ['error' => $e->getMessage()]));
         }
 
@@ -288,7 +304,8 @@ class ExpeditionsController extends Controller
 
     /**
      * Reprocess OCR.
-     * 
+     *
+     * TODO Add ocr actor to actor_expedition table. Check if already exists and set to 0.
      * @param OcrQueue $queue
      * @param $projectId
      * @param $expeditionId
@@ -305,8 +322,8 @@ class ExpeditionsController extends Controller
             return redirect()->route('web.projects.index');
         }
 
-        $queueCheck = $queue->skipCache()->where(['project_id' => $this->projectId])->first();
-        
+        $queueCheck = $queue->skipCache()->where(['project_id' => $projectId])->first();
+
         if ($queueCheck === null)
         {
             $this->dispatch((new BuildOcrBatches($project->id, $expeditionId))->onQueue(Config::get('config.beanstalkd.ocr')));
@@ -340,9 +357,12 @@ class ExpeditionsController extends Controller
 
         $workflow = $this->workflowManager->where(['expedition_id' => $expeditionId])->get();
 
-        if ($workflow === null) {
+        if ($workflow === null)
+        {
             session_flash_push('error', trans('expeditions.process_no_exists'));
-        } else {
+        }
+        else
+        {
             $workflow->stopped = 1;
             $this->workflowManager->save($workflow);
             session_flash_push('success', trans('expeditions.process_stopped'));
@@ -369,18 +389,24 @@ class ExpeditionsController extends Controller
         }
 
         $workflow = $this->workflowManager->where(['expedition_id' => $expeditionId])->first();
-        if ( $workflow !== null) {
+        if ($workflow !== null)
+        {
             session_flash_push('error', trans('expeditions.expedition_process_exists'));
 
             return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
-        } else {
-            try {
+        }
+        else
+        {
+            try
+            {
                 $subjects = $this->subject->getSubjectIds($projectId, null, $expeditionId);
                 $this->subject->detachSubjects($subjects, $expeditionId);
                 $this->expedition->delete($expeditionId);
 
                 session_flash_push('success', trans('expeditions.expedition_deleted'));
-            } catch (Exception $e) {
+            }
+            catch (Exception $e)
+            {
                 session_flash_push('error', trans('expeditions.expedition_destroy_error'));
             }
         }

@@ -82,7 +82,7 @@ class InvitesController extends Controller
             return redirect()->route('web.groups.show', [$id]);
         }
 
-        $this->dispatch(new InviteCreateJob($request, $group));
+        $this->dispatch(new InviteCreateJob($request, $group->id));
 
         return redirect()->route('web.invites.index', [$group->id]);
     }

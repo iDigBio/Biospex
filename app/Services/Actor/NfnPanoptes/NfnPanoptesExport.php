@@ -132,11 +132,6 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
 
         $this->record = $this->expedition->skipCache()->with(['project.group', 'subjects'])->find($actor->pivot->expedition_id);
 
-        if ($this->record === null)
-        {
-            throw new \Exception(trans('emails.error_process', ['id' => $actor->pivot->expedition_id]));
-        }
-
         $this->setRecordDir($actor->id. '-' . md5($this->record->title));
 
         $this->buildCsvArray($actor->pivot->expedition_id);
