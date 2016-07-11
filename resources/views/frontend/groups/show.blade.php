@@ -37,7 +37,7 @@
         <table class="table table-striped table-hover dataTable">
             <thead>
             <tr>
-                <th>{{ trans('groups.group_owner') }}</th>
+                <th>{{ trans('groups.group_admin') }}</th>
                 <th>{{ trans('users.users') }}</th>
                 <th>{{ trans('projects.projects') }}</th>
             </tr>

@@ -15,7 +15,6 @@ return array (
   'group_memberships' => 'Group Memberships',
   'group_name' => 'Group Name',
   'group_options' => 'Group Options',
-  'group_owner' => 'Owner',
   'group_required' => 'Before creating a project, you need to belong to a group. You may use this form to create your new group.',
   'group_view' => 'View group',
   'groupexists' => 'That group already exists',
@@ -25,7 +24,7 @@ return array (
   'invite_destroyed_failed' => 'invite_destroyed_failed',
   'invite_duplicate' => 'Invite to :group already exists for :email.',
   'invite_email_mismatch' => 'The email entered did not match the invite. contact the administration.',
-  'invite_explained' => 'Enter the email address(es) of people you want to invite to this group. BIOSPEX will send them an invitation code and instructions on creating an account if necessary.',
+  'invite_explained' => 'Enter the email address(es) of people you want to invite to this group. BIOSPEX will send them an invitation code and instructions on creating an account if necessary. Existing BIOSPEX users will be added automatically.',
   'invite_not_found' => 'Your invite was unable to be found. Please contact the administration.',
   'invite_options' => 'Options',
   'invite_title' => 'Invite others to join the group: :group',
@@ -51,4 +50,5 @@ return array (
   'invite_email' => 'Enter Email',
   'invite_form_text' => 'Enter email to invite. Click the plus button to add multiple emails.',
   'user_already_added' => 'User with email :email is already in your group.',
+  'group_admin' => 'Group Owner',
 );

@@ -31,6 +31,7 @@
                         {{ ($errors->has('name') ?  $errors->first('name') : '') }}
                     </div>
                 </div>
+                {!! Form::hidden('owner', $user->id) !!}
                 {!!Form::submit(trans('buttons.create'), array('class' => 'btn btn-primary')) !!}
                 {!! Form::close() !!}
             </div>

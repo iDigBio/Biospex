@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Services\Common\GroupService;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
 use App\Repositories\Contracts\User;
 use App\Repositories\Contracts\Group;
-use Illuminate\Support\Facades\Session;
 
 class GroupsController extends Controller
 {
@@ -72,9 +72,7 @@ class GroupsController extends Controller
 
         if ($group) {
             $user->assignGroup($group);
-
-            $groups = $this->group->whereHas('users', ['user_id' => $user->id])->get();
-            Request::session()->put('groups', $groups);
+            
             Event::fire('group.saved');
 
             session_flash_push('success', trans('groups.created'));
@@ -117,14 +115,15 @@ class GroupsController extends Controller
     /**
      * Show group edit form..
      *
+     * @param GroupService $service
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function edit($id)
+    public function edit(GroupService $service, $id)
     {
         $user = Request::user();
-        $group = $this->group->with(['users'])->find($id);
-        $users = $group->users->toArray();
+        $group = $this->group->with(['owner'])->find($id);
+        $users = $service->getGroupUsersSelect($group->id);
 
         if ($user->cannot('update', $group))
         {
@@ -137,15 +136,17 @@ class GroupsController extends Controller
     }
 
     /**
-     * Update group
+     * Update group.
+     * 
      * @param GroupFormRequest $request
+     * @param $groupId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(GroupFormRequest $request)
+    public function update(GroupFormRequest $request, $groupId)
     {
         $user = Request::user();
 
-        $group = $this->group->find($request->get('id'));
+        $group = $this->group->find($groupId);
 
         if ($user->cannot('update', $group))
         {
@@ -154,12 +155,8 @@ class GroupsController extends Controller
             return redirect()->route('web.groups.index');
         }
 
-        $group->name = $group->name === env('ADMIN_GROUP') ? $group->name : $request->get('name');
-        
-        $this->group->update($group->toArray(), $group->id);
+        $this->group->update($request->toArray(), $group->id);
 
-        $groups = $this->group->whereHas('users', ['user_id' => $user->id])->get();
-        Request::session()->put('groups', $groups);
         Event::fire('group.saved');
 
         session_flash_push('success', trans('groups.updated'));
