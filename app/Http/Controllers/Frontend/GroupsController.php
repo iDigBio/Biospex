@@ -68,7 +68,7 @@ class GroupsController extends Controller
     {
         $user = Request::user();
 
-        $group = $this->group->create(['user_id' => $user->id, 'name'    => $request->get('name')]);
+        $group = $this->group->create(['user_id' => $user->id, 'name' => $request->get('name')]);
 
         if ($group) {
             $user->assignGroup($group);
@@ -155,7 +155,7 @@ class GroupsController extends Controller
             return redirect()->route('web.groups.index');
         }
 
-        $this->group->update($request->toArray(), $group->id);
+        $this->group->update($request->all(), $group->id);
 
         Event::fire('group.saved');
 
