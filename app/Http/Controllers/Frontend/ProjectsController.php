@@ -227,7 +227,6 @@ class ProjectsController extends Controller
             ->where(['project_id' => (int) $id])
             ->whereRaw(['expedition_ids' => ['$not' => ['$size' => 0]]])
             ->count();
-        dd($subjectAssignedCount);
 
         return view('frontend.projects.explore', compact('project', 'subjectAssignedCount'));
     }
