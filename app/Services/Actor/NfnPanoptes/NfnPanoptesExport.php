@@ -6,6 +6,7 @@ ini_set('memory_limit', '1024M');
 
 use App\Services\Actor\ActorAbstract;
 use App\Services\Actor\ActorInterface;
+use Exception;
 use Illuminate\Config\Repository as Config;
 use App\Repositories\Contracts\Download;
 use App\Repositories\Contracts\Expedition;
@@ -280,14 +281,21 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
      */
     public function saveImage($code, $index, $image)
     {
-        if ($image ==='' || $code !== 200)
+        if ($image === '' || $code !== 200)
         {
             $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageURL']);
 
             return;
         }
 
-        $this->image->setImageSizeInfoFromString($image);
+        try {
+            $this->image->setImageSizeInfoFromString($image);
+        } catch (Exception $e) {
+            $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageURL']);
+            
+            return;
+        }
+        
         $ext = $this->image->getFileExtension();
 
         if ( ! $ext)
