@@ -4782,7 +4782,7 @@ function jqBuildGrid() {
             colModel: cm,
             rowNum: 10,
             gridview: true,
-            rowList: [10, 20, 50, 100, 500, 1000],
+            rowList: [10, 20, 50, 100, 500],
             multiSort: true,
             sortable: true,
             sortorder: 'asc',
