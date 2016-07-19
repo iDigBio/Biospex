@@ -12,6 +12,11 @@ class ExpeditionFormRequest extends Request
         return Auth::check();
     }
 
+    /**
+     * Validation rules.
+     *
+     * @return array
+     */
     public function rules()
     {
         $rules = [
@@ -22,5 +27,19 @@ class ExpeditionFormRequest extends Request
         ];
 
         return $rules;
+    }
+
+    /**
+     * Alter group form input before validation.
+     *
+     * @return array
+     */
+    public function alterInput()
+    {
+        $input = $this->all();
+        $input['title'] = trim($input['title']);
+        $this->replace($input);
+
+        return $this->all();
     }
 }
