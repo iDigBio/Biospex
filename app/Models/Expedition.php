@@ -45,6 +45,26 @@ class Expedition extends Eloquent
         'description',
         'keywords',
     ];
+
+    /**
+     * Handle model events.
+     */
+    public static function boot() {
+
+        parent::boot();
+
+        static::deleting(function ($model) {
+            $model->title = $model->title . ':' . str_random();
+            $model->save();
+        });
+
+        self::restored(function ($model)
+        {
+            $title = explode(':', $model->title);
+            $model->title = $title[0];
+            $model->save();
+        });
+    }
     
     /**
      * Project relationship.
