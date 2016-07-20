@@ -35,7 +35,7 @@
                         <div class="col-xs-12">
                             <div class="form-group required {{ ($errors->has('owner')) ? 'has-error' : '' }}" for="owner">
                                 <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-user fa-lg"></i></span>
+                                    <span class="input-group-addon"><i class="fa fa-user fa-lg" title="Group Owner"></i></span>
                                     {!! Form::select('owner', $users, $group->owner->id, ['class' => 'selectpicker form-control']) !!}
                                 </div>
                                 {{ ($errors->has('owner') ? $errors->first('owner') : '') }}

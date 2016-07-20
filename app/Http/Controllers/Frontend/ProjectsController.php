@@ -224,7 +224,7 @@ class ProjectsController extends Controller
         }
 
         $subjectAssignedCount = $subject->skipCache()
-            ->where(['project_id' => $id])
+            ->where(['project_id' => (int) $id])
             ->whereRaw(['expedition_ids' => ['$not' => ['$size' => 0]]])
             ->count();
 
