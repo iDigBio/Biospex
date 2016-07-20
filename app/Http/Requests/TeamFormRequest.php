@@ -28,7 +28,7 @@ class TeamFormRequest extends Request
             'first_name'       => 'required',
             'last_name'        => 'required',
             'email'            => 'required|min:4|max:32|email|unique:teams,email,' . $this->route('teams'),
-            'institution'      => 'required|min:4|max:60'
+            'institution'      => 'required|min:4|max:150'
         ];
     }
 }

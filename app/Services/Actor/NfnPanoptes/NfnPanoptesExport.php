@@ -6,6 +6,7 @@ ini_set('memory_limit', '1024M');
 
 use App\Services\Actor\ActorAbstract;
 use App\Services\Actor\ActorInterface;
+use Exception;
 use Illuminate\Config\Repository as Config;
 use App\Repositories\Contracts\Download;
 use App\Repositories\Contracts\Expedition;
@@ -134,7 +135,7 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
 
         $this->setRecordDir($actor->id. '-' . md5($this->record->title));
 
-        $this->buildCsvArray($actor->pivot->expedition_id);
+        $this->buildCsvArray();
 
         $this->getImagesFromUri();
 
@@ -161,30 +162,33 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
 
     /**
      * Build csvExport array for export.
-     * @param $expeditionId
      */
-    public function buildCsvArray($expeditionId)
+    public function buildCsvArray()
     {
         foreach ($this->record->subjects as $subject)
         {
-            $this->csvExport[] = $this->mapNfnCsvColumns($subject, $expeditionId);
+            $this->csvExport[] = $this->mapNfnCsvColumns($subject);
         }
     }
 
     /**
      * Map nfn csvExport values from configuration
      * @param $subject
-     * @param $expeditionId
      * @return array
      */
-    public function mapNfnCsvColumns($subject, $expeditionId)
+    public function mapNfnCsvColumns($subject)
     {
         $csvArray = [];
         foreach ($this->nfnCsvMap as $key => $item)
         {
             if ($key === '#expeditionId')
             {
-                $csvArray[$key] = $expeditionId;
+                $csvArray[$key] = $this->record->id;
+                continue;
+            }
+            if ($key === '#expeditionTitle')
+            {
+                $csvArray[$key] = $this->record->title;
                 continue;
             }
             if ( ! is_array($item))
@@ -280,14 +284,21 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
      */
     public function saveImage($code, $index, $image)
     {
-        if ($image ==='' || $code !== 200)
+        if ($image === '' || $code !== 200)
         {
             $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageURL']);
 
             return;
         }
 
-        $this->image->setImageSizeInfoFromString($image);
+        try {
+            $this->image->setImageSizeInfoFromString($image);
+        } catch (Exception $e) {
+            $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageURL']);
+            
+            return;
+        }
+        
         $ext = $this->image->getFileExtension();
 
         if ( ! $ext)
