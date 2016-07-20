@@ -35,23 +35,26 @@ class Group extends Model
         'permissions',
     ];
 
-    
+    /**
+     * Handle model events.
+     */
     public static function boot() {
 
         parent::boot();
-        
-        /*
-        // cause a delete of a product to cascade to children so they are also deleted
-        static::deleted(function($group)
-        {
-            $group->projects()->delete();
+
+        static::deleting(function ($model) {
+            $model->title = $model->title . ':' . str_random();
+            $model->save();
+            $model->projects()->delete();
         });
 
-        static::restored(function($group)
+        self::restored(function ($model)
         {
-            $group->projects()->restore();
+            $title = explode(':', $model->title);
+            $model->title = $title[0];
+            $model->save();
+            $model->projects()->restore();
         });
-         */
     }
 
     /**

@@ -121,9 +121,17 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
             $model->advertise = $model->attributes;
         });
 
-        // Delete associated subjects from expedition_subjects
         static::deleting(function ($model) {
+            $model->title = $model->title . ':' . str_random();
+            $model->save();
             $model->expeditions()->delete();
+        });
+
+        self::restored(function ($model)
+        {
+            $title = explode(':', $model->title);
+            $model->title = $title[0];
+            $model->save();
         });
     }
 

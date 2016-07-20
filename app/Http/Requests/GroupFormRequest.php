@@ -18,7 +18,7 @@ class GroupFormRequest extends Request
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Validation rules.
      *
      * @return array
      */
@@ -38,7 +38,7 @@ class GroupFormRequest extends Request
     public function alterInput()
     {
         $input = $this->all();
-        $input['name'] = $this->route('groups') === env('ADMIN_GROUP_ID') ? env('ADMIN_GROUP') : $input['name'];
+        $input['name'] = $this->route('groups') === env('ADMIN_GROUP_ID') ? env('ADMIN_GROUP') : trim($input['name']);
         $input['user_id'] = $input['owner'];
         $this->replace($input);
 
