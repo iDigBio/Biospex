@@ -7,10 +7,12 @@ $(function () {
         .css('display', 'block')
         .closest('li')
         .addClass('active');
-
+/*
     if ($('ckeditor').length > 1) {
         CKEDITOR.replace('ckeditor');
     }
+*/
+    $('textarea').wysihtml5();
 
     $(".source li").draggable({
         addClasses: false,

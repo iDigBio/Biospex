@@ -58,6 +58,10 @@
                 {!! Html::linkWithIcon(route('admin.teams.index'), 'Teams', [], ['before' => 'fa fa-users']) !!}
             </li>
 
+            <li class="{!! Html::active('admin.pages.') !!}">
+                {!! Html::linkWithIcon(route('admin.pages.index'), 'Pages', [], ['before' => 'fa fa-files-o', 'after' => 'fa fa-angle-left pull-right']) !!}
+            </li>
+
             <li class="{!! Html::active('admin.translations.') !!}">
                 {!! Html::linkWithIcon(route('admin.translations.index'), 'Translations', [], ['before' => 'fa fa-language']) !!}
             </li>

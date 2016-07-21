@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Backend;
 
 use App\Repositories\Contracts\User;
 use Illuminate\Http\Request;
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Support\Collection;

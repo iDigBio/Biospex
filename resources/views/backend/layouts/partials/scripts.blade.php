@@ -16,6 +16,9 @@
 <!-- iCheck -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/icheck.min.js"></script>
 
+<!--
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-wysiwyg/0.3.3/amd/bootstrap3-wysihtml5.all.min.js"></script>
+-->
 @yield('scripts')
 
 <!-- AdminLTE App -->

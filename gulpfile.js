@@ -42,8 +42,11 @@ elixir(function (mix) {
             'css/adminlte.css'
         ], 'public/adminlte/css/main.css', assetsDir)
         .scripts([
+            'vendor/jquery/dist/jquery.min.js',
+            'vendor/jquery-ui/jquery-ui.min.js',
             'vendor/AdminLTE/dist/js/app.min.js',
             'vendor/bs-confirmation/bootstrap-confirmation.min.js',
+            'vendor/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.all.min.js',
             'js/adminlte.js',
             'js/delete-form.js'
         ], 'public/adminlte/js/main.js', assetsDir)
