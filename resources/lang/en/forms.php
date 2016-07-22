@@ -6,7 +6,7 @@ return array (
   'assign_subjects' => 'Assign Subjects',
   'assigned_subjects' => 'Assigned Subjects',
   'banner' => 'Banner',
-  'banner_min' => 'Min. 1200 x 300',
+  'banner_min' => 'Min. 1200 x 250',
   'blog_url' => 'Project Blog',
   'blog_url_format' => 'http://blog.com',
   'contact' => 'Contact',

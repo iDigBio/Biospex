@@ -10,12 +10,11 @@
 @section('content')
     @if ($groups->isEmpty())
         <div class="col-md-10 col-md-offset-1">
-            <h3>{{ trans('welcome.welcome') }}</h3>
+            <h3>{{ trans('html.welcome') }}</h3>
         </div>
         <div class="col-md-10 col-md-offset-1">
 
-            {!! trans('welcome.intro') !!}
-            {!! trans('welcome.ready') !!}
+            {!! trans('html.new-user-intro') !!}
             <button class="btn btn-success" title="@lang('buttons.createTitleG')"
                     onClick="location.href='{{ route('web.groups.create') }}'"><span
                         class="glyphicon glyphicon-plus"></span> @lang('buttons.create')</button>

@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\Contracts\Workflow;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -33,6 +32,6 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
-        DB::statement("update ltm_translations set ltm_translations.group = 'html' where ltm_translations.group = 'welcome'");
+        DB::statement("TRUNCATE ltm_translations");
     }
 }
