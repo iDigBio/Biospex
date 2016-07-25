@@ -3,11 +3,9 @@ require('laravel-elixir-imagemin');
 require('laravel-elixir-replace');
 
 var replacements = [
-    ['./lib/css/wysiwyg-color.css', ''], // "./lib/css/wysiwyg-color.css"
+    ['./lib/css/wysiwyg-color.css', ''],
     ['blue.png', '../img/blue.png'],
     ['blue@2x.png', '../img/blue@2x.png']
-    //['fonts/', '../fonts/'],
-    //['images/', '../images/']
 ];
 
 var assets = './resources/assets';
@@ -41,7 +39,7 @@ elixir(function (mix) {
     };
     mix.imagemin().copy(assets + '/fonts', 'public/fonts');
 
-    // mix bootstrap using less
+    // mix bootstrap using less and app specific less
     mix.less('app.less', 'resources/assets/css/bootstrap.css', {paths: lessPaths});
 
     // Create frontend css and javascript
@@ -110,65 +108,3 @@ elixir(function (mix) {
     mix.replace('public/js/backend.js', replacements)
         .replace('public/css/backend.css', replacements);
 });
-
-/*
- elixir(function (mix) {
- mix.less('app.less', 'resources/assets/css/bootstrap.css', {paths: lessPaths})
- .styles([
- 'css/bootstrap.css',
- 'vendor/jquery-ui-multiselect-widget/jquery.multiselect.css',
- 'vendor/bootstrap-select/dist/css/bootstrap-select.min.css',
- 'vendor/tablesorter/dist/css/theme.bootstrap.min.css',
- 'vendor/jqGrid/css/ui.jqgrid-bootstrap.css',
- 'css/biospex.css'
- ], 'public/css/biospex.css', assetsDir)
- .scripts([
- 'vendor/bootstrap-select/dist/js/bootstrap-select.min.js',
- 'vendor/jquery-validation/dist/jquery.validate.min.js',
- 'vendor/jquery-validation/dist/additional-methods.min.js',
- 'vendor/jquery-ui-multiselect-widget/src/jquery.multiselect.js',
- 'vendor/tablesorter/dist/js/jquery.tablesorter.min.js',
- 'vendor/tablesorter/dist/js/jquery.tablesorter.widgets.js',
- 'vendor/amcharts3/amcharts/amcharts.js',
- 'vendor/amcharts3/amcharts/serial.js',
- 'vendor/amcharts3/amcharts/plugins/dataloader/dataloader.min.js',
- 'vendor/amcharts3/amcharts/plugins/responsive/responsive.min.js',
- 'vendor/jqGrid/js/i18n/grid.locale-en.js',
- 'vendor/jqGrid/js/jquery.jqGrid.min.js',
- 'vendor/bs-confirmation/bootstrap-confirmation.min.js',
- 'js/amchart.js',
- 'js/delete-form.js',
- 'js/biospex.js',
- 'js/grid.js'
- ], 'public/js/biospex.js', assetsDir)
-
- .styles([
- //'vendor/jquery-ui/themes/smoothness/jquery-ui.min.css',
- 'vendor/bootstrap/dist/css/bootstrap.min.css',
- 'vendor/font-awesome/css/font-awesome.min.css',
- 'vendor/AdminLTE/dist/css/AdminLTE.min.css',
- 'vendor/AdminLTE/dist/css/skins/skin-blue.min.css',
- 'css/adminlte.css'
- ], 'public/adminlte/css/main.css', assetsDir)
- .scripts([
- 'vendor/jquery/dist/jquery.min.js',
- //'vendor/jquery-ui/jquery-ui.min.js',
- 'vendor/bootstrap/dist/js/bootstrap.min.js',
- 'vendor/x-editable/dist/inputs-ext/bootstrap-wysihtml5-0.0.2/wysihtml5-0.3.0.min.js',
- 'vendor/x-editable/dist/inputs-ext/bootstrap-wysihtml5-0.0.2/bootstrap-wysihtml5-0.0.2.min.js',
- 'vendor/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js',
- 'vendor/toastr/toastr.min.js',
- 'vendor/iCheck/icheck.min.js',
- 'vendor/AdminLTE/dist/js/app.min.js',
- 'vendor/bs-confirmation/bootstrap-confirmation.min.js',
- 'js/adminlte.js',
- 'js/delete-form.js'
- ], 'public/adminlte/js/main.js', assetsDir)
- .copy(assetsDir + 'vendor/font-awesome/fonts/', 'public/adminlte/images')
- .copy(assetsDir + 'vendor/jquery-ui/themes/smoothness/images', 'public/adminlte/images')
- .copy(assetsDir + 'vendor/bootstrap/fonts', 'public/fonts')
- .copy(assetsDir + 'vendor/AdminLTE/dist/img', 'public/adminlte/img')
- .copy(assetsDir + 'vendor/amcharts3/amcharts/images', 'public/amcharts/images');
- });
- */
-
