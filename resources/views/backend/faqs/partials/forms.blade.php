@@ -83,7 +83,7 @@
                              for="question">
                             {!! Form::label('question', 'Question', ['class' => 'col-sm-2 control-label']) !!}
                             <div class="col-sm-10">
-                                {!! Form::text('question', isset($faq->question) ? $faq->question : null, ['class' => 'form-control', 'placeholder' => 'Question']) !!}
+                                {!! Form::text('question', isset($faq->question) ? $faq->question : null, ['class' => 'form-control', 'data-type' => 'wysihtml5', 'placeholder' => 'Question']) !!}
                                 {{ ($errors->has('question') ? $errors->first('question') : '') }}
                             </div>
                         </div>
