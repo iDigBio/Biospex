@@ -209,7 +209,7 @@
 
             <div class="form-group {{ ($errors->has('logo')) ? 'has-error' : '' }}">
                 {!! Form::label('logo', trans('forms.logo'), ['class' => 'col-sm-2 control-label']) !!}
-                <div class="col-sm-10">
+                <div class="col-sm-4">
                     {!! Form::file('logo') !!} {{ trans('forms.logo_max') }}
                 </div>
                 {{ ($errors->has('logo') ? $errors->first('logo') : '') }}
@@ -217,7 +217,7 @@
 
             <div class="form-group {{ ($errors->has('banner')) ? 'has-error' : '' }}">
                 {!! Form::label('banner', trans('forms.banner'), ['class' => 'col-sm-2 control-label']) !!}
-                <div class="col-sm-10">
+                <div class="col-sm-4">
                     {!! Form::file('banner') !!} {{ trans('forms.banner_min') }}
                 </div>
                 {{ ($errors->has('banner') ? $errors->first('banner') : '') }}

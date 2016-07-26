@@ -76,7 +76,7 @@ return [
 
     /** Min and max logo and banner sizes used in Project model for Codesleve Stapler */
     'logo'                  => '300x200',
-    'banner'                => '1200x300',
+    'banner'                => '1200x250',
 
     /**
      * Possible identifiers in subject uploads.

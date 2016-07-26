@@ -29,7 +29,7 @@ class ProjectFormRequest extends Request
             'description_long'  => 'required',
             'keywords'          => 'required',
             'workflow_id'       => 'required',
-            'banner'            => 'image|image_size:>=1200,>=300',
+            'banner'            => 'image|image_size:>=1200,>=250',
             'logo'              => 'image|image_size:<=300,<=200',
         ];
 
