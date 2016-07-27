@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\Contracts\Resource;
+use App\Repositories\Contracts\Translation;
 use Illuminate\Support\ServiceProvider;
 
 use App\Repositories\Contracts\User as UserContract;
@@ -29,6 +31,8 @@ use App\Repositories\Contracts\AmChart as AmChartContract;
 use App\Repositories\Contracts\TeamCategory as TeamCategoryContract;
 use App\Repositories\Contracts\Team as TeamContract;
 use App\Repositories\Contracts\Notice as NoticeContract;
+use App\Repositories\Contracts\Translation as TranslationContract;
+use App\Repositories\Contracts\Resource as ResourceContract;
 
 use App\Repositories\UserRepository;
 use App\Repositories\GroupRepository;
@@ -55,6 +59,8 @@ use App\Repositories\AmChartRepository;
 use App\Repositories\TeamCategoryRepository;
 use App\Repositories\TeamRepository;
 use App\Repositories\NoticeRepository;
+use App\Repositories\TranslationRepository;
+use App\Repositories\ResourceRepository;
 
 class BiospexServiceProvider extends ServiceProvider
 {
@@ -100,5 +106,7 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(TeamCategoryContract::class, TeamCategoryRepository::class);
         $this->app->bind(TeamContract::class, TeamRepository::class);
         $this->app->bind(NoticeContract::class, NoticeRepository::class);
+        $this->app->bind(TranslationContract::class, TranslationRepository::class);
+        $this->app->bind(Resource::class, ResourceRepository::class);
     }
 }

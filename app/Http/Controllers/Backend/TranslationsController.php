@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Backend;
 
 use App\Repositories\Contracts\User;
 use Illuminate\Http\Request;
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Support\Collection;
@@ -14,10 +13,12 @@ class TranslationsController extends Controller
 {
     /** @var \Barryvdh\TranslationManager\Manager  */
     protected $manager;
+
     /**
      * @var Request
      */
     private $request;
+
     /**
      * @var User
      */
@@ -36,6 +37,12 @@ class TranslationsController extends Controller
         $this->repo = $repo;
     }
 
+    /**
+     * Get index page.
+     *
+     * @param null $group
+     * @return mixed
+     */
     public function getIndex($group = null)
     {
         $user = $this->repo->with(['profile'])->find($this->request->user()->id);
@@ -74,6 +81,13 @@ class TranslationsController extends Controller
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
     }
 
+    /**
+     * Get View.
+     *
+     * @param $group
+     * @param null $sub_group
+     * @return mixed
+     */
     public function getView($group, $sub_group = null)
     {
         if ($sub_group) {
@@ -83,6 +97,11 @@ class TranslationsController extends Controller
         return $this->getIndex($group);
     }
 
+    /**
+     * Load locales.
+     *
+     * @return array
+     */
     protected function loadLocales()
     {
         //Set the default locale as the first one.
@@ -94,6 +113,14 @@ class TranslationsController extends Controller
         return array_unique($locales);
     }
 
+    /**
+     * Add new keys and data.
+     *
+     * @param Request $request
+     * @param $group
+     * @param null $sub_group
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function postAdd(Request $request, $group, $sub_group = null)
     {
         $keys = explode("\n", $request->get('keys'));
@@ -111,6 +138,14 @@ class TranslationsController extends Controller
         return redirect()->back();
     }
 
+    /**
+     * Edit keys and data.
+     *
+     * @param Request $request
+     * @param $group
+     * @param null $sub_group
+     * @return array
+     */
     public function postEdit(Request $request, $group, $sub_group = null)
     {
         if(!in_array($group, $this->manager->getConfig('exclude_groups'))) {
@@ -130,6 +165,14 @@ class TranslationsController extends Controller
         }
     }
 
+    /**
+     * Delete resource.
+     *
+     * @param $group
+     * @param $key
+     * @param null $sub_group
+     * @return array
+     */
     public function postDelete($group, $key, $sub_group = null)
     {
         if(!in_array($group, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
@@ -138,6 +181,12 @@ class TranslationsController extends Controller
         }
     }
 
+    /**
+     * Import files.
+     *
+     * @param Request $request
+     * @return array
+     */
     public function postImport(Request $request)
     {
         $replace = $request->get('replace', false);
@@ -146,6 +195,11 @@ class TranslationsController extends Controller
         return ['status' => 'ok', 'counter' => $counter];
     }
 
+    /**
+     * Find.
+     *
+     * @return array
+     */
     public function postFind()
     {
         $numFound = $this->manager->findTranslations();
@@ -153,6 +207,13 @@ class TranslationsController extends Controller
         return ['status' => 'ok', 'counter' => (int) $numFound];
     }
 
+    /**
+     * Publish language files.
+     *
+     * @param $group
+     * @param null $sub_group
+     * @return array
+     */
     public function postPublish($group, $sub_group = null)
     {
         if ($sub_group) {
@@ -162,5 +223,20 @@ class TranslationsController extends Controller
         }
 
         return ['status' => 'ok'];
+    }
+
+    /**
+     * Show preview for html pages.
+     *
+     * @param $id
+     * @param null $locale
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function preview($id, $locale = null)
+    {
+        $user = $this->repo->with(['profile'])->find($this->request->user()->id);
+        $translation = Translation::where('id', $id)->first();
+
+        return view('backend.translations.preview', compact('user', 'translation'));
     }
 }

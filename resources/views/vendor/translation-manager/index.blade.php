@@ -78,6 +78,7 @@
                     @if($deleteEnabled)
                         <th>&nbsp;</th>
                     @endif
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -91,7 +92,7 @@
                             <td>
                                 <a href="#edit" class="editable status-{{  $t ? $t->status : 0 }} locale-{{  $locale }}"
                                    data-locale="{{  $locale }}" data-name="{{  $locale . "|" . $key }}" id="username"
-                                   data-type="textarea" data-pk="{{  $t ? $t->id : 0 }}" data-url="{{  $editUrl }}"
+                                   data-type="wysihtml5" data-pk="{{  $t ? $t->id : 0 }}" data-url="{{  $editUrl }}"
                                    data-title="Enter translation">{{  $t ? htmlentities($t->value, ENT_QUOTES, 'UTF-8', false) : '' }}</a>
                             </td>
                         @endforeach
@@ -99,6 +100,15 @@
                             <td>
 
                                 {!! Html::linkWithIcon(route('admin.translations.delete', [$group, $key]), '<span class="glyphicon glyphicon-trash"></span>', ['class' => 'delete-key', 'data-confirm' => 'Are you sure you want to delete the translations for '.  $key . '?']) !!}
+                            </td>
+                        @endif
+                        @if($group === 'html')
+                            <td>
+                                <a href="{{ URL::route('admin.translations.preview', [$t->id]) }}" target="_blank">
+                                    <span class="fa-stack" tooltip="Preview" tooltip-popup-delay="750">
+                              <i class="fa fa-search fa-stack-1x fa-lower-right"></i>
+                              <i class="fa fa-file-o fa-stack-1x fa-upper-left"></i>
+                            </span></a>
                             </td>
                         @endif
                     </tr>

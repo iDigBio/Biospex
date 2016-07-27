@@ -39,3 +39,8 @@ $router->post('translations/delete/{group}/{key}', [
     'uses' => 'TranslationsController@postDelete',
     'as' => 'admin.translations.delete'
 ]);
+
+$router->get('translations/preview/{id}', [
+    'uses' => 'TranslationsController@preview',
+    'as' => 'admin.translations.preview'
+]);

@@ -48,6 +48,11 @@ return [
             'root'   => storage_path().'/app',
         ],
 
+        'public' => [
+            'driver' => 'local',
+            'root' => public_path()
+        ],
+
         's3' => [
             'driver' => 's3',
             'key'    => 'your-key',
@@ -65,7 +70,6 @@ return [
             'region'    => 'IAD',
             'url_type'  => 'publicURL'
         ],
-
     ],
 
 ];
