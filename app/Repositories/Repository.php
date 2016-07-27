@@ -503,6 +503,21 @@ abstract class Repository
     }
 
     /**
+     * Return single trashed.
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function withTrashed($id)
+    {
+        $result = $this->model->withTrashed()->find($id);
+
+        $this->resetModel();
+
+        return $result;
+    }
+
+    /**
      * Get only trashed.
      * 
      * @return $this

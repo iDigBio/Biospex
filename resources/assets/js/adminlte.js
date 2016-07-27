@@ -114,4 +114,35 @@ $(function () {
     $('.form-publish').on('ajax:success', function (e, data) {
         $('div.success-publish').slideDown();
     });
+
+    //Helper function to keep table row from collapsing when being sorted
+    var fixHelperModified = function(e, tr) {
+        var $originals = tr.children();
+        var $helper = tr.clone();
+        $helper.children().each(function(index)
+        {
+            $(this).width($originals.eq(index).width())
+        });
+        return $helper;
+    };
+
+    //Make diagnosis table sortable
+    $("#resources tbody").sortable({
+        helper: fixHelperModified,
+        stop: function(event,ui) {renumber_table('#resources')}
+    }).disableSelection();
 });
+
+//Renumber table rows
+function renumber_table(tableID) {
+    $(tableID + " tr").each(function() {
+        id = this.id;
+        count = $(this).parent().children().index($(this)) + 1;
+        $(this).find('.order').html(count);
+        if (id != '') {
+            $.post('resources/'+id+'/order/'+count, {id: id, order: count}, function () {
+                $(this).prop('id', count);
+            });
+        }
+    });
+}

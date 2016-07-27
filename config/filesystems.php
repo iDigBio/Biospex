@@ -65,7 +65,6 @@ return [
             'region'    => 'IAD',
             'url_type'  => 'publicURL'
         ],
-
     ],
 
 ];
