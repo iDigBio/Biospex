@@ -83,7 +83,7 @@ class ResourcesController extends Controller
         if (null !== $request->file('document'))
         {
             $filename = $resource->id . '-' . $request->file('document')->getClientOriginalName();
-            Storage::put(
+            Storage::disk('public')->put(
                 'resources/' . $filename,
                 file_get_contents($request->file('document')->getRealPath())
             );
@@ -129,11 +129,11 @@ class ResourcesController extends Controller
         {
             if ($resource->document)
             {
-                Storage::delete('resources/' . $resource->document);
+                Storage::disk('public')->delete('resources/' . $resource->document);
             }
 
             $resource->document = $resource->id . '-' . $request->file('document')->getClientOriginalName();
-            Storage::put(
+            Storage::disk('public')->put(
                 'resources/' . $resource->document,
                 file_get_contents($request->file('document')->getRealPath())
             );
@@ -179,7 +179,7 @@ class ResourcesController extends Controller
     public function trash($id)
     {
         $resource = $this->resource->withTrashed($id);
-        Storage::delete('resources/' . $resource->document);
+        Storage::disk('public')->delete('resources/' . $resource->document);
 
         $result = $this->resource->forceDelete($id);
 

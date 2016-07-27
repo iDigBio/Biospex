@@ -24,7 +24,7 @@ class ResourceFormRequest extends Request
     public function rules()
     {
         return [
-            'title' => 'required|between:3,60|unique:resources,title,' . $this->route('resources'),
+            'title' => 'required|between:3,255|unique:resources,title,' . $this->route('resources'),
             'description' => 'required',
             'document.file' => 'mimes:pdf'
         ];

@@ -1,9 +1,9 @@
 @foreach($resources as $resource)
     <tr id="{{ $resource->id }}">
         <td class="order">{{ $resource->order }}</td>
-        <td>{{ $resource->title }}</td>
-        <td>{{ $resource->description }}</td>
-        <td>{{ $resource->document}}</td>
+        <td>{!! $resource->title !!}</td>
+        <td>{!! $resource->description !!}</td>
+        <td>{{ link_to_route('web.resources.download', $resource->document, [$resource->id]) }}</td>
         <td><td class="button-fix">
             <div class="btn-toolbar">
                 <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs" type="button"

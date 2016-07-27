@@ -4,6 +4,13 @@
             <h3 class="box-title">Deleted Resources</h3>
             <div class="box-body table-responsive no-padding">
                 <table class="table table-hover">
+                    <colgroup>
+                        <col class="col-md-0">
+                        <col class="col-md-2">
+                        <col class="col-md-6">
+                        <col class="col-md-2">
+                        <col class="col-md-0">
+                    </colgroup>
                     <tr>
                         <th>ID</th>
                         <th>Title</th>

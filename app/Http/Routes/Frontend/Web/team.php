@@ -1,6 +1,6 @@
 <?php
 
-// Begin About
+// Begin Team
 $router->get('team', [
     'uses' => 'TeamsController@index',
     'as'   => 'web.teams.index'

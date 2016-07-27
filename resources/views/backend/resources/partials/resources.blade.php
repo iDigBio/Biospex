@@ -4,6 +4,13 @@
             <h3 class="box-title">Current Resources</h3>
             <div class="box-body table-responsive no-padding">
                 <table class="table table-hover" id="resources">
+                    <colgroup>
+                        <col class="col-md-0">
+                        <col class="col-md-2">
+                        <col class="col-md-6">
+                        <col class="col-md-2">
+                        <col class="col-md-0">
+                    </colgroup>
                     <thead>
                         <th>Order</th>
                         <th>Title</th>
