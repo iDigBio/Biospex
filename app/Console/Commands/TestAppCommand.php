@@ -40,9 +40,16 @@ class TestAppCommand extends Command
 
     public function fire()
     {
-        $this->api->token();
-        dd($this->api->getClassification(2046));
+        $this->api->getToken();
+        dd($this->api->getProject(1613));
         /*
+        - token:  include the token in an 'Authorization' header, as 'Bearer [insert token here]'
+        - classifications api call:
+        production - https://panoptes.zooniverse.org/api/classifications/project?workflow_id=2046
+            (for workflow Herbarium_WeDigFLPlants' Mints of Florida)
+        staging - https://panoptes-staging.zooniverse.org/api/classifications/project?project_id=1613
+            (as an example based on project id)
+
         $stageUrl = 'https://panoptes-staging.zooniverse.org/oauth/token?';
         $prodUrl = 'https://panoptes.zooniverse.org/oauth/token?';
         $clientId = 'e8ee800bdd04438cdb6a4f9569e9720d539b16c87127885cbb960651a7b3b760';

@@ -103,7 +103,7 @@ class WorkFlowManagerCommand extends Command
     {
         foreach ($manager->expedition->actors as $actor) {
             if ($this->checkErrorQueued($actor)) {
-                return;
+                continue;
             }
 
             if ($actor->completed) {
