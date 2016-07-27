@@ -48,3 +48,12 @@ ul.source, ul.target {
 .red {
     color: #FF0000;
 }
+
+.fa-lower-right {
+    left: 4px !important;
+    top: 2px !important;
+}
+.fa-upper-left {
+    left: -2px !important;
+    top: -2px !important;
+}
