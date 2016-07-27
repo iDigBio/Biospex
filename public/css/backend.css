@@ -7447,12 +7447,10 @@ ul.source, ul.target {
     color: #FF0000;
 }
 
-.fa-lower-right {
-    left: 4px !important;
-    top: 2px !important;
+.ui-sortable tr {
+    cursor:pointer;
 }
-.fa-upper-left {
-    left: -2px !important;
-    top: -2px !important;
+.ui-sortable tr:hover {
+    background:rgba(244,251,17,0.45);
 }
 /*# sourceMappingURL=backend.css.map */
