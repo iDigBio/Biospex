@@ -10,7 +10,7 @@
 @section('content')
     @if ($groups->isEmpty())
         <div class="col-md-10 col-md-offset-1">
-            <h3>{{ trans('html.welcome') }}</h3>
+            {{ trans('html.welcome') }}
         </div>
         <div class="col-md-10 col-md-offset-1">
 

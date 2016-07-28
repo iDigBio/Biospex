@@ -55,6 +55,8 @@ interface Repository
     public function orderBy(array $order_by = []);
 
     public function limitOffset($limit, $offset = 0);
+
+    public function withTrashed($id);
     
     public function trashed();
     
