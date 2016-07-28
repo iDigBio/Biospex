@@ -151,7 +151,6 @@ return [
         Msurguy\Honeypot\HoneypotServiceProvider::class,
         Vetruvet\PhpRedis\PhpRedisServiceProvider::class,
         Barryvdh\TranslationManager\ManagerServiceProvider::class,
-        Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider::class,
 
         /*
          * Biospex Providers
