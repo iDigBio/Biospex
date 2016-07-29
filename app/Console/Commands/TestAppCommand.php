@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
+use League\OAuth2\Client\Provider\GenericProvider;
 use App\Repositories\Contracts\Project;
+use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use App\Services\Api\NfnApi;
 
@@ -40,8 +42,15 @@ class TestAppCommand extends Command
 
     public function fire()
     {
-        $this->api->getToken();
-        dd($this->api->getProject(1613));
+        $this->api->setProvider();
+        $this->api->getClassifications(2318);
+
+        /*
+        $this->api->setClient(new Client(['cookies' => true, 'allow_redirects' => true]));
+        $token = $this->api->setToken();
+        dd($token);
+        dd($this->api->getClassifications(2318));
+        */
         /*
         - token:  include the token in an 'Authorization' header, as 'Bearer [insert token here]'
         - classifications api call:

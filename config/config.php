@@ -136,10 +136,11 @@ return [
     ],
 
     'nfnApi' => [
-        'auth' => env('NFN_API_AUTH'),
-        'uri' => env('NFN_API_URI'),
         'clientId' => env('NFN_API_CLIENT_ID'),
-        'clientSecret' => env('NFN_API_CLIENT_SECRET')
+        'clientSecret' => env('NFN_API_CLIENT_SECRET'),
+        'apiUri' => env('NFN_API_URI'),
+        'tokenUri' => env('NFN_API_TOKEN_URI'),
+        'redirectUri' => env('NFN_REDIRECT_URI')
     ],
 
     /**
