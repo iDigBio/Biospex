@@ -224,6 +224,16 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     {
         return $this->hasOne(AmChart::class);
     }
+
+    /**
+     * NfnClassification relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function nfnClassifications()
+    {
+        return $this->hasMany(NfnClassification::class);
+    }
     
     /**
      * Find by uuid.
