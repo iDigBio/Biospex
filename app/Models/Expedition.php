@@ -140,6 +140,16 @@ class Expedition extends Eloquent
     }
 
     /**
+     * NfnClassification relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function nfnClassifications()
+    {
+        return $this->hasMany(NfnClassification::class);
+    }
+
+    /**
      * Find by uuid.
      *
      * @param $uuid
