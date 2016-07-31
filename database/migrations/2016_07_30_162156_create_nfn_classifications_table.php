@@ -19,6 +19,7 @@ class CreateNfnClassificationsTable extends Migration
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->unsignedInteger('expedition_id');
             $table->foreign('expedition_id')->references('id')->on('expeditions')->onDelete('cascade');
+            $table->timestamp('started_at');
             $table->timestamp('finished_at');
             $table->timestamps();
             $table->softDeletes();
