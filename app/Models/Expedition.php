@@ -199,6 +199,17 @@ class Expedition extends Eloquent
     }
 
     /**
+     * Set the nfn_workflow_id to null if empty.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function setNfnWorkflowIdAttribute($value)
+    {
+        $this->attributes['nfn_workflow_id'] = empty($value) ? null : $value;
+    }
+
+    /**
      * Get all expeditions for user.
      * 
      * @param $id
