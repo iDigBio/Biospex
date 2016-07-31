@@ -46,6 +46,16 @@
                     {{ ($errors->has('keywords') ? $errors->first('keywords') : '') }}
                 </div>
 
+                @if(in_array($expedition->project->workflow_id, Config::get('config.nfnWorkflows'), false))
+                    <div class="form-group {{ ($errors->has('nfn_workflow_id')) ? 'has-error' : '' }}">
+                        {!! Form::label('nfn_workflow_id', trans('forms.nfn_workflow_id'), ['class' => 'col-sm-2 control-label']) !!}
+                        <div class="col-sm-4">
+                            {!! Form::text('nfn_workflow_id', null, ['class' => 'form-control', 'placeholder' => trans('forms.nfn_workflow_id_note')]) !!}
+                            {{ ($errors->has('nfn_workflow_id') ? $errors->first('nfn_workflow_id') : '') }}
+                        </div>
+                    </div>
+                @endif
+
                 <h4>{{ trans_choice('pages.subjects_assigned', 1) }} <span id="max">{{ trans('pages.subjects_assigned_max') }}</span>: <span id="subjectCountHtml">0</span></h4>
                 <div class="table-responsive" id="jqtable">
                     <input type="hidden" id="url" value="{{ URL::route('web.grids.create', [$expedition->project->id]) }}">
