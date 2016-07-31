@@ -108,13 +108,14 @@ class NfnApi
      * Get classifications.
      *
      * @param $id
+     * @param int $pageSize
      * @return mixed
      */
-    public function getClassifications($id)
+    public function getClassifications($id, $pageSize = 20)
     {
         $this->checkAccessToken();
 
-        $uri = $this->config->get('config.nfnApi.apiUri') . '/classifications/project?workflow_id=' . $id;
+        $uri = $this->config->get('config.nfnApi.apiUri') . '/classifications/project?workflow_id=' . $id . '&page_size=' . $pageSize;
 
         return $this->authorizedRequest($uri);
     }
