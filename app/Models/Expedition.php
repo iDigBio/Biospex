@@ -44,6 +44,7 @@ class Expedition extends Eloquent
         'title',
         'description',
         'keywords',
+        'nfn_workflow_id',
     ];
 
     /**
