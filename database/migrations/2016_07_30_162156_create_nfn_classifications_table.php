@@ -24,6 +24,7 @@ class CreateNfnClassificationsTable extends Migration
             $table->softDeletes();
 
             $table->engine = 'InnoDB';
+            $table->unique('classification_id');
             $table->index(['project_id', 'finished_at']);
         });
     }
