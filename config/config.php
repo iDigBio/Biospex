@@ -119,6 +119,11 @@ return [
         'smallWidth' => env('NFN_SM_WIDTH'),
     ],
 
+    'nfnWorkflows' => [
+        env('NFN_WORKFLOWS_1'),
+        env('NFN_WORKFLOWS_2'),
+    ],
+
     'nfnCsvMap' => [
         'subjectId'        => '_id',
         'imageName'        => '',
