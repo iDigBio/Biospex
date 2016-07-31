@@ -20,6 +20,7 @@ class NfnClassification extends Model
         'classification_id',
         'project_id',
         'expedition_id',
+        'started_at',
         'finished_at'
     ];
 
@@ -28,7 +29,7 @@ class NfnClassification extends Model
      *
      * @var array
      */
-    protected $dates = ['deleted_at', 'finished_at'];
+    protected $dates = ['deleted_at'];
 
 
     /**
@@ -49,5 +50,7 @@ class NfnClassification extends Model
     {
         return $this->belongsTo(Expedition::class);
     }
+
+
 
 }
