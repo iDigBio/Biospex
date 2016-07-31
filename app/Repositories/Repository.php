@@ -273,15 +273,13 @@ abstract class Repository
     /**
      * Find data using whereIn.
      *
-     * @param array $where
+     * @param $field
+     * @param array $values
      * @return $this
      */
-    public function whereIn(array $where = [])
+    public function whereIn($field, array $values)
     {
-        $this->model = $this->model->whereNested(function ($query) use ($where)
-        {
-            $this->buildWhereClause($query, $where, 'whereIn');
-        });
+        $this->model = $this->model->whereIn($field, $values);
 
         return $this;
     }
@@ -289,15 +287,13 @@ abstract class Repository
     /**
      * Find data using whereNotIn.
      *
-     * @param array $where
+     * @param $field
+     * @param array $values
      * @return $this
      */
-    public function whereNotIn(array $where = [])
+    public function whereNotIn($field, array $values)
     {
-        $this->model = $this->model->whereNested(function ($query) use ($where)
-        {
-            $this->buildWhereClause($query, $where, 'whereNotIn');
-        });
+        $this->model = $this->model->whereNotIn($field, $values);
 
         return $this;
     }
