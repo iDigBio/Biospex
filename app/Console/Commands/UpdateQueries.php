@@ -34,7 +34,7 @@ class UpdateQueries extends Command
     public function handle()
     {
 
-        //$this->updateWorkflowIds();
+        $this->updateWorkflowIds();
 
         $this->updateSoftDeletes();
 
