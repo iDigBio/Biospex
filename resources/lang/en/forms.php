@@ -53,4 +53,6 @@ return array (
   'target_name' => 'Name',
   'target_valid_response' => 'Valid responses',
   'owner' => 'Group Owner',
+  'nfn_workflow_id' => 'NfN Workflow Id',
+  'nfn_workflow_id_note' => 'Workflow Id from Notes From Nature',
 );
