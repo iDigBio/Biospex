@@ -30,9 +30,9 @@ interface Repository
     
     public function orWhere(array $where = []);
 
-    public function whereIn(array $where = []);
+    public function whereIn($field, array $values);
 
-    public function whereNotIn(array $where = []);
+    public function whereNotIn($field, array $values);
 
     public function whereHas($relation, array $where = []);
 

@@ -2,18 +2,14 @@
 
 namespace App\Jobs;
 
-use App\Jobs\Job;
 use App\Repositories\Contracts\AmChart;
 use App\Repositories\Contracts\Project;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use MongoCollection;
 
-class BuildAmChartData extends Job implements ShouldQueue
+class AmChartJob extends Job implements ShouldQueue
 {
 
     use InteractsWithQueue, SerializesModels;
@@ -40,7 +36,7 @@ class BuildAmChartData extends Job implements ShouldQueue
     protected $transcriptions = [];
 
     /**
-     * BuildAmChartData constructor.
+     * AmChartJob constructor.
      * @param $id
      */
     public function __construct($id)
@@ -116,11 +112,9 @@ class BuildAmChartData extends Job implements ShouldQueue
         $resultSet = [];
         foreach ($results as $result)
         {
-            $date = $result['_id']['year'] . '-' . $result['_id']['month'] . '-' . $result['_id']['day'];
-            $total = $result['total'];
-            $day = $this->calculateDay($expedition->stat->start_date, $date);
+            $day = $this->calculateDay($expedition->stat->start_date, $result->finished_at);
 
-            $resultSet[$day] = $this->buildResultSet($expedition->id, $expedition->title, $day, $total);
+            $resultSet[$day] = $this->buildResultSet($expedition->id, $expedition->title, $day, $result->total);
         }
 
         if ( ! array_key_exists(0, $resultSet))
@@ -188,28 +182,14 @@ class BuildAmChartData extends Job implements ShouldQueue
      */
     public function getData($expeditionId)
     {
-        $client = DB::connection('mongodb')->getMongoClient('mongodb');
-        $db = $client->selectDB(Config::get('database.connections.mongodb.database'));
-        $collection = new MongoCollection($db, 'transcriptions');
 
-        $ops = [
-            ['$match' => ['project_id' => $this->id, 'expedition_id' => $expeditionId]],
-            [
-                '$group' => [
-                    '_id'   => [
-                        'year'  => ['$year' => '$finished_at'],
-                        'month' => ['$month' => '$finished_at'],
-                        'day'   => ['$dayOfMonth' => '$finished_at'],
-                        //'hour'  => ['$hour' => '$finished_at']
-                    ],
-                    'total' => ['$sum' => 1]
-                ],
-            ]
-        ];
+        $results = DB::table('nfn_classifications')
+            ->select('finished_at', DB::raw('count(*) as total'))
+            ->where('expedition_id', $expeditionId)
+            ->groupBy(DB::raw('DATE_FORMAT(finished_at, \'%m-%d-%Y\')'))
+            ->get();
 
-        $results = $collection->aggregate($ops);
-
-        return $results['result'];
+        return $results;
     }
 
     /**

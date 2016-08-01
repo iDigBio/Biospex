@@ -4451,7 +4451,8 @@ AmCharts.makeChart("chartdiv", {
         size: 15,
         text: "Project Total Transcription Activity"
     }],
-    path: "/amcharts",
+    path: "/",
+    pathToImages: "/img/",
     fontSize: 12,
     marginTop: 10,
     categoryField: 'day',
