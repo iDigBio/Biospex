@@ -1,6 +1,7 @@
 <?php  namespace App\Services\Queue;
 
-use App\Jobs\UpdateExpeditionStat;
+use App\Jobs\AmChartJob;
+use App\Jobs\ExpeditionStatJob;
 use App\Repositories\Contracts\Import;
 use App\Services\Report\TranscriptionImportReport;
 use App\Services\Process\NfnTranscription;
@@ -89,8 +90,10 @@ class NfnTranscriptionQueue extends QueueAbstract
             $csv = $this->transcription->process($file);
             $expeditionId = $this->transcription->getExpeditionId();
             
-            $this->dispatch((new UpdateExpeditionStat($import->project_id, $expeditionId))->onQueue(Config::get('config.beanstalkd.import')));
-            
+            $this->dispatch((new ExpeditionStatJob($import->project_id, $expeditionId))->onQueue(Config::get('config.beanstalkd.job')));
+            $this->dispatch((new AmChartJob($import->project_id))->onQueue(Config::get('config.beanstalkd.job')));
+
+
             $this->report->complete($import->user->email, $import->project->title, $csv);
             $this->filesystem->delete($file);
             $this->import->delete($import->id);

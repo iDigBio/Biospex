@@ -44,6 +44,7 @@ class Expedition extends Eloquent
         'title',
         'description',
         'keywords',
+        'nfn_workflow_id',
     ];
 
     /**
@@ -56,6 +57,7 @@ class Expedition extends Eloquent
         static::deleting(function ($model) {
             $model->title = $model->title . ':' . str_random();
             $model->save();
+            $model->stat->delete();
         });
 
         self::restored(function ($model)
@@ -63,6 +65,7 @@ class Expedition extends Eloquent
             $title = explode(':', $model->title);
             $model->title = $title[0];
             $model->save();
+            $model->stat->restore();
         });
     }
     
@@ -140,6 +143,16 @@ class Expedition extends Eloquent
     }
 
     /**
+     * NfnClassification relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function nfnClassifications()
+    {
+        return $this->hasMany(NfnClassification::class);
+    }
+
+    /**
      * Find by uuid.
      *
      * @param $uuid
@@ -185,6 +198,17 @@ class Expedition extends Eloquent
     public function getSubjectsCountAttribute()
     {
         return $this->subjects()->count();
+    }
+
+    /**
+     * Set the nfn_workflow_id to null if empty.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function setNfnWorkflowIdAttribute($value)
+    {
+        $this->attributes['nfn_workflow_id'] = empty($value) ? null : $value;
     }
 
     /**

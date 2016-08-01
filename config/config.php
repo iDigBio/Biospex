@@ -119,6 +119,11 @@ return [
         'smallWidth' => env('NFN_SM_WIDTH'),
     ],
 
+    'nfnWorkflows' => [
+        env('NFN_WORKFLOWS_1'),
+        env('NFN_WORKFLOWS_2'),
+    ],
+
     'nfnCsvMap' => [
         'subjectId'        => '_id',
         'imageName'        => '',
@@ -133,6 +138,14 @@ return [
         '#catalogNumber'   => ['occurrence' => 'catalogNumber'],
         '#expeditionId'    => '',
         '#expeditionTitle' => '',
+    ],
+
+    'nfnApi' => [
+        'clientId' => env('NFN_API_CLIENT_ID'),
+        'clientSecret' => env('NFN_API_CLIENT_SECRET'),
+        'apiUri' => env('NFN_API_URI'),
+        'tokenUri' => env('NFN_API_TOKEN_URI'),
+        'redirectUri' => env('NFN_REDIRECT_URI')
     ],
 
     /**

@@ -3,14 +3,13 @@
 namespace App\Jobs;
 
 use App\Repositories\Contracts\ExpeditionStat;
+use App\Repositories\Contracts\NfnClassification;
 use App\Repositories\Contracts\Subject;
-use App\Repositories\Contracts\Transcription;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\Log;
 
-class UpdateExpeditionStat extends Job implements ShouldQueue
+class ExpeditionStatJob extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
@@ -41,9 +40,8 @@ class UpdateExpeditionStat extends Job implements ShouldQueue
      *
      * @param Subject $subject
      * @param ExpeditionStat $expeditionStat
-     * @param Transcription $transcription
      */
-    public function handle(Subject $subject, ExpeditionStat $expeditionStat, Transcription $transcription)
+    public function handle(Subject $subject, ExpeditionStat $expeditionStat)
     {
         $stat = $expeditionStat->skipCache()->where(['expedition_id' => $this->expeditionId])->first();
         $count = $subject->skipCache()->where(['expedition_ids' => $this->expeditionId])->count();
@@ -52,28 +50,25 @@ class UpdateExpeditionStat extends Job implements ShouldQueue
         $stat->transcriptions_total = transcriptions_total($count);
         $stat->transcriptions_completed = transcriptions_completed($this->expeditionId);
         $stat->percent_completed = transcriptions_percent_completed($stat->transcriptions_total, $stat->transcriptions_completed);
-        $stat->start_date = (null === $stat->start_date) ? $this->getEarliestDate($transcription) : $stat->start_date;
+        $stat->start_date = (null === $stat->start_date) ? $this->getEarliestDate() : $stat->start_date;
 
-        Log::alert('Updating ' . $stat->id);
         $stat->save();
     }
 
     /**
-     * @param Transcription $transcription
-     * @return mixed
+     * @return null|string
      */
-    private function getEarliestDate(Transcription $transcription)
+    private function getEarliestDate()
     {
-        $record = $transcription->skipCache()->where(['project_id' => $this->projectId, 'expedition_id' => $this->expeditionId])->orderBy(['finished_at' => 'asc'])->first();
+        $classification = app(NfnClassification::class);
+        $record = $classification->skipCache()->where(['project_id' => $this->projectId, 'expedition_id' => $this->expeditionId])->orderBy(['started_at' => 'asc'])->first();
         
         if ($record === null)
         {
             return null;
         }
 
-        $date = new \DateTime($record->finished_at);
-        
-        return $date->format('Y-m-d H:i:s');
+        return $record->started_at;
         
     }
 }

@@ -1,11 +1,11 @@
-<?php 
+<?php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ExpeditionStat extends Model
+class NfnClassification extends Model
 {
     use SoftDeletes;
 
@@ -14,40 +14,43 @@ class ExpeditionStat extends Model
      *
      * @var string
      */
-    protected $table = 'expedition_stats';
+    protected $table = 'nfn_classifications';
 
-    /**
-     * Accepted attributes
-     *
-     * @var array
-     */
     protected $fillable = [
+        'classification_id',
+        'project_id',
         'expedition_id',
-        'subject_count',
-        'transcriptions_total',
-        'transcriptions_completed',
-        'percentage_completed',
-        'start_date'
+        'started_at',
+        'finished_at'
     ];
 
     /**
+     * The attributes that should be mutated to dates.
+     *
      * @var array
      */
     protected $dates = ['deleted_at'];
 
+
     /**
-     * Boot function to add model events
+     * Project relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public static function boot()
+    public function project()
     {
-        parent::boot();
+        return $this->belongsTo(Project::class);
     }
 
     /**
+     * Expedition relationship.
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function expedition()
     {
         return $this->belongsTo(Expedition::class);
     }
+
+
+
 }

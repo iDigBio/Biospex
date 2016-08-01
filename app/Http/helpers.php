@@ -186,7 +186,7 @@ function transcriptions_total($count)
  */
 function transcriptions_completed($expeditionId)
 {
-    $transcription = app(\App\Repositories\Contracts\Transcription::class);
+    $transcription = app(\App\Models\NfnClassification::class);
     return $transcription->where(['expedition_id' => $expeditionId])->count();
 }
 
@@ -199,5 +199,7 @@ function transcriptions_completed($expeditionId)
  */
 function transcriptions_percent_completed($total, $completed)
 {
-    return ($total === 0 || $completed === 0) ? 0 : ($completed / $total) * 100;
+    $value = ($total === 0 || $completed === 0) ? 0 : ($completed / $total) * 100;
+
+    return ($value > 100) ? 100 : $value;
 }

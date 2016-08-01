@@ -19,7 +19,7 @@ class ClearBeanstalkdQueueCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Clear a Beanstalkd tube, by deleting all pending jobs.';
+    protected $description = 'Clear a Beanstalkd tube by deleting all pending jobs.';
 
     /**
      * All the queues defined for beanstalkd.

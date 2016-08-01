@@ -1,35 +1,20 @@
-<?php namespace App\Models;
+<?php
 
-use Jenssegers\Mongodb\Model as Eloquent;
+namespace App\Models;
 
-class AmChart extends Eloquent
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class AmChart extends Model
 {
-    /**
-     * Redefine connection to use mongodb
-     */
-    protected $connection = 'mongodb';
+    use SoftDeletes;
 
     /**
-     * Collection name.
-     * 
+     * The database table used by the model.
+     *
      * @var string
      */
-    protected $collection = 'amcharts';
-
-    /**
-     * Set primary key
-     */
-    protected $primaryKey = '_id';
-
-    /**
-     * @var bool
-     */
-    public $incrementing = false;
-
-    /**
-     * set guarded properties
-     */
-    protected $guarded = ['_id'];
+    protected $table = 'amcharts';
 
     /**
      * Fill data.

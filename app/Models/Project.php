@@ -124,7 +124,11 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         static::deleting(function ($model) {
             $model->title = $model->title . ':' . str_random();
             $model->save();
-            $model->expeditions()->delete();
+
+            foreach ($model->expeditions as $expedition)
+            {
+                $expedition->delete();
+            }
         });
 
         self::restored(function ($model)
@@ -132,6 +136,11 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
             $title = explode(':', $model->title);
             $model->title = $title[0];
             $model->save();
+
+            foreach ($model->expeditions as $expedition)
+            {
+                $expedition->restore();
+            }
         });
     }
 
@@ -223,6 +232,16 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     public function amChart()
     {
         return $this->hasOne(AmChart::class);
+    }
+
+    /**
+     * NfnClassification relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function nfnClassifications()
+    {
+        return $this->hasMany(NfnClassification::class);
     }
     
     /**
