@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ExpeditionStat extends Model
 {
+    use SoftDeletes;
+
     /**
      * The database table used by the model.
      *
@@ -26,6 +29,11 @@ class ExpeditionStat extends Model
         'percentage_completed',
         'start_date'
     ];
+
+    /**
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
 
     /**
      * Boot function to add model events
