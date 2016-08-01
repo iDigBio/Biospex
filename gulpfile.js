@@ -5,7 +5,8 @@ require('laravel-elixir-replace');
 var replacements = [
     ['./lib/css/wysiwyg-color.css', ''],
     ['blue.png', '../img/blue.png'],
-    ['blue@2x.png', '../img/blue@2x.png']
+    ['blue@2x.png', '../img/blue@2x.png'],
+    ['images/', 'img/']
 ];
 
 var assets = './resources/assets';
