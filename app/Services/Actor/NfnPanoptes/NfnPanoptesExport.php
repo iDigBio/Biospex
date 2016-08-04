@@ -20,10 +20,11 @@ use App\Services\Csv\Csv;
 
 class NfnPanoptesExport extends ActorAbstract implements ActorInterface
 {
+
     /**
      * Current expedition being processed.
      *
-     * @var object
+     * @var
      */
     public $record;
 
