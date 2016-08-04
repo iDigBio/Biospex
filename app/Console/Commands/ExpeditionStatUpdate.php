@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\AmChartJob;
 use App\Jobs\ExpeditionStatJob;
 use App\Repositories\Contracts\ExpeditionStat;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 
 class ExpeditionStatUpdate extends Command
@@ -19,14 +19,19 @@ class ExpeditionStatUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'stats:update {expedition?}';
+    protected $signature = 'stats:update {ids?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Updates Expedition Stats by setting ExpeditionStatJob. Pass in Expedition Id or run all.';
+    protected $description = 'Updates Expedition Stats by setting ExpeditionStatJob. Takes comma separated expedition ids or blank.';
+
+    /**
+     * @var
+     */
+    private $expeditionIds;
 
 
     /**
@@ -34,11 +39,19 @@ class ExpeditionStatUpdate extends Command
      */
     public function handle()
     {
+        $this->setIds();
+
         $stats = $this->findStats();
 
         $this->setJobs($stats);
+    }
 
-        Artisan::call('amchart:update');
+    /**
+     * Set expedition ids if passed via argument.
+     */
+    private function setIds()
+    {
+        $this->expeditionIds = null ===  $this->argument('ids') ? null : explode(',', $this->argument('ids'));
     }
 
     /**
@@ -54,7 +67,7 @@ class ExpeditionStatUpdate extends Command
 
         return null === $expeditionId ?
             $repo->skipCache()->with(['expedition.project'])->get() :
-            $repo->skipCache()->with(['expedition.project'])->where(['expedition_id' => $expeditionId])->get();
+            $repo->skipCache()->with(['expedition.project'])->whereIn('expedition_id', $this->expeditionIds)->get();
 
     }
 
@@ -65,10 +78,14 @@ class ExpeditionStatUpdate extends Command
      */
     private function setJobs($stats)
     {
+        $projectIds = [];
         foreach ($stats as $stat)
         {
+            $projectIds = $stat->expedition->project->id;
             $this->setJob($stat->expedition->project->id, $stat->expedition->id);
         }
+
+        $this->dispatchAmCharts($projectIds);
     }
 
     /**
@@ -77,8 +94,23 @@ class ExpeditionStatUpdate extends Command
      * @param $projectId
      * @param $expeditionId
      */
-    protected function setJob($projectId, $expeditionId)
+    private function setJob($projectId, $expeditionId)
     {
         $this->dispatch((new ExpeditionStatJob($projectId, $expeditionId))->onQueue(Config::get('config.beanstalkd.job')));
+    }
+
+    /**
+     * Call AmChart update for projects.
+     *
+     * @param $projectIds
+     */
+    private function dispatchAmCharts($projectIds)
+    {
+        $projectIds = array_unique($projectIds);
+
+        foreach ($projectIds as $projectId)
+        {
+            $this->dispatch((new AmChartJob($projectId))->onQueue(Config::get('config.beanstalkd.job')));
+        }
     }
 }
