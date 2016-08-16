@@ -136,7 +136,7 @@ class NfnPanoptesExport implements ActorInterface
 
             $this->fileService->filesystem->deleteDirectory($this->fileService->workingDir);
 
-            $this->service->processComplete($this->record, $this->imageService->getMissingImages());
+            $this->sendReport();
 
             $actor->pivot->queued = 0;
             ++$actor->pivot->state;
@@ -220,5 +220,20 @@ class NfnPanoptesExport implements ActorInterface
         $this->service->report->csv->writerCreateFromPath($this->fileService->workingDir . '/' . $folder . '/' . $this->record->uuid . '.csv');
         $this->service->report->csv->insertOne(array_keys($this->csvExport[0]));
         $this->service->report->csv->insertAll($this->csvExport);
+    }
+
+    /**
+     * Send report for process completed.
+     */
+    protected function sendReport()
+    {
+        $vars = [
+            'title' => $this->record->title,
+            'message' => trans('emails.expedition_export_complete_message', ['expedition', $this->record->title]),
+            'groupId' => $this->record->project->group->id,
+            'attachmentName' => trans('emails.missing_images_attachment_name', ['recordId' => $this->record->id])
+        ];
+
+        $this->service->processComplete($vars, $this->imageService->getMissingImages());
     }
 }

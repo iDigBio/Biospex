@@ -28,7 +28,7 @@ class TestAppCommand extends Command
 
     public function fire()
     {
-
+        echo trans('emails.expedition_export_complete_message', ['expedition' => 'This Is A Test']) . PHP_EOL;
     }
 
 }

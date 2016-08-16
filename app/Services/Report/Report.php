@@ -115,23 +115,20 @@ class Report
     /**
      * Current process for expedition completed successfully.
      *
-     * @param $groupId
-     * @param $title
+     * @param array $vars (title, message, groupId, attachmentName)
      * @param $csv
-     * @param $name
      */
-    public function processComplete($groupId, $title, $csv = null, $name = null)
+    public function processComplete($vars, $csv = null)
     {
-        $group = $this->group->with(['owner'])->find($groupId);
+        $group = $this->group->with(['owner'])->find((int) $vars['groupId']);
         $email = $group->Owner->email;
 
         $count = count($csv);
-        $attachment = $count ? $this->createAttachment($csv, $name) : [];
+        $attachment = $count ? $this->createAttachment($csv, $vars['attachmentName']) : [];
 
-        $subject = trans('emails.expedition_complete', ['expedition' => $title]);
+        $subject = trans('emails.expedition_complete', ['expedition' => $vars['title']]);
         $data = [
-            'completeMessage' => trans('emails.expedition_complete_message',
-                ['expedition' => $title])
+            'completeMessage' => $vars['message']
         ];
         $view = 'frontend.emails.report-process-complete';
 

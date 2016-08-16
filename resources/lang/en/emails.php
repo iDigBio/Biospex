@@ -63,4 +63,7 @@ return array (
   'missing_img_urls' => 'Missing Image Urls',
   'subject' => 'Subject',
   'subjects' => 'Subjects',
+  'expedition_export_complete_message' => 'The process for exporting ":expedition" has been completed successfully. If a download file was created during this process, you may access the link on the Expedition view page. If there were errors, an attachment will be included with this email.',
+  'missing_images_attachment_name' => ':recordId-missing_images',
+  'nfn_transcriptions_complete_message' => 'The Notes From Nature transcription process for ":expedition" has been completed.',
 );

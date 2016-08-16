@@ -158,7 +158,7 @@ class NfnLegacyExport implements ActorInterface
 
             $this->fileService->filesystem->deleteDirectory($this->fileService->workingDir);
 
-            $this->service->processComplete($record, $this->imageService->getMissingImages());
+            $this->sendReport($record);
 
             $actor->pivot->completed = 1;
             $actor->pivot->queued = 0;
@@ -323,5 +323,22 @@ class NfnLegacyExport implements ActorInterface
         $gb = 1073741824;
 
         return ($size < $gb) ? $size : ceil($size / ceil(number_format($size / $gb, 2)));
+    }
+
+    /**
+     * Send report for process completing.
+     *
+     * @param $record
+     */
+    protected function sendReport($record)
+    {
+        $vars = [
+            'title' => $record->title,
+            'message' => trans('emails.expedition_export_complete_message', ['expedition', $record->title]),
+            'groupId' => $record->project->group->id,
+            'attachmentName' => trans('emails.missing_images_attachment_name', ['recordId' => $record->id])
+        ];
+
+        $this->service->processComplete($vars, $this->imageService->getMissingImages());
     }
 }

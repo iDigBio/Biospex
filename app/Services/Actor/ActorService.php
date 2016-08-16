@@ -68,17 +68,11 @@ class ActorService
     /**
      * Report complete process.
      *
-     * @param $record
+     * @param array $vars (title, message, groupId, attachmentName)
      * @param array $missingImages
      */
-    public function processComplete($record, array $missingImages = [])
+    public function processComplete($vars, array $missingImages = [])
     {
-        $group_id = $record->project->group_id;
-        $title = $record->title;
-        $missingImg = $missingImages;
-        $name = $record->id . '-missing_images';
-
-        $this->report->processComplete($group_id, $title, $missingImg, $name);
-
+        $this->report->processComplete($vars, $missingImages);
     }
 }
