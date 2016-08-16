@@ -1,8 +1,8 @@
 <?php namespace App\Services\Image;
 
+use App\Services\Report\Report;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Config\Repository as Config;
 
 class Image
 {
@@ -61,14 +61,48 @@ class Image
     protected $imageTypeExtension = [];
 
     /**
-     * Initialize the image service.
-     *
-     * @param Filesystem $filesystem
+     * @var Config
      */
-    public function __construct(Filesystem $filesystem)
+    protected $config;
+
+    /**
+     * @var Report
+     */
+    protected $report;
+
+    /**
+     * @var mixed
+     */
+    protected $maxSize;
+
+    /**
+     * @var mixed
+     */
+    protected $compression;
+
+    /**
+     * @var mixed
+     */
+    protected $equalizer;
+
+    /**
+     * Image constructor.
+     *
+     * @param FileSystem $filesystem
+     * @param Config $config
+     * @param Report $report
+     */
+    public function __construct(Filesystem $filesystem, Config $config, Report $report)
     {
+        $this->imageTypeExtension = $config->get('config.images.imageTypeExtension');
+        $this->maxSize = $config->get('config.images.maxSize');
+        $this->compression = $config->get('config.images.compression');
+        $this->equalizer = $config->get('config.images.equalizer');
+
+
         $this->filesystem = $filesystem;
-        $this->imageTypeExtension = Config::get('config.images.imageTypeExtension');
+        $this->config = $config;
+        $this->report = $report;
     }
 
     /**
@@ -85,31 +119,31 @@ class Image
     }
 
     /**
-     * Set image size info from file.
+     * Set image info from file.
      *
      * @param $file
      */
-    public function setImageSizeInfoFromFile($file)
+    public function setImageInfoFromFile($file)
     {
-        $size = getimagesize($file);
-        $this->width = $size[0];
-        $this->height = $size[1];
-        $this->setExtension($size['mime']);
-        $this->setMimeType($size['mime']);
+        $info = getimagesize($file);
+        $this->width = $info[0];
+        $this->height = $info[1];
+        $this->setExtension($info['mime']);
+        $this->setMimeType($info['mime']);
     }
 
     /**
-     * Set image size info from image string.
+     * Set image info from image string.
      *
      * @param $file
      */
-    public function setImageSizeInfoFromString($file)
+    public function setImageInfoFromString($file)
     {
-        $size = getimagesizefromstring($file);
-        $this->width = $size[0];
-        $this->height = $size[1];
-        $this->setExtension($size['mime']);
-        $this->setMimeType($size['mime']);
+        $info = getimagesizefromstring($file);
+        $this->width = $info[0];
+        $this->height = $info[1];
+        $this->setExtension($info['mime']);
+        $this->setMimeType($info['mime']);
     }
 
     /**
@@ -219,26 +253,42 @@ class Image
     }
 
     /**
+     * Determine comporession level to keep size of image under maximum.
+     * @param $imageSize
+     * @return float|int
+     */
+    public function setCompressionLevel($imageSize)
+    {
+        $compression = $this->compression;
+
+        if ($imageSize > $this->maxSize)
+        {
+            $compression -= floor(($imageSize / $compression * $this->maxSize) / ($this->maxSize * $compression * $this->equalizer));
+        }
+
+        return $compression;
+    }
+
+    /**
      * Resize image.
      *
      * @param $target
      * @param int $width
      * @param int $height
-     * @return bool
      */
     public function imagickScale($target, $width = 0, $height = 0)
     {
-        try {
+        try
+        {
             $this->imagick->scaleImage($width, $height);
             $this->imagick->setImageCompression(\Imagick::COMPRESSION_JPEG);
-            $this->imagick->setImageCompressionQuality(80);
+            $this->imagick->setImageCompressionQuality($this->setCompressionLevel($this->imagick->getImageLength($target)));
             $this->imagick->writeImage($target);
-
-            return;
-        } catch (\Exception $e) {
-            Log::error('[IMAGE SERVICE] Failed to resize image. Target: "' . $target . ' [' . $e->getMessage() . ']');
-
-            return;
+        }
+        catch (\Exception $e)
+        {
+            $this->report->addError('[IMAGE SERVICE] Failed to resize image. Target: "' . $target . ' [' . $e->getMessage() . ']');
+            $this->report->reportSimpleError();
         }
     }
 
@@ -250,37 +300,5 @@ class Image
         $this->imagick->clear();
         $this->imagick->destroy();
         $this->geometry = null;
-    }
-
-    /**
-     * Save file.
-     *
-     * @param $path
-     * @param $contents
-     */
-    protected function saveFile($path, $contents)
-    {
-        if (! $this->filesystem->put($path, $contents)) {
-            throw new \RuntimeException(trans('emails.error_save_file', ['directory' => $path]));
-        }
-    }
-
-    /**
-     * Created directory.
-     *
-     * @param $dir
-     */
-    public function createDir($dir)
-    {
-        if (! $this->filesystem->isDirectory($dir)) {
-            if (! $this->filesystem->makeDirectory($dir, 0775, true)) {
-                throw new \RuntimeException(trans('emails.error_create_dir', ['directory' => $dir]));
-            }
-        }
-    }
-
-    public function deleteImage($file)
-    {
-        return $this->filesystem->delete($file);
     }
 }

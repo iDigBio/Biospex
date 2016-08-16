@@ -2,12 +2,13 @@
 
 namespace App\Jobs;
 
-use App\Repositories\Contracts\AmChart;
-use App\Repositories\Contracts\Project;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\DB;
+use App\Repositories\Contracts\AmChart;
+use App\Repositories\Contracts\NfnClassification;
+use App\Repositories\Contracts\Project;
+use Carbon\Carbon;
 
 class AmChartJob extends Job implements ShouldQueue
 {
@@ -19,14 +20,7 @@ class AmChartJob extends Job implements ShouldQueue
      *
      * @var
      */
-    protected $id;
-
-    /**
-     * Hold ids of expeditions for comparison with results.
-     *
-     * @var array
-     */
-    protected $expeditions = [];
+    protected $projectId;
 
     /**
      * Array to hold all transcription results.
@@ -36,12 +30,32 @@ class AmChartJob extends Job implements ShouldQueue
     protected $transcriptions = [];
 
     /**
-     * AmChartJob constructor.
-     * @param $id
+     * @var
      */
-    public function __construct($id)
+    protected $classification;
+
+    /**
+     * @var
+     */
+    protected $defaultDays;
+
+    /**
+     * @var
+     */
+    protected $earliest_date;
+
+    /**
+     * @var
+     */
+    protected $latest_date;
+
+    /**
+     * AmChartJob constructor.
+     * @param $projectId
+     */
+    public function __construct($projectId)
     {
-        $this->id = $id;
+        $this->projectId = $projectId;
     }
 
     /**
@@ -49,35 +63,78 @@ class AmChartJob extends Job implements ShouldQueue
      *
      * @param Project $repo
      * @param AmChart $chart
+     * @param NfnClassification $classification
      */
-    public function handle(Project $repo, AmChart $chart)
+    public function handle(Project $repo, AmChart $chart, NfnClassification $classification)
     {
-        $project = $repo->skipCache()->with(['expeditions.stat'])->find($this->id, ['id']);
+        $this->classification = $classification;
 
-        $this->processProject($project);
+        $project = $this->getProject($repo);
 
-        $this->fixMissingTranscriptionDays();
+        $this->setDaysAndDates($project->earliest_finished_at_date, $project->latest_finished_at_date);
 
-        $this->fixMissingResultsInTranscriptions();
+        $this->processProjectExpeditions($project->expeditions);
 
-        $content = call_user_func_array('array_merge', $this->transcriptions);
+        uasort($this->transcriptions, [$this, 'sort']);
 
-        $chart->updateOrCreate(['project_id' => $this->id], ['data' => json_encode($content)]);
+        $content = array_values($this->transcriptions);
+
+        $chart->updateOrCreate(['project_id' => $this->projectId], ['data' => json_encode($content)]);
     }
 
     /**
-     * @param $project
+     * @param Project $repo
+     * @return mixed
      */
-    protected function processProject($project)
+    protected function getProject(Project $repo)
     {
-        foreach ($project->expeditions as $expedition)
+        $with = [
+            'expeditions.stat',
+            'expeditions.nfnWorkflow',
+            'classificationsEarliestFinishedAtDate',
+            'classificationsLatestFinishedAtDate'
+        ];
+
+        return $repo->skipCache()->with($with)->find($this->projectId);
+    }
+
+    /**
+     * Set the days array using earliest and latest finished_at date.
+     *
+     * @param $earliest_date
+     * @param $latest_date
+     */
+    protected function setDaysAndDates($earliest_date, $latest_date)
+    {
+        $this->earliest_date = $earliest_date;
+        $this->latest_date = $latest_date;
+
+        $total = $this->calculateDay($earliest_date, $latest_date);
+
+        $i = 0;
+        while ($i <= $total) {
+            $this->defaultDays[$i] = '';
+            echo $i++;
+        }
+    }
+
+    /**
+     * Process a project's expeditions.
+     *
+     * @param array $expeditions
+     */
+    protected function processProjectExpeditions($expeditions)
+    {
+        foreach ($expeditions as $expedition)
         {
-            if ( ! isset($expedition->stat->start_date))
+            if ($expedition->stat->transcriptions_completed === 0)
             {
                 continue;
             }
 
             $resultSet = $this->processExpedition($expedition);
+
+            $this->aggregateResultCount($resultSet);
 
             $this->setTranscriptions($resultSet);
         }
@@ -91,40 +148,75 @@ class AmChartJob extends Job implements ShouldQueue
      */
     public function processExpedition($expedition)
     {
-        $this->expeditions[$expedition->id] = [$expedition->title, $expedition->stat->start_date];
+        $classificationCounts = $this->retrieveClassificationCount($expedition->nfnWorkflow->id);
 
-        $results = $this->getData($expedition->id);
+        $daysArray = $this->processClassificationData($expedition, $classificationCounts);
 
-        $resultSet = $this->processResultData($expedition, $results);
-
-        $this->aggregateResultCount($resultSet);
-
-        return $resultSet;
+        return $this->buildMissingData($expedition, $daysArray);
     }
 
     /**
+     * Process classification data.
+     *
      * @param $expedition
-     * @param $results
+     * @param array $classificationCounts
+     * @return array
+     */
+    protected function processClassificationData($expedition, $classificationCounts)
+    {
+        $daysArray = $this->defaultDays;
+
+        foreach ($classificationCounts as $classification)
+        {
+            $day = $this->calculateDay($this->earliest_date, $classification->finished_at);
+            $daysArray[$day] = $this->buildResultSet($expedition->id, $expedition->title, $day, $classification->total);
+        }
+
+        return $daysArray;
+    }
+
+    /**
+     * Build missing data for days in expedition.
+     *
+     * @param $expedition
+     * @param array $daysArray
      * @return mixed
      */
-    protected function processResultData($expedition, $results)
+    protected function buildMissingData($expedition, $daysArray)
     {
-        $resultSet = [];
-        foreach ($results as $result)
+        foreach ($daysArray as $day => &$data)
         {
-            $day = $this->calculateDay($expedition->stat->start_date, $result->finished_at);
+            if ($day === 0 && $data === '')
+            {
+                $data = $this->buildResultSet($expedition->id, $expedition->title, $day);
 
-            $resultSet[$day] = $this->buildResultSet($expedition->id, $expedition->title, $day, $result->total);
+                continue;
+            }
+
+            if ($data === '')
+            {
+                $data = $this->buildResultSet($expedition->id, $expedition->title, $day, $daysArray[$day-1]['count']);
+            }
         }
 
-        if ( ! array_key_exists(0, $resultSet))
+        unset($data);
+
+        return $daysArray;
+    }
+
+    /**
+     * Fix count on expeditions by using running total.
+     *
+     * @param $resultSet
+     */
+    public function aggregateResultCount(&$resultSet)
+    {
+        $total = 0;
+        foreach ($resultSet as $key => $value)
         {
-            $resultSet[0] = $this->buildResultSet($expedition->id, $expedition->title, 0, 0);
+            $total += $resultSet[$key]['count'];
+            $resultSet[$key]['count'] = $total;
         }
-
-        uasort($resultSet, [$this, 'sort']);
-
-        return $resultSet;
     }
 
     /**
@@ -134,10 +226,7 @@ class AmChartJob extends Job implements ShouldQueue
      */
     public function setTranscriptions($results)
     {
-        foreach ($results as $key => $item)
-        {
-            $this->transcriptions[$key][$item['expedition']] = $item;
-        }
+        $this->transcriptions = array_merge($this->transcriptions, $results);
     }
 
     /**
@@ -160,7 +249,7 @@ class AmChartJob extends Job implements ShouldQueue
     }
 
     /**
-     * Calculate the day using start date.
+     * Calculate the number of days.
      *
      * @param $startDate
      * @param $finishedDate
@@ -168,166 +257,32 @@ class AmChartJob extends Job implements ShouldQueue
      */
     public function calculateDay($startDate, $finishedDate)
     {
-        $start = new \DateTime($startDate);
-        $finish = new \DateTime($finishedDate);
+        $startTime = Carbon::createFromFormat('Y-m-d', $startDate)->startOfDay();
+        $finishTime = Carbon::createFromFormat('Y-m-d', $finishedDate)->startOfDay();
 
-        return $finish->diff($start)->format('%a');
+        return $finishTime->diff($startTime)->format('%a');
     }
 
     /**
-     * Get data from MongoDB Transcriptions.
+     * Get data from nfn_classifications.
      *
-     * @param $expeditionId
+     * @param $workflow
      * @return mixed
      */
-    public function getData($expeditionId)
+    public function retrieveClassificationCount($workflow)
     {
-
-        $results = DB::table('nfn_classifications')
-            ->select('finished_at', DB::raw('count(*) as total'))
-            ->where('expedition_id', $expeditionId)
-            ->groupBy(DB::raw('DATE_FORMAT(finished_at, \'%m-%d-%Y\')'))
-            ->get();
-
-        return $results;
+        return $this->classification->skipCache()->getExpeditionsGroupByFinishedAt($workflow);
     }
 
     /**
-     * Sort by date.
+     * Sort by day and expedition.
      *
      * @param $a
      * @param $b
-     * @return int
+     * @return mixed
      */
     public function sort($a, $b)
     {
-        if ($a['day'] === $b['day'])
-        {
-            return 0;
-        }
-
-        return ($a['day'] < $b['day']) ? -1 : 1;
-    }
-
-    /**
-     * Fix count on expeditions by using running total.
-     *
-     * @param $resultSet
-     */
-    public function aggregateResultCount(&$resultSet)
-    {
-        $total = 0;
-        foreach ($resultSet as $key => $value)
-        {
-            $total += $resultSet[$key]['count'];
-            $resultSet[$key]['count'] = $total;
-        }
-    }
-
-    /**
-     * Loop through transcriptions array and fill in missing pieces for the charting.
-     */
-    public function fixMissingTranscriptionDays()
-    {
-        $min = 0;
-        $max = max(array_keys($this->transcriptions));
-        $this->transcriptions += array_fill_keys(range($min, $max), '');
-        ksort($this->transcriptions);
-
-        foreach ($this->transcriptions as $day => $results)
-        {
-            if ( ! is_array($results))
-            {
-                $this->findPreviousTranscription($day);
-            }
-        }
-
-        ksort($this->transcriptions);
-    }
-
-    /**
-     * Fix missing results inside each day.
-     */
-    protected function fixMissingResultsInTranscriptions()
-    {
-        foreach ($this->transcriptions as $day => $results)
-        {
-            $missing = array_diff_key($this->expeditions, $results);
-            if (count($missing) > 0)
-            {
-                $this->processMissingResults($missing, $day);
-            }
-        }
-    }
-
-    /**
-     * Find previous day with results and copy forward.
-     *
-     * @param $day
-     * @return mixed
-     */
-    protected function findPreviousTranscription($day)
-    {
-        $i = $day;
-        while ($day >= 0)
-        {
-            if (is_array($this->transcriptions[$day]))
-            {
-                $results = $this->transcriptions[$day];
-                $this->transcriptions[$i] = $this->fixDay($results, $day);
-
-                break;
-            }
-            $day--;
-        }
-    }
-
-    /**
-     * @param $missing
-     * @param $day
-     */
-    protected function processMissingResults($missing, $day)
-    {
-        foreach ($missing as $expedition => $value)
-        {
-            $this->findPreviousResult($day, $expedition);
-        }
-    }
-
-    /**
-     * Find previous result to cary forward in current day.
-     *
-     * @param $day
-     * @param $expedition
-     */
-    protected function findPreviousResult($day, $expedition)
-    {
-        $i = $day;
-        while ($day >= 0)
-        {
-            if (array_key_exists($expedition, $this->transcriptions[$day]))
-            {
-                $result = $this->transcriptions[$day][$expedition];
-                $result['day'] = $day + 1;
-                $this->transcriptions[$i][$expedition] = $result;
-
-                break;
-            }
-            $day--;
-        }
-    }
-
-    /**
-     * @param $results
-     * @param $day
-     * @return mixed
-     */
-    protected function fixDay($results, $day)
-    {
-        foreach ($results as $key => $result)
-        {
-            $results[$key]['day'] = $day + 1;
-        }
-        return $results;
+        return $a['day'] - $b['day'] ?: $a['expedition'] - $b['expedition'];
     }
 }

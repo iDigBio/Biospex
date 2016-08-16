@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\AmChartJob;
 use App\Jobs\ExpeditionStatJob;
-use App\Repositories\Contracts\ExpeditionStat;
+use App\Repositories\Contracts\Expedition;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\Config;
@@ -36,14 +36,17 @@ class ExpeditionStatUpdate extends Command
 
     /**
      * Execute command
+     * @param Expedition $expeditionRepo
      */
-    public function handle()
+    public function handle(Expedition $expeditionRepo)
     {
         $this->setIds();
 
-        $stats = $this->findStats();
+        $expeditions = $this->findStats($expeditionRepo);
 
-        $this->setJobs($stats);
+        $projectIds = $this->setJobs($expeditions);
+
+        $this->dispatchAmCharts($projectIds);
     }
 
     /**
@@ -57,46 +60,33 @@ class ExpeditionStatUpdate extends Command
     /**
      * Return records from expedition_stats table.
      *
+     * @param Expedition $expeditionRepo
      * @return mixed
      */
-    private function findStats()
+    private function findStats(Expedition $expeditionRepo)
     {
-        $repo = app(ExpeditionStat::class);
-
-        $expeditionId = $this->argument('expedition');
-
-        return null === $expeditionId ?
-            $repo->skipCache()->with(['expedition.project'])->get() :
-            $repo->skipCache()->with(['expedition.project'])->whereIn('expedition_id', $this->expeditionIds)->get();
+        return null === $this->expeditionIds ?
+            $expeditionRepo->skipCache()->with(['project'])->whereHas('stat')->get() :
+            $expeditionRepo->skipCache()->with(['project'])->whereHas('stat')->whereIn('id', $this->expeditionIds)->get();
 
     }
 
     /**
      * Loop stats for setting jobs.
      *
-     * @param array $stats
+     * @param array $expeditions
+     * @return array
      */
-    private function setJobs($stats)
+    private function setJobs($expeditions)
     {
         $projectIds = [];
-        foreach ($stats as $stat)
+        foreach ($expeditions as $expedition)
         {
-            $projectIds = $stat->expedition->project->id;
-            $this->setJob($stat->expedition->project->id, $stat->expedition->id);
+            $projectIds[] = $expedition->project_id;
+            $this->dispatch((new ExpeditionStatJob($expedition->id))->onQueue(Config::get('config.beanstalkd.job')));
         }
 
-        $this->dispatchAmCharts($projectIds);
-    }
-
-    /**
-     * Create job for the expedition.
-     *
-     * @param $projectId
-     * @param $expeditionId
-     */
-    private function setJob($projectId, $expeditionId)
-    {
-        $this->dispatch((new ExpeditionStatJob($projectId, $expeditionId))->onQueue(Config::get('config.beanstalkd.job')));
+        return $projectIds;
     }
 
     /**

@@ -55,4 +55,5 @@ return array (
   'owner' => 'Group Owner',
   'nfn_workflow_id' => 'NfN Workflow Id',
   'nfn_workflow_id_note' => 'Workflow Id from Notes From Nature',
+  'nfn_workflow_id_note_create' => 'Once Expedition is submitted to NfN, add NfN workflow id here by editing Expedition',
 );

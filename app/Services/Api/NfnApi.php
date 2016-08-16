@@ -105,17 +105,19 @@ class NfnApi
     }
 
     /**
-     * Get classifications.
+     * Returns classifications greater than last id.
      *
-     * @param $id
-     * @param int $pageSize
+     * Values param should include project_id, workflow_id, last_id and page_size
+     * @param array $values
      * @return mixed
      */
-    public function getClassifications($id, $pageSize = 20)
+    public function getClassifications(array $values)
     {
         $this->checkAccessToken();
 
-        $uri = $this->config->get('config.nfnApi.apiUri') . '/classifications/project?workflow_id=' . $id . '&page_size=' . $pageSize;
+        $params = http_build_query($values);
+
+        $uri = $this->config->get('config.nfnApi.apiUri') . '/classifications/project?' . $params;
 
         return $this->authorizedRequest($uri);
     }

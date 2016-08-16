@@ -17,7 +17,6 @@ class TestAppCommand extends Command
      */
     protected $description = 'Used to test code';
 
-
     /**
      * AmChartJob constructor.
      */

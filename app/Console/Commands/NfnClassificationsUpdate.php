@@ -17,7 +17,7 @@ class NfnClassificationsUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'classifications:update {ids?}';
+    protected $signature = 'classifications:update {expeditionIds?} {--all}';
 
     /**
      * The console command description.
@@ -37,6 +37,11 @@ class NfnClassificationsUpdate extends Command
     private $expeditionIds;
 
     /**
+     * @var
+     */
+    private $all;
+
+    /**
      * Create a new command instance.
      *
      * @param Expedition $expedition
@@ -54,22 +59,23 @@ class NfnClassificationsUpdate extends Command
      */
     public function handle()
     {
-        $this->setIds();
+        $this->setArgumentOptions();
 
         $expeditions = $this->getExpeditions();
 
         foreach ($expeditions as $expedition)
         {
-            $this->dispatch((new NfnClassificationsJob($expedition->id))->onQueue(Config::get('config.beanstalkd.job')));
+            $this->dispatch((new NfnClassificationsJob($expedition->id, $this->all))->onQueue(Config::get('config.beanstalkd.job')));
         }
     }
 
     /**
      * Set expedition ids if passed via argument.
      */
-    private function setIds()
+    private function setArgumentOptions()
     {
-        $this->expeditionIds = null ===  $this->argument('ids') ? null : explode(',', $this->argument('ids'));
+        $this->all = $this->option('all');
+        $this->expeditionIds = null ===  $this->argument('expeditionIds') ? null : explode(',', $this->argument('expeditionIds'));
     }
 
     /**
@@ -80,7 +86,7 @@ class NfnClassificationsUpdate extends Command
     private function getExpeditions()
     {
         return null === $this->expeditionIds ?
-            $expeditions = $this->expedition->skipCache()->with(['project'])->whereNotNull('nfn_workflow_id')->get() :
-            $expeditions = $this->expedition->skipCache()->with(['project'])->whereIn('id', [$this->expeditionIds])->whereNotNull('nfn_workflow_id')->get();
+            $expeditions = $this->expedition->skipCache()->has('nfnWorkflow')->get() :
+            $expeditions = $this->expedition->skipCache()->has('nfnWorkflow')->whereIn('id', [$this->expeditionIds])->get();
     }
 }

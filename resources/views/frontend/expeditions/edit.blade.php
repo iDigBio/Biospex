@@ -2,8 +2,8 @@
 
 {{-- Web site Title --}}
 @section('title')
-@parent
-{{ trans('pages.edit') }} {{ trans('expeditions.expedition') }}
+    @parent
+    {{ trans('pages.edit') }} {{ trans('expeditions.expedition') }}
 @stop
 
 {{-- Content --}}
@@ -47,35 +47,43 @@
                 </div>
 
                 @if(in_array($expedition->project->workflow_id, Config::get('config.nfnWorkflows'), false))
-                    <div class="form-group {{ ($errors->has('nfn_workflow_id')) ? 'has-error' : '' }}">
-                        {!! Form::label('nfn_workflow_id', trans('forms.nfn_workflow_id'), ['class' => 'col-sm-2 control-label']) !!}
+                    <div class="form-group {{ ($errors->has('workflow')) ? 'has-error' : '' }}">
+                        {!! Form::label('workflow', trans('forms.nfn_workflow_id'), ['class' => 'col-sm-2 control-label']) !!}
                         <div class="col-sm-4">
-                            {!! Form::text('nfn_workflow_id', $expedition->nfn_workflow_id, ['class' => 'form-control', 'placeholder' => trans('forms.nfn_workflow_id_note')]) !!}
-                            {{ ($errors->has('nfn_workflow_id') ? $errors->first('nfn_workflow_id') : '') }}
+                            {!! Form::text('workflow', isset($expedition->nfnWorkflow->workflow) ? $expedition->nfnWorkflow->workflow : null, ['class' => 'form-control', 'placeholder' => trans('forms.nfn_workflow_id_note')]) !!}
+                            {{ ($errors->has('workflow') ? $errors->first('workflow') : '') }}
                         </div>
                     </div>
+                    @if(isset($expedition->nfnWorkflow->workflow))
+                        <input type="hidden" name="current_workflow"
+                               value="{{ $expedition->nfnWorkflow->workflow }}">
+                    @endif
                 @endif
 
-                <h4>{{ trans_choice('pages.subjects_assigned', 1) }} <span id="max">{{ trans('pages.subjects_assigned_max', ['count' => Config::get('config.expedition_size')]) }}</span>: <span id="subjectCountHtml">{{ $expedition->subjectsCount }}</span></h4>
+                <h4>{{ trans_choice('pages.subjects_assigned', 1) }} <span
+                            id="max">{{ trans('pages.subjects_assigned_max', ['count' => Config::get('config.expedition_size')]) }}</span>:
+                    <span id="subjectCountHtml">{{ $subjectCount }}</span></h4>
                 <div class="table-responsive" id="jqtable">
                     @if($showCb)
                         <input type="hidden" id="showCb" value="0">
                     @else
                         <input type="hidden" id="showCb" value="1">
                     @endif
-                    <input type="hidden" id="url" value="{{ URL::route('web.grids.edit', [$expedition->project->id, $expedition->id]) }}">
+                    <input type="hidden" id="url"
+                           value="{{ URL::route('web.grids.edit', [$expedition->project->id, $expedition->id]) }}">
                     <input type="hidden" id="projectId" value="{{ $expedition->project->id }}">
                     <input type="hidden" id="expeditionId" value="{{ $expedition->id }}">
-                    <input type="hidden" id="subjectCount" name="subjectCount" value="{{ $expedition->subjectsCount }}">
-                    <input type="hidden" id="maxCount" name="maxCount" value="{{ Config::get('config.expedition_size') }}">
+                    <input type="hidden" id="subjectCount" name="subjectCount" value="{{ $subjectCount }}">
+                    <input type="hidden" id="maxCount" name="maxCount"
+                           value="{{ Config::get('config.expedition_size') }}">
                     <input type="hidden" id="subjectIds" name="subjectIds" value="{{ $subjects }}">
                     <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
                     <div id="pager"></div>
-                    <br />
+                    <br/>
                     <button id="savestate" class="btn btn-default">Save Grid State</button>
                     <button id="loadstate" class="btn btn-default">Load Grid State</button>
                 </div>
-                <br />
+                <br/>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
                         {!! Form::hidden('project_id', $expedition->project->id) !!}

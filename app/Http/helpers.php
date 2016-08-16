@@ -186,8 +186,10 @@ function transcriptions_total($count)
  */
 function transcriptions_completed($expeditionId)
 {
-    $transcription = app(\App\Models\NfnClassification::class);
-    return $transcription->where(['expedition_id' => $expeditionId])->count();
+    $repo = app(\App\Repositories\Contracts\Expedition::class);
+    $expedition = $repo->skipCache()->with(['nfnClassificationsCount'])->find($expeditionId);
+
+    return $expedition->nfn_classifications_count;
 }
 
 /**

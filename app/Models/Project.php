@@ -239,11 +239,57 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function nfnClassifications()
+    public function classifications()
     {
-        return $this->hasMany(NfnClassification::class);
+        return $this->hasManyThrough(NfnClassification::class, NfnWorkflow::class);
     }
-    
+
+    /**
+     * NfnClassificationsEarliestFinishedAtDate relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function classificationsEarliestFinishedAtDate()
+    {
+        return $this->hasManyThrough(NfnClassification::class, NfnWorkflow::class)
+            ->selectRaw('DATE_FORMAT(MIN(finished_at), \'%Y-%m-%d\') as earliest_finished_at_date');
+    }
+
+    /**
+     * NfnClassificationsEarliestFinishedAtDate attribute.
+     *
+     * @return int
+     */
+    public function getEarliestFinishedAtDateAttribute()
+    {
+        $related = $this->getRelationValue('classificationsEarliestFinishedAtDate')->first();
+
+        return $related ? $related->earliest_finished_at_date : null;
+    }
+
+    /**
+     * NfnClassificationsLateFinishedAtDate relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function classificationsLatestFinishedAtDate()
+    {
+        return $this->hasManyThrough(NfnClassification::class, NfnWorkflow::class)
+            ->selectRaw('DATE_FORMAT(MAX(finished_at), \'%Y-%m-%d\') as latest_finished_at_date');
+    }
+
+    /**
+     * NfnClassificationsLatestFinishedAtDate attribute.
+     *
+     * @return int
+     */
+    public function getLatestFinishedAtDateAttribute()
+    {
+        $related = $this->getRelationValue('classificationsLatestFinishedAtDate')->first();
+
+        return $related ? $related->latest_finished_at_date : null;
+    }
+
     /**
      * Find by uuid.
      *

@@ -17,7 +17,7 @@ class AmChartUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'amchart:update {ids?}';
+    protected $signature = 'amchart:update {projectIds?}';
 
     /**
      * The console command description.
@@ -53,7 +53,7 @@ class AmChartUpdate extends Command
      */
     private function setIds()
     {
-        $this->projectIds = null ===  $this->argument('ids') ? null : explode(',', $this->argument('ids'));
+        $this->projectIds = null ===  $this->argument('projectIds') ? null : explode(',', $this->argument('projectIds'));
     }
 
     /**
@@ -66,8 +66,8 @@ class AmChartUpdate extends Command
         $repo = app(Project::class);
 
         null === $this->projectIds ?
-            $projects = $repo->skipCache()->has('expeditions.statWithStartDate')->get() :
-            $projects = $repo->skipCache()->whereIn('id', $this->projectIds)->has('expeditions.statWithStartDate')->get();
+            $projects = $repo->skipCache()->has('expeditions.statWithTranscriptions')->get() :
+            $projects = $repo->skipCache()->whereIn('id', $this->projectIds)->has('expeditions.statWithTranscriptions')->get();
 
         return $projects;
     }
