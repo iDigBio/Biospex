@@ -47,7 +47,7 @@ class UpdateQueries extends Command
     )
     {
 
-        $expeditions = $expeditionRepo->skipCache()->has('nfnWorkflow')->get();
+        $expeditions = $expeditionRepo->skipCache()->whereHas('nfnWorkflow')->get();
 
         $nfnApi->setProvider();
         foreach ($expeditions as $expedition)
