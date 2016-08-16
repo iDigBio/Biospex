@@ -4,45 +4,38 @@ namespace App\Services\Actor\NfnPanoptes;
 
 ini_set('memory_limit', '1024M');
 
-use App\Services\Actor\ActorAbstract;
 use App\Services\Actor\ActorInterface;
+use App\Services\Actor\ActorService;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Exception;
-use Illuminate\Config\Repository as Config;
-use App\Repositories\Contracts\Download;
-use App\Repositories\Contracts\Expedition;
-use App\Services\Report\Report;
-use App\Services\Image\Image;
-use Illuminate\Filesystem\Filesystem;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
-use App\Services\Csv\Csv;
+use RuntimeException;
 
-class NfnPanoptesExport extends ActorAbstract implements ActorInterface
+class NfnPanoptesExport implements ActorInterface
 {
     /**
-     * Current expedition being processed.
-     *
-     * @var object
+     * @var ActorService
      */
-    public $record;
-
-    /** Notes from Nature export directory */
-    public $nfnExportDir;
+    private $service;
 
     /**
-     * Full path to temp directory named after expedition title with md5 hash.
-     *
-     * @var string
+     * @var \App\Services\Actor\ActorFileService
      */
-    public $recordDir;
+    private $fileService;
 
     /**
-     * Full path to temp directory inside $recordDir for image conversions.
-     *
+     * @var \App\Services\Actor\ActorImageService
+     */
+    private $imageService;
+
+    /**
+     * @var \App\Services\Actor\ActorRepositoryService
+     */
+    private $repoService;
+
+    /**
      * @var
      */
-    public $recordDirTmp;
+    private $record;
 
     /**
      * Missing image when retrieving via curl.
@@ -52,24 +45,14 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
     public $missingImg = [];
 
     /**
-     * @var Expedition
+     * @var array
      */
-    public $expedition;
+    public $csvExport = [];
 
     /**
-     * @var Report
+     * @var mixed
      */
-    public $report;
-
-    /**
-     * @var Image
-     */
-    public $image;
-
-    /**
-     * @var Client
-     */
-    public $client;
+    public $nfnExportDir;
 
     /**
      * @var mixed
@@ -77,47 +60,28 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
     public $nfnCsvMap;
 
     /**
-     * @var array
+     * @var mixed
      */
-    public $csvExport = [];
+    public $largeWidth;
 
     /**
-     * @var Csv
-     */
-    public $csv;
-
-    /**
-     * NotesFromNatureOrigExport constructor.
-     * @param Filesystem $filesystem
-     * @param Download $download
-     * @param Config $config
-     * @param Expedition $expedition
-     * @param Report $report
-     * @param Image $image
-     * @param Csv $csv
+     * NfnPanoptesExport constructor.
+     * @param ActorService $service
+     * @internal param ActorRepositoryService $repositoryService
+     * @internal param ActorImageService $imageService
      */
     public function __construct(
-        Filesystem $filesystem,
-        Download $download,
-        Config $config,
-        Expedition $expedition,
-        Report $report,
-        Image $image,
-        Csv $csv
+        ActorService $service
     )
     {
-        $this->filesystem = $filesystem;
-        $this->download = $download;
-        $this->config = $config;
-        $this->expedition = $expedition;
-        $this->report = $report;
-        $this->image = $image;
-        $this->csv = $csv;
-        $this->client = new Client();
+        $this->service = $service;
+        $this->fileService = $service->fileService;
+        $this->imageService = $service->imageService;
+        $this->repoService = $service->repositoryService;
 
-        $this->scratchDir = $config->get('config.scratch_dir');
-        $this->nfnExportDir = $config->get('config.nfn_export_dir');
-        $this->nfnCsvMap = $config->get('config.nfnCsvMap');
+        $this->nfnExportDir = $this->service->config->get('config.nfn_export_dir');
+        $this->nfnCsvMap = $this->service->config->get('config.nfnCsvMap');
+        $this->largeWidth = $this->service->config->get('config.nfnImageSize.largeWidth');
     }
 
     /**
@@ -129,43 +93,77 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
      */
     public function process($actor)
     {
-        $this->createDir($this->nfnExportDir);
+        try {
+            $this->fileService->makeDirectory($this->nfnExportDir);
 
-        $this->record = $this->expedition->skipCache()->with(['project.group', 'subjects'])->find($actor->pivot->expedition_id);
+            $this->record = $this->repoService->expedition
+                ->skipCache()
+                ->with(['project.group', 'subjects'])
+                ->find($actor->pivot->expedition_id);
 
-        $this->setRecordDir($actor->id. '-' . md5($this->record->title));
+            $this->fileService->setDirectories($actor->id . '-' . md5($this->record->title));
 
-        $this->buildCsvArray();
+            $this->imageService->setWorkingDirVars(
+                $this->fileService->workingDir,
+                $this->fileService->workingDirOrig,
+                $this->fileService->workingDirConvert
+            );
 
-        $this->getImagesFromUri();
+            $this->imageService->buildImageUris($actor, $this->record->subjects);
 
-        $this->convert();
-        
-        $this->createCsv();
-        
-        $tarGzFile = $this->compressDir();
-        
-        $this->createDownloads($actor, $tarGzFile);
+            $this->imageService->getImages();
 
-        $this->moveCompressedFiles($tarGzFile);
+            $files = $this->fileService->getFiles($this->fileService->workingDirOrig);
 
-        $this->filesystem->deleteDirectory($this->recordDirTmp);
-        $this->filesystem->deleteDirectory($this->recordDir);
-        
-        $this->processComplete();
-        
-        $actor->pivot->queued = 0;
-        ++$actor->pivot->state;
-        $actor->pivot->completed = 1;
-        $actor->pivot->save();
+            $this->imageService->convert($files, [['width' => $this->largeWidth]]);
+
+            $this->fileService->filesystem->moveDirectory(
+                $this->fileService->workingDirConvert,
+                $this->fileService->workingDir . '/' . $this->record->uuid
+            );
+
+            $this->fileService->filesystem->deleteDirectory($this->fileService->workingDirOrig);
+
+            $this->buildCsvArray($this->record->subjects);
+
+            $this->createCsv($this->record->uuid);
+
+            $tarGzFiles = $this->fileService->compressDirectories([$this->imageService->workingDir . '/' . $this->record->uuid]);
+
+            $this->repoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
+
+            $this->fileService->moveCompressedFiles($this->fileService->workingDir, $this->nfnExportDir);
+
+            $this->fileService->filesystem->deleteDirectory($this->fileService->workingDir);
+
+            $this->sendReport();
+
+            $actor->pivot->queued = 0;
+            ++$actor->pivot->state;
+            $actor->pivot->save();
+        }
+        catch(FileNotFoundException $e) {}
+        catch(RuntimeException $e) {}
+        catch(Exception $e)
+        {
+            $actor->pivot->queued = 0;
+            $actor->pivot->error = 1;
+            $actor->pivot->save();
+
+            $this->service->report->addError($e->getMessage());
+            $this->service->report->reportSimpleError();
+        }
+
     }
 
     /**
      * Build csvExport array for export.
+     *
+     * @param array $subjects
      */
-    public function buildCsvArray()
+    public function buildCsvArray($subjects)
     {
-        foreach ($this->record->subjects as $subject)
+        foreach ($subjects as $subject)
         {
             $this->csvExport[] = $this->mapNfnCsvColumns($subject);
         }
@@ -213,247 +211,29 @@ class NfnPanoptesExport extends ActorAbstract implements ActorInterface
     }
 
     /**
-     * Process expedition for export
-     */
-    public function getImagesFromUri()
-    {
-        $requests = function ($csvExport)
-        {
-            foreach ($csvExport as $index => $row)
-            {
-
-                if ($this->checkUriExists($row) || $this->checkImageDoesNotExists($row['subjectId']))
-                {
-                    yield $index => new Request('GET', str_replace(' ', '%20', $row['imageURL']));
-                }
-            }
-        };
-
-        $pool = new Pool($this->client, $requests($this->csvExport), [
-            'concurrency' => 10,
-            'fulfilled'   => function ($response, $index)
-            {
-                $code = $response->getStatusCode();
-                $image = $response->getBody();
-                $this->saveImage($code, $index, $image);
-            },
-            'rejected'    => function ($reason, $index)
-            {
-                $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageURL']);
-            }
-        ]);
-
-        $promise = $pool->promise();
-
-        $promise->wait();
-    }
-
-    /**
-     * Check if image exists
+     * Create csv file.
      *
-     * @param $id
-     * @return bool
-     */
-    public function checkImageDoesNotExists($id)
-    {
-        return count($this->filesystem->glob($this->recordDir . '/' . $id . '.*')) === 0;
-    }
-
-    /**
-     * Check if image exists
-     * @param $row
-     * @return bool
-     */
-    public function checkUriExists($row)
-    {
-        if (empty($row['imageURL'])) {
-            $this->addMissingImage($row['subjectId']);
-            
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Callback function to save image
-     * @param $code
-     * @param $index
-     * @param $image
-     * @throws \Exception
-     */
-    public function saveImage($code, $index, $image)
-    {
-        if ($image === '' || $code !== 200)
-        {
-            $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageURL']);
-
-            return;
-        }
-
-        try {
-            $this->image->setImageSizeInfoFromString($image);
-        } catch (Exception $e) {
-            $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageURL']);
-            
-            return;
-        }
-        
-        $ext = $this->image->getFileExtension();
-
-        if ( ! $ext)
-        {
-            $this->addMissingImage($this->csvExport[$index]['subjectId'], $this->csvExport[$index]['imageURL']);
-
-            return;
-        }
-
-        $fileName = $this->csvExport[$index]['subjectId'] . '.' . $ext;
-        $this->csvExport[$index]['imageName'] = $fileName;
-        $path = $this->recordDir . '/' . $fileName;
-
-        $this->saveFile($path, $image);
-    }
-
-    /**
-     * Convert images.
-     */
-    public function convert()
-    {
-        $files = $this->filesystem->files($this->recordDir);
-
-        if (count($files) === 0)
-        {
-            return;
-        }
-
-        foreach ($files as $file)
-        {
-            $this->image->setImagePathInfo($file);
-
-            if ($this->image->getMimeType() === false)
-            {
-                continue;
-            }
-
-            $fileName = $this->image->getFileName();
-            $ext = $this->image->getFileExtension();
-
-            try
-            {
-                $this->image->imagickFile($file);
-            }
-            catch (\Exception $e)
-            {
-                $key = array_search($fileName, array_column($this->csvExport, 'subjectId'), true);
-                $this->addMissingImage($fileName, $this->csvExport[$key]['imageURL']);
-
-                continue;
-            }
-
-            $imgFilePath = $this->recordDirTmp . '/' . $fileName . '.' . $ext;
-
-            if (!$this->filesystem->exists($imgFilePath))
-            {
-                $this->image->imagickScale($imgFilePath, $this->config->get('config.nfnImageSize.largeWidth'), 0);
-            }
-
-            $this->image->imagickDestroy();
-        }
-    }
-
-    /**
-     * Create csv file
-     */
-    public function createCsv()
-    {
-        $this->csv->writerCreateFromPath($this->recordDirTmp . '/' . $this->record->uuid . '.csv');
-        $this->csv->insertOne(array_keys($this->csvExport[0]));
-        $this->csv->insertAll($this->csvExport);
-    }
-
-    /**
      * @param $folder
-     * @throws \Exception
      */
-    public function setRecordDir($folder)
+    public function createCsv($folder)
     {
-        $this->recordDir = $this->scratchDir . '/' . $folder;
-        $this->recordDirTmp = $this->recordDir . '/' . $this->record->uuid;
-        $this->createDir($this->recordDirTmp);
-        $this->writeDir($this->recordDirTmp);
-    }
-
-
-    /**
-     * Add missing image information to array
-     * @param null $index
-     * @param null $uri
-     */
-    public function addMissingImage($index = null, $uri = null)
-    {
-        if (($index !== null) && !($uri !== null)) {
-            $this->missingImg[] = ['value' => $index . ' : ' . $uri];
-        }
-
-        if (($index === null) && ($uri !== null)) {
-            $this->missingImg[] = ['value' => $uri];
-        }
-
-        if (($index !== null) && ($uri === null)) {
-            $this->missingImg[] = ['value' => $index];
-        }
+        $this->service->report->csv->writerCreateFromPath($this->fileService->workingDir . '/' . $folder . '/' . $this->record->uuid . '.csv');
+        $this->service->report->csv->insertOne(array_keys($this->csvExport[0]));
+        $this->service->report->csv->insertAll($this->csvExport);
     }
 
     /**
-     * Compress directory.
+     * Send report for process completed.
      */
-    public function compressDir()
+    protected function sendReport()
     {
-        $tarFile = $this->recordDirTmp . '.tar';
-        $a = new \PharData($tarFile);
-        $a->buildFromDirectory($this->recordDirTmp);
-        $a->compress(\Phar::GZ);
-        unset($a);
-        $this->filesystem->delete($tarFile);
-        $this->filesystem->deleteDirectory($this->recordDirTmp);
-        
-        return $tarFile . '.gz';
-    }
+        $vars = [
+            'title' => $this->record->title,
+            'message' => trans('emails.expedition_export_complete_message', ['expedition', $this->record->title]),
+            'groupId' => $this->record->project->group->id,
+            'attachmentName' => trans('emails.missing_images_attachment_name', ['recordId' => $this->record->id])
+        ];
 
-    /**
-     * Create download
-     * @param $actor
-     * @param $file
-     */
-    public function createDownloads($actor, $file)
-    {
-        $baseName = pathinfo($file, PATHINFO_BASENAME);
-        $this->createDownload($this->record->id, $actor->id, $baseName);
-    }
-
-    /**
-     * Move tar.gz file to export folder.
-     * @param $file
-     * @throws \Exception
-     */
-    public function moveCompressedFiles($file)
-    {
-        $baseName = pathinfo($file, PATHINFO_BASENAME);
-        $this->moveFile($file, "{$this->nfnExportDir}/$baseName");
-    }
-
-    /**
-     * Report complete process.
-     */
-    protected function processComplete()
-    {
-        $group_id = $this->record->project->group_id;
-        $title = $this->record->title;
-        $missingImg = $this->missingImg;
-        $name = $this->record->id . '-missing_images';
-
-        $this->report->processComplete($group_id, $title, $missingImg, $name);
-
+        $this->service->processComplete($vars, $this->imageService->getMissingImages());
     }
 }

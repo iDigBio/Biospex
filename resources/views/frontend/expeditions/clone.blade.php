@@ -47,11 +47,11 @@
                 </div>
 
                 @if(in_array($expedition->project->workflow_id, Config::get('config.nfnWorkflows'), false))
-                    <div class="form-group {{ ($errors->has('nfn_workflow_id')) ? 'has-error' : '' }}">
-                        {!! Form::label('nfn_workflow_id', trans('forms.nfn_workflow_id'), ['class' => 'col-sm-2 control-label']) !!}
-                        <div class="col-sm-4">
-                            {!! Form::text('nfn_workflow_id', null, ['class' => 'form-control', 'placeholder' => trans('forms.nfn_workflow_id_note')]) !!}
-                            {{ ($errors->has('nfn_workflow_id') ? $errors->first('nfn_workflow_id') : '') }}
+                    <div class="form-group {{ ($errors->has('workflow')) ? 'has-error' : '' }}">
+                        {!! Form::label('workflow', trans('forms.nfn_workflow_id'), ['class' => 'col-sm-2 control-label']) !!}
+                        <div class="col-sm-6">
+                            {!! Form::text('workflow', null, ['disabled', 'class' => 'form-control', 'placeholder' => trans('forms.nfn_workflow_id_note_create')]) !!}
+                            {{ ($errors->has('workflow') ? $errors->first('workflow_id') : '') }}
                         </div>
                     </div>
                 @endif

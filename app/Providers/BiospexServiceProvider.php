@@ -32,6 +32,7 @@ use App\Repositories\Contracts\Notice as NoticeContract;
 use App\Repositories\Contracts\Translation as TranslationContract;
 use App\Repositories\Contracts\Resource as ResourceContract;
 use App\Repositories\Contracts\NfnClassification as NfnClassificationContract;
+use App\Repositories\Contracts\NfnWorkflow as NfnWorkflowContract;
 
 use App\Repositories\UserRepository;
 use App\Repositories\GroupRepository;
@@ -61,6 +62,7 @@ use App\Repositories\NoticeRepository;
 use App\Repositories\TranslationRepository;
 use App\Repositories\ResourceRepository;
 use App\Repositories\NfnClassificationRepository;
+use App\Repositories\NfnWorkflowRepository;
 
 class BiospexServiceProvider extends ServiceProvider
 {
@@ -109,5 +111,6 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(TranslationContract::class, TranslationRepository::class);
         $this->app->bind(ResourceContract::class, ResourceRepository::class);
         $this->app->bind(NfnClassificationContract::class, NfnClassificationRepository::class);
+        $this->app->bind(NfnWorkflowContract::class, NfnWorkflowRepository::class);
     }
 }

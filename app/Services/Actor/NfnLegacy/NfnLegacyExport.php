@@ -2,59 +2,38 @@
 
 namespace App\Services\Actor\NfnLegacy;
 
+use App\Services\Actor\ActorInterface;
+use App\Services\Actor\ActorService;
+use Exception;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use RuntimeException;
+
 ini_set('memory_limit', '1024M');
 
-use Illuminate\Config\Repository as Config;
-use App\Repositories\Contracts\Download;
-use App\Repositories\Contracts\Expedition;
-use App\Services\Report\Report;
-use App\Services\Image\Image;
-use App\Services\Actor\ActorAbstract;
-use App\Services\Actor\ActorInterface;
-use Illuminate\Filesystem\Filesystem;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
-
-class NfnLegacyExport extends ActorAbstract implements ActorInterface
+class NfnLegacyExport implements ActorInterface
 {
     /**
-     * Actor object.
-     *
-     * @var object
+     * @var ActorService
      */
-    protected $actor;
+    private $service;
 
     /**
-     * Expedition Id
-     *
-     * @var int
+     * @var \App\Services\Actor\ActorFileService
      */
-    protected $expeditionId;
+    private $fileService;
 
     /**
-     * Current expedition being processed.
-     *
-     * @var object
+     * @var \App\Services\Actor\ActorImageService
      */
-    protected $record;
+    private $imageService;
+
+    /**
+     * @var \App\Services\Actor\ActorRepositoryService
+     */
+    private $repoService;
 
     /** Notes from Nature export directory */
     protected $nfnExportDir;
-
-    /**
-     * Full path to temp directory named after expedition title with md5 hash.
-     *
-     * @var string
-     */
-    protected $recordDir;
-
-    /**
-     * Full path to temp directory inside $recordDir for image conversions.
-     *
-     * @var
-     */
-    protected $recordDirTmp;
 
     /**
      * Directories built based on 1GB file sizes or less.
@@ -71,122 +50,52 @@ class NfnLegacyExport extends ActorAbstract implements ActorInterface
     protected $count = 0;
 
     /**
-     * Path to large images inside temp folder.
-     *
-     * @var string
-     */
-    protected $lrgFilePath;
-
-    /**
-     * Path to small images inside temp folder.
-     *
-     * @var string
-     */
-    protected $smFilePath;
-
-    /**
-     * Title of temp folder and tar file.
-     *
-     * @var string
-     */
-    public $title;
-
-    /**
-     * Array of image urls from subjects.
-     *
-     * @var array
-     */
-    protected $imageUriArray;
-
-    /**
-     * Array of existing images if files already retrieved
-     *
      * @var
      */
-    protected $existingImageUriArray;
+    public $lrgFilePath;
 
     /**
-     * CSV header array associated with meta file.
-     *
-     * @var array
-     */
-    protected $metaHeader = [];
-
-    /**
-     * Missing image when retrieving via curl.
-     *
-     * @var array
-     */
-    protected $missingImg = [];
-
-    /**
-     * Specific record folder for building out export.
-     *
      * @var
      */
-    protected $folder;
+    public $smFilePath;
 
     /**
-     * Large image width for NfN.
+     * @var mixed
+     */
+    private $largeWidth;
+
+    /**
+     * @var mixed
+     */
+    private $smallWidth;
+
+    /**
+     * @var
+     */
+    protected $imageUris;
+
+    /**
+     * @var
+     */
+    protected $existingImageUris;
+
+    /**
+     * NfnLegacyExport constructor.
      *
-     * @var int
-     */
-    private $largeWidth = 1540;
-
-    /**
-     * Small image width for NfN.
-     *
-     * @var int
-     */
-    private $smallWidth = 580;
-
-    /**
-     * @var Expedition
-     */
-    private $expedition;
-
-    /**
-     * @var Report
-     */
-    private $report;
-
-    /**
-     * @var Image
-     */
-    private $image;
-
-    /**
-     * @var Client
-     */
-    private $client;
-
-    /**
-     * NotesFromNatureOrigExport constructor.
-     * @param Filesystem $filesystem
-     * @param Download $download
-     * @param Config $config
-     * @param Expedition $expedition
-     * @param Report $report
-     * @param Image $image
+     * @param ActorService $service
      */
     public function __construct(
-        Filesystem $filesystem,
-        Download $download,
-        Config $config,
-        Expedition $expedition,
-        Report $report,
-        Image $image
-    ) {
-        $this->filesystem = $filesystem;
-        $this->download = $download;
-        $this->config = $config;
-        $this->expedition = $expedition;
-        $this->report = $report;
-        $this->image = $image;
-        $this->client = new Client();
+        ActorService $service
+    )
+    {
+        $this->service = $service;
+        $this->fileService = $service->fileService;
+        $this->imageService = $service->imageService;
+        $this->repoService = $service->repositoryService;
 
-        $this->scratchDir = $config->get('config.scratch_dir');
-        $this->nfnExportDir = $config->get('config.nfn_export_dir');
+        $this->nfnExportDir = $this->service->config->get('config.nfn_export_dir');
+        $this->largeWidth = $this->service->config->get('config.nfnImageSize.largeWidth');
+        $this->smallWidth = $this->service->config->get('config.nfnImageSize.smallWidth');
     }
 
     /**
@@ -194,265 +103,126 @@ class NfnLegacyExport extends ActorAbstract implements ActorInterface
      *
      * @param $actor
      * @return mixed|void
-     * @throws \Exception
+     * @throws \RuntimeException|\Exception
      */
     public function process($actor)
     {
-        $this->createDir($this->nfnExportDir);
+        try {
+            $this->fileService->makeDirectory($this->nfnExportDir);
 
-        $this->record = $this->expedition->skipCache()->with(['project.group', 'subjects'])->find($actor->pivot->expedition_id);
+            $record = $this->repoService->expedition
+                ->skipCache()
+                ->with(['project.group', 'subjects'])
+                ->find($actor->pivot->expedition_id);
 
-        $this->folder = "{$actor->id}-" . md5($this->record->title);
+            $folder = $actor->id . '-' . md5($record->title);
 
-        $this->setRecordDir();
+            $this->fileService->setDirectories($folder);
 
-        $this->buildImageUriArray($actor);
+            $this->imageService->setWorkingDirVars(
+                $this->fileService->workingDir,
+                $this->fileService->workingDirOrig,
+                $this->fileService->workingDirConvert
+            );
 
-        $this->getImagesFromUri();
+            $this->imageService->buildImageUris($actor, $record->subjects);
 
-        $this->convert();
+            $this->imageService->getImages();
 
-        $this->splitDirectories();
+            $files = $this->fileService->getFiles($this->fileService->workingDirOrig);
 
-        $this->buildDetails();
+            $attributes = [
+                [
+                    'ext'   => 'large.jpg',
+                    'width' => $this->largeWidth
+                ],
+                [
+                    'ext'   => 'small.jpg',
+                    'width' => $this->smallWidth
+                ],
+            ];
 
-        $this->compressDirs();
+            $this->imageService->convert($files, $attributes);
 
-        $this->createDownloads($actor);
+            $this->splitDirectories($folder);
 
-        $this->moveCompressedFiles();
+            $this->fileService->filesystem->deleteDirectory($this->fileService->workingDirOrig);
 
-        $this->filesystem->deleteDirectory($this->recordDir);
+            $directories = $this->buildDetails();
 
-        $this->processComplete();
+            $tarGzFiles = $this->fileService->compressDirectories($directories);
 
-        $actor->pivot->queued = 0;
-        ++$actor->pivot->state;
-        $actor->pivot->completed = 1;
-        $actor->pivot->save();
-    }
+            $this->repoService->createDownloads($record->id, $actor->id, $tarGzFiles);
 
-    /**
-     * Build array of image uris for curl.
-     *
-     * @param $actor
-     * @throws \Exception
-     */
-    public function buildImageUriArray($actor)
-    {
-        foreach ($this->record->subjects as $subject) {
-            if ($this->checkImageExists($subject->_id)) {
-                $this->existingImageUriArray[$subject->_id] = str_replace(' ', '%20', $subject->accessURI);
-                continue;
-            }
+            $this->fileService->moveCompressedFiles($this->fileService->workingDir, $this->nfnExportDir);
 
-            if ($this->checkUriExists($subject)) {
-                continue;
-            }
+            $this->fileService->filesystem->deleteDirectory($this->fileService->workingDir);
 
-            $this->imageUriArray[$subject->_id] = str_replace(' ', '%20', $subject->accessURI);
+            $this->sendReport($record);
+
+            $actor->pivot->completed = 1;
+            $actor->pivot->queued = 0;
+            ++$actor->pivot->state;
+            $actor->pivot->save();
         }
+        catch(FileNotFoundException $e) {}
+        catch(RuntimeException $e) {}
+        catch(Exception $e)
+        {
+            $actor->pivot->queued = 0;
+            $actor->pivot->error = 1;
+            $actor->pivot->save();
 
-        if (empty($this->imageUriArray) && empty($this->existingImageUriArray)) {
-            throw new \Exception(trans('emails.error_empty_image_uri', ['id' => $actor->pivot->id]));
-        }
-
-    }
-
-    /**
-     * Check if image exists
-     *
-     * @param $id
-     * @return bool
-     */
-    public function checkImageExists($id)
-    {
-        return count($this->filesystem->glob($this->recordDir . '/' . $id . '.*')) > 0;
-    }
-
-    /**
-     * Check if image exists
-     *
-     * @param $subject
-     * @return bool
-     */
-    public function checkUriExists($subject)
-    {
-        if (empty($subject->accessURI)) {
-            $this->addMissingImage($subject->id);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Process expedition for export
-     */
-    public function getImagesFromUri()
-    {
-        if (empty($this->imageUriArray)) {
-            return;
-        }
-
-        $requests = function ($uriArray) {
-            foreach ($uriArray as $index => $url) {
-                yield $index => new Request('GET', $url);
-            }
-        };
-
-        $pool = new Pool($this->client, $requests($this->imageUriArray), [
-            'concurrency' => 10,
-            'fulfilled' => function ($response, $index) {
-                $code = $response->getStatusCode();
-                $image = $response->getBody();
-                $this->saveImage($code, $index, $image);
-            },
-            'rejected' => function ($reason, $index) {
-                $this->addMissingImage($index, $this->imageUriArray[$index]);
-            }
-        ]);
-
-        $promise = $pool->promise();
-
-        $promise->wait();
-    }
-
-    /**
-     * Callback function to save image
-     * @param $code
-     * @param $index
-     * @param $image
-     * @throws \Exception
-     */
-    public function saveImage($code, $index, $image)
-    {
-        if (empty($image) || $code != 200) {
-            $this->addMissingImage($index, $this->imageUriArray[$index]);
-
-            return;
-        }
-
-        $this->image->setImageSizeInfoFromString($image);
-        $ext = $this->image->getFileExtension();
-
-        if ( ! $ext) {
-            $this->addMissingImage($index, $this->imageUriArray[$index]);
-
-            return;
-        }
-
-        $path = "{$this->recordDir}/$index.$ext";
-        $this->saveFile($path, $image);
-    }
-
-    /**
-     * Convert images.
-     */
-    public function convert()
-    {
-        $files = $this->filesystem->files($this->recordDir);
-
-        if (count($files) === 0) {
-            return;
-        }
-
-        $imageUriArray = $this->mergeImageUri();
-
-        foreach ($files as $file) {
-            $this->image->setImagePathInfo($file);
-
-            if ($this->image->getMimeType() === false) {
-                continue;
-            }
-
-            $fileName = $this->image->getFileName();
-
-            try {
-                $this->image->imagickFile($file);
-            } catch (\Exception $e) {
-                $this->addMissingImage($fileName, $imageUriArray[$fileName]);
-
-                continue;
-            }
-
-            $lrgFilePath = $this->recordDirTmp . "/$fileName.large.jpg";
-            $smFilePath = $this->recordDirTmp . "/$fileName.small.jpg";
-
-            if ( ! $this->filesystem->exists($lrgFilePath)) {
-                $this->image->imagickScale($lrgFilePath, $this->largeWidth, 0);
-            }
-
-            if ( ! $this->filesystem->exists($smFilePath)) {
-                $this->image->imagickScale($smFilePath, $this->smallWidth, 0);
-            }
-
-            $this->image->imagickDestroy();
-        }
-
-    }
-
-    /**
-     * Returns image uri array
-     * @return array
-     */
-    protected function mergeImageUri()
-    {
-        $imageUriCount = count($this->imageUriArray);
-        $existingImageUriCount = count($this->existingImageUriArray);
-        
-        if ($imageUriCount !== 0 && $existingImageUriCount !== 0) {
-            return array_merge($this->imageUriArray, $this->existingImageUriArray);
-        }
-
-        if ($imageUriCount === 0 && $existingImageUriCount !== 0) {
-            return $this->existingImageUriArray;
-        }
-
-        if ($imageUriCount !== 0 && $existingImageUriCount === 0) {
-            return $this->imageUriArray;
+            $this->service->report->addError($e->getMessage());
+            $this->service->report->addError($e->getFile());
+            $this->service->report->addError($e->getLine());
+            $this->service->report->reportSimpleError();
         }
 
     }
 
     /**
      * Split tmp directory into separate directories based on size.
+     *
+     * @param $folder
      */
-    public function splitDirectories()
+    public function splitDirectories($folder)
     {
         $size = 0;
-        $this->setSplitDir();
+        $this->setSplitDir($folder);
         $limit = $this->getDirectorySize();
-        $files = $this->filesystem->files($this->recordDir);
+        $files = $this->fileService->getFiles($this->fileService->workingDirOrig);
 
-        foreach ($files as $file) {
-            $this->image->setImagePathInfo($file);
+        foreach ($files as $file)
+        {
+            $this->imageService->image->setImagePathInfo($file);
 
-            if ($this->image->getMimeType() === false) {
+            if ($this->imageService->image->getMimeType() === false)
+            {
                 continue;
             }
 
-            $fileName = $this->image->getFileName();
-            $baseName = $this->image->getBaseName();
+            $fileName = $this->imageService->image->getFileName();
+            $baseName = $this->imageService->image->getBaseName();
 
-            $lrgFilePath = $this->recordDirTmp . "/$fileName.large.jpg";
-            $smFilePath = $this->recordDirTmp . "/$fileName.small.jpg";
+            $lrgFilePath = $this->imageService->workingDirConvert . '/' . $fileName . '.large.jpg';
+            $smFilePath = $this->imageService->workingDirConvert . '/' . $fileName . '.small.jpg';
 
             $size += filesize($lrgFilePath);
             $size += filesize($smFilePath);
 
-            $this->filesystem->move($lrgFilePath, $this->lrgFilePath . "/$fileName.large.jpg");
-            $this->filesystem->move($smFilePath, $this->smFilePath . "/$fileName.small.jpg");
-            $this->filesystem->move($file, $this->splitDir . "/$baseName");
+            $this->fileService->filesystem->move($lrgFilePath, $this->lrgFilePath . '/' . $fileName . '.large.jpg');
+            $this->fileService->filesystem->move($smFilePath, $this->smFilePath . '/' . $fileName . '.small.jpg');
+            $this->fileService->filesystem->move($file, $this->splitDir . "/$baseName");
 
-            if ($size >= $limit) {
-                $this->setSplitDir();
+            if ($size >= $limit)
+            {
+                $this->setSplitDir($folder);
                 $size = 0;
             }
         }
 
-        $this->filesystem->deleteDirectory($this->recordDirTmp);
+        $this->fileService->filesystem->deleteDirectory($this->fileService->workingDirConvert);
     }
 
     /**
@@ -460,155 +230,84 @@ class NfnLegacyExport extends ActorAbstract implements ActorInterface
      */
     public function buildDetails()
     {
-        $directories = $this->filesystem->directories($this->recordDir);
+        $directories = $this->fileService->filesystem->directories($this->fileService->workingDir);
 
         $metadata = [];
-        $metadata['sourceDir'] = $this->recordDir;
-        $metadata['targetDir'] = $this->recordDir;
+        $metadata['sourceDir'] = $this->fileService->workingDir;
+        $metadata['targetDir'] = $this->fileService->workingDir;
         $metadata['created_at'] = date('l jS F Y', time());
-        $metadata['highResDir'] = $this->recordDir . '/large';
-        $metadata['lowResDir'] = $this->recordDir . '/small';
+        $metadata['highResDir'] = $this->fileService->workingDir . '/large';
+        $metadata['lowResDir'] = $this->fileService->workingDir . '/small';
         $metadata['highResWidth'] = $this->largeWidth;
         $metadata['lowResWidth'] = $this->smallWidth;
+        $metadata['total'] = 0;
+        $metadata['images'] = [];
 
-        foreach ($directories as $directory) {
-            $data = [];
-            $metadata['total'] = 0;
-            $metadata['images'] = [];
-
-            $files = $this->filesystem->files($directory);
+        foreach ($directories as $directory)
+        {
+            $files = $this->fileService->filesystem->files($directory);
 
             $i = 0;
-            foreach ($files as $file) {
+            foreach ($files as $file)
+            {
+                $data = [];
+
                 // Original Image info.
-                $this->image->setImagePathInfo($file);
-                $baseName = $this->image->getBaseName();
-                $fileName = $this->image->getFileName();
-                $extension = $this->image->getFileExtension();
-                $this->image->setImageSizeInfoFromFile($file);
+                $this->imageService->image->setImagePathInfo($file);
+                $baseName = $this->imageService->image->getBaseName();
+                $fileName = $this->imageService->image->getFileName();
+                $extension = $this->imageService->image->getFileExtension();
+                $this->imageService->image->setImageInfoFromFile($file);
 
                 // Set array for original image.
                 $data['identifier'] = $fileName;
                 $data['original']['path'] = [$fileName, ".$extension"];
                 $data['original']['name'] = $baseName;
-                $data['original']['width'] = $this->image->getImageWidth();
-                $data['original']['height'] = $this->image->getImageHeight();
+                $data['original']['width'] = $this->imageService->image->getImageWidth();
+                $data['original']['height'] = $this->imageService->image->getImageHeight();
 
                 // Set array for large image.
-                $this->image->setImageSizeInfoFromFile("$directory/large/$fileName.large.$extension");
+                $this->imageService->image->setImageInfoFromFile("$directory/large/$fileName.large.$extension");
                 $data['large']['name'] = "large/$fileName.large.$extension";
-                $data['large']['width'] = $this->image->getImageWidth();
-                $data['large']['height'] = $this->image->getImageHeight();
+                $data['large']['width'] = $this->imageService->image->getImageWidth();
+                $data['large']['height'] = $this->imageService->image->getImageHeight();
 
                 // Set array for small image.
-                $this->image->setImageSizeInfoFromFile("$directory/small/$fileName.small.$extension");
+                $this->imageService->image->setImageInfoFromFile("$directory/small/$fileName.small.$extension");
                 $data['small']['name'] = "small/$fileName.small.$extension";
-                $data['small']['width'] = $this->image->getImageWidth();
-                $data['small']['height'] = $this->image->getImageHeight();
+                $data['small']['width'] = $this->imageService->image->getImageWidth();
+                $data['small']['height'] = $this->imageService->image->getImageHeight();
 
                 $metadata['images'][] = $data;
 
-                $this->filesystem->delete($file);
+                $this->fileService->filesystem->delete($file);
 
                 $i++;
             }
 
             $metadata['total'] = $i * 2;
 
-            $this->saveFile("$directory/details.js",
-                json_encode($metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $this->fileService->filesystem->put($directory . '/details.js', json_encode($metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         }
+
+        return $directories;
     }
 
     /**
-     * Set tmp directory used.
+     * Create split directories.
+     *
+     * @param $folder
      */
-    public function setRecordDir()
-    {
-        $this->recordDir = $this->scratchDir . '/' . $this->folder;
-        $this->recordDirTmp = $this->recordDir . '/tmp';
-        $this->createDir($this->recordDirTmp);
-        $this->writeDir($this->recordDirTmp);
-    }
-
-    public function setSplitDir()
+    public function setSplitDir($folder)
     {
         $count = ++$this->count;
-        $this->splitDir = $this->recordDir . '/' . $this->folder . '-' . $count;
-        $this->createDir($this->splitDir);
-        $this->writeDir($this->splitDir);
+        $this->splitDir = $this->fileService->workingDir . '/' . $folder . '-' . $count;
 
         $this->lrgFilePath = $this->splitDir . '/large';
-        $this->createDir($this->lrgFilePath);
-        $this->writeDir($this->lrgFilePath);
+        $this->fileService->makeDirectory($this->lrgFilePath);
 
         $this->smFilePath = $this->splitDir . '/small';
-        $this->createDir($this->smFilePath);
-        $this->writeDir($this->smFilePath);
-    }
-
-    /**
-     * Add missing image information to array
-     * @param null $index
-     * @param null $uri
-     */
-    public function addMissingImage($index = null, $uri = null)
-    {
-        if (($index !== null) && !($uri !== null)) {
-            $this->missingImg[] = ['value' => $index . ' : ' . $uri];
-        }
-
-        if (($index === null) && ($uri !== null)) {
-            $this->missingImg[] = ['value' => $uri];
-        }
-
-        if (($index !== null) && ($uri === null)) {
-            $this->missingImg[] = ['value' => $index];
-        }
-    }
-
-    /**
-     * Compress directory.
-     */
-    public function compressDirs()
-    {
-        $directories = $this->filesystem->directories($this->recordDir);
-        foreach ($directories as $directory) {
-            $a = new \PharData("$directory.tar");
-            $a->buildFromDirectory($directory);
-            $a->compress(\Phar::GZ);
-            unset($a);
-            $this->filesystem->delete("$directory.tar");
-            $this->filesystem->deleteDirectory($directory);
-        }
-    }
-
-    /**
-     * Add download files to downloads table.
-     *
-     * @param $actor
-     */
-    public function createDownloads($actor)
-    {
-        $files = $this->filesystem->files($this->recordDir);
-        foreach ($files as $file) {
-            $baseName = pathinfo($file, PATHINFO_BASENAME);
-            $this->createDownload($this->record->id, $actor->id, $baseName);
-        }
-    }
-
-    /**
-     * Move tar files to export folder.
-     *
-     * @throws \Exception
-     */
-    public function moveCompressedFiles()
-    {
-        $files = $this->filesystem->files($this->recordDir);
-        foreach ($files as $file) {
-            $baseName = pathinfo($file, PATHINFO_BASENAME);
-            $this->moveFile($file, "{$this->nfnExportDir}/$baseName");
-        }
+        $this->fileService->makeDirectory($this->smFilePath);
     }
 
     /**
@@ -618,7 +317,7 @@ class NfnLegacyExport extends ActorAbstract implements ActorInterface
      */
     protected function getDirectorySize()
     {
-        exec("du -b -s {$this->recordDirTmp}", $op);
+        exec("du -b -s {$this->fileService->workingDirConvert}", $op);
         list($size) = preg_split('/\s+/', $op[0]);
 
         $gb = 1073741824;
@@ -627,16 +326,19 @@ class NfnLegacyExport extends ActorAbstract implements ActorInterface
     }
 
     /**
-     * Report complete process.
+     * Send report for process completing.
+     *
+     * @param $record
      */
-    protected function processComplete()
+    protected function sendReport($record)
     {
-        $group_id = $this->record->project->group_id;
-        $title = $this->record->title;
-        $missingImg = $this->missingImg;
-        $name = $this->record->id . '-missing_images';
+        $vars = [
+            'title' => $record->title,
+            'message' => trans('emails.expedition_export_complete_message', ['expedition', $record->title]),
+            'groupId' => $record->project->group->id,
+            'attachmentName' => trans('emails.missing_images_attachment_name', ['recordId' => $record->id])
+        ];
 
-        $this->report->processComplete($group_id, $title, $missingImg, $name);
-
+        $this->service->processComplete($vars, $this->imageService->getMissingImages());
     }
 }

@@ -13,7 +13,7 @@ use App\Repositories\Contracts\Expedition;
 use App\Repositories\Contracts\Header;
 use App\Repositories\Contracts\Property;
 
-class NotesFromNatureManifestExport extends ActorAbstract implements ActorInterface
+class NotesFromNatureManifestExport implements ActorInterface
 {
     protected $actor;
     protected $expeditionId;

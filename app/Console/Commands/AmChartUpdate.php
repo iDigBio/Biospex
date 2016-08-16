@@ -17,15 +17,20 @@ class AmChartUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'amchart:update {id?}';
+    protected $signature = 'amchart:update {projectIds?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Build the AmChart data for project pages.';
-    
+    protected $description = 'Build the AmChart data for project pages. Takes comma separated values or empty as params';
+
+    /**
+     * @var
+     */
+    private $projectIds;
+
     /**
      * Execute the console command.
      *
@@ -33,8 +38,9 @@ class AmChartUpdate extends Command
      */
     public function handle()
     {
-        $id = $this->argument('id');
-        $projects = $this->getProjects($id);
+        $this->setIds();
+
+        $projects = $this->getProjects();
 
         foreach ($projects as $project)
         {
@@ -43,21 +49,25 @@ class AmChartUpdate extends Command
     }
 
     /**
-     * @param $id
+     * Set project ids if passed via argument.
+     */
+    private function setIds()
+    {
+        $this->projectIds = null ===  $this->argument('projectIds') ? null : explode(',', $this->argument('projectIds'));
+    }
+
+    /**
+     * Return project(s).
+     *
      * @return array
      */
-    private function getProjects($id)
+    private function getProjects()
     {
         $repo = app(Project::class);
 
-        if (null === $id)
-        {
-            $projects = $repo->skipCache()->has('expeditions.statWithStartDate')->get();
-        }
-        else
-        {
-            $projects = $repo->skipCache()->where(['id' => $id])->has('expeditions.statWithStartDate')->get();
-        }
+        null === $this->projectIds ?
+            $projects = $repo->skipCache()->has('expeditions.statWithTranscriptions')->get() :
+            $projects = $repo->skipCache()->whereIn('id', $this->projectIds)->has('expeditions.statWithTranscriptions')->get();
 
         return $projects;
     }

@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\AmChartJob;
 use App\Jobs\ExpeditionStatJob;
-use App\Repositories\Contracts\ExpeditionStat;
+use App\Repositories\Contracts\Expedition;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 
 class ExpeditionStatUpdate extends Command
@@ -19,66 +19,88 @@ class ExpeditionStatUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'stats:update {expedition?}';
+    protected $signature = 'stats:update {ids?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Updates Expedition Stats by setting ExpeditionStatJob. Pass in Expedition Id or run all.';
+    protected $description = 'Updates Expedition Stats by setting ExpeditionStatJob. Takes comma separated expedition ids or blank.';
+
+    /**
+     * @var
+     */
+    private $expeditionIds;
 
 
     /**
      * Execute command
+     * @param Expedition $expeditionRepo
      */
-    public function handle()
+    public function handle(Expedition $expeditionRepo)
     {
-        $stats = $this->findStats();
+        $this->setIds();
 
-        $this->setJobs($stats);
+        $expeditions = $this->findStats($expeditionRepo);
 
-        Artisan::call('amchart:update');
+        $projectIds = $this->setJobs($expeditions);
+
+        $this->dispatchAmCharts($projectIds);
+    }
+
+    /**
+     * Set expedition ids if passed via argument.
+     */
+    private function setIds()
+    {
+        $this->expeditionIds = null ===  $this->argument('ids') ? null : explode(',', $this->argument('ids'));
     }
 
     /**
      * Return records from expedition_stats table.
      *
+     * @param Expedition $expeditionRepo
      * @return mixed
      */
-    private function findStats()
+    private function findStats(Expedition $expeditionRepo)
     {
-        $repo = app(ExpeditionStat::class);
-
-        $expeditionId = $this->argument('expedition');
-
-        return null === $expeditionId ?
-            $repo->skipCache()->with(['expedition.project'])->get() :
-            $repo->skipCache()->with(['expedition.project'])->where(['expedition_id' => $expeditionId])->get();
+        return null === $this->expeditionIds ?
+            $expeditionRepo->skipCache()->with(['project'])->whereHas('stat')->get() :
+            $expeditionRepo->skipCache()->with(['project'])->whereHas('stat')->whereIn('id', $this->expeditionIds)->get();
 
     }
 
     /**
      * Loop stats for setting jobs.
      *
-     * @param array $stats
+     * @param array $expeditions
+     * @return array
      */
-    private function setJobs($stats)
+    private function setJobs($expeditions)
     {
-        foreach ($stats as $stat)
+        $projectIds = [];
+        foreach ($expeditions as $expedition)
         {
-            $this->setJob($stat->expedition->project->id, $stat->expedition->id);
+            $projectIds[] = $expedition->project_id;
+            $this->dispatch((new ExpeditionStatJob($expedition->id))->onQueue(Config::get('config.beanstalkd.job')));
         }
+
+        return $projectIds;
     }
 
     /**
-     * Create job for the expedition.
+     * Call AmChart update for projects.
      *
-     * @param $projectId
-     * @param $expeditionId
+     * @param $projectIds
      */
-    protected function setJob($projectId, $expeditionId)
+    private function dispatchAmCharts($projectIds)
     {
-        $this->dispatch((new ExpeditionStatJob($projectId, $expeditionId))->onQueue(Config::get('config.beanstalkd.job')));
+        $projectIds = array_unique($projectIds);
+
+        foreach ($projectIds as $projectId)
+        {
+            $this->dispatch((new AmChartJob($projectId))->onQueue(Config::get('config.beanstalkd.job')));
+        }
     }
 }

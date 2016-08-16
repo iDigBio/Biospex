@@ -2,12 +2,13 @@
 
 use Exception;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\File;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
 class Thumbnail extends Image
 {
+
     /**
      * Output file path.
      *
@@ -54,71 +55,62 @@ class Thumbnail extends Image
     private $tnHeight;
 
     /**
+     * Return thumbnail or create if not exists.
+     *
+     * @param $url
+     * @return null|string
+     */
+    public function getThumbnail($url)
+    {
+        $image = null;
+
+        try
+        {
+            $this->setVars();
+            $this->setOutPutFile($url);
+
+            if ($this->filesystem->isFile($this->outputFileSm))
+            {
+                $this->setImageInfoFromFile($this->outputFileSm);
+
+                $image = $this->filesystem->get($this->outputFileSm);
+            }
+            else
+            {
+                $image = $this->thumbFromUrl($url);
+            }
+        }
+        catch (RuntimeException $e)
+        {
+            $this->report->addError($e->getMessage());
+            $this->report->reportSimpleError();
+        }
+        catch (FileNotFoundException $e)
+        {
+            $this->report->addError($e->getMessage());
+            $this->report->reportSimpleError();
+        }
+
+        return $image;
+    }
+
+    /**
      * Set variables.
+     *
+     * @throws RuntimeException
      */
     public function setVars()
     {
         // We can read the output path from our configuration file.
-        $this->defaultImg = Config::get('config.images.thumbDefaultImg');
-        $this->tnWidth = Config::get('config.images.thumbWidth');
-        $this->tnHeight = Config::get('config.images.thumbHeight');
-        $this->outputDir = Config::get('config.images.thumbOutputDir') . '/' . $this->tnWidth . '_' . $this->tnHeight;
-        $this->createDir($this->outputDir);
-    }
+        $this->defaultImg = $this->config->get('config.images.thumbDefaultImg');
+        $this->tnWidth = $this->config->get('config.images.thumbWidth');
+        $this->tnHeight = $this->config->get('config.images.thumbHeight');
+        $this->outputDir = $this->config->get('config.images.thumbOutputDir') . '/' . $this->tnWidth . '_' . $this->tnHeight;
 
-    /**
-     * Resize on the fly.
-     *
-     * @param $url
-     * @return string
-     */
-    public function thumbFromUrl($url)
-    {
-        $client = new Client();
-        try {
-            $response = $client->get($url);
-            $this->saveThumbnail($response->getBody()->getContents());
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
+        if ( ! $this->filesystem->isDirectory($this->outputDir) && ! $this->filesystem->makeDirectory($this->outputDir, 0775, true))
+        {
+            throw new RuntimeException(trans('emails.error_create_dir', ['directory' => $this->outputDir]));
         }
-
-        return $this->thumbExists($this->outputFileSm) ?
-            $this->getFile($this->outputFileSm) : $this->getFile($this->defaultImg);
-    }
-
-    /**
-     * Return thumbnail or create if not exists.
-     *
-     * @param $url
-     * @return string
-     */
-    public function getThumbnail($url)
-    {
-        $this->setVars();
-        $this->setOutPutFile($url);
-
-        if ($this->thumbExists($this->outputFileSm)) {
-            return $this->getFile($this->outputFileSm);
-        }
-
-        $file = $this->thumbFromUrl($url);
-
-        return $file;
-    }
-
-    /**
-     * Save thumb file.
-     * @param $image
-     */
-    public function saveThumbnail($image)
-    {
-        $this->saveFile($this->outputFileLg, $image);
-        $this->imagickFile($this->outputFileLg);
-        $this->imagickScale($this->outputFileSm, $this->tnWidth, 0);
-        $this->deleteImage($this->outputFileLg);
-        $this->imagickDestroy();
-
-        return;
     }
 
     /**
@@ -136,24 +128,51 @@ class Thumbnail extends Image
     }
 
     /**
-     * Get file
-     * @param $file
-     * @return string
+     * Resize on the fly.
+     *
+     * @param $url
+     * @return null|string
      */
-    public function getFile($file)
+    public function thumbFromUrl($url)
     {
-        $this->setImageSizeInfoFromFile($file);
+        $client = new Client();
+        $image = null;
 
-        return File::get($file);
+        $response = $client->get($url);
+        $this->saveThumbnail($response->getBody()->getContents());
+
+        if ($this->filesystem->isFile($this->outputFileSm))
+        {
+            $this->setImageInfoFromFile($this->outputFileSm);
+            $image = $this->filesystem->get($this->outputFileSm);
+        }
+        else
+        {
+            $this->setImageInfoFromFile($this->defaultImg);
+            $image = $this->filesystem->get($this->defaultImg);
+        }
+
+        return $image;
     }
+
 
     /**
-     * Check file exists
-     * @param $file
-     * @return bool
+     * Save thumbnail.
+     *
+     * @param $image
+     * @throws RuntimeException
      */
-    public function thumbExists($file)
+    public function saveThumbnail($image)
     {
-        return File::isFile($file);
+        if ( ! $this->filesystem->put($this->outputFileLg, $image))
+        {
+            throw new RuntimeException(trans('emails.error_save_file', ['directory' => $this->outputFileLg]));
+        }
+
+        $this->imagickFile($this->outputFileLg);
+        $this->imagickScale($this->outputFileSm, $this->tnWidth, 0);
+        $this->filesystem->delete($this->outputFileLg);
+        $this->imagickDestroy();
     }
+
 }

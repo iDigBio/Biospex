@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BuildOcrBatches;
+use App\Jobs\UpdateNfnWorkflowJob;
 use App\Repositories\Contracts\OcrQueue;
 use App\Repositories\Contracts\User;
 use App\Http\Requests\ExpeditionFormRequest;
@@ -197,7 +198,8 @@ class ExpeditionsController extends Controller
     public function edit($projectId, $expeditionId)
     {
         $user = Request::user();
-        $expedition = $this->expedition->skipCache()->with(['project.group.permissions', 'workflowManager', 'subjects'])->find($expeditionId);
+        $expedition = $this->expedition->skipCache()->with(['project.group.permissions', 'workflowManager', 'subjects', 'nfnWorkflow'])->find($expeditionId);
+        $subjectCount = $this->expedition->skipCache()->find($expeditionId)->subjects()->count();
 
         if ( ! $this->checkPermissions($user, [$expedition->project], 'update'))
         {
@@ -213,11 +215,12 @@ class ExpeditionsController extends Controller
         $showCb = $expedition->workflowManager === null ? 0 : 1;
         $subjects = implode(',', $subjectIds);
 
-        return view('frontend.expeditions.edit', compact('expedition', 'subjects', 'showCb', 'subjects'));
+        return view('frontend.expeditions.edit', compact('expedition', 'subjects', 'showCb', 'subjects', 'subjectCount'));
     }
 
     /**
-     * Update expedition
+     * Update expedition.
+     *
      * @param ExpeditionFormRequest $request
      * @param $projectId
      * @param $expeditionId
@@ -237,6 +240,12 @@ class ExpeditionsController extends Controller
 
         if ($expedition)
         {
+            if (null !== $expedition->nfnWorkflow)
+            {
+                $this->dispatch((new UpdateNfnWorkflowJob($expedition->nfnWorkflow))
+                    ->onQueue(Config::get('config.beanstalkd.job')));
+            }
+
             // Success!
             session_flash_push('success', trans('expeditions.expedition_updated'));
 
@@ -285,7 +294,7 @@ class ExpeditionsController extends Controller
 
                     $actors[$actor->id] = ['order' => $actor->pivot->order];
                 }
-                
+
                 $expedition->actors()->sync($actors);
                 $this->workflowManager->create(['expedition_id' => $expeditionId]);
             }
@@ -355,7 +364,8 @@ class ExpeditionsController extends Controller
             return redirect()->route('web.projects.index');
         }
 
-        $workflow = $this->workflowManager->where(['expedition_id' => $expeditionId])->get();
+        $workflow = $this->workflowManager->where(['expedition_id' => $expeditionId])->first();
+
 
         if ($workflow === null)
         {
@@ -364,7 +374,7 @@ class ExpeditionsController extends Controller
         else
         {
             $workflow->stopped = 1;
-            $this->workflowManager->save($workflow);
+            $this->workflowManager->update(['stopped' => 1], $workflow->id);
             session_flash_push('success', trans('expeditions.process_stopped'));
         }
 

@@ -17,14 +17,12 @@ class TestAppCommand extends Command
      */
     protected $description = 'Used to test code';
 
-
     /**
      * AmChartJob constructor.
      */
     public function __construct()
     {
         parent::__construct();
-
     }
 
     public function fire()

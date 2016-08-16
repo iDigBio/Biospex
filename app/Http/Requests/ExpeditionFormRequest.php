@@ -24,7 +24,7 @@ class ExpeditionFormRequest extends Request
             'description' => 'required|between:6,140',
             'keywords' => 'required',
             'subjectCount' => 'integer|max:' . Config::get('config.expedition_size'),
-            'nfn_workflow_id' => 'integer'
+            'workflow' => 'integer|required_with:current_workflow:same:current_workflow'
         ];
 
         return $rules;

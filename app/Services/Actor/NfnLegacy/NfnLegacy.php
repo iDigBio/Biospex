@@ -2,26 +2,36 @@
 
 namespace App\Services\Actor\NfnLegacy;
 
-class NfnLegacy
+use App\Services\Actor\ActorInterface;
+
+class NfnLegacy implements ActorInterface
 {
+
     /**
-     * @var
+     * @var NfnLegacyExport
      */
-    protected $fromNatureExport;
+    private $export;
 
-    public $state = [
-        'export'
-    ];
-
+    /**
+     * NfnLegacy constructor.
+     * @param NfnLegacyExport $export
+     */
     public function __construct(NfnLegacyExport $export)
     {
         $this->export = $export;
     }
 
+    /**
+     * @param $actor
+     * @return mixed
+     * @throws \Exception|\RuntimeException
+     */
     public function process($actor)
     {
-        if ($this->state[$actor->pivot->state] === 'export') {
+        if ($actor->pivot->state === 0)
+        {
             $this->export->process($actor);
         }
+
     }
 }

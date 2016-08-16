@@ -90,9 +90,8 @@ class NfnTranscriptionQueue extends QueueAbstract
             $csv = $this->transcription->process($file);
             $expeditionId = $this->transcription->getExpeditionId();
             
-            $this->dispatch((new ExpeditionStatJob($import->project_id, $expeditionId))->onQueue(Config::get('config.beanstalkd.job')));
+            $this->dispatch((new ExpeditionStatJob($expeditionId))->onQueue(Config::get('config.beanstalkd.job')));
             $this->dispatch((new AmChartJob($import->project_id))->onQueue(Config::get('config.beanstalkd.job')));
-
 
             $this->report->complete($import->user->email, $import->project->title, $csv);
             $this->filesystem->delete($file);

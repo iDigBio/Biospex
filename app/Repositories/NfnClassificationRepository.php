@@ -17,4 +17,15 @@ class NfnClassificationRepository extends Repository implements NfnClassificatio
     {
         return \App\Models\NfnClassification::class;
     }
+
+    /**
+     * Return classification count grouped by finished_at date.
+     *
+     * @param $workflow
+     * @return mixed
+     */
+    public function getExpeditionsGroupByFinishedAt($workflow)
+    {
+        return $this->model->getExpeditionsGroupByFinishedAt($workflow);
+    }
 }

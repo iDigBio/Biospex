@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class NfnClassification extends Model
 {
@@ -17,9 +18,9 @@ class NfnClassification extends Model
     protected $table = 'nfn_classifications';
 
     protected $fillable = [
+        'nfn_workflow_id',
         'classification_id',
-        'project_id',
-        'expedition_id',
+        'subjects',
         'started_at',
         'finished_at'
     ];
@@ -31,26 +32,49 @@ class NfnClassification extends Model
      */
     protected $dates = ['deleted_at'];
 
-
     /**
-     * Project relationship.
+     * NfnWorkflow relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function project()
+    public function nfnWorkflow()
     {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(NfnWorkflow::class);
     }
 
     /**
-     * Expedition relationship.
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Mutator for subjects column.
+     *
+     * @param $value
      */
-    public function expedition()
+    public function setSubjectsAttribute($value)
     {
-        return $this->belongsTo(Expedition::class);
+        $this->attributes['subjects'] = json_encode($value);
     }
 
+    /**
+     * Accessor for subjects column.
+     *
+     * @param $value
+     * @return mixed
+     */
+    public function getSubjectsAttribute($value)
+    {
+        return json_decode($value);
+    }
 
-
+    /**
+     * Return classification count grouped by finished_at date.
+     *
+     * @param $workflow
+     * @return mixed
+     */
+    public function getExpeditionsGroupByFinishedAt($workflow)
+    {
+        return $this->selectRaw('DATE_FORMAT(finished_at, \'%Y-%m-%d\') as finished_at, count(*) as total')
+            ->where('nfn_workflow_id', $workflow)
+            ->groupBy(DB::raw('DATE_FORMAT(finished_at, \'%Y-%m-%d\')'))
+            ->orderBy('finished_at')
+            ->get();
+    }
 }

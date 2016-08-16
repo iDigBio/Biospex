@@ -12,21 +12,15 @@ class ActorQueue extends QueueAbstract
      * @var Report
      */
     protected $report;
-    /**
-     * @var ActorFactory
-     */
-    protected $actorFactory;
 
     /**
      * ActorQueue constructor.
      * 
      * @param Report $report
-     * @param ActorFactory $actorFactory
      */
-    public function __construct(Report $report, ActorFactory $actorFactory)
+    public function __construct(Report $report)
     {
         $this->report = $report;
-        $this->actorFactory = $actorFactory;
     }
 
     /**
@@ -41,7 +35,7 @@ class ActorQueue extends QueueAbstract
         $actor = unserialize($data);
 
         try {
-            $this->actorFactory->factory($actor);
+            ActorFactory::create($actor);
         } catch (Exception $e) {
             $actor->pivot->queued = 0;
             $actor->pivot->error = 1;
