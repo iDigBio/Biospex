@@ -62,7 +62,7 @@
 
                 <h4>{{ trans_choice('pages.subjects_assigned', 1) }} <span
                             id="max">{{ trans('pages.subjects_assigned_max', ['count' => Config::get('config.expedition_size')]) }}</span>:
-                    <span id="subjectCountHtml">{{ $subjectCount }}</span></h4>
+                    <span id="subjectCountHtml">{{ $expedition->subjectsCount }}</span></h4>
                 <div class="table-responsive" id="jqtable">
                     @if($showCb)
                         <input type="hidden" id="showCb" value="0">

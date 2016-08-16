@@ -199,7 +199,6 @@ class ExpeditionsController extends Controller
     {
         $user = Request::user();
         $expedition = $this->expedition->skipCache()->with(['project.group.permissions', 'workflowManager', 'subjects', 'nfnWorkflow'])->find($expeditionId);
-        $subjectCount = $this->expedition->skipCache()->find($expeditionId)->subjects()->count();
 
         if ( ! $this->checkPermissions($user, [$expedition->project], 'update'))
         {
@@ -215,7 +214,7 @@ class ExpeditionsController extends Controller
         $showCb = $expedition->workflowManager === null ? 0 : 1;
         $subjects = implode(',', $subjectIds);
 
-        return view('frontend.expeditions.edit', compact('expedition', 'subjects', 'showCb', 'subjects', 'subjectCount'));
+        return view('frontend.expeditions.edit', compact('expedition', 'subjects', 'showCb', 'subjects'));
     }
 
     /**
