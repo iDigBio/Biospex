@@ -2,15 +2,20 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\NfnClassificationsJob;
 use App\Repositories\Contracts\Expedition;
 use App\Repositories\Contracts\NfnClassification;
 use App\Services\Api\NfnApi;
 use Illuminate\Console\Command;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 
 
 class UpdateQueries extends Command
 {
+
+    use DispatchesJobs;
 
     /**
      * The console command name.
@@ -63,6 +68,8 @@ class UpdateQueries extends Command
             {
                 $classificationRepo->update(['nfn_workflow_id' => $result->id], $classification->id);
             }
+
+            $this->dispatch((new NfnClassificationsJob($expedition->id, true))->onQueue(Config::get('config.beanstalkd.job')));
         }
 
         DB::statement('ALTER TABLE nfn_classifications DROP COLUMN `project_id`;');
