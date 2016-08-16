@@ -43,48 +43,19 @@ class UpdateQueries extends Command
     public function handle(
         NfnApi $nfnApi,
         Expedition $expeditionRepo,
-        NfnClassification $classificationRepo,
-        NfnWorkflow $nfnWorkflow
+        NfnWorkflow $nfnWorkflowRepo
     )
     {
 
-        $expeditions = $expeditionRepo->skipCache()->whereNotNull('nfn_workflow_id')->get();
+        $expeditions = $expeditionRepo->skipCache()->has('nfnWorkflow')->get();
 
         $nfnApi->setProvider();
         foreach ($expeditions as $expedition)
         {
-            $classifications = $classificationRepo->where(['project_id' => $expedition->project_id, 'expedition_id' => $expedition->id])->get();
-            $result = json_decode($nfnApi->getWorkflow($expedition->nfn_workflow_id), true);
-
-            $attributes = [
-                'project_id'    => $expedition->project->id,
-                'expedition_id' => $expedition->id
-            ];
-
-            $workflow = $result['workflows'][0];
-
-            $values = [
-                'project_id'      => $expedition->project->id,
-                'project'      => $workflow['links']['project'],
-                'workflow'     => $workflow['id'],
-                'subject_sets' => isset($workflow['links']['subject_sets']) ? $workflow['links']['subject_sets'] : ''
-            ];
-
-            $result = $expedition->nfnWorkflow()->updateOrCreate($attributes, $values);
-
-            foreach ($classifications as $classification)
-            {
-                $classificationRepo->update(['nfn_workflow_id' => $result->id], $classification->id);
-            }
-
             $this->dispatch((new NfnClassificationsJob($expedition->id, true))->onQueue(Config::get('config.beanstalkd.job')));
         }
 
-        DB::statement('ALTER TABLE nfn_classifications DROP COLUMN `project_id`;');
-        DB::statement('ALTER TABLE nfn_classifications DROP COLUMN `expedition_id`;');
-        DB::statement('ALTER TABLE expeditions DROP COLUMN `nfn_workflow_id`;');
-
-        $workflows = $nfnWorkflow->skipCache()->with(['expedition.stat', 'expedition.actors'])->get();
+        $workflows = $nfnWorkflowRepo->skipCache()->with(['expedition.stat', 'expedition.actors'])->get();
         foreach ($workflows as $workflow)
         {
             if ((int) $workflow->expedition->stat->transcriptions_completed === 100)
