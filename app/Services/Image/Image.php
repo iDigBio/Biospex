@@ -253,7 +253,7 @@ class Image
     }
 
     /**
-     * Determine comporession level to keep size of image under maximum.
+     * Determine compression level to keep size of image under maximum.
      * @param $imageSize
      * @return float|int
      */
@@ -263,10 +263,10 @@ class Image
 
         if ($imageSize > $this->maxSize)
         {
-            $compression -= floor(($imageSize / $compression * $this->maxSize) / ($this->maxSize * $compression * $this->equalizer));
+            $compression -= ($imageSize / $compression * $this->maxSize) / ($this->maxSize * $compression * $this->equalizer);
         }
 
-        return $compression;
+        return floor($compression);
     }
 
     /**
@@ -281,8 +281,9 @@ class Image
         try
         {
             $this->imagick->scaleImage($width, $height);
+            $this->imagick->stripImage();
             $this->imagick->setImageCompression(\Imagick::COMPRESSION_JPEG);
-            $this->imagick->setImageCompressionQuality($this->setCompressionLevel($this->imagick->getImageLength($target)));
+            $this->imagick->setImageCompressionQuality($this->setCompressionLevel(strlen($this->imagick->getImageBlob())));
             $this->imagick->writeImage($target);
         }
         catch (\Exception $e)

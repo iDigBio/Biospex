@@ -67,7 +67,7 @@ return [
         'thumbWidth'         => 300,
         'thumbHeight'        => 300,
         'compression'        => 80,
-        'maxSize'            => 600000,
+        'maxSize'            => 500000,
         'equalizer'          => 100,
         'imageTypeExtension' => [
             'image/jpeg' => "jpg",
