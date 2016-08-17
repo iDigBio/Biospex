@@ -186,16 +186,9 @@ class AmChartJob extends Job implements ShouldQueue
     {
         foreach ($daysArray as $day => &$data)
         {
-            if ($day === 0 && $data === '')
-            {
-                $data = $this->buildResultSet($expedition->id, $expedition->title, $day);
-
-                continue;
-            }
-
             if ($data === '')
             {
-                $data = $this->buildResultSet($expedition->id, $expedition->title, $day, $daysArray[$day-1]['count']);
+                $data = $this->buildResultSet($expedition->id, $expedition->title, $day);
             }
         }
 

@@ -86,7 +86,7 @@ class NfnClassificationsUpdate extends Command
     private function getExpeditions()
     {
         return null === $this->expeditionIds ?
-            $expeditions = $this->expedition->skipCache()->has('nfnWorkflow')->get() :
-            $expeditions = $this->expedition->skipCache()->has('nfnWorkflow')->whereIn('id', [$this->expeditionIds])->get();
+            $this->expedition->skipCache()->has('nfnWorkflow')->get() :
+            $this->expedition->skipCache()->has('nfnWorkflow')->whereIn('id', [$this->expeditionIds])->get();
     }
 }
