@@ -73,7 +73,7 @@
                            value="{{ URL::route('web.grids.edit', [$expedition->project->id, $expedition->id]) }}">
                     <input type="hidden" id="projectId" value="{{ $expedition->project->id }}">
                     <input type="hidden" id="expeditionId" value="{{ $expedition->id }}">
-                    <input type="hidden" id="subjectCount" name="subjectCount" value="{{ $subjectCount }}">
+                    <input type="hidden" id="subjectCount" name="subjectCount" value="{{ $expedition->subjectsCount }}">
                     <input type="hidden" id="maxCount" name="maxCount"
                            value="{{ Config::get('config.expedition_size') }}">
                     <input type="hidden" id="subjectIds" name="subjectIds" value="{{ $subjects }}">
