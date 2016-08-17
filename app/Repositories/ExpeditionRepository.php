@@ -58,7 +58,12 @@ class ExpeditionRepository extends Repository implements Expedition, CacheableIn
 
         if ($attributes['workflow'] !== '')
         {
-            $expedition->nfnWorkflow()->updateOrCreate(['expedition_id' => $expedition->id], [$attributes['workflow']]);
+            $values = [
+                'project_id' => $attributes['project_id'],
+                'expedition_id' => $expedition->id,
+                'workflow' => $attributes['workflow']
+            ];
+            $expedition->nfnWorkflow()->updateOrCreate(['expedition_id' => $expedition->id], $values);
         }
 
         $existingSubjectIds = [];
