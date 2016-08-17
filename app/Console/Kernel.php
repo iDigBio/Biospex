@@ -8,6 +8,7 @@ use App\Console\Commands\ClearBeanstalkdQueueCommand;
 use App\Console\Commands\DarwinCoreFileImportCommand;
 use App\Console\Commands\DownloadCleanCommand;
 use App\Console\Commands\Inspire;
+use App\Console\Commands\NfnWorkflowUpdate;
 use App\Console\Commands\OcrDeleteFile;
 use App\Console\Commands\OcrProcessCommand;
 use App\Console\Commands\OcrQueuePushCommand;
@@ -43,6 +44,7 @@ class Kernel extends ConsoleKernel
         ExpeditionStatUpdate::class,
         ClearOcrResults::class,
         NfnClassificationsUpdate::class,
+        NfnWorkflowUpdate::class
     ];
 
     /**

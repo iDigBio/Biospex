@@ -65,10 +65,8 @@ class AmChartUpdate extends Command
     {
         $repo = app(Project::class);
 
-        null === $this->projectIds ?
-            $projects = $repo->skipCache()->has('expeditions.statWithTranscriptions')->get() :
-            $projects = $repo->skipCache()->whereIn('id', $this->projectIds)->has('expeditions.statWithTranscriptions')->get();
-
-        return $projects;
+        return null === $this->projectIds ?
+            $repo->skipCache()->has('expeditions.statWithTranscriptions')->get() :
+            $repo->skipCache()->whereIn('id', $this->projectIds)->has('expeditions.statWithTranscriptions')->get();
     }
 }

@@ -15,6 +15,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class UpdateNfnWorkflowJob extends Job implements ShouldQueue
 {
@@ -42,7 +43,7 @@ class UpdateNfnWorkflowJob extends Job implements ShouldQueue
      */
     public function handle(NfnApi $nfnApi)
     {
-        if (null !== $this->nfnWorkflow->project_id)
+        if (null !== $this->nfnWorkflow->project)
         {
             return;
         }
