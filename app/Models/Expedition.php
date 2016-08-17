@@ -164,6 +164,16 @@ class Expedition extends Eloquent
     }
 
     /**
+     * Get counts attribute.
+     *
+     * @return int
+     */
+    public function getSubjectsCountAttribute()
+    {
+        return $this->subjects()->count();
+    }
+
+    /**
      * NfnClassifications relationship count.
      * @return mixed
      */
