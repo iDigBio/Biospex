@@ -59,9 +59,9 @@
             </div>
             <div class="col-md-5">
                 <dl>
-                    <dt class="firstdl">{{ trans('forms.organization) }}</dt>
+                    <dt class="firstdl">{{ trans('forms.organization') }}</dt>
                     <dd class="firstdl">{{ $project->organization }}&nbsp;</dd>
-                    <dt>{{ trans('forms.contact) }}</dt>
+                    <dt>{{ trans('forms.contact') }}</dt>
                     <dd><a href="mailto:{{ $project->contact_email }}">{{ $project->contact }}</a>&nbsp;</dd>
                     <dt>{{ trans('forms.contact_title') }}</dt>
                     <dd>{{ $project->contact_title }}&nbsp;</dd>
