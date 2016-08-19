@@ -223,9 +223,8 @@ class ProjectsController extends Controller
             return redirect()->route('web.projects.index');
         }
 
-        $subjectAssignedCount = $subject->skipCache()
-            ->where(['project_id' => (int) $id])
-            ->whereRaw(['expedition_ids' => ['$not' => ['$size' => 0]]])
+        $subjectAssignedCount = $subject->where(['project_id' => (int) $id])
+            ->whereRaw(['expedition_ids.0' => ['$exists' => true]])
             ->count();
 
         return view('frontend.projects.explore', compact('project', 'subjectAssignedCount'));

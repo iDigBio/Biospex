@@ -338,9 +338,7 @@ abstract class Repository
      */
     public function whereRaw(array $where = [])
     {
-        $this->model = $this->model->whereRaw(function ($query) use ($where) {
-            $this->buildWhereClause($query, $where, 'whereRaw');
-        });
+        $this->model = $this->model->whereRaw($where);
                 
         return $this;
     }
