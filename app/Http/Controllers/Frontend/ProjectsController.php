@@ -70,7 +70,7 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        $groups = $this->group->with(['projects'])->whereHas('users', ['user_id' => $this->request->user()->id])->get();
+        $groups = $this->group->with(['projects'])->whereHas('users', ['id' => $this->request->user()->id])->get();
 
         return view('frontend.projects.index', compact('groups'));
     }
