@@ -208,10 +208,14 @@ class NfnPanoptesExport implements ActorInterface
                 $csvArray[$key] = $this->record->title;
                 continue;
             }
+            if ($key === 'imageName')
+            {
+                $csvArray[$key] = $subject->_id . '.jpg';
+                continue;
+            }
             if ( ! is_array($item))
             {
                 $csvArray[$key] = $item === '' ? '' : $subject->{$item};
-
                 continue;
             }
 
