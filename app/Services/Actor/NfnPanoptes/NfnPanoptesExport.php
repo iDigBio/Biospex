@@ -8,7 +8,6 @@ use App\Services\Actor\ActorInterface;
 use App\Services\Actor\ActorService;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Exception;
-use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 class NfnPanoptesExport implements ActorInterface
@@ -96,16 +95,13 @@ class NfnPanoptesExport implements ActorInterface
     {
         try {
             $this->fileService->makeDirectory($this->nfnExportDir);
-            Log::alert('created directories');
 
             $this->record = $this->repoService->expedition
                 ->skipCache()
                 ->with(['project.group', 'subjects'])
                 ->find($actor->pivot->expedition_id);
-            Log::alert('retrieved record');
 
             $this->fileService->setDirectories($actor->id . '-' . md5($this->record->title));
-            Log::alert('set directories');
 
             $this->imageService->setWorkingDirVars(
                 $this->fileService->workingDir,
@@ -113,49 +109,34 @@ class NfnPanoptesExport implements ActorInterface
                 $this->fileService->workingDirConvert
             );
 
-            Log::alert('set working directories');
-
             $this->imageService->buildImageUris($actor, $this->record->subjects);
-            Log::alert('build images');
 
             $this->imageService->getImages();
-            Log::alert('get images');
 
             $files = $this->fileService->getFiles($this->fileService->workingDirOrig);
-            Log::alert('get files');
 
             $this->imageService->convert($files, [['width' => $this->largeWidth]]);
-            Log::alert('convert');
 
             $this->fileService->filesystem->moveDirectory(
                 $this->fileService->workingDirConvert,
                 $this->fileService->workingDir . '/' . $this->record->uuid
             );
-            Log::alert('move directory');
 
             $this->fileService->filesystem->deleteDirectory($this->fileService->workingDirOrig);
-            Log::alert('delete working directory original');
 
             $this->buildCsvArray($this->record->subjects);
-            Log::alert('build csv array');
 
             $this->createCsv($this->record->uuid);
-            Log::alert('create csv');
 
             $tarGzFiles = $this->fileService->compressDirectories([$this->imageService->workingDir . '/' . $this->record->uuid]);
-            Log::alert('compress directories');
 
             $this->repoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
-            Log::alert('create downloads');
 
             $this->fileService->moveCompressedFiles($this->fileService->workingDir, $this->nfnExportDir);
-            Log::alert('move compressed dirs');
 
             $this->fileService->filesystem->deleteDirectory($this->fileService->workingDir);
-            Log::alert('delete directory');
 
             $this->sendReport();
-            Log::alert('send report');
 
             $actor->pivot->queued = 0;
             ++$actor->pivot->state;
