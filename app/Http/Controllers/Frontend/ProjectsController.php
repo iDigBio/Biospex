@@ -97,7 +97,7 @@ class ProjectsController extends Controller
     {
         $user = $this->request->user();
         $with = [
-            'group.permissions',
+            'group',
             'expeditions.downloads',
             'expeditions.actors',
             'expeditions.stat'
