@@ -70,7 +70,7 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        $groups = $this->group->with(['projects'])->whereHas('users', ['user_id' => $this->request->user()->id])->get();
+        $groups = $this->group->with(['projects'])->whereHas('users', ['id' => $this->request->user()->id])->get();
 
         return view('frontend.projects.index', compact('groups'));
     }
@@ -223,9 +223,8 @@ class ProjectsController extends Controller
             return redirect()->route('web.projects.index');
         }
 
-        $subjectAssignedCount = $subject->skipCache()
-            ->where(['project_id' => (int) $id])
-            ->whereRaw(['expedition_ids' => ['$not' => ['$size' => 0]]])
+        $subjectAssignedCount = $subject->where(['project_id' => (int) $id])
+            ->whereRaw(['expedition_ids.0' => ['$exists' => true]])
             ->count();
 
         return view('frontend.projects.explore', compact('project', 'subjectAssignedCount'));

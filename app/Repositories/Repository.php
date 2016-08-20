@@ -17,6 +17,8 @@ abstract class Repository
      */
     protected $withRelations = [];
 
+    protected $whereClauses;
+
     /**
      * @param Application $app
      */
@@ -279,6 +281,8 @@ abstract class Repository
      */
     public function whereIn($field, array $values)
     {
+        $this->whereClauses[] = [$field => $values];
+
         $this->model = $this->model->whereIn($field, $values);
 
         return $this;
@@ -293,6 +297,8 @@ abstract class Repository
      */
     public function whereNotIn($field, array $values)
     {
+        $this->whereClauses[] = [$field => $values];
+
         $this->model = $this->model->whereNotIn($field, $values);
 
         return $this;
@@ -338,9 +344,9 @@ abstract class Repository
      */
     public function whereRaw(array $where = [])
     {
-        $this->model = $this->model->whereRaw(function ($query) use ($where) {
-            $this->buildWhereClause($query, $where, 'whereRaw');
-        });
+        $this->whereClauses[] = [$where];
+
+        $this->model = $this->model->whereRaw($where);
                 
         return $this;
     }
@@ -353,6 +359,8 @@ abstract class Repository
      */
     public function whereNull($column)
     {
+        $this->whereClauses[] = [$column => null];
+
         $this->model = $this->model->whereNull($column);
         
         return $this;
@@ -366,6 +374,8 @@ abstract class Repository
      */
     public function whereNotNull($column)
     {
+        $this->whereClauses[] = [$column =>  ! null];
+
         $this->model = $this->model->whereNotNull($column);
         
         return $this;
@@ -411,6 +421,8 @@ abstract class Repository
      */
     public function has($relation, $condition = null, $value = null)
     {
+        $this->whereClauses[] = [$relation, $condition, $value];
+
         if (null === $condition)
         {
             $this->model = $this->model->has($relation);
@@ -474,6 +486,8 @@ abstract class Repository
      */
     protected function buildWhereClause(&$query, $where, $type = 'where')
     {
+        $this->whereClauses[] = [$type => $where];
+
         foreach ($where as $field => $value)
         {
             if (is_array($value))
@@ -496,6 +510,14 @@ abstract class Repository
     public function getWith()
     {
         return $this->withRelations;
+    }
+
+    /**
+     * @return array
+     */
+    public function getWhere()
+    {
+        return $this->whereClauses;
     }
 
     /**

@@ -30,7 +30,7 @@ trait CacheableRepository
         if ($this->cacheRepository === null) {
             $this->cacheRepository = app(CacheRepository::class);
         }
-        
+
         return $this->cacheRepository;
     }
 
@@ -43,8 +43,8 @@ trait CacheableRepository
      */
     public function createCacheKey($method, $args = null)
     {
-        $serialized = md5(serialize($args) . $this->serializeWith());
-                        
+        $serialized = md5(serialize($args) . $this->serializeWith() . $this->serializeWhere());
+
         return sprintf('%s@%s-%s', get_called_class(), $method, $serialized);
     }
 
@@ -242,5 +242,15 @@ trait CacheableRepository
     protected function serializeWith()
     {
         return serialize($this->getWith());
+    }
+
+    /**
+     * Serialize where array.
+     *
+     * @return string
+     */
+    protected function serializeWhere()
+    {
+        return serialize($this->getWhere());
     }
 }
