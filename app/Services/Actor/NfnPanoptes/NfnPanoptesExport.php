@@ -12,6 +12,7 @@ use RuntimeException;
 
 class NfnPanoptesExport implements ActorInterface
 {
+
     /**
      * @var ActorService
      */
@@ -93,7 +94,8 @@ class NfnPanoptesExport implements ActorInterface
      */
     public function process($actor)
     {
-        try {
+        try
+        {
             $this->fileService->makeDirectory($this->nfnExportDir);
 
             $this->record = $this->repoService->expedition
@@ -101,40 +103,29 @@ class NfnPanoptesExport implements ActorInterface
                 ->with(['project.group', 'subjects'])
                 ->find($actor->pivot->expedition_id);
 
-            $this->fileService->setDirectories($actor->id . '-' . md5($this->record->title));
+            $this->service->setWorkingDirectories($this->record->uuid);
 
-            $this->imageService->setWorkingDirVars(
-                $this->fileService->workingDir,
-                $this->fileService->workingDirOrig,
-                $this->fileService->workingDirConvert
-            );
+            $this->imageService->setSubjects($this->record->subjects);
 
-            $this->imageService->buildImageUris($actor, $this->record->subjects);
+            $this->imageService->getImages($this->service->workingDirOrig);
 
-            $this->imageService->getImages();
+            $files = $this->fileService->getFiles($this->service->workingDirOrig);
 
-            $files = $this->fileService->getFiles($this->fileService->workingDirOrig);
+            $this->imageService->processFiles($files, [['width' => $this->largeWidth]], $this->service->workingDirConvert);
 
-            $this->imageService->convert($files, [['width' => $this->largeWidth]]);
-
-            $this->fileService->filesystem->moveDirectory(
-                $this->fileService->workingDirConvert,
-                $this->fileService->workingDir . '/' . $this->record->uuid
-            );
-
-            $this->fileService->filesystem->deleteDirectory($this->fileService->workingDirOrig);
+            $this->fileService->filesystem->deleteDirectory($this->service->workingDirOrig);
 
             $this->buildCsvArray($this->record->subjects);
 
-            $this->createCsv($this->record->uuid);
+            if ($this->createCsv($this->record->uuid))
+            {
+                $tarGzFiles = $this->fileService->compressDirectories([$this->service->workingDirConvert]);
+                $this->repoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
+                $this->fileService->moveCompressedFiles($this->service->workingDir, $this->nfnExportDir);
+            }
 
-            $tarGzFiles = $this->fileService->compressDirectories([$this->imageService->workingDir . '/' . $this->record->uuid]);
-
-            $this->repoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
-
-            $this->fileService->moveCompressedFiles($this->fileService->workingDir, $this->nfnExportDir);
-
-            $this->fileService->filesystem->deleteDirectory($this->fileService->workingDir);
+            $this->fileService->filesystem->cleanDirectory($this->service->workingDir);
+            $this->fileService->filesystem->deleteDirectory($this->service->workingDir);
 
             $this->sendReport();
 
@@ -142,9 +133,13 @@ class NfnPanoptesExport implements ActorInterface
             ++$actor->pivot->state;
             $actor->pivot->save();
         }
-        catch(FileNotFoundException $e) {}
-        catch(RuntimeException $e) {}
-        catch(Exception $e)
+        catch (FileNotFoundException $e)
+        {
+        }
+        catch (RuntimeException $e)
+        {
+        }
+        catch (Exception $e)
         {
             $actor->pivot->queued = 0;
             $actor->pivot->error = 1;
@@ -165,7 +160,15 @@ class NfnPanoptesExport implements ActorInterface
     {
         foreach ($subjects as $subject)
         {
-            $this->csvExport[] = $this->mapNfnCsvColumns($subject);
+            $file = $this->service->workingDirConvert . '/' . $subject->_id . '.jpg';
+            if ($this->fileService->checkFileExists($file))
+            {
+                $this->csvExport[] = $this->mapNfnCsvColumns($subject);
+            }
+            else
+            {
+                $this->imageService->setMissingImages($subject, 'Converted image did not exist');
+            }
         }
     }
 
@@ -218,12 +221,20 @@ class NfnPanoptesExport implements ActorInterface
      * Create csv file.
      *
      * @param $folder
+     * @return bool
      */
     public function createCsv($folder)
     {
-        $this->service->report->csv->writerCreateFromPath($this->fileService->workingDir . '/' . $folder . '/' . $this->record->uuid . '.csv');
+        if (0 === count($this->csvExport))
+        {
+            return false;
+        }
+
+        $this->service->report->csv->writerCreateFromPath($this->service->workingDir . '/' . $folder . '/' . $this->record->uuid . '.csv');
         $this->service->report->csv->insertOne(array_keys($this->csvExport[0]));
         $this->service->report->csv->insertAll($this->csvExport);
+
+        return true;
     }
 
     /**
@@ -232,9 +243,9 @@ class NfnPanoptesExport implements ActorInterface
     protected function sendReport()
     {
         $vars = [
-            'title' => $this->record->title,
-            'message' => trans('emails.expedition_export_complete_message', ['expedition', $this->record->title]),
-            'groupId' => $this->record->project->group->id,
+            'title'          => $this->record->title,
+            'message'        => trans('emails.expedition_export_complete_message', ['expedition' => $this->record->title]),
+            'groupId'        => $this->record->project->group->id,
             'attachmentName' => trans('emails.missing_images_attachment_name', ['recordId' => $this->record->id])
         ];
 

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 
 class TestAppCommand extends Command
 {
@@ -27,7 +28,7 @@ class TestAppCommand extends Command
 
     public function fire()
     {
-
+        echo trans('emails.expedition_export_complete_message', ['expedition' =>'This is a test']) . PHP_EOL;
     }
 
 }

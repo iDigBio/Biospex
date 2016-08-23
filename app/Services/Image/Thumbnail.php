@@ -172,7 +172,7 @@ class Thumbnail extends Image
         $this->imagickFile($this->outputFileLg);
         $this->imagickScale($this->outputFileSm, $this->tnWidth, 0);
         $this->filesystem->delete($this->outputFileLg);
-        $this->imagickDestroy();
+        $this->imagickClear();
     }
 
 }

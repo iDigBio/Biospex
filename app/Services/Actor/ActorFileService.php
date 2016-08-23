@@ -8,11 +8,6 @@ use RuntimeException;
 
 class ActorFileService
 {
-
-    public $workingDir;
-    public $workingDirOrig;
-    public $workingDirConvert;
-
     /**
      * @var Filesystem
      */
@@ -33,8 +28,6 @@ class ActorFileService
         Config $config
     )
     {
-        $this->scratchDir = $config->get('config.scratch_dir');
-
         $this->filesystem = $filesystem;
         $this->config = $config;
     }
@@ -57,22 +50,6 @@ class ActorFileService
     }
 
     /**
-     * Set working directories for actors.
-     *
-     * @param $name
-     * @throws RuntimeException
-     */
-    public function setDirectories($name)
-    {
-        $this->workingDir = $this->scratchDir . '/' . $name;
-        $this->makeDirectory($this->workingDir);
-        $this->workingDirOrig = $this->workingDir . '/orig';
-        $this->makeDirectory($this->workingDirOrig);
-        $this->workingDirConvert = $this->workingDir . '/convert';
-        $this->makeDirectory($this->workingDirConvert);
-    }
-
-    /**
      * Compress directories.
      *
      * @param array $directories
@@ -88,8 +65,7 @@ class ActorFileService
             $a->buildFromDirectory($directory);
             $a->compress(\Phar::GZ);
             unset($a);
-            $this->filesystem->delete($tarFile);
-            $this->filesystem->deleteDirectory($directory);
+            \Phar::unlinkArchive($tarFile);
 
             $compressed[] = $tarFile . '.gz';
         }
@@ -113,6 +89,16 @@ class ActorFileService
         }
     }
 
+    /**
+     * Check if file exists.
+     *
+     * @param $file
+     * @return bool
+     */
+    public function checkFileExists($file)
+    {
+        return count($this->filesystem->glob($file)) > 0;
+    }
 
     /**
      * Get files from working directory.
@@ -123,6 +109,17 @@ class ActorFileService
     public function getFiles($dir)
     {
         return $this->filesystem->files($dir);
+    }
+
+    /**
+     * Return true if files in directory.
+     *
+     * @param $dir
+     * @return bool
+     */
+    public function checkFileCount($dir)
+    {
+        return count($this->getFiles($dir)) !== 0;
     }
 
     /**

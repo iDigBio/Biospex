@@ -30,21 +30,6 @@ class ActorImageService
     /**
      * @var
      */
-    public $workingDir;
-
-    /**
-     * @var
-     */
-    public $workingDirOrig;
-
-    /**
-     * @var
-     */
-    public $workingDirConvert;
-
-    /**
-     * @var
-     */
     public $imageUris;
 
     /**
@@ -56,6 +41,11 @@ class ActorImageService
      * @var
      */
     public $missingImages = [];
+
+    /**
+     * @var
+     */
+    private $subjects;
 
     /**
      * ActorImageService constructor.
@@ -71,17 +61,11 @@ class ActorImageService
     }
 
     /**
-     * Set working directories where images are processed.
-     *
-     * @param $path
-     * @param $pathOrig
-     * @param $pathConvert
+     * @param $subjects
      */
-    public function setWorkingDirVars($path, $pathOrig, $pathConvert)
+    public function setSubjects($subjects)
     {
-        $this->workingDir = $path;
-        $this->workingDirOrig = $pathOrig;
-        $this->workingDirConvert = $pathConvert;
+        $this->subjects = $subjects;
     }
 
     /**
@@ -107,24 +91,15 @@ class ActorImageService
     }
 
     /**
-     * Add missing image information to array
+     * Add missing image information to array.
      *
-     * @param null $index
-     * @param null $uri
+     * @param $subject
+     * @param null $message
      */
-    public function setMissingImages($index = null, $uri = null)
+    public function setMissingImages($subject, $message = null)
     {
-        if (($index !== null) && !($uri !== null)) {
-            $this->missingImages[] = ['value' => $index . ' : ' . $uri];
-        }
-
-        if (($index === null) && ($uri !== null)) {
-            $this->missingImages[] = ['value' => $uri];
-        }
-
-        if (($index !== null) && ($uri === null)) {
-            $this->missingImages[] = ['value' => $index];
-        }
+        $accessURI = $message === null ? $subject->accessURI : $message;
+        $this->missingImages[] = ['subjectId' => $subject->_id, 'accessURI' => $accessURI];
     }
 
     /**
@@ -140,16 +115,16 @@ class ActorImageService
     /**
      * Build array of image uris.
      *
-     * @param $actor
      * @param array $subjects
+     * @param $dir
+     * @throws \RuntimeException
      */
-    public function buildImageUris($actor, $subjects)
+    public function buildImageUris($subjects, $dir)
     {
         foreach ($subjects as $subject)
         {
-            if ($this->checkImageExists($subject->_id))
+            if ($this->checkImageExists($subject->_id, $dir))
             {
-                $this->setExistingImageUris($subject->_id, str_replace(' ', '%20', $subject->accessURI));
                 continue;
             }
 
@@ -160,39 +135,49 @@ class ActorImageService
 
             $this->setImageUris($subject->_id, str_replace(' ', '%20', $subject->accessURI));
         }
-
-        if (0 === count($this->imageUris) && 0 === count($this->existingImageUris))
-        {
-            throw new \RuntimeException(trans('emails.error_empty_image_uri', ['id' => $actor->pivot->id]));
-        }
-
     }
 
 
     /**
      * Process expedition for export
+     *
+     * @param $dir
      */
-    public function getImages()
+    public function getImages($dir)
     {
-        if (0 === count($this->imageUris)) {
+        if (0 === count($this->subjects))
+        {
             return;
         }
 
-        $requests = function (array $uriArray) {
-            foreach ($uriArray as $index => $url) {
-                yield $index => new Request('GET', $url);
+        $requests = function ($subjects) use ($dir)
+        {
+            foreach ($subjects as $index => $subject)
+            {
+                if ($this->checkImageExists($subject->_id, $dir))
+                {
+                    continue;
+                }
+
+                if ($this->checkUriExists($subject))
+                {
+                    continue;
+                }
+
+                yield $index => new Request('GET', str_replace(' ', '%20', $subject->accessURI));
             }
         };
 
-        $pool = new Pool($this->client, $requests($this->imageUris), [
+        $pool = new Pool($this->client, $requests($this->subjects), [
             'concurrency' => 10,
-            'fulfilled' => function ($response, $index) {
-                $code = $response->getStatusCode();
-                $image = $response->getBody();
-                $this->saveImage($code, $index, $image);
+            'fulfilled'   => function ($response, $index) use ($dir)
+            {
+                $this->saveImage($response, $index, $dir);
             },
-            'rejected' => function ($reason, $index) {
-                $this->setMissingImages($index, $this->imageUris[$index]);
+            'rejected'    => function ($reason, $index)
+            {
+                preg_match('/message\s(.*)\sresponse/', $reason, $matches);
+                $this->setMissingImages($this->subjects[$index], $matches[1]);
             }
         ]);
 
@@ -204,46 +189,54 @@ class ActorImageService
     /**
      * Save image to image path.
      *
-     * @param $code
+     * @param $response
      * @param $index
-     * @param $image
+     * @param $dir
      */
-    public function saveImage($code, $index, $image)
+    public function saveImage($response, $index, $dir)
     {
-        if ($image === '' || $code !== 200) {
-            $this->setMissingImages($index, $this->imageUris[$index]);
+        $image = $response->getBody();
+
+        if ($image === '' || $response->getStatusCode() !== 200)
+        {
+            $this->setMissingImages($this->subjects[$index]);
 
             return;
         }
 
-        try {
+        try
+        {
             $this->image->setImageInfoFromString($image);
-        } catch (Exception $e) {
-            $this->setMissingImages($index, $this->imageUris[$index]);
+        }
+        catch (Exception $e)
+        {
+            $this->setMissingImages($this->subjects[$index]);
 
             return;
         }
 
         $ext = $this->image->getFileExtension();
 
-        if ( ! $ext) {
-            $this->setMissingImages($index, $this->imageUris[$index]);
+        if ( ! $ext)
+        {
+            $this->setMissingImages($this->subjects[$index]);
 
             return;
         }
 
-        $this->filesystem->put($this->workingDirOrig . '/' . $index . '.' . $ext, $image);
+        $this->filesystem->put($dir . '/' . $this->subjects[$index]->_id . '.' . $ext, $image);
     }
 
     /**
-     * Check if image exists
+     * Check if image exists.
      *
+     * @param $dir
      * @param $id
      * @return bool
      */
-    public function checkImageExists($id)
+    public function checkImageExists($id, $dir)
     {
-        return count($this->filesystem->glob($this->workingDirOrig . '/' . $id . '.*')) > 0;
+        return count($this->filesystem->glob($dir . '/' . $id . '.*')) > 0;
     }
 
     /**
@@ -256,7 +249,7 @@ class ActorImageService
     {
         if ($subject->accessURI === '')
         {
-            $this->setMissingImages($subject->id);
+            $this->setMissingImages($subject);
 
             return true;
         }
@@ -267,113 +260,63 @@ class ActorImageService
     /**
      * @param array $files
      * @param array $attributes
+     * @param $dir
      */
-    public function convert(array $files, array $attributes)
+    public function processFiles(array $files, array $attributes, $dir)
     {
         if (count($files) === 0)
         {
             return;
         }
 
-        $imageUriArray = $this->mergeImageUri();
-
-        $this->processImagickFile($files, $attributes, $imageUriArray);
-    }
-
-    /**
-     * Process files.
-     *
-     * @param array $files
-     * @param array $attributes
-     * @param $imageUriArray
-     */
-    public function processImagickFile(array $files, array $attributes, $imageUriArray)
-    {
         foreach ($files as $file)
         {
             $this->image->setImagePathInfo($file);
-            $fileName = $this->image->getFileName();
 
-            if ($this->image->getMimeType() === false || ! $this->createImagickFile($file, $fileName, $imageUriArray))
+            if ($this->image->getMimeType() === false)
             {
                 continue;
             }
 
-            $this->saveImagickImage($attributes, $fileName);
-
-            $this->image->imagickDestroy();
+            $this->convertImage($attributes, $dir, $file);
         }
     }
 
     /**
-     * create imagick file.
-     *
-     * @param $file
-     * @param $fileName
-     * @param $imageUriArray
-     * @return bool
-     */
-    public function createImagickFile($file, $fileName, $imageUriArray)
-    {
-        try
-        {
-            $this->image->imagickFile($file);
-
-            return true;
-        }
-        catch (Exception $e)
-        {
-            $this->setMissingImages($fileName, $imageUriArray[$fileName]);
-
-            return false;
-        }
-    }
-
-    /**
-     * Save imagick file.
      *
      * @param array $attributes
-     * @param $fileName
+     * @param $dir
+     * @param $file
      */
-    public function saveImagickImage(array $attributes, $fileName)
+    private function convertImage(array $attributes, $dir, $file)
     {
-        $ext = $this->image->getFileExtension();
+        $fileName = $this->image->getFileName();
 
         foreach ($attributes as $attribute)
         {
-            $ext = isset($attribute['ext']) ?$attribute['ext'] : $ext;
-            $imagePath = $this->workingDirConvert . '/' . $fileName . '.' . $ext;
-            if ( ! $this->filesystem->exists($imagePath))
-            {
-                $this->image->imagickScale($imagePath, $attribute['width'], 0);
-            }
+            $this->writeImage($dir, $file, $attribute, $fileName);
         }
+
+        $this->image->imagickClear();
     }
 
     /**
-     * Merge image and existing image arrays if job was stopped in the middle for some reason.
-     *
-     * @return array
+     * Write image to convert directory
+     * @param $dir
+     * @param $file
+     * @param array $attribute
+     * @param $fileName
      */
-    public function mergeImageUri()
+    private function writeImage($dir, $file, $attribute, $fileName)
     {
-        $imageUriCount = count($this->imageUris);
-        $existingImageUriCount = count($this->existingImageUris);
-
-        if ($imageUriCount !== 0 && $existingImageUriCount !== 0)
+        $ext = array_key_exists('ext', $attribute) ? $attribute['ext'] : '.jpg';
+        $imagePath = $dir . '/' . $fileName . $ext;
+        if ( ! $this->filesystem->exists($imagePath))
         {
-            return array_merge($this->imageUris, $this->existingImageUris);
-        }
+            $this->image->imagickFile($file);
+            $this->image->imagickScale($imagePath, $attribute['width'], 0);
 
-        if ($imageUriCount === 0 && $existingImageUriCount !== 0)
-        {
-            return $this->existingImageUris;
+            return;
         }
-
-        if ($imageUriCount !== 0 && $existingImageUriCount === 0)
-        {
-            return $this->imageUris;
-        }
-
     }
 }

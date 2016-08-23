@@ -38,6 +38,26 @@ class ActorService
     public $repositoryService;
 
     /**
+     * @var mixed
+     */
+    public $scratchDir;
+
+    /**
+     * @var
+     */
+    public $workingDir;
+
+    /**
+     * @var
+     */
+    public $workingDirOrig;
+
+    /**
+     * @var
+     */
+    public $workingDirConvert;
+
+    /**
      * Actor constructor.
      *
      * @param Config $config
@@ -63,6 +83,24 @@ class ActorService
         $this->fileService = $fileService;
         $this->imageService = $imageService;
         $this->repositoryService = $repositoryService;
+
+        $this->scratchDir = $config->get('config.scratch_dir');
+    }
+
+    /**
+     * Set working directories for actors.
+     *
+     * @param $folder
+     * @throws  \RuntimeException
+     */
+    public function setWorkingDirectories($folder)
+    {
+        $this->workingDir = $this->scratchDir . '/' . $folder;
+        $this->fileService->makeDirectory($this->workingDir);
+        $this->workingDirOrig = $this->workingDir . '/orig';
+        $this->fileService->makeDirectory($this->workingDirOrig);
+        $this->workingDirConvert = $this->workingDir . '/' . $folder;
+        $this->fileService->makeDirectory($this->workingDirConvert);
     }
 
     /**

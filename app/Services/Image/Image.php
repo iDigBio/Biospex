@@ -86,6 +86,11 @@ class Image
     protected $equalizer;
 
     /**
+     * @var
+     */
+    private $fileSet = false;
+
+    /**
      * Image constructor.
      *
      * @param FileSystem $filesystem
@@ -114,7 +119,7 @@ class Image
     {
         $this->pathinfo = pathinfo($file);
         $this->setExtension();
-        $mime = array_search($this->pathinfo['extension'], $this->imageTypeExtension);
+        $mime = array_search($this->pathinfo['extension'], $this->imageTypeExtension, true);
         $this->setMimeType($mime);
     }
 
@@ -126,8 +131,7 @@ class Image
     public function setImageInfoFromFile($file)
     {
         $info = getimagesize($file);
-        $this->width = $info[0];
-        $this->height = $info[1];
+        list($this->width, $this->height) = $info;
         $this->setExtension($info['mime']);
         $this->setMimeType($info['mime']);
     }
@@ -140,8 +144,7 @@ class Image
     public function setImageInfoFromString($file)
     {
         $info = getimagesizefromstring($file);
-        $this->width = $info[0];
-        $this->height = $info[1];
+        list($this->width, $this->height) = $info;
         $this->setExtension($info['mime']);
         $this->setMimeType($info['mime']);
     }
@@ -163,7 +166,7 @@ class Image
      */
     public function setExtension($mime = null)
     {
-        $this->extension = is_null($mime) ? $this->pathinfo['extension'] : $this->imageTypeExtension[$mime];
+        $this->extension = null === $mime ? $this->pathinfo['extension'] : $this->imageTypeExtension[$mime];
     }
 
     /**
@@ -173,7 +176,7 @@ class Image
      */
     public function getImageWidth()
     {
-        return ! is_null($this->geometry['width']) ? $this->geometry['width'] : $this->width;
+        return null === $this->geometry['width'] ? $this->width : $this->geometry['width'];
     }
 
     /**
@@ -183,7 +186,7 @@ class Image
      */
     public function getImageHeight()
     {
-        return ! is_null($this->geometry['height']) ? $this->geometry['height'] : $this->height;
+        return null === $this->geometry['width'] ? $this->height : $this->geometry['height'];
     }
 
     /**
@@ -243,6 +246,11 @@ class Image
      */
     public function imagickFile($file)
     {
+        if ($this->fileSet)
+        {
+            return;
+        }
+
         $f = fopen($file, 'r');
         fseek($f, 0);
         $this->imagick = new \Imagick();
@@ -283,7 +291,9 @@ class Image
             $this->imagick->scaleImage($width, $height);
             $this->imagick->stripImage();
             $this->imagick->setImageCompression(\Imagick::COMPRESSION_JPEG);
-            $this->imagick->setImageCompressionQuality($this->setCompressionLevel(strlen($this->imagick->getImageBlob())));
+            $this->imagick->setOption('jpeg:extent', $this->maxSize);
+            $this->imagick->setImageCompressionQuality($this->compression);
+            //$this->imagick->setImageCompressionQuality($this->setCompressionLevel(strlen($this->imagick->getImageBlob())));
             $this->imagick->writeImage($target);
         }
         catch (\Exception $e)
@@ -296,10 +306,13 @@ class Image
     /**
      * Destroy.
      */
-    public function imagickDestroy()
+    public function imagickClear()
     {
-        $this->imagick->clear();
-        $this->imagick->destroy();
-        $this->geometry = null;
+        if (is_object($this->imagick))
+        {
+            $this->imagick->clear();
+            $this->fileSet = false;
+            $this->geometry = null;
+        }
     }
 }

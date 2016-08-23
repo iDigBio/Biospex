@@ -70,16 +70,6 @@ class NfnLegacyExport implements ActorInterface
     private $smallWidth;
 
     /**
-     * @var
-     */
-    protected $imageUris;
-
-    /**
-     * @var
-     */
-    protected $existingImageUris;
-
-    /**
      * NfnLegacyExport constructor.
      *
      * @param ActorService $service
@@ -115,38 +105,30 @@ class NfnLegacyExport implements ActorInterface
                 ->with(['project.group', 'subjects'])
                 ->find($actor->pivot->expedition_id);
 
-            $folder = $actor->id . '-' . md5($record->title);
+            $this->service->setWorkingDirectories($record->uuid);
 
-            $this->fileService->setDirectories($folder);
+            $this->imageService->setSubjects($record->subjects);
 
-            $this->imageService->setWorkingDirVars(
-                $this->fileService->workingDir,
-                $this->fileService->workingDirOrig,
-                $this->fileService->workingDirConvert
-            );
+            $this->imageService->getImages($this->service->workingDirOrig);
 
-            $this->imageService->buildImageUris($actor, $record->subjects);
-
-            $this->imageService->getImages();
-
-            $files = $this->fileService->getFiles($this->fileService->workingDirOrig);
+            $files = $this->fileService->getFiles($this->service->workingDirOrig);
 
             $attributes = [
                 [
-                    'ext'   => 'large.jpg',
+                    'ext'   => '.large.jpg',
                     'width' => $this->largeWidth
                 ],
                 [
-                    'ext'   => 'small.jpg',
+                    'ext'   => '.small.jpg',
                     'width' => $this->smallWidth
                 ],
             ];
 
-            $this->imageService->convert($files, $attributes);
+            $this->imageService->processFiles($files, $attributes, $this->service->workingDirConvert);
 
-            $this->splitDirectories($folder);
+            $this->splitDirectories($record->uuid);
 
-            $this->fileService->filesystem->deleteDirectory($this->fileService->workingDirOrig);
+            $this->fileService->filesystem->deleteDirectory($this->service->workingDirOrig);
 
             $directories = $this->buildDetails();
 
@@ -154,9 +136,10 @@ class NfnLegacyExport implements ActorInterface
 
             $this->repoService->createDownloads($record->id, $actor->id, $tarGzFiles);
 
-            $this->fileService->moveCompressedFiles($this->fileService->workingDir, $this->nfnExportDir);
+            $this->fileService->moveCompressedFiles($this->service->workingDir, $this->nfnExportDir);
 
-            $this->fileService->filesystem->deleteDirectory($this->fileService->workingDir);
+            $this->fileService->filesystem->cleanDirectory($this->service->workingDir);
+            $this->fileService->filesystem->deleteDirectory($this->service->workingDir);
 
             $this->sendReport($record);
 
@@ -191,7 +174,7 @@ class NfnLegacyExport implements ActorInterface
         $size = 0;
         $this->setSplitDir($folder);
         $limit = $this->getDirectorySize();
-        $files = $this->fileService->getFiles($this->fileService->workingDirOrig);
+        $files = $this->fileService->getFiles($this->service->workingDirOrig);
 
         foreach ($files as $file)
         {
@@ -205,8 +188,8 @@ class NfnLegacyExport implements ActorInterface
             $fileName = $this->imageService->image->getFileName();
             $baseName = $this->imageService->image->getBaseName();
 
-            $lrgFilePath = $this->imageService->workingDirConvert . '/' . $fileName . '.large.jpg';
-            $smFilePath = $this->imageService->workingDirConvert . '/' . $fileName . '.small.jpg';
+            $lrgFilePath = $this->service->workingDirConvert . '/' . $fileName . '.large.jpg';
+            $smFilePath = $this->service->workingDirConvert . '/' . $fileName . '.small.jpg';
 
             $size += filesize($lrgFilePath);
             $size += filesize($smFilePath);
@@ -221,8 +204,6 @@ class NfnLegacyExport implements ActorInterface
                 $size = 0;
             }
         }
-
-        $this->fileService->filesystem->deleteDirectory($this->fileService->workingDirConvert);
     }
 
     /**
@@ -230,14 +211,14 @@ class NfnLegacyExport implements ActorInterface
      */
     public function buildDetails()
     {
-        $directories = $this->fileService->filesystem->directories($this->fileService->workingDir);
+        $directories = $this->fileService->filesystem->directories($this->service->workingDir);
 
         $metadata = [];
-        $metadata['sourceDir'] = $this->fileService->workingDir;
-        $metadata['targetDir'] = $this->fileService->workingDir;
+        $metadata['sourceDir'] = $this->service->workingDir;
+        $metadata['targetDir'] = $this->service->workingDir;
         $metadata['created_at'] = date('l jS F Y', time());
-        $metadata['highResDir'] = $this->fileService->workingDir . '/large';
-        $metadata['lowResDir'] = $this->fileService->workingDir . '/small';
+        $metadata['highResDir'] = $this->service->workingDir . '/large';
+        $metadata['lowResDir'] = $this->service->workingDir . '/small';
         $metadata['highResWidth'] = $this->largeWidth;
         $metadata['lowResWidth'] = $this->smallWidth;
         $metadata['total'] = 0;
@@ -256,25 +237,24 @@ class NfnLegacyExport implements ActorInterface
                 $this->imageService->image->setImagePathInfo($file);
                 $baseName = $this->imageService->image->getBaseName();
                 $fileName = $this->imageService->image->getFileName();
-                $extension = $this->imageService->image->getFileExtension();
                 $this->imageService->image->setImageInfoFromFile($file);
 
                 // Set array for original image.
                 $data['identifier'] = $fileName;
-                $data['original']['path'] = [$fileName, ".$extension"];
+                $data['original']['path'] = [$fileName, '.jpg'];
                 $data['original']['name'] = $baseName;
                 $data['original']['width'] = $this->imageService->image->getImageWidth();
                 $data['original']['height'] = $this->imageService->image->getImageHeight();
 
                 // Set array for large image.
-                $this->imageService->image->setImageInfoFromFile("$directory/large/$fileName.large.$extension");
-                $data['large']['name'] = "large/$fileName.large.$extension";
+                $this->imageService->image->setImageInfoFromFile("$directory/large/$fileName.large.jpg");
+                $data['large']['name'] = "large/$fileName.large.jpg";
                 $data['large']['width'] = $this->imageService->image->getImageWidth();
                 $data['large']['height'] = $this->imageService->image->getImageHeight();
 
                 // Set array for small image.
-                $this->imageService->image->setImageInfoFromFile("$directory/small/$fileName.small.$extension");
-                $data['small']['name'] = "small/$fileName.small.$extension";
+                $this->imageService->image->setImageInfoFromFile("$directory/small/$fileName.small.jpg");
+                $data['small']['name'] = "small/$fileName.small.jpg";
                 $data['small']['width'] = $this->imageService->image->getImageWidth();
                 $data['small']['height'] = $this->imageService->image->getImageHeight();
 
@@ -301,7 +281,7 @@ class NfnLegacyExport implements ActorInterface
     public function setSplitDir($folder)
     {
         $count = ++$this->count;
-        $this->splitDir = $this->fileService->workingDir . '/' . $folder . '-' . $count;
+        $this->splitDir = $this->service->workingDir . '/' . $folder . '-' . $count;
 
         $this->lrgFilePath = $this->splitDir . '/large';
         $this->fileService->makeDirectory($this->lrgFilePath);
@@ -317,7 +297,7 @@ class NfnLegacyExport implements ActorInterface
      */
     protected function getDirectorySize()
     {
-        exec("du -b -s {$this->fileService->workingDirConvert}", $op);
+        exec("du -b -s {$this->service->workingDirConvert}", $op);
         list($size) = preg_split('/\s+/', $op[0]);
 
         $gb = 1073741824;
@@ -334,7 +314,7 @@ class NfnLegacyExport implements ActorInterface
     {
         $vars = [
             'title' => $record->title,
-            'message' => trans('emails.expedition_export_complete_message', ['expedition', $record->title]),
+            'message' => trans('emails.expedition_export_complete_message', ['expedition' => $record->title]),
             'groupId' => $record->project->group->id,
             'attachmentName' => trans('emails.missing_images_attachment_name', ['recordId' => $record->id])
         ];
