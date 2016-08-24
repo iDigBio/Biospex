@@ -118,8 +118,8 @@ class NfnPanoptesExport implements ActorInterface
             if ($this->createCsv($this->record->uuid))
             {
                 $tarGzFiles = $this->fileService->compressDirectories([$this->service->workingDirConvert]);
-                $this->repoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
                 $this->fileService->moveCompressedFiles($this->service->workingDir, $this->nfnExportDir);
+                $this->repoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
             }
 
             //$this->fileService->filesystem->deleteDirectory($this->service->workingDirOrig);
