@@ -113,8 +113,6 @@ class NfnPanoptesExport implements ActorInterface
 
             $this->imageService->processFiles($files, [['width' => $this->largeWidth]], $this->service->workingDirConvert);
 
-            $this->fileService->filesystem->deleteDirectory($this->service->workingDirOrig);
-
             $this->buildCsvArray($this->record->subjects);
 
             if ($this->createCsv($this->record->uuid))
@@ -123,6 +121,8 @@ class NfnPanoptesExport implements ActorInterface
                 $this->repoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
                 $this->fileService->moveCompressedFiles($this->service->workingDir, $this->nfnExportDir);
             }
+
+            //$this->fileService->filesystem->deleteDirectory($this->service->workingDirOrig);
 
             $this->fileService->filesystem->cleanDirectory($this->service->workingDir);
             $this->fileService->filesystem->deleteDirectory($this->service->workingDir);
