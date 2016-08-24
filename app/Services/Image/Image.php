@@ -288,12 +288,12 @@ class Image
     {
         try
         {
-            $this->imagick->scaleImage($width, $height);
-            $this->imagick->stripImage();
+            $this->imagick->setResourceLimit(6, 2); // two threads
             $this->imagick->setImageCompression(\Imagick::COMPRESSION_JPEG);
             $this->imagick->setOption('jpeg:extent', $this->maxSize);
             $this->imagick->setImageCompressionQuality($this->compression);
-            //$this->imagick->setImageCompressionQuality($this->setCompressionLevel(strlen($this->imagick->getImageBlob())));
+            $this->imagick->stripImage();
+            $this->imagick->scaleImage($width, $height);
             $this->imagick->writeImage($target);
         }
         catch (\Exception $e)
