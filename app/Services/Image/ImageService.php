@@ -13,22 +13,93 @@ use Illuminate\Config\Repository as Config;
 class ImageService
 {
 
+    /**
+     * @var Filesystem
+     */
     protected $filesystem;
+
+    /**
+     * @var Config
+     */
     protected $config;
+
+    /**
+     * @var Report
+     */
     protected $report;
+
+    /**
+     * @var
+     */
     protected $imgSource;
+
+    /**
+     * @var mixed
+     */
     protected $imageTypeExtension;
+
+    /**
+     * @var
+     */
     protected $sourceWidth;
+
+    /**
+     * @var
+     */
     protected $sourceHeight;
+
+    /**
+     * @var
+     */
     protected $sourceExtension; // jpg
-    protected $sourceMimeType; // image/jpeg
-    protected $sourceDirName; // /path/to/image/directory
-    protected $sourceBaseName; // example.jpg
-    protected $sourceFileName; // example
+
+    /**
+     * @var
+     * image/jpeg
+     */
+    protected $sourceMimeType;
+
+    /**
+     * @var
+     * /path/to/image/directory
+     */
+    protected $sourceDirName;
+
+    /**
+     * @var
+     * example.jpg
+     */
+    protected $sourceBaseName;
+
+    /**
+     * @var
+     * example
+     */
+    protected $sourceFileName;
+
+    /**
+     * @var
+     */
     protected $sourceAspectRatio;
+
+    /**
+     * @var mixed
+     */
     protected $defaultImg;
+
+    /**
+     * @var mixed
+     */
     protected $tnWidth;
+
+    /**
+     * @var mixed
+     */
     protected $tnHeight;
+
+    /**
+     * @var string
+     */
     protected $thumbDir;
 
     /**
