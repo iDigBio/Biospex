@@ -2,7 +2,6 @@
 
 namespace App\Services\Actor;
 
-
 use App\Services\Api\NfnApi;
 
 class ActorApiService

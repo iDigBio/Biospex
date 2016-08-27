@@ -14,22 +14,13 @@ class ActorFileService
     public $filesystem;
 
     /**
-     * @var Config
-     */
-    public $config;
-
-    /**
      * ActorFileService constructor.
+     *
      * @param Filesystem $filesystem
-     * @param Config $config
      */
-    public function __construct(
-        Filesystem $filesystem,
-        Config $config
-    )
+    public function __construct(Filesystem $filesystem)
     {
         $this->filesystem = $filesystem;
-        $this->config = $config;
     }
 
     /**

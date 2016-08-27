@@ -6,7 +6,6 @@ use App\Services\Actor\ActorInterface;
 use App\Services\Actor\ActorService;
 use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 ini_set('memory_limit', '1024M');
@@ -14,7 +13,11 @@ ini_set('memory_limit', '1024M');
 class NfnLegacyExport implements ActorInterface
 {
 
+    /**
+     * @var
+     */
     protected $record;
+
     /**
      * @var ActorService
      */

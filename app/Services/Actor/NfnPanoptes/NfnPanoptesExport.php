@@ -39,13 +39,6 @@ class NfnPanoptesExport implements ActorInterface
     private $record;
 
     /**
-     * Missing image when retrieving via curl.
-     *
-     * @var array
-     */
-    public $missingImg = [];
-
-    /**
      * @var array
      */
     public $csvExport = [];

@@ -7,7 +7,6 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use App\Services\Image\ImageService;
-use Illuminate\Filesystem\Filesystem;
 
 class ActorImageService
 {
@@ -15,7 +14,17 @@ class ActorImageService
     /**
      * @var Client
      */
-    public $client;
+    private $client;
+
+    /**
+     * @var
+     */
+    private $missingImages = [];
+
+    /**
+     * @var
+     */
+    private $subjects;
 
     /**
      * @var ImageService
@@ -26,16 +35,6 @@ class ActorImageService
      * @var ActorFileService
      */
     public $actorFileService;
-
-    /**
-     * @var
-     */
-    public $missingImages = [];
-
-    /**
-     * @var
-     */
-    private $subjects;
 
     /**
      * ActorImageService constructor.
@@ -127,7 +126,7 @@ class ActorImageService
      * @param $index
      * @param $attributes
      */
-    public function saveImage($response, $index, $attributes)
+    private function saveImage($response, $index, $attributes)
     {
         $image = $response->getBody();
 
@@ -159,7 +158,7 @@ class ActorImageService
      * @param $index
      * @return bool
      */
-    protected function checkStatus($image, $response, $index)
+    private function checkStatus($image, $response, $index)
     {
         if ($image === '' || $response->getStatusCode() !== 200)
         {
@@ -167,6 +166,8 @@ class ActorImageService
 
             return false;
         }
+
+        return true;
     }
 
 
@@ -177,7 +178,7 @@ class ActorImageService
      * @param array $attributes
      * @return bool
      */
-    public function checkImageExists($id, $attributes)
+    private function checkImageExists($id, $attributes)
     {
         $total = count($attributes);
 
@@ -195,7 +196,7 @@ class ActorImageService
      * @param $subject
      * @return bool
      */
-    public function checkUriExists($subject)
+    private function checkUriExists($subject)
     {
         if ($subject->accessURI === '')
         {
