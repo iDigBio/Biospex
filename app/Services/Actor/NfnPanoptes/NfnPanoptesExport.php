@@ -146,7 +146,7 @@ class NfnPanoptesExport implements ActorInterface
     /**
      * Build csvExport array for export.
      *
-     * @param $subjects
+     * @param array $subjects
      * @param $tempDir
      */
     public function buildCsvArray($subjects, $tempDir)

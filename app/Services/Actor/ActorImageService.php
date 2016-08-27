@@ -87,7 +87,7 @@ class ActorImageService
         {
             foreach ($subjects as $index => $subject)
             {
-                if ($this->checkUriExists($subject))
+                if ( ! $this->checkUriExists($subject))
                 {
                     continue;
                 }
@@ -128,9 +128,9 @@ class ActorImageService
      */
     private function saveImage($response, $index, $attributes)
     {
-        $image = $response->getBody();
+        $image = $response->getBody()->getContents();
 
-        if ($this->checkStatus($image, $response, $index))
+        if ( ! $this->checkStatus($image, $response, $index))
         {
             return;
         }
@@ -202,10 +202,10 @@ class ActorImageService
         {
             $this->setMissingImages($subject);
 
-            return true;
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     /**

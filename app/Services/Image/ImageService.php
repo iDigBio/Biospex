@@ -197,10 +197,12 @@ class ImageService
      * Generate and save image.
      *
      * @param string $name
-     * @param array $attributes [destination, extension, width, height]
+     * @param array $fileAttributes [destination, extension, width, height]
      */
-    public function generateAndSaveImage($name, array $attributes)
+    public function generateAndSaveImage($name, array $fileAttributes)
     {
+        $attributes = array_key_exists(0, $fileAttributes) ? $fileAttributes : [$fileAttributes];
+
         foreach ($attributes as $attribute)
         {
             list($destinationWidth, $destinationHeight) = $this->setDestinationWidthHeight($attribute['width'], $attribute['height']);
@@ -210,6 +212,8 @@ class ImageService
             imagecopyresized($newImage, $this->imgSource, 0, 0, 0, 0, $destinationWidth, $destinationHeight, $this->sourceWidth, $this->sourceHeight);
             imagejpeg($newImage, $attribute['destination'] . '/' . $name . $attribute['extension'], 80);
             imagedestroy($newImage);
+
+            echo 'Saved image ' . $attribute['destination'] . '/' . $name . $attribute['extension'] . PHP_EOL;
         }
     }
 
