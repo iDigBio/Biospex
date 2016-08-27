@@ -6,12 +6,15 @@ use App\Services\Actor\ActorInterface;
 use App\Services\Actor\ActorService;
 use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 ini_set('memory_limit', '1024M');
 
 class NfnLegacyExport implements ActorInterface
 {
+
+    protected $record;
     /**
      * @var ActorService
      */
@@ -20,17 +23,17 @@ class NfnLegacyExport implements ActorInterface
     /**
      * @var \App\Services\Actor\ActorFileService
      */
-    private $fileService;
+    private $actorFileService;
 
     /**
      * @var \App\Services\Actor\ActorImageService
      */
-    private $imageService;
+    private $actorImageService;
 
     /**
      * @var \App\Services\Actor\ActorRepositoryService
      */
-    private $repoService;
+    private $actorRepoService;
 
     /** Notes from Nature export directory */
     protected $nfnExportDir;
@@ -79,13 +82,13 @@ class NfnLegacyExport implements ActorInterface
     )
     {
         $this->service = $service;
-        $this->fileService = $service->fileService;
-        $this->imageService = $service->imageService;
-        $this->repoService = $service->repositoryService;
+        $this->actorFileService = $service->actorFileService;
+        $this->actorImageService = $service->actorImageService;
+        $this->actorRepoService = $service->actorRepoService;
 
         $this->nfnExportDir = $this->service->config->get('config.nfn_export_dir');
-        $this->largeWidth = $this->service->config->get('config.nfnImageSize.largeWidth');
-        $this->smallWidth = $this->service->config->get('config.nfnImageSize.smallWidth');
+        $this->largeWidth = $this->service->config->get('config.images.nfnLrgWidth');
+        $this->smallWidth = $this->service->config->get('config.images.nfnSmWidth');
     }
 
     /**
@@ -98,50 +101,43 @@ class NfnLegacyExport implements ActorInterface
     public function process($actor)
     {
         try {
-            $this->fileService->makeDirectory($this->nfnExportDir);
+            $this->actorFileService->makeDirectory($this->nfnExportDir);
 
-            $record = $this->repoService->expedition
+            $this->record = $this->actorRepoService->expedition
                 ->skipCache()
                 ->with(['project.group', 'subjects'])
                 ->find($actor->pivot->expedition_id);
 
-            $this->service->setWorkingDirectories($record->uuid);
+            $this->service->setWorkingDirectory("{$actor->id}-{$this->record->uuid}");
 
-            $this->imageService->setSubjects($record->subjects);
-
-            $this->imageService->getImages($this->service->workingDirOrig);
-
-            $files = $this->fileService->getFiles($this->service->workingDirOrig);
-
-            $attributes = [
+            $fileAttributes = [
                 [
-                    'ext'   => '.large.jpg',
-                    'width' => $this->largeWidth
+                    'destination' => $this->service->workingDir,
+                    'extension' => '.large.jpg',
+                    'width' => $this->largeWidth,
+                    'height' => $this->largeWidth,
                 ],
                 [
-                    'ext'   => '.small.jpg',
-                    'width' => $this->smallWidth
-                ],
+                    'destination' => $this->service->workingDir,
+                    'extension' => '.small.jpg',
+                    'width' => $this->smallWidth,
+                    'height' => $this->smallWidth,
+                ]
             ];
 
-            $this->imageService->processFiles($files, $attributes, $this->service->workingDirConvert);
+            $this->actorImageService->getImages($this->record->subjects, $fileAttributes);
 
-            $this->splitDirectories($record->uuid);
+            $this->splitDirectories($this->record->subjects, "{$actor->id}-{$this->record->uuid}");
 
-            $this->fileService->filesystem->deleteDirectory($this->service->workingDirOrig);
+            $this->buildDetails();
 
-            $directories = $this->buildDetails();
+            $tarGzFiles = $this->actorFileService->compressDirectories($this->service->workingDir, $this->nfnExportDir);
 
-            $tarGzFiles = $this->fileService->compressDirectories($directories);
+            $this->actorRepoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
 
-            $this->repoService->createDownloads($record->id, $actor->id, $tarGzFiles);
+            $this->actorFileService->filesystem->deleteDirectory($this->service->workingDir);
 
-            $this->fileService->moveCompressedFiles($this->service->workingDir, $this->nfnExportDir);
-
-            $this->fileService->filesystem->cleanDirectory($this->service->workingDir);
-            $this->fileService->filesystem->deleteDirectory($this->service->workingDir);
-
-            $this->sendReport($record);
+            $this->sendReport($this->record);
 
             $actor->pivot->completed = 1;
             $actor->pivot->queued = 0;
@@ -156,9 +152,7 @@ class NfnLegacyExport implements ActorInterface
             $actor->pivot->error = 1;
             $actor->pivot->save();
 
-            $this->service->report->addError($e->getMessage());
-            $this->service->report->addError($e->getFile());
-            $this->service->report->addError($e->getLine());
+            $this->service->report->addError($e->getMessage() . ' : ' . $e->getFile() . ' : ' . $e->getLine());
             $this->service->report->reportSimpleError();
         }
 
@@ -167,42 +161,38 @@ class NfnLegacyExport implements ActorInterface
     /**
      * Split tmp directory into separate directories based on size.
      *
+     * @param array $subjects
      * @param $folder
      */
-    public function splitDirectories($folder)
+    public function splitDirectories($subjects, $folder)
     {
         $size = 0;
         $this->setSplitDir($folder);
         $limit = $this->getDirectorySize();
-        $files = $this->fileService->getFiles($this->service->workingDirOrig);
 
-        foreach ($files as $file)
+        foreach ($subjects as $subject)
         {
-            $this->imageService->image->setImagePathInfo($file);
+            $lrgFilePath = $this->service->workingDir . '/' . $subject->_id . '.large.jpg';
+            $smFilePath = $this->service->workingDir . '/' . $subject->_id . '.small.jpg';
 
-            if ($this->imageService->image->getMimeType() === false)
+            if ( ! $this->actorFileService->checkFileExists($lrgFilePath))
             {
                 continue;
             }
 
-            $fileName = $this->imageService->image->getFileName();
-            $baseName = $this->imageService->image->getBaseName();
-
-            $lrgFilePath = $this->service->workingDirConvert . '/' . $fileName . '.large.jpg';
-            $smFilePath = $this->service->workingDirConvert . '/' . $fileName . '.small.jpg';
-
             $size += filesize($lrgFilePath);
             $size += filesize($smFilePath);
 
-            $this->fileService->filesystem->move($lrgFilePath, $this->lrgFilePath . '/' . $fileName . '.large.jpg');
-            $this->fileService->filesystem->move($smFilePath, $this->smFilePath . '/' . $fileName . '.small.jpg');
-            $this->fileService->filesystem->move($file, $this->splitDir . "/$baseName");
+            $this->actorFileService->filesystem->copy($lrgFilePath, $this->splitDir . '/' . $subject->_id . '.jpg');
+            $this->actorFileService->filesystem->move($lrgFilePath, $this->splitDir . '/large/' . $subject->_id . '.large.jpg');
+            $this->actorFileService->filesystem->move($smFilePath, $this->splitDir . '/small/' . $subject->_id . '.small.jpg');
 
             if ($size >= $limit)
             {
                 $this->setSplitDir($folder);
                 $size = 0;
             }
+
         }
     }
 
@@ -211,22 +201,22 @@ class NfnLegacyExport implements ActorInterface
      */
     public function buildDetails()
     {
-        $directories = $this->fileService->filesystem->directories($this->service->workingDir);
-
-        $metadata = [];
-        $metadata['sourceDir'] = $this->service->workingDir;
-        $metadata['targetDir'] = $this->service->workingDir;
-        $metadata['created_at'] = date('l jS F Y', time());
-        $metadata['highResDir'] = $this->service->workingDir . '/large';
-        $metadata['lowResDir'] = $this->service->workingDir . '/small';
-        $metadata['highResWidth'] = $this->largeWidth;
-        $metadata['lowResWidth'] = $this->smallWidth;
-        $metadata['total'] = 0;
-        $metadata['images'] = [];
+        $directories = $this->actorFileService->filesystem->directories($this->service->workingDir);
 
         foreach ($directories as $directory)
         {
-            $files = $this->fileService->filesystem->files($directory);
+            $metadata = [];
+            $metadata['sourceDir'] = $directory;
+            $metadata['targetDir'] = $directory;
+            $metadata['created_at'] = date('l jS F Y', time());
+            $metadata['highResDir'] = $directory . '/large';
+            $metadata['lowResDir'] = $directory . '/small';
+            $metadata['highResWidth'] = $this->largeWidth;
+            $metadata['lowResWidth'] = $this->smallWidth;
+            $metadata['total'] = 0;
+            $metadata['images'] = [];
+
+            $files = $this->actorFileService->filesystem->files($directory);
 
             $i = 0;
             foreach ($files as $file)
@@ -234,40 +224,47 @@ class NfnLegacyExport implements ActorInterface
                 $data = [];
 
                 // Original Image info.
-                $this->imageService->image->setImagePathInfo($file);
-                $baseName = $this->imageService->image->getBaseName();
-                $fileName = $this->imageService->image->getFileName();
-                $this->imageService->image->setImageInfoFromFile($file);
+                $this->actorImageService->imageService->setSourceFromFile($file);
 
-                // Set array for original image.
+                $baseName = $this->actorImageService->imageService->getSourceBaseName();
+                $fileName = $this->actorImageService->imageService->getSourceFileName();
+
                 $data['identifier'] = $fileName;
                 $data['original']['path'] = [$fileName, '.jpg'];
+
                 $data['original']['name'] = $baseName;
-                $data['original']['width'] = $this->imageService->image->getImageWidth();
-                $data['original']['height'] = $this->imageService->image->getImageHeight();
+                $data['original']['width'] = $this->actorImageService->imageService->getSourceWidth();
+                $data['original']['height'] = $this->actorImageService->imageService->getSourceHeight();
+
+                $this->actorImageService->imageService->destroySource();
 
                 // Set array for large image.
-                $this->imageService->image->setImageInfoFromFile("$directory/large/$fileName.large.jpg");
+
+                $this->actorImageService->imageService->setSourceFromFile("$directory/large/$fileName.large.jpg");
                 $data['large']['name'] = "large/$fileName.large.jpg";
-                $data['large']['width'] = $this->imageService->image->getImageWidth();
-                $data['large']['height'] = $this->imageService->image->getImageHeight();
+                $data['large']['width'] = $this->actorImageService->imageService->getSourceWidth();
+                $data['large']['height'] = $this->actorImageService->imageService->getSourceHeight();
+
+                $this->actorImageService->imageService->destroySource();
 
                 // Set array for small image.
-                $this->imageService->image->setImageInfoFromFile("$directory/small/$fileName.small.jpg");
+                $this->actorImageService->imageService->setSourceFromFile("$directory/small/$fileName.small.jpg");
                 $data['small']['name'] = "small/$fileName.small.jpg";
-                $data['small']['width'] = $this->imageService->image->getImageWidth();
-                $data['small']['height'] = $this->imageService->image->getImageHeight();
+                $data['small']['width'] = $this->actorImageService->imageService->getSourceWidth();
+                $data['small']['height'] = $this->actorImageService->imageService->getSourceHeight();
+
+                $this->actorImageService->imageService->destroySource();
 
                 $metadata['images'][] = $data;
 
-                $this->fileService->filesystem->delete($file);
+                $this->actorFileService->filesystem->delete($file);
 
                 $i++;
             }
 
             $metadata['total'] = $i * 2;
 
-            $this->fileService->filesystem->put($directory . '/details.js', json_encode($metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $this->actorFileService->filesystem->put($directory . '/details.js', json_encode($metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         }
 
         return $directories;
@@ -282,12 +279,8 @@ class NfnLegacyExport implements ActorInterface
     {
         $count = ++$this->count;
         $this->splitDir = $this->service->workingDir . '/' . $folder . '-' . $count;
-
-        $this->lrgFilePath = $this->splitDir . '/large';
-        $this->fileService->makeDirectory($this->lrgFilePath);
-
-        $this->smFilePath = $this->splitDir . '/small';
-        $this->fileService->makeDirectory($this->smFilePath);
+        $this->actorFileService->makeDirectory($this->splitDir . '/large');
+        $this->actorFileService->makeDirectory($this->splitDir . '/small');
     }
 
     /**
@@ -297,12 +290,17 @@ class NfnLegacyExport implements ActorInterface
      */
     protected function getDirectorySize()
     {
-        exec("du -b -s {$this->service->workingDirConvert}", $op);
+        exec("du -b -s {$this->service->workingDir}", $op);
         list($size) = preg_split('/\s+/', $op[0]);
 
         $gb = 1073741824;
 
         return ($size < $gb) ? $size : ceil($size / ceil(number_format($size / $gb, 2)));
+    }
+
+    protected function buildImageData(&$data)
+    {
+
     }
 
     /**
@@ -319,6 +317,6 @@ class NfnLegacyExport implements ActorInterface
             'attachmentName' => trans('emails.missing_images_attachment_name', ['recordId' => $record->id])
         ];
 
-        $this->service->processComplete($vars, $this->imageService->getMissingImages());
+        $this->service->processComplete($vars, $this->actorImageService->getMissingImages());
     }
 }

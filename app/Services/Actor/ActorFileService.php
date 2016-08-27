@@ -52,41 +52,23 @@ class ActorFileService
     /**
      * Compress directories.
      *
-     * @param array $directories
+     * @param $workingDir
+     * @param $storagePath
      * @return array
      */
-    public function compressDirectories(array $directories)
+    public function compressDirectories($workingDir, $storagePath)
     {
+        $directories = $this->filesystem->directories($workingDir);
+
         $compressed = [];
         foreach ($directories as $directory)
         {
-            $tarFile = $directory . '.tar';
-            $a = new \PharData($tarFile);
-            $a->buildFromDirectory($directory);
-            $a->compress(\Phar::GZ);
-            unset($a);
-            \Phar::unlinkArchive($tarFile);
-
-            $compressed[] = $tarFile . '.gz';
+            $baseName = basename($directory);
+            $compressed[] = $tarFile = $baseName . '.tar.gz';
+            exec("tar -zcf $storagePath/$tarFile -C $workingDir $baseName");
         }
 
         return $compressed;
-    }
-
-    /**
-     * Move tar files to export folder.
-     *
-     * @param $originalDir
-     * @param $destinationDir
-     */
-    public function moveCompressedFiles($originalDir, $destinationDir)
-    {
-        $files = $this->filesystem->glob($originalDir . '/*.tar.gz');
-        foreach ($files as $file)
-        {
-            $baseName = pathinfo($file, PATHINFO_BASENAME);
-            $this->filesystem->move($file, $destinationDir . '/' . $baseName);
-        }
     }
 
     /**

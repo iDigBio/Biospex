@@ -20,22 +20,17 @@ class ActorService
     /**
      * @var ActorApiService
      */
-    public $apiService;
-
-    /**
-     * @var ActorFileService
-     */
-    public $fileService;
+    public $actorApiService;
 
     /**
      * @var ActorImageService
      */
-    public $imageService;
+    public $actorImageService;
 
     /**
      * @var ActorRepositoryService
      */
-    public $repositoryService;
+    public $actorRepoService;
 
     /**
      * @var mixed
@@ -48,59 +43,43 @@ class ActorService
     public $workingDir;
 
     /**
-     * @var
-     */
-    public $workingDirOrig;
-
-    /**
-     * @var
-     */
-    public $workingDirConvert;
-
-    /**
      * Actor constructor.
      *
      * @param Config $config
      * @param Report $report
-     * @param ActorApiService $apiService
-     * @param ActorFileService $fileService
-     * @param ActorImageService $imageService
-     * @param ActorRepositoryService $repositoryService
+     * @param ActorApiService $actorApiService
+     * @param ActorImageService $actorImageService
+     * @param ActorRepositoryService $actorRepoService
      */
     public function __construct(
         Config $config,
         Report $report,
-        ActorApiService $apiService,
-        ActorFileService $fileService,
-        ActorImageService $imageService,
-        ActorRepositoryService $repositoryService
+        ActorApiService $actorApiService,
+        ActorImageService $actorImageService,
+        ActorRepositoryService $actorRepoService
     )
     {
 
         $this->config = $config;
         $this->report = $report;
-        $this->apiService = $apiService;
-        $this->fileService = $fileService;
-        $this->imageService = $imageService;
-        $this->repositoryService = $repositoryService;
+        $this->actorApiService = $actorApiService;
+        $this->actorFileService = $actorImageService->actorFileService;
+        $this->actorImageService = $actorImageService;
+        $this->actorRepoService = $actorRepoService;
 
         $this->scratchDir = $config->get('config.scratch_dir');
     }
 
     /**
-     * Set working directories for actors.
+     * Set working directory for actors.
      *
      * @param $folder
      * @throws  \RuntimeException
      */
-    public function setWorkingDirectories($folder)
+    public function setWorkingDirectory($folder)
     {
         $this->workingDir = $this->scratchDir . '/' . $folder;
-        $this->fileService->makeDirectory($this->workingDir);
-        $this->workingDirOrig = $this->workingDir . '/orig';
-        $this->fileService->makeDirectory($this->workingDirOrig);
-        $this->workingDirConvert = $this->workingDir . '/' . $folder;
-        $this->fileService->makeDirectory($this->workingDirConvert);
+        $this->actorFileService->makeDirectory($this->workingDir);
     }
 
     /**
