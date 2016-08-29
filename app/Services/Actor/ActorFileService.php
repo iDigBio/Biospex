@@ -8,35 +8,19 @@ use RuntimeException;
 
 class ActorFileService
 {
-
-    public $workingDir;
-    public $workingDirOrig;
-    public $workingDirConvert;
-
     /**
      * @var Filesystem
      */
     public $filesystem;
 
     /**
-     * @var Config
-     */
-    public $config;
-
-    /**
      * ActorFileService constructor.
+     *
      * @param Filesystem $filesystem
-     * @param Config $config
      */
-    public function __construct(
-        Filesystem $filesystem,
-        Config $config
-    )
+    public function __construct(Filesystem $filesystem)
     {
-        $this->scratchDir = $config->get('config.scratch_dir');
-
         $this->filesystem = $filesystem;
-        $this->config = $config;
     }
 
     /**
@@ -57,62 +41,37 @@ class ActorFileService
     }
 
     /**
-     * Set working directories for actors.
-     *
-     * @param $name
-     * @throws RuntimeException
-     */
-    public function setDirectories($name)
-    {
-        $this->workingDir = $this->scratchDir . '/' . $name;
-        $this->makeDirectory($this->workingDir);
-        $this->workingDirOrig = $this->workingDir . '/orig';
-        $this->makeDirectory($this->workingDirOrig);
-        $this->workingDirConvert = $this->workingDir . '/convert';
-        $this->makeDirectory($this->workingDirConvert);
-    }
-
-    /**
      * Compress directories.
      *
-     * @param array $directories
+     * @param $workingDir
+     * @param $storagePath
      * @return array
      */
-    public function compressDirectories(array $directories)
+    public function compressDirectories($workingDir, $storagePath)
     {
+        $directories = $this->filesystem->directories($workingDir);
+
         $compressed = [];
         foreach ($directories as $directory)
         {
-            $tarFile = $directory . '.tar';
-            $a = new \PharData($tarFile);
-            $a->buildFromDirectory($directory);
-            $a->compress(\Phar::GZ);
-            unset($a);
-            $this->filesystem->delete($tarFile);
-            $this->filesystem->deleteDirectory($directory);
-
-            $compressed[] = $tarFile . '.gz';
+            $baseName = basename($directory);
+            $compressed[] = $tarFile = $baseName . '.tar.gz';
+            exec("tar -zcf $storagePath/$tarFile -C $workingDir $baseName");
         }
 
         return $compressed;
     }
 
     /**
-     * Move tar files to export folder.
+     * Check if file exists.
      *
-     * @param $originalDir
-     * @param $destinationDir
+     * @param $file
+     * @return bool
      */
-    public function moveCompressedFiles($originalDir, $destinationDir)
+    public function checkFileExists($file)
     {
-        $files = $this->filesystem->glob($originalDir . '/*.tar.gz');
-        foreach ($files as $file)
-        {
-            $baseName = pathinfo($file, PATHINFO_BASENAME);
-            $this->filesystem->move($file, $destinationDir . '/' . $baseName);
-        }
+        return count($this->filesystem->glob($file)) > 0;
     }
-
 
     /**
      * Get files from working directory.
@@ -123,6 +82,17 @@ class ActorFileService
     public function getFiles($dir)
     {
         return $this->filesystem->files($dir);
+    }
+
+    /**
+     * Return true if files in directory.
+     *
+     * @param $dir
+     * @return bool
+     */
+    public function checkFileCount($dir)
+    {
+        return count($this->getFiles($dir)) !== 0;
     }
 
     /**

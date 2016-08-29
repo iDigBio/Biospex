@@ -17,8 +17,9 @@ class TestAppCommand extends Command
      */
     protected $description = 'Used to test code';
 
+
     /**
-     * AmChartJob constructor.
+     * TestAppCommand constructor.
      */
     public function __construct()
     {
@@ -27,7 +28,6 @@ class TestAppCommand extends Command
 
     public function fire()
     {
-
     }
 
 }

@@ -12,6 +12,7 @@ use RuntimeException;
 
 class NfnPanoptesExport implements ActorInterface
 {
+
     /**
      * @var ActorService
      */
@@ -20,29 +21,22 @@ class NfnPanoptesExport implements ActorInterface
     /**
      * @var \App\Services\Actor\ActorFileService
      */
-    private $fileService;
+    private $actorFileService;
 
     /**
      * @var \App\Services\Actor\ActorImageService
      */
-    private $imageService;
+    private $actorImageService;
 
     /**
      * @var \App\Services\Actor\ActorRepositoryService
      */
-    private $repoService;
+    private $actorRepoService;
 
     /**
      * @var
      */
     private $record;
-
-    /**
-     * Missing image when retrieving via curl.
-     *
-     * @var array
-     */
-    public $missingImg = [];
 
     /**
      * @var array
@@ -68,20 +62,20 @@ class NfnPanoptesExport implements ActorInterface
      * NfnPanoptesExport constructor.
      * @param ActorService $service
      * @internal param ActorRepositoryService $repositoryService
-     * @internal param ActorImageService $imageService
+     * @internal param ActorImageService $actorImageService
      */
     public function __construct(
         ActorService $service
     )
     {
         $this->service = $service;
-        $this->fileService = $service->fileService;
-        $this->imageService = $service->imageService;
-        $this->repoService = $service->repositoryService;
+        $this->actorFileService = $service->actorFileService;
+        $this->actorImageService = $service->actorImageService;
+        $this->actorRepoService = $service->actorRepoService;
 
         $this->nfnExportDir = $this->service->config->get('config.nfn_export_dir');
         $this->nfnCsvMap = $this->service->config->get('config.nfnCsvMap');
-        $this->largeWidth = $this->service->config->get('config.nfnImageSize.largeWidth');
+        $this->largeWidth = $this->service->config->get('config.images.nfnLrgWidth');
     }
 
     /**
@@ -93,48 +87,37 @@ class NfnPanoptesExport implements ActorInterface
      */
     public function process($actor)
     {
-        try {
-            $this->fileService->makeDirectory($this->nfnExportDir);
+        try
+        {
+            $this->actorFileService->makeDirectory($this->nfnExportDir);
 
-            $this->record = $this->repoService->expedition
+            $this->record = $this->actorRepoService->expedition
                 ->skipCache()
                 ->with(['project.group', 'subjects'])
                 ->find($actor->pivot->expedition_id);
 
-            $this->fileService->setDirectories($actor->id . '-' . md5($this->record->title));
+            $this->service->setWorkingDirectory("{$actor->id}-{$this->record->uuid}");
+            $tempDir = "{$this->service->workingDir}/{$actor->id}-{$this->record->uuid}";
+            $this->actorFileService->makeDirectory($tempDir);
 
-            $this->imageService->setWorkingDirVars(
-                $this->fileService->workingDir,
-                $this->fileService->workingDirOrig,
-                $this->fileService->workingDirConvert
-            );
+            $fileAttributes = [
+                'destination' => $tempDir,
+                'extension'   => '.jpg',
+                'width'       => $this->largeWidth,
+                'height'      => $this->largeWidth
+            ];
 
-            $this->imageService->buildImageUris($actor, $this->record->subjects);
+            $this->actorImageService->getImages($this->record->subjects, $fileAttributes);
 
-            $this->imageService->getImages();
+            $this->buildCsvArray($this->record->subjects, $tempDir);
 
-            $files = $this->fileService->getFiles($this->fileService->workingDirOrig);
+            if ($this->createCsv($tempDir))
+            {
+                $tarGzFiles = $this->actorFileService->compressDirectories($this->service->workingDir, $this->nfnExportDir);
+                $this->actorRepoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
+            }
 
-            $this->imageService->convert($files, [['width' => $this->largeWidth]]);
-
-            $this->fileService->filesystem->moveDirectory(
-                $this->fileService->workingDirConvert,
-                $this->fileService->workingDir . '/' . $this->record->uuid
-            );
-
-            $this->fileService->filesystem->deleteDirectory($this->fileService->workingDirOrig);
-
-            $this->buildCsvArray($this->record->subjects);
-
-            $this->createCsv($this->record->uuid);
-
-            $tarGzFiles = $this->fileService->compressDirectories([$this->imageService->workingDir . '/' . $this->record->uuid]);
-
-            $this->repoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
-
-            $this->fileService->moveCompressedFiles($this->fileService->workingDir, $this->nfnExportDir);
-
-            $this->fileService->filesystem->deleteDirectory($this->fileService->workingDir);
+            $this->actorFileService->filesystem->deleteDirectory($this->service->workingDir);
 
             $this->sendReport();
 
@@ -142,9 +125,13 @@ class NfnPanoptesExport implements ActorInterface
             ++$actor->pivot->state;
             $actor->pivot->save();
         }
-        catch(FileNotFoundException $e) {}
-        catch(RuntimeException $e) {}
-        catch(Exception $e)
+        catch (FileNotFoundException $e)
+        {
+        }
+        catch (RuntimeException $e)
+        {
+        }
+        catch (Exception $e)
         {
             $actor->pivot->queued = 0;
             $actor->pivot->error = 1;
@@ -160,12 +147,21 @@ class NfnPanoptesExport implements ActorInterface
      * Build csvExport array for export.
      *
      * @param array $subjects
+     * @param $tempDir
      */
-    public function buildCsvArray($subjects)
+    public function buildCsvArray($subjects, $tempDir)
     {
         foreach ($subjects as $subject)
         {
-            $this->csvExport[] = $this->mapNfnCsvColumns($subject);
+            $file = $tempDir . '/' . $subject->_id . '.jpg';
+            if ($this->actorFileService->checkFileExists($file))
+            {
+                $this->csvExport[] = $this->mapNfnCsvColumns($subject);
+            }
+            else
+            {
+                $this->actorImageService->setMissingImages($subject, 'Converted image did not exist');
+            }
         }
     }
 
@@ -189,10 +185,14 @@ class NfnPanoptesExport implements ActorInterface
                 $csvArray[$key] = $this->record->title;
                 continue;
             }
+            if ($key === 'imageName')
+            {
+                $csvArray[$key] = $subject->_id . '.jpg';
+                continue;
+            }
             if ( ! is_array($item))
             {
                 $csvArray[$key] = $item === '' ? '' : $subject->{$item};
-
                 continue;
             }
 
@@ -213,13 +213,21 @@ class NfnPanoptesExport implements ActorInterface
     /**
      * Create csv file.
      *
-     * @param $folder
+     * @param $tempDir
+     * @return bool
      */
-    public function createCsv($folder)
+    public function createCsv($tempDir)
     {
-        $this->service->report->csv->writerCreateFromPath($this->fileService->workingDir . '/' . $folder . '/' . $this->record->uuid . '.csv');
+        if (0 === count($this->csvExport))
+        {
+            return false;
+        }
+
+        $this->service->report->csv->writerCreateFromPath($tempDir . '/' . $this->record->uuid . '.csv');
         $this->service->report->csv->insertOne(array_keys($this->csvExport[0]));
         $this->service->report->csv->insertAll($this->csvExport);
+
+        return true;
     }
 
     /**
@@ -228,12 +236,12 @@ class NfnPanoptesExport implements ActorInterface
     protected function sendReport()
     {
         $vars = [
-            'title' => $this->record->title,
-            'message' => trans('emails.expedition_export_complete_message', ['expedition', $this->record->title]),
-            'groupId' => $this->record->project->group->id,
+            'title'          => $this->record->title,
+            'message'        => trans('emails.expedition_export_complete_message', ['expedition' => $this->record->title]),
+            'groupId'        => $this->record->project->group->id,
             'attachmentName' => trans('emails.missing_images_attachment_name', ['recordId' => $this->record->id])
         ];
 
-        $this->service->processComplete($vars, $this->imageService->getMissingImages());
+        $this->service->processComplete($vars, $this->actorImageService->getMissingImages());
     }
 }

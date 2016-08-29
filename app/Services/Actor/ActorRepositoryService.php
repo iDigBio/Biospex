@@ -41,23 +41,30 @@ class ActorRepositoryService
     {
         foreach ($files as $file)
         {
+            $attributes = [
+                'expedition_id' => $recordId,
+                'actor_id'      => $actorId,
+                'file'          => pathinfo($file, PATHINFO_BASENAME),
+            ];
+
             $values = [
                 'expedition_id' => $recordId,
                 'actor_id'      => $actorId,
                 'file'          => pathinfo($file, PATHINFO_BASENAME),
             ];
-            $this->createDownload($values);
+            $this->createDownload($attributes, $values);
         }
     }
 
     /**
      * Created download.
      *
+     * @param $attributes
      * @param $values
      * @return mixed
      */
-    public function createDownload($values)
+    public function createDownload($attributes, $values)
     {
-        return $this->download->create($values);
+        return $this->download->updateOrCreate($attributes, $values);
     }
 }

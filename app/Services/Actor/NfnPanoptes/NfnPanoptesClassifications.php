@@ -25,7 +25,7 @@ class NfnPanoptesClassifications implements ActorInterface
     /**
      * @var \App\Services\Actor\ActorRepositoryService
      */
-    private $repoService;
+    private $actorRepoService;
 
     /**
      * NfnPanoptesClassifications constructor.
@@ -36,7 +36,7 @@ class NfnPanoptesClassifications implements ActorInterface
     )
     {
         $this->service = $service;
-        $this->repoService = $service->repositoryService;
+        $this->actorRepoService = $service->actorRepoService;
     }
 
     /**
@@ -52,7 +52,7 @@ class NfnPanoptesClassifications implements ActorInterface
         try
         {
 
-            $record = $this->repoService->expedition->skipCache()->with(['project.group', 'stat'])->find($actor->pivot->expedition_id);
+            $record = $this->actorRepoService->expedition->skipCache()->with(['project.group', 'stat'])->find($actor->pivot->expedition_id);
 
             $this->processExpeditionRecord($actor, $record);
         }

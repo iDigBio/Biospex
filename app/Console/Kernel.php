@@ -2,6 +2,7 @@
 
 use App\Console\Commands\AustinProcessCommand;
 use App\Console\Commands\ClearOcrResults;
+use App\Console\Commands\ImageTest;
 use App\Console\Commands\NfnClassificationsUpdate;
 use App\Console\Commands\AmChartUpdate;
 use App\Console\Commands\ClearBeanstalkdQueueCommand;

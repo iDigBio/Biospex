@@ -66,15 +66,14 @@ return [
         'thumbOutputDir'     => storage_path('images'),
         'thumbWidth'         => 300,
         'thumbHeight'        => 300,
-        'compression'        => 80,
-        'maxSize'            => 500000,
-        'equalizer'          => 100,
         'imageTypeExtension' => [
             'image/jpeg' => "jpg",
             'image/png'  => "png",
             'image/tiff' => "tif",
             'image/gif'  => "gif"
         ],
+        'nfnLrgWidth' => env('NFN_LRG_WIDTH', 1500),
+        'nfnSmWidth' => env('NFN_SM_WIDTH', 500)
     ],
 
     /** Min and max logo and banner sizes used in Project model for Codesleve Stapler */
@@ -116,12 +115,6 @@ return [
         'recordId',
     ],
 
-
-    'nfnImageSize' => [
-        'largeWidth' => env('NFN_LRG_WIDTH', 1500),
-        'smallWidth' => env('NFN_SM_WIDTH', 500)
-    ],
-
     'nfnWorkflows' => [
         env('NFN_WORKFLOWS_1'),
         env('NFN_WORKFLOWS_2'),
@@ -129,7 +122,7 @@ return [
 
     'nfnCsvMap' => [
         'subjectId'        => '_id',
-        'imageName'        => '',
+        'imageName'        => '_id',
         'imageURL'         => 'accessURI',
         'references'       => ['occurrence' => 'references'],
         'scientificName'  => ['occurrence' => 'scientificName'],

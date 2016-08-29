@@ -21,16 +21,15 @@
             <div class="col-md-7">
                 <p class="description">{{ $project->description_short }}</p>
                 {{ $project->description_long }}
-                <h2 style="color: #8dc63f; font-size: 18px; font-weight: bold; margin: 45px 0 10px 0;">How to
-                    Participate</h2>
-                <p>This project has the following active expeditions:</p>
+                <h2 class="project-page-header">{{ trans('pages.project_page_header') }}</h2>
+                <p>{{ trans('pages.project_page_expeditions') }}:</p>
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
                         <thead>
                         <tr>
-                            <th>Expedition</th>
-                            <th class="nowrap">% Complete <span class="red">*</span></th>
-                            <th>Join In</th>
+                            <th>{{ trans('pages.expeditions') }}</th>
+                            <th class="nowrap">{{ trans('pages.project_page_percent_complete') }}</th>
+                            <th>{{ trans('pages.project_page_join') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -56,53 +55,51 @@
                         @endforeach
                         </tbody>
                     </table>
-                    <span class="red">*</span> <span
-                            class="small-font">Functionality currently under construction.</span>
                 </div>
             </div>
             <div class="col-md-5">
                 <dl>
-                    <dt class="firstdl">Organization</dt>
+                    <dt class="firstdl">{{ trans('forms.organization') }}</dt>
                     <dd class="firstdl">{{ $project->organization }}&nbsp;</dd>
-                    <dt>Contact</dt>
+                    <dt>{{ trans('forms.contact') }}</dt>
                     <dd><a href="mailto:{{ $project->contact_email }}">{{ $project->contact }}</a>&nbsp;</dd>
-                    <dt>Contact Title</dt>
+                    <dt>{{ trans('forms.contact_title') }}</dt>
                     <dd>{{ $project->contact_title }}&nbsp;</dd>
-                    <dt>Organization Website</dt>
+                    <dt>{{ trans('forms.organization_website') }}</dt>
                     <dd><a href="{{ $project->organization_website }}">{{ $project->organization_website }}</a>&nbsp;
                     </dd>
-                    <dt>Project Partners</dt>
+                    <dt>{{ trans('forms.project_partners') }}</dt>
                     <dd>{{ $project->project_partners }}&nbsp;</dd>
-                    <dt>Funding Source</dt>
+                    <dt>{{ trans('forms.funding_source') }}</dt>
                     <dd>{{ $project->funding_source }}&nbsp;</dd>
-                    <dt>Incentives</dt>
+                    <dt>{{ trans('forms.incentives') }}</dt>
                     <dd>{{ $project->incentives }}&nbsp;</dd>
-                    <dt>Geographic Scope</dt>
+                    <dt>{{ trans('forms.geographic_scope') }}</dt>
                     <dd>{{ $project->geographic_scope }}&nbsp;</dd>
-                    <dt>Taxonomic Scope</dt>
+                    <dt>{{ trans('forms.taxonomic_scope') }}</dt>
                     <dd>{{ $project->taxonomic_scope }}&nbsp;</dd>
-                    <dt>Temporal Scope</dt>
+                    <dt>{{ trans('forms.temporal_scope') }}</dt>
                     <dd>{{ $project->temporal_scope }}&nbsp;</dd>
-                    <dt>Language Skills Required</dt>
+                    <dt>{{ trans('forms.language_skills') }}</dt>
                     <dd>{{ $project->language_skills }}&nbsp;</dd>
-                    <dt>Activities</dt>
+                    <dt>{{ trans('forms.activities') }}</dt>
                     <dd>{{ $project->activities }}&nbsp;</dd>
-                    <dt>Keywords</dt>
+                    <dt>{{ trans('forms.keywords') }}</dt>
                     <dd>{{ $project->keywords }}&nbsp;</dd>
-                    <dt>Facebook</dt>
+                    <dt>{{ trans('forms.facebook') }}</dt>
                     <dd><a href="{{ $project->facebook }}">{{ $project->facebook }}</a>&nbsp;</dd>
-                    <dt>Twitter</dt>
+                    <dt>{{ trans('forms.twitter') }}</dt>
                     <dd><a href="http://twitter.com/{{ $project->twitter }}" target="_blank">{{ $project->twitter }}</a>&nbsp;
                     </dd>
                 </dl>
             </div>
         </div>
         @if ($project->amChart !== null)
-        <div class="row">
-            <input type="hidden" id="projectId" value="{{ $project->id }}" />
-            <div id="chartdiv" class="col-md-12" style="width: 100%; height: 600px"></div>
-        </div>
-        @endif
-        <!-- ./ content -->
+            <div class="row">
+                <input type="hidden" id="projectId" value="{{ $project->id }}"/>
+                <div id="chartdiv" class="col-md-12" style="width: 100%; height: 600px"></div>
+            </div>
+    @endif
+    <!-- ./ content -->
     </div>
 @stop
