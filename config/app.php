@@ -151,6 +151,7 @@ return [
         Msurguy\Honeypot\HoneypotServiceProvider::class,
         Vetruvet\PhpRedis\PhpRedisServiceProvider::class,
         Barryvdh\TranslationManager\ManagerServiceProvider::class,
+        Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class,
 
         /*
          * Biospex Providers
