@@ -12,6 +12,7 @@ return array (
   'contact_subject' => 'BIOSPEX Contact Form',
   'error' => 'BIOSPEX error report.',
   'error_core_file_missing' => 'Could not determine core file from meta file.',
+  'error_extension_file' => 'Could not determine extension file from meta file - :file.',
   'error_core_type' => 'Error querying core type from meta file.',
   'error_create_dir' => 'Unable to create directory: :directory',
   'error_csv_core_delimiter' => 'CSV core delimiter is empty.',
