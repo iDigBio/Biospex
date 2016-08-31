@@ -24,7 +24,7 @@
                 <h4 class="modal-title">@lang('pages.data_file_modal_header')</h4>
             </div>
             <div class="modal-body">
-                {!! trans('pages.add_data_file_desc', ['link' => link_to_asset('/resources/darwin-core-example.zip', "Darwin Core Example")]) !!}
+                {!! trans('pages.add_data_file_desc', ['link' => link_to_asset('darwin-core-example.zip', "Darwin Core Example")]) !!}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">@lang('pages.close')</button>
