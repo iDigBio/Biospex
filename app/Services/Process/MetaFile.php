@@ -4,6 +4,7 @@ namespace App\Services\Process;
 
 use App\Repositories\Contracts\Meta;
 use App\Services\Report\Report;
+use RuntimeException;
 use Illuminate\Support\Facades\Config;
 
 class MetaFile
@@ -45,7 +46,7 @@ class MetaFile
      *
      * @param $file
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function process($file)
     {
@@ -152,14 +153,14 @@ class MetaFile
     /**
      * Set core file.
      *
-     * @throws \Exception
+     * @throws RuntimeException
      */
     private function setCoreFile()
     {
         $this->coreFile = $this->core->nodeValue;
         if (empty($this->coreFile))
         {
-            throw new \Exception(trans('emails.error_core_file_missing'));
+            throw new RuntimeException(trans('emails.error_core_file_missing'));
         }
     }
 
@@ -174,7 +175,7 @@ class MetaFile
     /**
      * Set csv settings for core file.
      *
-     * @throws \Exception
+     * @throws RuntimeException
      */
     private function setCoreCsvSettings()
     {
@@ -184,14 +185,14 @@ class MetaFile
 
         if (empty($this->coreDelimiter))
         {
-            throw new \Exception(trans('emails.error_csv_core_delimiter'));
+            throw new RuntimeException(trans('emails.error_csv_core_delimiter'));
         }
     }
 
     /**
      * Set csv settings for extension file.
      *
-     * @throws \Exception
+     * @throws RuntimeException
      */
     private function setExtensionCsvSettings()
     {
@@ -201,7 +202,7 @@ class MetaFile
 
         if (empty($this->extDelimiter))
         {
-            throw new \Exception(trans('emails.error_csv_ext_delimiter'));
+            throw new RuntimeException(trans('emails.error_csv_ext_delimiter'));
         }
     }
 

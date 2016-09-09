@@ -8,10 +8,12 @@ use App\Repositories\Contracts\User;
 use App\Services\Process\DarwinCore;
 use App\Services\Process\Xml;
 use App\Services\Report\DarwinCoreImportReport;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\Config;
 use Exception;
+use RuntimeException;
 
 class DarwinCoreFileImportQueue extends QueueAbstract
 {
@@ -154,6 +156,8 @@ class DarwinCoreFileImportQueue extends QueueAbstract
             $this->import->delete($import->id);
 
         }
+        catch (FileNotFoundException $e) {}
+        catch (RuntimeException $e) {}
         catch (Exception $e)
         {
             $import->error = 1;

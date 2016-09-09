@@ -10,6 +10,8 @@ set_time_limit(0);
 ignore_user_abort(true);
 
 use App\Services\Csv\DarwinCoreCsvImport;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
+
 
 class DarwinCore
 {
@@ -62,13 +64,14 @@ class DarwinCore
      * 
      * @param $projectId
      * @param $directory
+     * @throws FileNotFoundException
      */
     public function process($projectId, $directory)
     {
         $this->projectId = $projectId;
 
         // Parse meta file, set properties, and save to database.
-        $this->processMetaFile($directory);
+        $meta = $this->processMetaFile($directory);
 
         // Load media first to create subjects
         $this->processCsvFile($directory);
@@ -76,21 +79,42 @@ class DarwinCore
         // Load occurrences
         $this->processCsvFile($directory, false);
 
+        $this->metaFile->saveMetaFile($projectId, $meta);
+
+    }
+
+    /**
+     * Check file exists.
+     *
+     * @param $file
+     * @throws FileNotFoundException
+     */
+    protected function checkFileExists($file)
+    {
+        if ( ! file_exists($file))
+        {
+            throw new FileNotFoundException(trans('emails.error_import_file_does_not_exist', ['file' => $file]));
+        }
     }
 
     /**
      * Process meta file, set properties, and save to database
+     *
      * @param $directory
+     * @return string
      */
     public function processMetaFile($directory)
     {
+        $this->checkFileExists($directory . '/meta.xml');
+
         $meta = $this->metaFile->process($directory . '/meta.xml');
         $this->mediaIsCore = $this->metaFile->getMediaIsCore();
         $this->metaFields = $this->metaFile->getMetaFields();
-        $this->metaFile->saveMetaFile($this->projectId, $meta);
 
         // Set meta properties needed in handling csv file.
         $this->csv->setCsvMetaProperties($this->mediaIsCore, $this->metaFields, $this->projectId);
+
+        return $meta;
     }
 
     /**
@@ -98,11 +122,15 @@ class DarwinCore
      * @param $directory
      * @param bool $loadMedia
      * @return array
+     * @throws FileNotFoundException
      */
     protected function processCsvFile($directory, $loadMedia = true)
     {
         $type = $this->setFileType($loadMedia);
         $file = $this->setFilePath($directory, $type);
+
+        $this->checkFileExists($file);
+
         $delimiter = $this->setDelimiter($type);
         $enclosure = $this->setEnclosure($type);
         $this->csv->loadCsvFile($file, $delimiter, $enclosure, $type, $loadMedia);

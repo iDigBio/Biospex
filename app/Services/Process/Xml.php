@@ -2,7 +2,7 @@
 
 use DOMDocument;
 use DOMXPath;
-use Exception;
+use RuntimeException;
 
 class Xml
 {
@@ -16,7 +16,7 @@ class Xml
      *
      * @param $input_xml
      * @return string
-     * @throws \Exception
+     * @throws RuntimeException
      */
     public function load($input_xml)
     {
@@ -25,7 +25,7 @@ class Xml
 
         $parsed = $this->xml->load($input_xml);
         if (! $parsed) {
-            throw new Exception(trans('emails.error_loading_xml'));
+            throw new RuntimeException(trans('emails.error_loading_xml'));
         }
 
         $this->xpath = new DOMXpath($this->xml);
