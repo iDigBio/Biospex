@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Repositories\Contracts\Project;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -107,8 +106,10 @@ class BuildOcrBatches extends Job implements ShouldQueue
     }
 
     /**
-     * Query MongoDB and return cursor
-     * @return bool
+     * Query MongoDB and return cursor.
+     *
+     * @return MongoCollection
+     * @throws \Exception
      */
     protected function setCollection()
     {
