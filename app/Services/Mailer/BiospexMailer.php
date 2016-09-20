@@ -36,7 +36,7 @@ class BiospexMailer
     {
         return Mail::queueOn(Config::get('config.beanstalkd.default'), $view, $data, function ($message) use ($email, $subject, $attachments) {
             $message->from($this->emailAddress['address'], $this->emailAddress['name'])->subject($subject)->to($email);
-            $size = sizeof($attachments);
+            $size = count($attachments);
             for ($i = 0; $i < $size; $i++) {
                 $message->attach($attachments[$i]);
             }
