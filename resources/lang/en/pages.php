@@ -140,10 +140,8 @@ return array (
   'value' => 'Value',
   'insufficient_permissions' => 'You do not have sufficient permissions.',
   'resources' => 'Resources',
-    'project_page_header' => 'How to Participate',
-    'project_page_expeditions' => 'This project has the following active expeditions',
-    'project_page_percent_complete' => '% Complete',
-    'project_page_join' => 'Join In',
-
-
+  'project_page_header' => 'How to Participate',
+  'project_page_expeditions' => 'This project has the following active expeditions',
+  'project_page_percent_complete' => '% Complete',
+  'project_page_join' => 'Join In',
 );
