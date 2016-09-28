@@ -42,18 +42,12 @@ class NfnWorkflow extends Model
 
         static::deleting(function ($model)
         {
-            foreach ($model->classifications as $classification)
-            {
-                $classification->delete();
-            }
+            $model->classifications()->delete();
         });
 
         self::restored(function ($model)
         {
-            foreach ($model->classifications as $classification)
-            {
-                $classification->restore();
-            }
+            $model->classifications()->delete();
         });
     }
 

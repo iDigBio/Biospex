@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Config;
 
 class BiospexMailer
 {
+
     /**
      * @var
      */
@@ -34,10 +35,43 @@ class BiospexMailer
      */
     public function send($email, $subject, $view, $data, $attachments = [])
     {
-        return Mail::queueOn(Config::get('config.beanstalkd.default'), $view, $data, function ($message) use ($email, $subject, $attachments) {
+        return Mail::queueOn(Config::get('config.beanstalkd.default'), $view, $data, function ($message) use ($email, $subject, $attachments)
+        {
             $message->from($this->emailAddress['address'], $this->emailAddress['name'])->subject($subject)->to($email);
-            $size = sizeof($attachments);
-            for ($i = 0; $i < $size; $i++) {
+            $size = count($attachments);
+            for ($i = 0; $i < $size; $i++)
+            {
+                $message->attach($attachments[$i]);
+            }
+        });
+    }
+
+    /**
+     * Send error mail.
+     *
+     * @param $email
+     * @param $subject
+     * @param $view
+     * @param $data
+     * @param array $attachments
+     * @return mixed
+     */
+    public function sendError($email, $subject, $view, $data, $attachments = [])
+    {
+        $email = null === $email ? $this->emailAddress['address'] : $email;
+
+        return Mail::queueOn(Config::get('config.beanstalkd.default'), $view, $data, function ($message) use ($email, $subject, $attachments)
+        {
+            $message->from($this->emailAddress['address'], $this->emailAddress['name'])
+                ->subject($subject)
+                ->to($email);
+            if ($email !== $this->emailAddress['address'])
+            {
+                $message->bcc($this->emailAddress['address'], $this->emailAddress['name']);
+            }
+            $size = count($attachments);
+            for ($i = 0; $i < $size; $i++)
+            {
                 $message->attach($attachments[$i]);
             }
         });
@@ -78,10 +112,6 @@ class BiospexMailer
      */
     public function sendReport($email, $subject, $view, $data, $attachments = [])
     {
-        if (is_null($email)) {
-            $email = $this->emailAddress['address'];
-        }
-
         return $this->send($email, $subject, $view, $data, $attachments);
     }
 
@@ -97,5 +127,6 @@ class BiospexMailer
 
         return $this->send($data['email'], $subject, $view, $data);
     }
+
 
 }

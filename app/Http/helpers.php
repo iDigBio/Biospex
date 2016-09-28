@@ -56,7 +56,8 @@ function round_up_to_any_five($n, $x = 5)
  */
 function format_date($date, $format = null, $tz = null)
 {
-    if (is_null($date)) {
+    if (is_null($date))
+    {
         return Carbon::now();
     }
 
@@ -95,13 +96,15 @@ function timezone_select()
     $timezones = \DateTimeZone::listIdentifiers(\DateTimeZone::ALL);
 
     $timezone_offsets = [];
-    foreach ($timezones as $timezone) {
+    foreach ($timezones as $timezone)
+    {
         $tz = new \DateTimeZone($timezone);
         $timezone_offsets[$timezone] = $tz->getOffset(new \DateTime);
     }
 
     $timezone_list = [];
-    foreach ($timezone_offsets as $timezone => $offset) {
+    foreach ($timezone_offsets as $timezone => $offset)
+    {
         $offset_prefix = $offset < 0 ? '-' : '+';
         $offset_formatted = gmdate('H:i', abs($offset));
 
@@ -115,14 +118,15 @@ function timezone_select()
 
 /**
  * Delete directory contents.
- * 
+ *
  * @param $dir
  * @param array $ignore
  * @return bool
  */
 function delete_directory_contents($dir, array $ignore = ['.gitignore'])
 {
-    if (false === file_exists($dir)) {
+    if (false === file_exists($dir))
+    {
         return false;
     }
 
@@ -132,17 +136,24 @@ function delete_directory_contents($dir, array $ignore = ['.gitignore'])
         \RecursiveIteratorIterator::CHILD_FIRST
     );
 
-    foreach ($files as $fileinfo) {
-        if ($fileinfo->isDir()) {
-            if (false === rmdir($fileinfo->getRealPath())) {
+    foreach ($files as $fileinfo)
+    {
+        if ($fileinfo->isDir())
+        {
+            if (false === rmdir($fileinfo->getRealPath()))
+            {
                 return false;
             }
-        } else {
-            if (in_array($fileinfo->getFilename(), $ignore)) {
+        }
+        else
+        {
+            if (in_array($fileinfo->getFilename(), $ignore))
+            {
                 continue;
             }
 
-            if (false === unlink($fileinfo->getRealPath())) {
+            if (false === unlink($fileinfo->getRealPath()))
+            {
                 return false;
             }
         }
@@ -157,19 +168,19 @@ function delete_directory_contents($dir, array $ignore = ['.gitignore'])
  */
 function array_to_object(array $array)
 {
-    foreach($array as $key => $value)
+    foreach ($array as $key => $value)
     {
-        if(is_array($value))
+        if (is_array($value))
         {
             $array[$key] = array_to_object($value);
         }
     }
-    return (object)$array;
+    return (object) $array;
 }
 
 /**
  * Set count for total transcriptions. 4 per subject.
- * 
+ *
  * @param $count
  * @return mixed
  */
@@ -180,7 +191,7 @@ function transcriptions_total($count)
 
 /**
  * Return completed transcriptions count.
- * 
+ *
  * @param $expeditionId
  * @return mixed
  */
@@ -194,7 +205,7 @@ function transcriptions_completed($expeditionId)
 
 /**
  * Return percentage of completed transcriptions.
- * 
+ *
  * @param $total
  * @param $completed
  * @return float|int
@@ -204,4 +215,64 @@ function transcriptions_percent_completed($total, $completed)
     $value = ($total === 0 || $completed === 0) ? 0 : ($completed / $total) * 100;
 
     return ($value > 100) ? 100 : $value;
+}
+
+
+/**
+ * jTraceEx() - provide a Java style exception trace
+ *
+ * @param $e
+ * @param array $seen - array passed to recursive calls to accumulate trace lines already seen.
+ * @return array|string
+ */
+function jTraceEx($e, array $seen = [])
+{
+    $starter = $seen ? 'Caused by: ' : '';
+    $result = array();
+
+    $trace = $e->getTrace();
+    $prev = $e->getPrevious();
+    $result[] = sprintf('%s%s: %s', $starter, get_class($e), $e->getMessage());
+    $file = $e->getFile();
+    $line = $e->getLine();
+
+    while (true)
+    {
+        $current = "$file:$line";
+        if (is_array($seen) && in_array($current, $seen, true))
+        {
+            $result[] = sprintf(' ... %d more', count($trace) + 1);
+            break;
+        }
+
+        $result[] = sprintf(' at %s%s%s(%s%s%s)',
+            count($trace) && array_key_exists('class', $trace[0]) ? str_replace('\\', '.', $trace[0]['class']) : '',
+            count($trace) && array_key_exists('class', $trace[0]) && array_key_exists('function', $trace[0]) ? '.' : '',
+            count($trace) && array_key_exists('function', $trace[0]) ? str_replace('\\', '.', $trace[0]['function']) : '(main)',
+            $line === null ? $file : basename($file),
+            $line === null ? '' : ':',
+            $line === null ? '' : $line);
+
+        if (count($seen) > 0)
+        {
+            $seen[] = "$file:$line";
+        }
+
+        if ( ! count($trace))
+        {
+            break;
+        }
+
+        $file = array_key_exists('file', $trace[0]) ? $trace[0]['file'] : 'Unknown Source';
+        $line = array_key_exists('file', $trace[0]) && array_key_exists('line', $trace[0]) && $trace[0]['line'] ? $trace[0]['line'] : null;
+        array_shift($trace);
+    }
+    $result = implode('<br />', $result);
+
+    if ($prev)
+    {
+        $result .= '<br />' . jTraceEx($prev, $seen);
+    }
+
+    return $result;
 }

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\BuildOcrBatches;
+use App\Repositories\Contracts\OcrQueue;
 use App\Repositories\Contracts\Subject;
 use Illuminate\Http\Request;
 use App\Repositories\Contracts\User;
@@ -10,6 +12,7 @@ use App\Repositories\Contracts\Group;
 use App\Repositories\Contracts\Project;
 use App\Http\Requests\ProjectFormRequest;
 use App\Services\Common\ProjectService;
+use Illuminate\Support\Facades\Config;
 
 class ProjectsController extends Controller
 {
@@ -98,6 +101,7 @@ class ProjectsController extends Controller
         $user = $this->request->user();
         $with = [
             'group',
+            'ocrQueue',
             'expeditions.downloads',
             'expeditions.actors',
             'expeditions.stat'
@@ -115,10 +119,9 @@ class ProjectsController extends Controller
      */
     public function store(ProjectFormRequest $request)
     {
-        $user = $request->user();
         $group = $this->group->with(['permissions'])->find($request->get('group_id'));
 
-        if ( ! $this->checkPermissions($user, [\App\Models\Project::class, $group], 'create'))
+        if ( ! $this->checkPermissions($this->request->user(), [\App\Models\Project::class, $group], 'create'))
         {
             return redirect()->route('web.projects.index');
         }
@@ -143,7 +146,6 @@ class ProjectsController extends Controller
      */
     public function duplicate($id)
     {
-        $user = $this->request->user();
         $project = $this->project->with(['group', 'expeditions.workflowManager'])->find($id);
 
         if ( ! $project)
@@ -153,7 +155,7 @@ class ProjectsController extends Controller
             return redirect()->route('web.projects.show', [$id]);
         }
 
-        $common = $this->service->setCommonVariables($user);
+        $common = $this->service->setCommonVariables($this->request->user());
         $variables = array_merge($common, ['project' => $project, 'workflowCheck' => '']);
 
         return view('frontend.projects.clone', $variables);
@@ -167,10 +169,9 @@ class ProjectsController extends Controller
      */
     public function edit($id)
     {
-        $user = $this->request->user();
         $project = $this->project->with(['group.permissions', 'expeditions.workflowManager'])->find($id);
 
-        if ( ! $this->checkPermissions($user, [$project], 'update'))
+        if ( ! $this->checkPermissions($this->request->user(), [$project], 'update'))
         {
             return redirect()->route('web.projects.index');
         }
@@ -191,10 +192,9 @@ class ProjectsController extends Controller
      */
     public function update(ProjectFormRequest $request)
     {
-        $user = $request->user();
         $project = $this->project->find($request->input('id'));
 
-        if ( ! $this->checkPermissions($user, [$project], 'update'))
+        if ( ! $this->checkPermissions($this->request->user(), [$project], 'update'))
         {
             return redirect()->route('web.projects.index');
         }
@@ -215,10 +215,9 @@ class ProjectsController extends Controller
      */
     public function explore(Subject $subject, $id)
     {
-        $user = $this->request->user();
         $project = $this->project->with(['group'])->find($id);
 
-        if ( ! $this->checkPermissions($user, [$project], 'read'))
+        if ( ! $this->checkPermissions($this->request->user(), [$project], 'read'))
         {
             return redirect()->route('web.projects.index');
         }
@@ -238,10 +237,9 @@ class ProjectsController extends Controller
      */
     public function delete($id)
     {
-        $user = $this->request->user();
         $project = $this->project->with(['group'])->find($id);
 
-        if ( ! $this->checkPermissions($user, [$project], 'delete'))
+        if ( ! $this->checkPermissions($this->request->user(), [$project], 'delete'))
         {
             return redirect()->route('web.projects.index');
         }
@@ -250,5 +248,37 @@ class ProjectsController extends Controller
         session_flash_push('success', trans('projects.project_destroyed'));
 
         return redirect()->route('web.projects.index');
+    }
+
+    /**
+     * Reprocess OCR.
+     *
+     * @param OcrQueue $queue
+     * @param $projectId
+     * @return mixed
+     */
+    public function ocr(OcrQueue $queue, $projectId)
+    {
+        $project = $this->project->with(['group.permissions'])->find($projectId);
+
+        if ( ! $this->checkPermissions($this->request->user(), [$project], 'update'))
+        {
+            return redirect()->route('web.projects.index');
+        }
+
+        $queueCheck = $queue->skipCache()->where(['project_id' => $projectId])->first();
+
+        if ($queueCheck === null)
+        {
+            $this->dispatch((new BuildOcrBatches($project->id))->onQueue(Config::get('config.beanstalkd.ocr')));
+
+            session_flash_push('success', trans('expeditions.ocr_process_success'));
+        }
+        else
+        {
+            session_flash_push('warning', trans('expeditions.ocr_process_error'));
+        }
+
+        return redirect()->route('web.projects.show', [$projectId]);
     }
 }

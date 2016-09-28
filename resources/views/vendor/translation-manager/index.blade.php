@@ -98,7 +98,6 @@
                         @endforeach
                         @if($deleteEnabled)
                             <td>
-
                                 {!! Html::linkWithIcon(route('admin.translations.delete', [$group, $key]), '<span class="glyphicon glyphicon-trash"></span>', ['class' => 'delete-key', 'data-confirm' => 'Are you sure you want to delete the translations for '.  $key . '?']) !!}
                             </td>
                         @endif

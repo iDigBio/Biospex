@@ -7988,4 +7988,8 @@ h6.panel-user-email a {
     color: #ffffff;
 }
 
+h2.project-page-header {
+    color: #8dc63f; font-size: 18px; font-weight: bold; margin: 45px 0 10px 0;
+}
+
 /*# sourceMappingURL=frontend.css.map */

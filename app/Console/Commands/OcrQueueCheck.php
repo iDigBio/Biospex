@@ -43,21 +43,21 @@ class OcrQueueCheckCommand extends Command
      */
     public function handle()
     {
-        $queues = $this->queue->skipCache()->with(['project.group.owner'])->get();
+        $queues = $this->queue->skipCache()->get();
 
         if ($queues->isEmpty()) {
             return;
         }
 
         foreach ($queues as $queue) {
-            $this->report->addError(trans('emails.error_ocr_queue',
+            $this->report->addError(trans('errors.ocr_queue',
                 [
                     'id'      => $queue->id,
-                    'message' => trans('emails.error_ocr_stuck_queue', ['id' => $queue->id]),
+                    'message' => trans('errors.ocr_stuck_queue', ['id' => $queue->id]),
                     'url'     => ''
                 ]));
         }
 
-        $this->report->reportSimpleError();
+        $this->report->reportError();
     }
 }

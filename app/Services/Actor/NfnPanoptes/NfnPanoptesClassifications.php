@@ -4,13 +4,11 @@ namespace App\Services\Actor\NfnPanoptes;
 
 ini_set('memory_limit', '1024M');
 
+use App\Exceptions\BiospexException;
 use App\Jobs\NfnClassificationsJob;
 use App\Services\Actor\ActorInterface;
 use App\Services\Actor\ActorService;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Exception;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use RuntimeException;
 
 class NfnPanoptesClassifications implements ActorInterface
 {
@@ -44,28 +42,28 @@ class NfnPanoptesClassifications implements ActorInterface
      *
      * @param $actor
      * @return mixed|void
-     * @throws \Exception
+     * @throws BiospexException
      */
     public function process($actor)
     {
 
+        $record = $this->actorRepoService->expedition->skipCache()->with(['project.group.owner', 'stat'])->find($actor->pivot->expedition_id);
+
         try
         {
-
-            $record = $this->actorRepoService->expedition->skipCache()->with(['project.group', 'stat'])->find($actor->pivot->expedition_id);
-
             $this->processExpeditionRecord($actor, $record);
         }
-        catch (FileNotFoundException $e)
+        catch (BiospexException $e)
         {
-        }
-        catch (RuntimeException $e)
-        {
-        }
-        catch (Exception $e)
-        {
-            $this->service->report->addError($e->getMessage());
-            $this->service->report->reportSimpleError();
+            $this->service->report->addError(trans('errors.nfn_classifications_error', [
+                'title'   => $record->title,
+                'id'      => $record->id,
+                'message' => $e->getMessage()
+            ]));
+
+            $this->service->report->reportError($record->project->group->owner->email);
+
+            $this->service->handler->report($e);
         }
 
     }
@@ -103,9 +101,9 @@ class NfnPanoptesClassifications implements ActorInterface
     protected function sendReport($record)
     {
         $vars = [
-            'title' => $record->title,
-            'message' => trans('emails.nfn_transcriptions_complete_message', ['expedition', $record->title]),
-            'groupId' => $record->project->group->id,
+            'title'          => $record->title,
+            'message'        => trans('emails.nfn_transcriptions_complete_message', ['expedition', $record->title]),
+            'groupId'        => $record->project->group->id,
             'attachmentName' => ''
         ];
 

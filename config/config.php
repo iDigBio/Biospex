@@ -45,10 +45,34 @@ return [
     /**
      * DCA import row types for multimedia.
      */
-    'metaFileRowTypes' => [
-        'http://rs.tdwg.org/ac/terms/multimedia'  => ['multimedia_raw', 'multimedia', 'multimedia-10'],
-        'http://rs.gbif.org/terms/1.0/image'      => ['images'],
-        'http://rs.tdwg.org/dwc/terms/occurrence' => ['occurrence_raw, occurrence', 'occurrence-10']
+    'dwcRequiredRowTypes' => [
+        'http://rs.tdwg.org/ac/terms/multimedia',
+        'http://rs.gbif.org/terms/1.0/image',
+        'http://rs.tdwg.org/dwc/terms/occurrence'
+    ],
+
+    'dwcRequiredFields' => [
+        'core' => ['id'],
+        'extension' => [
+            'coreid' => [],
+            'accessURI' => ['http://rs.tdwg.org/ac/terms/accessURI'],
+            'identifier' => [
+                'http://purl.org/dc/terms/identifier',
+                'http://rs.tdwg.org/ac/terms/providerManagedID',
+                'http://portal.idigbio.org/terms/uuid',
+                'http://portal.idigbio.org/terms/recordId',
+            ]
+        ]
+    ],
+
+    /**
+     * Possible identifiers in subject uploads.
+     */
+    'identifiers' => [
+        'http://purl.org/dc/terms/identifier',
+        'http://rs.tdwg.org/ac/terms/providerManagedID',
+        'http://portal.idigbio.org/terms/uuid',
+        'http://portal.idigbio.org/terms/recordId',
     ],
 
     /* Added Tubes */
@@ -79,16 +103,6 @@ return [
     /** Min and max logo and banner sizes used in Project model for Codesleve Stapler */
     'logo'                  => '300x200',
     'banner'                => '1200x250',
-
-    /**
-     * Possible identifiers in subject uploads.
-     */
-    'identifiers'           => [
-        'identifier',
-        'providerManagedID',
-        'uuid',
-        'recordId',
-    ],
 
     /**
      * Visible columns in jqGrid.

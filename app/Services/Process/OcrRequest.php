@@ -2,11 +2,10 @@
 
 namespace App\Services\Process;
 
-
+use App\Exceptions\RequestException;
 use App\Repositories\Contracts\Subject;
 use Illuminate\Support\Facades\Artisan;
 use GuzzleHttp\Client;
-use Exception;
 use Illuminate\Support\Facades\Config;
 
 class OcrRequest
@@ -40,7 +39,7 @@ class OcrRequest
      *
      * @param $record
      * @return bool
-     * @throws \Exception
+     * @throws RequestException
      */
     public function sendOcrFile($record)
     {
@@ -60,8 +59,8 @@ class OcrRequest
         $response = $this->client->request('POST', Config::get('config.ocr_post_url'), $options);
 
         if ($response->getStatusCode() !== 202) {
-            throw new \UnexpectedValueException(trans('emails.error_ocr_curl',
-                ['id' => $record->id, 'message' => print_r($response->getBody(), true)]));
+            throw new RequestException(trans('errors.ocr_send_error',
+                ['title' => $record->title, 'id' => $record->id, 'message' => print_r($response->getBody(), true)]));
         }
     }
 
@@ -70,13 +69,21 @@ class OcrRequest
      *
      * @param $uuid
      * @return string
+     * @throws RequestException
      */
     public function requestOcrFile($uuid)
     {
-        $response = $this->client->get(Config::get('config.ocr_get_url') . '/' . $uuid . '.json');
-        $contents = $response->getBody()->getContents();
+        try
+        {
+            $response = $this->client->get(Config::get('config.ocr_get_url') . '/' . $uuid . '.json');
+            $contents = $response->getBody()->getContents();
 
-        return json_decode($contents);
+            return json_decode($contents);
+        }
+        catch (\RuntimeException $e)
+        {
+            throw new RequestException($e->getMessage());
+        }
     }
 
     /**

@@ -56,8 +56,8 @@ class Expedition extends Eloquent
         static::deleting(function ($model) {
             $model->title = $model->title . ':' . str_random();
             $model->save();
-            $model->stat->delete();
-            $model->nfnWorkflow->delete();
+            $model->stat()->delete();
+            $model->nfnWorkflow()->delete();
         });
 
         self::restored(function ($model)
@@ -66,7 +66,7 @@ class Expedition extends Eloquent
             $model->title = $title[0];
             $model->save();
             $model->stat->restore();
-            $model->nfnWorkflow->restore();
+            $model->nfnWorkflow()->restore();
         });
     }
     

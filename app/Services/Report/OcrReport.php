@@ -9,7 +9,7 @@ class OcrReport extends Report
      * @param $email
      * @param $title
      * @param $csv
-     * @return array
+     * @return bool|array
      */
     public function complete($email, $title, $csv)
     {
@@ -23,7 +23,7 @@ class OcrReport extends Report
         $subject = trans('emails.ocr_complete');
         $view = 'frontend.emails.report-simple';
 
-        $this->fireEvent($email, $subject, $view, $data, $attachment);
+        $this->fireReportEvent($email, $subject, $view, $data, $attachment);
 
         return $count === 0 ? false : $attachment;
     }

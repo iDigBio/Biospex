@@ -25,27 +25,7 @@ class DarwinCoreImportReport extends Report
         $subject = trans('emails.import_subject_subject');
         $view = 'frontend.emails.report-import';
 
-        $this->fireEvent($email, $subject, $view, $data, $attachments);
-    }
-
-    /**
-     * Send error during subject import
-     *
-     * @param $id
-     * @param $email
-     * @param $title
-     */
-    public function error($id, $email, $title)
-    {
-        $subject = trans('emails.error_import');
-        $data = [
-            'importId'     => $id,
-            'projectTitle' => $title,
-            'errorMessage' => print_r($this->messages->get('error'), true)
-        ];
-        $view = 'frontend.emails.reporterror';
-
-        $this->fireEvent($email, $subject, $view, $data);
+        $this->fireReportEvent($email, $subject, $view, $data, $attachments);
     }
 }
 

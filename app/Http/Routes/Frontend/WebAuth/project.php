@@ -45,4 +45,9 @@ $router->get('projects/{projects}/explore', [
     'uses' => 'ProjectsController@explore',
     'as'   => 'projects.get.explore'
 ]);
+
+$router->get('projects/{projects}/ocr', [
+    'uses' => 'ProjectsController@ocr',
+    'as'   => 'web.projects.ocr'
+]);
 // End ProjectsController
