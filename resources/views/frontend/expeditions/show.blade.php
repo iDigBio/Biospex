@@ -40,19 +40,18 @@
                                         class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
                         </div>
                         <div class="col-md-2">
-                            @if (count($expedition->project->ocrQueue) === 0)
-                                <button title="@lang('buttons.ocrTitle')" class="btn btn-success btn-sm" type="button"
-                                        onClick="location.href='{{ route('web.expeditions.ocr', [$expedition->project->id, $expedition->id]) }}'">
-                                    <span class="fa fa-repeat fa-lrg"></span> @lang('buttons.ocr')</button>
-                            @else
-                                <button title="@lang('buttons.ocrTitle')" class="btn btn-success btn-sm" type="button" disabled
-                                        onClick="location.href='{{ route('web.expeditions.ocr', [$expedition->project->id, $expedition->id]) }}'">
-                                    <span class="fa fa-repeat fa-lrg"></span> @lang('buttons.ocrDisabled')</button>
-                            @endif
+                            <button title="@lang('buttons.ocrTitle')" class="btn btn-success btn-sm" type="button"
+                                    {{ count($expedition->project->ocrQueue) !== 0 || $subjectsCount === 0 ? 'disabled' : '' }}
+                                    onClick="location.href='{{ route('web.expeditions.ocr', [$expedition->project->id, $expedition->id]) }}'">
+                                <span class="fa fa-repeat fa-lrg"></span>
+                                {{ count($expedition->project->ocrQueue) !== 0 || $subjectsCount === 0 ? trans('buttons.ocr') : trans('buttons.ocrDisabled') }}
+                            </button>
+
                         </div>
                         <div class="col-md-2">
-                            @if (is_null($expedition->workflowManager) || $expedition->workflowManager->stopped == 1)
-                                <button title="@lang('buttons.processTitle')" class="btn btn-success btn-sm"
+                            @if (null === $expedition->workflowManager || $expedition->workflowManager->stopped === 1)
+                                <button title="@lang('buttons.processTitle')" class="btn btn-success btn-sm" type="button"
+                                        {{ $subjectsCount === 0 ? 'disabled' : '' }}
                                         onClick="location.href='{{ route('web.expeditions.process', [$expedition->project->id, $expedition->id]) }}'">
                                     <span class="fa fa-play fa-lrg"></span> @lang('buttons.process')</button>
                             @else
@@ -72,7 +71,7 @@
     <div class="row">
         <div class="col-md-12">
             <h4>{{ trans_choice('pages.subjects_assigned', 1) }}: <span
-                        id="subjectCount">{{ $expedition->subjectsCount }}</span></h4>
+                        id="subjectCount">{{ $subjectsCount }}</span></h4>
             <div class="table-responsive" id="jqtable">
                 <input type="hidden" id="url"
                        value="{{ URL::route('web.grids.show', [$expedition->project->id, $expedition->id]) }}">

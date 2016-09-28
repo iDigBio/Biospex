@@ -174,8 +174,9 @@ class ExpeditionsController extends Controller
     public function show($projectId, $expeditionId)
     {
         $expedition = $this->expedition->with(['project.group', 'project.ocrQueue', 'downloads', 'workflowManager'])->find($expeditionId);
+        $subjectsCount = $expedition->subjectsCount;
 
-        return view('frontend.expeditions.show', compact('expedition'));
+        return view('frontend.expeditions.show', compact('expedition', 'subjectsCount'));
     }
 
     /**
