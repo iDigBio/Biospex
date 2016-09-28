@@ -3,15 +3,19 @@
 namespace App\Console\Commands;
 
 use App\Events\PollOcrEvent;
+use App\Exceptions\BiospexException;
+use App\Exceptions\RequestException;
 use App\Repositories\Contracts\OcrCsv;
 use App\Repositories\Contracts\OcrQueue;
 use App\Services\Process\OcrRequest;
 use App\Services\Report\OcrReport;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Console\Command;
+use App\Exceptions\Handler;
 
 class OcrProcessCommand extends Command
 {
+
     /**
      * The name and signature of the console command.
      *
@@ -25,7 +29,7 @@ class OcrProcessCommand extends Command
      * @var string
      */
     protected $description = 'Polls Ocr server for file status and fires polling event';
-    
+
     /**
      * @var OcrRequest
      */
@@ -45,11 +49,15 @@ class OcrProcessCommand extends Command
      * @var OcrCsv
      */
     private $ocrCsv;
-    
+
     /**
      * @var Dispatcher
      */
     private $dispatcher;
+    /**
+     * @var Handler
+     */
+    private $handler;
 
     /**
      * OcrProcessCommand constructor.
@@ -59,13 +67,15 @@ class OcrProcessCommand extends Command
      * @param OcrReport $ocrReport
      * @param OcrCsv $ocrCsv
      * @param Dispatcher $dispatcher
+     * @param Handler $handler
      */
     public function __construct(
         OcrRequest $ocrRequest,
         OcrQueue $ocrQueue,
         OcrReport $ocrReport,
         OcrCsv $ocrCsv,
-        Dispatcher $dispatcher
+        Dispatcher $dispatcher,
+        Handler $handler
     )
     {
         parent::__construct();
@@ -75,16 +85,18 @@ class OcrProcessCommand extends Command
         $this->ocrReport = $ocrReport;
         $this->ocrCsv = $ocrCsv;
         $this->dispatcher = $dispatcher;
+        $this->handler = $handler;
     }
 
     /**
      * Execute the console command.
      *
+     * @throws BiospexException
      */
     public function handle()
     {
         $record = $this->ocrQueue->skipCache()->with(['project.group.owner', 'ocrCsv'])->where([['status', '<=', 1], 'error' => 0])->orderBy(['id' => 'asc'])->first();
-        
+
         if ($record === null)
         {
             return;
@@ -94,12 +106,14 @@ class OcrProcessCommand extends Command
         {
             $this->processRecord($record);
         }
-        catch (\Exception $e)
+        catch (BiospexException $e)
         {
             $record->error = 1;
             $this->ocrQueue->update($record->toArray(), $record->id);
-            $this->addReportError($record->id, $e->getMessage() . ': ' . $e->getTraceAsString());
-            $this->ocrReport->reportSimpleError($record->project->group->id);
+
+            $this->handler->report($e);
+
+            return;
         }
 
         $this->dispatcher->fire(new PollOcrEvent());
@@ -109,8 +123,7 @@ class OcrProcessCommand extends Command
      * Process the record and send requests to ocr servers
      *
      * @param $record
-     * @return string|void
-     * @throws \Exception
+     * @throws RequestException
      */
     private function processRecord($record)
     {
@@ -118,14 +131,14 @@ class OcrProcessCommand extends Command
         {
             return;
         }
-        
+
         if ( ! $record->status)
         {
             $this->ocrRequest->sendOcrFile($record);
 
             $record->status = 1;
             $this->ocrQueue->update($record->toArray(), $record->id);
-            
+
             return;
         }
 
@@ -135,23 +148,19 @@ class OcrProcessCommand extends Command
         {
             return;
         }
-        
-        
+
+
         if ($this->ocrRequest->checkOcrFileInProgress($file))
         {
             $this->updateSubjectRemaining($record, $file);
-            
+
             return;
         }
 
         if ($this->ocrRequest->checkOcrFileError($file))
-        {            
-            $record->error = 1;
-            $this->ocrQueue->update($record->toArray(), $record->id);
-            $this->addReportError($record->id, trans('emails.error_ocr_header'));
-            $this->ocrReport->reportSimpleError($record->project->group->id);
-
-            return;
+        {
+            throw new RequestException(trans('errors.ocr_file_error',
+                ['title' => $record->title, 'id' => $record->id, 'message' => 'Json file header returned status error.']));
         }
 
         $this->updateSubjectRemaining($record, $file);
@@ -170,23 +179,7 @@ class OcrProcessCommand extends Command
         }
 
         $this->ocrRequest->deleteJsonFiles([$record->uuid . '.json']);
-    }
 
-    /**
-     * Add error to report.
-     *
-     * @param $id
-     * @param $messages
-     * @param string $url
-     */
-    private function addReportError($id, $messages, $url = '')
-    {
-        $this->ocrReport->addError(trans('emails.error_ocr_queue',
-            [
-                'id'      => $id,
-                'message' => $messages,
-                'url'     => $url,
-            ]));
     }
 
     /**

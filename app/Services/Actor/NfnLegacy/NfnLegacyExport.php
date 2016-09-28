@@ -2,11 +2,9 @@
 
 namespace App\Services\Actor\NfnLegacy;
 
+use App\Exceptions\BiospexException;
 use App\Services\Actor\ActorInterface;
 use App\Services\Actor\ActorService;
-use Exception;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use RuntimeException;
 
 ini_set('memory_limit', '1024M');
 
@@ -24,9 +22,9 @@ class NfnLegacyExport implements ActorInterface
     private $service;
 
     /**
-     * @var \App\Services\Actor\ActorFileService
+     * @var \App\Services\File\FileService
      */
-    private $actorFileService;
+    private $fileService;
 
     /**
      * @var \App\Services\Actor\ActorImageService
@@ -85,7 +83,7 @@ class NfnLegacyExport implements ActorInterface
     )
     {
         $this->service = $service;
-        $this->actorFileService = $service->actorFileService;
+        $this->fileService = $service->fileService;
         $this->actorImageService = $service->actorImageService;
         $this->actorRepoService = $service->actorRepoService;
 
@@ -98,17 +96,16 @@ class NfnLegacyExport implements ActorInterface
      * Process current state
      *
      * @param $actor
-     * @return mixed|void
-     * @throws \RuntimeException|\Exception
      */
     public function process($actor)
     {
-        try {
-            $this->actorFileService->makeDirectory($this->nfnExportDir);
+        try
+        {
+            $this->fileService->makeDirectory($this->nfnExportDir);
 
             $this->record = $this->actorRepoService->expedition
                 ->skipCache()
-                ->with(['project.group', 'subjects'])
+                ->with(['project.group.owner', 'subjects'])
                 ->find($actor->pivot->expedition_id);
 
             $this->service->setWorkingDirectory("{$actor->id}-{$this->record->uuid}");
@@ -116,15 +113,15 @@ class NfnLegacyExport implements ActorInterface
             $fileAttributes = [
                 [
                     'destination' => $this->service->workingDir,
-                    'extension' => '.large.jpg',
-                    'width' => $this->largeWidth,
-                    'height' => $this->largeWidth,
+                    'extension'   => '.large.jpg',
+                    'width'       => $this->largeWidth,
+                    'height'      => $this->largeWidth,
                 ],
                 [
                     'destination' => $this->service->workingDir,
-                    'extension' => '.small.jpg',
-                    'width' => $this->smallWidth,
-                    'height' => $this->smallWidth,
+                    'extension'   => '.small.jpg',
+                    'width'       => $this->smallWidth,
+                    'height'      => $this->smallWidth,
                 ]
             ];
 
@@ -134,11 +131,11 @@ class NfnLegacyExport implements ActorInterface
 
             $this->buildDetails();
 
-            $tarGzFiles = $this->actorFileService->compressDirectories($this->service->workingDir, $this->nfnExportDir);
+            $tarGzFiles = $this->fileService->compressDirectories($this->service->workingDir, $this->nfnExportDir);
 
             $this->actorRepoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
 
-            $this->actorFileService->filesystem->deleteDirectory($this->service->workingDir);
+            $this->fileService->filesystem->deleteDirectory($this->service->workingDir);
 
             $this->sendReport($this->record);
 
@@ -147,18 +144,22 @@ class NfnLegacyExport implements ActorInterface
             ++$actor->pivot->state;
             $actor->pivot->save();
         }
-        catch(FileNotFoundException $e) {}
-        catch(RuntimeException $e) {}
-        catch(Exception $e)
+        catch (BiospexException $e)
         {
             $actor->pivot->queued = 0;
             $actor->pivot->error = 1;
             $actor->pivot->save();
 
-            $this->service->report->addError($e->getMessage() . ' : ' . $e->getFile() . ' : ' . $e->getLine());
-            $this->service->report->reportSimpleError();
-        }
+            $this->service->report->addError(trans('errors.nfn_legacy_export_error', [
+                'title'   => $this->record->title,
+                'id'      => $this->record->id,
+                'message' => $e->getMessage()
+            ]));
 
+            $this->service->report->reportError($this->record->project->group->owner->email);
+
+            $this->service->handler->report($e);
+        }
     }
 
     /**
@@ -178,7 +179,7 @@ class NfnLegacyExport implements ActorInterface
             $lrgFilePath = $this->service->workingDir . '/' . $subject->_id . '.large.jpg';
             $smFilePath = $this->service->workingDir . '/' . $subject->_id . '.small.jpg';
 
-            if ( ! $this->actorFileService->checkFileExists($lrgFilePath))
+            if ( ! $this->fileService->checkFileExists($lrgFilePath))
             {
                 continue;
             }
@@ -186,9 +187,9 @@ class NfnLegacyExport implements ActorInterface
             $size += filesize($lrgFilePath);
             $size += filesize($smFilePath);
 
-            $this->actorFileService->filesystem->copy($lrgFilePath, $this->splitDir . '/' . $subject->_id . '.jpg');
-            $this->actorFileService->filesystem->move($lrgFilePath, $this->splitDir . '/large/' . $subject->_id . '.large.jpg');
-            $this->actorFileService->filesystem->move($smFilePath, $this->splitDir . '/small/' . $subject->_id . '.small.jpg');
+            $this->fileService->filesystem->copy($lrgFilePath, $this->splitDir . '/' . $subject->_id . '.jpg');
+            $this->fileService->filesystem->move($lrgFilePath, $this->splitDir . '/large/' . $subject->_id . '.large.jpg');
+            $this->fileService->filesystem->move($smFilePath, $this->splitDir . '/small/' . $subject->_id . '.small.jpg');
 
             if ($size >= $limit)
             {
@@ -204,7 +205,7 @@ class NfnLegacyExport implements ActorInterface
      */
     public function buildDetails()
     {
-        $directories = $this->actorFileService->filesystem->directories($this->service->workingDir);
+        $directories = $this->fileService->filesystem->directories($this->service->workingDir);
 
         foreach ($directories as $directory)
         {
@@ -219,7 +220,7 @@ class NfnLegacyExport implements ActorInterface
             $metadata['total'] = 0;
             $metadata['images'] = [];
 
-            $files = $this->actorFileService->filesystem->files($directory);
+            $files = $this->fileService->filesystem->files($directory);
 
             $i = 0;
             foreach ($files as $file)
@@ -260,14 +261,14 @@ class NfnLegacyExport implements ActorInterface
 
                 $metadata['images'][] = $data;
 
-                $this->actorFileService->filesystem->delete($file);
+                $this->fileService->filesystem->delete($file);
 
                 $i++;
             }
 
             $metadata['total'] = $i * 2;
 
-            $this->actorFileService->filesystem->put($directory . '/details.js', json_encode($metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $this->fileService->filesystem->put($directory . '/details.js', json_encode($metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         }
 
         return $directories;
@@ -282,8 +283,8 @@ class NfnLegacyExport implements ActorInterface
     {
         $count = ++$this->count;
         $this->splitDir = $this->service->workingDir . '/' . $folder . '-' . $count;
-        $this->actorFileService->makeDirectory($this->splitDir . '/large');
-        $this->actorFileService->makeDirectory($this->splitDir . '/small');
+        $this->fileService->makeDirectory($this->splitDir . '/large');
+        $this->fileService->makeDirectory($this->splitDir . '/small');
     }
 
     /**
@@ -314,9 +315,9 @@ class NfnLegacyExport implements ActorInterface
     protected function sendReport($record)
     {
         $vars = [
-            'title' => $record->title,
-            'message' => trans('emails.expedition_export_complete_message', ['expedition' => $record->title]),
-            'groupId' => $record->project->group->id,
+            'title'          => $record->title,
+            'message'        => trans('emails.expedition_export_complete_message', ['expedition' => $record->title]),
+            'groupId'        => $record->project->group->id,
             'attachmentName' => trans('emails.missing_images_attachment_name', ['recordId' => $record->id])
         ];
 

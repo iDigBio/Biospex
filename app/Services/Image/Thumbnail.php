@@ -1,7 +1,8 @@
 <?php namespace App\Services\Image;
 
+use App\Exceptions\BiospexException;
+use App\Exceptions\ThumbnailFromUrlException;
 use GuzzleHttp\Client;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use RuntimeException;
 
 class Thumbnail extends ImageService
@@ -11,7 +12,8 @@ class Thumbnail extends ImageService
      * Return thumbnail or create if not exists.
      *
      * @param $url
-     * @return string
+     * @return string|void
+     *
      */
     public function getThumbnail($url)
     {
@@ -24,27 +26,22 @@ class Thumbnail extends ImageService
             {
                 $this->createThumbnail($url);
             }
-
-            return $this->getFile($thumbFile);
-
         }
-        catch (RuntimeException $e)
+        catch (BiospexException $e)
         {
-            $this->report->addError($e->getMessage());
-            $this->report->reportSimpleError();
+            $this->handler->report($e);
+            return $this->getFile($this->defaultImg);
         }
-        catch (FileNotFoundException $e)
-        {
-            $this->report->addError($e->getMessage());
-            $this->report->reportSimpleError();
-        }
+
+        return $this->getFile($thumbFile);
+
     }
 
     /**
      * Create thumbnail.
      *
      * @param $url
-     * @throws RuntimeException
+     * @throws ThumbnailFromUrlException
      */
     protected function createThumbnail($url)
     {
@@ -67,14 +64,20 @@ class Thumbnail extends ImageService
      *
      * @param $url
      * @return string
-     * @throws RuntimeException
+     * @throws ThumbnailFromUrlException
      */
     protected function thumbFromUrl($url)
     {
-        $client = new Client();
-        $response = $client->get($url);
+        try {
+            $client = new Client();
+            $response = $client->get($url);
 
-        return $response->getBody()->getContents();
+            return $response->getBody()->getContents();
+        }
+        catch(RuntimeException $e)
+        {
+            throw new ThumbnailFromUrlException($e->getMessage());
+        }
     }
 
     /**
@@ -82,7 +85,6 @@ class Thumbnail extends ImageService
      *
      * @param $thumbFile
      * @return string
-     * @throws FileNotFoundException
      */
     protected function getFile($thumbFile)
     {

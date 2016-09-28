@@ -5,6 +5,8 @@ namespace App\Services\Image;
 use App\Services\Report\Report;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Config\Repository as Config;
+use App\Exceptions\Handler;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class ImageService
@@ -103,13 +105,19 @@ class ImageService
     protected $thumbDir;
 
     /**
+     * @var Handler
+     */
+    public $handler;
+
+    /**
      * Image constructor.
      *
      * @param FileSystem $filesystem
      * @param Config $config
      * @param Report $report
+     * @param Handler $handler
      */
-    public function __construct(Filesystem $filesystem, Config $config, Report $report)
+    public function __construct(Filesystem $filesystem, Config $config, Report $report, Handler $handler)
     {
         $this->filesystem = $filesystem;
         $this->config = $config;
@@ -120,6 +128,7 @@ class ImageService
         $this->tnWidth = $this->config->get('config.images.thumbWidth');
         $this->tnHeight = $this->config->get('config.images.thumbHeight');
         $this->thumbDir = $this->config->get('config.images.thumbOutputDir') . '/' . $this->tnWidth . '_' . $this->tnHeight;
+        $this->handler = $handler;
     }
 
     /**
@@ -137,11 +146,16 @@ class ImageService
      * Set image source from string.
      *
      * @param $imgSource
+     * @return bool|resource
      */
     public function setSourceFromString($imgSource)
     {
-        $this->setImageInfoFromString($imgSource);
-        $this->imgSource = imagecreatefromstring($imgSource);
+        if ( ! $this->setImageInfoFromString($imgSource))
+        {
+            return false;
+        }
+
+        return $this->imgSource = imagecreatefromstring($imgSource);
     }
 
     /**
@@ -173,12 +187,18 @@ class ImageService
      * Set image info from image string.
      *
      * @param $imgSource
+     * @return bool
      */
     protected function setImageInfoFromString($imgSource)
     {
-        $size = getimagesizefromstring($imgSource);
+        if ( ! $size = getimagesizefromstring($imgSource)){
+            return false;
+        }
+
         $this->setImageInfo($size);
         $this->sourceExtension = $this->imageTypeExtension[$this->sourceMimeType];
+
+        return true;
     }
 
     /**
@@ -196,8 +216,9 @@ class ImageService
     /**
      * Generate and save image.
      *
-     * @param string $name
-     * @param array $fileAttributes [destination, extension, width, height]
+     * @param $name
+     * @param array $fileAttributes
+     * @return bool
      */
     public function generateAndSaveImage($name, array $fileAttributes)
     {
@@ -207,14 +228,28 @@ class ImageService
         {
             list($destinationWidth, $destinationHeight) = $this->setDestinationWidthHeight($attribute['width'], $attribute['height']);
 
-            $newImage = imagecreatetruecolor($destinationWidth, $destinationHeight);
+            if ( ! $newImage = imagecreatetruecolor($destinationWidth, $destinationHeight))
+            {
+                return false;
+            }
 
-            imagecopyresized($newImage, $this->imgSource, 0, 0, 0, 0, $destinationWidth, $destinationHeight, $this->sourceWidth, $this->sourceHeight);
-            imagejpeg($newImage, $attribute['destination'] . '/' . $name . $attribute['extension'], 80);
-            imagedestroy($newImage);
+            if ( ! imagecopyresized($newImage, $this->imgSource, 0, 0, 0, 0, $destinationWidth, $destinationHeight, $this->sourceWidth, $this->sourceHeight))
+            {
+                return false;
+            }
 
-            echo 'Saved image ' . $attribute['destination'] . '/' . $name . $attribute['extension'] . PHP_EOL;
+            if ( ! imagejpeg($newImage, $attribute['destination'] . '/' . $name . $attribute['extension'], 80))
+            {
+                return false;
+            }
+
+            if ( ! imagedestroy($newImage))
+            {
+                return false;
+            }
         }
+
+        return true;
     }
 
     /**

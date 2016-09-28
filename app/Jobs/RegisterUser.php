@@ -2,11 +2,11 @@
 
 namespace App\Jobs;
 
+use App\Exceptions\BiospexException;
 use Illuminate\Queue\SerializesModels;
 use App\Repositories\Contracts\User;
 use App\Repositories\Contracts\Invite;
 use App\Repositories\Contracts\Group;
-use Illuminate\Support\Facades\Log;
 
 class RegisterUser extends Job
 {
@@ -49,9 +49,8 @@ class RegisterUser extends Job
 
             return $user;
         }
-        catch(\Exception $e)
+        catch(BiospexException $e)
         {
-            Log::error($e->getMessage() . ' ' . $e->getFile() . ' ' . $e->getLine());
             return false;
         }
     }

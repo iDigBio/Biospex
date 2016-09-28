@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Exceptions\BiospexException;
 use App\Http\Controllers\Controller;
 use App\Jobs\BuildOcrBatches;
 use App\Jobs\UpdateNfnWorkflowJob;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
-use Exception;
+use App\Exceptions\Handler;
 
 class ExpeditionsController extends Controller
 {
@@ -50,6 +51,10 @@ class ExpeditionsController extends Controller
      * @var Request
      */
     protected $request;
+    /**
+     * @var Handler
+     */
+    private $handler;
 
 
     /**
@@ -59,18 +64,21 @@ class ExpeditionsController extends Controller
      * @param Project $project
      * @param Subject $subject
      * @param WorkflowManager $workflowManager
+     * @param Handler $handler
      */
     public function __construct(
         Expedition $expedition,
         Project $project,
         Subject $subject,
-        WorkflowManager $workflowManager
+        WorkflowManager $workflowManager,
+        Handler $handler
     )
     {
         $this->expedition = $expedition;
         $this->project = $project;
         $this->subject = $subject;
         $this->workflowManager = $workflowManager;
+        $this->handler = $handler;
     }
 
     /**
@@ -302,8 +310,9 @@ class ExpeditionsController extends Controller
 
             session_flash_push('success', trans('expeditions.expedition_process_success'));
         }
-        catch (Exception $e)
+        catch (BiospexException $e)
         {
+            $this->handler->report($e);
             session_flash_push('error', trans('expeditions.expedition_process_error', ['error' => $e->getMessage()]));
         }
 
@@ -414,8 +423,9 @@ class ExpeditionsController extends Controller
 
                 session_flash_push('success', trans('expeditions.expedition_deleted'));
             }
-            catch (Exception $e)
+            catch (BiospexException $e)
             {
+                $this->handler->report($e);
                 session_flash_push('error', trans('expeditions.expedition_destroy_error'));
             }
         }

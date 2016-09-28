@@ -2,30 +2,47 @@
 
 namespace App\Services\Queue;
 
+use App\Exceptions\BiospexException;
+use App\Repositories\Contracts\Expedition;
 use App\Services\Report\Report;
 use App\Services\Actor\ActorFactory;
-use Exception;
+use App\Exceptions\Handler;
 
 class ActorQueue extends QueueAbstract
 {
+
     /**
      * @var Report
      */
     protected $report;
 
     /**
-     * ActorQueue constructor.
-     * 
-     * @param Report $report
+     * @var Expedition
      */
-    public function __construct(Report $report)
+    protected $expedition;
+
+    /**
+     * @var Handler
+     */
+    protected $handler;
+
+    /**
+     * ActorQueue constructor.
+     *
+     * @param Report $report
+     * @param Expedition $expedition
+     * @param Handler $handler
+     */
+    public function __construct(Report $report, Expedition $expedition, Handler $handler)
     {
         $this->report = $report;
+        $this->expedition = $expedition;
+        $this->handler = $handler;
     }
 
     /**
      * Fire the job.
-     * 
+     *
      * @param $job
      * @param $data
      */
@@ -34,33 +51,39 @@ class ActorQueue extends QueueAbstract
         $this->job = $job;
         $actor = unserialize($data);
 
-        try {
+        try
+        {
             ActorFactory::create($actor);
-        } catch (Exception $e) {
+        }
+        catch (BiospexException $e)
+        {
             $actor->pivot->queued = 0;
             $actor->pivot->error = 1;
             $actor->pivot->save();
-            $this->createError($actor->pivot->expedition_id, $e);
+            $this->createError($actor, $e->getMessage());
+            $this->handler->report($e);
         }
 
         $this->delete();
     }
 
     /**
-     * Create and send error email
+     * Create and send error email.
      *
-     * @param $id
-     * @param $e
-     * @internal param $manager
-     * @internal param $actor
+     * @param $actor
+     * @param $message
      */
-    public function createError($id, $e)
+    public function createError($actor, $message)
     {
-        $this->report->addError(trans('emails.error_workflow_actor',
+        $record = $this->expedition->with(['project.group.owner'])->find($actor->pivot->expedition_id);
+
+        $this->report->addError(trans('errors.workflow_actor',
             [
-                'pivot_id' => $id,
-                'error' => $e->getFile() . " - " . $e->getLine() . ": " . $e->getMessage()
+                'title' => $record->title,
+                'class' => $actor->class,
+                'message' => $message
             ]));
-        $this->report->reportSimpleError();
+
+        $this->report->reportError($record->project->group->owner->email);
     }
 }

@@ -1,5 +1,6 @@
 <?php  namespace App\Services\Queue;
 
+use App\Exceptions\BiospexException;
 use App\Jobs\AmChartJob;
 use App\Jobs\ExpeditionStatJob;
 use App\Repositories\Contracts\Import;
@@ -8,7 +9,7 @@ use App\Services\Process\NfnTranscription;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\Config;
-use Exception;
+use App\Exceptions\Handler;
 
 class NfnTranscriptionQueue extends QueueAbstract
 {
@@ -49,23 +50,31 @@ class NfnTranscriptionQueue extends QueueAbstract
     protected $transcriptionImportDir;
 
     /**
+     * @var Handler
+     */
+    protected $handler;
+
+    /**
      * Constructor.
      *
      * @param Filesystem $filesystem
      * @param Import $import
      * @param TranscriptionImportReport $report
      * @param NfnTranscription $transcription
+     * @param Handler $handler
      */
     public function __construct(
         Filesystem $filesystem,
         Import $import,
         TranscriptionImportReport $report,
-        NfnTranscription $transcription
+        NfnTranscription $transcription,
+        Handler $handler
     ) {
         $this->filesystem = $filesystem;
         $this->import = $import;
         $this->report = $report;
         $this->transcription = $transcription;
+        $this->handler = $handler;
 
         $this->transcriptionImportDir = Config::get('config.transcription_import_dir');
         if (! $this->filesystem->isDirectory($this->transcriptionImportDir)) {
@@ -96,15 +105,21 @@ class NfnTranscriptionQueue extends QueueAbstract
             $this->report->complete($import->user->email, $import->project->title, $csv);
             $this->filesystem->delete($file);
             $this->import->delete($import->id);
-        } catch (Exception $e) {
+
+        } catch (BiospexException $e) {
             $import->error = 1;
             $this->import->update($import->toArray(), $import->id);
-            $this->report->addError(trans('emails.error_import_process',
-                ['id' => $import->id, 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]
-            ));
-            $this->report->error($import->id, $import->user->email, $import->project->title);
 
-            return;
+            $this->report->addError(trans('errors.import_process', [
+                'title'   => $import->project->title,
+                'id'      => $import->project->id,
+                'message' => $e->getMessage()
+            ]));
+
+            $this->report->reportError($import->user->email);
+
+            $this->handler->report($e);
+
         }
 
         $this->delete();

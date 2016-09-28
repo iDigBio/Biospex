@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Support\ServiceProvider;
-use App\Events\SendReportEvent;
+use App\Events\SendErrorEvent;
 use App\Models\Group;
 use App\Models\Permission;
 use App\Models\Profile;
@@ -59,11 +59,11 @@ class AppServiceProvider extends ServiceProvider
                 'email'   => null,
                 'subject' => trans('emails.failed_job_subject'),
                 'view'    => 'frontend.emails.report-failed-jobs',
-                'data'    => ['text' => trans('emails.failed_job_message', ['id' => $event->job->getJobId(), 'jobData' => $event->job->getRawBody()])],
+                'data'    => ['text' => trans('errors.failed_job_message', ['id' => $event->job->getJobId(), 'jobData' => $event->job->getRawBody()])],
                 'attachments' => []
             ];
 
-            Event::fire(new SendReportEvent($data));
+            Event::fire(new SendErrorEvent($data));
         });
 
         if ($this->app->environment() === 'local' && env('DB_LOG'))

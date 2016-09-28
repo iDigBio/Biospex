@@ -4,11 +4,9 @@ namespace App\Services\Actor\NfnPanoptes;
 
 ini_set('memory_limit', '1024M');
 
+use App\Exceptions\BiospexException;
 use App\Services\Actor\ActorInterface;
 use App\Services\Actor\ActorService;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Exception;
-use RuntimeException;
 
 class NfnPanoptesExport implements ActorInterface
 {
@@ -19,9 +17,9 @@ class NfnPanoptesExport implements ActorInterface
     private $service;
 
     /**
-     * @var \App\Services\Actor\ActorFileService
+     * @var \App\Services\File\fileService
      */
-    private $actorFileService;
+    private $fileService;
 
     /**
      * @var \App\Services\Actor\ActorImageService
@@ -69,7 +67,7 @@ class NfnPanoptesExport implements ActorInterface
     )
     {
         $this->service = $service;
-        $this->actorFileService = $service->actorFileService;
+        $this->fileService = $service->fileService;
         $this->actorImageService = $service->actorImageService;
         $this->actorRepoService = $service->actorRepoService;
 
@@ -83,22 +81,22 @@ class NfnPanoptesExport implements ActorInterface
      *
      * @param $actor
      * @return mixed|void
-     * @throws \Exception
+     * @throws BiospexException
      */
     public function process($actor)
     {
         try
         {
-            $this->actorFileService->makeDirectory($this->nfnExportDir);
+            $this->fileService->makeDirectory($this->nfnExportDir);
 
             $this->record = $this->actorRepoService->expedition
                 ->skipCache()
-                ->with(['project.group', 'subjects'])
+                ->with(['project.group.owner', 'subjects'])
                 ->find($actor->pivot->expedition_id);
 
             $this->service->setWorkingDirectory("{$actor->id}-{$this->record->uuid}");
             $tempDir = "{$this->service->workingDir}/{$actor->id}-{$this->record->uuid}";
-            $this->actorFileService->makeDirectory($tempDir);
+            $this->fileService->makeDirectory($tempDir);
 
             $fileAttributes = [
                 'destination' => $tempDir,
@@ -113,11 +111,11 @@ class NfnPanoptesExport implements ActorInterface
 
             if ($this->createCsv($tempDir))
             {
-                $tarGzFiles = $this->actorFileService->compressDirectories($this->service->workingDir, $this->nfnExportDir);
+                $tarGzFiles = $this->fileService->compressDirectories($this->service->workingDir, $this->nfnExportDir);
                 $this->actorRepoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
             }
 
-            $this->actorFileService->filesystem->deleteDirectory($this->service->workingDir);
+            $this->fileService->filesystem->deleteDirectory($this->service->workingDir);
 
             $this->sendReport();
 
@@ -125,20 +123,21 @@ class NfnPanoptesExport implements ActorInterface
             ++$actor->pivot->state;
             $actor->pivot->save();
         }
-        catch (FileNotFoundException $e)
-        {
-        }
-        catch (RuntimeException $e)
-        {
-        }
-        catch (Exception $e)
+        catch (BiospexException $e)
         {
             $actor->pivot->queued = 0;
             $actor->pivot->error = 1;
             $actor->pivot->save();
 
-            $this->service->report->addError($e->getMessage());
-            $this->service->report->reportSimpleError();
+            $this->service->report->addError(trans('errors.nfn_classifications_error', [
+                'title'   => $this->record->title,
+                'id'      => $this->record->id,
+                'message' => $e->getMessage()
+            ]));
+
+            $this->service->report->reportError($this->record->project->group->owner->email);
+
+            $this->service->handler->report($e);
         }
 
     }
@@ -154,7 +153,7 @@ class NfnPanoptesExport implements ActorInterface
         foreach ($subjects as $subject)
         {
             $file = $tempDir . '/' . $subject->_id . '.jpg';
-            if ($this->actorFileService->checkFileExists($file))
+            if ($this->fileService->checkFileExists($file))
             {
                 $this->csvExport[] = $this->mapNfnCsvColumns($subject);
             }

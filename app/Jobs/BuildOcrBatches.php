@@ -2,6 +2,10 @@
 
 namespace App\Jobs;
 
+use App\Exceptions\OcrBatchProcessException;
+use App\Repositories\Contracts\Project;
+use App\Services\Report\Report;
+use ErrorException;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -49,42 +53,57 @@ class BuildOcrBatches extends Job implements ShouldQueue
      *
      * @param OcrQueue $ocrQueueRepo
      * @param OcrCsv $ocrCsvRepo
+     * @param Project $projectRepo
+     * @param Report $report
+     * @throws OcrBatchProcessException
      */
-    public function handle(OcrQueue $ocrQueueRepo, OcrCsv $ocrCsvRepo)
-    {        
-        if (Config::get('config.ocr_disable'))
-        {
-            return;
+    public function handle(
+        OcrQueue $ocrQueueRepo,
+        OcrCsv $ocrCsvRepo,
+        Project $projectRepo,
+        Report $report
+    )
+    {
+        try {
+
+            if (Config::get('config.ocr_disable'))
+            {
+                return;
+            }
+
+            $this->buildOcrSubjectsArray();
+
+            $data = $this->getChunkQueueData();
+
+            if (count($data) === 0)
+            {
+                return;
+            }
+
+            $lastKey = array_search(end($data), $data, true);
+            $ocrCsv = $ocrCsvRepo->create(['subjects' => '']);
+
+            foreach ($data as $key => $chunk)
+            {
+                $batch = ($key === $lastKey) ? 1 : 0;
+                $count = count($chunk);
+
+                $ocrQueueRepo->create([
+                    'project_id'        => $this->projectId,
+                    'ocr_csv_id'        => $ocrCsv->id,
+                    'data'              => json_encode(['subjects' => $chunk]),
+                    'subject_count'     => $count,
+                    'subject_remaining' => $count,
+                    'batch'             => $batch
+                ]);
+            }
+
+            app(Dispatcher::class)->fire(new PollOcrEvent());
         }
-
-        $this->buildOcrSubjectsArray();
-     
-        $data = $this->getChunkQueueData();
-     
-        if (count($data) === 0)
+        catch(ErrorException $e)
         {
-            return;
+            throw new OcrBatchProcessException(trans('errors.ocr_batch_process', ['id' => $this->projectId]));
         }
-
-        $lastKey = array_search(end($data), $data, true);
-        $ocrCsv = $ocrCsvRepo->create(['subjects' => '']);
-
-        foreach ($data as $key => $chunk)
-        {
-            $batch = ($key === $lastKey) ? 1 : 0;
-            $count = count($chunk);
-
-            $ocrQueueRepo->create([
-                'project_id'        => $this->projectId,
-                'ocr_csv_id'        => $ocrCsv->id,
-                'data'              => json_encode(['subjects' => $chunk]),
-                'subject_count'     => $count,
-                'subject_remaining' => $count,
-                'batch'             => $batch
-            ]);
-        }
-
-        app(Dispatcher::class)->fire(new PollOcrEvent());
     }
 
     /**

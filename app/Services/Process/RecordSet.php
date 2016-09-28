@@ -1,15 +1,27 @@
 <?php namespace App\Services\Process;
 
+use App\Exceptions\BiospexException;
+use App\Exceptions\DownloadFileException;
+use App\Exceptions\RequestException;
 use App\Repositories\Contracts\Import;
+use App\Services\File\FileService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
-use Exception;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Queue;
 
 class RecordSet
 {
+
+    /**
+     * @var Import
+     */
+    protected $import;
+
+    /**
+     * @var FileService
+     */
+    private $fileService;
 
     /**
      * Data from job queue.
@@ -34,10 +46,12 @@ class RecordSet
      * Constructor.
      *
      * @param Import $import
+     * @param FileService $fileService
      */
-    public function __construct(Import $import)
+    public function __construct(Import $import, FileService $fileService)
     {
         $this->import = $import;
+        $this->fileService = $fileService;
 
         $this->tube = Config::get('config.beanstalkd.import');
         $this->recordsetUrl = Config::get('config.recordset_url');
@@ -48,18 +62,17 @@ class RecordSet
      * Process.
      *
      * @param $data
-     * @return bool|string
-     * @throws Exception
+     * @throws BiospexException
      */
     public function process($data)
     {
-        $this->checkDir();
+        $this->fileService->makeDirectory($this->importDir);
 
         $this->data = $data;
 
         $url = $this->setUrl();
 
-        return $this->send($url);
+        $this->send($url);
     }
 
     /**
@@ -83,48 +96,50 @@ class RecordSet
      * Send request to url.
      *
      * @param $url
-     * @return bool|string
+     * @throws BiospexException
      */
     public function send($url)
     {
         $client = new Client();
-        $response = $client->get($url, [
-            'headers' => ['Accept' => 'application/json']
-        ]);
+        $response = $client->get($url, ['headers' => ['Accept' => 'application/json']]);
 
-        if ($response->getStatusCode() != 200)
+        if ($response->getStatusCode() !== 200)
         {
-            return;
+            throw new RequestException(trans('errors.http_status_code', ['url' => $url, 'code' => $response->getStatusCode()]));
         }
 
-        $this->response = json_decode($response->getBody()->getContents());
+        try {
+            $this->response = json_decode($response->getBody()->getContents());
 
-        if ($this->response->complete == true && $this->response->task_status == "SUCCESS")
-        {
-            $this->download();
-            $this->pushToQueue();
+            if ($this->response->complete === true && $this->response->task_status === 'SUCCESS')
+            {
+                $this->download();
+                $this->pushToQueue();
 
-            return;
+                return;
+            }
+
+            $this->pushToQueue(true);
         }
-
-        $this->pushToQueue(true);
-
+        catch(\RuntimeException $e)
+        {
+            throw new RequestException($e->getMessage());
+        }
     }
 
 
     /**
      * Download zip file.
      *
-     * @return bool
-     * @throws Exception
+     * @throws DownloadFileException
      */
     public function download()
     {
         $fileName = $this->data['id'] . '.zip';
         $filePath = $this->importDir . '/' . $fileName;
-        if (!file_put_contents($filePath, file_get_contents($this->response->download_url)))
+        if ( ! file_put_contents($filePath, file_get_contents($this->response->download_url)))
         {
-            throw new \Exception(trans('emails.error_zip_download'));
+            throw new DownloadFileException(trans('errors.zip_download'));
         }
 
         $import = $this->importInsert($fileName);
@@ -142,32 +157,6 @@ class RecordSet
         $class = ($requeue) ? 'App\Services\Queue\RecordSetImportQueue' : 'App\Services\Queue\DarwinCoreFileImportQueue';
         $date = Carbon::now()->addMinutes(5);
         Queue::later($date, $class, $this->data, $this->tube);
-    }
-
-    /**
-     * Check if import directory exists.
-     *
-     * @throws Exception
-     */
-    protected function checkDir()
-    {
-        if (!File::isDirectory($this->importDir))
-        {
-            if (!File::makeDirectory($this->importDir, 0775, true))
-            {
-                throw new Exception(trans('emails.error_create_dir', ['directory' => $this->importDir]));
-            }
-        }
-
-        if (!File::isWritable($this->importDir))
-        {
-            if (!chmod($this->importDir, 0775))
-            {
-                throw new Exception(trans('emails.error_write_dir', ['directory' => $this->importDir]));
-            }
-        }
-
-        return;
     }
 
     /**

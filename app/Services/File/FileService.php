@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Services\Actor;
+namespace App\Services\File;
 
+use App\Exceptions\CreateDirectoryException;
+use App\Exceptions\FileUnzipException;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Config\Repository as Config;
-use RuntimeException;
+use Exception;
 
-class ActorFileService
+class FileService
 {
     /**
      * @var Filesystem
@@ -14,7 +15,7 @@ class ActorFileService
     public $filesystem;
 
     /**
-     * ActorFileService constructor.
+     * FileService constructor.
      *
      * @param Filesystem $filesystem
      */
@@ -25,18 +26,18 @@ class ActorFileService
 
     /**
      * @param $dir
-     * @throws RuntimeException
+     * @throws CreateDirectoryException
      */
     public function makeDirectory($dir)
     {
         if ( ! $this->filesystem->isDirectory($dir) && ! $this->filesystem->makeDirectory($dir, 0775, true))
         {
-            throw new RuntimeException(trans('emails.error_create_dir', ['directory' => $dir]));
+            throw new CreateDirectoryException(trans('errors.create_dir', ['directory' => $dir]));
         }
 
         if ( ! $this->filesystem->isWritable($dir) && ! chmod($dir, 0775))
         {
-            throw new RuntimeException(trans('emails.error_write_dir', ['directory' => $dir]));
+            throw new CreateDirectoryException(trans('errors.write_dir', ['directory' => $dir]));
         }
     }
 
@@ -105,6 +106,24 @@ class ActorFileService
         foreach ($directories as $directory)
         {
             $this->filesystem->deleteDirectory($directory);
+        }
+    }
+
+    /**
+     * Unzip file in directory.
+     *
+     * @param $zipFile
+     * @param $dir
+     * @throws FileUnzipException
+     */
+    public function unzip($zipFile, $dir)
+    {
+        try{
+            shell_exec("unzip $zipFile -d $dir");
+        }
+        catch(Exception $e)
+        {
+            throw new FileUnzipException($e->getMessage());
         }
     }
 }

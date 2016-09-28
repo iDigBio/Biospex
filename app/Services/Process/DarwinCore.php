@@ -9,9 +9,9 @@ ini_set('max_input_time', '0');
 set_time_limit(0);
 ignore_user_abort(true);
 
+use App\Exceptions\BiospexException;
+use App\Exceptions\FileDoesNotExist;
 use App\Services\Csv\DarwinCoreCsvImport;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
-
 
 class DarwinCore
 {
@@ -64,14 +64,22 @@ class DarwinCore
      * 
      * @param $projectId
      * @param $directory
-     * @throws FileNotFoundException
+     * @throws BiospexException
      */
     public function process($projectId, $directory)
     {
         $this->projectId = $projectId;
+        $file = $directory . '/meta.xml';
 
-        // Parse meta file, set properties, and save to database.
-        $meta = $this->processMetaFile($directory);
+        $this->checkFileExists($file);
+
+        $meta = $this->metaFile->process($file);
+
+        $this->mediaIsCore = $this->metaFile->getMediaIsCore();
+        $this->metaFields = $this->metaFile->getMetaFields();
+
+        // Set meta properties needed in handling csv file.
+        $this->csv->setCsvMetaProperties($this->mediaIsCore, $this->metaFields, $this->projectId);
 
         // Load media first to create subjects
         $this->processCsvFile($directory);
@@ -80,49 +88,46 @@ class DarwinCore
         $this->processCsvFile($directory, false);
 
         $this->metaFile->saveMetaFile($projectId, $meta);
-
     }
 
     /**
      * Check file exists.
      *
      * @param $file
-     * @throws FileNotFoundException
+     * @throws FileDoesNotExist
      */
     protected function checkFileExists($file)
     {
         if ( ! file_exists($file))
         {
-            throw new FileNotFoundException(trans('emails.error_import_file_does_not_exist', ['file' => $file]));
+            throw new FileDoesNotExist(trans('errors.import_file_missing', ['file' => $file]));
         }
     }
 
     /**
-     * Process meta file, set properties, and save to database
      *
-     * @param $directory
-     * @return string
      */
-    public function processMetaFile($directory)
+    protected function checkRequiredMetaFields()
     {
-        $this->checkFileExists($directory . '/meta.xml');
+        foreach ($this->requiredMetaFieldColumns as $key => $type)
+        {
+            if (count(array_intersect($type, $this->metaFields[$key])) === count($type))
+            {
+                continue;
+            }
+        }
 
-        $meta = $this->metaFile->process($directory . '/meta.xml');
-        $this->mediaIsCore = $this->metaFile->getMediaIsCore();
-        $this->metaFields = $this->metaFile->getMetaFields();
 
-        // Set meta properties needed in handling csv file.
-        $this->csv->setCsvMetaProperties($this->mediaIsCore, $this->metaFields, $this->projectId);
-
-        return $meta;
     }
+
+
 
     /**
      * Process a darwin core csv file
      * @param $directory
      * @param bool $loadMedia
      * @return array
-     * @throws FileNotFoundException
+     * @throws BiospexException
      */
     protected function processCsvFile($directory, $loadMedia = true)
     {

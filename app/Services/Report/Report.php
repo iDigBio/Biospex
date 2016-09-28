@@ -7,6 +7,7 @@ use App\Repositories\Contracts\Group;
 use App\Services\Mailer\BiospexMailer;
 use Illuminate\Events\Dispatcher as Event;
 use App\Events\SendReportEvent;
+use App\Events\SendErrorEvent;
 use App\Services\Csv\Csv;
 
 
@@ -85,20 +86,12 @@ class Report
     }
 
     /**
-     * Report a simple error
+     * Report an error.
      *
-     * @param null $groupId
+     * @param null $email
      */
-    public function reportSimpleError($groupId = null)
+    public function reportError($email = null)
     {
-        $email = null;
-
-        if ($groupId !== null)
-        {
-            $group = $this->group->with(['owner'])->find($groupId);
-            $email = $group->owner->email;
-        }
-
         $errorMessage = '';
         $messages = $this->messages->get('error');
         foreach ($messages as $message)
@@ -107,9 +100,9 @@ class Report
         }
         $subject = trans('emails.error');
         $data = ['errorMessage' => $errorMessage];
-        $view = 'frontend.emails.report-simple-error';
+        $view = 'frontend.emails.report-error';
 
-        $this->fireEvent($email, $subject, $view, $data);
+        $this->fireErrorEvent($email, $subject, $view, $data);
     }
 
     /**
@@ -121,7 +114,7 @@ class Report
     public function processComplete($vars, $csv = null)
     {
         $group = $this->group->with(['owner'])->find((int) $vars['groupId']);
-        $email = $group->Owner->email;
+        $email = $group->owner->email;
 
         $count = count($csv);
         $attachment = $count ? $this->createAttachment($csv, $vars['attachmentName']) : [];
@@ -132,7 +125,7 @@ class Report
         ];
         $view = 'frontend.emails.report-process-complete';
 
-        $this->fireEvent($email, $subject, $view, $data, $attachment);
+        $this->fireReportEvent($email, $subject, $view, $data, $attachment);
     }
 
     /**
@@ -168,7 +161,7 @@ class Report
      * @param $data
      * @param array $attachments
      */
-    protected function fireEvent($email, $subject, $view, $data, $attachments = [])
+    protected function fireReportEvent($email, $subject, $view, $data, array $attachments = [])
     {
         $data = [
             'email'       => $email,
@@ -179,5 +172,26 @@ class Report
         ];
 
         $this->event->fire(new SendReportEvent($data));
+    }
+
+    /**
+     * Fire send error event
+     * @param $email
+     * @param $subject
+     * @param $view
+     * @param $data
+     * @param array $attachments
+     */
+    protected function fireErrorEvent($email, $subject, $view, $data, array $attachments = [])
+    {
+        $data = [
+            'email'       => $email,
+            'subject'     => $subject,
+            'view'        => $view,
+            'data'        => $data,
+            'attachments' => $attachments
+        ];
+
+        $this->event->fire(new SendErrorEvent($data));
     }
 }

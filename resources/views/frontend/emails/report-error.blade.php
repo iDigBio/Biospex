@@ -6,7 +6,7 @@
     <p>
     <blockquote>
     @lang('emails.error_message')<br />
-    {{ $errorMessage }}
+    {!! $errorMessage !!}
     </blockquote>
     </p>
 @stop

@@ -6,9 +6,25 @@ use RuntimeException;
 
 class Xml
 {
-    private $xml = null;
-    private $xpath = null;
+
+    /**
+     * @var null
+     */
+    private $xml;
+
+    /**
+     * @var
+     */
+    private $xpath;
+
+    /**
+     * @var string
+     */
     private $encoding = 'UTF-8';
+
+    /**
+     * @var string
+     */
     private $version = '1.0';
 
     /**
@@ -25,7 +41,7 @@ class Xml
 
         $parsed = $this->xml->load($input_xml);
         if (! $parsed) {
-            throw new RuntimeException(trans('emails.error_loading_xml'));
+            throw new RuntimeException(trans('errors.loading_xml'));
         }
 
         $this->xpath = new DOMXpath($this->xml);
@@ -45,11 +61,23 @@ class Xml
      */
     public function xpathQuery($query, $get = false)
     {
-        if (! $get) {
+        if ( ! $get) {
             return $this->xpath->query($query);
         }
 
         return $this->xpath->query($query)->item(0);
+    }
+
+    /**
+     * Perform xpath evaluate on query.
+     *
+     * @param $query
+     * @param $element
+     * @return mixed
+     */
+    public function evaluate($query, $element)
+    {
+        return $this->xpath->evaluate($query, $element);
     }
 
     /**

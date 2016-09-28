@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\SendErrorEvent;
 use App\Listeners\FlushCacheEventListener;
 use App\Listeners\GroupEventListener;
+use App\Listeners\SendErrorEventListener;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Events\SendReportEvent;
@@ -35,7 +37,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         UserRegisteredEvent::class => [
             UserRegisteredEventListener::class
-        ]
+        ],
+        SendErrorEvent::class => [
+            SendErrorEventListener::class
+        ],
     ];
 
     /**

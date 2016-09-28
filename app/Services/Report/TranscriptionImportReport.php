@@ -24,24 +24,4 @@ class TranscriptionImportReport extends Report
         $this->fireEvent($email, $subject, $view, $data, $attachments);
 
     }
-
-    /**
-     * Send error during transcription import
-     *
-     * @param $id
-     * @param $email
-     * @param $title
-     */
-    public function error($id, $email, $title)
-    {
-        $subject = trans('emails.error_import');
-        $data = [
-            'importId'     => $id,
-            'projectTitle' => $title,
-            'errorMessage' => print_r($this->messages->get('error'), true)
-        ];
-        $view = 'frontend.emails.reporterror';
-
-        $this->fireEvent($email, $subject, $view, $data);
-    }
 }

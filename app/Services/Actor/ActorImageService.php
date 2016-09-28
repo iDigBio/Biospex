@@ -2,7 +2,7 @@
 
 namespace App\Services\Actor;
 
-use Exception;
+use App\Services\File\FileService;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
@@ -32,21 +32,21 @@ class ActorImageService
     public $imageService;
 
     /**
-     * @var ActorFileService
+     * @var FileService
      */
-    public $actorFileService;
+    public $fileService;
 
     /**
      * ActorImageService constructor.
      *
      * @param ImageService $imageService
-     * @param ActorFileService $actorFileService
+     * @param FileService $fileService
      */
-    public function __construct(ImageService $imageService, ActorFileService $actorFileService)
+    public function __construct(ImageService $imageService, FileService $fileService)
     {
         $this->client = new Client();
         $this->imageService = $imageService;
-        $this->actorFileService = $actorFileService;
+        $this->fileService = $fileService;
     }
 
     /**
@@ -57,8 +57,7 @@ class ActorImageService
      */
     public function setMissingImages($subject, $message = null)
     {
-        $accessURI = $message === null ? $subject->accessURI : $message;
-        $this->missingImages[] = ['subjectId' => $subject->_id, 'accessURI' => $accessURI];
+        $this->missingImages[] = ['subjectId' => $subject->_id, 'accessURI' => $subject->accessURI, 'message' => $message];
     }
 
     /**
@@ -130,46 +129,30 @@ class ActorImageService
     {
         $image = $response->getBody()->getContents();
 
-        if ( ! $this->checkStatus($image, $response, $index))
+        if ($image === '' || $response->getStatusCode() !== 200)
         {
+            $this->setMissingImages($this->subjects[$index], 'Image empty: ' . $response->getStatusCode());
+
             return;
         }
 
-        try
+        if ( ! $this->imageService->setSourceFromString($image))
         {
-            $this->imageService->setSourceFromString($image);
-            $this->imageService->generateAndSaveImage($this->subjects[$index]->_id, $attributes);
-            $this->imageService->destroySource();
+            $this->setMissingImages($this->subjects[$index], 'Could not create image from string: ' . $response->getStatusCode());
+
+            return;
         }
-        catch (Exception $e)
+
+        if ( ! $this->imageService->generateAndSaveImage($this->subjects[$index]->_id, $attributes))
         {
             $this->removeErrorFiles($index, $attributes);
             $this->setMissingImages($this->subjects[$index], 'Could not save image to destination file');
 
             return;
         }
+
+        $this->imageService->destroySource();
     }
-
-    /**
-     * Check status of image.
-     *
-     * @param $image
-     * @param $response
-     * @param $index
-     * @return bool
-     */
-    private function checkStatus($image, $response, $index)
-    {
-        if ($image === '' || $response->getStatusCode() !== 200)
-        {
-            $this->setMissingImages($this->subjects[$index], 'Image empty:' . $response->getStatusCode());
-
-            return false;
-        }
-
-        return true;
-    }
-
 
     /**
      * Check if image exists.
@@ -184,7 +167,7 @@ class ActorImageService
 
         foreach ($attributes as $attribute)
         {
-            $total -= count($this->actorFileService->filesystem->glob("{$attribute['destination']}/{$id}.{$attribute['extension']}"));
+            $total -= count($this->fileService->filesystem->glob("{$attribute['destination']}/{$id}.{$attribute['extension']}"));
         }
 
         return $total === 0;
@@ -200,7 +183,7 @@ class ActorImageService
     {
         if ($subject->accessURI === '')
         {
-            $this->setMissingImages($subject);
+            $this->setMissingImages($subject, 'Image missing accessURI');
 
             return false;
         }
@@ -219,7 +202,7 @@ class ActorImageService
         foreach ($attributes as $attribute)
         {
             $path = $attribute['destination'] . '/' . $this->subjects[$index]->_id . $attribute['extension'];
-            if ($this->actorFileService->filesystem->exists($path))
+            if ($this->fileService->filesystem->exists($path))
             {
                 @unlink($path);
             }

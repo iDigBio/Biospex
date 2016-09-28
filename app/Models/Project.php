@@ -125,6 +125,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
             $model->title = $model->title . ':' . str_random();
             $model->save();
             $model->expeditions()->delete();
+            $model->header()->delete();
+            $model->metas()->delete();
         });
 
         self::restored(function ($model)
@@ -133,6 +135,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
             $model->title = $title[0];
             $model->save();
             $model->expeditions()->restore();
+            $model->header()->restore();
+            $model->metas()->restore();
         });
     }
 

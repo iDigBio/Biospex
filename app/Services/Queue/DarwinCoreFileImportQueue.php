@@ -1,19 +1,17 @@
 <?php namespace App\Services\Queue;
 
+use App\Exceptions\BiospexException;
 use App\Jobs\BuildOcrBatches;
+use App\Services\File\FileService;
 use App\Services\Mailer\BiospexMailer;
 use App\Repositories\Contracts\Import;
 use App\Repositories\Contracts\Project;
-use App\Repositories\Contracts\User;
 use App\Services\Process\DarwinCore;
 use App\Services\Process\Xml;
 use App\Services\Report\DarwinCoreImportReport;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\Config;
-use Exception;
-use RuntimeException;
+use App\Exceptions\Handler;
 
 class DarwinCoreFileImportQueue extends QueueAbstract
 {
@@ -21,10 +19,6 @@ class DarwinCoreFileImportQueue extends QueueAbstract
     use DispatchesJobs;
 
     public $subjectImportDir;
-    /**
-     * @var Filesystem
-     */
-    protected $filesystem;
 
     /**
      * @var Import
@@ -69,47 +63,56 @@ class DarwinCoreFileImportQueue extends QueueAbstract
     protected $scratchFileDir;
 
     /**
-     * @var User
+     * @var
      */
-    protected $user;
+    protected $record;
+
+    /**
+     * @var FileService
+     */
+    protected $fileService;
+    /**
+     * @var Handler
+     */
+    private $handler;
 
     /**
      * Constructor
      *
-     * @param Filesystem $filesystem
      * @param Import $import
      * @param Project $project
-     * @param User $user
      * @param DarwinCoreImportReport $report
      * @param DarwinCore $process
      * @param Xml $xml
      * @param BiospexMailer $mailer
+     * @param FileService $fileService
+     * @param Handler $handler
      */
     public function __construct(
-        Filesystem $filesystem,
         Import $import,
         Project $project,
-        User $user,
         DarwinCoreImportReport $report,
         DarwinCore $process,
         Xml $xml,
-        BiospexMailer $mailer
+        BiospexMailer $mailer,
+        FileService $fileService,
+        Handler $handler
     )
     {
-        $this->filesystem = $filesystem;
         $this->import = $import;
         $this->project = $project;
-        $this->user = $user;
         $this->report = $report;
         $this->process = $process;
         $this->xml = $xml;
         $this->mailer = $mailer;
+        $this->fileService = $fileService;
+        $this->handler = $handler;
 
         $this->scratchDir = Config::get('config.scratch_dir');
         $this->subjectImportDir = Config::get('config.subject_import_dir');
-        if ( ! $this->filesystem->isDirectory($this->subjectImportDir))
+        if ( ! $this->fileService->filesystem->isDirectory($this->subjectImportDir))
         {
-            $this->filesystem->makeDirectory($this->subjectImportDir);
+            $this->fileService->filesystem->makeDirectory($this->subjectImportDir);
         }
     }
 
@@ -118,8 +121,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract
      *
      * @param $job
      * @param $data
-     * @return mixed
-     * @throws \Exception
+     * @throws BiospexException
      */
     public function fire($job, $data)
     {
@@ -127,8 +129,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract
         $this->data = $data;
 
         $import = $this->import->skipCache()->find($this->data['id']);
-        $user = $this->user->skipCache()->find($import->user_id);
-        $project = $this->project->skipCache()->with(['workflow.actors'])->find($import->project_id);
+        $this->record = $this->project->skipCache()->with(['group.owner', 'workflow.actors'])->find($import->project_id);
 
         $fileName = pathinfo($this->subjectImportDir . '/' . $import->file, PATHINFO_FILENAME);
         $this->scratchFileDir = $this->scratchDir . '/' . $import->id . '-' . md5($fileName);
@@ -136,74 +137,44 @@ class DarwinCoreFileImportQueue extends QueueAbstract
 
         try
         {
-            $this->makeTmp();
-            $this->unzip($zipFile);
+            $this->fileService->makeDirectory($this->scratchFileDir);
+            $this->fileService->unzip($zipFile, $this->scratchFileDir);
 
             $this->process->process($import->project_id, $this->scratchFileDir);
 
             $duplicates = $this->process->getDuplicates();
             $rejects = $this->process->getRejectedMedia();
 
-            $this->report->complete($user->email, $project->title, $duplicates, $rejects);
+            $this->report->complete($this->record->group->owner->email, $this->record->title, $duplicates, $rejects);
 
-            if ($project->workflow->actors->contains('title', 'OCR') && $this->process->getSubjectCount() > 0)
+            if ($this->record->workflow->actors->contains('title', 'OCR') && $this->process->getSubjectCount() > 0)
             {
-                $this->dispatch((new BuildOcrBatches($project->id))->onQueue(Config::get('config.beanstalkd.ocr')));
+                $this->dispatch((new BuildOcrBatches($this->record->id))->onQueue(Config::get('config.beanstalkd.ocr')));
             }
 
-            $this->filesystem->deleteDirectory($this->scratchFileDir);
-            $this->filesystem->delete($zipFile);
+            $this->fileService->filesystem->deleteDirectory($this->scratchFileDir);
+            $this->fileService->filesystem->delete($zipFile);
             $this->import->delete($import->id);
 
+            $this->delete();
         }
-        catch (FileNotFoundException $e) {}
-        catch (RuntimeException $e) {}
-        catch (Exception $e)
+        catch (BiospexException $e)
         {
             $import->error = 1;
             $this->import->update($import->toArray(), $import->id);
-            $this->report->addError(trans('emails.error_import_process',
-                ['id' => $import->id, 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]
-            ));
-            $this->report->error($import->id, $user->email, $project->title);
+            $this->fileService->filesystem->deleteDirectory($this->scratchFileDir);
+
+            $this->report->addError(trans('errors.import_process', [
+                'title'   => $this->record->title,
+                'id'      => $this->record->id,
+                'message' => $e->getMessage()
+            ]));
+
+            $this->report->reportError($this->record->group->owner->email);
+
+            $this->handler->report($e);
+
+            $this->delete();
         }
-
-        $this->delete();
-    }
-
-    /**
-     * Create tmp data directory
-     *
-     * @throws \Exception
-     */
-    protected function makeTmp()
-    {
-        if ( ! $this->filesystem->isDirectory($this->scratchFileDir))
-        {
-            if ( ! $this->filesystem->makeDirectory($this->scratchFileDir, 0777, true))
-            {
-                throw new Exception(trans('emails.error_create_dir', ['directory' => $this->scratchFileDir]));
-            }
-        }
-
-        if ( ! $this->filesystem->isWritable($this->scratchFileDir))
-        {
-            if ( ! chmod($this->scratchFileDir, 0777))
-            {
-                throw new Exception(trans('emails.error_write_dir', ['directory' => $this->scratchFileDir]));
-            }
-        }
-    }
-
-    /**
-     * Extract files from zip
-     * ZipArchive causes MAC uploaded files to extract with two folders.
-     *
-     * @param $zipFile
-     * @throws Exception
-     */
-    public function unzip($zipFile)
-    {
-        shell_exec("unzip $zipFile -d $this->scratchFileDir");
     }
 }

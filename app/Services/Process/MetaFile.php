@@ -1,30 +1,101 @@
-<?php 
+<?php
 
 namespace App\Services\Process;
 
-use App\Repositories\Contracts\Meta;
-use App\Services\Report\Report;
+use App\Exceptions\BiospexException;
+use App\Exceptions\ExtensionMissingException;
+use App\Exceptions\MissingCsvDelimiter;
+use App\Exceptions\MissingNodeException;
+use App\Exceptions\RowTypeMismatchException;
+use App\Exceptions\XmlLoadException;
 use RuntimeException;
 use Illuminate\Support\Facades\Config;
+use App\Repositories\Contracts\Meta;
+use App\Services\Report\Report;
+
 
 class MetaFile
 {
 
+    /**
+     * @var Xml
+     */
     protected $xml;
+
+    /**
+     * @var Report
+     */
     protected $report;
-    protected $core = null;
-    protected $extension = null;
-    protected $metaFileRowTypes;
+
+    /**
+     * @var null
+     */
+    protected $core;
+
+    /**
+     * @var null
+     */
+    protected $extension;
+
+    /**
+     * @var array $dwcRequiredRowTypes
+     */
+    protected $dwcRequiredRowTypes;
+
+    /**
+     * @var
+     */
     protected $mediaIsCore;
+
+    /**
+     * @var
+     */
     protected $coreFile;
+
+    /**
+     * @var
+     */
     protected $extensionFile;
+
+    /**
+     * @var
+     */
     protected $coreDelimiter;
+
+    /**
+     * @var
+     */
     protected $coreEnclosure;
+
+    /**
+     * @var
+     */
     protected $extDelimiter;
+
+    /**
+     * @var
+     */
     protected $extEnclosure;
+
+    /**
+     * @var
+     */
     protected $metaFields;
+
+    /**
+     * @var Meta
+     */
     protected $meta;
+
+    /**
+     * @var
+     */
     protected $file;
+
+    /**
+     * @var array $dwcRequiredFields
+     */
+    protected $dwcRequiredFields;
 
     /**
      * Constructor
@@ -37,8 +108,10 @@ class MetaFile
     {
         $this->xml = $xml;
         $this->report = $report;
-        $this->metaFileRowTypes = Config::get('config.metaFileRowTypes');
         $this->meta = $meta;
+
+        $this->dwcRequiredRowTypes = Config::get('config.dwcRequiredRowTypes');
+        $this->dwcRequiredFields = Config::get('config.dwcRequiredFields');
     }
 
     /**
@@ -46,19 +119,25 @@ class MetaFile
      *
      * @param $file
      * @return string
-     * @throws Exception
+     * @throws BiospexException
      */
     public function process($file)
     {
         $this->file = $file;
 
-        $xml = $this->xml->load($file);
+        try
+        {
+            $xml = $this->xml->load($file);
+        }
+        catch (RuntimeException $e)
+        {
+            throw new XmlLoadException($e->getMessage());
+        }
 
-        // New
         $this->loadCoreNode();
+        $this->setMediaIsCore();
         $this->loadExtensionNode();
         $this->checkExtensionRowType();
-        $this->setMediaIsCore();
         $this->setCoreFile();
         $this->setExtensionFile();
         $this->setCoreCsvSettings();
@@ -94,50 +173,103 @@ class MetaFile
 
     /**
      * Load extension node from meta file.
-     * TODO Loads extension using file location from config. Need more robust method.
+     *
+     * @throws ExtensionMissingException
      */
     public function loadExtensionNode()
     {
-        foreach ($this->metaFileRowTypes as $rowType => $fileNames)
-        {
-            foreach ($fileNames as $fileName)
-            {
-                if ($this->findExtensionFile($fileName))
-                {
-                    return;
-                }
-            }
-        }
+        $extensions = $this->xml->xpathQuery('//ns:archive/ns:extension');
 
-        $this->report->addError(trans('emails.error_extension_file', ['file' => $this->file]));
-        $this->report->reportSimpleError();
-
-    }
-
-    protected function findExtensionFile($fileName)
-    {
-        $query = "//ns:archive/ns:extension[contains(ns:files/ns:location, '" . $fileName . ".')]";
-        $this->extension = $this->xml->xpathQuery($query, true);
-
-        return empty($this->extension) ? false : true;
-    }
-
-    /**
-     * Check row type against file given and send warning if mismatch occurs
-     */
-    private function checkExtensionRowType()
-    {
-        $rowType = strtolower($this->extension->attributes->getNamedItem('rowType')->nodeValue);
-        if (isset($this->metaFileRowTypes[$rowType]))
+        if ($this->loopExtensions($extensions))
         {
             return;
         }
 
-        $this->report->addError(trans('emails.error_rowtype_mismatch',
+        throw new ExtensionMissingException(trans('errors.missing_meta_extension', ['file' => $this->file]));
+    }
+
+    /**
+     * Loop through extensions found using xpath query.
+     *
+     * @param array $extensions
+     * @return bool
+     */
+    protected function loopExtensions($extensions)
+    {
+        foreach ($extensions as $extension)
+        {
+            $matches = $this->loopExtension($extension);
+
+            if ($matches >= count($this->dwcRequiredFields['extension']))
+            {
+                $this->extension = $extension;
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Loop through extension.
+     *
+     * @param $extension
+     * @return int
+     */
+    protected function loopExtension($extension)
+    {
+        $matches = 0;
+        foreach ($this->dwcRequiredFields['extension'] as $field => $terms)
+        {
+            if (count($terms) === 0 && count($extension->getElementsByTagName($field)) > 0)
+            {
+                $matches++;
+
+                continue;
+            }
+
+            $this->checkExtensionTerms($extension, $terms, $matches);
+        }
+
+        return $matches;
+    }
+
+    /**
+     * Check terms in extension node.
+     *
+     * @param $extension
+     * @param $terms
+     * @param $matches
+     */
+    protected function checkExtensionTerms($extension, $terms, &$matches)
+    {
+        foreach ($terms as $value)
+        {
+            if ((int) $this->xml->evaluate('count(ns:field[@term=\'' . $value . '\'])', $extension))
+            {
+                $matches++;
+
+                break;
+            }
+        }
+    }
+
+    /**
+     * Check row type against file given and send warning if mismatch occurs
+     * @throws RowTypeMismatchException
+     */
+    private function checkExtensionRowType()
+    {
+        $rowType = strtolower($this->extension->attributes->getNamedItem('rowType')->nodeValue);
+        if (in_array($rowType, $this->dwcRequiredRowTypes, true))
+        {
+            return;
+        }
+
+        throw new RowTypeMismatchException(trans('errors.rowtype_mismatch',
             ['file' => $this->file, 'row_type' => $rowType, 'type_file' => $this->extension->nodeValue]
         ));
-        $this->report->reportSimpleError();
-
     }
 
     /**
@@ -146,36 +278,41 @@ class MetaFile
     private function setMediaIsCore()
     {
         $rowType = $this->core->attributes->getNamedItem('rowType')->nodeValue;
-        $this->mediaIsCore = preg_match('/occurrence/i', $rowType) ? false : true;
+        $this->mediaIsCore = false === stripos($rowType, 'occurrence');
 
     }
 
     /**
      * Set core file.
      *
-     * @throws RuntimeException
+     * @throws MissingNodeException
      */
     private function setCoreFile()
     {
         $this->coreFile = $this->core->nodeValue;
-        if (empty($this->coreFile))
+        if ($this->coreFile === '')
         {
-            throw new RuntimeException(trans('emails.error_core_file_missing'));
+            throw new MissingNodeException(trans('errors.core_node_missing'));
         }
     }
 
     /**
      * Set extension file.
+     * @throws MissingNodeException
      */
     private function setExtensionFile()
     {
         $this->extensionFile = $this->extension->nodeValue;
+        if ($this->extensionFile === '')
+        {
+            throw new MissingNodeException(trans('errors.extension_node_missing'));
+        }
     }
 
     /**
      * Set csv settings for core file.
      *
-     * @throws RuntimeException
+     * @throws MissingCsvDelimiter
      */
     private function setCoreCsvSettings()
     {
@@ -183,16 +320,16 @@ class MetaFile
         $this->coreDelimiter = ($delimiter === "\\t") ? "\t" : $delimiter;
         $this->coreEnclosure = $this->core->attributes->getNamedItem('fieldsEnclosedBy')->nodeValue;
 
-        if (empty($this->coreDelimiter))
+        if ($this->coreDelimiter === '')
         {
-            throw new RuntimeException(trans('emails.error_csv_core_delimiter'));
+            throw new MissingCsvDelimiter(trans('errors.csv_core_delimiter'));
         }
     }
 
     /**
      * Set csv settings for extension file.
      *
-     * @throws RuntimeException
+     * @throws MissingCsvDelimiter
      */
     private function setExtensionCsvSettings()
     {
@@ -200,9 +337,9 @@ class MetaFile
         $this->extDelimiter = ($delimiter === "\\t") ? "\t" : $delimiter;
         $this->extEnclosure = $this->extension->attributes->getNamedItem('fieldsEnclosedBy')->nodeValue;
 
-        if (empty($this->extDelimiter))
+        if ($this->extDelimiter === '')
         {
-            throw new RuntimeException(trans('emails.error_csv_ext_delimiter'));
+            throw new MissingCsvDelimiter(trans('errors.csv_ext_delimiter'));
         }
     }
 
@@ -213,7 +350,7 @@ class MetaFile
      */
     private function setMetaFields($type)
     {
-        foreach ($this->$type->childNodes as $child)
+        foreach ($this->{$type}->childNodes as $child)
         {
             if ($child->tagName === 'files')
             {

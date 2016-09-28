@@ -2,6 +2,10 @@
 
 namespace App\Services\Csv;
 
+use App\Exceptions\BiospexException;
+use App\Exceptions\CsvHeaderCountException;
+use App\Exceptions\CsvHeaderNameException;
+use App\Exceptions\MissingMetaIdentifier;
 use App\Repositories\Contracts\Header;
 use App\Repositories\Contracts\Property;
 use App\Repositories\Contracts\Subject;
@@ -87,7 +91,7 @@ class DarwinCoreCsvImport {
     public $factory;
 
     /**
-     * @var mixed
+     * @var array
      */
     public $identifiers;
     
@@ -120,7 +124,7 @@ class DarwinCoreCsvImport {
         Csv $csv
     )
     {
-        $this->identifiers = $config->get('config.identifiers');
+        $this->identifiers = $config->get('config.dwcRequiredFields.extension.identifier');
         $this->property = $property;
         $this->subject = $subject;
         $this->config = $config;
@@ -151,13 +155,13 @@ class DarwinCoreCsvImport {
      * @param $enclosure
      * @param $type
      * @param $loadMedia
+     * @throws BiospexException
      */
     public function loadCsvFile($file, $delimiter, $enclosure, $type, $loadMedia)
     {
         $this->csv->readerCreateFromPath($file, $delimiter, $enclosure);
 
         $header = $this->processCsvHeader($this->csv->getHeaderRow(), $type);
-        $this->saveHeaderArray($header, $loadMedia);
 
         $rows = $this->csv->fetch();
         foreach ($rows as $row)
@@ -168,6 +172,8 @@ class DarwinCoreCsvImport {
             }
             $this->processRow($header, $row, $type, $loadMedia);
         }
+
+        $this->saveHeaderArray($header, $loadMedia);
     }
 
     /**
@@ -177,8 +183,8 @@ class DarwinCoreCsvImport {
      * @param $row
      * @param $type
      * @param $loadMedia
+     * @throws BiospexException
      * @return bool
-     * @throws \Exception
      */
     public function processRow($header, $row, $type, $loadMedia)
     {
@@ -206,6 +212,7 @@ class DarwinCoreCsvImport {
      * @param $header
      * @param $type
      * @return array
+     * @throws BiospexException
      */
     public function processCsvHeader($header, $type)
     {
@@ -221,13 +228,13 @@ class DarwinCoreCsvImport {
      *
      * @param $header
      * @param $row
-     * @throws \Exception
+     * @throws CsvHeaderCountException
      */
     public function testHeaderRowCount($header, $row)
     {
-        if (count($header) != count($row))
+        if (count($header) !== count($row))
         {
-            throw new \Exception(trans('emails.error_csv_row_count', [
+            throw new CsvHeaderCountException(trans('errors.csv_row_count', [
                 'headers' => count($header),
                 'rows'    => count($row)
             ]));
@@ -252,8 +259,8 @@ class DarwinCoreCsvImport {
      *
      * @param $row
      * @param $type
+     * @throws BiospexException
      * @return array
-     * @throws \Exception
      */
     public function buildHeaderUsingShortNames($row, $type)
     {
@@ -274,13 +281,13 @@ class DarwinCoreCsvImport {
      * @param $qualified
      * @param $header
      * @return mixed
-     * @throws \Exception
+     * @throws CsvHeaderNameException
      */
     public function createShortNameForHeader($row, $key, $qualified, $header)
     {
         if ( ! isset($row[$key]))
         {
-            throw new \Exception(trans('emails.error_csv_build_header', ['key' => $key, 'qualified' => $qualified]));
+            throw new CsvHeaderNameException(trans('errors.csv_build_header', ['key' => $key, 'qualified' => $qualified]));
         }
 
         $short = $this->checkProperty($qualified, $row[$key]);
@@ -380,6 +387,7 @@ class DarwinCoreCsvImport {
      *
      * @param $header
      * @param $type
+     * @throws MissingMetaIdentifier
      */
     public function setIdentifierColumn($header, $type)
     {
@@ -388,14 +396,19 @@ class DarwinCoreCsvImport {
             return;
         }
 
-        $result = array_values(array_intersect($this->identifiers, $header));
-
-        if ( ! $result)
+        $key = null;
+        foreach ($this->identifiers as $identifier)
         {
-            return;
+            $key = array_search($identifier, $this->metaFields[$type], true);
+            if ( null !== $key)
+            {
+                $this->identifierColumn = $header[$key];
+
+                return;
+            }
         }
 
-        $this->identifierColumn = $result[0];
+        throw new MissingMetaIdentifier(trans('errors.missing_identifier', ['identifiers' => implode(',', $this->identifiers)]));
 
     }
 
