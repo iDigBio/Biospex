@@ -65,16 +65,6 @@ return [
         ]
     ],
 
-    /**
-     * Possible identifiers in subject uploads.
-     */
-    'identifiers' => [
-        'http://purl.org/dc/terms/identifier',
-        'http://rs.tdwg.org/ac/terms/providerManagedID',
-        'http://portal.idigbio.org/terms/uuid',
-        'http://portal.idigbio.org/terms/recordId',
-    ],
-
     /* Added Tubes */
     'beanstalkd'       => [
         'default'  => env('QUEUE_DEFAULT_TUBE'),
