@@ -82,7 +82,7 @@ class OcrRequest
         }
         catch (\RuntimeException $e)
         {
-            throw new RequestException($e->getMessage());
+            throw new RequestException('UUID: ' . $uuid . ' <br /><br />' . $e->getMessage());
         }
     }
 
