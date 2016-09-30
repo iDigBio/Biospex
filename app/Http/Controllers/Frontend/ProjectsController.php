@@ -177,7 +177,7 @@ class ProjectsController extends Controller
         }
 
         $workflowCheck = $this->service->checkWorkflow($project->expeditions);
-        $common = $this->service->setCommonVariables($user);
+        $common = $this->service->setCommonVariables($this->request->user());
 
         $variables = array_merge($common, ['project' => $project, 'workflowCheck' => $workflowCheck]);
 
