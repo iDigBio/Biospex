@@ -127,11 +127,6 @@ class OcrProcessCommand extends Command
      */
     private function processRecord($record)
     {
-        if ($record === null)
-        {
-            return;
-        }
-
         if ( ! $record->status)
         {
             $this->ocrRequest->sendOcrFile($record);
