@@ -24,6 +24,16 @@ class PollExport
     private $dispatcher;
 
     /**
+     * @var
+     */
+    private $expeditionTitle;
+
+    /**
+     * @var
+     */
+    private $groupUuid;
+
+    /**
      * PollExport constructor.
      * @param Dispatcher $dispatcher
      */
@@ -32,9 +42,14 @@ class PollExport
         $this->dispatcher = $dispatcher;
     }
 
-    public function setProjectId()
+    public function setGroupUuid($id)
     {
+        $this->groupUuid = $id;
+    }
 
+    public function setExpeditionTitle($title)
+    {
+        $this->expeditionTitle = $title;
     }
 
     public function setTotal($total)
@@ -45,26 +60,50 @@ class PollExport
     public function updateCount()
     {
         $this->count++;
-    }
 
-    public function sendCountMessage($groupId, $projectTitle)
-    {
         if ($this->count % 10 === 0) {
             $data = [
-                'groupId' => $groupId,
-                'projectTitle' => $projectTitle
+                'groupUuid' => $this->groupUuid,
+                'expeditionTitle' => $this->expeditionTitle,
+                'message' => trans('expeditions.poll_export_count', [
+                    ':count' => $this->count, ':total' => $this->total
+                ])
             ];
-            $this->sendMessage();
+            $this->sendMessage($data);
         }
     }
 
-    public function sentCsvMessage()
+    public function sendCsvMessage()
     {
-
+        $data = [
+            'groupUuid' => $this->groupUuid,
+            'expeditionTitle' => $this->expeditionTitle,
+            'message' => trans('expeditions.poll_export_csv')
+        ];
+        $this->sendMessage($data);
     }
 
+    /**
+     * Clear any messages for poll event.
+     */
     public function clearMessage()
     {
-        $this->dispatcher->fire(new PollExportEvent());
+        $data = [
+            'groupUuid' => $this->groupUuid,
+            'expeditionTitle' => $this->expeditionTitle,
+            'message' => ''
+        ];
+        $this->sendMessage($data);
     }
+
+    /**
+     * Fire export polling event.
+     *
+     * @param null $data
+     */
+    private function sendMessage($data = null)
+    {
+        $this->dispatcher->fire(new PollExportEvent($data));
+    }
+
 }

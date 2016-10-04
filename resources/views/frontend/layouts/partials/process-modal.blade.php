@@ -55,4 +55,31 @@
         $("#processHtml").html(processHtml.length > 0 ? processHtml : html);
     });
 
+    socket.on("{!! config('config.poll_export_channel') !!}:app.polling", function (message) {
+        var html = '{!! trans('pages.no_processes') !!}';
+        var uuids = {!! json_encode($uuids) !!};
+
+        if (jQuery.isEmptyObject(message)) {
+            $("#exportHtml").text(html);
+
+            return;
+        }
+
+        var exportHtml = '';
+        var data = message.data;
+
+        $.each(data, function (index) {
+            if ($.inArray(data[index].groupUuid, uuids) == -1) {
+                return true;
+            }
+            exportHtml += '<div class="processes"><span class="title">';
+            exportHtml += data[index].expeditionTitle;
+            exportHtml += '</span><br />';
+            exportHtml += data[index].message;
+            exportHtml += '</div>';
+        });
+
+        $("#exportHtml").html(exportHtml.length > 0 ? exportHtml : html);
+    });
+
 </script>

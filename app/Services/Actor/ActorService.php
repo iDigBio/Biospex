@@ -3,6 +3,7 @@
 namespace App\Services\Actor;
 
 use App\Exceptions\CreateDirectoryException;
+use App\Services\Poll\PollExport;
 use Illuminate\Config\Repository as Config;
 use App\Services\Report\Report;
 use App\Exceptions\Handler;
@@ -45,6 +46,11 @@ class ActorService
     public $workingDir;
 
     /**
+     * @var PollExport
+     */
+    public $pollExport;
+
+    /**
      * @var Handler
      */
     public $handler;
@@ -57,6 +63,7 @@ class ActorService
      * @param ActorApiService $actorApiService
      * @param ActorImageService $actorImageService
      * @param ActorRepositoryService $actorRepoService
+     * @param PollExport $pollExport
      * @param Handler $handler
      */
     public function __construct(
@@ -65,6 +72,7 @@ class ActorService
         ActorApiService $actorApiService,
         ActorImageService $actorImageService,
         ActorRepositoryService $actorRepoService,
+        PollExport $pollExport,
         Handler $handler
     )
     {
@@ -76,6 +84,7 @@ class ActorService
         $this->actorImageService = $actorImageService;
         $this->actorRepoService = $actorRepoService;
         $this->handler = $handler;
+        $this->pollExport = $pollExport;
 
         $this->scratchDir = $config->get('config.scratch_dir');
     }

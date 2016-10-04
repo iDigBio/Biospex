@@ -38,45 +38,16 @@ class ActorImageService
     public $fileService;
 
     /**
-     * @var PollExport
-     */
-    private $pollExport;
-
-    /**
-     * @var
-     */
-    private $groupId;
-
-    /**
-     * @var
-     */
-    private $expeditionTitle;
-
-    /**
      * ActorImageService constructor.
      *
      * @param ImageService $imageService
      * @param FileService $fileService
-     * @param PollExport $pollExport
      */
-    public function __construct(ImageService $imageService, FileService $fileService, PollExport $pollExport)
+    public function __construct(ImageService $imageService, FileService $fileService)
     {
         $this->client = new Client();
         $this->imageService = $imageService;
         $this->fileService = $fileService;
-        $this->pollExport = $pollExport;
-    }
-
-    /**
-     * Set project and group id for export polling.
-     *
-     * @param $groupId
-     * @param $expeditionTitle
-     */
-    public function setProjectGroupIds($groupId, $expeditionTitle)
-    {
-        $this->groupId = $groupId;
-        $this->expeditionTitle = $expeditionTitle;
     }
 
     /**
@@ -105,11 +76,11 @@ class ActorImageService
      *
      * @param array $subjects
      * @param array $fileAttributes
+     * @param PollExport $pollExport
      */
-    public function getImages($subjects, $fileAttributes)
+    public function getImages($subjects, $fileAttributes, PollExport $pollExport)
     {
         $this->subjects = $subjects;
-        $this->pollExport->setTotal(count($subjects));
 
         $attributes = array_key_exists(0, $fileAttributes) ? $fileAttributes : [$fileAttributes];
 
@@ -133,9 +104,12 @@ class ActorImageService
 
         $pool = new Pool($this->client, $requests($subjects), [
             'concurrency' => 10,
-            'fulfilled'   => function ($response, $index) use ($attributes)
+            'fulfilled'   => function ($response, $index) use ($attributes, $pollExport)
             {
-                $this->saveImage($response, $index, $attributes);
+                if ($this->saveImage($response, $index, $attributes))
+                {
+                    $pollExport->updateCount();
+                }
             },
             'rejected'    => function ($reason, $index)
             {
@@ -155,6 +129,7 @@ class ActorImageService
      * @param $response
      * @param $index
      * @param $attributes
+     * @return bool
      */
     private function saveImage($response, $index, $attributes)
     {
@@ -164,14 +139,14 @@ class ActorImageService
         {
             $this->setMissingImages($this->subjects[$index], 'Image empty: ' . $response->getStatusCode());
 
-            return;
+            return false;
         }
 
         if ( ! $this->imageService->setSourceFromString($image))
         {
             $this->setMissingImages($this->subjects[$index], 'Could not create image from string: ' . $response->getStatusCode());
 
-            return;
+            return false;
         }
 
         if ( ! $this->imageService->generateAndSaveImage($this->subjects[$index]->_id, $attributes))
@@ -179,13 +154,12 @@ class ActorImageService
             $this->removeErrorFiles($index, $attributes);
             $this->setMissingImages($this->subjects[$index], 'Could not save image to destination file');
 
-            return;
+            return false;
         }
 
         $this->imageService->destroySource();
 
-        $this->pollExport->updateCount();
-        $this->pollExport->sendCountMessage();
+        return true;
     }
 
     /**
