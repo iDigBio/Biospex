@@ -68,7 +68,7 @@ class OcrRequest
      * Request file from ocr server
      *
      * @param $uuid
-     * @return string
+     * @return mixed|void
      * @throws RequestException
      */
     public function requestOcrFile($uuid)
@@ -82,7 +82,7 @@ class OcrRequest
         }
         catch (\RuntimeException $e)
         {
-            throw new RequestException('UUID: ' . $uuid . ' <br /><br />' . $e->getMessage());
+            return '';
         }
     }
 
