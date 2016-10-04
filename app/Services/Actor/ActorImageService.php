@@ -3,6 +3,7 @@
 namespace App\Services\Actor;
 
 use App\Services\File\FileService;
+use App\Services\Poll\PollExport;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
@@ -37,16 +38,45 @@ class ActorImageService
     public $fileService;
 
     /**
+     * @var PollExport
+     */
+    private $pollExport;
+
+    /**
+     * @var
+     */
+    private $groupId;
+
+    /**
+     * @var
+     */
+    private $expeditionTitle;
+
+    /**
      * ActorImageService constructor.
      *
      * @param ImageService $imageService
      * @param FileService $fileService
+     * @param PollExport $pollExport
      */
-    public function __construct(ImageService $imageService, FileService $fileService)
+    public function __construct(ImageService $imageService, FileService $fileService, PollExport $pollExport)
     {
         $this->client = new Client();
         $this->imageService = $imageService;
         $this->fileService = $fileService;
+        $this->pollExport = $pollExport;
+    }
+
+    /**
+     * Set project and group id for export polling.
+     *
+     * @param $groupId
+     * @param $expeditionTitle
+     */
+    public function setProjectGroupIds($groupId, $expeditionTitle)
+    {
+        $this->groupId = $groupId;
+        $this->expeditionTitle = $expeditionTitle;
     }
 
     /**
@@ -79,6 +109,7 @@ class ActorImageService
     public function getImages($subjects, $fileAttributes)
     {
         $this->subjects = $subjects;
+        $this->pollExport->setTotal(count($subjects));
 
         $attributes = array_key_exists(0, $fileAttributes) ? $fileAttributes : [$fileAttributes];
 
@@ -152,6 +183,9 @@ class ActorImageService
         }
 
         $this->imageService->destroySource();
+
+        $this->pollExport->updateCount();
+        $this->pollExport->sendCountMessage();
     }
 
     /**

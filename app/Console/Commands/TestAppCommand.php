@@ -33,7 +33,7 @@ class TestAppCommand extends Command
     /**
      * TestAppCommand constructor.
      */
-    public function __construct(DarwinCore $darwinCore)
+    public function __construct()
     {
         parent::__construct();
         $this->darwinCore = $darwinCore;
@@ -42,12 +42,6 @@ class TestAppCommand extends Command
     public function fire()
     {
 
-        //$file = storage_path('austin.xml');
-        //$file = storage_path('idigbio.xml');
-        //$file = storage_path('sedges.xml');
-        $file = storage_path('scratch/34-04bbd7e9a2820392bc0352148fe02dc0');
-
-        $this->darwinCore->process(21, $file);
     }
 
 }

@@ -40,7 +40,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         SendErrorEvent::class => [
             SendErrorEventListener::class
-        ],
+        ]
     ];
 
     /**

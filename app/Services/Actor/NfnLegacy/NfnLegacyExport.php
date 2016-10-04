@@ -125,6 +125,8 @@ class NfnLegacyExport implements ActorInterface
                 ]
             ];
 
+            $this->actorImageService->setProjectGroupIds($this->record->project->group->id, $this->record->title);
+
             $this->actorImageService->getImages($this->record->subjects, $fileAttributes);
 
             $this->splitDirectories($this->record->subjects, "{$actor->id}-{$this->record->uuid}");

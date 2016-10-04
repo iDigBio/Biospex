@@ -26,7 +26,7 @@
     <?php
     $uuids = Session::get('user-groups');
     ?>
-    socket.on("{!! config('config.ocr_poll_channel') !!}:app.polling", function (message) {
+    socket.on("{!! config('config.poll_ocr_channel') !!}:app.polling", function (message) {
         var html = '{!! trans('pages.no_processes') !!}';
         var uuids = {!! json_encode($uuids) !!};
 

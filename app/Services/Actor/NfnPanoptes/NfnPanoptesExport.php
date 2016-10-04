@@ -105,6 +105,8 @@ class NfnPanoptesExport implements ActorInterface
                 'height'      => $this->largeWidth
             ];
 
+            $this->actorImageService->setProjectGroupIds($this->record->project->group->id, $this->record->title);
+
             $this->actorImageService->getImages($this->record->subjects, $fileAttributes);
 
             $this->buildCsvArray($this->record->subjects, $tempDir);
