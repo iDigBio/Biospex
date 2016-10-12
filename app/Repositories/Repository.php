@@ -321,6 +321,27 @@ abstract class Repository
     }
 
     /**
+     * Find record based on relation.
+     *
+     * @param $relation
+     * @param array $where
+     * @return $this
+     */
+    public function whereHasIn($relation, array $where = [])
+    {
+        $this->model = $this->model->whereHas($relation, function ($query) use ($where) {
+            foreach ($where as $field => $value)
+            {
+                $this->whereClauses[] = [$field => $value];
+
+                $query->whereIn($field, $value);
+            }
+        });
+
+        return $this;
+    }
+
+    /**
      * Find record based on relation using Or.
      *
      * @param $relation

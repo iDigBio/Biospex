@@ -15,9 +15,9 @@ class PollExportEvent extends Event implements ShouldBroadcast
 
     /**
      * PollOcrEvent constructor.
-     * @param null $data
+     * @param $data
      */
-    public function __construct($data = null)
+    public function __construct($data)
     {
         $this->data = $data;
     }

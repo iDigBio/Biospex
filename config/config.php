@@ -126,6 +126,8 @@ return [
         env('NFN_WORKFLOWS_2'),
     ],
 
+    'nfnActors' => env('NFN_ACTORS'),
+
     'nfnCsvMap' => [
         'subjectId'        => '_id',
         'imageName'        => '_id',

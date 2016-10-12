@@ -2,6 +2,7 @@
 
 use App\Console\Commands\AustinProcessCommand;
 use App\Console\Commands\ClearOcrResults;
+use App\Console\Commands\ExportPollCommand;
 use App\Console\Commands\ImageTest;
 use App\Console\Commands\NfnClassificationsUpdate;
 use App\Console\Commands\AmChartUpdate;
@@ -11,6 +12,7 @@ use App\Console\Commands\DownloadCleanCommand;
 use App\Console\Commands\Inspire;
 use App\Console\Commands\NfnWorkflowUpdate;
 use App\Console\Commands\OcrDeleteFile;
+use App\Console\Commands\OcrPollCommand;
 use App\Console\Commands\OcrProcessCommand;
 use App\Console\Commands\OcrQueuePushCommand;
 use App\Console\Commands\ExpeditionStatUpdate;
@@ -45,7 +47,9 @@ class Kernel extends ConsoleKernel
         ExpeditionStatUpdate::class,
         ClearOcrResults::class,
         NfnClassificationsUpdate::class,
-        NfnWorkflowUpdate::class
+        NfnWorkflowUpdate::class,
+        ExportPollCommand::class,
+        OcrPollCommand::class,
     ];
 
     /**

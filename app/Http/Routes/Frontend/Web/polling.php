@@ -2,6 +2,6 @@
 
 // Ajax poll event
 $router->get('poll', [
-    'uses' => 'ServerController@pollOcr',
-    'as'   => 'server.get.pollOcr'
+    'uses' => 'ServerController@poll',
+    'as'   => 'server.get.poll'
 ]);

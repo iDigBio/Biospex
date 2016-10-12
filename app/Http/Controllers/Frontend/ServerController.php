@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Events\PollOcrEvent;
 use App\Http\Controllers\Controller;
 use DOMDocument;
 use GuzzleHttp\Pool;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Events\Dispatcher;
 
 class ServerController extends Controller
 {
@@ -129,10 +128,11 @@ class ServerController extends Controller
         return view('frontend.ocr', compact('elements'));
     }
     
-    public function pollOcr(Dispatcher $dispatcher)
+    public function poll()
     {
         if (Request::ajax()) {
-            $dispatcher->fire(new PollOcrEvent());
+            Artisan::call('ocr:poll');
+            Artisan::call('export:poll');
         }
     }
 

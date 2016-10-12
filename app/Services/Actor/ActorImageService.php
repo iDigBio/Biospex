@@ -2,6 +2,7 @@
 
 namespace App\Services\Actor;
 
+use App\Models\Actor;
 use App\Services\File\FileService;
 use App\Services\Poll\PollExport;
 use GuzzleHttp\Psr7\Request;
@@ -36,6 +37,16 @@ class ActorImageService
      * @var FileService
      */
     public $fileService;
+
+    /**
+     * @var
+     */
+    protected $actor;
+
+    /**
+     * @var int
+     */
+    protected $processed = 0;
 
     /**
      * ActorImageService constructor.
@@ -76,11 +87,12 @@ class ActorImageService
      *
      * @param array $subjects
      * @param array $fileAttributes
-     * @param PollExport $pollExport
+     * @param Actor $actor
      */
-    public function getImages($subjects, $fileAttributes, PollExport $pollExport)
+    public function getImages($subjects, $fileAttributes, Actor $actor)
     {
         $this->subjects = $subjects;
+        $this->actor = $actor;
 
         $attributes = array_key_exists(0, $fileAttributes) ? $fileAttributes : [$fileAttributes];
 
@@ -90,11 +102,15 @@ class ActorImageService
             {
                 if ( ! $this->checkUriExists($subject))
                 {
+                    $this->updateActor();
+
                     continue;
                 }
 
                 if ($this->checkImageExists($subject->_id, $attributes))
                 {
+                    $this->updateActor();
+
                     continue;
                 }
 
@@ -104,12 +120,10 @@ class ActorImageService
 
         $pool = new Pool($this->client, $requests($subjects), [
             'concurrency' => 10,
-            'fulfilled'   => function ($response, $index) use ($attributes, $pollExport)
+            'fulfilled'   => function ($response, $index) use ($attributes, $actor)
             {
-                if ($this->saveImage($response, $index, $attributes))
-                {
-                    $pollExport->updateCount();
-                }
+                $this->saveImage($response, $index, $attributes);
+                $this->updateActor();
             },
             'rejected'    => function ($reason, $index)
             {
@@ -129,7 +143,6 @@ class ActorImageService
      * @param $response
      * @param $index
      * @param $attributes
-     * @return bool
      */
     private function saveImage($response, $index, $attributes)
     {
@@ -139,14 +152,14 @@ class ActorImageService
         {
             $this->setMissingImages($this->subjects[$index], 'Image empty: ' . $response->getStatusCode());
 
-            return false;
+            return;
         }
 
         if ( ! $this->imageService->setSourceFromString($image))
         {
             $this->setMissingImages($this->subjects[$index], 'Could not create image from string: ' . $response->getStatusCode());
 
-            return false;
+            return;
         }
 
         if ( ! $this->imageService->generateAndSaveImage($this->subjects[$index]->_id, $attributes))
@@ -154,12 +167,10 @@ class ActorImageService
             $this->removeErrorFiles($index, $attributes);
             $this->setMissingImages($this->subjects[$index], 'Could not save image to destination file');
 
-            return false;
+            return;
         }
 
         $this->imageService->destroySource();
-
-        return true;
     }
 
     /**
@@ -214,6 +225,19 @@ class ActorImageService
             {
                 @unlink($path);
             }
+        }
+    }
+
+    /**
+     * Update actor processed column.
+     */
+    private function updateActor()
+    {
+        $this->processed++;
+        if ($this->processed % 50 === 0 || $this->processed === count($this->subjects))
+        {
+            $this->actor->pivot->processed = $this->processed;
+            $this->actor->save();
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Config;
 use Jenssegers\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UuidTrait;
@@ -139,8 +140,9 @@ class Expedition extends Eloquent
     public function actors()
     {
         return $this->belongsToMany(Actor::class, 'actor_expedition')
-            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'error', 'queued', 'completed', 'order')
-            ->orderBy('order');
+            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'processed', 'error', 'queued', 'completed', 'order')
+            ->orderBy('order')
+            ->withTimestamps();
     }
 
     /**

@@ -28,5 +28,5 @@ return array(
     'missing_identifier'        => 'The Darwin Core Archive is missing the required identifier column inside the csv file.<br />Accepted identifiers: :identifiers',
     'missing_meta_extension'    => 'Unable to determine meta file extension during Darwin Core Archive import. This is typically due to missing required DWC row types. File: :file',
     'import_file_missing'       => 'Required file missing from Darwin Core Archive. :file',
-    'ocr_batch_process'         => 'Error trying to create OCR batch for project id :id',
+    'ocr_batch_process'         => 'Error trying to create OCR batch for project id :id<br />:message',
 );

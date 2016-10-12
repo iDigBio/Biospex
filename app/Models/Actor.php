@@ -76,7 +76,8 @@ class Actor extends Model
     public function expeditions()
     {
         return $this->belongsToMany(Expedition::class, 'actor_expedition')
-            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'error', 'queued', 'completed')
+            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'processed', 'error', 'queued', 'completed', 'order')
+            ->orderBy('order')
             ->withTimestamps();
     }
 }

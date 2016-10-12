@@ -32,11 +32,6 @@ class NfnPanoptesExport implements ActorInterface
     private $actorRepoService;
 
     /**
-     * @var \App\Services\Poll\PollExport
-     */
-    private $pollExport;
-
-    /**
      * @var
      */
     private $record;
@@ -75,7 +70,6 @@ class NfnPanoptesExport implements ActorInterface
         $this->fileService = $service->fileService;
         $this->actorImageService = $service->actorImageService;
         $this->actorRepoService = $service->actorRepoService;
-        $this->pollExport = $service->pollExport;
 
         $this->nfnExportDir = $this->service->config->get('config.nfn_export_dir');
         $this->nfnCsvMap = $this->service->config->get('config.nfnCsvMap');
@@ -111,13 +105,8 @@ class NfnPanoptesExport implements ActorInterface
                 'height'      => $this->largeWidth
             ];
 
-            $this->pollExport->setGroupUuid($this->record->project->group->uuid);
-            $this->pollExport->setExpeditionTitle($this->record->title);
-            $this->pollExport->setTotal(count($this->record->subjects));
+            $this->actorImageService->getImages($this->record->subjects, $fileAttributes, $actor);
 
-            $this->actorImageService->getImages($this->record->subjects, $fileAttributes, $this->pollExport);
-
-            $this->pollExport->sendCsvMessage();
             $this->buildCsvArray($this->record->subjects, $tempDir);
 
             if ($this->createCsv($tempDir))
@@ -129,8 +118,6 @@ class NfnPanoptesExport implements ActorInterface
             $this->fileService->filesystem->deleteDirectory($this->service->workingDir);
 
             $this->sendReport();
-
-            $this->pollExport->clearMessage();
 
             $actor->pivot->queued = 0;
             ++$actor->pivot->state;

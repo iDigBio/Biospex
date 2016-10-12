@@ -2,17 +2,16 @@
 
 namespace App\Jobs;
 
+use Exception;
+use App\Exceptions\BiospexException;
+use App\Exceptions\MongoDbException;
 use App\Exceptions\OcrBatchProcessException;
-use App\Repositories\Contracts\Project;
-use App\Services\Report\Report;
-use ErrorException;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\DatabaseManager;
-use Illuminate\Events\Dispatcher;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
-use App\Events\PollOcrEvent;
 use App\Repositories\Contracts\OcrCsv;
 use App\Repositories\Contracts\OcrQueue;
 use MongoCollection;
@@ -53,15 +52,11 @@ class BuildOcrBatches extends Job implements ShouldQueue
      *
      * @param OcrQueue $ocrQueueRepo
      * @param OcrCsv $ocrCsvRepo
-     * @param Project $projectRepo
-     * @param Report $report
      * @throws OcrBatchProcessException
      */
     public function handle(
         OcrQueue $ocrQueueRepo,
-        OcrCsv $ocrCsvRepo,
-        Project $projectRepo,
-        Report $report
+        OcrCsv $ocrCsvRepo
     )
     {
         try {
@@ -98,29 +93,39 @@ class BuildOcrBatches extends Job implements ShouldQueue
                 ]);
             }
 
-            app(Dispatcher::class)->fire(new PollOcrEvent());
+            Artisan::call('ocr:poll');
         }
-        catch(ErrorException $e)
+        catch(BiospexException $e)
         {
-            throw new OcrBatchProcessException(trans('errors.ocr_batch_process', ['id' => $this->projectId]));
+            throw new OcrBatchProcessException(trans('errors.ocr_batch_process', [
+                'id' => $this->projectId,
+                'message' => $e->getMessage()
+            ]));
         }
     }
 
     /**
      * Build the ocr subject array
+     * @throws MongoDbException
      */
     protected function buildOcrSubjectsArray()
     {
-        $collection = $this->setCollection();
-        $query = null === $this->expeditionId ?
-            ['project_id' => $this->projectId, 'ocr' => ''] :
-            ['project_id' => $this->projectId, 'expedition_ids' => $this->expeditionId, 'ocr' => ''];
+        try{
+            $collection = $this->setCollection();
+            $query = null === $this->expeditionId ?
+                ['project_id' => $this->projectId, 'ocr' => ''] :
+                ['project_id' => $this->projectId, 'expedition_ids' => $this->expeditionId, 'ocr' => ''];
 
-        $results = $collection->find($query);
+            $results = $collection->find($query);
 
-        foreach ($results as $doc)
+            foreach ($results as $doc)
+            {
+                $this->buildOcrQueueData($doc);
+            }
+        }
+        catch(Exception $e)
         {
-            $this->buildOcrQueueData($doc);
+            throw new MongoDbException($e);
         }
     }
 

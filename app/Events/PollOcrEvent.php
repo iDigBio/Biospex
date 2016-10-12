@@ -2,24 +2,23 @@
 
 namespace App\Events;
 
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Support\Facades\Config;
-use App\Repositories\Contracts\OcrQueue;
 
 class PollOcrEvent extends Event implements ShouldBroadcast
 {
-
-    use SerializesModels;
-
+    /**
+     * @var array
+     */
     public $data = [];
 
     /**
      * PollOcrEvent constructor.
+     * @param $data
      */
-    public function __construct()
+    public function __construct($data)
     {
-        $this->buildData();
+        $this->data = $data;
     }
 
     /**
@@ -50,42 +49,5 @@ class PollOcrEvent extends Event implements ShouldBroadcast
     public function broadcastOn()
     {
         return [Config::get('config.poll_ocr_channel')];
-    }
-
-    private function buildData()
-    {
-        $repository = app(OcrQueue::class);
-
-        $records = $repository->skipCache()->with(['project.group'])->get();
-
-        if ($records->isEmpty())
-        {
-            return;
-        }
-        
-        $grouped = $records->groupBy('ocr_csv_id')->toArray();
-        $totalSubjectsAhead = 0;
-        $previousKey = null;
-        foreach ($grouped as $key => $group)
-        {
-            if (null !== $previousKey)
-            {
-                $totalSubjectsAhead = +array_sum(array_column($grouped[$previousKey], 'subject_remaining'));
-            }
-
-            $previousKey = $key;
-
-            $groupSubjectCount = array_sum(array_column($group, 'subject_count'));
-            $groupSubjectRemaining = array_sum(array_column($group, 'subject_remaining'));
-
-            $this->data[] = [
-                'batchId'               => $key,
-                'groupUuid'             => $group[0]['project']['group']['uuid'],
-                'projectTitle'          => $group[0]['project']['title'],
-                'totalSubjectsAhead'    => $totalSubjectsAhead,
-                'groupSubjectRemaining' => $groupSubjectRemaining,
-                'groupSubjectCount'     => $groupSubjectCount
-            ];
-        }
     }
 }

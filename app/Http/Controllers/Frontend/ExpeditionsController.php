@@ -283,7 +283,7 @@ class ExpeditionsController extends Controller
 
         try
         {
-            $expedition = $this->expedition->skipCache(['project.workflow.actors', 'workflowManager'])->with()->find($expeditionId);
+            $expedition = $this->expedition->skipCache()->with(['project.workflow.actors', 'workflowManager'])->find($expeditionId);
 
             if (null !== $expedition->workflowManager)
             {

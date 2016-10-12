@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Events\PollOcrEvent;
 use App\Exceptions\BiospexException;
 use App\Exceptions\RequestException;
 use App\Repositories\Contracts\OcrCsv;
@@ -12,6 +11,7 @@ use App\Services\Report\OcrReport;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Console\Command;
 use App\Exceptions\Handler;
+use Illuminate\Support\Facades\Artisan;
 
 class OcrProcessCommand extends Command
 {
@@ -116,7 +116,7 @@ class OcrProcessCommand extends Command
             return;
         }
 
-        $this->dispatcher->fire(new PollOcrEvent());
+        Artisan::call('ocr:poll');
     }
 
     /**

@@ -56,52 +56,43 @@ class WorkFlowManagerCommand extends Command
         $id = $this->argument('expedition');
 
         if ( null !== $id) {
-            $managers = $this->manager->skipCache()->with(['expedition.actors'])->where(['expedition_id' => $id])->get();
+            $managers = $this->manager->skipCache()->with(['expedition.actors', 'expedition.stat'])->where(['expedition_id' => $id])->get();
         } else {
-            $managers = $this->manager->skipCache()->with(['expedition.actors'])->get();
+            $managers = $this->manager->skipCache()->with(['expedition.actors', 'expedition.stat'])->get();
         }
 
         if ($managers->isEmpty()) {
             return;
         }
 
-        $actors = $this->processWorkFlows($managers);
-
-        foreach ($actors as $actor) {
-            $actor->pivot->queued = 1;
-            $actor->pivot->save();
-            Queue::push('App\Services\Queue\ActorQueue', serialize($actor), $this->tube);
-        }
+        $this->processManagers($managers);
     }
 
     /**
-     * Process each workflow and actors
-     * @param $managers
+     * Process each workflow manager and actors
+     * @param array $managers
      * @return array
      */
-    protected function processWorkFlows($managers)
+    protected function processManagers($managers)
     {
-        $actors = [];
         foreach ($managers as $manager) {
             if ($manager->stopped) {
                 continue;
             }
 
-            $this->processActors($manager, $actors);
+            $this->processActors($manager->expedition->actors, $manager->expedition->stat->subject_count);
         }
-
-        return $actors;
     }
 
     /**
      * Decide what actor to include in the array and being processed.
      * 
-     * @param $manager
-     * @param $actors
+     * @param array $actors
+     * @param int $count
      */
-    protected function processActors($manager, &$actors)
+    protected function processActors($actors, $count)
     {
-        foreach ($manager->expedition->actors as $actor) {
+        foreach ($actors as $actor) {
             if ($this->checkErrorQueued($actor)) {
                 continue;
             }
@@ -110,7 +101,11 @@ class WorkFlowManagerCommand extends Command
                 continue;
             }
 
-            $actors[] = $actor;
+            $actor->pivot->total = $count;
+            $actor->pivot->processed = 0;
+            $actor->pivot->queued = 1;
+            $actor->pivot->save();
+            Queue::push('App\Services\Queue\ActorQueue', serialize($actor), $this->tube);
         }
     }
 

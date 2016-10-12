@@ -7,11 +7,11 @@
             </div>
             <div class="modal-body">
                 <div><h4>@lang('pages.process_title', ['type' => 'OCR'])</h4></div>
-                <div id="processHtml">@lang('pages.retrieve_process', ['type' => 'OCR'])</div>
+                <div id="ocrHtml">@lang('pages.retrieve_process', ['type' => 'OCR'])</div>
             </div>
             <div class="modal-body">
-                <div><h4>@lang('pages.process_title', ['type' => 'Import'])</h4></div>
-                <div id="importHtml">@lang('pages.no_processes')</div>
+                <div><h4>@lang('pages.process_title', ['type' => 'Export'])</h4></div>
+                <div id="exportHtml">@lang('pages.retrieve_process', ['type' => 'Export'])</div>
             </div>
             <div class="modal-footer">
                 <span class="text-danger pull-left">@lang('pages.process_warning')</span>
@@ -27,57 +27,39 @@
     $uuids = Session::get('user-groups');
     ?>
     socket.on("{!! config('config.poll_ocr_channel') !!}:app.polling", function (message) {
-        var html = '{!! trans('pages.no_processes') !!}';
         var uuids = {!! json_encode($uuids) !!};
-
-        if (jQuery.isEmptyObject(message)) {
-            $("#processHtml").text(html);
-
-            return;
-        }
-
-        var processHtml = '';
+        var ocrHtml = '';
         var data = message.data;
 
-        $.each(data, function (index) {
-            if ($.inArray(data[index].groupUuid, uuids) == -1) {
-                return true;
-            }
-            processHtml += '<div class="processes"><span class="title">' + data[index].projectTitle + '</span><br />' +
-                    'Ocr Batch #' + data[index].batchId + ' - ';
-            processHtml += data[index].groupSubjectRemaining + " out of " + data[index].groupSubjectCount + " remaining to be processed";
-            if (data[index].totalSubjectsAhead > 0) {
-                processHtml += '<br />' + data[index].totalSubjectsAhead + ' subjects being processed before this batch begins';
-            }
-            processHtml += '</div>';
-        });
+        if($.isArray(data)) {
+            $.each(data, function (index) {
+                if ($.inArray(data[index].groupUuid, uuids) == -1) {
+                    return true;
+                }
+                ocrHtml += data[index].message;
+            });
+        } else {
+            ocrHtml = data;
+        }
 
-        $("#processHtml").html(processHtml.length > 0 ? processHtml : html);
+        $("#ocrHtml").html(ocrHtml.length > 0 ? ocrHtml : html);
     });
 
     socket.on("{!! config('config.poll_export_channel') !!}:app.polling", function (message) {
-        var html = '{!! trans('pages.no_processes') !!}';
         var uuids = {!! json_encode($uuids) !!};
-
-        if (jQuery.isEmptyObject(message)) {
-            $("#exportHtml").text(html);
-
-            return;
-        }
-
         var exportHtml = '';
         var data = message.data;
 
-        $.each(data, function (index) {
-            if ($.inArray(data[index].groupUuid, uuids) == -1) {
-                return true;
-            }
-            exportHtml += '<div class="processes"><span class="title">';
-            exportHtml += data[index].expeditionTitle;
-            exportHtml += '</span><br />';
-            exportHtml += data[index].message;
-            exportHtml += '</div>';
-        });
+        if($.isArray(data)) {
+            $.each(data, function (index) {
+                if ($.inArray(data[index].groupUuid, uuids) == -1) {
+                    return true;
+                }
+                exportHtml += data[index].message;
+            });
+        } else {
+            exportHtml = data;
+        }
 
         $("#exportHtml").html(exportHtml.length > 0 ? exportHtml : html);
     });

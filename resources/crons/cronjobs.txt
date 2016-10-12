@@ -3,10 +3,13 @@
 #00 00 * * * /usr/bin/php /data/web/biospex/production/artisan download:clean >> /var/log/apache2/download.clean.log 2>&1
 #00 00 * * * /usr/bin/php /data/web/biospex/production/artisan ocrqueue:check >> /var/log/apache2/ocrqueue.check.log 2>&1
 
-*/5 * * * * /usr/bin/php /data/web/biospex/production/artisan ocrprocess:records >> /var/log/apache2/ocrprocess-prod.poll.log 2>&1
-*/5 * * * * /usr/bin/php /data/web/biospex/staging/artisan ocrprocess:records >> /var/log/apache2/ocrprocess-stage.poll.log 2>&1
-*/5 * * * * /usr/bin/php /data/web/biospex/development/artisan ocrprocess:records >> /var/log/apache2/ocrprocess-dev.poll.log 2>&1
-00 00 * * * /usr/bin/php /data/web/biospex/production/artisan classifications:update >> /var/log/apache2/classifications.log 2>&1
+*/5 * * * * /usr/bin/php /path/to/artisan ocrprocess:records >> /var/log/apache2/ocrprocess-prod.poll.log 2>&1
+*/5 * * * * /usr/bin/php /path/to/artisan ocrprocess:records >> /var/log/apache2/ocrprocess-stage.poll.log 2>&1
+*/5 * * * * /usr/bin/php /path/to/artisan ocrprocess:records >> /var/log/apache2/ocrprocess-dev.poll.log 2>&1
+00 00 * * * /usr/bin/php /path/to/artisan classifications:update >> /var/log/apache2/classifications.log 2>&1
+
+*/15 * * * * /usr/bin/php /path/to/artisan export:poll >> /var/log/apache2/export.poll.log 2>&1
+*/15 * * * * /usr/bin/php /path/to/artisan ocr:poll >> /var/log/apache2/ocr.poll.log 2>&1
 
 # Cron for auto-renew letsencrypt certs run twice a day (recommended)
 0 11,23 * * * ./opt/certbot-auto renew --quiet --no-self-upgrade
