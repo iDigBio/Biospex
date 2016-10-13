@@ -147,7 +147,7 @@ class OcrProcessCommand extends Command
 
         if ($this->ocrRequest->checkOcrFileInProgress($file))
         {
-            $this->updateSubjectRemaining($record, $file);
+            $this->updateProcessed($record, $file);
 
             return;
         }
@@ -158,7 +158,7 @@ class OcrProcessCommand extends Command
                 ['title' => $record->title, 'id' => $record->id, 'message' => 'Json file header returned status error.']));
         }
 
-        $this->updateSubjectRemaining($record, $file);
+        $this->updateProcessed($record, $file);
 
         $csv = $this->ocrRequest->updateSubjectsFromOcrFile($file);
 
@@ -204,14 +204,14 @@ class OcrProcessCommand extends Command
     }
 
     /**
-     * Update subject remaining for record.
+     * Update subjects processed.
      *
      * @param $record
      * @param $file
      */
-    private function updateSubjectRemaining($record, $file)
+    private function updateProcessed($record, $file)
     {
-        $record->subject_remaining = max(0, $record->subject_count - $file->header->complete);
+        $record->processed = (int) $file->header->complete;
         $this->ocrQueue->update($record->toArray(), $record->id);
     }
 }

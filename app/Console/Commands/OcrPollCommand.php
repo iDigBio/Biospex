@@ -72,13 +72,13 @@ class OcrPollCommand extends Command
         {
             if (null !== $previousKey)
             {
-                $totalSubjectsAhead = +array_sum(array_column($grouped[$previousKey], 'subject_remaining'));
+                $totalSubjectsAhead = +array_sum(array_column($grouped[$previousKey], 'processed'));
             }
 
             $previousKey = $key;
 
-            $groupSubjectCount = array_sum(array_column($group, 'subject_count'));
-            $groupSubjectRemaining = array_sum(array_column($group, 'subject_remaining'));
+            $groupSubjectCount = array_sum(array_column($group, 'total'));
+            $groupSubjectRemaining = array_sum(array_column($group, 'processed'));
 
             $message = trans('pages.ocr_processing', [
                 'title'     => $group[0]['project']['title'],

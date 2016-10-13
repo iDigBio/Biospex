@@ -18,6 +18,7 @@ use MongoCollection;
 
 class BuildOcrBatches extends Job implements ShouldQueue
 {
+
     use InteractsWithQueue, SerializesModels;
 
     /**
@@ -59,7 +60,8 @@ class BuildOcrBatches extends Job implements ShouldQueue
         OcrCsv $ocrCsvRepo
     )
     {
-        try {
+        try
+        {
 
             if (Config::get('config.ocr_disable'))
             {
@@ -84,21 +86,21 @@ class BuildOcrBatches extends Job implements ShouldQueue
                 $count = count($chunk);
 
                 $ocrQueueRepo->create([
-                    'project_id'        => $this->projectId,
-                    'ocr_csv_id'        => $ocrCsv->id,
-                    'data'              => json_encode(['subjects' => $chunk]),
-                    'subject_count'     => $count,
-                    'subject_remaining' => $count,
-                    'batch'             => $batch
+                    'project_id' => $this->projectId,
+                    'ocr_csv_id' => $ocrCsv->id,
+                    'data'       => json_encode(['subjects' => $chunk]),
+                    'total'      => $count,
+                    'processed'  => 0,
+                    'batch'      => $batch
                 ]);
             }
 
             Artisan::call('ocr:poll');
         }
-        catch(BiospexException $e)
+        catch (BiospexException $e)
         {
             throw new OcrBatchProcessException(trans('errors.ocr_batch_process', [
-                'id' => $this->projectId,
+                'id'      => $this->projectId,
                 'message' => $e->getMessage()
             ]));
         }
@@ -110,7 +112,8 @@ class BuildOcrBatches extends Job implements ShouldQueue
      */
     protected function buildOcrSubjectsArray()
     {
-        try{
+        try
+        {
             $collection = $this->setCollection();
             $query = null === $this->expeditionId ?
                 ['project_id' => $this->projectId, 'ocr' => ''] :
@@ -123,7 +126,7 @@ class BuildOcrBatches extends Job implements ShouldQueue
                 $this->buildOcrQueueData($doc);
             }
         }
-        catch(Exception $e)
+        catch (Exception $e)
         {
             throw new MongoDbException($e);
         }
