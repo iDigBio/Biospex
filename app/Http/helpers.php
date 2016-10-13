@@ -276,3 +276,19 @@ function jTraceEx($e, array $seen = [])
 
     return $result;
 }
+
+/**
+ * Check if table has index.
+ *
+ * @param $table
+ * @param $index
+ * @return bool
+ */
+function table_has_index($table, $index)
+{
+    $conn = Schema::getConnection();
+    $dbSchemaManager = $conn->getDoctrineSchemaManager();
+    $doctrineTable = $dbSchemaManager->listTableDetails($table);
+
+    return $doctrineTable->hasIndex($index);
+}
