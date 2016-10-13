@@ -141,7 +141,7 @@ return array(
     'project_page_join'             => 'Join In',
     'processes'                     => 'Processes',
     'process_title'                 => ':type Processes',
-    'process_warning'               => 'Ocr processing stats refresh every 5 minutes.<br /> Export processing refreshes every 15 minutes.',
+    'process_warning'               => 'Stats update every 5 minutes.',
     'retrieve_process'              => 'Retrieving :type processes...',
     'processing_empty'              => 'No processes running at this time.',
     'export_processing'             => '<div class="processes"><span class="title">:title</span><br />:processed record of :total completed.</div>|
