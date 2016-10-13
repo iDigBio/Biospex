@@ -148,6 +148,8 @@ return array(
                                         <div class="processes"><span class="title">:title</span><br />:processed records of :total completed.</div>',
     'export_queued'                 => '<div class="processes"><span class="title">:title</span><br />:count export remains in queue before processing begins.</div>|
                                         <div class="processes"><span class="title">:title</span><br />:count exports remain in queue before processing begins.</div>',
-    'ocr_processing'                => '<div class="processes"><span class="title">:title</span><br />Ocr Batch #:batchId - :remaining out of :total remaining to be processed.<br />:ahead</div>',
-    'ocr_in_queue'                  => '|:remaining_ahead subjects being processed before this batch begins',
+    'ocr_processing'                => '<div class="processes"><span class="title">:title</span>:ocr</div>',
+    'ocr_batches'                   => '<br />Ocr Batch #:batchId - :records',
+    'ocr_records'                   => ':processed record of :total completed.|:processed records of :total completed.',
+    'ocr_queue'                     => ':batches_ahead batch remains in queue before processing begins|:batches_ahead batches remain in queue before processing begins',
 );

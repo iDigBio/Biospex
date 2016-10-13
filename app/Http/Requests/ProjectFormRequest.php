@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ProjectFormRequest extends Request
 {
+
     public function authorize()
     {
         return Auth::check();
@@ -19,18 +20,22 @@ class ProjectFormRequest extends Request
     public function rules()
     {
         $rules = [
-            'group_id'          => 'required|integer|min:1',
-            'status'            => 'required',
-            'title'             => 'required|between:6,140|unique:projects,title,' . $this->route('projects'),
-            'contact'           => 'required',
-            'contact_email'     => 'required|min:4|max:32|email',
-            'contact_title'     => 'required',
-            'description_short' => 'required|between:6,140',
-            'description_long'  => 'required',
-            'keywords'          => 'required',
-            'workflow_id'       => 'required',
-            'banner'            => 'image|image_size:>=1200,>=250',
-            'logo'              => 'image|image_size:<=300,<=200',
+            'group_id'             => 'required|integer|min:1',
+            'status'               => 'required',
+            'title'                => 'required|between:6,140|unique:projects,title,' . $this->route('projects'),
+            'contact'              => 'required',
+            'contact_email'        => 'required|min:4|max:32|email',
+            'contact_title'        => 'required',
+            'description_short'    => 'required|between:6,140',
+            'description_long'     => 'required',
+            'keywords'             => 'required',
+            'workflow_id'          => 'required',
+            'organization_website' => 'url',
+            'blog_url'             => 'url',
+            'facebook'             => 'url',
+            'twitter'              => 'url',
+            'banner'               => 'image|image_size:>=1200,>=250',
+            'logo'                 => 'image|image_size:<=300,<=200',
         ];
 
         return $rules;

@@ -86,10 +86,12 @@
                     <dd>{{ $project->activities }}&nbsp;</dd>
                     <dt>{{ trans('forms.keywords') }}</dt>
                     <dd>{{ $project->keywords }}&nbsp;</dd>
+                    <dt>{{ trans('forms.blog_url') }}</dt>
+                    <dd><a href="{{ $project->blog_url }}">{{ $project->blog_url }}</a>&nbsp;</dd>
                     <dt>{{ trans('forms.facebook') }}</dt>
                     <dd><a href="{{ $project->facebook }}">{{ $project->facebook }}</a>&nbsp;</dd>
                     <dt>{{ trans('forms.twitter') }}</dt>
-                    <dd><a href="http://twitter.com/{{ $project->twitter }}" target="_blank">{{ $project->twitter }}</a>&nbsp;
+                    <dd><a href="{{ $project->twitter }}" target="_blank">{{ $project->twitter }}</a>&nbsp;
                     </dd>
                 </dl>
             </div>

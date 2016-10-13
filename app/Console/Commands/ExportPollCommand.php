@@ -71,6 +71,8 @@ class ExportPollCommand extends Command
         {
             $data = trans('pages.processing_empty');
             $this->dispatcher->fire(new PollExportEvent($data));
+
+            return;
         }
 
         $data = [];

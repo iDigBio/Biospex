@@ -42,7 +42,7 @@
             ocrHtml = data;
         }
 
-        $("#ocrHtml").html(ocrHtml.length > 0 ? ocrHtml : html);
+        $('#ocrHtml').html(ocrHtml);
     });
 
     socket.on("{!! config('config.poll_export_channel') !!}:app.polling", function (message) {
@@ -61,7 +61,7 @@
             exportHtml = data;
         }
 
-        $("#exportHtml").html(exportHtml.length > 0 ? exportHtml : html);
+        $('#exportHtml').html(exportHtml);
     });
 
 </script>
