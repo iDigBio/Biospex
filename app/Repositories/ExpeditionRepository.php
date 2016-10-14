@@ -87,6 +87,8 @@ class ExpeditionRepository extends Repository implements Expedition, CacheableIn
         ];
         $expedition->stat()->updateOrCreate(['expedition_id' => $expedition->id], $values);
 
+        $expedition = $this->model->with(['subjects', 'nfnWorkflow', 'stat'])->find($id);
+
         return $expedition;
     }
 }
