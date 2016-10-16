@@ -16,8 +16,8 @@
 
                     <div class="panel-body">
                         {!!  Form::open([
-                        'route' => ['admin.ocr.store'],
-                        'method' => 'post',
+                        'route' => ['admin.ocr.delete'],
+                        'method' => 'delete',
                         'class' => 'form-horizontal',
                         'role' => 'form'
                         ]) !!}
