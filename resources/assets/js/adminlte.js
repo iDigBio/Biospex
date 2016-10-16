@@ -124,6 +124,11 @@ $(function () {
         helper: fixHelperModified,
         stop: function(event,ui) {renumber_table('#resources')}
     }).disableSelection();
+
+    $("#ocrCheckAll").change(function () {
+        $("input:checkbox").prop('checked', $(this).prop("checked"));
+    });
+
 });
 
 //Renumber table rows

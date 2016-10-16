@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Facades\Toastr;
 use App\Repositories\Contracts\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -29,86 +30,30 @@ class OcrController extends Controller
 
         $elements = $dom->getElementsByTagName('li');
 
-        return view('backend.ocr', compact('elements', 'user'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+        return view('backend.ocr.index', compact('elements', 'user'));
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param Request $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete(Request $request, $id)
+    public function delete(Request $request)
     {
-        if ($request->isMethod('post') && ! empty($request->get('files')))
+        if (count($request->get('files')) > 0)
         {
             $files = $request->get('files');
 
             Artisan::call('ocrfile:delete', ['files' => $files]);
 
-            session_flash_push('success', 'Ocr files deleted successfully.');
+            Toastr::success('OCR deleted successfully.', 'OCR Delete');
 
-            return redirect()->route('ocr.get.index');
+            return redirect()->route('admin.ocr.index');
         }
 
-        session_flash_push('error', 'Ocr files could not be deleted.');
+        Toastr::error('Deleting did not work.', 'OCR Delete');
 
-        return redirect()->route('ocr.get.index');
+        return redirect()->route('admin.ocr.index');
     }
 }

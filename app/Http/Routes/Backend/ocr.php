@@ -29,7 +29,7 @@ $router->put('ocr/{ocr}', [
     'as'   => 'admin.ocr.update'
 ]);
 
-$router->delete('ocr/{ocr}', [
+$router->delete('ocr/delete/{ocr?}', [
     'uses' => 'OcrController@delete',
     'as'   => 'admin.ocr.delete'
 ]);
