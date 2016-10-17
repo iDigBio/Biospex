@@ -49,6 +49,11 @@ class ActorImageService
     protected $processed = 0;
 
     /**
+     * @var int
+     */
+    protected $subjectCount = 0;
+
+    /**
      * ActorImageService constructor.
      *
      * @param ImageService $imageService
@@ -92,6 +97,7 @@ class ActorImageService
     public function getImages($subjects, $fileAttributes, Actor $actor)
     {
         $this->subjects = $subjects;
+        $this->subjectCount = count($this->subjects);
         $this->actor = $actor;
 
         $attributes = array_key_exists(0, $fileAttributes) ? $fileAttributes : [$fileAttributes];
@@ -234,10 +240,10 @@ class ActorImageService
     private function updateActor()
     {
         $this->processed++;
-        if ($this->processed % 50 === 0 || $this->processed === count($this->subjects))
+        if ($this->processed % 50 === 0 || ($this->subjectCount - $this->processed) <= 50)
         {
             $this->actor->pivot->processed = $this->processed;
-            $this->actor->save();
+            $this->actor->pivot->save();
         }
     }
 }
