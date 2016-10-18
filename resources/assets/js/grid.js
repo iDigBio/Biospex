@@ -19,15 +19,21 @@ $(function () {
         Grid.project = $("#projectId").val();
         Grid.maxCount = $("#maxCount").val();
         Grid.subjectCountHtmlObj = $('#subjectCountHtml');
-        Grid.subjectCountObj = $('#subjectCount');
         Grid.subjectIdsObj = $('#subjectIds');
-        Grid.subjectIds = Grid.subjectIdsObj.length > 0 ?
-            (Grid.subjectIdsObj.val().length == 0 ? [] : Grid.subjectIdsObj.val().split(',')) : '';
+        Grid.showCheckbox = Laravel.showCheckbox;
+        if (Grid.showCheckbox)
+            Grid.subjectIdsObj.data('ids', Laravel.subjectIds);
         $.ajax({
             type: "GET",
             url: "/projects/" + Grid.project + "/grids/load",
             dataType: "json",
             success: jqBuildGrid()
+        });
+
+        $('.gridForm').submit(function () {
+            $('#subjectIds').val(Grid.subjectIdsObj.data('ids').toString());
+
+            return true;
         });
     }
 });
@@ -69,6 +75,7 @@ function jqBuildGrid() {
             storeNavOptions: true,
             height: '100%',
             pager: "#pager",
+            toppager: true,
             beforeSelectRow: function (id, event) {
                 return handleCellSelect(id, event);
             },
@@ -89,7 +96,7 @@ function jqBuildGrid() {
             loadComplete: function () {
                 setPreviewLinks();
 
-                if(switchCbColumn() || Grid.loadSate) return;
+                if (switchCbColumn() || Grid.loadSate) return;
 
                 setMultipleSelect();
             }
@@ -102,7 +109,8 @@ function jqBuildGrid() {
                 refresh: true,
                 closeOnEscape: true,
                 closeAfterSearch: true,
-                overlay: true
+                overlay: true,
+                cloneToTop: true
             },
             {}, // edit options
             {}, // add options
@@ -136,6 +144,30 @@ function jqBuildGrid() {
                 localStorage.clear();
                 window.location.reload();
             }
+        }).navButtonAdd('#' + Grid.id + '_toppager_left', {
+            caption: '',
+            buttonicon: "glyphicon glyphicon-list",
+            title: "Choose columns",
+            onClickButton: function () {
+                Grid.obj.jqGrid('columnChooser', {
+                    classname: "columnChooser",
+                    modal: true,
+                    width: 500,
+                    done: function (perm) {
+                        if (perm) {
+                            this.jqGrid("remapColumns", perm, true);
+                        }
+                    }
+                });
+            }
+        }).navButtonAdd('#' + Grid.id + '_toppager_left', {
+            caption: '',
+            buttonicon: "glyphicon glyphicon-remove",
+            title: "Clear saved grid's settings",
+            onClickButton: function () {
+                localStorage.clear();
+                window.location.reload();
+            }
         });
 
         $('#savestate').click(function (event) {
@@ -158,7 +190,7 @@ function jqBuildGrid() {
  * @returns {boolean}
  */
 function switchCbColumn() {
-    if ($("#showCb").val() == 0) {
+    if (!Grid.showCheckbox) {
         $('#' + Grid.id).jqGrid('hideCol', 'cb');
         return true;
     }
@@ -172,13 +204,13 @@ function switchCbColumn() {
  * @param event
  * @returns {boolean}
  */
-function handleCellSelect(id, event){
+function handleCellSelect(id, event) {
     if (event.target.className == 'ocrPreview') {
         $('#model-body').html($(event.target).text());
         return false;
     }
 
-    if(event.target.className == 'thumbPreview') {
+    if (event.target.className == 'thumbPreview') {
         return false;
     }
 
@@ -216,22 +248,18 @@ function mapFormatter(column) {
 function setMultipleSelect() {
     var $grid = $('#' + Grid.id);
     var ids = $grid.jqGrid('getDataIDs');
-    for (var x = 0; x < ids.length; x++) {
-        if ( ! Grid.loadSate) {
-            var index = $.inArray(ids[x], Grid.subjectIds);
-            if (index >= 0) {
-                var row = $grid.jqGrid('getRowData', ids[x]);
-                if (row.expedition_ids == "Yes") {
-                    $grid.setSelection(ids[x]);
-                }
-            }
+    for (var i = 0; i < ids.length; i++) {
+        if (!Grid.loadSate && $.inArray(ids[i], Grid.subjectIdsObj.data('ids')) !== -1) {
+            $grid.setSelection(ids[i]);
         } else {
-            if ($('#' + ids[x]).hasClass("success")) {
-                $('#' + ids[x] + ' input[type=checkbox]').prop('checked', true);
-                updateIdsOfSelectedRows(ids[x], true);
+            if ($('#' + ids[i]).hasClass("success")) {
+                $('#' + ids[i] + ' input[type=checkbox]').prop('checked', true);
+                updateIdsOfSelectedRows(value, true);
             }
         }
     }
+
+    Grid.subjectCountHtmlObj.html(Grid.subjectIdsObj.data('ids').length);
     Grid.loadSate = false;
 }
 
@@ -241,20 +269,18 @@ function setMultipleSelect() {
  * @param isSelected
  */
 function updateIdsOfSelectedRows(id, isSelected) {
-    var index = $.inArray(id, Grid.subjectIds);
+    var index = $.inArray(id, Grid.subjectIdsObj.data('ids'));
     if (!isSelected && index >= 0) {
-        Grid.subjectIds = $.grep(Grid.subjectIds, function (val) {
-            return val != id;
-        });
+        Grid.subjectIdsObj.data('ids').splice($.inArray(id, Grid.subjectIdsObj.data('ids')), 1);
     } else if (index < 0) {
-        Grid.subjectIds.push(id);
+        Grid.subjectIdsObj.data('ids').push(id);
     }
-    Grid.subjectIdsObj.val(Grid.subjectIds);
-    if (Grid.subjectIds.length > Grid.maxCount) {
+
+    if (Grid.subjectIdsObj.data('ids').length > Grid.maxCount) {
         $('#max').addClass('red');
     }
-    Grid.subjectCountHtmlObj.html(Grid.subjectIds.length);
-    Grid.subjectCountObj.val(Grid.subjectIds.length);
+
+    Grid.subjectCountHtmlObj.html(Grid.subjectIdsObj.data('ids').length);
 }
 
 /**
@@ -265,11 +291,11 @@ function setPreviewLinks() {
     $('#' + Grid.id).on("click", 'a.thumb-view', function (event) {
         event.preventDefault();
         $.ajax({
-                url: $(event.target).attr('href'),
-                beforeSend: function (xhr) {
-                    $('.loading').show();
-                }
-            })
+            url: $(event.target).attr('href'),
+            beforeSend: function (xhr) {
+                $('.loading').show();
+            }
+        })
             .done(function (data) {
                 $('#model-body').html(data);
                 $('.loading').hide();
