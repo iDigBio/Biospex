@@ -13,6 +13,7 @@ use App\Repositories\Contracts\Project;
 use App\Http\Requests\ProjectFormRequest;
 use App\Services\Common\ProjectService;
 use Illuminate\Support\Facades\Config;
+use JavaScript;
 
 class ProjectsController extends Controller
 {
@@ -225,6 +226,8 @@ class ProjectsController extends Controller
         $subjectAssignedCount = $subject->where(['project_id' => (int) $id])
             ->whereRaw(['expedition_ids.0' => ['$exists' => true]])
             ->count();
+
+        JavaScript::put(['showCheckbox' => false]);
 
         return view('frontend.projects.explore', compact('project', 'subjectAssignedCount'));
     }

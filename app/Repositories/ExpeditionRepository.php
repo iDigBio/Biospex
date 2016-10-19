@@ -41,7 +41,7 @@ class ExpeditionRepository extends Repository implements Expedition, CacheableIn
         $expedition->subjects()->sync($subjects);
 
         $values = [
-            'subject_count' => $attributes['subjectCount'],
+            'subject_count' => count($subjects),
             'transcriptions_total' => transcriptions_total($attributes['subjectCount']),
         ];
 
@@ -77,10 +77,10 @@ class ExpeditionRepository extends Repository implements Expedition, CacheableIn
         $subjectIds = explode(',', $attributes['subjectIds']);
         $expedition->subjects()->attach($subjectIds);
 
-        $total = transcriptions_total($attributes['subjectCount']);
+        $total = transcriptions_total(count($subjectIds));
         $completed = transcriptions_completed($expedition->id);
         $values = [
-            'subject_count' => $attributes['subjectCount'],
+            'subject_count' => count($subjectIds),
             'transcriptions_total' => $total,
             'transcriptions_completed' => $completed,
             'percent_completed' => transcriptions_percent_completed($total, $completed)

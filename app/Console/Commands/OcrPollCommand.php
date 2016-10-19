@@ -41,11 +41,6 @@ class OcrPollCommand extends Command
     private $dispatcher;
 
     /**
-     * @var int
-     */
-    private $batches = 0;
-
-    /**
      * Create a new command instance.
      *
      * @param OcrQueue $ocrQueue
@@ -81,80 +76,29 @@ class OcrPollCommand extends Command
 
         $grouped = $records->groupBy('ocr_csv_id')->toArray();
 
-        $data = $this->loopGroupedRecords($grouped);
-
-        $this->dispatcher->fire(new PollOcrEvent($data));
-    }
-
-    /**
-     * Loop through grouped records.
-     *
-     * @param $grouped
-     * @return array
-     */
-    private function loopGroupedRecords($grouped)
-    {
         $data = [];
+        $count = 0;
         foreach ($grouped as $group)
         {
             $project = $this->project->with(['group'])->find($group[0]['project_id']);
 
-            $ocr = $this->setBatchText($group);
+            $total = array_sum(array_column($group, 'total'));
+            $processed = array_sum(array_column($group, 'processed'));
 
-            $message = trans('pages.ocr_processing', ['title' => $project->title, 'ocr' => $ocr]);
+            $batches = $count === 0 ? '' : trans_choice('pages.ocr_queue', $count, ['batches_queued' => $count]);
+
+            $ocr = trans_choice('pages.ocr_records', $processed,['processed' => $processed, 'total' => $total]);
+
+            $message = trans('pages.ocr_processing', ['title' => $project->title, 'ocr' => $ocr, 'batches' => $batches]);
 
             $data[] = [
                 'groupUuid' => $project->group->uuid,
                 'message'   => $message,
             ];
-        }
-        return $data;
-    }
 
-    /**
-     * Set text for batch.
-     *
-     * @param $group
-     * @return string
-     */
-    private function setBatchText($group)
-    {
-        $ocr = '';
-        foreach ($group as $batch)
-        {
-            $records = $this->setRecordText($batch);
-
-            $ocr .= trans_choice('pages.ocr_batches', $batch['processed'], [
-                'batchId' => $this->batches === 0 ? 1 : $this->batches + 1 ,
-                'records' => $records
-            ]);
-
-            $this->batches++;
+            $count++;
         }
 
-        return $ocr;
-    }
-
-    /**
-     * Set the text for the OCR batch.
-     *
-     * @param $batch
-     * @return string
-     */
-    private function setRecordText($batch)
-    {
-        if ($this->batches === 0)
-        {
-            $records = trans_choice('pages.ocr_records', $this->batches, [
-                'processed' => $batch['processed'],
-                'total'     => $batch['total']
-            ]);
-        }
-        else
-        {
-            $records = trans_choice('pages.ocr_queue', $this->batches, ['batches_ahead' => $this->batches]);
-        }
-
-        return $records;
+        $this->dispatcher->fire(new PollOcrEvent($data));
     }
 }

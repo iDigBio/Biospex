@@ -41,17 +41,17 @@
                         </div>
                         <div class="col-md-2">
                             <button title="@lang('buttons.ocrTitle')" class="btn btn-success btn-sm" type="button"
-                                    {{ count($expedition->project->ocrQueue) !== 0 || $subjectsCount === 0 ? 'disabled' : '' }}
+                                    {{ count($expedition->project->ocrQueue) !== 0 || $expedition->stat->subject_count === 0 ? 'disabled' : '' }}
                                     onClick="location.href='{{ route('web.expeditions.ocr', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-repeat fa-lrg"></span>
-                                {{ count($expedition->project->ocrQueue) !== 0 || $subjectsCount === 0 ? trans('buttons.ocr') : trans('buttons.ocrDisabled') }}
+                                {{ count($expedition->project->ocrQueue) !== 0 || $expedition->stat->subject_count === 0 ? trans('buttons.ocr') : trans('buttons.ocrDisabled') }}
                             </button>
 
                         </div>
                         <div class="col-md-2">
                             @if (null === $expedition->workflowManager || $expedition->workflowManager->stopped === 1)
                                 <button title="@lang('buttons.processTitle')" class="btn btn-success btn-sm" type="button"
-                                        {{ $subjectsCount === 0 ? 'disabled' : '' }}
+                                        {{ $expedition->stat->subject_count === 0 ? 'disabled' : '' }}
                                         onClick="location.href='{{ route('web.expeditions.process', [$expedition->project->id, $expedition->id]) }}'">
                                     <span class="fa fa-play fa-lrg"></span> @lang('buttons.process')</button>
                             @else
@@ -61,8 +61,8 @@
                                         data-toggle="confirmation" data-placement="left"
                                         data-href="{{ route('web.expeditions.stop', [$expedition->project->id, $expedition->id]) }}"><span
                                             class="fa fa-stop fa-lrg"></span> @lang('buttons.stop')</button>
+                            @endif
                         </div>
-                        @endif
                     </div>
                 </div>
             </div>
@@ -70,12 +70,10 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <h4>{{ trans_choice('pages.subjects_assigned', 1) }}: <span
-                        id="subjectCount">{{ $subjectsCount }}</span></h4>
+            <h4>{{ trans_choice('pages.subjects_assigned', 1) }}: {{ $expedition->stat->subject_count }}</h4>
             <div class="table-responsive" id="jqtable">
                 <input type="hidden" id="url"
                        value="{{ URL::route('web.grids.show', [$expedition->project->id, $expedition->id]) }}">
-                <input type="hidden" id="showCb" value="0">
                 <input type="hidden" id="projectId" value="{{ $expedition->project->id }}">
                 <input type="hidden" id="expeditionId" value="{{ $expedition->id }}">
                 <table class="table table-bordered jgrid" id="jqGridExpedition"></table>

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
 use App\Exceptions\Handler;
+use JavaScript;
 
 class ExpeditionsController extends Controller
 {
@@ -131,7 +132,13 @@ class ExpeditionsController extends Controller
         if ( ! $this->checkPermissions($user, [$project, $project->group], 'create'))
         {
             return redirect()->route('web.projects.index');
-        };
+        }
+
+        JavaScript::put([
+            'subjectIds' => [],
+            'showCheckbox' => true
+        ]);
+
         return view('frontend.expeditions.create', compact('project'));
     }
 
@@ -173,10 +180,10 @@ class ExpeditionsController extends Controller
      */
     public function show($projectId, $expeditionId)
     {
-        $expedition = $this->expedition->with(['project.group', 'project.ocrQueue', 'downloads', 'workflowManager'])->find($expeditionId);
-        $subjectsCount = $expedition->subjectsCount;
+        $expedition = $this->expedition->with(['project.group', 'project.ocrQueue', 'downloads', 'workflowManager', 'stat'])->find($expeditionId);
+        JavaScript::put(['showCheckbox' => false]);
 
-        return view('frontend.expeditions.show', compact('expedition', 'subjectsCount'));
+        return view('frontend.expeditions.show', compact('expedition'));
     }
 
     /**
@@ -195,6 +202,11 @@ class ExpeditionsController extends Controller
             return redirect()->route('web.projects.index');
         }
 
+        JavaScript::put([
+            'subjectIds' => [],
+            'showCheckbox' => true
+        ]);
+
         return view('frontend.expeditions.clone', compact('expedition'));
     }
 
@@ -207,7 +219,12 @@ class ExpeditionsController extends Controller
     public function edit($projectId, $expeditionId)
     {
         $user = Request::user();
-        $expedition = $this->expedition->skipCache()->with(['project.group.permissions', 'workflowManager', 'subjects', 'nfnWorkflow'])->find($expeditionId);
+        $expedition = $this->expedition->skipCache()->with([
+            'project.group.permissions',
+            'workflowManager',
+            'subjects',
+            'nfnWorkflow'
+        ])->find($expeditionId);
 
         if ( ! $this->checkPermissions($user, [$expedition->project], 'update'))
         {
@@ -220,10 +237,12 @@ class ExpeditionsController extends Controller
             $subjectIds[] = $subject->_id;
         }
 
-        $showCb = $expedition->workflowManager === null ? 0 : 1;
-        $subjects = implode(',', $subjectIds);
+        JavaScript::put([
+            'subjectIds' => $subjectIds,
+            'showCheckbox' => $expedition->workflowManager === null
+        ]);
 
-        return view('frontend.expeditions.edit', compact('expedition', 'subjects', 'showCb', 'subjects'));
+        return view('frontend.expeditions.edit', compact('expedition'));
     }
 
     /**

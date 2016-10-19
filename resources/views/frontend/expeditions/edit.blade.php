@@ -18,7 +18,7 @@
                 {!! Form::open([
                 'route' => ['web.expeditions.update', $expedition->project->id, $expedition->id],
                 'method' => 'put',
-                'class' => 'form-horizontal',
+                'class' => 'form-horizontal gridForm',
                 'role' => 'form'
                 ]) !!}
 
@@ -62,21 +62,16 @@
 
                 <h4>{{ trans_choice('pages.subjects_assigned', 1) }} <span
                             id="max">{{ trans('pages.subjects_assigned_max', ['count' => Config::get('config.expedition_size')]) }}</span>:
-                    <span id="subjectCountHtml">{{ $expedition->subjectsCount }}</span></h4>
+                    <span id="subjectCountHtml"></span></h4>
                 <div class="table-responsive" id="jqtable">
-                    @if($showCb)
-                        <input type="hidden" id="showCb" value="0">
-                    @else
-                        <input type="hidden" id="showCb" value="1">
-                    @endif
                     <input type="hidden" id="url"
                            value="{{ URL::route('web.grids.edit', [$expedition->project->id, $expedition->id]) }}">
                     <input type="hidden" id="projectId" value="{{ $expedition->project->id }}">
                     <input type="hidden" id="expeditionId" value="{{ $expedition->id }}">
-                    <input type="hidden" id="subjectCount" name="subjectCount" value="{{ $expedition->subjectsCount }}">
+                    <input type="hidden" id="subjectCount" name="subjectCount">
                     <input type="hidden" id="maxCount" name="maxCount"
                            value="{{ Config::get('config.expedition_size') }}">
-                    <input type="hidden" id="subjectIds" name="subjectIds" value="{{ $subjects }}">
+                    <input type="hidden" id="subjectIds" name="subjectIds">
                     <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
                     <div id="pager"></div>
                     <br/>

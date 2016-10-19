@@ -18,7 +18,7 @@
                 {!! Form::open([
                 'route' => ['web.expeditions.store', $project->id],
                 'method' => 'post',
-                'class' => 'form-horizontal',
+                'class' => 'form-horizontal gridForm',
                 'role' => 'form'
                 ]) !!}
 
@@ -63,7 +63,7 @@
                     <input type="hidden" id="projectId" value="{{ $project->id }}">
                     <input type="hidden" id="subjectCount" name="subjectCount" value="">
                     <input type="hidden" id="maxCount" name="maxCount" value="{{ Config::get('config.expedition_size') }}">
-                    <input type="hidden" id="subjectIds" name="subjectIds" value="">
+                    <input type="hidden" id="subjectIds" name="subjectIds">
                     <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
                     <div id="pager"></div>
                     <br />
