@@ -240,7 +240,7 @@ class ActorImageService
     private function updateActor()
     {
         $this->processed++;
-        if ($this->processed % 50 === 0 || ($this->subjectCount - $this->processed) === 0)
+        if ($this->processed % 10 === 0 || ($this->subjectCount - $this->processed) === 0)
         {
             $this->actor->pivot->processed = $this->processed;
             $this->actor->pivot->save();
