@@ -7,7 +7,6 @@ ini_set('memory_limit', '1024M');
 use App\Exceptions\BiospexException;
 use App\Services\Actor\ActorInterface;
 use App\Services\Actor\ActorService;
-use Illuminate\Support\Facades\Log;
 
 class NfnPanoptesExport implements ActorInterface
 {
@@ -106,22 +105,16 @@ class NfnPanoptesExport implements ActorInterface
                 'height'      => $this->largeWidth
             ];
 
-            Log::alert('Getting images');
             $this->actorImageService->getImages($this->record->subjects, $fileAttributes, $actor);
-            Log::alert('Retreived all images. Building CSV Array');
 
             $this->buildCsvArray($this->record->subjects, $tempDir);
 
-            Log::alert('CSV Array built. Creating CSV');
             if ($this->createCsv($tempDir))
             {
-                Log::alert('Creating TAR file');
                 $tarGzFiles = $this->fileService->compressDirectories($this->service->workingDir, $this->nfnExportDir);
-                Log::alert('Creating download');
                 $this->actorRepoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
             }
 
-            Log::alert('Deleting directory');
             $this->fileService->filesystem->deleteDirectory($this->service->workingDir);
 
             $this->sendReport();
