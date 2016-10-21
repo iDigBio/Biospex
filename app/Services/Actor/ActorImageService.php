@@ -129,11 +129,11 @@ class ActorImageService
             'fulfilled'   => function ($response, $index) use ($attributes, $actor)
             {
                 $this->saveImage($response, $index, $attributes);
-                $this->updateActor();
             },
             'rejected'    => function ($reason, $index)
             {
                 preg_match('/message\s(.*)\sresponse/', $reason, $matches);
+                $this->updateActor();
                 $this->setMissingImages($this->subjects[$index], $matches[1]);
             }
         ]);
@@ -177,6 +177,7 @@ class ActorImageService
         }
 
         $this->imageService->destroySource();
+        $this->updateActor();
     }
 
     /**
@@ -239,11 +240,7 @@ class ActorImageService
      */
     private function updateActor()
     {
-        $this->processed++;
-        if ($this->processed % 10 === 0 || ($this->subjectCount - $this->processed) === 0)
-        {
-            $this->actor->pivot->processed = $this->processed;
-            $this->actor->pivot->save();
-        }
+        $this->actor->pivot->processed++;
+        $this->actor->pivot->save();
     }
 }
