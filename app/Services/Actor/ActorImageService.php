@@ -135,10 +135,9 @@ class ActorImageService
             },
             'rejected'    => function ($reason, $index)
             {
-                preg_match('/message\s(.*)\sresponse/', $reason, $matches);
                 Log::alert('Missing image');
                 $this->updateActor();
-                $this->setMissingImages($this->subjects[$index], $matches[1]);
+                $this->setMissingImages($this->subjects[$index], 'Could not retrieve image from uri.');
             }
         ]);
 
@@ -194,10 +193,9 @@ class ActorImageService
     private function checkImageExists($id, $attributes)
     {
         $total = count($attributes);
-
         foreach ($attributes as $attribute)
         {
-            $total -= count($this->fileService->filesystem->glob("{$attribute['destination']}/{$id}.{$attribute['extension']}"));
+            $total =- $this->fileService->filesystem->exists("{$attribute['destination']}/{$id}.{$attribute['extension']}") ? 1 : 0;
         }
 
         return $total === 0;
