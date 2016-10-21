@@ -9,6 +9,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use App\Services\Image\ImageService;
+use Illuminate\Support\Facades\Log;
 
 class ActorImageService
 {
@@ -108,6 +109,7 @@ class ActorImageService
             {
                 if ( ! $this->checkUriExists($subject))
                 {
+                    Log::alert('URI does not exist');
                     $this->updateActor();
 
                     continue;
@@ -115,6 +117,7 @@ class ActorImageService
 
                 if ($this->checkImageExists($subject->_id, $attributes))
                 {
+                    Log::alert('Image Exists');
                     $this->updateActor();
 
                     continue;
@@ -133,6 +136,7 @@ class ActorImageService
             'rejected'    => function ($reason, $index)
             {
                 preg_match('/message\s(.*)\sresponse/', $reason, $matches);
+                Log::alert('Missing image');
                 $this->updateActor();
                 $this->setMissingImages($this->subjects[$index], $matches[1]);
             }
