@@ -16,16 +16,18 @@ $(function () {
         Grid.loadSate = false;
         Grid.id = $(".jgrid").prop('id');
         Grid.obj = $("#" + Grid.id);
-        Grid.project = $("#projectId").val();
-        Grid.maxCount = $("#maxCount").val();
+        Grid.project = Laravel.projectId;
+        Grid.expeditionId = Laravel.expeditionId;
+        Grid.url = Laravel.url;
+        Grid.maxSubjects = Laravel.maxSubjects;
         Grid.subjectCountHtmlObj = $('#subjectCountHtml');
         Grid.subjectIdsObj = $('#subjectIds');
         Grid.showCheckbox = Laravel.showCheckbox;
-        if (Grid.showCheckbox)
-            Grid.subjectIdsObj.data('ids', Laravel.subjectIds);
+        Grid.subjectIdsObj.data('ids', Laravel.subjectIds);
+
         $.ajax({
             type: "GET",
-            url: "/projects/" + Grid.project + "/grids/load",
+            url: "/projects/" + Grid.projectId + "/grids/load",
             dataType: "json",
             success: jqBuildGrid()
         });
@@ -43,7 +45,6 @@ function jqBuildGrid() {
     return function (result) {
         var cm = result.colModel;
         mapFormatter(cm);
-        var url = $('#url').val();
         Grid.obj.jqGrid({
             jsonReader: {
                 repeatitems: false,
@@ -54,7 +55,7 @@ function jqBuildGrid() {
                 cell: "",
                 id: "_id"
             },
-            url: url,
+            url: Grid.url,
             mtype: "GET",
             datatype: "json",
             page: 1,
@@ -144,6 +145,13 @@ function jqBuildGrid() {
                 localStorage.clear();
                 window.location.reload();
             }
+        }).navButtonAdd('#pager', {
+            caption: '',
+            buttonicon: "glyphicon glyphicon-file",
+            title: "Export to CSV",
+            onClickButton: function () {
+                Grid.obj.jqGrid('excelExport',{'url':'/projects/{projects}/grids/expeditions/{expeditions}/export'});
+            }
         }).navButtonAdd('#' + Grid.id + '_toppager_left', {
             caption: '',
             buttonicon: "glyphicon glyphicon-list",
@@ -226,7 +234,7 @@ function mapFormatter(column) {
         "imagePreview": function (cellValue, opts, rowObjects) {
             var url = encodeURIComponent(cellValue);
             return '<a href="' + cellValue + '" target="_new">View Image</a>&nbsp;&nbsp;'
-                + '<a href="/images/preview?url=' + url + '" class="thumb-view">View Thumb</a>&nbsp;&nbsp;'
+                + '<a href="/img/preview?url=' + url + '" class="thumb-view">View Thumb</a>&nbsp;&nbsp;'
                 + '<a href="' + cellValue + '" class="url-view">View Url</a>';
         }
     };
@@ -276,7 +284,7 @@ function updateIdsOfSelectedRows(id, isSelected) {
         Grid.subjectIdsObj.data('ids').push(id);
     }
 
-    if (Grid.subjectIdsObj.data('ids').length > Grid.maxCount) {
+    if (Grid.subjectIdsObj.data('ids').length > Grid.maxSubjects) {
         $('#max').addClass('red');
     }
 

@@ -105,6 +105,11 @@ class GridsController extends Controller
     {
         return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
     }
+
+    public function export()
+    {
+        return;
+    }
 }
 
 

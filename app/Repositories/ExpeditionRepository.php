@@ -42,7 +42,7 @@ class ExpeditionRepository extends Repository implements Expedition, CacheableIn
 
         $values = [
             'subject_count' => count($subjects),
-            'transcriptions_total' => transcriptions_total($attributes['subjectCount']),
+            'transcriptions_total' => transcriptions_total(count($subjects)),
         ];
 
         $expedition->stat()->updateOrCreate(['expedition_id' => $expedition->id], $values);

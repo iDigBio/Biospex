@@ -64,9 +64,6 @@
             <h3>{{ trans_choice('pages.subjects_assigned', $subjectAssignedCount) }}: <span
                         id="subjectCount">{{ $subjectAssignedCount }}</span></h3>
             <div class="table-responsive" id="jqtable">
-                <input type="hidden" id="url" value="{{ route('web.grids.explore', [$project->id]) }}">
-                <input type="hidden" id="projectId" value="{{ $project->id }}">
-                <input type="hidden" id="expeditionId" value="0">
                 <table class="table table-bordered jgrid" id="jqGridExplore"></table>
                 <div id="pager"></div>
                 <br/>

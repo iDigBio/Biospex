@@ -1,12 +1,12 @@
 <?php
 
 // ImagesController
-$router->get('images/html', [
+$router->get('img/html', [
     'uses' => 'ImagesController@html',
     'as'   => 'images.html'
 ]);
 
-$router->get('images/preview', [
+$router->get('img/preview', [
     'uses' => 'ImagesController@preview',
     'as'   => 'images.preview'
 ]);

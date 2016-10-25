@@ -6,7 +6,7 @@ var replacements = [
     ['./lib/css/wysiwyg-color.css', ''],
     ['blue.png', '../img/blue.png'],
     ['blue@2x.png', '../img/blue@2x.png'],
-    ['images/', 'img/']
+    ['images/', '../img/'],
 ];
 
 var assets = './resources/assets';
@@ -107,5 +107,7 @@ elixir(function (mix) {
 
     // replace urls for images and fonts
     mix.replace('public/js/backend.js', replacements)
-        .replace('public/css/backend.css', replacements);
+        .replace('public/css/backend.css', replacements)
+        .replace('public/js/frontend.js', replacements)
+        .replace('public/css/frontend.css', replacements);
 });

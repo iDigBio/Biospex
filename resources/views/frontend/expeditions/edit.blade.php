@@ -64,13 +64,6 @@
                             id="max">{{ trans('pages.subjects_assigned_max', ['count' => Config::get('config.expedition_size')]) }}</span>:
                     <span id="subjectCountHtml"></span></h4>
                 <div class="table-responsive" id="jqtable">
-                    <input type="hidden" id="url"
-                           value="{{ URL::route('web.grids.edit', [$expedition->project->id, $expedition->id]) }}">
-                    <input type="hidden" id="projectId" value="{{ $expedition->project->id }}">
-                    <input type="hidden" id="expeditionId" value="{{ $expedition->id }}">
-                    <input type="hidden" id="subjectCount" name="subjectCount">
-                    <input type="hidden" id="maxCount" name="maxCount"
-                           value="{{ Config::get('config.expedition_size') }}">
                     <input type="hidden" id="subjectIds" name="subjectIds">
                     <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
                     <div id="pager"></div>

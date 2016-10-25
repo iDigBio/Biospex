@@ -6,3 +6,4 @@ $router->get('/projects/{projects}/grids/explore', ['as' => 'web.grids.explore',
 $router->get('/projects/{projects}/grids/expeditions/create', ['as' => 'web.grids.create', 'uses' => 'GridsController@expeditionsCreate']);
 $router->get('/projects/{projects}/grids/expeditions/{expeditions}', ['as' => 'web.grids.show', 'uses' => 'GridsController@expeditionsShow']);
 $router->get('/projects/{projects}/grids/expeditions/{expeditions}/edit', ['as' => 'web.grids.edit', 'uses' => 'GridsController@expeditionsEdit']);
+$router->get('/projects/{projects}/grids/export', ['as' => 'web.grids.export', 'uses' => 'GridsController@export']);

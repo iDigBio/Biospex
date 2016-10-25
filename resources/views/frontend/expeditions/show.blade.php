@@ -72,10 +72,6 @@
         <div class="col-md-12">
             <h4>{{ trans_choice('pages.subjects_assigned', 1) }}: {{ $expedition->stat->subject_count }}</h4>
             <div class="table-responsive" id="jqtable">
-                <input type="hidden" id="url"
-                       value="{{ URL::route('web.grids.show', [$expedition->project->id, $expedition->id]) }}">
-                <input type="hidden" id="projectId" value="{{ $expedition->project->id }}">
-                <input type="hidden" id="expeditionId" value="{{ $expedition->id }}">
                 <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
                 <div id="pager"></div>
                 <br/>

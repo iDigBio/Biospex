@@ -227,7 +227,14 @@ class ProjectsController extends Controller
             ->whereRaw(['expedition_ids.0' => ['$exists' => true]])
             ->count();
 
-        JavaScript::put(['showCheckbox' => false]);
+        JavaScript::put([
+            'projectId' => $project->id,
+            'expeditionId' => 0,
+            'subjectIds' => [],
+            'maxSubjects' => Config::get('config.expedition_size'),
+            'url' => route('web.grids.explore', [$project->id]),
+            'showCheckbox' => false
+        ]);
 
         return view('frontend.projects.explore', compact('project', 'subjectAssignedCount'));
     }

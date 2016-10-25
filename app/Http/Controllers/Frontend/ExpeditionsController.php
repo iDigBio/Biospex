@@ -135,7 +135,11 @@ class ExpeditionsController extends Controller
         }
 
         JavaScript::put([
+            'projectId' => $project->id,
+            'expeditionId' => 0,
             'subjectIds' => [],
+            'maxSubjects' => Config::get('config.expedition_size'),
+            'url' => route('web.grids.create', [$project->id]),
             'showCheckbox' => true
         ]);
 
@@ -180,8 +184,22 @@ class ExpeditionsController extends Controller
      */
     public function show($projectId, $expeditionId)
     {
-        $expedition = $this->expedition->with(['project.group', 'project.ocrQueue', 'downloads', 'workflowManager', 'stat'])->find($expeditionId);
-        JavaScript::put(['showCheckbox' => false]);
+        $expedition = $this->expedition->with([
+            'project.group',
+            'project.ocrQueue',
+            'downloads',
+            'workflowManager',
+            'stat'])
+            ->find($expeditionId);
+
+        JavaScript::put([
+            'projectId' => $expedition->project->id,
+            'expeditionId' => $expedition->id,
+            'subjectIds' => [],
+            'maxSubjects' => Config::get('config.expedition_size'),
+            'url' => route('web.grids.show', [$expedition->project->id, $expedition->id]),
+            'showCheckbox' => false
+        ]);
 
         return view('frontend.expeditions.show', compact('expedition'));
     }
@@ -203,7 +221,11 @@ class ExpeditionsController extends Controller
         }
 
         JavaScript::put([
+            'projectId' => $expedition->project->id,
+            'expeditionId' => 0,
             'subjectIds' => [],
+            'maxSubjects' => Config::get('config.expedition_size'),
+            'url' => route('web.grids.create', [$expedition->project->id]),
             'showCheckbox' => true
         ]);
 
@@ -238,7 +260,11 @@ class ExpeditionsController extends Controller
         }
 
         JavaScript::put([
+            'projectId' => $expedition->project->id,
+            'expeditionId' => $expedition->id,
             'subjectIds' => $subjectIds,
+            'maxSubjects' => Config::get('config.expedition_size'),
+            'url' => route('web.grids.edit', [$expedition->project->id, $expedition->id]),
             'showCheckbox' => $expedition->workflowManager === null
         ]);
 
