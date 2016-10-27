@@ -85,6 +85,7 @@ function jqBuildGrid() {
                 if (switchCbColumn()) return;
 
                 updateIdsOfSelectedRows(id, isSelected);
+                Grid.subjectCountHtmlObj.html(Grid.subjectIdsObj.data('ids').length);
             },
             onSelectAll: function (rowIds, isSelected) {
                 if (switchCbColumn()) return;
@@ -94,6 +95,7 @@ function jqBuildGrid() {
                     id = rowIds[i];
                     updateIdsOfSelectedRows(id, isSelected);
                 }
+                Grid.subjectCountHtmlObj.html(Grid.subjectIdsObj.data('ids').length);
             },
             loadComplete: function () {
                 setPreviewLinks();
@@ -101,6 +103,7 @@ function jqBuildGrid() {
                 if (switchCbColumn() || Grid.loadSate) return;
 
                 setMultipleSelect();
+                Grid.subjectCountHtmlObj.html(Grid.subjectIdsObj.data('ids').length);
             }
 
         }).navGrid("#pager", {
@@ -269,8 +272,6 @@ function setMultipleSelect() {
         }
     }
 
-    alert(Grid.subjectIdsObj.data('ids').length);
-    Grid.subjectCountHtmlObj.html(Grid.subjectIdsObj.data('ids').length);
     Grid.loadSate = false;
 }
 
@@ -290,8 +291,6 @@ function updateIdsOfSelectedRows(id, isSelected) {
     if (Grid.subjectIdsObj.data('ids').length > Grid.maxSubjects) {
         $('#max').addClass('red');
     }
-
-    Grid.subjectCountHtmlObj.html(Grid.subjectIdsObj.data('ids').length);
 }
 
 /**
