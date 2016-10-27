@@ -463,6 +463,10 @@ class ExpeditionsController extends Controller
      */
     public function delete($projectId, $expeditionId)
     {
+        session_flash_push('error', 'Edit ability temporarily disabled due to errors. We are working on the issues.');
+
+        return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
+
         $user = Request::user();
         $project = $this->project->with(['group.permissions'])->find($projectId);
 
