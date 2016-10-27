@@ -126,6 +126,11 @@ class ExpeditionsController extends Controller
      */
     public function create($id)
     {
+        // Success!
+        session_flash_push('error', 'Edit ability temporarily disabled due to errors. We are working on the issues.');
+
+        return redirect()->route('web.projects.index');
+
         $user = Request::user();
         $project = $this->project->with(['group.permissions'])->find($id);
 
@@ -214,6 +219,11 @@ class ExpeditionsController extends Controller
      */
     public function duplicate($projectId, $expeditionId)
     {
+        // Success!
+        session_flash_push('error', 'Edit ability temporarily disabled due to errors. We are working on the issues.');
+
+        return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
+
         $user = Request::user();
         $expedition = $this->expedition->with(['project.group.permissions'])->find($expeditionId);
 
@@ -244,7 +254,7 @@ class ExpeditionsController extends Controller
     public function edit($projectId, $expeditionId)
     {
         // Success!
-        session_flash_push('success', 'Edit ability temporarily disabled due to errors. We are working on the issues.');
+        session_flash_push('error', 'Edit ability temporarily disabled due to errors. We are working on the issues.');
 
         return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
 
