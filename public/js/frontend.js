@@ -4917,10 +4917,13 @@ function jqBuildGrid() {
             loadComplete: function () {
                 setPreviewLinks();
 
-                if (switchCbColumn() || Grid.loadSate) return;
+                if (switchCbColumn() || Grid.loadSate) {
+                    Grid.subjectCountHtmlObj.html(Grid.subjectIdsObj.data('ids').length);
+                    return;
+                }
 
                 setMultipleSelect();
-                alert(Grid.subjectIdsObj.data('ids').length);
+
                 Grid.subjectCountHtmlObj.html(Grid.subjectIdsObj.data('ids').length);
             }
 
