@@ -140,6 +140,7 @@ class ExpeditionsController extends Controller
             'subjectIds' => [],
             'maxSubjects' => Config::get('config.expedition_size'),
             'url' => route('web.grids.create', [$project->id]),
+            'exportUrl' => '',
             'showCheckbox' => true
         ]);
 
@@ -198,6 +199,7 @@ class ExpeditionsController extends Controller
             'subjectIds' => [],
             'maxSubjects' => Config::get('config.expedition_size'),
             'url' => route('web.grids.show', [$expedition->project->id, $expedition->id]),
+            'exportUrl' => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'showCheckbox' => false
         ]);
 
@@ -226,6 +228,7 @@ class ExpeditionsController extends Controller
             'subjectIds' => [],
             'maxSubjects' => Config::get('config.expedition_size'),
             'url' => route('web.grids.create', [$expedition->project->id]),
+            'exportUrl' => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'showCheckbox' => true
         ]);
 
@@ -265,6 +268,7 @@ class ExpeditionsController extends Controller
             'subjectIds' => $subjectIds,
             'maxSubjects' => Config::get('config.expedition_size'),
             'url' => route('web.grids.edit', [$expedition->project->id, $expedition->id]),
+            'exportUrl' => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'showCheckbox' => $expedition->workflowManager === null
         ]);
 

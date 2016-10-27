@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Exceptions\MongoDbException;
 use App\Http\Controllers\Controller;
+use Config;
+use Exception;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Http\Request;
-
 use App\Repositories\Contracts\Header;
 use App\Services\Grid\JqGridJsonEncoder;
 use App\Repositories\Contracts\Project;
+use MongoCollection;
+use Response;
+use App\Services\Csv\Csv;
 
 class GridsController extends Controller
 {
@@ -49,6 +55,10 @@ class GridsController extends Controller
      * @var Request
      */
     private $request;
+    /**
+     * @var Csv
+     */
+    private $csv;
 
     /**
      * GridsController constructor.
@@ -56,18 +66,21 @@ class GridsController extends Controller
      * @param Project $project
      * @param Header $header
      * @param Request $request
+     * @param Csv $csv
      */
     public function __construct(
         JqGridJsonEncoder $grid,
         Project $project,
         Header $header,
-        Request $request
+        Request $request,
+        Csv $csv
     )
     {
         $this->grid = $grid;
         $this->project = $project;
         $this->header = $header;
         $this->request = $request;
+        $this->csv = $csv;
 
         $this->projectId = (int) $this->request->route('projects');
         $this->expeditionId = (int) $this->request->route('expeditions');
@@ -106,9 +119,61 @@ class GridsController extends Controller
         return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
     }
 
-    public function export()
+    /**
+     * @param $projectId
+     * @param null $expeditionId
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @throws MongoDbException
+     */
+    public function export($projectId, $expeditionId = null)
     {
-        return;
+        try
+        {
+            $databaseManager = app(DatabaseManager::class);
+            $db = $databaseManager->connection('mongodb')->getMongoClient()->selectDB(Config::get('database.connections.mongodb.database'));
+
+            $collection =  new MongoCollection($db, 'subjects');
+
+            $query = null === $expeditionId ?
+                ['project_id' => (int) $projectId] :
+                ['project_id' => (int) $projectId, 'expedition_ids' => (int) $expeditionId];
+
+            $cursor = $collection->find($query);
+
+            $filename = 'grid_export_' . $projectId . '.csv';
+            $temp = storage_path('scratch/' . $filename);
+            $this->csv->writerCreateFromPath($temp);
+
+            $i = 0;
+            while($cursor->hasNext())
+            {
+                $cursor->next();
+                $record = $cursor->current();
+                unset($record['_id'], $record['occurrence']);
+                $record['expedition_ids'] = trim(implode(', ', $record['expedition_ids']), ',');
+                $record['updated_at'] = date('Y-m-d H:i:s', $record['updated_at']->sec);
+                $record['created_at'] = date('Y-m-d H:i:s', $record['created_at']->sec);
+
+                if ($i === 0)
+                {
+                    $this->csv->insertOne(array_keys($record));
+                }
+
+                $this->csv->insertOne($record);
+                $i++;
+            }
+        }
+        catch (Exception $e)
+        {
+            throw new MongoDbException($e);
+        }
+
+        $headers = [
+            'Content-type' => 'text/csv; charset=utf-8',
+            'Content-disposition' => 'attachment; filename="grid_export.csv"'
+        ];
+
+        return Response::download($temp, $filename, $headers);
     }
 }
 
