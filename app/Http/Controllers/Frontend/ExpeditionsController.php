@@ -243,6 +243,11 @@ class ExpeditionsController extends Controller
      */
     public function edit($projectId, $expeditionId)
     {
+        // Success!
+        session_flash_push('success', 'Edit ability temporarily disabled due to errors. We are working on the issues.');
+
+        return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
+
         $user = Request::user();
         $expedition = $this->expedition->skipCache()->with([
             'project.group.permissions',
