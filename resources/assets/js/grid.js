@@ -19,6 +19,7 @@ $(function () {
         Grid.project = Laravel.projectId;
         Grid.expeditionId = Laravel.expeditionId;
         Grid.url = Laravel.url;
+        Grid.exportUrl = Laravel.exportUrl;
         Grid.maxSubjects = Laravel.maxSubjects;
         Grid.subjectCountHtmlObj = $('#subjectCountHtml');
         Grid.subjectIdsObj = $('#subjectIds');
@@ -149,8 +150,9 @@ function jqBuildGrid() {
             caption: '',
             buttonicon: "glyphicon glyphicon-file",
             title: "Export to CSV",
-            onClickButton: function () {
-                Grid.obj.jqGrid('excelExport',{'url':'/projects/{projects}/grids/expeditions/{expeditions}/export'});
+            onClickButton: function (event) {
+                event.preventDefault();
+                Grid.obj.jqGrid('excelExport',{tag:'excel', url:Grid.exportUrl});
             }
         }).navButtonAdd('#' + Grid.id + '_toppager_left', {
             caption: '',
