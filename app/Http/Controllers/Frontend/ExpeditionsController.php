@@ -261,7 +261,6 @@ class ExpeditionsController extends Controller
         {
             $subjectIds[] = $subject->_id;
         }
-        dd($subjectIds);
 
         JavaScript::put([
             'projectId' => $expedition->project->id,

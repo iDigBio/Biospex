@@ -269,6 +269,7 @@ function setMultipleSelect() {
         }
     }
 
+    alert(Grid.subjectIdsObj.data('ids').length);
     Grid.subjectCountHtmlObj.html(Grid.subjectIdsObj.data('ids').length);
     Grid.loadSate = false;
 }
