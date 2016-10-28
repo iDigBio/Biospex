@@ -23,6 +23,7 @@ class MissingMetaIdentifier extends BiospexException {}
 class ExtensionMissingException extends BiospexException {}
 class OcrBatchProcessException extends BiospexException {}
 class MongoDbException extends BiospexException {}
+class NfnApiException extends BiospexException {}
 
 
 

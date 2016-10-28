@@ -9,13 +9,13 @@
 namespace App\Jobs;
 
 
+use App\Exceptions\NfnApiException;
 use App\Models\NfnWorkflow;
 use App\Services\Api\NfnApi;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class UpdateNfnWorkflowJob extends Job implements ShouldQueue
 {
@@ -40,6 +40,7 @@ class UpdateNfnWorkflowJob extends Job implements ShouldQueue
      * Execute job.
      *
      * @param NfnApi $nfnApi
+     * @throws NfnApiException
      */
     public function handle(NfnApi $nfnApi)
     {
@@ -58,12 +59,13 @@ class UpdateNfnWorkflowJob extends Job implements ShouldQueue
      * Retrieve workflow from api.
      *
      * @param NfnApi $nfnApi
+     * @throws NfnApiException
      */
     private function retrieveWorkflow(NfnApi $nfnApi)
     {
         $nfnApi->setProvider();
 
-        $result = json_decode($nfnApi->getWorkflow($this->nfnWorkflow->workflow), true);
+        $result = $nfnApi->getWorkflow($this->nfnWorkflow->workflow);
 
         $workflow = $result['workflows'][0];
 

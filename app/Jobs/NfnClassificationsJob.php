@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Exceptions\NfnApiException;
 use App\Repositories\Contracts\Expedition;
 use App\Services\Api\NfnApi;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -42,6 +43,7 @@ class NfnClassificationsJob extends Job implements ShouldQueue
      *
      * @param Expedition $expeditionRepo
      * @param NfnApi $api
+     * @throws NfnApiException
      */
     public function handle(Expedition $expeditionRepo, NfnApi $api)
     {
@@ -56,9 +58,9 @@ class NfnClassificationsJob extends Job implements ShouldQueue
             return;
         }
 
-        $results = $this->retrieveClassifications($api, $expedition);
+        $classifications = $this->retrieveClassifications($api, $expedition);
 
-        $this->processClassifications($expedition, $results['classifications']);
+        $this->processClassifications($expedition, $classifications);
 
         $this->dispatch((new ExpeditionStatJob($expedition->id))->onQueue(Config::get('config.beanstalkd.job')));
 
@@ -91,6 +93,7 @@ class NfnClassificationsJob extends Job implements ShouldQueue
      * @param NfnApi $api
      * @param $expedition
      * @return mixed
+     * @throws NfnApiException
      */
     private function retrieveClassifications(NfnApi $api, $expedition)
     {
@@ -103,7 +106,7 @@ class NfnClassificationsJob extends Job implements ShouldQueue
             'page_size'   => Config::get('config.expedition_size') * 3
         ];
 
-        return json_decode($api->getClassifications($values), true);
+        return $api->getClassifications($values);
     }
 
     /**
