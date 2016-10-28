@@ -75,6 +75,7 @@
                 <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
                 <div id="pager"></div>
                 <br/>
+                <input type="hidden" id="subjectIds" name="subjectIds">
                 <button id="savestate" class="btn btn-default">Save Grid State</button>
                 <button id="loadstate" class="btn btn-default">Load Grid State</button>
             </div>

@@ -34,7 +34,7 @@
                     <td>{{ link_to_route('web.expeditions.show', $expedition->expedition_title, ['projects' => $expedition->project_id, 'expeditions' => $expedition->expedition_id]) }}</td>
                     <td>{{ $expedition->expedition_description }}</td>
                     <td>{{ convert_time_zone($expedition->expedition_created_at, 'Y-m-d', $user->timezone) }}</td>
-                    <td>{{ link_to_route('web.groups.show', $expedition->group_label, ['groups' => $expedition->group_id]) }}</td>
+                    <td>{{ link_to_route('web.groups.show', $expedition->group_name, ['groups' => $expedition->group_id]) }}</td>
                     <td>{{ link_to_route('web.projects.show', $expedition->project_title, ['projects' => $expedition->project_id]) }}</td>
                     <td>{{ $expedition->subject_count }}</td>
                     @if( ! is_null($expedition->actor_expedition_id))
