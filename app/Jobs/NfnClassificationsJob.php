@@ -62,7 +62,7 @@ class NfnClassificationsJob extends Job implements ShouldQueue
 
         $this->dispatch((new ExpeditionStatJob($expedition->id))->onQueue(Config::get('config.beanstalkd.job')));
 
-        if ( ! $expedition->project->amChart->queued)
+        if ( $expedition->project->amChart === null || ! $expedition->project->amChart->queued )
         {
             $this->dispatch((new AmChartJob($expedition->project->id))->onQueue(Config::get('config.beanstalkd.job')));
         }
