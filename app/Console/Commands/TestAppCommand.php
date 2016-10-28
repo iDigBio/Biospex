@@ -42,7 +42,7 @@ class TestAppCommand extends Command
 
     public function fire()
     {
-        $ids = [13 => 51]; //, 13 => 53, 17 => 47, 34 => 59];
+        $ids = [13 => 53, 17 => 47, 34 => 59];
 
         foreach ($ids as $projectId => $id)
         {
