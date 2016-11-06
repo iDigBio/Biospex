@@ -193,6 +193,11 @@ class ExpeditionsController extends Controller
             'stat'])
             ->find($expeditionId);
 
+        $user = Request::user();
+        if ($user->id === 1)
+        {
+            dd($expedition);
+        }
         $btnDisable =  ($expedition->project->ocrQueue !== null &&
                         count($expedition->project->ocrQueue) !== 0) ||
                             $expedition->stat->subject_count === 0 ? true : false;
