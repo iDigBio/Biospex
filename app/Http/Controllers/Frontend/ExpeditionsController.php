@@ -193,6 +193,10 @@ class ExpeditionsController extends Controller
             'stat'])
             ->find($expeditionId);
 
+        $btnDisable =  ($expedition->project->ocrQueue !== null &&
+                        count($expedition->project->ocrQueue) !== 0) ||
+                            $expedition->stat->subject_count === 0 ? true : false;
+
         JavaScript::put([
             'projectId' => $expedition->project->id,
             'expeditionId' => $expedition->id,
@@ -203,7 +207,7 @@ class ExpeditionsController extends Controller
             'showCheckbox' => false
         ]);
 
-        return view('frontend.expeditions.show', compact('expedition'));
+        return view('frontend.expeditions.show', compact('expedition', 'btnDisable'));
     }
 
     /**

@@ -41,10 +41,10 @@
                         </div>
                         <div class="col-md-2">
                             <button title="@lang('buttons.ocrTitle')" class="btn btn-success btn-sm" type="button"
-                                    {{ count($expedition->project->ocrQueue) !== 0 || $expedition->stat->subject_count === 0 ? 'disabled' : '' }}
+                                    {{ $btnDisable ? 'disabled' : '' }}
                                     onClick="location.href='{{ route('web.expeditions.ocr', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-repeat fa-lrg"></span>
-                                {{ count($expedition->project->ocrQueue) !== 0 || $expedition->stat->subject_count === 0 ? trans('buttons.ocr') : trans('buttons.ocrDisabled') }}
+                                {{ $btnDisable ? trans('buttons.ocr') : trans('buttons.ocrDisabled') }}
                             </button>
 
                         </div>
