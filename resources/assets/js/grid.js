@@ -16,7 +16,6 @@ $(function () {
         Grid.loadSate = false;
         Grid.id = $(".jgrid").prop('id');
         Grid.obj = $("#" + Grid.id);
-        Grid.project = Laravel.projectId;
         Grid.expeditionId = Laravel.expeditionId;
         Grid.url = Laravel.url;
         Grid.exportUrl = Laravel.exportUrl;
@@ -28,7 +27,7 @@ $(function () {
 
         $.ajax({
             type: "GET",
-            url: "/projects/" + Grid.projectId + "/grids/load",
+            url: "/projects/" + Laravel.projectId + "/grids/load",
             dataType: "json",
             success: jqBuildGrid()
         });

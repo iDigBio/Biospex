@@ -74,7 +74,7 @@ class JqGridJsonEncoder
      */
     public function loadGridModel($projectId, $route)
     {
-        
+
         $this->route = $route;
 
         $result = $this->header->skipCache()->where(['project_id' => $projectId])->first();
