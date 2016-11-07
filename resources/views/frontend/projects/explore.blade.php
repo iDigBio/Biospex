@@ -67,7 +67,7 @@
                 <table class="table table-bordered jgrid" id="jqGridExplore"></table>
                 <div id="pager"></div>
                 <br/>
-                <input type="hidden" id="subjectIds" name="subjectIds">
+                {!! Form::hidden('subjectIds', '', ['name' => 'subjectIds', 'id' => 'subjectIds']) !!}
                 <button id="savestate" class="btn btn-default">Save Grid State</button>
                 <button id="loadstate" class="btn btn-default">Load Grid State</button>
             </div>

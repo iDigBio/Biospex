@@ -58,7 +58,6 @@
 
                 <h4>{{ trans_choice('pages.subjects_assigned', 1) }} <span id="max">{{ trans('pages.subjects_assigned_max') }}</span>: <span id="subjectCountHtml">0</span></h4>
                 <div class="table-responsive" id="jqtable">
-                    <input type="hidden" id="subjectIds" name="subjectIds">
                     <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
                     <div id="pager"></div>
                     <br />
@@ -68,6 +67,7 @@
                 <br />
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
+                        {!! Form::hidden('subjectIds', '', ['name' => 'subjectIds', 'id' => 'subjectIds']) !!}
                         {!! Form::hidden('project_id', $expedition->project->id) !!}
                         {!! Form::submit(trans('buttons.create'), ['class' => 'btn btn-primary']) !!}
                         {!! link_to(URL::previous(), trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger']) !!}
