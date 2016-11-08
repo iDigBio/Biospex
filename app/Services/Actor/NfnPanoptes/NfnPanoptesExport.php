@@ -226,6 +226,7 @@ class NfnPanoptesExport implements ActorInterface
     {
         if (0 === count($this->csvExport))
         {
+            Log::alert('CSV Export count is zero');
             return false;
         }
 
