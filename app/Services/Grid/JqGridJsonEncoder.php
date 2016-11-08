@@ -1,4 +1,4 @@
-<?php  namespace App\Services\Grid;
+<?php namespace App\Services\Grid;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
@@ -24,7 +24,7 @@ class JqGridJsonEncoder
      * @var Header
      */
     protected $header;
-    
+
     /**
      * @var
      */
@@ -60,7 +60,7 @@ class JqGridJsonEncoder
         $this->subject = $subject;
         $this->expedition = $expedition;
         $this->header = $header;
-        
+
         $this->defaultGridVisible = Config::get('config.defaultGridVisible');
         $this->defaultSubGridVisible = Config::get('config.defaultSubGridVisible');
     }
@@ -78,7 +78,9 @@ class JqGridJsonEncoder
         $this->route = $route;
 
         $result = $this->header->skipCache()->where(['project_id' => $projectId])->first();
-        if (empty($result)) {
+        if (empty($result))
+        {
+
             $headers['image'] = [
                 'assigned',
                 'id',
@@ -92,6 +94,8 @@ class JqGridJsonEncoder
             array_unshift($headers['image'], 'assigned', 'id');
             array_push($headers['image'], 'ocr');
         }
+
+        array_unshift($headers['image'], 'actions');
 
         $colNames = $headers['image'];
         $colModel = $this->setColModel($colNames);
@@ -129,7 +133,8 @@ class JqGridJsonEncoder
     protected function setColModel($colNames)
     {
         $colModel = [];
-        foreach ($colNames as $column) {
+        foreach ($colNames as $column)
+        {
             $colModel[] = $this->formatGridColumn($column);
         }
 
@@ -144,23 +149,48 @@ class JqGridJsonEncoder
      */
     protected function formatGridColumn($column)
     {
-        if ($column === 'assigned') {
+        if ($column === 'actions')
+        {
+            return $this->setActionsColumnProperties($column);
+        }
+
+        if ($column === 'assigned')
+        {
             return $this->buildExpeditionCheckbox();
         }
 
         $col = $this->setNormalColumnProperties($column);
 
-        if ($column === 'ocr') {
+        if ($column === 'ocr')
+        {
             $col = array_merge($col, [
-                'title' => false,
-                'classes' => 'ocrPreview',
+                'title'    => false,
+                'classes'  => 'ocrPreview',
                 'cellattr' => 'addDataAttr'
             ]);
         }
 
-        if ($column === 'accessURI') {
+        if ($column === 'accessURI')
+        {
             $col = $this->addUriLink($col);
         }
+
+        return $col;
+    }
+
+    protected function setActionsColumnProperties($column)
+    {
+        $col = [
+            'name'          => 'actions',
+            'index'         => $column,
+            'key'           => false,
+            'resizable'     => false,
+            'search'        => false,
+            'sortable'      => false,
+            'editable'      => false,
+            'width' => 20,
+            'formatter' => 'deleteLink'
+        ];
 
         return $col;
     }
@@ -170,17 +200,17 @@ class JqGridJsonEncoder
         $default = $image ? $this->defaultGridVisible : $this->defaultSubGridVisible;
 
         $col = [
-            'name' => $column,
-            'index' => $column,
-            'key' => false,
-            'resizable' => true,
-            'search' => true,
-            'sortable' => true,
-            'editable' => false,
-            'hidden' =>  in_array($column, $default) ? false : true,
+            'name'          => $column,
+            'index'         => $column,
+            'key'           => false,
+            'resizable'     => true,
+            'search'        => true,
+            'sortable'      => true,
+            'editable'      => false,
+            'hidden'        => in_array($column, $default) ? false : true,
             'searchoptions' => ['sopt' => [
                 'eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn'
-            ], 'value' => ':Any;true:Yes;false:No']
+            ], 'value'                 => ':Any;true:Yes;false:No']
         ];
 
         return $col;
@@ -194,10 +224,10 @@ class JqGridJsonEncoder
     protected function addUriLink($col)
     {
         return array_merge($col, [
-            'classes' => 'thumbPreview',
+            'classes'   => 'thumbPreview',
             'formatter' => 'imagePreview'
         ]);
-        
+
     }
 
     /**
@@ -207,12 +237,12 @@ class JqGridJsonEncoder
     protected function buildExpeditionCheckbox()
     {
         return [
-            'name' => 'expedition_ids',
-            'index' => 'expedition_ids',
-            'width' => 100,
-            'align' => 'center',
-            'hidedlg' => true,
-            'stype' => 'select',
+            'name'          => 'expedition_ids',
+            'index'         => 'expedition_ids',
+            'width'         => 100,
+            'align'         => 'center',
+            'hidedlg'       => true,
+            'stype'         => 'select',
             'searchoptions' => ['sopt' => ['eq'], 'value' => 'all:All;true:Yes;false:No']
         ];
     }
@@ -243,7 +273,8 @@ class JqGridJsonEncoder
 
         $limit = count($limit) === 0 ? $count : $limit;
 
-        if (!is_int($count)) {
+        if ( ! is_int($count))
+        {
             throw new Exception('The method getTotalNumberOfRows must return an integer');
         }
 
@@ -255,33 +286,44 @@ class JqGridJsonEncoder
         $start = $start < 0 ? 0 : $start;
         $limit *= $page;
 
-        if (empty($postedData['pivotRows'])) {
+        if (empty($postedData['pivotRows']))
+        {
             $rows = $this->subject->getRows($limit, $start, $sidx, $sord, $filters);
-        } else {
+        }
+        else
+        {
             $rows = json_decode($postedData['pivotRows'], true);
         }
 
-        if (!is_array($rows) || (isset($rows[0]) && !is_array($rows[0]))) {
+        if ( ! is_array($rows) || (isset($rows[0]) && ! is_array($rows[0])))
+        {
             throw new Exception('The method getRows must return an array of arrays, example: array(array("column1"  =>  "1-1", "column2" => "1-2"), array("column1" => "2-1", "column2" => "2-2"))');
         }
 
         // Prefix occurrence fields, merge into row, unset occurrence
-        foreach ($rows as $key => $row) {
+        foreach ($rows as $key => $row)
+        {
             $row['occurrence'] = array_combine(
-                array_map(function($k){ return 'occurrence.'.$k; }, array_keys($row['occurrence'])), $row['occurrence']
+                array_map(function ($k)
+                {
+                    return 'occurrence.' . $k;
+                }, array_keys($row['occurrence'])), $row['occurrence']
             );
 
             $rows[$key] = array_merge($row, $row['occurrence']);
             unset($rows[$key]['occurrence']);
         }
 
-        if (isset($postedData['exportFormat'])) {
-        } else {
+        if (isset($postedData['exportFormat']))
+        {
+        }
+        else
+        {
             return json_encode([
-                'page' => $page,
-                'total' => $totalPages,
+                'page'    => $page,
+                'total'   => $totalPages,
                 'records' => $count,
-                'rows' => $rows,
+                'rows'    => $rows,
             ]);
         }
     }
@@ -297,15 +339,16 @@ class JqGridJsonEncoder
 
         $row = $this->subject->skipCache()->where(['_id' => $subjectId])->first()->toArray();
 
-        if (! $row) {
+        if ( ! $row)
+        {
             throw new Exception('The method must return row');
         }
 
         return json_encode([
-            'page' => 1,
-            'total' => 1,
+            'page'    => 1,
+            'total'   => 1,
             'records' => count($row) === 0 ? 0 : 1,
-            'rows' => [$row['occurrence']],
+            'rows'    => [$row['occurrence']],
         ]);
     }
 
@@ -320,9 +363,12 @@ class JqGridJsonEncoder
     {
         $expedition = $this->expedition->skipCache()->find($id);
 
-        if ($data['selected'] === 'true') {
+        if ($data['selected'] === 'true')
+        {
             $expedition->subjects()->sync($data['ids'], false);
-        } else {
+        }
+        else
+        {
             $this->subject->detachSubjects($data['ids'], $id);
         }
 
@@ -388,10 +434,13 @@ class JqGridJsonEncoder
      */
     public function setTotalPages($count, $limit)
     {
-        if ($count > 0) {
+        if ($count > 0)
+        {
             $totalPages = ceil($count / $limit);
             return $totalPages;
-        } else {
+        }
+        else
+        {
             $totalPages = 0;
             return $totalPages;
         }
