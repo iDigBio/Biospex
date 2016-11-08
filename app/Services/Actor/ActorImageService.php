@@ -190,7 +190,7 @@ class ActorImageService
         $total = count($attributes);
         foreach ($attributes as $attribute)
         {
-            $total =- $this->fileService->filesystem->exists("{$attribute['destination']}/{$id}.{$attribute['extension']}") ? 1 : 0;
+            $total -= count($this->fileService->filesystem->glob("{$attribute['destination']}/{$id}.{$attribute['extension']}"));
         }
 
         return $total === 0;
