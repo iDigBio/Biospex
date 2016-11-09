@@ -80,7 +80,6 @@ class JqGridJsonEncoder
         $result = $this->header->skipCache()->where(['project_id' => $projectId])->first();
         if (empty($result))
         {
-
             $headers['image'] = [
                 'assigned',
                 'id',
@@ -94,8 +93,6 @@ class JqGridJsonEncoder
             array_unshift($headers['image'], 'assigned', 'id');
             array_push($headers['image'], 'ocr');
         }
-
-        array_unshift($headers['image'], 'actions');
 
         $colNames = $headers['image'];
         $colModel = $this->setColModel($colNames);
@@ -149,11 +146,6 @@ class JqGridJsonEncoder
      */
     protected function formatGridColumn($column)
     {
-        if ($column === 'actions')
-        {
-            return $this->setActionsColumnProperties($column);
-        }
-
         if ($column === 'assigned')
         {
             return $this->buildExpeditionCheckbox();
@@ -174,23 +166,6 @@ class JqGridJsonEncoder
         {
             $col = $this->addUriLink($col);
         }
-
-        return $col;
-    }
-
-    protected function setActionsColumnProperties($column)
-    {
-        $col = [
-            'name'          => 'actions',
-            'index'         => $column,
-            'key'           => false,
-            'resizable'     => false,
-            'search'        => false,
-            'sortable'      => false,
-            'editable'      => false,
-            'width' => 20,
-            'formatter' => 'deleteLink'
-        ];
 
         return $col;
     }
