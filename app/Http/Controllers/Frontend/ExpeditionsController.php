@@ -141,7 +141,8 @@ class ExpeditionsController extends Controller
             'maxSubjects' => Config::get('config.expedition_size'),
             'url' => route('web.grids.create', [$project->id]),
             'exportUrl' => '',
-            'showCheckbox' => true
+            'showCheckbox' => true,
+            'explore' => false
         ]);
 
         return view('frontend.expeditions.create', compact('project'));
@@ -204,7 +205,8 @@ class ExpeditionsController extends Controller
             'maxSubjects' => Config::get('config.expedition_size'),
             'url' => route('web.grids.show', [$expedition->project->id, $expedition->id]),
             'exportUrl' => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
-            'showCheckbox' => false
+            'showCheckbox' => false,
+            'explore' => false
         ]);
 
         return view('frontend.expeditions.show', compact('expedition', 'btnDisable'));
@@ -233,7 +235,8 @@ class ExpeditionsController extends Controller
             'maxSubjects' => Config::get('config.expedition_size'),
             'url' => route('web.grids.create', [$expedition->project->id]),
             'exportUrl' => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
-            'showCheckbox' => true
+            'showCheckbox' => true,
+            'explore' => false
         ]);
 
         return view('frontend.expeditions.clone', compact('expedition'));
@@ -273,7 +276,8 @@ class ExpeditionsController extends Controller
             'maxSubjects' => Config::get('config.expedition_size'),
             'url' => route('web.grids.edit', [$expedition->project->id, $expedition->id]),
             'exportUrl' => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
-            'showCheckbox' => $expedition->workflowManager === null
+            'showCheckbox' => $expedition->workflowManager === null,
+            'explore' => false
         ]);
 
         return view('frontend.expeditions.edit', compact('expedition'));

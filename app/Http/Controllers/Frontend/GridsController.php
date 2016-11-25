@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Exceptions\MongoDbException;
 use App\Http\Controllers\Controller;
+use App\Repositories\Contracts\Subject;
 use Config;
 use Exception;
 use Illuminate\Database\DatabaseManager;
@@ -174,6 +175,31 @@ class GridsController extends Controller
         ];
 
         return Response::download($temp, $filename, $headers);
+    }
+
+
+    public function delete(Subject $subject, $projectId)
+    {
+        if ( ! $this->request->ajax())
+        {
+            return response()->json(['error' => 'Delete must be performed via ajax.'], 404);
+        }
+
+        if ( ! $this->request->get('oper'))
+        {
+            return response()->json(['error' => 'Only delete operation allowed.'], 404);
+        }
+
+        $ids = explode(',', $this->request->get('id'));
+
+        foreach ($ids as $id)
+        {
+            $subject->delete($id);
+        }
+
+
+        return response()->json(['success']);
+
     }
 }
 

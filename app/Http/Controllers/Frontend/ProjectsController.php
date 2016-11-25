@@ -234,7 +234,8 @@ class ProjectsController extends Controller
             'maxSubjects' => Config::get('config.expedition_size'),
             'url' => route('web.grids.explore', [$project->id]),
             'exportUrl' => route('web.grids.project.export', [$project->id]),
-            'showCheckbox' => false
+            'showCheckbox' => true,
+            'explore' => true
         ]);
 
         return view('frontend.projects.explore', compact('project', 'subjectAssignedCount'));

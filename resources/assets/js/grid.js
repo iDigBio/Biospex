@@ -16,6 +16,7 @@ $(function () {
         Grid.loadSate = false;
         Grid.id = $(".jgrid").prop('id');
         Grid.obj = $("#" + Grid.id);
+        Grid.projectId = Laravel.projectId;
         Grid.expeditionId = Laravel.expeditionId;
         Grid.url = Laravel.url;
         Grid.exportUrl = Laravel.exportUrl;
@@ -23,11 +24,12 @@ $(function () {
         Grid.subjectCountHtmlObj = $('#subjectCountHtml');
         Grid.subjectIdsObj = $('#subjectIds');
         Grid.showCheckbox = Laravel.showCheckbox;
+        Grid.explore = Laravel.explore;
         Grid.subjectIdsObj.data('ids', Laravel.subjectIds);
 
         $.ajax({
             type: "GET",
-            url: "/projects/" + Laravel.projectId + "/grids/load",
+            url: "/projects/" + Grid.projectId + "/grids/load",
             dataType: "json",
             success: jqBuildGrid()
         });
@@ -42,8 +44,27 @@ $(function () {
 
 function jqBuildGrid() {
 
-    return function (result) {
-        var cm = result.colModel;
+        return function (result) {
+        var cm = result.colModel,
+            delSettings = {
+                onclickSubmit: function () {
+                    var $this = $(this), p = $this.jqGrid("getGridParam"), newPage = p.page;
+
+                    if (p.lastpage > 1) {// on the multipage grid reload the grid
+                        if (p.reccount === 1 && newPage === p.lastpage) {
+                            // if after deliting there are no rows on the current page
+                            // which is the last page of the grid
+                            newPage--; // go to the previous page
+                        }
+                        // reload grid to make the row from the next page visable.
+                        setTimeout(function () {
+                            $this.trigger("reloadGrid", [{page: newPage}]);
+                        }, 50);
+                    }
+
+                    return true;
+                }
+            };
         mapFormatter(cm);
         Grid.obj.jqGrid({
             jsonReader: {
@@ -77,6 +98,7 @@ function jqBuildGrid() {
             height: '100%',
             pager: "#pager",
             toppager: true,
+            editurl: '/projects/' + Grid.projectId + '/grids/explore',
             beforeSelectRow: function (id, event) {
                 return handleCellSelect(id, event);
             },
@@ -108,12 +130,11 @@ function jqBuildGrid() {
 
                 Grid.subjectCountHtmlObj.html(Grid.subjectIdsObj.data('ids').length);
             }
-
         }).navGrid("#pager", {
                 search: true, // show search button on the toolbar
                 add: false,
                 edit: false,
-                del: false,
+                del: true,
                 refresh: true,
                 closeOnEscape: true,
                 closeAfterSearch: true,
@@ -122,7 +143,29 @@ function jqBuildGrid() {
             },
             {}, // edit options
             {}, // add options
-            {}, // delete options
+            {
+                onclickSubmit: function (jqXHR) {
+                    var $this = $(this), p = $this.jqGrid("getGridParam"), newPage = p.page;
+
+                    if (p.lastpage > 1) {// on the multipage grid reload the grid
+                        if (p.reccount === 1 && newPage === p.lastpage) {
+                            // if after deliting there are no rows on the current page
+                            // which is the last page of the grid
+                            newPage--; // go to the previous page
+                        }
+                        // reload grid to make the row from the next page visable.
+                        setTimeout(function () {
+                            $this.trigger("reloadGrid", [{page: newPage}]);
+                        }, 50);
+                    }
+
+                    return true;
+                },
+                delData: {
+                    _token: $('meta[name=csrf-token]').attr('content')
+                }
+
+            }, // delete options
             {
                 width: 600,
                 multipleSearch: true,
@@ -211,6 +254,10 @@ function switchCbColumn() {
         return true;
     }
 
+    if (Grid.explore) {
+        $("#cb_jqGridExplore").attr("disabled", "disabled");
+    }
+
     return false;
 }
 
@@ -228,6 +275,14 @@ function handleCellSelect(id, event) {
 
     if (event.target.className == 'thumbPreview') {
         return false;
+    }
+
+    if (Grid.explore) {
+        var $grid = $('#' + Grid.id);
+        var rowData = $grid.jqGrid('getRowData', id);
+        if (rowData['expedition_ids'] === 'Yes') {
+            return false;
+        }
     }
 
     return true;
@@ -265,12 +320,20 @@ function setMultipleSelect() {
     var $grid = $('#' + Grid.id);
     var ids = $grid.jqGrid('getDataIDs');
     for (var i = 0; i < ids.length; i++) {
+
         if (!Grid.loadSate && $.inArray(ids[i], Grid.subjectIdsObj.data('ids')) !== -1) {
             $grid.setSelection(ids[i]);
         } else {
             if ($('#' + ids[i]).hasClass("success")) {
                 $('#' + ids[i] + ' input[type=checkbox]').prop('checked', true);
                 updateIdsOfSelectedRows(value, true);
+            }
+        }
+
+        if (Grid.explore) {
+            var rowData = $grid.jqGrid('getRowData', ids[i]);
+            if (rowData['expedition_ids'] === 'Yes') {
+                $('#' + ids[i] + ' input[type=checkbox]').prop('disabled', true);
             }
         }
     }
