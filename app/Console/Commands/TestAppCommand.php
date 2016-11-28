@@ -25,9 +25,11 @@ class TestAppCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * Fire
+     */
     public function fire()
     {
 
     }
-
 }

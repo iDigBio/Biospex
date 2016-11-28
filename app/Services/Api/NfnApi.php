@@ -8,6 +8,9 @@ use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Illuminate\Config\Repository as Config;
 use Exception;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Client;
+use GuzzleHttp\Pool;
 
 class NfnApi
 {
@@ -56,27 +59,39 @@ class NfnApi
     }
 
     /**
-     * Send authorized request.
+     * Build authorized request.
      *
      * @param $uri
+     * @return \Psr\Http\Message\RequestInterface
+     */
+    private function buildRequest($uri)
+    {
+        $request = $this->provider->getAuthenticatedRequest(
+            'GET',
+            $uri,
+            $this->cache->get('nfnToken')->getToken(),
+            [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Accept'       => 'application/vnd.api+json; version=1'
+                ]
+            ]
+        );
+
+        return $request;
+    }
+
+    /**
+     * Send authorized request.
+     *
+     * @param $request
      * @return mixed
      * @throws NfnApiException
      */
-    private function authorizedRequest($uri)
+    private function authorizedRequest($request)
     {
-        try{
-            $request = $this->provider->getAuthenticatedRequest(
-                'GET',
-                $uri,
-                $this->cache->get('nfnToken')->getToken(),
-                [
-                    'headers' => [
-                        'Content-Type'  => 'application/json',
-                        'Accept'        => 'application/vnd.api+json; version=1'
-                    ]
-                ]
-            );
-
+        try
+        {
             $response = $this->provider->getHttpClient()->send($request);
 
             return json_decode($response->getBody()->getContents(), true);
@@ -104,7 +119,9 @@ class NfnApi
 
         $uri = $this->config->get('config.nfnApi.apiUri') . '/projects/' . $id;
 
-        return $this->authorizedRequest($uri);
+        $request = $this->buildRequest($uri);
+
+        return $this->authorizedRequest($request);
     }
 
     /**
@@ -120,35 +137,9 @@ class NfnApi
 
         $uri = $this->config->get('config.nfnApi.apiUri') . '/workflows/' . $id;
 
-        return $this->authorizedRequest($uri);
-    }
+        $request = $this->buildRequest($uri);
 
-    /**
-     * Returns classifications greater than last id.
-     *
-     * Values param should include project_id, workflow_id, last_id and page_size
-     * @param array $values
-     * @return mixed
-     * @throws NfnApiException
-     */
-    public function getClassifications(array $values)
-    {
-        $this->checkAccessToken();
-
-        $uri = $this->buildClassificationUri($values);
-
-        $result = $this->authorizedRequest($uri);
-
-        $this->results = array_merge($this->results, $result['classifications']);
-
-        if ($result['meta']['classifications']['next_page'] !== null)
-        {
-            $values['page'] = $result['meta']['classifications']['next_page'];
-
-            $this->getClassifications($values);
-        }
-
-        return $this->results;
+        return $this->authorizedRequest($request);
     }
 
     /**
@@ -180,6 +171,74 @@ class NfnApi
     private function buildClassificationUri($values)
     {
         return $this->config->get('config.nfnApi.apiUri') . '/classifications/project?' . http_build_query($values);
+    }
+
+
+    /**
+     * Get Classifications.
+     *
+     * @param array $values
+     * @return array
+     * @throws NfnApiException
+     */
+    public function getClassifications(array $values)
+    {
+        $this->checkAccessToken();
+
+        $uri = $this->buildClassificationUri($values);
+        $request = $this->buildRequest($uri);
+        $result = $this->authorizedRequest($request);
+
+        $this->results = array_merge($this->results, $result['classifications']);
+
+        $this->poolClassificationRequests($values, $result);
+
+        return $this->results;
+    }
+
+    /**
+     * @param array $values
+     * @param $result
+     * @throws NfnApiException
+     */
+    private function poolClassificationRequests(array $values, $result)
+    {
+        if ($result['meta']['classifications']['next_page'] === null)
+        {
+            return;
+        }
+
+        $pages = range(2, $result['meta']['classifications']['page_count']);
+
+        $requests = function (array $pages) use ($values)
+        {
+            foreach ($pages as $page)
+            {
+                $values['page'] = $page;
+
+                $uri = $this->buildClassificationUri($values);
+                $request = $this->buildRequest($uri);
+
+                yield $request;
+            }
+        };
+
+        $pool = new Pool($this->provider->getHttpClient(), $requests($pages), [
+            'concurrency' => 10,
+            'fulfilled'   => function ($response)
+            {
+                $result = json_decode($response->getBody()->getContents(), true);
+                $this->results = array_merge($this->results, $result['classifications']);
+            },
+            'rejected'    => function ($reason)
+            {
+                throw new NfnApiException($reason);
+            }
+        ]);
+
+        $promise = $pool->promise();
+
+        $promise->wait();
     }
 
 }
