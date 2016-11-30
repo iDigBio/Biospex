@@ -1,11 +1,11 @@
 <div class="row">
     <!-- right column -->
     <div class="col-md-8">
-        <div class="box box-primary {!! Html::collapse(['admin.groups.edit', 'admin.groups.create']) !!} box-solid">
+        <div class="box box-primary {{ $errors->any() ? '' : 'collapsed-box' }} box-solid">
             <div class="box-header with-border">
-                <h3 class="box-title">{{ isset($group->id) ? 'Edit Group' : 'Create Group' }}
+                <h3 class="box-title">Create Group
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
-                                class="fa {!! Html::setIconByRoute(['admin.group.edit', 'admin.group.create'], ['fa-minus', 'fa-plus']) !!}"></i>
+                                class="fa fa-plus "></i>
                     </button>
                 </h3>
                 <!-- /.box-tools -->
@@ -17,8 +17,8 @@
                     <!-- /.box-header -->
                     <!-- form start -->
                     {!! Form::open([
-                        'route' => isset($group->id) ? ['admin.groups.update', $group->id] : ['admin.groups.store'],
-                        'method' => isset($group->id) ? 'put' : 'post',
+                        'route' => 'admin.groups.store',
+                        'method' => 'post',
                         'role' => 'form',
                         'class' => 'form-horizontal',
                         'enctype' => 'multipart/form-data'

@@ -56,26 +56,30 @@ class GroupsController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created group.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @param GroupFormRequest $request
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function create()
+    public function store(GroupFormRequest $request)
     {
-        $user = $this->user->with(['profile'])->find($this->request->user()->id);
+        $user = $this->request->user();
 
-        return view('backend.groups.create', compact('user'));
-    }
+        $group = $this->group->create(['user_id' => $user->id, 'name' => $request->get('name')]);
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
+        if ($group) {
+            $user->assignGroup($group);
 
+            Event::fire('group.saved');
+
+            Toastr::success('The Group has been created.', 'Group Create');
+
+            return redirect()->route('admin.groups.index');
+        }
+
+        Toastr::error('The Group could not be updated.', 'Group Update');
+
+        return redirect()->route('admin.groups.index');
     }
 
     /**
