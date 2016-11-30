@@ -21,11 +21,6 @@ $router->get('groups/{groups}', [
     'as'   => 'admin.groups.show'
 ]);
 
-$router->get('groups/{groups}/edit', [
-    'uses' => 'GroupsController@edit',
-    'as'   => 'admin.groups.edit'
-]);
-
 $router->put('groups/{groups}', [
     'uses' => 'GroupsController@update',
     'as'   => 'admin.groups.update'
@@ -34,5 +29,25 @@ $router->put('groups/{groups}', [
 $router->delete('groups/{groups}', [
     'uses' => 'GroupsController@delete',
     'as'   => 'admin.groups.delete'
+]);
+
+$router->delete('groups/{groups}/trash', [
+    'uses' => 'GroupsController@trash',
+    'as'   => 'admin.groups.trash'
+]);
+
+$router->get('groups/{groups}/restore', [
+    'uses' => 'GroupsController@restore',
+    'as'   => 'admin.groups.restore'
+]);
+
+$router->post('groups/{groups}/invite', [
+    'uses' => 'GroupsController@invite',
+    'as'   => 'admin.groups.invite'
+]);
+
+$router->delete('groups/{groups}/user/{user}', [
+    'uses' => 'GroupsController@deleteUser',
+    'as'   => 'admin.groups.deleteUser'
 ]);
 // End GroupsController

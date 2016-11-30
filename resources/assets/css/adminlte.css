@@ -55,3 +55,13 @@ ul.source, ul.target {
 .ui-sortable tr:hover {
     background:rgba(244,251,17,0.45);
 }
+
+.contacts-list-info {
+    color: #000000;
+}
+
+.select2-container--default
+.select2-selection--single,
+.select2-selection .select2-selection--single {
+    height: 41px;
+}

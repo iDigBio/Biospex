@@ -43,15 +43,15 @@ class Group extends Model
         parent::boot();
 
         static::deleting(function ($model) {
-            $model->title = $model->title . ':' . str_random();
+            $model->name = $model->name . ':' . str_random();
             $model->save();
             $model->projects()->delete();
         });
 
         self::restored(function ($model)
         {
-            $title = explode(':', $model->title);
-            $model->title = $title[0];
+            $name = explode(':', $model->name);
+            $model->name = $name[0];
             $model->save();
             $model->projects()->restore();
         });

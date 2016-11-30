@@ -129,6 +129,34 @@ $(function () {
         $("input:checkbox").prop('checked', $(this).prop("checked"));
     });
 
+    $(".users-ajax").select2({
+        ajax: {
+            url: "/admin/users/search",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term
+                };
+            },
+            processResults: function (data, params) {
+                // parse the results into the format expected by Select2
+                // since we are using custom formatting functions we do not need to
+                // alter the remote JSON data, except to indicate that infinite
+                // scrolling can be used
+                return {
+                    results: data.results,
+                    pagination: data.pagination
+                };
+            },
+            cache: true
+        },
+        escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+        minimumInputLength: 1,
+        //templateResult: formatRepo, // omitted for brevity, see the source of this page
+        //templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
+    });
+
 });
 
 //Renumber table rows

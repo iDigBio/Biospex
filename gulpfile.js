@@ -45,15 +45,15 @@ elixir(function (mix) {
 
     // Create frontend css and javascript
     mix.styles([
-            'css/bootstrap.css',
-            '/vendor/font-awesome/css/font-awesome.min.css',
-            'vendor/jquery-ui/themes/smoothness/jquery-ui.min.css',
-            'vendor/jquery-ui-multiselect-widget/jquery.multiselect.css',
-            'vendor/bootstrap-select/dist/css/bootstrap-select.min.css',
-            'vendor/tablesorter/dist/css/theme.bootstrap.min.css',
-            'vendor/jqGrid/css/ui.jqgrid-bootstrap.css',
-            'css/biospex.css'
-        ], 'public/css/frontend.css', assets)
+        'css/bootstrap.css',
+        '/vendor/font-awesome/css/font-awesome.min.css',
+        'vendor/jquery-ui/themes/smoothness/jquery-ui.min.css',
+        'vendor/jquery-ui-multiselect-widget/jquery.multiselect.css',
+        'vendor/bootstrap-select/dist/css/bootstrap-select.min.css',
+        'vendor/tablesorter/dist/css/theme.bootstrap.min.css',
+        'vendor/jqGrid/css/ui.jqgrid-bootstrap.css',
+        'css/biospex.css'
+    ], 'public/css/frontend.css', assets)
         .scripts([
             '/vendor/jquery/dist/jquery.min.js',
             '/vendor/jquery-ui/jquery-ui.min.js',
@@ -79,16 +79,17 @@ elixir(function (mix) {
 
     // Create backend css and javascript
     mix.styles([
-            'css/bootstrap.css',
-            '/vendor/font-awesome/css/font-awesome.min.css',
-            '/vendor/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.min.css',
-            '/vendor/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css',
-            '/vendor/toastr/toastr.min.css',
-            '/vendor/iCheck/skins/minimal/blue.css',
-            '/vendor/AdminLTE/dist/css/AdminLTE.min.css',
-            '/vendor/AdminLTE/dist/css/skins/skin-blue.min.css',
-            '/css/adminlte.css'
-        ], 'public/css/backend.css', assets)
+        'css/bootstrap.css',
+        '/vendor/font-awesome/css/font-awesome.min.css',
+        '/vendor/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.min.css',
+        '/vendor/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css',
+        '/vendor/toastr/toastr.min.css',
+        '/vendor/iCheck/skins/minimal/blue.css',
+        '/vendor/AdminLTE/plugins/select2/select2.css',
+        '/vendor/AdminLTE/dist/css/AdminLTE.min.css',
+        '/vendor/AdminLTE/dist/css/skins/skin-blue.min.css',
+        '/css/adminlte.css'
+    ], 'public/css/backend.css', assets)
         .scripts([
             '/vendor/jquery/dist/jquery.min.js',
             '/vendor/jquery-ui/jquery-ui.min.js',
@@ -99,6 +100,7 @@ elixir(function (mix) {
             '/vendor/jquery-ujs/src/rails.js',
             '/vendor/toastr/toastr.min.js',
             '/vendor/iCheck/icheck.min.js',
+            '/vendor/AdminLTE/plugins/select2/select2.js',
             '/vendor/AdminLTE/dist/js/app.min.js',
             '/vendor/bs-confirmation/bootstrap-confirmation.min.js',
             '/js/adminlte.js',

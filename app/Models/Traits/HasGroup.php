@@ -29,6 +29,17 @@ trait HasGroup
     }
 
     /**
+     * Detach Group.
+     *
+     * @param $id
+     * @return int
+     */
+    public function detachGroup($id)
+    {
+        return $this->groups()->detach($id);
+    }
+
+    /**
      * Determine if the user has the given group.
      *
      * @param  mixed $group

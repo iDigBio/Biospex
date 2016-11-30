@@ -26,12 +26,8 @@
                 {!! Html::linkWithIcon(route('admin.dashboard.index'), 'Dashboard', [], ['before' => 'fa fa-dashboard']) !!}
             </li>
 
-            <li class="treeview">
-                {!! Html::linkWithIcon('#', 'Groups', [], ['before' => 'fa fa-group', 'after' => 'fa fa-angle-left pull-right']) !!}
-                <ul class="treeview-menu" role="directory" style="display: none;">
-                    <li class="{!! Html::active('admin.groups.index') !!}">{!! Html::linkWithIcon(route('admin.groups.index'), 'Show Groups', [], ['before' => 'fa fa-circle-o']) !!}</li>
-                    <li>{!! Html::linkWithIcon(route('admin.groups.create'), 'Create Group', [], ['before' => 'fa fa-circle-o']) !!}</li>
-                </ul>
+            <li class="{!! Html::active('admin.groups.') !!}">
+                {!! Html::linkWithIcon(route('admin.groups.index'), 'Groups', [], ['before' => 'fa fa-group']) !!}
             </li>
 
             <li class="treeview">

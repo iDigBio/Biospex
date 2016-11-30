@@ -48,4 +48,5 @@ return array (
   'login' => 'Login',
   'password_forgot' => 'Forgot Password',
   'ocrDisabled' => 'OCR is processing',
+    'restoreTitle' => 'Restore'
 );
