@@ -9,7 +9,7 @@
                         class="btn btn-primary btn-xs"
                         type="button"
                         onClick="location.href='{{ route('admin.groups.show', [$group->id]) }}'">
-                    <span class="fa fa-eye fa-lg"></span><!-- @lang('buttons.view') --></button>
+                    <span class="fa fa-wrench fa-sm"></span><!-- @lang('buttons.view') --></button>
 
                 <button title="@lang('buttons.deleteTitle')"
                         class="btn btn-danger btn-xs" type="button"
