@@ -183,7 +183,7 @@ class ModelDeleteService
     {
         try
         {
-            $record = $this->expeditionService->repository->skipCache()->with(['nfnWorkflow', 'subjects'])->find($id);
+            $record = $this->expeditionService->repository->skipCache()->with(['nfnWorkflow'])->find($id);
 
             if ( ! $this->nfnWorkflowService->checkNfnWorkflowsEmpty(collect($record->nfnWorkflow)))
             {
@@ -192,9 +192,11 @@ class ModelDeleteService
                 return false;
             }
 
-            if ( ! $record->subjects->isEmpty())
+            $subjects = $this->subjectService->repository->where(['expedition_ids' => (int) $id])->get();
+
+            if ( ! $subjects->isEmpty())
             {
-                $this->subjectService->detach($record->subjects, $id);
+                $this->subjectService->detach($subjects, $id);
             }
 
             $values = [
