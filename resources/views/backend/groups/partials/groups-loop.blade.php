@@ -6,7 +6,7 @@
         <td>
             <div class="btn-toolbar">
                 <button title="@lang('buttons.viewTitle')"
-                        class="btn btn-primary btn-xs"
+                        class="btn btn-warning btn-xs"
                         type="button"
                         onClick="location.href='{{ route('admin.groups.show', [$group->id]) }}'">
                     <span class="fa fa-wrench fa-sm"></span><!-- @lang('buttons.view') --></button>
