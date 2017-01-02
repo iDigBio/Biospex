@@ -29,8 +29,22 @@ class SubjectService
      */
     public function detach($subjects, $id)
     {
-        $ids = $subjects->pluck('_id');
-        $this->repository->detachSubjects($ids, $id);
+        foreach ($subjects as $subject)
+        {
+            $array = [];
+            foreach ($subject->expedition_ids as $value)
+            {
+                if ((int) $id !== (int) $value)
+                {
+                    $array[] = $value;
+                }
+            }
+            $subject->expedition_ids = $array;
+            $subject->save();
+        }
+
+        //$ids = $subjects->pluck('_id');
+        //$this->repository->detachSubjects($ids, $id);
     }
 
 }
