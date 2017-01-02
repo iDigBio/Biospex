@@ -5,9 +5,13 @@ return array(
     'expedition'                 => 'Expedition',
     'expedition_created'         => 'Expedition was created successfully.',
     'expedition_deleted'         => 'Expedition deleted.',
-    'expedition_destroy_error'   => 'An error occurred when deleting expedition.',
+    'expedition_delete_error'    => 'An error occurred when deleting expedition.',
+    'expedition_destroy_error'   => 'Could not destroy the Expedition. Please contact the administration.',
+    'expedition_destroyed'       => 'Expedition and associated content destroyed.',
+    'expedition_restore'         => 'Expedition has been restored.',
+    'expedition_restore_error'   => 'Expedition could not be restored.',
     'expedition_process_error'   => 'An error occurred when trying to process the expedition: :error',
-    'expedition_process_exists'  => 'An Expedition cannot be deleted if processing has already been started. Even if the process has been stopped locally. Other services may need to refer to the existing Expedition.',
+    'expedition_process_exists'  => 'An Expedition process exists and cannot be deleted. Even if the process has been stopped locally. Other services may need to refer to the existing Expedition.',
     'expedition_process_success' => 'The expedition has been added to the process queue.',
     'expedition_save_error'      => 'An error occurred when saving expedition.',
     'expedition_updated'         => 'Expedition was updated successfully.',
@@ -23,5 +27,5 @@ return array(
     'process_destroy_error'      => 'Expedition process could not be stopped.',
     'expeditions'                => 'Expeditions',
     'poll_export_count'          => ':count of :total images exported.',
-    'poll_export_csv'            => 'Generating CSV file for export.'
+    'poll_export_csv'            => 'Generating CSV file for export.',
 );

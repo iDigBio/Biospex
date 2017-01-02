@@ -26,16 +26,20 @@
                 {!! Html::linkWithIcon(route('admin.dashboard.index'), 'Dashboard', [], ['before' => 'fa fa-dashboard']) !!}
             </li>
 
+            <li class="{!! Html::active('admin.users.') !!}">
+                {!! Html::linkWithIcon(route('admin.users.index'), 'Users', [], ['before' => 'fa fa-user']) !!}
+            </li>
+
             <li class="{!! Html::active('admin.groups.') !!}">
                 {!! Html::linkWithIcon(route('admin.groups.index'), 'Groups', [], ['before' => 'fa fa-group']) !!}
             </li>
 
-            <li class="treeview">
-                {!! Html::linkWithIcon('#', 'Projects', [], ['before' => 'fa fa-folder-o', 'after' => 'fa fa-angle-left pull-right']) !!}
-                <ul class="treeview-menu" role="directory" style="display: none;">
-                    <li class="{!! Html::active('admin.projects.index') !!}">{!! Html::linkWithIcon(route('admin.projects.index'), 'Show Projects', [], ['before' => 'fa fa-circle-o']) !!}</li>
-                    <li>{!! Html::linkWithIcon(route('admin.projects.create'), 'Create Project', [], ['before' => 'fa fa-circle-o']) !!}</li>
-                </ul>
+            <li class="{!! Html::active('admin.projects.') !!}">
+                {!! Html::linkWithIcon(route('admin.projects.index'), 'Projects', [], ['before' => 'fa fa-folder-o']) !!}
+            </li>
+
+            <li class="{!! Html::active('admin.expeditions.') !!}">
+                {!! Html::linkWithIcon(route('admin.expeditions.index'), 'Expeditions', [], ['before' => 'fa fa-area-chart']) !!}
             </li>
 
             <li class="{!! Html::active('admin.actors.') !!}">

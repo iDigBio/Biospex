@@ -13,6 +13,9 @@ use App\Repositories\Contracts\Expedition;
 use App\Repositories\Contracts\Project;
 use App\Repositories\Contracts\Subject;
 use App\Repositories\Contracts\WorkflowManager;
+use App\Services\Model\ModelDeleteService;
+use App\Services\Model\ModelDestroyService;
+use App\Services\Model\ModelRestoreService;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -85,12 +88,14 @@ class ExpeditionsController extends Controller
     /**
      * Display all expeditions for user.
      *
+     * @param User $userRepo
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      * TODO: Fix query so it can be cached in normal fashion.
      */
-    public function index()
+    public function index(User $userRepo)
     {
-        $user = Request::user();
+        $user = $userRepo->with(['profile'])->find(Request::user()->id);
+
         $results = Cache::remember(md5(Request::url() . $user->id), 60, function () use ($user)
         {
             return $this->expedition->getAllExpeditions($user->id);
@@ -102,17 +107,19 @@ class ExpeditionsController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param User $userRepo
      * @param $id
      * @return \Illuminate\View\View
      */
-    public function ajax($id)
+    public function ajax(User $userRepo, $id)
     {
         if ( ! Request::ajax())
         {
             return redirect()->route('web.projects.show', [$id]);
         }
 
-        $user = Request::user();
+        $user = $userRepo->with(['profile'])->find(Request::user()->id);
+
         $project = $this->project->with(['expeditions.actors', 'expeditions.stat'])->find($id);
 
         return view('frontend.expeditions.ajax', compact('project', 'user'));
@@ -448,18 +455,15 @@ class ExpeditionsController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Soft delete the specified resource from storage.
      *
+     * @param ModelDeleteService $service
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete($projectId, $expeditionId)
+    public function delete(ModelDeleteService $service, $projectId, $expeditionId)
     {
-        session_flash_push('error', 'Edit ability temporarily disabled due to errors. We are working on the issues.');
-
-        return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
-
         $user = Request::user();
         $project = $this->project->with(['group.permissions'])->find($projectId);
 
@@ -468,29 +472,60 @@ class ExpeditionsController extends Controller
             return redirect()->route('web.projects.index');
         }
 
-        $workflow = $this->workflowManager->where(['expedition_id' => $expeditionId])->first();
-        if ($workflow !== null)
-        {
-            session_flash_push('error', trans('expeditions.expedition_process_exists'));
+        $result = $service->deleteExpedition($expeditionId);
 
-            return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
-        }
-        else
-        {
-            try
-            {
-                $subjects = $this->subject->getSubjectIds($projectId, null, $expeditionId);
-                $this->subject->detachSubjects($subjects, $expeditionId);
-                $this->expedition->delete($expeditionId);
+        $result ?
+            session_flash_push('success', trans('expeditions.expedition_deleted')) :
+            session_flash_push('error', trans('expeditions.expedition_delete_error'));
 
-                session_flash_push('success', trans('expeditions.expedition_deleted'));
-            }
-            catch (BiospexException $e)
-            {
-                $this->handler->report($e);
-                session_flash_push('error', trans('expeditions.expedition_destroy_error'));
-            }
+        return $result ?
+            redirect()->route('web.projects.show', [$projectId]) :
+            redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
+
+    }
+
+    /**
+     * Soft delete the specified resource from storage.
+     *
+     * @param ModelDestroyService $service
+     * @param $projectId
+     * @param $expeditionId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(ModelDestroyService $service, $projectId, $expeditionId)
+    {
+        $user = Request::user();
+        $project = $this->project->with(['group.permissions'])->find($projectId);
+
+        if ( ! $this->checkPermissions($user, [$project], 'delete'))
+        {
+            return redirect()->route('web.projects.index');
         }
+
+        $result = $service->destroyExpedition($expeditionId);
+
+        $result ? session_flash_push('success', trans('expeditions.expedition_destroyed')) :
+            session_flash_push('error', trans('expeditions.expedition_destroy_error'));
+
+        return $service->destroyExpedition($expeditionId) ?
+            redirect()->route('web.projects.show', [$projectId]) :
+            redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
+
+    }
+
+    /**
+     * Restore deleted expedition.
+     *
+     * @param ModelRestoreService $service
+     * @param $projectId
+     * @param $expeditionId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function restore(ModelRestoreService $service, $projectId, $expeditionId)
+    {
+        $service->restoreExpedition($expeditionId) ?
+            session_flash_push('success', trans('expeditions.expedition_restore')) :
+            session_flash_push('error', trans('expeditions.expedition_restore_error'));
 
         return redirect()->route('web.projects.show', [$projectId]);
     }

@@ -23,12 +23,12 @@
                 'role' => 'form'
                 ]) !!}
                 <div class="col-xs-12 col-sm-12 col-md-12">
-                    <div class="form-group {{ ($errors->has('name')) ? 'has-error' : '' }}">
+                    <div class="form-group {{ ($errors->has('title')) ? 'has-error' : '' }}">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-users fa-lg"></i></span>
-                            {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => trans('pages.name'), 'required']) !!}
+                            {!! Form::text('title', null, ['class' => 'form-control', 'placeholder' => trans('pages.name'), 'required']) !!}
                         </div>
-                        {{ ($errors->has('name') ?  $errors->first('name') : '') }}
+                        {{ ($errors->has('title') ?  $errors->first('title') : '') }}
                     </div>
                 </div>
                 {!! Form::hidden('owner', $user->id) !!}

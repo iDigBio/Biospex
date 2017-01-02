@@ -40,6 +40,16 @@ $router->delete('projects/{projects}/expeditions/{expeditions}', [
     'as'   => 'web.expeditions.delete'
 ]);
 
+$router->delete('projects/{projects}/expeditions/{expeditions}/destroy', [
+    'uses' => 'ExpeditionsController@destroy',
+    'as'   => 'web.expeditions.destroy'
+]);
+
+$router->get('projects/{projects}/expeditions/{expeditions}/restore', [
+    'uses' => 'ExpeditionsController@restore',
+    'as'   => 'web.expeditions.restore'
+]);
+
 $router->get('projects/{projects}/expeditions/{expeditions}/duplicate', [
     'uses' => 'ExpeditionsController@duplicate',
     'as'   => 'web.expeditions.duplicate'

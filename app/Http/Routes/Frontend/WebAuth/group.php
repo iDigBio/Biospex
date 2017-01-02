@@ -35,4 +35,15 @@ $router->delete('groups/{groups}', [
     'uses' => 'GroupsController@delete',
     'as'   => 'web.groups.delete'
 ]);
+
+$router->delete('groups/{groups}/destroy', [
+    'uses' => 'GroupsController@destroy',
+    'as'   => 'web.groups.destroy'
+]);
+
+$router->get('groups/{groups}/restore', [
+    'uses' => 'GroupsController@restore',
+    'as'   => 'web.groups.restore'
+]);
+
 // End GroupsController

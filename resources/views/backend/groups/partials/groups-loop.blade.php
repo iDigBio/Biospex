@@ -1,7 +1,7 @@
 @foreach($groups as $group)
     <tr id="{{ $group->id }}">
         <td>{!! $group->id !!}</td>
-        <td>{!! $group->name !!}</td>
+        <td>{!! $group->title !!}</td>
         <td>
         <td>
             <div class="btn-toolbar">

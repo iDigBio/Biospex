@@ -5,12 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UuidTrait;
-use Illuminate\Support\Facades\Event;
+use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 
 class Group extends Model
 {
-    use SoftDeletes, UuidTrait;
+    use SoftDeletes, UuidTrait, SoftCascadeTrait;
 
+    /**
+     * Soft delete cascades.
+     *
+     * @var array
+     */
+    protected $softCascade = ['projects'];
+
+    /**
+     * Protected dates.
+     *
+     * @var array
+     */
     protected $dates = ['deleted_at'];
 
     /**
@@ -31,31 +43,9 @@ class Group extends Model
     protected $fillable = [
         'uuid',
         'user_id',
-        'name',
+        'title',
         'permissions',
     ];
-
-    /**
-     * Handle model events.
-     */
-    public static function boot() {
-
-        parent::boot();
-
-        static::deleting(function ($model) {
-            $model->name = $model->name . ':' . str_random();
-            $model->save();
-            $model->projects()->delete();
-        });
-
-        self::restored(function ($model)
-        {
-            $name = explode(':', $model->name);
-            $model->name = $name[0];
-            $model->save();
-            $model->projects()->restore();
-        });
-    }
 
     /**
      * User as owner relationship
@@ -95,6 +85,16 @@ class Group extends Model
     public function projects()
     {
         return $this->hasMany(Project::class)->orderBy('title');
+    }
+
+    /**
+     * Trashed projects relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function trashedProjects()
+    {
+        return $this->hasMany(Project::class)->orderBy('title')->onlyTrashed();
     }
 
     /**

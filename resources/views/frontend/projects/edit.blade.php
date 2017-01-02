@@ -200,7 +200,7 @@
                     {{ ($errors->has('language_skills') ? $errors->first('language_skills') : '') }}
                 </div>
 
-                @if( ! $workflowCheck)
+                @if($workflowEmpty)
                     <div class="form-group required {{ ($errors->has('workflow_id')) ? 'has-error' : '' }}">
                         {!! Form::label('workflow_id', trans('forms.workflows'), array('class' => 'col-sm-2 control-label')) !!}
                         <div class="col-sm-4">
@@ -214,7 +214,7 @@
                         <div class="col-sm-4">
                             {!! Form::select('workflow_id', $workflows, $project->workflow_id, ['disabled', 'data-width' => 'fit']) !!}
                         </div>
-                        @if(!empty($workflowCheck))
+                        @if( ! $workflowEmpty)
                             {!! Form::hidden('workflow_id', $project->workflow_id) !!}
                         @endif
                         {{ ($errors->has('workflow_id') ? $errors->first('workflow_id') : '') }}

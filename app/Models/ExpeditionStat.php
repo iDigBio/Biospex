@@ -35,14 +35,6 @@ class ExpeditionStat extends Model
     protected $dates = ['deleted_at'];
 
     /**
-     * Boot function to add model events
-     */
-    public static function boot()
-    {
-        parent::boot();
-    }
-
-    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function expedition()

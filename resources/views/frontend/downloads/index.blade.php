@@ -69,7 +69,7 @@
                                         {{ human_file_size(mb_strlen($download->data, '8bit')) }}
                                     @endif
                                 </td>
-                                <td>{{ format_date($download->created_at, 'Y-m-d', $user->timezone) }}</td>
+                                <td>{{ format_date($download->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
                                 <td>{{ route('projects.expeditions.downloads.get.show', [$expedition->project->id, $expedition->id, $download->id]) }}</td>
                                 <td>
                                     <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs"

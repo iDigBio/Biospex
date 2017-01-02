@@ -6,27 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Jobs\BuildOcrBatches;
 use App\Repositories\Contracts\OcrQueue;
 use App\Repositories\Contracts\Subject;
-use Illuminate\Http\Request;
 use App\Repositories\Contracts\User;
+use App\Services\Model\ModelDeleteService;
+use App\Services\Model\ModelDestroyService;
+use App\Services\Model\ModelRestoreService;
+use App\Services\Model\NfnWorkflowService;
+use Illuminate\Http\Request;
 use App\Repositories\Contracts\Group;
 use App\Repositories\Contracts\Project;
 use App\Http\Requests\ProjectFormRequest;
-use App\Services\Common\ProjectService;
+use App\Services\Model\ProjectService;
 use Illuminate\Support\Facades\Config;
 use JavaScript;
 
 class ProjectsController extends Controller
 {
-    /**
-     * @var ProjectService
-     */
-    public $service;
-
-    /**
-     * @var User
-     */
-    public $user;
-
     /**
      * @var Request
      */
@@ -41,26 +35,27 @@ class ProjectsController extends Controller
      * @var Project
      */
     public $project;
+    /**
+     * @var NfnWorkflowService
+     */
+    private $nfnWorkflowService;
 
     /**
      * ProjectsController constructor.
      *
-     * @param ProjectService $service
-     * @param User $user
+     * @param NfnWorkflowService $nfnWorkflowService
      * @param Group $group
      * @param Project $project
      * @param Request $request
      */
     public function __construct(
-        ProjectService $service,
-        User $user,
+        NfnWorkflowService $nfnWorkflowService,
         Group $group,
         Project $project,
         Request $request
     )
     {
-        $this->service = $service;
-        $this->user = $user;
+        $this->nfnWorkflowService = $nfnWorkflowService;
         $this->request = $request;
         $this->group = $group;
         $this->project = $project;
@@ -74,19 +69,21 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        $groups = $this->group->with(['projects'])->whereHas('users', ['id' => $this->request->user()->id])->get();
+        $groups = $this->group->with(['projects'])->has('projects')->whereHas('users', ['id' => $this->request->user()->id])->get();
+        $trashed = $this->group->with(['trashedProjects'])->has('trashedProjects')->whereHas('users', ['id' => $this->request->user()->id])->get();
 
-        return view('frontend.projects.index', compact('groups'));
+        return view('frontend.projects.index', compact('groups', 'trashed'));
     }
 
     /**
      * Show the form for creating a new resource.
      *
+     * @param ProjectService $service
      * @return \Illuminate\View\View
      */
-    public function create()
+    public function create(ProjectService $service)
     {
-        $vars = $this->service->setCommonVariables($this->request->user());
+        $vars = $service->setCommonVariables($this->request->user());
 
         return view('frontend.projects.create', $vars);
     }
@@ -94,12 +91,14 @@ class ProjectsController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param User $userRepo
      * @param $id
      * @return \Illuminate\View\View
      */
-    public function show($id)
+    public function show(User $userRepo, $id)
     {
-        $user = $this->request->user();
+        $user = $userRepo->with(['profile'])->find($this->request->user()->id);
+
         $with = [
             'group',
             'ocrQueue',
@@ -109,7 +108,21 @@ class ProjectsController extends Controller
         ];
         $project = $this->project->with($with)->find($id);
 
-        return view('frontend.projects.show', compact('user', 'project'));
+        $expeditions = null;
+        $trashed = null;
+        foreach ($project->expeditions as $expedition)
+        {
+            if (null === $expedition->deleted_at)
+            {
+                $expeditions[] = $expedition;
+            }
+            else
+            {
+                $trashed[] = $expedition;
+            }
+        }
+
+        return view('frontend.projects.show', compact('user', 'project', 'expeditions', 'trashed'));
     }
 
     /**
@@ -129,7 +142,8 @@ class ProjectsController extends Controller
 
         $project = $this->project->create($request->all());
 
-        if ($project) {
+        if ($project)
+        {
             session_flash_push('success', trans('projects.project_created'));
             return redirect()->route('web.projects.show', [$project->id]);
         }
@@ -141,11 +155,12 @@ class ProjectsController extends Controller
 
     /**
      * Create duplicate project
-     * 
+     *
+     * @param ProjectService $service
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function duplicate($id)
+    public function duplicate(ProjectService $service, $id)
     {
         $project = $this->project->with(['group', 'expeditions.workflowManager'])->find($id);
 
@@ -156,7 +171,7 @@ class ProjectsController extends Controller
             return redirect()->route('web.projects.show', [$id]);
         }
 
-        $common = $this->service->setCommonVariables($this->request->user());
+        $common = $service->setCommonVariables($this->request->user());
         $variables = array_merge($common, ['project' => $project, 'workflowCheck' => '']);
 
         return view('frontend.projects.clone', $variables);
@@ -165,22 +180,23 @@ class ProjectsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
+     * @param ProjectService $service
      * @param $id
      * @return \Illuminate\View\View
      */
-    public function edit($id)
+    public function edit(ProjectService $service, $id)
     {
-        $project = $this->project->with(['group.permissions', 'expeditions.workflowManager'])->find($id);
+        $project = $this->project->with(['group.permissions', 'nfnWorkflows'])->find($id);
 
         if ( ! $this->checkPermissions($this->request->user(), [$project], 'update'))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $workflowCheck = $this->service->checkWorkflow($project->expeditions);
-        $common = $this->service->setCommonVariables($this->request->user());
+        $workflowEmpty = $this->nfnWorkflowService->checkNfnWorkflowsEmpty($project->nfnWorkflows);
+        $common = $service->setCommonVariables($this->request->user());
 
-        $variables = array_merge($common, ['project' => $project, 'workflowCheck' => $workflowCheck]);
+        $variables = array_merge($common, ['project' => $project, 'workflowEmpty' => $workflowEmpty]);
 
         return view('frontend.projects.edit', $variables);
     }
@@ -209,7 +225,7 @@ class ProjectsController extends Controller
 
     /**
      * Display project explore page.
-     * 
+     *
      * @param Subject $subject
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
@@ -228,14 +244,14 @@ class ProjectsController extends Controller
             ->count();
 
         JavaScript::put([
-            'projectId' => $project->id,
+            'projectId'    => $project->id,
             'expeditionId' => 0,
-            'subjectIds' => [],
-            'maxSubjects' => Config::get('config.expedition_size'),
-            'url' => route('web.grids.explore', [$project->id]),
-            'exportUrl' => route('web.grids.project.export', [$project->id]),
+            'subjectIds'   => [],
+            'maxSubjects'  => Config::get('config.expedition_size'),
+            'url'          => route('web.grids.explore', [$project->id]),
+            'exportUrl'    => route('web.grids.project.export', [$project->id]),
             'showCheckbox' => true,
-            'explore' => true
+            'explore'      => true
         ]);
 
         return view('frontend.projects.explore', compact('project', 'subjectAssignedCount'));
@@ -244,10 +260,11 @@ class ProjectsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param ModelDeleteService $service
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete($id)
+    public function delete(ModelDeleteService $service, $id)
     {
         $project = $this->project->with(['group'])->find($id);
 
@@ -256,10 +273,51 @@ class ProjectsController extends Controller
             return redirect()->route('web.projects.index');
         }
 
-        $this->project->delete($id);
-        session_flash_push('success', trans('projects.project_destroyed'));
+        $result = $service->deleteProject($project->id);
+
+        $result ? session_flash_push('success', trans('projects.project_deleted')) :
+            session_flash_push('error', trans('projects.project_delete_error'));
 
         return redirect()->route('web.projects.index');
+    }
+
+    /**
+     * Destroy project and related content.
+     *
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(ModelDestroyService $service, $id)
+    {
+        $project = $this->project->with(['group'])->withTrashed($id);
+
+        if ( ! $this->checkPermissions($this->request->user(), [$project], 'delete'))
+        {
+            return redirect()->route('web.projects.index');
+        }
+
+        $result = $service->destroyProject($project->id);
+
+        $result ? session_flash_push('success', trans('projects.project_destroyed')) :
+            session_flash_push('error', trans('projects.project_destroy_error'));
+
+        return redirect()->route('web.projects.index');
+    }
+
+    /**
+     * Restore project.
+     *
+     * @param ModelRestoreService $service
+     * @param $projectId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function restore(ModelRestoreService $service, $projectId)
+    {
+        $service->restoreProject($projectId) ?
+            session_flash_push('success', trans('projects.project_restore')) :
+            session_flash_push('error', trans('projects.project_restore_error'));
+
+        return redirect()->route('web.projects.show', [$projectId]);
     }
 
     /**

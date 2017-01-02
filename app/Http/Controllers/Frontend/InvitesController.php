@@ -115,9 +115,9 @@ class InvitesController extends Controller
 
             $dispatcher->fire(new SendInviteEvent($data));
 
-            session_flash_push('success', trans('groups.send_invite_success', ['group' => $group->name, 'email' => $invite->email]));
+            session_flash_push('success', trans('groups.send_invite_success', ['group' => $group->title, 'email' => $invite->email]));
         } else {
-            session_flash_push('warning', trans('groups.send_invite_error', ['group' => $group->name, 'email' => $invite->email]));
+            session_flash_push('warning', trans('groups.send_invite_error', ['group' => $group->title, 'email' => $invite->email]));
         }
 
         return redirect()->route('web.invites.index', [$group->id]);

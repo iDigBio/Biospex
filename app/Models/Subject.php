@@ -1,9 +1,12 @@
 <?php namespace App\Models;
 
 use Jenssegers\Mongodb\Model as Eloquent;
+use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
 class Subject extends Eloquent
 {
+    use SoftDeletes;
+
     /**
      * Redefine connection to use mongodb
      */
@@ -14,6 +17,14 @@ class Subject extends Eloquent
      */
     protected $primaryKey = '_id';
 
+    /**
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
+
+    /**
+     * @var bool
+     */
     public $incrementing = false;
 
     /**
@@ -40,12 +51,24 @@ class Subject extends Eloquent
      */
     protected $groupOpProcessed = false;
 
+    /**
+     * @var
+     */
     protected $projectId;
 
+    /**
+     * @var
+     */
     protected $expeditionId;
 
+    /**
+     * @var
+     */
     protected $route;
 
+    /**
+     * @var
+     */
     protected $assignedRuleData;
 
     /**

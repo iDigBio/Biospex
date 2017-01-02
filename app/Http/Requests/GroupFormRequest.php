@@ -25,7 +25,7 @@ class GroupFormRequest extends Request
     public function rules()
     {
         return [
-            'name' => 'required|min:4|max:32|not_in:'. env('ADMIN_GROUP') . '|unique:groups,name,' . $this->route('groups'),
+            'title' => 'required|min:4|max:32|not_in:'. env('ADMIN_GROUP') . '|unique:groups,title,' . $this->route('groups'),
             'user_id' => 'required'
         ];
     }
@@ -38,7 +38,7 @@ class GroupFormRequest extends Request
     public function alterInput()
     {
         $input = $this->all();
-        $input['name'] = $this->route('groups') === env('ADMIN_GROUP_ID') ? env('ADMIN_GROUP') : trim($input['name']);
+        $input['title'] = $this->route('groups') === env('ADMIN_GROUP_ID') ? env('ADMIN_GROUP') : trim($input['title']);
         $input['user_id'] = $input['owner'];
         $this->replace($input);
 

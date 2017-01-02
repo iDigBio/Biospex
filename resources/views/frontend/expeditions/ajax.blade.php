@@ -16,7 +16,7 @@
             <tr>
                 <td>{{ $expedition->title }}</td>
                 <td>{{ $expedition->description }}</td>
-                <td>{{ format_date($expedition->created_at, 'Y-m-d', $user->timezone) }}</td>
+                <td>{{ format_date($expedition->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
                 <td>{{ $expedition->subjectsCount }}</td>
                 @if( ! $expedition->actors->isEmpty())
                     <td>{{ $expedition->stat->transcriptions_total }}</td>

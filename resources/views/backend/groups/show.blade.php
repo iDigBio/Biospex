@@ -1,10 +1,10 @@
 @extends('backend.layouts.app')
 
 @section('htmlheader_title')
-    {{ $group->name }}
+    {{ $group->title }}
 @endsection
 
-@section('contentheader_title', 'Manage ' . $group->name)
+@section('contentheader_title', 'Manage ' . $group->title)
 
 
 @section('main-content')
@@ -33,13 +33,13 @@
                             'role' => 'form'
                             ]) !!}
                             <div class="col-xs-12">
-                                <div class="form-group required {{ ($errors->has('name')) ? 'has-error' : '' }}"
-                                     for="name">
+                                <div class="form-group required {{ ($errors->has('title')) ? 'has-error' : '' }}"
+                                     for="title">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="fa fa-users fa-lg"></i></span>
-                                        {!! Form::text('name', old('name') ?: $group->name, ['class' => 'form-control', 'placeholder' => trans('pages.name')]) !!}
+                                        {!! Form::text('title', old('title') ?: $group->title, ['class' => 'form-control', 'placeholder' => trans('pages.name')]) !!}
                                     </div>
-                                    {{ ($errors->has('name') ?  $errors->first('name') : '') }}
+                                    {{ ($errors->has('title') ?  $errors->first('title') : '') }}
                                 </div>
                             </div>
                             <div class="col-xs-12">

@@ -2,15 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\Config;
 use Jenssegers\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UuidTrait;
+use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 
 class Expedition extends Eloquent
 {
-    use SoftDeletes;
-    use UuidTrait;
+    use SoftDeletes, UuidTrait, SoftCascadeTrait;
+
+    /**
+     * Soft delete cascades.
+     *
+     * @var array
+     */
+    protected $softCascade = ['stat', 'nfnWorkflow', 'stat'];
 
     /**
      * @var array
@@ -47,30 +53,7 @@ class Expedition extends Eloquent
         'keywords'
     ];
 
-    /**
-     * Handle model events.
-     */
-    public static function boot() {
 
-        parent::boot();
-
-        static::deleting(function ($model) {
-            $model->title = $model->title . ':' . str_random();
-            $model->save();
-            $model->stat()->delete();
-            $model->nfnWorkflow()->delete();
-        });
-
-        self::restored(function ($model)
-        {
-            $title = explode(':', $model->title);
-            $model->title = $title[0];
-            $model->save();
-            $model->stat->restore();
-            $model->nfnWorkflow()->restore();
-        });
-    }
-    
     /**
      * Project relationship.
      *
@@ -285,7 +268,7 @@ class Expedition extends Eloquent
                 'projects.id as project_id',
                 'projects.title as project_title',
                 'groups.id as group_id',
-                'groups.name as group_name',
+                'groups.title as group_name',
                 'actor_expedition.id as actor_expedition_id')
             ->where('group_user.user_id', '=', $id)
             ->get();

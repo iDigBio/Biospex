@@ -24,12 +24,12 @@
                         'enctype' => 'multipart/form-data'
                     ]) !!}
                     <div class="box-body">
-                        <div class="form-group {{ ($errors->has('name')) ? 'has-error' : '' }}">
+                        <div class="form-group {{ ($errors->has('title')) ? 'has-error' : '' }}">
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-users fa-lg"></i></span>
-                                {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => trans('pages.name'), 'required']) !!}
+                                {!! Form::text('title', null, ['class' => 'form-control', 'placeholder' => trans('pages.name'), 'required']) !!}
                             </div>
-                            {{ ($errors->has('name') ?  $errors->first('name') : '') }}
+                            {{ ($errors->has('title') ?  $errors->first('title') : '') }}
                         </div>
                         {!! Form::hidden('owner', $user->id) !!}
 

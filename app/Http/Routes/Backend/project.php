@@ -6,23 +6,8 @@ $router->get('projects', [
     'as'   => 'admin.projects.index'
 ]);
 
-$router->get('projects/create', [
-    'uses' => 'ProjectsController@create',
-    'as'   => 'admin.projects.create'
-]);
-
-$router->post('projects/create', [
-    'uses' => 'ProjectsController@store',
-    'as'   => 'admin.projects.store'
-]);
-
-$router->get('projects/{projects}', [
-    'uses' => 'ProjectsController@show',
-    'as'   => 'admin.projects.show'
-]);
-
 $router->get('projects/{projects}/edit', [
-    'uses' => 'ProjectsController@edit',
+    'uses' => 'ProjectsController@index',
     'as'   => 'admin.projects.edit'
 ]);
 
@@ -31,9 +16,24 @@ $router->put('projects/{projects}', [
     'as'   => 'admin.projects.update'
 ]);
 
+$router->post('projects', [
+    'uses' => 'ProjectsController@store',
+    'as'   => 'admin.projects.store'
+]);
+
 $router->delete('projects/{projects}', [
     'uses' => 'ProjectsController@delete',
     'as'   => 'admin.projects.delete'
+]);
+
+$router->delete('projects/{projects}/destroy', [
+    'uses' => 'ProjectsController@destroy',
+    'as'   => 'admin.projects.destroy'
+]);
+
+$router->get('projects/{projects}/restore', [
+    'uses' => 'ProjectsController@restore',
+    'as'   => 'admin.projects.restore'
 ]);
 
 // End ProjectsController

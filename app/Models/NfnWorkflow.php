@@ -4,11 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 
 class NfnWorkflow extends Model
 {
 
-    use SoftDeletes;
+    use SoftDeletes, SoftCascadeTrait;
+
+    /**
+     * Soft delete cascades.
+     *
+     * @var array
+     */
+    protected $softCascade = ['classifications'];
 
     /**
      * The database table used by the model.
@@ -33,23 +41,6 @@ class NfnWorkflow extends Model
         'subject_sets'
     ];
 
-    /**
-     * Boot function to add model events
-     */
-    public static function boot()
-    {
-        parent::boot();
-
-        static::deleting(function ($model)
-        {
-            $model->classifications()->delete();
-        });
-
-        self::restored(function ($model)
-        {
-            $model->classifications()->delete();
-        });
-    }
 
     /**
      * Project relationship.

@@ -10,7 +10,7 @@
                     </colgroup>
                     <thead>
                     <th>ID</th>
-                    <th>Name</th>
+                    <th>Title</th>
                     <th></th>
                     </thead>
                     @include('backend.groups.partials.trashed-loop')

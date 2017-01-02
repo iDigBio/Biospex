@@ -1,7 +1,7 @@
 @foreach($trashed as $group)
     <tr>
         <td>{{ $group->id }}</td>
-        <td>{{ $group->name }}</td>
+        <td>{{ $group->title }}</td>
         <td>
             <div class="btn-toolbar">
                 <button title="@lang('buttons.restoreTitle')"
@@ -13,7 +13,7 @@
                 <button title="@lang('buttons.deleteTitle')"
                         class="btn btn-danger btn-xs" type="button"
                         data-toggle="confirmation" data-placement="left"
-                        data-href="{{ route('admin.groups.trash', [$group->id]) }}"
+                        data-href="{{ route('admin.groups.destroy', [$group->id]) }}"
                         data-method="delete">
                     <span class="fa fa-remove fa-sm"></span> <!-- @lang('buttons.delete') --></button>
             </div>

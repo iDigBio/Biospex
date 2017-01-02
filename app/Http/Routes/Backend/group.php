@@ -31,9 +31,9 @@ $router->delete('groups/{groups}', [
     'as'   => 'admin.groups.delete'
 ]);
 
-$router->delete('groups/{groups}/trash', [
-    'uses' => 'GroupsController@trash',
-    'as'   => 'admin.groups.trash'
+$router->delete('groups/{groups}/destroy', [
+    'uses' => 'GroupsController@destroy',
+    'as'   => 'admin.groups.destroy'
 ]);
 
 $router->get('groups/{groups}/restore', [

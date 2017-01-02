@@ -151,4 +151,7 @@ return array(
     'ocr_processing'                => '<div class="processes"><span class="title">:title</span>:ocr :batches</div>',
     'ocr_records'                   => '<br />:processed record of :total completed.|<br />:processed records of :total completed.',
     'ocr_queue'                     => '<br />:batches_queued process remains in queue before processing begins|<br />:batches_queued processes remain in queue before processing begins',
+    'expeditions_none'              => 'No Expeditions exist for this Project.',
+    'trashed_none'                  => 'No Trashed items exist.',
+    'trash'                         => 'Trash'
 );

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\Contracts\User;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Config\Repository as Config;
@@ -63,13 +64,14 @@ class DownloadsController extends Controller
     /**
      * Index showing downloads for Expedition.
      *
+     * @param User $userRepo
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\View\View
      */
-    public function index($projectId, $expeditionId)
+    public function index(User $userRepo, $projectId, $expeditionId)
     {
-        $user = $this->request->user();
+        $user = $userRepo->with(['profile'])->find($this->request->user()->id);
         $expedition = $this->expedition->with(['project.group', 'downloads.actor'])->find($expeditionId);
 
         return view('frontend.downloads.index', compact('expedition', 'user'));

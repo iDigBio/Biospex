@@ -6,7 +6,7 @@ Breadcrumbs::register('groups', function ($breadcrumbs) {
 
 Breadcrumbs::register('web.groups.show', function ($breadcrumbs, $group) {
     $breadcrumbs->parent('groups');
-    $breadcrumbs->push($group->name, route('web.groups.show', $group->id));
+    $breadcrumbs->push($group->title, route('web.groups.show', $group->id));
 });
 
 Breadcrumbs::register('web.groups.show.create', function ($breadcrumbs) {
@@ -16,13 +16,13 @@ Breadcrumbs::register('web.groups.show.create', function ($breadcrumbs) {
 
 Breadcrumbs::register('web.groups.show.edit', function ($breadcrumbs, $group) {
     $breadcrumbs->parent('groups');
-    $breadcrumbs->push($group->name, route('web.groups.show', $group->id));
+    $breadcrumbs->push($group->title, route('web.groups.show', $group->id));
     $breadcrumbs->push(Lang::get('pages.edit'));
 });
 
 Breadcrumbs::register('web.groups.show.invite', function ($breadcrumbs, $group) {
     $breadcrumbs->parent('groups');
-    $breadcrumbs->push($group->name, route('web.groups.show', $group->id));
+    $breadcrumbs->push($group->title, route('web.groups.show', $group->id));
     $breadcrumbs->push(Lang::get('pages.invite'));
 });
 
@@ -39,13 +39,13 @@ Breadcrumbs::register('projects.title', function ($breadcrumbs, $title) {
 
 Breadcrumbs::register('web.projects.show', function ($breadcrumbs, $project) {
     $breadcrumbs->parent('projects');
-    $breadcrumbs->push($project->group->name, route('web.groups.show', $project->group->id));
+    $breadcrumbs->push($project->group->title, route('web.groups.show', $project->group->id));
     $breadcrumbs->push($project->title);
 });
 
 Breadcrumbs::register('web.projects.show.title', function ($breadcrumbs, $project, $title) {
     $breadcrumbs->parent('projects');
-    $breadcrumbs->push($project->group->name, route('web.groups.show', $project->group->id));
+    $breadcrumbs->push($project->group->title, route('web.groups.show', $project->group->id));
     $breadcrumbs->push($project->title, route('web.projects.show', $project->id));
     $breadcrumbs->push($title);
 });
@@ -53,7 +53,7 @@ Breadcrumbs::register('web.projects.show.title', function ($breadcrumbs, $projec
 // Expedition Pages
 Breadcrumbs::register('web.expeditions.show', function ($breadcrumbs, $expedition, $link = false) {
     $breadcrumbs->parent('projects');
-    $breadcrumbs->push($expedition->project->group->name, route('web.groups.show', $expedition->project->group->id));
+    $breadcrumbs->push($expedition->project->group->title, route('web.groups.show', $expedition->project->group->id));
     $breadcrumbs->push($expedition->project->title, route('web.projects.show', $expedition->project->id));
     ($link) ?
         $breadcrumbs->push($expedition->title, route('web.expeditions.show', [$expedition->project->id, $expedition->id]))

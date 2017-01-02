@@ -62,8 +62,8 @@ class InviteCreateJob extends Job
             $filtered = $existing->where('email', $email)->first();
             if ($filtered !== null)
             {
-                $this->createEvent($email, $group->name, $filtered->code);
-                session_flash_push('success', trans('groups.send_invite_success', ['group' => $group->name, 'email' => $email]));
+                $this->createEvent($email, $group->title, $filtered->code);
+                session_flash_push('success', trans('groups.send_invite_success', ['group' => $group->title, 'email' => $email]));
 
                 continue;
             }
@@ -94,9 +94,9 @@ class InviteCreateJob extends Job
 
             $inviteRepo->create($inviteData);
 
-            $this->createEvent($email, $group->name, $code);
+            $this->createEvent($email, $group->title, $code);
 
-            session_flash_push('success', trans('groups.send_invite_success', ['group' => $group->name, 'email' => $email]));
+            session_flash_push('success', trans('groups.send_invite_success', ['group' => $group->title, 'email' => $email]));
         }
 
     }

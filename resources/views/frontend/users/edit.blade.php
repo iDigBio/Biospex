@@ -21,8 +21,8 @@
                     <p><strong>{{ trans('pages.email') }}:</strong> {{ $user->email }}</p>
                 </div>
                 <div class="col-md-4">
-                    <p><em>{{ trans('pages.account_created') }}: {{ format_date($user->created_at, 'Y-m-d', $user->timezone) }}</em></p>
-                    <p><em>{{ trans('pages.last_updated') }}: {{ format_date($user->updated_at, 'Y-m-d', $user->timezone) }}</em></p>
+                    <p><em>{{ trans('pages.account_created') }}: {{ format_date($user->created_at, 'Y-m-d', $user->profile->timezone) }}</em></p>
+                    <p><em>{{ trans('pages.last_updated') }}: {{ format_date($user->updated_at, 'Y-m-d', $user->profile->timezone) }}</em></p>
                 </div>
                 </div>
                 {!! Form::open([
@@ -58,7 +58,7 @@
                 <div class="form-group {{ ($errors->has('timezone')) ? 'has-error' : '' }}" for="timezone">
                     {!! Form::label('timezone', trans('forms.timezone'), array('class' => 'col-sm-2 control-label')) !!}
                     <div class="col-sm-6">
-                        {!! Form::select('timezone', $timezones, $user->timezone, array('class' => 'form-control')) !!}
+                        {!! Form::select('timezone', $timezones, $user->profile->timezone, array('class' => 'form-control')) !!}
                     </div>
                     {{ ($errors->has('timezone') ? $errors->first('timezone') : '') }}
                 </div>

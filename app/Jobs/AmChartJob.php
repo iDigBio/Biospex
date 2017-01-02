@@ -127,7 +127,7 @@ class AmChartJob extends Job implements ShouldQueue
     {
         foreach ($expeditions as $expedition)
         {
-            if ($expedition->stat->transcriptions_completed === 0)
+            if ($expedition->stat->transcriptions_completed === 0 || null !== $expedition->deleted_at)
             {
                 continue;
             }

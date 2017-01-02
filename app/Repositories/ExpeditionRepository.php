@@ -66,26 +66,29 @@ class ExpeditionRepository extends Repository implements Expedition, CacheableIn
             $expedition->nfnWorkflow()->updateOrCreate(['expedition_id' => $expedition->id], $values);
         }
 
-        $existingSubjectIds = [];
-        foreach ($expedition->subjects as $subject) {
-            $existingSubjectIds[] = $subject->_id;
+        if ( ! isset($attributes['admin']))
+        {
+            $existingSubjectIds = [];
+            foreach ($expedition->subjects as $subject) {
+                $existingSubjectIds[] = $subject->_id;
+            }
+
+            $subjectModel = new Subject();
+            $subjectModel->detachSubjects($existingSubjectIds, $expedition->id);
+
+            $subjectIds = explode(',', $attributes['subjectIds']);
+            $expedition->subjects()->attach($subjectIds);
+
+            $total = transcriptions_total(count($subjectIds));
+            $completed = transcriptions_completed($expedition->id);
+            $values = [
+                'subject_count' => count($subjectIds),
+                'transcriptions_total' => $total,
+                'transcriptions_completed' => $completed,
+                'percent_completed' => transcriptions_percent_completed($total, $completed)
+            ];
+            $expedition->stat()->updateOrCreate(['expedition_id' => $expedition->id], $values);
         }
-
-        $subjectModel = new Subject();
-        $subjectModel->detachSubjects($existingSubjectIds, $expedition->id);
-
-        $subjectIds = explode(',', $attributes['subjectIds']);
-        $expedition->subjects()->attach($subjectIds);
-
-        $total = transcriptions_total(count($subjectIds));
-        $completed = transcriptions_completed($expedition->id);
-        $values = [
-            'subject_count' => count($subjectIds),
-            'transcriptions_total' => $total,
-            'transcriptions_completed' => $completed,
-            'percent_completed' => transcriptions_percent_completed($total, $completed)
-        ];
-        $expedition->stat()->updateOrCreate(['expedition_id' => $expedition->id], $values);
 
         $expedition = $this->model->with(['subjects', 'nfnWorkflow', 'stat'])->find($id);
 

@@ -10,13 +10,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Cviebrock\EloquentSluggable\SluggableInterface;
 use Cviebrock\EloquentSluggable\SluggableTrait;
 use App\Models\Traits\UuidTrait;
+use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 
 class Project extends Eloquent implements StaplerableInterface, SluggableInterface
 {
-    use EloquentTrait;
-    use SoftDeletes;
-    use SluggableTrait;
-    use UuidTrait;
+    use EloquentTrait, SoftDeletes, SluggableTrait, UuidTrait, SoftCascadeTrait;
+
+    /**
+     * Soft delete cascades.
+     *
+     * @var array
+     */
+    protected $softCascade = ['expeditions', 'subjects', 'header', 'metas', 'amChart', 'nfnWorkflows'];
 
     /**
      * Sluggable value.
@@ -120,24 +125,6 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         static::updating(function ($model) {
             $model->advertise = $model->attributes;
         });
-
-        static::deleting(function ($model) {
-            $model->title = $model->title . ':' . str_random();
-            $model->save();
-            $model->expeditions()->delete();
-            $model->header()->delete();
-            $model->metas()->delete();
-        });
-
-        self::restored(function ($model)
-        {
-            $title = explode(':', $model->title);
-            $model->title = $title[0];
-            $model->save();
-            $model->expeditions()->restore();
-            $model->header()->restore();
-            $model->metas()->restore();
-        });
     }
 
     /**
@@ -177,7 +164,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      */
     public function expeditions()
     {
-        return $this->hasMany(Expedition::class);
+        return $this->hasMany(Expedition::class)->withTrashed();
     }
 
     /**
@@ -188,6 +175,16 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     public function subjects()
     {
         return $this->hasMany(Subject::class);
+    }
+
+    /**
+     * Trashed subject relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function trashedSubjects()
+    {
+        return $this->hasMany(Subject::class)->withTrashed();
     }
 
     /**
@@ -228,6 +225,16 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     public function amChart()
     {
         return $this->hasOne(AmChart::class);
+    }
+
+    /**
+     * NfnWorkflow relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function nfnWorkflows()
+    {
+        return $this->hasMany(NfnWorkflow::class);
     }
 
     /**

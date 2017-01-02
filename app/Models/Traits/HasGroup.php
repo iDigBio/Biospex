@@ -18,6 +18,26 @@ trait HasGroup
     }
 
     /**
+     * Trashed group relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function trashedGroups()
+    {
+        return $this->belongsToMany(Group::class)->onlyTrashed();
+    }
+
+    /**
+     * Group owner relationship.
+     *
+     * @return mixed
+     */
+    public function ownGroups()
+    {
+        return $this->hasMany(Group::class);
+    }
+
+    /**
      * Assign the given group to the user.
      * 
      * @param $group
@@ -48,7 +68,7 @@ trait HasGroup
     public function hasGroup($group)
     {
         if (is_string($group)) {
-            return $this->groups->contains('name', $group);
+            return $this->groups->contains('title', $group);
         }
 
         return !! $this->groups->intersect(collect([$group]))->count();
@@ -68,6 +88,6 @@ trait HasGroup
             return false;
         }
         
-        return $group->permissions->contains('name', $permission);
+        return $group->permissions->contains('title', $permission);
     }
 }

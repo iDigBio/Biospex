@@ -16,6 +16,10 @@ return array (
   'dataViewTitle' => 'Explore data added to project',
   'delete' => 'Delete',
   'deleteTitle' => 'Delete this item',
+  'destroy' => 'Destroy',
+  'destroyTitle' => 'Destroy this item',
+  'restore' => 'Restore',
+  'restoreTitle' => 'Restore this item',
   'download' => 'Download',
   'downloadTitle' => 'Download generated files',
   'duplicate' => 'Clone',
@@ -48,5 +52,4 @@ return array (
   'login' => 'Login',
   'password_forgot' => 'Forgot Password',
   'ocrDisabled' => 'OCR is processing',
-    'restoreTitle' => 'Restore'
 );

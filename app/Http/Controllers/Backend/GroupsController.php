@@ -8,6 +8,9 @@ use App\Http\Requests\InviteFormRequest;
 use App\Jobs\InviteCreateJob;
 use App\Repositories\Contracts\Group;
 use App\Repositories\Contracts\User;
+use App\Services\Model\ModelDeleteService;
+use App\Services\Model\ModelDestroyService;
+use App\Services\Model\ModelRestoreService;
 use Event;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -65,7 +68,7 @@ class GroupsController extends Controller
     {
         $user = $this->request->user();
 
-        $group = $this->group->create(['user_id' => $user->id, 'name' => $request->get('name')]);
+        $group = $this->group->create(['user_id' => $user->id, 'title' => $request->get('title')]);
 
         if ($group) {
             $user->assignGroup($group);
@@ -115,19 +118,20 @@ class GroupsController extends Controller
         $result ? Toastr::success('The Group has been updated.', 'Group Update') :
             Toastr::error('The Group could not be updated.', 'Group Update');
 
-        return redirect()->route('admin.groups.index');
+        return redirect()->route('admin.groups.show', [$group->id]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param ModelDeleteService $service
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete($id)
+    public function delete(ModelDeleteService $service, $id)
     {
-        $result = $this->group->delete($id);
-        $result ? Toastr::success('The Group has been deleted.', 'Group Delete') :
+        $service->deleteGroup($id) ?
+            Toastr::success('The Group has been deleted.', 'Group Delete') :
             Toastr::error('The Group could not be deleted.', 'Group Delete');
 
         return redirect()->route('admin.groups.index');
@@ -136,14 +140,14 @@ class GroupsController extends Controller
     /**
      * Forcefully delete trashed records.
      *
+     * @param ModelDestroyService $service
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function trash($id)
+    public function destroy(ModelDestroyService $service, $id)
     {
-        $result = $this->group->forceDelete($id);
-
-        $result ? Toastr::success('Group has been forcefully deleted.', 'Group Destroy') :
+        $service->destroyGroup($id) ?
+            Toastr::success('Group has been forcefully deleted.', 'Group Destroy') :
             Toastr::error('Group could not be forcefully deleted.', 'Group Destroy');
 
         return redirect()->route('admin.groups.index');
@@ -152,17 +156,17 @@ class GroupsController extends Controller
     /**
      * Restore deleted record.
      *
+     * @param ModelRestoreService $service
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function restore($id)
+    public function restore(ModelRestoreService $service, $id)
     {
-        $result = $this->group->withTrashed($id)->restore();
-
-        $result ? Toastr::success('Group has been restored successfully.', 'Group Restore') :
+        $service->restoreGroup($id) ?
+            Toastr::success('Group has been restored successfully.', 'Group Restore') :
             Toastr::error('Group could not be restored.', 'Group Restore');
 
-        return redirect()->route('admin.groups.index');
+        return redirect()->route('admin.groups.show', [$id]);
     }
 
     /**
@@ -178,7 +182,9 @@ class GroupsController extends Controller
 
         $this->dispatch(new InviteCreateJob($request, $group->id));
 
-        return redirect()->route('admin.groups.index', [$group->id]);
+        Toastr::success('The User has been invited to the Group.', 'Group User Invite');
+
+        return redirect()->route('admin.groups.show', [$group->id]);
     }
 
     /**

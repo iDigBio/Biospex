@@ -130,6 +130,7 @@ $(function () {
     });
 
     $(".users-ajax").select2({
+        tags: true,
         ajax: {
             url: "/admin/users/search",
             dataType: 'json',

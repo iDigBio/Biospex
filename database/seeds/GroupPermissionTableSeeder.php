@@ -44,7 +44,7 @@ class GroupPermissionTableSeeder extends Seeder
         $permissions = $this->permission->all();
 
         foreach ($groups as $group) {
-            if ($group->name == 'admins') {
+            if ($group->title == 'admins') {
                 $group->permissions()->attach($permissions[0]->id);
                 unset($permissions[0]);
                 continue;

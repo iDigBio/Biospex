@@ -11,12 +11,29 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use App\Models\Traits\HasGroup;
 use App\Models\Traits\UuidTrait;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 
 class User extends Model implements AuthenticatableContract,
     AuthorizableContract,
     CanResetPasswordContract
 {
-    use Authenticatable, Authorizable, CanResetPassword, HasGroup, UuidTrait;
+    use Authenticatable, Authorizable, CanResetPassword,
+        HasGroup, UuidTrait, SoftDeletes, SoftCascadeTrait;
+
+    /**
+     * Soft delete cascades.
+     *
+     * @var array
+     */
+    protected $softCascade = ['ownGroups'];
+
+    /**
+     * Protected dates.
+     *
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
 
     /**
      * The database table used by the model.
@@ -49,6 +66,7 @@ class User extends Model implements AuthenticatableContract,
      * @var array
      */
     protected $hashableAttributes = ['password'];
+
 
     /**
      * Import relationship.

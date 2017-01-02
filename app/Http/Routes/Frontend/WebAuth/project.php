@@ -36,6 +36,16 @@ $router->delete('projects/{projects}', [
     'as'   => 'web.projects.delete'
 ]);
 
+$router->delete('projects/{projects}/destroy', [
+    'uses' => 'ProjectsController@destroy',
+    'as'   => 'web.projects.destroy'
+]);
+
+$router->get('projects/{projects}/restore', [
+    'uses' => 'ProjectsController@restore',
+    'as'   => 'web.projects.restore'
+]);
+
 $router->get('projects/{projects}/duplicate', [
     'uses' => 'ProjectsController@duplicate',
     'as'   => 'web.projects.duplicate'

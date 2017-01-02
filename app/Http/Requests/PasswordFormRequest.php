@@ -24,7 +24,7 @@ class PasswordFormRequest extends Request
     public function rules()
     {
         return [
-            'oldPassword' => 'required|min:6',
+            'oldPassword' => 'required_without:admin|min:6',
             'newPassword' => 'required|min:6|confirmed',
             'newPassword_confirmation' => 'required'
         ];
