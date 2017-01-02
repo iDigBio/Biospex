@@ -2,6 +2,8 @@
 
 namespace App\Services\Model;
 
+ini_set('memory_limit', '1024M');
+
 use Illuminate\Support\Facades\Event;
 use App\Exceptions\BiospexException;
 use App\Exceptions\Handler;
