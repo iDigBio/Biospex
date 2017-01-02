@@ -2,6 +2,7 @@
 
 namespace App\Services\Model;
 
+ini_set('memory_limit', '1024M');
 
 class ModelRestoreService
 {
