@@ -57,10 +57,9 @@ class TestAppCommand extends Command
     /**
      * TestAppCommand constructor.
      */
-    public function __construct($projectId)
+    public function __construct()
     {
         parent::__construct();
-        $this->projectId = 17;
     }
 
     /**
@@ -72,6 +71,8 @@ class TestAppCommand extends Command
      */
     public function fire(Project $repo, AmChart $chart, NfnClassification $classification)
     {
+        $this->projectId = 17;
+
         $this->classification = $classification;
 
         $project = $this->getProject($repo);
