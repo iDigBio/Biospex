@@ -120,7 +120,6 @@ class TestAppCommand extends Command
         $i = 0;
         while ($i <= $total) {
             $this->defaultDays[$i] = '';
-            echo $i++;
         }
     }
 
@@ -133,6 +132,12 @@ class TestAppCommand extends Command
     {
         foreach ($expeditions as $expedition)
         {
+            if ( ! isset($expedition->stat->transcriptions_completed) || null !== $expedition->deleted_at)
+            {
+                echo $expedition->id . PHP_EOL;
+                continue;
+            }
+
             if ($expedition->stat->transcriptions_completed === 0 || null !== $expedition->deleted_at)
             {
                 continue;
