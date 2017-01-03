@@ -114,6 +114,7 @@ class AmChartJob extends Job implements ShouldQueue
         $i = 0;
         while ($i <= $total) {
             $this->defaultDays[$i] = '';
+            $i++;
         }
     }
 
@@ -145,7 +146,7 @@ class AmChartJob extends Job implements ShouldQueue
      * Process each expedition's transcriptions.
      *
      * @param $expedition
-     * @return mixed|void
+     * @return mixed
      */
     public function processExpedition($expedition)
     {
