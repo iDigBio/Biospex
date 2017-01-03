@@ -77,25 +77,15 @@ class TestAppCommand extends Command
 
         $project = $this->getProject($repo);
 
-        echo 'retrieved project' . PHP_EOL;
-
         $this->setDaysAndDates($project->earliest_finished_at_date, $project->latest_finished_at_date);
-
-        echo 'set days and dates' . PHP_EOL;
 
         $this->processProjectExpeditions($project->expeditions);
 
-        echo 'processed expeditions' . PHP_EOL;
-
         uasort($this->transcriptions, [$this, 'sort']);
-
-        echo 'sort transcriptions' . PHP_EOL;
 
         $content = array_values($this->transcriptions);
 
         $chart->updateOrCreate(['project_id' => $this->projectId], ['data' => json_encode($content)]);
-
-        echo 'updated chart' . PHP_EOL;
     }
 
     /**
@@ -126,12 +116,11 @@ class TestAppCommand extends Command
         $this->latest_date = $latest_date;
 
         $total = $this->calculateDay($earliest_date, $latest_date);
-        echo 'calculated total: ' . $total . PHP_EOL;
 
         $i = 0;
         while ($i <= $total) {
             $this->defaultDays[$i] = '';
-            echo $i++ . PHP_EOL;
+            $i++;
         }
     }
 
@@ -148,13 +137,10 @@ class TestAppCommand extends Command
                 $expedition->stat->transcriptions_completed === 0 ||
                 null !== $expedition->deleted_at)
             {
-                echo 'bypassing expeditions' . PHP_EOL;
                 continue;
             }
 
             $resultSet = $this->processExpedition($expedition);
-
-            echo 'processed expedition: ' . $expedition->id . PHP_EOL;
 
             $this->aggregateResultCount($resultSet);
 
