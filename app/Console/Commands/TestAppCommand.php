@@ -126,10 +126,12 @@ class TestAppCommand extends Command
         $this->latest_date = $latest_date;
 
         $total = $this->calculateDay($earliest_date, $latest_date);
+        echo 'calculated total: ' . $total . PHP_EOL;
 
         $i = 0;
         while ($i <= $total) {
             $this->defaultDays[$i] = '';
+            echo $i++ . PHP_EOL;
         }
     }
 
