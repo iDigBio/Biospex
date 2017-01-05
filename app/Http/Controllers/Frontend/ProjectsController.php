@@ -289,7 +289,7 @@ class ProjectsController extends Controller
      */
     public function destroy(ModelDestroyService $service, $id)
     {
-        $project = $this->project->with(['group'])->withTrashed($id);
+        $project = $this->project->with(['group'])->trashed($id);
 
         if ( ! $this->checkPermissions($this->request->user(), [$project], 'delete'))
         {

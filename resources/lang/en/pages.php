@@ -153,5 +153,10 @@ return array(
     'ocr_queue'                     => '<br />:batches_queued process remains in queue before processing begins|<br />:batches_queued processes remain in queue before processing begins',
     'expeditions_none'              => 'No Expeditions exist for this Project.',
     'trashed_none'                  => 'No Trashed items exist.',
-    'trash'                         => 'Trash'
+    'trash'                         => 'Trash',
+    'no_notifications'              => 'No notifications',
+    'count_notifications'           => 'You have :count notification|You have :count notifications',
+    'view_all'                      => 'View All',
+    'options'                       => 'Options',
+    'notifications'                 => 'Notifications',
 );

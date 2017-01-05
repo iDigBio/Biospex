@@ -15,7 +15,7 @@
         <div class="container-fluid" id="home-content">
             <div class="col-md-11 col-lg-offset-1">
             <!-- Notifications -->
-            @include('frontend.layouts.notifications')
+            @include('frontend.layouts.notices')
                     <!-- ./ notifications -->
 
             <!-- Content -->

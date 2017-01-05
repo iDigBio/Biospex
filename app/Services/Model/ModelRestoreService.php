@@ -62,7 +62,7 @@ class ModelRestoreService
      */
     public function restoreUser($id)
     {
-        return $this->userService->repository->skipCache()->withTrashed($id)->restore();
+        return $this->userService->repository->restore($id);
     }
 
     /**
@@ -73,7 +73,7 @@ class ModelRestoreService
      */
     public function restoreGroup($id)
     {
-        return $this->groupService->repository->skipCache()->withTrashed($id)->restore();
+        return $this->groupService->repository->restore($id);
     }
 
     /**
@@ -84,7 +84,7 @@ class ModelRestoreService
      */
     public function restoreProject($id)
     {
-        return $this->projectService->repository->skipCache()->withTrashed($id)->restore();
+        return $this->projectService->repository->restore($id);
     }
 
     /**
@@ -94,6 +94,6 @@ class ModelRestoreService
      */
     public function restoreExpedition($id)
     {
-        return $this->expeditionService->repository->skipCache()->withTrashed($id)->restore();
+        return $this->expeditionService->repository->restore($id);
     }
 }

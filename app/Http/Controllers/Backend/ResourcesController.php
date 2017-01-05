@@ -178,7 +178,7 @@ class ResourcesController extends Controller
      */
     public function trash($id)
     {
-        $resource = $this->resource->withTrashed($id);
+        $resource = $this->resource->onlyTrashed($id);
         Storage::disk('public')->delete('resources/' . $resource->document);
 
         $result = $this->resource->forceDelete($id);

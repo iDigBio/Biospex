@@ -3,8 +3,6 @@ namespace App\Http\ViewComposers;
 
 use Illuminate\Contracts\View\View;
 use App\Repositories\Contracts\Notice;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class NoticesComposer
 {

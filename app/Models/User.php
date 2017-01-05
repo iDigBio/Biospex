@@ -89,6 +89,16 @@ class User extends Model implements AuthenticatableContract,
     }
 
     /**
+     * Import notifications.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function notifications()
+    {
+        return $this->hasMany(Notifications::class);
+    }
+
+    /**
      * Return activation code.
      *
      * @return string

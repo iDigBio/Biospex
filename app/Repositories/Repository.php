@@ -456,6 +456,21 @@ abstract class Repository
     }
 
     /**
+     * Find where model doesn't have relationship.
+     *
+     * @param $relation
+     * @param string $boolean
+     * @param null $callback
+     * @return $this
+     */
+    public function doesntHave($relation, $boolean = 'and', $callback = null)
+    {
+        $this->model = $this->model->doesntHave($relation, $boolean, $callback);
+
+        return $this;
+    }
+
+    /**
      * Group by.
      * 
      * @param array $value
@@ -542,28 +557,14 @@ abstract class Repository
     }
 
     /**
-     * Return single trashed.
+     * Get only trashed.
      *
-     * @param $id
+     * @param null $id
      * @return mixed
      */
-    public function withTrashed($id)
+    public function trashed($id = null)
     {
-        $result = $this->model->withTrashed()->find($id);
-
-        $this->resetModel();
-
-        return $result;
-    }
-
-    /**
-     * Get only trashed.
-     * 
-     * @return $this
-     */
-    public function trashed()
-    {
-        $result = $this->model->onlyTrashed()->get();
+        $result = $id === null ? $this->model->onlyTrashed()->get() : $this->model->onlyTrashed()->find($id);
 
         $this->resetModel();
 
@@ -583,5 +584,18 @@ abstract class Repository
         $this->resetModel();
 
         return $model->forceDelete();
+    }
+
+    /**
+     * Restore a record.
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function restore($id)
+    {
+        $result = $this->trashed($id);
+
+        return $result->restore();
     }
 }

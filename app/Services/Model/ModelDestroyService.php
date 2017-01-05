@@ -77,7 +77,7 @@ class ModelDestroyService
     {
         try
         {
-            $record = $this->userService->repository->skipCache()->with(['trashedGroups'])->withTrashed($id);
+            $record = $this->userService->repository->skipCache()->with(['trashedGroups'])->trashed($id);
 
             if ( ! $record->trashedGroups->isEmpty())
             {
@@ -109,7 +109,7 @@ class ModelDestroyService
     {
         try
         {
-            $record = $this->groupService->repository->skipCache()->with(['trashedProjects'])->withTrashed($id);
+            $record = $this->groupService->repository->skipCache()->with(['trashedProjects'])->trashed($id);
 
             if ( ! $record->trashedProjects->isEmpty())
             {
@@ -144,7 +144,7 @@ class ModelDestroyService
             $record = $this->projectService->repository
                 ->skipCache()
                 ->with(['expeditions', 'trashedSubjects'])
-                ->withTrashed($id);
+                ->trashed($id);
 
             if ( ! $record->expeditions->isEmpty())
             {
@@ -179,13 +179,13 @@ class ModelDestroyService
      */
     public function destroyExpedition($id)
     {
-        $expedition = $this->expeditionService->repository->skipCache()->with(['downloads'])->withTrashed($id);
+        $record = $this->expeditionService->repository->skipCache()->with(['downloads'])->trashed($id);
 
-        if (isset($expedition->downloads))
+        if (isset($record->downloads))
         {
-            $this->downloadService->deleteFiles($expedition->downloads);
+            $this->downloadService->deleteFiles($record->downloads);
         }
 
-        return $this->expeditionService->repository->forceDelete($id);
+        return $record->forceDelete();
     }
 }

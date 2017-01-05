@@ -3,9 +3,11 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class TestAppCommand extends Command
 {
+    use DispatchesJobs;
 
     /**
      * The console command name.
@@ -16,6 +18,7 @@ class TestAppCommand extends Command
      * The console command description.
      */
     protected $description = 'Used to test code';
+
 
     /**
      * TestAppCommand constructor.

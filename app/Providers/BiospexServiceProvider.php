@@ -33,6 +33,7 @@ use App\Repositories\Contracts\Translation as TranslationContract;
 use App\Repositories\Contracts\Resource as ResourceContract;
 use App\Repositories\Contracts\NfnClassification as NfnClassificationContract;
 use App\Repositories\Contracts\NfnWorkflow as NfnWorkflowContract;
+use App\Repositories\Contracts\Notification as NotificationContract;
 
 use App\Repositories\UserRepository;
 use App\Repositories\GroupRepository;
@@ -63,15 +64,18 @@ use App\Repositories\TranslationRepository;
 use App\Repositories\ResourceRepository;
 use App\Repositories\NfnClassificationRepository;
 use App\Repositories\NfnWorkflowRepository;
+use App\Repositories\NotificationRepository;
 
 class BiospexServiceProvider extends ServiceProvider
 {
     public function boot()
     {
         require base_path().'/resources/macros/macros.php';
-        
         view()->composer(
-            'frontend.layouts.notifications', 'App\Http\ViewComposers\NoticesComposer'
+            'frontend.layouts.notices', 'App\Http\ViewComposers\NoticesComposer'
+        );
+        view()->composer(
+            'frontend.layouts.partials.authuser', 'App\Http\ViewComposers\NotificationsComposer'
         );
     }
     
@@ -112,5 +116,6 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(ResourceContract::class, ResourceRepository::class);
         $this->app->bind(NfnClassificationContract::class, NfnClassificationRepository::class);
         $this->app->bind(NfnWorkflowContract::class, NfnWorkflowRepository::class);
+        $this->app->bind(NotificationContract::class, NotificationRepository::class);
     }
 }

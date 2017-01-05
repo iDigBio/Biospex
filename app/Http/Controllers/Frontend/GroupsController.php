@@ -201,7 +201,7 @@ class GroupsController extends Controller
      */
     public function destroy(ModelDestroyService $service, $groupId)
     {
-        $group = $this->groupService->repository->withTrashed($groupId);
+        $group = $this->groupService->repository->trashed($groupId);
 
         if ( ! $this->checkPermissions(Request::user(), [$group], 'delete'))
         {

@@ -94,9 +94,7 @@ class ModelDeleteService
                 }
             }
 
-            $this->userService->repository->delete($record->id);
-
-            return true;
+            return $record->delete();
         }
         catch (BiospexException $e)
         {
@@ -128,7 +126,7 @@ class ModelDeleteService
                 }
             }
 
-            $this->groupService->repository->delete($id);
+            $record->delete();
 
             //$groups = $service->groupService->model->whereHas('users', ['user_id' => $user->id])->get();
             //Request::session()->put('groups', $groups);
@@ -163,9 +161,7 @@ class ModelDeleteService
                 return false;
             }
 
-            $this->projectService->repository->delete($id);
-
-            return true;
+            return $record->delete();
         }
         catch (BiospexException $e)
         {
@@ -210,9 +206,7 @@ class ModelDeleteService
 
             $record->stat()->updateOrCreate(['expedition_id' => $record->id], $values);
 
-            $this->expeditionService->repository->delete($id);
-
-            return true;
+            return $record->delete();
         }
         catch (BiospexException $e)
         {

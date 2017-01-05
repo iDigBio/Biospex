@@ -11,6 +11,7 @@ use App\Console\Commands\DarwinCoreFileImportCommand;
 use App\Console\Commands\DownloadCleanCommand;
 use App\Console\Commands\Inspire;
 use App\Console\Commands\NfnWorkflowUpdate;
+use App\Console\Commands\NotificationsUpdateCommand;
 use App\Console\Commands\OcrDeleteFile;
 use App\Console\Commands\OcrPollCommand;
 use App\Console\Commands\OcrProcessCommand;
@@ -50,6 +51,7 @@ class Kernel extends ConsoleKernel
         NfnWorkflowUpdate::class,
         ExportPollCommand::class,
         OcrPollCommand::class,
+        NotificationsUpdateCommand::class
     ];
 
     /**

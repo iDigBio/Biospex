@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterFormRequest;
 use App\Http\Requests\ResendActivationFormRequest;
 use App\Repositories\Contracts\Group;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
@@ -78,15 +79,13 @@ class AuthController extends Controller
      * @param $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function authenticated($request, $user)
+    public function authenticated(Request $request, $user)
     {
         if ( ! $user->activated) {
             session_flash_push('error', trans('users.notactive', ['url' => route('auth.get.resend')]));
             Auth::logout();
             return redirect()->route('home');
         }
-        
-        
 
         return redirect()->intended($this->redirectPath());
     }
@@ -119,10 +118,11 @@ class AuthController extends Controller
     }
 
     /**
-     * Handle a registration request for the application
+     * Handle a registration request for the application.
+     *
      * @param RegisterFormRequest $request
      * @param Event $dispatcher
-     * @return $this|\Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function postRegister(RegisterFormRequest $request, Event $dispatcher)
     {

@@ -50,15 +50,17 @@ interface Repository
 
     public function has($relation, $condition = null, $value = null);
 
+    public function doesntHave($relation, $boolean = 'and', $callback = null);
+
     public function groupBy($value);
 
     public function orderBy(array $order_by = []);
 
     public function limitOffset($limit, $offset = 0);
-
-    public function withTrashed($id);
     
-    public function trashed();
+    public function trashed($id = null);
     
     public function forceDelete($id);
+
+    public function restore($id);
 }

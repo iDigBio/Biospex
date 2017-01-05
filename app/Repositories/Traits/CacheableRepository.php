@@ -215,22 +215,23 @@ trait CacheableRepository
     /**
      * Retrieve records using get.
      *
+     * @param null $id
      * @return mixed
      */
-    public function trashed()
+    public function trashed($id = null)
     {
         if ($this->cacheSkip)
         {
-            return parent::trashed();
+            return parent::trashed($id);
         }
 
         $key = $this->createCacheKey('trashed');
 
         $minutes = $this->getCacheMinutes();
 
-        return $this->getCacheRepository()->remember($key, $minutes, function ()
+        return $this->getCacheRepository()->remember($key, $minutes, function () use ($id)
         {
-            return parent::trashed();
+            return parent::trashed($id);
         });
     }
 

@@ -14,7 +14,7 @@
     @yield('project')
 @else
     <div class="container-fluid">
-        @include('frontend.layouts.notifications')
+        @include('frontend.layouts.notices')
         @yield('content')
     </div>
 @endif

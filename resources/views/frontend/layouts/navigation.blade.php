@@ -1,6 +1,6 @@
 <!-- Navbar -->
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="navbar-header">
+    <div class="navbar-header pull-left">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
@@ -17,13 +17,13 @@
         @if (config('config.translate'))
             @include('frontend.layouts.partials.translate')
         @endif
-        <ul class="nav navbar-nav">
+        <ul class="nav navbar-nav pull-left">
             @if(Auth::check())
                 @include('frontend.layouts.partials.authmenu')
             @endif
             @include('frontend.layouts.partials.commonmenu')
         </ul>
-        <ul class="nav navbar-nav pull-right">
+        <ul class="nav navbar-nav  pull-right">
             @if (Auth::check())
                 @include('frontend.layouts.partials.authuser')
             @else
