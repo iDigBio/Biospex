@@ -13,7 +13,7 @@
             {{ trans('html.welcome') }}
         </div>
         <div class="col-md-10 col-md-offset-1">
-            {!! trans('html.new-user-intro') !!}
+            {{ trans('html.new-user-intro') }}
             <button class="btn btn-success" title="@lang('buttons.createTitleG')"
                     onClick="location.href='{{ route('web.groups.create') }}'"><span
                         class="glyphicon glyphicon-plus"></span> @lang('buttons.create')</button>
