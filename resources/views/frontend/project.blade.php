@@ -33,7 +33,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach ($project->expeditions as $expedition)
+                        @foreach ($expeditions as $expedition)
                             <tr>
                                 <td>{{ $expedition->title }}</td>
                                 @if( ! $expedition->actors->isEmpty())
