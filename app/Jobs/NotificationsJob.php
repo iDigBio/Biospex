@@ -42,6 +42,11 @@ class NotificationsJob extends Job implements ShouldQueue
     private function nfnWorkflowNotification($expedition, $notification)
     {
         $results = $expedition->skipCache()->with(['project.group'])->whereHas('workflowManager', ['stopped' => 0])->doesntHave('nfnWorkflow')->get();
+        if (null === $results)
+        {
+            return;
+        }
+
         foreach ($results as $result)
         {
             $values = [
