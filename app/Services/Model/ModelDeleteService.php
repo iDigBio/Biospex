@@ -190,7 +190,7 @@ class ModelDeleteService
                 return false;
             }
 
-            $subjects = $this->subjectService->repository->where(['expedition_ids' => (int) $id])->timeout(-1)->get();
+            $subjects = $this->subjectService->repository->where(['expedition_ids' => (int) $id])->get();
 
             if ( ! $subjects->isEmpty())
             {
