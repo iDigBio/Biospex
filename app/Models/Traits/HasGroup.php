@@ -88,6 +88,6 @@ trait HasGroup
             return false;
         }
         
-        return $group->permissions->contains('title', $permission);
+        return $group->permissions->contains('name', $permission);
     }
 }
