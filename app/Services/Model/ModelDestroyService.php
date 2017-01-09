@@ -179,13 +179,24 @@ class ModelDestroyService
      */
     public function destroyExpedition($id)
     {
-        $record = $this->expeditionService->repository->skipCache()->with(['downloads'])->trashed($id);
-
-        if (isset($record->downloads))
+        try
         {
-            $this->downloadService->deleteFiles($record->downloads);
-        }
+            $record = $this->expeditionService->repository->skipCache()->with(['downloads'])->trashed($id);
 
-        return $record->forceDelete();
+            if (isset($record->downloads))
+            {
+                $this->downloadService->deleteFiles($record->downloads);
+            }
+
+            $record->forceDelete();
+
+            return true;
+        }
+        catch (BiospexException $e)
+        {
+            $this->handler->report($e);
+
+            return false;
+        }
     }
 }

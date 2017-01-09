@@ -2,9 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\NfnClassificationsJob;
 use App\Jobs\NotificationsJob;
-use App\Repositories\Contracts\Expedition;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\Config;

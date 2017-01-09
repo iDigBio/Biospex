@@ -598,4 +598,18 @@ abstract class Repository
 
         return $result->restore();
     }
+
+    /**
+     * Truncate table.
+     *
+     * @return mixed
+     */
+    public function truncate()
+    {
+        $result = $this->model->truncate();
+
+        $this->resetModel();
+
+        return $result;
+    }
 }

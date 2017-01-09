@@ -63,4 +63,6 @@ interface Repository
     public function forceDelete($id);
 
     public function restore($id);
+
+    public function truncate();
 }

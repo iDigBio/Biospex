@@ -507,7 +507,7 @@ class ExpeditionsController extends Controller
         $result ? session_flash_push('success', trans('expeditions.expedition_destroyed')) :
             session_flash_push('error', trans('expeditions.expedition_destroy_error'));
 
-        return $service->destroyExpedition($expeditionId) ?
+        return $result ?
             redirect()->route('web.projects.show', [$projectId]) :
             redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
 
