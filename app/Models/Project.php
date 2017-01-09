@@ -139,8 +139,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
 
     /**
      * Workflow relationship.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function workflow()
     {

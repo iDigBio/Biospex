@@ -615,3 +615,27 @@ h2.project-page-header {
 .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a > .ion {
     width: 20px;
 }
+
+.participants dl {
+    width: 100%;
+    overflow: hidden;
+    padding: 0;
+    margin: 0 0 10px 0;
+}
+.participants dt {
+    float: left;
+    width: 10%;
+    padding: 0;
+    margin: 0;
+}
+.participants dd {
+    float: left;
+    text-align: left;
+    width: 90%;
+    padding: 0;
+    margin: 0;
+}
+
+.participants dd, dt {
+    line-height: 30px;
+}

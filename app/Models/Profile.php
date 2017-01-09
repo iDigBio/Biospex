@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Codesleeve\Stapler\ORM\EloquentTrait;
+use Codesleeve\Stapler\ORM\StaplerableInterface;
 
-class Profile extends Model
+class Profile extends Model implements StaplerableInterface
 {
+    use EloquentTrait;
 
     /**
      * @var array
@@ -18,7 +21,8 @@ class Profile extends Model
     protected $fillable = [
         'first_name',
         'last_name',
-        'timezone'
+        'timezone',
+        'avatar'
     ];
 
     /**
@@ -27,6 +31,27 @@ class Profile extends Model
      * @var string
      */
     protected $table = 'profiles';
+
+    /**
+     * Profile constructor.
+     * @param array $attributes
+     */
+    public function __construct(array $attributes = [])
+    {
+        $this->hasAttachedFile('avatar', ['styles' => ['medium' => '160x160', 'small' => '25x25']]);
+
+        parent::__construct($attributes);
+    }
+
+    /**
+     * Boot function to add model events
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::bootStapler();
+    }
 
     /**
      * User relationship.

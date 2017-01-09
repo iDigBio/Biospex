@@ -75,7 +75,7 @@ class UsersController extends Controller
      */
     public function update(EditUserFormRequest $request, $users)
     {
-        $user = $this->user->with(['profile'])->find($users);
+        $user = $this->user->skipCache()->with(['profile'])->find($users);
 
         if ($user->cannot('update', $user))
         {
@@ -85,9 +85,8 @@ class UsersController extends Controller
         }
 
         $result = $this->user->update($request->all(), $user->id);
-        $user->profile->first_name = $request->input('first_name');
-        $user->profile->last_name = $request->input('last_name');
-        $user->profile->timezone = $request->input('timezone');
+
+        $user->profile->fill($request->all());
         $user->profile()->save($user->profile);
 
         if ($result)
