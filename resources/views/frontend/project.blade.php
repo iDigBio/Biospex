@@ -16,66 +16,55 @@
         <!-- ./ notifications -->
         <!-- Content -->
         <h1 class="banner">{{ $project->title }}</h1>
+
         <div class="row">
             <div class="col-md-7">
                 <p class="description">{{ $project->description_short }}</p>
                 {{ $project->description_long }}
-            </div>
-            <div class="col-md-5 participants">
-                <h2 class="project-page-header">{{ trans('pages.project_page_participants') }}</h2>
-                <dl>
-                    @foreach($project->group->users as $user)
-                        <dt><img src="{{ $user->profile->avatar->url('small') }}"/></dt>
-                        <dd>{!! HTML::mailto('someone@example.com', $user->profile->full_name) !!}</dd>
-                    @endforeach
-                </dl>
-            </div>
-        </div>
-        <div class="row">
-            <div class="table-responsive col-md-7">
                 <h2 class="project-page-header">{{ trans('pages.project_page_header') }}</h2>
                 <p>{{ trans('pages.project_page_expeditions') }}:</p>
-                <table class="table table-striped table-hover">
-                    <thead>
-                    <tr>
-                        <th>{{ trans('pages.expeditions') }}</th>
-                        <th class="nowrap">{{ trans('pages.project_page_percent_complete') }}</th>
-                        <th>{{ trans('pages.project_page_join') }}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @if (null !== $expeditions)
-                        @foreach ($expeditions as $expedition)
-                            <tr>
-                                <td>{{ $expedition->title }}</td>
-                                @if( ! $expedition->actors->isEmpty())
-                                    <td class="nowrap">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>{{ trans('pages.expeditions') }}</th>
+                            <th class="nowrap">{{ trans('pages.project_page_percent_complete') }}</th>
+                            <th>{{ trans('pages.project_page_join') }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @if(null !== $expeditions)
+                            @foreach ($expeditions as $expedition)
+                                <tr>
+                                    <td>{{ $expedition->title }}</td>
+                                    @if( ! $expedition->actors->isEmpty())
+                                        <td class="nowrap">
                                         <span class="complete">
                                         <span class="complete{{ round_up_to_any_five($expedition->stat->percent_completed) }}">&nbsp;</span>
                                         </span> {{ $expedition->stat->percent_completed }}%
+                                        </td>
+                                    @else
+                                        <td class="nowrap"
+                                            colspan="3">{{ trans('expeditions.processing_not_started') }}</td>
+                                    @endif
+                                    <td>
+                                        @foreach($expedition->actors as $actor)
+                                            <a href="{{ $actor->url }}">{{ $actor->title }}</a>&nbsp;&nbsp;
+                                        @endforeach
                                     </td>
-                                @else
-                                    <td class="nowrap"
-                                        colspan="3">{{ trans('expeditions.processing_not_started') }}</td>
-                                @endif
-                                <td>
-                                    @foreach($expedition->actors as $actor)
-                                        <a href="{{ $actor->url }}">{{ $actor->title }}</a>&nbsp;&nbsp;
-                                    @endforeach
-                                </td>
-                            </tr>
-                        @endforeach
-                    @endif
-                    </tbody>
-                </table>
+                                </tr>
+                            @endforeach
+                        @endif
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="col-md-5">
-                <h2 class="project-page-header">{{ trans('pages.project_page_information') }}</h2>
                 <dl>
                     <dt class="firstdl">{{ trans('forms.organization') }}</dt>
                     <dd class="firstdl">{{ $project->organization }}&nbsp;</dd>
                     <dt>{{ trans('forms.contact') }}</dt>
-                    <dd>{!! HTML::mailto($project->contact_email, $project->contact) !!}</dd>
+                    <dd><a href="mailto:{{ $project->contact_email }}">{{ $project->contact }}</a>&nbsp;</dd>
                     <dt>{{ trans('forms.contact_title') }}</dt>
                     <dd>{{ $project->contact_title }}&nbsp;</dd>
                     <dt>{{ trans('forms.organization_website') }}</dt>
@@ -109,13 +98,21 @@
                 </dl>
             </div>
         </div>
-    </div>
-    @if ($project->amChart !== null)
-        <div class="row">
-            <input type="hidden" id="projectId" value="{{ $project->id }}"/>
-            <div id="chartdiv" class="col-md-12" style="width: 100%; height: 600px"></div>
+        @if ($project->amChart !== null)
+            <div class="row">
+                <input type="hidden" id="projectId" value="{{ $project->id }}"/>
+                <div id="chartdiv" class="col-md-12" style="width: 100%; height: 600px"></div>
+            </div>
+        @endif
+        <div class="col-md-5 participants">
+            <h2 class="project-page-header">{{ trans('pages.project_page_organizers') }}</h2>
+            <dl>
+                @foreach($project->group->users as $user)
+                    <dt><img src="{{ $user->profile->avatar->url('small') }}"/></dt>
+                    <dd>{!! HTML::mailto('someone@example.com', $user->profile->full_name) !!}</dd>
+                @endforeach
+            </dl>
         </div>
-    @endif
     <!-- ./ content -->
     </div>
 @stop

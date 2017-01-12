@@ -159,6 +159,6 @@ return array(
     'view_all'                      => 'View All',
     'options'                       => 'Options',
     'notifications'                 => 'Notifications',
-    'project_page_participants'     => 'Participants',
+    'project_page_organizers'       => 'Organizers',
     'project_page_information'      => 'Project Information'
 );
