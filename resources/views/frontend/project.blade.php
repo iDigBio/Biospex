@@ -109,7 +109,7 @@
             <dl>
                 @foreach($project->group->users as $user)
                     <dt><img src="{{ $user->profile->avatar->url('small') }}"/></dt>
-                    <dd>{!! HTML::mailto('someone@example.com', $user->profile->full_name) !!}</dd>
+                    <dd>{!! HTML::mailto($user->email, $user->profile->full_name) !!}</dd>
                 @endforeach
             </dl>
         </div>
