@@ -639,3 +639,9 @@ h2.project-page-header {
 .participants dd, dt {
     line-height: 30px;
 }
+
+.carousel-inner > .item > img,
+.carousel-inner > .item > a > img {
+    width: 70%;
+    margin: auto;
+}
