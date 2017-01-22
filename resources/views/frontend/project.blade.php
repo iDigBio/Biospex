@@ -104,7 +104,7 @@
                 <div id="chartdiv" class="col-md-12" style="width: 100%; height: 600px"></div>
             </div>
         @endif
-        <div class="col-md-5 participants">
+        <div class="col-md-5 organizers">
             <h2 class="project-page-header">{{ trans('pages.project_page_organizers') }}</h2>
             <dl>
                 @foreach($project->group->users as $user)

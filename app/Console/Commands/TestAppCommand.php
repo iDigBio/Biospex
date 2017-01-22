@@ -19,7 +19,6 @@ class TestAppCommand extends Command
      */
     protected $description = 'Used to test code';
 
-
     /**
      * TestAppCommand constructor.
      */

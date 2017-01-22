@@ -104,7 +104,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     public function __construct(array $attributes = [])
     {
         $this->hasAttachedFile('logo', ['styles' => ['thumb' => '100x67']]);
-        $this->hasAttachedFile('banner', ['styles' => ['thumb' => '200x50']]);
+        $this->hasAttachedFile('banner', ['styles' => ['thumb' => '200x50', 'carousel' => '650x225']]);
 
         parent::__construct($attributes);
     }

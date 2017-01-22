@@ -9,7 +9,6 @@ use App\Repositories\Contracts\Faq;
 use App\Repositories\Contracts\Project;
 use App\Http\Requests\ContactFormRequest;
 use Illuminate\Contracts\Config\Repository as Config;
-use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -18,9 +17,11 @@ class HomeController extends Controller
      *
      * @return Response
      */
-    public function index()
+    public function index(Project $project)
     {
-        return view('frontend.home');
+        $projects = $project->getRandomProjectsForCarousel(5);
+
+        return view('frontend.home', compact('projects'));
     }
 
     /**

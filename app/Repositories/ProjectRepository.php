@@ -15,4 +15,13 @@ class ProjectRepository extends Repository implements Project, CacheableInterfac
     {
         return \App\Models\Project::class;
     }
+
+    /**
+     * @param int $count
+     * @return mixed
+     */
+    public function getRandomProjectsForCarousel($count = 5)
+    {
+        return $this->model->inRandomOrder()->whereNotNull('banner_file_name')->limit($count)->get();
+    }
 }

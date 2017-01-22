@@ -533,8 +533,14 @@ h2.project-page-header {
 
 /* Begin */
 
-.user-image{float:left;width:25px;height:25px;border-radius:50%;margin-right:10px;margin-top:-2px}
-
+.user-image {
+    float: left;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    margin-right: 10px;
+    margin-top: -2px
+}
 
 .navbar-nav > .notifications-menu > .dropdown-menu {
     width: 280px;
@@ -598,11 +604,12 @@ h2.project-page-header {
     /* Prevent text from breaking */
     border-bottom: 1px solid #f4f4f4;
 }
-.navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a:hover
-{
+
+.navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a:hover {
     background: #f4f4f4;
     text-decoration: none;
 }
+
 .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a {
     color: #444444;
     overflow: hidden;
@@ -616,19 +623,21 @@ h2.project-page-header {
     width: 20px;
 }
 
-.participants dl {
+.organizers dl {
     width: 100%;
     overflow: hidden;
     padding: 0;
     margin: 0 0 10px 0;
 }
-.participants dt {
+
+.organizers dt {
     float: left;
     width: 10%;
     padding: 0;
     margin: 0;
 }
-.participants dd {
+
+.organizers dd {
     float: left;
     text-align: left;
     width: 90%;
@@ -636,12 +645,28 @@ h2.project-page-header {
     margin: 0;
 }
 
-.participants dd, dt {
+.organizers dd, dt {
     line-height: 30px;
+}
+
+#carousel {
+    width: 650px;
+    margin-top: 50px;
 }
 
 .carousel-inner > .item > img,
 .carousel-inner > .item > a > img {
-    width: 70%;
+    width: 75%;
+    height: 135px;
     margin: auto;
+}
+
+.carousel-inner > .item > a > img h3 {
+    -webkit-text-stroke: 1px black;
+    color: white;
+    text-shadow: 3px 3px 0 #000,
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
 }
