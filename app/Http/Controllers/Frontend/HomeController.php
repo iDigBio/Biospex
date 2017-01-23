@@ -19,7 +19,7 @@ class HomeController extends Controller
      */
     public function index(Project $project)
     {
-        $projects = $project->getRandomProjectsForCarousel(5);
+        $projects = $project->skipCache()->getRandomProjectsForCarousel(5);
 
         return view('frontend.home', compact('projects'));
     }
