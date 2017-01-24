@@ -137,6 +137,9 @@ return [
         'country'          => ['occurrence' => 'country'],
         'stateProvince'    => ['occurrence' => 'stateProvince'],
         'county'           => ['occurrence' => 'county'],
+        'eol'              => ['occurrence' => 'scientificName'],
+        'mol'              => ['occurrence' => 'scientificName'],
+        'idigbio'          => ['occurrence' => 'scientificName'],
         '#institutionCode' => ['occurrence' => 'institutionCode'],
         '#collectionCode'  => ['occurrence' => 'collectionCode'],
         '#catalogNumber'   => ['occurrence' => 'catalogNumber'],
@@ -153,10 +156,16 @@ return [
         'redirectUri'  => env('NFN_REDIRECT_URI')
     ],
 
+    'nfnSearch' => [
+        'eol'     => env('NFN_EOL_SEARCH'),
+        'mol'     => env('NFN_MOL_SEARCH'),
+        'idigbio' => env('NFN_IDIGBIO_SEARCH'),
+    ],
+
     /**
      * Default advertise fields for PPSR_CORE
      */
-    'ppsr'   => [
+    'ppsr'      => [
         'ProjectGUID'             => ['private' => 'uuid'],
         'ProjectName'             => ['column' => 'title'],
         'ProjectDataProvider'     => ['value' => env('APP_NAME')],

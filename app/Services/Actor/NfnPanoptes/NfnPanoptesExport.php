@@ -207,6 +207,12 @@ class NfnPanoptesExport implements ActorInterface
             {
                 if (isset($subject->{$doc}->{$value}))
                 {
+                    if ($key === 'eol' || $key === 'mol' || $key === 'idigbio')
+                    {
+                        $csvArray[$key] = str_replace('SCIENTIFIC_NAME', rawurlencode($subject->{$doc}->{$value}), $this->service->config->get('config.nfnSearch.' . $key) );
+                        break;
+                    }
+
                     $csvArray[$key] = $subject->{$doc}->{$value};
                     break;
                 }
