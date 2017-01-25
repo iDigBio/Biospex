@@ -13,6 +13,7 @@
         <img src="/img/logo.png" alt="biospex"/>
         {!! trans('html.homepage-header') !!}
         </div>
+        <!--
         <div id="carousel" class="carousel slide pull-right" data-ride="carousel">
             <ol class="carousel-indicators">
                 <li data-target="#carousel" data-slide-to="0" class="active"></li>
@@ -40,6 +41,7 @@
                 <span class="glyphicon glyphicon-chevron-right"></span>
             </a>
         </div>
+        -->
     </div>
     <div class="container-fluid" id="home-content">
         <div class="col-md-11 col-lg-offset-1">
