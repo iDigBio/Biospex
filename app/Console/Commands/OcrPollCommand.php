@@ -80,7 +80,7 @@ class OcrPollCommand extends Command
         $count = 0;
         foreach ($grouped as $group)
         {
-            $project = $this->project->with(['group'])->find($group[0]['project_id']);
+            $project = $this->project->skipCache()->with(['group'])->find($group[0]['project_id']);
 
             $total = array_sum(array_column($group, 'total'));
             $processed = array_sum(array_column($group, 'processed'));

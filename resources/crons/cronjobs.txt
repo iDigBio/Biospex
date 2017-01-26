@@ -7,7 +7,7 @@
 */5 * * * * /usr/bin/php /path/to/artisan ocrprocess:records >> /var/log/apache2/ocrprocess-stage.poll.log 2>&1
 */5 * * * * /usr/bin/php /path/to/artisan ocrprocess:records >> /var/log/apache2/ocrprocess-dev.poll.log 2>&1
 00 00 * * * /usr/bin/php /path/to/artisan classifications:update >> /var/log/apache2/classifications.log 2>&1
-0 5 * * * /usr/bin/php /path/to/artisan notifications:update /var/log/apache2/notifications.log 2>&1
+0 5 * * * /usr/bin/php /path/to/artisan notifications:update >> /var/log/apache2/notifications.log 2>&1
 
 */15 * * * * /usr/bin/php /path/to/artisan export:poll >> /var/log/apache2/export.poll.log 2>&1
 */15 * * * * /usr/bin/php /path/to/artisan ocr:poll >> /var/log/apache2/ocr.poll.log 2>&1
