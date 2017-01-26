@@ -47,6 +47,7 @@ elixir(function (mix) {
     mix.styles([
         'css/bootstrap.css',
         '/vendor/font-awesome/css/font-awesome.min.css',
+        '/vendor/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.min.css',
         'vendor/jquery-ui/themes/smoothness/jquery-ui.min.css',
         'vendor/jquery-ui-multiselect-widget/jquery.multiselect.css',
         'vendor/bootstrap-select/dist/css/bootstrap-select.min.css',
@@ -59,6 +60,7 @@ elixir(function (mix) {
             '/vendor/jquery-ui/jquery-ui.min.js',
             '/vendor/bootstrap/dist/js/bootstrap.min.js',
             'vendor/bootstrap-select/dist/js/bootstrap-select.min.js',
+            '/vendor/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.all.min.js',
             'vendor/jquery-validation/dist/jquery.validate.min.js',
             'vendor/jquery-validation/dist/additional-methods.min.js',
             'vendor/jquery-ui-multiselect-widget/src/jquery.multiselect.js',

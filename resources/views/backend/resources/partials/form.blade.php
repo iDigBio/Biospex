@@ -34,7 +34,7 @@
                         <div class="form-group required {{ ($errors->has('description')) ? 'has-error' : '' }}" for="description">
                             {!! Form::label('description', 'Description', ['class' => 'col-sm-2 control-label']) !!}
                             <div class="col-sm-10">
-                                {!! Form::textarea('description', isset($resource->description) ? $resource->description : null, ['class' => 'form-control', 'placeholder' => 'Description']) !!}
+                                {!! Form::textarea('description', isset($resource->description) ? $resource->description : null, ['class' => 'form-control textarea', 'placeholder' => 'Description']) !!}
                                 {{ ($errors->has('description') ? $errors->first('description') : '') }}
                             </div>
                         </div>

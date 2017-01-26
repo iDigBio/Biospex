@@ -129,6 +129,8 @@ $(document).ready(function() {
         event.preventDefault();
     });
 
+    $('.textarea').wysihtml5();
+
 });
 
 $(function()

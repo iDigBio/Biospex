@@ -114,7 +114,7 @@
             <div class="form-group required {{ ($errors->has('description_long')) ? 'has-error' : '' }}">
                 {!! Form::label('description_long', trans('forms.description_long'), ['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-10">
-                    {!! Form::textarea('description_long', null, ['class' => 'form-control', 'placeholder' => trans('forms.description_long')]) !!}
+                    {!! Form::textarea('description_long', null, ['class' => 'form-control textarea', 'placeholder' => trans('forms.description_long')]) !!}
                 </div>
                 {{ ($errors->has('description_long') ? $errors->first('description_long') : '') }}
             </div>

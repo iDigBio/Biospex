@@ -20,7 +20,7 @@
         <div class="row">
             <div class="col-md-7">
                 <p class="description">{{ $project->description_short }}</p>
-                {{ $project->description_long }}
+                {!! $project->description_long !!}
                 <h2 class="project-page-header">{{ trans('pages.project_page_header') }}</h2>
                 <p>{{ trans('pages.project_page_expeditions') }}:</p>
                 <div class="table-responsive">

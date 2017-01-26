@@ -8,7 +8,7 @@ $(function () {
         .closest('li')
         .addClass('active');
 
-    $('textarea').wysihtml5();
+    $('.textarea').wysihtml5();
 
     $(".source li").draggable({
         addClasses: false,
