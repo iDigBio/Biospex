@@ -158,6 +158,16 @@ $(function () {
         //templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
     });
 
+    $(".add-more").click(function(){
+        var html = $(".copy").html();
+        $(".after-add-more").after(html);
+    });
+
+    $("body").on("click",".remove",function(){
+        $(this).parents(".control-group").remove();
+    });
+
+
 });
 
 //Renumber table rows

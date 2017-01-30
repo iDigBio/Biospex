@@ -7892,4 +7892,8 @@ ul.source, ul.target {
 .select2-selection .select2-selection--single {
     height: 41px;
 }
+
+.copyHtml {
+    margin-bottom: 5px;
+}
 /*# sourceMappingURL=backend.css.map */

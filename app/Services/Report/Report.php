@@ -1,5 +1,6 @@
 <?php namespace App\Services\Report;
 
+use App\Repositories\Contracts\Project;
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\MessageBag;
@@ -45,11 +46,17 @@ class Report
     public $csv;
 
     /**
+     * @var Project
+     */
+    public $project;
+
+    /**
      * Report constructor.
      * @param Config $config
      * @param Filesystem $filesystem
      * @param MessageBag $messages
      * @param Group $group
+     * @param Project $project
      * @param BiospexMailer $mailer
      * @param Event $event
      * @param Csv $csv
@@ -59,6 +66,7 @@ class Report
         Filesystem $filesystem,
         MessageBag $messages,
         Group $group,
+        Project $project,
         BiospexMailer $mailer,
         Event $event,
         Csv $csv
@@ -70,6 +78,7 @@ class Report
         $this->group = $group;
         $this->mailer = $mailer;
         $this->event = $event;
+        $this->project = $project;
 
         $this->exportReportsDir = $this->config->get('config.export_reports_dir');
         $this->csv = $csv;

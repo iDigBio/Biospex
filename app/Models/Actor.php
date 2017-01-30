@@ -69,6 +69,14 @@ class Actor extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function contacts()
+    {
+        return $this->hasMany(ActorContact::class);
+    }
+
+    /**
      * Expedition relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany

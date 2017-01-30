@@ -26,7 +26,15 @@ class ActorFormRequest extends Request
         return [
             'title' => 'required|between:3,60|unique:actors,title,' . $this->route('actors'),
             'url' => 'required|active_url|max:255',
-            'class' => 'required|between:3,30|unique:actors,class,' . $this->route('actors')
+            'class' => 'required|between:3,30|unique:actors,class,' . $this->route('actors'),
+            'contacts.*.email' => 'email'
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'contacts.*.email' => 'Please enter valid email addresses'
         ];
     }
 

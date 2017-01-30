@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BuildOcrBatches;
+use App\Models\ActorContact;
 use App\Repositories\Contracts\OcrQueue;
 use App\Repositories\Contracts\Subject;
 use App\Repositories\Contracts\User;
@@ -11,6 +12,7 @@ use App\Services\Model\ModelDeleteService;
 use App\Services\Model\ModelDestroyService;
 use App\Services\Model\ModelRestoreService;
 use App\Services\Model\NfnWorkflowService;
+use App\Services\Report\NfnProjectCreateReport;
 use Illuminate\Http\Request;
 use App\Repositories\Contracts\Group;
 use App\Repositories\Contracts\Project;
@@ -129,9 +131,10 @@ class ProjectsController extends Controller
      * Store a newly created resource in storage.
      *
      * @param ProjectFormRequest $request
+     * @param NfnProjectCreateReport $report
      * @return mixed
      */
-    public function store(ProjectFormRequest $request)
+    public function store(ProjectFormRequest $request, NfnProjectCreateReport $report)
     {
         $group = $this->group->with(['permissions'])->find($request->get('group_id'));
 
@@ -144,6 +147,11 @@ class ProjectsController extends Controller
 
         if ($project)
         {
+            if (in_array($project->workflow_id, Config::get('config.nfnWorkflows'), true))
+            {
+                $report->complete($project->id);
+            }
+
             session_flash_push('success', trans('projects.project_created'));
             return redirect()->route('web.projects.show', [$project->id]);
         }

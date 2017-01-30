@@ -34,6 +34,7 @@ use App\Repositories\Contracts\Resource as ResourceContract;
 use App\Repositories\Contracts\NfnClassification as NfnClassificationContract;
 use App\Repositories\Contracts\NfnWorkflow as NfnWorkflowContract;
 use App\Repositories\Contracts\Notification as NotificationContract;
+use App\Repositories\Contracts\ActorContact as ActorContactContract;
 
 use App\Repositories\UserRepository;
 use App\Repositories\GroupRepository;
@@ -65,6 +66,7 @@ use App\Repositories\ResourceRepository;
 use App\Repositories\NfnClassificationRepository;
 use App\Repositories\NfnWorkflowRepository;
 use App\Repositories\NotificationRepository;
+use App\Repositories\ActorContactRepository;
 
 class BiospexServiceProvider extends ServiceProvider
 {
@@ -117,5 +119,6 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(NfnClassificationContract::class, NfnClassificationRepository::class);
         $this->app->bind(NfnWorkflowContract::class, NfnWorkflowRepository::class);
         $this->app->bind(NotificationContract::class, NotificationRepository::class);
+        $this->app->bind(ActorContactContract::class, ActorContactRepository::class);
     }
 }
