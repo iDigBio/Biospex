@@ -11,7 +11,7 @@ class NfnProjectCreateReport extends Report
     {
         $project = $this->project->with(['workflow.actors.contacts'])->find($id);
 
-        $email = [];
+        $email = null;
         foreach($project->workflow->actors as $actor)
         {
             if ($actor->contacts->isEmpty())
@@ -23,6 +23,11 @@ class NfnProjectCreateReport extends Report
             {
                 $email[] = $contact->email;
             }
+        }
+
+        if (null === $email)
+        {
+            return;
         }
 
         $data = [

@@ -147,10 +147,7 @@ class ProjectsController extends Controller
 
         if ($project)
         {
-            if (in_array($project->workflow_id, Config::get('config.nfnWorkflows'), true))
-            {
-                $report->complete($project->id);
-            }
+            $report->complete($project->id);
 
             session_flash_push('success', trans('projects.project_created'));
             return redirect()->route('web.projects.show', [$project->id]);
