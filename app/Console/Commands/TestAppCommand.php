@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use PulkitJalan\Google\Facades\Google;
 
 class TestAppCommand extends Command
 {
@@ -32,6 +33,11 @@ class TestAppCommand extends Command
      */
     public function fire()
     {
+        // returns instance of \Google_Service_Storage
+        $fusionTables = Google::make('fusiontables');
+        $fusionTables->setScope('fusiontables');
 
+        // list tables example
+        dd($fusionTables->table->list());
     }
 }
