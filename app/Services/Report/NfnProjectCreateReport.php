@@ -42,5 +42,7 @@ class NfnProjectCreateReport extends Report
         $view = 'frontend.emails.report-nfn';
 
         $this->fireReportEvent($email, $subject, $view, $data);
+
+        session_flash_push('success', trans('projects.project_created_notification'));
     }
 }

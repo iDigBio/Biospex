@@ -5,6 +5,7 @@ return array (
   'dashboard' => 'Dashboard',
   'project' => 'Project',
   'project_created' => 'Project was created successfully.',
+  'project_created_notification' => 'A notification has been sent to the coordinator of the workflow actor you have selected for the project.',
   'project_destroy_error' => 'An error occurred when destroying project.',
   'project_destroyed' => 'Project and associated content destroyed.',
   'project_delete_error' => 'An error occurred when deleting project.',
