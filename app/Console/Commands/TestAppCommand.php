@@ -35,9 +35,9 @@ class TestAppCommand extends Command
     {
         // returns instance of \Google_Service_Storage
         $fusionTables = Google::make('fusiontables');
-        $fusionTables->setScope('fusiontables');
+        //$fusionTables->setScope('fusiontables');
 
         // list tables example
-        dd($fusionTables->table->list());
+        dd($fusionTables->table->listTable());
     }
 }
