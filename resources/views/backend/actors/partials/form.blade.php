@@ -50,7 +50,7 @@
                             </div>
                         </div>
                         <div class="form-group" for="emails">
-                            {!! Form::label('emails', 'Notification Email', ['class' => 'col-sm-2 control-label']) !!}
+                            {!! Form::label('emails', 'Coordinator Email', ['class' => 'col-sm-2 control-label']) !!}
                             <div class="col-sm-10">
                                 @if(isset($actor->contacts))
                                     @foreach($actor->contacts as $key => $contact)
@@ -60,7 +60,7 @@
                                                 <button class="btn btn-danger remove" type="button"><i
                                                             class="fa fa-minus"></i></button>
                                             </span>
-                                                {!! Form::text('contacts['.$key.'][email]', $contact->email, ['class' => 'form-control', 'placeholder' => 'Enter Contact Email']) !!}
+                                                {!! Form::text('contacts['.$key.'][email]', $contact->email, ['class' => 'form-control', 'placeholder' => 'Coordinator Email']) !!}
                                             </div>
                                         </div>
                                     @endforeach
