@@ -35,11 +35,14 @@ class HomeController extends Controller
     {
         $project = $repository->with(['group.users.profile', 'expeditions.stat', 'expeditions.actors', 'amChart'])->where(['slug' => $slug])->first();
         $expeditions = null;
-        foreach ($project->expeditions as $expedition)
+        if ( ! $project->expeditions->isEmpty())
         {
-            if (null === $expedition->deleted_at)
+            foreach ($project->expeditions as $expedition)
             {
-                $expeditions[] = $expedition;
+                if (null === $expedition->deleted_at)
+                {
+                    $expeditions[] = $expedition;
+                }
             }
         }
 
