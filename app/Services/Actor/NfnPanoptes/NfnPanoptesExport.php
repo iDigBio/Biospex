@@ -2,11 +2,6 @@
 
 namespace App\Services\Actor\NfnPanoptes;
 
-ini_set('memory_limit', '1024M');
-ini_set('max_execution_time', '0');
-ini_set('max_input_time', '0');
-set_time_limit(0);
-
 use App\Exceptions\BiospexException;
 use App\Services\Actor\ActorInterface;
 use App\Services\Actor\ActorService;
@@ -91,6 +86,7 @@ class NfnPanoptesExport implements ActorInterface
     {
         try
         {
+            Log::alert('Starting processing');
             $this->fileService->makeDirectory($this->nfnExportDir);
 
             $this->record = $this->actorRepoService->expedition
