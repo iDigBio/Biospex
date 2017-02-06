@@ -100,7 +100,7 @@ class NfnPanoptesExport implements ActorInterface
 
             $fileAttributes = [
                 'destination' => $tempDir,
-                'extension'   => '.jpg',
+                'extension'   => 'jpg',
                 'width'       => $this->largeWidth,
                 'height'      => $this->largeWidth
             ];
@@ -113,6 +113,7 @@ class NfnPanoptesExport implements ActorInterface
 
             if ($this->createCsv($tempDir))
             {
+                Log::alert('Creating tar files');
                 $tarGzFiles = $this->fileService->compressDirectories($this->service->workingDir, $this->nfnExportDir);
                 Log::alert('Created tar files');
 
@@ -238,6 +239,7 @@ class NfnPanoptesExport implements ActorInterface
         $this->service->report->csv->writerCreateFromPath($tempDir . '/' . $this->record->uuid . '.csv');
         $this->service->report->csv->insertOne(array_keys($this->csvExport[0]));
         $this->service->report->csv->insertAll($this->csvExport);
+        Log::alert('Inserted all csv records');
 
         return true;
     }

@@ -113,13 +113,13 @@ class NfnLegacyExport implements ActorInterface
             $fileAttributes = [
                 [
                     'destination' => $this->service->workingDir,
-                    'extension'   => '.large.jpg',
+                    'extension'   => 'large.jpg',
                     'width'       => $this->largeWidth,
                     'height'      => $this->largeWidth,
                 ],
                 [
                     'destination' => $this->service->workingDir,
-                    'extension'   => '.small.jpg',
+                    'extension'   => 'small.jpg',
                     'width'       => $this->smallWidth,
                     'height'      => $this->smallWidth,
                 ]
