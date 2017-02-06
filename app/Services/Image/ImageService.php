@@ -6,7 +6,6 @@ use App\Services\Report\Report;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Config\Repository as Config;
 use App\Exceptions\Handler;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class ImageService

@@ -6,7 +6,6 @@ use App\Exceptions\CreateDirectoryException;
 use App\Exceptions\FileUnzipException;
 use Illuminate\Filesystem\Filesystem;
 use Exception;
-use Log;
 
 class FileService
 {
@@ -58,7 +57,6 @@ class FileService
         {
             $baseName = basename($directory);
             $compressed[] = $tarFile = $baseName . '.tar.gz';
-            Log::alert("tar -zcf $storagePath/$tarFile -C $workingDir $baseName");
             exec("tar -zcf $storagePath/$tarFile -C $workingDir $baseName");
         }
 

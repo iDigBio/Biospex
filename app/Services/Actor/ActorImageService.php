@@ -8,7 +8,6 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use App\Services\Image\ImageService;
-use Log;
 
 class ActorImageService
 {
@@ -108,7 +107,6 @@ class ActorImageService
             {
                 if ( ! $this->checkUriExists($subject))
                 {
-                    Log::alert($subject->_id . ' missing uri');
                     $this->updateActor();
 
                     continue;
@@ -116,13 +114,11 @@ class ActorImageService
 
                 if ($this->checkImageExists($subject->_id, $attributes))
                 {
-                    Log::alert($subject->_id . ' image exists');
                     $this->updateActor();
 
                     continue;
                 }
 
-                Log::alert($subject->_id . ' added to request');
                 yield $index => new Request('GET', str_replace(' ', '%20', $subject->accessURI));
             }
         };
@@ -135,7 +131,6 @@ class ActorImageService
             },
             'rejected'    => function ($reason, $index)
             {
-                Log::alert($this->subjects[$index]->_id . ' rejected');
                 $this->updateActor();
                 $this->setMissingImages($this->subjects[$index], 'Could not retrieve image from uri.');
             }
@@ -159,7 +154,6 @@ class ActorImageService
 
         if ($image === '' || $response->getStatusCode() !== 200)
         {
-            Log::alert($this->subjects[$index] . ' response code bad');
             $this->setMissingImages($this->subjects[$index], 'Image empty: ' . $response->getStatusCode());
 
             return;
@@ -167,7 +161,6 @@ class ActorImageService
 
         if ( ! $this->imageService->setSourceFromString($image))
         {
-            Log::alert($this->subjects[$index] . ' cannot set source from string');
             $this->setMissingImages($this->subjects[$index], 'Could not create image from string: ' . $response->getStatusCode());
 
             return;
@@ -175,7 +168,6 @@ class ActorImageService
 
         if ( ! $this->imageService->generateAndSaveImage($this->subjects[$index]->_id, $attributes))
         {
-            Log::alert($this->subjects[$index] . ' Cannot generate and save image');
             $this->removeErrorFiles($index, $attributes);
             $this->setMissingImages($this->subjects[$index], 'Could not save image to destination file');
 
@@ -184,7 +176,6 @@ class ActorImageService
 
         $this->imageService->destroySource();
         $this->updateActor();
-        Log::alert($this->subjects[$index]->_id . ' Saved');
     }
 
     /**
