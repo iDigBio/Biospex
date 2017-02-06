@@ -8,7 +8,6 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use App\Services\Image\ImageService;
-use Log;
 
 class ActorImageService
 {
@@ -108,7 +107,6 @@ class ActorImageService
             {
                 if ( ! $this->checkUriExists($subject))
                 {
-                    Log::alert("URI does not exist " . $subject->_id);
                     $this->updateActor();
 
                     continue;
@@ -116,7 +114,6 @@ class ActorImageService
 
                 if ($this->checkImageExists($subject->_id, $attributes))
                 {
-                    Log::alert("Image exists for " . $subject->_id);
                     $this->updateActor();
 
                     continue;
@@ -157,7 +154,6 @@ class ActorImageService
 
         if ($image === '' || $response->getStatusCode() !== 200)
         {
-            Log::alert("Bad Status Code {$this->subjects[$index]->_id}");
             $this->setMissingImages($this->subjects[$index], 'Image empty: ' . $response->getStatusCode());
 
             return;
@@ -165,7 +161,6 @@ class ActorImageService
 
         if ( ! $this->imageService->setSourceFromString($image))
         {
-            Log::alert("Error source from string {$this->subjects[$index]->_id}");
             $this->setMissingImages($this->subjects[$index], 'Could not create image from string: ' . $response->getStatusCode());
 
             return;
@@ -173,14 +168,11 @@ class ActorImageService
 
         if ( ! $this->imageService->generateAndSaveImage($this->subjects[$index]->_id, $attributes))
         {
-            Log::alert("Error saving image {$this->subjects[$index]->_id}");
             $this->removeErrorFiles($index, $attributes);
             $this->setMissingImages($this->subjects[$index], 'Could not save image to destination file');
 
             return;
         }
-
-        Log::alert("Saved {$this->subjects[$index]->_id}");
 
         $this->imageService->destroySource();
         $this->updateActor();
@@ -198,7 +190,6 @@ class ActorImageService
         $total = count($attributes);
         foreach ($attributes as $attribute)
         {
-            Log::alert("{$attribute['destination']}/{$id}.{$attribute['extension']}");
             $total -= count($this->fileService->filesystem->glob("{$attribute['destination']}/{$id}.{$attribute['extension']}"));
         }
 

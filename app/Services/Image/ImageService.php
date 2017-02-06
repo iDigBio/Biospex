@@ -237,7 +237,7 @@ class ImageService
                 return false;
             }
 
-            if ( ! imagejpeg($newImage, $attribute['destination'] . '/' . $name . $attribute['extension'], 80))
+            if ( ! imagejpeg($newImage, $attribute['destination'] . '/' . $name . '.' . $attribute['extension'], 80))
             {
                 return false;
             }

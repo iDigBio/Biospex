@@ -110,7 +110,6 @@ class NfnPanoptesExport implements ActorInterface
             if ($this->createCsv($tempDir))
             {
                 $tarGzFiles = $this->fileService->compressDirectories($this->service->workingDir, $this->nfnExportDir);
-
                 $this->actorRepoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
             }
 
@@ -120,7 +119,7 @@ class NfnPanoptesExport implements ActorInterface
             $actor->pivot->state++;
             $actor->pivot->save();
 
-            $this->sendReport();
+            //$this->sendReport();
         }
         catch (BiospexException $e)
         {
