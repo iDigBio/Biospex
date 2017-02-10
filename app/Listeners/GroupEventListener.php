@@ -96,7 +96,7 @@ class GroupEventListener
     {
         $user = Auth::user();
 
-        $groups = $this->group->whereHas('users', ['user_id' => $user->id])->get();
+        $groups = $this->group->skipCache()->whereHas('users', ['user_id' => $user->id])->get();
 
         $uuids = $groups->map(function ($item, $key) {
             return $item['uuid'];
