@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-    @if ($groups->isEmpty())
+    @if ( ! $groups->count())
         <div class="col-md-10 col-md-offset-1">
             {!!  trans('html.welcome') !!}
         </div>
