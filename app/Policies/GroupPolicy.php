@@ -79,7 +79,7 @@ class GroupPolicy
     {
         $key = md5(__METHOD__ . $user->uuid . $group->uuid);
         $access = Cache::remember($key, 60, function() use ($user, $group) {
-            return $user->hasAccess($group, 'delete-group') && $user->id === $group->user_id;
+            return $user->id === $group->user_id;
         });
 
         return $access ? true : null;

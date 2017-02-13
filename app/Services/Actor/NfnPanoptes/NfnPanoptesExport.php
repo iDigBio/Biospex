@@ -2,12 +2,9 @@
 
 namespace App\Services\Actor\NfnPanoptes;
 
-ini_set('memory_limit', '1024M');
-
 use App\Exceptions\BiospexException;
 use App\Services\Actor\ActorInterface;
 use App\Services\Actor\ActorService;
-use Log;
 
 class NfnPanoptesExport implements ActorInterface
 {
@@ -101,34 +98,28 @@ class NfnPanoptesExport implements ActorInterface
 
             $fileAttributes = [
                 'destination' => $tempDir,
-                'extension'   => '.jpg',
+                'extension'   => 'jpg',
                 'width'       => $this->largeWidth,
                 'height'      => $this->largeWidth
             ];
 
             $this->actorImageService->getImages($this->record->subjects, $fileAttributes, $actor);
-            Log::alert('Retrieved images');
 
             $this->buildCsvArray($this->record->subjects, $tempDir);
-            Log::alert('Built csv');
 
             if ($this->createCsv($tempDir))
             {
                 $tarGzFiles = $this->fileService->compressDirectories($this->service->workingDir, $this->nfnExportDir);
-                Log::alert('Created tar files');
-
                 $this->actorRepoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
-                Log::alert('Created download record');
             }
 
             $this->fileService->filesystem->deleteDirectory($this->service->workingDir);
-            Log::alert('Deleted directory');
-
-            $this->sendReport();
 
             $actor->pivot->queued = 0;
             $actor->pivot->state++;
             $actor->pivot->save();
+
+            //$this->sendReport();
         }
         catch (BiospexException $e)
         {
@@ -232,7 +223,6 @@ class NfnPanoptesExport implements ActorInterface
     {
         if (0 === count($this->csvExport))
         {
-            Log::alert('CSV Export count is zero');
             return false;
         }
 

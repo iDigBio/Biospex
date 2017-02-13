@@ -6,7 +6,6 @@ use App\Services\Report\Report;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Config\Repository as Config;
 use App\Exceptions\Handler;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class ImageService
@@ -238,7 +237,7 @@ class ImageService
                 return false;
             }
 
-            if ( ! imagejpeg($newImage, $attribute['destination'] . '/' . $name . $attribute['extension'], 80))
+            if ( ! imagejpeg($newImage, $attribute['destination'] . '/' . $name . '.' . $attribute['extension'], 80))
             {
                 return false;
             }

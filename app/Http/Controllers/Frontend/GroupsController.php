@@ -72,7 +72,7 @@ class GroupsController extends Controller
     {
         $user = Request::user();
 
-        $group = $this->groupService->repository->create(['user_id' => $user->id, 'name' => $request->get('name')]);
+        $group = $this->groupService->repository->create(['user_id' => $user->id, 'title' => $request->get('title')]);
 
         if ($group) {
             $user->assignGroup($group);

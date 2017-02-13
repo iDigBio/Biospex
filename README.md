@@ -6,7 +6,12 @@ Public Participation Manager
 Requirements
 ------------
 
- - PHP 5.6 or greater
+ - PHP 5.6.4 or greater
+ - OpenSSL PHP Extension
+ - PDO PHP Extension
+ - Mbstring PHP Extension
+ - Tokenizer PHP Extension
+ - XML PHP Extension
  - MySQL
  - Mongodb
  - Composer
