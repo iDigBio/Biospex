@@ -104,6 +104,12 @@ class DownloadsController extends Controller
 
             $nfnExportDir = $this->config->get('config.nfn_export_dir');
             $path = $nfnExportDir . '/' . $download->file;
+            if ( ! file_exists($path))
+            {
+                session_flash_push('error', trans('errors.missing_download_file'));
+                return redirect()->route('web.downloads.index', [$projectId, $expeditionId]);
+            }
+
             $headers = ['Content-Type' => 'application/x-compressed'];
 
             return $this->response->download($path, $download->file, $headers);
