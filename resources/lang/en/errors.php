@@ -29,4 +29,5 @@ return array(
     'missing_meta_extension'    => 'Unable to determine meta file extension during Darwin Core Archive import. This is typically due to missing required DWC row types. File: :file',
     'import_file_missing'       => 'Required file missing from Darwin Core Archive. :file',
     'ocr_batch_process'         => 'Error trying to create OCR batch for project id :id<br />:message',
+    'missing_download_file'     => 'The file appears to be missing. If you\'d like to have the file regenerated, please contact the Biospex Administrator using the contact form and specify the Expedition title.',
 );
