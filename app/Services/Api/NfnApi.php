@@ -8,8 +8,6 @@ use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Illuminate\Config\Repository as Config;
 use Exception;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 
 class NfnApi
@@ -46,6 +44,9 @@ class NfnApi
         $this->config = $config;
     }
 
+    /**
+     * Set authentication provider
+     */
     public function setProvider()
     {
         $this->provider = new GenericProvider([
@@ -62,23 +63,41 @@ class NfnApi
      * Build authorized request.
      *
      * @param $uri
+     * @param string $method
+     * @param array $extra
      * @return \Psr\Http\Message\RequestInterface
      */
-    private function buildRequest($uri)
+    private function buildAuthorizedRequest($method, $uri, array $extra = [])
     {
         $request = $this->provider->getAuthenticatedRequest(
-            'GET',
+            $method,
             $uri,
             $this->cache->get('nfnToken')->getToken(),
-            [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Accept'       => 'application/vnd.api+json; version=1'
-                ]
-            ]
+            $options = array_merge(
+                [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'Accept'       => 'application/vnd.api+json; version=1'
+                    ]
+                ],
+                $extra
+            )
         );
 
         return $request;
+    }
+
+    /**
+     * Build request.
+     *
+     * @param string $method
+     * @param $uri
+     * @param array $options
+     * @return \Psr\Http\Message\RequestInterface
+     */
+    private function buildRequest($method, $uri, array $options = [])
+    {
+        return $this->provider->getRequest($method, $uri, $options);
     }
 
     /**
@@ -88,7 +107,7 @@ class NfnApi
      * @return mixed
      * @throws NfnApiException
      */
-    private function authorizedRequest($request)
+    private function sendAuthorizedRequest($request)
     {
         try
         {
@@ -107,6 +126,31 @@ class NfnApi
     }
 
     /**
+     * Send request.
+     *
+     * @param $request
+     * @return mixed
+     * @throws NfnApiException
+     */
+    private function sendRequest($request)
+    {
+        try
+        {
+            return $this->provider->getHttpClient()->send($request);
+        }
+        catch (GuzzleException $e)
+        {
+            throw new NfnApiException($e);
+        }
+        catch (Exception $e)
+        {
+            throw new NfnApiException($e);
+        }
+    }
+
+
+
+    /**
      * Get project.
      *
      * @param $id
@@ -119,9 +163,9 @@ class NfnApi
 
         $uri = $this->config->get('config.nfnApi.apiUri') . '/projects/' . $id;
 
-        $request = $this->buildRequest($uri);
+        $request = $this->buildAuthorizedRequest('GET', $uri);
 
-        return $this->authorizedRequest($request);
+        return $this->sendAuthorizedRequest($request);
     }
 
     /**
@@ -137,9 +181,9 @@ class NfnApi
 
         $uri = $this->config->get('config.nfnApi.apiUri') . '/workflows/' . $id;
 
-        $request = $this->buildRequest($uri);
+        $request = $this->buildAuthorizedRequest('GET', $uri);
 
-        return $this->authorizedRequest($request);
+        return $this->sendAuthorizedRequest($request);
     }
 
     /**
@@ -186,8 +230,8 @@ class NfnApi
         $this->checkAccessToken();
 
         $uri = $this->buildClassificationUri($values);
-        $request = $this->buildRequest($uri);
-        $result = $this->authorizedRequest($request);
+        $request = $this->buildAuthorizedRequest('GET', $uri);
+        $result = $this->sendAuthorizedRequest($request);
 
         $this->results = array_merge($this->results, $result['classifications']);
 
@@ -217,7 +261,7 @@ class NfnApi
                 $values['page'] = $page;
 
                 $uri = $this->buildClassificationUri($values);
-                $request = $this->buildRequest($uri);
+                $request = $this->buildAuthorizedRequest('GET', $uri);
 
                 yield $request;
             }
@@ -241,4 +285,62 @@ class NfnApi
         $promise->wait();
     }
 
+    /**
+     * Builds the uri specific for csv downloads by workflow.
+     *
+     * @param $workflowId
+     * @return string
+     */
+    public function buildClassificationCsvUri($workflowId)
+    {
+        return $this->config->get('config.nfnApi.apiUri') . '/workflows/' . $workflowId . '/classifications_export';
+    }
+
+    /**
+     * Sends POST request to api for creating csv download.
+     *
+     * @param $workflowId
+     * @return mixed
+     * @throws NfnApiException
+     */
+    public function requestClassificationCsvExport($workflowId)
+    {
+        $this->checkAccessToken();
+        $uri = $this->buildClassificationCsvUri($workflowId);
+        $request = $this->buildAuthorizedRequest('POST', $uri, ['body' => '{"media":{"content_type":"text/csv"}}']);
+
+        return $this->sendAuthorizedRequest($request);
+    }
+
+    /**
+     * Check workflow classification csv download.
+     *
+     * @param $workflowId
+     * @return mixed
+     * @throws NfnApiException
+     */
+    public function checkClassificationCsvExport($workflowId)
+    {
+        $this->checkAccessToken();
+        $uri = $this->buildClassificationCsvUri($workflowId);
+        $request = $this->buildAuthorizedRequest('GET', $uri);
+
+        return $this->sendAuthorizedRequest($request);
+    }
+
+    /**
+     * Retrieve workflow classification csv file.
+     *
+     * @param $src
+     * @param $workflow
+     * @return mixed
+     * @throws NfnApiException
+     */
+    public function retrieveClassificationCsvExport($src, $workflow)
+    {
+        $filePath = storage_path('classifications/downloads/' . $workflow . '.csv');
+        $request = $this->buildRequest('GET', $src, ['sink' => $filePath]);
+
+        return $this->sendRequest($request);
+    }
 }

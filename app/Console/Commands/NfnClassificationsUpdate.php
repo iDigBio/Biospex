@@ -24,7 +24,7 @@ class NfnClassificationsUpdate extends Command
      *
      * @var string
      */
-    protected $description = 'Update NfN Classifications for Expeditions. Arguement can be comma separated ids or empty.';
+    protected $description = 'Update NfN Classifications for Expeditions. Argument can be comma separated ids or empty.';
 
     /**
      * @var Expedition

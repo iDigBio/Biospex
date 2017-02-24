@@ -128,6 +128,13 @@ class Expedition extends Eloquent
             ->withTimestamps();
     }
 
+    public function nfnActor()
+    {
+        return $this->belongsToMany(Actor::class, 'actor_expedition')
+            ->wherePivot('actor_id', 2)
+            ->wherePivot('queued', 0);
+    }
+
     /**
      * NfnWorkflow relationship.
      *
