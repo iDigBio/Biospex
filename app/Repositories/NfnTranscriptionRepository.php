@@ -2,11 +2,11 @@
 
 namespace App\Repositories;
 
-use App\Repositories\Contracts\Transcription;
+use App\Repositories\Contracts\NfnTranscription;
 use App\Repositories\Contracts\CacheableInterface;
 use App\Repositories\Traits\CacheableRepository;
 
-class TranscriptionRepository extends Repository implements Transcription, CacheableInterface
+class NfnTranscriptionRepository extends Repository implements NfnTranscription, CacheableInterface
 {
 
     use CacheableRepository;
@@ -16,7 +16,7 @@ class TranscriptionRepository extends Repository implements Transcription, Cache
      */
     public function model()
     {
-        return \App\Models\Transcription::class;
+        return \App\Models\NfnTranscription::class;
     }
 
 }

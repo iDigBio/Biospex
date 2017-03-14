@@ -94,24 +94,34 @@ class Report
         $this->messages->add('error', $error);
     }
 
+    public function checkErrors()
+    {
+        return count($this->messages->get('error')) > 0;
+    }
+
     /**
      * Report an error.
      *
      * @param null $email
+     * @param null $csv
      */
-    public function reportError($email = null)
+    public function reportError($email = null, $csv = null)
     {
-        $errorMessage = '';
+        $errorMessage = null;
         $messages = $this->messages->get('error');
         foreach ($messages as $message)
         {
-            $errorMessage .= "$message ";
+            $errorMessage .= $message;
         }
+
+        $count = count($csv);
+        $attachment = $count ? $this->createAttachment($csv, 'errors') : [];
+
         $subject = trans('emails.error');
-        $data = ['errorMessage' => $errorMessage];
+        $data = ['errorMessage' => null === $errorMessage ? 'No Error Reported' : $errorMessage];
         $view = 'frontend.emails.report-error';
 
-        $this->fireErrorEvent($email, $subject, $view, $data);
+        $this->fireErrorEvent($email, $subject, $view, $data, $attachment);
     }
 
     /**

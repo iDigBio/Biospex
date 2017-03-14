@@ -5,7 +5,7 @@ use App\Jobs\AmChartJob;
 use App\Jobs\ExpeditionStatJob;
 use App\Repositories\Contracts\Import;
 use App\Services\Report\TranscriptionImportReport;
-use App\Services\Process\NfnTranscription;
+use App\Services\Process\NfnTranscriptionProcess;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\Config;
@@ -26,7 +26,7 @@ class NfnTranscriptionQueue extends QueueAbstract
     protected $import;
 
     /**
-     * @var NfnTranscription
+     * @var NfnTranscriptionProcess
      */
     protected $transcription;
 
@@ -60,14 +60,14 @@ class NfnTranscriptionQueue extends QueueAbstract
      * @param Filesystem $filesystem
      * @param Import $import
      * @param TranscriptionImportReport $report
-     * @param NfnTranscription $transcription
+     * @param NfnTranscriptionProcess $transcription
      * @param Handler $handler
      */
     public function __construct(
         Filesystem $filesystem,
         Import $import,
         TranscriptionImportReport $report,
-        NfnTranscription $transcription,
+        NfnTranscriptionProcess $transcription,
         Handler $handler
     ) {
         $this->filesystem = $filesystem;

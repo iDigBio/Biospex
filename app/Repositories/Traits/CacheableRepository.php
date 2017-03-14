@@ -88,7 +88,7 @@ trait CacheableRepository
 
         $minutes = $this->getCacheMinutes();
 
-        return $this->getCacheRepository()->remember($key, $minutes, function () use ($columns)
+        return $this->getCacheRepository()->tags(['mysql'])->remember($key, $minutes, function () use ($columns)
         {
             return parent::get($columns);
         });
@@ -111,7 +111,7 @@ trait CacheableRepository
 
         $minutes = $this->getCacheMinutes();
 
-        return $this->getCacheRepository()->remember($key, $minutes, function () use ($columns)
+        return $this->getCacheRepository()->tags(['mysql'])->remember($key, $minutes, function () use ($columns)
         {
             return parent::first($columns);
         });
@@ -134,7 +134,7 @@ trait CacheableRepository
 
         $minutes = $this->getCacheMinutes();
         
-        return $this->getCacheRepository()->remember($key, $minutes, function () use ($columns)
+        return $this->getCacheRepository()->tags(['mysql'])->remember($key, $minutes, function () use ($columns)
         {
             return parent::all($columns);
         });
@@ -159,7 +159,7 @@ trait CacheableRepository
         
         $minutes = $this->getCacheMinutes();
 
-        return $this->getCacheRepository()->remember($key, $minutes, function () use ($id, $columns)
+        return $this->getCacheRepository()->tags(['mysql'])->remember($key, $minutes, function () use ($id, $columns)
         {
             return parent::find($id, $columns);
         });
@@ -182,7 +182,7 @@ trait CacheableRepository
         $key = $this->createCacheKey('paginate', func_get_args());
         $minutes = $this->getCacheMinutes();
 
-        return $this->getCacheRepository()->remember($key, $minutes, function () use ($limit, $columns)
+        return $this->getCacheRepository()->tags(['mysql'])->remember($key, $minutes, function () use ($limit, $columns)
         {
             return parent::paginate($limit, $columns);
         });
@@ -206,7 +206,7 @@ trait CacheableRepository
         $key = $this->createCacheKey('lists', func_get_args());
         $minutes = $this->getCacheMinutes();
 
-        return $this->getCacheRepository()->remember($key, $minutes, function () use ($value, $index)
+        return $this->getCacheRepository()->tags(['mysql'])->remember($key, $minutes, function () use ($value, $index)
         {
             return parent::lists($value, $index);
         });
@@ -229,7 +229,7 @@ trait CacheableRepository
 
         $minutes = $this->getCacheMinutes();
 
-        return $this->getCacheRepository()->remember($key, $minutes, function () use ($id)
+        return $this->getCacheRepository()->tags(['mysql'])->remember($key, $minutes, function () use ($id)
         {
             return parent::trashed($id);
         });

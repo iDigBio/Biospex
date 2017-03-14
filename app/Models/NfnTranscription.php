@@ -1,14 +1,21 @@
-<?php namespace App\Models;
+<?php
+
+namespace App\Models;
 
 use Jenssegers\Mongodb\Model as Eloquent;
 use MongoDate;
 
-class Transcription extends Eloquent
+class NfnTranscription extends Eloquent
 {
     /**
      * Redefine connection to use mongodb
      */
     protected $connection = 'mongodb';
+
+    /**
+     * Set Collection
+     */
+    protected $collection = 'transcriptions';
 
     /**
      * Set primary key

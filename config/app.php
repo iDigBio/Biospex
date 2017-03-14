@@ -153,6 +153,7 @@ return [
         Vetruvet\PhpRedis\PhpRedisServiceProvider::class,
         Barryvdh\TranslationManager\ManagerServiceProvider::class,
         Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class,
+        PulkitJalan\Google\GoogleServiceProvider::class,
 
         /*
          * Biospex Providers
@@ -221,6 +222,7 @@ return [
         'Honeypot'    => Msurguy\Honeypot\HoneypotFacade::class,
         'Gate'        => Illuminate\Support\Facades\Gate::class,
         'Toastr'      => App\Facades\Toastr::class,
+        'Google'      => PulkitJalan\Google\Facades\Google::class
     ],
 
 ];

@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Robert
- * Date: 8/9/2016
- * Time: 1:10 PM
- */
 
 namespace App\Jobs;
-
 
 use App\Exceptions\NfnApiException;
 use App\Models\NfnWorkflow;
@@ -51,7 +44,7 @@ class UpdateNfnWorkflowJob extends Job implements ShouldQueue
 
         $this->retrieveWorkflow($nfnApi);
 
-        $this->job->delete();
+        $this->delete();
 
     }
 
@@ -64,7 +57,7 @@ class UpdateNfnWorkflowJob extends Job implements ShouldQueue
     private function retrieveWorkflow(NfnApi $nfnApi)
     {
         $nfnApi->setProvider();
-
+        $nfnApi->checkAccessToken('nfnToken');
         $result = $nfnApi->getWorkflow($this->nfnWorkflow->workflow);
 
         $workflow = $result['workflows'][0];

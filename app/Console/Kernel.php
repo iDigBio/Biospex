@@ -3,7 +3,10 @@
 use App\Console\Commands\AustinProcessCommand;
 use App\Console\Commands\ClearOcrResults;
 use App\Console\Commands\ExportPollCommand;
-use App\Console\Commands\ImageTest;
+use App\Console\Commands\NfnClassificationsCsvCreate;
+use App\Console\Commands\NfnClassificationsCsvFile;
+use App\Console\Commands\NfnClassificationsReconciliation;
+use App\Console\Commands\NfnClassificationsTranscript;
 use App\Console\Commands\NfnClassificationsUpdate;
 use App\Console\Commands\AmChartUpdate;
 use App\Console\Commands\ClearBeanstalkdQueueCommand;
@@ -51,7 +54,11 @@ class Kernel extends ConsoleKernel
         NfnWorkflowUpdate::class,
         ExportPollCommand::class,
         OcrPollCommand::class,
-        NotificationsUpdateCommand::class
+        NotificationsUpdateCommand::class,
+        NfnClassificationsCsvCreate::class,
+        NfnClassificationsCsvFile::class,
+        NfnClassificationsReconciliation::class,
+        NfnClassificationsTranscript::class,
     ];
 
     /**

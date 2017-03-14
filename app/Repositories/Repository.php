@@ -612,4 +612,9 @@ abstract class Repository
 
         return $result;
     }
+
+    public function min($value)
+    {
+        return $this->model->min($value);
+    }
 }

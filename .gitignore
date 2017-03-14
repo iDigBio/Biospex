@@ -23,4 +23,5 @@ Homestead.yaml
 Homestead.json
 .env
 out/
+biospex-heat-map.json
 

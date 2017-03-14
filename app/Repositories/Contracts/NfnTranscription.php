@@ -1,5 +1,5 @@
 <?php  namespace App\Repositories\Contracts;
 
-interface Transcription extends Repository
+interface NfnTranscription extends Repository
 {
 }

@@ -21,7 +21,7 @@ class TranscriptionImportReport extends Report
         $subject = trans('emails.import_transcription_subject');
         $view = 'frontend.emails.report-import';
 
-        $this->fireEvent($email, $subject, $view, $data, $attachments);
+        $this->fireReportEvent($email, $subject, $view, $data, $attachments);
 
     }
 }

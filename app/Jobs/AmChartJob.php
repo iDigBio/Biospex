@@ -2,18 +2,23 @@
 
 namespace App\Jobs;
 
+use App\Repositories\Contracts\PanoptesTranscriptionContract;
+use App\Repositories\Contracts\ProjectContract;
+use App\Repositories\Contracts\AmChartContract;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\Repositories\Contracts\AmChart;
-use App\Repositories\Contracts\NfnClassification;
-use App\Repositories\Contracts\Project;
 use Carbon\Carbon;
 
 class AmChartJob extends Job implements ShouldQueue
 {
 
     use InteractsWithQueue, SerializesModels;
+
+    /**
+     * @var PanoptesTranscriptionContract
+     */
+    protected $transcription;
 
     /**
      * Id of project being processed.
@@ -28,11 +33,6 @@ class AmChartJob extends Job implements ShouldQueue
      * @var array
      */
     protected $transcriptions = [];
-
-    /**
-     * @var
-     */
-    protected $classification;
 
     /**
      * @var
@@ -53,25 +53,29 @@ class AmChartJob extends Job implements ShouldQueue
      * AmChartJob constructor.
      * @param $projectId
      */
-    public function __construct($projectId)
+    public function __construct($projectId = null)
     {
-        $this->projectId = $projectId;
+        $this->projectId = 16;
     }
 
     /**
-     * Execute the Job.
-     *
-     * @param Project $repo
-     * @param AmChart $chart
-     * @param NfnClassification $classification
+     * @param ProjectContract $projectContract
+     * @param AmChartContract $chart
+     * @param PanoptesTranscriptionContract $transcription
      */
-    public function handle(Project $repo, AmChart $chart, NfnClassification $classification)
+    public function handle(
+        ProjectContract $projectContract,
+        AmChartContract $chart,
+        PanoptesTranscriptionContract $transcription)
     {
-        $this->classification = $classification;
+        $this->transcription = $transcription;
 
-        $project = $this->getProject($repo);
+        $relations = ['expeditions.stat', 'expeditions.nfnWorkflow'];
+        $project = $projectContract->setCacheLifetime(0)->projectFindWith($this->projectId, $relations);
+        $earliest_date = $this->transcription->setCacheLifetime(0)->getMinFinishedAtDateByProjectId($project->id);
+        $finished_date = $this->transcription->setCacheLifetime(0)->getMaxFinishedAtDateByProjectId($project->id);
 
-        $this->setDaysAndDates($project->earliest_finished_at_date, $project->latest_finished_at_date);
+        $this->setDaysAndDates($earliest_date, $finished_date);
 
         $this->processProjectExpeditions($project->expeditions);
 
@@ -79,23 +83,7 @@ class AmChartJob extends Job implements ShouldQueue
 
         $content = array_values($this->transcriptions);
 
-        $chart->updateOrCreate(['project_id' => $this->projectId], ['data' => json_encode($content)]);
-    }
-
-    /**
-     * @param Project $repo
-     * @return mixed
-     */
-    protected function getProject(Project $repo)
-    {
-        $with = [
-            'expeditions.stat',
-            'expeditions.nfnWorkflow',
-            'classificationsEarliestFinishedAtDate',
-            'classificationsLatestFinishedAtDate'
-        ];
-
-        return $repo->skipCache()->with($with)->find($this->projectId);
+        $chart->updateOrCreateRecord(['project_id' => $this->projectId], ['data' => json_encode($content)]);
     }
 
     /**
@@ -127,9 +115,9 @@ class AmChartJob extends Job implements ShouldQueue
     {
         foreach ($expeditions as $expedition)
         {
-            if ( ! isset($expedition->stat->transcriptions_completed) ||
-                $expedition->stat->transcriptions_completed === 0 ||
-                null !== $expedition->deleted_at)
+            if ( ! isset($expedition->stat->transcriptions_completed)
+                || $expedition->stat->transcriptions_completed === 0
+                || null !== $expedition->deleted_at)
             {
                 continue;
             }
@@ -150,28 +138,30 @@ class AmChartJob extends Job implements ShouldQueue
      */
     public function processExpedition($expedition)
     {
-        $classificationCounts = $this->retrieveClassificationCount($expedition->nfnWorkflow->id);
+        $transcriptCountByDate = $this->transcription
+            ->setCacheLifetime(0)
+            ->getTranscriptionCountPerDate($expedition->nfnWorkflow->workflow);
 
-        $daysArray = $this->processClassificationData($expedition, $classificationCounts);
+        $daysArray = $this->processTranscriptionDateCounts($expedition, $transcriptCountByDate['result']);
 
         return $this->buildMissingData($expedition, $daysArray);
     }
 
     /**
-     * Process classification data.
+     * Process transcript data.
      *
      * @param $expedition
-     * @param array $classificationCounts
+     * @param array $transcriptCountByDate
      * @return array
      */
-    protected function processClassificationData($expedition, $classificationCounts)
+    protected function processTranscriptionDateCounts($expedition, $transcriptCountByDate)
     {
         $daysArray = $this->defaultDays;
 
-        foreach ($classificationCounts as $classification)
+        foreach ($transcriptCountByDate as $date)
         {
-            $day = $this->calculateDay($this->earliest_date, $classification->finished_at);
-            $daysArray[$day] = $this->buildResultSet($expedition->id, $expedition->title, $day, $classification->total);
+            $day = $this->calculateDay($this->earliest_date, $date['_id']);
+            $daysArray[$day] = $this->buildResultSet($expedition->id, $expedition->title, $day, $date['count']);
         }
 
         return $daysArray;
@@ -259,17 +249,6 @@ class AmChartJob extends Job implements ShouldQueue
     }
 
     /**
-     * Get data from nfn_classifications.
-     *
-     * @param $workflow
-     * @return mixed
-     */
-    public function retrieveClassificationCount($workflow)
-    {
-        return $this->classification->skipCache()->getExpeditionsGroupByFinishedAt($workflow);
-    }
-
-    /**
      * Sort by day and expedition.
      *
      * @param $a
@@ -278,6 +257,6 @@ class AmChartJob extends Job implements ShouldQueue
      */
     public function sort($a, $b)
     {
-        return $a['day'] - $b['day'] ?: $a['expedition'] - $b['expedition'];
+        return ($a['day'] - $b['day']) ?: $a['expedition'] - $b['expedition'];
     }
 }

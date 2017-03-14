@@ -80,6 +80,14 @@ class Subject extends Eloquent
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function panoptesTranscriptions()
+    {
+        return $this->hasMany(PanoptesTranscription::class, 'subject_subjectId');
+    }
+
+    /**
      * @return \Jenssegers\Mongodb\Relations\EmbedsOne
      */
     public function occurrence()
