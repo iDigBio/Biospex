@@ -38,7 +38,7 @@ class Handler extends ExceptionHandler
 
         }
 
-        return parent::report($e);
+        parent::report($e);
     }
 
     /**

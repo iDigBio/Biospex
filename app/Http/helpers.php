@@ -197,10 +197,9 @@ function transcriptions_total($count)
  */
 function transcriptions_completed($expeditionId)
 {
-    $repo = app(\App\Repositories\Contracts\Expedition::class);
-    $expedition = $repo->skipCache()->with(['nfnClassificationsCount'])->find($expeditionId);
+    $transcription = app(\App\Repositories\Contracts\PanoptesTranscriptionContract::class);
 
-    return $expedition->nfn_classifications_count;
+    return $transcription->setCacheLifetime(0)->getTranscriptionCountByExpeditionId($expeditionId);
 }
 
 /**

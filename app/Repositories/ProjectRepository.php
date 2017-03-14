@@ -17,6 +17,19 @@ class ProjectRepository extends Repository implements Project, CacheableInterfac
     }
 
     /**
+     * Get Project with relationships.
+     *
+     * @param $projectId
+     * @param array $relations
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function getProjectWithRelations($projectId, array $relations = [], array $attributes = ['*'])
+    {
+        return $this->with($relations)->find($projectId, $attributes);
+    }
+
+    /**
      * @param int $count
      * @return mixed
      */

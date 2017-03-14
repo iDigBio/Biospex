@@ -24,6 +24,6 @@ class ExtensionMissingException extends BiospexException {}
 class OcrBatchProcessException extends BiospexException {}
 class MongoDbException extends BiospexException {}
 class NfnApiException extends BiospexException {}
-
+class HttpRequestException extends BiospexException{}
 
 

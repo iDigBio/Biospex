@@ -18,17 +18,6 @@ class ExpeditionRepository extends Repository implements Expedition, CacheableIn
     }
 
     /**
-     * Return all expeditions for given user id.
-     * 
-     * @param $id
-     * @return mixed
-     */
-    public function getAllExpeditions($id)
-    {
-        return $this->model->getAllExpeditions($id);
-    }
-
-    /**
      * Override parent create to allow sync.
      * 
      * @param array $attributes

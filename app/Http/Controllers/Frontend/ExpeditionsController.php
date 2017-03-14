@@ -6,6 +6,7 @@ use App\Exceptions\BiospexException;
 use App\Http\Controllers\Controller;
 use App\Jobs\BuildOcrBatches;
 use App\Jobs\UpdateNfnWorkflowJob;
+use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\OcrQueue;
 use App\Repositories\Contracts\User;
 use App\Http\Requests\ExpeditionFormRequest;
@@ -59,12 +60,17 @@ class ExpeditionsController extends Controller
      * @var Handler
      */
     private $handler;
+    /**
+     * @var ExpeditionContract
+     */
+    private $expeditionContract;
 
 
     /**
      * ExpeditionsController constructor.
      *
      * @param Expedition $expedition
+     * @param ExpeditionContract $expeditionContract
      * @param Project $project
      * @param Subject $subject
      * @param WorkflowManager $workflowManager
@@ -72,6 +78,7 @@ class ExpeditionsController extends Controller
      */
     public function __construct(
         Expedition $expedition,
+        ExpeditionContract $expeditionContract,
         Project $project,
         Subject $subject,
         WorkflowManager $workflowManager,
@@ -83,6 +90,7 @@ class ExpeditionsController extends Controller
         $this->subject = $subject;
         $this->workflowManager = $workflowManager;
         $this->handler = $handler;
+        $this->expeditionContract = $expeditionContract;
     }
 
     /**
@@ -90,18 +98,15 @@ class ExpeditionsController extends Controller
      *
      * @param User $userRepo
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     * TODO: Fix query so it can be cached in normal fashion.
      */
     public function index(User $userRepo)
     {
         $user = $userRepo->with(['profile'])->find(Request::user()->id);
 
-        $results = Cache::remember(md5(Request::url() . $user->id), 60, function () use ($user)
-        {
-            return $this->expedition->getAllExpeditions($user->id);
-        });
+        $relations = ['stat', 'downloads', 'actors', 'project.group'];
+        $expeditions = $this->expeditionContract->expeditionsByUserId($user->id, $relations);
 
-        return view('frontend.expeditions.index', compact('results', 'user'));
+        return view('frontend.expeditions.index', compact('expeditions', 'user'));
     }
 
     /**
@@ -142,14 +147,14 @@ class ExpeditionsController extends Controller
         }
 
         JavaScript::put([
-            'projectId' => $project->id,
+            'projectId'    => $project->id,
             'expeditionId' => 0,
-            'subjectIds' => [],
-            'maxSubjects' => Config::get('config.expedition_size'),
-            'url' => route('web.grids.create', [$project->id]),
-            'exportUrl' => '',
+            'subjectIds'   => [],
+            'maxSubjects'  => Config::get('config.expedition_size'),
+            'url'          => route('web.grids.create', [$project->id]),
+            'exportUrl'    => '',
             'showCheckbox' => true,
-            'explore' => false
+            'explore'      => false
         ]);
 
         return view('frontend.expeditions.create', compact('project'));
@@ -201,19 +206,19 @@ class ExpeditionsController extends Controller
             'stat'])
             ->find($expeditionId);
 
-        $btnDisable =  ($expedition->project->ocrQueue !== null &&
-                        count($expedition->project->ocrQueue) !== 0) ||
-                            $expedition->stat->subject_count === 0 ? true : false;
+        $btnDisable = ($expedition->project->ocrQueue !== null &&
+            count($expedition->project->ocrQueue) !== 0) ||
+        $expedition->stat->subject_count === 0 ? true : false;
 
         JavaScript::put([
-            'projectId' => $expedition->project->id,
+            'projectId'    => $expedition->project->id,
             'expeditionId' => $expedition->id,
-            'subjectIds' => [],
-            'maxSubjects' => Config::get('config.expedition_size'),
-            'url' => route('web.grids.show', [$expedition->project->id, $expedition->id]),
-            'exportUrl' => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
+            'subjectIds'   => [],
+            'maxSubjects'  => Config::get('config.expedition_size'),
+            'url'          => route('web.grids.show', [$expedition->project->id, $expedition->id]),
+            'exportUrl'    => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'showCheckbox' => false,
-            'explore' => false
+            'explore'      => false
         ]);
 
         return view('frontend.expeditions.show', compact('expedition', 'btnDisable'));
@@ -236,14 +241,14 @@ class ExpeditionsController extends Controller
         }
 
         JavaScript::put([
-            'projectId' => $expedition->project->id,
+            'projectId'    => $expedition->project->id,
             'expeditionId' => 0,
-            'subjectIds' => [],
-            'maxSubjects' => Config::get('config.expedition_size'),
-            'url' => route('web.grids.create', [$expedition->project->id]),
-            'exportUrl' => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
+            'subjectIds'   => [],
+            'maxSubjects'  => Config::get('config.expedition_size'),
+            'url'          => route('web.grids.create', [$expedition->project->id]),
+            'exportUrl'    => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'showCheckbox' => true,
-            'explore' => false
+            'explore'      => false
         ]);
 
         return view('frontend.expeditions.clone', compact('expedition'));
@@ -277,14 +282,14 @@ class ExpeditionsController extends Controller
         }
 
         JavaScript::put([
-            'projectId' => $expedition->project->id,
+            'projectId'    => $expedition->project->id,
             'expeditionId' => $expedition->id,
-            'subjectIds' => $subjectIds,
-            'maxSubjects' => Config::get('config.expedition_size'),
-            'url' => route('web.grids.edit', [$expedition->project->id, $expedition->id]),
-            'exportUrl' => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
+            'subjectIds'   => $subjectIds,
+            'maxSubjects'  => Config::get('config.expedition_size'),
+            'url'          => route('web.grids.edit', [$expedition->project->id, $expedition->id]),
+            'exportUrl'    => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'showCheckbox' => $expedition->workflowManager === null,
-            'explore' => false
+            'explore'      => false
         ]);
 
         return view('frontend.expeditions.edit', compact('expedition'));

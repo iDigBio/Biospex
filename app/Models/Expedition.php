@@ -88,7 +88,7 @@ class Expedition extends Eloquent
      * Subject relationship.
      * $expedition->subjects()->attach($subject) adds expedition ids in subjects
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function subjects()
     {
@@ -106,9 +106,7 @@ class Expedition extends Eloquent
     }
 
     /**
-     * Download relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function downloads()
     {
@@ -116,9 +114,7 @@ class Expedition extends Eloquent
     }
 
     /**
-     * Actor relationship.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return mixed
      */
     public function actors()
     {
@@ -136,9 +132,7 @@ class Expedition extends Eloquent
     }
 
     /**
-     * NfnWorkflow relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function nfnWorkflow()
     {
@@ -146,13 +140,19 @@ class Expedition extends Eloquent
     }
 
     /**
-     * NfnClassifications relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function nfnClassifications()
     {
         return $this->hasManyThrough(NfnClassification::class, NfnWorkflow::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function panoptesTranscriptions()
+    {
+        return $this->hasMany(PanoptesTranscription::class, 'subject_expeditionId');
     }
 
     /**
@@ -185,29 +185,6 @@ class Expedition extends Eloquent
         $related = $this->getRelationValue('nfnClassificationsCount')->first();
 
         return $related ? (int) $related->aggregate : 0;
-    }
-
-    /**
-     * NfnClassifications last id.
-     *
-     * @return mixed
-     */
-    public function nfnClassificationsLastId()
-    {
-        return $this->hasManyThrough(NfnClassification::class, NfnWorkflow::class)
-            ->selectRaw('MAX(classification_id) as last_id');
-    }
-
-    /**
-     * NfnClassificationsLstId attribute.
-     *
-     * @return int
-     */
-    public function getNfnClassificationsLastIdAttribute()
-    {
-        $related = $this->getRelationValue('nfnClassificationsLastId')->first();
-
-        return $related ? (int) $related->last_id : 0;
     }
 
     /**
@@ -246,38 +223,5 @@ class Expedition extends Eloquent
         $uuid = bin2hex($value);
 
         return substr($uuid, 0, 8) . '-' . substr($uuid, 8, 4) . '-' . substr($uuid, 12, 4) . '-' . substr($uuid, 16, 4) . '-' . substr($uuid, 20);
-    }
-
-    /**
-     * Get all expeditions for user.
-     * 
-     * @param $id
-     * @return mixed
-     */
-    public function getAllExpeditions($id)
-    {
-        return $this->leftJoin('expedition_stats', 'expedition_stats.expedition_id', '=', 'expeditions.id')
-            ->leftJoin('downloads', 'downloads.expedition_id', '=', 'expeditions.id')
-            ->leftJoin('actor_expedition', 'actor_expedition.expedition_id', '=', 'expeditions.id')
-            ->leftJoin('projects', 'projects.id', '=', 'expeditions.project_id')
-            ->leftJoin('groups', 'groups.id', '=', 'projects.group_id')
-            ->leftJoin('group_user', 'group_user.group_id', '=', 'groups.id')
-            ->select(
-                'expeditions.id as expedition_id',
-                'expeditions.title as expedition_title',
-                'expeditions.description as expedition_description',
-                'expeditions.created_at as expedition_created_at',
-                'expedition_stats.subject_count',
-                'expedition_stats.transcriptions_total',
-                'expedition_stats.transcriptions_completed',
-                'expedition_stats.percent_completed',
-                'downloads.id as downloads_id',
-                'projects.id as project_id',
-                'projects.title as project_title',
-                'groups.id as group_id',
-                'groups.title as group_name',
-                'actor_expedition.id as actor_expedition_id')
-            ->where('group_user.user_id', '=', $id)
-            ->get();
     }
 }

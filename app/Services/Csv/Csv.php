@@ -8,30 +8,53 @@ use League\Csv\Reader;
 class Csv
 {
     /**
-     * @var
+     * @var Reader
      */
     public $reader;
 
     /**
-     * @var
+     * @var Writer
      */
     public $writer;
 
     /**
      * Create reader using file path.
-     * 
+     *
      * @param $file
-     * @param string $delimiter
-     * @param string $enclosure
      */
-    public function readerCreateFromPath($file, $delimiter = ',', $enclosure = "")
+    public function readerCreateFromPath($file)
     {
         $this->reader = Reader::createFromPath($file);
-        $this->reader->setDelimiter($delimiter);
-        if ( ! empty($enclosure)) {
-            $this->reader->setEnclosure($enclosure);
-        }
+        $this->setDelimiter();
+        $this->setEnclosure();
+        $this->setEscape();
     }
+
+    /**
+     * @param string $delimiter
+     */
+    public function setDelimiter($delimiter = ',')
+    {
+        $this->reader->setDelimiter($delimiter);
+    }
+
+    /**
+     * @param string $enclosure
+     */
+    public function setEnclosure($enclosure = '"')
+    {
+        $this->reader->setEnclosure($enclosure);
+    }
+
+    /**
+     * @param string $escape
+     */
+    public function setEscape($escape = '\\')
+    {
+        $this->reader->setEscape($escape);
+    }
+
+
 
     /**
      * Create writer from file path.

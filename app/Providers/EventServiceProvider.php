@@ -3,8 +3,9 @@
 namespace App\Providers;
 
 use App\Events\SendErrorEvent;
-use App\Listeners\FlushCacheEventListener;
+use App\Listeners\DatabaseCacheEventListener;
 use App\Listeners\GroupEventListener;
+use App\Listeners\RepositoryEventListener;
 use App\Listeners\SendErrorEventListener;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -23,12 +24,6 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'eloquent.saved: *' => [
-            FlushCacheEventListener::class
-        ],
-        'eloquent.deleted: *' => [
-            FlushCacheEventListener::class
-        ],
         SendReportEvent::class => [
             SendReportEventListener::class
         ],
@@ -49,7 +44,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $subscribe = [
-        GroupEventListener::class
+        GroupEventListener::class,
+        DatabaseCacheEventListener::class,
+        RepositoryEventListener::class
     ];
 
     /**

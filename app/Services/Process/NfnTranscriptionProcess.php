@@ -3,13 +3,13 @@
 namespace App\Services\Process;
 
 use App\Repositories\Contracts\Subject;
-use App\Repositories\Contracts\Transcription;
+use App\Repositories\Contracts\NfnTranscription;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Validation\Factory as Validation;
 use ForceUTF8\Encoding;
 use App\Services\Csv\Csv;
 
-class NfnTranscription
+class NfnTranscriptionProcess
 {
 
     /**
@@ -23,7 +23,7 @@ class NfnTranscription
     protected $subject;
 
     /**
-     * @var Transcription
+     * @var NfnTranscription
      */
     protected $transcription;
 
@@ -51,14 +51,14 @@ class NfnTranscription
     /**
      * NfnTranscription constructor.
      * @param Subject $subject
-     * @param Transcription $transcription
+     * @param NfnTranscription $transcription
      * @param Config $config
      * @param Validation $factory
      * @param Csv $csv
      */
     public function __construct(
         Subject $subject,
-        Transcription $transcription,
+        NfnTranscription $transcription,
         Config $config,
         Validation $factory,
         Csv $csv
@@ -80,7 +80,7 @@ class NfnTranscription
      */
     public function process($file)
     {
-        $this->csv->readerCreateFromPath($file, ',', '"');
+        $this->csv->readerCreateFromPath($file);
 
         $header = $this->prepareHeader($this->csv->getHeaderRow());
 

@@ -5,9 +5,9 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\Config;
-use App\Jobs\NfnClassificationsCsvJob;
+use App\Jobs\NfnClassificationsCsvFileJob;
 
-class NfNClassificationsCsvRequests extends Command
+class NfnClassificationsCsvFile extends Command
 {
     use DispatchesJobs;
 
@@ -16,14 +16,14 @@ class NfNClassificationsCsvRequests extends Command
      *
      * @var string
      */
-    protected $signature = 'nfncsv:request {expeditionIds?}';
+    protected $signature = 'nfnfile:request {ids?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Sends requests for NfN Workflow Classifications CSV files. Argument can be comma separated ids.';
+    protected $description = 'Sends requests for Nfn Workflow Classifications CSV files. Argument can be comma separated ids.';
 
     /**
      * NfNClassificationsCsvRequests constructor.
@@ -40,6 +40,6 @@ class NfNClassificationsCsvRequests extends Command
     {
         $ids = null ===  $this->argument('ids') ? null : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new NfnClassificationsCsvJob($ids))->onQueue(Config::get('config.beanstalkd.job')));
+        $this->dispatch((new NfnClassificationsCsvFileJob($ids))->onQueue(Config::get('config.beanstalkd.job')));
     }
 }

@@ -159,7 +159,9 @@ class DarwinCoreCsvImport {
      */
     public function loadCsvFile($file, $delimiter, $enclosure, $type, $loadMedia)
     {
-        $this->csv->readerCreateFromPath($file, $delimiter, $enclosure);
+        $this->csv->readerCreateFromPath($file);
+        $this->csv->setDelimiter($delimiter);
+        $this->csv->setEnclosure($enclosure);
 
         $header = $this->processCsvHeader($this->csv->getHeaderRow(), $type);
 

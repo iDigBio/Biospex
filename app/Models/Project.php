@@ -21,7 +21,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      *
      * @var array
      */
-    protected $softCascade = ['expeditions', 'subjects', 'header', 'metas', 'amChart', 'nfnWorkflows'];
+    protected $softCascade = ['expeditions', 'subjects', 'panoptes_transcriptions', 'header', 'metas', 'amChart', 'nfnWorkflows'];
 
     /**
      * Sluggable value.
@@ -238,13 +238,19 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     }
 
     /**
-     * NfnClassification relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function classifications()
     {
         return $this->hasManyThrough(NfnClassification::class, NfnWorkflow::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function panoptesTranscriptions()
+    {
+        return $this->hasMany(PanoptesTranscription::class, 'subject_projectId');
     }
 
     /**
@@ -291,6 +297,11 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         $related = $this->getRelationValue('classificationsLatestFinishedAtDate')->first();
 
         return $related ? $related->latest_finished_at_date : null;
+    }
+
+    public function getTranscriptionsEarliestFinishedAtDate()
+    {
+        return $this->hasMany(PanoptesTranscription::class)->min('classification_finished_at');
     }
 
     /**
