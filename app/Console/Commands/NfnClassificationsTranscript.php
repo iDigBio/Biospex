@@ -26,6 +26,11 @@ class NfnClassificationsTranscript extends Command
     protected $description = 'Process reconciled transcriptions and enter into database.';
 
     /**
+     * @var array
+     */
+    private $ids = [];
+
+    /**
      * NfNClassificationsCsvRequests constructor.
      */
     public function __construct()
@@ -38,8 +43,20 @@ class NfnClassificationsTranscript extends Command
      */
     public function handle()
     {
-        $ids = null === $this->argument('ids') ? null : explode(',', $this->argument('ids'));
+        $this->ids = null === $this->argument('ids') ? $this->readDirectory() : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new NfnClassificationsTranscriptJob($ids, $dir))->onQueue(config('config.beanstalkd.job')));
+        $this->dispatch((new NfnClassificationsTranscriptJob($this->ids))->onQueue(config('config.beanstalkd.job')));
+    }
+
+    /**
+     * Read directory files to process.
+     */
+    private function readDirectory()
+    {
+        $files = File::allFiles(config('config.classifications_transcript'));
+        foreach ($files as $file)
+        {
+            $this->ids[] = basename($file, '.csv');
+        }
     }
 }

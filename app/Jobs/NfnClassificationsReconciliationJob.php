@@ -20,9 +20,9 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
 
     /**
      * NfnClassificationsCsvRequestsJob constructor.
-     * @param null|array $ids
+     * @param array $ids
      */
-    public function __construct($ids = null)
+    public function __construct(array $ids = [])
     {
         $this->ids = $ids;
     }
@@ -35,7 +35,9 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
     {
         if (null === $this->ids)
         {
-            $this->readDirectory();
+            $this->delete();
+
+            return;
         }
 
         foreach ($this->ids as $id)
@@ -60,17 +62,5 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
         exec('sudo chown -R www-data.www-data ' . config('config.classifications_dir'));
 
         $this->dispatch((new NfnClassificationsTranscriptJob($this->ids))->onQueue(config('config.beanstalkd.job')));
-    }
-
-    /**
-     * Read directory files to process.
-     */
-    private function readDirectory()
-    {
-        $files = File::allFiles(config('config.classifications_download'));
-        foreach ($files as $file)
-        {
-            $this->ids[] = basename($file, '.csv');
-        }
     }
 }

@@ -46,7 +46,9 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
     {
         if (null === $this->ids)
         {
-            $this->readDirectory();
+            $this->delete();
+
+            return;
         }
 
         $csv = null;
@@ -84,18 +86,6 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
         catch (BiospexException $e)
         {
             $report->addError($e->getMessage());
-        }
-    }
-
-    /**
-     * Read directory files to process.
-     */
-    private function readDirectory()
-    {
-        $files = File::allFiles(config('config.classifications_transcript'));
-        foreach ($files as $file)
-        {
-            $this->ids[] = basename($file, '.csv');
         }
     }
 }
