@@ -71,7 +71,6 @@ class WorkFlowManagerCommand extends Command
     /**
      * Process each workflow manager and actors
      * @param array $managers
-     * @return array
      */
     protected function processManagers($managers)
     {

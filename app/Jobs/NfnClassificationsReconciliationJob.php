@@ -59,6 +59,8 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
             exec($command);
         }
 
+        exec('sudo chown -R www-data.www-data ' . config('config.classifications_dir'));
+
         $this->dispatch((new NfnClassificationsTranscriptJob($this->ids))->onQueue(config('config.beanstalkd.job')));
     }
 }

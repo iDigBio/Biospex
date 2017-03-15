@@ -10,7 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Config;
 
-class NfnClassificationsJob extends Job implements ShouldQueue
+class NfnClassificationsUpdateJob extends Job implements ShouldQueue
 {
 
     use InteractsWithQueue, SerializesModels, DispatchesJobs;
@@ -26,7 +26,7 @@ class NfnClassificationsJob extends Job implements ShouldQueue
     private $all;
 
     /**
-     * NfnClassificationsJob constructor.
+     * NfnClassificationsUpdateJob constructor.
      *
      * @param $expeditionId
      * @param bool $all
@@ -45,7 +45,7 @@ class NfnClassificationsJob extends Job implements ShouldQueue
      */
     public function handle(ExpeditionContract $expeditionContract)
     {
-        $relations = ['project.amChart', 'nfnWorkflow'];
+        $relations = ['project.amChart', 'nfnWorkflow', 'stat'];
         $expedition = $expeditionContract->setCacheLifetime(0)->expeditionFindWith($this->expeditionId, $relations);
 
         if ($this->checkForRequiredInformation($expedition))
@@ -55,7 +55,13 @@ class NfnClassificationsJob extends Job implements ShouldQueue
             return;
         }
 
-        $this->dispatch((new ExpeditionStatJob($expedition->id))->onQueue(Config::get('config.beanstalkd.job')));
+        // Update stats
+        $count = $expeditionContract->setCacheLifetime(0)->getExpeditionSubjectCounts($this->expeditionId);
+        $expedition->stat->subject_count = $count;
+        $expedition->stat->transcriptions_total = transcriptions_total($count);
+        $expedition->stat->transcriptions_completed = transcriptions_completed($this->expeditionId);
+        $expedition->stat->percent_completed = transcriptions_percent_completed($expedition->stat->transcriptions_total, $expedition->stat->transcriptions_completed);
+        $expedition->stat->save();
 
         if ( $expedition->project->amChart === null || ! $expedition->project->amChart->queued )
         {
@@ -63,7 +69,6 @@ class NfnClassificationsJob extends Job implements ShouldQueue
         }
 
         $this->delete();
-
     }
 
     /**

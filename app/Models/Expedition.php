@@ -16,7 +16,7 @@ class Expedition extends Eloquent
      *
      * @var array
      */
-    protected $softCascade = ['stat', 'nfnWorkflow', 'stat'];
+    protected $softCascade = ['stat', 'nfnWorkflow', 'stat', 'workflowManager'];
 
     /**
      * @var array

@@ -32,6 +32,11 @@ class NfnLegacy implements ActorInterface
         {
             $this->export->process($actor);
         }
-
+        else
+        {
+            $actor->pivot->completed = 1;
+            $actor->pivot->queued = 0;
+            $actor->pivot->save();
+        }
     }
 }

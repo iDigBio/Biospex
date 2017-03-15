@@ -84,8 +84,13 @@ class TestAppCommand extends Command
      */
     public function fire()
     {
-        //dd($this->getContainer('events'));
-        $this->job->handle($this->projectContract, $this->amChartContract, $this->panoptesTranscriptionContract);
+        $csvPath = config('config.classifications_download') . '/35.csv';
+        $recPath = config('config.classifications_reconcile') . '/35.csv';
+        $tranPath = config('config.classifications_transcript') . '/35.csv';
+        $sumPath = config('config.classifications_summary') . '/35.html';
+        $pythonPath = base_path('label_reconciliations/reconcile.py');
+        $command = "sudo python3 $pythonPath -w 2468 -r $recPath -u $tranPath -s $sumPath $csvPath";
+        echo $command . PHP_EOL;
     }
 
     public function getContainer($service = null)

@@ -63,8 +63,9 @@ class PanoptesTranscriptionRepository extends EloquentRepository implements Pano
      */
     public function getMinFinishedAtDateByProjectId($projectId)
     {
-        return $this->where('subject_projectId', '=', $projectId)
-            ->min('classification_finished_at')->toDateTime()->format('Y-m-d');
+        $result = $this->where('subject_projectId', '=', $projectId)->min('classification_finished_at');
+
+        return null === $result ? null : $result->toDateTime()->format('Y-m-d');
     }
 
     /**
@@ -75,8 +76,9 @@ class PanoptesTranscriptionRepository extends EloquentRepository implements Pano
      */
     public function getMaxFinishedAtDateByProjectId($projectId)
     {
-        return $this->where('subject_projectId', '=', $projectId)
-            ->max('classification_finished_at')->toDateTime()->format('Y-m-d');
+        $result = $this->where('subject_projectId', '=', $projectId)->max('classification_finished_at');
+
+        return null === $result ? null : $result->toDateTime()->format('Y-m-d');
     }
 
     /**

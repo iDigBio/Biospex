@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\NfnClassificationsJob;
+use App\Jobs\NfnClassificationsUpdateJob;
 use App\Repositories\Contracts\ExpeditionContract;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -58,7 +58,7 @@ class NfnClassificationsUpdate extends Command
 
         foreach ($expeditions as $expedition)
         {
-            $this->dispatch((new NfnClassificationsJob($expedition->id))
+            $this->dispatch((new NfnClassificationsUpdateJob($expedition->id))
                 ->onQueue(Config::get('config.beanstalkd.job')));
         }
     }
