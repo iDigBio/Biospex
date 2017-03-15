@@ -53,6 +53,10 @@ class TestAppCommand extends Command
      * @var PanoptesTranscriptionContract
      */
     private $panoptesTranscriptionContract;
+    /**
+     * @var \App\Jobs\NfnClassificationsReconciliationJob
+     */
+    private $reconciliationJob;
 
 
     /**
@@ -65,7 +69,8 @@ class TestAppCommand extends Command
         \App\Repositories\Contracts\ExpeditionContract $expeditionContract,
         \App\Repositories\Contracts\GroupContract $groupContract,
         \App\Services\Process\PanoptesTranscriptionProcess $panoptesTranscriptionProcess,
-        \App\Jobs\AmChartJob $job
+        \App\Jobs\AmChartJob $job,
+        \App\Jobs\NfnClassificationsReconciliationJob $reconciliationJob
     )
     {
         parent::__construct();
@@ -77,6 +82,7 @@ class TestAppCommand extends Command
         $this->projectContract = $projectContract;
         $this->amChartContract = $amChartContract;
         $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
+        $this->reconciliationJob = $reconciliationJob;
     }
 
     /**
@@ -84,13 +90,7 @@ class TestAppCommand extends Command
      */
     public function fire()
     {
-        $csvPath = config('config.classifications_download') . '/35.csv';
-        $recPath = config('config.classifications_reconcile') . '/35.csv';
-        $tranPath = config('config.classifications_transcript') . '/35.csv';
-        $sumPath = config('config.classifications_summary') . '/35.html';
-        $pythonPath = base_path('label_reconciliations/reconcile.py');
-        $command = "sudo python3 $pythonPath -w 2468 -r $recPath -u $tranPath -s $sumPath $csvPath";
-        echo $command . PHP_EOL;
+        $this->reconciliationJob->handle($this->expeditionContract);
     }
 
     public function getContainer($service = null)

@@ -29,12 +29,10 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
      * NfnClassificationsTranscriptJob constructor.
      *
      * @param null $ids
-     * @param bool $dir
      */
-    public function __construct($ids = null, $dir = false)
+    public function __construct($ids = null)
     {
         $this->ids = $ids;
-        $this->dir = $dir;
     }
 
     /**
@@ -46,7 +44,7 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
      */
     public function handle(PanoptesTranscriptionProcess $transcription, Report $report)
     {
-        if ($this->dir)
+        if (null === $this->ids)
         {
             $this->readDirectory();
         }

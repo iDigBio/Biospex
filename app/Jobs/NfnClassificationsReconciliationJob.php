@@ -19,20 +19,12 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
     public $ids;
 
     /**
-     * @var bool
-     */
-    public $dir;
-
-
-    /**
      * NfnClassificationsCsvRequestsJob constructor.
      * @param null|array $ids
-     * @param bool $dir
      */
-    public function __construct($ids = null, $dir = false)
+    public function __construct($ids = null)
     {
         $this->ids = $ids;
-        $this->dir = $dir;
     }
 
     /**
@@ -41,7 +33,7 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
      */
     public function handle(ExpeditionContract $expeditionContract)
     {
-        if ($this->dir)
+        if (null === $this->ids)
         {
             $this->readDirectory();
         }

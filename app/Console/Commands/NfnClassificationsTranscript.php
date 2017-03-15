@@ -16,7 +16,7 @@ class NfnClassificationsTranscript extends Command
      *
      * @var string
      */
-    protected $signature = 'nfnfile:transcript {ids?} {--dir}';
+    protected $signature = 'nfnfile:transcript {ids?}';
 
     /**
      * The console command description.
@@ -39,7 +39,6 @@ class NfnClassificationsTranscript extends Command
     public function handle()
     {
         $ids = null === $this->argument('ids') ? null : explode(',', $this->argument('ids'));
-        $dir = $this->option('dir');
 
         $this->dispatch((new NfnClassificationsTranscriptJob($ids, $dir))->onQueue(config('config.beanstalkd.job')));
     }
