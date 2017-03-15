@@ -5,7 +5,7 @@ namespace App\Services\Actor\NfnPanoptes;
 ini_set('memory_limit', '1024M');
 
 use App\Exceptions\BiospexException;
-use App\Jobs\NfnClassificationsJob;
+use App\Jobs\NfnClassificationsUpdateJob;
 use App\Services\Actor\ActorInterface;
 use App\Services\Actor\ActorService;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -86,7 +86,7 @@ class NfnPanoptesClassifications implements ActorInterface
         }
         else
         {
-            $this->dispatch((new NfnClassificationsJob($actor->pivot->expedition_id))
+            $this->dispatch((new NfnClassificationsUpdateJob($actor->pivot->expedition_id))
                 ->onQueue($this->service->config->get('config.beanstalkd.job')));
             $actor->pivot->queued = 0;
             $actor->pivot->save();

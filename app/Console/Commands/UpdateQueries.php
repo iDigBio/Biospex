@@ -30,10 +30,24 @@ class UpdateQueries extends Command
     }
 
     /**
-     * handle
+     * Fire command
      */
-    public function handle()
+    public function fire()
     {
 
+        $expeditions = \App\Models\Expedition::onlyTrashed()->get();
+        foreach ($expeditions as $expedition)
+        {
+            $workflowManager = \App\Models\WorkflowManager::where('expedition_id', '=', $expedition->id)->first();
+            if (null === $workflowManager)
+            {
+                continue;
+            }
+
+            $workflowManager->deleted_at = $expedition->deleted_at;
+            $workflowManager->created_at = $expedition->created_at;
+            $workflowManager->save();
+
+        }
     }
 }

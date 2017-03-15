@@ -17,12 +17,12 @@ class WorkflowManager extends Model
     /**
      * @var array
      */
-    protected $dates = ['deleted_at'];
+    //protected $dates = ['deleted_at'];
 
 
     protected $fillable = [
         'expedition_id',
-        'stopped',
+        'stopped'
     ];
 
     /**

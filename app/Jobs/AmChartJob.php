@@ -75,6 +75,13 @@ class AmChartJob extends Job implements ShouldQueue
         $earliest_date = $this->transcription->setCacheLifetime(0)->getMinFinishedAtDateByProjectId($project->id);
         $finished_date = $this->transcription->setCacheLifetime(0)->getMaxFinishedAtDateByProjectId($project->id);
 
+        if (null === $earliest_date || null === $finished_date)
+        {
+            $this->delete();
+
+            return;
+        }
+
         $this->setDaysAndDates($earliest_date, $finished_date);
 
         $this->processProjectExpeditions($project->expeditions);
