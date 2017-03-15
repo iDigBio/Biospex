@@ -1,9 +1,12 @@
 <?php namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class WorkflowManager extends Model
 {
+    use SoftDeletes;
+
     /**
      * The database table used by the model.
      *
@@ -12,11 +15,10 @@ class WorkflowManager extends Model
     protected $table = 'workflow_managers';
 
     /**
-     * Do not use timestamps
-     *
-     * @var bool
+     * @var array
      */
-    public $timestamps = false;
+    protected $dates = ['deleted_at'];
+
 
     protected $fillable = [
         'expedition_id',
@@ -24,7 +26,7 @@ class WorkflowManager extends Model
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function expedition()
     {
