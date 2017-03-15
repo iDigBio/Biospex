@@ -26,10 +26,10 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
 
     /**
      * NfnClassificationsCsvRequestsJob constructor.
-     * @param array $ids
+     * @param null|array $ids
      * @param bool $dir
      */
-    public function __construct(array $ids = [], $dir = false)
+    public function __construct($ids = null, $dir = false)
     {
         $this->ids = $ids;
         $this->dir = $dir;
