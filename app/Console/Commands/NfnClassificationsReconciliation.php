@@ -56,7 +56,6 @@ class NfnClassificationsReconciliation extends Command
         $files = File::allFiles(config('config.classifications_download'));
         foreach ($files as $file)
         {
-            echo basename($file, '.csv') . PHP_EOL;
             $this->ids[] = basename($file, '.csv');
         }
     }
