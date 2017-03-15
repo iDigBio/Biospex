@@ -43,7 +43,7 @@ class NfnClassificationsReconciliation extends Command
      */
     public function handle()
     {
-        $this->ids = null === $this->argument('ids') ? $this->readDirectory() : explode(',', $this->argument('ids'));
+        null === $this->argument('ids') ? $this->readDirectory() : explode(',', $this->argument('ids'));
 
         $this->dispatch((new NfnClassificationsReconciliationJob($this->ids))->onQueue(config('config.beanstalkd.job')));
     }
@@ -56,6 +56,7 @@ class NfnClassificationsReconciliation extends Command
         $files = File::allFiles(config('config.classifications_download'));
         foreach ($files as $file)
         {
+            echo basename($file, '.csv') . PHP_EOL;
             $this->ids[] = basename($file, '.csv');
         }
     }

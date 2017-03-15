@@ -43,7 +43,7 @@ class NfnClassificationsTranscript extends Command
      */
     public function handle()
     {
-        $this->ids = null === $this->argument('ids') ? $this->readDirectory() : explode(',', $this->argument('ids'));
+        null === $this->argument('ids') ? $this->readDirectory() : explode(',', $this->argument('ids'));
 
         $this->dispatch((new NfnClassificationsTranscriptJob($this->ids))->onQueue(config('config.beanstalkd.job')));
     }
