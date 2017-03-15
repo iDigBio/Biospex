@@ -31,7 +31,7 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
      * @param null $ids
      * @param bool $dir
      */
-    public function __construct($ids = null, $dir = true)
+    public function __construct($ids = null, $dir = false)
     {
         $this->ids = $ids;
         $this->dir = $dir;

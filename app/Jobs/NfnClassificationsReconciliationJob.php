@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Repositories\Contracts\ExpeditionContract;
+use File;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -17,14 +18,21 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
      */
     public $ids;
 
+    /**
+     * @var bool
+     */
+    public $dir;
+
 
     /**
      * NfnClassificationsCsvRequestsJob constructor.
-     * @param $ids
+     * @param array $ids
+     * @param bool $dir
      */
-    public function __construct(array $ids = [])
+    public function __construct(array $ids = [], $dir = false)
     {
         $this->ids = $ids;
+        $this->dir = $dir;
     }
 
     /**
@@ -33,11 +41,9 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
      */
     public function handle(ExpeditionContract $expeditionContract)
     {
-        if (null === $this->ids)
+        if ($this->dir)
         {
-            $this->delete();
-
-            return;
+            $this->readDirectory();
         }
 
         foreach ($this->ids as $id)
@@ -62,5 +68,17 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
         exec('sudo chown -R www-data.www-data ' . config('config.classifications_dir'));
 
         $this->dispatch((new NfnClassificationsTranscriptJob($this->ids))->onQueue(config('config.beanstalkd.job')));
+    }
+
+    /**
+     * Read directory files to process.
+     */
+    private function readDirectory()
+    {
+        $files = File::allFiles(config('config.classifications_download'));
+        foreach ($files as $file)
+        {
+            $this->ids[] = basename($file, '.csv');
+        }
     }
 }

@@ -15,7 +15,7 @@ class NfnClassificationsReconciliation extends Command
      *
      * @var string
      */
-    protected $signature = 'nfnfile:reconcile {ids?}';
+    protected $signature = 'nfnfile:reconcile {ids?} {--dir}';
 
     /**
      * The console command description.
@@ -37,12 +37,7 @@ class NfnClassificationsReconciliation extends Command
      */
     public function handle()
     {
-        $ids = explode(',', $this->argument('ids'));
-        if (null === $ids)
-        {
-            echo 'Ids comma separated list required.' . PHP_EOL;
-            return;
-        }
+        $ids = null === $this->argument('ids') ? null : explode(',', $this->argument('ids'));
 
         $this->dispatch((new NfnClassificationsReconciliationJob($ids))->onQueue(config('config.beanstalkd.job')));
     }
