@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Repositories\Contracts\WorkflowManager;
+use App\Repositories\Contracts\WorkflowManagerContract;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
 
@@ -24,9 +24,9 @@ class WorkFlowManagerCommand extends Command
     protected $description = "Workflow manager";
 
     /**
-     * @var WorkflowManager
+     * @var WorkflowManagerContract
      */
-    protected $manager;
+    protected $workflowManagerContract;
 
     /**
      * @var
@@ -36,13 +36,13 @@ class WorkFlowManagerCommand extends Command
     /**
      * WorkFlowManagerCommand constructor.
      *
-     * @param WorkflowManager $manager
+     * @param WorkflowManagerContract $workflowManagerContract
      */
-    public function __construct(WorkflowManager $manager)
+    public function __construct(WorkflowManagerContract $workflowManagerContract)
     {
         parent::__construct();
         $this->tube = Config::get('config.beanstalkd.workflow');
-        $this->manager = $manager;
+        $this->workflowManagerContract = $workflowManagerContract;
     }
     
 
@@ -55,11 +55,13 @@ class WorkFlowManagerCommand extends Command
     {
         $id = $this->argument('expedition');
 
-        if ( null !== $id) {
-            $managers = $this->manager->skipCache()->with(['expedition.actors', 'expedition.stat'])->where(['expedition_id' => $id])->get();
-        } else {
-            $managers = $this->manager->skipCache()->with(['expedition.actors', 'expedition.stat'])->get();
-        }
+        $withRelations = ['expedition.actors', 'expedition.stat'];
+
+        $managers = null !== $id ?
+            $this->workflowManagerContract->setCacheLifetime(0)
+                ->findWhereWithRelations(['expedition_id', '=', $id], $withRelations) :
+            $this->workflowManagerContract->setCacheLifetime(0)
+                ->findAllWithRelations($withRelations);
 
         if ($managers->isEmpty()) {
             return;
@@ -96,7 +98,7 @@ class WorkFlowManagerCommand extends Command
                 continue;
             }
 
-            if ($actor->completed) {
+            if ($actor->pivot->completed) {
                 continue;
             }
 

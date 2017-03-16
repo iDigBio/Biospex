@@ -71,7 +71,7 @@ class AmChartJob extends Job implements ShouldQueue
         $this->transcription = $transcription;
 
         $relations = ['expeditions.stat', 'expeditions.nfnWorkflow'];
-        $project = $projectContract->setCacheLifetime(0)->projectFindWith($this->projectId, $relations);
+        $project = $projectContract->setCacheLifetime(0)->findWithRelations($this->projectId, $relations);
         $earliest_date = $this->transcription->setCacheLifetime(0)->getMinFinishedAtDateByProjectId($project->id);
         $finished_date = $this->transcription->setCacheLifetime(0)->getMaxFinishedAtDateByProjectId($project->id);
 

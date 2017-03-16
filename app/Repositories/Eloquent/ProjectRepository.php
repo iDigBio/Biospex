@@ -24,7 +24,7 @@ class ProjectRepository extends EloquentRepository implements ProjectContract
     /**
      * @inheritdoc
      */
-    public function projectFindWith($projectId, array $relations = [], array $attributes = ['*'])
+    public function findWithRelations($projectId, array $relations = [], array $attributes = ['*'])
     {
         return $this->with($relations)->find($projectId, $attributes);
     }

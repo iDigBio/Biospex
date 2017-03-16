@@ -13,7 +13,7 @@ interface ProjectContract extends RepositoryContract, CacheableContract
      * @param array $attributes
      * @return mixed
      */
-    public function projectFindWith($projectId, array $relations = [], array $attributes = ['*']);
+    public function findWithRelations($projectId, array $relations = [], array $attributes = ['*']);
 
     /**
      * Get random projects for carousel.

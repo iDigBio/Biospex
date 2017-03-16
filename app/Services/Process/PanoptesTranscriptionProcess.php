@@ -147,7 +147,7 @@ class PanoptesTranscriptionProcess
      */
     public function getSubject($combined)
     {
-        $subject = $this->subjectContract->setCacheLifetime(0)->subjectFind(trim($combined['subject_subjectId']));
+        $subject = $this->subjectContract->setCacheLifetime(0)->findById(trim($combined['subject_subjectId']));
 
         return empty($subject) ? false : $subject;
     }

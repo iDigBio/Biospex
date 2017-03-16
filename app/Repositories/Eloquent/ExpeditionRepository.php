@@ -38,30 +38,35 @@ class ExpeditionRepository extends EloquentRepository implements ExpeditionContr
     /**
      * @inheritdoc
      */
-    public function expeditionsHasRelations($relations, array $attributes = ['*'])
+    public function findAllHasRelationsWithRelations(array $hasRelations = [], array $relations = [], array $attributes = ['*'])
     {
-        foreach ($relations as $relation)
+        foreach ($hasRelations as $relation)
         {
             $this->has($relation);
         }
 
-        return $this->findAll($attributes);
+        return $this->with($relations)->findAll($attributes);
     }
 
     /**
      * @inheritdoc
      */
-    public function expeditionFindWith($id, $relations)
+    public function findWhereInHasRelationsWithRelations($attributeValues, array $hasRelations = [], array $relations = [], array $attributes = ['*'])
+    {
+        foreach ($hasRelations as $relation)
+        {
+            $this->has($relation);
+        }
+
+        return $this->with($relations)->findWhereIn($attributeValues, $attributes);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function findWithRelations($id, $relations)
     {
         return $this->with($relations)->find($id);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function expeditionsHasRelationWhereIn($relation, $attributeValues, array $attributes = ['*'])
-    {
-        return $this->has($relation)->findWhereIn($attributeValues, $attributes);
     }
 
     /**

@@ -90,7 +90,20 @@ class TestAppCommand extends Command
      */
     public function fire()
     {
-        $this->reconciliationJob->handle($this->expeditionContract);
+        $ids = null;
+
+        $hasRelations = ['nfnWorkflow'];
+        $withRelations = ['project.amChart', 'nfnWorkflow', 'nfnActor', 'stat'];
+
+        $expeditions = null === $ids ?
+            $this->expeditionContract->setCacheLifetime(0)
+                ->findAllHasRelationsWithRelations($hasRelations, $withRelations) :
+            $this->expeditionContract->setCacheLifetime(0)
+                ->findWhereInHasRelationsWithRelations(['id', [$ids]], $hasRelations, $withRelations);
+        foreach ($expeditions as $expedition)
+        {
+            echo $expedition->actorNfn->pivot->completed . PHP_EOL;
+        }
     }
 
     public function getContainer($service = null)

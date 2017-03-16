@@ -34,7 +34,7 @@ class ExpeditionStatJob extends Job implements ShouldQueue
      */
     public function handle(ExpeditionContract $expedition)
     {
-        $record = $expedition->setCacheLifetime(0)->expeditionFindWith($this->expeditionId, 'stat');
+        $record = $expedition->setCacheLifetime(0)->findWithRelations($this->expeditionId, 'stat');
         $count = $expedition->setCacheLifetime(0)->getExpeditionSubjectCounts($this->expeditionId);
 
         $record->stat->subject_count = $count;

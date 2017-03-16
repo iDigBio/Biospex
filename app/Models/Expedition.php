@@ -124,11 +124,19 @@ class Expedition extends Eloquent
             ->withTimestamps();
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function nfnActor()
     {
         return $this->belongsToMany(Actor::class, 'actor_expedition')
-            ->wherePivot('actor_id', 2)
-            ->wherePivot('queued', 0);
+            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'processed', 'error', 'queued', 'completed', 'order')
+            ->wherePivot('actor_id', 2);
+    }
+
+    public function getActorNfnAttribute()
+    {
+        return $this->nfnActor->first();
     }
 
     /**

@@ -17,6 +17,8 @@ use App\Repositories\Contracts\AmChartContract;
 use App\Repositories\Eloquent\AmChartRepository;
 use App\Repositories\Contracts\GroupContract;
 use App\Repositories\Eloquent\GroupRepository;
+use App\Repositories\Contracts\WorkflowManagerContract;
+use App\Repositories\Eloquent\WorkflowManagerRepository;
 
 
 // Replacing eventually
@@ -28,7 +30,7 @@ use App\Repositories\Contracts\Permission as PermissionContract;
 use App\Repositories\Contracts\Subject as SubjectContractOld;
 use App\Repositories\Contracts\Import as ImportContract;
 use App\Repositories\Contracts\Header as HeaderContract;
-use App\Repositories\Contracts\WorkflowManager as WorkflowManagerContract;
+use App\Repositories\Contracts\WorkflowManager as WorkflowManagerContractOld;
 use App\Repositories\Contracts\Actor as ActorContract;
 use App\Repositories\Contracts\Download as DownloadContract;
 use App\Repositories\Contracts\Invite as InviteContract;
@@ -60,7 +62,7 @@ use App\Repositories\PermissionRepository;
 use App\Repositories\SubjectRepository as SubjectRepositoryOld;
 use App\Repositories\ImportRepository;
 use App\Repositories\HeaderRepository;
-use App\Repositories\WorkflowManagerRepository;
+use App\Repositories\WorkflowManagerRepository as WorkflowManagerRepositoryOld;
 use App\Repositories\ActorRepository;
 use App\Repositories\DownloadRepository;
 use App\Repositories\InviteRepository;
@@ -124,7 +126,7 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(SubjectContractOld::class, SubjectRepositoryOld::class);
         $this->app->bind(ImportContract::class, ImportRepository::class);
         $this->app->bind(HeaderContract::class, HeaderRepository::class);
-        $this->app->bind(WorkflowManagerContract::class, WorkflowManagerRepository::class);
+        $this->app->bind(WorkflowManagerContractOld::class, WorkflowManagerRepositoryOld::class);
         $this->app->bind(ActorContract::class, ActorRepository::class);
         $this->app->bind(DownloadContract::class, DownloadRepository::class);
         $this->app->bind(InviteContract::class, InviteRepository::class);
@@ -155,5 +157,6 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(SubjectContract::class, SubjectRepository::class);
         $this->app->bind(AmChartContract::class, AmChartRepository::class);
         $this->app->bind(GroupContract::class, GroupRepository::class);
+        $this->app->bind(WorkflowManagerContract::class, WorkflowManagerRepository::class);
     }
 }

@@ -133,7 +133,7 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('local')) {
             $this->app->register(IdeHelper::class);
             $this->app->register(Debugbar::class);
-            $this->app->register(GeneratorsServiceProvider::class);
+            //$this->app->register(GeneratorsServiceProvider::class);
             $this->app->register(MigrationsGeneratorServiceProvider::class);
             $this->app->register(ArtisanViewServiceProvider::class);
         }

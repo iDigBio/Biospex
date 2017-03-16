@@ -46,7 +46,6 @@
     "laracasts/behat-laravel-extension": "^1.0",
     "codeception/codeception": "*",
     "xethron/migrations-generator": "dev-l5",
-    "way/generators": "dev-feature/laravel-five-stable",
     "sven/artisan-view": "^1.0"
   },
   "repositories": [

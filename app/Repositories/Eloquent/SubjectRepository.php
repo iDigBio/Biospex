@@ -23,7 +23,7 @@ class SubjectRepository extends EloquentRepository implements SubjectContract
     /**
      * @inheritdoc
      */
-    public function subjectFind($id, array $attributes = ['*'])
+    public function findById($id, array $attributes = ['*'])
     {
         return $this->find($id, $attributes);
     }

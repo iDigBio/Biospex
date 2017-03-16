@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "94d3a631808769f4aea15e0f86e385c9",
+    "content-hash": "33d85d2651c5f6d1b80a90937458069d",
     "packages": [
         {
             "name": "askedio/laravel5-soft-cascade",
@@ -2522,16 +2522,16 @@
         },
         {
             "name": "paragonie/random_compat",
-            "version": "v1.4.1",
+            "version": "v1.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/random_compat.git",
-                "reference": "c7e26a21ba357863de030f0b9e701c7d04593774"
+                "reference": "965cdeb01fdcab7653253aa81d40441d261f1e66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/c7e26a21ba357863de030f0b9e701c7d04593774",
-                "reference": "c7e26a21ba357863de030f0b9e701c7d04593774",
+                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/965cdeb01fdcab7653253aa81d40441d261f1e66",
+                "reference": "965cdeb01fdcab7653253aa81d40441d261f1e66",
                 "shasum": ""
             },
             "require": {
@@ -2566,7 +2566,7 @@
                 "pseudorandom",
                 "random"
             ],
-            "time": "2016-03-18T20:34:03+00:00"
+            "time": "2017-03-13T16:22:52+00:00"
         },
         {
             "name": "pda/pheanstalk",
@@ -6452,45 +6452,6 @@
             "time": "2017-03-07T16:47:02+00:00"
         },
         {
-            "name": "way/generators",
-            "version": "dev-feature/laravel-five-stable",
-            "source": {
-                "type": "git",
-                "url": "git@github.com:jamisonvalenta/Laravel-4-Generators.git",
-                "reference": "a358bb44f517e2b3c1fd4f848f2646857c75b3a4"
-            },
-            "require": {
-                "illuminate/support": "~5.0",
-                "php": ">=5.4.0"
-            },
-            "require-dev": {
-                "behat/behat": "~2.5.1",
-                "behat/mink": "~1.5.0",
-                "behat/mink-extension": "~1.2.0",
-                "behat/mink-goutte-driver": "~1.0.9",
-                "behat/mink-selenium2-driver": "~1.1.1",
-                "phpspec/phpspec": "~2.0",
-                "phpunit/phpunit": "~3.7"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Way\\Generators": "src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jeffrey Way",
-                    "email": "jeffrey@jeffrey-way.com"
-                }
-            ],
-            "description": "Rapidly generate resources, migrations, models, and much more.",
-            "time": "2015-02-17 06:26:25"
-        },
-        {
             "name": "xethron/laravel-4-generators",
             "version": "3.1.1",
             "source": {
@@ -6597,8 +6558,7 @@
         "behat/behat": 20,
         "behat/mink": 20,
         "behat/mink-extension": 20,
-        "xethron/migrations-generator": 20,
-        "way/generators": 20
+        "xethron/migrations-generator": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

@@ -15,23 +15,25 @@ interface ExpeditionContract extends RepositoryContract, CacheableContract
     public function getExpeditionsForNfnClassificationProcess($ids = null, array $attributes = ['*']);
 
     /**
-     * Find all Expeditions having relations passed.
+     * Find all expeditions having relations and with relations.
      *
+     * @param array $hasRelations
      * @param array $relations
-     * @param array $attributes
-     * @return \Illuminate\Support\Collection
-     */
-    public function expeditionsHasRelations($relations, array $attributes = ['*']);
-
-    /**
-     * Find all expeditions having relation with whereIn clause.
-     *
-     * @param $relation
-     * @param $attributeValues
      * @param array $attributes
      * @return mixed
      */
-    public function expeditionsHasRelationWhereIn($relation, $attributeValues, array $attributes = ['*']);
+    public function findAllHasRelationsWithRelations(array $hasRelations = [], array $relations = [], array $attributes = ['*']);
+
+    /**
+     * Find expeditions where in, having relations, with relations.
+     *
+     * @param $attributeValues
+     * @param array $hasRelations
+     * @param array $relations
+     * @param array $attributes
+     * @return mixed
+     */
+    public function findWhereInHasRelationsWithRelations($attributeValues, array $hasRelations = [], array $relations = [], array $attributes = ['*']);
 
     /**
      * Find Expedition with relations.
@@ -40,7 +42,7 @@ interface ExpeditionContract extends RepositoryContract, CacheableContract
      * @param array|string $relations
      * @return mixed
      */
-    public function expeditionFindWith($id, $relations);
+    public function findWithRelations($id, $relations);
 
     /**
      * Get count of Expedition Subjects.

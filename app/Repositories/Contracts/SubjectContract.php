@@ -12,5 +12,5 @@ interface SubjectContract extends RepositoryContract, CacheableContract
      * @param array $attributes
      * @return mixed
      */
-    public function subjectFind($id, array $attributes = ['*']);
+    public function findById($id, array $attributes = ['*']);
 }

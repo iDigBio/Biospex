@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Config;
 
 class NfnClassificationsUpdate extends Command
 {
+
     use DispatchesJobs;
 
     /**
@@ -17,7 +18,7 @@ class NfnClassificationsUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'classifications:update {expeditionIds?}';
+    protected $signature = 'classifications:update {ids?}';
 
     /**
      * The console command description.
@@ -26,21 +27,13 @@ class NfnClassificationsUpdate extends Command
      */
     protected $description = 'Update NfN Classifications for Expeditions. Argument can be comma separated ids or empty.';
 
-    /**
-     * @var ExpeditionContract
-     */
-    private $expeditionContract;
 
     /**
      * Create a new command instance.
-     *
-     * @param ExpeditionContract $expeditionContract
      */
-    public function __construct(ExpeditionContract $expeditionContract)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->expeditionContract = $expeditionContract;
     }
 
     /**
@@ -48,18 +41,8 @@ class NfnClassificationsUpdate extends Command
      */
     public function handle()
     {
-        $expeditionIds = null ===  $this->argument('expeditionIds') ?
-            null :
-            explode(',', $this->argument('expeditionIds'));
+        $ids = null === $this->argument('ids') ? null : explode(',', $this->argument('ids'));
 
-        $expeditions = null === $expeditionIds ?
-            $this->expeditionContract->setCacheLifetime(0)->expeditionsHasRelations(['nfnWorkflow']) :
-            $this->expeditionContract->setCacheLifetime(0)->expeditionsHasRelationWhereIn('nfnWorkflow', ['id', [$expeditionIds]]);
-
-        foreach ($expeditions as $expedition)
-        {
-            $this->dispatch((new NfnClassificationsUpdateJob($expedition->id))
-                ->onQueue(Config::get('config.beanstalkd.job')));
-        }
+        $this->dispatch((new NfnClassificationsUpdateJob($ids))->onQueue(Config::get('config.beanstalkd.job')));
     }
 }

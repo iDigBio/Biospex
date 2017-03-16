@@ -16,25 +16,17 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
     use InteractsWithQueue, SerializesModels, DispatchesJobs;
 
     /**
-     * @var
+     * @var array|null
      */
-    private $expeditionId;
-
-    /**
-     * @var bool
-     */
-    private $all;
+    private $ids;
 
     /**
      * NfnClassificationsUpdateJob constructor.
-     *
-     * @param $expeditionId
-     * @param bool $all
+     * @param array|null $ids
      */
-    public function __construct($expeditionId, $all = false)
+    public function __construct($ids = null)
     {
-        $this->expeditionId = $expeditionId;
-        $this->all = $all;
+        $this->ids = $ids;
     }
 
     /**
@@ -45,27 +37,28 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
      */
     public function handle(ExpeditionContract $expeditionContract)
     {
-        $relations = ['project.amChart', 'nfnWorkflow', 'stat'];
-        $expedition = $expeditionContract->setCacheLifetime(0)->expeditionFindWith($this->expeditionId, $relations);
+        $hasRelations = ['nfnWorkflow'];
+        $withRelations = ['project.amChart', 'nfnWorkflow', 'nfnActor', 'stat'];
 
-        if ($this->checkForRequiredInformation($expedition))
+        $expeditions = null === $this->ids ?
+            $expeditionContract->setCacheLifetime(0)
+                ->findAllHasRelationsWithRelations($hasRelations, $withRelations) :
+            $expeditionContract->setCacheLifetime(0)
+                ->findWhereInHasRelationsWithRelations(['id', [$this->ids]], $hasRelations, $withRelations);
+
+        foreach ($expeditions as $expedition)
         {
-            $this->delete();
+            if ($this->checkIfExpeditionShouldProcess($expedition))
+            {
+                continue;
+            }
 
-            return;
-        }
+            $this->updateExpeditionStats($expeditionContract, $expedition);
 
-        // Update stats
-        $count = $expeditionContract->setCacheLifetime(0)->getExpeditionSubjectCounts($this->expeditionId);
-        $expedition->stat->subject_count = $count;
-        $expedition->stat->transcriptions_total = transcriptions_total($count);
-        $expedition->stat->transcriptions_completed = transcriptions_completed($this->expeditionId);
-        $expedition->stat->percent_completed = transcriptions_percent_completed($expedition->stat->transcriptions_total, $expedition->stat->transcriptions_completed);
-        $expedition->stat->save();
-
-        if ( $expedition->project->amChart === null || ! $expedition->project->amChart->queued )
-        {
-            $this->dispatch((new AmChartJob($expedition->project->id))->onQueue(Config::get('config.beanstalkd.job')));
+            if ($expedition->project->amChart === null || ! $expedition->project->amChart->queued)
+            {
+                $this->dispatch((new AmChartJob($expedition->project->id))->onQueue(Config::get('config.beanstalkd.job')));
+            }
         }
 
         $this->delete();
@@ -77,11 +70,29 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
      * @param $expedition
      * @return bool
      */
-    public function checkForRequiredInformation($expedition)
+    public function checkIfExpeditionShouldProcess($expedition)
     {
         return null === $expedition
             || ! isset($expedition->nfnWorkflow)
             || null === $expedition->nfnWorkflow->workflow
-            || null === $expedition->nfnWorkflow->project;
+            || null === $expedition->nfnWorkflow->project
+            || $expedition->actorNfn->completed === 1;
+    }
+
+    /**
+     * Update expedition stats.
+     *
+     * @param ExpeditionContract $expeditionContract
+     * @param $expedition
+     */
+    private function updateExpeditionStats(ExpeditionContract $expeditionContract, $expedition)
+    {
+        // Update stats
+        $count = $expeditionContract->setCacheLifetime(0)->getExpeditionSubjectCounts($expedition->id);
+        $expedition->stat->subject_count = $count;
+        $expedition->stat->transcriptions_total = transcriptions_total($count);
+        $expedition->stat->transcriptions_completed = transcriptions_completed($expedition->id);
+        $expedition->stat->percent_completed = transcriptions_percent_completed($expedition->stat->transcriptions_total, $expedition->stat->transcriptions_completed);
+        $expedition->stat->save();
     }
 }
