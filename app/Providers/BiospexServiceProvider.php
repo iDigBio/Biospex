@@ -89,14 +89,15 @@ class BiospexServiceProvider extends ServiceProvider
     public function boot()
     {
         require base_path().'/resources/macros/macros.php';
+        /*
         view()->composer(
             'frontend.layouts.notices', 'App\Http\ViewComposers\NoticesComposer'
         );
-        /*
+        */
+
         view()->composer(
             'frontend.layouts.partials.authuser', 'App\Http\ViewComposers\NotificationsComposer'
         );
-        */
 
         // Subscribe the registered event listener
         $this->app['events']->subscribe('repository.listener');
