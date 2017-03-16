@@ -92,12 +92,14 @@ class BiospexServiceProvider extends ServiceProvider
         view()->composer(
             'frontend.layouts.notices', 'App\Http\ViewComposers\NoticesComposer'
         );
+        /*
         view()->composer(
             'frontend.layouts.partials.authuser', 'App\Http\ViewComposers\NotificationsComposer'
         );
+        */
 
         // Subscribe the registered event listener
-        //$this->app['events']->subscribe('repository.listener');
+        $this->app['events']->subscribe('repository.listener');
     }
     
     public function register()
