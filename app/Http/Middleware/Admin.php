@@ -19,7 +19,6 @@ class Admin
             return redirect()->route('web.projects.index');
         }
 
-        dd($request);
         return $next($request);
     }
 
