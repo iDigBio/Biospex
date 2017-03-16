@@ -23,7 +23,13 @@
             @endif
             @include('frontend.layouts.partials.commonmenu')
         </ul>
-
+        <ul class="nav navbar-nav  pull-right">
+            @if (Auth::check())
+                @include('frontend.layouts.partials.authuser')
+            @else
+                @include('frontend.layouts.partials.noauthmenu')
+            @endif
+        </ul>
     </div>
     <!--/.nav-collapse -->
 </nav>

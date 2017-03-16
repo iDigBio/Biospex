@@ -74,6 +74,7 @@ class ProjectsController extends Controller
         $groups = $this->group->with(['projects'])->whereHas('users', ['id' => $this->request->user()->id])->get();
         $trashed = $this->group->with(['trashedProjects'])->whereHas('users', ['id' => $this->request->user()->id])->get();
 
+        dd($groups);
         return view('frontend.projects.index', compact('groups', 'trashed'));
     }
 
