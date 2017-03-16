@@ -15,7 +15,6 @@ class DashboardController extends Controller
      */
     public function index(Request $request, User $repo)
     {
-        dd("here");
         $user = $repo->with(['profile'])->find($request->user()->id);
 
         return view('backend.index', compact('user'));
