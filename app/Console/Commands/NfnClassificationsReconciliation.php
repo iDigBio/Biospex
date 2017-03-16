@@ -26,11 +26,6 @@ class NfnClassificationsReconciliation extends Command
     protected $description = 'Process reconciliation on NFN files.';
 
     /**
-     * @var array
-     */
-    private $ids = [];
-
-    /**
      * NfNClassificationsCsvRequests constructor.
      */
     public function __construct()
@@ -43,9 +38,9 @@ class NfnClassificationsReconciliation extends Command
      */
     public function handle()
     {
-        null === $this->argument('ids') ? $this->readDirectory() : explode(',', $this->argument('ids'));
+        $ids = null === $this->argument('ids') ? $this->readDirectory() : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new NfnClassificationsReconciliationJob($this->ids))->onQueue(config('config.beanstalkd.job')));
+        $this->dispatch((new NfnClassificationsReconciliationJob($ids))->onQueue(config('config.beanstalkd.job')));
     }
 
     /**
@@ -53,10 +48,13 @@ class NfnClassificationsReconciliation extends Command
      */
     private function readDirectory()
     {
+        $ids = [];
         $files = File::allFiles(config('config.classifications_download'));
         foreach ($files as $file)
         {
-            $this->ids[] = basename($file, '.csv');
+            $ids[] = basename($file, '.csv');
         }
+
+        return $ids;
     }
 }
