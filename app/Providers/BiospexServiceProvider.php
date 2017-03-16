@@ -97,7 +97,7 @@ class BiospexServiceProvider extends ServiceProvider
         );
 
         // Subscribe the registered event listener
-        $this->app['events']->subscribe('repository.listener');
+        //$this->app['events']->subscribe('repository.listener');
     }
     
     public function register()
