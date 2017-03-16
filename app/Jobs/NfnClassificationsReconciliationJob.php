@@ -55,11 +55,11 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
             $tranPath = config('config.classifications_transcript') . '/' . $expedition->id . '.csv';
             $sumPath = config('config.classifications_summary') . '/' . $expedition->id . '.html';
             $pythonPath = base_path('label_reconciliations/reconcile.py');
-            $command = "sudo python3 $pythonPath -w {$expedition->nfnWorkflow->workflow} -r $recPath -u $tranPath -s $sumPath $csvPath";
+            $command = "sudo -u www-data python3 $pythonPath -w {$expedition->nfnWorkflow->workflow} -r $recPath -u $tranPath -s $sumPath $csvPath";
             exec($command);
         }
 
-        exec('sudo chown -R www-data.www-data ' . config('config.classifications_dir'));
+        //exec('sudo chown -R www-data.www-data ' . config('config.classifications_dir'));
 
         $this->dispatch((new NfnClassificationsTranscriptJob($this->ids))->onQueue(config('config.beanstalkd.job')));
     }
