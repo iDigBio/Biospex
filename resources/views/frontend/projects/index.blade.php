@@ -24,8 +24,6 @@
                 onClick="location.href='{{ route('web.projects.create') }}'"><span
                     class="fa fa-plus fa-lg"></span> @lang('buttons.create')</button>
     </h3>
-    @include('frontend.projects.partials.project-table')
-    <h3>{!! trans('pages.trash') !!}</h3>
-    @include('frontend.projects.partials.project-trashed-table')
+
 @endif
 @stop
