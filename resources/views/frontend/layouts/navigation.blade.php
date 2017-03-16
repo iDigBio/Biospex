@@ -13,6 +13,17 @@
                                                                     alt="{{ trans('pages.sitename') }}"/></a>
         </div>
     </div>
+    <div class="collapse navbar-collapse">
+        @if (config('config.translate'))
+            @include('frontend.layouts.partials.translate')
+        @endif
+        <ul class="nav navbar-nav pull-left">
+            @if(Auth::check())
+                @include('frontend.layouts.partials.authmenu')
+            @endif
+            @include('frontend.layouts.partials.commonmenu')
+        </ul>
 
+    </div>
     <!--/.nav-collapse -->
 </nav>
