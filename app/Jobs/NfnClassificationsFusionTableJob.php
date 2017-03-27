@@ -47,6 +47,11 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
     public $email;
 
     /**
+     * @var mixed
+     */
+    public $prefix;
+
+    /**
      * Create a new job instance.
      *
      * @param array $projectIds
@@ -55,6 +60,7 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
     {
         $this->projectIds = $projectIds;
         $this->email = Config::get('mail.from');
+        $this->prefix = Config::get('config.nfn_table_prefix');
     }
 
     /**

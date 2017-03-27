@@ -14,17 +14,18 @@ return [
     'translate'       => env('APP_TRANSLATE'),
     'expedition_size' => env('APP_EXPEDITION_SIZE'),
 
-    'scratch_dir'                => storage_path('scratch'),
-    'nfn_export_dir'             => storage_path('exports/nfn'),
-    'subject_import_dir'         => storage_path('imports/subjects'),
-    'transcription_import_dir'   => storage_path('imports/transcriptions'),
-    'export_reports_dir'         => storage_path('exports/report'),
-    'classifications_dir'        => storage_path('classifications'),
-    'classifications_download'   => storage_path('classifications/download'),
-    'classifications_reconcile'  => storage_path('classifications/reconcile'),
-    'classifications_summary'    => storage_path('classifications/summary'),
-    'classifications_transcript' => storage_path('classifications/transcript'),
+    'scratch_dir'                 => storage_path('scratch'),
+    'nfn_export_dir'              => storage_path('exports/nfn'),
+    'subject_import_dir'          => storage_path('imports/subjects'),
+    'transcription_import_dir'    => storage_path('imports/transcriptions'),
+    'export_reports_dir'          => storage_path('exports/report'),
+    'classifications_dir'         => storage_path('classifications'),
+    'classifications_download'    => storage_path('classifications/download'),
+    'classifications_reconcile'   => storage_path('classifications/reconcile'),
+    'classifications_summary'     => storage_path('classifications/summary'),
+    'classifications_transcript'  => storage_path('classifications/transcript'),
     'classifications_fusiontable' => storage_path('classifications/fusiontable'),
+    'nfn_table_prefix'            => env('NFN_TABLE_PREFIX', ''),
 
     'ocr_post_url'   => env('OCR_POSTURL'),
     'ocr_get_url'    => env('OCR_GETURL'),
@@ -75,7 +76,7 @@ return [
 
     'dwcLocalityFields' => [
         'StateProvince' => 'stateProvince',
-        'County' => 'county'
+        'County'        => 'county'
     ],
 
     /* Added Tubes */
