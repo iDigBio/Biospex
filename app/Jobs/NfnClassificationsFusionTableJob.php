@@ -120,7 +120,8 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
 
     public function createProjectFusionTable($project, $locations, $counts)
     {
-        $tableId = $this->createTable($project->title);
+        $title = empty($this->prefix) ? $project->title : $this->prefix . ' ' . $project->title;
+        $tableId = $this->createTable($title);
         $this->createPermission($tableId);
         $settings = $this->createTableStyle($tableId, $counts);
         $styleId = $this->table->insertTableStyle($tableId, $settings);
