@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Exceptions\GoogleFusionTableException;
 use App\Repositories\Contracts\ProjectContract;
 use App\Repositories\Contracts\TranscriptionLocationContract;
 use App\Services\Google\Bucket;
@@ -72,6 +73,7 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
      * @param Bucket $bucket
      * @param Drive $drive
      * @return void
+     * @throws GoogleFusionTableException
      */
     public function handle(
         ProjectContract $projectContract,
@@ -81,27 +83,35 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
         Drive $drive
     )
     {
-        $this->projectContract = $projectContract;
-        $this->drive = $drive;
-        $this->table = $table;
-        $this->bucket = $bucket;
+        try
+        {
+            $this->projectContract = $projectContract;
+            $this->drive = $drive;
+            $this->table = $table;
+            $this->bucket = $bucket;
 
-        $hasRelations = ['transcriptionLocations'];
-        $columns = ['id', 'title', 'fusion_table_id', 'fusion_style_id'];
+            $hasRelations = ['transcriptionLocations'];
+            $columns = ['id', 'title', 'fusion_table_id', 'fusion_style_id'];
 
-        $projects = empty($this->ids) ?
-            $projectContract->setCacheLifetime(0)
-                ->findAllHasRelationsWithRelations($hasRelations, [], $columns) :
-            $projectContract->setCacheLifetime(0)
-                ->findWhereInHasRelationsWithRelations(['id', $this->ids], $hasRelations, [], $columns);
+            $projects = empty($this->ids) ?
+                $projectContract->setCacheLifetime(0)
+                    ->findAllHasRelationsWithRelations($hasRelations, [], $columns) :
+                $projectContract->setCacheLifetime(0)
+                    ->findWhereInHasRelationsWithRelations(['id', $this->ids], $hasRelations, [], $columns);
 
-        $projects->each(function($project) use ($locationContract) {
-            $locations = $this->getProjectLocations($locationContract, $project->id);
-            $counts = $this->getProjectLocationsCount($locations);
-            $project->fusion_table_id === null ?
-                $this->createProjectFusionTable($project, $locations, $counts) :
-                $this->updateProjectFusionTable($project, $locations, $counts);
-        });
+            $projects->each(function ($project) use ($locationContract)
+            {
+                $locations = $this->getProjectLocations($locationContract, $project->id);
+                $counts = $this->getProjectLocationsCount($locations);
+                $project->fusion_table_id === null ?
+                    $this->createProjectFusionTable($project, $locations, $counts) :
+                    $this->updateProjectFusionTable($project, $locations, $counts);
+            });
+        }
+        catch(\Exception $e)
+        {
+            throw new GoogleFusionTableException($e->getMessage());
+        }
     }
 
     public function getProjectLocations(TranscriptionLocationContract $locationContract, $projectId)
