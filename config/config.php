@@ -24,6 +24,7 @@ return [
     'classifications_reconcile'  => storage_path('classifications/reconcile'),
     'classifications_summary'    => storage_path('classifications/summary'),
     'classifications_transcript' => storage_path('classifications/transcript'),
+    'classifications_fusiontable' => storage_path('classifications/fusiontable'),
 
     'ocr_post_url'   => env('OCR_POSTURL'),
     'ocr_get_url'    => env('OCR_GETURL'),
@@ -70,6 +71,11 @@ return [
                 'http://portal.idigbio.org/terms/recordId',
             ]
         ]
+    ],
+
+    'dwcLocalityFields' => [
+        'StateProvince' => 'stateProvince',
+        'County' => 'county'
     ],
 
     /* Added Tubes */

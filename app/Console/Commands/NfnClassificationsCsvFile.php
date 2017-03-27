@@ -16,7 +16,7 @@ class NfnClassificationsCsvFile extends Command
      *
      * @var string
      */
-    protected $signature = 'nfnfile:request {ids?}';
+    protected $signature = 'nfn:filerequest {ids?}';
 
     /**
      * The console command description.

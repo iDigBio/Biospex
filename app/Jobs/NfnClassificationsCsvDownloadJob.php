@@ -45,7 +45,7 @@ class NfnClassificationsCsvDownloadJob extends Job implements ShouldQueue
         Handler $handler
     )
     {
-        if (null === $this->sources)
+        if (empty($this->sources))
         {
             return;
         }

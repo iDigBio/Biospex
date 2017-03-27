@@ -17,7 +17,7 @@ class NfnWorkflowUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'nfnworkflow:update {expeditionIds?}';
+    protected $signature = 'nfn:workflow {expeditionIds?}';
 
     /**
      * The console command description.

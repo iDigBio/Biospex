@@ -21,11 +21,9 @@ class AmChartJob extends Job implements ShouldQueue
     protected $transcription;
 
     /**
-     * Id of project being processed.
-     *
-     * @var
+     * @var array
      */
-    protected $projectId;
+    protected $ids;
 
     /**
      * Array to hold all transcription results.
@@ -51,11 +49,11 @@ class AmChartJob extends Job implements ShouldQueue
 
     /**
      * AmChartJob constructor.
-     * @param $projectId
+     * @param array $ids
      */
-    public function __construct($projectId = null)
+    public function __construct(array $ids = [])
     {
-        $this->projectId = 16;
+        $this->ids = $ids;
     }
 
     /**
@@ -68,29 +66,39 @@ class AmChartJob extends Job implements ShouldQueue
         AmChartContract $chart,
         PanoptesTranscriptionContract $transcription)
     {
-        $this->transcription = $transcription;
-
-        $relations = ['expeditions.stat', 'expeditions.nfnWorkflow'];
-        $project = $projectContract->setCacheLifetime(0)->findWithRelations($this->projectId, $relations);
-        $earliest_date = $this->transcription->setCacheLifetime(0)->getMinFinishedAtDateByProjectId($project->id);
-        $finished_date = $this->transcription->setCacheLifetime(0)->getMaxFinishedAtDateByProjectId($project->id);
-
-        if (null === $earliest_date || null === $finished_date)
+        if (empty($this->ids) || null === $this->ids)
         {
             $this->delete();
 
             return;
         }
 
-        $this->setDaysAndDates($earliest_date, $finished_date);
+        foreach ($this->ids as $id)
+        {
+            $this->transcription = $transcription;
 
-        $this->processProjectExpeditions($project->expeditions);
+            $relations = ['expeditions.stat', 'expeditions.nfnWorkflow'];
+            $project = $projectContract->setCacheLifetime(0)->findWithRelations($id, $relations);
+            $earliest_date = $this->transcription->setCacheLifetime(0)->getMinFinishedAtDateByProjectId($project->id);
+            $finished_date = $this->transcription->setCacheLifetime(0)->getMaxFinishedAtDateByProjectId($project->id);
 
-        uasort($this->transcriptions, [$this, 'sort']);
+            if (null === $earliest_date || null === $finished_date)
+            {
+                $this->delete();
 
-        $content = array_values($this->transcriptions);
+                return;
+            }
 
-        $chart->updateOrCreateRecord(['project_id' => $this->projectId], ['data' => json_encode($content)]);
+            $this->setDaysAndDates($earliest_date, $finished_date);
+
+            $this->processProjectExpeditions($project->expeditions);
+
+            uasort($this->transcriptions, [$this, 'sort']);
+
+            $content = array_values($this->transcriptions);
+
+            $chart->updateOrCreateRecord(['project_id' => $id], ['data' => json_encode($content)]);
+        }
     }
 
     /**

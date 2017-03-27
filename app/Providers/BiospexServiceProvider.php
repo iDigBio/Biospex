@@ -19,7 +19,10 @@ use App\Repositories\Contracts\GroupContract;
 use App\Repositories\Eloquent\GroupRepository;
 use App\Repositories\Contracts\WorkflowManagerContract;
 use App\Repositories\Eloquent\WorkflowManagerRepository;
-
+use App\Repositories\Contracts\TranscriptionLocationContract;
+use App\Repositories\Eloquent\TranscriptionLocationRepository;
+use App\Repositories\Contracts\StateCountyContract;
+use App\Repositories\Eloquent\StateCountyRepository;
 
 // Replacing eventually
 use App\Repositories\Contracts\User as UserContract;
@@ -158,5 +161,7 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(AmChartContract::class, AmChartRepository::class);
         $this->app->bind(GroupContract::class, GroupRepository::class);
         $this->app->bind(WorkflowManagerContract::class, WorkflowManagerRepository::class);
+        $this->app->bind(TranscriptionLocationContract::class, TranscriptionLocationRepository::class);
+        $this->app->bind(StateCountyContract::class, StateCountyRepository::class);
     }
 }

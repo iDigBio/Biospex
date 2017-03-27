@@ -33,7 +33,7 @@ class HttpRequest
      * @param array $config
      * @return GenericProvider
      */
-    protected function setHttpProvider(array $config = [])
+    public function setHttpProvider(array $config = [])
     {
         $handlerStack = HandlerStack::create(new CurlHandler());
         $handlerStack->push(Middleware::retry($this->retryDecider(), $this->retryDelay()));

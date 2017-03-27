@@ -5,9 +5,11 @@ namespace App\Services\Process;
 use App\Exceptions\CsvHeaderCountException;
 use App\Repositories\Contracts\SubjectContract;
 use App\Repositories\Contracts\PanoptesTranscriptionContract;
+use App\Repositories\Contracts\TranscriptionLocationContract;
 use Illuminate\Validation\Factory as Validation;
 use ForceUTF8\Encoding;
 use App\Services\Csv\Csv;
+use Config;
 
 class PanoptesTranscriptionProcess
 {
@@ -42,17 +44,29 @@ class PanoptesTranscriptionProcess
      */
     protected $expeditionId;
 
+    /**
+     * @var array
+     */
+    protected $dwcLocalityFields;
+
+    /**
+     * @var TranscriptionLocationContract
+     */
+    private $transcriptionLocationContract;
+
 
     /**
      * NfnTranscription constructor.
      * @param SubjectContract $subjectContract
      * @param PanoptesTranscriptionContract $panoptesTranscriptionContract
+     * @param TranscriptionLocationContract $transcriptionLocationContract
      * @param Validation $factory
      * @param Csv $csv
      */
     public function __construct(
         SubjectContract $subjectContract,
         PanoptesTranscriptionContract $panoptesTranscriptionContract,
+        TranscriptionLocationContract $transcriptionLocationContract,
         Validation $factory,
         Csv $csv
     )
@@ -61,6 +75,8 @@ class PanoptesTranscriptionProcess
         $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
         $this->factory = $factory;
         $this->csv = $csv;
+        $this->dwcLocalityFields = $fields = Config::get('config.dwcLocalityFields');
+        $this->transcriptionLocationContract = $transcriptionLocationContract;
     }
 
     /**
@@ -127,7 +143,10 @@ class PanoptesTranscriptionProcess
             return;
         }
 
+        $this->buildTranscriptionLocation($combined, $subject);
+
         $combined = array_merge($combined, ['subject_projectId' => $subject->project_id]);
+
         $this->convertStringToIntegers($combined);
 
         if ($this->validateTranscription($combined))
@@ -138,6 +157,48 @@ class PanoptesTranscriptionProcess
         $this->panoptesTranscriptionContract->create($combined);
 
     }
+
+    /**
+     * @param $combined
+     * @param $subject
+     *
+     * Transcripts: StateProvince, County
+     * Subject: stateProvince, county
+     */
+    private function buildTranscriptionLocation($combined, $subject)
+    {
+        $data = [];
+        foreach ($this->dwcLocalityFields as $transcriptField => $subjectField)
+        {
+            if (isset($combined[$transcriptField]) && ! empty($combined[$transcriptField]))
+            {
+                $data[decamelize($transcriptField)] = $combined[$transcriptField];
+
+                continue;
+            }
+
+            if (isset($subject->occurrence->{$subjectField}) && ! empty($subject->occurrence->{$subjectField}))
+            {
+                $data[decamelize($subjectField)] = $subject->occurrence->{$subjectField};
+            }
+        }
+
+        $data['classification_id'] = $combined['classification_id'];
+        $data['project_id'] = $subject->project_id;
+        $data['expedition_id'] = $combined['subject_expeditionId'];
+
+        if (array_key_exists('state_province', $data) && strtolower($data['state_province']) === 'district of columbia')
+        {
+            $data['county'] = $data['state_province'];
+        }
+
+        $data['state_county'] = empty($data['state_province']) || empty($data['county']) ?
+            null : get_state($data['state_province']) . '-' . trim(str_ireplace('county', '', $data['county']));
+
+        $attributes = ['classification_id' => $combined['classification_id']];
+        $this->transcriptionLocationContract->updateOrCreateRecord($attributes, $data);
+    }
+
 
     /**
      * Get subject from db to set projectId

@@ -5,6 +5,7 @@ use App\Console\Commands\ClearOcrResults;
 use App\Console\Commands\ExportPollCommand;
 use App\Console\Commands\NfnClassificationsCsvCreate;
 use App\Console\Commands\NfnClassificationsCsvFile;
+use App\Console\Commands\NfnClassificationsFusionTable;
 use App\Console\Commands\NfnClassificationsReconciliation;
 use App\Console\Commands\NfnClassificationsTranscript;
 use App\Console\Commands\NfnClassificationsUpdate;
@@ -21,6 +22,7 @@ use App\Console\Commands\OcrProcessCommand;
 use App\Console\Commands\OcrQueuePushCommand;
 use App\Console\Commands\ExpeditionStatUpdate;
 use App\Console\Commands\TestAppCommand;
+use App\Console\Commands\UpdateGoogleStateCountyTable;
 use App\Console\Commands\UpdateQueries;
 use App\Console\Commands\ViewsCommand;
 use App\Console\Commands\WorkFlowManagerCommand;
@@ -59,6 +61,8 @@ class Kernel extends ConsoleKernel
         NfnClassificationsCsvFile::class,
         NfnClassificationsReconciliation::class,
         NfnClassificationsTranscript::class,
+        UpdateGoogleStateCountyTable::class,
+        NfnClassificationsFusionTable::class
     ];
 
     /**

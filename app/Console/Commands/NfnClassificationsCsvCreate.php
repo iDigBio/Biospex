@@ -16,7 +16,7 @@ class NfnClassificationsCsvCreate extends Command
      *
      * @var string
      */
-    protected $signature = 'nfncsv:request {ids?}';
+    protected $signature = 'nfn:csvrequest {ids?}';
 
     /**
      * The console command description.

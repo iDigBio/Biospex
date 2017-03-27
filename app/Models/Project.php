@@ -94,6 +94,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         'target_fields',
         'status',
         'advertise',
+        'fusion_table_id',
+        'fusion_style_id'
     ];
 
     /**
@@ -251,6 +253,14 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     public function panoptesTranscriptions()
     {
         return $this->hasMany(PanoptesTranscription::class, 'subject_projectId');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function transcriptionLocations()
+    {
+        return $this->hasMany(TranscriptionLocation::class);
     }
 
     /**

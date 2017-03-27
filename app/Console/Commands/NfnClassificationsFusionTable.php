@@ -2,12 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\AmChartJob;
+use App\Jobs\NfnClassificationsFusionTableJob;
+use Config;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Support\Facades\Config;
 
-class AmChartUpdate extends Command
+class NfnClassificationsFusionTable extends Command
 {
     use DispatchesJobs;
 
@@ -16,14 +16,15 @@ class AmChartUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'amchart:update {ids?}';
+    protected $signature = 'nfn:fusion {ids?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Build the AmChart data for project pages. Takes comma separated values or empty as params';
+    protected $description = 'Run Google Fusion Table Job for NfN Classifications. Argument can be comma separated project ids or empty.';
+
 
     /**
      * Create a new command instance.
@@ -35,13 +36,11 @@ class AmChartUpdate extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
     public function handle()
     {
-        $ids = null ===  $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
+        $ids = null === $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new AmChartJob($ids))->onQueue(Config::get('config.beanstalkd.job')));
+        $this->dispatch((new NfnClassificationsFusionTableJob($ids))->onQueue(Config::get('config.beanstalkd.job')));
     }
 }

@@ -16,7 +16,7 @@ class NfnClassificationsReconciliation extends Command
      *
      * @var string
      */
-    protected $signature = 'nfnfile:reconcile {ids?}';
+    protected $signature = 'nfn:reconcile {ids?}';
 
     /**
      * The console command description.

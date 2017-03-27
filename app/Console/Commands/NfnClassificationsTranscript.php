@@ -16,7 +16,7 @@ class NfnClassificationsTranscript extends Command
      *
      * @var string
      */
-    protected $signature = 'nfnfile:transcript {ids?}';
+    protected $signature = 'nfn:transcript {ids?}';
 
     /**
      * The console command description.

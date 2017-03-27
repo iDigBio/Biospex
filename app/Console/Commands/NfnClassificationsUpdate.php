@@ -18,7 +18,7 @@ class NfnClassificationsUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'classifications:update {ids?}';
+    protected $signature = 'nfn:update {ids?}';
 
     /**
      * The console command description.

@@ -33,7 +33,7 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
      */
     public function handle(ExpeditionContract $expeditionContract)
     {
-        if (null === $this->ids)
+        if (empty($this->ids))
         {
             $this->delete();
 

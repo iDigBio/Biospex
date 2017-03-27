@@ -3,9 +3,10 @@
 namespace App\Jobs;
 
 use App\Exceptions\BiospexException;
+use App\Repositories\Contracts\ExpeditionContract;
 use App\Services\Report\Report;
 use App\Services\Process\PanoptesTranscriptionProcess;
-use File;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,7 +14,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
 {
 
-    use InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, SerializesModels, DispatchesJobs;
 
     /**
      * @var array
@@ -39,12 +40,17 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
      * Execute the job.
      *
      * @param PanoptesTranscriptionProcess $transcription
+     * @param ExpeditionContract $expeditionContract
      * @param Report $report
      * @return void
      */
-    public function handle(PanoptesTranscriptionProcess $transcription, Report $report)
+    public function handle(
+        PanoptesTranscriptionProcess $transcription,
+        ExpeditionContract $expeditionContract,
+        Report $report
+    )
     {
-        if (null === $this->ids)
+        if (empty($this->ids))
         {
             $this->delete();
 
@@ -52,9 +58,12 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
         }
 
         $csv = null;
+        $projectIds = [];
         foreach ($this->ids as $id)
         {
             $csv = $this->processCsvFile($transcription, $report, $id);
+            $record = $expeditionContract->setCacheLifetime(0)->find($id);
+            $projectIds = array_unique(array_merge($projectIds, [$record->project_id]));
         }
 
         if (null !== $transcription->getCsvError() || $report->checkErrors())

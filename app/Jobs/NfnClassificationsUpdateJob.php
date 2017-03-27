@@ -46,6 +46,7 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
             $expeditionContract->setCacheLifetime(0)
                 ->findWhereInHasRelationsWithRelations(['id', [$this->ids]], $hasRelations, $withRelations);
 
+        $projectIds = [];
         foreach ($expeditions as $expedition)
         {
             if ($this->checkIfExpeditionShouldProcess($expedition))
@@ -54,12 +55,14 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
             }
 
             $this->updateExpeditionStats($expeditionContract, $expedition);
-
-            if ($expedition->project->amChart === null || ! $expedition->project->amChart->queued)
-            {
-                $this->dispatch((new AmChartJob($expedition->project->id))->onQueue(Config::get('config.beanstalkd.job')));
-            }
+            $projectIds[] = $expedition->project->id;
         }
+
+        $projectIds = array_values(array_unique($projectIds));
+
+        $this->dispatch((new AmChartJob($projectIds))->onQueue(Config::get('config.beanstalkd.job')));
+
+        $this->dispatch((new NfnClassificationsFusionTableJob($projectIds))->onQueue(config('config.beanstalkd.job')));
 
         $this->delete();
     }
