@@ -135,10 +135,14 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
         $this->createPermission($tableId);
         $settings = $this->createTableStyle($tableId, $counts);
         $styleId = $this->table->insertTableStyle($tableId, $settings);
-        $this->createTemplate($tableId);
+        $templateId = $this->createTemplate($tableId);
         $this->importTableData($tableId, $locations);
 
-        $attributes = ['fusion_table_id' => $tableId, 'fusion_style_id' => $styleId];
+        $attributes = [
+            'fusion_table_id' => $tableId,
+            'fusion_style_id' => $styleId,
+            'fusion_template_id' => $templateId
+        ];
         $this->projectContract->update($project->id, $attributes);
     }
 
@@ -194,7 +198,8 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
             'setAutomaticColumnNames' => ['State-County', 'Count']
         ];
         $template = $this->table->setServiceProperties('Fusiontables_Template', $templateProperties);
-        $this->table->insertTableTemplate($tableId, $template);
+
+        return $this->table->insertTableTemplate($tableId, $template)->templateId;
     }
 
     public function getStyleBuckets($counts)

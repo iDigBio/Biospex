@@ -95,7 +95,8 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
         'status',
         'advertise',
         'fusion_table_id',
-        'fusion_style_id'
+        'fusion_style_id',
+        'fusion_template_id'
     ];
 
     /**
