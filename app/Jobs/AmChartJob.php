@@ -66,7 +66,7 @@ class AmChartJob extends Job implements ShouldQueue
         AmChartContract $chart,
         PanoptesTranscriptionContract $transcription)
     {
-        if (empty($this->ids) || null === $this->ids)
+        if (count($this->ids) === 0)
         {
             $this->delete();
 
