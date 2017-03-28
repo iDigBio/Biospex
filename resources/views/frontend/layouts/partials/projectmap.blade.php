@@ -9,7 +9,7 @@
         }
     </style>
 
-    <script type="text/javascript" src="https://maps.google.com/maps/api/js?v=3"></script>
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?v=3&key={{ Config::get('google.map_api_key') }}"></script>
 
     <script type="text/javascript">
         function initialize() {
