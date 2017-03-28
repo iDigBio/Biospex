@@ -104,15 +104,22 @@
                 <div id="chartdiv" class="col-md-12" style="width: 100%; height: 600px"></div>
             </div>
         @endif
-        <div class="col-md-5 organizers">
-            <h2 class="project-page-header">{{ trans('pages.project_page_organizers') }}</h2>
-            <dl>
-                @foreach($project->group->users as $user)
-                    <dt><img src="{{ $user->profile->avatar->url('small') }}"/></dt>
-                    <dd>{!! HTML::mailto($user->email, $user->profile->full_name) !!}</dd>
-                @endforeach
-            </dl>
+        <div class="row">
+            @if ($project->fusion_table_id !== null)
+                @include('frontend.layouts.partials.projectmap')
+            @endif
+            <div class="col-md-5 organizers">
+                <h2 class="project-page-header">{{ trans('pages.project_page_organizers') }}</h2>
+                <dl>
+                    @foreach($project->group->users as $user)
+                        <dt>
+                            <img src="{{ $user->profile->avatar->url('small') }}"/>
+                        </dt>
+                        <dd>{!! HTML::mailto($user->email, $user->profile->full_name) !!}</dd>
+                    @endforeach
+                </dl>
+            </div>
         </div>
-    <!-- ./ content -->
+        <!-- ./ content -->
     </div>
 @stop
