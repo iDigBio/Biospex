@@ -36,13 +36,11 @@ class AmChartUpdate extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
      */
     public function handle()
     {
         $ids = null ===  $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
 
-        dd($ids);
         $this->dispatch((new AmChartJob($ids))->onQueue(Config::get('config.beanstalkd.job')));
     }
 }
