@@ -61,7 +61,7 @@ class TestAppCommand extends Command
 
     public function handle()
     {
-        $service = Google::make('fusiontables_column');
+        $service = Google::make('fusiontables');
     }
 
 }
