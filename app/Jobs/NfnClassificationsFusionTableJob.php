@@ -165,7 +165,7 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
             'setColumns'      => $tableColumns,
             'setIsExportable' => true
         ];
-        $table = $this->table->setServiceProperties('fusiontables_table', $tableProperties);
+        $table = $this->table->setServiceProperties('Fusiontables_Table', $tableProperties);
 
         return $this->table->insertTable($table);
     }
@@ -193,7 +193,7 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
             'setName'                 => 'Default template',
             'setAutomaticColumnNames' => ['State-County', 'Count']
         ];
-        $template = $this->table->setServiceProperties('fusiontables_template', $templateProperties);
+        $template = $this->table->setServiceProperties('Fusiontables_Template', $templateProperties);
         $this->table->insertTableTemplate($tableId, $template);
     }
 
@@ -212,7 +212,7 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
             'setColumnName' => 'Count',
             'setBuckets'    => $buckets
         ];
-        $styleFunction = $this->table->setServiceProperties('fusiontables_stylefunction', $style);
+        $styleFunction = $this->table->setServiceProperties('Fusiontables_StyleFunction', $style);
 
         $polygon = [
             'fillOpacity'        => 1.0,
@@ -220,7 +220,7 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
             'strokeWeight'       => 1,
             'setFillColorStyler' => $styleFunction
         ];
-        $polygonStyle = $this->table->setServiceProperties('fusiontables_polygonstyle', $polygon);
+        $polygonStyle = $this->table->setServiceProperties('Fusiontables_PolygonStyle', $polygon);
 
         $setting = [
             'setKind'           => 'fusiontables#styleSetting',
@@ -228,7 +228,7 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
             'setPolygonOptions' => $polygonStyle
         ];
 
-        return $this->table->setServiceProperties('fusiontables_stylesetting', $setting);
+        return $this->table->setServiceProperties('Fusiontables_StyleSetting', $setting);
 
     }
 

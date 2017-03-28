@@ -74,7 +74,7 @@ class Bucket extends GoogleService
             return $bucket !== null;
         })->map(function ($bucket)
         {
-            return $this->setServiceProperties('fusiontables_bucket', $bucket);
+            return $this->setServiceProperties('Fusiontables_Bucket', $bucket);
         });
     }
 

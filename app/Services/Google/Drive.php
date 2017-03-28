@@ -25,7 +25,7 @@ class Drive extends GoogleService
      */
     public function createTablePermissions($tableId, $property)
     {
-        $permission = $this->setServiceProperties('drive_permission', $property);
+        $permission = $this->setServiceProperties('Drive_Permission', $property);
         $this->driveService->permissions->create($tableId, $permission);
     }
 }

@@ -26,7 +26,7 @@ class Table extends GoogleService
     {
         return collect($columns)->map(function ($column)
         {
-            return $this->setServiceProperties('fusiontables_column', $column);
+            return $this->setServiceProperties('Fusiontables_Column', $column);
         })->toArray();
     }
 
