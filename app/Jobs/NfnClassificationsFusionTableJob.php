@@ -110,7 +110,7 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
         }
         catch(\Exception $e)
         {
-            throw new GoogleFusionTableException($e->getMessage());
+            throw new GoogleFusionTableException($e);
         }
     }
 
