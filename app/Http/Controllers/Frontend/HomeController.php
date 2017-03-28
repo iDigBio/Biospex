@@ -33,7 +33,7 @@ class HomeController extends Controller
      */
     public function project($slug, Project $repository)
     {
-        $project = $repository->with(['group.users.profile', 'expeditions.stat', 'expeditions.actors', 'amChart'])->where(['slug' => $slug])->first();
+        $project = $repository->skipCache()->with(['group.users.profile', 'expeditions.stat', 'expeditions.actors', 'amChart'])->where(['slug' => $slug])->first();
         $expeditions = null;
         if ( ! $project->expeditions->isEmpty())
         {
