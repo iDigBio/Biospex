@@ -4522,7 +4522,7 @@ AmCharts.makeChart("chartdiv", {
     type: "serial",
     titles: [{
         size: 15,
-        text: "Project Total Transcription Activity"
+        text: "Cumulative Transcription Activity through Time"
     }],
     path: "/",
     pathToImages: "/img/",

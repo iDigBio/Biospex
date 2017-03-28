@@ -61,6 +61,8 @@ class TestAppCommand extends Command
 
     public function handle()
     {
+        $service = Google::make('Fusiontables');
+        dd($service->template->listTemplate('1Cn8Te7Bbcqla5E9Cki1oS30Zp98Zz3k7YZua6pbm'));
     }
 
 }

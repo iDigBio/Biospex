@@ -162,5 +162,5 @@ return array (
   'notifications' => 'Notifications',
   'project_page_organizers' => 'Organizers',
   'project_page_information' => 'Project Information',
-  'project_map_title' => 'Transcriptions Per County/Province',
+  'project_map_title' => 'Heat Map of Collection Location of Transcribed Specimens',
 );
