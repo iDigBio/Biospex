@@ -108,7 +108,7 @@
             @if ($project->fusion_table_id !== null)
                 @include('frontend.layouts.partials.projectmap')
             @endif
-            <div class="col-md-5 organizers">
+            <div class="col-md-4 organizers">
                 <h2 class="project-page-header">{{ trans('pages.project_page_organizers') }}</h2>
                 <dl>
                     @foreach($project->group->users as $user)
