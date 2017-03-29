@@ -24,7 +24,7 @@ class ExpeditionRepository extends EloquentRepository implements ExpeditionContr
     /**
      * @inheritdoc
      */
-    public function getExpeditionsForNfnClassificationProcess($ids = null, array $attributes = ['*'])
+    public function getExpeditionsForNfnClassificationProcess(array $ids = [], array $attributes = ['*'])
     {
         $this->with(['stat'])->has('nfnWorkflow')
             ->whereHas('actors', function ($query)
@@ -32,7 +32,7 @@ class ExpeditionRepository extends EloquentRepository implements ExpeditionContr
                 $query->where('completed', 0);
             }, '=');
 
-        return $ids === null ? $this->findAll($attributes) : $this->findWhereIn(['id', $ids]);
+        return empty($ids) ? $this->findAll($attributes) : $this->findWhereIn(['id', $ids]);
     }
 
     /**

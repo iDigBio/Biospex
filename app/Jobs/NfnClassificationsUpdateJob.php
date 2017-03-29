@@ -22,9 +22,9 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
 
     /**
      * NfnClassificationsUpdateJob constructor.
-     * @param array|null $ids
+     * @param array$ids
      */
-    public function __construct($ids = null)
+    public function __construct(array $ids = [])
     {
         $this->ids = $ids;
     }
@@ -40,7 +40,7 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
         $hasRelations = ['nfnWorkflow'];
         $withRelations = ['project.amChart', 'nfnWorkflow', 'nfnActor', 'stat'];
 
-        $expeditions = null === $this->ids ?
+        $expeditions = empty($this->ids) ?
             $expeditionContract->setCacheLifetime(0)
                 ->findAllHasRelationsWithRelations($hasRelations, $withRelations) :
             $expeditionContract->setCacheLifetime(0)

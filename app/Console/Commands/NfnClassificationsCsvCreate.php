@@ -38,7 +38,7 @@ class NfnClassificationsCsvCreate extends Command
      */
     public function handle()
     {
-        $ids = null ===  $this->argument('ids') ? null : explode(',', $this->argument('ids'));
+        $ids = null ===  $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
 
         $this->dispatch((new NfnClassificationsCsvCreateJob($ids))->onQueue(Config::get('config.beanstalkd.job')));
     }

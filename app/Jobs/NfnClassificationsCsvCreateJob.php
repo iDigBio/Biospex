@@ -28,9 +28,9 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
      * Create a new job instance.
      *
      * NfNClassificationsCsvJob constructor.
-     * @param null $ids
+     * @param array $ids
      */
-    public function __construct($ids = null)
+    public function __construct(array $ids = [])
     {
         $this->ids = $ids;
     }
@@ -50,17 +50,6 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
         Handler $handler
     )
     {
-
-        $expeditions = $expeditionContract->setCacheLifetime(0)
-            ->getExpeditionsForNfnClassificationProcess($this->ids);
-
-        if (count($expeditions) === 0)
-        {
-            return;
-        }
-
-        $api->setProvider();
-        $api->checkAccessToken('nfnToken');
 
         /**
          * @param array $expeditions
@@ -84,7 +73,13 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
 
         try
         {
-            $responses = $api->poolBatchRequest($requests);
+            $expeditions = $expeditionContract->setCacheLifetime(0)
+                ->getExpeditionsForNfnClassificationProcess($this->ids);
+
+            $api->setProvider();
+            $api->checkAccessToken('nfnToken');
+
+            $responses = $api->poolBatchRequest($requests($expeditions));
             foreach ($responses as $response)
             {
                 if ($response instanceof ServerException || $response instanceof ClientException)

@@ -3,11 +3,15 @@
 namespace App\Console\Commands;
 
 
+use App\Exceptions\Handler;
+use App\Jobs\NfnClassificationsCsvFileJob;
 use App\Jobs\NfnClassificationsFusionTableJob;
-use App\Repositories\Contracts\ProjectContract;
+use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\TranscriptionLocationContract;
+use App\Services\Api\NfnApi;
 use App\Services\Google\Bucket;
 use App\Services\Google\Drive;
+use App\Services\Report\Report;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Services\Google\Table;
@@ -49,20 +53,52 @@ class TestAppCommand extends Command
      * @var Drive
      */
     private $drive;
+    /**
+     * @var ExpeditionContract
+     */
+    private $expeditionContract;
+    /**
+     * @var NfnApi
+     */
+    private $api;
+    /**
+     * @var Report
+     */
+    private $report;
+    /**
+     * @var Handler
+     */
+    private $handler;
 
 
     /**
      * TestAppCommand constructor.
      */
-    public function __construct()
+    public function __construct(
+        ExpeditionContract $expeditionContract,
+        NfnApi $api,
+        Report $report,
+        Handler $handler
+    )
     {
         parent::__construct();
+
+        $this->expeditionContract = $expeditionContract;
+        $this->api = $api;
+        $this->report = $report;
+        $this->handler = $handler;
     }
 
     public function handle()
     {
-        $service = Google::make('Fusiontables');
-        dd($service->template->listTemplate('1Cn8Te7Bbcqla5E9Cki1oS30Zp98Zz3k7YZua6pbm'));
+        $expeditions = $this->expeditionContract->setCacheLifetime(0)
+            ->getExpeditionsForNfnClassificationProcess();
+        foreach ($expeditions as $expedition)
+        {
+            echo $expedition->id . PHP_EOL;
+        }
+        //$job = new NfnClassificationsCsvFileJob(["17"]);
+        //$job->handle($this->expeditionContract, $this->api, $this->report, $this->handler);
     }
 
 }

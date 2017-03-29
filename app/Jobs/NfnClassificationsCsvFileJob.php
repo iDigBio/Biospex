@@ -30,9 +30,9 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
      * Create a new job instance.
      *
      * NfNClassificationsCsvJob constructor.
-     * @param null $ids
+     * @param array $ids
      */
-    public function __construct($ids = null)
+    public function __construct(array $ids = [])
     {
         $this->ids = $ids;
     }
@@ -53,17 +53,6 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
     )
     {
 
-        $expeditions = $expeditionContract->setCacheLifetime(0)
-            ->getExpeditionsForNfnClassificationProcess($this->ids);
-
-        if (count($expeditions) === 0)
-        {
-            return;
-        }
-
-        $api->setProvider();
-        $api->checkAccessToken('nfnToken');
-
         $requests = function ($expeditions) use ($api)
         {
             foreach ($expeditions as $expedition)
@@ -82,6 +71,12 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
 
         try
         {
+            $expeditions = $expeditionContract->setCacheLifetime(0)
+                ->getExpeditionsForNfnClassificationProcess($this->ids);
+
+            $api->setProvider();
+            $api->checkAccessToken('nfnToken');
+
             $responses = $api->poolBatchRequest($requests($expeditions));
             $sources = [];
             foreach ($responses as $index => $response)

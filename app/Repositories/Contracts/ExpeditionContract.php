@@ -8,11 +8,11 @@ interface ExpeditionContract extends RepositoryContract, CacheableContract
     /**
      * Retrieve expeditions for Notes From Nature classification process.
      *
-     * @param null $ids
+     * @param array $ids
      * @param array $attributes
      * @return mixed
      */
-    public function getExpeditionsForNfnClassificationProcess($ids = null, array $attributes = ['*']);
+    public function getExpeditionsForNfnClassificationProcess(array $ids = [], array $attributes = ['*']);
 
     /**
      * Find all expeditions having relations and with relations.
