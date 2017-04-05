@@ -30,7 +30,7 @@ class AmChartJob extends Job implements ShouldQueue
      *
      * @var array
      */
-    protected $transcriptions = [];
+    protected $transcriptions;
 
     /**
      * @var
@@ -75,6 +75,7 @@ class AmChartJob extends Job implements ShouldQueue
 
         foreach ($this->ids as $id)
         {
+            $this->transcriptions = [];
             $this->transcription = $transcription;
 
             $relations = ['expeditions.stat', 'expeditions.nfnWorkflow'];

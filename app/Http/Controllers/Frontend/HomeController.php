@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\SendContactEmail;
-use App\Repositories\Contracts\AmChart;
+use App\Repositories\Contracts\AmChartContract;
 use App\Repositories\Contracts\Faq;
 use App\Repositories\Contracts\Project;
 use App\Http\Requests\ContactFormRequest;
@@ -52,13 +52,13 @@ class HomeController extends Controller
     /**
      * Load AmChart for project home page.
      *
-     * @param AmChart $chart
+     * @param AmChartContract $chart
      * @param $projectId
      * @return mixed
      */
-    public function loadAmChart(AmChart $chart, $projectId)
+    public function loadAmChart(AmChartContract $chart, $projectId)
     {
-        $record = $chart->skipCache()->where(['project_id' => (int) $projectId])->first();
+        $record = $chart->setCacheLifetime(0)->findBy('project_id', $projectId);
 
         return json_decode($record->data);
     }
