@@ -33,72 +33,22 @@ class TestAppCommand extends Command
      * The console command description.
      */
     protected $description = 'Used to test code';
-    /**
-     * @var NfnClassificationsFusionTableJob
-     */
-    private $job;
-    /**
-     * @var TranscriptionLocationContract
-     */
-    private $locationContract;
-    /**
-     * @var Table
-     */
-    private $table;
-    /**
-     * @var Bucket
-     */
-    private $bucket;
-    /**
-     * @var Drive
-     */
-    private $drive;
-    /**
-     * @var ExpeditionContract
-     */
-    private $expeditionContract;
-    /**
-     * @var NfnApi
-     */
-    private $api;
-    /**
-     * @var Report
-     */
-    private $report;
-    /**
-     * @var Handler
-     */
-    private $handler;
-
 
     /**
      * TestAppCommand constructor.
      */
     public function __construct(
-        ExpeditionContract $expeditionContract,
-        NfnApi $api,
-        Report $report,
-        Handler $handler
+
     )
     {
         parent::__construct();
-
-        $this->expeditionContract = $expeditionContract;
-        $this->api = $api;
-        $this->report = $report;
-        $this->handler = $handler;
     }
 
     public function handle()
     {
-        $expeditions = $this->expeditionContract->setCacheLifetime(0)
-            ->getExpeditionsForNfnClassificationProcess();
-        foreach ($expeditions as $expedition)
-        {
-            echo $expedition->id . PHP_EOL;
-        }
-        //$job = new NfnClassificationsCsvFileJob(["17"]);
-        //$job->handle($this->expeditionContract, $this->api, $this->report, $this->handler);
+        $tableService = app(Table::class);
+
+        dd($tableService->listTableStyle('1Cn8Te7Bbcqla5E9Cki1oS30Zp98Zz3k7YZua6pbm'));
     }
 
 }
