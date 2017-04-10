@@ -15,6 +15,7 @@ use Config;
 
 class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
 {
+
     use InteractsWithQueue, SerializesModels;
 
     /**
@@ -83,35 +84,28 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
         Drive $drive
     )
     {
-        try
+        $this->projectContract = $projectContract;
+        $this->drive = $drive;
+        $this->table = $table;
+        $this->bucket = $bucket;
+
+        $hasRelations = ['transcriptionLocations'];
+        $columns = ['id', 'title', 'fusion_table_id', 'fusion_style_id'];
+
+        $projects = empty($this->ids) ?
+            $projectContract->setCacheLifetime(0)
+                ->findAllHasRelationsWithRelations($hasRelations, [], $columns) :
+            $projectContract->setCacheLifetime(0)
+                ->findWhereInHasRelationsWithRelations(['id', $this->ids], $hasRelations, [], $columns);
+
+        $projects->each(function ($project) use ($locationContract)
         {
-            $this->projectContract = $projectContract;
-            $this->drive = $drive;
-            $this->table = $table;
-            $this->bucket = $bucket;
-
-            $hasRelations = ['transcriptionLocations'];
-            $columns = ['id', 'title', 'fusion_table_id', 'fusion_style_id'];
-
-            $projects = empty($this->ids) ?
-                $projectContract->setCacheLifetime(0)
-                    ->findAllHasRelationsWithRelations($hasRelations, [], $columns) :
-                $projectContract->setCacheLifetime(0)
-                    ->findWhereInHasRelationsWithRelations(['id', $this->ids], $hasRelations, [], $columns);
-
-            $projects->each(function ($project) use ($locationContract)
-            {
-                $locations = $this->getProjectLocations($locationContract, $project->id);
-                $counts = $this->getProjectLocationsCount($locations);
-                $project->fusion_table_id === null ?
-                    $this->createProjectFusionTable($project, $locations, $counts) :
-                    $this->updateProjectFusionTable($project, $locations, $counts);
-            });
-        }
-        catch(\Exception $e)
-        {
-            throw new GoogleFusionTableException($e);
-        }
+            $locations = $this->getProjectLocations($locationContract, $project->id);
+            $counts = $this->getProjectLocationsCount($locations);
+            $project->fusion_table_id === null ?
+                $this->createProjectFusionTable($project, $locations, $counts) :
+                $this->updateProjectFusionTable($project, $locations, $counts);
+        });
     }
 
     public function getProjectLocations(TranscriptionLocationContract $locationContract, $projectId)
@@ -130,29 +124,43 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
 
     public function createProjectFusionTable($project, $locations, $counts)
     {
-        $title = empty($this->prefix) ? $project->title : $this->prefix . ' ' . $project->title;
-        $tableId = $this->createTable($title);
-        $this->createPermission($tableId);
-        $settings = $this->createTableStyle($tableId, $counts);
-        $styleId = $this->table->insertTableStyle($tableId, $settings);
-        $templateId = $this->createTemplate($tableId);
-        $this->importTableData($tableId, $locations);
+        try
+        {
+            $title = empty($this->prefix) ? $project->title : $this->prefix . ' ' . $project->title;
+            $tableId = $this->createTable($title);
+            $this->createPermission($tableId);
+            $settings = $this->createTableStyle($tableId, $counts);
+            $styleId = $this->table->insertTableStyle($tableId, $settings);
+            $templateId = $this->createTemplate($tableId);
+            $this->importTableData($tableId, $locations);
 
-        $attributes = [
-            'fusion_table_id' => $tableId,
-            'fusion_style_id' => $styleId,
-            'fusion_template_id' => $templateId
-        ];
-        $this->projectContract->update($project->id, $attributes);
+            $attributes = [
+                'fusion_table_id'    => $tableId,
+                'fusion_style_id'    => $styleId,
+                'fusion_template_id' => $templateId
+            ];
+            $this->projectContract->update($project->id, $attributes);
+        }
+        catch (\Exception $e)
+        {
+            throw new GoogleFusionTableException($e);
+        }
     }
 
     public function updateProjectFusionTable($project, $locations, $counts)
     {
-        $this->table->deleteTableData($project->fusion_table_id);
-        $this->importTableData($project->fusion_table_id, $locations);
+        try
+        {
+            $this->table->deleteTableData($project->fusion_table_id);
+            $this->importTableData($project->fusion_table_id, $locations);
 
-        $setting = $this->createTableStyle($project->fusion_table_id, $counts);
-        $this->table->updateTableStyle($project->fusion_table_id, $project->fusion_style_id, $setting);
+            $setting = $this->createTableStyle($project->fusion_table_id, $counts);
+            $this->table->updateTableStyle($project->fusion_table_id, $project->fusion_style_id, $setting);
+        }
+        catch (\Exception $e)
+        {
+            throw new GoogleFusionTableException($e);
+        }
     }
 
     public function createTable($title)
@@ -183,8 +191,8 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
         $this->drive->createTablePermissions($tableId, $anyone);
 
         $user = [
-            'setType' => 'user',
-            'setRole' => 'writer',
+            'setType'         => 'user',
+            'setRole'         => 'writer',
             'setEmailAddress' => $this->email['address']
         ];
         $this->drive->createTablePermissions($tableId, $user);

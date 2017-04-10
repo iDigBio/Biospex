@@ -40,6 +40,7 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
             return;
         }
 
+        $ids = [];
         foreach ($this->ids as $id)
         {
             $expedition = $expeditionContract->setCacheLifetime(0)
@@ -57,10 +58,11 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
             $pythonPath = base_path('label_reconciliations/reconcile.py');
             $command = "sudo -u www-data python3 $pythonPath -w {$expedition->nfnWorkflow->workflow} -r $recPath -u $tranPath -s $sumPath $csvPath";
             exec($command);
+            $ids[] = $expedition->id;
         }
 
         //exec('sudo chown -R www-data.www-data ' . config('config.classifications_dir'));
 
-        $this->dispatch((new NfnClassificationsTranscriptJob($this->ids))->onQueue(config('config.beanstalkd.job')));
+        $this->dispatch((new NfnClassificationsTranscriptJob($ids))->onQueue(config('config.beanstalkd.job')));
     }
 }
