@@ -29,9 +29,9 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
     /**
      * NfnClassificationsTranscriptJob constructor.
      *
-     * @param null $ids
+     * @param array $ids
      */
-    public function __construct($ids = null)
+    public function __construct(array $ids = [])
     {
         $this->ids = $ids;
     }
