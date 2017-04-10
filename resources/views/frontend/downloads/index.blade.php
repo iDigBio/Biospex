@@ -21,25 +21,12 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-sm" type="button"
-                                    onClick="location.href='{{ route('web.expeditions.duplicate', [$expedition->project->id, $expedition->id]) }}'">
-                                <span class="fa fa-copy fa-lrg"></span> @lang('buttons.duplicate')</button>
-                            <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm"
-                                    onClick="location.href='{{ route('web.expeditions.edit', [$expedition->project->id, $expedition->id]) }}'">
-                                <span class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
-                            <button title="@lang('buttons.deleteTitle')" class="btn btn-danger btn-sm" type="button"
-                                    data-toggle="confirmation" data-placement="left"
-                                    data-href="{{ route('web.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"
-                                    data-method="delete">
-                                <span class="fa fa-remove fa-lrg"></span> <!-- @lang('buttons.delete') --></button>
-
+                            <button title="@lang('buttons.regenerateDownload')" class="btn btn-success btn-sm" type="button"
+                                    onClick="location.href='{{ route('web.downloads.regenerate', [$expedition->project->id, $expedition->id]) }}'">
+                                <span class="fa fa-refresh fa-lrg"></span> @lang('buttons.regenerateDownload')</button>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="alert alert-info">
-                <p><strong>{{ trans('expeditions.download_ready') }}</strong></p>
             </div>
 
             <div class="table-responsive">
@@ -75,7 +62,7 @@
                                     <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs"
                                             type="button"
                                             onClick="location.href='{{ route('projects.expeditions.downloads.get.show', [$expedition->project->id, $expedition->id, $download->id]) }}'">
-                                        <span class="glyphicon glyphicon-floppy-save"></span> @lang('buttons.download')
+                                        <span class="fa fa-download"></span> @lang('buttons.download')
                                     </button>
                                 </td>
                             </tr>

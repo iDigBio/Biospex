@@ -63,7 +63,7 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
                 {
                     continue;
                 }
-
+                echo 'Building workflow uri: ' . $expedition->nfnWorkflow->workflow . PHP_EOL;
                 $uri = $api->buildClassificationCsvUri($expedition->nfnWorkflow->workflow);
                 $request = $api->buildAuthorizedRequest('POST', $uri, ['body' => '{"media":{"content_type":"text/csv"}}']);
 
@@ -84,14 +84,21 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
             {
                 if ($response instanceof ServerException || $response instanceof ClientException)
                 {
-                    $report->addError($response->getMessage());
+
+                    echo 'Bad response: ' .  $response->getMessage() . PHP_EOL;
+                    continue;
+                    //$report->addError($response->getMessage());
                 }
+
+                echo 'Good response: ' . PHP_EOL;
             }
 
+            /*
             if ($report->checkErrors())
             {
                 $report->reportError();
             }
+            */
         }
         catch (HttpRequestException $e)
         {

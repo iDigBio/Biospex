@@ -92,18 +92,16 @@ class NfnPanoptesExport implements ActorInterface
                 ->with(['project.group.owner', 'subjects'])
                 ->find($actor->pivot->expedition_id);
 
+            \Log::alert('retrieved record');
+
             $this->service->setWorkingDirectory("{$actor->id}-{$this->record->uuid}");
             $tempDir = "{$this->service->workingDir}/{$actor->id}-{$this->record->uuid}";
             $this->fileService->makeDirectory($tempDir);
+            \Log::alert('created directories');
 
-            $fileAttributes = [
-                'destination' => $tempDir,
-                'extension'   => 'jpg',
-                'width'       => $this->largeWidth,
-                'height'      => $this->largeWidth
-            ];
-
-            $this->actorImageService->getImages($this->record->subjects, $fileAttributes, $actor);
+            \Log::alert('getImages');
+            $this->actorImageService->testImages($this->record->subjects, $tempDir, $actor);
+            return;
 
             $this->buildCsvArray($this->record->subjects, $tempDir);
 
@@ -113,7 +111,7 @@ class NfnPanoptesExport implements ActorInterface
                 $this->actorRepoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
             }
 
-            $this->fileService->filesystem->deleteDirectory($this->service->workingDir);
+            //$this->fileService->filesystem->deleteDirectory($this->service->workingDir);
 
             $actor->pivot->queued = 0;
             $actor->pivot->state++;

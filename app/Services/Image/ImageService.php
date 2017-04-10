@@ -6,6 +6,7 @@ use App\Services\Report\Report;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Config\Repository as Config;
 use App\Exceptions\Handler;
+use Imagick;
 
 /**
  * Class ImageService
@@ -13,6 +14,9 @@ use App\Exceptions\Handler;
  */
 class ImageService
 {
+
+    public $destinationImageWidth;
+    public $destinationImageHeight;
 
     /**
      * @var Filesystem
@@ -109,9 +113,14 @@ class ImageService
     public $handler;
 
     /**
-     * Image constructor.
+     * @var Imagick
+     */
+    public $imagick;
+
+    /**
+     * ImageService constructor.
      *
-     * @param FileSystem $filesystem
+     * @param Filesystem $filesystem
      * @param Config $config
      * @param Report $report
      * @param Handler $handler
@@ -131,6 +140,54 @@ class ImageService
     }
 
     /**
+     * @param array $source
+     */
+    public function createImagickObject(array $source = [])
+    {
+        $this->imagick = empty($source) ? new Imagick() : new Imagick($source);
+    }
+
+    /**
+     * @return bool
+     */
+    public function clearImagickObject()
+    {
+        return $this->imagick->clear();
+    }
+
+    /**
+     * Read image from blob
+     *
+     * @param $source
+     * @return bool
+     */
+    public function readImagickFromBlob($source)
+    {
+        return $this->imagick->readImageBlob($source);
+    }
+
+    /**
+     * @param $source
+     * @return bool
+     */
+    public function readImageFromPath($source)
+    {
+        return $this->imagick->readImage($source);
+    }
+
+    /**
+     * @param $destination
+     * @return bool
+     */
+    public function writeImagickImage($destination)
+    {
+        $this->imagick->setImageFormat('jpg');
+        $this->imagick->setOption('jpeg:extent', '600kb');
+        return $this->imagick->writeImage($destination);
+    }
+
+
+    /**
      * Set image source from file.
      *
      * @param $imgSource
@@ -138,32 +195,7 @@ class ImageService
     public function setSourceFromFile($imgSource)
     {
         $this->setImageInfoFromFile($imgSource);
-        $this->imgSource = imagecreatefromjpeg($imgSource);
-    }
-
-    /**
-     * Set image source from string.
-     *
-     * @param $imgSource
-     * @return bool|resource
-     */
-    public function setSourceFromString($imgSource)
-    {
-        if ( ! $this->setImageInfoFromString($imgSource))
-        {
-            return false;
-        }
-
-        return $this->imgSource = imagecreatefromstring($imgSource);
-    }
-
-    /**
-     * Destroy image source.
-     */
-    public function destroySource()
-    {
-        imagedestroy($this->imgSource);
-        $this->imgSource = null;
+        $this->createImagickObject($imgSource);
     }
 
     /**
@@ -183,24 +215,6 @@ class ImageService
     }
 
     /**
-     * Set image info from image string.
-     *
-     * @param $imgSource
-     * @return bool
-     */
-    protected function setImageInfoFromString($imgSource)
-    {
-        if ( ! $size = getimagesizefromstring($imgSource)){
-            return false;
-        }
-
-        $this->setImageInfo($size);
-        $this->sourceExtension = $this->imageTypeExtension[$this->sourceMimeType];
-
-        return true;
-    }
-
-    /**
      * Set common image information.
      *
      * @param $size
@@ -216,50 +230,31 @@ class ImageService
      * Generate and save image.
      *
      * @param $name
-     * @param array $fileAttributes
+     * @param $destination
      * @return bool
      */
-    public function generateAndSaveImage($name, array $fileAttributes)
+    public function generateAndSaveImage($name, $destination)
     {
-        $attributes = array_key_exists(0, $fileAttributes) ? $fileAttributes : [$fileAttributes];
 
-        foreach ($attributes as $attribute)
+        if (isset($this->destinationImageWidth, $this->destinationImageHeight))
         {
-            list($destinationWidth, $destinationHeight) = $this->setDestinationWidthHeight($attribute['width'], $attribute['height']);
-
-            if ( ! $newImage = imagecreatetruecolor($destinationWidth, $destinationHeight))
-            {
-                return false;
-            }
-
-            if ( ! imagecopyresized($newImage, $this->imgSource, 0, 0, 0, 0, $destinationWidth, $destinationHeight, $this->sourceWidth, $this->sourceHeight))
-            {
-                return false;
-            }
-
-            if ( ! imagejpeg($newImage, $attribute['destination'] . '/' . $name . '.' . $attribute['extension'], 80))
-            {
-                return false;
-            }
-
-            if ( ! imagedestroy($newImage))
-            {
-                return false;
-            }
+            $this->imagick->scaleImage($this->destinationImageWidth, $this->destinationImageHeight, true);
         }
 
-        return true;
+        \Log::alert('Saving: ' . $destination . '/' . $name . '.jpg');
+        return $this->writeImagickImage($destination . '/' . $name . '.jpg');
     }
 
     /**
      * Set width and height of destination image preserving aspect ratio.
      *
-     * @param $width
-     * @param $height
      * @return array
      */
-    protected function setDestinationWidthHeight($width, $height)
+    protected function setDestinationWidthHeight()
     {
+        $width = $this->destinationImageWidth;
+        $height = $this->destinationImageHeight;
+
         if ($width / $height > $this->sourceAspectRatio)
         {
             $width = round($height * $this->sourceAspectRatio);
@@ -270,6 +265,22 @@ class ImageService
         }
 
         return [$width, $height];
+    }
+
+    /**
+     * @param $width
+     */
+    public function setDestinationImageWidth($width)
+    {
+        $this->destinationImageWidth = $width;
+    }
+
+    /**
+     * @param $height
+     */
+    public function setDestinationImageHeight($height)
+    {
+        $this->destinationImageHeight = $height;
     }
 
     /**
@@ -290,36 +301,6 @@ class ImageService
     public function getSourceHeight()
     {
         return $this->sourceHeight;
-    }
-
-    /**
-     * Return source extension.
-     *
-     * @return mixed
-     */
-    public function getSourceExtension()
-    {
-        return $this->sourceExtension;
-    }
-
-    /**
-     * Return source mime type.
-     *
-     * @return mixed
-     */
-    public function getSourceMimeType()
-    {
-        return $this->sourceMimeType;
-    }
-
-    /**
-     * Return source directory name.
-     *
-     * @return mixed
-     */
-    public function getSourceDirName()
-    {
-        return $this->sourceDirName;
     }
 
     /**

@@ -134,6 +134,9 @@ class Expedition extends Eloquent
             ->wherePivot('actor_id', 2);
     }
 
+    /**
+     * @return mixed
+     */
     public function getActorNfnAttribute()
     {
         return $this->nfnActor->first();

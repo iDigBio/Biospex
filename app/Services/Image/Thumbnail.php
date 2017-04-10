@@ -12,12 +12,12 @@ class Thumbnail extends ImageService
      * Return thumbnail or create if not exists.
      *
      * @param $url
-     * @return string|void
+     * @return string
      *
      */
     public function getThumbnail($url)
     {
-        $thumbName = md5($url) . '.small.jpg';
+        $thumbName = md5($url) . '.jpg';
         $thumbFile = $this->thumbDir . '/' . $thumbName;
 
         try
@@ -46,17 +46,12 @@ class Thumbnail extends ImageService
     protected function createThumbnail($url)
     {
         $image = $this->thumbFromUrl($url);
-        $this->setSourceFromString($image);
-
-        $fileAttributes = [
-            'destination' => $this->thumbDir,
-            'extension'   => '.small.jpg',
-            'width'       => $this->tnWidth,
-            'height'      => $this->tnHeight
-        ];
-
-        $this->generateAndSaveImage(md5($url), $fileAttributes);
-        $this->destroySource();
+        $this->createImagickObject();
+        $this->readImagickFromBlob($image);
+        $this->setDestinationImageWidth($this->tnWidth);
+        $this->setDestinationImageHeight($this->tnHeight);
+        $this->generateAndSaveImage(md5($url), $this->thumbDir);
+        $this->clearImagickObject();
     }
 
     /**

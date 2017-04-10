@@ -227,37 +227,9 @@ class NfnLegacyExport implements ActorInterface
             {
                 $data = [];
 
-                // Original Image info.
-                $this->actorImageService->imageService->setSourceFromFile($file);
-
-                $baseName = $this->actorImageService->imageService->getSourceBaseName();
-                $fileName = $this->actorImageService->imageService->getSourceFileName();
-
-                $data['identifier'] = $fileName;
-                $data['original']['path'] = [$fileName, '.jpg'];
-
-                $data['original']['name'] = $baseName;
-                $data['original']['width'] = $this->actorImageService->imageService->getSourceWidth();
-                $data['original']['height'] = $this->actorImageService->imageService->getSourceHeight();
-
-                $this->actorImageService->imageService->destroySource();
-
-                // Set array for large image.
-
-                $this->actorImageService->imageService->setSourceFromFile("$directory/large/$fileName.large.jpg");
-                $data['large']['name'] = "large/$fileName.large.jpg";
-                $data['large']['width'] = $this->actorImageService->imageService->getSourceWidth();
-                $data['large']['height'] = $this->actorImageService->imageService->getSourceHeight();
-
-                $this->actorImageService->imageService->destroySource();
-
-                // Set array for small image.
-                $this->actorImageService->imageService->setSourceFromFile("$directory/small/$fileName.small.jpg");
-                $data['small']['name'] = "small/$fileName.small.jpg";
-                $data['small']['width'] = $this->actorImageService->imageService->getSourceWidth();
-                $data['small']['height'] = $this->actorImageService->imageService->getSourceHeight();
-
-                $this->actorImageService->imageService->destroySource();
+                $fileName = $this->setOriginalImageData($file, $data);
+                $this->setLargeImageData($fileName, $directory, $data);
+                $this->setSmallImageData($fileName, $directory, $data);
 
                 $metadata['images'][] = $data;
 
@@ -272,6 +244,62 @@ class NfnLegacyExport implements ActorInterface
         }
 
         return $directories;
+    }
+
+    /**
+     * @param $file
+     * @param $data
+     * @return mixed
+     */
+    public function setOriginalImageData($file, &$data)
+    {
+        // Original Image info.
+        $this->actorImageService->imageService->setSourceFromFile($file);
+
+        $baseName = $this->actorImageService->imageService->getSourceBaseName();
+        $fileName = $this->actorImageService->imageService->getSourceFileName();
+
+        $data['identifier'] = $fileName;
+        $data['original']['path'] = [$fileName, '.jpg'];
+
+        $data['original']['name'] = $baseName;
+        $data['original']['width'] = $this->actorImageService->imageService->getSourceWidth();
+        $data['original']['height'] = $this->actorImageService->imageService->getSourceHeight();
+
+        $this->actorImageService->imageService->clearImagickObject();
+
+        return $fileName;
+    }
+
+    /**
+     * @param $fileName
+     * @param $directory
+     * @param $data
+     */
+    public function setLargeImageData($fileName, $directory, &$data)
+    {
+        $this->actorImageService->imageService->setSourceFromFile("$directory/large/$fileName.large.jpg");
+
+        $data['large']['name'] = "large/$fileName.large.jpg";
+        $data['large']['width'] = $this->actorImageService->imageService->getSourceWidth();
+        $data['large']['height'] = $this->actorImageService->imageService->getSourceHeight();
+
+        $this->actorImageService->imageService->clearImagickObject();
+    }
+
+    /**
+     * @param $fileName
+     * @param $directory
+     * @param $data
+     */
+    public function setSmallImageData($fileName, $directory, &$data)
+    {
+        $this->actorImageService->imageService->setSourceFromFile("$directory/small/$fileName.small.jpg");
+        $data['small']['name'] = "small/$fileName.small.jpg";
+        $data['small']['width'] = $this->actorImageService->imageService->getSourceWidth();
+        $data['small']['height'] = $this->actorImageService->imageService->getSourceHeight();
+
+        $this->actorImageService->imageService->clearImagickObject();
     }
 
     /**
