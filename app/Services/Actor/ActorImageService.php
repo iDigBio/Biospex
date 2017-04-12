@@ -179,7 +179,7 @@ class ActorImageService
                     continue;
                 }
 
-                if ($this->checkImageExists($subject->_id, $destination))
+                if ($this->checkImageExists($destination . '/' . $subject->_id . '.jpg'))
                 {
                     \Log::alert('checkImageExists');
                     $this->updateActor();

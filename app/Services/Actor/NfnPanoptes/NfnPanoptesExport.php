@@ -85,6 +85,8 @@ class NfnPanoptesExport implements ActorInterface
     {
         try
         {
+            \Log::alert('Start processing');
+
             $this->fileService->makeDirectory($this->nfnExportDir);
 
             $this->record = $this->actorRepoService->expedition
@@ -92,15 +94,16 @@ class NfnPanoptesExport implements ActorInterface
                 ->with(['project.group.owner', 'subjects'])
                 ->find($actor->pivot->expedition_id);
 
-            \Log::alert('retrieved record');
-
             $this->service->setWorkingDirectory("{$actor->id}-{$this->record->uuid}");
             $tempDir = "{$this->service->workingDir}/{$actor->id}-{$this->record->uuid}";
             $this->fileService->makeDirectory($tempDir);
-            \Log::alert('created directories');
 
             \Log::alert('getImages');
-            $this->actorImageService->testImages($this->record->subjects, $tempDir, $actor);
+            $this->actorImageService->getImages($this->record->subjects, $tempDir, $actor);
+
+            //execution time of the script
+            \Log::alert('Stop Processing');
+
             return;
 
             $this->buildCsvArray($this->record->subjects, $tempDir);

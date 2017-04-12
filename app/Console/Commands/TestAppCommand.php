@@ -10,6 +10,7 @@ use App\Services\Api\NfnApi;
 use App\Services\Report\Report;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Imagick;
 
 
 class TestAppCommand extends Command
@@ -42,13 +43,34 @@ class TestAppCommand extends Command
         Handler $handler
     )
     {
+        \Log::alert('starting');
+        $time_start = microtime(true);
+
+        $files = collect(glob(storage_path('scratch/2-d912100e-ae42-4255-af8d-e49aa1545ccb/2-d912100e-ae42-4255-af8d-e49aa1545ccb/*.jpg')));
+        $files->each(function($file){
+            $image = new Imagick($file);
+            $image->setImageFormat('jpg');
+            $image->setOption('jpeg:extent', '600kb');
+            $image->writeImage($file);
+        });
+
+        \Log::alert('finish');
+
+        $time_end = microtime(true);
+
+        //dividing with 60 will give the execution time in minutes other wise seconds
+        $execution_time = ($time_end - $time_start)/60;
+
+        //execution time of the script
+        echo 'Total Execution Time: '.$execution_time.' Mins' . PHP_EOL;
+
         //$ids = [35,38,44,45,47,48,49,50,51,52,53,55,57,60,61,65,66,69,71];
         //$job = new NfnClassificationsCsvFileJob($ids);
         //$job->handle($expeditionContract, $api, $report, $handler);
 
-        $sources = $this->sources();
-        $job = new NfnClassificationsCsvDownloadJob($sources);
-        $job->handle($api, $report, $handler);
+        //$sources = $this->sources();
+        //$job = new NfnClassificationsCsvDownloadJob($sources);
+        //$job->handle($api, $report, $handler);
     }
 
 
