@@ -85,26 +85,16 @@ class NfnPanoptesExport implements ActorInterface
     {
         try
         {
-            \Log::alert('Start processing');
-
             $this->fileService->makeDirectory($this->nfnExportDir);
 
-            $this->record = $this->actorRepoService->expedition
-                ->skipCache()
-                ->with(['project.group.owner', 'subjects'])
-                ->find($actor->pivot->expedition_id);
+            $this->record = $this->actorRepoService->expeditionContract->setCacheLifetime(0)
+                ->findWithRelations($actor->pivot->expedition_id, ['project.group.owner', 'subjects']);
 
             $this->service->setWorkingDirectory("{$actor->id}-{$this->record->uuid}");
             $tempDir = "{$this->service->workingDir}/{$actor->id}-{$this->record->uuid}";
             $this->fileService->makeDirectory($tempDir);
 
-            \Log::alert('getImages');
             $this->actorImageService->getImages($this->record->subjects, $tempDir, $actor);
-
-            //execution time of the script
-            \Log::alert('Stop Processing');
-
-            return;
 
             $this->buildCsvArray($this->record->subjects, $tempDir);
 
@@ -114,13 +104,13 @@ class NfnPanoptesExport implements ActorInterface
                 $this->actorRepoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
             }
 
-            //$this->fileService->filesystem->deleteDirectory($this->service->workingDir);
+            $this->fileService->filesystem->deleteDirectory($this->service->workingDir);
 
             $actor->pivot->queued = 0;
             $actor->pivot->state++;
             $actor->pivot->save();
 
-            //$this->sendReport();
+            $this->sendReport();
         }
         catch (BiospexException $e)
         {

@@ -183,6 +183,7 @@ class ImageService
     {
         $this->imagick->setImageFormat('jpg');
         $this->imagick->setOption('jpeg:extent', '600kb');
+        $this->imagick->stripImage();
         return $this->imagick->writeImage($destination);
     }
 
@@ -241,7 +242,6 @@ class ImageService
             $this->imagick->scaleImage($this->destinationImageWidth, $this->destinationImageHeight, true);
         }
 
-        \Log::alert('Saving: ' . $destination . '/' . $name . '.jpg');
         return $this->writeImagickImage($destination . '/' . $name . '.jpg');
     }
 

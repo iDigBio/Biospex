@@ -3,15 +3,15 @@
 namespace App\Services\Actor;
 
 use App\Repositories\Contracts\Download;
-use App\Repositories\Contracts\Expedition;
+use App\Repositories\Contracts\ExpeditionContract;
 
 class ActorRepositoryService
 {
 
     /**
-     * @var Expedition
+     * @var ExpeditionContract
      */
-    public $expedition;
+    public $expeditionContract;
 
     /**
      * @var Download
@@ -21,12 +21,12 @@ class ActorRepositoryService
     /**
      * ActorServiceRepositories constructor.
      *
-     * @param Expedition $expedition
+     * @param ExpeditionContract $expeditionContract
      * @param Download $download
      */
-    public function __construct(Expedition $expedition, Download $download)
+    public function __construct(ExpeditionContract $expeditionContract, Download $download)
     {
-        $this->expedition = $expedition;
+        $this->expedition = $expeditionContract;
         $this->download = $download;
     }
 
