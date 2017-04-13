@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Exceptions\Handler;
+use App\Exceptions\BiospexException;
 use App\Http\Controllers\Controller;
+use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\User;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Config\Repository as Config;
 use App\Repositories\Contracts\Expedition;
 use App\Repositories\Contracts\Download;
+use Queue;
 
 class DownloadsController extends Controller
 {
@@ -114,5 +118,34 @@ class DownloadsController extends Controller
 
             return $this->response->download($path, $download->file, $headers);
         }
+    }
+
+    public function regenerate(ExpeditionContract $expeditionContract, Handler $handler, $projectId, $expeditionId)
+    {
+        $withRelations = ['nfnActor', 'stat'];
+
+        $expedition = $expeditionContract->setCacheLifetime(0)->findWithRelations($expeditionId, $withRelations);
+
+        try
+        {
+            $expedition->nfnActor[0]->pivot->state = 0;
+            $expedition->nfnActor[0]->pivot->total = $expedition->stat->subject_count;
+            $expedition->nfnActor[0]->pivot->processed = 0;
+            $expedition->nfnActor[0]->pivot->queued = 1;
+            $expedition->nfnActor[0]->pivot->save();
+
+            //User::find(1)->roles()->updateExistingPivot($roleId, $attributes);
+
+            Queue::push('App\Services\Queue\ActorQueue', serialize($expedition->nfnActor[0]), $this->config->get('config.beanstalkd.job'));
+
+            session_flash_push('success', trans('expeditions.download_regeneration_success'));
+        }
+        catch (BiospexException $e)
+        {
+            $handler->report($e);
+            session_flash_push('error', trans('expeditions.download_regeneration_error', ['error' => $e->getMessage()]));
+        }
+
+        return redirect()->route('web.downloads.index', [$projectId, $expeditionId]);
     }
 }

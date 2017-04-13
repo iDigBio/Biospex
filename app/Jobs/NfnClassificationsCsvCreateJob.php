@@ -15,7 +15,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
 {
-
     use InteractsWithQueue, SerializesModels;
 
     /**
@@ -64,14 +63,13 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
                 {
                     continue;
                 }
-
+                echo 'Building workflow uri: ' . $expedition->nfnWorkflow->workflow . PHP_EOL;
                 $uri = $api->buildClassificationCsvUri($expedition->nfnWorkflow->workflow);
                 $request = $api->buildAuthorizedRequest('POST', $uri, ['body' => '{"media":{"content_type":"text/csv"}}']);
 
-                yield $expedition->id => $request;
+                yield $request;
             }
         };
-
 
         try
         {
@@ -81,28 +79,26 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
             $api->setProvider();
             $api->checkAccessToken('nfnToken');
 
-            $ids = [];
             $responses = $api->poolBatchRequest($requests($expeditions));
-            foreach ($responses as $index => $response)
+            foreach ($responses as $response)
             {
                 if ($response instanceof ServerException || $response instanceof ClientException)
                 {
-                    $report->addError($response->getMessage());
+
+                    echo 'Bad response: ' .  $response->getMessage() . PHP_EOL;
                     continue;
+                    //$report->addError($response->getMessage());
                 }
 
-                $ids[] = $index;
+                echo 'Good response: ' . PHP_EOL;
             }
 
+            /*
             if ($report->checkErrors())
             {
                 $report->reportError();
             }
-
-            empty($ids) ? $this->delete() :
-                $this->dispatch((new NfnClassificationsCsvFileJob($ids))
-                    ->onQueue(\Config::get('config.beanstalkd.classification'))
-                    ->delay(14400));
+            */
         }
         catch (HttpRequestException $e)
         {

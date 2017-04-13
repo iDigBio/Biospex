@@ -85,6 +85,8 @@ class NfnPanoptesExport implements ActorInterface
     {
         try
         {
+            \Log::alert('Start processing');
+
             $this->fileService->makeDirectory($this->nfnExportDir);
 
             $this->record = $this->actorRepoService->expedition
@@ -96,14 +98,13 @@ class NfnPanoptesExport implements ActorInterface
             $tempDir = "{$this->service->workingDir}/{$actor->id}-{$this->record->uuid}";
             $this->fileService->makeDirectory($tempDir);
 
-            $fileAttributes = [
-                'destination' => $tempDir,
-                'extension'   => 'jpg',
-                'width'       => $this->largeWidth,
-                'height'      => $this->largeWidth
-            ];
+            \Log::alert('getImages');
+            $this->actorImageService->getImages($this->record->subjects, $tempDir, $actor);
 
-            $this->actorImageService->getImages($this->record->subjects, $fileAttributes, $actor);
+            //execution time of the script
+            \Log::alert('Stop Processing');
+
+            return;
 
             $this->buildCsvArray($this->record->subjects, $tempDir);
 
@@ -113,7 +114,7 @@ class NfnPanoptesExport implements ActorInterface
                 $this->actorRepoService->createDownloads($this->record->id, $actor->id, $tarGzFiles);
             }
 
-            $this->fileService->filesystem->deleteDirectory($this->service->workingDir);
+            //$this->fileService->filesystem->deleteDirectory($this->service->workingDir);
 
             $actor->pivot->queued = 0;
             $actor->pivot->state++;

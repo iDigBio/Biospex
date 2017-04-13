@@ -4,10 +4,13 @@ namespace App\Services\Actor;
 
 use App\Models\Actor;
 use App\Services\File\FileService;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use App\Services\Image\ImageService;
+use App\Services\Requests\HttpRequest;
 
 class ActorImageService
 {
@@ -51,6 +54,10 @@ class ActorImageService
      * @var int
      */
     protected $subjectCount = 0;
+    /**
+     * @var HttpRequest
+     */
+    private $httpRequest;
 
     /**
      * ActorImageService constructor.
@@ -58,11 +65,12 @@ class ActorImageService
      * @param ImageService $imageService
      * @param FileService $fileService
      */
-    public function __construct(ImageService $imageService, FileService $fileService)
+    public function __construct(ImageService $imageService, FileService $fileService, HttpRequest $httpRequest)
     {
         $this->client = new Client();
         $this->imageService = $imageService;
         $this->fileService = $fileService;
+        $this->httpRequest = $httpRequest;
     }
 
     /**
@@ -86,51 +94,114 @@ class ActorImageService
         return $this->missingImages;
     }
 
-    /**
-     * Process expedition for export.
-     *
-     * @param array $subjects
-     * @param array $fileAttributes
-     * @param Actor $actor
-     */
-    public function getImages($subjects, $fileAttributes, Actor $actor)
+    public function testImages($subjects, $destination, Actor $actor)
     {
         $this->subjects = $subjects;
         $this->subjectCount = count($this->subjects);
         $this->actor = $actor;
 
-        $attributes = array_key_exists(0, $fileAttributes) ? $fileAttributes : [$fileAttributes];
+        $this->httpRequest->setHttpProvider();
 
-        $requests = function ($subjects) use ($attributes)
+        $requests = function ($subjects) use ($destination)
         {
+            foreach ($subjects as $index => $subject)
+            {
+                $uri = str_replace(' ', '%20', $subject->accessURI);
+                $filePath = $destination . '/' . $subject->_id . '.jpg';
+
+                if ( ! $this->checkUriExists($subject))
+                {
+                    \Log::alert('checkUriExists failed');
+                    $this->updateActor();
+
+                    continue;
+                }
+
+                if ($this->checkImageExists($filePath))
+                {
+                    \Log::alert('checkImageExists');
+                    $this->updateActor();
+
+                    continue;
+                }
+
+                \Log::alert('Yeild Request: ' . $subject->accessURI);
+                yield $index => function($poolOpts) use ($uri, $filePath) {
+                    $reqOpts = [
+                        'sink' => $filePath
+                    ];
+                    if (is_array($poolOpts) && count($poolOpts) > 0) {
+                        $reqOpts = array_merge($poolOpts, $reqOpts); // req > pool
+                    }
+
+                    return $this->httpRequest->getHttpClient()->getAsync($uri, $reqOpts);
+                };
+            }
+        };
+
+        $responses = $this->httpRequest->poolBatchRequest($requests($subjects));
+        $i = 0;
+        foreach ($responses as $index => $response)
+        {
+            if ($response instanceof ServerException || $response instanceof ClientException)
+            {
+                \Log::alert('Error response: ' . $response->getMessage());
+                continue;
+            }
+            \Log::alert('Success response' . $i++);
+        }
+    }
+
+
+    /**
+     * Process expedition for export.
+     *
+     * @param array $subjects
+     * @param string $destination
+     * @param Actor $actor
+     */
+    public function getImages($subjects, $destination, Actor $actor)
+    {
+        $this->subjects = $subjects;
+        $this->subjectCount = count($this->subjects);
+        $this->actor = $actor;
+
+        $requests = function ($subjects) use ($destination)
+        {
+            \Log::alert('Building Requests');
             foreach ($subjects as $index => $subject)
             {
                 if ( ! $this->checkUriExists($subject))
                 {
+                    \Log::alert('checkUriExists failed');
                     $this->updateActor();
 
                     continue;
                 }
 
-                if ($this->checkImageExists($subject->_id, $attributes))
+                if ($this->checkImageExists($destination . '/' . $subject->_id . '.jpg'))
                 {
+                    \Log::alert('checkImageExists');
                     $this->updateActor();
 
                     continue;
                 }
 
+                \Log::alert('Yeild Request: ' . $subject->accessURI);
                 yield $index => new Request('GET', str_replace(' ', '%20', $subject->accessURI));
             }
         };
 
         $pool = new Pool($this->client, $requests($subjects), [
             'concurrency' => 10,
-            'fulfilled'   => function ($response, $index) use ($attributes, $actor)
+            'fulfilled'   => function ($response, $index) use ($destination, $actor)
             {
-                $this->saveImage($response, $index, $attributes);
+                \Log::alert('saveImage: ' . $index);
+                $this->saveImage($response, $index, $destination);
             },
             'rejected'    => function ($reason, $index)
             {
+                \Log::alert('rejected: ' . $index);
                 $this->updateActor();
                 $this->setMissingImages($this->subjects[$index], 'Could not retrieve image from uri.');
             }
@@ -146,54 +217,56 @@ class ActorImageService
      *
      * @param $response
      * @param $index
-     * @param $attributes
+     * @param $destination
      */
-    private function saveImage($response, $index, $attributes)
+    private function saveImage($response, $index, $destination)
     {
+        \Log::alert('Entering saveImage');
         $image = $response->getBody()->getContents();
 
         if ($image === '' || $response->getStatusCode() !== 200)
         {
+            \Log::alert('Image empty: ' . $response->getStatusCode());
             $this->setMissingImages($this->subjects[$index], 'Image empty: ' . $response->getStatusCode());
 
             return;
         }
 
-        if ( ! $this->imageService->setSourceFromString($image))
+        $this->imageService->createImagickObject();
+        \Log::alert('createdImageObject');
+
+        if ( ! $this->imageService->readImagickFromBlob($image))
         {
+            \Log::alert('Failed to read image blob: ' . $response->getStatusCode());
             $this->setMissingImages($this->subjects[$index], 'Could not create image from string: ' . $response->getStatusCode());
 
             return;
         }
 
-        if ( ! $this->imageService->generateAndSaveImage($this->subjects[$index]->_id, $attributes))
+        \Log::alert('generateAndSaveImage: ' . $this->subjects[$index]->_id);
+        if ( ! $this->imageService->generateAndSaveImage($this->subjects[$index]->_id, $destination))
         {
-            $this->removeErrorFiles($index, $attributes);
+            \Log::alert('Failed to generate Image: ' . $this->subjects[$index]->_id);
+            $this->removeErrorFiles($index, $destination);
             $this->setMissingImages($this->subjects[$index], 'Could not save image to destination file');
 
             return;
         }
 
-        $this->imageService->destroySource();
+        \Log::alert('clearImageObject');
+        $this->imageService->clearImagickObject();
         $this->updateActor();
     }
 
     /**
      * Check if image exists.
      *
-     * @param $id
-     * @param array $attributes
+     * @param string $filePath
      * @return bool
      */
-    private function checkImageExists($id, $attributes)
+    private function checkImageExists($filePath)
     {
-        $total = count($attributes);
-        foreach ($attributes as $attribute)
-        {
-            $total -= count($this->fileService->filesystem->glob("{$attribute['destination']}/{$id}.{$attribute['extension']}"));
-        }
-
-        return $total === 0;
+        return file_exists($filePath);
     }
 
     /**
@@ -218,17 +291,14 @@ class ActorImageService
      * Remove any subject images that existed when error occurred.
      *
      * @param $index
-     * @param array $attributes
+     * @param string $destination
      */
-    private function removeErrorFiles($index, $attributes)
+    private function removeErrorFiles($index, $destination)
     {
-        foreach ($attributes as $attribute)
+        $path = $destination . '/' . $this->subjects[$index]->_id . '.jpg';
+        if ($this->fileService->filesystem->exists($path))
         {
-            $path = $attribute['destination'] . '/' . $this->subjects[$index]->_id . $attribute['extension'];
-            if ($this->fileService->filesystem->exists($path))
-            {
-                @unlink($path);
-            }
+            @unlink($path);
         }
     }
 
