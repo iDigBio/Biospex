@@ -27,8 +27,14 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
      */
     public $ids;
 
+    /**
+     * @var array
+     */
     public $sources = [];
 
+    /**
+     * @var array
+     */
     public $reQueued = [];
 
     /**

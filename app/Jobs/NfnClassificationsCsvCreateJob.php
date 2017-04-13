@@ -9,13 +9,14 @@ use App\Services\Api\NfnApi;
 use App\Services\Report\Report;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, SerializesModels, DispatchesJobs;
 
     /**
      * Expedition ids pass to the job.
@@ -63,11 +64,11 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
                 {
                     continue;
                 }
-                echo 'Building workflow uri: ' . $expedition->nfnWorkflow->workflow . PHP_EOL;
+
                 $uri = $api->buildClassificationCsvUri($expedition->nfnWorkflow->workflow);
                 $request = $api->buildAuthorizedRequest('POST', $uri, ['body' => '{"media":{"content_type":"text/csv"}}']);
 
-                yield $request;
+                yield $expedition->id => $request;
             }
         };
 
@@ -79,26 +80,28 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
             $api->setProvider();
             $api->checkAccessToken('nfnToken');
 
+            $ids = [];
             $responses = $api->poolBatchRequest($requests($expeditions));
-            foreach ($responses as $response)
+            foreach ($responses as $index => $response)
             {
                 if ($response instanceof ServerException || $response instanceof ClientException)
                 {
-
-                    echo 'Bad response: ' .  $response->getMessage() . PHP_EOL;
+                    $report->addError($response->getMessage());
                     continue;
-                    //$report->addError($response->getMessage());
                 }
 
-                echo 'Good response: ' . PHP_EOL;
+                $ids[] = $index;
             }
 
-            /*
             if ($report->checkErrors())
             {
                 $report->reportError();
             }
-            */
+
+            empty($ids) ? $this->delete() :
+                $this->dispatch((new NfnClassificationsCsvFileJob($ids))
+                    ->onQueue(\Config::get('config.beanstalkd.classification'))
+                    ->delay(14400));
         }
         catch (HttpRequestException $e)
         {
