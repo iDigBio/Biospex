@@ -15,6 +15,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 class NfnClassificationsCsvDownloadJob extends Job implements ShouldQueue
 {
+
     use InteractsWithQueue, SerializesModels, DispatchesJobs;
 
     /**
@@ -58,11 +59,13 @@ class NfnClassificationsCsvDownloadJob extends Job implements ShouldQueue
             {
                 $filePath = config('config.classifications_download') . '/' . $index . '.csv';
 
-                yield $index => function($poolOpts) use ($api, $source, $filePath) {
+                yield $index => function ($poolOpts) use ($api, $source, $filePath)
+                {
                     $reqOpts = [
                         'sink' => $filePath
                     ];
-                    if (is_array($poolOpts) && count($poolOpts) > 0) {
+                    if (is_array($poolOpts) && count($poolOpts) > 0)
+                    {
                         $reqOpts = array_merge($poolOpts, $reqOpts); // req > pool
                     }
 
@@ -91,7 +94,9 @@ class NfnClassificationsCsvDownloadJob extends Job implements ShouldQueue
                 $report->reportError();
             }
 
-            $this->dispatch((new NfnClassificationsReconciliationJob($ids))->onQueue(config('config.beanstalkd.job')));
+            $this->dispatch((new NfnClassificationsReconciliationJob($ids))
+                ->onQueue(config('config.beanstalkd.classification'))
+                ->delay(1800));
         }
         catch (HttpRequestException $e)
         {

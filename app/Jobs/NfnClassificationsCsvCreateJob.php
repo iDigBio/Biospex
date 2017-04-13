@@ -15,6 +15,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
 {
+
     use InteractsWithQueue, SerializesModels;
 
     /**
@@ -67,9 +68,10 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
                 $uri = $api->buildClassificationCsvUri($expedition->nfnWorkflow->workflow);
                 $request = $api->buildAuthorizedRequest('POST', $uri, ['body' => '{"media":{"content_type":"text/csv"}}']);
 
-                yield $request;
+                yield $expedition->id => $request;
             }
         };
+
 
         try
         {
@@ -79,19 +81,28 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
             $api->setProvider();
             $api->checkAccessToken('nfnToken');
 
+            $ids = [];
             $responses = $api->poolBatchRequest($requests($expeditions));
-            foreach ($responses as $response)
+            foreach ($responses as $index => $response)
             {
                 if ($response instanceof ServerException || $response instanceof ClientException)
                 {
                     $report->addError($response->getMessage());
+                    continue;
                 }
+
+                $ids[] = $index;
             }
 
             if ($report->checkErrors())
             {
                 $report->reportError();
             }
+
+            empty($ids) ? $this->delete() :
+                $this->dispatch((new NfnClassificationsCsvFileJob($ids))
+                    ->onQueue(\Config::get('config.beanstalkd.classification'))
+                    ->delay(14400));
         }
         catch (HttpRequestException $e)
         {

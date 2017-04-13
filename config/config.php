@@ -81,12 +81,13 @@ return [
 
     /* Added Tubes */
     'beanstalkd'        => [
-        'default'  => env('QUEUE_DEFAULT_TUBE'),
-        'import'   => env('QUEUE_IMPORT_TUBE'),
-        'workflow' => env('QUEUE_WORKFLOW_TUBE'),
-        'ocr'      => env('QUEUE_OCR_TUBE'),
-        'event'    => env('QUEUE_EVENT_TUBE'),
-        'job'      => env('QUEUE_JOB_TUBE')
+        'default'        => env('QUEUE_DEFAULT_TUBE'),
+        'import'         => env('QUEUE_IMPORT_TUBE'),
+        'workflow'       => env('QUEUE_WORKFLOW_TUBE'),
+        'ocr'            => env('QUEUE_OCR_TUBE'),
+        'event'          => env('QUEUE_EVENT_TUBE'),
+        'job'            => env('QUEUE_JOB_TUBE'),
+        'classification' => env('QUEUE_CLASSIFICATION_TUBE')
     ],
 
     'images'                => [

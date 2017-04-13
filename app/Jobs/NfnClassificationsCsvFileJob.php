@@ -17,6 +17,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
 {
+
     use InteractsWithQueue, SerializesModels, DispatchesJobs;
 
     /**
@@ -25,6 +26,10 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
      * @var null
      */
     public $ids;
+
+    public $sources = [];
+
+    public $reQueued = [];
 
     /**
      * Create a new job instance.
@@ -78,18 +83,17 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
             $api->checkAccessToken('nfnToken');
 
             $responses = $api->poolBatchRequest($requests($expeditions));
-            $sources = [];
             foreach ($responses as $index => $response)
             {
                 if ($response instanceof ServerException || $response instanceof ClientException)
                 {
                     $report->addError($response->getMessage());
+                    continue;
                 }
-                else
-                {
-                    $results = json_decode($response->getBody()->getContents());
-                    $sources[$index] = $results->media[0]->src;
-                }
+
+                $results = json_decode($response->getBody()->getContents());
+
+                $this->checkState($results, $index);
             }
 
             if ($report->checkErrors())
@@ -97,12 +101,59 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
                 $report->reportError();
             }
 
-            $this->dispatch((new NfnClassificationsCsvDownloadJob($sources))->onQueue(Config::get('config.beanstalkd.job')));
+            $this->dispatchSources();
+            $this->dispatchReQueued();
         }
         catch (HttpRequestException $e)
         {
             $handler->report($e);
         }
 
+    }
+
+    /**
+     * @param $results
+     * @param $index
+     */
+    public function checkState($results, $index)
+    {
+        if ($results->media[0]->metadata->state === 'creating')
+        {
+            $this->reQueued[] = $index;
+        }
+
+        if ($results->media[0]->metadata->state === 'ready')
+        {
+            $sources[$index] = $results->media[0]->src;
+        }
+    }
+
+    /**
+     * Dispatch downloads
+     */
+    public function dispatchSources()
+    {
+        if (empty($this->sources))
+        {
+            return;
+        }
+
+        $this->dispatch((new NfnClassificationsCsvDownloadJob($this->sources))
+            ->onQueue(Config::get('config.beanstalkd.classification')));
+    }
+
+    /**
+     * Dispatch CSV file job if not ready
+     */
+    public function dispatchReQueued()
+    {
+        if (empty($this->reQueued))
+        {
+            return;
+        }
+
+        $this->dispatch((new NfnClassificationsCsvFileJob($this->reQueued))
+            ->onQueue(Config::get('config.beanstalkd.classification'))
+            ->delay(3600));
     }
 }

@@ -42,6 +42,11 @@ class TestAppCommand extends Command
         Handler $handler
     )
     {
+        $job = new NfnClassificationsCsvFileJob([35]);
+        $job->handle($expeditionContract,$api,$report,$handler);
+
+
+        return;
         //$ids = [35,38,44,45,47,48,49,50,51,52,53,55,57,60,61,65,66,69,71];
         //$job = new NfnClassificationsCsvFileJob($ids);
         //$job->handle($expeditionContract, $api, $report, $handler);
