@@ -26,7 +26,7 @@ class ActorRepositoryService
      */
     public function __construct(ExpeditionContract $expeditionContract, Download $download)
     {
-        $this->expedition = $expeditionContract;
+        $this->expeditionContract = $expeditionContract;
         $this->download = $download;
     }
 
