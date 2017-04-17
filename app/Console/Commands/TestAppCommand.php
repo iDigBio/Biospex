@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\Contracts\ExpeditionContract;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -30,9 +29,9 @@ class TestAppCommand extends Command
         parent::__construct();
     }
 
-    public function handle(ExpeditionContract $contract)
+    public function handle(
+    )
     {
-        $expeditions = $contract->setCacheLifetime(0)->getExpeditionsForNfnClassificationProcess([]);
-        dd($expeditions->pluck('id'));
+
     }
 }
