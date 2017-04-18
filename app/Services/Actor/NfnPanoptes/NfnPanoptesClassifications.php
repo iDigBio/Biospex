@@ -47,7 +47,7 @@ class NfnPanoptesClassifications implements ActorInterface
     public function process($actor)
     {
 
-        $record = $this->actorRepoService->expedition->skipCache()->with(['project.group.owner', 'stat'])->find($actor->pivot->expedition_id);
+        $record = $this->actorRepoService->expeditionContract->skipCache()->with(['project.group.owner', 'stat'])->find($actor->pivot->expedition_id);
 
         try
         {
