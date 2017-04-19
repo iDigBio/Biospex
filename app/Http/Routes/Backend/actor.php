@@ -16,11 +16,6 @@ $router->post('actors/create', [
     'as'   => 'admin.actors.store'
 ]);
 
-$router->get('actors/{actors}', [
-    'uses' => 'ActorsController@show',
-    'as'   => 'admin.actors.show'
-]);
-
 $router->get('actors/{actors}/edit', [
     'uses' => 'ActorsController@edit',
     'as'   => 'admin.actors.edit'

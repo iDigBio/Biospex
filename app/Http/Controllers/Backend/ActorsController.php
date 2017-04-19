@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ActorFormRequest;
 use App\Repositories\Contracts\Actor;
 use App\Repositories\Contracts\User;
+use App\Services\Actor\ActorAdminService;
 use Illuminate\Http\Request;
 
 class ActorsController extends Controller
@@ -20,17 +21,23 @@ class ActorsController extends Controller
      * @var User
      */
     private $user;
+    /**
+     * @var ActorAdminService
+     */
+    private $actorAdminService;
 
     /**
      * ActorsController constructor.
-     * 
+     *
+     * @param ActorAdminService $actorAdminService
      * @param Actor $actor
      * @param User $user
      */
-    public function __construct(Actor $actor, User $user)
+    public function __construct(ActorAdminService $actorAdminService, Actor $actor, User $user)
     {
         $this->actor = $actor;
         $this->user = $user;
+        $this->actorAdminService = $actorAdminService;
     }
 
     /**
@@ -41,23 +48,9 @@ class ActorsController extends Controller
      */
     public function index(Request $request)
     {
-        $user = $this->user->with(['profile'])->find($request->user()->id);
-        $actors = $this->actor->all();
-        $trashed = $this->actor->trashed();
-        
-        return view('backend.actors.index', compact('user', 'actors', 'trashed'));
+        return $this->actorAdminService->showIndex($request);
     }
 
-    /**
-     * Redirect show route.
-     * 
-     * @return mixed
-     */
-    public function show()
-    {
-        return redirect()->route('admin.actors.index');
-    }
-    
     /**
      * Create form.
      *
@@ -66,11 +59,7 @@ class ActorsController extends Controller
      */
     public function create(Request $request)
     {
-        $user = $this->user->with(['profile'])->find($request->user()->id);
-        $actors = $this->actor->all();
-        $trashed = $this->actor->trashed()->get();
-
-        return view('backend.actors.index', compact('user', 'actors', 'trashed'));
+        return $this->actorAdminService->showCreateForm($request);
     }
 
     /**
@@ -81,9 +70,8 @@ class ActorsController extends Controller
      */
     public function store(ActorFormRequest $request)
     {
-        $actor = $this->actor->create($request->all());
-
-        $actor ? Toastr::success('Actor has been created successfully.', 'Actor Create') :
+        $this->actorAdminService->createActor($request) ?
+            Toastr::success('Actor has been created successfully.', 'Actor Create') :
             Toastr::error('Actor could not be saved.', 'Actor Create');
 
         return redirect()->route('admin.actors.index');
@@ -98,12 +86,7 @@ class ActorsController extends Controller
      */
     public function edit(Request $request, $id)
     {
-        $user = $this->user->with(['profile'])->find($request->user()->id);
-        $actors = $this->actor->all();
-        $actor = $this->actor->with(['contacts'])->find($id);
-        $trashed = $this->actor->trashed();
-
-        return view('backend.actors.index', compact('user', 'actors', 'actor', 'trashed'));
+        return $this->actorAdminService->editActor($request, $id);
     }
 
     /**
@@ -115,12 +98,7 @@ class ActorsController extends Controller
      */
     public function update(ActorFormRequest $request, $id)
     {
-        $result = $this->actor->update($request->all(), $id);
-
-        $result ? Toastr::success('Actor has been updated successfully.', 'Actor Update')
-            : Toastr::error('Actor could not be updated.', 'Actor Update');
-
-        return redirect()->route('admin.actors.index');
+        return $this->actorAdminService->updateActor($request, $id);
     }
 
     /**

@@ -36,7 +36,7 @@ interface ExpeditionContract extends RepositoryContract, CacheableContract
     public function findWhereInHasRelationsWithRelations($attributeValues, array $hasRelations = [], array $relations = [], array $attributes = ['*']);
 
     /**
-     * Find Expedition with relations.
+     * Find with relations.
      *
      * @param integer $id
      * @param array|string $relations

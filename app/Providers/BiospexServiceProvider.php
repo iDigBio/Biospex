@@ -23,9 +23,14 @@ use App\Repositories\Contracts\TranscriptionLocationContract;
 use App\Repositories\Eloquent\TranscriptionLocationRepository;
 use App\Repositories\Contracts\StateCountyContract;
 use App\Repositories\Eloquent\StateCountyRepository;
+use App\Repositories\Contracts\ActorContract;
+use App\Repositories\Eloquent\ActorRepository;
+use App\Repositories\Contracts\UserContract;
+use App\Repositories\Eloquent\UserRepository;
+
 
 // Replacing eventually
-use App\Repositories\Contracts\User as UserContract;
+use App\Repositories\Contracts\User as UserContractOld;
 use App\Repositories\Contracts\Group as GroupContractOld;
 use App\Repositories\Contracts\Project as ProjectContractOld;
 use App\Repositories\Contracts\Expedition as ExpeditionContractOld;
@@ -34,7 +39,7 @@ use App\Repositories\Contracts\Subject as SubjectContractOld;
 use App\Repositories\Contracts\Import as ImportContract;
 use App\Repositories\Contracts\Header as HeaderContract;
 use App\Repositories\Contracts\WorkflowManager as WorkflowManagerContractOld;
-use App\Repositories\Contracts\Actor as ActorContract;
+use App\Repositories\Contracts\Actor as ActorContractOld;
 use App\Repositories\Contracts\Download as DownloadContract;
 use App\Repositories\Contracts\Invite as InviteContract;
 use App\Repositories\Contracts\Property as PropertyContract;
@@ -57,7 +62,7 @@ use App\Repositories\Contracts\NfnWorkflow as NfnWorkflowContract;
 use App\Repositories\Contracts\Notification as NotificationContract;
 use App\Repositories\Contracts\ActorContact as ActorContactContract;
 
-use App\Repositories\UserRepository;
+use App\Repositories\UserRepository as UserRepositoryOld;
 use App\Repositories\GroupRepository as GroupRepositoryOld;
 use App\Repositories\ProjectRepository as ProjectRepositoryOld;
 use App\Repositories\ExpeditionRepository as ExpeditionRepositoryOld;
@@ -66,7 +71,7 @@ use App\Repositories\SubjectRepository as SubjectRepositoryOld;
 use App\Repositories\ImportRepository;
 use App\Repositories\HeaderRepository;
 use App\Repositories\WorkflowManagerRepository as WorkflowManagerRepositoryOld;
-use App\Repositories\ActorRepository;
+use App\Repositories\ActorRepository as ActorRepositoryOld;
 use App\Repositories\DownloadRepository;
 use App\Repositories\InviteRepository;
 use App\Repositories\PropertyRepository;
@@ -120,7 +125,7 @@ class BiospexServiceProvider extends ServiceProvider
      */
     protected function registerRepositories()
     {
-        $this->app->bind(UserContract::class, UserRepository::class);
+        $this->app->bind(UserContractOld::class, UserRepositoryOld::class);
         $this->app->bind(GroupContractOld::class, GroupRepositoryOld::class);
         $this->app->bind(PermissionContract::class, PermissionRepository::class);
         $this->app->bind(ProjectContractOld::class, ProjectRepositoryOld::class);
@@ -130,7 +135,7 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(ImportContract::class, ImportRepository::class);
         $this->app->bind(HeaderContract::class, HeaderRepository::class);
         $this->app->bind(WorkflowManagerContractOld::class, WorkflowManagerRepositoryOld::class);
-        $this->app->bind(ActorContract::class, ActorRepository::class);
+        $this->app->bind(ActorContractOld::class, ActorRepositoryOld::class);
         $this->app->bind(DownloadContract::class, DownloadRepository::class);
         $this->app->bind(InviteContract::class, InviteRepository::class);
         $this->app->bind(PropertyContract::class, PropertyRepository::class);
@@ -163,5 +168,7 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(WorkflowManagerContract::class, WorkflowManagerRepository::class);
         $this->app->bind(TranscriptionLocationContract::class, TranscriptionLocationRepository::class);
         $this->app->bind(StateCountyContract::class, StateCountyRepository::class);
+        $this->app->bind(ActorContract::class, ActorRepository::class);
+        $this->app->bind(UserContract::class, UserRepository::class);
     }
 }
