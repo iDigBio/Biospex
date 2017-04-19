@@ -38,6 +38,7 @@
                         <th>{{ trans('pages.filename') }}</th>
                         <th>{{ trans('pages.filesize') }}</th>
                         <th>{{ trans('pages.created') }}</th>
+                        <th>{{ trans('pages.updated') }}</th>
                         <th>{{ trans('pages.downloadurl') }}</th>
                         <th></th>
                     </tr>
@@ -57,6 +58,7 @@
                                     @endif
                                 </td>
                                 <td>{{ format_date($download->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
+                                <td>{{ format_date($download->updated_at, 'Y-m-d', $user->profile->timezone) }}</td>
                                 <td>{{ route('projects.expeditions.downloads.get.show', [$expedition->project->id, $expedition->id, $download->id]) }}</td>
                                 <td>
                                     <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs"
