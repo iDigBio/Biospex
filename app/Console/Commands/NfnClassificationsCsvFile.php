@@ -40,6 +40,6 @@ class NfnClassificationsCsvFile extends Command
     {
         $ids = null ===  $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new NfnClassificationsCsvFileJob($ids))->onQueue(Config::get('config.beanstalkd.job')));
+        $this->dispatch((new NfnClassificationsCsvFileJob($ids))->onQueue(Config::get('config.beanstalkd.classification')));
     }
 }

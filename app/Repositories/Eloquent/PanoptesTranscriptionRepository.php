@@ -4,10 +4,12 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\PanoptesTranscription;
 use App\Repositories\Contracts\PanoptesTranscriptionContract;
+use App\Repositories\Traits\EloquentRepositoryCommon;
 use Illuminate\Contracts\Container\Container;
 
 class PanoptesTranscriptionRepository extends EloquentRepository implements PanoptesTranscriptionContract
 {
+    use EloquentRepositoryCommon;
 
     /**
      * PanoptesTranscriptionRepository constructor.
@@ -18,16 +20,6 @@ class PanoptesTranscriptionRepository extends EloquentRepository implements Pano
         $this->setContainer($container)
             ->setModel(PanoptesTranscription::class)
             ->setRepositoryId('biospex.repository.panoptesTranscription');
-
-    }
-
-    /**
-     * Function for testing.
-     *
-     * @param $value
-     */
-    public function testing($value)
-    {
 
     }
 

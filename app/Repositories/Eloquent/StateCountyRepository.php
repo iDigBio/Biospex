@@ -5,11 +5,14 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\StateCounty;
 use App\Repositories\Contracts\StateCountyContract;
+use App\Repositories\Traits\EloquentRepositoryCommon;
 use DB;
 use Illuminate\Contracts\Container\Container;
 
 class StateCountyRepository extends EloquentRepository implements StateCountyContract
 {
+    use EloquentRepositoryCommon;
+
     /**
      * StateCountyRepository constructor.
      * @param Container $container

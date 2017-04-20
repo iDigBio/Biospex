@@ -46,7 +46,7 @@ class NfnPanoptesClassifications implements ActorInterface
      */
     public function process($actor)
     {
-        $record =$this->record = $this->actorRepoService->expeditionContract->setCacheLifetime(0)
+        $record = $this->actorRepoService->expeditionContract->setCacheLifetime(0)
             ->findWithRelations($actor->pivot->expedition_id, ['project.group.owner', 'stat']);
 
         try
@@ -75,7 +75,7 @@ class NfnPanoptesClassifications implements ActorInterface
      */
     protected function processExpeditionRecord($actor, $record)
     {
-        if ((int) $record->stat->transcriptions_completed === 100)
+        if ((int) $record->stat->percent_completed === 100)
         {
             $actor->pivot->queued = 0;
             ++$actor->pivot->state;

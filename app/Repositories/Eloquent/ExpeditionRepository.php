@@ -4,10 +4,16 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Expedition;
 use App\Repositories\Contracts\ExpeditionContract;
+use App\Repositories\Traits\EloquentRepositoryCommon;
 use Illuminate\Contracts\Container\Container;
 
+/**
+ * Class ExpeditionRepository
+ * @package App\Repositories\Eloquent
+ */
 class ExpeditionRepository extends EloquentRepository implements ExpeditionContract
 {
+    use EloquentRepositoryCommon;
 
     /**
      * ExpeditionRepository constructor.
@@ -18,7 +24,6 @@ class ExpeditionRepository extends EloquentRepository implements ExpeditionContr
         $this->setContainer($container)
             ->setModel(Expedition::class)
             ->setRepositoryId('biospex.repository.expedition');
-
     }
 
     /**
@@ -33,40 +38,6 @@ class ExpeditionRepository extends EloquentRepository implements ExpeditionContr
             }, '=');
 
         return empty($ids) ? $this->findAll($attributes) : $this->findWhereIn(['id', $ids]);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function findAllHasRelationsWithRelations(array $hasRelations = [], array $relations = [], array $attributes = ['*'])
-    {
-        foreach ($hasRelations as $relation)
-        {
-            $this->has($relation);
-        }
-
-        return $this->with($relations)->findAll($attributes);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function findWhereInHasRelationsWithRelations($attributeValues, array $hasRelations = [], array $relations = [], array $attributes = ['*'])
-    {
-        foreach ($hasRelations as $relation)
-        {
-            $this->has($relation);
-        }
-
-        return $this->with($relations)->findWhereIn($attributeValues, $attributes);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function findWithRelations($id, $relations)
-    {
-        return $this->with($relations)->find($id);
     }
 
     /**
