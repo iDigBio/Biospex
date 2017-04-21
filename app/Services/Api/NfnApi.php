@@ -25,6 +25,16 @@ class NfnApi extends HttpRequest
     public $provider;
 
     /**
+     * @var array
+     */
+    public $nfnSkipCsv = [];
+
+    public function __construct()
+    {
+        $this->nfnSkipCsv = explode(',', config('config.nfnSkipCsv'));
+    }
+
+    /**
      * Set provider for Notes From Nature
      * @param bool $auth
      */
@@ -152,6 +162,7 @@ class NfnApi extends HttpRequest
         return null === $expedition
             || ! isset($expedition->nfnWorkflow)
             || null === $expedition->nfnWorkflow->workflow
-            || null === $expedition->nfnWorkflow->project;
+            || null === $expedition->nfnWorkflow->project
+            || in_array($expedition->id, $this->nfnSkipCsv, false);
     }
 }

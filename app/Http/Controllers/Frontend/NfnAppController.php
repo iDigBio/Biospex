@@ -16,6 +16,6 @@ class NfnAppController extends Controller
 
     public function index()
     {
-        Log::alert(dd(Request::all()));
+
     }
 }

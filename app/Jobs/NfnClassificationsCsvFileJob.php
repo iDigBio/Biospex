@@ -68,11 +68,6 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
         {
             foreach ($expeditions as $expedition)
             {
-                if ($expedition->id === 55)
-                {
-                    continue;
-                }
-
                 if ($api->checkForRequiredVariables($expedition))
                 {
                     continue;

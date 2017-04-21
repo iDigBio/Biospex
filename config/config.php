@@ -140,6 +140,7 @@ return [
     ],
 
     'nfnActors' => env('NFN_ACTORS'),
+    'nfnSkipCsv' => env('NFN_SKIP_CSV'), // Skip csv creation for expedition ids
 
     'nfnCsvMap' => [
         'subjectId'        => '_id',
