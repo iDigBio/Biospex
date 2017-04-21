@@ -31,7 +31,7 @@
             <tbody>
             @foreach ($expeditions as $expedition)
                 <tr>
-                    <td>{{ link_to_route('web.expeditions.show', $expedition->title, ['projects' => $expedition->project_id, 'expeditions' => $expedition->expedition_id]) }}</td>
+                    <td>{{ link_to_route('web.expeditions.show', $expedition->title, ['projects' => $expedition->project_id, 'expeditions' => $expedition->id]) }}</td>
                     <td>{{ $expedition->description }}</td>
                     <td>{{ convert_time_zone($expedition->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
                     <td>{{ link_to_route('web.groups.show', $expedition->project->group->title, ['groups' => $expedition->project->group->id]) }}</td>
