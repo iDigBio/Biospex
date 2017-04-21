@@ -68,6 +68,11 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
         {
             foreach ($expeditions as $expedition)
             {
+                if ($expedition->id === 55)
+                {
+                    continue;
+                }
+
                 if ($api->checkForRequiredVariables($expedition))
                 {
                     continue;
@@ -130,7 +135,7 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
 
         if ($results->media[0]->metadata->state === 'ready')
         {
-            $sources[$index] = $results->media[0]->src;
+            $this->sources[$index] = $results->media[0]->src;
         }
     }
 
