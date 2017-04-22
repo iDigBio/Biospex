@@ -96,6 +96,7 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
         $expedition->stat->transcriptions_total = transcriptions_total($count);
         $expedition->stat->transcriptions_completed = transcriptions_completed($expedition->id);
         $expedition->stat->percent_completed = transcriptions_percent_completed($expedition->stat->transcriptions_total, $expedition->stat->transcriptions_completed);
+
         $expedition->stat->save();
     }
 }

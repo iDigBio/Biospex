@@ -10,6 +10,7 @@ return [
     'app_domain'      => env('APP_DOMAIN'),
     'app_nodejs_url'  => env('APP_NODEJS_URL'),
     'app_ip'          => env('APP_IP'),
+    'app_user'        => env('APP_USER'),
     'registration'    => env('APP_REGISTRATION'),
     'translate'       => env('APP_TRANSLATE'),
     'expedition_size' => env('APP_EXPEDITION_SIZE'),
@@ -139,7 +140,7 @@ return [
         env('NFN_WORKFLOWS_2'),
     ],
 
-    'nfnActors' => env('NFN_ACTORS'),
+    'nfnActors'  => env('NFN_ACTORS'),
     'nfnSkipCsv' => env('NFN_SKIP_CSV'), // Skip csv creation for expedition ids
 
     'nfnCsvMap' => [

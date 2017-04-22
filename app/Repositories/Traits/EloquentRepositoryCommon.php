@@ -2,8 +2,6 @@
 
 namespace App\Repositories\Traits;
 
-use App\Repositories\Eloquent\EloquentRepository;
-
 /**
  * Class EloquentRepositoryCommon
  * @package App\Repositories\Traits
@@ -40,11 +38,12 @@ trait EloquentRepositoryCommon
      *
      * @param integer $id
      * @param array|string $relations
+     * @param array $attributes
      * @return mixed
      */
-    public function findWithRelations($id, $relations)
+    public function findWithRelations($id, $relations, array $attributes = ['*'])
     {
-        return $this->with($relations)->find($id);
+        return $this->with($relations)->find($id, $attributes);
     }
 
     /**
@@ -55,7 +54,7 @@ trait EloquentRepositoryCommon
      * @param array $attributes
      * @return \Illuminate\Support\Collection|mixed
      */
-    public function findWhereWithRelations(array $where = [], array $relations = [], array $attributes = [])
+    public function findWhereWithRelations(array $where = [], array $relations = [], array $attributes = ['*'])
     {
         return $this->with($relations)->findWhere($where, $attributes);
     }

@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Exceptions\BiospexException;
-use App\Repositories\Contracts\ExpeditionContract;
 use App\Services\Report\Report;
 use App\Services\Process\PanoptesTranscriptionProcess;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -40,13 +39,11 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
      * Execute the job.
      *
      * @param PanoptesTranscriptionProcess $transcription
-     * @param ExpeditionContract $expeditionContract
      * @param Report $report
      * @return void
      */
     public function handle(
         PanoptesTranscriptionProcess $transcription,
-        ExpeditionContract $expeditionContract,
         Report $report
     )
     {
@@ -57,19 +54,15 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
             return;
         }
 
-        $csv = null;
-        $projectIds = [];
         foreach ($this->ids as $id)
         {
-            $csv = $this->processCsvFile($transcription, $report, $id);
-            $record = $expeditionContract->setCacheLifetime(0)->find($id);
-            $projectIds = array_unique(array_merge($projectIds, [$record->project_id]));
+            $this->processCsvFile($transcription, $report, $id);
         }
 
-        if (null !== $transcription->getCsvError() || $report->checkErrors())
+        if ( ! empty($transcription->getCsvError()) || $report->checkErrors())
         {
             $report->addError('Panoptes Transcript Error');
-            $report->reportError(null, $csv);
+            $report->reportError(null, $transcription->getCsvError());
         }
     }
 

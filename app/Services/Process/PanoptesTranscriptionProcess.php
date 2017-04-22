@@ -30,9 +30,9 @@ class PanoptesTranscriptionProcess
     protected $panoptesTranscriptionContract;
 
     /**
-     * @var
+     * @var array
      */
-    protected $csvError;
+    protected $csvError = [];
 
     /**
      * @var Validation
