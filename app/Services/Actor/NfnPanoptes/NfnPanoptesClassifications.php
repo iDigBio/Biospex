@@ -78,7 +78,6 @@ class NfnPanoptesClassifications implements ActorInterface
         if ((int) $record->stat->percent_completed === 100)
         {
             $actor->pivot->queued = 0;
-            ++$actor->pivot->state;
             $actor->completed = 1;
             $actor->pivot->save();
 
