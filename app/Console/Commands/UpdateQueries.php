@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\Contracts\ExpeditionContract;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -32,22 +33,29 @@ class UpdateQueries extends Command
     /**
      * Fire command
      */
-    public function fire()
+    public function fire(ExpeditionContract $contract)
     {
+        $hasRelations = $withRelations = ['nfnActor', 'stat'];
+        $records = $contract->setCacheLifetime(0)->findAllHasRelationsWithRelations($hasRelations, $withRelations);
 
-        $expeditions = \App\Models\Expedition::onlyTrashed()->get();
-        foreach ($expeditions as $expedition)
-        {
-            $workflowManager = \App\Models\WorkflowManager::where('expedition_id', '=', $expedition->id)->first();
-            if (null === $workflowManager)
+        $records->each(function($record){
+            $actor = $record->nfnActor->first();
+
+            if ((int) $record->stat->percent_completed === 100)
             {
-                continue;
+                echo 'setting completed ' . $record->id . PHP_EOL;
+                $actor->pivot->completed = 1;
+                $actor->pivot->queued = 0;
+                $actor->pivot->state = 1;
+                $actor->pivot->save();
             }
-
-            $workflowManager->deleted_at = $expedition->deleted_at;
-            $workflowManager->created_at = $expedition->created_at;
-            $workflowManager->save();
-
-        }
+            else
+            {
+                echo 'setting state ' . $record->id . PHP_EOL;
+                $actor->pivot->queued = 0;
+                $actor->pivot->state = 1;
+                $actor->pivot->save();
+            }
+        });
     }
 }

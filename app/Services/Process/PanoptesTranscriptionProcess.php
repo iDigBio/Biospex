@@ -30,9 +30,9 @@ class PanoptesTranscriptionProcess
     protected $panoptesTranscriptionContract;
 
     /**
-     * @var
+     * @var array
      */
-    protected $csvError;
+    protected $csvError = [];
 
     /**
      * @var Validation
@@ -194,6 +194,11 @@ class PanoptesTranscriptionProcess
 
         $data['state_county'] = empty($data['state_province']) || empty($data['county']) ?
             null : get_state($data['state_province']) . '-' . trim(str_ireplace('county', '', $data['county']));
+
+        if (null === $data['state_county'])
+        {
+            return;
+        }
 
         $attributes = ['classification_id' => $combined['classification_id']];
         $this->transcriptionLocationContract->updateOrCreateRecord($attributes, $data);

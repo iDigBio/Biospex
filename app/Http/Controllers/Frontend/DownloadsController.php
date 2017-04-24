@@ -128,15 +128,13 @@ class DownloadsController extends Controller
 
         try
         {
-            $expedition->nfnActor[0]->pivot->state = 0;
-            $expedition->nfnActor[0]->pivot->total = $expedition->stat->subject_count;
-            $expedition->nfnActor[0]->pivot->processed = 0;
-            $expedition->nfnActor[0]->pivot->queued = 1;
-            $expedition->nfnActor[0]->pivot->save();
+            $expedition->nfnActor->first()->pivot->state = 0;
+            $expedition->nfnActor->first()->pivot->total = $expedition->stat->subject_count;
+            $expedition->nfnActor->first()->pivot->processed = 0;
+            $expedition->nfnActor->first()->pivot->queued = 1;
+            $expedition->nfnActor->first()->pivot->save();
 
-            //User::find(1)->roles()->updateExistingPivot($roleId, $attributes);
-
-            Queue::push('App\Services\Queue\ActorQueue', serialize($expedition->nfnActor[0]), $this->config->get('config.beanstalkd.job'));
+            Queue::push('App\Services\Queue\ActorQueue', serialize($expedition->nfnActor->first()), $this->config->get('config.beanstalkd.job'));
 
             session_flash_push('success', trans('expeditions.download_regeneration_success'));
         }

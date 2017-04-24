@@ -4,10 +4,13 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Subject;
 use App\Repositories\Contracts\SubjectContract;
+use App\Repositories\Traits\EloquentRepositoryCommon;
 use Illuminate\Contracts\Container\Container;
 
 class SubjectRepository extends EloquentRepository implements SubjectContract
 {
+
+    use EloquentRepositoryCommon;
 
     /**
      * SubjectRepository constructor.
@@ -18,13 +21,5 @@ class SubjectRepository extends EloquentRepository implements SubjectContract
         $this->setContainer($container)
             ->setModel(Subject::class)
             ->setRepositoryId('biospex.repository.subject');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function findById($id, array $attributes = ['*'])
-    {
-        return $this->find($id, $attributes);
     }
 }

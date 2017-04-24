@@ -135,14 +135,6 @@ class Expedition extends Eloquent
     }
 
     /**
-     * @return mixed
-     */
-    public function getActorNfnAttribute()
-    {
-        return $this->nfnActor->first();
-    }
-
-    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function nfnWorkflow()

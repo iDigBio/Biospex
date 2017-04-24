@@ -2,6 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\Contracts\ExpeditionContract;
+use App\Repositories\Contracts\WorkflowManagerContract;
+use App\Services\Actor\ActorService;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -29,8 +32,7 @@ class TestAppCommand extends Command
         parent::__construct();
     }
 
-    public function handle(
-    )
+    public function handle()
     {
 
     }

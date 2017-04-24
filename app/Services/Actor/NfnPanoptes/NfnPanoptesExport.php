@@ -107,7 +107,7 @@ class NfnPanoptesExport implements ActorInterface
             $this->fileService->filesystem->deleteDirectory($this->service->workingDir);
 
             $actor->pivot->queued = 0;
-            $actor->pivot->state++;
+            $actor->pivot->state = 1;
             $actor->pivot->save();
 
             $this->sendReport();

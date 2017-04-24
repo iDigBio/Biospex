@@ -6,13 +6,6 @@ interface TranscriptionLocationContract extends RepositoryContract, CacheableCon
 {
 
     /**
-     * @param array $attributes
-     * @param array $values
-     * @return mixed
-     */
-    public function updateOrCreateRecord(array $attributes, array $values = []);
-
-    /**
      * @param $id
      * @return mixed
      */
