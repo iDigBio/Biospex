@@ -101,7 +101,7 @@ class NfnPanoptesClassifications implements ActorInterface
     {
         $vars = [
             'title'          => $record->title,
-            'message'        => trans('emails.nfn_transcriptions_complete_message', ['expedition', $record->title]),
+            'message'        => trans('emails.nfn_transcriptions_complete_message', ['expedition' => $record->title]),
             'groupId'        => $record->project->group->id,
             'attachmentName' => ''
         ];
