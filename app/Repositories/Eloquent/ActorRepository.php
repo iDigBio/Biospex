@@ -4,10 +4,12 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Actor;
 use App\Repositories\Contracts\ActorContract;
+use App\Repositories\Traits\EloquentRepositoryCommon;
 use Illuminate\Contracts\Container\Container;
 
 class ActorRepository extends EloquentRepository implements ActorContract
 {
+    use EloquentRepositoryCommon;
 
     /**
      * ActorRepository constructor.
@@ -18,14 +20,6 @@ class ActorRepository extends EloquentRepository implements ActorContract
         $this->setContainer($container)
             ->setModel(Actor::class)
             ->setRepositoryId('biospex.repository.actor');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function findWithRelations($id, array $relations = [])
-    {
-        return $this->with($relations)->find($id);
     }
 
     /**

@@ -5,10 +5,13 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\User;
 use App\Repositories\Contracts\UserContract;
+use App\Repositories\Traits\EloquentRepositoryCommon;
 use Illuminate\Contracts\Container\Container;
 
 class UserRepository extends EloquentRepository implements UserContract
 {
+    use EloquentRepositoryCommon;
+
     /**
      * ExpeditionRepository constructor.
      * @param Container $container
@@ -19,14 +22,6 @@ class UserRepository extends EloquentRepository implements UserContract
             ->setModel(User::class)
             ->setRepositoryId('biospex.repository.user');
 
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function findWithRelations($id, $relations)
-    {
-        return $this->with($relations)->find($id);
     }
 
 }
