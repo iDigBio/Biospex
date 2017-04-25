@@ -2,9 +2,7 @@
 
 namespace App\Services\Google;
 
-use Config;
-
-class Drive extends GoogleService
+class GoogleDrive extends GoogleBaseService
 {
     /**
      * @var \Google_Service_Drive

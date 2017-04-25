@@ -2,16 +2,15 @@
 
 namespace App\Services\Google;
 
-class Table extends GoogleService
+class FusionTable extends GoogleBaseService
 {
-
     /**
      * @var \Google_Service_Fusiontables
      */
     protected $fusionTables;
 
     /**
-     * GoogleFusionTable constructor.
+     * FusionTable constructor.
      */
     public function __construct()
     {
@@ -69,6 +68,8 @@ class Table extends GoogleService
     }
 
     /**
+     * Delete table data.
+     *
      * @param $tableId
      * @return \Google_Service_Fusiontables_Sqlresponse
      */

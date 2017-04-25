@@ -11,5 +11,9 @@ interface TranscriptionLocationContract extends RepositoryContract, CacheableCon
      */
     public function getStateCountyGroupByCountByProjectId($id);
 
+    /**
+     * @param $id
+     * @return mixed
+     */
     public function getTranscriptionFusionTableData($id);
 }

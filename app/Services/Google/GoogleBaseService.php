@@ -2,11 +2,12 @@
 
 namespace App\Services\Google;
 
+
+use App\Services\BaseService;
 use PulkitJalan\Google\Facades\Google;
 
-class GoogleService
+class GoogleBaseService extends BaseService
 {
-
     /**
      * Create a Google service and return;
      *

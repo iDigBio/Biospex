@@ -5,7 +5,7 @@ namespace App\Services\Google;
 
 use Illuminate\Support\Collection;
 
-class Bucket extends GoogleService
+class FusionTableBucket extends GoogleBaseService
 {
 
     /**
