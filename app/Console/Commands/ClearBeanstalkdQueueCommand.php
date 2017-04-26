@@ -2,8 +2,8 @@
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
-use Symfony\Component\Console\Input\InputArgument;
 
 class ClearBeanstalkdQueueCommand extends Command
 {
@@ -45,6 +45,8 @@ class ClearBeanstalkdQueueCommand extends Command
         $this->tubes = $this->argument('tube') === null ? Config::get('config.beanstalkd') : $this->argument('tube');
 
         is_array($this->tubes) ? $this->loopQueues() : $this->clearQueue();
+
+        DB::statement("UPDATE actor_expedition set queued = 0;");
     }
 
     /**
