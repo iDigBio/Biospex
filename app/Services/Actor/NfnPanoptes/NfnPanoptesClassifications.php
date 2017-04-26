@@ -86,7 +86,7 @@ class NfnPanoptesClassifications implements ActorInterface
         else
         {
             $this->dispatch((new NfnClassificationsUpdateJob([$actor->pivot->expedition_id]))
-                ->onQueue($this->service->config->get('config.beanstalkd.job')));
+                ->onQueue($this->service->config->get('config.beanstalkd.classification')));
             $actor->pivot->queued = 0;
             $actor->pivot->save();
         }
