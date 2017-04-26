@@ -74,19 +74,15 @@ class WorkFlowManagerCommand extends Command
 
     /**
      * Process each workflow manager and actors
-     * @param array $managers
+     * @param  \Illuminate\Support\Collection $managers
      */
     protected function processManagers($managers)
     {
-        foreach ($managers as $manager)
-        {
-            if ($manager->stopped)
-            {
-                continue;
-            }
-
+        $managers->reject(function($manager){
+            return $manager->stopped;
+        })->each(function($manager){
             $this->processActors($manager->expedition->actors, $manager->expedition->stat->subject_count);
-        }
+        });
     }
 
     /**
@@ -97,33 +93,14 @@ class WorkFlowManagerCommand extends Command
      */
     protected function processActors($actors, $count)
     {
-        foreach ($actors as $actor)
-        {
-            if ($this->checkErrorQueued($actor))
-            {
-                continue;
-            }
-
-            if ($actor->pivot->completed)
-            {
-                continue;
-            }
-
+        $actors->reject(function($actor){
+            return $actor->error || $actor->queued || $actor->pivot->completed;
+        })->each(function($actor) use ($count){
             $actor->pivot->total = $count;
             $actor->pivot->processed = 0;
             $actor->pivot->queued = 1;
             $actor->pivot->save();
             Queue::push('App\Services\Queue\ActorQueue', serialize($actor), $this->tube);
-        }
-    }
-
-    /**
-     * Check if actor is in error or queued
-     * @param $actor
-     * @return bool
-     */
-    protected function checkErrorQueued($actor)
-    {
-        return ($actor->error || $actor->queued);
+        });
     }
 }
