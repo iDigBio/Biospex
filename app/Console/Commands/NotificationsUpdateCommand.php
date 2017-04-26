@@ -40,6 +40,6 @@ class NotificationsUpdateCommand extends Command
      */
     public function handle()
     {
-        $this->dispatch((new NotificationsJob())->onQueue(Config::get('config.beanstalkd.job')));
+        $this->dispatch((new NotificationsJob())->onQueue(Config::get('config.beanstalkd.default')));
     }
 }

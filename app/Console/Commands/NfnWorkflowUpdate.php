@@ -53,7 +53,7 @@ class NfnWorkflowUpdate extends Command
 
         foreach ($workflows as $workflow)
         {
-            $this->dispatch((new UpdateNfnWorkflowJob($workflow))->onQueue(Config::get('config.beanstalkd.job')));
+            $this->dispatch((new UpdateNfnWorkflowJob($workflow))->onQueue(Config::get('config.beanstalkd.classification')));
         }
 
     }

@@ -41,6 +41,6 @@ class NfnClassificationsFusionTable extends Command
     {
         $ids = null === $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new NfnClassificationsFusionTableJob($ids))->onQueue(Config::get('config.beanstalkd.job')));
+        $this->dispatch((new NfnClassificationsFusionTableJob($ids))->onQueue(Config::get('config.beanstalkd.classification')));
     }
 }

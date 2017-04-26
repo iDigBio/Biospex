@@ -60,9 +60,9 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
 
         $projectIds = array_values(array_unique($projectIds));
 
-        $this->dispatch((new AmChartJob($projectIds))->onQueue(Config::get('config.beanstalkd.job')));
+        $this->dispatch((new AmChartJob($projectIds))->onQueue(Config::get('config.beanstalkd.chart')));
 
-        $this->dispatch((new NfnClassificationsFusionTableJob($projectIds))->onQueue(config('config.beanstalkd.job')));
+        $this->dispatch((new NfnClassificationsFusionTableJob($projectIds))->onQueue(config('config.beanstalkd.classification')));
 
         $this->delete();
     }

@@ -43,6 +43,6 @@ class NfnClassificationsUpdate extends Command
     {
         $ids = null === $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new NfnClassificationsUpdateJob($ids))->onQueue(Config::get('config.beanstalkd.job')));
+        $this->dispatch((new NfnClassificationsUpdateJob($ids))->onQueue(Config::get('config.beanstalkd.classification')));
     }
 }

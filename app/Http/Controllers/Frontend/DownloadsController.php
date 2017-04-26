@@ -134,7 +134,7 @@ class DownloadsController extends Controller
             $expedition->nfnActor->first()->pivot->queued = 1;
             $expedition->nfnActor->first()->pivot->save();
 
-            Queue::push('App\Services\Queue\ActorQueue', serialize($expedition->nfnActor->first()), $this->config->get('config.beanstalkd.job'));
+            Queue::push('App\Services\Queue\ActorQueue', serialize($expedition->nfnActor->first()), $this->config->get('config.beanstalkd.export'));
 
             session_flash_push('success', trans('expeditions.download_regeneration_success'));
         }

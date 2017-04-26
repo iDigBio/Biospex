@@ -318,7 +318,7 @@ class ExpeditionsController extends Controller
             if (null !== $expedition->nfnWorkflow)
             {
                 $this->dispatch((new UpdateNfnWorkflowJob($expedition->nfnWorkflow))
-                    ->onQueue(Config::get('config.beanstalkd.job')));
+                    ->onQueue(Config::get('config.beanstalkd.workflow')));
             }
 
             // Success!

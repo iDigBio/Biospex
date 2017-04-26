@@ -83,7 +83,7 @@ class ExpeditionStatUpdate extends Command
         foreach ($expeditions as $expedition)
         {
             $projectIds[] = $expedition->project_id;
-            $this->dispatch((new ExpeditionStatJob($expedition->id))->onQueue(Config::get('config.beanstalkd.job')));
+            $this->dispatch((new ExpeditionStatJob($expedition->id))->onQueue(Config::get('config.beanstalkd.stat')));
         }
 
         return $projectIds;
@@ -100,7 +100,7 @@ class ExpeditionStatUpdate extends Command
 
         foreach ($projectIds as $projectId)
         {
-            $this->dispatch((new AmChartJob($projectId))->onQueue(Config::get('config.beanstalkd.job')));
+            $this->dispatch((new AmChartJob($projectId))->onQueue(Config::get('config.beanstalkd.chart')));
         }
     }
 }

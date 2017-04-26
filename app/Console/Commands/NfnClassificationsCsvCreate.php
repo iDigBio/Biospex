@@ -40,6 +40,6 @@ class NfnClassificationsCsvCreate extends Command
     {
         $ids = null ===  $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new NfnClassificationsCsvCreateJob($ids))->onQueue(Config::get('config.beanstalkd.job')));
+        $this->dispatch((new NfnClassificationsCsvCreateJob($ids))->onQueue(Config::get('config.beanstalkd.classification')));
     }
 }

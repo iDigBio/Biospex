@@ -41,6 +41,6 @@ class AmChartUpdate extends Command
     {
         $ids = null ===  $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new AmChartJob($ids))->onQueue(Config::get('config.beanstalkd.job')));
+        $this->dispatch((new AmChartJob($ids))->onQueue(Config::get('config.beanstalkd.chart')));
     }
 }
