@@ -206,9 +206,7 @@ class ExpeditionsController extends Controller
             'stat'])
             ->find($expeditionId);
 
-        $btnDisable = ($expedition->project->ocrQueue !== null &&
-            count($expedition->project->ocrQueue) !== 0) ||
-        $expedition->stat->subject_count === 0 ? true : false;
+        $btnDisable = ($expedition->project->ocrQueue->isEmpty() || $expedition->stat->subject_count === 0);
 
         JavaScript::put([
             'projectId'    => $expedition->project->id,

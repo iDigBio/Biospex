@@ -41,7 +41,7 @@
                         </div>
                         <div class="col-md-2">
                             <button title="@lang('buttons.ocrTitle')" class="btn btn-success btn-sm" type="button"
-                                    {{ $btnDisable ? 'disabled' : '' }}
+                                    {{ $btnDisable ? '' : 'disabled' }}
                                     onClick="location.href='{{ route('web.expeditions.ocr', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-repeat fa-lrg"></span>
                                 {{ $btnDisable ? trans('buttons.ocr') : trans('buttons.ocrDisabled') }}
