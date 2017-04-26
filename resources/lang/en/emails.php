@@ -32,7 +32,7 @@ return array (
   'failed_job_subject' => 'Failed Job Report.',
   'group_invite_message' => 'You have been invited to join the BIOSPEX group :group. Please :link to register using this email address.',
   'group_invite_subject' => 'Bisopex Group Invite',
-  'import_dup_rej_message' => 'If duplicates or rejects exist, you will find the information in an attached csv file.',
+  'import_dup_rej_message' => 'If duplicates or rejects exist, you will find the information in an attached csv file. Duplicates or rejects mean the subjects where not imported into the database.',
   'import_ocr_message' => 'OCR processing may take longer, and you will receive an email when it is complete.',
   'import_subject_complete' => 'The subject import for :project has been completed.',
   'import_subject_subject' => 'Subject Import Completed',
