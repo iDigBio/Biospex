@@ -40,7 +40,7 @@ class NfnClassificationsReconciliation extends Command
     {
         $ids = null === $this->argument('ids') ? $this->readDirectory() : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new NfnClassificationsReconciliationJob($ids))->onQueue(config('config.beanstalkd.job')));
+        $this->dispatch((new NfnClassificationsReconciliationJob($ids))->onQueue(config('config.beanstalkd.classification')));
     }
 
     /**
