@@ -81,6 +81,9 @@ class NfnTranscriptionProcess
     public function process($file)
     {
         $this->csv->readerCreateFromPath($file);
+        $this->csv->setDelimiter();
+        $this->csv->setEnclosure();
+        $this->csv->setEscape();
 
         $header = $this->prepareHeader($this->csv->getHeaderRow());
 

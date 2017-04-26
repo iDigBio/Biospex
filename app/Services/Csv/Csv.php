@@ -25,9 +25,6 @@ class Csv
     public function readerCreateFromPath($file)
     {
         $this->reader = Reader::createFromPath($file);
-        $this->setDelimiter();
-        $this->setEnclosure();
-        $this->setEscape();
     }
 
     /**

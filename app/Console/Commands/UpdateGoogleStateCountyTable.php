@@ -48,6 +48,9 @@ class UpdateGoogleStateCountyTable extends Command
         $httpRequest->getHttpClient()->request('GET', $uri, ['sink' => $filePath]);
 
         $csv->readerCreateFromPath(storage_path('United States Counties.csv'));
+        $csv->setDelimiter();
+        $csv->setEnclosure();
+        $csv->setEscape();
         $rows = $csv->fetch();
 
         $stateCountyContract->truncateTable();

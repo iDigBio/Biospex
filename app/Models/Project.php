@@ -21,7 +21,7 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
      *
      * @var array
      */
-    protected $softCascade = ['expeditions', 'subjects', 'panoptes_transcriptions', 'header', 'metas', 'amChart', 'nfnWorkflows'];
+    protected $softCascade = ['expeditions', 'subjects', 'panoptesTranscriptions', 'header', 'metas', 'amChart', 'nfnWorkflows'];
 
     /**
      * Sluggable value.

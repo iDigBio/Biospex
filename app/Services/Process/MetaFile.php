@@ -318,7 +318,8 @@ class MetaFile
     {
         $delimiter = $this->core->attributes->getNamedItem('fieldsTerminatedBy')->nodeValue;
         $this->coreDelimiter = ($delimiter === "\\t") ? "\t" : $delimiter;
-        $this->coreEnclosure = $this->core->attributes->getNamedItem('fieldsEnclosedBy')->nodeValue;
+        $enclosure = $this->core->attributes->getNamedItem('fieldsEnclosedBy')->nodeValue;
+        $this->coreEnclosure = $enclosure === '' ? '"' : $enclosure;
 
         if ($this->coreDelimiter === '')
         {
@@ -335,7 +336,8 @@ class MetaFile
     {
         $delimiter = $this->extension->attributes->getNamedItem('fieldsTerminatedBy')->nodeValue;
         $this->extDelimiter = ($delimiter === "\\t") ? "\t" : $delimiter;
-        $this->extEnclosure = $this->extension->attributes->getNamedItem('fieldsEnclosedBy')->nodeValue;
+        $enclosure = $this->extension->attributes->getNamedItem('fieldsEnclosedBy')->nodeValue;
+        $this->extEnclosure = $enclosure === '' ? '"' : $enclosure;
 
         if ($this->extDelimiter === '')
         {

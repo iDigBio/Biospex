@@ -118,7 +118,7 @@ class ModelDeleteService
 
             foreach ($record->projects as $project)
             {
-                if ( ! $this->nfnWorkflowService->checkNfnWorkflowsEmpty($project->nfnWorkflows))
+                if ( ! $this->nfnWorkflowService->checkNfnWorkflowsEmpty($project))
                 {
                     session_flash_push('error', trans('expeditions.expedition_process_exists'));
 
@@ -154,7 +154,7 @@ class ModelDeleteService
         {
             $record = $this->projectService->repository->skipCache()->with(['nfnWorkflows'])->find($id);
 
-            if ( ! $this->nfnWorkflowService->checkNfnWorkflowsEmpty($record->nfnWorkflows))
+            if ( ! $this->nfnWorkflowService->checkNfnWorkflowsEmpty($record))
             {
                 session_flash_push('error', trans('expeditions.expedition_process_exists'));
 
@@ -183,7 +183,7 @@ class ModelDeleteService
         {
             $record = $this->expeditionService->repository->skipCache()->with(['nfnWorkflow'])->find($id);
 
-            if ( ! $this->nfnWorkflowService->checkNfnWorkflowsEmpty(collect($record->nfnWorkflow)))
+            if ( ! $this->nfnWorkflowService->checkNfnWorkflowEmpty($record))
             {
                 session_flash_push('error', trans('expeditions.expedition_process_exists'));
 

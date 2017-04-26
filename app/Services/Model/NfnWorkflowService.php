@@ -20,13 +20,24 @@ class NfnWorkflowService
     }
 
     /**
-     * Check if a NfN workflow empty.
+     * Check if a NfN workflows empty.
      *
-     * @param array $nfnWorkflows
+     * @param $record
      * @return bool
      */
-    public function checkNfnWorkflowsEmpty($nfnWorkflows)
+    public function checkNfnWorkflowsEmpty($record)
     {
-        return null === $nfnWorkflows || $nfnWorkflows->isEmpty();
+        return null === $record->nfnWorkflows || $record->nfnWorkflows->isEmpty();
+    }
+
+    /**
+     * Check workflow is empty.
+     *
+     * @param $record
+     * @return bool
+     */
+    public function checkNfnWorkflowEmpty($record)
+    {
+        return empty($record->nfnWorkflow) || null === $record->nfnWorkflow;
     }
 }
