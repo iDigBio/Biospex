@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Console\Commands;
 
@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
 
 class WorkFlowManagerCommand extends Command
-{    
+{
+
     /**
      * The console command name.
      *
@@ -44,7 +45,7 @@ class WorkFlowManagerCommand extends Command
         $this->tube = Config::get('config.beanstalkd.workflow');
         $this->workflowManagerContract = $workflowManagerContract;
     }
-    
+
 
     /**
      * Execute the console command.
@@ -63,7 +64,8 @@ class WorkFlowManagerCommand extends Command
             $this->workflowManagerContract->setCacheLifetime(0)
                 ->findAllWithRelations($withRelations);
 
-        if ($managers->isEmpty()) {
+        if ($managers->isEmpty())
+        {
             return;
         }
 
@@ -76,8 +78,10 @@ class WorkFlowManagerCommand extends Command
      */
     protected function processManagers($managers)
     {
-        foreach ($managers as $manager) {
-            if ($manager->stopped) {
+        foreach ($managers as $manager)
+        {
+            if ($manager->stopped)
+            {
                 continue;
             }
 
@@ -87,18 +91,21 @@ class WorkFlowManagerCommand extends Command
 
     /**
      * Decide what actor to include in the array and being processed.
-     * 
+     *
      * @param array $actors
      * @param int $count
      */
     protected function processActors($actors, $count)
     {
-        foreach ($actors as $actor) {
-            if ($this->checkErrorQueued($actor)) {
+        foreach ($actors as $actor)
+        {
+            if ($this->checkErrorQueued($actor))
+            {
                 continue;
             }
 
-            if ($actor->pivot->completed) {
+            if ($actor->pivot->completed)
+            {
                 continue;
             }
 
