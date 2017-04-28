@@ -94,7 +94,7 @@ class WorkFlowManagerCommand extends Command
     protected function processActors($actors, $count)
     {
         $actors->reject(function($actor){
-            return $actor->error || $actor->queued || $actor->pivot->completed;
+            return $actor->pivot->error || $actor->pivot->queued || $actor->pivot->completed;
         })->each(function($actor) use ($count){
             $actor->pivot->total = $count;
             $actor->pivot->processed = 0;
