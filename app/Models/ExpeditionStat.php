@@ -2,24 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ExpeditionStat extends Model
+class ExpeditionStat extends BaseEloquentModel
 {
     use SoftDeletes;
 
     /**
-     * The database table used by the model.
+     * Enable soft delete.
      *
-     * @var string
+     * @var boolean
+     */
+    protected $softDelete = true;
+
+    /**
+     * @inheritDoc
      */
     protected $table = 'expedition_stats';
 
     /**
-     * Accepted attributes
-     *
-     * @var array
+     * @inheritDoc
      */
     protected $fillable = [
         'expedition_id',
@@ -31,7 +33,7 @@ class ExpeditionStat extends Model
     ];
 
     /**
-     * @var array
+     * @inheritDoc
      */
     protected $dates = ['deleted_at'];
 

@@ -4,16 +4,11 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Expedition;
 use App\Repositories\Contracts\ExpeditionContract;
-use App\Repositories\Traits\EloquentRepositoryCommon;
 use Illuminate\Contracts\Container\Container;
 
-/**
- * Class ExpeditionRepository
- * @package App\Repositories\Eloquent
- */
-class ExpeditionRepository extends EloquentRepository implements ExpeditionContract
+
+class ExpeditionRepository extends BaseEloquentRepository implements ExpeditionContract
 {
-    use EloquentRepositoryCommon;
 
     /**
      * ExpeditionRepository constructor.

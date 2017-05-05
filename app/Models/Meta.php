@@ -2,27 +2,31 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Meta extends Model
+class Meta extends BaseEloquentModel
 {
     use SoftDeletes;
 
     /**
-     * @var array
+     * Enable soft delete.
+     *
+     * @var boolean
+     */
+    protected $softDelete = true;
+
+    /**
+     * @inheritDoc
      */
     protected $dates = ['deleted_at'];
 
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'metas';
 
     /**
-     * @var array
+     * @inheritDoc
      */
     protected $fillable = [
         'project_id',

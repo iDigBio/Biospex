@@ -3,26 +3,30 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Model;
 
-class Header extends Model
+class Header extends BaseEloquentModel
 {
     use SoftDeletes;
 
     /**
-     * The database table used by the model.
+     * Enable soft delete.
      *
-     * @var string
+     * @var boolean
+     */
+    protected $softDelete = true;
+
+    /**
+     * @inheritDoc
      */
     protected $table = 'headers';
 
     /**
-     * @var array
+     * @inheritDoc
      */
     protected $dates = ['deleted_at'];
 
     /**
-     * @var array
+     * @inheritDoc
      */
     protected $fillable = [
         'project_id',

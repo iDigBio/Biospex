@@ -2,14 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Group extends Model
+class Group extends BaseEloquentModel
 {
-    use SoftDeletes, UuidTrait, SoftCascadeTrait;
+    use UuidTrait, SoftCascadeTrait, SoftDeletes;
+
+    /**
+     * Enable soft delete.
+     *
+     * @var boolean
+     */
+    protected $softDelete = true;
 
     /**
      * Soft delete cascades.
@@ -19,26 +25,17 @@ class Group extends Model
     protected $softCascade = ['projects'];
 
     /**
-     * Protected dates.
-     *
-     * @var array
+     * @inheritDoc
      */
     protected $dates = ['deleted_at'];
 
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'groups';
 
     /**
-     * Allow soft deletes
-     */
-    protected $softDelete = true;
-
-    /**
-     * @var array
+     * @inheritDoc
      */
     protected $fillable = [
         'uuid',

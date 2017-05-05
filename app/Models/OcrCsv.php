@@ -2,20 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class OcrCsv extends Model
+class OcrCsv extends BaseEloquentModel
 {
-
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'ocr_csv';
 
     /**
-     * @var array
+     * @inheritDoc
      */
     protected $fillable = [
         'subjects'

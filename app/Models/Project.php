@@ -2,19 +2,25 @@
 
 namespace App\Models;
 
+use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
-use Jenssegers\Eloquent\Model as Eloquent;
 use Codesleeve\Stapler\ORM\EloquentTrait;
 use Codesleeve\Stapler\ORM\StaplerableInterface;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Cviebrock\EloquentSluggable\SluggableInterface;
 use Cviebrock\EloquentSluggable\SluggableTrait;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 
-class Project extends Eloquent implements StaplerableInterface, SluggableInterface
+class Project extends BaseEloquentMongoModel implements StaplerableInterface, SluggableInterface
 {
-    use EloquentTrait, SoftDeletes, SluggableTrait, UuidTrait, SoftCascadeTrait;
+    use EloquentTrait, SluggableTrait, UuidTrait, SoftCascadeTrait, SoftDeletes;
+
+    /**
+     * Enable soft delete.
+     *
+     * @var boolean
+     */
+    protected $softDelete = true;
 
     /**
      * Soft delete cascades.
@@ -34,35 +40,27 @@ class Project extends Eloquent implements StaplerableInterface, SluggableInterfa
     ];
 
     /**
-     * Dates to protect.
-     *
-     * @var array
+     * @inheritDoc
      */
     protected $dates = ['deleted_at'];
 
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'projects';
 
     /**
-     * Database connection.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $connection = 'mysql';
 
     /**
-     * Primary key of the table.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $primaryKey = 'id';
 
     /**
-     * @var array
+     * @inheritDoc
      */
     protected $fillable = [
         'uuid',

@@ -2,20 +2,27 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Actor extends Model
+class Actor extends BaseEloquentModel
 {
     use SoftDeletes;
 
     /**
-     * The database table used by the model.
+     * Enable soft delete.
      *
-     * @var string
+     * @var boolean
+     */
+    protected $softDelete = true;
+
+    /**
+     * @inheritDoc
      */
     protected $table = 'actors';
 
+    /**
+     * @inheritDoc
+     */
     protected $fillable = [
         'title',
         'url',
@@ -24,9 +31,7 @@ class Actor extends Model
     ];
 
     /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
+     * @inheritDoc
      */
     protected $dates = ['deleted_at'];
 

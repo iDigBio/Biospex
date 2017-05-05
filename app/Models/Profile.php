@@ -2,21 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Codesleeve\Stapler\ORM\EloquentTrait;
 use Codesleeve\Stapler\ORM\StaplerableInterface;
 
-class Profile extends Model implements StaplerableInterface
+class Profile extends BaseEloquentModel implements StaplerableInterface
 {
     use EloquentTrait;
 
     /**
-     * @var array
+     * @inheritDoc
      */
     protected $dates = ['created_at', 'updated_at'];
 
     /**
-     * @var array
+     * @inheritDoc
      */
     protected $fillable = [
         'first_name',
@@ -26,9 +25,7 @@ class Profile extends Model implements StaplerableInterface
     ];
 
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'profiles';
 

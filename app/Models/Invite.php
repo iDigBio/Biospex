@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Invite extends Model
+class Invite extends BaseEloquentModel
 {
+
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'invites';
 
+    /**
+     * @inheritDoc
+     */
     protected $fillable = [
         'group_id',
         'email',

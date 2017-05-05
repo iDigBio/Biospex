@@ -2,24 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class AmChart extends Model
+class AmChart extends BaseEloquentModel
 {
     use SoftDeletes;
 
     /**
-     * The database table used by the model.
+     * Enable soft delete.
      *
-     * @var string
+     * @var boolean
+     */
+    protected $softDelete = true;
+
+    /**
+     * @inheritDoc
      */
     protected $table = 'amcharts';
 
     /**
-     * Fill data.
-     * 
-     * @var array
+     * @inheritDoc
      */
     protected $fillable = ['project_id', 'data'];
 

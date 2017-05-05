@@ -2,22 +2,33 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Model as Eloquent;
 
-class Occurrence extends Eloquent
+
+use Jenssegers\Mongodb\Eloquent\SoftDeletes;
+
+class Occurrence extends BaseMongoModel
 {
+    use SoftDeletes;
+
     /**
-     * Redefine connection to use mongodb
+     * Enable soft delete.
+     *
+     * @var boolean
+     */
+    protected $softDelete = true;
+
+    /**
+     * @inheritDoc
      */
     protected $connection = 'mongodb';
 
     /**
-     * Set primary key
+     * @inheritDoc
      */
     protected $primaryKey = '_id';
 
     /**
-     * set guarded properties
+     * @inheritDoc
      */
     protected $guarded = ['_id'];
 }

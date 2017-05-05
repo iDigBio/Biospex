@@ -1,25 +1,33 @@
-<?php namespace App\Models;
+<?php
 
-use Illuminate\Database\Eloquent\Model;
+namespace App\Models;
+
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class WorkflowManager extends Model
+class WorkflowManager extends BaseEloquentModel
 {
     use SoftDeletes;
 
     /**
-     * The database table used by the model.
+     * Enable soft delete.
      *
-     * @var string
+     * @var boolean
+     */
+    protected $softDelete = true;
+
+    /**
+     * @inheritDoc
      */
     protected $table = 'workflow_managers';
 
     /**
-     * @var array
+     * @inheritDoc
      */
     protected $dates = ['deleted_at'];
 
-
+    /**
+     * @inheritDoc
+     */
     protected $fillable = [
         'expedition_id',
         'stopped'

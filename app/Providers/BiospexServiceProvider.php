@@ -27,6 +27,8 @@ use App\Repositories\Contracts\ActorContract;
 use App\Repositories\Eloquent\ActorRepository;
 use App\Repositories\Contracts\UserContract;
 use App\Repositories\Eloquent\UserRepository;
+use App\Repositories\Contracts\ExportJobQueueContract;
+use App\Repositories\Eloquent\ExportJobQueueRepository;
 
 
 // Replacing eventually
@@ -57,7 +59,6 @@ use App\Repositories\Contracts\Team as TeamContract;
 use App\Repositories\Contracts\Notice as NoticeContract;
 use App\Repositories\Contracts\Translation as TranslationContract;
 use App\Repositories\Contracts\Resource as ResourceContract;
-use App\Repositories\Contracts\NfnClassification as NfnClassificationContract;
 use App\Repositories\Contracts\NfnWorkflow as NfnWorkflowContract;
 use App\Repositories\Contracts\Notification as NotificationContract;
 use App\Repositories\Contracts\ActorContact as ActorContactContract;
@@ -89,7 +90,6 @@ use App\Repositories\TeamRepository;
 use App\Repositories\NoticeRepository;
 use App\Repositories\TranslationRepository;
 use App\Repositories\ResourceRepository;
-use App\Repositories\NfnClassificationRepository;
 use App\Repositories\NfnWorkflowRepository;
 use App\Repositories\NotificationRepository;
 use App\Repositories\ActorContactRepository;
@@ -153,7 +153,6 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(NoticeContract::class, NoticeRepository::class);
         $this->app->bind(TranslationContract::class, TranslationRepository::class);
         $this->app->bind(ResourceContract::class, ResourceRepository::class);
-        $this->app->bind(NfnClassificationContract::class, NfnClassificationRepository::class);
         $this->app->bind(NfnWorkflowContract::class, NfnWorkflowRepository::class);
         $this->app->bind(NotificationContract::class, NotificationRepository::class);
         $this->app->bind(ActorContactContract::class, ActorContactRepository::class);
@@ -170,5 +169,6 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(StateCountyContract::class, StateCountyRepository::class);
         $this->app->bind(ActorContract::class, ActorRepository::class);
         $this->app->bind(UserContract::class, UserRepository::class);
+        $this->app->bind(ExportJobQueueContract::class, ExportJobQueueRepository::class);
     }
 }

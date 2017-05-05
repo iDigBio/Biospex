@@ -91,15 +91,4 @@ class ActorService
         $this->workingDir = $this->scratchDir . '/' . $folder;
         $this->fileService->makeDirectory($this->workingDir);
     }
-
-    /**
-     * Report complete process.
-     *
-     * @param array $vars (title, message, groupId, attachmentName)
-     * @param array $missingImages
-     */
-    public function processComplete($vars, array $missingImages = [])
-    {
-        $this->report->processComplete($vars, $missingImages);
-    }
 }

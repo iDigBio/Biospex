@@ -2,14 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class NfnWorkflow extends Model
+class NfnWorkflow extends BaseEloquentModel
 {
 
-    use SoftDeletes, SoftCascadeTrait;
+    use SoftCascadeTrait, SoftDeletes;
+
+    /**
+     * Enable soft delete.
+     *
+     * @var boolean
+     */
+    protected $softDelete = true;
 
     /**
      * Soft delete cascades.
@@ -19,20 +25,18 @@ class NfnWorkflow extends Model
     protected $softCascade = ['classifications'];
 
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'nfn_workflows';
 
     /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
+     * @inheritDoc
      */
     protected $dates = ['deleted_at'];
 
-
+    /**
+     * @inheritDoc
+     */
     protected $fillable = [
         'project_id',
         'expedition_id',

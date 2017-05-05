@@ -4,6 +4,7 @@ namespace App\Services\Actor\NfnLegacy;
 
 use App\Exceptions\BiospexException;
 use App\Services\Actor\ActorInterface;
+use App\Services\Actor\ActorReportService;
 use App\Services\Actor\ActorService;
 
 ini_set('memory_limit', '1024M');
@@ -74,12 +75,19 @@ class NfnLegacyExport implements ActorInterface
     private $smallWidth;
 
     /**
+     * @var ActorReportService
+     */
+    public $report;
+
+    /**
      * NfnLegacyExport constructor.
      *
      * @param ActorService $service
+     * @param ActorReportService $report
      */
     public function __construct(
-        ActorService $service
+        ActorService $service,
+        ActorReportService $report
     )
     {
         $this->service = $service;
@@ -90,6 +98,7 @@ class NfnLegacyExport implements ActorInterface
         $this->nfnExportDir = $this->service->config->get('config.nfn_export_dir');
         $this->largeWidth = $this->service->config->get('config.images.nfnLrgWidth');
         $this->smallWidth = $this->service->config->get('config.images.nfnSmWidth');
+        $this->report = $report;
     }
 
     /**
@@ -148,7 +157,7 @@ class NfnLegacyExport implements ActorInterface
             $actor->pivot->error = 1;
             $actor->pivot->save();
 
-            $this->service->report->addError(trans('errors.nfn_legacy_export_error', [
+            $this->report->addError(trans('errors.nfn_legacy_export_error', [
                 'title'   => $this->record->title,
                 'id'      => $this->record->id,
                 'message' => $e->getMessage()
@@ -347,6 +356,6 @@ class NfnLegacyExport implements ActorInterface
             'attachmentName' => trans('emails.missing_images_attachment_name', ['recordId' => $record->id])
         ];
 
-        $this->service->processComplete($vars, $this->actorImageService->getMissingImages());
+        $this->report->processComplete($vars, $this->actorImageService->getMissingImages());
     }
 }

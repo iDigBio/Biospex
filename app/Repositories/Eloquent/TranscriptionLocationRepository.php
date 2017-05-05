@@ -2,17 +2,13 @@
 
 namespace App\Repositories\Eloquent;
 
-
 use App\Models\TranscriptionLocation;
 use App\Repositories\Contracts\TranscriptionLocationContract;
-use App\Repositories\Traits\EloquentRepositoryCommon;
 use DB;
 use Illuminate\Contracts\Container\Container;
 
-class TranscriptionLocationRepository extends EloquentRepository implements TranscriptionLocationContract
+class TranscriptionLocationRepository extends BaseEloquentRepository implements TranscriptionLocationContract
 {
-    use EloquentRepositoryCommon;
-
     /**
      * PanoptesTranscriptionLocationRepository constructor.
      * @param Container $container

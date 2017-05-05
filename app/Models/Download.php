@@ -2,20 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\UuidTrait;
 
-class Download extends Model
+class Download extends BaseEloquentModel
 {
     use UuidTrait;
 
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'downloads';
 
+    /**
+     * @inheritDoc
+     */
     protected $fillable = [
         'uuid',
         'expedition_id',

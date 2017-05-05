@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Team extends Model
+class Team extends BaseEloquentModel
 {
+
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'teams';
 
+    /**
+     * @inheritDoc
+     */
     protected $fillable = [
         'team_category_id',
         'first_name',

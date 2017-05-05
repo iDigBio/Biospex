@@ -4,8 +4,8 @@ namespace App\Services\Actor;
 
 use App\Models\Actor;
 use App\Services\File\FileService;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
@@ -130,13 +130,21 @@ class ActorImageService
         };
 
         $pool = new Pool($this->client, $requests($subjects), [
-            'concurrency' => 10,
+            'concurrency' => 5,
             'fulfilled'   => function ($response, $index) use ($destination, $actor)
             {
                 $this->saveImage($response, $index, $destination);
             },
             'rejected'    => function ($reason, $index)
             {
+                if ($reason instanceof RequestException ) {
+                    if ($reason->hasResponse())
+                    {
+                        \Log::alert(print_r($reason->getResponse(), true));
+                        \Log::alert(print_r($reason->getMessage(), true));
+                    }
+                }
+
                 $this->updateActor();
                 $this->setMissingImages($this->subjects[$index], 'Could not retrieve image from uri.');
             }

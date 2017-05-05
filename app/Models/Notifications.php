@@ -1,24 +1,26 @@
 <?php
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Notifications extends Model
+class Notifications extends BaseEloquentModel
 {
     use SoftDeletes;
 
     /**
-     * The database table used by the model.
+     * Enable soft delete.
      *
-     * @var string
+     * @var boolean
+     */
+    protected $softDelete = true;
+
+    /**
+     * @inheritDoc
      */
     protected $table = 'notifications';
 
     /**
-     * Fillable array.
-     *
-     * @var array
+     * @inheritDoc
      */
     protected $fillable = [
         'user_id',
@@ -27,9 +29,7 @@ class Notifications extends Model
     ];
 
     /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
+     * @inheritDoc
      */
     protected $dates = ['deleted_at'];
 

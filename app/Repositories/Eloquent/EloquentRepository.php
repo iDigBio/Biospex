@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use App\Exceptions\RepositoryException;
 use App\Exceptions\EntityNotFoundException;
 
+/**
+ * Class EloquentRepository
+ * @package App\Repositories\Eloquent
+ */
 class EloquentRepository extends BaseRepository
 {
     /**

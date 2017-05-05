@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
-class ActorContact extends Model
+class ActorContact extends BaseEloquentModel
 {
+
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'actor_contacts';
 
+    /**
+     * @inheritDoc
+     */
     protected $fillable = [
         'email',
     ];

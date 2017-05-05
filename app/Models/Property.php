@@ -2,24 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
-class Property extends Model
+class Property extends BaseEloquentModel
 {
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'properties';
 
     /**
-     * @var array
+     * @inhertiDoc
      */
     protected $dates = ['deleted_at'];
 
     /**
-     * @var array
+     * @inheritDoc
      */
     protected $fillable = [
         'qualified',

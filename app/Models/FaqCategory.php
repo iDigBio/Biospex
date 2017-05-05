@@ -2,18 +2,17 @@
 
 namespace App\Models;
 
-
-use Illuminate\Database\Eloquent\Model;
-
-class FaqCategory extends Model
+class FaqCategory extends BaseEloquentModel
 {
+
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'faq_categories';
 
+    /**
+     * @inheritDoc
+     */
     protected $fillable = ['name'];
 
     /**

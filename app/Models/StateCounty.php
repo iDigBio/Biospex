@@ -2,34 +2,27 @@
 
 namespace App\Models;
 
-use Eloquent;
 
-class StateCounty extends Eloquent
+class StateCounty extends BaseEloquentModel
 {
 
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'state_counties';
 
     /**
-     * Database connection.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $connection = 'mysql';
 
     /**
-     * Primary key of the table.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $primaryKey = 'id';
 
     /**
-     * @var array
+     * @inheritDoc
      */
     protected $fillable = [
         'county_name',

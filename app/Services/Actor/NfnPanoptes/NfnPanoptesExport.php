@@ -5,6 +5,7 @@ namespace App\Services\Actor\NfnPanoptes;
 use App\Exceptions\BiospexException;
 use App\Services\Actor\ActorInterface;
 use App\Services\Actor\ActorService;
+use App\Services\Report\Report;
 
 class NfnPanoptesExport implements ActorInterface
 {
@@ -53,15 +54,21 @@ class NfnPanoptesExport implements ActorInterface
      * @var mixed
      */
     public $largeWidth;
+    /**
+     * @var Report
+     */
+    private $report;
 
     /**
      * NfnPanoptesExport constructor.
      * @param ActorService $service
+     * @param Report $report
      * @internal param ActorRepositoryService $repositoryService
      * @internal param ActorImageService $actorImageService
      */
     public function __construct(
-        ActorService $service
+        ActorService $service,
+        Report $report
     )
     {
         $this->service = $service;
@@ -72,6 +79,7 @@ class NfnPanoptesExport implements ActorInterface
         $this->nfnExportDir = $this->service->config->get('config.nfn_export_dir');
         $this->nfnCsvMap = $this->service->config->get('config.nfnCsvMap');
         $this->largeWidth = $this->service->config->get('config.images.nfnLrgWidth');
+        $this->report = $report;
     }
 
     /**
@@ -118,13 +126,13 @@ class NfnPanoptesExport implements ActorInterface
             $actor->pivot->error = 1;
             $actor->pivot->save();
 
-            $this->service->report->addError(trans('errors.nfn_classifications_error', [
+            $this->report->addError(trans('errors.nfn_classifications_error', [
                 'title'   => $this->record->title,
                 'id'      => $this->record->id,
                 'message' => $e->getMessage()
             ]));
 
-            $this->service->report->reportError($this->record->project->group->owner->email);
+            $this->report->reportError($this->record->project->group->owner->email);
 
             $this->service->handler->report($e);
         }
@@ -217,9 +225,9 @@ class NfnPanoptesExport implements ActorInterface
             return false;
         }
 
-        $this->service->report->csv->writerCreateFromPath($tempDir . '/' . $this->record->uuid . '.csv');
-        $this->service->report->csv->insertOne(array_keys($this->csvExport[0]));
-        $this->service->report->csv->insertAll($this->csvExport);
+        $this->report->csv->writerCreateFromPath($tempDir . '/' . $this->record->uuid . '.csv');
+        $this->report->csv->insertOne(array_keys($this->csvExport[0]));
+        $this->report->csv->insertAll($this->csvExport);
 
         return true;
     }
@@ -236,6 +244,6 @@ class NfnPanoptesExport implements ActorInterface
             'attachmentName' => trans('emails.missing_images_attachment_name', ['recordId' => $this->record->id])
         ];
 
-        $this->service->processComplete($vars, $this->actorImageService->getMissingImages());
+        $this->report->processComplete($vars, $this->actorImageService->getMissingImages());
     }
 }

@@ -4,13 +4,10 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Actor;
 use App\Repositories\Contracts\ActorContract;
-use App\Repositories\Traits\EloquentRepositoryCommon;
 use Illuminate\Contracts\Container\Container;
 
-class ActorRepository extends EloquentRepository implements ActorContract
+class ActorRepository extends BaseEloquentRepository implements ActorContract
 {
-    use EloquentRepositoryCommon;
-
     /**
      * ActorRepository constructor.
      * @param Container $container

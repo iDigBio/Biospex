@@ -4,13 +4,10 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Project;
 use App\Repositories\Contracts\ProjectContract;
-use App\Repositories\Traits\EloquentRepositoryCommon;
 use Illuminate\Contracts\Container\Container;
 
-class ProjectRepository extends EloquentRepository implements ProjectContract
+class ProjectRepository extends BaseEloquentRepository implements ProjectContract
 {
-    use EloquentRepositoryCommon;
-
     /**
      * ProjectRepository constructor.
      * @param Container $container

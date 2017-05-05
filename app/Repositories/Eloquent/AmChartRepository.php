@@ -4,13 +4,10 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\AmChart;
 use App\Repositories\Contracts\AmChartContract;
-use App\Repositories\Traits\EloquentRepositoryCommon;
 use Illuminate\Contracts\Container\Container;
 
-class AmChartRepository extends EloquentRepository implements AmChartContract
+class AmChartRepository extends BaseEloquentRepository implements AmChartContract
 {
-    use EloquentRepositoryCommon;
-
     /**
      * AmChartRepository constructor.
      * @param Container $container

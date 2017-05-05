@@ -1,21 +1,19 @@
-<?php namespace App\Models;
+<?php
+namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\UuidTrait;
 
-class OcrQueue extends Model
+class OcrQueue extends BaseEloquentModel
 {
     use UuidTrait;
 
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'ocr_queues';
 
     /**
-     * @var array
+     * @inheritDoc
      */
     protected $fillable = [
         'project_id',

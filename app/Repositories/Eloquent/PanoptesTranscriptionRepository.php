@@ -4,13 +4,10 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\PanoptesTranscription;
 use App\Repositories\Contracts\PanoptesTranscriptionContract;
-use App\Repositories\Traits\EloquentRepositoryCommon;
 use Illuminate\Contracts\Container\Container;
 
-class PanoptesTranscriptionRepository extends EloquentRepository implements PanoptesTranscriptionContract
+class PanoptesTranscriptionRepository extends BaseEloquentRepository implements PanoptesTranscriptionContract
 {
-    use EloquentRepositoryCommon;
-
     /**
      * PanoptesTranscriptionRepository constructor.
      * @param Container $container

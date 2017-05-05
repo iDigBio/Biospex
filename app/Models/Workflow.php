@@ -2,36 +2,37 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Workflow extends Model
+class Workflow extends BaseEloquentModel
 {
     use SoftDeletes;
 
     /**
-     * The database table used by the model.
+     * Enable soft delete.
      *
-     * @var string
+     * @var boolean
+     */
+    protected $softDelete = true;
+
+    /**
+     * @inheritDoc
      */
     protected $table = 'workflows';
 
     /**
-     * @var array
+     * @inheritDoc
      */
     protected $fillable = ['title', 'enabled'];
 
     /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
+     * @inheritDoc
      */
     protected $dates = ['deleted_at'];
 
     /**
-     * Actor relationship.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return mixed
      */
     public function actors()
     {
@@ -39,9 +40,7 @@ class Workflow extends Model
     }
 
     /**
-     * Project relationship.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function project()
     {

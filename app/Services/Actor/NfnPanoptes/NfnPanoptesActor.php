@@ -2,9 +2,10 @@
 
 namespace App\Services\Actor\NfnPanoptes;
 
-use App\Services\Actor\ActorInterface;
+use App\Exceptions\BiospexException;
+use App\Services\Actor\ActorBase;
 
-class NfnPanoptes implements ActorInterface
+class NfnPanoptesActor extends ActorBase
 {
 
     /**
@@ -35,8 +36,7 @@ class NfnPanoptes implements ActorInterface
      * Process actors.
      *
      * @param $actor
-     * @return mixed
-     * @throws \Exception|\RuntimeException
+     * @throws BiospexException
      */
     public function process($actor)
     {

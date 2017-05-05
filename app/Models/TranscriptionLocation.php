@@ -2,39 +2,42 @@
 
 namespace App\Models;
 
-use Jenssegers\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class TranscriptionLocation extends Eloquent
+class TranscriptionLocation extends BaseEloquentModel
 {
+
     use SoftDeletes;
 
     /**
-     * @var array
+     * Enable soft delete.
+     *
+     * @var boolean
+     */
+    protected $softDelete = true;
+
+    /**
+     * @inheritDoc
      */
     protected $dates = ['deleted_at'];
 
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'transcription_locations';
 
     /**
-     * @var string
+     * @inheritDoc
      */
     protected $connection = 'mysql';
 
     /**
-     * @var string
+     * @inheritDoc
      */
     protected $primaryKey = 'id';
 
     /**
-     * Accepted attributes
-     *
-     * @var array
+     * @inheritDoc
      */
     protected $fillable = [
         'classification_id',

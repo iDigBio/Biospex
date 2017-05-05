@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Model as Eloquent;
 use MongoDate;
 
-class PanoptesTranscription extends Eloquent
+class PanoptesTranscription extends BaseMongoModel
 {
     /**
-     * Redefine connection to use mongodb
+     * @inheritDoc
      */
     protected $connection = 'mongodb';
 
@@ -18,17 +17,17 @@ class PanoptesTranscription extends Eloquent
     protected $collection = 'panoptes_transcriptions';
 
     /**
-     * Set primary key
+     * @inheritDoc
      */
     protected $primaryKey = '_id';
 
     /**
-     * @var bool
+     * @inheritDoc
      */
     public $incrementing = false;
 
     /**
-     * set guarded properties
+     * @inheritDoc
      */
     protected $guarded = ['_id'];
 

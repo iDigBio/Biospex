@@ -3,23 +3,29 @@
 namespace App\Models;
 
 use Illuminate\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use App\Models\Traits\HasGroup;
 use App\Models\Traits\UuidTrait;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 
-class User extends Model implements AuthenticatableContract,
+class User extends BaseEloquentModel implements AuthenticatableContract,
     AuthorizableContract,
     CanResetPasswordContract
 {
     use Authenticatable, Authorizable, CanResetPassword,
-        HasGroup, UuidTrait, SoftDeletes, SoftCascadeTrait;
+        HasGroup, UuidTrait, SoftCascadeTrait, SoftDeletes;
+
+    /**
+     * Enable soft delete.
+     *
+     * @var boolean
+     */
+    protected $softDelete = true;
 
     /**
      * Soft delete cascades.
@@ -29,23 +35,17 @@ class User extends Model implements AuthenticatableContract,
     protected $softCascade = ['ownGroups'];
 
     /**
-     * Protected dates.
-     *
-     * @var array
+     * @inheritDoc
      */
     protected $dates = ['deleted_at'];
 
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'users';
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
+     * @inheritDoc
      */
     protected $fillable = [
         'uuid',
@@ -54,9 +54,7 @@ class User extends Model implements AuthenticatableContract,
     ];
 
     /**
-     * The attributes excluded from the model's JSON form.
-     *
-     * @var array
+     * @inheritDoc
      */
     protected $hidden = ['password', 'remember_token'];
 

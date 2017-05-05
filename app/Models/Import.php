@@ -2,17 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Import extends Model
+class Import extends BaseEloquentModel
 {
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'imports';
 
+    /**
+     * @inheritDoc
+     */
     protected $fillable = [
         'user_id',
         'project_id',

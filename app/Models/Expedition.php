@@ -2,14 +2,20 @@
 
 namespace App\Models;
 
-use Jenssegers\Eloquent\Model as Eloquent;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
+use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
-class Expedition extends Eloquent
+class Expedition extends BaseEloquentMongoModel
 {
-    use SoftDeletes, UuidTrait, SoftCascadeTrait;
+    use UuidTrait, SoftCascadeTrait, SoftDeletes;
+
+    /**
+     * Enable soft delete.
+     *
+     * @var boolean
+     */
+    protected $softDelete = true;
 
     /**
      * Soft delete cascades.
@@ -19,31 +25,27 @@ class Expedition extends Eloquent
     protected $softCascade = ['stat', 'nfnWorkflow', 'stat', 'workflowManager'];
 
     /**
-     * @var array
+     * @inheritDoc
      */
     protected $dates = ['deleted_at'];
 
     /**
-     * The database table used by the model.
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $table = 'expeditions';
 
     /**
-     * @var string
+     * @inheritDoc
      */
     protected $connection = 'mysql';
 
     /**
-     * @var string
+     * @inheritDoc
      */
     protected $primaryKey = 'id';
 
     /**
-     * Accepted attributes
-     *
-     * @var array
+     * @inheritDoc
      */
     protected $fillable = [
         'uuid',
@@ -156,6 +158,14 @@ class Expedition extends Eloquent
     public function panoptesTranscriptions()
     {
         return $this->hasMany(PanoptesTranscription::class, 'subject_expeditionId');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function exportJobQueue()
+    {
+        return $this->hasOne(ExportJobQueue::class);
     }
 
     /**

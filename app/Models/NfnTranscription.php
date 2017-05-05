@@ -2,13 +2,22 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Model as Eloquent;
+use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 use MongoDate;
 
-class NfnTranscription extends Eloquent
+class NfnTranscription extends BaseMongoModel
 {
+    use SoftDeletes;
+
     /**
-     * Redefine connection to use mongodb
+     * Enable soft delete.
+     *
+     * @var boolean
+     */
+    protected $softDelete = true;
+
+    /**
+     * @inhertiDoc
      */
     protected $connection = 'mongodb';
 
@@ -18,14 +27,17 @@ class NfnTranscription extends Eloquent
     protected $collection = 'transcriptions';
 
     /**
-     * Set primary key
+     * @inheritDoc
      */
     protected $primaryKey = '_id';
 
+    /**
+     * @inheritDoc
+     */
     public $incrementing = false;
 
     /**
-     * set guarded properties
+     * @inheritDoc
      */
     protected $guarded = ['_id'];
 

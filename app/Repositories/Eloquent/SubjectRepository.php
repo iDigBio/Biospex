@@ -4,14 +4,10 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Subject;
 use App\Repositories\Contracts\SubjectContract;
-use App\Repositories\Traits\EloquentRepositoryCommon;
 use Illuminate\Contracts\Container\Container;
 
-class SubjectRepository extends EloquentRepository implements SubjectContract
+class SubjectRepository extends BaseEloquentRepository implements SubjectContract
 {
-
-    use EloquentRepositoryCommon;
-
     /**
      * SubjectRepository constructor.
      * @param Container $container

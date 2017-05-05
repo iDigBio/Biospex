@@ -1,34 +1,42 @@
-<?php namespace App\Models;
+<?php
 
-use Jenssegers\Mongodb\Model as Eloquent;
+namespace App\Models;
+
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
-class Subject extends Eloquent
+class Subject extends BaseMongoModel
 {
     use SoftDeletes;
 
     /**
-     * Redefine connection to use mongodb
+     * Enable soft delete.
+     *
+     * @var boolean
+     */
+    protected $softDelete = true;
+
+    /**
+     * @inheritDoc
      */
     protected $connection = 'mongodb';
 
     /**
-     * Set primary key
+     * @inheritDoc
      */
     protected $primaryKey = '_id';
 
     /**
-     * @var array
+     * @inheritDoc
      */
     protected $dates = ['deleted_at'];
 
     /**
-     * @var bool
+     * @inheritDoc
      */
     public $incrementing = false;
 
     /**
-     * set guarded properties
+     * @inheritDoc
      */
     protected $guarded = ['_id'];
 
