@@ -40,21 +40,15 @@ class ExpeditionStatUpdate extends Command
      */
     public function handle(Expedition $expeditionRepo)
     {
-        $this->setIds();
+        $this->expeditionIds = null ===  $this->argument('ids') ?
+            null :
+            explode(',', $this->argument('ids'));
 
         $expeditions = $this->findStats($expeditionRepo);
 
         $projectIds = $this->setJobs($expeditions);
 
         $this->dispatchAmCharts($projectIds);
-    }
-
-    /**
-     * Set expedition ids if passed via argument.
-     */
-    private function setIds()
-    {
-        $this->expeditionIds = null ===  $this->argument('ids') ? null : explode(',', $this->argument('ids'));
     }
 
     /**
@@ -97,10 +91,6 @@ class ExpeditionStatUpdate extends Command
     private function dispatchAmCharts($projectIds)
     {
         $projectIds = array_unique($projectIds);
-
-        foreach ($projectIds as $projectId)
-        {
-            $this->dispatch((new AmChartJob($projectId))->onQueue(Config::get('config.beanstalkd.chart')));
-        }
+        $this->dispatch((new AmChartJob($projectIds))->onQueue(Config::get('config.beanstalkd.chart')));
     }
 }
