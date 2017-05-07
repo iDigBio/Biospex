@@ -56,7 +56,7 @@ class WorkFlowManagerCommand extends Command
     {
         $id = $this->argument('expedition');
 
-        $withRelations = ['expedition.actors', 'expedition.stat'];
+        $withRelations = ['expedition.actors', 'expedition.stat', 'expedition.nfnWorkflow'];
 
         $managers = null !== $id ?
             $this->workflowManagerContract->setCacheLifetime(0)
@@ -81,20 +81,26 @@ class WorkFlowManagerCommand extends Command
         $managers->reject(function($manager){
             return $manager->stopped;
         })->each(function($manager){
-            $this->processActors($manager->expedition->actors, $manager->expedition->stat->subject_count);
+            $this->processActors($manager);
         });
     }
 
     /**
      * Decide what actor to include in the array and being processed.
      *
-     * @param array $actors
-     * @param int $count
+     * @param $manager
      */
-    protected function processActors($actors, $count)
+    protected function processActors($manager)
     {
-        $actors->reject(function($actor){
-            return $actor->pivot->error || $actor->pivot->queued || $actor->pivot->completed;
+
+        $actors = $manager->expedition->actors;
+        $count = $manager->expedition->stat->subject_count;
+
+        $actors->reject(function($actor) use ($manager) {
+            return $actor->pivot->error ||
+                $actor->pivot->queued ||
+                $actor->pivot->completed
+                || $this->checkNfnWorkflow($actor, $manager);
         })->each(function($actor) use ($count){
             $actor->pivot->total = $count;
             $actor->pivot->processed = 0;
@@ -102,5 +108,23 @@ class WorkFlowManagerCommand extends Command
             $actor->pivot->save();
             Queue::push('App\Services\Queue\ActorQueue', serialize($actor), $this->tube);
         });
+    }
+
+    protected function checkNfnWorkflow($actor, $manager)
+    {
+        if ($actor->pivot->actor_id === 2)
+        {
+            if ( ! isset($manager->expedition->nfnWorkflow))
+            {
+                return true;
+            }
+
+            if ($manager->expedition->nfnWorkflow === null)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
