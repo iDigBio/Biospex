@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Robert
- * Date: 2/28/2017
- * Time: 1:30 PM
- */
 
 namespace App\Listeners;
 
@@ -17,7 +11,8 @@ class DatabaseCacheEventListener
      * Flush cache on saved.
      */
     public function saved() {
-        Cache::tags(['mysql'])->flush();
+        Cache::flush();
+        //Cache::tags(['mysql'])->flush();
     }
 
     /**
@@ -25,7 +20,8 @@ class DatabaseCacheEventListener
      */
     public function deleted()
     {
-        Cache::tags(['mysql'])->flush();
+        Cache::flush();
+        //Cache::tags(['mysql'])->flush();
     }
 
     /**
