@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\SendContactEmail;
 use App\Repositories\Contracts\AmChartContract;
 use App\Repositories\Contracts\Faq;
+use App\Repositories\Contracts\ProjectContract;
 use App\Repositories\Contracts\Project;
 use App\Http\Requests\ContactFormRequest;
 use Illuminate\Contracts\Config\Repository as Config;
@@ -17,11 +18,12 @@ class HomeController extends Controller
      *
      * @return Response
      */
-    public function index(Project $project)
+    public function index(ProjectContract $projectContract)
     {
-        $projects = $project->skipCache()->getRandomProjectsForCarousel(5);
+        $carouselProjects = $projectContract->getRandomProjectsForCarousel(5);
+        $recentProjects = $projectContract->getRecentProjects(5, ['title','slug', 'description_short']);
 
-        return view('frontend.home', compact('projects'));
+        return view('frontend.home', compact('carouselProjects', 'recentProjects'));
     }
 
     /**

@@ -671,3 +671,19 @@ h2.project-page-header {
 .wysihtml5-toolbar {
 
 }
+
+ul.recent-projects{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+ul.recent-projects li a{
+    font-weight: bold;
+}
+
+
+div.recent-projects-pane {
+    height:300px;
+    overflow-y:scroll;
+    width:100%;
+}

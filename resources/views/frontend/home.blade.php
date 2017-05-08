@@ -24,7 +24,7 @@
             </ol>
             <div class="carousel-inner">
                 <?php $i = 0 ?>
-                @foreach($projects as $project)
+                @foreach($carouselProjects as $project)
                     <div class="item {{ $i===0 ? 'active' : '' }}">
                         <img src="{{ $project->banner->url() }}" alt="{{ $project->title }}"/>
                         <div class="carousel-caption">
@@ -113,6 +113,21 @@
                                         fjs.parentNode.insertBefore(js, fjs);
                                     }
                                 }(document, "script", "twitter-wjs");</script>
+                        </div>
+                    </div>
+                    <div class="panel panel-primary" style="margin-top: 50px;">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">The Projects</h3>
+                        </div>
+                        <div class="panel-body recent-projects-pane">
+                            <ul class="recent-projects">
+                            @foreach($recentProjects as $project)
+                                        <li>
+                                            {!! link_to_route('home.get.project', $project->title, [$project->slug]) !!}
+                                            <p>{!! $project->description_short !!}</p>
+                                        </li>
+                            @endforeach
+                            </ul>
                         </div>
                     </div>
                 </div>
