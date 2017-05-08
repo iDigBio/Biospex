@@ -27,7 +27,7 @@ class NfnWorkflowService
      */
     public function checkNfnWorkflowsEmpty($record)
     {
-        return null === $record->nfnWorkflows || $record->nfnWorkflows->isEmpty();
+        return ! isset($record->nfnWorkflows) || null === $record->nfnWorkflows || $record->nfnWorkflows->isEmpty();
     }
 
     /**
@@ -38,6 +38,6 @@ class NfnWorkflowService
      */
     public function checkNfnWorkflowEmpty($record)
     {
-        return empty($record->nfnWorkflow) || null === $record->nfnWorkflow;
+        return ! isset($record->nfnWorkflows) || empty($record->nfnWorkflow) || null === $record->nfnWorkflow;
     }
 }
