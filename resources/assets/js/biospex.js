@@ -129,6 +129,15 @@ $(document).ready(function() {
         event.preventDefault();
     });
 
+    $('a.home-project-list').click(function(event){
+        var count = $(this).data("count");
+        $.get( $(this).attr("href") + '/' + count, function( data ) {
+                $( ".recent-projects-pane" ).html( data );
+                $('a.home-project-list').data("count", count+5);
+            });
+        event.preventDefault();
+    });
+
     $('.textarea').wysihtml5();
 
 });

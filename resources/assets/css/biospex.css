@@ -672,18 +672,28 @@ h2.project-page-header {
 
 }
 
+div.recent-projects-pane {
+    height:300px;
+    overflow-y:scroll;
+    width:100%;
+}
+
 ul.recent-projects{
     margin: 0;
     padding: 0;
     list-style: none;
 }
+
 ul.recent-projects li a{
     font-weight: bold;
 }
 
+div.project-text{
+    padding-left: 2em
+}
 
-div.recent-projects-pane {
-    height:300px;
-    overflow-y:scroll;
-    width:100%;
+div.recent-projects-footer {
+    text-align: center;
+    background-color: #f5f8fa;
+    border-top: none;
 }

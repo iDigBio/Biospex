@@ -120,14 +120,10 @@
                             <h3 class="panel-title">The Projects</h3>
                         </div>
                         <div class="panel-body recent-projects-pane">
-                            <ul class="recent-projects">
-                            @foreach($recentProjects as $project)
-                                        <li>
-                                            {!! link_to_route('home.get.project', $project->title, [$project->slug]) !!}
-                                            <p>{!! $project->description_short !!}</p>
-                                        </li>
-                            @endforeach
-                            </ul>
+                            @include('frontend.layouts.partials.home-project-list')
+                        </div>
+                        <div class="panel-footer recent-projects-footer">
+                            {!! link_to_route('home.project-list', 'Load more Projects', [], ['class' => 'home-project-list', 'data-count' => $recentProjects->count()]) !!}
                         </div>
                     </div>
                 </div>

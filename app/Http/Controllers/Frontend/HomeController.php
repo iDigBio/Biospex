@@ -10,18 +10,21 @@ use App\Repositories\Contracts\ProjectContract;
 use App\Repositories\Contracts\Project;
 use App\Http\Requests\ContactFormRequest;
 use Illuminate\Contracts\Config\Repository as Config;
+use Request;
 
 class HomeController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @param ProjectContract $projectContract
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index(ProjectContract $projectContract)
     {
         $carouselProjects = $projectContract->getRandomProjectsForCarousel(5);
-        $recentProjects = $projectContract->getRecentProjects(5, ['title','slug', 'description_short']);
+        $recentProjects = $projectContract->getRecentProjects(5);
 
         return view('frontend.home', compact('carouselProjects', 'recentProjects'));
     }
@@ -49,6 +52,25 @@ class HomeController extends Controller
         }
 
         return view('frontend.project', compact('project', 'expeditions'));
+    }
+
+    /**
+     * Return project list for home page.
+     *
+     * @param ProjectContract $projectContract
+     * @param $count
+     * @return mixed
+     */
+    public function projects(ProjectContract $projectContract, $count = 5)
+    {
+        if ( ! Request::ajax())
+        {
+            return '';
+        }
+
+        $recentProjects = $projectContract->getRecentProjects($count+5);
+
+        return view('frontend.layouts.partials.home-project-list', compact('recentProjects'));
     }
 
     /**

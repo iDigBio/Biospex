@@ -17,6 +17,10 @@ $router->get('/', [
     'uses' => 'HomeController@index',
     'as'   => 'home'
 ]);
+$router->get('/project-list/{count?}', [
+    'uses' => 'HomeController@projects',
+    'as'   => 'home.project-list'
+]);
 // End Home and Welcome
 
 // Begin Vision
