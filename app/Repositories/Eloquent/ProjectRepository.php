@@ -40,9 +40,9 @@ class ProjectRepository extends EloquentRepository implements ProjectContract
      */
     public function getRecentProjects($count = 5, array $attributes = ['*'])
     {
-        return $this->setCacheLifetime(0)
-            ->latest('id')
-            ->take($count)
-            ->get($attributes);
+        return $this->has('nfnWorkflows')
+            ->orderBy('id', 'desc')
+            ->findAll($attributes)
+            ->take($count);
     }
 }
