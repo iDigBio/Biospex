@@ -27,4 +27,6 @@ return array (
     Advancing Digitization of Biodiversity Collections Program (Cooperative Agreement EF-1115210). Any opinions, 
     findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not 
     necessarily reflect the views of the National Science Foundation.',
+    'total-transcriptions' => '<h1>Transcriptions Performed in Biospex-launched Projects: :transcriptionCount</h1>',
+
 );
