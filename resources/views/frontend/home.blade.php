@@ -99,6 +99,17 @@
                 <div class="col-md-5">
                     <div class="panel panel-primary" style="margin-top: 50px;">
                         <div class="panel-heading">
+                            <h3 class="panel-title">The Projects</h3>
+                        </div>
+                        <div class="panel-body recent-projects-pane">
+                            @include('frontend.layouts.partials.home-project-list')
+                        </div>
+                        <div class="panel-footer recent-projects-footer">
+                            {!! link_to_route('home.project-list', 'Load more Projects', [], ['class' => 'home-project-list', 'data-count' => $recentProjects->count()]) !!}
+                        </div>
+                    </div>
+                    <div class="panel panel-primary" style="margin-top: 50px;">
+                        <div class="panel-heading">
                             <h3 class="panel-title">The Buzz</h3>
                         </div>
                         <div class="panel-body">
@@ -113,17 +124,6 @@
                                         fjs.parentNode.insertBefore(js, fjs);
                                     }
                                 }(document, "script", "twitter-wjs");</script>
-                        </div>
-                    </div>
-                    <div class="panel panel-primary" style="margin-top: 50px;">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">The Projects</h3>
-                        </div>
-                        <div class="panel-body recent-projects-pane">
-                            @include('frontend.layouts.partials.home-project-list')
-                        </div>
-                        <div class="panel-footer recent-projects-footer">
-                            {!! link_to_route('home.project-list', 'Load more Projects', [], ['class' => 'home-project-list', 'data-count' => $recentProjects->count()]) !!}
                         </div>
                     </div>
                 </div>
