@@ -36,6 +36,16 @@ class PanoptesTranscriptionRepository extends EloquentRepository implements Pano
     }
 
     /**
+     * Return total count of transcriptions.
+     *
+     * @return int|mixed
+     */
+    public function getTotalTranscriptions()
+    {
+        return $this->count();
+    }
+
+    /**
      * Retrieve transcription count using expedition id.
      *
      * @param $expeditionId
