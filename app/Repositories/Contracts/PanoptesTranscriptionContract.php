@@ -7,6 +7,8 @@ interface PanoptesTranscriptionContract extends RepositoryContract, CacheableCon
 
     public function getTranscriptionCountByWorkflowId($workflowId, array $attributes= ['*']);
 
+    public function getTotalTranscriptions();
+
     public function getTranscriptionCountByExpeditionId($expeditionId, array $attributes = ['*']);
 
     public function getMinFinishedAtDateByProjectId($projectId);
