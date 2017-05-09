@@ -9,9 +9,12 @@
 {{-- Content --}}
 @section('homepage')
     <div id="splash">
-        <div class="pull-left">
+        <div class="pull-left col-md-6">
         <img src="/img/logo.png" alt="biospex"/>
         {!! trans('html.homepage-header') !!}
+        </div>
+        <div class="pull-right col-md-6 vertical-center">
+            {!! trans('html.total-transcriptions', ['transcriptionCount' => $transcriptionCount]) !!}
         </div>
         <!--
         <div id="carousel" class="carousel slide pull-right" data-ride="carousel">

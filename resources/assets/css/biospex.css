@@ -649,6 +649,13 @@ h2.project-page-header {
     line-height: 30px;
 }
 
+.vertical-center {
+    height: 30vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 #carousel {
     width: 650px;
     margin-top: 50px;

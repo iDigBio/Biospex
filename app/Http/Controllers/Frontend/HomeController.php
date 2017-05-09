@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\SendContactEmail;
 use App\Repositories\Contracts\AmChartContract;
 use App\Repositories\Contracts\Faq;
+use App\Repositories\Contracts\PanoptesTranscriptionContract;
 use App\Repositories\Contracts\ProjectContract;
 use App\Repositories\Contracts\Project;
 use App\Http\Requests\ContactFormRequest;
@@ -19,14 +20,16 @@ class HomeController extends Controller
      * Display a listing of the resource.
      *
      * @param ProjectContract $projectContract
+     * @param PanoptesTranscriptionContract $panoptesTranscriptionContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(ProjectContract $projectContract)
+    public function index(ProjectContract $projectContract, PanoptesTranscriptionContract $panoptesTranscriptionContract)
     {
         $carouselProjects = $projectContract->getRandomProjectsForCarousel(5);
         $recentProjects = $projectContract->getRecentProjects(5);
+        $transcriptionCount = $panoptesTranscriptionContract->getTotalTranscriptions();
 
-        return view('frontend.home', compact('carouselProjects', 'recentProjects'));
+        return view('frontend.home', compact('carouselProjects', 'recentProjects', 'transcriptionCount'));
     }
 
     /**
@@ -63,11 +66,6 @@ class HomeController extends Controller
      */
     public function projects(ProjectContract $projectContract, $count = 5)
     {
-        if ( ! Request::ajax())
-        {
-            return '';
-        }
-
         $recentProjects = $projectContract->getRecentProjects($count+5);
 
         return view('frontend.layouts.partials.home-project-list', compact('recentProjects'));
