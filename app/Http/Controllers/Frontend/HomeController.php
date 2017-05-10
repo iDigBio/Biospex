@@ -28,7 +28,7 @@ class HomeController extends Controller
         $carouselProjects = $projectContract->getRandomProjectsForCarousel(5);
         $recentProjects = $projectContract->getRecentProjects(5);
         $transcriptionCount = number_format($panoptesTranscriptionContract->getTotalTranscriptions());
-        $contributorCount = number_format($panoptesTranscriptionContract->getContributorCount());
+        $contributorCount = $panoptesTranscriptionContract->getContributorCount();
 
         return view('frontend.home', compact('carouselProjects', 'recentProjects', 'transcriptionCount', 'contributorCount'));
     }

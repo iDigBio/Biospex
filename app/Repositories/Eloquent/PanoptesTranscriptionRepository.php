@@ -112,6 +112,9 @@ class PanoptesTranscriptionRepository extends EloquentRepository implements Pano
      */
     public function getContributorCount()
     {
-        return $this->where('user_name', 'not regexp', '/^not-logged-in/i')->count();
+        return $this->where('user_name', 'not regexp', '/^not-logged-in/i')
+            ->groupBy('user_name')
+            ->get()
+            ->count();
     }
 }
