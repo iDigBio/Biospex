@@ -704,3 +704,14 @@ div.recent-projects-footer {
     background-color: #f5f8fa;
     border-top: none;
 }
+
+div.stats {
+    font-size: medium;
+    font-weight:bold;
+    color:#325D88;
+    margin-bottom: 10px;
+}
+
+div.stats-number{
+    font-size: large;
+}

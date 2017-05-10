@@ -13,9 +13,6 @@
         <img src="/img/logo.png" alt="biospex"/>
         {!! trans('html.homepage-header') !!}
         </div>
-        <div class="pull-right col-md-6 vertical-center">
-            {!! trans('html.total-transcriptions', ['transcriptionCount' => $transcriptionCount]) !!}
-        </div>
         <!--
         <div id="carousel" class="carousel slide pull-right" data-ride="carousel">
             <ol class="carousel-indicators">
@@ -102,6 +99,21 @@
                 <div class="col-md-5">
                     <div class="panel panel-primary" style="margin-top: 50px;">
                         <div class="panel-heading">
+                            <h3 class="panel-title">The Statistics</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-2 stats stats-number">{!! $transcriptionCount !!}</div>
+                                <div class="col-sm-10 stats">{!! trans('html.total-transcriptions') !!}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2 stats stats-number">{!! $contributorCount !!}</div>
+                                <div class="col-sm-10 stats">{!! trans('html.total-contributors') !!}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
                             <h3 class="panel-title">The Projects</h3>
                         </div>
                         <div class="panel-body recent-projects-pane">
@@ -111,7 +123,7 @@
                             {!! link_to_route('home.project-list', 'Load more Projects', [], ['class' => 'home-project-list', 'data-count' => $recentProjects->count()]) !!}
                         </div>
                     </div>
-                    <div class="panel panel-primary" style="margin-top: 50px;">
+                    <div class="panel panel-primary">
                         <div class="panel-heading">
                             <h3 class="panel-title">The Buzz</h3>
                         </div>

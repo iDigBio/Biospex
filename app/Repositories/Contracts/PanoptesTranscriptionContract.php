@@ -16,4 +16,6 @@ interface PanoptesTranscriptionContract extends RepositoryContract, CacheableCon
     public function getMaxFinishedAtDateByProjectId($projectId);
 
     public function getTranscriptionCountPerDate($workflowId);
+
+    public function getContributorCount();
 }

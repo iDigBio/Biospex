@@ -106,4 +106,12 @@ class PanoptesTranscriptionRepository extends EloquentRepository implements Pano
                 ]);
         });
     }
+
+    /**
+     * @return int|mixed
+     */
+    public function getContributorCount()
+    {
+        return $this->where('user_name', 'not regexp', '/^not-logged-in/i')->count();
+    }
 }

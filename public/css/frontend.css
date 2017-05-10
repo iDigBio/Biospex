@@ -8336,4 +8336,14 @@ div.recent-projects-footer {
     border-top: none;
 }
 
+div.stats {
+    font-size: medium;
+    font-weight:bold;
+    color:#325D88;
+    margin-bottom: 10px;
+}
+
+div.stats-number{
+    font-size: large;
+}
 /*# sourceMappingURL=frontend.css.map */
