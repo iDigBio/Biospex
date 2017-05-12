@@ -97,10 +97,7 @@ class WorkFlowManagerCommand extends Command
         $count = $manager->expedition->stat->subject_count;
 
         $actors->reject(function($actor) use ($manager) {
-            return $actor->pivot->error ||
-                $actor->pivot->queued ||
-                $actor->pivot->completed
-                || $this->checkNfnWorkflow($actor, $manager);
+            return $this->checkActor($actor) || $this->checkNfnWorkflow($actor, $manager);
         })->each(function($actor) use ($count){
             $actor->pivot->total = $count;
             $actor->pivot->processed = 0;
@@ -110,6 +107,24 @@ class WorkFlowManagerCommand extends Command
         });
     }
 
+    /**
+     * Check actor properties.
+     *
+     * @param $actor
+     * @return bool
+     */
+    protected function checkActor($actor)
+    {
+        return $actor->pivot->error || $actor->pivot->queued || $actor->pivot->completed;
+    }
+
+    /**
+     * Check nfnWorkflow.
+     *
+     * @param $actor
+     * @param $manager
+     * @return bool
+     */
     protected function checkNfnWorkflow($actor, $manager)
     {
         if ($actor->pivot->actor_id === 2)
