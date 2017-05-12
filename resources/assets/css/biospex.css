@@ -649,6 +649,13 @@ h2.project-page-header {
     line-height: 30px;
 }
 
+.vertical-center {
+    height: 30vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 #carousel {
     width: 650px;
     margin-top: 50px;
@@ -670,4 +677,41 @@ h2.project-page-header {
 
 .wysihtml5-toolbar {
 
+}
+
+div.recent-projects-pane {
+    height:300px;
+    overflow-y:scroll;
+    width:100%;
+}
+
+ul.recent-projects{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+ul.recent-projects li a{
+    font-weight: bold;
+}
+
+div.project-text{
+    padding-left: 2em
+}
+
+div.recent-projects-footer {
+    text-align: center;
+    background-color: #f5f8fa;
+    border-top: none;
+}
+
+div.stats {
+    font-size: medium;
+    font-weight:bold;
+    color:#325D88;
+    margin-bottom: 10px;
+}
+
+div.stats-number{
+    font-size: large;
 }

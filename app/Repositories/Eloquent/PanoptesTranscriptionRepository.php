@@ -33,6 +33,16 @@ class PanoptesTranscriptionRepository extends BaseEloquentRepository implements 
     }
 
     /**
+     * Return total count of transcriptions.
+     *
+     * @return int|mixed
+     */
+    public function getTotalTranscriptions()
+    {
+        return $this->count();
+    }
+
+    /**
      * Retrieve transcription count using expedition id.
      *
      * @param $expeditionId
@@ -92,5 +102,13 @@ class PanoptesTranscriptionRepository extends BaseEloquentRepository implements 
                     ['$sort' => ['_id' => 1]]
                 ]);
         });
+    }
+
+    /**
+     * @return int|mixed
+     */
+    public function getContributorCount()
+    {
+        return $this->groupBy('user_name')->findWhere(['user_name', 'not regexp', '/^not-logged-in.*/i'])->count();
     }
 }

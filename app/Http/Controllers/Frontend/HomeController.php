@@ -6,22 +6,31 @@ use App\Http\Controllers\Controller;
 use App\Jobs\SendContactEmail;
 use App\Repositories\Contracts\AmChartContract;
 use App\Repositories\Contracts\Faq;
+use App\Repositories\Contracts\PanoptesTranscriptionContract;
+use App\Repositories\Contracts\ProjectContract;
 use App\Repositories\Contracts\Project;
 use App\Http\Requests\ContactFormRequest;
 use Illuminate\Contracts\Config\Repository as Config;
+use Request;
 
 class HomeController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @param ProjectContract $projectContract
+     * @param PanoptesTranscriptionContract $panoptesTranscriptionContract
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Project $project)
+    public function index(ProjectContract $projectContract, PanoptesTranscriptionContract $panoptesTranscriptionContract)
     {
-        $projects = $project->skipCache()->getRandomProjectsForCarousel(5);
+        $carouselProjects = $projectContract->getRandomProjectsForCarousel(5);
+        $recentProjects = $projectContract->getRecentProjects(5);
+        $transcriptionCount = number_format($panoptesTranscriptionContract->getTotalTranscriptions());
+        $contributorCount = number_format($panoptesTranscriptionContract->getContributorCount());
 
-        return view('frontend.home', compact('projects'));
+        return view('frontend.home', compact('carouselProjects', 'recentProjects', 'transcriptionCount', 'contributorCount'));
     }
 
     /**
@@ -47,6 +56,20 @@ class HomeController extends Controller
         }
 
         return view('frontend.project', compact('project', 'expeditions'));
+    }
+
+    /**
+     * Return project list for home page.
+     *
+     * @param ProjectContract $projectContract
+     * @param $count
+     * @return mixed
+     */
+    public function projects(ProjectContract $projectContract, $count = 5)
+    {
+        $recentProjects = $projectContract->getRecentProjects($count+5);
+
+        return view('frontend.layouts.partials.home-project-list', compact('recentProjects'));
     }
 
     /**

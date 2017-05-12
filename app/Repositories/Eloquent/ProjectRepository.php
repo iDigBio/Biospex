@@ -23,8 +23,23 @@ class ProjectRepository extends BaseEloquentRepository implements ProjectContrac
     /**
      * @inheritdoc
      */
-    public function getRandomProjectsForCarousel($count = 5)
+    public function getRandomProjectsForCarousel($count = 5, array $attributes = ['*'])
     {
-        return $this->model->inRandomOrder()->whereNotNull('banner_file_name')->limit($count)->get();
+        return $this->setCacheLifetime(0)
+            ->inRandomOrder()
+            ->whereNotNull('banner_file_name')
+            ->limit($count)
+            ->get($attributes);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRecentProjects($count = 5, array $attributes = ['*'])
+    {
+        return $this->has('nfnWorkflows')
+            ->orderBy('id', 'desc')
+            ->findAll($attributes)
+            ->take($count);
     }
 }
