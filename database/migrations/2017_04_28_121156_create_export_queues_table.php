@@ -15,12 +15,14 @@ class CreateExportQueuesTable extends Migration
         Schema::create('export_queues', function ($table) {
             $table->increments('id');
             $table->integer('expedition_id')->unsigned();
-            $table->integer('stage');
-            $table->boolean('queued');
+            $table->integer('actor_id')->unsigned();
+            $table->integer('stage')->index();
+            $table->boolean('queued')->index();
             $table->longText('missing')->nullable();
             $table->timestamps();
 
             $table->foreign('expedition_id')->references('id')->on('expeditions')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('actor_id')->references('id')->on('actors')->onUpdate('cascade')->onDelete('cascade');
             $table->engine = 'InnoDB';
         });
     }
