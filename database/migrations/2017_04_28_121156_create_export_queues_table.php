@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateExportJobQueuesTable extends Migration
+class CreateExportQueuesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,10 +12,10 @@ class CreateExportJobQueuesTable extends Migration
      */
     public function up()
     {
-        Schema::create('export_job_queues', function ($table) {
+        Schema::create('export_queues', function ($table) {
             $table->increments('id');
             $table->integer('expedition_id')->unsigned();
-            $table->integer('state');
+            $table->integer('stage');
             $table->boolean('queued');
             $table->longText('missing')->nullable();
             $table->timestamps();
@@ -32,6 +32,6 @@ class CreateExportJobQueuesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('export_job_queues');
+        Schema::drop('export_queues');
     }
 }
