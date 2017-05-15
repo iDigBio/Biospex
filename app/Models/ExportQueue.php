@@ -21,4 +21,19 @@ class ExportQueue extends BaseEloquentModel
         'missing'
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function expedition()
+    {
+        return $this->belongsTo(Expedition::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function actor()
+    {
+        return $this->belongsTo(Actor::class);
+    }
 }

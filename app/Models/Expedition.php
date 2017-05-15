@@ -131,8 +131,21 @@ class Expedition extends BaseEloquentMongoModel
      */
     public function nfnActor()
     {
+        $pivot = [
+            'id',
+            'expedition_id',
+            'actor_id',
+            'state',
+            'total',
+            'processed',
+            'error',
+            'queued',
+            'completed',
+            'order'
+        ];
+
         return $this->belongsToMany(Actor::class, 'actor_expedition')
-            ->withPivot('id', 'expedition_id', 'actor_id', 'state', 'total', 'processed', 'error', 'queued', 'completed', 'order')
+            ->withPivot($pivot)
             ->wherePivot('actor_id', 2);
     }
 
@@ -161,11 +174,11 @@ class Expedition extends BaseEloquentMongoModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function exportQueue()
+    public function exportQueues()
     {
-        return $this->hasOne(ExportQueue::class);
+        return $this->hasMany(ExportQueue::class);
     }
 
     /**

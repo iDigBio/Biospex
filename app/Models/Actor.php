@@ -93,4 +93,12 @@ class Actor extends BaseEloquentModel
             ->orderBy('order')
             ->withTimestamps();
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function exportQueues()
+    {
+        return $this->hasMany(ExportQueue::class);
+    }
 }
