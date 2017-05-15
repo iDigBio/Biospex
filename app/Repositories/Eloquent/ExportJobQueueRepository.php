@@ -18,4 +18,12 @@ class ExportJobQueueRepository extends BaseEloquentRepository implements ExportJ
             ->setModel(ExportJobQueue::class)
             ->setRepositoryId('biospex.repository.exportJobQue');
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function checkForQueuedJob()
+    {
+        return $this->findWhere(['queued', '=', 1])->count();
+    }
 }
