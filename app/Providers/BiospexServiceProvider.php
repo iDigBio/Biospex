@@ -27,8 +27,8 @@ use App\Repositories\Contracts\ActorContract;
 use App\Repositories\Eloquent\ActorRepository;
 use App\Repositories\Contracts\UserContract;
 use App\Repositories\Eloquent\UserRepository;
-use App\Repositories\Contracts\ExportJobQueueContract;
-use App\Repositories\Eloquent\ExportJobQueueRepository;
+use App\Repositories\Contracts\ExportQueueContract;
+use App\Repositories\Eloquent\ExportQueueRepository;
 
 
 // Replacing eventually
@@ -169,6 +169,6 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(StateCountyContract::class, StateCountyRepository::class);
         $this->app->bind(ActorContract::class, ActorRepository::class);
         $this->app->bind(UserContract::class, UserRepository::class);
-        $this->app->bind(ExportJobQueueContract::class, ExportJobQueueRepository::class);
+        $this->app->bind(ExportQueueContract::class, ExportQueueRepository::class);
     }
 }
