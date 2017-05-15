@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Events\SendErrorEvent;
 use App\Listeners\DatabaseCacheEventListener;
+use App\Listeners\ExportExpeditionEventListener;
 use App\Listeners\GroupEventListener;
 use App\Listeners\RepositoryEventListener;
 use App\Listeners\SendErrorEventListener;
@@ -46,7 +47,8 @@ class EventServiceProvider extends ServiceProvider
     protected $subscribe = [
         GroupEventListener::class,
         DatabaseCacheEventListener::class,
-        RepositoryEventListener::class
+        RepositoryEventListener::class,
+        ExportExpeditionEventListener::class
     ];
 
     /**
