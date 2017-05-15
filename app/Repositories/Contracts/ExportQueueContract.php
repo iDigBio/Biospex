@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Contracts;
 
-interface ExportJobQueueContract extends RepositoryContract, CacheableContract
+interface ExportQueueContract extends RepositoryContract, CacheableContract
 {
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\Contracts\ExportQueueContract;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -29,7 +30,9 @@ class TestAppCommand extends Command
         parent::__construct();
     }
 
-    public function handle()
+    public function handle(ExportQueueContract $contract)
     {
+        $result = $record = $contract->firstOrCreate(['expedition_id' => 17]);
+        dd($result);
     }
 }

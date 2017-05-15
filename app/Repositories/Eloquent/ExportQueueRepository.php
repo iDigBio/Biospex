@@ -2,11 +2,11 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\Models\ExportJobQueue;
-use App\Repositories\Contracts\ExportJobQueueContract;
+use App\Models\ExportQueue;
+use App\Repositories\Contracts\ExportQueueContract;
 use Illuminate\Contracts\Container\Container;
 
-class ExportJobQueueRepository extends BaseEloquentRepository implements ExportJobQueueContract
+class ExportQueueRepository extends BaseEloquentRepository implements ExportQueueContract
 {
     /**
      * ActorRepository constructor.
@@ -15,8 +15,8 @@ class ExportJobQueueRepository extends BaseEloquentRepository implements ExportJ
     public function __construct(Container $container)
     {
         $this->setContainer($container)
-            ->setModel(ExportJobQueue::class)
-            ->setRepositoryId('biospex.repository.exportJobQue');
+            ->setModel(ExportQueue::class)
+            ->setRepositoryId('biospex.repository.exportQueue');
     }
 
     /**

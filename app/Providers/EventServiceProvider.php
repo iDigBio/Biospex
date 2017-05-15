@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use App\Events\SendErrorEvent;
 use App\Listeners\DatabaseCacheEventListener;
-use App\Listeners\ExportJobQueueEventListener;
+use App\Listeners\ExportQueueEventListener;
 use App\Listeners\GroupEventListener;
 use App\Listeners\RepositoryEventListener;
 use App\Listeners\SendErrorEventListener;
@@ -48,7 +48,7 @@ class EventServiceProvider extends ServiceProvider
         GroupEventListener::class,
         DatabaseCacheEventListener::class,
         RepositoryEventListener::class,
-        ExportJobQueueEventListener::class
+        ExportQueueEventListener::class
     ];
 
     /**

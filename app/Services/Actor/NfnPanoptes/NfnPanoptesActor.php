@@ -3,33 +3,41 @@
 namespace App\Services\Actor\NfnPanoptes;
 
 use App\Exceptions\BiospexException;
+use App\Repositories\Contracts\ExportQueueContract;
 use App\Services\Actor\ActorBase;
+use Illuminate\Events\Dispatcher as Event;
 
 class NfnPanoptesActor extends ActorBase
 {
 
     /**
-     * @var NfnPanoptesExport
-     */
-    private $export;
-
-    /**
      * @var NfnPanoptesClassifications
      */
     private $classifications;
+    /**
+     * @var ExportQueueContract
+     */
+    private $exportQueueContract;
+    /**
+     * @var Event
+     */
+    private $dispatcher;
 
     /**
      * NfnPanoptes constructor.
-     * @param NfnPanoptesExport $export
      * @param NfnPanoptesClassifications $classifications
+     * @param ExportQueueContract $exportQueueContract
+     * @param Event $dispatcher
      */
     public function __construct(
-        NfnPanoptesExport $export,
-        NfnPanoptesClassifications $classifications
+        NfnPanoptesClassifications $classifications,
+        ExportQueueContract $exportQueueContract,
+        Event $dispatcher
     )
     {
-        $this->export = $export;
         $this->classifications = $classifications;
+        $this->exportQueueContract = $exportQueueContract;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -40,10 +48,13 @@ class NfnPanoptesActor extends ActorBase
      */
     public function process($actor)
     {
-        if ($actor->pivot->state === 0) {
-            $this->export->process($actor);
+        if ($actor->pivot->state === 0)
+        {
+            $this->exportQueueContract->firstOrCreate(['expedition_id' => $actor->pivot->expedition_id]);
+            $this->dispatcher->fire('exportQueue.saved');
         }
-        elseif ($actor->pivot->state === 1) {
+        elseif ($actor->pivot->state === 1)
+        {
             $this->classifications->process($actor);
         }
     }

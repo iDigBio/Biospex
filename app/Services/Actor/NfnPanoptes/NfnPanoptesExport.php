@@ -3,6 +3,7 @@
 namespace App\Services\Actor\NfnPanoptes;
 
 use App\Exceptions\BiospexException;
+use App\Repositories\Contracts\ExportQueueContract;
 use App\Services\Actor\ActorInterface;
 use App\Services\Actor\ActorService;
 use App\Services\Report\Report;
@@ -58,17 +59,36 @@ class NfnPanoptesExport implements ActorInterface
      * @var Report
      */
     private $report;
+    /**
+     * @var ExportQueueContract
+     */
+    private $exportQueueContract;
+
+    private $state = [
+        'NfnPanoptesExportImages',
+        'NfnPanoptesExportConvert',
+        'NfnPanoptesExportCompress',
+        'NfnPanoptesExportReport'
+    ];
+    /**
+     * @var NfnPanoptesExportImages
+     */
+    private $exportImages;
 
     /**
      * NfnPanoptesExport constructor.
+     * @param NfnPanoptesExportImages $exportImages
      * @param ActorService $service
      * @param Report $report
+     * @param ExportQueueContract $exportQueueContract
      * @internal param ActorRepositoryService $repositoryService
      * @internal param ActorImageService $actorImageService
      */
     public function __construct(
+        NfnPanoptesExportImages $exportImages,
         ActorService $service,
-        Report $report
+        Report $report,
+        ExportQueueContract $exportQueueContract
     )
     {
         $this->service = $service;
@@ -80,6 +100,8 @@ class NfnPanoptesExport implements ActorInterface
         $this->nfnCsvMap = $this->service->config->get('config.nfnCsvMap');
         $this->largeWidth = $this->service->config->get('config.images.nfnLrgWidth');
         $this->report = $report;
+        $this->exportQueueContract = $exportQueueContract;
+        $this->exportImages = $exportImages;
     }
 
     /**
@@ -93,6 +115,15 @@ class NfnPanoptesExport implements ActorInterface
     {
         try
         {
+            $record = $this->exportQueueContract->firstOrCreate(['expedition_id' => $actor->pivot->expedition_id]);
+
+            $class = $this->state[$record->state];
+
+
+
+
+
+
             $this->fileService->makeDirectory($this->nfnExportDir);
 
             $this->record = $this->actorRepoService->expeditionContract->setCacheLifetime(0)

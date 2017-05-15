@@ -163,9 +163,9 @@ class Expedition extends BaseEloquentMongoModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function exportJobQueue()
+    public function exportQueue()
     {
-        return $this->hasOne(ExportJobQueue::class);
+        return $this->hasOne(ExportQueue::class);
     }
 
     /**
