@@ -9,7 +9,7 @@ use Illuminate\Contracts\Container\Container;
 class ExportQueueRepository extends BaseEloquentRepository implements ExportQueueContract
 {
     /**
-     * ActorRepository constructor.
+     * ExpeditionRepository constructor.
      * @param Container $container
      */
     public function __construct(Container $container)
@@ -22,8 +22,17 @@ class ExportQueueRepository extends BaseEloquentRepository implements ExportQueu
     /**
      * @inheritdoc
      */
-    public function checkForQueuedJob()
+    public function createExportQueue(array $attributes = [])
     {
-        return $this->findWhere(['queued', '=', 1])->count();
+        return $this->firstOrCreate($attributes);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFirst(array $attributes = ['*'])
+    {
+        return $this->findFirst($attributes);
+    }
+
 }
