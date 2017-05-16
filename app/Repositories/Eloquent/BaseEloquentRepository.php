@@ -39,7 +39,15 @@ class BaseEloquentRepository extends EloquentRepository
      */
     public function findWhereWithRelations(array $where = [], array $relations = [], array $attributes = ['*'])
     {
-        return $this->with($relations)->findWhere($where, $attributes);
+        $where = is_array(current($where)) ? $where : [$where];
+
+        foreach ($where as $statement)
+        {
+            list($attribute, $operator, $value) = $statement;
+            $this->where($attribute, $operator, $value);
+        }
+
+        return $this->with($relations)->findAll($attributes);
     }
 
     /**
