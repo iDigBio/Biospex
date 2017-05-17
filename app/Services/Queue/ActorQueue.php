@@ -5,7 +5,7 @@ namespace App\Services\Queue;
 use App\Exceptions\BiospexException;
 use App\Repositories\Contracts\Expedition;
 use App\Services\Report\Report;
-use App\Services\Actor\ActorFactory;
+use Illuminate\Support\Facades\App;
 use App\Exceptions\Handler;
 
 class ActorQueue extends QueueAbstract
@@ -53,7 +53,8 @@ class ActorQueue extends QueueAbstract
 
         try
         {
-            ActorFactory::create($actor);
+            $class = App::make(__NAMESPACE__ . '\\' . $actor->class . '\\' . $actor->class . 'Actor');
+            $class->processActor($actor);
         }
         catch (BiospexException $e)
         {
