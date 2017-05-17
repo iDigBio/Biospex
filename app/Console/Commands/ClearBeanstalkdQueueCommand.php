@@ -42,25 +42,19 @@ class ClearBeanstalkdQueueCommand extends Command
      */
     public function handle()
     {
-        $this->tubes = $this->argument('tube') === null ? Config::get('config.beanstalkd') : $this->argument('tube');
+        $this->tubes = $this->argument('tube') === null ? Config::get('config.beanstalkd') : explode(',', $this->argument('tube'));
 
-        is_array($this->tubes) ? $this->loopQueues() : $this->clearQueue();
+        collect($this->tubes)->each(function ($tube){
+            $this->clearQueue($tube);
+        });
 
         DB::statement("UPDATE actor_expedition set queued = 0;");
     }
 
     /**
-     * Loop through queues and remove.
-     */
-    protected function loopQueues()
-    {
-        foreach ($this->tubes as $tube) {
-            $this->clearQueue($tube);
-        }
-    }
-
-    /**
-     * Clear Queue.
+     * Clear beanstalk tube.
+     *
+     * @param $tube
      */
     protected function clearQueue($tube)
     {
