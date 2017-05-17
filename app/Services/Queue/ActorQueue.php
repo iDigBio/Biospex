@@ -53,7 +53,7 @@ class ActorQueue extends QueueAbstract
 
         try
         {
-            $class = App::make(__NAMESPACE__ . '\\' . $actor->class . '\\' . $actor->class . 'Actor');
+            $class = App::make(__NAMESPACE__ . '\\' . $actor->class . '\\' . $actor->class);
             $class->processActor($actor);
         }
         catch (BiospexException $e)
