@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Exceptions\BiospexException;
 use App\Http\Controllers\Controller;
-use App\Jobs\BuildOcrBatches;
+use App\Jobs\BuildOcrBatchesJob;
 use App\Jobs\UpdateNfnWorkflowJob;
 use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\OcrQueue;
@@ -411,7 +411,7 @@ class ExpeditionsController extends Controller
 
         if ($queueCheck === null)
         {
-            $this->dispatch((new BuildOcrBatches($project->id, $expeditionId))->onQueue(Config::get('config.beanstalkd.ocr')));
+            $this->dispatch((new BuildOcrBatchesJob($project->id, $expeditionId))->onQueue(Config::get('config.beanstalkd.ocr')));
 
             session_flash_push('success', trans('expeditions.ocr_process_success'));
         }

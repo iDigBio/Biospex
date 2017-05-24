@@ -1,12 +1,41 @@
 <?php namespace App\Services\Image;
 
 use App\Exceptions\BiospexException;
+use App\Exceptions\Handler;
 use App\Exceptions\ThumbnailFromUrlException;
+use App\Services\File\FileService;
 use GuzzleHttp\Client;
 use RuntimeException;
 
-class Thumbnail extends ImageService
+class Thumbnail extends ImagickService
 {
+
+    /**
+     * @var FileService
+     */
+    private $fileService;
+    /**
+     * @var Handler
+     */
+    private $handler;
+
+    /**
+     * Thumbnail constructor.
+     * @param FileService $fileService
+     * @param Handler $handler
+     */
+    public function __construct(FileService $fileService, Handler $handler)
+    {
+        $this->fileService = $fileService;
+        $this->handler = $handler;
+
+        $this->defaultThumbImg = config('config.images.thumbDefaultImg');
+        $this->tnWidth = config('config.images.thumbWidth');
+        $this->tnHeight = config('config.images.thumbHeight');
+        $this->thumbDirectory = config('config.images.thumbOutputDir') . '/' . $this->tnWidth . '_' . $this->tnHeight;
+    }
+
+
 
     /**
      * Return thumbnail or create if not exists.
@@ -18,11 +47,11 @@ class Thumbnail extends ImageService
     public function getThumbnail($url)
     {
         $thumbName = md5($url) . '.jpg';
-        $thumbFile = $this->thumbDir . '/' . $thumbName;
+        $thumbFile = $this->thumbDirectory . '/' . $thumbName;
 
         try
         {
-            if ( ! $this->filesystem->isFile($thumbFile))
+            if ( ! $this->fileService->filesystem->isFile($thumbFile))
             {
                 $this->createThumbnail($url);
             }
@@ -30,7 +59,7 @@ class Thumbnail extends ImageService
         catch (BiospexException $e)
         {
             $this->handler->report($e);
-            return $this->getFile($this->defaultImg);
+            return $this->getFile($this->defaultThumbImg);
         }
 
         return $this->getFile($thumbFile);
@@ -50,7 +79,7 @@ class Thumbnail extends ImageService
         $this->readImagickFromBlob($image);
         $this->setDestinationImageWidth($this->tnWidth);
         $this->setDestinationImageHeight($this->tnHeight);
-        $this->generateAndSaveImage(md5($url), $this->thumbDir);
+        $this->generateAndSaveImage(md5($url), $this->thumbDirectory);
         $this->clearImagickObject();
     }
 
@@ -83,11 +112,11 @@ class Thumbnail extends ImageService
      */
     protected function getFile($thumbFile)
     {
-        if ($this->filesystem->isFile($thumbFile))
+        if ($this->fileService->filesystem->isFile($thumbFile))
         {
-            return $this->filesystem->get($thumbFile);
+            return $this->fileService->filesystem->get($thumbFile);
         }
 
-        return $this->filesystem->get($this->defaultImg);
+        return $this->fileService->filesystem->get($this->defaultThumbImg);
     }
 }

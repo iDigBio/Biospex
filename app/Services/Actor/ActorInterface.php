@@ -2,12 +2,23 @@
 
 namespace App\Services\Actor;
 
+use App\Models\Actor;
+use App\Models\StagedQueue;
+
 interface ActorInterface
 {
+
     /**
-     * Each actor has a process to handle the states.
+     * Process Actor.
      *
-     * @param $actor
+     * @param Actor $actor
      */
-    public function process($actor);
+    public function actor(Actor $actor);
+
+    /**
+     * Process queue.
+     *
+     * @param StagedQueue $queue
+     */
+    public function queue(StagedQueue $queue);
 }

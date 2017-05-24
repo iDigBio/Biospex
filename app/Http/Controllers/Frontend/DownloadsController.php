@@ -7,6 +7,7 @@ use App\Exceptions\BiospexException;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\User;
+use Event;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Config\Repository as Config;
@@ -128,13 +129,8 @@ class DownloadsController extends Controller
 
         try
         {
-            $expedition->nfnActor->first()->pivot->state = 0;
-            $expedition->nfnActor->first()->pivot->total = $expedition->stat->subject_count;
-            $expedition->nfnActor->first()->pivot->processed = 0;
-            $expedition->nfnActor->first()->pivot->queued = 1;
-            $expedition->nfnActor->first()->pivot->save();
-
-            Queue::push('App\Services\Queue\ActorQueue', serialize($expedition->nfnActor->first()), $this->config->get('config.beanstalkd.export'));
+            Event::fire('actor.pivot.regenerate', [$expedition->nfnActor, $expedition->stat->subject_count]);
+            Queue::push('App\Services\Queue\ActorQueue', serialize($expedition->nfnActor->first()), $this->config->get('config.beanstalkd.staged'));
 
             session_flash_push('success', trans('expeditions.download_regeneration_success'));
         }

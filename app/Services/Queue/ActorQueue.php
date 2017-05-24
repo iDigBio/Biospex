@@ -4,9 +4,10 @@ namespace App\Services\Queue;
 
 use App\Exceptions\BiospexException;
 use App\Repositories\Contracts\Expedition;
+use App\Services\Actor\ActorFactory;
 use App\Services\Report\Report;
-use Illuminate\Support\Facades\App;
 use App\Exceptions\Handler;
+use Event;
 
 class ActorQueue extends QueueAbstract
 {
@@ -53,14 +54,12 @@ class ActorQueue extends QueueAbstract
 
         try
         {
-            $class = App::make(__NAMESPACE__ . '\\' . $actor->class . '\\' . $actor->class);
-            $class->processActor($actor);
+            $class = ActorFactory::create($actor);
+            $class->actor($actor);
         }
         catch (BiospexException $e)
         {
-            $actor->pivot->queued = 0;
-            $actor->pivot->error = 1;
-            $actor->pivot->save();
+            Event::fire('actor.pivot.error', $actor);
             $this->createError($actor, $e->getMessage());
             $this->handler->report($e);
         }

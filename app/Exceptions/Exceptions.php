@@ -26,5 +26,6 @@ class MongoDbException extends BiospexException {}
 class NfnApiException extends BiospexException {}
 class HttpRequestException extends BiospexException{}
 class GoogleFusionTableException extends BiospexException{}
+class ActorException extends BiospexException{}
 
 

@@ -6,14 +6,14 @@ use Illuminate\Queue\SerializesModels;
 use App\Services\Mailer\BiospexMailer;
 use Illuminate\Contracts\Config\Repository as Config;
 
-class SendContactEmail extends Job
+class SendContactEmailJob extends Job
 {
     use SerializesModels;
 
     public $data;
 
     /**
-     * SendContactEmail constructor.
+     * SendContactEmailJob constructor.
      * @param $data
      */
     public function __construct($data)

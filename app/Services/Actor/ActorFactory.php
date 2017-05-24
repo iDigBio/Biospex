@@ -2,14 +2,19 @@
 
 namespace App\Services\Actor;
 
-use Illuminate\Support\Facades\App;
+use App\Services\Queue\ActorQueue;
 
 class ActorFactory
 {
+
+    /**
+     * @param $actor
+     * @return \Illuminate\Foundation\Application|\Laravel\Lumen\Application|mixed
+     * @see ActorQueue::fire()
+     */
     public static function create($actor)
     {
-        $classPath = __NAMESPACE__ . '\\' . $actor->class . '\\' . $actor->class . 'Actor';
-        $class = App::make($classPath);
-        $class->process($actor);
+        $classPath = __NAMESPACE__ . '\\' . $actor->class . '\\' . $actor->class;
+        return app($classPath);
     }
 }

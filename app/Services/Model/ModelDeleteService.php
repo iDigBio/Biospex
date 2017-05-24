@@ -36,11 +36,6 @@ class ModelDeleteService
     private $subjectService;
 
     /**
-     * @var NfnWorkflowService
-     */
-    public $nfnWorkflowService;
-
-    /**
      * @var Handler
      */
     private $handler;
@@ -52,7 +47,6 @@ class ModelDeleteService
      * @param ProjectService $projectService
      * @param ExpeditionService $expeditionService
      * @param SubjectService $subjectService
-     * @param NfnWorkflowService $nfnWorkflowService
      * @param Handler $handler
      */
     public function __construct(
@@ -61,7 +55,6 @@ class ModelDeleteService
         ProjectService $projectService,
         ExpeditionService $expeditionService,
         SubjectService $subjectService,
-        NfnWorkflowService $nfnWorkflowService,
         Handler $handler
     )
     {
@@ -70,7 +63,6 @@ class ModelDeleteService
         $this->projectService = $projectService;
         $this->expeditionService = $expeditionService;
         $this->subjectService = $subjectService;
-        $this->nfnWorkflowService = $nfnWorkflowService;
         $this->handler = $handler;
     }
 
@@ -118,7 +110,7 @@ class ModelDeleteService
 
             foreach ($record->projects as $project)
             {
-                if ( ! $this->nfnWorkflowService->checkNfnWorkflowsEmpty($project))
+                if ( ! $project->nfnWorkflows->isEmpty())
                 {
                     session_flash_push('error', trans('expeditions.expedition_process_exists'));
 
@@ -154,7 +146,7 @@ class ModelDeleteService
         {
             $record = $this->projectService->repository->skipCache()->with(['nfnWorkflows'])->find($id);
 
-            if ( ! $this->nfnWorkflowService->checkNfnWorkflowsEmpty($record))
+            if ( ! $record->nfnWorkflows->isEmpty())
             {
                 session_flash_push('error', trans('expeditions.expedition_process_exists'));
 
@@ -183,7 +175,7 @@ class ModelDeleteService
         {
             $record = $this->expeditionService->repository->skipCache()->with(['nfnWorkflow'])->find($id);
 
-            if ( ! $this->nfnWorkflowService->checkNfnWorkflowEmpty($record))
+            if (isset($record->nfnWorkflow))
             {
                 session_flash_push('error', trans('expeditions.expedition_process_exists'));
 

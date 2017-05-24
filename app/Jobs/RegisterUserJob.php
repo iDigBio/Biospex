@@ -8,7 +8,7 @@ use App\Repositories\Contracts\User;
 use App\Repositories\Contracts\Invite;
 use App\Repositories\Contracts\Group;
 
-class RegisterUser extends Job
+class RegisterUserJob extends Job
 {
     use SerializesModels;
 

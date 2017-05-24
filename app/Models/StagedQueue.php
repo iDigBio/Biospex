@@ -3,12 +3,12 @@
 namespace App\Models;
 
 
-class ExportQueue extends BaseEloquentModel
+class StagedQueue extends BaseEloquentModel
 {
     /**
      * @ineritDoc
      */
-    protected $table = 'export_queues';
+    protected $table = 'staged_queues';
 
     /**
      * @inheritDoc
@@ -35,5 +35,26 @@ class ExportQueue extends BaseEloquentModel
     public function actor()
     {
         return $this->belongsTo(Actor::class);
+    }
+
+    /**
+     * Mutator for missing column.
+     *
+     * @param $value
+     */
+    public function setMissingAttribute($value)
+    {
+        $this->attributes['missing'] = serialize($value);
+    }
+
+    /**
+     * Accessor for missing column.
+     *
+     * @param $value
+     * @return mixed
+     */
+    public function getMissingAttribute($value)
+    {
+        return unserialize($value);
     }
 }

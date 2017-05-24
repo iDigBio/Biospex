@@ -27,31 +27,23 @@ class ModelRestoreService
     public $expeditionService;
 
     /**
-     * @var NfnWorkflowService
-     */
-    public $nfnWorkflowService;
-
-    /**
      * ModelDeleteService constructor.
      * @param UserService $userService
      * @param GroupService $groupService
      * @param ProjectService $projectService
      * @param ExpeditionService $expeditionService
-     * @param NfnWorkflowService $nfnWorkflowService
      */
     public function __construct(
         UserService $userService,
         GroupService $groupService,
         ProjectService $projectService,
-        ExpeditionService $expeditionService,
-        NfnWorkflowService $nfnWorkflowService
+        ExpeditionService $expeditionService
     )
     {
         $this->userService = $userService;
         $this->groupService = $groupService;
         $this->projectService = $projectService;
         $this->expeditionService = $expeditionService;
-        $this->nfnWorkflowService = $nfnWorkflowService;
     }
 
     /**

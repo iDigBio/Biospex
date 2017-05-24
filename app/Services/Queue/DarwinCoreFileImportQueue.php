@@ -1,7 +1,7 @@
 <?php namespace App\Services\Queue;
 
 use App\Exceptions\BiospexException;
-use App\Jobs\BuildOcrBatches;
+use App\Jobs\BuildOcrBatchesJob;
 use App\Services\File\FileService;
 use App\Services\Mailer\BiospexMailer;
 use App\Repositories\Contracts\Import;
@@ -149,7 +149,7 @@ class DarwinCoreFileImportQueue extends QueueAbstract
 
             if ($this->record->workflow->actors->contains('title', 'OCR') && $this->process->getSubjectCount() > 0)
             {
-                $this->dispatch((new BuildOcrBatches($this->record->id))->onQueue(Config::get('config.beanstalkd.ocr')));
+                $this->dispatch((new BuildOcrBatchesJob($this->record->id))->onQueue(Config::get('config.beanstalkd.ocr')));
             }
 
             $this->fileService->filesystem->deleteDirectory($this->scratchFileDir);

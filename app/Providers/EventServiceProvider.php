@@ -3,19 +3,20 @@
 namespace App\Providers;
 
 use App\Events\SendErrorEvent;
+use App\Events\SendInviteEvent;
+use App\Events\SendReportEvent;
+use App\Events\UserRegisteredEvent;
+use App\Listeners\ActorPivotUpdateEventListener;
 use App\Listeners\DatabaseCacheEventListener;
-use App\Listeners\ExportQueueEventListener;
 use App\Listeners\GroupEventListener;
 use App\Listeners\RepositoryEventListener;
 use App\Listeners\SendErrorEventListener;
+use App\Listeners\SendInviteEventListener;
+use App\Listeners\SendReportEventListener;
+use App\Listeners\StagedQueueEventListener;
+use App\Listeners\UserRegisteredEventListener;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use App\Events\SendReportEvent;
-use App\Listeners\SendReportEventListener;
-use App\Events\SendInviteEvent;
-use App\Listeners\SendInviteEventListener;
-use App\Events\UserRegisteredEvent;
-use App\Listeners\UserRegisteredEventListener;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -48,7 +49,8 @@ class EventServiceProvider extends ServiceProvider
         GroupEventListener::class,
         DatabaseCacheEventListener::class,
         RepositoryEventListener::class,
-        ExportQueueEventListener::class
+        StagedQueueEventListener::class,
+        ActorPivotUpdateEventListener::class
     ];
 
     /**

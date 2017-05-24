@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
-use App\Jobs\RegisterUser;
+use App\Jobs\RegisterUserJob;
 use Illuminate\Config\Repository as Config;
 use App\Repositories\Contracts\Invite;
 use App\Repositories\Contracts\User;
@@ -126,7 +126,7 @@ class AuthController extends Controller
      */
     public function postRegister(RegisterFormRequest $request, Event $dispatcher)
     {
-        $user = $this->dispatch(new RegisterUser($request));
+        $user = $this->dispatch(new RegisterUserJob($request));
         
         if ($user)
         {

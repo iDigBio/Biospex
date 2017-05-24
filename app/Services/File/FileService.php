@@ -41,6 +41,7 @@ class FileService
         }
     }
 
+
     /**
      * Compress directories.
      *
@@ -75,17 +76,6 @@ class FileService
     }
 
     /**
-     * Get files from working directory.
-     *
-     * @param $dir
-     * @return array
-     */
-    public function getFiles($dir)
-    {
-        return $this->filesystem->files($dir);
-    }
-
-    /**
      * Return true if files in directory.
      *
      * @param $dir
@@ -93,7 +83,7 @@ class FileService
      */
     public function checkFileCount($dir)
     {
-        return count($this->getFiles($dir)) !== 0;
+        return count($this->filesystem->files($dir)) !== 0;
     }
 
     /**
@@ -125,5 +115,15 @@ class FileService
         {
             throw new FileUnzipException($e->getMessage());
         }
+    }
+
+    /**
+     * @param $file
+     * @param $image
+     * @return bool|int
+     */
+    public function writeToFile($file, $image)
+    {
+        return $this->filesystem->put($file, $image);
     }
 }

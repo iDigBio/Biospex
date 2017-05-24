@@ -16,7 +16,7 @@ use App\Repositories\Contracts\OcrCsv;
 use App\Repositories\Contracts\OcrQueue;
 use MongoCollection;
 
-class BuildOcrBatches extends Job implements ShouldQueue
+class BuildOcrBatchesJob extends Job implements ShouldQueue
 {
 
     use InteractsWithQueue, SerializesModels;
@@ -37,7 +37,7 @@ class BuildOcrBatches extends Job implements ShouldQueue
     private $ocrData;
 
     /**
-     * BuildOcrBatches constructor.
+     * BuildOcrBatchesJob constructor.
      *
      * @param $projectId
      * @param null $expeditionId

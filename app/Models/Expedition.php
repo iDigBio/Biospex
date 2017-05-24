@@ -150,19 +150,39 @@ class Expedition extends BaseEloquentMongoModel
     }
 
     /**
+     * NfnClassificationsCount attribute.
+     *
+     * @return int
+     */
+    public function getNfnActorAttribute()
+    {
+        return $this->getRelationValue('nfnActor')->first();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function actor()
+    {
+        return $this->actors();
+    }
+
+    /**
+     * NfnClassificationsCount attribute.
+     *
+     * @return int
+     */
+    public function getActorAttribute()
+    {
+        return $this->getRelationValue('actor')->first();
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function nfnWorkflow()
     {
         return $this->hasOne(NfnWorkflow::class);
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
-     */
-    public function nfnClassifications()
-    {
-        return $this->hasManyThrough(NfnClassification::class, NfnWorkflow::class);
     }
 
     /**
@@ -176,9 +196,9 @@ class Expedition extends BaseEloquentMongoModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function exportQueues()
+    public function stagedQueues()
     {
-        return $this->hasMany(ExportQueue::class);
+        return $this->hasMany(StagedQueue::class);
     }
 
     /**

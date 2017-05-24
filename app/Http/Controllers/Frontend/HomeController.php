@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\SendContactEmail;
+use App\Jobs\SendContactEmailJob;
 use App\Repositories\Contracts\AmChartContract;
 use App\Repositories\Contracts\Faq;
 use App\Repositories\Contracts\PanoptesTranscriptionContract;
@@ -120,7 +120,7 @@ class HomeController extends Controller
     {
         $data = $request->only('first_name', 'last_name', 'email', 'message');
 
-        $this->dispatch(new SendContactEmail($data));
+        $this->dispatch(new SendContactEmailJob($data));
 
         return redirect()->route('home')->with('success', trans('pages.contact_success'));
     }

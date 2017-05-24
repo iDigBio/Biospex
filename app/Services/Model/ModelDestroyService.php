@@ -25,11 +25,6 @@ class ModelDestroyService
     public $expeditionService;
 
     /**
-     * @var NfnWorkflowService
-     */
-    public $nfnWorkflowService;
-
-    /**
      * @var Handler
      */
     public $handler;
@@ -53,7 +48,6 @@ class ModelDestroyService
         GroupService $groupService,
         ProjectService $projectService,
         ExpeditionService $expeditionService,
-        NfnWorkflowService $nfnWorkflowService,
         DownloadService $downloadService,
         Handler $handler
     )
@@ -62,7 +56,6 @@ class ModelDestroyService
         $this->groupService = $groupService;
         $this->projectService = $projectService;
         $this->expeditionService = $expeditionService;
-        $this->nfnWorkflowService = $nfnWorkflowService;
         $this->handler = $handler;
         $this->downloadService = $downloadService;
     }

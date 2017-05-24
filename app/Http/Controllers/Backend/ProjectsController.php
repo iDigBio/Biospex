@@ -9,7 +9,6 @@ use App\Repositories\Contracts\User;
 use App\Services\Model\ModelDeleteService;
 use App\Services\Model\ModelDestroyService;
 use App\Services\Model\ModelRestoreService;
-use App\Services\Model\NfnWorkflowService;
 use App\Services\Model\ProjectService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -50,12 +49,11 @@ class ProjectsController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
      * @param ProjectService $service
      * @param null $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(ProjectService $service, NfnWorkflowService $nfnWorkflowService, $id = null)
+    public function index(ProjectService $service, $id = null)
     {
         $user = $this->user->with(['profile'])->find($this->request->user()->id);
         $projects = $this->project->all();
@@ -63,9 +61,7 @@ class ProjectsController extends Controller
 
         $editProject = $id !== null ? $this->project->with(['nfnWorkflows'])->find($id) : null;
 
-        $workflowEmpty = isset($editProject->nfnWorkflows) ?
-            $nfnWorkflowService->checkNfnWorkflowsEmpty($editProject->nfnWorkflows) :
-            true;
+        $workflowEmpty = ! isset($editProject->nfnWorkflows) || $editProject->nfnWorkflows->isEmpty();
         $common = $service->setCommonVariables($this->request->user());
         $vars = [
             'user' => $user,

@@ -85,7 +85,7 @@ return [
         'default'        => env('QUEUE_DEFAULT_TUBE'),
         'event'          => env('QUEUE_EVENT_TUBE'),
         'import'         => env('QUEUE_IMPORT_TUBE'),
-        'export'         => env('QUEUE_EXPORT_TUBE'),
+        'staged'         => env('QUEUE_STAGED_TUBE'),
         'chart'          => env('QUEUE_CHART_TUBE'),
         'stat'           => env('QUEUE_STAT_TUBE'),
         'classification' => env('QUEUE_CLASSIFICATION_TUBE'),
@@ -98,12 +98,6 @@ return [
         'thumbOutputDir'     => storage_path('images'),
         'thumbWidth'         => 300,
         'thumbHeight'        => 300,
-        'imageTypeExtension' => [
-            'image/jpeg' => "jpg",
-            'image/png'  => "png",
-            'image/tiff' => "tif",
-            'image/gif'  => "gif"
-        ],
         'nfnLrgWidth'        => env('NFN_LRG_WIDTH', 1500),
         'nfnSmWidth'         => env('NFN_SM_WIDTH', 500)
     ],

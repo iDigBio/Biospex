@@ -3,15 +3,13 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\BuildOcrBatches;
-use App\Models\ActorContact;
+use App\Jobs\BuildOcrBatchesJob;
 use App\Repositories\Contracts\OcrQueue;
 use App\Repositories\Contracts\Subject;
 use App\Repositories\Contracts\User;
 use App\Services\Model\ModelDeleteService;
 use App\Services\Model\ModelDestroyService;
 use App\Services\Model\ModelRestoreService;
-use App\Services\Model\NfnWorkflowService;
 use App\Services\Report\NfnProjectCreateReport;
 use Illuminate\Http\Request;
 use App\Repositories\Contracts\Group;
@@ -37,27 +35,20 @@ class ProjectsController extends Controller
      * @var Project
      */
     public $project;
-    /**
-     * @var NfnWorkflowService
-     */
-    private $nfnWorkflowService;
 
     /**
      * ProjectsController constructor.
      *
-     * @param NfnWorkflowService $nfnWorkflowService
      * @param Group $group
      * @param Project $project
      * @param Request $request
      */
     public function __construct(
-        NfnWorkflowService $nfnWorkflowService,
         Group $group,
         Project $project,
         Request $request
     )
     {
-        $this->nfnWorkflowService = $nfnWorkflowService;
         $this->request = $request;
         $this->group = $group;
         $this->project = $project;
@@ -198,7 +189,7 @@ class ProjectsController extends Controller
             return redirect()->route('web.projects.index');
         }
 
-        $workflowEmpty = $this->nfnWorkflowService->checkNfnWorkflowsEmpty($project->nfnWorkflows);
+        $workflowEmpty = ! isset($project->nfnWorkflows) || $project->nfnWorkflows->isEmpty();
         $common = $service->setCommonVariables($this->request->user());
 
         $variables = array_merge($common, ['project' => $project, 'workflowEmpty' => $workflowEmpty]);
@@ -345,7 +336,7 @@ class ProjectsController extends Controller
 
         if ($queueCheck === null)
         {
-            $this->dispatch((new BuildOcrBatches($project->id))->onQueue(Config::get('config.beanstalkd.ocr')));
+            $this->dispatch((new BuildOcrBatchesJob($project->id))->onQueue(Config::get('config.beanstalkd.ocr')));
 
             session_flash_push('success', trans('expeditions.ocr_process_success'));
         }

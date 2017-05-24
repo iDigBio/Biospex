@@ -27,8 +27,10 @@ use App\Repositories\Contracts\ActorContract;
 use App\Repositories\Eloquent\ActorRepository;
 use App\Repositories\Contracts\UserContract;
 use App\Repositories\Eloquent\UserRepository;
-use App\Repositories\Contracts\ExportQueueContract;
-use App\Repositories\Eloquent\ExportQueueRepository;
+use App\Repositories\Contracts\StagedQueueContract;
+use App\Repositories\Eloquent\StagedQueueRepository;
+use App\Repositories\Contracts\NfnWorkflowContract;
+use App\Repositories\Eloquent\NfnWorkflowRepository;
 
 
 // Replacing eventually
@@ -59,7 +61,7 @@ use App\Repositories\Contracts\Team as TeamContract;
 use App\Repositories\Contracts\Notice as NoticeContract;
 use App\Repositories\Contracts\Translation as TranslationContract;
 use App\Repositories\Contracts\Resource as ResourceContract;
-use App\Repositories\Contracts\NfnWorkflow as NfnWorkflowContract;
+use App\Repositories\Contracts\NfnWorkflow as NfnWorkflowContractOld;
 use App\Repositories\Contracts\Notification as NotificationContract;
 use App\Repositories\Contracts\ActorContact as ActorContactContract;
 
@@ -90,7 +92,7 @@ use App\Repositories\TeamRepository;
 use App\Repositories\NoticeRepository;
 use App\Repositories\TranslationRepository;
 use App\Repositories\ResourceRepository;
-use App\Repositories\NfnWorkflowRepository;
+use App\Repositories\NfnWorkflowRepository as NfnWorkflowRepositoryOld;
 use App\Repositories\NotificationRepository;
 use App\Repositories\ActorContactRepository;
 
@@ -153,7 +155,7 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(NoticeContract::class, NoticeRepository::class);
         $this->app->bind(TranslationContract::class, TranslationRepository::class);
         $this->app->bind(ResourceContract::class, ResourceRepository::class);
-        $this->app->bind(NfnWorkflowContract::class, NfnWorkflowRepository::class);
+        $this->app->bind(NfnWorkflowContractOld::class, NfnWorkflowRepositoryOld::class);
         $this->app->bind(NotificationContract::class, NotificationRepository::class);
         $this->app->bind(ActorContactContract::class, ActorContactRepository::class);
 
@@ -169,6 +171,7 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(StateCountyContract::class, StateCountyRepository::class);
         $this->app->bind(ActorContract::class, ActorRepository::class);
         $this->app->bind(UserContract::class, UserRepository::class);
-        $this->app->bind(ExportQueueContract::class, ExportQueueRepository::class);
+        $this->app->bind(StagedQueueContract::class, StagedQueueRepository::class);
+        $this->app->bind(NfnWorkflowContract::class, NfnWorkflowRepository::class);
     }
 }

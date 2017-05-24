@@ -6,11 +6,12 @@ use App\Exceptions\BiospexException;
 use App\Jobs\NfnClassificationsUpdateJob;
 use App\Repositories\Contracts\ActorContract;
 use App\Repositories\Contracts\ExpeditionContract;
+use App\Repositories\Contracts\NfnWorkflowContract;
 use App\Services\Actor\ActorService;
 use App\Services\Report\Report;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
-class NfnPanoptesClassifications extends NfnPanoptesBase
+class NfnPanoptesClassifications
 {
 
     use DispatchesJobs;
@@ -36,10 +37,16 @@ class NfnPanoptesClassifications extends NfnPanoptesBase
     private $actorContract;
 
     /**
+     * @var NfnWorkflowContract
+     */
+    private $nfnWorkflowContract;
+
+    /**
      * NfnPanoptesClassifications constructor.
      *
      * @param ActorService $service
      * @param ExpeditionContract $expeditionContract
+     * @param NfnWorkflowContract $nfnWorkflowContract
      * @param ActorContract $actorContract
      * @param Report $report
      * @internal param ActorContract $actor
@@ -47,6 +54,7 @@ class NfnPanoptesClassifications extends NfnPanoptesBase
     public function __construct(
         ActorService $service,
         ExpeditionContract $expeditionContract,
+        NfnWorkflowContract $nfnWorkflowContract,
         ActorContract $actorContract,
         Report $report
     )
@@ -55,6 +63,7 @@ class NfnPanoptesClassifications extends NfnPanoptesBase
         $this->expeditionContract = $expeditionContract;
         $this->actorContract = $actorContract;
         $this->report = $report;
+        $this->nfnWorkflowContract = $nfnWorkflowContract;
     }
 
     /**
@@ -62,8 +71,16 @@ class NfnPanoptesClassifications extends NfnPanoptesBase
      * @param $actor
      *
      */
-    public function process($actor)
+    public function processActor($actor)
     {
+        $check = $this->nfnWorkflowContract->setCacheLifetime(0)
+            ->findWhere(['expedition_id', '=', $actor->expedition_id])
+            ->isEmpty();
+        if ($check)
+        {
+            return;
+        }
+
         $record = $this->expeditionContract->setCacheLifetime(0)
             ->findWithRelations($actor->pivot->expedition_id, ['project.group.owner', 'stat']);
 

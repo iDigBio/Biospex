@@ -34,4 +34,12 @@ class ActorRepository extends BaseEloquentRepository implements ActorContract
     {
         return $this->create($attributes);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function updateActorExpeditionPivot($actor, $expeditionId, array $attributes = [])
+    {
+        return $actor->expeditions()->updateExistingPivot($expeditionId, $attributes);
+    }
 }
