@@ -40,6 +40,11 @@ class DatabaseCacheEventListener
             'eloquent.deleted: *',
             'App\Listeners\DatabaseCacheEventListener@deleted'
         );
+
+        $events->listen(
+            'actor.pivot.updated',
+            'App\Listeners\DatabaseCacheEventListener@saved'
+        );
     }
 
 }
