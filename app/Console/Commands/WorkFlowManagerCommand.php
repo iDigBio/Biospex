@@ -55,7 +55,6 @@ class WorkFlowManagerCommand extends Command
     public function handle()
     {
         $id = $this->argument('expedition');
-        echo $id . PHP_EOL;
 
         $withRelations = ['expedition.actors', 'expedition.stat', 'expedition.nfnWorkflow'];
 
@@ -67,7 +66,6 @@ class WorkFlowManagerCommand extends Command
 
         if ($managers->isEmpty())
         {
-            echo 'managers empty' . PHP_EOL;
             return;
         }
 
@@ -81,10 +79,8 @@ class WorkFlowManagerCommand extends Command
     protected function processManagers($managers)
     {
         $managers->reject(function($manager){
-            echo 'rejecting manager' . PHP_EOL;
             return $manager->stopped;
         })->each(function($manager){
-            echo 'processing actors' . PHP_EOL;
             $this->processActors($manager);
         });
     }
@@ -101,7 +97,6 @@ class WorkFlowManagerCommand extends Command
         $count = $manager->expedition->stat->subject_count;
 
         $actors->reject(function($actor) use ($manager) {
-            echo 'rejecting actor' . PHP_EOL;
             return $actor->pivot->error ||
                 $actor->pivot->queued ||
                 $actor->pivot->completed
@@ -111,7 +106,6 @@ class WorkFlowManagerCommand extends Command
             $actor->pivot->processed = 0;
             $actor->pivot->queued = 1;
             $actor->pivot->save();
-            echo 'pushing to queue' . PHP_EOL;
             Queue::push('App\Services\Queue\ActorQueue', serialize($actor), $this->tube);
         });
     }
