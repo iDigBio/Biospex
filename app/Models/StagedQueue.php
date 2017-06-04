@@ -55,6 +55,6 @@ class StagedQueue extends BaseEloquentModel
      */
     public function getMissingAttribute($value)
     {
-        return unserialize($value);
+        return empty($value) ? [] : unserialize($value);
     }
 }

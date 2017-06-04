@@ -42,4 +42,17 @@ class ProjectRepository extends BaseEloquentRepository implements ProjectContrac
             ->findAll($attributes)
             ->take($count);
     }
+
+    /**
+     * Find project with relations.
+     *
+     * @param $projectId
+     * @param array $relations
+     * @param array $attributes
+     * @return mixed
+     */
+    public function findProjectWithRelations($projectId, array $relations = [], array $attributes = ['*'])
+    {
+        return $this->findWithRelations($projectId, $relations, $attributes);
+    }
 }

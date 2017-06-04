@@ -40,6 +40,11 @@ class ActorPivotUpdateEventListener
         );
 
         $events->listen(
+            'actor.pivot.state',
+            'App\Listeners\ActorPivotUpdateEventListener@actorPivotState'
+        );
+
+        $events->listen(
             'actor.pivot.regenerate',
             'App\Listeners\ActorPivotUpdateEventListener@actorPivotRegenerate'
         );
@@ -87,6 +92,21 @@ class ActorPivotUpdateEventListener
             'total'     => $count,
             'processed' => 0,
             'queued'    => 1
+        ];
+        $this->updateActorExpeditions($actor, $attributes);
+    }
+
+    /**
+     * Update actor for new state.
+     *
+     * @param $actor
+     */
+    public function actorPivotState($actor)
+    {
+        $attributes = [
+            'state'     => $actor->pivot->state,
+            'processed' => 0,
+            'queued'    => 0,
         ];
         $this->updateActorExpeditions($actor, $attributes);
     }

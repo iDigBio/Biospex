@@ -22,4 +22,14 @@ interface ProjectContract extends RepositoryContract, CacheableContract
      * @return mixed
      */
     public function getRecentProjects($count = 5, array $attributes = ['*']);
+
+    /**
+     * Find project with relations.
+     *
+     * @param $projectId
+     * @param array $relations
+     * @param array $attributes
+     * @return mixed
+     */
+    public function findProjectWithRelations($projectId, array $relations = [], array $attributes = ['*']);
 }

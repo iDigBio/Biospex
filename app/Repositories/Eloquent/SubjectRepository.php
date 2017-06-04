@@ -18,4 +18,12 @@ class SubjectRepository extends BaseEloquentRepository implements SubjectContrac
             ->setModel(Subject::class)
             ->setRepositoryId('biospex.repository.subject');
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function findSubjectsByExpeditionId($expeditionId, array $attributes = ['*'])
+    {
+        return $this->findWhere(['expedition_ids', '=', $expeditionId]);
+    }
 }

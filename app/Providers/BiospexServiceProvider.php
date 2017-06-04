@@ -31,6 +31,8 @@ use App\Repositories\Contracts\StagedQueueContract;
 use App\Repositories\Eloquent\StagedQueueRepository;
 use App\Repositories\Contracts\NfnWorkflowContract;
 use App\Repositories\Eloquent\NfnWorkflowRepository;
+use App\Repositories\Contracts\DownloadContract;
+use App\Repositories\Eloquent\DownloadRepository;
 
 
 // Replacing eventually
@@ -44,7 +46,7 @@ use App\Repositories\Contracts\Import as ImportContract;
 use App\Repositories\Contracts\Header as HeaderContract;
 use App\Repositories\Contracts\WorkflowManager as WorkflowManagerContractOld;
 use App\Repositories\Contracts\Actor as ActorContractOld;
-use App\Repositories\Contracts\Download as DownloadContract;
+use App\Repositories\Contracts\Download as DownloadContractOld;
 use App\Repositories\Contracts\Invite as InviteContract;
 use App\Repositories\Contracts\Property as PropertyContract;
 use App\Repositories\Contracts\Meta as MetaContract;
@@ -75,7 +77,7 @@ use App\Repositories\ImportRepository;
 use App\Repositories\HeaderRepository;
 use App\Repositories\WorkflowManagerRepository as WorkflowManagerRepositoryOld;
 use App\Repositories\ActorRepository as ActorRepositoryOld;
-use App\Repositories\DownloadRepository;
+use App\Repositories\DownloadRepository as DownloadRepositoryOld;
 use App\Repositories\InviteRepository;
 use App\Repositories\PropertyRepository;
 use App\Repositories\MetaRepository;
@@ -138,7 +140,7 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(HeaderContract::class, HeaderRepository::class);
         $this->app->bind(WorkflowManagerContractOld::class, WorkflowManagerRepositoryOld::class);
         $this->app->bind(ActorContractOld::class, ActorRepositoryOld::class);
-        $this->app->bind(DownloadContract::class, DownloadRepository::class);
+        $this->app->bind(DownloadContractOld::class, DownloadRepositoryOld::class);
         $this->app->bind(InviteContract::class, InviteRepository::class);
         $this->app->bind(PropertyContract::class, PropertyRepository::class);
         $this->app->bind(MetaContract::class, MetaRepository::class);
@@ -173,5 +175,6 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(UserContract::class, UserRepository::class);
         $this->app->bind(StagedQueueContract::class, StagedQueueRepository::class);
         $this->app->bind(NfnWorkflowContract::class, NfnWorkflowRepository::class);
+        $this->app->bind(DownloadContract::class, DownloadRepository::class);
     }
 }

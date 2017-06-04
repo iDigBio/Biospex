@@ -35,12 +35,6 @@ class TestAppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var HttpRequest
-     */
-    private $httpRequest;
-    private $actor;
-    private $subjects;
-    /**
      * @var ActorImageService
      */
     private $actorImageService;
@@ -85,10 +79,22 @@ class TestAppCommand extends Command
     public function handle(StagedQueueContract $contract)
     {
         $queue = $contract->setCacheLifetime(0)->findByIdWithExpeditionActor(1, 17, 2);
+        //$this->nfnPanoptesExport->retrieve($queue);
+        //$this->nfnPanoptesExport->convert($queue);
+        $this->nfnPanoptesExport->csv($queue);
+        //$this->nfnPanoptesExport->compress($queue);
+    }
 
-        //$this->nfnPanoptesExport->images($queue);
+    public function compress($source, $destination, $quality = 50)
+    {
+        $image = imagecreatefromjpeg($source);
+        imagejpeg($image, $destination, $quality);
+        imagedestroy($image);
+        echo filesize($destination) . ' at quality ' . $quality . PHP_EOL;
 
-        $this->nfnPanoptesExport->convert($queue);
+        if (filesize($destination) < 600000) return;
 
+        unlink($destination);
+        $this->compress($source, $destination, $quality-10);
     }
 }

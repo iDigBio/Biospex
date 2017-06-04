@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Contracts;
 
-interface ExpeditionContract extends RepositoryContract, CacheableContract, BaseRepositoryContract
+interface ExpeditionContract extends RepositoryContract, CacheableContract
 {
 
     /**

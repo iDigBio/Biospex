@@ -8,7 +8,7 @@ use App\Repositories\Contracts\BaseRepositoryContract;
  * Class BaseEloquentRepository
  * @package App\Repositories\Eloquent
  */
-class BaseEloquentRepository extends EloquentRepository
+class BaseEloquentRepository extends EloquentRepository implements BaseRepositoryContract
 {
     /**
      * @inheritdoc

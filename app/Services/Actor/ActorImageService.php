@@ -7,7 +7,6 @@ use GuzzleHttp\Pool;
 use App\Services\Image\ImagickService;
 use App\Services\Image\GdService;
 use App\Services\Requests\HttpRequest;
-use Illuminate\Contracts\Events\Dispatcher as Event;
 
 class ActorImageService extends ActorServiceBase
 {
@@ -23,24 +22,9 @@ class ActorImageService extends ActorServiceBase
     public $gdService;
 
     /**
-     * @var Event
-     */
-    public $dispatcher;
-
-    /**
      * @var HttpRequest
      */
     public $httpRequest;
-
-    /**
-     * @var
-     */
-    private $actor;
-
-    /**
-     * @var \Illuminate\Support\Collection
-     */
-    private $subjects;
 
     /**
      * @var
@@ -53,54 +37,51 @@ class ActorImageService extends ActorServiceBase
      * @param ImagickService $imagickService
      * @param GdService $gdService
      * @param HttpRequest $httpRequest
-     * @param Event $dispatcher
      * @internal param ImageService $imageService
      */
     public function __construct(
         ImagickService $imagickService,
         GdService $gdService,
-        HttpRequest $httpRequest,
-        Event $dispatcher
+        HttpRequest $httpRequest
     )
     {
         $this->imagickService = $imagickService;
         $this->gdService = $gdService;
         $this->httpRequest = $httpRequest;
-        $this->dispatcher = $dispatcher;
     }
 
     /**
-     * Set Actor
-     * @param $actor
+     * Set actor service configuration.
+     *
+     * @param ActorServiceConfig $config
      */
-    public function setActor($actor)
+    public function setActorServiceConfig(ActorServiceConfig $config)
     {
-        $this->actor = $actor;
+        $this->config = $config;
     }
 
     /**
      * Process expedition for export.
-     *
-     * @param $subjects
      */
-    public function getImages($subjects)
+    public function getImages()
     {
-        echo 'entered get images method ' . PHP_EOL;
-        $this->subjects = $subjects;
+        $this->checkActorServiceConfig();
 
         $this->httpRequest->setHttpProvider();
 
         $requests = function ()
         {
-            foreach ($this->subjects as $index => $subject)
+            foreach ($this->config->subjects as $index => $subject)
             {
                 if ($this->checkPropertiesExist($subject))
                 {
-                    $this->fireActorUpdate();
+                    $this->fireActorProcessedEvent();
                     continue;
                 }
 
-                yield $index => new Request('GET', str_replace(' ', '%20', $subject->accessURI));
+                $uri = str_replace(' ', '%20', $subject->accessURI);
+
+                yield $index => new Request('GET', $uri);
             }
         };
 
@@ -108,14 +89,17 @@ class ActorImageService extends ActorServiceBase
             'concurrency' => 5,
             'fulfilled'   => function ($response, $index)
             {
-                echo 'fulfilled image ' . $index . PHP_EOL;
                 $this->saveImage($response, $index);
             },
             'rejected'    => function ($reason, $index)
             {
-                echo 'rejected image ' . $index . PHP_EOL;
-                $this->fireActorUpdate();
-                $this->setMissingImages($this->subjects[$index]->_id, $this->subjects[$index]->accessURI, 'Could not retrieve image from uri.');
+                $this->fireActorProcessedEvent();
+                $attributes = [
+                    'subjectId' => $this->config->subjects[$index]->_id,
+                    'accessURI' => $this->config->subjects[$index]->accessURI,
+                    'message' => 'Could not retrieve image from uri.'
+                ];
+                $this->setMissingImages($attributes);
             }
         ]);
 
@@ -136,81 +120,57 @@ class ActorImageService extends ActorServiceBase
 
         if ($image === '' || $response->getStatusCode() !== 200)
         {
-            echo 'missing image response ' . $index . PHP_EOL;
-            $this->setMissingImages($this->subjects[$index]->_id, $this->subjects[$index]->accessURI, 'Image empty: ' . $response->getStatusCode());
+            $attributes = [
+                'subjectId' => $this->config->subjects[$index]->_id,
+                'accessURI' => $this->config->subjects[$index]->accessURI,
+                'message' => 'Image empty: ' . $response->getStatusCode()
+            ];
+            $this->setMissingImages($attributes);
 
             return;
         }
 
-        echo 'set image source ' . $index . PHP_EOL;
         if ( ! $this->gdService->setImageFromSource($image, false))
         {
-            echo 'could not set image information ' . $index . PHP_EOL;
-            $this->setMissingImages($this->subjects[$index]->_id, $this->subjects[$index]->accessURI, 'Image corrupt: ' . $response->getStatusCode());
+            $attributes = [
+                'subjectId' => $this->config->subjects[$index]->_id,
+                'accessURI' => $this->config->subjects[$index]->accessURI,
+                'message' => 'Image corrupt: ' . $response->getStatusCode()
+            ];
+            $this->setMissingImages($attributes);
 
             return;
         }
 
         $ext = $this->gdService->getSourceExtension();
         echo 'set image ext ' . $ext . PHP_EOL;
-        if ( ! $this->gdService->writeImageToFile($this->workingDirectory . '/' . $this->subjects[$index]->_id . $ext, $image))
+        if ( ! $this->gdService->writeImageToFile($this->config->workingDirectory . '/' . $this->config->subjects[$index]->_id . $ext, $image))
         {
-            echo 'failed to write image ' . $index . PHP_EOL;
-            $this->setMissingImages($this->subjects[$index]->_id, $this->subjects[$index]->accessURI, 'Write image to file: ' . $response->getStatusCode());
+            $attributes = [
+                $this->config->subjects[$index]->_id,
+                $this->config->subjects[$index]->accessURI,
+                'Write image to file: ' . $response->getStatusCode()
+            ];
+            $this->setMissingImages($attributes);
 
             return;
         }
 
-        echo 'image saved ' . $index . PHP_EOL;
-        $this->fireActorUpdate();
-    }
-
-    public function convert($source, $filename)
-    {
-        $this->imagickService->createImagickObject();
-
-        if ( ! $this->imagickService->readImageFromPath($source))
-        {
-            $this->setMissingImages($source, 'Could not create image from string: ' . $response->getStatusCode());
-
-            return;
-        }
-
-        if ( ! $this->imagickService->generateAndSaveImage($this->subjects[$index]->_id, $destination))
-        {
-            $this->removeErrorFiles($index, $destination);
-            $this->setMissingImages($this->subjects[$index], 'Could not save image to destination file');
-
-            return;
-        }
-
-        $this->imageService->clearImagickObject();
-    }
-
-
-    /**
-     * Fire actor update for processed count.
-     */
-    private function fireActorUpdate()
-    {
-        $this->actor->pivot->processed++;
-        if ($this->actor->pivot->processed % 25 === 0 || ($this->subjects->count() - $this->actor->pivot->processed === 0) )
-        {
-            echo 'updating actor ' . $this->actor->pivot->processed . PHP_EOL;
-            $this->dispatcher->fire('actor.pivot.processed', $this->actor);
-        }
+        $this->fireActorProcessedEvent();
     }
 
     /**
      * Add missing image information to array.
      *
-     * @param $subjectId
-     * @param $accessURI
-     * @param null $message
+     * @param $attributes
      */
-    public function setMissingImages($subjectId, $accessURI, $message = null)
+    private function setMissingImages($attributes)
     {
-        $this->missingImages[] = ['subjectId' => $subjectId, 'accessURI' => $accessURI, 'message' => $message];
+        $this->missingImages[] = [
+            'subjectId' => $attributes['subjectId'],
+            'accessURI' => $attributes['accessURI'],
+            'message' => ! isset($attributes['message']) ? null : $attributes['message']
+        ];
     }
 
     /**
@@ -234,12 +194,17 @@ class ActorImageService extends ActorServiceBase
         if (empty($subject->accessURI))
         {
             echo 'access uri empty ' . $subject->_id . PHP_EOL;
-            $this->setMissingImages($subject->_id, $subject->accessURI, 'Image missing accessURI');
+            $attributes = [
+                'subjectId' => $subject->_id,
+                'accessURI' => $subject->accessURI,
+                'message' => 'Image missing accessURI value'
+            ];
+            $this->setMissingImages($attributes);
 
             return true;
         }
 
-        if (count(glob($this->workingDirectory . '/' . $subject->_id . '.*')) > 0)
+        if (count(glob($this->config->workingDirectory . '/' . $subject->_id . '.*')) > 0)
         {
             echo 'image exists ' . $subject->_id . PHP_EOL;
             return true;
@@ -252,21 +217,26 @@ class ActorImageService extends ActorServiceBase
      * Write imagick to file.
      *
      * @param $file
-     * @param $directory
      * @param $filename
      */
-    public function writeImagickFile($file, $directory, $filename)
+    public function writeImagickFile($file, $filename)
     {
+        $this->checkActorServiceConfig();
+
         $this->imagickService->createImagickObject($file);
 
-        $destination = $directory . '/' . $filename . '.jpg';
+        $destination = $this->config->tmpDirectory . '/' . $filename . '.jpg';
         if ( ! $this->imagickService->writeImagickImageToFile($destination))
         {
-            $this->setMissingImages($filename, '', 'Could not write image to file.');
+            $attributes = [
+                'subjectId' => $filename,
+                'accessURI' => '',
+                'message' => 'Could not write image to file.'
+            ];
+            $this->setMissingImages($attributes);
         }
 
         $this->imagickService->clearImagickObject();
-
-        $this->fireActorUpdate();
+        $this->fireActorProcessedEvent();
     }
 }

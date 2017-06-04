@@ -17,6 +17,11 @@ class ImagickService extends ImageServiceBase
     public function createImagickObject($source)
     {
         $this->imagick = empty($source) ? new Imagick() : new Imagick($source);
+        $this->imagick->setResourceLimit(Imagick::RESOURCETYPE_MEMORY, 256);
+        $this->imagick->setResourceLimit(Imagick::RESOURCETYPE_MAP, 256);
+        //$this->imagick->setResourceLimit(\Imagick::RESOURCETYPE_AREA, 1512);
+        //$this->imagick->setResourceLimit(\Imagick::RESOURCETYPE_FILE, 768);
+        //$this->imagick->setResourceLimit(\Imagick::RESOURCETYPE_DISK, -1);
     }
 
     /**
@@ -75,6 +80,6 @@ class ImagickService extends ImageServiceBase
             $this->imagick->scaleImage($this->destinationImageWidth, $this->destinationImageHeight, true);
         }
 
-        return $this->writeImagickImage($destination . '/' . $name . '.jpg');
+        return $this->writeImagickImageToFile($destination . '/' . $name . '.jpg');
     }
 }
