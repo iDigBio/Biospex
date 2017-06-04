@@ -118,7 +118,7 @@ class WorkFlowManagerCommand extends Command
 
     protected function checkNfnWorkflow($actor, $manager)
     {
-        if ($actor->pivot->actor_id === 2)
+        if ($actor->pivot->actor_id === 2 && $actor->pivot->state === 1)
         {
             if ( ! isset($manager->expedition->nfnWorkflow))
             {
