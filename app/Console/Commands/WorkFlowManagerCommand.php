@@ -55,6 +55,7 @@ class WorkFlowManagerCommand extends Command
     public function handle()
     {
         $id = $this->argument('expedition');
+        echo $id . PHP_EOL;
 
         $withRelations = ['expedition.actors', 'expedition.stat', 'expedition.nfnWorkflow'];
 
@@ -66,6 +67,7 @@ class WorkFlowManagerCommand extends Command
 
         if ($managers->isEmpty())
         {
+            echo 'managers empty' . PHP_EOL;
             return;
         }
 
