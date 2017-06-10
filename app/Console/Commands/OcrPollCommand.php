@@ -3,10 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Events\PollOcrEvent;
-use App\Repositories\Contracts\Project;
+use App\Repositories\Contracts\ProjectContract;
 use Illuminate\Console\Command;
-use App\Repositories\Contracts\OcrQueue;
-use Illuminate\Events\Dispatcher;
+use App\Repositories\Contracts\OcrQueueContract;
 
 class OcrPollCommand extends Command
 {
@@ -26,34 +25,30 @@ class OcrPollCommand extends Command
     protected $description = 'Processes information for OCR Polling event.';
 
     /**
-     * @var OcrQueue
+     * @var OcrQueueContract
      */
-    private $ocrQueue;
+    private $ocrQueueContract;
 
     /**
-     * @var Project
+     * @var ProjectContract
      */
-    private $project;
-
-    /**
-     * @var Dispatcher
-     */
-    private $dispatcher;
+    private $projectContract;
 
     /**
      * Create a new command instance.
      *
-     * @param OcrQueue $ocrQueue
-     * @param Project $project
-     * @param Dispatcher $dispatcher
+     * @param OcrQueueContract $ocrQueueContract
+     * @param ProjectContract $projectContract
      */
-    public function __construct(OcrQueue $ocrQueue, Project $project, Dispatcher $dispatcher)
+    public function __construct(
+        OcrQueueContract $ocrQueueContract,
+        ProjectContract $projectContract
+    )
     {
         parent::__construct();
 
-        $this->ocrQueue = $ocrQueue;
-        $this->project = $project;
-        $this->dispatcher = $dispatcher;
+        $this->ocrQueueContract = $ocrQueueContract;
+        $this->projectContract = $projectContract;
     }
 
     /**
@@ -61,15 +56,16 @@ class OcrPollCommand extends Command
      */
     public function handle()
     {
-        $records = $this->ocrQueue->skipCache()
-            ->where(['error' => 0])
-            ->orderBy(['ocr_csv_id' => 'asc', 'created_at' => 'asc'])
-            ->get();
+        $records = $this->ocrQueueContract->setCacheLifetime(0)
+            ->where('error', '=', 0)
+            ->orderBy('ocr_csv_id', 'asc')
+            ->orderBy('created_at', 'asc')
+            ->findAll();
 
         if ($records->isEmpty())
         {
             $data = trans('pages.processing_empty');
-            $this->dispatcher->fire(new PollOcrEvent($data));
+            event(new PollOcrEvent($data));
 
             return;
         }
@@ -80,14 +76,15 @@ class OcrPollCommand extends Command
         $count = 0;
         foreach ($grouped as $group)
         {
-            $project = $this->project->skipCache()->with(['group'])->find($group[0]['project_id']);
+            $project = $this->projectContract->setCacheLifetime(0)
+                ->with('group')->find($group[0]['project_id']);
 
             $total = array_sum(array_column($group, 'total'));
             $processed = array_sum(array_column($group, 'processed'));
 
             $batches = $count === 0 ? '' : trans_choice('pages.ocr_queue', $count, ['batches_queued' => $count]);
 
-            $ocr = trans_choice('pages.ocr_records', $processed,['processed' => $processed, 'total' => $total]);
+            $ocr = trans_choice('pages.ocr_records', $processed, ['processed' => $processed, 'total' => $total]);
 
             $message = trans('pages.ocr_processing', ['title' => $project->title, 'ocr' => $ocr, 'batches' => $batches]);
 
@@ -99,6 +96,6 @@ class OcrPollCommand extends Command
             $count++;
         }
 
-        $this->dispatcher->fire(new PollOcrEvent($data));
+        event(new PollOcrEvent($data));
     }
 }

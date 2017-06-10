@@ -3,14 +3,22 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
-use App\Repositories\Contracts\OcrQueue;
+use App\Repositories\Contracts\OcrQueueContract;
 
 class OcrQueuePushCommand extends Command
 {
-    public $repo;
+
+    /**
+     * @var OcrQueueContract
+     */
+    public $ocrQueueContract;
+
+    /**
+     * @var
+     */
     public $tube;
+
     /**
      * The console command name.
      *
@@ -28,14 +36,14 @@ class OcrQueuePushCommand extends Command
     /**
      * OcrQueuePushCommand constructor.
      * 
-     * @param OcrQueue $repo
+     * @param OcrQueueContract $ocrQueueContract
      */
-    public function __construct(OcrQueue $repo)
+    public function __construct(OcrQueueContract $ocrQueueContract)
     {
         parent::__construct();
 
-        $this->repo = $repo;
-        $this->tube = Config::get('config.beanstalkd.ocr');
+        $this->ocrQueueContract = $ocrQueueContract;
+        $this->tube = config('config.beanstalkd.ocr');
     }
 
     /**

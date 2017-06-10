@@ -1,7 +1,6 @@
 <?php namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 
@@ -42,7 +41,7 @@ class ClearBeanstalkdQueueCommand extends Command
      */
     public function handle()
     {
-        $this->tubes = $this->argument('tube') === null ? Config::get('config.beanstalkd') : explode(',', $this->argument('tube'));
+        $this->tubes = $this->argument('tube') === null ? config('config.beanstalkd') : explode(',', $this->argument('tube'));
 
         collect($this->tubes)->each(function ($tube){
             $this->clearQueue($tube);

@@ -3,13 +3,20 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Repositories\Contracts\Import;
-use Illuminate\Support\Facades\Config;
+use App\Repositories\Contracts\ImportContract;
 use Illuminate\Support\Facades\Queue;
 
 class DarwinCoreFileImportCommand extends Command
 {
-    private $import;
+
+    /**
+     * @var ImportContract
+     */
+    private $importContract;
+
+    /**
+     * @var mixed
+     */
     private $tube;
 
     /**
@@ -29,14 +36,14 @@ class DarwinCoreFileImportCommand extends Command
     /**
      * DarwinCoreFileImportCommand constructor.
      * 
-     * @param Import $import
+     * @param ImportContract $importContract
      */
-    public function __construct(Import $import)
+    public function __construct(ImportContract $importContract)
     {
         parent::__construct();
 
-        $this->import = $import;
-        $this->tube = Config::get('config.beanstalkd.import');
+        $this->importContract = $importContract;
+        $this->tube = config('config.beanstalkd.import');
     }
 
     /**
@@ -46,7 +53,7 @@ class DarwinCoreFileImportCommand extends Command
      */
     public function handle()
     {
-        $imports = $this->import->skipCache()->where(['error' => 0])->get();
+        $imports = $this->importContract->setCacheLifetime(0)->findWhere(['error', '=', 0]);
 
         $count = 0;
         foreach ($imports as $import) {

@@ -6,14 +6,22 @@ use App\Exceptions\BiospexException;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Config;
-use App\Repositories\Contracts\Download;
+use App\Repositories\Contracts\DownloadContract;
 use App\Exceptions\Handler;
 
 class DownloadCleanCommand extends Command
 {
+
+    /**
+     * @var Filesystem
+     */
     public $filesystem;
-    public $download;
+
+    /**
+     * @var DownloadContract
+     */
+    public $downloadContract;
+
     /**
      * The console command name.
      *
@@ -43,21 +51,21 @@ class DownloadCleanCommand extends Command
      * DownloadCleanCommand constructor.
      *
      * @param Filesystem $filesystem
-     * @param Download $download
+     * @param DownloadContract $downloadContract
      * @param Handler $handler
      */
     public function __construct(
         Filesystem $filesystem,
-        Download $download,
+        DownloadContract $downloadContract,
         Handler $handler
     ) {
         parent::__construct();
 
         $this->filesystem = $filesystem;
-        $this->download = $download;
+        $this->downloadContract = $downloadContract;
         $this->handler = $handler;
 
-        $this->nfnExportDir = Config::get('config.nfnExportDir');
+        $this->nfnExportDir = config('config.nfnExportDir');
     }
 
     /**
@@ -67,7 +75,10 @@ class DownloadCleanCommand extends Command
      */
     public function handle()
     {
-        $downloads = $this->download->skipCache()->where([['count', '>', 5]])->orWhere([['created_at', '<', Carbon::now()->subDays(7)]])->get();
+        $downloads = $this->downloadContract->setCacheLifetime(0)
+            ->where('count', '>', 5)
+            ->where('created_at', '<', Carbon::now()->subDays(7), 'or')
+            ->findAll();
 
         foreach ($downloads as $download) {
             try {
@@ -76,7 +87,7 @@ class DownloadCleanCommand extends Command
                     $this->filesystem->delete($file);
                 }
 
-                $this->download->delete($download->id);
+                $this->downloadContract->delete($download->id);
             } catch (BiospexException $e) {
                 $this->handler->report($e);
 

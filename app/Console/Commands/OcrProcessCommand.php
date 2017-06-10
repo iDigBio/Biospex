@@ -4,11 +4,10 @@ namespace App\Console\Commands;
 
 use App\Exceptions\BiospexException;
 use App\Exceptions\RequestException;
-use App\Repositories\Contracts\OcrCsv;
-use App\Repositories\Contracts\OcrQueue;
+use App\Repositories\Contracts\OcrCsvContract;
+use App\Repositories\Contracts\OcrQueueContract;
 use App\Services\Process\OcrRequest;
 use App\Services\Report\OcrReport;
-use Illuminate\Events\Dispatcher;
 use Illuminate\Console\Command;
 use App\Exceptions\Handler;
 use Illuminate\Support\Facades\Artisan;
@@ -36,9 +35,9 @@ class OcrProcessCommand extends Command
     private $ocrRequest;
 
     /**
-     * @var OcrQueue
+     * @var OcrQueueContract
      */
-    private $ocrQueue;
+    private $ocrQueueContract;
 
     /**
      * @var OcrReport
@@ -46,14 +45,10 @@ class OcrProcessCommand extends Command
     private $ocrReport;
 
     /**
-     * @var OcrCsv
+     * @var OcrCsvContract
      */
-    private $ocrCsv;
+    private $ocrCsvContract;
 
-    /**
-     * @var Dispatcher
-     */
-    private $dispatcher;
     /**
      * @var Handler
      */
@@ -63,28 +58,25 @@ class OcrProcessCommand extends Command
      * OcrProcessCommand constructor.
      *
      * @param OcrRequest $ocrRequest
-     * @param OcrQueue $ocrQueue
+     * @param OcrQueueContract $ocrQueueContract
      * @param OcrReport $ocrReport
-     * @param OcrCsv $ocrCsv
-     * @param Dispatcher $dispatcher
+     * @param OcrCsvContract $ocrCsvContract
      * @param Handler $handler
      */
     public function __construct(
         OcrRequest $ocrRequest,
-        OcrQueue $ocrQueue,
+        OcrQueueContract $ocrQueueContract,
         OcrReport $ocrReport,
-        OcrCsv $ocrCsv,
-        Dispatcher $dispatcher,
+        OcrCsvContract $ocrCsvContract,
         Handler $handler
     )
     {
         parent::__construct();
 
         $this->ocrRequest = $ocrRequest;
-        $this->ocrQueue = $ocrQueue;
+        $this->ocrQueueContract = $ocrQueueContract;
         $this->ocrReport = $ocrReport;
-        $this->ocrCsv = $ocrCsv;
-        $this->dispatcher = $dispatcher;
+        $this->ocrCsvContract = $ocrCsvContract;
         $this->handler = $handler;
     }
 
@@ -95,7 +87,13 @@ class OcrProcessCommand extends Command
      */
     public function handle()
     {
-        $record = $this->ocrQueue->skipCache()->with(['project.group.owner', 'ocrCsv'])->where([['status', '<=', 1], 'error' => 0])->orderBy(['id' => 'asc'])->first();
+        $record = $this->ocrQueueContract->setCacheLifetime(0)
+            ->with('project.group.owner')
+            ->with('ocrCsv')
+            ->where('status', '<=', 1)
+            ->where('error', '=', 0)
+            ->orderBy('id', 'asc')
+            ->findFirst();
 
         if ($record === null)
         {
@@ -109,7 +107,7 @@ class OcrProcessCommand extends Command
         catch (BiospexException $e)
         {
             $record->error = 1;
-            $this->ocrQueue->update($record->toArray(), $record->id);
+            $this->ocrQueueContract->update($record->id, $record->toArray());
 
             $this->handler->report($e);
 
@@ -132,7 +130,7 @@ class OcrProcessCommand extends Command
             $this->ocrRequest->sendOcrFile($record);
 
             $record->status = 1;
-            $this->ocrQueue->update($record->toArray(), $record->id);
+            $this->ocrQueueContract->update($record->id, $record->toArray());
 
             return;
         }
@@ -165,12 +163,12 @@ class OcrProcessCommand extends Command
         $this->setOcrCsv($record, $csv);
 
         $record->status = 2;
-        $this->ocrQueue->update($record->toArray(), $record->id);
+        $this->ocrQueueContract->update($record->id, $record->toArray());
 
         if ($record->batch)
         {
             $this->sendReport($record);
-            $this->ocrCsv->delete($record->ocrCsv->id);
+            $this->ocrCsvContract->delete($record->ocrCsv->id);
         }
 
         $this->ocrRequest->deleteJsonFiles([$record->uuid . '.json']);
@@ -212,6 +210,6 @@ class OcrProcessCommand extends Command
     private function updateProcessed($record, $file)
     {
         $record->processed = (int) $file->header->complete;
-        $this->ocrQueue->update($record->toArray(), $record->id);
+        $this->ocrQueueContract->update($record->id, $record->toArray());
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\Contracts\Subject;
+use App\Repositories\Contracts\SubjectContract;
 use Illuminate\Console\Command;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Facades\Config;
@@ -23,21 +23,22 @@ class ClearOcrResults extends Command
      * @var string
      */
     protected $description = 'Clear project expeditions ocr values.';
+    
     /**
-     * @var Subject
+     * @var SubjectContract
      */
-    private $subject;
+    private $subjectContract;
 
     /**
      * Create a new command instance.
      *
-     * @param Subject $subject
+     * @param SubjectContract $subjectContract
      */
-    public function __construct(Subject $subject)
+    public function __construct(SubjectContract $subjectContract)
     {
         parent::__construct();
 
-        $this->subject = $subject;
+        $this->subjectContract = $subjectContract;
     }
 
     /**
@@ -65,7 +66,7 @@ class ClearOcrResults extends Command
 
     /**
      * Query MongoDB and return cursor
-     * @return bool
+     * @return MongoCollection
      */
     protected function setCollection($projectId, $expeditionId = null)
     {

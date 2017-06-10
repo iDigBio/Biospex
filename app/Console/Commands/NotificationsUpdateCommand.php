@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Jobs\NotificationsJob;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Support\Facades\Config;
 
 class NotificationsUpdateCommand extends Command
 {
@@ -40,6 +39,6 @@ class NotificationsUpdateCommand extends Command
      */
     public function handle()
     {
-        $this->dispatch((new NotificationsJob())->onQueue(Config::get('config.beanstalkd.default')));
+        $this->dispatch((new NotificationsJob())->onQueue(config('config.beanstalkd.default')));
     }
 }

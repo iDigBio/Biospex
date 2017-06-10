@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Jobs\NfnClassificationsFusionTableJob;
-use Config;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -41,6 +40,6 @@ class NfnClassificationsFusionTable extends Command
     {
         $ids = null === $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new NfnClassificationsFusionTableJob($ids))->onQueue(Config::get('config.beanstalkd.classification')));
+        $this->dispatch((new NfnClassificationsFusionTableJob($ids))->onQueue(config('config.beanstalkd.classification')));
     }
 }

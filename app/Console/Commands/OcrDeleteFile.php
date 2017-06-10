@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Config\Repository as Config;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
@@ -27,20 +26,11 @@ class OcrDeleteFile extends Command
     protected $description = 'Command description';
 
     /**
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * Create a new command instance.
-     *
-     * @param Config $config
      */
-    public function __construct(Config $config)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->config = $config;
     }
 
     /**
@@ -56,9 +46,9 @@ class OcrDeleteFile extends Command
         {
             foreach ($files as $file)
             {
-                $headers = ['API-KEY' => $this->config->get('config.ocr_api_key'), 'Content-Type' => 'application/x-www-form-urlencoded'];
+                $headers = ['API-KEY' => config('config.ocr_api_key'), 'Content-Type' => 'application/x-www-form-urlencoded'];
                 $body = http_build_query(['file' => $file]);
-                yield $file => new Request('POST', $this->config->get('config.ocr_delete_url'), $headers, $body);
+                yield $file => new Request('POST', config('config.ocr_delete_url'), $headers, $body);
             }
         };
         

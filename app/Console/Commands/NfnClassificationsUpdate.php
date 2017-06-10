@@ -3,10 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Jobs\NfnClassificationsUpdateJob;
-use App\Repositories\Contracts\ExpeditionContract;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Support\Facades\Config;
 
 class NfnClassificationsUpdate extends Command
 {
@@ -43,6 +41,6 @@ class NfnClassificationsUpdate extends Command
     {
         $ids = null === $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new NfnClassificationsUpdateJob($ids))->onQueue(Config::get('config.beanstalkd.classification')));
+        $this->dispatch((new NfnClassificationsUpdateJob($ids))->onQueue(config('config.beanstalkd.classification')));
     }
 }

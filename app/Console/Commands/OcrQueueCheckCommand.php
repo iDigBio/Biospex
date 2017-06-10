@@ -1,13 +1,22 @@
 <?php namespace App\Console\Commands;
 
-use App\Repositories\Contracts\OcrQueue;
+use App\Repositories\Contracts\OcrQueueContract;
 use App\Services\Report\Report;
 use Illuminate\Console\Command;
 
 class OcrQueueCheckCommand extends Command
 {
-    public $queue;
+
+    /**
+     * @var OcrQueueContract
+     */
+    public $queueContract;
+
+    /**
+     * @var Report
+     */
     public $report;
+
     /**
      * The console command name.
      *
@@ -25,14 +34,14 @@ class OcrQueueCheckCommand extends Command
     /**
      * OcrQueueCheckCommand constructor.
      * 
-     * @param OcrQueue $queue
+     * @param OcrQueueContract $queueContract
      * @param Report $report
      */
-    public function __construct(OcrQueue $queue, Report $report)
+    public function __construct(OcrQueueContract $queueContract, Report $report)
     {
         parent::__construct();
 
-        $this->queue = $queue;
+        $this->queueContract = $queueContract;
         $this->report = $report;
     }
 
@@ -43,7 +52,7 @@ class OcrQueueCheckCommand extends Command
      */
     public function handle()
     {
-        $queues = $this->queue->skipCache()->get();
+        $queues = $this->queueContract->setCacheLifetime(0)->findAll();
 
         if ($queues->isEmpty()) {
             return;

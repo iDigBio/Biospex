@@ -3,10 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Jobs\UpdateNfnWorkflowJob;
-use App\Repositories\Contracts\NfnWorkflow;
+use App\Repositories\Contracts\NfnWorkflowContract;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Support\Facades\Config;
 
 class NfnWorkflowUpdate extends Command
 {
@@ -42,10 +41,10 @@ class NfnWorkflowUpdate extends Command
     /**
      * Execute the console command.
      *
-     * @param NfnWorkflow $nfnWorkflow
+     * @param NfnWorkflowContract $nfnWorkflow
      * @return mixed
      */
-    public function handle(NfnWorkflow $nfnWorkflow)
+    public function handle(NfnWorkflowContract $nfnWorkflow)
     {
         $this->setIds();
 
@@ -53,7 +52,7 @@ class NfnWorkflowUpdate extends Command
 
         foreach ($workflows as $workflow)
         {
-            $this->dispatch((new UpdateNfnWorkflowJob($workflow))->onQueue(Config::get('config.beanstalkd.classification')));
+            $this->dispatch((new UpdateNfnWorkflowJob($workflow))->onQueue(config('config.beanstalkd.classification')));
         }
 
     }
@@ -69,10 +68,10 @@ class NfnWorkflowUpdate extends Command
     /**
      * Retrieve workflows.
      *
-     * @param NfnWorkflow $nfnWorkflow
+     * @param NfnWorkflowContract $nfnWorkflow
      * @return mixed
      */
-    private function getWorkflows(NfnWorkflow $nfnWorkflow)
+    private function getWorkflows(NfnWorkflowContract $nfnWorkflow)
     {
         return null === $this->expeditionIds ?
             $nfnWorkflow->skipCache()->get() :

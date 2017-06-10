@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Jobs\AmChartJob;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Support\Facades\Config;
 
 class AmChartUpdate extends Command
 {
@@ -41,6 +40,6 @@ class AmChartUpdate extends Command
     {
         $ids = null ===  $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new AmChartJob($ids))->onQueue(Config::get('config.beanstalkd.chart')));
+        $this->dispatch((new AmChartJob($ids))->onQueue(config('config.beanstalkd.chart')));
     }
 }
