@@ -7,7 +7,6 @@ use App\Jobs\ExpeditionStatJob;
 use App\Repositories\Contracts\ExpeditionContract;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Support\Facades\Config;
 
 class ExpeditionStatUpdate extends Command
 {
@@ -82,7 +81,7 @@ class ExpeditionStatUpdate extends Command
         foreach ($expeditions as $expedition)
         {
             $projectIds[] = $expedition->project_id;
-            $this->dispatch((new ExpeditionStatJob($expedition->id))->onQueue(Config::get('config.beanstalkd.stat')));
+            $this->dispatch((new ExpeditionStatJob($expedition->id))->onQueue(config('config.beanstalkd.stat')));
         }
 
         return $projectIds;
@@ -96,6 +95,6 @@ class ExpeditionStatUpdate extends Command
     private function dispatchAmCharts($projectIds)
     {
         $projectIds = array_unique($projectIds);
-        $this->dispatch((new AmChartJob($projectIds))->onQueue(Config::get('config.beanstalkd.chart')));
+        $this->dispatch((new AmChartJob($projectIds))->onQueue(config('config.beanstalkd.chart')));
     }
 }

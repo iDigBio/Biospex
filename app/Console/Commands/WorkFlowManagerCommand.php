@@ -5,9 +5,7 @@ namespace App\Console\Commands;
 use App\Repositories\Eloquent\WorkflowManagerRepository;
 use Illuminate\Console\Command;
 use App\Repositories\Contracts\WorkflowManagerContract;
-use Config;
 use Queue;
-use Event;
 
 class WorkFlowManagerCommand extends Command
 {
@@ -44,7 +42,7 @@ class WorkFlowManagerCommand extends Command
     public function __construct(WorkflowManagerContract $workflowManagerContract)
     {
         parent::__construct();
-        $this->tube = Config::get('config.beanstalkd.workflow');
+        $this->tube = config('config.beanstalkd.workflow');
         $this->workflowManagerContract = $workflowManagerContract;
     }
 
@@ -83,7 +81,7 @@ class WorkFlowManagerCommand extends Command
         $expedition->actors->each(function ($actor) use ($count)
         {
             $actor->pivot->processed = 0;
-            Event::fire('actor.pivot.queued', [$actor, $count]);
+            event('actor.pivot.queued', [$actor, $count]);
             Queue::push('App\Services\Queue\ActorQueue', serialize($actor), $this->tube);
         });
     }
