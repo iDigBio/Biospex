@@ -7,7 +7,6 @@ use App\Jobs\NfnClassificationsUpdateJob;
 use App\Repositories\Contracts\ActorContract;
 use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\NfnWorkflowContract;
-use App\Services\Actor\ActorService;
 use App\Services\Report\Report;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -15,11 +14,6 @@ class NfnPanoptesClassifications
 {
 
     use DispatchesJobs;
-
-    /**
-     * @var ActorService
-     */
-    private $service;
 
     /**
      * @var ExpeditionContract
@@ -44,7 +38,6 @@ class NfnPanoptesClassifications
     /**
      * NfnPanoptesClassifications constructor.
      *
-     * @param ActorService $service
      * @param ExpeditionContract $expeditionContract
      * @param NfnWorkflowContract $nfnWorkflowContract
      * @param ActorContract $actorContract
@@ -52,14 +45,12 @@ class NfnPanoptesClassifications
      * @internal param ActorContract $actor
      */
     public function __construct(
-        ActorService $service,
         ExpeditionContract $expeditionContract,
         NfnWorkflowContract $nfnWorkflowContract,
         ActorContract $actorContract,
         Report $report
     )
     {
-        $this->service = $service;
         $this->expeditionContract = $expeditionContract;
         $this->actorContract = $actorContract;
         $this->report = $report;
@@ -78,11 +69,13 @@ class NfnPanoptesClassifications
             ->isEmpty();
         if ($check)
         {
+            // TODO add email to project owner telling them to add the workflow id
             return;
         }
 
         $record = $this->expeditionContract->setCacheLifetime(0)
-            ->findWithRelations($actor->pivot->expedition_id, ['project.group.owner', 'stat']);
+            ->with(['project.group.owner', 'stat'])
+            ->find($actor->pivot->expedition_id);
 
         try
         {

@@ -2,13 +2,12 @@
 
 namespace App\Listeners;
 
-use App\Jobs\StagedQueueJob;
+use App\Jobs\ExportQueueJob;
 use App\Repositories\Contracts\RepositoryContract;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Contracts\Events\Dispatcher;
-use Config;
 
-class StagedQueueEventListener
+class ExportQueueEventListener
 {
     use DispatchesJobs;
 
@@ -19,12 +18,12 @@ class StagedQueueEventListener
      */
     public function subscribe(Dispatcher $dispatcher)
     {
-        $dispatcher->listen('biospex.repository.stagedQueue.entity.creating', __CLASS__.'@entityCreating');
-        $dispatcher->listen('biospex.repository.stagedQueue.entity.created', __CLASS__.'@entityCreated');
-        $dispatcher->listen('biospex.repository.stagedQueue.entity.updating', __CLASS__.'@entityUpdating');
-        $dispatcher->listen('biospex.repository.stagedQueue.entity.updated', __CLASS__.'@entityUpdated');
-        $dispatcher->listen('biospex.repository.stagedQueue.entity.deleting', __CLASS__.'@entityDeleting');
-        $dispatcher->listen('biospex.repository.stagedQueue.entity.deleted', __CLASS__.'@entityDeleted');
+        $dispatcher->listen('biospex.repository.exportQueue.entity.creating', __CLASS__.'@entityCreating');
+        $dispatcher->listen('biospex.repository.exportQueue.entity.created', __CLASS__.'@entityCreated');
+        $dispatcher->listen('biospex.repository.exportQueue.entity.updating', __CLASS__.'@entityUpdating');
+        $dispatcher->listen('biospex.repository.exportQueue.entity.updated', __CLASS__.'@entityUpdated');
+        $dispatcher->listen('biospex.repository.exportQueue.entity.deleting', __CLASS__.'@entityDeleting');
+        $dispatcher->listen('biospex.repository.exportQueue.entity.deleted', __CLASS__.'@entityDeleted');
     }
 
     /**
@@ -44,9 +43,9 @@ class StagedQueueEventListener
      * @param RepositoryContract $repositoryContract
      * @param $entity
      *
-     * @see NfnPanoptesExport::stagedQueue() Fired when new exports added.
-     * @see StagedQueueJob::handle() Call job if a record exists and not queued.
-     * @see StagedQueueRepository::getFirst() Get first record with no error.
+     * @see NfnPanoptesExport::exportQueue() Fired when new exports added.
+     * @see ExportQueueJob::handle() Call job if a record exists and not queued.
+     * @see ExportQueueRepository::getFirst() Get first record with no error.
      */
     public function entityCreated(RepositoryContract $repositoryContract, $entity)
     {
@@ -73,7 +72,7 @@ class StagedQueueEventListener
      *
      * @param RepositoryContract $repositoryContract
      * @param $entity
-     * @see StagedQueueRepository::getFirst() Get first record with no error.
+     * @see ExportQueueRepository::getFirst() Get first record with no error.
      */
     public function entityUpdated(RepositoryContract $repositoryContract, $entity)
     {
@@ -125,6 +124,6 @@ class StagedQueueEventListener
      */
     public function dispatchJob($record)
     {
-        $this->dispatch((new StagedQueueJob($record))->onQueue(Config::get('config.beanstalkd.staged')));
+        $this->dispatch((new ExportQueueJob($record))->onQueue(config('config.beanstalkd.export')));
     }
 }

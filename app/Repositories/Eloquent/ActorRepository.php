@@ -6,7 +6,7 @@ use App\Models\Actor;
 use App\Repositories\Contracts\ActorContract;
 use Illuminate\Contracts\Container\Container;
 
-class ActorRepository extends BaseEloquentRepository implements ActorContract
+class ActorRepository extends EloquentRepository implements ActorContract
 {
     /**
      * ActorRepository constructor.
@@ -32,7 +32,43 @@ class ActorRepository extends BaseEloquentRepository implements ActorContract
      */
     public function createActor(array $attributes = [])
     {
-        return $this->create($attributes);
+        $actor = $this->create($attributes);
+
+        foreach ($attributes['contacts'] as $contact)
+        {
+            if ($contact['email'] !== '')
+            {
+                $actor->contacts()->create(['email' => $contact['email']]);
+            }
+        }
+
+        return $actor;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function updateActor($id, array $attributes = [])
+    {
+        $actor = $this->with(['contacts'])->find($id);
+        $actor->fill($attributes);
+        $actor->save();
+
+        $contacts = [];
+        $actor->contacts()->delete();
+        foreach ($attributes['contacts'] as $contact)
+        {
+            if ($contact['email'] !== '')
+            {
+                $contacts[] = new ActorContact(['email' => $contact['email']]);
+            }
+        }
+
+        $actor->contacts()->saveMany($contacts);
+
+        $actor = $this->model->with(['contacts'])->find($id);
+
+        return $actor;
     }
 
     /**

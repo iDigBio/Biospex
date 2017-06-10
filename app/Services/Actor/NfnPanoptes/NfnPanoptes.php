@@ -3,7 +3,7 @@
 namespace App\Services\Actor\NfnPanoptes;
 
 use App\Models\Actor;
-use App\Models\StagedQueue;
+use App\Models\ExportQueue;
 use App\Services\Actor\ActorBase;
 use App\Services\Queue\ActorQueue;
 
@@ -43,7 +43,7 @@ class NfnPanoptes extends ActorBase
     {
         if ($actor->pivot->state === 0)
         {
-            $this->nfnPanoptesExport->stagedQueue($actor);
+            $this->nfnPanoptesExport->exportQueue($actor);
         }
         elseif ($actor->pivot->state === 1)
         {
@@ -53,9 +53,9 @@ class NfnPanoptes extends ActorBase
 
     /**
      * @inheritdoc
-     * @see StagedQueueJob::handle() Instantiates class and calls method.
+     * @see ExportQueueJob::handle() Instantiates class and calls method.
      */
-    public function queue(StagedQueue $queue)
+    public function queue(ExportQueue $queue)
     {
         $this->nfnPanoptesExport->queue($queue);
     }

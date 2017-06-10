@@ -6,6 +6,10 @@ use App\Services\File\FileService;
 
 class ActorFileService extends ActorServiceBase
 {
+    /**
+     * @var
+     */
+    protected $config;
 
     /**
      * @var FileService
@@ -18,22 +22,12 @@ class ActorFileService extends ActorServiceBase
      */
     public function __construct(FileService $fileService)
     {
-        parent::__construct();
-
         $this->fileService = $fileService;
     }
 
-    /**
-     * Create and set working directory.
-     *
-     * @param $folder
-     * @return string
-     */
-    public function createAndSetWorkingDirectories($folder)
+    public function setActorServiceConfig(ActorServiceConfig $config)
     {
-        $directory = $this->scratchDirectory . '/' . $folder;
-        $this->fileService->makeDirectory($this->scratchDirectory . '/' . $folder);
-
-        return $directory;
+        $this->config = $config;
     }
+
 }

@@ -2,6 +2,8 @@
 
 namespace App\Services\Model;
 
+use App\Repositories\Contracts\ExpeditionContract;
+
 ini_set('memory_limit', '1024M');
 
 class ModelRestoreService
@@ -22,28 +24,28 @@ class ModelRestoreService
     public $projectService;
 
     /**
-     * @var ExpeditionService
+     * @var ExpeditionContract
      */
-    public $expeditionService;
+    public $expeditionContract;
 
     /**
      * ModelDeleteService constructor.
      * @param UserService $userService
      * @param GroupService $groupService
      * @param ProjectService $projectService
-     * @param ExpeditionService $expeditionService
+     * @param ExpeditionContract $expeditionContract
      */
     public function __construct(
         UserService $userService,
         GroupService $groupService,
         ProjectService $projectService,
-        ExpeditionService $expeditionService
+        ExpeditionContract $expeditionContract
     )
     {
         $this->userService = $userService;
         $this->groupService = $groupService;
         $this->projectService = $projectService;
-        $this->expeditionService = $expeditionService;
+        $this->expeditionContract = $expeditionContract;
     }
 
     /**
@@ -81,11 +83,11 @@ class ModelRestoreService
 
     /**
      * Restore Expedition.
-     *
      * @param $id
+     * @return mixed
      */
     public function restoreExpedition($id)
     {
-        return $this->expeditionService->repository->restore($id);
+        return $this->expeditionContract->restore($id);
     }
 }

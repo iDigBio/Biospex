@@ -6,7 +6,7 @@ use App\Models\Subject;
 use App\Repositories\Contracts\SubjectContract;
 use Illuminate\Contracts\Container\Container;
 
-class SubjectRepository extends BaseEloquentRepository implements SubjectContract
+class SubjectRepository extends EloquentRepository implements SubjectContract
 {
     /**
      * SubjectRepository constructor.

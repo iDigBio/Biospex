@@ -45,7 +45,8 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
         foreach ($this->ids as $id)
         {
             $expedition = $expeditionContract->setCacheLifetime(0)
-                ->findWithRelations($id, 'nfnWorkflow');
+                ->with('nfnWorkflow')
+                ->find($id);
 
             if ( ! file_exists(config('config.classifications_download') . '/' . $expedition->id . '.csv'))
             {

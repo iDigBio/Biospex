@@ -65,8 +65,6 @@ class ActorImageService extends ActorServiceBase
      */
     public function getImages()
     {
-        $this->checkActorServiceConfig();
-
         $this->httpRequest->setHttpProvider();
 
         $requests = function ()
@@ -75,7 +73,7 @@ class ActorImageService extends ActorServiceBase
             {
                 if ($this->checkPropertiesExist($subject))
                 {
-                    $this->fireActorProcessedEvent();
+                    $this->config->fireActorProcessedEvent();
                     continue;
                 }
 
@@ -93,7 +91,7 @@ class ActorImageService extends ActorServiceBase
             },
             'rejected'    => function ($reason, $index)
             {
-                $this->fireActorProcessedEvent();
+                $this->config->fireActorProcessedEvent();
                 $attributes = [
                     'subjectId' => $this->config->subjects[$index]->_id,
                     'accessURI' => $this->config->subjects[$index]->accessURI,
@@ -143,7 +141,6 @@ class ActorImageService extends ActorServiceBase
         }
 
         $ext = $this->gdService->getSourceExtension();
-        echo 'set image ext ' . $ext . PHP_EOL;
         if ( ! $this->gdService->writeImageToFile($this->config->workingDirectory . '/' . $this->config->subjects[$index]->_id . $ext, $image))
         {
             $attributes = [
@@ -156,7 +153,7 @@ class ActorImageService extends ActorServiceBase
             return;
         }
 
-        $this->fireActorProcessedEvent();
+        $this->config->fireActorProcessedEvent();
     }
 
     /**
@@ -193,7 +190,6 @@ class ActorImageService extends ActorServiceBase
     {
         if (empty($subject->accessURI))
         {
-            echo 'access uri empty ' . $subject->_id . PHP_EOL;
             $attributes = [
                 'subjectId' => $subject->_id,
                 'accessURI' => $subject->accessURI,
@@ -206,7 +202,6 @@ class ActorImageService extends ActorServiceBase
 
         if (count(glob($this->config->workingDirectory . '/' . $subject->_id . '.*')) > 0)
         {
-            echo 'image exists ' . $subject->_id . PHP_EOL;
             return true;
         }
 
@@ -221,8 +216,6 @@ class ActorImageService extends ActorServiceBase
      */
     public function writeImagickFile($file, $filename)
     {
-        $this->checkActorServiceConfig();
-
         $this->imagickService->createImagickObject($file);
 
         $destination = $this->config->tmpDirectory . '/' . $filename . '.jpg';
@@ -237,6 +230,6 @@ class ActorImageService extends ActorServiceBase
         }
 
         $this->imagickService->clearImagickObject();
-        $this->fireActorProcessedEvent();
+        $this->config->fireActorProcessedEvent();
     }
 }

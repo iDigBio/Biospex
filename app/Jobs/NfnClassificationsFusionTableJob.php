@@ -137,14 +137,15 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
      */
     public function getProjects()
     {
-        $hasRelations = ['transcriptionLocations'];
         $columns = ['id', 'title', 'fusion_table_id', 'fusion_style_id', 'fusion_template_id'];
 
         $projects = empty($this->ids) ?
             $this->projectContract->setCacheLifetime(0)
-                ->findAllHasRelationsWithRelations($hasRelations, [], $columns) :
+                ->has('transcriptionLocations')
+                ->findAll($columns) :
             $this->projectContract->setCacheLifetime(0)
-                ->findWhereInHasRelationsWithRelations(['id', $this->ids], $hasRelations, [], $columns);
+                ->has('transcriptionLocations')
+                ->findWhereIn(['id', $this->ids], $columns);
 
         return $projects;
     }

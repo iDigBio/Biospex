@@ -7,7 +7,7 @@ use App\Repositories\Contracts\TranscriptionLocationContract;
 use DB;
 use Illuminate\Contracts\Container\Container;
 
-class TranscriptionLocationRepository extends BaseEloquentRepository implements TranscriptionLocationContract
+class TranscriptionLocationRepository extends EloquentRepository implements TranscriptionLocationContract
 {
     /**
      * PanoptesTranscriptionLocationRepository constructor.
@@ -19,6 +19,17 @@ class TranscriptionLocationRepository extends BaseEloquentRepository implements 
             ->setModel(TranscriptionLocation::class)
             ->setRepositoryId('biospex.repository.transcriptionLocation');
 
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function updateOrCreateTranscriptionLocation(array $attributes = [], array $values = [])
+    {
+        $entity = $this->updateOrCreate($attributes, $values);
+        $this->flushCacheKeys();
+
+        return $entity;
     }
 
     /**

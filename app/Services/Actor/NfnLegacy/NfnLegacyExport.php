@@ -3,13 +3,11 @@
 namespace App\Services\Actor\NfnLegacy;
 
 use App\Exceptions\BiospexException;
-use App\Services\Actor\ActorInterface;
 use App\Services\Actor\ActorReportService;
-use App\Services\Actor\ActorService;
 
 ini_set('memory_limit', '1024M');
 
-class NfnLegacyExport implements ActorInterface
+class NfnLegacyExport
 {
 
     /**
@@ -82,18 +80,12 @@ class NfnLegacyExport implements ActorInterface
     /**
      * NfnLegacyExport constructor.
      *
-     * @param ActorService $service
      * @param ActorReportService $report
      */
     public function __construct(
-        ActorService $service,
         ActorReportService $report
     )
     {
-        $this->service = $service;
-        $this->fileService = $service->fileService;
-        $this->actorImageService = $service->actorImageService;
-        $this->actorRepoService = $service->actorRepoService;
 
         $this->nfnExportDir = $this->service->config->get('config.nfn_export_dir');
         $this->largeWidth = $this->service->config->get('config.images.nfnLrgWidth');
@@ -113,7 +105,8 @@ class NfnLegacyExport implements ActorInterface
             $this->fileService->makeDirectory($this->nfnExportDir);
 
             $this->record = $this->actorRepoService->expeditionContract->setCacheLifetime(0)
-                ->findWithRelations($actor->pivot->expedition_id, ['project.group.owner', 'subjects']);
+                ->with(['project.group.owner', 'subjects'])
+                ->find($actor->pivot->expedition_id);
 
             $this->service->setWorkingDirectory("{$actor->id}-{$this->record->uuid}");
 

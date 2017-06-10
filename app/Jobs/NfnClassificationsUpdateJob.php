@@ -37,14 +37,17 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
      */
     public function handle(ExpeditionContract $expeditionContract)
     {
-        $hasRelations = ['nfnWorkflow'];
         $withRelations = ['project.amChart', 'nfnWorkflow', 'nfnActor', 'stat'];
 
         $expeditions = empty($this->ids) ?
             $expeditionContract->setCacheLifetime(0)
-                ->findAllHasRelationsWithRelations($hasRelations, $withRelations) :
+                ->has('nfnWorkflow')
+                ->with($withRelations)
+                ->findAll() :
             $expeditionContract->setCacheLifetime(0)
-                ->findWhereInHasRelationsWithRelations(['id', [$this->ids]], $hasRelations, $withRelations);
+                ->has('nfnWorkflow')
+                ->with($withRelations)
+                ->findWhereIn(['id', [$this->ids]]);
 
         $projectIds = [];
         foreach ($expeditions as $expedition)

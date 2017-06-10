@@ -204,7 +204,7 @@ class PanoptesTranscriptionProcess
         }
 
         $attributes = ['classification_id' => $combined['classification_id']];
-        $this->transcriptionLocationContract->updateOrCreateRecord($attributes, $data);
+        $this->transcriptionLocationContract->updateOrCreateTranscriptionLocation($attributes, $data);
     }
 
 
@@ -216,7 +216,7 @@ class PanoptesTranscriptionProcess
      */
     public function getSubject($combined)
     {
-        $subject = $this->subjectContract->setCacheLifetime(0)->findById(trim($combined['subject_subjectId']));
+        $subject = $this->subjectContract->setCacheLifetime(0)->find(trim($combined['subject_subjectId']));
 
         return empty($subject) ? false : $subject;
     }

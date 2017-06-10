@@ -3,12 +3,12 @@
 namespace App\Models;
 
 
-class StagedQueue extends BaseEloquentModel
+class ExportQueue extends BaseEloquentModel
 {
     /**
      * @ineritDoc
      */
-    protected $table = 'staged_queues';
+    protected $table = 'export_queues';
 
     /**
      * @inheritDoc

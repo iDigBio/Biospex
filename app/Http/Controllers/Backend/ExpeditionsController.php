@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Facades\Toastr;
 use App\Http\Requests\ExpeditionFormRequest;
-use App\Repositories\Contracts\Expedition;
+use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\User;
 use App\Services\Model\ModelDeleteService;
 use App\Services\Model\ModelDestroyService;
@@ -21,9 +21,9 @@ class ExpeditionsController extends Controller
     public $user;
 
     /**
-     * @var Expedition
+     * @var ExpeditionContract
      */
-    public $expedition;
+    public $expeditionContract;
 
     /**
      * @var Request
@@ -34,16 +34,16 @@ class ExpeditionsController extends Controller
      * ExpeditionsController constructor.
      *
      * @param User $user
-     * @param Expedition $expedition
+     * @param ExpeditionContract $expeditionContract
      * @param Request $request
      */
     public function __construct(
         User $user,
-        Expedition $expedition,
+        ExpeditionContract $expeditionContract,
         Request $request)
     {
         $this->user = $user;
-        $this->expedition = $expedition;
+        $this->expeditionContract = $expeditionContract;
         $this->request = $request;
     }
 
@@ -56,10 +56,10 @@ class ExpeditionsController extends Controller
     public function index($id = null)
     {
         $user = $this->user->skipCache()->with(['profile'])->find($this->request->user()->id);
-        $expeditions = $this->expedition->skipCache()->all();
-        $trashed = $this->expedition->skipCache()->trashed();
+        $expeditions = $this->expeditionContract->setCacheLifetime(0)->findAll();
+        $trashed = $this->expeditionContract->setCacheLifetime(0)->onlyTrashed();
 
-        $editExpedition = $id !== null ? $this->expedition->with(['project', 'nfnWorkflow'])->find($id) : null;
+        $editExpedition = $id !== null ? $this->expeditionContract->with(['project', 'nfnWorkflow'])->find($id) : null;
 
         $variables = array_merge(compact('user', 'expeditions', 'trashed', 'editExpedition'));
 
@@ -74,7 +74,7 @@ class ExpeditionsController extends Controller
      */
     public function store(ExpeditionFormRequest $request)
     {
-        $expedition = $this->expedition->create($request->all());
+        $expedition = $this->expeditionContract->createExpedition($request->all());
 
         if ($expedition)
         {
@@ -95,7 +95,7 @@ class ExpeditionsController extends Controller
      */
     public function update(ExpeditionFormRequest $request)
     {
-        $expedition = $this->expedition->update($request->all(), $request->input('id'));
+        $expedition = $this->expeditionContract->updateExpedition($request->input('id'), $request->all());
 
         $expedition ?
             Toastr::success('The Expedition has been updated.', 'Expedition Update') :

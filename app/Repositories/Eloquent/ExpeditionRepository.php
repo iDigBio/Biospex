@@ -3,11 +3,12 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Expedition;
+use App\Models\Subject;
 use App\Repositories\Contracts\ExpeditionContract;
 use Illuminate\Contracts\Container\Container;
 
 
-class ExpeditionRepository extends BaseEloquentRepository implements ExpeditionContract
+class ExpeditionRepository extends EloquentRepository implements ExpeditionContract
 {
 
     /**
@@ -52,5 +53,72 @@ class ExpeditionRepository extends BaseEloquentRepository implements ExpeditionC
             ->findWhereHas(['project.group.users', function ($query) {
                 $query->where('user_id', 1);
             }]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createExpedition(array $attributes = [], $syncRelations = false)
+    {
+        $expedition = $this->create($attributes);
+        $subjects = explode(',', $attributes['subjectIds']);
+        $expedition->subjects()->sync($subjects);
+
+        $values = [
+            'subject_count' => count($subjects),
+            'transcriptions_total' => transcriptions_total(count($subjects)),
+        ];
+
+        $expedition->stat()->updateOrCreate(['expedition_id' => $expedition->id], $values);
+
+        return $expedition;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function updateExpedition($id, array $attributes = [], $syncRelations = false)
+    {
+        $expedition = $this->with(['subjects', 'nfnWorkflow', 'stat'])->find($id);
+        $expedition->fill($attributes);
+        $expedition->save();
+
+        if ($attributes['workflow'] !== '')
+        {
+            $values = [
+                'project_id' => $attributes['project_id'],
+                'expedition_id' => $expedition->id,
+                'workflow' => $attributes['workflow']
+            ];
+            $expedition->nfnWorkflow()->updateOrCreate(['expedition_id' => $expedition->id], $values);
+        }
+
+        if ( ! isset($attributes['admin']))
+        {
+            $existingSubjectIds = [];
+            foreach ($expedition->subjects as $subject) {
+                $existingSubjectIds[] = $subject->_id;
+            }
+
+            $subjectModel = new Subject();
+            $subjectModel->detachSubjects($existingSubjectIds, $expedition->id);
+
+            $subjectIds = explode(',', $attributes['subjectIds']);
+            $expedition->subjects()->attach($subjectIds);
+
+            $total = transcriptions_total(count($subjectIds));
+            $completed = transcriptions_completed($expedition->id);
+            $values = [
+                'subject_count' => count($subjectIds),
+                'transcriptions_total' => $total,
+                'transcriptions_completed' => $completed,
+                'percent_completed' => transcriptions_percent_completed($total, $completed)
+            ];
+            $expedition->stat()->updateOrCreate(['expedition_id' => $expedition->id], $values);
+        }
+
+        $expedition = $this->with(['subjects', 'nfnWorkflow', 'stat'])->find($id);
+
+        return $expedition;
     }
 }

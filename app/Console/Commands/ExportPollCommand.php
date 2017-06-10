@@ -3,10 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Events\PollExportEvent;
-use App\Repositories\Contracts\Expedition;
+use App\Repositories\Contracts\ExpeditionContract;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
 
 class ExportPollCommand extends Command
 {
@@ -36,23 +35,23 @@ class ExportPollCommand extends Command
     private $dispatcher;
 
     /**
-     * @var Expedition
+     * @var ExpeditionContract
      */
-    private $expedition;
+    private $expeditionContract;
 
     /**
      * Create a new command instance.
      *
-     * @param Expedition $expedition
+     * @param ExpeditionContract $expeditionContract
      * @param Dispatcher $dispatcher
      * @internal param Actor $actor
      */
-    public function __construct(Expedition $expedition, Dispatcher $dispatcher)
+    public function __construct(ExpeditionContract $expeditionContract, Dispatcher $dispatcher)
     {
         parent::__construct();
 
-        $this->nfnActors = explode(',', Config::get('config.nfnActors'));
-        $this->expedition = $expedition;
+        $this->nfnActors = explode(',', config('config.nfnActors'));
+        $this->expeditionContract = $expeditionContract;
         $this->dispatcher = $dispatcher;
     }
 
@@ -61,11 +60,14 @@ class ExportPollCommand extends Command
      */
     public function handle()
     {
-        $records = $this->expedition->skipCache()->with(['project.group', 'actors'])
-            ->whereHasIn('actors', ['actor_id' => $this->nfnActors])
-            ->whereHas('actors', ['state' => 0, 'error' => 0, 'queued' => 1])
-            ->orderBy(['id' => 'asc'])
-            ->get();
+        $records = $this->expeditionContract->setCacheLifetime(0)
+            ->with(['project.group', 'actors'])
+            ->whereHas('actors', function ($query) {
+                $query->whereIn('actor_id', $this->nfnActors);
+                $query->where('state', 0)->where('error', 0)->where('queued', 0);
+            })
+            ->orderBy('id', 'asc')
+            ->findAll();
 
         if ($records->isEmpty())
         {

@@ -6,7 +6,7 @@ use App\Models\WorkflowManager;
 use App\Repositories\Contracts\WorkflowManagerContract;
 use Illuminate\Contracts\Container\Container;
 
-class WorkflowManagerRepository extends BaseEloquentRepository implements WorkflowManagerContract
+class WorkflowManagerRepository extends EloquentRepository implements WorkflowManagerContract
 {
     /**
      * WorkflowManagerRepository constructor.

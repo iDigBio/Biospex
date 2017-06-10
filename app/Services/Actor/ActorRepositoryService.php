@@ -6,7 +6,7 @@ use App\Repositories\Contracts\ActorContract;
 use App\Repositories\Contracts\DownloadContract;
 use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\ProjectContract;
-use App\Repositories\Contracts\StagedQueueContract;
+use App\Repositories\Contracts\ExportQueueContract;
 use App\Repositories\Contracts\SubjectContract;
 
 class ActorRepositoryService extends ActorServiceBase
@@ -33,9 +33,9 @@ class ActorRepositoryService extends ActorServiceBase
     public $downloadContract;
 
     /**
-     * @var StagedQueueContract
+     * @var ExportQueueContract
      */
-    public $stagedQueueContract;
+    public $exportQueueContract;
 
     /**
      * @var ProjectContract
@@ -49,7 +49,7 @@ class ActorRepositoryService extends ActorServiceBase
      * @param SubjectContract $subjectContract
      * @param ActorContract $actorContract
      * @param ExpeditionContract $expeditionContract
-     * @param StagedQueueContract $stagedQueueContract
+     * @param ExportQueueContract $exportQueueContract
      * @param DownloadContract $downloadContract
      * @param ProjectContract $projectContract
      */
@@ -57,7 +57,7 @@ class ActorRepositoryService extends ActorServiceBase
         SubjectContract $subjectContract,
         ActorContract $actorContract,
         ExpeditionContract $expeditionContract,
-        StagedQueueContract $stagedQueueContract,
+        ExportQueueContract $exportQueueContract,
         DownloadContract $downloadContract,
         ProjectContract $projectContract
     )
@@ -65,7 +65,7 @@ class ActorRepositoryService extends ActorServiceBase
         $this->subjectContract = $subjectContract;
         $this->actorContract = $actorContract;
         $this->expeditionContract = $expeditionContract;
-        $this->stagedQueueContract = $stagedQueueContract;
+        $this->exportQueueContract = $exportQueueContract;
         $this->downloadContract = $downloadContract;
         $this->projectContract = $projectContract;
     }
@@ -87,10 +87,9 @@ class ActorRepositoryService extends ActorServiceBase
      */
     public function getProjectGroupById()
     {
-        $this->checkActorServiceConfig();
-
         return $this->projectContract->setCacheLifetime(0)
-            ->findProjectWithRelations($this->config->expedition->project_id, ['group']);
+            ->with('group')
+            ->find($this->config->expedition->project_id);
     }
 
     /**
@@ -100,8 +99,6 @@ class ActorRepositoryService extends ActorServiceBase
      */
     public function getSubjectsByExpeditionId()
     {
-        $this->checkActorServiceConfig();
-
         return $this->subjectContract->setCacheLifetime(0)
             ->findSubjectsByExpeditionId($this->config->expedition->id);
     }
@@ -119,25 +116,36 @@ class ActorRepositoryService extends ActorServiceBase
     }
 
     /**
-     * Create StagedQueue.
+     * Create ExportQueue.
      *
      * @param $attributes
      * @return mixed
      */
-    public function createStagedQueue($attributes)
+    public function firstOrCreateExportQueue($attributes)
     {
-        return $this->stagedQueueContract->createStagedQueue($attributes);
+        return $this->exportQueueContract->firstOrCreateExportQueue($attributes);
     }
 
     /**
-     * Update StagedQueue record.
+     * Update ExportQueue record.
      *
      * @param $id
      * @param $attributes
      * @return mixed
      */
-    public function updateStagedQueue($id, $attributes)
+    public function updateExportQueue($id, $attributes)
     {
-        return $this->stagedQueueContract->update($id, $attributes);
+        return $this->exportQueueContract->update($id, $attributes);
+    }
+
+    /**
+     * Delete staged queue.
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function deleteExportQueue($id)
+    {
+        return $this->exportQueueContract->delete($id);
     }
 }

@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\AmChartJob;
 use App\Jobs\ExpeditionStatJob;
-use App\Repositories\Contracts\Expedition;
+use App\Repositories\Contracts\ExpeditionContract;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\Config;
@@ -36,15 +36,15 @@ class ExpeditionStatUpdate extends Command
 
     /**
      * Execute command
-     * @param Expedition $expeditionRepo
+     * @param ExpeditionContract $expeditionContract
      */
-    public function handle(Expedition $expeditionRepo)
+    public function handle(ExpeditionContract $expeditionContract)
     {
         $this->expeditionIds = null ===  $this->argument('ids') ?
             null :
             explode(',', $this->argument('ids'));
 
-        $expeditions = $this->findStats($expeditionRepo);
+        $expeditions = $this->findStats($expeditionContract);
 
         $projectIds = $this->setJobs($expeditions);
 
@@ -54,15 +54,20 @@ class ExpeditionStatUpdate extends Command
     /**
      * Return records from expedition_stats table.
      *
-     * @param Expedition $expeditionRepo
+     * @param ExpeditionContract $expeditionContract
      * @return mixed
      */
-    private function findStats(Expedition $expeditionRepo)
+    private function findStats(ExpeditionContract $expeditionContract)
     {
         return null === $this->expeditionIds ?
-            $expeditionRepo->skipCache()->with(['project'])->whereHas('stat')->get() :
-            $expeditionRepo->skipCache()->with(['project'])->whereHas('stat')->whereIn('id', $this->expeditionIds)->get();
-
+            $expeditionContract->setCacheLifetime(0)
+                ->has('stat')
+                ->with('project')
+                ->findAll() :
+            $expeditionContract->setCacheLifetime(0)
+                ->has('stat')
+                ->with('project')
+                ->findWhereIn(['id', [$this->expeditionIds]]);
     }
 
     /**

@@ -2,15 +2,14 @@
 
 use App\Exceptions\BiospexException;
 use App\Jobs\BuildOcrBatchesJob;
+use App\Repositories\Contracts\ImportContract;
 use App\Services\File\FileService;
 use App\Services\Mailer\BiospexMailer;
-use App\Repositories\Contracts\Import;
-use App\Repositories\Contracts\Project;
+use App\Repositories\Contracts\ProjectContract;
 use App\Services\Process\DarwinCore;
 use App\Services\Process\Xml;
 use App\Services\Report\DarwinCoreImportReport;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Support\Facades\Config;
 use App\Exceptions\Handler;
 
 class DarwinCoreFileImportQueue extends QueueAbstract
@@ -21,14 +20,14 @@ class DarwinCoreFileImportQueue extends QueueAbstract
     public $subjectImportDir;
 
     /**
-     * @var Import
+     * @var ImportContract
      */
-    protected $import;
+    protected $importContract;
 
     /**
-     * @var Project
+     * @var ProjectContract
      */
-    protected $project;
+    protected $projectContract;
 
     /**
      * @var DarwinCoreImportReport
@@ -79,8 +78,8 @@ class DarwinCoreFileImportQueue extends QueueAbstract
     /**
      * Constructor
      *
-     * @param Import $import
-     * @param Project $project
+     * @param ImportContract $importContract
+     * @param ProjectContract $projectContract
      * @param DarwinCoreImportReport $report
      * @param DarwinCore $process
      * @param Xml $xml
@@ -89,8 +88,8 @@ class DarwinCoreFileImportQueue extends QueueAbstract
      * @param Handler $handler
      */
     public function __construct(
-        Import $import,
-        Project $project,
+        ImportContract $importContract,
+        ProjectContract $projectContract,
         DarwinCoreImportReport $report,
         DarwinCore $process,
         Xml $xml,
@@ -99,8 +98,8 @@ class DarwinCoreFileImportQueue extends QueueAbstract
         Handler $handler
     )
     {
-        $this->import = $import;
-        $this->project = $project;
+        $this->importContract = $importContract;
+        $this->projectContract = $projectContract;
         $this->report = $report;
         $this->process = $process;
         $this->xml = $xml;
@@ -108,8 +107,8 @@ class DarwinCoreFileImportQueue extends QueueAbstract
         $this->fileService = $fileService;
         $this->handler = $handler;
 
-        $this->scratchDir = Config::get('config.scratch_dir');
-        $this->subjectImportDir = Config::get('config.subject_import_dir');
+        $this->scratchDir = config('config.scratch_dir');
+        $this->subjectImportDir = config('config.subject_import_dir');
         if ( ! $this->fileService->filesystem->isDirectory($this->subjectImportDir))
         {
             $this->fileService->filesystem->makeDirectory($this->subjectImportDir);
@@ -128,8 +127,10 @@ class DarwinCoreFileImportQueue extends QueueAbstract
         $this->job = $job;
         $this->data = $data;
 
-        $import = $this->import->skipCache()->find($this->data['id']);
-        $this->record = $this->project->skipCache()->with(['group.owner', 'workflow.actors'])->find($import->project_id);
+        $import = $this->importContract->setCacheLifetime(0)->find($this->data['id']);
+        $this->record = $this->projectContract->setCacheLifetime(0)
+            ->with(['group.owner', 'workflow.actors'])
+            ->find($import->project_id);
 
         $fileName = pathinfo($this->subjectImportDir . '/' . $import->file, PATHINFO_FILENAME);
         $this->scratchFileDir = $this->scratchDir . '/' . $import->id . '-' . md5($fileName);
@@ -149,19 +150,19 @@ class DarwinCoreFileImportQueue extends QueueAbstract
 
             if ($this->record->workflow->actors->contains('title', 'OCR') && $this->process->getSubjectCount() > 0)
             {
-                $this->dispatch((new BuildOcrBatchesJob($this->record->id))->onQueue(Config::get('config.beanstalkd.ocr')));
+                $this->dispatch((new BuildOcrBatchesJob($this->record->id))->onQueue(config('config.beanstalkd.ocr')));
             }
 
             $this->fileService->filesystem->deleteDirectory($this->scratchFileDir);
             $this->fileService->filesystem->delete($zipFile);
-            $this->import->delete($import->id);
+            $this->importContract->delete($import->id);
 
             $this->delete();
         }
         catch (BiospexException $e)
         {
             $import->error = 1;
-            $this->import->update($import->toArray(), $import->id);
+            $this->importContract->update($import->id, $import->toArray());
             $this->fileService->filesystem->deleteDirectory($this->scratchFileDir);
 
             $this->report->addError(trans('errors.import_process', [

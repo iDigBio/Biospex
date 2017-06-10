@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Repositories\Contracts\UserContract;
 use Illuminate\Contracts\Container\Container;
 
-class UserRepository extends BaseEloquentRepository implements UserContract
+class UserRepository extends EloquentRepository implements UserContract
 {
     /**
      * ExpeditionRepository constructor.

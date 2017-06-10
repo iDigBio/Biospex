@@ -6,7 +6,7 @@ use App\Models\Project;
 use App\Repositories\Contracts\ProjectContract;
 use Illuminate\Contracts\Container\Container;
 
-class ProjectRepository extends BaseEloquentRepository implements ProjectContract
+class ProjectRepository extends EloquentRepository implements ProjectContract
 {
     /**
      * ProjectRepository constructor.
@@ -43,16 +43,4 @@ class ProjectRepository extends BaseEloquentRepository implements ProjectContrac
             ->take($count);
     }
 
-    /**
-     * Find project with relations.
-     *
-     * @param $projectId
-     * @param array $relations
-     * @param array $attributes
-     * @return mixed
-     */
-    public function findProjectWithRelations($projectId, array $relations = [], array $attributes = ['*'])
-    {
-        return $this->findWithRelations($projectId, $relations, $attributes);
-    }
 }

@@ -13,7 +13,7 @@ use App\Listeners\RepositoryEventListener;
 use App\Listeners\SendErrorEventListener;
 use App\Listeners\SendInviteEventListener;
 use App\Listeners\SendReportEventListener;
-use App\Listeners\StagedQueueEventListener;
+use App\Listeners\ExportQueueEventListener;
 use App\Listeners\UserRegisteredEventListener;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -49,7 +49,7 @@ class EventServiceProvider extends ServiceProvider
         GroupEventListener::class,
         DatabaseCacheEventListener::class,
         RepositoryEventListener::class,
-        StagedQueueEventListener::class,
+        ExportQueueEventListener::class,
         ActorPivotUpdateEventListener::class
     ];
 

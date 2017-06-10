@@ -4,6 +4,7 @@ namespace App\Services\Model;
 
 ini_set('memory_limit', '1024M');
 
+use App\Repositories\Contracts\ExpeditionContract;
 use Illuminate\Support\Facades\Event;
 use App\Exceptions\BiospexException;
 use App\Exceptions\Handler;
@@ -26,9 +27,9 @@ class ModelDeleteService
     public $projectService;
 
     /**
-     * @var ExpeditionService
+     * @var ExpeditionContract
      */
-    public $expeditionService;
+    public $expeditionContract;
 
     /**
      * @var SubjectService
@@ -45,7 +46,7 @@ class ModelDeleteService
      * @param UserService $userService
      * @param GroupService $groupService
      * @param ProjectService $projectService
-     * @param ExpeditionService $expeditionService
+     * @param ExpeditionContract $expeditionContract
      * @param SubjectService $subjectService
      * @param Handler $handler
      */
@@ -53,7 +54,7 @@ class ModelDeleteService
         UserService $userService,
         GroupService $groupService,
         ProjectService $projectService,
-        ExpeditionService $expeditionService,
+        ExpeditionContract $expeditionContract,
         SubjectService $subjectService,
         Handler $handler
     )
@@ -61,7 +62,7 @@ class ModelDeleteService
         $this->userService = $userService;
         $this->groupService = $groupService;
         $this->projectService = $projectService;
-        $this->expeditionService = $expeditionService;
+        $this->expeditionContract = $expeditionContract;
         $this->subjectService = $subjectService;
         $this->handler = $handler;
     }
@@ -173,7 +174,7 @@ class ModelDeleteService
     {
         try
         {
-            $record = $this->expeditionService->repository->skipCache()->with(['nfnWorkflow'])->find($id);
+            $record = $this->expeditionContract->setCacheLifetime(0)->with(['nfnWorkflow'])->find($id);
 
             if (isset($record->nfnWorkflow))
             {

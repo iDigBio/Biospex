@@ -6,6 +6,21 @@ interface ExpeditionContract extends RepositoryContract, CacheableContract
 {
 
     /**
+     * @param array $attributes
+     * @param bool $syncRelations
+     * @return mixed
+     */
+    public function createExpedition(array $attributes = [], $syncRelations = false);
+
+    /**
+     * @param $id
+     * @param array $attributes
+     * @param bool $syncRelations
+     * @return mixed
+     */
+    public function updateExpedition($id, array $attributes = [], $syncRelations = false);
+
+    /**
      * Retrieve expeditions for Notes From Nature classification process.
      *
      * @param array $ids

@@ -94,7 +94,7 @@ class RepositoryEventListener
      */
     public function entityDeleted(RepositoryContract $repository, $entity)
     {
-        $clearOn = $repository->getContainer('config')->get('rinvex.repository.cache.clear_on');
+        $clearOn = $repository->getContainer('config')->get('repository.cache.clear_on');
 
         if ($repository->isCacheClearEnabled() && in_array('delete', $clearOn)) {
             $repository->forgetCache();

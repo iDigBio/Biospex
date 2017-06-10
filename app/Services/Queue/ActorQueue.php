@@ -3,7 +3,7 @@
 namespace App\Services\Queue;
 
 use App\Exceptions\BiospexException;
-use App\Repositories\Contracts\Expedition;
+use App\Repositories\Contracts\ExpeditionContract;
 use App\Services\Actor\ActorFactory;
 use App\Services\Report\Report;
 use App\Exceptions\Handler;
@@ -18,9 +18,9 @@ class ActorQueue extends QueueAbstract
     protected $report;
 
     /**
-     * @var Expedition
+     * @var ExpeditionContract
      */
-    protected $expedition;
+    protected $expeditionContract;
 
     /**
      * @var Handler
@@ -31,13 +31,13 @@ class ActorQueue extends QueueAbstract
      * ActorQueue constructor.
      *
      * @param Report $report
-     * @param Expedition $expedition
+     * @param ExpeditionContract $expeditionContract
      * @param Handler $handler
      */
-    public function __construct(Report $report, Expedition $expedition, Handler $handler)
+    public function __construct(Report $report, ExpeditionContract $expeditionContract, Handler $handler)
     {
         $this->report = $report;
-        $this->expedition = $expedition;
+        $this->expeditionContract = $expeditionContract;
         $this->handler = $handler;
     }
 
@@ -75,7 +75,7 @@ class ActorQueue extends QueueAbstract
      */
     public function createError($actor, $message)
     {
-        $record = $this->expedition->with(['project.group.owner'])->find($actor->pivot->expedition_id);
+        $record = $this->expeditionContract->with(['project.group.owner'])->find($actor->pivot->expedition_id);
 
         $this->report->addError(trans('errors.workflow_actor',
             [

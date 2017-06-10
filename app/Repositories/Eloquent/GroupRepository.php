@@ -6,7 +6,7 @@ use App\Models\Group;
 use App\Repositories\Contracts\GroupContract;
 use Illuminate\Contracts\Container\Container;
 
-class GroupRepository extends BaseEloquentRepository implements GroupContract
+class GroupRepository extends EloquentRepository implements GroupContract
 {
 
     /**

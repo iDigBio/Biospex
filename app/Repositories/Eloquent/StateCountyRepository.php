@@ -6,7 +6,7 @@ use App\Models\StateCounty;
 use App\Repositories\Contracts\StateCountyContract;
 use Illuminate\Contracts\Container\Container;
 
-class StateCountyRepository extends BaseEloquentRepository implements StateCountyContract
+class StateCountyRepository extends EloquentRepository implements StateCountyContract
 {
     /**
      * StateCountyRepository constructor.

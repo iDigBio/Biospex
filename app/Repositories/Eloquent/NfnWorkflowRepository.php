@@ -6,7 +6,7 @@ use App\Models\NfnWorkflow;
 use App\Repositories\Contracts\NfnWorkflowContract;
 use Illuminate\Contracts\Container\Container;
 
-class NfnWorkflowRepository extends BaseEloquentRepository implements NfnWorkflowContract
+class NfnWorkflowRepository extends EloquentRepository implements NfnWorkflowContract
 {
 
     /**

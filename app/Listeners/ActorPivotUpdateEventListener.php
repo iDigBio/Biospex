@@ -40,6 +40,11 @@ class ActorPivotUpdateEventListener
         );
 
         $events->listen(
+            'actor.pivot.unqueued',
+            'App\Listeners\ActorPivotUpdateEventListener@actorPivotUnQueued'
+        );
+
+        $events->listen(
             'actor.pivot.state',
             'App\Listeners\ActorPivotUpdateEventListener@actorPivotState'
         );
@@ -81,17 +86,31 @@ class ActorPivotUpdateEventListener
     }
 
     /**
-     * Update actor for new queue.
-     *
-     * @param $actor
-     * @param $count
-     */
-    public function actorPivotQueued($actor, $count)
+ * Update actor for new queue.
+ *
+ * @param $actor
+ */
+    public function actorPivotQueued($actor)
     {
         $attributes = [
-            'total'     => $count,
+            'total'     => $actor->pivot->total,
             'processed' => 0,
             'queued'    => 1
+        ];
+        $this->updateActorExpeditions($actor, $attributes);
+    }
+
+    /**
+     * Update actor to clear queue.
+     *
+     * @param $actor
+     */
+    public function actorPivotUnQueued($actor)
+    {
+        $attributes = [
+            'total'     => $actor->pivot->total,
+            'processed' => 0,
+            'queued'    => 0
         ];
         $this->updateActorExpeditions($actor, $attributes);
     }

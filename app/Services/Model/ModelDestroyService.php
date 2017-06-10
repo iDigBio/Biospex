@@ -6,6 +6,7 @@ ini_set('memory_limit', '1024M');
 
 use App\Exceptions\BiospexException;
 use App\Exceptions\Handler;
+use App\Repositories\Contracts\ExpeditionContract;
 
 class ModelDestroyService
 {
@@ -20,9 +21,9 @@ class ModelDestroyService
     public $projectService;
 
     /**
-     * @var ExpeditionService
+     * @var ExpeditionContract
      */
-    public $expeditionService;
+    public $expeditionContract;
 
     /**
      * @var Handler
@@ -38,7 +39,7 @@ class ModelDestroyService
      * @param UserService $userService
      * @param GroupService $groupService
      * @param ProjectService $projectService
-     * @param ExpeditionService $expeditionService
+     * @param ExpeditionContract $expeditionContract
      * @param NfnWorkflowService $nfnWorkflowService
      * @param DownloadService $downloadService
      * @param Handler $handler
@@ -47,7 +48,7 @@ class ModelDestroyService
         UserService $userService,
         GroupService $groupService,
         ProjectService $projectService,
-        ExpeditionService $expeditionService,
+        ExpeditionContract $expeditionContract,
         DownloadService $downloadService,
         Handler $handler
     )
@@ -55,7 +56,7 @@ class ModelDestroyService
         $this->userService = $userService;
         $this->groupService = $groupService;
         $this->projectService = $projectService;
-        $this->expeditionService = $expeditionService;
+        $this->expeditionContract = $expeditionContract;
         $this->handler = $handler;
         $this->downloadService = $downloadService;
     }
@@ -174,7 +175,7 @@ class ModelDestroyService
     {
         try
         {
-            $record = $this->expeditionService->repository->skipCache()->with(['downloads'])->trashed($id);
+            $record = $this->expeditionContract->setCacheLifetime(0)->with(['downloads'])->onlyTrashed($id);
 
             if (isset($record->downloads))
             {

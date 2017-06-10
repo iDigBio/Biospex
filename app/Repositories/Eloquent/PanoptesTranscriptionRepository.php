@@ -6,7 +6,7 @@ use App\Models\PanoptesTranscription;
 use App\Repositories\Contracts\PanoptesTranscriptionContract;
 use Illuminate\Contracts\Container\Container;
 
-class PanoptesTranscriptionRepository extends BaseEloquentRepository implements PanoptesTranscriptionContract
+class PanoptesTranscriptionRepository extends EloquentRepository implements PanoptesTranscriptionContract
 {
     /**
      * PanoptesTranscriptionRepository constructor.

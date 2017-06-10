@@ -6,7 +6,7 @@ use App\Models\Download;
 use App\Repositories\Contracts\DownloadContract;
 use Illuminate\Contracts\Container\Container;
 
-class DownloadRepository extends BaseEloquentRepository implements DownloadContract
+class DownloadRepository extends EloquentRepository implements DownloadContract
 {
     /**
      * ActorRepository constructor.
@@ -24,6 +24,9 @@ class DownloadRepository extends BaseEloquentRepository implements DownloadContr
      */
     public function updateOrCreateDownload(array $attributes = [], array $values = [])
     {
-        return $this->updateOrCreateRecord($attributes, $values);
+        $entity = $this->updateOrCreate($attributes, $values);
+        $this->flushCacheKeys();
+
+        return $entity;
     }
 }

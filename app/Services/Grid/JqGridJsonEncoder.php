@@ -1,9 +1,8 @@
 <?php namespace App\Services\Grid;
 
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 use App\Repositories\Contracts\Subject;
-use App\Repositories\Contracts\Expedition;
+use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\Header;
 use Exception;
 
@@ -16,9 +15,9 @@ class JqGridJsonEncoder
     protected $subject;
 
     /**
-     * @var Expedition
+     * @var ExpeditionContract
      */
-    protected $expedition;
+    protected $expeditionContract;
 
     /**
      * @var Header
@@ -48,21 +47,21 @@ class JqGridJsonEncoder
     /**
      * JqGridJsonEncoder constructor.
      * @param Subject $subject
-     * @param Expedition $expedition
+     * @param ExpeditionContract $expeditionContract
      * @param Header $header
      */
     public function __construct(
         Subject $subject,
-        Expedition $expedition,
+        ExpeditionContract $expeditionContract,
         Header $header
     )
     {
         $this->subject = $subject;
-        $this->expedition = $expedition;
+        $this->expeditionContract = $expeditionContract;
         $this->header = $header;
 
-        $this->defaultGridVisible = Config::get('config.defaultGridVisible');
-        $this->defaultSubGridVisible = Config::get('config.defaultSubGridVisible');
+        $this->defaultGridVisible = config('config.defaultGridVisible');
+        $this->defaultSubGridVisible = config('config.defaultSubGridVisible');
     }
 
     /**
@@ -336,7 +335,7 @@ class JqGridJsonEncoder
      */
     public function updateSelectedRows($id, $data)
     {
-        $expedition = $this->expedition->skipCache()->find($id);
+        $expedition = $this->expeditionContract->setCacheLifetime(0)->find($id);
 
         if ($data['selected'] === 'true')
         {

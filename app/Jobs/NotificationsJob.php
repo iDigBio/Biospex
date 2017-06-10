@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Repositories\Contracts\Expedition;
-use App\Repositories\Contracts\Notification;
+use App\Repositories\Contracts\ExpeditionContract;
+use App\Repositories\Contracts\NotificationContract;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -24,26 +24,24 @@ class NotificationsJob extends Job implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param Expedition $expedition
-     * @param Notification $notification
+     * @param ExpeditionContract $expeditionContract
+     * @param NotificationContract $notification
      * @return void
      */
-    public function handle(Expedition $expedition, Notification $notification)
-    {
-        $this->nfnWorkflowNotification($expedition, $notification);
-    }
-
-    /**
-     * Build missing nfn workflow notifications.
-     *
-     * @param $expedition
-     * @param $notification
-     */
-    private function nfnWorkflowNotification($expedition, $notification)
+    public function handle(ExpeditionContract $expeditionContract, NotificationContract $notification)
     {
         $notification->truncate();
 
-        $results = $expedition->skipCache()->with(['project.group'])->whereHas('workflowManager', ['stopped' => 0])->whereHas('nfnWorkflow', ['workflow' => null])->get();
+        $results = $expeditionContract->setCacheLifetime(0)
+            ->with(['project.group'])
+            ->whereHas('workflowManager', function($query) {
+                $query->where('stopped', 0);
+            })
+            ->whereHas('nfnWorkflow', function($query){
+                $query->whereNull('workflow');
+            })
+            ->findAll();
+
         foreach ($results as $result)
         {
             $values = [

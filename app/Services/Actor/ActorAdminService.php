@@ -8,6 +8,7 @@ use App\Repositories\Contracts\ActorContract;
 use App\Repositories\Contracts\UserContract;
 use App\Services\BaseService;
 use Illuminate\Http\Request;
+use Toastr;
 
 class ActorAdminService extends BaseService
 {
@@ -36,7 +37,7 @@ class ActorAdminService extends BaseService
 
     public function showIndex(Request $request)
     {
-        $user = $this->userContract->findWithRelations($request->user()->id, ['profile']);
+        $user = $this->userContract->with('profile')->find($request->user()->id);
         $actors = $this->actorContract->findAll();
         $trashed = $this->actorContract->getAllTrashed();
 
@@ -45,7 +46,7 @@ class ActorAdminService extends BaseService
 
     public function showCreateForm(Request $request)
     {
-        $user = $this->userContract->findWithRelations($request->user()->id, ['profile']);
+        $user = $this->userContract->with('profile')->find($request->user()->id);
         $actors = $this->actorContract->findAll();
         $trashed = $this->actorContract->getAllTrashed();
 
@@ -80,8 +81,8 @@ class ActorAdminService extends BaseService
      */
     public function editActor(Request $request, $id)
     {
-        $user = $this->userContract->findWithRelations($request->user()->id, ['profile']);
-        $actor = $this->actorContract->findWithRelations($id, ['contacts']);
+        $user = $this->userContract->with('profile')->find($request->user()->id);
+        $actor = $this->actorContract->with('contacts')->find($id);
         $actors = $this->actorContract->findAll();
         $trashed = $this->actorContract->getAllTrashed();
         
@@ -95,7 +96,7 @@ class ActorAdminService extends BaseService
      */
     public function updateActor(ActorFormRequest $request, $id)
     {
-        $result = $this->actor->update($request->all(), $id);
+        $result = $this->actorContract->update($id, $request->all());
 
         $result ? Toastr::success('Actor has been updated successfully.', 'Actor Update')
             : Toastr::error('Actor could not be updated.', 'Actor Update');
