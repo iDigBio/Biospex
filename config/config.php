@@ -82,13 +82,13 @@ return [
 
     /* Added Tubes */
     'beanstalkd'        => [
+        'chart'          => env('QUEUE_CHART_TUBE'),
+        'classification' => env('QUEUE_CLASSIFICATION_TUBE'),
         'default'        => env('QUEUE_DEFAULT_TUBE'),
         'event'          => env('QUEUE_EVENT_TUBE'),
         'import'         => env('QUEUE_IMPORT_TUBE'),
-        'staged'         => env('QUEUE_STAGED_TUBE'),
-        'chart'          => env('QUEUE_CHART_TUBE'),
+        'export'         => env('QUEUE_EXPORT_TUBE'),
         'stat'           => env('QUEUE_STAT_TUBE'),
-        'classification' => env('QUEUE_CLASSIFICATION_TUBE'),
         'workflow'       => env('QUEUE_WORKFLOW_TUBE'),
         'ocr'            => env('QUEUE_OCR_TUBE')
     ],

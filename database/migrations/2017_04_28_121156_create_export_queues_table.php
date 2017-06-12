@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateStagedQueuesTable extends Migration
+class CreateExportQueuesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,7 +12,7 @@ class CreateStagedQueuesTable extends Migration
      */
     public function up()
     {
-        Schema::create('staged_queues', function ($table) {
+        Schema::create('export_queues', function ($table) {
             $table->increments('id');
             $table->integer('expedition_id')->unsigned();
             $table->integer('actor_id')->unsigned();
@@ -36,6 +36,6 @@ class CreateStagedQueuesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('staged_queues');
+        Schema::drop('export_queues');
     }
 }

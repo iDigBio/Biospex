@@ -3,7 +3,7 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 use App\Repositories\Contracts\Group;
-use App\Repositories\Contracts\Permission;
+use App\Repositories\Contracts\PermissionContract;
 
 class GroupPermissionTableSeeder extends Seeder
 {
@@ -12,16 +12,16 @@ class GroupPermissionTableSeeder extends Seeder
      */
     private $group;
     /**
-     * @var Permission
+     * @var PermissionContract
      */
     private $permission;
 
     /**
      * @param Group $group
-     * @param Permission $permission
+     * @param PermissionContract $permission
      * @internal param User $user
      */
-    public function __construct(Group $group, Permission $permission)
+    public function __construct(Group $group, PermissionContract $permission)
     {
         $this->group = $group;
         $this->permission = $permission;
