@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Workflow extends BaseEloquentModel
+class Workflow extends Model
 {
     use SoftDeletes;
 

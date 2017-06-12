@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Codesleeve\Stapler\ORM\EloquentTrait;
 use Codesleeve\Stapler\ORM\StaplerableInterface;
 
-class Profile extends BaseEloquentModel implements StaplerableInterface
+class Profile extends Model implements StaplerableInterface
 {
     use EloquentTrait;
 

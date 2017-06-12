@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
-class FaqCategory extends BaseEloquentModel
+use Illuminate\Database\Eloquent\Model;
+
+class FaqCategory extends Model
 {
 
     /**

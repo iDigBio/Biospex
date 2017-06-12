@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 
-class StateCounty extends BaseEloquentModel
+class StateCounty extends Model
 {
 
     /**

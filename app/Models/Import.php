@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
-class Import extends BaseEloquentModel
+use Illuminate\Database\Eloquent\Model;
+
+class Import extends Model
 {
     /**
      * @inheritDoc

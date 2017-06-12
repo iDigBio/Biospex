@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 
-class Permission extends BaseEloquentModel
+class Permission extends Model
 {
 
     /**

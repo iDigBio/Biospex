@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Notice extends BaseEloquentModel
+class Notice extends Model
 {
     use SoftDeletes;
 

@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Jenssegers\Mongodb\Model;
 use MongoDate;
 
-class PanoptesTranscription extends BaseMongoModel
+class PanoptesTranscription extends Model
 {
     /**
      * @inheritDoc

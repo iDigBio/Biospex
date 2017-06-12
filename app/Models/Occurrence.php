@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-
-
+use Jenssegers\Mongodb\Model;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
-class Occurrence extends BaseMongoModel
+class Occurrence extends Model
 {
     use SoftDeletes;
 

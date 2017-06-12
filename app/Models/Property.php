@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 
-class Property extends BaseEloquentModel
+class Property extends Model
 {
     /**
      * @inheritDoc

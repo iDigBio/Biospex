@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,7 +14,7 @@ use App\Models\Traits\HasGroup;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 
-class User extends BaseEloquentModel implements AuthenticatableContract,
+class User extends Model implements AuthenticatableContract,
     AuthorizableContract,
     CanResetPasswordContract
 {

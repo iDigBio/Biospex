@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use Jenssegers\Mongodb\Model;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 use MongoDate;
 
-class NfnTranscription extends BaseMongoModel
+class NfnTranscription extends Model
 {
     use SoftDeletes;
 

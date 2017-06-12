@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
-class Team extends BaseEloquentModel
+use Illuminate\Database\Eloquent\Model;
+
+class Team extends Model
 {
 
     /**

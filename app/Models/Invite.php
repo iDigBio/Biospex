@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
-class Invite extends BaseEloquentModel
+use Illuminate\Database\Eloquent\Model;
+
+class Invite extends Model
 {
 
     /**

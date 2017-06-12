@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 
-class ActorContact extends BaseEloquentModel
+class ActorContact extends Model
 {
 
     /**

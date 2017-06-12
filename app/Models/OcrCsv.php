@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
-class OcrCsv extends BaseEloquentModel
+use Illuminate\Database\Eloquent\Model;
+
+class OcrCsv extends Model
 {
     /**
      * @inheritDoc

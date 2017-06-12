@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ExpeditionStat extends BaseEloquentModel
+class ExpeditionStat extends Model
 {
     use SoftDeletes;
 

@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class TranscriptionLocation extends BaseEloquentModel
+class TranscriptionLocation extends Model
 {
 
     use SoftDeletes;

@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Group extends BaseEloquentModel
+class Group extends Model
 {
     use UuidTrait, SoftCascadeTrait, SoftDeletes;
 

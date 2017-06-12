@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Jenssegers\Mongodb\Model;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
-class Subject extends BaseMongoModel
+class Subject extends Model
 {
     use SoftDeletes;
 

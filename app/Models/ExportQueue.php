@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 
-class ExportQueue extends BaseEloquentModel
+class ExportQueue extends Model
 {
     /**
      * @ineritDoc

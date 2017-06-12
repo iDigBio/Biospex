@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class AmChart extends BaseEloquentModel
+class AmChart extends Model
 {
     use SoftDeletes;
 

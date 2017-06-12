@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Jenssegers\Eloquent\Model;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
 use Codesleeve\Stapler\ORM\EloquentTrait;
@@ -11,7 +12,7 @@ use Cviebrock\EloquentSluggable\SluggableTrait;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 
-class Project extends BaseEloquentMongoModel implements StaplerableInterface, SluggableInterface
+class Project extends Model implements StaplerableInterface, SluggableInterface
 {
     use EloquentTrait, SluggableTrait, UuidTrait, SoftCascadeTrait, SoftDeletes;
 

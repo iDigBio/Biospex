@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use Jenssegers\Eloquent\Model;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
-class Expedition extends BaseEloquentMongoModel
+class Expedition extends Model
 {
     use UuidTrait, SoftCascadeTrait, SoftDeletes;
 
