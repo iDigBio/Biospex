@@ -114,7 +114,9 @@ class GridsController extends Controller
         try
         {
             $databaseManager = app(DatabaseManager::class);
-            $db = $databaseManager->connection('mongodb')->getMongoClient()->selectDB(config('database.connections.mongodb.database'));
+            $db = $databaseManager->connection('mongodb')
+                ->getMongoClient()
+                ->selectDB(config('database.connections.mongodb.database'));
 
             $collection =  new MongoCollection($db, 'subjects');
 
@@ -154,7 +156,7 @@ class GridsController extends Controller
 
         $headers = [
             'Content-type' => 'text/csv; charset=utf-8',
-            'Content-disposition' => 'attachment; filename="grid_export.csv"'
+            'Content-disposition' => 'attachment; filename="'.$filename.'"'
         ];
 
         return Response::download($temp, $filename, $headers);

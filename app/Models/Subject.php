@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Collection;
 use Jenssegers\Mongodb\Model;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
@@ -218,27 +219,29 @@ class Subject extends Model
     /**
      * Calculate the number of rows. It's used for paging the result.
      *
-     * @param  array $filters
-     *  An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
+     * @param Collection $vars
+     * page
+     * limit
+     * count
+     * sidx
+     * sord
+     * filters
+     * projectId
+     * expeditionId
+     *
+     *  Filters is an array: example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
      *  The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
      *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
      *  when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
      *  The 'data' key will contain the string searched by the user.
-     * @param $projectId
-     * @param $expeditionId
-     * @param $route
+
      * @return int Total number of rows
-     * Total number of rows
      */
-    public function getNumberOfRowsTotal($filters, $route, $projectId, $expeditionId)
+    public function getRowCount($vars)
     {
-        $this->route = $route;
-        $this->projectId = $projectId;
-        $this->expeditionId = $expeditionId;
-        
-        $count = $this->whereNested(function ($query) use ($filters)
+        $count = $this->whereNested(function ($query) use ($vars)
         {
-            $this->buildQuery($query, $filters);
+            $this->buildQuery($query, $vars);
         })->count();
 
         return (int) $count;
@@ -249,12 +252,7 @@ class Subject extends Model
      *
      * Get the rows data to be shown in the grid.
      *
-     * @param $limit
-     * @param $offset
-     * @param $orderBy
-     * @param $sord
-     * @param $filters
-     * @return array
+     * @param $vars
      *  An array of filters, example: array(array('field'=>'column index/name 1','op'=>'operator','data'=>'searched string column 1'), array('field'=>'column index/name 2','op'=>'operator','data'=>'searched string column 2'))
      *  The 'field' key will contain the 'index' column property if is set, otherwise the 'name' column property.
      *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
@@ -263,20 +261,21 @@ class Subject extends Model
      * @return array
      *  An array of array, each array will have the data of a row.
      *  Example: array(array('row 1 col 1','row 1 col 2'), array('row 2 col 1','row 2 col 2'))
+     *
+     * $limit, $start, $sidx, $sord, $filters
      */
-    public function getAllRows($limit, $offset, $orderBy, $sord, $filters)
+    public function getAllRows($vars)
     {
-        dd($this->where('project_id', 13))->get();
-        $orderByRaw = $this->setOrderBy($orderBy, $sord);
+        $orderByRaw = $this->setOrderBy($vars['sidx'], $vars['sord']);
 
-        $limit = ($limit === 0) ? 1 : $limit;
+        $vars['limit'] = ($vars['limit'] === 0) ? 1 : $vars['limit'];
 
-        $query = $this->whereNested(function ($query) use ($filters)
+        $query = $this->whereNested(function ($query) use ($vars)
         {
-            $this->buildQuery($query, $filters);
+            $this->buildQuery($query, $vars);
         })
-            ->take($limit)
-            ->skip($offset);
+            ->take($vars['limit'])
+            ->skip($vars['offset']);
 
         foreach ($orderByRaw as $field => $sort)
         {
@@ -293,8 +292,6 @@ class Subject extends Model
 
         $this->setRowCheckbox($rows);
 
-        dd($rows);
-
         return $rows;
     }
 
@@ -302,44 +299,44 @@ class Subject extends Model
      * Build query for search.
      *
      * @param $query
-     * @param $filters
+     * @param $vars
      */
-    protected function buildQuery(&$query, $filters)
+    protected function buildQuery(&$query, $vars)
     {
-        $this->setGroupOp($filters);
+        $this->setGroupOp($vars['filters']);
 
-        $this->setWhere($query, 'project_id', '=', $this->projectId);
+        $this->setWhere($query, 'project_id', '=', $vars['projectId']);
 
-        if (isset($filters['rules']) && is_array($filters['rules']))
+        if (isset($vars['filters']['rules']) && is_array($vars['filters']['rules']))
         {
-            $rules = $filters['rules'];
+            $rules = $vars['filters']['rules'];
             $query->where(function ($query) use ($rules)
             {
                 $this->handleRules($query, $rules);
             });
         }
 
-        if ($this->route !== 'web.grids.explore') {
-            $this->setExpeditionWhere($query);
+        if ($vars['route'] !== 'web.grids.explore') {
+            $this->setExpeditionWhere($query, $vars);
         }
     }
 
-    protected function setExpeditionWhere(&$query)
+    protected function setExpeditionWhere(&$query, $vars)
     {
         // web.grids.explore: Project Explore (show all)
         // web.grids.show: Expedition Show page (show only assigned)
         // web.grids.edit: Expedition edit (show all)
         // web.grids.create: Expedition create (show not assigned)
-        if ($this->route === 'web.grids.edit')
+        if ($vars['route'] === 'web.grids.edit')
         {
             if ($this->assignedRuleData === '' || $this->assignedRuleData === 'all')
                 return;
         }
-        elseif ($this->route === 'web.grids.show')
+        elseif ($vars['route'] === 'web.grids.show')
         {
-            $this->setWhereIn($query, 'expedition_ids', [$this->expeditionId]);
+            $this->setWhereIn($query, 'expedition_ids', [$vars['expeditionId']]);
         }
-        elseif ($this->route === 'web.grids.create')
+        elseif ($vars['route'] === 'web.grids.create')
         {
             $this->setWhere($query, 'expedition_ids', 'size', 0);
         }
@@ -464,7 +461,6 @@ class Subject extends Model
     /**
      * @param $query
      * @param $rule
-     * @return mixed
      */
     protected function setWhereForAssigned(&$query, $rule)
     {

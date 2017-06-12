@@ -27,54 +27,43 @@ class SubjectRepository extends EloquentRepository implements SubjectContract
         return $this->findWhere(['expedition_ids', '=', $expeditionId]);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getUnassignedCount($id)
     {
         return $this->loadUnassignedCount($id);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getSubjectIds($projectId, $take = null, $expeditionId = null)
     {
         return $this->loadSubjectIds($projectId, $take, $expeditionId);
     }
 
     /**
-     * Detach subjects
-     *
-     * @param array $ids
-     * @param $expeditionId
-     * @return mixed
+     * @inheritdoc
      */
     public function detachSubjects($ids = [], $expeditionId)
     {
-        return $this->getModel()->detachSubjects($ids, $expeditionId);
+        return $this->detachAllSubjects($ids, $expeditionId);
     }
 
     /**
-     * Grid: get total number of rows.
-     *
-     * @param array $filters
-     * @param $projectId
-     * @param null $expeditionId
-     * @param null $route
-     * @return int
+     * @inheritdoc
      */
-    public function getTotalNumberOfRows($filters = [], $route, $projectId, $expeditionId = null)
+    public function getTotalRowCount(array $vars = [])
     {
-        return $this->getNumberOfRowsTotal($filters, $route, $projectId, $expeditionId);
+        return $this->getRowCount($vars);
     }
 
     /**
-     * Grid: get rows.
-     *
-     * @param $limit
-     * @param $offset
-     * @param null $orderBy
-     * @param null $sord
-     * @param array $filters
-     * @return mixed
+     * @inheritdoc
      */
-    public function getRows($limit, $offset, $orderBy = null, $sord = null, $filters = [])
+    public function getRows(array $vars = [])
     {
-        return $this->getAllRows($limit, $offset, $orderBy, $sord, $filters);
+        return $this->getAllRows($vars);
     }
 }

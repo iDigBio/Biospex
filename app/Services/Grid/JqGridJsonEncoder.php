@@ -238,36 +238,40 @@ class JqGridJsonEncoder
      */
     public function encodeGridRequestedData($postedData, $route, $projectId, $expeditionId = null)
     {
-        $page = $this->setPage($postedData);
+        $vars = [
+            'page'         => $this->setPage($postedData),
+            'limit'        => $this->setLimit($postedData),
+            'count'        => null,
+            'offset'       => null,
+            'sidx'         => $this->setSidx($postedData),
+            'sord'         => $this->setSord($postedData),
+            'filters'      => $this->setFilters($postedData),
+            'route'        => $route,
+            'projectId'    => $projectId,
+            'expeditionId' => $expeditionId
+        ];
 
-        $limit = $this->setLimit($postedData);
+        $vars['count'] = $this->subjectContract->getTotalRowCount($vars);
 
-        $sidx = $this->setSidx($postedData);
+        $vars['limit'] = count($vars['limit']) === 0 ? $vars['count'] : $vars['limit'];
 
-        $sord = $this->setSord($postedData);
-
-        $filters = $this->setFilters($postedData);
-
-        $count = $this->subjectContract->getTotalNumberOfRows($filters, $route, $projectId, $expeditionId);
-
-        $limit = count($limit) === 0 ? $count : $limit;
-
-        if ( ! is_int($count))
+        if ( ! is_int($vars['count']))
         {
             throw new Exception('The method getTotalNumberOfRows must return an integer');
         }
 
-        $totalPages = $this->setTotalPages($count, $limit);
+        $totalPages = $this->setTotalPages($vars['count'], $vars['limit']);
 
-        $page = ($page > $totalPages) ? $totalPages : $page;
-        $limit = $limit < 0 ? 0 : $limit;
-        $start = $limit * $page - $limit;
-        $start = $start < 0 ? 0 : $start;
-        $limit *= $page;
+        $vars['page'] = ($vars['page'] > $totalPages) ? $totalPages : $vars['page'];
+        $vars['limit'] = $vars['limit'] < 0 ? 0 : $vars['limit'];
+        $vars['offset'] = $vars['limit'] * $vars['page'] - $vars['limit'];
+        $vars['offset'] = $vars['offset'] < 0 ? 0 : $vars['offset'];
+        $vars['limit'] *= $vars['page'];
 
         if (empty($postedData['pivotRows']))
         {
-            $rows = $this->subjectContract->getRows($limit, $start, $sidx, $sord, $filters);
+            // $limit, $start, $sidx, $sord, $filters
+            $rows = $this->subjectContract->getRows($vars);
         }
         else
         {
@@ -299,9 +303,9 @@ class JqGridJsonEncoder
         else
         {
             return json_encode([
-                'page'    => $page,
+                'page'    => $vars['page'],
                 'total'   => $totalPages,
-                'records' => $count,
+                'records' => $vars['count'],
                 'rows'    => $rows,
             ]);
         }
