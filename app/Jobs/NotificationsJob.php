@@ -14,14 +14,6 @@ class NotificationsJob extends Job implements ShouldQueue
     use InteractsWithQueue, SerializesModels;
 
     /**
-     * Create a new job instance.
-     */
-    public function __construct()
-    {
-
-    }
-
-    /**
      * Execute the job.
      *
      * @param ExpeditionContract $expeditionContract
@@ -33,7 +25,7 @@ class NotificationsJob extends Job implements ShouldQueue
         $notification->truncate();
 
         $results = $expeditionContract->setCacheLifetime(0)
-            ->with(['project.group'])
+            ->with('project.group')
             ->whereHas('workflowManager', function($query) {
                 $query->where('stopped', 0);
             })

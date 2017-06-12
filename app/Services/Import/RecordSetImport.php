@@ -1,4 +1,6 @@
-<?php namespace App\Services\Import;
+<?php 
+
+namespace App\Services\Import;
 
 class RecordSetImport extends ImportServiceAbstract
 {
@@ -10,8 +12,8 @@ class RecordSetImport extends ImportServiceAbstract
      */
     public function import($id)
     {
-        $recordset = strstr($this->request->input('recordset'), '/') ?
-            trim(strrchr($this->request->input('recordset'), "/"), "/") : trim($this->request->input('recordset'));
+        $recordset = strstr(request()->input('recordset'), '/') ?
+            trim(strrchr(request()->input('recordset'), "/"), "/") : trim(request()->input('recordset'));
 
         $validator = $this->validation->make(
             ['recordset' => $recordset],
@@ -26,7 +28,7 @@ class RecordSetImport extends ImportServiceAbstract
 
         $data = [
             'id'         => $recordset,
-            'user_id'    => $this->request->input('user_id'),
+            'user_id'    => request()->input('user_id'),
             'project_id' => $id
         ];
         $this->queue->push('App\Services\Queue\RecordSetImportQueue', $data, $this->tube);

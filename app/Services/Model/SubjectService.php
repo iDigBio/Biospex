@@ -2,23 +2,23 @@
 
 namespace App\Services\Model;
 
-use App\Repositories\Contracts\Subject;
+use App\Repositories\Contracts\SubjectContract;
 
 class SubjectService
 {
 
     /**
-     * @var Subject
+     * @var SubjectContract
      */
-    public $repository;
+    public $subjectContract;
 
     /**
      * SubjectService constructor.
-     * @param Subject $repository
+     * @param SubjectContract $subjectContract
      */
-    public function __construct(Subject $repository)
+    public function __construct(SubjectContract $subjectContract)
     {
-        $this->repository = $repository;
+        $this->subjectContract = $subjectContract;
     }
 
     /**
@@ -42,9 +42,6 @@ class SubjectService
             $subject->expedition_ids = $array;
             $subject->save();
         }
-
-        //$ids = $subjects->pluck('_id');
-        //$this->repository->detachSubjects($ids, $id);
     }
 
 }

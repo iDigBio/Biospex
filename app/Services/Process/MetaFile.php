@@ -9,10 +9,8 @@ use App\Exceptions\MissingNodeException;
 use App\Exceptions\RowTypeMismatchException;
 use App\Exceptions\XmlLoadException;
 use RuntimeException;
-use Illuminate\Support\Facades\Config;
-use App\Repositories\Contracts\Meta;
+use App\Repositories\Contracts\MetaContract;
 use App\Services\Report\Report;
-
 
 class MetaFile
 {
@@ -83,9 +81,9 @@ class MetaFile
     protected $metaFields;
 
     /**
-     * @var Meta
+     * @var MetaContract
      */
-    protected $meta;
+    protected $metaContract;
 
     /**
      * @var
@@ -100,18 +98,18 @@ class MetaFile
     /**
      * Constructor
      *
-     * @param Meta $meta
+     * @param MetaContract $metaContract
      * @param Xml $xml
      * @param Report $report
      */
-    public function __construct(Meta $meta, Xml $xml, Report $report)
+    public function __construct(MetaContract $metaContract, Xml $xml, Report $report)
     {
         $this->xml = $xml;
         $this->report = $report;
-        $this->meta = $meta;
+        $this->metaContract = $metaContract;
 
-        $this->dwcRequiredRowTypes = Config::get('config.dwcRequiredRowTypes');
-        $this->dwcRequiredFields = Config::get('config.dwcRequiredFields');
+        $this->dwcRequiredRowTypes = config('config.dwcRequiredRowTypes');
+        $this->dwcRequiredFields = config('config.dwcRequiredFields');
     }
 
     /**
@@ -156,7 +154,7 @@ class MetaFile
      */
     public function saveMetaFile($projectId, $meta)
     {
-        $this->meta->create([
+        $this->metaContract->create([
             'project_id' => $projectId,
             'xml'        => $meta,
         ]);

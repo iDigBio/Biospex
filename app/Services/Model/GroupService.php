@@ -2,24 +2,23 @@
 
 namespace App\Services\Model;
 
-use App\Exceptions\Handler;
-use App\Repositories\Contracts\Group;
+use App\Repositories\Contracts\GroupContract;
 
 class GroupService
 {
 
     /**
-     * @var Group
+     * @var GroupContract
      */
-    public $repository;
+    public $groupContract;
 
     /**
      * GroupService constructor.
-     * @param Group $repository
+     * @param GroupContract $groupContract
      */
-    public function __construct(Group $repository)
+    public function __construct(GroupContract $groupContract)
     {
-        $this->repository = $repository;
+        $this->groupContract = $groupContract;
     }
 
     /**
@@ -30,7 +29,7 @@ class GroupService
      */
     public function getGroupUsersSelect($groupId)
     {
-        $group = $this->repository->with(['users.profile'])->find($groupId);
+        $group = $this->groupContract->with('users.profile')->find($groupId);
         $select = [];
         foreach ($group->users as $user)
         {
@@ -48,7 +47,10 @@ class GroupService
      */
     public function getUsersGroupsSelect($user)
     {
-        return $this->repository->whereHas('users', ['user_id' => $user->id])
+        return $this->groupContract
+            ->whereHas('users', function ($query) use($user) {
+                $query->where('user_id', $user->id);
+            })
             ->pluck('title', 'id')
             ->toArray();
     }

@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Repositories\Contracts\User;
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
+use App\Repositories\Contracts\UserContract;
 use App\Http\Controllers\Controller;
 
 class ServerController extends Controller
@@ -13,14 +10,13 @@ class ServerController extends Controller
 
     /**
      * Display listing of resource.
-     * 
-     * @param Request $request
-     * @param User $repo
+     *
+     * @param UserContract $userContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Request $request, User $repo)
+    public function index(UserContract $userContract)
     {
-        $user = $repo->with(['profile'])->find($request->user()->id);
+        $user = $userContract->with(['profile'])->find(request()->user()->id);
 
         return view('backend.servers.index', compact('user'));
     }
@@ -37,24 +33,21 @@ class ServerController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * 
-     * @param Request $request
      */
-    public function store(Request $request)
+    public function store()
     {
         
     }
 
     /**
      * Display the specified resource.
-     * 
-     * @param Request $request
-     * @param User $repo
+     *
+     * @param UserContract $userContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(Request $request, User $repo)
+    public function show(UserContract $userContract)
     {
-        $user = $repo->with(['profile'])->find($request->user()->id);
+        $user = $userContract->with('profile')->find(request()->user()->id);
 
         ob_start () ;
         phpinfo () ;
@@ -81,11 +74,10 @@ class ServerController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update($id)
     {
         //
     }

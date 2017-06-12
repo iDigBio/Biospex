@@ -1,7 +1,8 @@
-<?php namespace App\Services\Mailer;
+<?php
+
+namespace App\Services\Mailer;
 
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Config;
 
 class BiospexMailer
 {
@@ -12,16 +13,11 @@ class BiospexMailer
     public $emailAddress;
 
     /**
-     * @var Config
-     */
-    public $config;
-
-    /**
      * BiospexMailer constructor.
      */
     public function __construct()
     {
-        $this->emailAddress = Config::get('mail.from');
+        $this->emailAddress = config('mail.from');
     }
 
     /**
@@ -35,7 +31,7 @@ class BiospexMailer
      */
     public function send($email, $subject, $view, $data, $attachments = [])
     {
-        return Mail::queueOn(Config::get('config.beanstalkd.default'), $view, $data, function ($message) use ($email, $subject, $attachments)
+        return Mail::queueOn(config('config.beanstalkd.default'), $view, $data, function ($message) use ($email, $subject, $attachments)
         {
             $message->from($this->emailAddress['address'], $this->emailAddress['name'])->subject($subject)->to($email);
             $size = count($attachments);
@@ -60,7 +56,7 @@ class BiospexMailer
     {
         $email = null === $email ? $this->emailAddress['address'] : $email;
 
-        return Mail::queueOn(Config::get('config.beanstalkd.default'), $view, $data, function ($message) use ($email, $subject, $attachments)
+        return Mail::queueOn(config('config.beanstalkd.default'), $view, $data, function ($message) use ($email, $subject, $attachments)
         {
             $message->from($this->emailAddress['address'], $this->emailAddress['name'])
                 ->subject($subject)

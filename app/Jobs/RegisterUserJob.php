@@ -3,15 +3,19 @@
 namespace App\Jobs;
 
 use App\Exceptions\BiospexException;
+use Illuminate\Http\Request;
 use Illuminate\Queue\SerializesModels;
-use App\Repositories\Contracts\User;
-use App\Repositories\Contracts\Invite;
-use App\Repositories\Contracts\Group;
+use App\Repositories\Contracts\UserContract;
+use App\Repositories\Contracts\InviteContract;
+use App\Repositories\Contracts\GroupContract;
 
 class RegisterUserJob extends Job
 {
     use SerializesModels;
 
+    /**
+     * @var Request
+     */
     public $request;
 
     /**
@@ -26,24 +30,30 @@ class RegisterUserJob extends Job
 
     /**
      * Handle job
-     * @param User $userRepo
-     * @param Invite $inviteRepo
-     * @param Group $groupRepo
+     * @param UserContract $userContract
+     * @param InviteContract $inviteContract
+     * @param GroupContract $groupContract
      * @return bool
      */
-    public function handle(User $userRepo, Invite $inviteRepo, Group $groupRepo)
+    public function handle(
+        UserContract $userContract,
+        InviteContract $inviteContract,
+        GroupContract $groupContract
+    )
     {
         try {
             $input = $this->request->only('email', 'password', 'first_name', 'last_name', 'invite');
             $input['password'] = bcrypt($input['password']);
-            $user = $userRepo->create($input);
+            $user = $userContract->create($input);
 
             if ( ! empty($input['invite'])) {
-                $result = $inviteRepo->skipCache()->where(['code' => $input['invite']])->first();
+                $result = $inviteContract->setCacheLifetime(0)
+                    ->where('code', '=', $input['invite'])
+                    ->findFirst();
                 if ($result->email === $user->email) {
-                    $group = $groupRepo->skipCache()->find($result->group_id);
+                    $group = $groupContract->setCacheLifetime(0)->find($result->group_id);
                     $user->assignGroup($group);
-                    $inviteRepo->delete($result->id);
+                    $inviteContract->delete($result->id);
                 }
             }
 

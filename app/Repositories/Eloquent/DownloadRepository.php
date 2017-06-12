@@ -8,8 +8,9 @@ use Illuminate\Contracts\Container\Container;
 
 class DownloadRepository extends EloquentRepository implements DownloadContract
 {
+
     /**
-     * ActorRepository constructor.
+     * DownloadRepository constructor.
      * @param Container $container
      */
     public function __construct(Container $container)

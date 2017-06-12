@@ -4,14 +4,11 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Exceptions\MongoDbException;
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\Subject;
-use Config;
+use App\Repositories\Contracts\SubjectContract;
 use Exception;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Http\Request;
-use App\Repositories\Contracts\Header;
 use App\Services\Grid\JqGridJsonEncoder;
-use App\Repositories\Contracts\Project;
 use MongoCollection;
 use Response;
 use App\Services\Csv\Csv;
@@ -21,65 +18,51 @@ class GridsController extends Controller
     /**
      * @var
      */
-    protected $grid;
+    public $grid;
 
     /**
      * @var
      */
-    protected $project;
-
-    /**
-     * @var
-     */
-    protected $fields;
-
-    /**
-     * @var Header
-     */
-    protected $header;
+    public $fields;
 
     /**
      * @var int
      */
-    protected $projectId;
+    public $projectId;
 
     /**
      * @var int
      */
-    protected $expeditionId;
+    public $expeditionId;
 
     /**
      * @var string
      */
-    protected $route;
+    public $route;
+
     /**
      * @var Request
      */
-    private $request;
+    public $request;
+
     /**
      * @var Csv
      */
-    private $csv;
+    public $csv;
 
     /**
      * GridsController constructor.
      * @param JqGridJsonEncoder $grid
-     * @param Project $project
-     * @param Header $header
      * @param Request $request
      * @param Csv $csv
      */
     public function __construct(
         JqGridJsonEncoder $grid,
-        Project $project,
-        Header $header,
         Request $request,
         Csv $csv
     )
     {
         $this->grid = $grid;
-        $this->project = $project;
-        $this->header = $header;
         $this->request = $request;
         $this->csv = $csv;
 
@@ -131,7 +114,7 @@ class GridsController extends Controller
         try
         {
             $databaseManager = app(DatabaseManager::class);
-            $db = $databaseManager->connection('mongodb')->getMongoClient()->selectDB(Config::get('database.connections.mongodb.database'));
+            $db = $databaseManager->connection('mongodb')->getMongoClient()->selectDB(config('database.connections.mongodb.database'));
 
             $collection =  new MongoCollection($db, 'subjects');
 
@@ -178,7 +161,7 @@ class GridsController extends Controller
     }
 
 
-    public function delete(Subject $subject, $projectId)
+    public function delete(SubjectContract $subjectContract, $projectId)
     {
         if ( ! $this->request->ajax())
         {
@@ -194,7 +177,7 @@ class GridsController extends Controller
 
         foreach ($ids as $id)
         {
-            $subject->delete($id);
+            $subjectContract->delete($id);
         }
 
 

@@ -2,15 +2,16 @@
 
 namespace App\Services\Model;
 
-
-use App\Repositories\Contracts\Workflow;
+use App\Repositories\Contracts\WorkflowContract;
 
 class WorkflowService
 {
 
-    public function __construct(Workflow $workflow)
+    public $workflowContract;
+
+    public function __construct(WorkflowContract $workflowContract)
     {
-        $this->workflow = $workflow;
+        $this->workflowContract = $workflowContract;
     }
 
     /**
@@ -20,8 +21,8 @@ class WorkflowService
      */
     public function select()
     {
-        return ['--Select--'] + $this->workflow->where(['enabled' => 1])
-                ->orderBy(['title' => 'asc'])
+        return ['--Select--'] + $this->workflowContract->where('enabled', '=',1)
+                ->orderBy('title', 'asc')
                 ->pluck('title', 'id')
                 ->toArray();
     }

@@ -1,18 +1,18 @@
-<?php namespace App\Services\Import;
+<?php
 
-use Illuminate\Config\Repository as Config;
+namespace App\Services\Import;
+
 use Illuminate\Validation\Factory as Validation;
 use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Filesystem\Filesystem;
-use App\Repositories\Contracts\Import;
-use Illuminate\Http\Request;
+use App\Repositories\Contracts\ImportContract;
 
 abstract class ImportServiceAbstract
 {
     /**
-     * @var Import
+     * @var ImportContract
      */
-    protected $import;
+    protected $importContract;
 
     /**
      * Directory for storing imported files.
@@ -25,11 +25,6 @@ abstract class ImportServiceAbstract
      * @var
      */
     protected $tube;
-
-    /**
-     * @var Config
-     */
-    protected $config;
 
     /**
      * @var Filesystem
@@ -48,24 +43,19 @@ abstract class ImportServiceAbstract
 
     /**
      * ImportServiceAbstract constructor.
-     * @param Request $request
-     * @param Import $import
-     * @param Config $config
+     *
+     * @param ImportContract $importContract
      * @param Filesystem $filesystem
      * @param Validation $validation
      * @param Queue $queue
      */
     public function __construct(
-        Request $request,
-        Import $import,
-        Config $config,
+        ImportContract $importContract,
         Filesystem $filesystem,
         Validation $validation,
         Queue $queue
     ) {
-        $this->request = $request;
-        $this->import = $import;
-        $this->config = $config;
+        $this->importContract = $importContract;
         $this->filesystem = $filesystem;
         $this->validation = $validation;
         $this->queue = $queue;
@@ -86,7 +76,7 @@ abstract class ImportServiceAbstract
      */
     protected function setDirectory($dir)
     {
-        $this->directory = $this->config->get($dir);
+        $this->directory = config($dir);
         if ( ! $this->filesystem->isDirectory($this->directory)) {
             $this->filesystem->makeDirectory($this->directory);
         }
@@ -99,7 +89,7 @@ abstract class ImportServiceAbstract
      */
     protected function setTube($queue)
     {
-        $this->tube = $this->config->get($queue);
+        $this->tube = config($queue);
     }
 
     /**
@@ -110,9 +100,9 @@ abstract class ImportServiceAbstract
      */
     protected function moveFile($name)
     {
-        $file = $this->request->file($name);
+        $file = request()->file($name);
         $filename = md5($file->getClientOriginalName()) . '.' . $file->guessExtension();
-        $this->request->file($name)->move($this->directory, $filename);
+        request()->file($name)->move($this->directory, $filename);
 
         return $filename;
     }
@@ -127,7 +117,7 @@ abstract class ImportServiceAbstract
      */
     protected function importInsert($user_id, $id, $filename)
     {
-        $import = $this->import->create([
+        $import = $this->importContract->create([
             'user_id'    => $user_id,
             'project_id' => $id,
             'file'       => $filename

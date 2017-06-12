@@ -1,16 +1,15 @@
-<?php namespace App\Services\Report;
+<?php
 
-use App\Repositories\Contracts\Project;
-use Illuminate\Contracts\Config\Repository as Config;
+namespace App\Services\Report;
+
+use App\Repositories\Contracts\ProjectContract;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\MessageBag;
-use App\Repositories\Contracts\Group;
+use App\Repositories\Contracts\GroupContract;
 use App\Services\Mailer\BiospexMailer;
-use Illuminate\Events\Dispatcher as Event;
 use App\Events\SendReportEvent;
 use App\Events\SendErrorEvent;
 use App\Services\Csv\Csv;
-
 
 class Report
 {
@@ -26,19 +25,9 @@ class Report
     protected $mailer;
 
     /**
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * @var Filesystem
      */
     protected $filesystem;
-
-    /**
-     * @var Event
-     */
-    protected $event;
     
     /**
      * @var Csv
@@ -46,41 +35,36 @@ class Report
     public $csv;
 
     /**
-     * @var Project
+     * @var ProjectContract
      */
-    public $project;
+    public $projectContract;
 
     /**
      * Report constructor.
-     * @param Config $config
+     *
      * @param Filesystem $filesystem
      * @param MessageBag $messages
-     * @param Group $group
-     * @param Project $project
+     * @param GroupContract $groupContract
+     * @param ProjectContract $projectContract
      * @param BiospexMailer $mailer
-     * @param Event $event
      * @param Csv $csv
      */
     public function __construct(
-        Config $config,
         Filesystem $filesystem,
         MessageBag $messages,
-        Group $group,
-        Project $project,
+        GroupContract $groupContract,
+        ProjectContract $projectContract,
         BiospexMailer $mailer,
-        Event $event,
         Csv $csv
     )
     {
         $this->filesystem = $filesystem;
-        $this->config = $config;
         $this->messages = $messages;
-        $this->group = $group;
+        $this->groupContract = $groupContract;
         $this->mailer = $mailer;
-        $this->event = $event;
-        $this->project = $project;
+        $this->projectContract = $projectContract;
 
-        $this->exportReportsDir = $this->config->get('config.export_reports_dir');
+        $this->exportReportsDir = config('config.export_reports_dir');
         $this->csv = $csv;
     }
 
@@ -132,7 +116,7 @@ class Report
      */
     public function processComplete($vars, $csv = null)
     {
-        $group = $this->group->with(['owner'])->find((int) $vars['groupId']);
+        $group = $this->groupContract->with('owner')->find((int) $vars['groupId']);
         $email = $group->owner->email;
 
         $count = count($csv);
@@ -190,7 +174,7 @@ class Report
             'attachments' => $attachments
         ];
 
-        $this->event->fire(new SendReportEvent($data));
+        event(new SendReportEvent($data));
     }
 
     /**
@@ -211,6 +195,6 @@ class Report
             'attachments' => $attachments
         ];
 
-        $this->event->fire(new SendErrorEvent($data));
+        event(new SendErrorEvent($data));
     }
 }

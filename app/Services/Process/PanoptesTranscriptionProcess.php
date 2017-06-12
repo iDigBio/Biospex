@@ -9,7 +9,6 @@ use App\Repositories\Contracts\TranscriptionLocationContract;
 use Illuminate\Validation\Factory as Validation;
 use ForceUTF8\Encoding;
 use App\Services\Csv\Csv;
-use Config;
 
 class PanoptesTranscriptionProcess
 {
@@ -75,7 +74,7 @@ class PanoptesTranscriptionProcess
         $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
         $this->factory = $factory;
         $this->csv = $csv;
-        $this->dwcLocalityFields = $fields = Config::get('config.dwcLocalityFields');
+        $this->dwcLocalityFields = $fields = config('config.dwcLocalityFields');
         $this->transcriptionLocationContract = $transcriptionLocationContract;
     }
 

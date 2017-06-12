@@ -5,22 +5,17 @@ namespace App\Http\Controllers\Backend;
 use App\Facades\Toastr;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ActorFormRequest;
-use App\Repositories\Contracts\Actor;
-use App\Repositories\Contracts\User;
+use App\Repositories\Contracts\ActorContract;
 use App\Services\Actor\ActorAdminService;
 use Illuminate\Http\Request;
 
 class ActorsController extends Controller
 {
     /**
-     * @var Actor
+     * @var ActorContract
      */
-    private $actor;
-    
-    /**
-     * @var User
-     */
-    private $user;
+    private $actorContract;
+
     /**
      * @var ActorAdminService
      */
@@ -30,13 +25,14 @@ class ActorsController extends Controller
      * ActorsController constructor.
      *
      * @param ActorAdminService $actorAdminService
-     * @param Actor $actor
-     * @param User $user
+     * @param ActorContract $actorContract
      */
-    public function __construct(ActorAdminService $actorAdminService, Actor $actor, User $user)
+    public function __construct(
+        ActorAdminService $actorAdminService,
+        ActorContract $actorContract
+    )
     {
-        $this->actor = $actor;
-        $this->user = $user;
+        $this->actorContract = $actorContract;
         $this->actorAdminService = $actorAdminService;
     }
 
@@ -109,7 +105,7 @@ class ActorsController extends Controller
      */
     public function delete($id)
     {
-        $result = $this->actor->delete($id);
+        $result = $this->actorContract->delete($id);
 
         $result ? Toastr::success('The actor has been deleted.', 'Actor Delete')
                 : Toastr::error('Actor could not be deleted.', 'Actor Delete');
@@ -125,7 +121,7 @@ class ActorsController extends Controller
      */
     public function trash($id)
     {
-        $result = $this->actor->forceDelete($id);
+        $result = $this->actorContract->forceDelete($id);
 
         $result ? Toastr::success('Actor has been forcefully deleted.', 'Actor Destroy')
             : Toastr::error('Actor could not be forcefully deleted.', 'Actor Destroy');

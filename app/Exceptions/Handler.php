@@ -1,8 +1,9 @@
-<?php namespace App\Exceptions;
+<?php
+
+namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 
 class Handler extends ExceptionHandler
@@ -26,9 +27,9 @@ class Handler extends ExceptionHandler
     {
         if ($e instanceof BiospexException)
         {
-            $tube = Config::get('config.beanstalkd.default');
+            $tube = config('config.beanstalkd.default');
             $view = 'frontend.emails.exception';
-            $email = Config::get('mail.from');
+            $email = config('mail.from');
             $data = ['error' => jTraceEx($e)];
 
             Mail::queueOn($tube, $view, $data, function ($message) use ($email)

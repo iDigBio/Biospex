@@ -5,47 +5,45 @@ namespace App\Http\Controllers\Backend;
 use App\Facades\Toastr;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ResourceFormRequest;
-use App\Repositories\Contracts\Resource as Repo;
-use App\Repositories\Contracts\User;
-use Illuminate\Http\Request;
+use App\Repositories\Contracts\ResourceContract;
+use App\Repositories\Contracts\UserContract;
 use Illuminate\Support\Facades\Storage;
 
 class ResourcesController extends Controller
 {
     /**
-     * @var Resource
+     * @var ResourceContract
      */
-    private $resource;
+    private $resourceContract;
     
     /**
-     * @var User
+     * @var UserContract
      */
-    private $user;
+    private $userContract;
 
     /**
      * ResourcesController constructor.
      *
      * ResourcesController constructor.
-     * @param Repo $resource
-     * @param User $user
+     * @param ResourceContract $resourceContract
+     * @param UserContract $userContract
      */
-    public function __construct(Repo $resource, User $user)
+    public function __construct(ResourceContract $resourceContract, UserContract $userContract)
     {
-        $this->resource = $resource;
-        $this->user = $user;
+        $this->resourceContract = $resourceContract;
+        $this->userContract = $userContract;
     }
 
     /**
      * Show Faq list by category.
      *
-     * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Request $request)
+    public function index()
     {
-        $user = $this->user->with(['profile'])->find($request->user()->id);
-        $resources = $this->resource->orderBy(['order' => 'asc'])->get();
-        $trashed = $this->resource->trashed();
+        $user = $this->userContract->with('profile')->find(request()->user()->id);
+        $resources = $this->resourceContract->orderBy('order', 'asc')->findAll();
+        $trashed = $this->resourceContract->onlyTrashed();
         
         return view('backend.resources.index', compact('user', 'resources', 'trashed'));
     }
@@ -78,7 +76,7 @@ class ResourcesController extends Controller
      */
     public function store(ResourceFormRequest $request)
     {
-        $resource = $this->resource->create($request->all());
+        $resource = $this->resourceContract->create($request->all());
 
         if (null !== $request->file('document'))
         {
@@ -88,7 +86,7 @@ class ResourcesController extends Controller
                 file_get_contents($request->file('document')->getRealPath())
             );
 
-            $resource = $this->resource->update(['document' => $filename], $resource->id);
+            $resource = $this->resourceContract->update($resource->id, ['document' => $filename]);
         }
 
         $resource ? Toastr::success('Resource has been created successfully.', 'Resource Create') :
@@ -100,16 +98,15 @@ class ResourcesController extends Controller
     /**
      * Edit Resource.
      *
-     * @param Request $request
      * @param $id
      * @return mixed
      */
-    public function edit(Request $request, $id)
+    public function edit($id)
     {
-        $user = $this->user->with(['profile'])->find($request->user()->id);
-        $resources = $this->resource->all();
-        $resource = $this->resource->find($id);
-        $trashed = $this->resource->trashed();
+        $user = $this->userContract->with('profile')->find(request()->user()->id);
+        $resources = $this->resourceContract->findAll();
+        $resource = $this->resourceContract->find($id);
+        $trashed = $this->resourceContract->onlyTrashed();
 
         return view('backend.resources.index', compact('user', 'resources', 'resource', 'trashed'));
     }
@@ -123,7 +120,7 @@ class ResourcesController extends Controller
      */
     public function update(ResourceFormRequest $request, $id)
     {
-        $resource = $this->resource->find($id);
+        $resource = $this->resourceContract->find($id);
 
         if (null !== $request->file('document'))
         {
@@ -145,7 +142,7 @@ class ResourcesController extends Controller
             'document' => $resource->document
         ];
 
-        $resource = $this->resource->update($data, $id);
+        $resource = $this->resourceContract->update($id, $data);
 
         $resource ? Toastr::success('Resource has been updated successfully.', 'Resource Update')
             : Toastr::error('Resource could not be updated.', 'Resource Update');
@@ -161,8 +158,8 @@ class ResourcesController extends Controller
      */
     public function delete($id)
     {
-        $this->resource->update(['order' => 0], $id);
-        $result = $this->resource->delete($id);
+        $this->resourceContract->update($id, ['order' => 0]);
+        $result = $this->resourceContract->delete($id);
 
         $result ? Toastr::success('The resource has been deleted.', 'Resource Delete')
                 : Toastr::error('Resource could not be deleted.', 'Resource Delete');
@@ -178,10 +175,10 @@ class ResourcesController extends Controller
      */
     public function trash($id)
     {
-        $resource = $this->resource->onlyTrashed($id);
+        $resource = $this->resourceContract->onlyTrashed($id);
         Storage::disk('public')->delete('resources/' . $resource->document);
 
-        $result = $this->resource->forceDelete($id);
+        $result = $this->resourceContract->forceDelete($id);
 
         $result ? Toastr::success('Resource has been forcefully deleted.', 'Resource Destroy')
             : Toastr::error('Resource could not be forcefully deleted.', 'Resource Destroy');
@@ -192,15 +189,14 @@ class ResourcesController extends Controller
     /**
      * Update ordering on resources.
      *
-     * @param Request $request
      * @param $id
      * @param $order
      */
-    public function order(Request $request, $id, $order)
+    public function order($id, $order)
     {
-        if ($request->ajax())
+        if (request()->ajax())
         {
-            $this->resource->update(['order' => $order], $id);
+            $this->resourceContract->update($id, ['order' => $order]);
         }
     }
 }

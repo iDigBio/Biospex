@@ -2,14 +2,12 @@
 
 namespace App\Services\Report;
 
-
-
 class NfnProjectCreateReport extends Report
 {
 
     public function complete($id)
     {
-        $project = $this->project->with(['workflow.actors.contacts'])->find($id);
+        $project = $this->projectContract->with('workflow.actors.contacts')->find($id);
 
         $email = null;
         foreach($project->workflow->actors as $actor)

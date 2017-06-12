@@ -88,8 +88,7 @@ class OcrProcessCommand extends Command
     public function handle()
     {
         $record = $this->ocrQueueContract->setCacheLifetime(0)
-            ->with('project.group.owner')
-            ->with('ocrCsv')
+            ->with(['project.group.owner', 'ocrCsv'])
             ->where('status', '<=', 1)
             ->where('error', '=', 0)
             ->orderBy('id', 'asc')

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Repositories\Contracts\User;
+use App\Repositories\Contracts\UserContract;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PasswordFormRequest;
 use Illuminate\Foundation\Auth\ResetsPasswords;
@@ -27,17 +27,17 @@ class PasswordController extends Controller
     protected $redirectTo = '/projects';
 
     /**
-     * @var User
+     * @var UserContract
      */
-    private $user;
+    private $userContract;
 
     /**
      * PasswordController constructor.
-     * @param User $user
+     * @param UserContract $userContract
      */
-    public function __construct(User $user)
+    public function __construct(UserContract $userContract)
     {
-        $this->user = $user;
+        $this->userContract = $userContract;
     }
 
     public function getEmail()
@@ -49,7 +49,7 @@ class PasswordController extends Controller
      * Display the password reset view for the given token.
      *
      * @param null $token
-     * @return $this
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      * @throws NotFoundHttpException
      */
     public function getReset($token = null)
@@ -69,7 +69,7 @@ class PasswordController extends Controller
      */
     public function pass(PasswordFormRequest $request)
     {
-        $user = $this->user->find($request->route('id'));
+        $user = $this->userContract->find($request->route('id'));
 
         if ( ! policy($user)->pass($user))
         {

@@ -97,8 +97,8 @@ class Actor extends BaseEloquentModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function stagedQueues()
+    public function exportQueues()
     {
-        return $this->hasMany(StagedQueue::class);
+        return $this->hasMany(ExportQueue::class);
     }
 }

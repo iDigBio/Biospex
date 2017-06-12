@@ -2,39 +2,37 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use Illuminate\Http\Request;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\Project;
+use App\Repositories\Contracts\ProjectContract;
 
 class AdvertisesController extends Controller
 {
 
     /**
-     * @var Project
+     * @var ProjectContract
      */
-    private $project;
+    public $projectContract;
 
     /**
      * Advertise constructor.
-     * @param Project $project
+     * @param ProjectContract $projectContract
      */
-    public function __construct(Project $project)
+    public function __construct(ProjectContract $projectContract)
     {
-        $this->project = $project;
+        $this->projectContract = $projectContract;
     }
 
     /**
      * Show advertise page.
      *
-     * @param Request $request
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function index(Request $request, $id)
+    public function index($id)
     {
-        $user = $request->user();
-        $project = $this->project->with(['group'])->find($id);
+        $user = request()->user();
+        $project = $this->projectContract->with('group')->find($id);
 
         if ( ! $this->checkPermissions($user, [$project], 'read'))
         {
@@ -42,7 +40,7 @@ class AdvertisesController extends Controller
         }
 
         if (empty($project->advertise)) {
-            $project = $this->project->update($project->toArray(), $project->id);
+            $project = $this->projectContract->update($project->id, $project->toArray());
         }
 
         return view('frontend.projects.advertise', compact('project'));
@@ -50,16 +48,15 @@ class AdvertisesController extends Controller
 
     /**
      * Advertise download.
-     * 
-     * @param Request $request
+     *
      * @param ResponseFactory $response
      * @param $id
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
-    public function show(Request $request, ResponseFactory $response, $id)
+    public function show(ResponseFactory $response, $id)
     {
-        $user = $request->user();
-        $project = $this->project->with(['group'])->find($id);
+        $user = request()->user();
+        $project = $this->projectContract->with('group')->find($id);
 
         if ( ! $this->checkPermissions($user, [$project], 'read'))
         {

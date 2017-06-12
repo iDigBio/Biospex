@@ -93,7 +93,7 @@ class User extends BaseEloquentModel implements AuthenticatableContract,
      */
     public function notifications()
     {
-        return $this->hasMany(Notifications::class);
+        return $this->hasMany(Notification::class);
     }
 
     /**

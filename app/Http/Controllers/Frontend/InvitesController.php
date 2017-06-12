@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Events\Dispatcher as Event;
-use App\Repositories\Contracts\Invite;
-use App\Repositories\Contracts\Group;
-use App\Repositories\Contracts\User;
+use App\Repositories\Contracts\InviteContract;
+use App\Repositories\Contracts\GroupContract;
+use App\Repositories\Contracts\UserContract;
 use App\Http\Requests\InviteFormRequest;
 use App\Jobs\InviteCreateJob;
 use App\Events\SendInviteEvent;
@@ -15,35 +13,35 @@ use App\Events\SendInviteEvent;
 class InvitesController extends Controller
 {
     /**
-     * @var Invite
+     * @var InviteContract
      */
-    public $invite;
+    public $inviteContract;
 
     /**
-     * @var Group
+     * @var GroupContract
      */
-    public $group;
+    public $groupContract;
 
     /**
-     * @var User
+     * @var UserContract
      */
-    public $user;
+    public $userContract;
 
     /**
      * InvitesController constructor.
      * 
-     * @param Invite $invite
-     * @param Group $group
-     * @param User $user
+     * @param InviteContract $inviteContract
+     * @param GroupContract $groupContract
+     * @param UserContract $userContract
      */
     public function __construct(
-        Invite $invite,
-        Group $group,
-        User $user
+        InviteContract $inviteContract,
+        GroupContract $groupContract,
+        UserContract $userContract
     ) {
-        $this->invite = $invite;
-        $this->group = $group;
-        $this->user = $user;
+        $this->inviteContract = $inviteContract;
+        $this->groupContract = $groupContract;
+        $this->userContract = $userContract;
     }
 
     /**
@@ -54,8 +52,8 @@ class InvitesController extends Controller
      */
     public function index($id)
     {
-        $user = Request::user();
-        $group = $this->group->skipCache()->with(['invites'])->find($id);
+        $user = request()->user();
+        $group = $this->groupContract->setCacheLifetime(0)->with('invites')->find($id);
 
         if ( ! $this->checkPermissions($user, [$group], 'update'))
         {
@@ -74,8 +72,8 @@ class InvitesController extends Controller
      */
     public function store(InviteFormRequest $request, $id)
     {
-        $user = Request::user();
-        $group = $this->group->with(['invites'])->find($id);
+        $user = request()->user();
+        $group = $this->groupContract->with('invites')->find($id);
 
         if ( ! $this->checkPermissions($user, [$group], 'update'))
         {
@@ -89,22 +87,21 @@ class InvitesController extends Controller
 
     /**
      * Resend a group invite
-     * @param Event $dispatcher
      * @param $id
      * @param $inviteId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function resend(Event $dispatcher, $id, $inviteId)
+    public function resend($id, $inviteId)
     {
-        $user = Request::user();
-        $group = $this->group->find($id);
+        $user = request()->user();
+        $group = $this->groupContract->find($id);
 
         if ( ! $this->checkPermissions($user, [$group], 'update'))
         {
             return redirect()->route('web.groups.show', [$id]);
         }
 
-        $invite = $this->invite->find($inviteId);
+        $invite = $this->inviteContract->find($inviteId);
 
         if ($invite) {
             $data = [
@@ -113,7 +110,7 @@ class InvitesController extends Controller
                 'code' => $invite->code
             ];
 
-            $dispatcher->fire(new SendInviteEvent($data));
+            event(new SendInviteEvent($data));
 
             session_flash_push('success', trans('groups.send_invite_success', ['group' => $group->title, 'email' => $invite->email]));
         } else {
@@ -131,15 +128,15 @@ class InvitesController extends Controller
      */
     public function delete($id, $inviteId)
     {
-        $user = Request::user();
-        $group = $this->group->find($id);
+        $user = request()->user();
+        $group = $this->groupContract->find($id);
 
         if ( ! $this->checkPermissions($user, [$group], 'delete'))
         {
             return redirect()->route('web.groups.show', [$id]);
         }
 
-        if ($this->invite->delete($inviteId)) {
+        if ($this->inviteContract->delete($inviteId)) {
             session_flash_push('success', trans('groups.invite_destroyed'));
         } else {
             session_flash_push('error', trans('groups.invite_destroyed_failed'));

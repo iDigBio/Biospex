@@ -4,21 +4,12 @@ namespace App\Services\Api;
 
 use App\Exceptions\NfnApiException;
 use App\Services\Requests\HttpRequest;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Pool;
-use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Exception;
 
 class NfnApi extends HttpRequest
 {
-
-    /**
-     * @var CacheRepository
-     */
-    public $cache;
-
     /**
      * @var GenericProvider
      */

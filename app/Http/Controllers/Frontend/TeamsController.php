@@ -3,25 +3,25 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\TeamCategory;
+use App\Repositories\Contracts\TeamCategoryContract;
 
 class TeamsController extends Controller
 {
 
     /**
-     * @var TeamCategory
+     * @var TeamCategoryContract
      */
-    private $category;
+    public $teamCategoryContract;
 
     /**
      * TeamsController constructor.
      * 
-     * @param TeamCategory $category
+     * @param TeamCategoryContract $teamCategoryContract
      */
-    public function __construct(TeamCategory $category)
+    public function __construct(TeamCategoryContract $teamCategoryContract)
     {
 
-        $this->category = $category;
+        $this->teamCategoryContract = $teamCategoryContract;
     }
 
     /**
@@ -31,7 +31,10 @@ class TeamsController extends Controller
      */
     public function index()
     {
-        $categories = $this->category->with(['teams'])->orderBy(['id' => 'asc'])->groupBy('id')->get();
+        $categories = $this->teamCategoryContract->with('teams')
+            ->orderBy('id', 'asc')
+            ->groupBy('id')
+            ->findAll();
 
         return view('frontend.teams.index', compact('categories'));
     }

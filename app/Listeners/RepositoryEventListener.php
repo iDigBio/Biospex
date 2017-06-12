@@ -47,6 +47,8 @@ class RepositoryEventListener
         if ($repository->isCacheClearEnabled() && in_array('create', $clearOn)) {
             $repository->forgetCache();
         }
+
+        \Cache::flush();
     }
 
     /**
@@ -73,6 +75,8 @@ class RepositoryEventListener
         if ($repository->isCacheClearEnabled() && in_array('update', $clearOn)) {
             $repository->forgetCache();
         }
+
+        \Cache::flush();
     }
 
     /**
@@ -99,5 +103,7 @@ class RepositoryEventListener
         if ($repository->isCacheClearEnabled() && in_array('delete', $clearOn)) {
             $repository->forgetCache();
         }
+
+        \Cache::flush();
     }
 }

@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use Illuminate\Queue\SerializesModels;
 use App\Services\Mailer\BiospexMailer;
-use Illuminate\Contracts\Config\Repository as Config;
 
 class SendContactEmailJob extends Job
 {

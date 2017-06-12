@@ -1,4 +1,6 @@
-<?php namespace App\Services\Process;
+<?php
+
+namespace App\Services\Process;
 
 use DOMDocument;
 use DOMXPath;

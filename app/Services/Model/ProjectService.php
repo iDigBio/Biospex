@@ -2,14 +2,14 @@
 
 namespace App\Services\Model;
 
-use App\Repositories\Contracts\Project;
+use App\Repositories\Contracts\ProjectContract;
 
 class ProjectService
 {
     /**
-     * @var Project
+     * @var ProjectContract
      */
-    public $repository;
+    public $projectContract;
 
     /**
      * @var WorkflowService
@@ -23,16 +23,17 @@ class ProjectService
 
     /**
      * ProjectService constructor.
-     * @param Project $repository
+     *
+     * @param ProjectContract $projectContract
      * @param WorkflowService $workflowService
      * @param GroupService $groupService
      */
     public function __construct(
-        Project $repository,
+        ProjectContract $projectContract,
         WorkflowService $workflowService,
         GroupService $groupService
     ) {
-        $this->repository = $repository;
+        $this->projectContract = $projectContract;
         $this->workflowService = $workflowService;
         $this->groupService = $groupService;
     }

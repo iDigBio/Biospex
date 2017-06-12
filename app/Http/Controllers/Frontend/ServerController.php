@@ -6,9 +6,7 @@ use App\Http\Controllers\Controller;
 use DOMDocument;
 use GuzzleHttp\Pool;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Config;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Cache;
 
 class ServerController extends Controller
@@ -24,18 +22,13 @@ class ServerController extends Controller
     protected $client;
 
     /**
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * Constructor
      *
      * @internal param Curl $curl
      */
     public function __construct()
     {
-        $this->ocrDeleteUrl = Config::get('config.ocrDeleteUrl');
+        $this->ocrDeleteUrl = config('config.ocrDeleteUrl');
         $this->client = New Client();
     }
 
@@ -64,7 +57,7 @@ class ServerController extends Controller
      */
     public function showPhpInfo()
     {
-        $user = Request::user();
+        $user = request()->user();
 
         if ( ! $user->isAdmin('admins')) {
             return redirect()->route('login');
@@ -82,7 +75,7 @@ class ServerController extends Controller
 
     public function clear()
     {
-        $user = Request::user();
+        $user = request()->user();
 
         if ( ! $user->isAdmin('admins')) {
             return redirect()->route('login');
@@ -98,15 +91,15 @@ class ServerController extends Controller
 
     public function ocr()
     {
-        if (Request::isMethod('post') && ! empty(Request::get('files'))) {
-            $files = Request::get('files');
+        if (request()->isMethod('post') && ! empty(request()->get('files'))) {
+            $files = request()->get('files');
             $requests = [];
             foreach ($files as $file)
             {
                 $options = [
                     'headers' => ['Content-Type' => 'multipart/form-data', 'API-KEY' => 't$p480UAJ5v8P=ifcE23&hpM?#+&r3']
                 ];
-                $newRequest = $this->client->createRequest('POST', Config::get('config.ocrDeleteUrl'), $options);
+                $newRequest = $this->client->createRequest('POST', config('config.ocrDeleteUrl'), $options);
                 $postBody = $newRequest->getBody();
                 $postBody->setField('file', $file);
 
@@ -116,7 +109,7 @@ class ServerController extends Controller
             Pool::send($this->client, $requests, ['pool_size' => 10]);
         }
 
-        $html = file_get_contents(Request::get('config.ocrGetUrl'));
+        $html = file_get_contents(request()->get('config.ocrGetUrl'));
 
         $dom = new DomDocument;
         libxml_use_internal_errors(true);
@@ -130,7 +123,7 @@ class ServerController extends Controller
     
     public function poll()
     {
-        if (Request::ajax()) {
+        if (request()->ajax()) {
             Artisan::call('ocr:poll');
             Artisan::call('export:poll');
         }

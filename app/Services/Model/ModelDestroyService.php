@@ -40,7 +40,6 @@ class ModelDestroyService
      * @param GroupService $groupService
      * @param ProjectService $projectService
      * @param ExpeditionContract $expeditionContract
-     * @param NfnWorkflowService $nfnWorkflowService
      * @param DownloadService $downloadService
      * @param Handler $handler
      */
@@ -71,7 +70,9 @@ class ModelDestroyService
     {
         try
         {
-            $record = $this->userService->repository->skipCache()->with(['trashedGroups'])->trashed($id);
+            $record = $this->userService->userContract->setCacheLifetime(0)
+                ->with('trashedGroups')
+                ->onlyTrashed($id);
 
             if ( ! $record->trashedGroups->isEmpty())
             {
@@ -103,7 +104,9 @@ class ModelDestroyService
     {
         try
         {
-            $record = $this->groupService->repository->skipCache()->with(['trashedProjects'])->trashed($id);
+            $record = $this->groupService->groupContract->setCacheLifetime(0)
+                ->with('trashedProjects')
+                ->onlyTrashed($id);
 
             if ( ! $record->trashedProjects->isEmpty())
             {
@@ -135,10 +138,10 @@ class ModelDestroyService
     {
         try
         {
-            $record = $this->projectService->repository
-                ->skipCache()
+            $record = $this->projectService->projectContract
+                ->setCacheLifetime(0)
                 ->with(['expeditions', 'trashedSubjects'])
-                ->trashed($id);
+                ->onlyTrashed($id);
 
             if ( ! $record->expeditions->isEmpty())
             {
@@ -175,7 +178,9 @@ class ModelDestroyService
     {
         try
         {
-            $record = $this->expeditionContract->setCacheLifetime(0)->with(['downloads'])->onlyTrashed($id);
+            $record = $this->expeditionContract->setCacheLifetime(0)
+                ->with('downloads')
+                ->onlyTrashed($id);
 
             if (isset($record->downloads))
             {

@@ -8,7 +8,6 @@ use App\Services\Api\NfnApi;
 use App\Services\Report\Report;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
-use Illuminate\Contracts\Logging\Log;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;

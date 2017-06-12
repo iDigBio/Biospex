@@ -6,35 +6,30 @@ use App\Exceptions\BiospexException;
 use App\Exceptions\CsvHeaderCountException;
 use App\Exceptions\CsvHeaderNameException;
 use App\Exceptions\MissingMetaIdentifier;
-use App\Repositories\Contracts\Header;
-use App\Repositories\Contracts\Property;
-use App\Repositories\Contracts\Subject;
+use App\Repositories\Contracts\HeaderContract;
+use App\Repositories\Contracts\PropertyContract;
+use App\Repositories\Contracts\SubjectContract;
 use ForceUTF8\Encoding;
-use Illuminate\Config\Repository as Config;
 use Illuminate\Validation\Factory as Validation;
 use App\Models\Occurrence;
 
-class DarwinCoreCsvImport {
+class DarwinCoreCsvImport
+{
 
     /**
-     * @var Config
+     * @var PropertyContract
      */
-    public $config;
+    public $propertyContract;
 
     /**
-     * @var Property
+     * @var SubjectContract
      */
-    public $property;
+    public $subjectContract;
 
     /**
-     * @var Subject
+     * @var HeaderContract
      */
-    public $subject;
-
-    /**
-     * @var Header
-     */
-    public $header;
+    public $headerContract;
 
     /**
      * Identifier column for media in csv file
@@ -94,7 +89,7 @@ class DarwinCoreCsvImport {
      * @var array
      */
     public $identifiers;
-    
+
     /**
      * @var \App\Services\Csv\Csv
      */
@@ -108,27 +103,24 @@ class DarwinCoreCsvImport {
     /**
      * Construct
      *
-     * @param Config $config
-     * @param Property $property
-     * @param Subject $subject
-     * @param Header $header
+     * @param PropertyContract $propertyContract
+     * @param SubjectContract $subjectContract
+     * @param HeaderContract $headerContract
      * @param Validation $factory
      * @param \App\Services\Csv\Csv $csv
      */
     public function __construct(
-        Config $config,
-        Property $property,
-        Subject $subject,
-        Header $header,
+        PropertyContract $propertyContract,
+        SubjectContract $subjectContract,
+        HeaderContract $headerContract,
         Validation $factory,
         Csv $csv
     )
     {
-        $this->identifiers = $config->get('config.dwcRequiredFields.extension.identifier');
-        $this->property = $property;
-        $this->subject = $subject;
-        $this->config = $config;
-        $this->header = $header;
+        $this->identifiers = config('config.dwcRequiredFields.extension.identifier');
+        $this->propertyContract = $propertyContract;
+        $this->subjectContract = $subjectContract;
+        $this->headerContract = $headerContract;
         $this->factory = $factory;
         $this->csv = $csv;
     }
@@ -347,8 +339,13 @@ class DarwinCoreCsvImport {
      */
     protected function setShortNameForQualifiedName($qualified, $short, $namespace)
     {
-        $checkQualified = $this->property->skipCache()->where(['qualified' => $qualified])->first();
-        $checkShort = $this->property->skipCache()->where(['short' => $short])->first();
+        $checkQualified = $this->propertyContract->setCacheLifetime(0)
+            ->where('qualified', '=', $qualified)
+            ->findFirst();
+
+        $checkShort = $this->propertyContract->setCacheLifetime(0)
+            ->where('short', '=', $short)
+            ->findFirst();
 
         if ($checkQualified !== null)
         {
@@ -381,7 +378,7 @@ class DarwinCoreCsvImport {
             'short'     => $short,
             'namespace' => $namespace,
         ];
-        $this->property->create($array);
+        $this->propertyContract->create($array);
     }
 
     /**
@@ -402,7 +399,7 @@ class DarwinCoreCsvImport {
         foreach ($this->identifiers as $identifier)
         {
             $key = array_search($identifier, $this->metaFields[$type], true);
-            if ( null !== $key)
+            if (null !== $key)
             {
                 $this->identifierColumn = $header[$key];
 
@@ -476,13 +473,13 @@ class DarwinCoreCsvImport {
             return;
         }
 
-        $subject = $this->subject->create($subject);
+        $subject = $this->subjectContract->create($subject);
 
         if ($occurrenceId !== null)
         {
             $subject->occurrence()->save(new Occurrence(['id' => $occurrenceId]));
         }
-        
+
         $this->subjectCount++;
     }
 
@@ -494,17 +491,20 @@ class DarwinCoreCsvImport {
      */
     public function saveOccurrence($header, $data)
     {
-        $subjects = $this->subject->skipCache()->where(['project_id'=> $this->projectId, 'occurrence.id' => $data[$header[0]]])->get();
+        $subjects = $this->subjectContract->setCacheLifetime(0)
+            ->where('project_id', '=', $this->projectId)
+            ->where('occurrence.id', '=', $data[$header[0]])
+            ->findAll();
 
         if ($subjects->isEmpty())
         {
             return;
         }
 
-        foreach ($subjects as $subject)
+        $subjects->each(function ($subject) use ($data)
         {
             $subject->occurrence()->save(new Occurrence($data));
-        }
+        });
 
     }
 
@@ -593,7 +593,9 @@ class DarwinCoreCsvImport {
     {
         $type = $loadMedia ? 'image' : 'occurrence';
 
-        $result = $this->header->skipCache()->where(['project_id' => $this->projectId])->first();
+        $result = $this->headerContract->setCacheLifetime(0)
+            ->where('project_id','=', $this->projectId)
+            ->findFirst();
 
         if (empty($result))
         {
@@ -601,7 +603,7 @@ class DarwinCoreCsvImport {
                 'project_id' => $this->projectId,
                 'header'     => [$type => $header],
             ];
-            $this->header->create($insert);
+            $this->headerContract->create($insert);
         }
         else
         {
@@ -609,7 +611,7 @@ class DarwinCoreCsvImport {
             $existingHeader[$type] = isset($existingHeader[$type]) ?
                 $this->combineHeader($existingHeader[$type], $header) : array_unique($header);
             $result->header = $existingHeader;
-            $this->header->update($result->toArray(), $result->id);
+            $this->headerContract->update($result->id, $result->toArray());
         }
 
     }

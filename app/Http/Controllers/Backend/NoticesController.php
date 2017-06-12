@@ -5,34 +5,33 @@ namespace App\Http\Controllers\Backend;
 use App\Facades\Toastr;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\NoticeFormRequest;
-use App\Repositories\Contracts\Actor;
-use App\Repositories\Contracts\User;
-use App\Repositories\Contracts\Notice;
+use App\Repositories\Contracts\UserContract;
+use App\Repositories\Contracts\NoticeContract;
 use Illuminate\Http\Request;
 
 class NoticesController extends Controller
 {
 
     /**
-     * @var Notice
+     * @var NoticeContract
      */
-    private $notice;
+    private $noticeContract;
 
     /**
-     * @var User
+     * @var UserContract
      */
-    private $user;
+    private $userContract;
 
     /**
      * NoticesController constructor.
      *
-     * @param Notice $notice
-     * @param User $user
+     * @param NoticeContract $noticeContract
+     * @param UserContract $userContract
      */
-    public function __construct(Notice $notice, User $user)
+    public function __construct(NoticeContract $noticeContract, UserContract $userContract)
     {
-        $this->notice = $notice;
-        $this->user = $user;
+        $this->noticeContract = $noticeContract;
+        $this->userContract = $userContract;
     }
 
     /**
@@ -43,9 +42,9 @@ class NoticesController extends Controller
      */
     public function index(Request $request)
     {
-        $user = $this->user->with(['profile'])->find($request->user()->id);
-        $notices = $this->notice->all();
-        $trashed = $this->notice->trashed();
+        $user = $this->userContract->with('profile')->find($request->user()->id);
+        $notices = $this->noticeContract->findAll();
+        $trashed = $this->noticeContract->onlyTrashed();
 
         return view('backend.notices.index', compact('user', 'notices', 'trashed'));
     }
@@ -59,10 +58,10 @@ class NoticesController extends Controller
      */
     public function edit(Request $request, $id)
     {
-        $user = $this->user->with(['profile'])->find($request->user()->id);
-        $notices = $this->notice->all();
-        $trashed = $this->notice->trashed();
-        $notice = $this->notice->find($id);
+        $user = $this->userContract->with('profile')->find($request->user()->id);
+        $notices = $this->noticeContract->findAll();
+        $trashed = $this->noticeContract->onlyTrashed();
+        $notice = $this->noticeContract->find($id);
 
         return view('backend.notices.index', compact('user', 'notices', 'notice', 'trashed'));
     }
@@ -76,7 +75,7 @@ class NoticesController extends Controller
      */
     public function update(NoticeFormRequest $request, $id)
     {
-        $notice = $this->notice->update($request->all(), $id);
+        $notice = $this->noticeContract->update($id, $request->all());
         
         $notice ? Toastr::success('Notice has been updated.', 'Notice Update')
             : Toastr::error('Notice could not be updated.', 'Notice Update');
@@ -102,7 +101,7 @@ class NoticesController extends Controller
      */
     public function store(NoticeFormRequest $request)
     {
-        $notice = $this->notice->create($request->all());
+        $notice = $this->noticeContract->create($request->all());
         
         $notice ? Toastr::success('Notice has been created.', 'Notice Create')
             : Toastr::error('Notice could not be created.', 'Notice Create');
@@ -118,8 +117,8 @@ class NoticesController extends Controller
      */
     public function delete($id)
     {
-        $this->notice->update(['enabled' => 0], $id);
-        $result = $this->notice->delete($id);
+        $this->noticeContract->update($id, ['enabled' => 0]);
+        $result = $this->noticeContract->delete($id);
 
         $result ? Toastr::success('Notice has been deleted.', 'Notice Delete')
             : Toastr::error('Notice could not be deleted.', 'Notice Delete');
@@ -135,7 +134,7 @@ class NoticesController extends Controller
      */
     public function trash($id)
     {
-        $result = $this->notice->forceDelete($id);
+        $result = $this->noticeContract->forceDelete($id);
 
         $result ? Toastr::success('Notice has been forcefully deleted.', 'Notice Delete')
             : Toastr::error('Notice could not be forcefully deleted.', 'Notice Delete');
@@ -151,7 +150,7 @@ class NoticesController extends Controller
      */
     public function enable($id)
     {
-        $result = $this->notice->update(['enabled' => 1], $id);
+        $result = $this->noticeContract->update($id, ['enabled' => 1]);
 
         $result ? Toastr::success('Notice has been enabled.', 'Notice Enable')
             : Toastr::error('Notice could not be enabled.', 'Notice Enable');
@@ -167,7 +166,7 @@ class NoticesController extends Controller
      */
     public function disable($id)
     {
-        $result = $this->notice->update(['enabled' => 0], $id);
+        $result = $this->noticeContract->update($id, ['enabled' => 0]);
 
         $result ? Toastr::success('Notice has been disabled.', 'Notice Disable')
             : Toastr::error('Notice could not be disabled.', 'Notice Disable');

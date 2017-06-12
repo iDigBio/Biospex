@@ -5,17 +5,15 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterFormRequest;
 use App\Http\Requests\ResendActivationFormRequest;
-use App\Repositories\Contracts\Group;
+use App\Repositories\Contracts\GroupContract;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 use App\Jobs\RegisterUserJob;
-use Illuminate\Config\Repository as Config;
-use App\Repositories\Contracts\Invite;
-use App\Repositories\Contracts\User;
+use App\Repositories\Contracts\InviteContract;
+use App\Repositories\Contracts\UserContract;
 use Illuminate\Routing\Router;
-use Illuminate\Events\Dispatcher as Event;
 use App\Events\UserRegisteredEvent;
 
 class AuthController extends Controller
@@ -32,52 +30,44 @@ class AuthController extends Controller
      */
     public $loginView = 'frontend.auth.login';
 
-
     /**
-     * @var Config
+     * @var UserContract
      */
-    public $config;
-
-    /**
-     * @var User
-     */
-    public $user;
+    public $userContract;
 
     /**
      * @var Router
      */
     public $route;
+
     /**
-     * @var Group
+     * @var GroupContract
      */
-    private $group;
+    public $groupContract;
 
     /**
      * AuthController constructor.
-     * @param Config $config
-     * @param User $user
+     * @param UserContract $userContract
      * @param Router $route
-     * @param Group $group
+     * @param GroupContract $groupContract
      */
     public function __construct(
-        Config $config,
-        User $user,
+        UserContract $userContract,
         Router $route,
-        Group $group
+        GroupContract $groupContract
     )
     {
-        $this->config = $config;
-        $this->user = $user;
+        $this->userContract = $userContract;
         $this->route = $route;
-        $this->group = $group;
+        $this->groupContract = $groupContract;
     }
 
     /**
      * Authenticate user
      *
-     * @param $request
+     * @param Request $request
      * @param $user
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\RedirectResponse1
      */
     public function authenticated(Request $request, $user)
     {
@@ -93,19 +83,19 @@ class AuthController extends Controller
     /**
      * Show the application registration form.
      *
-     * @param Invite $repository
+     * @param InviteContract $inviteContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function getRegister(Invite $repository)
+    public function getRegister(InviteContract $inviteContract)
     {
-        $registration = $this->config->get('config.registration');
+        $registration = config('config.registration');
         if (!$registration) {
             return redirect()->route('home')->with('error', trans('users.inactive_reg'));
         }
 
         $code = $this->route->input('code');
 
-        $invite = $repository->where(['code' => $code])->first();
+        $invite = $inviteContract->where('code', '=', $code)->findFirst();
 
         if (!empty($code) && !$invite) {
             session_flash_push('warning', trans('groups.invite_not_found'));
@@ -121,16 +111,15 @@ class AuthController extends Controller
      * Handle a registration request for the application.
      *
      * @param RegisterFormRequest $request
-     * @param Event $dispatcher
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postRegister(RegisterFormRequest $request, Event $dispatcher)
+    public function postRegister(RegisterFormRequest $request)
     {
         $user = $this->dispatch(new RegisterUserJob($request));
         
         if ($user)
         {
-            $dispatcher->fire(new UserRegisteredEvent($user));
+            event(new UserRegisteredEvent($user));
             session_flash_push('success', trans('users.created'));
 
             return redirect()->route('home');
@@ -147,7 +136,7 @@ class AuthController extends Controller
     {
         $id = $this->route->input('id');
         $code = $this->route->input('code');
-        $user = $this->user->find($id);
+        $user = $this->userContract->find($id);
 
         if ( ! $user) {
             session_flash_push('error', trans('users.notfound'));
@@ -175,13 +164,13 @@ class AuthController extends Controller
 
     /**
      * Send activation link
+     *
      * @param ResendActivationFormRequest $request
-     * @param Event $dispatcher
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postResendActivation(ResendActivationFormRequest $request, Event $dispatcher)
+    public function postResendActivation(ResendActivationFormRequest $request)
     {
-        $user = $this->user->where(['email' => $request->only('email')])->first();
+        $user = $this->userContract->where('email', '=', $request->only('email'))->findFirst();
 
         if ( ! $user)
         {
@@ -197,7 +186,7 @@ class AuthController extends Controller
             return redirect()->route('auth.get.login');
         }
 
-        $dispatcher->fire(new UserRegisteredEvent($user));
+        event(new UserRegisteredEvent($user));
 
         session_flash_push('success', trans('users.emailconfirm'));
 

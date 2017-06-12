@@ -1,4 +1,6 @@
-<?php namespace App\Services\Import;
+<?php
+
+namespace App\Services\Import;
 
 use Illuminate\Support\Facades\App;
 

@@ -2,9 +2,8 @@
 
 namespace App\Services\Process;
 
-use App\Repositories\Contracts\Subject;
-use App\Repositories\Contracts\NfnTranscription;
-use Illuminate\Config\Repository as Config;
+use App\Repositories\Contracts\SubjectContract;
+use App\Repositories\Contracts\NfnTranscriptionContract;
 use Illuminate\Validation\Factory as Validation;
 use ForceUTF8\Encoding;
 use App\Services\Csv\Csv;
@@ -18,24 +17,19 @@ class NfnTranscriptionProcess
     protected $collection;
 
     /**
-     * @var Subject
+     * @var SubjectContract
      */
-    protected $subject;
+    protected $subjectContract;
 
     /**
-     * @var NfnTranscription
+     * @var NfnTranscriptionContract
      */
-    protected $transcription;
+    protected $transcriptionContract;
 
     /**
      * @var
      */
     protected $csv = [];
-
-    /**
-     * @var Config
-     */
-    protected $config;
 
     /**
      * @var Validation
@@ -47,27 +41,23 @@ class NfnTranscriptionProcess
      */
     protected $expeditionId;
 
-
     /**
      * NfnTranscription constructor.
-     * @param Subject $subject
-     * @param NfnTranscription $transcription
-     * @param Config $config
+     * @param SubjectContract $subjectContract
+     * @param NfnTranscriptionContract $transcriptionContract
      * @param Validation $factory
      * @param Csv $csv
      */
     public function __construct(
-        Subject $subject,
-        NfnTranscription $transcription,
-        Config $config,
+        SubjectContract $subjectContract,
+        NfnTranscriptionContract $transcriptionContract,
         Validation $factory,
         Csv $csv
     )
     {
-        $this->config = $config;
-        $this->collection = $this->config->get('config.collection');
-        $this->subject = $subject;
-        $this->transcription = $transcription;
+        $this->collection = config('config.collection');
+        $this->subjectContract = $subjectContract;
+        $this->transcriptionContract = $transcriptionContract;
         $this->factory = $factory;
         $this->csv = $csv;
     }
@@ -149,7 +139,7 @@ class NfnTranscriptionProcess
         $addArray = ['project_id' => $subject->project_id, 'expedition_id' => $this->getExpeditionId()];
         $combined = array_merge($addArray, $combined);
 
-        $this->transcription->create($combined);
+        $this->transcriptionContract->create($combined);
 
     }
 
@@ -163,9 +153,12 @@ class NfnTranscriptionProcess
     {
         if ($this->checkCollection($combined)) {
             $filename = strtok(trim($combined['filename']), '.');
-            $subject = $this->subject->skipCache()->where(['accessURI', 'like', '%' . $filename . '%'])->first();
+            $subject = $this->subjectContract->setCacheLifetime(0)
+                ->where('accessURI', 'like', '%' . $filename . '%')
+                ->findFirst();
         } else {
-            $subject = $this->subject->skipCache()->find(trim($combined['subject_id']));
+            $subject = $this->subjectContract->setCacheLifetime(0)
+                ->find(trim($combined['subject_id']));
         }
 
         return empty($subject) ? false : $subject;
@@ -190,7 +183,6 @@ class NfnTranscriptionProcess
      */
     public function validateTranscription($combined)
     {
-
         $rules = ['id' => 'unique_with:transcriptions,id'];
         $values = ['id' => $combined['id']];
         $validator = $this->factory->make($values, $rules);
@@ -198,7 +190,6 @@ class NfnTranscriptionProcess
 
         // returns true if failed.
         return $validator->fails();
-
     }
 
     /**

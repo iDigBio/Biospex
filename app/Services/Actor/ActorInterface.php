@@ -3,7 +3,7 @@
 namespace App\Services\Actor;
 
 use App\Models\Actor;
-use App\Models\StagedQueue;
+use App\Models\ExportQueue;
 
 interface ActorInterface
 {
@@ -18,7 +18,7 @@ interface ActorInterface
     /**
      * Process queue.
      *
-     * @param StagedQueue $queue
+     * @param ExportQueue $queue
      */
-    public function queue(StagedQueue $queue);
+    public function queue(ExportQueue $queue);
 }

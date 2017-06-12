@@ -1,4 +1,6 @@
-<?php namespace App\Services\Queue;
+<?php
+
+namespace App\Services\Queue;
 
 abstract class QueueAbstract
 {

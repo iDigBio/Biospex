@@ -4,47 +4,39 @@ namespace App\Http\Controllers\Backend;
 
 use App\Facades\Toastr;
 use App\Http\Requests\ProjectFormRequest;
-use App\Repositories\Contracts\Project;
-use App\Repositories\Contracts\User;
+use App\Repositories\Contracts\ProjectContract;
+use App\Repositories\Contracts\UserContract;
 use App\Services\Model\ModelDeleteService;
 use App\Services\Model\ModelDestroyService;
 use App\Services\Model\ModelRestoreService;
 use App\Services\Model\ProjectService;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class ProjectsController extends Controller
 {
 
     /**
-     * @var User
+     * @var UserContract
      */
-    public $user;
+    public $userContract;
 
     /**
-     * @var Project
+     * @var ProjectContract
      */
-    public $project;
-
-    /**
-     * @var Request
-     */
-    public $request;
+    public $projectContract;
 
     /**
      * ProjectsController constructor.
-     * @param User $user
-     * @param Project $project
-     * @param Request $request
+     * @param UserContract $userContract
+     * @param ProjectContract $projectContract
      */
     public function __construct(
-        User $user,
-        Project $project,
-        Request $request)
+        UserContract $userContract,
+        ProjectContract $projectContract
+    )
     {
-        $this->user = $user;
-        $this->project = $project;
-        $this->request = $request;
+        $this->userContract = $userContract;
+        $this->projectContract = $projectContract;
     }
 
     /**
@@ -55,14 +47,14 @@ class ProjectsController extends Controller
      */
     public function index(ProjectService $service, $id = null)
     {
-        $user = $this->user->with(['profile'])->find($this->request->user()->id);
-        $projects = $this->project->all();
-        $trashed = $this->project->trashed();
+        $user = $this->userContract->with('profile')->find(request()->user()->id);
+        $projects = $this->projectContract->findAll();
+        $trashed = $this->projectContract->onlyTrashed();
 
-        $editProject = $id !== null ? $this->project->with(['nfnWorkflows'])->find($id) : null;
+        $editProject = $id !== null ? $this->projectContract->with('nfnWorkflows')->find($id) : null;
 
         $workflowEmpty = ! isset($editProject->nfnWorkflows) || $editProject->nfnWorkflows->isEmpty();
-        $common = $service->setCommonVariables($this->request->user());
+        $common = $service->setCommonVariables(request()->user());
         $vars = [
             'user' => $user,
             'projects' => $projects,
@@ -84,7 +76,7 @@ class ProjectsController extends Controller
      */
     public function store(ProjectFormRequest $request)
     {
-        $project = $this->project->create($request->all());
+        $project = $this->projectContract->create($request->all());
 
         if ($project)
         {
@@ -105,7 +97,7 @@ class ProjectsController extends Controller
      */
     public function update(ProjectFormRequest $request)
     {
-        $project = $this->project->update($request->all(), $request->input('id'));
+        $project = $this->projectContract->update($request->input('id'), $request->all());
 
         $project ?
             Toastr::success('The Project has been updated.', 'Project Update') :

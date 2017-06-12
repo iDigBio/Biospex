@@ -2,24 +2,23 @@
 
 namespace App\Services\Model;
 
-
-use App\Repositories\Contracts\User;
+use App\Repositories\Contracts\UserContract;
 
 class UserService
 {
 
     /**
-     * @var User
+     * @var UserContract
      */
-    public $repository;
+    public $userContract;
 
     /**
      * UserService constructor.
-     * @param User $repository
+     * @param UserContract $userContract
      */
-    public function __construct(User $repository)
+    public function __construct(UserContract $userContract)
     {
 
-        $this->repository = $repository;
+        $this->userContract = $userContract;
     }
 }

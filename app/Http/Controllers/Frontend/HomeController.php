@@ -5,13 +5,10 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Jobs\SendContactEmailJob;
 use App\Repositories\Contracts\AmChartContract;
-use App\Repositories\Contracts\Faq;
+use App\Repositories\Contracts\FaqContract;
 use App\Repositories\Contracts\PanoptesTranscriptionContract;
 use App\Repositories\Contracts\ProjectContract;
-use App\Repositories\Contracts\Project;
 use App\Http\Requests\ContactFormRequest;
-use Illuminate\Contracts\Config\Repository as Config;
-use Request;
 
 class HomeController extends Controller
 {
@@ -37,12 +34,15 @@ class HomeController extends Controller
      * Show public project page.
      *
      * @param $slug
-     * @param Project $repository
+     * @param ProjectContract $projectContract
      * @return \Illuminate\View\View
      */
-    public function project($slug, Project $repository)
+    public function project($slug, ProjectContract $projectContract)
     {
-        $project = $repository->skipCache()->with(['group.users.profile', 'expeditions.stat', 'expeditions.actors', 'amChart'])->where(['slug' => $slug])->first();
+        $project = $projectContract->setCacheLifetime(0)
+            ->with(['group.users.profile', 'expeditions.stat', 'expeditions.actors', 'amChart'])
+            ->where('slug', '=', $slug)
+            ->findFirst();
         $expeditions = null;
         if ( ! $project->expeditions->isEmpty())
         {
@@ -75,13 +75,13 @@ class HomeController extends Controller
     /**
      * Load AmChart for project home page.
      *
-     * @param AmChartContract $chart
+     * @param AmChartContract $amChartContract
      * @param $projectId
      * @return mixed
      */
-    public function loadAmChart(AmChartContract $chart, $projectId)
+    public function loadAmChart(AmChartContract $amChartContract, $projectId)
     {
-        $record = $chart->setCacheLifetime(0)->findBy('project_id', $projectId);
+        $record = $amChartContract->setCacheLifetime(0)->findBy('project_id', $projectId);
 
         return json_decode($record->data);
     }
@@ -89,12 +89,12 @@ class HomeController extends Controller
     /**
      * Show faq page.
      *
-     * @param Faq $faq
+     * @param FaqContract $faqContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function faq(Faq $faq)
+    public function faq(FaqContract $faqContract)
     {
-        $faqs = $faq->orderBy(['id' => 'asc'])->get();
+        $faqs = $faqContract->orderBy('id','asc')->findAll();
                 
         return view('frontend.faq', compact('faqs'));
     }
@@ -113,10 +113,9 @@ class HomeController extends Controller
      * Send contact form.
      *
      * @param ContactFormRequest $request
-     * @param Config $config
      * @return mixed
      */
-    public function postContact(ContactFormRequest $request, Config $config)
+    public function postContact(ContactFormRequest $request)
     {
         $data = $request->only('first_name', 'last_name', 'email', 'message');
 

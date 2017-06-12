@@ -5,7 +5,6 @@ namespace App\Services\Model;
 ini_set('memory_limit', '1024M');
 
 use App\Repositories\Contracts\ExpeditionContract;
-use Illuminate\Support\Facades\Event;
 use App\Exceptions\BiospexException;
 use App\Exceptions\Handler;
 
@@ -77,7 +76,9 @@ class ModelDeleteService
     {
         try
         {
-            $record = $this->userService->repository->skipCache()->with(['ownGroups'])->find($id);
+            $record = $this->userService->userContract->setCacheLifetime(0)
+                ->with('ownGroups')
+                ->find($id);
 
             foreach ($record->ownGroups as $group)
             {
@@ -107,7 +108,9 @@ class ModelDeleteService
     {
         try
         {
-            $record = $this->groupService->repository->skipCache()->with(['projects.nfnWorkflows'])->find($id);
+            $record = $this->groupService->groupContract->setCacheLifetime(0)
+                ->with('projects.nfnWorkflows')
+                ->find($id);
 
             foreach ($record->projects as $project)
             {
@@ -121,9 +124,7 @@ class ModelDeleteService
 
             $record->delete();
 
-            //$groups = $service->groupService->model->whereHas('users', ['user_id' => $user->id])->get();
-            //Request::session()->put('groups', $groups);
-            Event::fire('group.deleted');
+            event('group.deleted');
 
             return true;
         }
@@ -145,7 +146,9 @@ class ModelDeleteService
     {
         try
         {
-            $record = $this->projectService->repository->skipCache()->with(['nfnWorkflows'])->find($id);
+            $record = $this->projectService->projectContract->setCacheLifetime(0)
+                ->with('nfnWorkflows')
+                ->find($id);
 
             if ( ! $record->nfnWorkflows->isEmpty())
             {
@@ -174,7 +177,9 @@ class ModelDeleteService
     {
         try
         {
-            $record = $this->expeditionContract->setCacheLifetime(0)->with(['nfnWorkflow'])->find($id);
+            $record = $this->expeditionContract->setCacheLifetime(0)
+                ->with('nfnWorkflow')
+                ->find($id);
 
             if (isset($record->nfnWorkflow))
             {
@@ -183,7 +188,9 @@ class ModelDeleteService
                 return false;
             }
 
-            $subjects = $this->subjectService->repository->where(['expedition_ids' => (int) $id])->get();
+            $subjects = $this->subjectService->subjectContract
+                ->where('expedition_ids', '=', (int) $id)
+                ->findAll();
 
             if ( ! $subjects->isEmpty())
             {

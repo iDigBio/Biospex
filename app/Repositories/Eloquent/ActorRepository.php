@@ -3,6 +3,7 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Actor;
+use App\Models\ActorContact;
 use App\Repositories\Contracts\ActorContract;
 use Illuminate\Contracts\Container\Container;
 

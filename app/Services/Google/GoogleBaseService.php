@@ -2,7 +2,6 @@
 
 namespace App\Services\Google;
 
-
 use App\Services\BaseService;
 use PulkitJalan\Google\Facades\Google;
 

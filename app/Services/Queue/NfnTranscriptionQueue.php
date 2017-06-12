@@ -1,9 +1,11 @@
-<?php  namespace App\Services\Queue;
+<?php 
+
+namespace App\Services\Queue;
 
 use App\Exceptions\BiospexException;
 use App\Jobs\AmChartJob;
 use App\Jobs\ExpeditionStatJob;
-use App\Repositories\Contracts\Import;
+use App\Repositories\Contracts\ImportContract;
 use App\Services\Report\TranscriptionImportReport;
 use App\Services\Process\NfnTranscriptionProcess;
 use Illuminate\Filesystem\Filesystem;
@@ -21,9 +23,9 @@ class NfnTranscriptionQueue extends QueueAbstract
     protected $filesystem;
 
     /**
-     * @var Import
+     * @var ImportContract
      */
-    protected $import;
+    protected $importContract;
 
     /**
      * @var NfnTranscriptionProcess
@@ -58,25 +60,25 @@ class NfnTranscriptionQueue extends QueueAbstract
      * Constructor.
      *
      * @param Filesystem $filesystem
-     * @param Import $import
+     * @param ImportContract $importContract
      * @param TranscriptionImportReport $report
      * @param NfnTranscriptionProcess $transcription
      * @param Handler $handler
      */
     public function __construct(
         Filesystem $filesystem,
-        Import $import,
+        ImportContract $importContract,
         TranscriptionImportReport $report,
         NfnTranscriptionProcess $transcription,
         Handler $handler
     ) {
         $this->filesystem = $filesystem;
-        $this->import = $import;
+        $this->importContract = $importContract;
         $this->report = $report;
         $this->transcription = $transcription;
         $this->handler = $handler;
 
-        $this->transcriptionImportDir = Config::get('config.transcription_import_dir');
+        $this->transcriptionImportDir = config('config.transcription_import_dir');
         if (! $this->filesystem->isDirectory($this->transcriptionImportDir)) {
             $this->filesystem->makeDirectory($this->transcriptionImportDir);
         }
@@ -92,23 +94,23 @@ class NfnTranscriptionQueue extends QueueAbstract
         $this->job = $job;
         $this->data = $data;
 
-        $import = $this->import->with(['project', 'user'])->find($this->data['id']);
+        $import = $this->importContract->with(['project', 'user'])->find($this->data['id']);
         $file = $this->transcriptionImportDir . '/' . $import->file;
 
         try {
             $csv = $this->transcription->process($file);
             $expeditionId = $this->transcription->getExpeditionId();
             
-            $this->dispatch((new ExpeditionStatJob($expeditionId))->onQueue(Config::get('config.beanstalkd.stat')));
-            $this->dispatch((new AmChartJob($import->project_id))->onQueue(Config::get('config.beanstalkd.chart')));
+            $this->dispatch((new ExpeditionStatJob($expeditionId))->onQueue(config('config.beanstalkd.stat')));
+            $this->dispatch((new AmChartJob($import->project_id))->onQueue(config('config.beanstalkd.chart')));
 
             $this->report->complete($import->user->email, $import->project->title, $csv);
             $this->filesystem->delete($file);
-            $this->import->delete($import->id);
+            $this->importContract->delete($import->id);
 
         } catch (BiospexException $e) {
             $import->error = 1;
-            $this->import->update($import->toArray(), $import->id);
+            $this->importContract->update($import->id, $import->toArray());
 
             $this->report->addError(trans('errors.import_process', [
                 'title'   => $import->project->title,

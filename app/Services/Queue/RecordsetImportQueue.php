@@ -1,7 +1,9 @@
-<?php namespace App\Services\Queue;
+<?php
+
+namespace App\Services\Queue;
 
 use App\Exceptions\BiospexException;
-use App\Repositories\Contracts\Project;
+use App\Repositories\Contracts\ProjectContract;
 use App\Services\Process\RecordSet;
 use App\Services\Report\Report;
 use App\Exceptions\Handler;
@@ -20,9 +22,9 @@ class RecordSetImportQueue extends QueueAbstract
     public $report;
 
     /**
-     * @var Project
+     * @var ProjectContract
      */
-    protected $project;
+    protected $projectContract;
 
     /**
      * @var Handler
@@ -35,14 +37,19 @@ class RecordSetImportQueue extends QueueAbstract
      *
      * @param RecordSet $record
      * @param Report $report
-     * @param Project $project
+     * @param ProjectContract $projectContract
      * @param Handler $handler
      */
-    public function __construct(RecordSet $record, Report $report, Project $project, Handler $handler)
+    public function __construct(
+        RecordSet $record,
+        Report $report,
+        ProjectContract $projectContract,
+        Handler $handler
+    )
     {
         $this->record = $record;
         $this->report = $report;
-        $this->project = $project;
+        $this->projectContract = $projectContract;
         $this->handler = $handler;
     }
 
@@ -65,7 +72,8 @@ class RecordSetImportQueue extends QueueAbstract
         }
         catch (BiospexException $e)
         {
-            $project = $this->project->with(['group.owner'])->find($data['project_id']);
+            $project = $this->projectContract->with('group.owner')
+                ->find($data['project_id']);
 
             $this->report->addError(trans('errors.import_process', [
                 'title'   => $project->title,

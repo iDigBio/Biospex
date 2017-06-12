@@ -3,7 +3,7 @@
 namespace App\Services\Actor;
 
 use App\Models\Actor;
-use App\Models\StagedQueue;
+use App\Models\ExportQueue;
 
 abstract class ActorBase implements ActorInterface
 {
@@ -18,7 +18,7 @@ abstract class ActorBase implements ActorInterface
     /**
      * @inheritdoc
      */
-    public function queue(StagedQueue $queue)
+    public function queue(ExportQueue $queue)
     {
 
     }

@@ -9,6 +9,7 @@ use App\Services\Google\FusionTableService;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Collection;
 
 class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
 {
@@ -166,7 +167,7 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
     /**
      * Get counts of locations.
      *
-     * @param $locations
+     * @param Collection $locations
      * @return mixed
      */
     public function getProjectLocationsCount($locations)

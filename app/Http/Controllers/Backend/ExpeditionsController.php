@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Facades\Toastr;
 use App\Http\Requests\ExpeditionFormRequest;
 use App\Repositories\Contracts\ExpeditionContract;
-use App\Repositories\Contracts\User;
+use App\Repositories\Contracts\UserContract;
 use App\Services\Model\ModelDeleteService;
 use App\Services\Model\ModelDestroyService;
 use App\Services\Model\ModelRestoreService;
@@ -16,9 +16,9 @@ class ExpeditionsController extends Controller
 {
 
     /**
-     * @var User
+     * @var UserContract
      */
-    public $user;
+    public $userContract;
 
     /**
      * @var ExpeditionContract
@@ -33,16 +33,16 @@ class ExpeditionsController extends Controller
     /**
      * ExpeditionsController constructor.
      *
-     * @param User $user
+     * @param UserContract $userContract
      * @param ExpeditionContract $expeditionContract
      * @param Request $request
      */
     public function __construct(
-        User $user,
+        UserContract $userContract,
         ExpeditionContract $expeditionContract,
         Request $request)
     {
-        $this->user = $user;
+        $this->userContract = $userContract;
         $this->expeditionContract = $expeditionContract;
         $this->request = $request;
     }
@@ -55,7 +55,9 @@ class ExpeditionsController extends Controller
      */
     public function index($id = null)
     {
-        $user = $this->user->skipCache()->with(['profile'])->find($this->request->user()->id);
+        $user = $this->userContract->setCacheLifetime(0)
+            ->with('profile')
+            ->find($this->request->user()->id);
         $expeditions = $this->expeditionContract->setCacheLifetime(0)->findAll();
         $trashed = $this->expeditionContract->setCacheLifetime(0)->onlyTrashed();
 

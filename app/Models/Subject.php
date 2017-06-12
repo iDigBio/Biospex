@@ -140,7 +140,7 @@ class Subject extends BaseMongoModel
      * @param $projectId
      * @return mixed
      */
-    public function getUnassignedCount($projectId)
+    public function loadUnassignedCount($projectId)
     {
         return $this->where('expedition_ids', 'size', 0)
             ->where('project_id', (int) $projectId)
@@ -155,7 +155,7 @@ class Subject extends BaseMongoModel
      * @param $expeditionId
      * @return array
      */
-    public function getSubjectIds($projectId, $take, $expeditionId)
+    public function loadSubjectIds($projectId, $take, $expeditionId)
     {
         $ids = $this->whereNested(function ($query) use ($projectId, $take, $expeditionId)
         {
@@ -195,7 +195,7 @@ class Subject extends BaseMongoModel
      * @param $ids
      * @param $expeditionId
      */
-    public function detachSubjects($ids, $expeditionId)
+    public function detachAllSubjects($ids, $expeditionId)
     {
         foreach ($ids as $id)
         {
@@ -229,7 +229,7 @@ class Subject extends BaseMongoModel
      * @return int Total number of rows
      * Total number of rows
      */
-    public function getTotalNumberOfRows($filters, $route, $projectId, $expeditionId)
+    public function getNumberOfRowsTotal($filters, $route, $projectId, $expeditionId)
     {
         $this->route = $route;
         $this->projectId = $projectId;
@@ -263,8 +263,9 @@ class Subject extends BaseMongoModel
      *  An array of array, each array will have the data of a row.
      *  Example: array(array('row 1 col 1','row 1 col 2'), array('row 2 col 1','row 2 col 2'))
      */
-    public function getRows($limit, $offset, $orderBy, $sord, $filters)
+    public function getAllRows($limit, $offset, $orderBy, $sord, $filters)
     {
+        dd($this->where('project_id', 13))->get();
         $orderByRaw = $this->setOrderBy($orderBy, $sord);
 
         $limit = ($limit === 0) ? 1 : $limit;
@@ -290,6 +291,8 @@ class Subject extends BaseMongoModel
         }
 
         $this->setRowCheckbox($rows);
+
+        dd($rows);
 
         return $rows;
     }

@@ -3,10 +3,9 @@
 namespace App\Services\Process;
 
 use App\Exceptions\RequestException;
-use App\Repositories\Contracts\Subject;
+use App\Repositories\Contracts\SubjectContract;
 use Illuminate\Support\Facades\Artisan;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Config;
 
 class OcrRequest
 {
@@ -17,21 +16,21 @@ class OcrRequest
     protected $client;
 
     /**
-     * @var Subject
+     * @var SubjectContract
      */
-    protected $subject;
+    protected $subjectContract;
     
     /**
      * Ocr constructor.
      *
-     * @param Subject $subject
+     * @param SubjectContract $subjectContract
      */
     public function __Construct(
-        Subject $subject
+        SubjectContract $subjectContract
     )
     {
         $this->client = new Client();
-        $this->subject = $subject;
+        $this->subjectContract = $subjectContract;
     }
 
     /**
@@ -56,7 +55,7 @@ class OcrRequest
                 ]
             ]];
 
-        $response = $this->client->request('POST', Config::get('config.ocr_post_url'), $options);
+        $response = $this->client->request('POST', config('config.ocr_post_url'), $options);
 
         if ($response->getStatusCode() !== 202) {
             throw new RequestException(trans('errors.ocr_send_error',
@@ -75,7 +74,7 @@ class OcrRequest
     {
         try
         {
-            $response = $this->client->get(Config::get('config.ocr_get_url') . '/' . $uuid . '.json');
+            $response = $this->client->get(config('config.ocr_get_url') . '/' . $uuid . '.json');
             $contents = $response->getBody()->getContents();
 
             return json_decode($contents);
@@ -136,9 +135,9 @@ class OcrRequest
                 continue;
             }
 
-            $subject = $this->subject->find($id);
+            $subject = $this->subjectContract->find($id);
             $subject->ocr = $data->ocr;
-            $this->subject->update($subject->toArray(), $subject->_id);
+            $this->subjectContract->update($subject->_id, $subject->toArray());
         }
 
         return $csv;

@@ -20,6 +20,15 @@ interface ActorContract extends RepositoryContract, CacheableContract
     public function createActor(array $attributes = []);
 
     /**
+     * Update actor.
+     *
+     * @param $id
+     * @param array $attributes
+     * @return mixed
+     */
+    public function updateActor($id, array $attributes = []);
+
+    /**
      * Update existing pivot table for ActorExpeditions.
      *
      * @param $actor

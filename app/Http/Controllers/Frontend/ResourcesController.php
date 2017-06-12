@@ -3,24 +3,23 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\Resource as ResourceContract;
+use App\Repositories\Contracts\ResourceContract;
 
 class ResourcesController extends Controller
 {
 
     /**
-     * @var ResourceContact
+     * @var ResourceContract
      */
-    private $resource;
+    private $resourceContract;
 
     /**
      * ResourcesController constructor.
-     * @param ResourceContract $resource
+     * @param ResourceContract $resourceContract
      */
-    public function __construct(ResourceContract $resource)
+    public function __construct(ResourceContract $resourceContract)
     {
-
-        $this->resource = $resource;
+        $this->resourceContract = $resourceContract;
     }
 
     /**
@@ -30,7 +29,7 @@ class ResourcesController extends Controller
      */
     public function index()
     {
-        $resources = $this->resource->orderBy(['order' => 'asc'])->get();
+        $resources = $this->resourceContract->orderBy('order', 'asc')->findAll();
 
         return view('frontend.resources.index', compact('resources'));
     }
@@ -43,7 +42,7 @@ class ResourcesController extends Controller
      */
     public function download($id)
     {
-        $download = $this->resource->find($id);
+        $download = $this->resourceContract->find($id);
         $file= public_path('resources/' . $download->document);
 
         return response()->download($file, $download->document, ['Content-Type: application/pdf']);

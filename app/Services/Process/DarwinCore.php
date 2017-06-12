@@ -105,24 +105,6 @@ class DarwinCore
     }
 
     /**
-     *
-     */
-    protected function checkRequiredMetaFields()
-    {
-        foreach ($this->requiredMetaFieldColumns as $key => $type)
-        {
-            if (count(array_intersect($type, $this->metaFields[$key])) === count($type))
-            {
-                continue;
-            }
-        }
-
-
-    }
-
-
-
-    /**
      * Process a darwin core csv file
      * @param $directory
      * @param bool $loadMedia

@@ -1,4 +1,6 @@
-<?php namespace App\Listeners;
+<?php
+
+namespace App\Listeners;
 
 use App\Events\SendInviteEvent;
 use App\Services\Mailer\BiospexMailer;

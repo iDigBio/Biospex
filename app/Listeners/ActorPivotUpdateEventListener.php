@@ -2,7 +2,6 @@
 
 namespace App\Listeners;
 
-use App\Models\Actor;
 use App\Repositories\Contracts\ActorContract;
 
 class ActorPivotUpdateEventListener

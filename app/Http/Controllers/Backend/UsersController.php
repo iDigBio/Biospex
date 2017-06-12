@@ -5,37 +5,30 @@ namespace App\Http\Controllers\Backend;
 use App\Facades\Toastr;
 use App\Http\Requests\EditUserFormRequest;
 use App\Http\Requests\PasswordFormRequest;
-use App\Repositories\Contracts\User;
+use App\Repositories\Contracts\UserContract;
 use App\Services\Model\ModelDeleteService;
 use App\Services\Model\ModelDestroyService;
 use App\Services\Model\ModelRestoreService;
 use Illuminate\Foundation\Auth\ResetsPasswords;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Services\Delete\DeleteService;
 
 class UsersController extends Controller
 {
+
     use ResetsPasswords;
 
     /**
-     * @var User
+     * @var UserContract
      */
-    public $user;
-    /**
-     * @var Request
-     */
-    private $request;
+    public $userContract;
 
     /**
      * UsersController constructor.
-     * @param User $user
-     * @param Request $request
+     * @param UserContract $userContract
      */
-    public function __construct(User $user, Request $request)
+    public function __construct(UserContract $userContract)
     {
-        $this->user = $user;
-        $this->request = $request;
+        $this->userContract = $userContract;
     }
 
     /**
@@ -44,14 +37,13 @@ class UsersController extends Controller
      */
     public function index($id = null)
     {
-        $user = $this->user->with(['profile'])->find($this->request->user()->id);
-        $users = $this->user->with(['profile'])->orderBy(['created_at' => 'asc'])->get();
-        $trashed = $this->user->trashed();
+        $user = $this->userContract->with('profile')->find(request()->user()->id);
+        $users = $this->userContract->with('profile')->orderBy('created_at', 'asc')->findAll();
+        $trashed = $this->userContract->onlyTrashed();
 
-        $editUser = $id !== null ? $this->user->with(['profile'])->find($id) : null;
+        $editUser = $id !== null ? $this->userContract->with('profile')->find($id) : null;
 
         $timezones = timezone_select();
-
 
         return view('backend.users.index', compact('user', 'users', 'trashed', 'editUser', 'timezones'));
     }
@@ -65,8 +57,8 @@ class UsersController extends Controller
      */
     public function update(EditUserFormRequest $request, $id)
     {
-        $result = $this->user->update($request->all(), $id);
-        $user = $this->user->with(['profile'])->find($id);
+        $result = $this->userContract->update($id, $request->all());
+        $user = $this->userContract->with('profile')->find($id);
         $user->profile->first_name = $request->input('first_name');
         $user->profile->last_name = $request->input('last_name');
         $user->profile->timezone = $request->input('timezone');
@@ -85,13 +77,14 @@ class UsersController extends Controller
      */
     public function search()
     {
-        if (! $this->request->ajax())
+        if ( ! request()->ajax())
         {
             return json_encode(['Invalid']);
         }
 
-        $emails = $this->user->where([['email', 'like', $this->request->get('q') . '%']])
-            ->get(['email as text'])->toArray();
+        $emails = $this->userContract->where('email', 'like', request()
+                ->get('q') . '%')
+                ->findAll(['email as text'])->toArray();
 
         foreach ($emails as $key => $email)
         {
@@ -110,7 +103,7 @@ class UsersController extends Controller
      */
     public function pass(PasswordFormRequest $request, $id)
     {
-        $user = $this->user->find($id);
+        $user = $this->userContract->find($id);
 
         $this->resetPassword($user, $request->input('newPassword'));
 

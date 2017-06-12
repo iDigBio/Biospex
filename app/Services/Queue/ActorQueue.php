@@ -7,7 +7,6 @@ use App\Repositories\Contracts\ExpeditionContract;
 use App\Services\Actor\ActorFactory;
 use App\Services\Report\Report;
 use App\Exceptions\Handler;
-use Event;
 
 class ActorQueue extends QueueAbstract
 {
@@ -59,7 +58,7 @@ class ActorQueue extends QueueAbstract
         }
         catch (BiospexException $e)
         {
-            Event::fire('actor.pivot.error', $actor);
+            event('actor.pivot.error', $actor);
             $this->createError($actor, $e->getMessage());
             $this->handler->report($e);
         }
@@ -75,7 +74,8 @@ class ActorQueue extends QueueAbstract
      */
     public function createError($actor, $message)
     {
-        $record = $this->expeditionContract->with(['project.group.owner'])->find($actor->pivot->expedition_id);
+        $record = $this->expeditionContract->with('project.group.owner')
+            ->find($actor->pivot->expedition_id);
 
         $this->report->addError(trans('errors.workflow_actor',
             [

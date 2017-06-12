@@ -100,7 +100,7 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
 
             empty($ids) ? $this->delete() :
                 $this->dispatch((new NfnClassificationsCsvFileJob($ids))
-                    ->onQueue(\Config::get('config.beanstalkd.classification'))
+                    ->onQueue(config('config.beanstalkd.classification'))
                     ->delay(14400));
         }
         catch (HttpRequestException $e)

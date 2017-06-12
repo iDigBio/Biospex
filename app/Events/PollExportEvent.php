@@ -4,7 +4,6 @@ namespace App\Events;
 
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Support\Facades\Config;
 
 class PollExportEvent extends Event implements ShouldBroadcast
 {
@@ -29,7 +28,7 @@ class PollExportEvent extends Event implements ShouldBroadcast
      */
     public function onQueue()
     {
-        return Config::get('config.beanstalkd.event');
+        return config('config.beanstalkd.event');
     }
 
     /**
@@ -49,6 +48,6 @@ class PollExportEvent extends Event implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return [Config::get('config.poll_export_channel')];
+        return [config('config.poll_export_channel')];
     }
 }

@@ -2,8 +2,6 @@
 
 namespace App\Services\Google;
 
-use Config;
-
 class FusionTableService
 {
 
@@ -38,8 +36,8 @@ class FusionTableService
         $this->fusionTableBucket = $fusionTableBucket;
         $this->googleDrive = $googleDrive;
 
-        $this->email = Config::get('mail.from');
-        $this->prefix = Config::get('config.nfn_table_prefix');
+        $this->email = config('mail.from');
+        $this->prefix = config('config.nfn_table_prefix');
     }
 
     /**

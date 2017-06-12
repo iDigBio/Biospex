@@ -3,10 +3,9 @@
 namespace App\Jobs;
 
 use App\Events\SendInviteEvent;
-use App\Repositories\Contracts\Group;
-use App\Repositories\Contracts\Invite;
-use App\Repositories\Contracts\User;
-use Illuminate\Events\Dispatcher;
+use App\Repositories\Contracts\GroupContract;
+use App\Repositories\Contracts\InviteContract;
+use App\Repositories\Contracts\UserContract;
 
 class InviteCreateJob extends Job
 {
@@ -22,16 +21,6 @@ class InviteCreateJob extends Job
     private $groupId;
 
     /**
-     * @var User
-     */
-    private $user;
-
-    /**
-     * @var
-     */
-    private $dispatcher;
-
-    /**
      * InviteCreateJob constructor.
      * @param $request
      * @param $groupId
@@ -40,21 +29,27 @@ class InviteCreateJob extends Job
     {
         $this->request = $request;
         $this->groupId = $groupId;
-        $this->dispatcher = app(Dispatcher::class);
     }
 
     /**
      * Handle job.
      *
-     * @param User $userRepo
-     * @param Invite $inviteRepo
-     * @param Group $groupRepo
+     * @param UserContract $userContract
+     * @param InviteContract $inviteContract
+     * @param GroupContract $groupContract
      */
-    public function handle(User $userRepo, Invite $inviteRepo, Group $groupRepo)
+    public function handle(
+        UserContract $userContract,
+        InviteContract $inviteContract,
+        GroupContract $groupContract
+    )
     {
         $invites = $this->request->get('invites');
-        $group = $groupRepo->skipCache()->find($this->groupId);
-        $existing = $inviteRepo->skipCache()->with(['group'])->where(['group_id' => $group->id])->get();
+        $group = $groupContract->setCacheLifetime(0)->find($this->groupId);
+        $existing = $inviteContract->setCacheLifetime(0)
+            ->with('group')
+            ->where('group_id', '=', $group->id)
+            ->findAll();
 
         foreach ($invites as $invite) {
             $email = trim($invite['email']);
@@ -68,7 +63,9 @@ class InviteCreateJob extends Job
                 continue;
             }
 
-            $user = $userRepo->skipCache()->where(['email' => $email])->first();
+            $user = $userContract->setCacheLifetime(0)
+                ->where('email', '=', $email)
+                ->findFirst();
             if ($user)
             {
                 if ($user->hasGroup($group))
@@ -92,7 +89,7 @@ class InviteCreateJob extends Job
                 'code'     => $code
             ];
 
-            $inviteRepo->create($inviteData);
+            $inviteContract->create($inviteData);
 
             $this->createEvent($email, $group->title, $code);
 
@@ -116,6 +113,6 @@ class InviteCreateJob extends Job
             'code' => $code
         ];
 
-        $this->dispatcher->fire(new SendInviteEvent($data));
+        event(new SendInviteEvent($data));
     }
 }

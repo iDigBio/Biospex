@@ -1,25 +1,26 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
 use Illuminate\Contracts\View\View;
-use App\Repositories\Contracts\Notice;
+use App\Repositories\Contracts\NoticeContract;
 
 class NoticesComposer
 {
 
     /**
-     * @var Notice
+     * @var NoticeContract
      */
-    private $notice;
+    private $noticeContract;
 
     /**
      * Create a new profile composer.
      *
-     * @param Notice $notice
+     * @param NoticeContract $noticeContract
      */
-    public function __construct(Notice $notice)
+    public function __construct(NoticeContract $noticeContract)
     {
-        $this->notice = $notice;
+        $this->noticeContract = $noticeContract;
     }
 
     /**
@@ -30,7 +31,7 @@ class NoticesComposer
      */
     public function compose(View $view)
     {
-        $notices = $this->notice->where(['enabled' => 1])->get();
+        $notices = $this->noticeContract->where('enabled', '=', 1)->findAll();
         $notices = $notices->isEmpty() ? null : $notices;
 
         $view->with('notices', $notices);

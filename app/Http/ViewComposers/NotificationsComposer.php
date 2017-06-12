@@ -1,25 +1,26 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
-use App\Repositories\Contracts\Notification;
+use App\Repositories\Contracts\NotificationContract;
 use Illuminate\Contracts\View\View;
 
 class NotificationsComposer
 {
 
     /**
-     * @var Notification
+     * @var NotificationContract
      */
-    public $notification;
+    public $notificationContract;
 
     /**
      * Create a new profile composer.
      *
-     * @param Notification $notification
+     * @param NotificationContract $notificationContract
      */
-    public function __construct(Notification $notification)
+    public function __construct(NotificationContract $notificationContract)
     {
-        $this->notification = $notification;
+        $this->notificationContract = $notificationContract;
     }
 
     /**
@@ -30,7 +31,7 @@ class NotificationsComposer
      */
     public function compose(View $view)
     {
-        $notifications = $this->notification->where(['user_id' => auth()->id()])->get();
+        $notifications = $this->notificationContract->where('user_id', '=', auth()->id())->findAll();
         $notifications = $notifications->isEmpty() ? null : $notifications;
 
         $view->with('notifications', $notifications);

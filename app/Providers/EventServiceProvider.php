@@ -7,7 +7,6 @@ use App\Events\SendInviteEvent;
 use App\Events\SendReportEvent;
 use App\Events\UserRegisteredEvent;
 use App\Listeners\ActorPivotUpdateEventListener;
-use App\Listeners\DatabaseCacheEventListener;
 use App\Listeners\GroupEventListener;
 use App\Listeners\RepositoryEventListener;
 use App\Listeners\SendErrorEventListener;
@@ -47,7 +46,6 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $subscribe = [
         GroupEventListener::class,
-        DatabaseCacheEventListener::class,
         RepositoryEventListener::class,
         ExportQueueEventListener::class,
         ActorPivotUpdateEventListener::class

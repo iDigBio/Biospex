@@ -1,4 +1,6 @@
-<?php namespace App\Services\Import;
+<?php
+
+namespace App\Services\Import;
 
 class DarwinCoreUrlImport extends ImportServiceAbstract
 {
@@ -11,7 +13,7 @@ class DarwinCoreUrlImport extends ImportServiceAbstract
     public function import($id)
     {
         $validator = $this->validation->make(
-            ['data-url' => $this->request->input('data-url')],
+            ['data-url' => request()->input('data-url')],
             ['data-url' => 'required|url']
         );
 
@@ -23,8 +25,8 @@ class DarwinCoreUrlImport extends ImportServiceAbstract
 
         $data = [
             'id'      => $id,
-            'user_id' => $this->request->input('user_id'),
-            'url'     => $this->request->input('data-url')
+            'user_id' => request()->input('user_id'),
+            'url'     => request()->input('data-url')
         ];
 
         $this->queue->push('App\Services\Queue\DarwinCoreUrlImportQueue', $data, $this->tube);

@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use Illuminate\Auth\Events\Login;
-use App\Repositories\Contracts\Group;
+use App\Repositories\Contracts\GroupContract;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -12,30 +12,31 @@ class GroupEventListener
 {
 
     /**
-     * @var Group
+     * @var GroupContract
      */
-    private $group;
+    private $groupContract;
 
     /**
      * GroupSessionEventListener constructor.
      *
-     * @param Group $group
+     * @param GroupContract $groupContract
      */
-    public function __construct(Group $group)
+    public function __construct(GroupContract $groupContract)
     {
-        $this->group = $group;
+        $this->groupContract = $groupContract;
     }
 
     /**
      * Handle user login events.
      */
-    public function onUserLogin($event) {
+    public function onUserLogin($event)
+    {
         $this->setUserGroupSession();
     }
 
     /**
      * Handle user logout.
-     * 
+     *
      * @param $event
      */
     public function onUserLogout($event)
@@ -61,7 +62,7 @@ class GroupEventListener
 
     /**
      * Register the listeners for the subscriber.
-     * 
+     *
      * @param $events
      */
     public function subscribe($events)
@@ -96,9 +97,15 @@ class GroupEventListener
     {
         $user = Auth::user();
 
-        $groups = $this->group->skipCache()->whereHas('users', ['user_id' => $user->id])->get();
+        $groups = $this->groupContract->setCacheLifetime(0)
+            ->whereHas('users', function ($query) use ($user)
+            {
+                $query->where('user_id', $user->id);
+            })
+            ->findAll();
 
-        $uuids = $groups->map(function ($item, $key) {
+        $uuids = $groups->map(function ($item, $key)
+        {
             return $item['uuid'];
         });
 

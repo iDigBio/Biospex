@@ -3,8 +3,6 @@
 namespace App\Jobs;
 
 use App\Repositories\Contracts\ExpeditionContract;
-use File;
-use Illuminate\Contracts\Logging\Log;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;

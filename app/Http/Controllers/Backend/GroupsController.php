@@ -6,12 +6,11 @@ use App\Facades\Toastr;
 use App\Http\Requests\GroupFormRequest;
 use App\Http\Requests\InviteFormRequest;
 use App\Jobs\InviteCreateJob;
-use App\Repositories\Contracts\Group;
-use App\Repositories\Contracts\User;
+use App\Repositories\Contracts\GroupContract;
+use App\Repositories\Contracts\UserContract;
 use App\Services\Model\ModelDeleteService;
 use App\Services\Model\ModelDestroyService;
 use App\Services\Model\ModelRestoreService;
-use Event;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -19,13 +18,15 @@ class GroupsController extends Controller
 {
 
     /**
-     * @var User
+     * @var UserContract
      */
-    private $user;
+    private $userContract;
+
     /**
-     * @var Group
+     * @var GroupContract
      */
-    private $group;
+    private $groupContract;
+
     /**
      * @var Request
      */
@@ -33,14 +34,14 @@ class GroupsController extends Controller
 
     /**
      * GroupsController constructor.
-     * @param User $user
-     * @param Group $group
+     * @param UserContract $userContract
+     * @param GroupContract $groupContract
      * @param Request $request
      */
-    public function __construct(User $user, Group $group, Request $request)
+    public function __construct(UserContract $userContract, GroupContract $groupContract, Request $request)
     {
-        $this->user = $user;
-        $this->group = $group;
+        $this->userContract = $userContract;
+        $this->groupContract = $groupContract;
         $this->request = $request;
     }
 
@@ -51,9 +52,9 @@ class GroupsController extends Controller
      */
     public function index()
     {
-        $user = $this->user->with(['profile'])->find($this->request->user()->id);
-        $groups = $this->group->all();
-        $trashed = $this->group->trashed();
+        $user = $this->userContract->with('profile')->find(request()->user()->id);
+        $groups = $this->groupContract->findAll();
+        $trashed = $this->groupContract->onlyTrashed();
 
         return view('backend.groups.index', compact('user', 'groups', 'trashed'));
     }
@@ -66,14 +67,14 @@ class GroupsController extends Controller
      */
     public function store(GroupFormRequest $request)
     {
-        $user = $this->request->user();
+        $user = request()->user();
 
-        $group = $this->group->create(['user_id' => $user->id, 'title' => $request->get('title')]);
+        $group = $this->groupContract->create(['user_id' => $user->id, 'title' => $request->get('title')]);
 
         if ($group) {
             $user->assignGroup($group);
 
-            Event::fire('group.saved');
+            event('group.saved');
 
             Toastr::success('The Group has been created.', 'Group Create');
 
@@ -93,8 +94,8 @@ class GroupsController extends Controller
      */
     public function show($id)
     {
-        $user = $this->user->with(['profile'])->find($this->request->user()->id);
-        $group = $this->group->with(['owner.profile', 'users.profile'])->find($id);
+        $user = $this->userContract->with('profile')->find(request()->user()->id);
+        $group = $this->groupContract->with(['owner.profile', 'users.profile'])->find($id);
 
         return view('backend.groups.show', compact('user', 'group'));
     }
@@ -109,11 +110,11 @@ class GroupsController extends Controller
      */
     public function update(GroupFormRequest $request, $id)
     {
-        $group = $this->group->find($id);
+        $group = $this->groupContract->find($id);
 
-        $result = $this->group->update($request->all(), $group->id);
+        $result = $this->groupContract->update($group->id, $request->all());
 
-        Event::fire('group.saved');
+        event('group.saved');
 
         $result ? Toastr::success('The Group has been updated.', 'Group Update') :
             Toastr::error('The Group could not be updated.', 'Group Update');
@@ -178,7 +179,7 @@ class GroupsController extends Controller
      */
     public function invite(InviteFormRequest $request, $id)
     {
-        $group = $this->group->with(['invites'])->find($id);
+        $group = $this->groupContract->with('invites')->find($id);
 
         $this->dispatch(new InviteCreateJob($request, $group->id));
 
@@ -196,9 +197,9 @@ class GroupsController extends Controller
      */
     public function deleteUser($groupId, $userId)
     {
-        $user = $this->user->find($userId);
+        $user = $this->userContract->find($userId);
         $result = $user->detachGroup($groupId);
-        Event::fire('eloquent.deleted: *');
+        event('eloquent.deleted: *');
 
         $result ? Toastr::success('The user has been deleted from Group.', 'Group User Delete') :
             Toastr::error('The user could not be deleted from Group.', 'Group User Delete');

@@ -6,11 +6,9 @@ use App\Services\Model\GroupService;
 use App\Services\Model\ModelDeleteService;
 use App\Services\Model\ModelDestroyService;
 use App\Services\Model\ModelRestoreService;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
-use App\Repositories\Contracts\User;
+use App\Repositories\Contracts\UserContract;
 
 class GroupsController extends Controller
 {
@@ -21,20 +19,20 @@ class GroupsController extends Controller
     public $groupService;
 
     /**
-     * @var User
+     * @var UserContract
      */
-    public $user;
+    public $userContract;
 
     /**
      * GroupsController constructor.
      *
      * @param GroupService $groupService
-     * @param User $user
+     * @param UserContract $userContract
      */
-    public function __construct(GroupService $groupService, User $user)
+    public function __construct(GroupService $groupService, UserContract $userContract)
     {
         $this->groupService = $groupService;
-        $this->user = $user;
+        $this->userContract = $userContract;
     }
 
     /**
@@ -44,8 +42,8 @@ class GroupsController extends Controller
      */
     public function index()
     {
-        $user = $this->user->with(['groups'])->find(Request::user()->id);
-        $trashed = $this->user->with(['trashedGroups'])->find(Request::user()->id);
+        $user = $this->userContract->with('groups')->find(request()->user()->id);
+        $trashed = $this->userContract->with('trashedGroups')->find(request()->user()->id);
 
         return view('frontend.groups.index', compact('user', 'trashed'));
     }
@@ -57,7 +55,7 @@ class GroupsController extends Controller
      */
     public function create()
     {
-        $user = Request::user();
+        $user = request()->user();
 
         return view('frontend.groups.create', compact('user'));
     }
@@ -70,14 +68,14 @@ class GroupsController extends Controller
      */
     public function store(GroupFormRequest $request)
     {
-        $user = Request::user();
+        $user = request()->user();
 
-        $group = $this->groupService->repository->create(['user_id' => $user->id, 'title' => $request->get('title')]);
+        $group = $this->groupService->groupContract->create(['user_id' => $user->id, 'title' => $request->get('title')]);
 
         if ($group) {
             $user->assignGroup($group);
 
-            Event::fire('group.saved');
+            event('group.saved');
 
             session_flash_push('success', trans('groups.created'));
 
@@ -97,13 +95,13 @@ class GroupsController extends Controller
      */
     public function show($id)
     {
-        $user = Request::user();
+        $user = request()->user();
         $with = [
             'projects',
             'owner.profile',
             'users.profile'
         ];
-        $group = $this->groupService->repository->with($with)->find($id);
+        $group = $this->groupService->groupContract->with($with)->find($id);
 
         if ($user->cannot('show', $group))
         {
@@ -124,8 +122,8 @@ class GroupsController extends Controller
      */
     public function edit($id)
     {
-        $user = Request::user();
-        $group = $this->groupService->repository->with(['owner'])->find($id);
+        $user = request()->user();
+        $group = $this->groupService->groupContract->with('owner')->find($id);
         $users = $this->groupService->getGroupUsersSelect($group->id);
 
         if ($user->cannot('update', $group))
@@ -147,9 +145,9 @@ class GroupsController extends Controller
      */
     public function update(GroupFormRequest $request, $groupId)
     {
-        $user = Request::user();
+        $user = request()->user();
 
-        $group = $this->groupService->repository->find($groupId);
+        $group = $this->groupService->groupContract->find($groupId);
 
         if ($user->cannot('update', $group))
         {
@@ -158,9 +156,9 @@ class GroupsController extends Controller
             return redirect()->route('web.groups.index');
         }
 
-        $this->groupService->repository->update($request->all(), $group->id);
+        $this->groupService->groupContract->update($group->id, $request->all());
 
-        Event::fire('group.saved');
+        event('group.saved');
 
         session_flash_push('success', trans('groups.updated'));
 
@@ -176,9 +174,9 @@ class GroupsController extends Controller
      */
     public function delete(ModelDeleteService $service, $id)
     {
-        $group = $service->groupService->repository->find($id);
+        $group = $service->groupService->groupContract->find($id);
 
-        if (Request::user()->cannot('delete', $group))
+        if (request()->user()->cannot('delete', $group))
         {
             session_flash_push('warning', trans('pages.insufficient_permissions'));
 
@@ -201,9 +199,9 @@ class GroupsController extends Controller
      */
     public function destroy(ModelDestroyService $service, $groupId)
     {
-        $group = $this->groupService->repository->trashed($groupId);
+        $group = $this->groupService->groupContract->onlyTrashed($groupId);
 
-        if ( ! $this->checkPermissions(Request::user(), [$group], 'delete'))
+        if ( ! $this->checkPermissions(request()->user(), [$group], 'delete'))
         {
             return redirect()->route('web.groups.index');
         }

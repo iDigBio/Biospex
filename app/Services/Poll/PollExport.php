@@ -3,7 +3,6 @@
 namespace App\Services\Poll;
 
 use App\Events\PollExportEvent;
-use Illuminate\Events\Dispatcher;
 
 class PollExport
 {
@@ -11,17 +10,12 @@ class PollExport
     /**
      * @var
      */
-    protected $total;
+    private $total;
 
     /**
      * @var int
      */
-    protected $count = 0;
-
-    /**
-     * @var Dispatcher
-     */
-    private $dispatcher;
+    private $count = 0;
 
     /**
      * @var
@@ -33,14 +27,6 @@ class PollExport
      */
     private $groupUuid;
 
-    /**
-     * PollExport constructor.
-     * @param Dispatcher $dispatcher
-     */
-    public function __construct(Dispatcher $dispatcher)
-    {
-        $this->dispatcher = $dispatcher;
-    }
 
     public function setGroupUuid($id)
     {
@@ -103,7 +89,7 @@ class PollExport
      */
     private function sendMessage($data = null)
     {
-        $this->dispatcher->fire(new PollExportEvent($data));
+        event(new PollExportEvent($data));
     }
 
 }

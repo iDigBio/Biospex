@@ -56,7 +56,7 @@ class ModelRestoreService
      */
     public function restoreUser($id)
     {
-        return $this->userService->repository->restore($id);
+        return $this->userService->userContract->restore($id);
     }
 
     /**
@@ -67,7 +67,7 @@ class ModelRestoreService
      */
     public function restoreGroup($id)
     {
-        return $this->groupService->repository->restore($id);
+        return $this->groupService->groupContract->restore($id);
     }
 
     /**
@@ -78,7 +78,7 @@ class ModelRestoreService
      */
     public function restoreProject($id)
     {
-        return $this->projectService->repository->restore($id);
+        return $this->projectService->projectContract->restore($id);
     }
 
     /**

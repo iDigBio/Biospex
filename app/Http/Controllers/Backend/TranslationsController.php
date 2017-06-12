@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Repositories\Contracts\User;
-use Illuminate\Http\Request;
+use App\Repositories\Contracts\UserContract;
 use App\Http\Controllers\Controller;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Support\Collection;
@@ -15,26 +14,19 @@ class TranslationsController extends Controller
     protected $manager;
 
     /**
-     * @var Request
+     * @var UserContract
      */
-    private $request;
-
-    /**
-     * @var User
-     */
-    private $repo;
+    private $userContract;
 
     /**
      * TranslationsController constructor.
      * @param Manager $manager
-     * @param Request $request
-     * @param User $repo
+     * @param UserContract $userContract
      */
-    public function __construct(Manager $manager, Request $request, User $repo)
+    public function __construct(Manager $manager, UserContract $userContract)
     {
         $this->manager = $manager;
-        $this->request = $request;
-        $this->repo = $repo;
+        $this->userContract = $userContract;
     }
 
     /**
@@ -45,7 +37,7 @@ class TranslationsController extends Controller
      */
     public function getIndex($group = null)
     {
-        $user = $this->repo->with(['profile'])->find($this->request->user()->id);
+        $user = $this->userContract->with('profile')->find(request()->user()->id);
 
         $locales = $this->loadLocales();
         $groups = Translation::groupBy('group');
@@ -116,14 +108,13 @@ class TranslationsController extends Controller
     /**
      * Add new keys and data.
      *
-     * @param Request $request
      * @param $group
      * @param null $sub_group
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postAdd(Request $request, $group, $sub_group = null)
+    public function postAdd($group, $sub_group = null)
     {
-        $keys = explode("\n", $request->get('keys'));
+        $keys = explode("\n", request()->get('keys'));
 
         if ($sub_group) {
             $group = $group . "/" . $sub_group;
@@ -141,16 +132,15 @@ class TranslationsController extends Controller
     /**
      * Edit keys and data.
      *
-     * @param Request $request
      * @param $group
      * @param null $sub_group
      * @return array
      */
-    public function postEdit(Request $request, $group, $sub_group = null)
+    public function postEdit($group, $sub_group = null)
     {
         if(!in_array($group, $this->manager->getConfig('exclude_groups'))) {
-            $name = $request->get('name');
-            $value = $request->get('value');
+            $name = request()->get('name');
+            $value = request()->get('value');
 
             list($locale, $key) = explode('|', $name, 2);
             $translation = Translation::firstOrNew([
@@ -184,12 +174,11 @@ class TranslationsController extends Controller
     /**
      * Import files.
      *
-     * @param Request $request
      * @return array
      */
-    public function postImport(Request $request)
+    public function postImport()
     {
-        $replace = $request->get('replace', false);
+        $replace = request()->get('replace', false);
         $counter = $this->manager->importTranslations($replace);
 
         return ['status' => 'ok', 'counter' => $counter];
@@ -234,7 +223,7 @@ class TranslationsController extends Controller
      */
     public function preview($id, $locale = null)
     {
-        $user = $this->repo->with(['profile'])->find($this->request->user()->id);
+        $user = $this->userContract->with('profile')->find(request()->user()->id);
         $translation = Translation::where('id', $id)->first();
 
         return view('backend.translations.preview', compact('user', 'translation'));

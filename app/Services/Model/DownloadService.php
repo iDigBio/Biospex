@@ -2,18 +2,16 @@
 
 namespace App\Services\Model;
 
-
-use App\Repositories\Contracts\Download;
+use App\Repositories\Contracts\DownloadContract;
 use App\Services\File\FileService;
-
 
 class DownloadService
 {
 
     /**
-     * @var Download
+     * @var DownloadContract
      */
-    private $download;
+    private $downloadContract;
 
     /**
      * @var FileService
@@ -22,12 +20,12 @@ class DownloadService
 
     /**
      * DownloadService constructor.
-     * @param Download $download
+     * @param DownloadContract $downloadContract
      * @param FileService $fileService
      */
-    public function __construct(Download $download, FileService $fileService)
+    public function __construct(DownloadContract $downloadContract, FileService $fileService)
     {
-        $this->download = $download;
+        $this->downloadContract = $downloadContract;
         $this->fileService = $fileService;
     }
 

@@ -1,4 +1,6 @@
-<?php namespace App\Services\Import;
+<?php 
+
+namespace App\Services\Import;
 
 class NfnTranscriptionImport extends ImportServiceAbstract
 {
@@ -11,7 +13,7 @@ class NfnTranscriptionImport extends ImportServiceAbstract
     public function import($id)
     {
         $validator = $this->validation->make(
-            ['file' => $this->request->file('transcription')],
+            ['file' => request()->file('transcription')],
             ['file' => 'required|mimes:txt']
         );
 
@@ -22,7 +24,7 @@ class NfnTranscriptionImport extends ImportServiceAbstract
         $this->setDirectory('config.transcription_import_dir');
 
         $filename = $this->moveFile('transcription');
-        $import = $this->importInsert($this->request->input('user_id'), $id, $filename);
+        $import = $this->importInsert(request()->input('user_id'), $id, $filename);
         $this->setTube('config.beanstalkd.import');
 
         $this->queue->push('App\Services\Queue\NfnTranscriptionQueue', ['id' => $import->id], $this->tube);

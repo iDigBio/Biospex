@@ -3,25 +3,25 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Facades\Toastr;
-use App\Repositories\Contracts\User;
-use Illuminate\Http\Request;
+use App\Repositories\Contracts\UserContract;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Config;
 use DOMDocument;
 
 class OcrController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param UserContract $userContract
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Request $request, User $repo)
+    public function index(UserContract $userContract)
     {
-        $user = $repo->with(['profile'])->find($request->user()->id);
+        $user = $userContract->with('profile')->find(request()->user()->id);
 
-        $html = file_get_contents(Config::get('config.ocr_get_url'));
+        $html = file_get_contents(config('config.ocr_get_url'));
 
         $dom = new DomDocument;
         libxml_use_internal_errors(true);
@@ -36,14 +36,13 @@ class OcrController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete(Request $request)
+    public function delete()
     {
-        if (count($request->get('files')) > 0)
+        if (count(request()->get('files')) > 0)
         {
-            $files = $request->get('files');
+            $files = request()->get('files');
 
             Artisan::call('ocrfile:delete', ['files' => $files]);
 

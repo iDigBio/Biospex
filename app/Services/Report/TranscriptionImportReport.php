@@ -1,5 +1,6 @@
-<?php namespace App\Services\Report;
+<?php
 
+namespace App\Services\Report;
 
 class TranscriptionImportReport extends Report
 {

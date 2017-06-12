@@ -3,7 +3,6 @@
 namespace App\Events;
 
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Support\Facades\Config;
 
 class PollOcrEvent extends Event implements ShouldBroadcast
 {
@@ -28,7 +27,7 @@ class PollOcrEvent extends Event implements ShouldBroadcast
      */
     public function onQueue()
     {
-        return Config::get('config.beanstalkd.event');
+        return config('config.beanstalkd.event');
     }
 
     /**
@@ -48,6 +47,6 @@ class PollOcrEvent extends Event implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return [Config::get('config.poll_ocr_channel')];
+        return [config('config.poll_ocr_channel')];
     }
 }

@@ -1,18 +1,20 @@
-<?php namespace App\Services\Grid;
+<?php
+
+namespace App\Services\Grid;
 
 use Illuminate\Support\Facades\Route;
-use App\Repositories\Contracts\Subject;
+use App\Repositories\Contracts\SubjectContract;
 use App\Repositories\Contracts\ExpeditionContract;
-use App\Repositories\Contracts\Header;
+use App\Repositories\Contracts\HeaderContract;
 use Exception;
 
 class JqGridJsonEncoder
 {
 
     /**
-     * @var Subject
+     * @var SubjectContract
      */
-    protected $subject;
+    protected $subjectContract;
 
     /**
      * @var ExpeditionContract
@@ -20,9 +22,9 @@ class JqGridJsonEncoder
     protected $expeditionContract;
 
     /**
-     * @var Header
+     * @var HeaderContract
      */
-    protected $header;
+    protected $headerContract;
 
     /**
      * @var
@@ -46,19 +48,19 @@ class JqGridJsonEncoder
 
     /**
      * JqGridJsonEncoder constructor.
-     * @param Subject $subject
+     * @param SubjectContract $subjectContract
      * @param ExpeditionContract $expeditionContract
-     * @param Header $header
+     * @param HeaderContract $headerContract
      */
     public function __construct(
-        Subject $subject,
+        SubjectContract $subjectContract,
         ExpeditionContract $expeditionContract,
-        Header $header
+        HeaderContract $headerContract
     )
     {
-        $this->subject = $subject;
+        $this->subjectContract = $subjectContract;
         $this->expeditionContract = $expeditionContract;
-        $this->header = $header;
+        $this->headerContract = $headerContract;
 
         $this->defaultGridVisible = config('config.defaultGridVisible');
         $this->defaultSubGridVisible = config('config.defaultSubGridVisible');
@@ -76,7 +78,10 @@ class JqGridJsonEncoder
 
         $this->route = $route;
 
-        $result = $this->header->skipCache()->where(['project_id' => $projectId])->first();
+        $result = $this->headerContract->setCacheLifetime(0)
+            ->where('project_id', '=', $projectId)
+            ->findFirst();
+
         if (empty($result))
         {
             $headers['image'] = [
@@ -243,7 +248,7 @@ class JqGridJsonEncoder
 
         $filters = $this->setFilters($postedData);
 
-        $count = $this->subject->getTotalNumberOfRows($filters, $route, $projectId, $expeditionId);
+        $count = $this->subjectContract->getTotalNumberOfRows($filters, $route, $projectId, $expeditionId);
 
         $limit = count($limit) === 0 ? $count : $limit;
 
@@ -262,7 +267,7 @@ class JqGridJsonEncoder
 
         if (empty($postedData['pivotRows']))
         {
-            $rows = $this->subject->getRows($limit, $start, $sidx, $sord, $filters);
+            $rows = $this->subjectContract->getRows($limit, $start, $sidx, $sord, $filters);
         }
         else
         {
@@ -311,7 +316,10 @@ class JqGridJsonEncoder
     {
         $subjectId = Route::input('subjects');
 
-        $row = $this->subject->skipCache()->where(['_id' => $subjectId])->first()->toArray();
+        $row = $this->subjectContract->setCacheLifetime(0)
+            ->where('_id', '=', $subjectId)
+            ->findFirst()
+            ->toArray();
 
         if ( ! $row)
         {
@@ -343,7 +351,7 @@ class JqGridJsonEncoder
         }
         else
         {
-            $this->subject->detachSubjects($data['ids'], $id);
+            $this->subjectContract->detachSubjects($data['ids'], $id);
         }
 
         $count = $expedition->getSubjectsCountAttribute();

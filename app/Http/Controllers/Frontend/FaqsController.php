@@ -3,33 +3,33 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\Faq;
-use App\Repositories\Contracts\FaqCategory;
+use App\Repositories\Contracts\FaqContract;
+use App\Repositories\Contracts\FaqCategoryContract;
 
 class FaqsController extends Controller
 {
 
     /**
-     * @var Faq
+     * @var FaqContract
      */
-    private $faq;
+    public $faqContract;
     
     /**
-     * @var FaqCategory
+     * @var FaqCategoryContract
      */
-    private $category;
+    public $faqCategoryContract;
 
     /**
      * FaqController constructor.
      *
-     * @param Faq $faq
-     * @param FaqCategory $category
+     * @param FaqContract $faqContract
+     * @param FaqCategoryContract $faqCategoryContract
      */
-    public function __construct(Faq $faq, FaqCategory $category)
+    public function __construct(FaqContract $faqContract, FaqCategoryContract $faqCategoryContract)
     {
 
-        $this->faq = $faq;
-        $this->category = $category;
+        $this->faqContract = $faqContract;
+        $this->faqCategoryContract = $faqCategoryContract;
     }
 
     /**
@@ -39,7 +39,10 @@ class FaqsController extends Controller
      */
     public function index()
     {
-        $categories = $this->category->skipCache()->with(['faqs'])->orderBy(['id' => 'asc'])->groupBy('id')->get();
+        $categories = $this->faqCategoryContract->setCacheLifetime(0)
+            ->with('faqs')
+            ->orderBy('id', 'asc')
+            ->groupBy('id')->findAll();
 
         return view('frontend.faqs.index', compact('categories'));
     }

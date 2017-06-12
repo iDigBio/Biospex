@@ -1,4 +1,6 @@
-<?php namespace App\Services\Report;
+<?php
+
+namespace App\Services\Report;
 
 class DarwinCoreImportReport extends Report
 {

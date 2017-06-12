@@ -1,12 +1,13 @@
-<?php namespace App\Services\Process;
+<?php 
+
+namespace App\Services\Process;
 
 use App\Exceptions\BiospexException;
 use App\Exceptions\DownloadFileException;
 use App\Exceptions\RequestException;
-use App\Repositories\Contracts\Import;
+use App\Repositories\Contracts\ImportContract;
 use App\Services\File\FileService;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Config;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Queue;
 
@@ -14,9 +15,9 @@ class RecordSet
 {
 
     /**
-     * @var Import
+     * @var ImportContract
      */
-    protected $import;
+    protected $importContract;
 
     /**
      * @var FileService
@@ -45,17 +46,17 @@ class RecordSet
     /**
      * Constructor.
      *
-     * @param Import $import
+     * @param ImportContract $importContract
      * @param FileService $fileService
      */
-    public function __construct(Import $import, FileService $fileService)
+    public function __construct(ImportContract $importContract, FileService $fileService)
     {
-        $this->import = $import;
+        $this->importContract = $importContract;
         $this->fileService = $fileService;
 
-        $this->tube = Config::get('config.beanstalkd.import');
-        $this->recordsetUrl = Config::get('config.recordset_url');
-        $this->importDir = Config::get('config.subject_import_dir');
+        $this->tube = config('config.beanstalkd.import');
+        $this->recordsetUrl = config('config.recordset_url');
+        $this->importDir = config('config.subject_import_dir');
     }
 
     /**
@@ -167,7 +168,7 @@ class RecordSet
      */
     protected function importInsert($filename)
     {
-        $import = $this->import->create([
+        $import = $this->importContract->create([
             'user_id'    => $this->data['user_id'],
             'project_id' => $this->data['project_id'],
             'file'       => $filename

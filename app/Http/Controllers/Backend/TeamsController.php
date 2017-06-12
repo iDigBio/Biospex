@@ -6,61 +6,56 @@ use App\Facades\Toastr;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TeamCategoryFormRequest;
 use App\Http\Requests\TeamFormRequest;
-use App\Repositories\Contracts\Team;
-use App\Repositories\Contracts\User;
-use Illuminate\Http\Request;
-use App\Repositories\Contracts\TeamCategory;
+use App\Repositories\Contracts\TeamContract;
+use App\Repositories\Contracts\UserContract;
+use App\Repositories\Contracts\TeamCategoryContract;
 
 class TeamsController extends Controller
 {
 
     /**
-     * @var Request
+     * @var UserContract
      */
-    private $request;
+    private $userContract;
 
     /**
-     * @var User
+     * @var TeamCategoryContract
      */
-    private $user;
+    private $teamCategoryContract;
 
     /**
-     * @var TeamCategory
+     * @var TeamContract
      */
-    private $category;
-
-    /**
-     * @var Team
-     */
-    private $team;
+    private $teamContract;
 
     /**
      * TeamsController constructor.
      *
-     * @param Request $request
-     * @param User $user
-     * @param TeamCategory $category
-     * @param Team $team
+     * @param UserContract $userContract
+     * @param TeamCategoryContract $teamCategoryContract
+     * @param TeamContract $teamContract
      */
-    public function __construct(Request $request, User $user, TeamCategory $category, Team $team)
+    public function __construct(
+        UserContract $userContract,
+        TeamCategoryContract $teamCategoryContract,
+        TeamContract $teamContract
+    )
     {
-        $this->request = $request;
-        $this->user = $user;
-        $this->category = $category;
-        $this->team = $team;
+        $this->userContract = $userContract;
+        $this->teamCategoryContract = $teamCategoryContract;
+        $this->teamContract = $teamContract;
     }
 
     /**
      * Show team forms and list by category.
      *
-     * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Request $request)
+    public function index()
     {
-        $user = $this->user->with(['profile'])->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->category->pluck('name', 'id')->toArray();
-        $categories = $this->category->with(['teams'])->groupBy('id')->get();
+        $user = $this->userContract->with('profile')->find(request()->user()->id);
+        $select = [null => 'Please Select'] + $this->teamCategoryContract->pluck('name', 'id')->toArray();
+        $categories = $this->teamCategoryContract->with(['teams'])->groupBy('id')->findAll();
         $categoryId = null;
         $teamId = null;
 
@@ -70,15 +65,14 @@ class TeamsController extends Controller
     /**
      * Show create forms for team category and members.
      *
-     * @param Request $request
      * @param $categoryId
      * @return mixed
      */
-    public function create(Request $request, $categoryId)
+    public function create($categoryId)
     {
-        $user = $this->user->with(['profile'])->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->category->pluck('name', 'id')->toArray();
-        $categories = $this->category->with(['teams'])->groupBy('id')->get();
+        $user = $this->userContract->with('profile')->find(request()->user()->id);
+        $select = [null => 'Please Select'] + $this->teamCategoryContract->pluck('name', 'id')->toArray();
+        $categories = $this->teamCategoryContract->with('teams')->groupBy('id')->findAll();
 
         return view('backend.teams.index', compact('user', 'categories', 'select', 'categoryId'));
     }
@@ -91,7 +85,7 @@ class TeamsController extends Controller
      */
     public function store(TeamFormRequest $request)
     {
-        $team = $this->team->create($request->all());
+        $team = $this->teamContract->create($request->all());
 
         $team ?
             Toastr::success('Team member has been created successfully.', 'Team Member Create') :
@@ -108,7 +102,7 @@ class TeamsController extends Controller
      */
     public function storeCategory(TeamCategoryFormRequest $request)
     {
-        $category = $this->category->create(['name' => $request->get('name')]);
+        $category = $this->teamCategoryContract->create(['name' => $request->get('name')]);
 
         $category ?
             Toastr::success('Team category has been created successfully.', 'Team Category Create') :
@@ -120,17 +114,16 @@ class TeamsController extends Controller
     /**
      * Edit team.
      *
-     * @param Request $request
      * @param $categoryId
      * @param $teamId
      * @return mixed
      */
-    public function edit(Request $request, $categoryId, $teamId)
+    public function edit($categoryId, $teamId)
     {
-        $user = $this->user->with(['profile'])->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->category->pluck('name', 'id')->toArray();
-        $categories = $this->category->with(['teams'])->groupBy('id')->get();
-        $team = $this->team->find($teamId);
+        $user = $this->userContract->with('profile')->find(request()->user()->id);
+        $select = [null => 'Please Select'] + $this->teamCategoryContract->pluck('name', 'id')->toArray();
+        $categories = $this->teamCategoryContract->with('teams')->groupBy('id')->findAll();
+        $team = $this->teamContract->find($teamId);
 
         return view('backend.teams.index', compact('user', 'categories', 'select', 'categoryId', 'team'));
     }
@@ -145,7 +138,7 @@ class TeamsController extends Controller
      */
     public function update(TeamFormRequest $request, $categoryId, $teamId)
     {
-        $team = $this->team->update($request->all(), $teamId);
+        $team = $this->teamContract->update($teamId, $request->all());
 
         $team ? Toastr::success('Team member has been updated successfully.', 'Team Member Update') :
             Toastr::error('Team member could not be updated.', 'Team Member Update');
@@ -156,17 +149,16 @@ class TeamsController extends Controller
     /**
      * Edit Category.
      *
-     * @param Request $request
      * @param $categoryId
      * @param $teamId
      * @return mixed
      */
-    public function editCategory(Request $request, $categoryId, $teamId)
+    public function editCategory($categoryId, $teamId)
     {
-        $user = $this->user->with(['profile'])->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->category->pluck('name', 'id')->toArray();
-        $categories = $this->category->with(['teams'])->groupBy('id')->get();
-        $category = $this->category->find($categoryId);
+        $user = $this->userContract->with('profile')->find(request()->user()->id);
+        $select = [null => 'Please Select'] + $this->teamCategoryContract->pluck('name', 'id')->toArray();
+        $categories = $this->teamCategoryContract->with('teams')->groupBy('id')->findAll();
+        $category = $this->teamCategoryContract->find($categoryId);
 
         return view('backend.teams.index', compact('user', 'select', 'category', 'categories', 'categoryId', 'teamId'));
     }
@@ -180,7 +172,7 @@ class TeamsController extends Controller
      */
     public function updateCategory(TeamCategoryFormRequest $request, $categoryId)
     {
-        $category = $this->category->update(['name' => $request->get('name')], $categoryId);
+        $category = $this->teamCategoryContract->update($categoryId, ['name' => $request->get('name')]);
 
         $category ? Toastr::success('Team category has been updated successfully.', 'Team Category Update')
             : Toastr::error('Team category could not be updated.', 'Team Category Update');
@@ -199,13 +191,13 @@ class TeamsController extends Controller
     {
         if ((int) $teamId === 0)
         {
-            $result = $this->category->delete($categoryId);
+            $result = $this->teamCategoryContract->delete($categoryId);
             $result ? Toastr::success('The category and all team members have been deleted.', 'Team Category Delete')
                 : Toastr::error('Team category could not be deleted.', 'Team Category Delete');
         }
         else
         {
-            $result = $this->team->delete($teamId);
+            $result = $this->teamContract->delete($teamId);
             $result ? Toastr::success('The team member has been deleted.', 'Team Member Delete')
                 : Toastr::error('The team member could not be deleted.', 'Team Member Delete');
         }

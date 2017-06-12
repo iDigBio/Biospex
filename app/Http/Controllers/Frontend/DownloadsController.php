@@ -7,8 +7,6 @@ use App\Exceptions\BiospexException;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\UserContract;
-use Event;
-use Illuminate\Http\Request;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Repositories\Contracts\DownloadContract;
 use Queue;
@@ -19,26 +17,22 @@ class DownloadsController extends Controller
     /**
      * @var ExpeditionContract
      */
-    protected $expeditionContract;
+    public $expeditionContract;
 
     /**
      * @var DownloadContract
      */
-    protected $downloadContract;
-
-    /**
-     * @var Request
-     */
-    protected $request;
+    public $downloadContract;
 
     /**
      * @var ResponseFactory
      */
-    protected $response;
+    public $response;
+
     /**
      * @var UserContract
      */
-    private $userContract;
+    public $userContract;
 
     /**
      * DownloadsController constructor.
@@ -46,7 +40,6 @@ class DownloadsController extends Controller
      * @param ExpeditionContract $expeditionContract
      * @param DownloadContract $downloadContract
      * @param UserContract $userContract
-     * @param Request $request
      * @param ResponseFactory $response
      * @internal param ResponseFactory $response0
      */
@@ -54,12 +47,10 @@ class DownloadsController extends Controller
         ExpeditionContract $expeditionContract,
         DownloadContract $downloadContract,
         UserContract $userContract,
-        Request $request,
         ResponseFactory $response
     ) {
         $this->expeditionContract = $expeditionContract;
         $this->downloadContract = $downloadContract;
-        $this->request = $request;
         $this->response = $response;
         $this->userContract = $userContract;
     }
@@ -73,7 +64,7 @@ class DownloadsController extends Controller
      */
     public function index($projectId, $expeditionId)
     {
-        $user = $this->userContract->with('profile')->find($this->request->user()->id);
+        $user = $this->userContract->with('profile')->find(request()->user()->id);
         $expedition = $this->expeditionContract->with(['project.group', 'downloads.actor'])->find($expeditionId);
 
         return view('frontend.downloads.index', compact('expedition', 'user'));
@@ -124,8 +115,8 @@ class DownloadsController extends Controller
 
         try
         {
-            Event::fire('actor.pivot.regenerate', [$expedition->nfnActor, $expedition->stat->subject_count]);
-            Queue::push('App\Services\Queue\ActorQueue', serialize($expedition->nfnActor->first()), config('config.beanstalkd.export'));
+            event('actor.pivot.regenerate', [$expedition->nfnActor, $expedition->stat->subject_count]);
+            Queue::push('App\Services\Queue\ActorQueue', serialize($expedition->nfnActor), config('config.beanstalkd.export'));
 
             session_flash_push('success', trans('expeditions.download_regeneration_success'));
         }

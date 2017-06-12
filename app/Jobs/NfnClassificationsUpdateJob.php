@@ -8,7 +8,6 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\Config;
 
 class NfnClassificationsUpdateJob extends Job implements ShouldQueue
 {
@@ -63,7 +62,7 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
 
         $projectIds = array_values(array_unique($projectIds));
 
-        $this->dispatch((new AmChartJob($projectIds))->onQueue(Config::get('config.beanstalkd.chart')));
+        $this->dispatch((new AmChartJob($projectIds))->onQueue(config('config.beanstalkd.chart')));
 
         $this->dispatch((new NfnClassificationsFusionTableJob($projectIds))->onQueue(config('config.beanstalkd.classification')));
 

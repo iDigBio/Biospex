@@ -11,9 +11,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Config;
-use App\Repositories\Contracts\OcrCsv;
-use App\Repositories\Contracts\OcrQueue;
+use App\Repositories\Contracts\OcrCsvContract;
+use App\Repositories\Contracts\OcrQueueContract;
 use MongoCollection;
 
 class BuildOcrBatchesJob extends Job implements ShouldQueue
@@ -51,19 +50,19 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
     /**
      * Handle Job.
      *
-     * @param OcrQueue $ocrQueueRepo
-     * @param OcrCsv $ocrCsvRepo
+     * @param OcrQueueContract $ocrQueueRepo
+     * @param OcrCsvContract $ocrCsvRepo
      * @throws OcrBatchProcessException
      */
     public function handle(
-        OcrQueue $ocrQueueRepo,
-        OcrCsv $ocrCsvRepo
+        OcrQueueContract $ocrQueueRepo,
+        OcrCsvContract $ocrCsvRepo
     )
     {
         try
         {
 
-            if (Config::get('config.ocr_disable'))
+            if (config('config.ocr_disable'))
             {
                 return;
             }
@@ -141,7 +140,9 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
     protected function setCollection()
     {
         $databaseManager = app(DatabaseManager::class);
-        $db = $databaseManager->connection('mongodb')->getMongoClient()->selectDB(Config::get('database.connections.mongodb.database'));
+        $db = $databaseManager->connection('mongodb')
+            ->getMongoClient()
+            ->selectDB(config('database.connections.mongodb.database'));
 
         return new MongoCollection($db, 'subjects');
     }
@@ -154,7 +155,7 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
     protected function buildOcrQueueData($doc)
     {
         $this->ocrData[(string) $doc['_id']] = [
-            'crop'   => Config::get('config.ocr_crop'),
+            'crop'   => config('config.ocr_crop'),
             'ocr'    => '',
             'status' => 'pending',
             'url'    => $doc['accessURI']
@@ -168,6 +169,6 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
      */
     protected function getChunkQueueData()
     {
-        return 0 === count($this->ocrData) ? [] : array_chunk($this->ocrData, Config::get('config.ocr_chunk'), true);
+        return 0 === count($this->ocrData) ? [] : array_chunk($this->ocrData, config('config.ocr_chunk'), true);
     }
 }

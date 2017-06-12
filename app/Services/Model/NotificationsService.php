@@ -2,18 +2,17 @@
 
 namespace App\Services\Model;
 
-
 use App\Exceptions\BiospexException;
-use App\Repositories\Contracts\Notification;
+use App\Repositories\Contracts\NotificationContract;
 use App\Exceptions\Handler;
 
 class NotificationsService
 {
 
     /**
-     * @var Notification
+     * @var NotificationContract
      */
-    public $repo;
+    public $notificationContract;
 
     /**
      * @var Handler
@@ -22,12 +21,12 @@ class NotificationsService
 
     /**
      * NotificationsService constructor.
-     * @param Notification $repo
+     * @param NotificationContract $notificationContract
      * @param Handler $handler
      */
-    public function __construct(Notification $repo, Handler $handler)
+    public function __construct(NotificationContract $notificationContract, Handler $handler)
     {
-        $this->repo = $repo;
+        $this->notificationContract = $notificationContract;
         $this->handler = $handler;
     }
 
@@ -41,7 +40,7 @@ class NotificationsService
     {
         try
         {
-            return $this->repo->delete($id);
+            return $this->notificationContract->delete($id);
         }
         catch (BiospexException $e)
         {
@@ -61,7 +60,7 @@ class NotificationsService
     {
         try
         {
-            return $this->repo->restore($id);
+            return $this->notificationContract->restore($id);
         }
         catch (BiospexException $e)
         {
@@ -81,7 +80,7 @@ class NotificationsService
     {
         try
         {
-            return $this->repo->forceDelete($id);
+            return $this->notificationContract->forceDelete($id);
         }
         catch (BiospexException $e)
         {

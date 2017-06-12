@@ -3,34 +3,32 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\User;
+use App\Repositories\Contracts\UserContract;
 use App\Http\Requests\EditUserFormRequest;
-use Illuminate\Http\Request;
 
 class UsersController extends Controller
 {
 
     /**
-     * @var User
+     * @var UserContract
      */
-    public $user;
+    public $userContract;
 
     /**
      * UsersController constructor.
-     * @param User $user
+     * @param UserContract $userContract
      */
-    public function __construct(User $user)
+    public function __construct(UserContract $userContract)
     {
-        $this->user = $user;
+        $this->userContract = $userContract;
     }
 
     /**
-     * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function index(Request $request)
+    public function index()
     {
-        return redirect()->route('web.users.edit', [$request->user()->id]);
+        return redirect()->route('web.users.edit', [request()->user()->id]);
     }
 
     /**
@@ -52,7 +50,7 @@ class UsersController extends Controller
      */
     public function edit($id)
     {
-        $user = $this->user->with(['profile'])->find($id);
+        $user = $this->userContract->with('profile')->find($id);
 
         if ($user->cannot('update', $user))
         {
@@ -75,7 +73,7 @@ class UsersController extends Controller
      */
     public function update(EditUserFormRequest $request, $users)
     {
-        $user = $this->user->skipCache()->with(['profile'])->find($users);
+        $user = $this->userContract->setCacheLifetime(0)->with('profile')->find($users);
 
         if ($user->cannot('update', $user))
         {
@@ -84,7 +82,7 @@ class UsersController extends Controller
             return redirect()->route('web.projects.index');
         }
 
-        $result = $this->user->update($request->all(), $user->id);
+        $result = $this->userContract->update($user->id, $request->all());
 
         $user->profile->fill($request->all());
         $user->profile()->save($user->profile);

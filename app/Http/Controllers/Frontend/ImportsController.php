@@ -3,43 +3,33 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Services\Import\ImportServiceFactory;
-use App\Repositories\Contracts\Project;
+use App\Repositories\Contracts\ProjectContract;
 
 class ImportsController extends Controller
 {
 
     /**
-     * @var Project
+     * @var ProjectContract
      */
-    protected $project;
+    public $projectContract;
 
     /**
      * @var ImportServiceFactory
      */
-    protected $importFactory;
-
-    /**
-     * @var Request
-     */
-    protected $request;
-
+    public $importFactory;
 
     /**
      * ImportsController constructor.
      * @param ImportServiceFactory $importFactory
-     * @param Project $project
-     * @param Request $request
+     * @param ProjectContract $projectContract
      */
     public function __construct(
         ImportServiceFactory $importFactory,
-        Project $project,
-        Request $request
+        ProjectContract $projectContract
     ) {
-        $this->project = $project;
+        $this->projectContract = $projectContract;
         $this->importFactory = $importFactory;
-        $this->request = $request;
     }
 
     /**
@@ -50,7 +40,7 @@ class ImportsController extends Controller
      */
     public function import($id)
     {
-        $project = $this->project->with(['group'])->find($id);
+        $project = $this->projectContract->with('group')->find($id);
 
         return view('frontend.projects.add', compact('project'));
     }
@@ -63,7 +53,7 @@ class ImportsController extends Controller
      */
     public function upload($id)
     {
-        $obj = $this->importFactory->create($this->request->input('class'));
+        $obj = $this->importFactory->create(request()->input('class'));
         if (! $obj) {
             session_flash_push('error', trans('pages.bad_type'));
 

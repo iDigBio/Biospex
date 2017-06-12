@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\User;
+use App\Repositories\Contracts\UserContract;
 
 class DashboardController extends Controller
 {
@@ -10,12 +10,12 @@ class DashboardController extends Controller
      * Show the application dashboard.
      * 
      * @param Request $request
-     * @param User $repo
+     * @param UserContract $userContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Request $request, User $repo)
+    public function index(Request $request, UserContract $userContract)
     {
-        $user = $repo->with(['profile'])->find($request->user()->id);
+        $user = $userContract->with('profile')->find($request->user()->id);
 
         return view('backend.index', compact('user'));
     }

@@ -1,14 +1,15 @@
-<?php namespace App\Services\Queue;
+<?php 
+
+namespace App\Services\Queue;
 
 use App\Exceptions\BiospexException;
 use App\Exceptions\DownloadFileException;
 use App\Exceptions\FileSaveException;
 use App\Exceptions\FileTypeException;
-use App\Repositories\Contracts\Import;
-use App\Repositories\Contracts\Project;
+use App\Repositories\Contracts\ImportContract;
+use App\Repositories\Contracts\ProjectContract;
 use App\Services\Report\Report;
 use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
 use finfo;
 use App\Exceptions\Handler;
@@ -17,11 +18,11 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
 {
 
     protected $filesystem;
-    protected $import;
+    protected $importContract;
     protected $report;
     protected $importDir;
     protected $tube;
-    protected $project;
+    protected $projectContract;
 
     /**
      * @var Handler
@@ -32,32 +33,32 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
      * DarwinCoreUrlImportQueue constructor.
      *
      * @param Filesystem $filesystem
-     * @param Import $import
+     * @param ImportContract $importContract
      * @param Report $report
-     * @param Project $project
+     * @param ProjectContract $projectContract
      * @param Handler $handler
      */
     public function __construct(
         Filesystem $filesystem,
-        Import $import,
+        ImportContract $importContract,
         Report $report,
-        Project $project,
+        ProjectContract $projectContract,
         Handler $handler
     )
     {
         $this->filesystem = $filesystem;
-        $this->import = $import;
+        $this->importContract = $importContract;
         $this->report = $report;
-        $this->project = $project;
+        $this->projectContract = $projectContract;
         $this->handler = $handler;
 
-        $this->importDir = Config::get('config.subject_import_dir');
+        $this->importDir = config('config.subject_import_dir');
         if (!$this->filesystem->isDirectory($this->importDir))
         {
             $this->filesystem->makeDirectory($this->importDir);
         }
 
-        $this->tube = Config::get('config.beanstalkd.import');
+        $this->tube = config('config.beanstalkd.import');
     }
 
     /**
@@ -78,7 +79,7 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
         }
         catch (BiospexException $e)
         {
-            $project = $this->project->with(['group.owner'])->find($this->data['project_id']);
+            $project = $this->projectContract->with('group.owner')->find($this->data['project_id']);
 
             $this->report->addError(trans('errors.import_process', [
                 'title'   => $project->title,
@@ -158,7 +159,7 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
      */
     protected function importInsert($filename)
     {
-        $import = $this->import->create([
+        $import = $this->importContract->create([
             'user_id'    => $this->data['user_id'],
             'project_id' => $this->data['id'],
             'file'       => $filename

@@ -6,39 +6,45 @@ use App\Facades\Toastr;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FaqCategoryFormRequest;
 use App\Http\Requests\FaqFormRequest;
-use App\Repositories\Contracts\FaqCategory;
-use App\Repositories\Contracts\User;
+use App\Repositories\Contracts\FaqCategoryContract;
+use App\Repositories\Contracts\UserContract;
 use Illuminate\Http\Request;
-use App\Repositories\Contracts\Faq;
+use App\Repositories\Contracts\FaqContract;
 
 class FaqsController extends Controller
 {
 
     /**
-     * @var Faq
+     * @var FaqContract
      */
-    private $faq;
+    private $faqContract;
+
     /**
-     * @var FaqCategory
+     * @var FaqCategoryContract
      */
-    private $category;
+    private $faqCategoryContract;
+
     /**
-     * @var User
+     * @var UserContract
      */
-    private $user;
+    private $userContract;
 
     /**
      * FaqController constructor.
      *
-     * @param FaqCategory $category
-     * @param Faq $faq
-     * @param User $user
+     * @param FaqCategoryContract $faqCategoryContract
+     * @param FaqContract $faqContract
+     * @param UserContract $userContract
      */
-    public function __construct(FaqCategory $category, Faq $faq, User $user)
+    public function __construct(
+        FaqCategoryContract $faqCategoryContract,
+        FaqContract $faqContract,
+        UserContract $userContract
+    )
     {
-        $this->category = $category;
-        $this->faq = $faq;
-        $this->user = $user;
+        $this->faqCategoryContract = $faqCategoryContract;
+        $this->faqContract = $faqContract;
+        $this->userContract = $userContract;
     }
 
     /**
@@ -49,9 +55,9 @@ class FaqsController extends Controller
      */
     public function index(Request $request)
     {
-        $user = $this->user->with(['profile'])->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->category->pluck('name', 'id')->toArray();
-        $categories = $this->category->with(['faqs'])->groupBy('id')->get();
+        $user = $this->userContract->with('profile')->find($request->user()->id);
+        $select = [null => 'Please Select'] + $this->faqCategoryContract->pluck('name', 'id')->toArray();
+        $categories = $this->faqCategoryContract->with('faqs')->groupBy('id')->findAll();
         $categoryId = null;
         $faqId = null;
 
@@ -67,9 +73,9 @@ class FaqsController extends Controller
      */
     public function create(Request $request, $categoryId)
     {
-        $user = $this->user->with(['profile'])->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->category->pluck('name', 'id')->toArray();
-        $categories = $this->category->with(['faqs'])->groupBy('id')->get();
+        $user = $this->userContract->with('profile')->find($request->user()->id);
+        $select = [null => 'Please Select'] + $this->faqCategoryContract->pluck('name', 'id')->toArray();
+        $categories = $this->faqCategoryContract->with('faqs')->groupBy('id')->findAll();
 
         return view('backend.faqs.index', compact('user', 'categories', 'select', 'categoryId'));
     }
@@ -82,7 +88,7 @@ class FaqsController extends Controller
      */
     public function store(FaqFormRequest $request)
     {
-        $faq = $this->faq->create($request->all());
+        $faq = $this->faqContract->create($request->all());
 
         $faq ? Toastr::success('FAQ has been created successfully.', 'FAQ Create') : Toastr::error('FAQ could not be saved.', 'FAQ Create');
 
@@ -97,7 +103,7 @@ class FaqsController extends Controller
      */
     public function storeCategory(FaqCategoryFormRequest $request)
     {
-        $category = $this->category->create(['name' => $request->get('name')]);
+        $category = $this->faqCategoryContract->create(['name' => $request->get('name')]);
 
         $category ? Toastr::success('Category has been created successfully.', 'Category Create') : Toastr::error('Category could not be saved.', 'Category Create');
 
@@ -114,10 +120,10 @@ class FaqsController extends Controller
      */
     public function edit(Request $request, $categoryId, $faqId)
     {
-        $user = $this->user->with(['profile'])->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->category->pluck('name', 'id')->toArray();
-        $categories = $this->category->with(['faqs'])->groupBy('id')->get();
-        $faq = $this->faq->find($faqId);
+        $user = $this->userContract->with('profile')->find($request->user()->id);
+        $select = [null => 'Please Select'] + $this->faqCategoryContract->pluck('name', 'id')->toArray();
+        $categories = $this->faqCategoryContract->with('faqs')->groupBy('id')->findAll();
+        $faq = $this->faqCategoryContract->find($faqId);
 
         return view('backend.faqs.index', compact('user', 'categories', 'select', 'categoryId', 'faq'));
     }
@@ -132,7 +138,7 @@ class FaqsController extends Controller
      */
     public function update(FaqFormRequest $request, $categoryId, $faqId)
     {
-        $result = $this->faq->update($request->all(), $faqId);
+        $result = $this->faqContract->update($faqId, $request->all());
 
         $result ? Toastr::success('FAQ has been updated successfully.', 'FAQ Update')
             : Toastr::error('FAQ could not be updated.', 'FAQ Update');
@@ -150,10 +156,10 @@ class FaqsController extends Controller
      */
     public function editCategory(Request $request, $categoryId, $faqId)
     {
-        $user = $this->user->with(['profile'])->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->category->pluck('name', 'id')->toArray();
-        $categories = $this->category->with(['faqs'])->groupBy('id')->get();
-        $category = $this->category->find($categoryId);
+        $user = $this->userContract->with('profile')->find($request->user()->id);
+        $select = [null => 'Please Select'] + $this->faqCategoryContract->pluck('name', 'id')->toArray();
+        $categories = $this->faqCategoryContract->with('faqs')->groupBy('id')->findAll();
+        $category = $this->faqCategoryContract->find($categoryId);
 
         return view('backend.faqs.index', compact('user', 'select', 'category', 'categories', 'categoryId', 'faqId'));
     }
@@ -167,7 +173,7 @@ class FaqsController extends Controller
      */
     public function updateCategory(FaqCategoryFormRequest $request, $categoryId)
     {
-        $result = $this->category->update(['name' => $request->get('name')], $categoryId);
+        $result = $this->faqCategoryContract->update($categoryId, ['name' => $request->get('name')]);
 
         $result ? Toastr::success('Category has been updated successfully.', 'Category Update')
             : Toastr::error('Category could not be updated.', 'Category Update');
@@ -187,7 +193,7 @@ class FaqsController extends Controller
     {
         if ((int) $faqId === 0)
         {
-            $result = $this->category->delete($categoryId);
+            $result = $this->faqCategoryContract->delete($categoryId);
             $result ? Toastr::success('The category and all faqs have been deleted.', 'Category Delete')
                 : Toastr::error('Category could not be deleted.', 'Category Delete');
         }
