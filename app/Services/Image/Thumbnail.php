@@ -1,4 +1,6 @@
-<?php namespace App\Services\Image;
+<?php
+
+namespace App\Services\Image;
 
 use App\Exceptions\BiospexException;
 use App\Exceptions\Handler;
@@ -9,15 +11,35 @@ use RuntimeException;
 
 class Thumbnail extends ImagickService
 {
-
     /**
      * @var FileService
      */
-    private $fileService;
+    public $fileService;
+
     /**
      * @var Handler
      */
-    private $handler;
+    public $handler;
+
+    /**
+     * @var mixed
+     */
+    public $defaultThumbImg;
+
+    /**
+     * @var mixed
+     */
+    public $tnWidth;
+
+    /**
+     * @var mixed
+     */
+    public $tnHeight;
+
+    /**
+     * @var string
+     */
+    public $thumbDirectory;
 
     /**
      * Thumbnail constructor.
