@@ -32,4 +32,13 @@ interface ExportQueueContract extends RepositoryContract, CacheableContract
      */
     public function findByIdExpeditionActor($queueId, $expeditionId, $actorId, array $attributes = ['*']);
 
+    /**
+     * @param $queueId
+     * @param $expeditionId
+     * @param $actorId
+     * @param array $attributes
+     * @return mixed
+     */
+    public function findQueueProcessData($queueId, $expeditionId, $actorId, array $attributes = ['*']);
+
 }

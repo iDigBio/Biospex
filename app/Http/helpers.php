@@ -390,3 +390,16 @@ function get_state($input)
 
     return null;
 }
+
+/**
+ * Turn camel case to words with spacing.
+ *
+ * @param $string
+ * @return string
+ */
+function camelCaseToWords($string)
+{
+    $split_data = preg_split('/(?=[A-Z])/', $string);
+
+    return ucwords(implode(' ', $split_data));
+}

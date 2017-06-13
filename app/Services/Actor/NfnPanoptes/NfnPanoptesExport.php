@@ -43,11 +43,6 @@ class NfnPanoptesExport
     /**
      * @var mixed
      */
-    private $stage;
-
-    /**
-     * @var mixed
-     */
     private $nfnCsvMap;
 
     /**
@@ -64,6 +59,18 @@ class NfnPanoptesExport
      * @var ActorServiceConfig
      */
     private $config;
+
+    /**
+     * @var mixed
+     */
+    public $stage = [
+        'retrieveImages',
+        'convertImages',
+        'buildCsv',
+        'tarImages',
+        'compressImages',
+        'emailReport',
+    ];
 
     /**
      * NfnPanoptesExport constructor.
@@ -87,15 +94,6 @@ class NfnPanoptesExport
         $this->actorImageService = $actorImageService;
         $this->fileService = $fileService;
         $this->report = $report;
-
-        $this->stage = [
-            'retrieve',
-            'convert',
-            'csv',
-            'tar',
-            'compress',
-            'report',
-        ];
 
         $this->nfnCsvMap = config('config.nfnCsvMap');
     }
@@ -159,7 +157,7 @@ class NfnPanoptesExport
      *
      * @throws ActorException
      */
-    public function retrieve()
+    public function retrieveImages()
     {
         $subjects = $this->actorRepositoryService->getSubjectsByExpeditionId();
         if ($subjects->isEmpty())
@@ -180,7 +178,7 @@ class NfnPanoptesExport
      *
      * @throws ActorException
      */
-    public function convert()
+    public function convertImages()
     {
         try
         {
@@ -211,7 +209,7 @@ class NfnPanoptesExport
      *
      * @throws ActorException
      */
-    public function csv()
+    public function buildCsv()
     {
         $subjects = $this->actorRepositoryService->getSubjectsByExpeditionId();
         if ($subjects->isEmpty())
@@ -244,7 +242,7 @@ class NfnPanoptesExport
     /**
      * Create tar file.
      */
-    public function tar()
+    public function tarImages()
     {
         $this->config->archivePhar->buildFromDirectory($this->config->tmpDirectory);
 
@@ -256,7 +254,7 @@ class NfnPanoptesExport
     /**
      * Compress and move.
      */
-    public function compress()
+    public function compressImages()
     {
         $this->config->archivePhar->compress(\Phar::GZ); // copies to /path/to/my.tar.gz
         $this->fileService->filesystem->move($this->config->archiveTarGzPath, $this->config->archiveExportPath);
@@ -279,7 +277,7 @@ class NfnPanoptesExport
     /**
      * Send report and clean up directories.
      */
-    public function report()
+    public function emailReport()
     {
         $project = $this->actorRepositoryService->getProjectGroupById();
         $this->fileService->filesystem->deleteDirectory($this->config->workingDirectory);

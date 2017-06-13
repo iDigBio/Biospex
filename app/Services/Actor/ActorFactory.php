@@ -8,13 +8,15 @@ class ActorFactory
 {
 
     /**
-     * @param $actor
-     * @return \Illuminate\Foundation\Application|\Laravel\Lumen\Application|mixed
      * @see ActorQueue::fire()
+     *
+     * @param $actorPath
+     * @param $actorClass
+     * @return \Illuminate\Foundation\Application|\Laravel\Lumen\Application|mixed
      */
-    public static function create($actor)
+    public static function create($actorPath, $actorClass)
     {
-        $classPath = __NAMESPACE__ . '\\' . $actor->class . '\\' . $actor->class;
+        $classPath = __NAMESPACE__ . '\\' . $actorPath . '\\' . $actorClass;
         return app($classPath);
     }
 }

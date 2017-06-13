@@ -195,11 +195,11 @@ class Expedition extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function exportQueues()
+    public function exportQueue()
     {
-        return $this->hasMany(ExportQueue::class);
+        return $this->hasOne(ExportQueue::class);
     }
 
     /**

@@ -44,11 +44,24 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueueCon
      */
     public function findByIdExpeditionActor($queueId, $expeditionId, $actorId, array $attributes = ['*'])
     {
-        return $this->with(['expedition.actor'])->whereHas('actor', function ($query) use ($expeditionId, $actorId)
+        return $this->with(['expedition.actor'])
+            ->whereHas('actor', function ($query) use ($expeditionId, $actorId)
             {
                 $query->where('expedition_id', $expeditionId);
                 $query->where('actor_id', $actorId);
             }, '=')->find($queueId);
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function findQueueProcessData($queueId, $expeditionId, $actorId, array $attributes = ['*'])
+    {
+        return $this->with(['expedition.actor', 'expedition.project.group'])
+            ->whereHas('actor', function ($query) use ($expeditionId, $actorId)
+            {
+                $query->where('expedition_id', $expeditionId);
+                $query->where('actor_id', $actorId);
+            }, '=')->find($queueId);
+    }
 }

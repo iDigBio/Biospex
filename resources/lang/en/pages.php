@@ -145,8 +145,8 @@ return array (
   'project_page_percent_complete' => '% Complete',
   'project_page_join' => 'Join In',
   'processing_empty' => 'No processes running at this time.',
-  'export_processing' => '<div class="processes"><span class="title">:title</span><br />:processed record of :total completed.</div>|
-                                        <div class="processes"><span class="title">:title</span><br />:processed records of :total completed.</div>',
+  'processed_records' => '| - :processed of :total completed.',
+  'export_processing' => '<div class="processes"><span class="title">:title</span><br />:stage :processedRecords</div>',
   'export_queued' => '<div class="processes"><span class="title">:title</span><br />:count export remains in queue before processing begins.</div>|
                                         <div class="processes"><span class="title">:title</span><br />:count exports remain in queue before processing begins.</div>',
   'ocr_processing' => '<div class="processes"><span class="title">:title</span>:ocr :batches</div>',

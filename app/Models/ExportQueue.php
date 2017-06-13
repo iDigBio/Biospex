@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ExportQueue extends Model
 {
+
     /**
      * @ineritDoc
      */

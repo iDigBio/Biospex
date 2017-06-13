@@ -53,7 +53,7 @@ class ActorQueue extends QueueAbstract
 
         try
         {
-            $class = ActorFactory::create($actor);
+            $class = ActorFactory::create($actor->class, $actor->class);
             $class->actor($actor);
         }
         catch (BiospexException $e)
