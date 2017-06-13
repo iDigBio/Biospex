@@ -38,7 +38,7 @@ class ExportQueueJob extends Job implements ShouldQueue
         $queue = $exportQueueContract->setCacheLifetime(0)
             ->findByIdExpeditionActor($this->record->id, $this->record->expedition_id, $this->record->actor_id);
 
-        $class = ActorFactory::create($queue->expedition->actor);
+        $class = ActorFactory::create($queue->expedition->actor->class, $queue->expedition->actor->class);
         $class->queue($queue);
     }
 }
