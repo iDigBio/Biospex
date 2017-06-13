@@ -109,7 +109,7 @@ class ActorServiceConfig
     /**
      * @param $queue
      */
-    private function setQueue($queue)
+    public function setQueue($queue)
     {
         $this->queue = $queue;
     }
@@ -117,7 +117,7 @@ class ActorServiceConfig
     /**
      * @param $expedition
      */
-    private function setExpedition($expedition)
+    public function setExpedition($expedition)
     {
         $this->expedition = $expedition;
     }
@@ -125,7 +125,7 @@ class ActorServiceConfig
     /**
      * @param $actor
      */
-    private function setActor($actor)
+    public function setActor($actor)
     {
         $this->actor = $actor;
     }
@@ -141,7 +141,7 @@ class ActorServiceConfig
     /**
      * Set working folder name.
      */
-    private function setFolderName()
+    public function setFolderName()
     {
         $this->folderName = $this->actor->id . '-' . $this->expedition->uuid;
     }
@@ -149,7 +149,7 @@ class ActorServiceConfig
     /**
      * Set scratch directory.
      */
-    private function setScratchDirectory()
+    public function setScratchDirectory()
     {
         $this->scratchDirectory = config('config.scratch_dir');
     }
@@ -157,7 +157,7 @@ class ActorServiceConfig
     /**
      * Set working directory.
      */
-    private function setWorkingDirectory()
+    public function setWorkingDirectory()
     {
         $this->workingDirectory = $this->scratchDirectory . '/' . $this->folderName;
         File::makeDirectory($this->workingDirectory, 0775, true, true);
@@ -166,7 +166,7 @@ class ActorServiceConfig
     /**
      * Set tmp directory.
      */
-    private function setTmpDirectory()
+    public function setTmpDirectory()
     {
         $this->tmpDirectory = $this->workingDirectory . '/tmp';
         File::makeDirectory($this->tmpDirectory, 0775, true, true);
@@ -175,7 +175,7 @@ class ActorServiceConfig
     /**
      * Set nfn export directory.
      */
-    private function setNfnExportDirectory()
+    public function setNfnExportDirectory()
     {
         $this->nfnExportDirectory = config('config.nfn_export_dir');
     }
@@ -183,7 +183,7 @@ class ActorServiceConfig
     /**
      * Set tar archive and path.
      */
-    private function setArchiveTar()
+    public function setArchiveTar()
     {
         $this->archiveTar = $this->folderName . '.tar';
         $this->archiveTarPath = $this->scratchDirectory . '/' . $this->archiveTar;
@@ -192,7 +192,7 @@ class ActorServiceConfig
     /**
      * Set gz archive and path.
      */
-    private function setArchiveTarGz()
+    public function setArchiveTarGz()
     {
         $this->archiveTarGz = $this->folderName . '.tar.gz';
         $this->archiveTarGzPath = $this->scratchDirectory . '/' . $this->archiveTarGz;
@@ -201,7 +201,7 @@ class ActorServiceConfig
     /**
      * Create new Phar archive.
      */
-    private function setArchivePhar()
+    public function setArchivePhar()
     {
         $this->archivePhar = new PharData($this->archiveTarPath);
     }
@@ -209,7 +209,7 @@ class ActorServiceConfig
     /**
      * Set archive destination path.
      */
-    private function setArchiveExportPath()
+    public function setArchiveExportPath()
     {
         $this->archiveExportPath = $this->nfnExportDirectory . '/' . $this->archiveTarGz;
     }
@@ -267,6 +267,14 @@ class ActorServiceConfig
     {
         $collection = $actor === null ? $this->actor : $actor;
         event('actor.pivot.error', $collection);
+    }
+
+    /**
+     * Fire actor completed event.
+     */
+    public function fireActorCompletedEvent()
+    {
+        event('actor.pivot.completed', $this->actor);
     }
 
 }

@@ -5,6 +5,7 @@ return array (
   'ocr_send_error' => 'An error occurred while submitting json file to the OCR server.<br />Project: :title<br />ID:  :id<br />Message: :message<br /><br />The Biospex Administration has been notified and will investigate the issue. Please do not try to resubmit or perform other functions on this project.',
   'nfn_legacy_export_error' => 'An error occurred while exporting.<br />Project: :title<br />ID:  :id<br />Message: :message<br /><br />The Biospex Administration has been notified and will investigate the issue. Please do not attempt to restart export or perform other functions on this project.',
   'nfn_classifications_error' => 'An error occurred while processing the NfN classifications.<br />Project: :title<br />ID:  :id<br />Message: :message<br /><br />The Biospex Administration has been notified and will investigate the issue. Please do not attempt to restart or perform other functions on this project.',
+  'missing_nfnworkflow' => 'An error occurred while processing the NfN classifications.<br />Expedition: :title<br />Message: Missing required Notes From Nature Workflow ID and cannot process classifications. Please edit the Expedition and enter the ID in the appropriate form field.',
   'create_dir' => 'Unable to create directory: :directory',
   'write_dir' => 'Unable to make directory writable: :directory',
   'save_file' => 'An error occurred while attempting to save file: :file',

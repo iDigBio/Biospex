@@ -4,9 +4,8 @@ namespace App\Services\Actor\NfnPanoptes;
 
 use App\Exceptions\BiospexException;
 use App\Jobs\NfnClassificationsUpdateJob;
-use App\Repositories\Contracts\ActorContract;
 use App\Repositories\Contracts\ExpeditionContract;
-use App\Repositories\Contracts\NfnWorkflowContract;
+use App\Services\Actor\ActorServiceConfig;
 use App\Services\Report\Report;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -18,43 +17,34 @@ class NfnPanoptesClassifications
     /**
      * @var ExpeditionContract
      */
-    private $expeditionContract;
+    public $expeditionContract;
 
     /**
      * @var Report
      */
-    private $report;
+    public $report;
 
     /**
-     * @var ActorContract
+     * @var ActorServiceConfig
      */
-    private $actorContract;
-
-    /**
-     * @var NfnWorkflowContract
-     */
-    private $nfnWorkflowContract;
+    public $actorServiceConfig;
 
     /**
      * NfnPanoptesClassifications constructor.
      *
      * @param ExpeditionContract $expeditionContract
-     * @param NfnWorkflowContract $nfnWorkflowContract
-     * @param ActorContract $actorContract
+     * @param ActorServiceConfig $actorServiceConfig
      * @param Report $report
-     * @internal param ActorContract $actor
      */
     public function __construct(
         ExpeditionContract $expeditionContract,
-        NfnWorkflowContract $nfnWorkflowContract,
-        ActorContract $actorContract,
+        ActorServiceConfig $actorServiceConfig,
         Report $report
     )
     {
         $this->expeditionContract = $expeditionContract;
-        $this->actorContract = $actorContract;
+        $this->actorServiceConfig = $actorServiceConfig;
         $this->report = $report;
-        $this->nfnWorkflowContract = $nfnWorkflowContract;
     }
 
     /**
@@ -64,27 +54,22 @@ class NfnPanoptesClassifications
      */
     public function processActor($actor)
     {
-        $check = $this->nfnWorkflowContract->setCacheLifetime(0)
-            ->findWhere(['expedition_id', '=', $actor->expedition_id])
-            ->isEmpty();
-        if ($check)
-        {
-            // TODO add email to project owner telling them to add the workflow id
-            return;
-        }
+        $this->actorServiceConfig->setActor($actor);
 
         $record = $this->expeditionContract->setCacheLifetime(0)
-            ->with(['project.group.owner', 'stat'])
+            ->with(['project.group.owner', 'stat', 'nfnWorkflow'])
             ->find($actor->pivot->expedition_id);
+
+        if ($this->workflowIdDoesNotExist($record))
+        {
+            return;
+        }
 
         try
         {
             if ((int) $record->stat->percent_completed === 100)
             {
-                $actor->pivot->queued = 0;
-                $actor->completed = 1;
-                $actor->pivot->save();
-
+                $this->actorServiceConfig->fireActorCompletedEvent();
                 $this->sendReport($record);
 
                 return;
@@ -93,12 +78,14 @@ class NfnPanoptesClassifications
             $this->dispatch((new NfnClassificationsUpdateJob([$record->id]))
                 ->onQueue(config('config.beanstalkd.classification')));
 
-            $this->actorContract->update(['queued' => 0], $actor->id);
+            $this->actorServiceConfig->fireActorUnQueuedEvent();
 
             return;
         }
         catch (BiospexException $e)
         {
+            $this->actorServiceConfig->fireActorErrorEvent();
+
             $this->report->addError(trans('errors.nfn_classifications_error', [
                 'title'   => $record->title,
                 'id'      => $record->id,
@@ -106,8 +93,6 @@ class NfnPanoptesClassifications
             ]));
 
             $this->report->reportError($record->project->group->owner->email);
-
-            $this->service->handler->report($e);
         }
 
     }
@@ -129,4 +114,21 @@ class NfnPanoptesClassifications
         $this->report->processComplete($vars);
     }
 
+    /**
+     * @param $record
+     * @return bool
+     */
+    protected function workflowIdDoesNotExist($record)
+    {
+        if ($record->nfnWorkflow === null || empty($record->nfnWorkflow->workflow))
+        {
+            $this->actorServiceConfig->fireActorUnQueuedEvent();
+            $this->report->addError(trans('errors.missing_nfnworkflow', ['title'   => $record->title]));
+            $this->report->reportError($record->project->group->owner->email);
+
+            return true;
+        }
+
+        return false;
+    }
 }
