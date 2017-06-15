@@ -136,6 +136,12 @@ class OcrRequest
             }
 
             $subject = $this->subjectContract->find($id);
+            if ($subject === null)
+            {
+                $csv[] = ['id' => $id, 'message' => 'Could not locate associated subject in database', 'url' => ''];
+                continue;
+            }
+
             $subject->ocr = $data->ocr;
             $this->subjectContract->update($subject->_id, $subject->toArray());
         }
