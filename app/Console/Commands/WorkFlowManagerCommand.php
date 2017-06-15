@@ -76,12 +76,10 @@ class WorkFlowManagerCommand extends Command
      */
     protected function processActors($expedition)
     {
-        $count = $expedition->stat->subject_count;
-
-        $expedition->actors->each(function ($actor) use ($count)
+        $expedition->actors->each(function ($actor) use ($expedition)
         {
-            $actor->pivot->processed = 0;
-            event('actor.pivot.queued', [$actor, $count]);
+            $actor->pivot->total = $expedition->stat->subject_count;
+            event('actor.pivot.queued', [$actor]);
             Queue::push('App\Services\Queue\ActorQueue', serialize($actor), $this->tube);
         });
     }
