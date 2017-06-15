@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Http\Controllers\Frontend;
 
@@ -48,7 +48,8 @@ class DownloadsController extends Controller
         DownloadContract $downloadContract,
         UserContract $userContract,
         ResponseFactory $response
-    ) {
+    )
+    {
         $this->expeditionContract = $expeditionContract;
         $this->downloadContract = $downloadContract;
         $this->response = $response;
@@ -82,16 +83,19 @@ class DownloadsController extends Controller
         $download->count = $download->count + 1;
         $this->downloadContract->update($download->id, $download->toArray());
 
-        if ( ! empty($download->data)){
+        if ( ! empty($download->data))
+        {
             $headers = [
-                'Content-type' => 'application/json; charset=utf-8',
+                'Content-type'        => 'application/json; charset=utf-8',
                 'Content-disposition' => 'attachment; filename="' . $download->file . '"'
             ];
 
             $view = view('frontend.manifest', unserialize($download->data))->render();
 
             return $this->response->make(stripslashes($view), 200, $headers);
-        } else {
+        }
+        else
+        {
 
             $nfnExportDir = config('config.nfn_export_dir');
             $path = $nfnExportDir . '/' . $download->file;
@@ -115,7 +119,11 @@ class DownloadsController extends Controller
 
         try
         {
-            event('actor.pivot.regenerate', [$expedition->nfnActor, $expedition->stat->subject_count]);
+            $expedition->nfnActor->pivot->state = 0;
+            $expedition->nfnActor->pivot->total = $expedition->stat->subject_count;
+            $expedition->nfnActor->pivot->processed = 0;
+            $expedition->nfnActor->pivot->queued = 1;
+            event('actor.pivot.regenerate', [$expedition->nfnActor]);
             Queue::push('App\Services\Queue\ActorQueue', serialize($expedition->nfnActor), config('config.beanstalkd.export'));
 
             session_flash_push('success', trans('expeditions.download_regeneration_success'));

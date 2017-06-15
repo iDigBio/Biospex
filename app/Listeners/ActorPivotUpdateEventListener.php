@@ -138,15 +138,14 @@ class ActorPivotUpdateEventListener
      * Regenerate expedition download.
      *
      * @param $actor
-     * @param $count
      */
-    public function actorPivotRegenerate($actor, $count)
+    public function actorPivotRegenerate($actor)
     {
         $attributes = [
-            'state'     => 0,
-            'total'     => $count,
-            'processed' => 0,
-            'queued'    => 1
+            'state'     => $actor->pivot->state,
+            'total'     => $actor->pivot->total,
+            'processed' => $actor->pivot->processed,
+            'queued'    => $actor->pivot->queued
         ];
         $this->updateActorExpeditions($actor, $attributes);
     }
