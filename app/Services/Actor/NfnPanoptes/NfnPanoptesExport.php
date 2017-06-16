@@ -66,6 +66,7 @@ class NfnPanoptesExport
     public $stage = [
         'retrieveImages',
         'convertImages',
+        'deleteOriginalImages',
         'buildCsv',
         'tarImages',
         'compressImages',
@@ -202,6 +203,21 @@ class NfnPanoptesExport
         {
             throw new ActorException($e);
         }
+    }
+
+    /**
+     * Delete original files to save space on server.
+     */
+    public function deleteOriginalImages()
+    {
+        $files = collect($this->fileService->filesystem->files($this->config->workingDirectory));
+
+        $files->each(function($file){
+            $this->fileService->filesystem->delete($file);
+        });
+
+        $this->config->fireActorQueuedEvent();
+        $this->advanceQueue();
     }
 
     /**

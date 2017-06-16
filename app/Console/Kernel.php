@@ -3,6 +3,7 @@
 use App\Console\Commands\AustinProcessCommand;
 use App\Console\Commands\ClearOcrResults;
 use App\Console\Commands\ExportPollCommand;
+use App\Console\Commands\ExportQueue;
 use App\Console\Commands\NfnClassificationsCsvCreate;
 use App\Console\Commands\NfnClassificationsCsvFile;
 use App\Console\Commands\NfnClassificationsFusionTable;
@@ -62,7 +63,8 @@ class Kernel extends ConsoleKernel
         NfnClassificationsReconciliation::class,
         NfnClassificationsTranscript::class,
         UpdateGoogleStateCountyTable::class,
-        NfnClassificationsFusionTable::class
+        NfnClassificationsFusionTable::class,
+        ExportQueue::class
     ];
 
     /**
