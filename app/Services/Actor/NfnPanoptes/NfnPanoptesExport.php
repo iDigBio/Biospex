@@ -16,6 +16,7 @@ use App\Listeners\ExportQueueEventListener;
 use Illuminate\Support\Collection;
 use PDOException;
 
+putenv('MAGICK_THREAD_LIMIT=1');
 
 class NfnPanoptesExport
 {
@@ -189,7 +190,14 @@ class NfnPanoptesExport
 
             $files->reject(function ($file) use ($existingFiles)
             {
-                return $this->checkConvertedFile($file, $existingFiles);
+                if ($this->checkConvertedFile($file, $existingFiles))
+                {
+                    $this->config->fireActorProcessedEvent();
+
+                    return true;
+                }
+
+                return false;
             })->each(function ($file)
             {
                 $fileName = $this->fileService->filesystem->name($file);
