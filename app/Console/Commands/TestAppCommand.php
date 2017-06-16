@@ -43,7 +43,7 @@ class TestAppCommand extends Command
         foreach ($files as $file)
         {
             $baseName = \File::basename($file);
-            $count = $downloadContract->findWhere(['file', '=', $baseName]);
+            $count = $downloadContract->findWhere(['file', '=', $baseName])->count();
             echo $baseName . ' ' . $count . PHP_EOL;
         }
     }
