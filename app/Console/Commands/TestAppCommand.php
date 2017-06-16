@@ -2,19 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\ExportQueueJob;
-use App\Models\Actor;
-use App\Models\Expedition;
-use App\Repositories\Contracts\ActorContract;
-use App\Repositories\Contracts\ExpeditionContract;
-use App\Repositories\Contracts\ExportQueueContract;
-use App\Repositories\Contracts\SubjectContract;
-use App\Services\Actor\ActorImageService;
-use App\Services\Actor\ActorRepositoryService;
-use App\Services\Actor\NfnPanoptes\NfnPanoptesExport;
-use App\Services\File\FileService;
-use App\Services\Requests\HttpRequest;
-use Event;
+use App\Repositories\Contracts\DownloadContract;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -46,16 +34,17 @@ class TestAppCommand extends Command
     }
 
     /**
-     * @param ExportQueueContract $exportQueueContract
+     *
      */
-    public function handle(ExportQueueContract $exportQueueContract)
+    public function handle(DownloadContract $downloadContract)
     {
-        \DB::listen(function ($query) {
-            echo$query->sql . PHP_EOL;
-            // $query->bindings
-            // $query->time
-        });
-        $entity = $exportQueueContract->setCacheLifetime(0)->getFirst();
-        //$this->dispatch((new ExportQueueJob($entity))->onQueue(config('config.beanstalkd.export')));
+        $files = \File::allFiles(config('config.nfn_export_dir'));
+
+        foreach ($files as $file)
+        {
+            $baseName = \File::basename($file);
+            $count = $downloadContract->findWhere(['file', '=', $baseName]);
+            echo $baseName . ' ' . $count . PHP_EOL;
+        }
     }
 }
