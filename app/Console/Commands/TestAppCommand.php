@@ -44,7 +44,11 @@ class TestAppCommand extends Command
         {
             $baseName = \File::basename($file);
             $count = $downloadContract->findWhere(['file', '=', $baseName])->count();
-            echo $baseName . ' ' . $count . PHP_EOL;
+            if ($count === 0)
+            {
+                echo 'Deleting ' . $file . PHP_EOL;
+                \File::delete($file);
+            }
         }
     }
 }
