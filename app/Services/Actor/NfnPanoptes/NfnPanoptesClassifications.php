@@ -124,7 +124,8 @@ class NfnPanoptesClassifications
         {
             $this->actorServiceConfig->fireActorUnQueuedEvent();
             $this->report->addError(trans('errors.missing_nfnworkflow', ['title'   => $record->title]));
-            $this->report->reportError($record->project->group->owner->email);
+            //$this->report->reportError($record->project->group->owner->email);
+            $this->report->reportError();
 
             return true;
         }
