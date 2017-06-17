@@ -1,5 +1,5 @@
 /resources/assets/vendor
-/resources/supervisor/queue.local.conf
+/resources/supervisord/queue.local.conf
 .gitattributes
 .idea
 Thumbs.db
