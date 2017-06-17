@@ -386,7 +386,7 @@ class ExpeditionsController extends Controller
         }
 
         $queueCheck = $ocrQueueContract->setCacheLifetime(0)
-            ->where('project_id'. '=', $projectId)->findFirst();
+            ->where('project_id', '=', $projectId)->findFirst();
 
         if ($queueCheck === null)
         {
