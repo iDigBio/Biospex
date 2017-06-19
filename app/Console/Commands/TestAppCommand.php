@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Repositories\Contracts\DownloadContract;
+use App\Repositories\Contracts\SubjectContract;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -36,19 +37,9 @@ class TestAppCommand extends Command
     /**
      *
      */
-    public function handle(DownloadContract $downloadContract)
+    public function handle(SubjectContract $subjectContract)
     {
-        $files = \File::allFiles(config('config.nfn_export_dir'));
-
-        foreach ($files as $file)
-        {
-            $baseName = \File::basename($file);
-            $count = $downloadContract->findWhere(['file', '=', $baseName])->count();
-            if ($count === 0)
-            {
-                echo 'Deleting ' . $file . PHP_EOL;
-                \File::delete($file);
-            }
-        }
+        $count = $subjectContract->setCacheLifetime(0)->getUnassignedCount(34);
+        dd($count);
     }
 }
