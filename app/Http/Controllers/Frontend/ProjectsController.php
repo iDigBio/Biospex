@@ -239,8 +239,9 @@ class ProjectsController extends Controller
             return redirect()->route('web.projects.index');
         }
 
-        $subjectAssignedCount = $subjectContract->where('project_id', '=', (int) $id)
+        $subjectAssignedCount = $subjectContract->setCacheLifetime(0)
             ->whereRaw(['expedition_ids.0' => ['$exists' => true]])
+            ->where('project_id', '=', (int) $id)
             ->count();
 
         JavaScript::put([
