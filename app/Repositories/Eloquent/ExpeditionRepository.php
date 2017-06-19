@@ -100,8 +100,8 @@ class ExpeditionRepository extends EloquentRepository implements ExpeditionContr
                 $existingSubjectIds[] = $subject->_id;
             }
 
-            $subjectModel = new Subject();
-            $subjectModel->detachSubjects($existingSubjectIds, $expedition->id);
+            $subjectContract = app(Subject::class);
+            $subjectContract->detachSubjects($existingSubjectIds, $expedition->id);
 
             $subjectIds = explode(',', $attributes['subjectIds']);
             $expedition->subjects()->attach($subjectIds);
