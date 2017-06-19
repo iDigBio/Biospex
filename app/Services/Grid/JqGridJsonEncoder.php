@@ -251,7 +251,7 @@ class JqGridJsonEncoder
             'expeditionId' => $expeditionId
         ];
 
-        $vars['count'] = $this->subjectContract->getTotalRowCount($vars);
+        $vars['count'] = $this->subjectContract->setCacheLifetime(0)->getTotalRowCount($vars);
 
         $vars['limit'] = count($vars['limit']) === 0 ? $vars['count'] : $vars['limit'];
 
@@ -271,7 +271,7 @@ class JqGridJsonEncoder
         if (empty($postedData['pivotRows']))
         {
             // $limit, $start, $sidx, $sord, $filters
-            $rows = $this->subjectContract->getRows($vars);
+            $rows = $this->subjectContract->setCacheLifetime(0)->getRows($vars);
         }
         else
         {
@@ -355,7 +355,7 @@ class JqGridJsonEncoder
         }
         else
         {
-            $this->subjectContract->detachSubjects($data['ids'], $id);
+            $this->subjectContract->setCacheLifetime(0)->detachSubjects($data['ids'], $id);
         }
 
         $count = $expedition->getSubjectsCountAttribute();
