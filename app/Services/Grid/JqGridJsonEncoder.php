@@ -187,9 +187,19 @@ class JqGridJsonEncoder
             'sortable'      => true,
             'editable'      => false,
             'hidden'        => in_array($column, $default) ? false : true,
-            'searchoptions' => ['sopt' => [
-                'eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn'
-            ], 'value'                 => ':Any;true:Yes;false:No']
+            'searchoptions' => [
+                'sopt'     => [
+                    'eq',
+                    'ne',
+                    'bw',
+                    'bn',
+                    'ew',
+                    'en',
+                    'cn',
+                    'nc',
+                    'nu',
+                    'nn'
+                ], 'value' => ':Any;true:Yes;false:No']
         ];
 
         return $col;
@@ -365,7 +375,7 @@ class JqGridJsonEncoder
 
     /**
      * @param $postedData
-     * @return array
+     * @return int
      */
     public function setPage($postedData)
     {
