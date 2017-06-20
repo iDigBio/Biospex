@@ -2,20 +2,10 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Model;
-use Jenssegers\Mongodb\Eloquent\SoftDeletes;
+use Jenssegers\Mongodb\Eloquent\Model;
 
 class Occurrence extends Model
 {
-    use SoftDeletes;
-
-    /**
-     * Enable soft delete.
-     *
-     * @var boolean
-     */
-    protected $softDelete = true;
-
     /**
      * @inheritDoc
      */

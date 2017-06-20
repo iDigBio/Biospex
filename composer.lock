@@ -2216,16 +2216,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "1.22.1",
+            "version": "1.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "1e044bc4b34e91743943479f1be7a1d5eb93add0"
+                "reference": "fd8c787753b3a2ad11bc60c063cff1358a32a3b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/1e044bc4b34e91743943479f1be7a1d5eb93add0",
-                "reference": "1e044bc4b34e91743943479f1be7a1d5eb93add0",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/fd8c787753b3a2ad11bc60c063cff1358a32a3b4",
+                "reference": "fd8c787753b3a2ad11bc60c063cff1358a32a3b4",
                 "shasum": ""
             },
             "require": {
@@ -2246,7 +2246,7 @@
                 "phpunit/phpunit-mock-objects": "2.3.0",
                 "ruflin/elastica": ">=0.90 <3.0",
                 "sentry/sentry": "^0.13",
-                "swiftmailer/swiftmailer": "~5.3"
+                "swiftmailer/swiftmailer": "^5.3|^6.0"
             },
             "suggest": {
                 "aws/aws-sdk-php": "Allow sending log messages to AWS services like DynamoDB",
@@ -2290,7 +2290,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2017-03-13T07:08:03+00:00"
+            "time": "2017-06-19T01:22:40+00:00"
         },
         {
             "name": "msurguy/honeypot",
@@ -6015,16 +6015,16 @@
         },
         {
             "name": "sven/artisan-view",
-            "version": "1.3.2",
+            "version": "1.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/svenluijten/artisan-view.git",
-                "reference": "5daea7329665dda2e244a79a39f96c0488186995"
+                "reference": "6121bded15b5cebc5e8c893216e772c4e49dcf2a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/svenluijten/artisan-view/zipball/5daea7329665dda2e244a79a39f96c0488186995",
-                "reference": "5daea7329665dda2e244a79a39f96c0488186995",
+                "url": "https://api.github.com/repos/svenluijten/artisan-view/zipball/6121bded15b5cebc5e8c893216e772c4e49dcf2a",
+                "reference": "6121bded15b5cebc5e8c893216e772c4e49dcf2a",
                 "shasum": ""
             },
             "require": {
@@ -6035,6 +6035,13 @@
                 "phpunit/phpunit": "^4.8 || ^5.0"
             },
             "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Sven\\ArtisanView\\ArtisanViewServiceProvider"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Sven\\ArtisanView\\": "src/"
@@ -6058,7 +6065,7 @@
                 "templates",
                 "views"
             ],
-            "time": "2017-02-02T07:53:09+00:00"
+            "time": "2017-06-19T10:37:08+00:00"
         },
         {
             "name": "symfony/browser-kit",
