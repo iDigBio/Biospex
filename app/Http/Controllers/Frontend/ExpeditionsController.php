@@ -10,6 +10,7 @@ use App\Http\Requests\ExpeditionFormRequest;
 use App\Services\Model\ModelDeleteService;
 use App\Services\Model\ModelDestroyService;
 use App\Services\Model\ModelRestoreService;
+use File;
 use Illuminate\Support\Facades\Artisan;
 use App\Exceptions\Handler;
 use JavaScript;
@@ -509,5 +510,26 @@ class ExpeditionsController extends Controller
             session_flash_push('error', trans('expeditions.expedition_restore_error'));
 
         return redirect()->route('web.projects.show', [$projectId]);
+    }
+
+    /**
+     * @param $projectId
+     * @param $expeditionId
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function summary($projectId, $expeditionId)
+    {
+        $expedition = $this->expeditionContract->find($expeditionId);
+
+        $file = 24 . '.html';
+
+        if (File::exists(config('config.classifications_summary') . '/' . $file))
+        {
+            $contents = File::get(config('config.classifications_summary') . '/' . $file);
+            return view('frontend.summary', compact('contents'));
+        }
+
+        $contents = trans('errors.missing_summary', ['title' => $expedition->title]);
+        return view('frontend.summary', compact('contents'));
     }
 }
