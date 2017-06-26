@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use Auth;
 use Illuminate\Support\Facades\Cache;
 
 class ExpeditionPolicy
@@ -24,6 +25,11 @@ class ExpeditionPolicy
         });
 
         return $access ? true : null;
+    }
+
+    public function owner($project)
+    {
+        return $project->group->user_id == Auth::getUser()->id;
     }
 
     public function read($user, $expedition)
