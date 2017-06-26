@@ -27,9 +27,9 @@ class ExpeditionPolicy
         return $access ? true : null;
     }
 
-    public function owner($project)
+    public function owner($group)
     {
-        return $project->group->user_id == Auth::getUser()->id;
+        return $group->user_id == Auth::getUser()->id;
     }
 
     public function read($user, $expedition)
