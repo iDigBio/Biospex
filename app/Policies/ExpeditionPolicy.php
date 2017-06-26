@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use Auth;
 use Illuminate\Support\Facades\Cache;
 
 class ExpeditionPolicy
