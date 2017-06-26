@@ -231,7 +231,7 @@ abstract class BaseRepository implements RepositoryContract, CacheableContract
 
         // Add a "scope" to the query
         foreach ($this->scopes as $scope => $parameters) {
-            $model = $model->$scope(...$parameters);
+            $model = $model->$scope($parameters);
         }
 
         // Set the "offset" value of the query
