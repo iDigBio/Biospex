@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Console\Commands;
 
@@ -58,7 +58,8 @@ class DownloadCleanCommand extends Command
         Filesystem $filesystem,
         DownloadContract $downloadContract,
         Handler $handler
-    ) {
+    )
+    {
         parent::__construct();
 
         $this->filesystem = $filesystem;
@@ -77,23 +78,19 @@ class DownloadCleanCommand extends Command
     {
         $downloads = $this->downloadContract->setCacheLifetime(0)
             ->where('count', '>', 5)
-            ->where('created_at', '<', Carbon::now()->subDays(7), 'or')
+            ->where('created_at', '<', Carbon::now()->subDays(30), 'or')
             ->findAll();
 
-        foreach ($downloads as $download) {
-            try {
-                $file = $this->nfnExportDir . '/' . $download->file;
-                if ($this->filesystem->isFile($file)) {
-                    $this->filesystem->delete($file);
-                }
-
-                $this->downloadContract->delete($download->id);
-            } catch (BiospexException $e) {
-                $this->handler->report($e);
-
-                continue;
+        $downloads->each(function ($download)
+        {
+            $file = $this->nfnExportDir . '/' . $download->file;
+            if ($this->filesystem->isFile($file))
+            {
+                echo 'Deleting ' . $download->file;
+                //$this->filesystem->delete($file);
             }
-        }
 
+            //$this->downloadContract->delete($download->id);
+        });
     }
 }
