@@ -69,3 +69,8 @@ $router->get('projects/{projects}/expeditions/{expeditions}/ocr', [
     'uses' => 'ExpeditionsController@ocr',
     'as'   => 'web.expeditions.ocr'
 ]);
+
+$router->get('projects/{projects}/expeditions/{expeditions}/summary', [
+    'uses' => 'ExpeditionsController@summary',
+    'as'   => 'web.expeditions.summary'
+]);

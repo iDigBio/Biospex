@@ -57,9 +57,4 @@ class ProjectPolicy
     {
         return $user->id === $project->group->user_id;
     }
-
-    public function owner($group)
-    {
-        return $group->user_id == \Auth::getUser()->id;
-    }
 }

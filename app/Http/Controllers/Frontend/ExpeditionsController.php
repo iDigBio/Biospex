@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\BuildOcrBatchesJob;
 use App\Jobs\UpdateNfnWorkflowJob;
 use App\Http\Requests\ExpeditionFormRequest;
+use App\Models\Expedition;
 use App\Services\Model\ModelDeleteService;
 use App\Services\Model\ModelDestroyService;
 use App\Services\Model\ModelRestoreService;
@@ -519,7 +520,11 @@ class ExpeditionsController extends Controller
      */
     public function summary($projectId, $expeditionId)
     {
-        $expedition = $this->expeditionContract->find($expeditionId);
+        $expedition = $this->expeditionContract->with('project.group')->find($expeditionId);
+
+        if (request()->user()->id != $expedition->project->group->user_id) {
+            return redirect()->route('web.projects.index');
+        }
 
         $file = 24 . '.html';
 
