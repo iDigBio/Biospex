@@ -224,6 +224,7 @@ class NfnPanoptesExport
             $this->fileService->filesystem->delete($file);
         });
 
+        $this->config->deleteScratchTmpDir();
         $this->config->fireActorQueuedEvent();
         $this->advanceQueue();
     }

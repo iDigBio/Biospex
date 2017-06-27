@@ -215,6 +215,17 @@ class ActorServiceConfig
     }
 
     /**
+     * Delete tmp directory
+     */
+    public function deleteScratchTmpDir()
+    {
+        if (! \File::exists(config('config.scratch_dir_tmp')))
+        {
+            \File::deleteDirectory(config('config.scratch_dir_tmp'));
+        }
+    }
+
+    /**
      * Fire actor update for processed count.
      */
     public function fireActorProcessedEvent()

@@ -57,6 +57,19 @@ class ImageServiceBase
     protected $destinationImageHeight;
 
     /**
+     * Set tmp directory for imagick
+     */
+    public function setScratchTmpDir()
+    {
+        if (! \File::exists(config('config.scratch_dir_tmp')))
+        {
+            \File::makeDirectory(config('config.scratch_dir_tmp'));
+        }
+
+        return config('config.scratch_dir_tmp');
+    }
+
+    /**
      * Set image info from file.
      *
      * @param $imgSource
