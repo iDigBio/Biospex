@@ -46,7 +46,9 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
                 ->with('nfnWorkflow')
                 ->find($id);
 
-            if ( ! file_exists(config('config.classifications_download') . '/' . $expedition->id . '.csv'))
+            $file = config('config.classifications_download') . '/' . $expedition->id . '.csv';
+
+            if ( ! file_exists($file) || $expedition->nfnWorkflow === null)
             {
                 continue;
             }
