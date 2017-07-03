@@ -522,11 +522,13 @@ class ExpeditionsController extends Controller
     {
         $expedition = $this->expeditionContract->with('project.group')->find($expeditionId);
 
+        /*
         if (request()->user()->id != $expedition->project->group->user_id) {
             return redirect()->route('web.projects.index');
         }
+        */
 
-        $file = 24 . '.html';
+        $file = $expeditionId . '.html';
 
         if (File::exists(config('config.classifications_summary') . '/' . $file))
         {
