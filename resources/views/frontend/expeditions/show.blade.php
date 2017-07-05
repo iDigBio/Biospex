@@ -26,6 +26,13 @@
                                         onClick="location.href='{{ route('web.downloads.index', [$expedition->project->id, $expedition->id]) }}'">
                                     <span class="fa fa-download fa-lrg"></span> @lang('buttons.download') </button>
                             @endif
+                            @if(request()->user()->id === $expedition->project->group->user_id)
+                                <button title="@lang('buttons.summaryTitle')" class="btn btn-success btn-sm"
+                                        type="button"
+                                        onClick="window.open('{{ route('web.expeditions.summary', [$project->id, $expedition->id]) }}')">
+                                    <span class="fa fa-bar-chart fa-lrg"></span> @lang('buttons.summary')
+                                </button>
+                            @endif
                             <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-sm" type="button"
                                     onClick="location.href='{{ route('web.expeditions.duplicate', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-copy fa-lrg"></span> @lang('buttons.duplicate')</button>
