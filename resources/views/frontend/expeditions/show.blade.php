@@ -29,7 +29,7 @@
                             @if(request()->user()->id === $expedition->project->group->user_id)
                                 <button title="@lang('buttons.summaryTitle')" class="btn btn-success btn-sm"
                                         type="button"
-                                        onClick="window.open('{{ route('web.expeditions.summary', [$project->id, $expedition->id]) }}')">
+                                        onClick="window.open('{{ route('web.expeditions.summary', [$expedition->project->id, $expedition->id]) }}')">
                                     <span class="fa fa-bar-chart fa-lrg"></span> @lang('buttons.summary')
                                 </button>
                             @endif
