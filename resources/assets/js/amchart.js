@@ -1,4 +1,40 @@
-AmCharts.makeChart("chartdiv", {
+/**
+ * Use addInitHandler to do operations on the chart object
+ * before it is drawn
+ *
+ **/
+AmCharts.addInitHandler(function (chart) {
+
+    AmCharts.resizeCategory = function (chart) {
+        var standardHeight = 400;
+        var calculatedHeight = 100 * collections.length;
+        var containerHeight = standardHeight > calculatedHeight ? standardHeight : calculatedHeight;
+
+        chart.div.style.height = containerHeight + 'px';
+    };
+
+    // check for dataLoader
+    var loader = chart.dataLoader;
+    if (loader !== undefined && loader.url !== undefined) {
+        if (loader.complete) {
+            loader._complete = loader.complete;
+        }
+        loader.complete = function (chart) {
+            // call original complete
+            if (loader._complete) loader._complete.call(this, chart);
+
+            // now let's do our thing
+            AmCharts.resizeCategory(chart);
+        };
+    } else {
+        AmCharts.resizeCategory(chart);
+    }
+
+}, ['serial']);
+
+var collections = [];
+
+var chart = AmCharts.makeChart("chartdiv", {
     type: "serial",
     titles: [{
         size: 15,
@@ -15,6 +51,7 @@ AmCharts.makeChart("chartdiv", {
         startOnAxis: true,
         title: "Days elapsed"
     },
+    resizeCategoryHeight: 4,
     chartCursor: {
         cursorAlpha: 1
     },
@@ -45,7 +82,6 @@ AmCharts.makeChart("chartdiv", {
         "postProcess": function (data, config, chart) {
             var graphs = []
                 , hidden_graphs = []
-                , collections = []
                 , chartData = []
                 , current_day;
             //prepare the data for consumption by amcharts
@@ -55,7 +91,7 @@ AmCharts.makeChart("chartdiv", {
                     , count = item.count
                     , day = item.day
                     , obj;
-                if (collection != "" && typeof(collection) != 'undefined'){
+                if (collection != "" && typeof(collection) != 'undefined') {
                     if (collections.indexOf(collection) === -1 && collection != "") collections.push(collection);
                     if (current_day != day && typeof(day) != "undefined") {
                         if (obj) chartData.push(obj);
@@ -63,10 +99,10 @@ AmCharts.makeChart("chartdiv", {
                         current_day = day;
                         obj["day"] = day;
                     }
-                    if (typeof(count) != 'undefined'){
+                    if (typeof(count) != 'undefined') {
                         obj[collection] = count;
                     }
-                    if (i+1 == data.length) {
+                    if (i + 1 == data.length) {
                         chartData.push(obj)
                     } //make sure we push last item if it's there
                 }
@@ -115,6 +151,7 @@ AmCharts.makeChart("chartdiv", {
                     }
                 })
             }
+
             return chartData;
         }
     },
