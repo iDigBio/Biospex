@@ -41,10 +41,10 @@
             </button>
         @endif
         @if(request()->user()->id === $project->group->user_id)
-            <button title="@lang('buttons.summaryTitle')" class="btn btn-success btn-xs"
+            <button title="@lang('buttons.transcriptsTitle')" class="btn btn-success btn-xs"
                     type="button"
-                    onClick="window.open('{{ route('web.expeditions.summary', [$project->id, $expedition->id]) }}')">
-                <span class="fa fa-bar-chart fa-lrg"></span> <!-- @lang('buttons.summary') -->
+                    onClick="location.href='{{ route('web.expeditions.transcripts', [$project->id, $expedition->id]) }}'">
+                <span class="fa fa-bar-chart fa-lrg"></span> <!-- @lang('buttons.transcripts') -->
             </button>
         @endif
     </td>
