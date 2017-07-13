@@ -27,10 +27,10 @@
                                     <span class="fa fa-download fa-lrg"></span> @lang('buttons.download') </button>
                             @endif
                             @if(request()->user()->id === $expedition->project->group->user_id)
-                                <button title="@lang('buttons.summaryTitle')" class="btn btn-success btn-sm"
+                                <button title="@lang('buttons.transcriptsTitle')" class="btn btn-success btn-sm"
                                         type="button"
-                                        onClick="window.open('{{ route('web.expeditions.summary', [$expedition->project->id, $expedition->id]) }}')">
-                                    <span class="fa fa-bar-chart fa-lrg"></span> @lang('buttons.summary')
+                                        onClick="location.href='{{ route('web.expeditions.transcripts', [$expedition->project->id, $expedition->id]) }}'">
+                                    <span class="fa fa-file-text-o fa-lrg"></span> @lang('buttons.transcripts')
                                 </button>
                             @endif
                             <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-sm" type="button"
