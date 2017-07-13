@@ -70,7 +70,7 @@ $router->get('projects/{projects}/expeditions/{expeditions}/ocr', [
     'as'   => 'web.expeditions.ocr'
 ]);
 
-$router->get('projects/{projects}/expeditions/{expeditions}/summary', [
-    'uses' => 'ExpeditionsController@summary',
-    'as'   => 'web.expeditions.summary'
+$router->get('projects/{projects}/expeditions/{expeditions}/transcripts', [
+    'uses' => 'ExpeditionsController@transcripts',
+    'as'   => 'web.expeditions.transcripts'
 ]);
