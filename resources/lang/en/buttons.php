@@ -53,6 +53,8 @@ return array(
     'restore'            => 'Restore',
     'restoreTitle'       => 'Restore this item',
     'regenerateDownload' => 'Regenerate Download',
-    'summary'            => 'Summary',
-    'summaryTitle'       => 'Generated Summary',
+    'projectStats'       => 'Statistics',
+    'projectStatsTitle'  => 'Project Statistics',
+    'transcripts'        => 'Transcripts',
+    'transcriptsTitle'   => 'Transcripts',
 );
