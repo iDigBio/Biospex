@@ -26,6 +26,13 @@
                             data-href="{{ route('web.projects.delete', [$project->id]) }}"><span
                                 class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
                 @endcan
+                @if(request()->user()->id === $project->group->user_id)
+                    <button title="@lang('buttons.projectStatsTitle')" class="btn btn-success btn-sm"
+                            type="button"
+                            onClick="window.open('{{ route('web.projects.stats', [$expedition->id]) }}')">
+                        <span class="fa fa-bar-chart fa-lrg"></span> @lang('buttons.projectStats')
+                    </button>
+                @endif
             </div>
 
             <div class="col-md-2">
