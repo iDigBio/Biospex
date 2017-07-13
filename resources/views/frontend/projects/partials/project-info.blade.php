@@ -29,7 +29,7 @@
                 @if(request()->user()->id === $project->group->user_id)
                     <button title="@lang('buttons.projectStatsTitle')" class="btn btn-success btn-sm"
                             type="button"
-                            onClick="location.href='{{ route('web.projects.stats', [$expedition->id]) }}'">
+                            onClick="location.href='{{ route('web.projects.stats', [$project->id]) }}'">
                         <span class="fa fa-bar-chart fa-lrg"></span> @lang('buttons.projectStats')
                     </button>
                 @endif
