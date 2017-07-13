@@ -26,13 +26,6 @@
                             data-href="{{ route('web.projects.delete', [$project->id]) }}"><span
                                 class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
                 @endcan
-                @if(request()->user()->id === $project->group->user_id)
-                    <button title="@lang('buttons.projectStatsTitle')" class="btn btn-success btn-sm"
-                            type="button"
-                            onClick="location.href='{{ route('web.projects.stats', [$project->id]) }}'">
-                        <span class="fa fa-bar-chart fa-lrg"></span> @lang('buttons.projectStats')
-                    </button>
-                @endif
             </div>
 
             <div class="col-md-2">
@@ -50,6 +43,13 @@
                 <button title="@lang('buttons.advertiseTitle')" class="btn btn-success btn-sm" type="button"
                         onClick="location.href='{{ route('web.advertises.index', [$project->id]) }}'"><span
                             class="fa fa-globe fa-lrg"></span> @lang('buttons.advertise')</button>
+                @if(request()->user()->id === $project->group->user_id)
+                    <button title="@lang('buttons.projectStatsTitle')" class="btn btn-success btn-sm"
+                            type="button"
+                            onClick="location.href='{{ route('web.projects.stats', [$project->id]) }}'">
+                        <span class="fa fa-bar-chart fa-lrg"></span> @lang('buttons.projectStats')
+                    </button>
+                @endif
             </div>
         </div>
     </div>
