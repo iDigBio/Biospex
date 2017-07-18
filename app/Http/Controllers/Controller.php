@@ -13,14 +13,14 @@ abstract class Controller extends BaseController
 
     /**
      * Check permissions.
-     * @param $user
-     * @param $classes
+     *
      * @param $ability
+     * @param $objects
      * @return bool
      */
-    public function checkPermissions($user, $classes, $ability)
+    public function checkPermissions($ability, $objects)
     {
-        if ($user->cannot($ability, $classes))
+        if (request()->user()->cannot($ability, $objects))
         {
             session_flash_push('warning', trans('pages.insufficient_permissions'));
 
