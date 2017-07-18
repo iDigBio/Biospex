@@ -40,12 +40,12 @@
                 <span class="fa fa-download fa-lrg"></span> <!-- @lang('buttons.download') -->
             </button>
         @endif
-        @if(request()->user()->id === $project->group->user_id)
+        @can('isOwner', $project->group)
             <button title="@lang('buttons.transcriptsTitle')" class="btn btn-success btn-xs"
                     type="button"
                     onClick="location.href='{{ route('web.expeditions.transcripts', [$project->id, $expedition->id]) }}'">
                 <span class="fa fa-file-text-o fa-lrg"></span> <!-- @lang('buttons.transcripts') -->
             </button>
-        @endif
+        @endcan
     </td>
 </tr>
