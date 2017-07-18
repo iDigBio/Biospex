@@ -43,7 +43,7 @@
         @can('isOwner', $project->group)
             <button title="@lang('buttons.transcriptsTitle')" class="btn btn-success btn-xs"
                     type="button"
-                    onClick="location.href='{{ route('web.expeditions.transcripts', [$project->id, $expedition->id]) }}'">
+                    onClick="location.href='{{ route('web.transcriptions.index', [$project->id, $expedition->id]) }}'">
                 <span class="fa fa-file-text-o fa-lrg"></span> <!-- @lang('buttons.transcripts') -->
             </button>
         @endcan
