@@ -46,7 +46,7 @@
                 @can('isOwner', $project->group)
                     <button title="@lang('buttons.projectStatsTitle')" class="btn btn-success btn-sm"
                             type="button"
-                            onClick="location.href='{{ route('web.projects.stats', [$project->id]) }}'">
+                            onClick="location.href='{{ route('web.statistics.index', [$project->id]) }}'">
                         <span class="fa fa-bar-chart fa-lrg"></span> @lang('buttons.projectStats')
                     </button>
                 @endcan
