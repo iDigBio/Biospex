@@ -133,7 +133,7 @@ class ProjectsController extends Controller
         $group = $this->groupContract->with('permissions')
             ->find(request()->get('group_id'));
 
-        if ( ! $this->checkPermissions(request()->user(), [Project::class, $group], 'create'))
+        if ( ! $this->checkPermissions('create', [Project::class, $group]))
         {
             return redirect()->route('web.projects.index');
         }
@@ -188,7 +188,7 @@ class ProjectsController extends Controller
     {
         $project = $this->projectContract->with(['group.permissions', 'nfnWorkflows'])->find($id);
 
-        if ( ! $this->checkPermissions(request()->user(), [$project], 'update'))
+        if ( ! $this->checkPermissions('update', $project))
         {
             return redirect()->route('web.projects.index');
         }
@@ -211,7 +211,7 @@ class ProjectsController extends Controller
     {
         $project = $this->projectContract->find($request->input('id'));
 
-        if ( ! $this->checkPermissions(request()->user(), [$project], 'update'))
+        if ( ! $this->checkPermissions('update', $project))
         {
             return redirect()->route('web.projects.index');
         }
@@ -234,7 +234,7 @@ class ProjectsController extends Controller
     {
         $project = $this->projectContract->with('group')->find($id);
 
-        if ( ! $this->checkPermissions(request()->user(), [$project], 'read'))
+        if ( ! $this->checkPermissions('read', $project))
         {
             return redirect()->route('web.projects.index');
         }
@@ -269,7 +269,7 @@ class ProjectsController extends Controller
     {
         $project = $this->projectContract->with('group')->find($id);
 
-        if ( ! $this->checkPermissions(request()->user(), [$project], 'delete'))
+        if ( ! $this->checkPermissions('delete', $project))
         {
             return redirect()->route('web.projects.index');
         }
@@ -293,7 +293,7 @@ class ProjectsController extends Controller
     {
         $project = $this->projectContract->with('group')->onlyTrashed($id);
 
-        if ( ! $this->checkPermissions(request()->user(), [$project], 'delete'))
+        if ( ! $this->checkPermissions('delete', $project))
         {
             return redirect()->route('web.projects.index');
         }
@@ -333,7 +333,7 @@ class ProjectsController extends Controller
     {
         $project = $this->projectContract->with('group.permissions')->find($projectId);
 
-        if ( ! $this->checkPermissions(request()->user(), [$project], 'update'))
+        if ( ! $this->checkPermissions('update', $project))
         {
             return redirect()->route('web.projects.index');
         }
@@ -354,5 +354,10 @@ class ProjectsController extends Controller
         }
 
         return redirect()->route('web.projects.show', [$projectId]);
+    }
+
+    public function stats($projectId)
+    {
+        
     }
 }

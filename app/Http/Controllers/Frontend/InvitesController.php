@@ -52,10 +52,9 @@ class InvitesController extends Controller
      */
     public function index($id)
     {
-        $user = request()->user();
         $group = $this->groupContract->setCacheLifetime(0)->with('invites')->find($id);
 
-        if ( ! $this->checkPermissions($user, [$group], 'update'))
+        if ( ! $this->checkPermissions('update', $group))
         {
             return redirect()->route('web.groups.show', [$id]);
         }
@@ -72,10 +71,9 @@ class InvitesController extends Controller
      */
     public function store(InviteFormRequest $request, $id)
     {
-        $user = request()->user();
         $group = $this->groupContract->with('invites')->find($id);
 
-        if ( ! $this->checkPermissions($user, [$group], 'update'))
+        if ( ! $this->checkPermissions('update', $group))
         {
             return redirect()->route('web.groups.show', [$id]);
         }
@@ -93,10 +91,9 @@ class InvitesController extends Controller
      */
     public function resend($id, $inviteId)
     {
-        $user = request()->user();
         $group = $this->groupContract->find($id);
 
-        if ( ! $this->checkPermissions($user, [$group], 'update'))
+        if ( ! $this->checkPermissions('update', $group))
         {
             return redirect()->route('web.groups.show', [$id]);
         }
@@ -128,10 +125,9 @@ class InvitesController extends Controller
      */
     public function delete($id, $inviteId)
     {
-        $user = request()->user();
         $group = $this->groupContract->find($id);
 
-        if ( ! $this->checkPermissions($user, [$group], 'delete'))
+        if ( ! $this->checkPermissions('delete', $group))
         {
             return redirect()->route('web.groups.show', [$id]);
         }

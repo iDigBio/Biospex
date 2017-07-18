@@ -31,10 +31,9 @@ class AdvertisesController extends Controller
      */
     public function index($id)
     {
-        $user = request()->user();
         $project = $this->projectContract->with('group')->find($id);
 
-        if ( ! $this->checkPermissions($user, [$project], 'read'))
+        if ( ! $this->checkPermissions('read', $project))
         {
             return redirect()->route('web.projects.index');
         }
@@ -55,10 +54,9 @@ class AdvertisesController extends Controller
      */
     public function show(ResponseFactory $response, $id)
     {
-        $user = request()->user();
         $project = $this->projectContract->with('group')->find($id);
 
-        if ( ! $this->checkPermissions($user, [$project], 'read'))
+        if ( ! $this->checkPermissions('read', $project))
         {
             return redirect()->route('web.projects.index');
         }
