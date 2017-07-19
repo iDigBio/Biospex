@@ -355,9 +355,4 @@ class ProjectsController extends Controller
 
         return redirect()->route('web.projects.show', [$projectId]);
     }
-
-    public function stats($projectId)
-    {
-        
-    }
 }

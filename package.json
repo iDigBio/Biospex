@@ -1,20 +1,20 @@
 {
   "private": true,
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-autoprefixer": "^3.1.0",
-    "gulp-imagemin": "^3.0.2",
-    "gulp-replace": "^0.5.4",
-    "gulp-sass": "^2.3.1",
-    "laravel-elixir": "*",
-    "laravel-elixir-imagemin": "^0.2.3",
-    "laravel-elixir-replace": "^1.1.2"
+    "gulp": "latest",
+    "gulp-autoprefixer": "latest",
+    "gulp-imagemin": "latest",
+    "gulp-replace": "latest",
+    "gulp-sass": "latest",
+    "laravel-elixir": "latest",
+    "laravel-elixir-imagemin": "latest",
+    "laravel-elixir-replace": "latest"
   },
   "dependencies": {
-    "express": "^4.13.4",
-    "forever": "^0.15.1",
-    "ioredis": "^1.15.1",
-    "redis": "^2.6.0-2",
-    "socket.io": "^1.4.6"
+    "express": "latest",
+    "forever": "latest",
+    "ioredis": "latest",
+    "redis": "latest",
+    "socket.io": "latest"
   }
 }

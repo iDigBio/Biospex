@@ -501,30 +501,4 @@ class ExpeditionsController extends Controller
 
         return redirect()->route('web.projects.show', [$projectId]);
     }
-
-    /**
-     * @param $projectId
-     * @param $expeditionId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function transcripts($projectId, $expeditionId)
-    {
-        $expedition = $this->expeditionContract->with('project.group')->find($expeditionId);
-
-        if ( ! $this->checkPermissions('isOwner', $expedition->project->group))
-        {
-            return redirect()->route('web.projects.index');
-        }
-
-        $file = $expeditionId . '.html';
-
-        if (File::exists(config('config.classifications_summary') . '/' . $file))
-        {
-            $contents = File::get(config('config.classifications_summary') . '/' . $file);
-            return view('frontend.summary', compact('contents'));
-        }
-
-        $contents = trans('errors.missing_summary', ['title' => $expedition->title]);
-        return view('frontend.summary', compact('contents'));
-    }
 }
