@@ -27,11 +27,13 @@
                                     <span class="fa fa-download fa-lrg"></span> @lang('buttons.download') </button>
                             @endif
                             @can('isOwner', $expedition->project->group)
+                                <!--
                                 <button title="@lang('buttons.transcriptsTitle')" class="btn btn-success btn-sm"
                                         type="button"
                                         onClick="location.href='{{ route('web.transcriptions.index', [$expedition->project->id, $expedition->id]) }}'">
                                     <span class="fa fa-file-text-o fa-lrg"></span> @lang('buttons.transcripts')
                                 </button>
+                                -->
                             @endcan
                             <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-sm" type="button"
                                     onClick="location.href='{{ route('web.expeditions.duplicate', [$expedition->project->id, $expedition->id]) }}'">
