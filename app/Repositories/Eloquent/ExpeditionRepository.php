@@ -3,8 +3,8 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Expedition;
-use App\Models\Subject;
 use App\Repositories\Contracts\ExpeditionContract;
+use App\Repositories\Contracts\SubjectContract;
 use Illuminate\Contracts\Container\Container;
 
 
@@ -100,8 +100,8 @@ class ExpeditionRepository extends EloquentRepository implements ExpeditionContr
                 $existingSubjectIds[] = $subject->_id;
             }
 
-            $subjectModel = new Subject();
-            $subjectModel->detachSubjects($existingSubjectIds, $expedition->id);
+            $subjectContract = app(SubjectContract::class);
+            $subjectContract->detachSubjects($existingSubjectIds, $expedition->id);
 
             $subjectIds = explode(',', $attributes['subjectIds']);
             $expedition->subjects()->attach($subjectIds);

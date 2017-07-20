@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use Jenssegers\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
+use Jenssegers\Mongodb\Eloquent\HybridRelations;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
 use Codesleeve\Stapler\ORM\EloquentTrait;
@@ -14,7 +15,7 @@ use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 
 class Project extends Model implements StaplerableInterface, SluggableInterface
 {
-    use EloquentTrait, SluggableTrait, UuidTrait, SoftCascadeTrait, SoftDeletes;
+    use EloquentTrait, SluggableTrait, UuidTrait, SoftCascadeTrait, SoftDeletes, HybridRelations ;
 
     /**
      * Enable soft delete.
@@ -28,7 +29,7 @@ class Project extends Model implements StaplerableInterface, SluggableInterface
      *
      * @var array
      */
-    protected $softCascade = ['expeditions', 'subjects', 'panoptesTranscriptions', 'header', 'metas', 'amChart', 'nfnWorkflows'];
+    protected $softCascade = ['expeditions', 'header', 'metas', 'amChart', 'nfnWorkflows'];
 
     /**
      * Sluggable value.

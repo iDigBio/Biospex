@@ -187,9 +187,19 @@ class JqGridJsonEncoder
             'sortable'      => true,
             'editable'      => false,
             'hidden'        => in_array($column, $default) ? false : true,
-            'searchoptions' => ['sopt' => [
-                'eq', 'ne', 'bw', 'bn', 'ew', 'en', 'cn', 'nc', 'nu', 'nn'
-            ], 'value'                 => ':Any;true:Yes;false:No']
+            'searchoptions' => [
+                'sopt'     => [
+                    'eq',
+                    'ne',
+                    'bw',
+                    'bn',
+                    'ew',
+                    'en',
+                    'cn',
+                    'nc',
+                    'nu',
+                    'nn'
+                ], 'value' => ':Any;true:Yes;false:No']
         ];
 
         return $col;
@@ -251,7 +261,7 @@ class JqGridJsonEncoder
             'expeditionId' => $expeditionId
         ];
 
-        $vars['count'] = $this->subjectContract->getTotalRowCount($vars);
+        $vars['count'] = $this->subjectContract->setCacheLifetime(0)->getTotalRowCount($vars);
 
         $vars['limit'] = count($vars['limit']) === 0 ? $vars['count'] : $vars['limit'];
 
@@ -271,7 +281,7 @@ class JqGridJsonEncoder
         if (empty($postedData['pivotRows']))
         {
             // $limit, $start, $sidx, $sord, $filters
-            $rows = $this->subjectContract->getRows($vars);
+            $rows = $this->subjectContract->setCacheLifetime(0)->getRows($vars);
         }
         else
         {
@@ -355,7 +365,7 @@ class JqGridJsonEncoder
         }
         else
         {
-            $this->subjectContract->detachSubjects($data['ids'], $id);
+            $this->subjectContract->setCacheLifetime(0)->detachSubjects($data['ids'], $id);
         }
 
         $count = $expedition->getSubjectsCountAttribute();
@@ -365,7 +375,7 @@ class JqGridJsonEncoder
 
     /**
      * @param $postedData
-     * @return array
+     * @return int
      */
     public function setPage($postedData)
     {

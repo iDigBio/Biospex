@@ -115,14 +115,16 @@ class ActorImageService extends ActorServiceBase
     private function saveImage($response, $index)
     {
         $image = $response->getBody()->getContents();
+        $response->getBody()->close();
+
+        $attributes = [
+            'subjectId' => $this->config->subjects[$index]->_id,
+            'accessURI' => $this->config->subjects[$index]->accessURI,
+            'message' => 'Image corrupt: ' . $response->getStatusCode()
+        ];
 
         if ($image === '' || $response->getStatusCode() !== 200)
         {
-            $attributes = [
-                'subjectId' => $this->config->subjects[$index]->_id,
-                'accessURI' => $this->config->subjects[$index]->accessURI,
-                'message' => 'Image empty: ' . $response->getStatusCode()
-            ];
             $this->setMissingImages($attributes);
 
             return;
@@ -130,11 +132,6 @@ class ActorImageService extends ActorServiceBase
 
         if ( ! $this->gdService->setImageFromSource($image, false))
         {
-            $attributes = [
-                'subjectId' => $this->config->subjects[$index]->_id,
-                'accessURI' => $this->config->subjects[$index]->accessURI,
-                'message' => 'Image corrupt: ' . $response->getStatusCode()
-            ];
             $this->setMissingImages($attributes);
 
             return;
@@ -143,11 +140,6 @@ class ActorImageService extends ActorServiceBase
         $ext = $this->gdService->getSourceExtension();
         if ( ! $this->gdService->writeImageToFile($this->config->workingDirectory . '/' . $this->config->subjects[$index]->_id . $ext, $image))
         {
-            $attributes = [
-                $this->config->subjects[$index]->_id,
-                $this->config->subjects[$index]->accessURI,
-                'Write image to file: ' . $response->getStatusCode()
-            ];
             $this->setMissingImages($attributes);
 
             return;

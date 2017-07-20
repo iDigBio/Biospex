@@ -138,7 +138,9 @@ class PanoptesTranscriptionProcess
 
         $combined = array_combine($header, $row);
 
-        if ( ! $subject = $this->getSubject($combined))
+        $subject = $this->getSubject($combined);
+
+        if ($subject === null)
         {
             $this->csvError[] = array_merge(['error' => 'Could not find subject id for classification'], $combined);
 
@@ -215,9 +217,7 @@ class PanoptesTranscriptionProcess
      */
     public function getSubject($combined)
     {
-        $subject = $this->subjectContract->setCacheLifetime(0)->find(trim($combined['subject_subjectId']));
-
-        return empty($subject) ? false : $subject;
+        return $this->subjectContract->setCacheLifetime(0)->find(trim($combined['subject_subjectId']));
     }
 
     /**

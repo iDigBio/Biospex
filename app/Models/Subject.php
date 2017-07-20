@@ -3,20 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Support\Collection;
-use Jenssegers\Mongodb\Model;
-use Jenssegers\Mongodb\Eloquent\SoftDeletes;
+use Jenssegers\Mongodb\Eloquent\Model;
 
 class Subject extends Model
 {
-    use SoftDeletes;
-
-    /**
-     * Enable soft delete.
-     *
-     * @var boolean
-     */
-    protected $softDelete = true;
-
     /**
      * @inheritDoc
      */
@@ -26,11 +16,6 @@ class Subject extends Model
      * @inheritDoc
      */
     protected $primaryKey = '_id';
-
-    /**
-     * @inheritDoc
-     */
-    protected $dates = ['deleted_at'];
 
     /**
      * @inheritDoc

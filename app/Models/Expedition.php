@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
-use Jenssegers\Eloquent\Model;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
+use Illuminate\Database\Eloquent\Model;
+use Jenssegers\Mongodb\Eloquent\HybridRelations;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
 class Expedition extends Model
 {
-    use UuidTrait, SoftCascadeTrait, SoftDeletes;
+    use UuidTrait, SoftCascadeTrait, SoftDeletes, HybridRelations;
 
     /**
      * Enable soft delete.
@@ -23,7 +24,7 @@ class Expedition extends Model
      *
      * @var array
      */
-    protected $softCascade = ['stat', 'nfnWorkflow', 'stat', 'workflowManager'];
+    protected $softCascade = ['stat', 'nfnWorkflow', 'workflowManager'];
 
     /**
      * @inheritDoc

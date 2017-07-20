@@ -135,7 +135,7 @@ class OcrRequest
                 continue;
             }
 
-            $subject = $this->subjectContract->find($id);
+            $subject = $this->subjectContract->setCacheLifetime(0)->find($id);
             if ($subject === null)
             {
                 $csv[] = ['id' => $id, 'message' => 'Could not locate associated subject in database', 'url' => ''];

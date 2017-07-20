@@ -2,10 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\Contracts\DownloadContract;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-
 
 class TestAppCommand extends Command
 {
@@ -22,13 +20,10 @@ class TestAppCommand extends Command
      */
     protected $description = 'Used to test code';
 
-
     /**
      * TestAppCommand constructor.
      */
-    public function __construct(
-
-    )
+    public function __construct()
     {
         parent::__construct();
     }
@@ -36,19 +31,8 @@ class TestAppCommand extends Command
     /**
      *
      */
-    public function handle(DownloadContract $downloadContract)
+    public function handle()
     {
-        $files = \File::allFiles(config('config.nfn_export_dir'));
 
-        foreach ($files as $file)
-        {
-            $baseName = \File::basename($file);
-            $count = $downloadContract->findWhere(['file', '=', $baseName])->count();
-            if ($count === 0)
-            {
-                echo 'Deleting ' . $file . PHP_EOL;
-                \File::delete($file);
-            }
-        }
     }
 }

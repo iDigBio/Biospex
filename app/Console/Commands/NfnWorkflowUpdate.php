@@ -74,7 +74,7 @@ class NfnWorkflowUpdate extends Command
     private function getWorkflows(NfnWorkflowContract $nfnWorkflow)
     {
         return null === $this->expeditionIds ?
-            $nfnWorkflow->skipCache()->get() :
-            $nfnWorkflow->skipCache()->whereIn('expedition_id', [$this->expeditionIds])->get();
+            $nfnWorkflow->setCacheLifetime(0)->findAll() :
+            $nfnWorkflow->setCacheLifetime(0)->findWhereIn(['expedition_id', [$this->expeditionIds]]);
     }
 }

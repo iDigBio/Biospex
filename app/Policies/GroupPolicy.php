@@ -6,6 +6,13 @@ use Illuminate\Support\Facades\Cache;
 
 class GroupPolicy
 {
+
+    /**
+     * Allow admins.
+     *
+     * @param $user
+     * @return bool|null
+     */
     public function before($user)
     {
         $key = md5(__METHOD__ . $user->uuid);
@@ -14,6 +21,18 @@ class GroupPolicy
         });
         
         return $access ? true : null;
+    }
+
+    /**
+     * Is group owner.
+     *
+     * @param $user
+     * @param $group
+     * @return bool
+     */
+    public function isOwner($user,$group)
+    {
+        return $user->id === $group->user_id;
     }
 
     /**

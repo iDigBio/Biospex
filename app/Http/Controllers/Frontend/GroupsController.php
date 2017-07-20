@@ -201,7 +201,7 @@ class GroupsController extends Controller
     {
         $group = $this->groupService->groupContract->onlyTrashed($groupId);
 
-        if ( ! $this->checkPermissions(request()->user(), [$group], 'delete'))
+        if ( ! $this->checkPermissions('delete', $group))
         {
             return redirect()->route('web.groups.index');
         }

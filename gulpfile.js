@@ -31,17 +31,19 @@ elixir(function (mix) {
         folder: 'img',
         outputFolder: 'img'
     };
-    mix.imagemin().copy(assets + '/img', 'public/img');
+    //mix.imagemin().copy(assets + '/img', 'public/img');
+    mix.copy(assets + '/img', 'public/img');
 
     //minify fonts
     elixir.config.images = {
         folder: 'fonts',
         outputFolder: 'fonts'
     };
-    mix.imagemin().copy(assets + '/fonts', 'public/fonts');
+    //mix.imagemin().copy(assets + '/fonts', 'public/fonts');
+    mix.copy(assets + '/fonts', 'public/fonts');
 
     // mix bootstrap using less and app specific less
-    mix.less('app.less', 'resources/assets/css/bootstrap.css', {paths: lessPaths});
+    mix.less('app.less', 'resources/assets/css/bootstrap.css');
 
     // Create frontend css and javascript
     mix.styles([

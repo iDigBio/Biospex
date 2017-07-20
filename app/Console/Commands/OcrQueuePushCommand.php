@@ -57,7 +57,7 @@ class OcrQueuePushCommand extends Command
         $id = $this->argument('id');
 
         // Retrieve record and update error column if needed
-        $job = $this->repo->skipCache()->find($id);
+        $job = $this->ocrQueueContract->setCacheLifetime(0)->find($id);
 
         if (empty($job))
         {

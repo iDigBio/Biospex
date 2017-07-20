@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Model;
+use Jenssegers\Mongodb\Eloquent\Model;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 use MongoDate;
 

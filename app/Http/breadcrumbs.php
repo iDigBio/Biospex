@@ -64,3 +64,9 @@ Breadcrumbs::register('web.expeditions.show.title', function ($breadcrumbs, $exp
     $breadcrumbs->parent('web.expeditions.show', $expedition, true);
     $breadcrumbs->push($title);
 });
+
+// Transcription Pages
+Breadcrumbs::register('web.transcriptions.show.title', function ($breadcrumbs, $expedition, $title) {
+    $breadcrumbs->parent('web.expeditions.show', $expedition, true);
+    $breadcrumbs->push($title);
+});

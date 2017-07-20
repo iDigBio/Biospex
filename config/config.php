@@ -16,6 +16,7 @@ return [
     'expedition_size' => env('APP_EXPEDITION_SIZE'),
 
     'scratch_dir'                 => storage_path('scratch'),
+    'scratch_dir_tmp'             => storage_path('scratch/tmp'),
     'nfn_export_dir'              => storage_path('exports/nfn'),
     'subject_import_dir'          => storage_path('imports/subjects'),
     'transcription_import_dir'    => storage_path('imports/transcriptions'),
@@ -94,12 +95,12 @@ return [
     ],
 
     'images'                => [
-        'thumbDefaultImg'    => public_path('/img/default_image.jpg'),
-        'thumbOutputDir'     => storage_path('images'),
-        'thumbWidth'         => 300,
-        'thumbHeight'        => 300,
-        'nfnLrgWidth'        => env('NFN_LRG_WIDTH', 1500),
-        'nfnSmWidth'         => env('NFN_SM_WIDTH', 500)
+        'thumbDefaultImg' => public_path('/img/default_image.jpg'),
+        'thumbOutputDir'  => storage_path('images'),
+        'thumbWidth'      => 300,
+        'thumbHeight'     => 300,
+        'nfnLrgWidth'     => env('NFN_LRG_WIDTH', 1500),
+        'nfnSmWidth'      => env('NFN_SM_WIDTH', 500)
     ],
 
     /** Min and max logo and banner sizes used in Project model for Codesleve Stapler */

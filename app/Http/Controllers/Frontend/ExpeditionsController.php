@@ -7,9 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Jobs\BuildOcrBatchesJob;
 use App\Jobs\UpdateNfnWorkflowJob;
 use App\Http\Requests\ExpeditionFormRequest;
+use App\Models\Expedition;
 use App\Services\Model\ModelDeleteService;
 use App\Services\Model\ModelDestroyService;
 use App\Services\Model\ModelRestoreService;
+use File;
 use Illuminate\Support\Facades\Artisan;
 use App\Exceptions\Handler;
 use JavaScript;
@@ -119,10 +121,9 @@ class ExpeditionsController extends Controller
      */
     public function create($id)
     {
-        $user = request()->user();
         $project = $this->projectContract->with('group.permissions')->find($id);
 
-        if ( ! $this->checkPermissions($user, [$project, $project->group], 'create'))
+        if ( ! $this->checkPermissions('create', [$project, $project->group]))
         {
             return redirect()->route('web.projects.index');
         }
@@ -150,10 +151,9 @@ class ExpeditionsController extends Controller
      */
     public function store(ExpeditionFormRequest $request, $projectId)
     {
-        $user = request()->user();
         $project = $this->projectContract->with('group.permissions')->find($projectId);
 
-        if ( ! $this->checkPermissions($user, [$project, $project->group], 'create'))
+        if ( ! $this->checkPermissions('create', [$project, $project->group]))
         {
             return redirect()->route('web.projects.index');
         }
@@ -211,10 +211,9 @@ class ExpeditionsController extends Controller
      */
     public function duplicate($projectId, $expeditionId)
     {
-        $user = request()->user();
         $expedition = $this->expeditionContract->with(['project.group.permissions'])->find($expeditionId);
 
-        if ( ! $this->checkPermissions($user, [$expedition->project, $expedition->project->group], 'create'))
+        if ( ! $this->checkPermissions('create', [$expedition->project, $expedition->project->group]))
         {
             return redirect()->route('web.projects.index');
         }
@@ -241,7 +240,6 @@ class ExpeditionsController extends Controller
      */
     public function edit($projectId, $expeditionId)
     {
-        $user = request()->user();
         $expedition = $this->expeditionContract->setCacheLifetime(0)
             ->with([
             'project.group.permissions',
@@ -250,7 +248,7 @@ class ExpeditionsController extends Controller
             'nfnWorkflow'
         ])->find($expeditionId);
 
-        if ( ! $this->checkPermissions($user, [$expedition->project], 'update'))
+        if ( ! $this->checkPermissions('update', $expedition->project))
         {
             return redirect()->route('web.projects.index');
         }
@@ -285,10 +283,9 @@ class ExpeditionsController extends Controller
      */
     public function update(ExpeditionFormRequest $request, $projectId, $expeditionId)
     {
-        $user = request()->user();
         $project = $this->projectContract->with('group.permissions')->find($projectId);
 
-        if ( ! $this->checkPermissions($user, [$project], 'update'))
+        if ( ! $this->checkPermissions('update', $project))
         {
             return redirect()->route('web.projects.index');
         }
@@ -322,10 +319,9 @@ class ExpeditionsController extends Controller
      */
     public function process($projectId, $expeditionId)
     {
-        $user = request()->user();
         $project = $this->projectContract->with('group.permissions')->find($projectId);
 
-        if ( ! $this->checkPermissions($user, [$project], 'update'))
+        if ( ! $this->checkPermissions('update', $project))
         {
             return redirect()->route('web.projects.index');
         }
@@ -376,11 +372,9 @@ class ExpeditionsController extends Controller
      */
     public function ocr(OcrQueueContract $ocrQueueContract, $projectId, $expeditionId)
     {
-        $user = request()->user();
-
         $project = $this->projectContract->with('group.permissions')->find($projectId);
 
-        if ( ! $this->checkPermissions($user, [$project], 'update'))
+        if ( ! $this->checkPermissions('update', $project))
         {
             return redirect()->route('web.projects.index');
         }
@@ -411,10 +405,9 @@ class ExpeditionsController extends Controller
      */
     public function stop($projectId, $expeditionId)
     {
-        $user = request()->user();
         $project = $this->projectContract->with('group.permissions')->find($projectId);
 
-        if ( ! $this->checkPermissions($user, [$project], 'update'))
+        if ( ! $this->checkPermissions('update', $project))
         {
             return redirect()->route('web.projects.index');
         }
@@ -445,10 +438,9 @@ class ExpeditionsController extends Controller
      */
     public function delete(ModelDeleteService $service, $projectId, $expeditionId)
     {
-        $user = request()->user();
         $project = $this->projectContract->with('group.permissions')->find($projectId);
 
-        if ( ! $this->checkPermissions($user, [$project], 'delete'))
+        if ( ! $this->checkPermissions('delete', $project))
         {
             return redirect()->route('web.projects.index');
         }
@@ -475,10 +467,9 @@ class ExpeditionsController extends Controller
      */
     public function destroy(ModelDestroyService $service, $projectId, $expeditionId)
     {
-        $user = request()->user();
         $project = $this->projectContract->with('group.permissions')->find($projectId);
 
-        if ( ! $this->checkPermissions($user, [$project], 'delete'))
+        if ( ! $this->checkPermissions('delete', $project))
         {
             return redirect()->route('web.projects.index');
         }

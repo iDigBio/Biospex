@@ -29,5 +29,6 @@ return array(
     'poll_export_count'             => ':count of :total images exported.',
     'poll_export_csv'               => 'Generating CSV file for export.',
     'download_regeneration_success' => 'Download regeneration has started. You will be notified when completed',
-    'download_regeneration_error'   => 'An error occurred while trying to regenerate the download. The Admin has been notified.'
+    'download_regeneration_error'   => 'An error occurred while trying to regenerate the download. The Admin has been notified.',
+    'transcriptions'                => 'Transcriptions'
 );

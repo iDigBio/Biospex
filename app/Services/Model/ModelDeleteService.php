@@ -189,6 +189,7 @@ class ModelDeleteService
             }
 
             $subjects = $this->subjectService->subjectContract
+                ->setCacheLifetime(0)
                 ->where('expedition_ids', '=', (int) $id)
                 ->findAll();
 

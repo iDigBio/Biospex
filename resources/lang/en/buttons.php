@@ -52,5 +52,9 @@ return array(
     'destroyTitle'       => 'Destroy this item',
     'restore'            => 'Restore',
     'restoreTitle'       => 'Restore this item',
-    'regenerateDownload' => 'Regenerate Download'
+    'regenerateDownload' => 'Regenerate Download',
+    'projectStats'       => 'Statistics',
+    'projectStatsTitle'  => 'Project Statistics',
+    'transcripts'        => 'Transcripts',
+    'transcriptsTitle'   => 'Transcripts',
 );

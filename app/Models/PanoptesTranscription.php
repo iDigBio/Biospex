@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Model;
+use Jenssegers\Mongodb\Eloquent\Model;
 use MongoDate;
 
 class PanoptesTranscription extends Model
