@@ -111,4 +111,11 @@ class PanoptesTranscriptionRepository extends EloquentRepository implements Pano
     {
         return $this->groupBy('user_name')->findWhere(['user_name', 'not regexp', '/^not-logged-in.*/i'])->count();
     }
+
+    public function getUserTranscriptionCount($expeditionId)
+    {
+        return $this->findWhere(['user_name', 'not regexp', '/^not-logged-in.*/i'])
+            ->selectRaw('user_name, count(user_name) as count')
+            ->groupBy('user_name');
+    }
 }

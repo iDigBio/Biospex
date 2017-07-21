@@ -18,4 +18,6 @@ interface PanoptesTranscriptionContract extends RepositoryContract, CacheableCon
     public function getTranscriptionCountPerDate($workflowId);
 
     public function getContributorCount();
+
+    public function getUserTranscriptionCount($expeditionId);
 }

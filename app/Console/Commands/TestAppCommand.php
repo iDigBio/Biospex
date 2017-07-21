@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\Contracts\PanoptesTranscriptionContract;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -31,8 +32,9 @@ class TestAppCommand extends Command
     /**
      *
      */
-    public function handle()
+    public function handle(PanoptesTranscriptionContract $contract)
     {
-
+        $results = $contract->getUserTranscriptionCount(60);
+        dd($results);
     }
 }
