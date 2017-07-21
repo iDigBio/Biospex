@@ -205,6 +205,7 @@ class ActorImageService extends ActorServiceBase
      *
      * @param $file
      * @param $filename
+     * @return bool
      */
     public function writeImagickFile($file, $filename)
     {
@@ -219,8 +220,18 @@ class ActorImageService extends ActorServiceBase
                 'message' => 'Could not write image to file.'
             ];
             $this->setMissingImages($attributes);
+            $this->clearAndFire();
+
+            return false;
         }
 
+        $this->clearAndFire();
+        return true;
+    }
+
+
+    private function clearAndFire()
+    {
         $this->imagickService->clearImagickObject();
         $this->config->fireActorProcessedEvent();
     }
