@@ -182,35 +182,33 @@ class NfnPanoptesExport
      */
     public function convertImages()
     {
-        try
+        $existingFiles = $this->getExistingConvertedFiles();
+        $files = collect($this->fileService->filesystem->files($this->config->workingDirectory));
+        $this->config->setSubjects($files);
+
+        $files->reject(function ($file) use ($existingFiles)
         {
-            $existingFiles = $this->getExistingConvertedFiles();
-            $files = collect($this->fileService->filesystem->files($this->config->workingDirectory));
-            $this->config->setSubjects($files);
-
-            $files->reject(function ($file) use ($existingFiles)
+            if ($this->checkConvertedFile($file, $existingFiles))
             {
-                if ($this->checkConvertedFile($file, $existingFiles))
-                {
-                    $this->config->fireActorProcessedEvent();
+                $this->config->fireActorProcessedEvent();
 
-                    return true;
-                }
+                return true;
+            }
 
-                return false;
-            })->each(function ($file)
-            {
-                $fileName = $this->fileService->filesystem->name($file);
-                $this->actorImageService->writeImagickFile($file, $fileName);
-            });
-
-            $this->config->fireActorQueuedEvent();
-            $this->advanceQueue();
-        }
-        catch (Exception $e)
+            return false;
+        })->each(function ($file)
         {
-            throw new ActorException($e);
+            $fileName = $this->fileService->filesystem->name($file);
+            $this->actorImageService->writeImagickFile($file, $fileName);
+        });
+
+        if (empty($this->fileService->filesystem->files($this->config->tmpDirectory)))
+        {
+            throw new ActorException('Missing converted images for Expedition ' . $this->config->expedition->id);
         }
+
+        $this->config->fireActorQueuedEvent();
+        $this->advanceQueue();
     }
 
     /**

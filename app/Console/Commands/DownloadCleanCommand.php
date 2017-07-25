@@ -77,8 +77,7 @@ class DownloadCleanCommand extends Command
     public function handle()
     {
         $downloads = $this->downloadContract->setCacheLifetime(0)
-            //->where('count', '>', 5)
-            ->where('created_at', '<', Carbon::now()->subDays(30), 'or')
+            ->where('created_at', '<', Carbon::now()->subDays(90), 'or')
             ->findAll();
 
         $downloads->each(function ($download)
@@ -86,11 +85,24 @@ class DownloadCleanCommand extends Command
             $file = $this->nfnExportDir . '/' . $download->file;
             if ($this->filesystem->isFile($file))
             {
-                echo 'Deleting ' . $download->file;
-                //$this->filesystem->delete($file);
+                echo 'Deleting ' . $file . PHP_EOL;
+                $this->filesystem->delete($file);
             }
 
-            //$this->downloadContract->delete($download->id);
+            $this->downloadContract->delete($download->id);
         });
+
+        $files = collect($this->filesystem->files($this->nfnExportDir));
+        $files->each(function($file){
+            $fileName = $this->filesystem->basename($file);
+            $result = $this->downloadContract->setCacheLifetime(0)->findBy('file', '=', $fileName);
+            if ($result)
+            {
+                echo 'Deleting ' . $file . PHP_EOL;
+                $this->downloadContract->delete($result->id);
+                $this->filesystem->delete($file);
+            }
+        });
+
     }
 }
