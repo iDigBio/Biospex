@@ -715,3 +715,16 @@ div.stats {
 div.stats-number{
     font-size: large;
 }
+
+div#transcribers {
+    height: 400px;
+    overflow: scroll;
+}
+
+div.panel-title i {
+    cursor: pointer;
+}
+
+div#chartTranscriptionsDiv {
+    height: 500px;
+}

@@ -140,6 +140,17 @@ $(document).ready(function() {
 
     $('.textarea').wysihtml5();
 
+    $('div.panel-heading i').click(function(){
+        var div = '#transcribers';
+        if ( $(div).height() !== 370) {
+            $(div).css('height', '370px');
+            $(div).css('overflow', 'scroll');
+        } else {
+            $(div).css('height', 'auto');
+            $(div).css('overflow', '');
+        }
+    });
+
 });
 
 $(function()

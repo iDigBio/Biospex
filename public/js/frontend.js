@@ -4647,10 +4647,7 @@ AmCharts.addInitHandler(function (chart) {
             // now let's do our thing
             AmCharts.resizeCategory(chart);
         };
-    } else {
-        AmCharts.resizeCategory(chart);
     }
-
 }, ['serial']);
 
 var collections = [];
@@ -4787,6 +4784,46 @@ var chart = AmCharts.makeChart("chartdiv", {
         periodValueText: "Total: [[value.high]]"
     }
 });
+
+var transcriptChart = AmCharts.makeChart( "chartTranscriptionsDiv", {
+    "type": "serial",
+    "theme": "light",
+    "marginRight": 70,
+    "resizeCategoryHeight": 4,
+    "titles": [{
+        "size": 15,
+        "text": "Transcriptions per Transcriber"
+    }],
+    "dataProvider": JSON.parse(Laravel.transcriptionChartData),
+    "startDuration": 1,
+    "graphs": [{
+        "balloonText": "<b>[[category]]: [[value]]</b>",
+        "fillColorsField": "color",
+        "fillAlphas": 0.9,
+        "lineAlpha": 0.2,
+        "type": "column",
+        "valueField": "users"
+    }],
+    "valueAxes": [{
+        "title": "Number of Transcribers"
+    }],
+    "chartCursor": {
+        "categoryBalloonEnabled": false,
+        "cursorAlpha": 0,
+        "zoomable": false
+    },
+    "categoryField": "count",
+    "categoryAxis": {
+        "gridThickness": 0,
+        "gridPosition": "start",
+        "labelRotation": 45,
+        "title": "Number of Transcriptions"
+    },
+    "export": {
+        "enabled": true
+    }
+
+} );
 $('body').confirmation({
     singleton: true,
     selector: '[data-toggle="confirmation"]',
@@ -4945,6 +4982,17 @@ $(document).ready(function() {
     });
 
     $('.textarea').wysihtml5();
+
+    $('div.panel-heading i').click(function(){
+        var div = '#transcribers';
+        if ( $(div).height() !== 370) {
+            $(div).css('height', '370px');
+            $(div).css('overflow', 'scroll');
+        } else {
+            $(div).css('height', 'auto');
+            $(div).css('overflow', '');
+        }
+    });
 
 });
 

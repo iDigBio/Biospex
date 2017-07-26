@@ -32,9 +32,7 @@ class TestAppCommand extends Command
     /**
      *
      */
-    public function handle(PanoptesTranscriptionContract $contract)
+    public function handle()
     {
-        $results = $contract->getUserTranscriptionCount(60);
-        dd($results);
     }
 }

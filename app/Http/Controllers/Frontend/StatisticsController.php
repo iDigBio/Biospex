@@ -6,64 +6,62 @@ use App\Exceptions\Handler;
 use App\Exceptions\BiospexException;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\ExpeditionContract;
+use App\Repositories\Contracts\PanoptesTranscriptionContract;
+use App\Repositories\Contracts\ProjectContract;
 use App\Repositories\Contracts\UserContract;
 use File;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Repositories\Contracts\DownloadContract;
+use JavaScript;
 use Queue;
 
 class StatisticsController extends Controller
 {
 
     /**
-     * @var ExpeditionContract
+     * @var ProjectContract
      */
-    public $expeditionContract;
-
+    private $projectContract;
     /**
-     * @var DownloadContract
+     * @var PanoptesTranscriptionContract
      */
-    public $downloadContract;
+    private $panoptesTranscriptionContract;
 
-    /**
-     * @var ResponseFactory
-     */
-    public $response;
-
-    /**
-     * @var UserContract
-     */
-    public $userContract;
 
     /**
      * DownloadsController constructor.
-     *
-     * @param ExpeditionContract $expeditionContract
-     * @param DownloadContract $downloadContract
-     * @param UserContract $userContract
-     * @param ResponseFactory $response
-     * @internal param ResponseFactory $response0
+     * @param ProjectContract $projectContract
+     * @param PanoptesTranscriptionContract $panoptesTranscriptionContract
      */
     public function __construct(
-        ExpeditionContract $expeditionContract,
-        DownloadContract $downloadContract,
-        UserContract $userContract,
-        ResponseFactory $response
+        ProjectContract $projectContract,
+        PanoptesTranscriptionContract $panoptesTranscriptionContract
     )
     {
-        $this->expeditionContract = $expeditionContract;
-        $this->downloadContract = $downloadContract;
-        $this->response = $response;
-        $this->userContract = $userContract;
+        $this->projectContract = $projectContract;
+        $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
     }
 
     /**
      * @param $projectId
-     * @param $expeditionId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index($projectId)
     {
-        return 'Page';
+        $project = $this->projectContract->find($projectId);
+        $transcribers = collect($this->panoptesTranscriptionContract
+            ->setCacheLifetime(0)
+            ->getUserTranscriptionCount($projectId))->sortByDesc('count');
+        $plucked = collect(array_count_values($transcribers->pluck('count')->sort()->toArray()));
+
+        $transcriptions = $plucked->flatMap(function($users, $count){
+            return [['count' => $count, 'users' => $users]];
+        })->toJson();
+
+        JavaScript::put([
+            'transcriptionChartData' => $transcriptions
+        ]);
+
+        return view('frontend.statistics.index', compact('project', 'transcribers'));
     }
 }

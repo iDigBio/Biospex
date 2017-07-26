@@ -4,6 +4,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\PanoptesTranscription;
 use App\Repositories\Contracts\PanoptesTranscriptionContract;
+use DB;
 use Illuminate\Contracts\Container\Container;
 
 class PanoptesTranscriptionRepository extends EloquentRepository implements PanoptesTranscriptionContract
@@ -112,10 +113,22 @@ class PanoptesTranscriptionRepository extends EloquentRepository implements Pano
         return $this->groupBy('user_name')->findWhere(['user_name', 'not regexp', '/^not-logged-in.*/i'])->count();
     }
 
-    public function getUserTranscriptionCount($expeditionId)
+    /**
+     * Get transcription counts per user.
+     *
+     * @param $projectId
+     * @return mixed
+     */
+    public function getUserTranscriptionCount($projectId)
     {
-        return $this->findWhere(['user_name', 'not regexp', '/^not-logged-in.*/i'])
-            ->selectRaw('user_name, count(user_name) as count')
-            ->groupBy('user_name');
+        $result = $this->raw(function($collection) use ($projectId) {
+            return $collection->aggregate(
+                [
+                    ['$match' => ['subject_projectId' => (int) $projectId]],
+                    ['$group' => ['_id' => '$user_name', 'count' => ['$sum' => 1]]]
+                ]);
+        });
+
+        return $result['result'];
     }
 }
