@@ -4619,211 +4619,217 @@ var e="",f=i.p.groupingView,g=[],h=f.groupField.length,j=i.p.colModel,k=j.length
  * https://github.com/tavicu/bs-confirmation
  */
 +function(a){"use strict";var b=!1,c=function(c,d){var e=this;this.init("confirmation",c,d),a(c).on("show.bs.confirmation",function(b){e.options.onShow(b,this),a(this).addClass("open");var c=e.options,d=c.all_selector;c.singleton&&a(d).not(e.$element).each(function(){a(this).hasClass("open")&&a(this).confirmation("hide")})}),a(c).on("hide.bs.confirmation",function(b){e.options.onHide(b,this),a(this).removeClass("open")}),a(c).on("shown.bs.confirmation",function(c){var d=e.options;d.all_selector;e.isPopout()&&(b||(b=a("body").on("click",function(c){e.$element.is(c.target)||e.$element.has(c.target).length||a(".popover").has(c.target).length||(e.hide(),e.inState.click=!1,a("body").unbind(c),b=!1)})))}),d.selector?a(c).on("click.bs.confirmation",d.selector,function(a){a.preventDefault()}):a(c).on("click.bs.confirmation",function(a){a.preventDefault()})};if(!a.fn.popover||!a.fn.tooltip)throw new Error("Confirmation requires popover.js and tooltip.js");c.VERSION="1.0.5",c.DEFAULTS=a.extend({},a.fn.popover.Constructor.DEFAULTS,{placement:"right",title:"Are you sure?",btnOkClass:"btn btn-sm btn-danger",btnOkLabel:"Delete",btnOkIcon:"glyphicon glyphicon-ok",btnCancelClass:"btn btn-sm btn-default",btnCancelLabel:"Cancel",btnCancelIcon:"glyphicon glyphicon-remove",href:"#",target:"_self",singleton:!0,popout:!0,onShow:function(a,b){},onHide:function(a,b){},onConfirm:function(a,b){},onCancel:function(a,b){},template:'<div class="popover"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"><a data-apply="confirmation">Yes</a><a data-dismiss="confirmation">No</a></div></div>'}),c.prototype=a.extend({},a.fn.popover.Constructor.prototype),c.prototype.constructor=c,c.prototype.getDefaults=function(){return c.DEFAULTS},c.prototype.setContent=function(){var b=this,c=this.tip(),d=this.getTitle(),e=c.find('[data-apply="confirmation"]'),f=c.find('[data-dismiss="confirmation"]'),g=this.options;e.addClass(this.getBtnOkClass()).html(this.getBtnOkLabel()).prepend(a("<i></i>").addClass(this.getBtnOkIcon())," ").attr("href",this.getHref()).attr("target",this.getTarget()).off("click").on("click",function(a){g.onConfirm(a,b.$element),"submit"==b.$element.attr("type")&&b.$element.closest("form:first").submit(),b.hide(),b.inState.click=!1}),f.addClass(this.getBtnCancelClass()).html(this.getBtnCancelLabel()).prepend(a("<i></i>").addClass(this.getBtnCancelIcon())," ").off("click").on("click",function(a){g.onCancel(a,b.$element),b.hide(),b.inState.click=!1}),c.find(".popover-title")[this.options.html?"html":"text"](d),c.removeClass("fade top bottom left right in"),c.find(".popover-title").html()||c.find(".popover-title").hide()},c.prototype.getBtnOkClass=function(){var a=this.$element,b=this.options;return a.attr("data-btnOkClass")||("function"==typeof b.btnOkClass?b.btnOkClass.call(this,a[0]):b.btnOkClass)},c.prototype.getBtnOkLabel=function(){var a=this.$element,b=this.options;return a.attr("data-btnOkLabel")||("function"==typeof b.btnOkLabel?b.btnOkLabel.call(this,a[0]):b.btnOkLabel)},c.prototype.getBtnOkIcon=function(){var a=this.$element,b=this.options;return a.attr("data-btnOkIcon")||("function"==typeof b.btnOkIcon?b.btnOkIcon.call(this,a[0]):b.btnOkIcon)},c.prototype.getBtnCancelClass=function(){var a=this.$element,b=this.options;return a.attr("data-btnCancelClass")||("function"==typeof b.btnCancelClass?b.btnCancelClass.call(this,a[0]):b.btnCancelClass)},c.prototype.getBtnCancelLabel=function(){var a=this.$element,b=this.options;return a.attr("data-btnCancelLabel")||("function"==typeof b.btnCancelLabel?b.btnCancelLabel.call(this,a[0]):b.btnCancelLabel)},c.prototype.getBtnCancelIcon=function(){var a=this.$element,b=this.options;return a.attr("data-btnCancelIcon")||("function"==typeof b.btnCancelIcon?b.btnCancelIcon.call(this,a[0]):b.btnCancelIcon)},c.prototype.getHref=function(){var a=this.$element,b=this.options;return a.attr("data-href")||("function"==typeof b.href?b.href.call(this,a[0]):b.href)},c.prototype.getTarget=function(){var a=this.$element,b=this.options;return a.attr("data-target")||("function"==typeof b.target?b.target.call(this,a[0]):b.target)},c.prototype.isPopout=function(){var a,b=this.$element,c=this.options;return a=b.attr("data-popout")||("function"==typeof c.popout?c.popout.call(this,b[0]):c.popout),"false"==a&&(a=!1),a};var d=a.fn.confirmation;a.fn.confirmation=function(b){var d=this;return this.each(function(){var e=a(this),f=e.data("bs.confirmation"),g="object"==typeof b&&b;g=g||{},g.all_selector=d.selector,(f||"destroy"!=b)&&(f||e.data("bs.confirmation",f=new c(this,g)),"string"==typeof b&&f[b]())})},a.fn.confirmation.Constructor=c,a.fn.confirmation.noConflict=function(){return a.fn.confirmation=d,this}}(jQuery);
-/**
- * Use addInitHandler to do operations on the chart object
- * before it is drawn
- *
- **/
-AmCharts.addInitHandler(function (chart) {
+$(function () {
+    /**
+     * Use addInitHandler to do operations on the chart object
+     * before it is drawn
+     *
+     **/
+    AmCharts.addInitHandler(function (chart) {
 
-    AmCharts.resizeCategory = function (chart) {
-        var standardHeight = 400;
-        var calculatedHeight = 100 * collections.length;
-        var containerHeight = standardHeight > calculatedHeight ? standardHeight : calculatedHeight;
+        AmCharts.resizeCategory = function (chart) {
+            var standardHeight = 400;
+            var calculatedHeight = 100 * collections.length;
+            var containerHeight = standardHeight > calculatedHeight ? standardHeight : calculatedHeight;
 
-        chart.div.style.height = containerHeight + 'px';
-    };
-
-    // check for dataLoader
-    var loader = chart.dataLoader;
-    if (loader !== undefined && loader.url !== undefined) {
-        if (loader.complete) {
-            loader._complete = loader.complete;
-        }
-        loader.complete = function (chart) {
-            // call original complete
-            if (loader._complete) loader._complete.call(this, chart);
-
-            // now let's do our thing
-            AmCharts.resizeCategory(chart);
+            chart.div.style.height = containerHeight + 'px';
         };
-    }
-}, ['serial']);
 
-var collections = [];
+        // check for dataLoader
+        var loader = chart.dataLoader;
+        if (loader !== undefined && loader.url !== undefined) {
+            if (loader.complete) {
+                loader._complete = loader.complete;
+            }
+            loader.complete = function (chart) {
+                // call original complete
+                if (loader._complete) loader._complete.call(this, chart);
 
-var chart = AmCharts.makeChart("chartdiv", {
-    type: "serial",
-    titles: [{
-        size: 15,
-        text: "Cumulative Transcription Activity through Time"
-    }],
-    path: "/",
-    pathToImages: "/img/",
-    fontSize: 12,
-    marginTop: 10,
-    categoryField: 'day',
-    categoryAxis: {
-        gridAlpha: 0.07,
-        axisColor: "#DADADA",
-        startOnAxis: true,
-        title: "Days elapsed"
-    },
-    resizeCategoryHeight: 4,
-    chartCursor: {
-        cursorAlpha: 1
-    },
-    responsive: {enabled: true},
-    svgIcons: false,
-    chartScrollbar: {
-        color: "FFFFFF",
-        dragIcon: "dragIconRoundSmall.png"
-    },
-    valueAxes: [{
-        id: "a1",
-        stackType: "regular",
-        gridAlpha: 0.07,
-        position: 'right',
-        title: "Number of Transcriptions"
-    }, {
-        id: 'a2',
-        gridAlpha: 0.07,
-        stackType: "regular",
-        position: "left",
-        title: "Number of Transcriptions",
-        includeHidden: true
-    }],
-    "dataLoader": {
-        "url": "/project/" + $("#projectId").val() + "/chart",
-        "format": "json",
-        "showErrors": true,
-        "postProcess": function (data, config, chart) {
-            var graphs = []
-                , hidden_graphs = []
-                , chartData = []
-                , current_day;
-            //prepare the data for consumption by amcharts
-            for (var i = 0; i < data.length; i++) {
-                var item = data[i]
-                    , collection = item.collection
-                    , count = item.count
-                    , day = item.day
-                    , obj;
-                if (collection != "" && typeof(collection) != 'undefined') {
-                    if (collections.indexOf(collection) === -1 && collection != "") collections.push(collection);
-                    if (current_day != day && typeof(day) != "undefined") {
-                        if (obj) chartData.push(obj);
-                        obj = {};
-                        current_day = day;
-                        obj["day"] = day;
-                    }
-                    if (typeof(count) != 'undefined') {
-                        obj[collection] = count;
-                    }
-                    if (i + 1 == data.length) {
-                        chartData.push(obj)
-                    } //make sure we push last item if it's there
-                }
-            }
-            /////////////////////////////////////
-            //create a graph for each collection
-            /////////////////////////////////////
-            for (var i = 0; i < collections.length; i++) {
-                var col = collections[i];
-                if (col != "") {
-                    graphs.push({
-                        valueAxis: "a1",
-                        type: "line",
-                        title: col,
-                        lineAlpha: 0,
-                        valueField: col,
-                        fillAlphas: 0.6,
-                        balloonText: "[[title]] - [[value]] out of [[total]] total"
-                    })
-                    hidden_graphs.push({
-                        valueAxis: "a2",
-                        type: "line",
-                        title: col,
-                        hidden: false,
-                        visibleInLegend: false,
-                        categoryBalloonAlpha: 0,
-                        //cursorAlpha: 0,
-                        lineAlpha: 0,
-                        lineColor: '',
-                        valueField: col,
-                        fillAlphas: 0,
-                        balloonText: ""
-                    })
-                }
-            }
-            chart.graphs = graphs.concat(hidden_graphs);
-            //////////////////////////////////////////
-            // if any of the data is missing a collection, set
-            // that collections count to zero
-            //////////////////////////////////////////
-            for (var i = 0; i < chartData.length; i++) {
-                var data = chartData[i];
-                collections.forEach(function (col) {
-                    if (!data.hasOwnProperty(col)) {
-                        data[col] = 0
-                    }
-                })
-            }
-
-            return chartData;
+                // now let's do our thing
+                AmCharts.resizeCategory(chart);
+            };
         }
-    },
-    legend: {
-        maxColumns: 1,
-        position: "bottom",
-        labelText: "[[title]]",
-        valueText: "[[value]] transcriptions of [[total]] total in [[category]] day(s)",
-        valueWidth: 100,
-        valueAlign: "left",
-        equalWidths: true,
-        periodValueText: "Total: [[value.high]]"
+    }, ['serial']);
+
+    if ($("#chartdiv").length > 0) {
+        var collections = [];
+
+        var chart = AmCharts.makeChart("chartdiv", {
+            type: "serial",
+            titles: [{
+                size: 15,
+                text: "Cumulative Transcription Activity through Time"
+            }],
+            path: "/",
+            pathToImages: "/img/",
+            fontSize: 12,
+            marginTop: 10,
+            categoryField: 'day',
+            categoryAxis: {
+                gridAlpha: 0.07,
+                axisColor: "#DADADA",
+                startOnAxis: true,
+                title: "Days elapsed"
+            },
+            resizeCategoryHeight: 4,
+            chartCursor: {
+                cursorAlpha: 1
+            },
+            responsive: {enabled: true},
+            svgIcons: false,
+            chartScrollbar: {
+                color: "FFFFFF",
+                dragIcon: "dragIconRoundSmall.png"
+            },
+            valueAxes: [{
+                id: "a1",
+                stackType: "regular",
+                gridAlpha: 0.07,
+                position: 'right',
+                title: "Number of Transcriptions"
+            }, {
+                id: 'a2',
+                gridAlpha: 0.07,
+                stackType: "regular",
+                position: "left",
+                title: "Number of Transcriptions",
+                includeHidden: true
+            }],
+            "dataLoader": {
+                "url": "/project/" + $("#projectId").val() + "/chart",
+                "format": "json",
+                "showErrors": true,
+                "postProcess": function (data, config, chart) {
+                    var graphs = []
+                        , hidden_graphs = []
+                        , chartData = []
+                        , current_day;
+                    //prepare the data for consumption by amcharts
+                    for (var i = 0; i < data.length; i++) {
+                        var item = data[i]
+                            , collection = item.collection
+                            , count = item.count
+                            , day = item.day
+                            , obj;
+                        if (collection != "" && typeof(collection) != 'undefined') {
+                            if (collections.indexOf(collection) === -1 && collection != "") collections.push(collection);
+                            if (current_day != day && typeof(day) != "undefined") {
+                                if (obj) chartData.push(obj);
+                                obj = {};
+                                current_day = day;
+                                obj["day"] = day;
+                            }
+                            if (typeof(count) != 'undefined') {
+                                obj[collection] = count;
+                            }
+                            if (i + 1 == data.length) {
+                                chartData.push(obj)
+                            } //make sure we push last item if it's there
+                        }
+                    }
+                    /////////////////////////////////////
+                    //create a graph for each collection
+                    /////////////////////////////////////
+                    for (var i = 0; i < collections.length; i++) {
+                        var col = collections[i];
+                        if (col != "") {
+                            graphs.push({
+                                valueAxis: "a1",
+                                type: "line",
+                                title: col,
+                                lineAlpha: 0,
+                                valueField: col,
+                                fillAlphas: 0.6,
+                                balloonText: "[[title]] - [[value]] out of [[total]] total"
+                            })
+                            hidden_graphs.push({
+                                valueAxis: "a2",
+                                type: "line",
+                                title: col,
+                                hidden: false,
+                                visibleInLegend: false,
+                                categoryBalloonAlpha: 0,
+                                //cursorAlpha: 0,
+                                lineAlpha: 0,
+                                lineColor: '',
+                                valueField: col,
+                                fillAlphas: 0,
+                                balloonText: ""
+                            })
+                        }
+                    }
+                    chart.graphs = graphs.concat(hidden_graphs);
+                    //////////////////////////////////////////
+                    // if any of the data is missing a collection, set
+                    // that collections count to zero
+                    //////////////////////////////////////////
+                    for (var i = 0; i < chartData.length; i++) {
+                        var data = chartData[i];
+                        collections.forEach(function (col) {
+                            if (!data.hasOwnProperty(col)) {
+                                data[col] = 0
+                            }
+                        })
+                    }
+
+                    return chartData;
+                }
+            },
+            legend: {
+                maxColumns: 1,
+                position: "bottom",
+                labelText: "[[title]]",
+                valueText: "[[value]] transcriptions of [[total]] total in [[category]] day(s)",
+                valueWidth: 100,
+                valueAlign: "left",
+                equalWidths: true,
+                periodValueText: "Total: [[value.high]]"
+            }
+        });
+    }
+
+    if ($("#chartTranscriptionsDiv").length > 0) {
+        var transcriptChart = AmCharts.makeChart("chartTranscriptionsDiv", {
+            "type": "serial",
+            "theme": "light",
+            "marginRight": 70,
+            "resizeCategoryHeight": 4,
+            "titles": [{
+                "size": 15,
+                "text": "Transcriptions per Transcriber"
+            }],
+            "dataProvider": JSON.parse(Laravel.transcriptionChartData),
+            "startDuration": 1,
+            "graphs": [{
+                "balloonText": "<b>[[category]]: [[value]]</b>",
+                "fillColorsField": "color",
+                "fillAlphas": 0.9,
+                "lineAlpha": 0.2,
+                "type": "column",
+                "valueField": "users"
+            }],
+            "valueAxes": [{
+                "title": "Number of Transcribers"
+            }],
+            "chartCursor": {
+                "categoryBalloonEnabled": false,
+                "cursorAlpha": 0,
+                "zoomable": false
+            },
+            "categoryField": "count",
+            "categoryAxis": {
+                "gridThickness": 0,
+                "gridPosition": "start",
+                "labelRotation": 45,
+                "title": "Number of Transcriptions"
+            },
+            "export": {
+                "enabled": true
+            }
+
+        })
     }
 });
-
-var transcriptChart = AmCharts.makeChart( "chartTranscriptionsDiv", {
-    "type": "serial",
-    "theme": "light",
-    "marginRight": 70,
-    "resizeCategoryHeight": 4,
-    "titles": [{
-        "size": 15,
-        "text": "Transcriptions per Transcriber"
-    }],
-    "dataProvider": JSON.parse(Laravel.transcriptionChartData),
-    "startDuration": 1,
-    "graphs": [{
-        "balloonText": "<b>[[category]]: [[value]]</b>",
-        "fillColorsField": "color",
-        "fillAlphas": 0.9,
-        "lineAlpha": 0.2,
-        "type": "column",
-        "valueField": "users"
-    }],
-    "valueAxes": [{
-        "title": "Number of Transcribers"
-    }],
-    "chartCursor": {
-        "categoryBalloonEnabled": false,
-        "cursorAlpha": 0,
-        "zoomable": false
-    },
-    "categoryField": "count",
-    "categoryAxis": {
-        "gridThickness": 0,
-        "gridPosition": "start",
-        "labelRotation": 45,
-        "title": "Number of Transcriptions"
-    },
-    "export": {
-        "enabled": true
-    }
-
-} );
 $('body').confirmation({
     singleton: true,
     selector: '[data-toggle="confirmation"]',

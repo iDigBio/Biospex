@@ -2,18 +2,10 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Exceptions\Handler;
-use App\Exceptions\BiospexException;
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\PanoptesTranscriptionContract;
 use App\Repositories\Contracts\ProjectContract;
-use App\Repositories\Contracts\UserContract;
-use File;
-use Illuminate\Contracts\Routing\ResponseFactory;
-use App\Repositories\Contracts\DownloadContract;
 use JavaScript;
-use Queue;
 
 class StatisticsController extends Controller
 {
