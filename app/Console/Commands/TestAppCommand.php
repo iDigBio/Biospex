@@ -34,8 +34,10 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
-        $ids = [];
+        echo 'Sending to job' . PHP_EOL;
 
-        new NfnClassificationsFusionTableJob($ids);
+        new NfnClassificationsFusionTableJob();
+
+        echo 'Finished' . PHP_EOL;
     }
 }

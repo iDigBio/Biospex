@@ -63,6 +63,7 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
         $this->transcriptionLocationContract = $transcriptionLocationContract;
         $this->fusionTableService = $fusionTableService;
 
+        echo 'Getting jobs' . PHP_EOL;
         $projects = $this->getProjects();
 
         $projects->each(function ($project)
