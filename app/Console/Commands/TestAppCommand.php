@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\Contracts\PanoptesTranscriptionContract;
+use App\Jobs\NfnClassificationsFusionTableJob;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -34,5 +34,9 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
+        $ids = ["18"];
+
+        new NfnClassificationsFusionTableJob($ids);
+
     }
 }

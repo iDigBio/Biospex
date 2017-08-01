@@ -140,6 +140,8 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
     {
         $columns = ['id', 'title', 'fusion_table_id', 'fusion_style_id', 'fusion_template_id'];
 
+        dd($this->ids);
+
         $projects = empty($this->ids) ?
             $this->projectContract->setCacheLifetime(0)
                 ->has('transcriptionLocations')
