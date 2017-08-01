@@ -68,8 +68,6 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
 
         $projects->each(function ($project)
         {
-            echo 'Starting process on project id:' . $project->id . PHP_EOL;
-            echo date('h:i:s') . PHP_EOL;
             $project->fusion_table_id === null ?
                 $this->createProjectFusionTable($project) :
                 $this->updateProjectFusionTable($project);
