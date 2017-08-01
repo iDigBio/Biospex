@@ -34,7 +34,7 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
-        $ids = ["18"];
+        $ids = [];
 
         new NfnClassificationsFusionTableJob($ids);
 

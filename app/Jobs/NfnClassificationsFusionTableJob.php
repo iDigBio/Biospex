@@ -67,9 +67,12 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
 
         $projects->each(function ($project)
         {
+            echo 'Starting process on project id:' . $project->id . PHP_EOL;
+            echo date('h:i:s') . PHP_EOL;
             $project->fusion_table_id === null ?
                 $this->createProjectFusionTable($project) :
                 $this->updateProjectFusionTable($project);
+            sleep(2);
         });
     }
 
@@ -121,7 +124,6 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
 
             $setting = $this->fusionTableService->createTableStyle($project->fusion_table_id, $counts);
             $this->fusionTableService->updateTableStyle($project->fusion_table_id, $styleId, $setting);
-
             $this->fusionTableService->deleteTableData($project->fusion_table_id);
             $this->fusionTableService->importTableData($project->fusion_table_id, $locations);
         }
@@ -139,8 +141,6 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
     public function getProjects()
     {
         $columns = ['id', 'title', 'fusion_table_id', 'fusion_style_id', 'fusion_template_id'];
-
-        dd($this->ids);
 
         $projects = empty($this->ids) ?
             $this->projectContract->setCacheLifetime(0)
