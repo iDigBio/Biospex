@@ -37,6 +37,5 @@ class TestAppCommand extends Command
         $ids = [];
 
         new NfnClassificationsFusionTableJob($ids);
-
     }
 }
