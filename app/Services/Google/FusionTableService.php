@@ -190,6 +190,8 @@ class FusionTableService
 
         $reqData = $this->fusionTable->getTable($tableId);
 
+        \Log::alert('Received table reData for:' . $tableId);
+
         $params = [
             'postBody'   => $reqData,
             'data'       => $csv,
@@ -198,6 +200,7 @@ class FusionTableService
             'delimiter'  => ','
         ];
 
+        \Log::alert('Importing Rows for:' . $tableId);
         $this->fusionTable->importRows($tableId, $params);
     }
 

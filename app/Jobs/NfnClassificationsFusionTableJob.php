@@ -67,6 +67,7 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
 
         $projects->each(function ($project)
         {
+            \Log::alert('Starting process on project id:' . $project->id);
             $project->fusion_table_id === null ?
                 $this->createProjectFusionTable($project) :
                 $this->updateProjectFusionTable($project);
@@ -111,6 +112,7 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
      */
     public function updateProjectFusionTable($project)
     {
+        \Log::alert('Updating fusion table:' . $project->id);
         try
         {
             $locations = $this->getProjectLocations($project->id);
@@ -122,7 +124,11 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
             $setting = $this->fusionTableService->createTableStyle($project->fusion_table_id, $counts);
             $this->fusionTableService->updateTableStyle($project->fusion_table_id, $styleId, $setting);
 
+            \Log::alert('Deleting table data:' . $project->id);
+
             $this->fusionTableService->deleteTableData($project->fusion_table_id);
+
+            \Log::alert('Importing table data:' . $project->id);
             $this->fusionTableService->importTableData($project->fusion_table_id, $locations);
         }
         catch (\Exception $e)
