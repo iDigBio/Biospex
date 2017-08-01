@@ -38,8 +38,8 @@ class NfnClassificationsFusionTable extends Command
      */
     public function handle()
     {
-        dd($this->argument('ids'));
         $ids = null === $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
+        dd($ids);
 
         $this->dispatch((new NfnClassificationsFusionTableJob($ids))->onQueue(config('config.beanstalkd.classification')));
     }
