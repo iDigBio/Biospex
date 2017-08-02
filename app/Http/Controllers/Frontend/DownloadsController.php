@@ -66,7 +66,7 @@ class DownloadsController extends Controller
     public function index($projectId, $expeditionId)
     {
         $user = $this->userContract->with('profile')->find(request()->user()->id);
-        $expedition = $this->expeditionContract->with(['project.group', 'downloads.actor'])->find($expeditionId);
+        $expedition = $this->expeditionContract->expeditionDownloadsByActor($expeditionId);
 
         return view('frontend.downloads.index', compact('expedition', 'user'));
     }
