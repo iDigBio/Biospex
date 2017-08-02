@@ -14,6 +14,7 @@ class AddTypeToDownloadsTable extends Migration
     {
         Schema::table('downloads', function(Blueprint $table) {
             $table->enum('type', ['export', 'classifications', 'transcriptions', 'reconciled', 'summary'])->after('file');
+            $table->dropIndex('downloads_file_unique');
         });
     }
 
@@ -26,6 +27,7 @@ class AddTypeToDownloadsTable extends Migration
     {
         Schema::table('downloads', function(Blueprint $table) {
             $table->dropColumn('type');
+            $table->unique('file');
         });
     }
 }
