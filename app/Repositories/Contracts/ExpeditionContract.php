@@ -45,4 +45,12 @@ interface ExpeditionContract extends RepositoryContract, CacheableContract
      * @return \Illuminate\Support\Collection|mixed
      */
     public function expeditionsByUserId($userId, array $relations =[]);
+
+    /**
+     * Retrieve expedition project, group, actors, and downloads.
+     *
+     * @param $expeditionId
+     * @return mixed
+     */
+    public function expeditionDownloadsByActor($expeditionId);
 }
