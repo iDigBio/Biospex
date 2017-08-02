@@ -121,4 +121,14 @@ class ExpeditionRepository extends EloquentRepository implements ExpeditionContr
 
         return $expedition;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function expeditionDownloadsByActor($expeditionId)
+    {
+        return $this->with(['project.group', 'actors.downloads' => function($query) use ($expeditionId){
+            $query->where('expedition_id', $expeditionId);
+        }])->find($expeditionId);
+    }
 }
