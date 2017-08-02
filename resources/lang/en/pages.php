@@ -164,5 +164,6 @@ return array(
     'project_page_organizers'       => 'Organizers',
     'project_page_information'      => 'Project Information',
     'project_map_title'             => 'Heat Map of Collection Location of Transcribed Specimens',
-    'transcriber_summary'           => 'Transcriber Summary'
+    'transcriber_summary'           => 'Transcriber Summary',
+    'download_type'                 => 'Download Type',
 );
