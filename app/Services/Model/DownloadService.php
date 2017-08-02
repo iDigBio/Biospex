@@ -39,4 +39,16 @@ class DownloadService
             $this->fileService->filesystem->delete(config('config.nfn_export_dir') . '/' . $download->file);
         }
     }
+
+    /**
+     * Update or create download.
+     *
+     * @param $attributes
+     * @param $values
+     * @return mixed
+     */
+    public function updateOrCreate($attributes, $values)
+    {
+        return $this->downloadContract->updateOrCreateDownload($attributes, $values);
+    }
 }
