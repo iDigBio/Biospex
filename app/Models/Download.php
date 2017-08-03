@@ -22,6 +22,7 @@ class Download extends Model
         'expedition_id',
         'actor_id',
         'file',
+        'type',
         'data',
         'count'
     ];

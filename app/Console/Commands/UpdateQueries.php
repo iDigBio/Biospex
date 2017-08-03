@@ -80,13 +80,13 @@ class UpdateQueries extends Command
         $values = [
             'expedition_id' => $expeditionId,
             'actor_id' => 2,
-            'file' => $expeditionId . '.csv',
+            'file' => $type === 'summary' ? $expeditionId . '.html' : $expeditionId . '.csv',
             'type' => $type
         ];
         $attributes = [
             'expedition_id' => $expeditionId,
             'actor_id' => 2,
-            'file' => $expeditionId . '.csv',
+            'file' => $type === 'summary' ? $expeditionId . '.html' : $expeditionId . '.csv',
             'type' => $type
         ];
 

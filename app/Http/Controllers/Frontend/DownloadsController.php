@@ -96,18 +96,19 @@ class DownloadsController extends Controller
         }
         else
         {
-
-            $nfnExportDir = config('config.nfn_export_dir');
-            $path = $nfnExportDir . '/' . $download->file;
+            $path = $this->setFilePath($download);
             if ( ! file_exists($path))
             {
                 session_flash_push('error', trans('errors.missing_download_file'));
                 return redirect()->route('web.downloads.index', [$projectId, $expeditionId]);
             }
 
-            $headers = ['Content-Type' => 'application/x-compressed'];
+            $headers = [
+                'Content-Type'        => 'application/x-compressed',
+                'Content-disposition' => 'attachment; filename="' . $download->type . '-' . $download->file . '"'
+            ];
 
-            return $this->response->download($path, $download->file, $headers);
+            return $this->response->download($path, $download->type . '-' . $download->file, $headers);
         }
     }
 
@@ -135,5 +136,22 @@ class DownloadsController extends Controller
         }
 
         return redirect()->route('web.downloads.index', [$projectId, $expeditionId]);
+    }
+
+    /**
+     * Set files.
+     *
+     * @param $download
+     * @return mixed
+     */
+    private function setFilePath($download)
+    {
+        return collect([
+            'export'          => config('config.nfn_export_dir') . '/' . $download->file,
+            'classifications' => config('config.classifications_download') . '/' . $download->file,
+            'transcriptions'  => config('config.classifications_reconcile') . '/' . $download->file,
+            'reconciled'      => config('config.classifications_transcript') . '/' . $download->file,
+            'summary'         => config('config.classifications_summary') . '/' . $download->file
+        ])->get($download->type, 'export');
     }
 }
