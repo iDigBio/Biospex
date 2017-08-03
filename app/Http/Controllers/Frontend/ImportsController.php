@@ -40,9 +40,13 @@ class ImportsController extends Controller
      */
     public function import($id)
     {
-        $project = $this->projectContract->with('group')->find($id);
+        session_flash_push('error', 'Imports have been disabled temporarily while working on database issues.');
 
-        return view('frontend.projects.add', compact('project'));
+        return redirect()->route('web.projects.show', [$id]);
+
+        //$project = $this->projectContract->with('group')->find($id);
+
+        //return view('frontend.projects.add', compact('project'));
     }
 
     /**
