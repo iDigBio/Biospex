@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
-
 class UpdateQueries extends Command
 {
 
@@ -24,7 +23,8 @@ class UpdateQueries extends Command
     /**
      * UpdateQueries constructor.
      */
-    public function __construct()
+    public function __construct(
+    )
     {
         parent::__construct();
     }
