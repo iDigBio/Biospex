@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\Csv\Csv;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -22,8 +23,9 @@ class TestAppCommand extends Command
 
     /**
      * TestAppCommand constructor.
+     * @param Csv $csv
      */
-    public function __construct()
+    public function __construct(Csv $csv)
     {
         parent::__construct();
     }
@@ -33,5 +35,6 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
+
     }
 }
