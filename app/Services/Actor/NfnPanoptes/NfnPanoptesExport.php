@@ -279,8 +279,15 @@ class NfnPanoptesExport
      */
     public function compressImages()
     {
-        $this->config->archivePhar->compress(\Phar::GZ); // copies to /path/to/my.tar.gz
-        $this->fileService->filesystem->move($this->config->archiveTarGzPath, $this->config->archiveExportPath);
+        if ( ! $this->fileService->filesystem->exists($this->config->archiveTarGzPath))
+        {
+            $this->config->archivePhar->compress(\Phar::GZ); // copies to /path/to/my.tar.gz
+        }
+
+        if ( ! $this->fileService->filesystem->move($this->config->archiveTarGzPath, $this->config->archiveExportPath))
+        {
+            throw new ActorException('Could not move compressed file to export directory ' . $this->config->expedition->id . ' export');
+        }
 
         $values = [
             'expedition_id' => $this->config->expedition->id,
