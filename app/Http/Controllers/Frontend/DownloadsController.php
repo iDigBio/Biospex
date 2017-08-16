@@ -7,6 +7,7 @@ use App\Exceptions\BiospexException;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\UserContract;
+use File;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Repositories\Contracts\DownloadContract;
 use Queue;
@@ -35,6 +36,11 @@ class DownloadsController extends Controller
     public $userContract;
 
     /**
+     * @var array
+     */
+    public $paths;
+
+    /**
      * DownloadsController constructor.
      *
      * @param ExpeditionContract $expeditionContract
@@ -54,6 +60,14 @@ class DownloadsController extends Controller
         $this->downloadContract = $downloadContract;
         $this->response = $response;
         $this->userContract = $userContract;
+
+        $this->paths = [
+            'export' => config('config.nfn_export_dir'),
+            'classifications' => config('config.classifications_download'),
+            'transcriptions' => config('config.classifications_transcript'),
+            'reconciled' => config('config.classifications_reconcile'),
+            'summary' => config('config.classifications_summary')
+        ];
     }
 
     /**
@@ -67,11 +81,14 @@ class DownloadsController extends Controller
     {
         $user = $this->userContract->with('profile')->find(request()->user()->id);
         $expedition = $this->expeditionContract->expeditionDownloadsByActor($expeditionId);
+        $paths = $this->paths;
 
-        return view('frontend.downloads.index', compact('expedition', 'user'));
+        return view('frontend.downloads.index', compact('expedition', 'user', 'paths'));
     }
 
     /**
+     * Show downloads.
+     *
      * @param $projectId
      * @param $expeditionId
      * @param $downloadId
@@ -80,6 +97,13 @@ class DownloadsController extends Controller
     public function show($projectId, $expeditionId, $downloadId)
     {
         $download = $this->downloadContract->find($downloadId);
+
+        if ( ! $download)
+        {
+            session_flash_push('error', trans('errors.missing_download_file'));
+            return redirect()->route('web.downloads.index', [$projectId, $expeditionId]);
+        }
+
         $download->count = $download->count + 1;
         $this->downloadContract->update($download->id, $download->toArray());
 
@@ -96,7 +120,7 @@ class DownloadsController extends Controller
         }
         else
         {
-            $path = $this->setFilePath($download);
+            $path = $this->paths[$download->type] . '/' . $download->file;
             if ( ! file_exists($path))
             {
                 session_flash_push('error', trans('errors.missing_download_file'));
@@ -112,6 +136,15 @@ class DownloadsController extends Controller
         }
     }
 
+    /**
+     * Regenerate export download.
+     *
+     * @param ExpeditionContract $expeditionContract
+     * @param Handler $handler
+     * @param $projectId
+     * @param $expeditionId
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function regenerate(ExpeditionContract $expeditionContract, Handler $handler, $projectId, $expeditionId)
     {
         $withRelations = ['nfnActor', 'stat'];
@@ -139,19 +172,27 @@ class DownloadsController extends Controller
     }
 
     /**
-     * Set files.
+     * Display the summary page.
      *
-     * @param $download
-     * @return mixed
+     * @param $projectId
+     * @param $expeditionId
+     * @return \Illuminate\Http\RedirectResponse|string
      */
-    private function setFilePath($download)
+    public function summary($projectId, $expeditionId)
     {
-        return collect([
-            'export'          => config('config.nfn_export_dir') . '/' . $download->file,
-            'classifications' => config('config.classifications_download') . '/' . $download->file,
-            'transcriptions'  => config('config.classifications_reconcile') . '/' . $download->file,
-            'reconciled'      => config('config.classifications_transcript') . '/' . $download->file,
-            'summary'         => config('config.classifications_summary') . '/' . $download->file
-        ])->get($download->type, 'export');
+        $expedition = $this->expeditionContract->with('project.group')->find($expeditionId);
+
+        if ( ! $this->checkPermissions('isOwner', [$expedition->project->group]))
+        {
+            return redirect()->route('web.projects.show', [$projectId]);
+        }
+
+        if ( ! File::exists(config('config.classifications_summary') . '/' . $expeditionId . '.html'))
+        {
+            session_flash_push('warning', trans('pages.file_does_not_exist'));
+            return redirect()->route('web.projects.show', [$projectId]);
+        }
+
+        return File::get(config('config.classifications_summary') . '/' . $expeditionId . '.html');
     }
 }

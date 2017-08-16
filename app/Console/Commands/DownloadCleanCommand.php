@@ -77,6 +77,7 @@ class DownloadCleanCommand extends Command
     public function handle()
     {
         $downloads = $this->downloadContract->setCacheLifetime(0)
+            ->where('type', '=', 'export')
             ->where('created_at', '<', Carbon::now()->subDays(90))
             ->findAll();
 

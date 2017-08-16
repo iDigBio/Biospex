@@ -50,34 +50,7 @@
                             <tbody>
                             @foreach($actor->downloads as $download)
                                 @if ( ! empty($download))
-                                    <tr>
-                                        <td>{{ $download->type }}</td>
-                                        <td>{{ $download->file }}</td>
-                                        <td>
-                                            @if (File::exists(Config::get('config.nfn_export_dir') . '/' . $download->file))
-                                                {{ human_file_size(File::size(Config::get('config.nfn_export_dir') . '/' . $download->file)) }}
-                                            @else
-                                                {{ human_file_size(mb_strlen($download->data, '8bit')) }}
-                                            @endif
-                                        </td>
-                                        <td>{{ format_date($download->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
-                                        <td>{{ format_date($download->updated_at, 'Y-m-d', $user->profile->timezone) }}</td>
-                                        <td>
-                                            <button title="@lang('buttons.downloadTitle')"
-                                                    class="btn btn-success btn-xs"
-                                                    type="button"
-                                                    onClick="location.href='{{ route('projects.expeditions.downloads.get.show', [$expedition->project->id, $expedition->id, $download->id]) }}'">
-                                                <span class="fa fa-download"></span> @lang('buttons.download')
-                                            </button>
-                                            @if ($download->type === 'export')
-                                            <button title="@lang('buttons.regenerateDownload')"
-                                                    class="btn btn-success btn-xs" type="button"
-                                                    onClick="location.href='{{ route('web.downloads.regenerate', [$expedition->project->id, $expedition->id]) }}'">
-                                                <span class="fa fa-refresh"></span> @lang('buttons.regenerateDownload')
-                                            </button>
-                                            @endif
-                                        </td>
-                                    </tr>
+                                    @include('frontend.downloads.partials.tablerow')
                                 @endif
                             @endforeach
                             </tbody>
