@@ -55,6 +55,6 @@ return array(
     'regenerateDownload' => 'Regenerate',
     'projectStats'       => 'Statistics',
     'projectStatsTitle'  => 'Project Statistics',
-    'transcripts'        => 'Transcripts',
-    'transcriptsTitle'   => 'Transcripts',
+    'summary'            => 'Summary',
+    'summaryTitle'       => 'Summary',
 );

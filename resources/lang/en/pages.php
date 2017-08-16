@@ -167,4 +167,5 @@ return array(
     'transcriber_summary'           => 'Transcriber Summary',
     'download_type'                 => 'Download Type',
     'project_stats'                 => 'Statistics',
+    'file_does_not_exist'           => 'File does not exist',
 );
