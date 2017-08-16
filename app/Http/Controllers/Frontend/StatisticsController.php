@@ -43,8 +43,9 @@ class StatisticsController extends Controller
         $project = $this->projectContract->find($projectId);
         $transcribers = collect($this->panoptesTranscriptionContract
             ->setCacheLifetime(0)
-            ->getUserTranscriptionCount($projectId))->sortByDesc('count');
-        $plucked = collect(array_count_values($transcribers->pluck('count')->sort()->toArray()));
+            ->getUserTranscriptionCount($projectId))->sortByDesc('transcriptionCount');
+
+        $plucked = collect(array_count_values($transcribers->pluck('transcriptionCount')->sort()->toArray()));
 
         $transcriptions = $plucked->flatMap(function($users, $count){
             return [['count' => $count, 'users' => $users]];
