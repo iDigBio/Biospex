@@ -721,6 +721,10 @@ div#transcribers {
     overflow: scroll;
 }
 
+div#transcribers table {
+    width: 100%;
+}
+
 div.panel-title i {
     cursor: pointer;
 }
