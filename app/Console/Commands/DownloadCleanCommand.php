@@ -80,6 +80,7 @@ class DownloadCleanCommand extends Command
             ->where('type', '=', 'export')
             ->where('created_at', '<', Carbon::now()->subDays(90))
             ->findAll();
+        dd($downloads);
 
         $downloads->each(function ($download)
         {
