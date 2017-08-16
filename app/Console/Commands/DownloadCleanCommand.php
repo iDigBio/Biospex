@@ -96,7 +96,7 @@ class DownloadCleanCommand extends Command
         $files = collect($this->filesystem->files($this->nfnExportDir));
         $files->each(function($file){
             $fileName = $this->filesystem->basename($file);
-            $result = $this->downloadContract->setCacheLifetime(0)->findBy('file', '=', $fileName);
+            $result = $this->downloadContract->setCacheLifetime(0)->findBy('file', $fileName);
             if ($result)
             {
                 echo 'Deleting ' . $file . PHP_EOL;
