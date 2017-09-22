@@ -37,6 +37,7 @@ use App\Repositories\Contracts\TeamContract;
 use App\Repositories\Contracts\TranscriptionLocationContract;
 use App\Repositories\Contracts\TranslationContract;
 use App\Repositories\Contracts\UserContract;
+use App\Repositories\Contracts\WeDigBioDashboardContract;
 use App\Repositories\Contracts\WorkflowContract;
 use App\Repositories\Contracts\WorkflowManagerContract;
 
@@ -72,6 +73,7 @@ use App\Repositories\Eloquent\TeamRepository;
 use App\Repositories\Eloquent\TranscriptionLocationRepository;
 use App\Repositories\Eloquent\TranslationRepository;
 use App\Repositories\Eloquent\UserRepository;
+use App\Repositories\Eloquent\WeDigBioDashboardRepository;
 use App\Repositories\Eloquent\WorkflowManagerRepository;
 use App\Repositories\Eloquent\WorkflowRepository;
 
@@ -139,6 +141,7 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(TranscriptionLocationContract::class, TranscriptionLocationRepository::class);
         $this->app->bind(TranslationContract::class, TranslationRepository::class);
         $this->app->bind(UserContract::class, UserRepository::class);
+        $this->app->bind(WeDigBioDashboardContract::class, WeDigBioDashboardRepository::class);
         $this->app->bind(WorkflowContract::class, WorkflowRepository::class);
         $this->app->bind(WorkflowManagerContract::class, WorkflowManagerRepository::class);
     }

@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Csv\Csv;
+use App\Jobs\WeDigBioDashboardJob;
+use App\Services\Model\WeDigBioDashboardService;
+use App\Services\Report\Report;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -10,6 +12,8 @@ class TestAppCommand extends Command
 {
 
     use DispatchesJobs;
+
+    public $ids;
 
     /**
      * The console command name.
@@ -23,9 +27,9 @@ class TestAppCommand extends Command
 
     /**
      * TestAppCommand constructor.
-     * @param Csv $csv
      */
-    public function __construct(Csv $csv)
+    public function __construct(
+    )
     {
         parent::__construct();
     }

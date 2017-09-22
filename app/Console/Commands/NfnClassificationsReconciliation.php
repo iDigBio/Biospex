@@ -13,6 +13,7 @@ class NfnClassificationsReconciliation extends Command
 
     /**
      * The name and signature of the console command.
+     * ids are comma delimited expedition ids.
      *
      * @var string
      */

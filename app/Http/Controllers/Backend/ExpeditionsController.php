@@ -76,7 +76,7 @@ class ExpeditionsController extends Controller
      */
     public function store(ExpeditionFormRequest $request)
     {
-        $expedition = $this->expeditionContract->createExpedition($request->all());
+        $expedition = $this->expeditionContract->create($request->all());
 
         if ($expedition)
         {
@@ -97,7 +97,7 @@ class ExpeditionsController extends Controller
      */
     public function update(ExpeditionFormRequest $request)
     {
-        $expedition = $this->expeditionContract->updateExpedition($request->input('id'), $request->all());
+        $expedition = $this->expeditionContract->update($request->input('id'), $request->all());
 
         $expedition ?
             Toastr::success('The Expedition has been updated.', 'Expedition Update') :

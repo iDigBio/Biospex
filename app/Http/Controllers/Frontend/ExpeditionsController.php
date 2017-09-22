@@ -2,92 +2,69 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Exceptions\BiospexException;
 use App\Http\Controllers\Controller;
-use App\Jobs\BuildOcrBatchesJob;
-use App\Jobs\UpdateNfnWorkflowJob;
 use App\Http\Requests\ExpeditionFormRequest;
-use App\Models\Expedition;
+use App\Services\Model\ExpeditionService;
 use App\Services\Model\ModelDeleteService;
 use App\Services\Model\ModelDestroyService;
 use App\Services\Model\ModelRestoreService;
-use File;
-use Illuminate\Support\Facades\Artisan;
-use App\Exceptions\Handler;
+use App\Services\Model\ProjectService;
+use App\Services\Model\UserService;
+use App\Services\Model\WorkflowManagerService;
 use JavaScript;
 
-use App\Repositories\Contracts\ExpeditionContract;
-use App\Repositories\Contracts\ProjectContract;
-use App\Repositories\Contracts\SubjectContract;
-use App\Repositories\Contracts\WorkflowManagerContract;
-use App\Repositories\Contracts\OcrQueueContract;
-use App\Repositories\Contracts\UserContract;
 
 class ExpeditionsController extends Controller
 {
+    /**
+     * @var ExpeditionService
+     */
+    private $expeditionService;
+    /**
+     * @var ProjectService
+     */
+    private $projectService;
+    /**
+     * @var WorkflowManagerService
+     */
+    private $workflowManagerService;
 
     /**
-     * @var ProjectContract
+     * @var UserService
      */
-    public $projectContract;
-
-    /**
-     * @var SubjectContract
-     */
-    public $subjectContract;
-
-    /**
-     * @var WorkflowManagerContract
-     */
-    public $workflowManagerContract;
-
-    /**
-     * @var Handler
-     */
-    public $handler;
-
-    /**
-     * @var ExpeditionContract
-     */
-    public $expeditionContract;
-
+    private $userService;
 
     /**
      * ExpeditionsController constructor.
      *
-     * @param ExpeditionContract $expeditionContract
-     * @param ProjectContract $projectContract
-     * @param SubjectContract $subjectContract
-     * @param WorkflowManagerContract $workflowManagerContract
-     * @param Handler $handler
+     * @param ExpeditionService $expeditionService
+     * @param ProjectService $projectService
+     * @param WorkflowManagerService $workflowManagerService
+     * @param UserService $userService
      */
     public function __construct(
-        ExpeditionContract $expeditionContract,
-        ProjectContract $projectContract,
-        SubjectContract $subjectContract,
-        WorkflowManagerContract $workflowManagerContract,
-        Handler $handler
+        ExpeditionService $expeditionService,
+        ProjectService $projectService,
+        WorkflowManagerService $workflowManagerService,
+        UserService $userService
     )
     {
-        $this->projectContract = $projectContract;
-        $this->subjectContract = $subjectContract;
-        $this->workflowManagerContract = $workflowManagerContract;
-        $this->expeditionContract = $expeditionContract;
-        $this->handler = $handler;
+        $this->expeditionService = $expeditionService;
+        $this->projectService = $projectService;
+        $this->workflowManagerService = $workflowManagerService;
+        $this->userService = $userService;
     }
 
     /**
      * Display all expeditions for user.
      *
-     * @param UserContract $userContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(UserContract $userContract)
+    public function index()
     {
-        $user = $userContract->with('profile')->find(request()->user()->id);
+        $user = $this->userService->getLoggedInUser();
 
-        $relations = ['stat', 'downloads', 'actors', 'project.group'];
-        $expeditions = $this->expeditionContract->expeditionsByUserId($user->id, $relations);
+        $expeditions = $this->expeditionService->getExpeditionsByUserId($user->id);
 
         return view('frontend.expeditions.index', compact('expeditions', 'user'));
     }
@@ -95,20 +72,19 @@ class ExpeditionsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param UserContract $userContract
-     * @param $id
+     * @param $projectId
      * @return \Illuminate\View\View
      */
-    public function ajax(UserContract $userContract, $id)
+    public function ajax($projectId)
     {
         if ( ! request('ajax'))
         {
-            return redirect()->route('web.projects.show', [$id]);
+            return redirect()->route('web.projects.show', [$projectId]);
         }
 
-        $user = $userContract->with('profile')->find(request()->user()->id);
+        $user = $this->userService->getLoggedInUser();
 
-        $project = $this->projectContract->with(['expeditions.actors', 'expeditions.stat'])->find($id);
+        $project = $this->projectService->expeditionAjax($projectId);
 
         return view('frontend.expeditions.ajax', compact('project', 'user'));
     }
@@ -116,12 +92,12 @@ class ExpeditionsController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param $id
+     * @param $projectId
      * @return \Illuminate\View\View
      */
-    public function create($id)
+    public function create($projectId)
     {
-        $project = $this->projectContract->with('group.permissions')->find($id);
+        $project = $this->projectService->permissionCheck($projectId);
 
         if ( ! $this->checkPermissions('create', [$project, $project->group]))
         {
@@ -151,14 +127,14 @@ class ExpeditionsController extends Controller
      */
     public function store(ExpeditionFormRequest $request, $projectId)
     {
-        $project = $this->projectContract->with('group.permissions')->find($projectId);
+        $project = $this->projectService->permissionCheck($projectId);
 
         if ( ! $this->checkPermissions('create', [$project, $project->group]))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $expedition = $this->expeditionContract->createExpedition($request->all());
+        $expedition = $this->expeditionService->createExpedition($request->all());
 
         if ($expedition)
         {
@@ -179,13 +155,7 @@ class ExpeditionsController extends Controller
      */
     public function show($projectId, $expeditionId)
     {
-        $expedition = $this->expeditionContract->with([
-            'project.group',
-            'project.ocrQueue',
-            'downloads',
-            'workflowManager',
-            'stat'])
-            ->find($expeditionId);
+        $expedition = $this->expeditionService->getShowExpedition($expeditionId);
 
         $btnDisable = ($expedition->project->ocrQueue->isEmpty() || $expedition->stat->subject_count === 0);
 
@@ -211,7 +181,7 @@ class ExpeditionsController extends Controller
      */
     public function duplicate($projectId, $expeditionId)
     {
-        $expedition = $this->expeditionContract->with(['project.group.permissions'])->find($expeditionId);
+        $expedition = $this->expeditionService->getDuplicateCreateExpedition($expeditionId);
 
         if ( ! $this->checkPermissions('create', [$expedition->project, $expedition->project->group]))
         {
@@ -240,13 +210,7 @@ class ExpeditionsController extends Controller
      */
     public function edit($projectId, $expeditionId)
     {
-        $expedition = $this->expeditionContract->setCacheLifetime(0)
-            ->with([
-            'project.group.permissions',
-            'workflowManager',
-            'subjects',
-            'nfnWorkflow'
-        ])->find($expeditionId);
+        $expedition = $this->expeditionService->getEditExpedition($expeditionId);
 
         if ( ! $this->checkPermissions('update', $expedition->project))
         {
@@ -283,32 +247,26 @@ class ExpeditionsController extends Controller
      */
     public function update(ExpeditionFormRequest $request, $projectId, $expeditionId)
     {
-        $project = $this->projectContract->with('group.permissions')->find($projectId);
+        $project = $this->projectService->permissionCheck($projectId);
 
         if ( ! $this->checkPermissions('update', $project))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $expedition = $this->expeditionContract->updateExpedition($expeditionId, $request->all());
+        $result = $this->expeditionService->updateExpedition($expeditionId, $request->all());
 
-        if ($expedition)
+        if ( ! $result)
         {
-            if (null !== $expedition->nfnWorkflow)
-            {
-                $this->dispatch((new UpdateNfnWorkflowJob($expedition->nfnWorkflow))
-                    ->onQueue(config('config.beanstalkd.workflow')));
-            }
+            session_flash_push('error', trans('expeditions.expedition_save_error'));
 
-            // Success!
-            session_flash_push('success', trans('expeditions.expedition_updated'));
-
-            return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
+            return redirect()->route('projects.expeditions.edit', [$projectId, $expeditionId]);
         }
 
-        session_flash_push('error', trans('expeditions.expedition_save_error'));
+        // Success!
+        session_flash_push('success', trans('expeditions.expedition_updated'));
 
-        return redirect()->route('projects.expeditions.edit', [$projectId, $expeditionId]);
+        return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
     }
 
     /**
@@ -319,44 +277,14 @@ class ExpeditionsController extends Controller
      */
     public function process($projectId, $expeditionId)
     {
-        $project = $this->projectContract->with('group.permissions')->find($projectId);
+        $project = $this->projectService->permissionCheck($projectId);
 
         if ( ! $this->checkPermissions('update', $project))
         {
             return redirect()->route('web.projects.index');
         }
 
-        try
-        {
-            $expedition = $this->expeditionContract->setCacheLifetime(0)
-                ->with(['project.workflow.actors', 'workflowManager'])
-                ->find($expeditionId);
-
-            if (null !== $expedition->workflowManager)
-            {
-                $expedition->workflowManager->stopped = 0;
-                $expedition->workflowManager->save();
-            }
-            else
-            {
-                $expedition->project->workflow->actors->reject(function($actor) {
-                    return $actor->private;
-                })->each(function($actor) use ($expedition){
-                    $expedition->actors()->syncWithoutDetaching([$actor->id => ['order' => $actor->pivot->order]]);
-                });
-
-                $this->workflowManagerContract->create(['expedition_id' => $expeditionId]);
-            }
-
-            Artisan::call('workflow:manage', ['expedition' => $expeditionId]);
-
-            session_flash_push('success', trans('expeditions.expedition_process_success'));
-        }
-        catch (BiospexException $e)
-        {
-            $this->handler->report($e);
-            session_flash_push('error', trans('expeditions.expedition_process_error', ['error' => $e->getMessage()]));
-        }
+        $this->expeditionService->processExpedition($expeditionId);
 
         return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
     }
@@ -364,34 +292,21 @@ class ExpeditionsController extends Controller
     /**
      * Reprocess OCR.
      *
-     * TODO Add ocr actor to actor_expedition table. Check if already exists and set to 0.
-     * @param OcrQueueContract $ocrQueueContract
      * @param $projectId
      * @param $expeditionId
      * @return mixed
      */
-    public function ocr(OcrQueueContract $ocrQueueContract, $projectId, $expeditionId)
+    public function ocr($projectId, $expeditionId)
     {
-        $project = $this->projectContract->with('group.permissions')->find($projectId);
+
+        $project = $this->projectService->permissionCheck($projectId);
 
         if ( ! $this->checkPermissions('update', $project))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $queueCheck = $ocrQueueContract->setCacheLifetime(0)
-            ->where('project_id', '=', $projectId)->findFirst();
-
-        if ($queueCheck === null)
-        {
-            $this->dispatch((new BuildOcrBatchesJob($project->id, $expeditionId))->onQueue(config('config.beanstalkd.ocr')));
-
-            session_flash_push('success', trans('expeditions.ocr_process_success'));
-        }
-        else
-        {
-            session_flash_push('warning', trans('expeditions.ocr_process_error'));
-        }
+        $this->projectService->processOcr($project, $expeditionId);
 
         return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
     }
@@ -405,25 +320,14 @@ class ExpeditionsController extends Controller
      */
     public function stop($projectId, $expeditionId)
     {
-        $project = $this->projectContract->with('group.permissions')->find($projectId);
+        $project = $this->projectService->permissionCheck($projectId);
 
         if ( ! $this->checkPermissions('update', $project))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $workflow = $this->workflowManagerContract->where('expedition_id', '=', $expeditionId)->findFirst();
-
-        if ($workflow === null)
-        {
-            session_flash_push('error', trans('expeditions.process_no_exists'));
-        }
-        else
-        {
-            $workflow->stopped = 1;
-            $this->workflowManagerContract->update($workflow->id, ['stopped' => 1]);
-            session_flash_push('success', trans('expeditions.process_stopped'));
-        }
+        $this->workflowManagerService->toggleExpeditionWorkflow($expeditionId);
 
         return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
     }
@@ -438,7 +342,7 @@ class ExpeditionsController extends Controller
      */
     public function delete(ModelDeleteService $service, $projectId, $expeditionId)
     {
-        $project = $this->projectContract->with('group.permissions')->find($projectId);
+        $project = $this->projectService->permissionCheck($projectId);
 
         if ( ! $this->checkPermissions('delete', $project))
         {
@@ -467,7 +371,7 @@ class ExpeditionsController extends Controller
      */
     public function destroy(ModelDestroyService $service, $projectId, $expeditionId)
     {
-        $project = $this->projectContract->with('group.permissions')->find($projectId);
+        $project = $this->projectService->permissionCheck($projectId);
 
         if ( ! $this->checkPermissions('delete', $project))
         {

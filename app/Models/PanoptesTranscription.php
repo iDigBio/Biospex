@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Traits\MongoDbTrait;
 use Jenssegers\Mongodb\Eloquent\Model;
-use MongoDate;
 
 class PanoptesTranscription extends Model
 {
+    use MongoDbTrait;
+
     /**
      * @inheritDoc
      */
@@ -39,12 +41,17 @@ class PanoptesTranscription extends Model
      */
     protected $orderBy = [[]];
 
+    protected static function boot()
+    {
+        parent::boot();
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project()
     {
-        return $this->belongsTo(Project::class, 'id', 'subject_projectId');
+        return $this->belongsTo(Project::class, 'subject_projectId', 'id');
     }
 
     /**
@@ -52,7 +59,7 @@ class PanoptesTranscription extends Model
      */
     public function expedition()
     {
-        return $this->belongsTo(Expedition::class, 'id', 'subject_expeditionId');
+        return $this->belongsTo(Expedition::class, 'subject_expeditionId', 'id');
     }
 
     /**
@@ -60,8 +67,39 @@ class PanoptesTranscription extends Model
      */
     public function subject()
     {
-        return $this->belongsTo(Subject::class, '_id', 'subject_subjectId');
+        return $this->belongsTo(Subject::class, 'subject_subjectId', '_id');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function dashboard()
+    {
+        return $this->hasOne(WeDigBioDashboard::class, 'transcription_id', '_id');
+    }
+
+    /**
+     * Set project id.
+     *
+     * @param $value
+     * @return int
+     */
+    public function setSubjectProjectIdAttribute($value)
+    {
+        return $this->attributes['subject_projectId'] = (int) $value;
+    }
+
+    /**
+     * Set expedition id.
+     *
+     * @param $value
+     * @return int
+     */
+    public function setSubjectExpeditionIdAttribute($value)
+    {
+        return $this->attributes['subject_expeditionId'] = (int) $value;
+    }
+
 
     /**
      * Mutate finished_at date for MongoDb
@@ -71,7 +109,7 @@ class PanoptesTranscription extends Model
      */
     public function setClassificationFinishedAtAttribute($value)
     {
-        $this->attributes['classification_finished_at'] = new MongoDate(strtotime($value));
+        $this->attributes['classification_finished_at'] = $this->asMongoDate($value);
     }
 
     /**
@@ -82,7 +120,7 @@ class PanoptesTranscription extends Model
      */
     public function getClassificationFinishedAtAttribute($value)
     {
-        return $value->toDateTime()->format('Y-m-d H:i:s');
+        return $this->asDateTime($value)->format('Y-m-d H:i:s');
     }
 
     /**
@@ -93,7 +131,7 @@ class PanoptesTranscription extends Model
      */
     public function setClassificationStartedAtAttribute($value)
     {
-        $this->attributes['classification_started_at'] = new MongoDate(strtotime($value));
+        $this->attributes['classification_started_at'] = $this->asMongoDate($value);
     }
 
     /**
@@ -104,7 +142,6 @@ class PanoptesTranscription extends Model
      */
     public function getClassificationStartedAtAttribute($value)
     {
-        return $value->toDateTime()->format('Y-m-d H:i:s');
+        return $this->asDateTime($value)->format('Y-m-d H:i:s');
     }
-    
 }

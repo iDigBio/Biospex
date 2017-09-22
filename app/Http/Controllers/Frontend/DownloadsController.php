@@ -81,6 +81,7 @@ class DownloadsController extends Controller
     {
         $user = $this->userContract->with('profile')->find(request()->user()->id);
         $expedition = $this->expeditionContract->expeditionDownloadsByActor($expeditionId);
+
         $paths = $this->paths;
 
         return view('frontend.downloads.index', compact('expedition', 'user', 'paths'));

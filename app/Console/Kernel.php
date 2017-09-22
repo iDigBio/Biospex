@@ -27,6 +27,7 @@ use App\Console\Commands\TestAppCommand;
 use App\Console\Commands\UpdateGoogleStateCountyTable;
 use App\Console\Commands\UpdateQueries;
 use App\Console\Commands\ViewsCommand;
+use App\Console\Commands\WeDigBioDashboard;
 use App\Console\Commands\WorkFlowManagerCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -66,7 +67,8 @@ class Kernel extends ConsoleKernel
         UpdateGoogleStateCountyTable::class,
         NfnClassificationsFusionTable::class,
         ExportQueue::class,
-        FixIdentifiersCommand::class
+        FixIdentifiersCommand::class,
+        WeDigBioDashboard::class
     ];
 
     /**

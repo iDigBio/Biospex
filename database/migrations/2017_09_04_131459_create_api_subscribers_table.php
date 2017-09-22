@@ -1,8 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\Schema;
 
 class CreateApiSubscribersTable extends Migration
 {
@@ -14,17 +14,21 @@ class CreateApiSubscribersTable extends Migration
     public function up()
     {
         Schema::create('api_subscribers', function (Blueprint $table) {
-            $table->increments('api_subscriber_id');
-            $table->string('email', 255);
-            $table->string('password', 255);
+            $table->increments('id');
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('password', 60);
+            $table->string('activation_code')->nullable();
+            $table->string('reset_password_code')->nullable();
+
+            $table->rememberToken();
             $table->timestamps();
-            $table->softDeletes();
-            // unique key
-            $table->unique('email');
-            // indexes
-            $table->index(['email', 'password']);
+
+            $table->index('activation_code');
+            $table->index('reset_password_code');
         });
     }
+
     /**
      * Reverse the migrations.
      *

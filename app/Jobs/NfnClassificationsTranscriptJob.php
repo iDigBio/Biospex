@@ -32,7 +32,7 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
      */
     public function __construct(array $ids = [])
     {
-        $this->ids = $ids;
+        $this->ids = collect($ids);
     }
 
     /**
@@ -47,23 +47,24 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
         Report $report
     )
     {
-        if (empty($this->ids))
+        if ($this->ids->isEmpty())
         {
             $this->delete();
 
             return;
         }
 
-        foreach ($this->ids as $id)
-        {
+        $this->ids->each(function($id) use ($transcription, $report) {
             $this->processCsvFile($transcription, $report, $id);
-        }
+        });
 
         if ( ! empty($transcription->getCsvError()) || $report->checkErrors())
         {
             $report->addError('Panoptes Transcript Error');
             $report->reportError(null, $transcription->getCsvError());
         }
+
+        $this->dispatch((new WeDigBioDashboardJob($this->ids))->onQueue(config('config.beanstalkd.classification')));
     }
 
     /**

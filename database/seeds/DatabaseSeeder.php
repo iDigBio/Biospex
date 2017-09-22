@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call('TruncateTables');
         $this->call('PermissionTableSeeder');
-        $this->call('UserTableSeeder');
+        $this->call('ApiSubscribersTableSeeder');
         $this->call('GroupTableSeeder');
         $this->call('UserGroupTableSeeder');
         $this->call('ActorsTableSeeder');

@@ -18,7 +18,16 @@ class UserService
      */
     public function __construct(UserContract $userContract)
     {
-
         $this->userContract = $userContract;
+    }
+
+    /**
+     * Return the logged in user.
+     *
+     * @return mixed
+     */
+    public function getLoggedInUser()
+    {
+        return $this->userContract->with('profile')->find(request()->user()->id);
     }
 }

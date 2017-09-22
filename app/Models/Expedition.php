@@ -196,6 +196,14 @@ class Expedition extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function dashboard()
+    {
+        return $this->hasMany(WeDigBioDashboard::class, 'expedition_id');
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function exportQueue()
