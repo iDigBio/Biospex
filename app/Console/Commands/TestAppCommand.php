@@ -39,6 +39,5 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
-
     }
 }
