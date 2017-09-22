@@ -10,14 +10,13 @@ _ide_helper.php
 /config/debugbar.php
 .env.behat
 codeception.yml
-/public/test
-public/vision/images/Thumbs.db
 storage/scratch/
 tests/_output/
 backups
 
 resources/lang/*/[a-zA-Z]*20[0-9][0-9][0-1][0-9][0-3][0-9]_[0-2][0-9][0-5][0-9][0-5][0-9].php
 /resources/supervisord/queue.loc.conf
+/resources/upstart/biospex-socket.conf
 
 /vendor
 /node_modules
