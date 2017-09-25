@@ -33,7 +33,6 @@ class WeDigBioDashboard extends Model
      */
     protected $guarded = ['_id'];
 
-
     /**
      * @inheritDoc
      */
