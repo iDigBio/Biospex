@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
-use MongoDate;
+use MongoDB\BSON\UTCDateTime;
 
 class NfnTranscription extends Model
 {
@@ -65,7 +65,7 @@ class NfnTranscription extends Model
      */
     public function setFinishedAtAttribute($value)
     {
-        $this->attributes['finished_at'] = new MongoDate(strtotime($value));
+        $this->attributes['finished_at'] = new UTCDateTime(strtotime($value));
     }
 
     /**
@@ -87,7 +87,7 @@ class NfnTranscription extends Model
      */
     public function setStartedAtAttribute($value)
     {
-        $this->attributes['started_at'] = new MongoDate(strtotime($value));
+        $this->attributes['started_at'] = new UTCDateTime(strtotime($value));
     }
 
     /**

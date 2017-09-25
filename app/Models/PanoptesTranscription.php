@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
-use MongoDate;
+use MongoDB\BSON\UTCDateTime;
 
 class PanoptesTranscription extends Model
 {
@@ -106,7 +106,7 @@ class PanoptesTranscription extends Model
      */
     public function setClassificationFinishedAtAttribute($value)
     {
-        $this->attributes['classification_finished_at'] = new MongoDate(strtotime($value));
+        $this->attributes['classification_finished_at'] = new UTCDateTime(strtotime($value));
     }
 
     /**
@@ -127,7 +127,7 @@ class PanoptesTranscription extends Model
      */
     public function setClassificationStartedAtAttribute($value)
     {
-        $this->attributes['classification_started_at'] = new MongoDate(strtotime($value));
+        $this->attributes['classification_started_at'] = new UTCDateTime(strtotime($value));
     }
 
     /**
