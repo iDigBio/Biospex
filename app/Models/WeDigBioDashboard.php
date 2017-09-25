@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\Traits\MongoDbTrait;
-use Carbon\Carbon;
 use Jenssegers\Mongodb\Eloquent\Model;
+use MongoDB\BSON\ObjectID;
+use MongoDB\BSON\UTCDateTime;
 
 class WeDigBioDashboard extends Model
 {
-    use MongoDbTrait;
-
     /**
      * @inheritDoc
      */
@@ -39,7 +37,7 @@ class WeDigBioDashboard extends Model
     /**
      * @inheritDoc
      */
-    protected $dates = ['created_at', 'updated_at', 'timestamp'];
+    protected $dates = ['created_at', 'updated_at'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -71,11 +69,12 @@ class WeDigBioDashboard extends Model
      * Set transcript as mongo id.
      *
      * @param $value
-     * @return \MongoDB\BSON\ObjectID
      */
     public function setTranscriptionIdAttribute($value)
     {
-        $this->attributes['transcription_id'] = $this->asMongoID($value);
+        if (is_string($value) and strlen($value) === 24 and ctype_xdigit($value)) {
+            $this->attributes['transcription_id'] = new ObjectID($value);
+        }
     }
 
     /**
@@ -93,12 +92,14 @@ class WeDigBioDashboard extends Model
      * Mutate finished_at date for MongoDb
      *
      * @param  string  $value
-     * @return string
      */
     public function setTimestampAttribute($value)
     {
-        // new MongoDate(strtotime($value))
-        $this->attributes['timestamp'] = $this->asMongoDate($value);
+        if ($value instanceof UTCDatetime) {
+            $this->attributes['timestamp'] = $value;
+        }
+
+        $this->attributes['timestamp'] = new UTCDatetime($this->asTimeStamp($value) * 1000);
     }
 
     /**

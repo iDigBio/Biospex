@@ -133,8 +133,8 @@ class WeDigBioDashboardService
      */
     private function setThumbnailUri($transcription)
     {
-        return ( ! isset($transcription['subject_imageURL']) || empty($transcription['subject_imageURL'])) ?
-            $transcription->subject->accessURI : $transcription['subject_imageURL'];
+        return ( ! isset($transcription->subject_imageURL) || empty($transcription->subject_imageURL)) ?
+            $transcription->subject->accessURI : $transcription->subject_imageURL;
     }
 
     /**
@@ -154,16 +154,16 @@ class WeDigBioDashboardService
             'project'              => $transcription->workflow_name,
             'description'          => $expedition->description,
             'guid'                 => Uuid::uuid4()->toString(),
-            'timestamp'            => $transcription['classification_finished_at'],
+            'timestamp'            => $transcription->classification_finished_at,
             'subject'              => [
-                'link'         => $transcription['subject_references'],
+                'link'         => $transcription->subject_references,
                 'thumbnailUri' => $thumbnailUri
             ],
             'contributor'          => [
                 'decimalLatitude'  => '',
                 'decimalLongitude' => '',
                 'ipAddress'        => '',
-                'transcriber'      => $transcription['user_name'],
+                'transcriber'      => $transcription->user_name,
                 'physicalLocation' => [
                     'country'      => '',
                     'province'     => '',
@@ -175,14 +175,14 @@ class WeDigBioDashboardService
             'transcriptionContent' => [
                 'lat'          => '',
                 'long'         => '',
-                'country'      => $transcription['Country'],
-                'province'     => $transcription['State_Province'],
-                'county'       => $transcription['County'],
+                'country'      => $transcription->Country,
+                'province'     => $transcription->State_Province,
+                'county'       => $transcription->County,
                 'municipality' => '',
-                'locality'     => $transcription['Location'],
+                'locality'     => $transcription->Location,
                 'date'         => '', // which date to use? transcription date is messy
-                'collector'    => $transcription['Collected_By'],
-                'taxon'        => $transcription['Scientific_Name'],
+                'collector'    => $transcription->Collected_By,
+                'taxon'        => $transcription->Scientific_Name,
             ],
             'discretionaryState'   => 'Transcribed'
         ];
