@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use App\Models\Traits\MongoDbTrait;
 use Jenssegers\Mongodb\Eloquent\Model;
+use MongoDate;
 
 class PanoptesTranscription extends Model
 {
-    use MongoDbTrait;
-
     /**
      * @inheritDoc
      */
@@ -105,11 +103,10 @@ class PanoptesTranscription extends Model
      * Mutate finished_at date for MongoDb
      *
      * @param  string  $value
-     * @return string
      */
     public function setClassificationFinishedAtAttribute($value)
     {
-        $this->attributes['classification_finished_at'] = $this->asMongoDate($value);
+        $this->attributes['classification_finished_at'] = new MongoDate(strtotime($value));
     }
 
     /**
@@ -127,11 +124,10 @@ class PanoptesTranscription extends Model
      * Mutate started_at for MongoDb
      *
      * @param  string  $value
-     * @return string
      */
     public function setClassificationStartedAtAttribute($value)
     {
-        $this->attributes['classification_started_at'] = $this->asMongoDate($value);
+        $this->attributes['classification_started_at'] = new MongoDate(strtotime($value));
     }
 
     /**
