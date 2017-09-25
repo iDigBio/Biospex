@@ -24,7 +24,7 @@
     "codesleeve/laravel-stapler": "dev-master",
     "league/csv": "8.0.*",
     "neitanod/forceutf8": "1.4.*",
-    "vetruvet/laravel-phpredis": "1.*",
+    "vetruvet/laravel-phpredis": "1.0.4",
     "barryvdh/laravel-translation-manager": "^0.2.2",
     "league/oauth2-client": "^1.4",
     "laracasts/utilities": "~2.0",

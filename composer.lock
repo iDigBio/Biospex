@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "2c2c6c597a540d6ccab17d05facb0ad5",
+    "content-hash": "fec449471daf99c90b533ff36bd53ea6",
     "packages": [
         {
             "name": "askedio/laravel5-soft-cascade",
@@ -413,6 +413,7 @@
                 "laravel",
                 "validator"
             ],
+            "abandoned": "illuminate/validation",
             "time": "2016-04-11T19:10:43+00:00"
         },
         {
@@ -1119,16 +1120,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.22",
+            "version": "v0.27",
             "source": {
                 "type": "git",
                 "url": "https://github.com/google/google-api-php-client-services.git",
-                "reference": "f3cc7456ec878086ee6b53591e979a022e24ac27"
+                "reference": "a78a34c76ba300d8236979d74f340b815151f893"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-api-php-client-services/zipball/f3cc7456ec878086ee6b53591e979a022e24ac27",
-                "reference": "f3cc7456ec878086ee6b53591e979a022e24ac27",
+                "url": "https://api.github.com/repos/google/google-api-php-client-services/zipball/a78a34c76ba300d8236979d74f340b815151f893",
+                "reference": "a78a34c76ba300d8236979d74f340b815151f893",
                 "shasum": ""
             },
             "require": {
@@ -1152,7 +1153,7 @@
             "keywords": [
                 "google"
             ],
-            "time": "2017-09-02T00:25:09+00:00"
+            "time": "2017-09-24T00:22:51+00:00"
         },
         {
             "name": "google/auth",
@@ -3960,17 +3961,22 @@
         },
         {
             "name": "vetruvet/laravel-phpredis",
-            "version": "1.0.0",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vetruvet/laravel-phpredis.git",
-                "reference": "a11dbcd2afdabcc61f5f327822f571d448cf03e1"
+                "reference": "8f814ef5473a93f92e490044c9100f6eece3e2c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vetruvet/laravel-phpredis/zipball/a11dbcd2afdabcc61f5f327822f571d448cf03e1",
-                "reference": "a11dbcd2afdabcc61f5f327822f571d448cf03e1",
+                "url": "https://api.github.com/repos/vetruvet/laravel-phpredis/zipball/8f814ef5473a93f92e490044c9100f6eece3e2c9",
+                "reference": "8f814ef5473a93f92e490044c9100f6eece3e2c9",
                 "shasum": ""
+            },
+            "require": {
+                "ext-redis": "*",
+                "illuminate/redis": "5.* || 4.*",
+                "illuminate/support": "5.* || 4.*"
             },
             "type": "library",
             "autoload": {
@@ -3994,7 +4000,7 @@
                 "phpredis",
                 "redis"
             ],
-            "time": "2014-04-29T04:49:46+00:00"
+            "time": "2016-06-09T19:32:20+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -4171,12 +4177,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Behat/Behat.git",
-                "reference": "74c665dcc28e18a34142032ddfcc5fd8333d74c8"
+                "reference": "269777f1477b132031f048aa45620aef787d8425"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Behat/Behat/zipball/74c665dcc28e18a34142032ddfcc5fd8333d74c8",
-                "reference": "74c665dcc28e18a34142032ddfcc5fd8333d74c8",
+                "url": "https://api.github.com/repos/Behat/Behat/zipball/269777f1477b132031f048aa45620aef787d8425",
+                "reference": "269777f1477b132031f048aa45620aef787d8425",
                 "shasum": ""
             },
             "require": {
@@ -4246,7 +4252,7 @@
                 "symfony",
                 "testing"
             ],
-            "time": "2017-09-03T10:07:19+00:00"
+            "time": "2017-09-18T11:09:58+00:00"
         },
         {
             "name": "behat/gherkin",
@@ -4427,12 +4433,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Behat/MinkExtension.git",
-                "reference": "ba90463fab1e92fbdb3b16f25cc106634d373878"
+                "reference": "c85f3276c49def6de8860049644c6b799ce26623"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Behat/MinkExtension/zipball/ba90463fab1e92fbdb3b16f25cc106634d373878",
-                "reference": "ba90463fab1e92fbdb3b16f25cc106634d373878",
+                "url": "https://api.github.com/repos/Behat/MinkExtension/zipball/c85f3276c49def6de8860049644c6b799ce26623",
+                "reference": "c85f3276c49def6de8860049644c6b799ce26623",
                 "shasum": ""
             },
             "require": {
@@ -4478,7 +4484,7 @@
                 "test",
                 "web"
             ],
-            "time": "2016-11-17T11:38:25+00:00"
+            "time": "2017-09-21T09:52:01+00:00"
         },
         {
             "name": "behat/transliterator",
@@ -5169,16 +5175,16 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "v1.7.1",
+            "version": "v1.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "15ea9ac619e37009edcda64089e3fa4cc88aa659"
+                "reference": "c9b8c6088acd19d769d4cc0ffa60a9fe34344bd6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/15ea9ac619e37009edcda64089e3fa4cc88aa659",
-                "reference": "15ea9ac619e37009edcda64089e3fa4cc88aa659",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/c9b8c6088acd19d769d4cc0ffa60a9fe34344bd6",
+                "reference": "c9b8c6088acd19d769d4cc0ffa60a9fe34344bd6",
                 "shasum": ""
             },
             "require": {
@@ -5228,7 +5234,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2017-09-03T09:38:53+00:00"
+            "time": "2017-09-04T11:05:03+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -6083,7 +6089,7 @@
         },
         {
             "name": "symfony/browser-kit",
-            "version": "v3.3.8",
+            "version": "v3.3.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/browser-kit.git",
@@ -6140,7 +6146,7 @@
         },
         {
             "name": "symfony/class-loader",
-            "version": "v3.3.8",
+            "version": "v3.3.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/class-loader.git",
@@ -6252,7 +6258,7 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v3.3.8",
+            "version": "v3.3.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/css-selector.git",
@@ -6368,16 +6374,16 @@
         },
         {
             "name": "symfony/dom-crawler",
-            "version": "v3.3.8",
+            "version": "v3.3.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dom-crawler.git",
-                "reference": "d15dfaf71b65bf3affb80900470caf4451a8217e"
+                "reference": "6b511d7329b203a620f09a2288818d27dcc915ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/d15dfaf71b65bf3affb80900470caf4451a8217e",
-                "reference": "d15dfaf71b65bf3affb80900470caf4451a8217e",
+                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/6b511d7329b203a620f09a2288818d27dcc915ae",
+                "reference": "6b511d7329b203a620f09a2288818d27dcc915ae",
                 "shasum": ""
             },
             "require": {
@@ -6420,11 +6426,11 @@
             ],
             "description": "Symfony DomCrawler Component",
             "homepage": "https://symfony.com",
-            "time": "2017-08-15T13:31:09+00:00"
+            "time": "2017-09-11T15:55:22+00:00"
         },
         {
             "name": "symfony/filesystem",
-            "version": "v3.3.8",
+            "version": "v3.3.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
@@ -6473,7 +6479,7 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.3.8",
+            "version": "v3.3.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
