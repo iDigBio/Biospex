@@ -41,6 +41,8 @@ class ImportsController extends Controller
     public function import($id)
     {
         $project = $this->projectContract->with('group')->find($id);
+        session_flash_push('warning', 'Imports are disabled temporarily');
+        return redirect()->route('web.projects.show', [$id]);
 
         return view('frontend.projects.add', compact('project'));
     }
