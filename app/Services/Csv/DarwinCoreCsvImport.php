@@ -502,31 +502,25 @@ class DarwinCoreCsvImport
 
         $fields = ['project_id' => (int) $this->projectId, 'ocr' => '', 'expedition_ids' => []];
 
-        $subject = $fields + $combined + ['occurrence' => is_null($occurrenceId) ? '' : $occurrenceId];
+        $occurrence = is_null($occurrenceId) ? [] : ['occurrence' => ['id' => $occurrenceId]];
+        $subject = $fields + $combined + $occurrence;
 
         if ($this->validateDoc($subject))
         {
             return;
         }
 
-        $this->saveSubject($subject, $occurrenceId);
+        $this->saveSubject($subject);
     }
 
     /**
      * Build subject and save to database.
      *
      * @param $subject
-     * @param $occurrenceId
      */
-    public function saveSubject($subject, $occurrenceId)
+    public function saveSubject($subject)
     {
-        $subject = $this->subjectContract->create($subject);
-
-        if ($occurrenceId !== null)
-        {
-            $subject->occurrence()->save(new Occurrence(['id' => $occurrenceId]));
-        }
-
+        $this->subjectContract->create($subject);
         $this->subjectCount++;
     }
 
@@ -549,9 +543,9 @@ class DarwinCoreCsvImport
         }
 
         $subjects->each(function ($subject) use ($data) {
-            $subject->occurrence()->save(new Occurrence($data));
+            $occurrence = new Occurrence($data);
+            $subject->occurrence()->save($occurrence);
         });
-
     }
 
     /**
