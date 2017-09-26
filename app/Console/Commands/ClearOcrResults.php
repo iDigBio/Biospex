@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Repositories\Contracts\SubjectContract;
 use Illuminate\Console\Command;
 use Illuminate\Database\DatabaseManager;
-use Illuminate\Support\Facades\Config;
 use MongoCollection;
 
 class ClearOcrResults extends Command
@@ -68,11 +67,12 @@ class ClearOcrResults extends Command
      * Query MongoDB and return cursor
      * @return MongoCollection
      */
-    protected function setCollection($projectId, $expeditionId = null)
+    protected function setCollection()
     {
         $databaseManager = app(DatabaseManager::class);
-        $db = $databaseManager->connection('mongodb')->getMongoClient()->selectDB(Config::get('database.connections.mongodb.database'));
+        $client = $databaseManager->connection('mongodb')->getMongoClient();
+        $collection =$client->{config('database.connections.mongodb.database')}->subjects;
 
-         return new MongoCollection($db, 'subjects');
+         return $collection;
     }
 }

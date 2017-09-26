@@ -114,11 +114,8 @@ class GridsController extends Controller
         try
         {
             $databaseManager = app(DatabaseManager::class);
-            $db = $databaseManager->connection('mongodb')
-                ->getMongoClient()
-                ->selectDB(config('database.connections.mongodb.database'));
-
-            $collection =  new MongoCollection($db, 'subjects');
+            $client = $databaseManager->connection('mongodb')->getMongoClient();
+            $collection =$client->{config('database.connections.mongodb.database')}->subjects;
 
             $query = null === $expeditionId ?
                 ['project_id' => (int) $projectId] :

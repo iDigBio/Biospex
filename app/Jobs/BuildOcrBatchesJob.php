@@ -140,11 +140,10 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
     protected function setCollection()
     {
         $databaseManager = app(DatabaseManager::class);
-        $db = $databaseManager->connection('mongodb')
-            ->getMongoClient()
-            ->selectDB(config('database.connections.mongodb.database'));
+        $client = $databaseManager->connection('mongodb')->getMongoClient();
+        $collection =$client->{config('database.connections.mongodb.database')}->subjects;
 
-        return new MongoCollection($db, 'subjects');
+        return $collection;
     }
 
     /**
