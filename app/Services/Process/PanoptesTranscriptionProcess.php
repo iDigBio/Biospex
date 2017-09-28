@@ -155,6 +155,8 @@ class PanoptesTranscriptionProcess
 
         if ($this->validateTranscription($combined))
         {
+            $transcript = $this->panoptesTranscriptionContract->findBy('classification_id', $combined['classification_id']);
+            $this->panoptesTranscriptionContract->update($transcript->id, $combined);
             return;
         }
 

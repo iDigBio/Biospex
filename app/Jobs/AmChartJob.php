@@ -123,6 +123,10 @@ class AmChartJob extends Job implements ShouldQueue
             $this->defaultDays[$i] = '';
             $i++;
         }
+
+        \Log::alert($this->earliest_date);
+        \Log::alert($this->latest_date);
+        \Log::alert($total);
     }
 
     /**
@@ -160,6 +164,7 @@ class AmChartJob extends Job implements ShouldQueue
         $transcriptCountByDate = $this->transcription
             ->setCacheLifetime(0)
             ->getTranscriptionCountPerDate($expedition->nfnWorkflow->workflow);
+        \Log::alert('Expedition ' . $expedition->id . ': ' . count($transcriptCountByDate));
 
         $daysArray = $this->processTranscriptionDateCounts($expedition, $transcriptCountByDate);
 
