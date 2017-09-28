@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\BiospexException;
 use App\Jobs\AmChartJob;
 use App\Jobs\NfnClassificationsTranscriptJob;
 use App\Repositories\Contracts\AmChartContract;
@@ -73,17 +74,11 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
-        $transcriptions = $this->transcription->setCacheLifetime(0)
-            ->where('classification_started_at', '<', new UTCDateTime(strtotime('1970-01-20T00:00:00Z') * 1000), 'or')
-            ->where('classification_finished_at', '<', new UTCDateTime(strtotime('1970-01-20T00:00:00Z') * 1000))
-            ->findAll();
+        $ids = null === $this->argument('ids') ? $this->readDirectory() : explode(',', $this->argument('ids'));
 
-        $ids = $transcriptions->map(function($transcription){
-            return $transcription->subject_expeditionId;
+        collect($ids)->each(function($id) {
+            $this->processCsvFile($id);
         });
-
-        dd(array_unique($ids->toArray()));
-
 
         //dd(new UTCDateTime(strtotime('Thu, 28 Sep 2017 20:50:04 GMT') * 1000));
         //dd(new \DateTime(1506631804));
@@ -119,5 +114,23 @@ class TestAppCommand extends Command
         }
 
         return $ids;
+    }
+
+    private function processCsvFile($id)
+    {
+        try
+        {
+            $filePath = config('config.classifications_transcript') . '/' . $id . '.csv';
+            if ( ! file_exists($filePath))
+            {
+                return;
+            }
+
+            $this->process->process($filePath);
+        }
+        catch (BiospexException $e)
+        {
+            $this->report->addError($e->getMessage());
+        }
     }
 }
