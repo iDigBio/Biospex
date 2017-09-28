@@ -82,7 +82,7 @@ class TestAppCommand extends Command
             return $transcription->subject_expeditionId;
         });
 
-        dd($ids);
+        dd(array_unique($ids->toArray()));
 
 
         //dd(new UTCDateTime(strtotime('Thu, 28 Sep 2017 20:50:04 GMT') * 1000));
