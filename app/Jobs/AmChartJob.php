@@ -145,8 +145,10 @@ class AmChartJob extends Job implements ShouldQueue
 
             $resultSet = $this->processExpedition($expedition);
 
+            \Log::alert('aggregate result count ' . $expedition->id);
             $this->aggregateResultCount($resultSet);
 
+            \Log::alert('setTranscriptions ' . $expedition->id);
             $this->setTranscriptions($resultSet);
         }
     }
@@ -198,6 +200,7 @@ class AmChartJob extends Job implements ShouldQueue
      */
     protected function buildMissingData($expedition, $daysArray)
     {
+        \Log::alert('build missing data expedition ' . $expedition->id);
         foreach ($daysArray as $day => &$data)
         {
             if ($data === '')
@@ -247,6 +250,7 @@ class AmChartJob extends Job implements ShouldQueue
      */
     protected function buildResultSet($id, $title, $day, $total = 0)
     {
+        \Log::alert('build result set expedition ' . $id);
         return [
             'expedition' => (int) $id,
             'collection' => $title,
