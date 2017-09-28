@@ -236,10 +236,14 @@ class AmChartJob extends Job implements ShouldQueue
      */
     public function setTranscriptions($results)
     {
-        \Log::alert(print_r($this->transcriptions, true));
-        \Log::alert(print_r($results, true));
-        $this->delete();
-        exit;
+        if (!empty($this->transcriptions))
+        {
+            \Log::alert(print_r($this->transcriptions, true));
+            \Log::alert(print_r($results, true));
+            $this->delete();
+            exit;
+        }
+
         $this->transcriptions = array_merge($this->transcriptions, $results);
     }
 
