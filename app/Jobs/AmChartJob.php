@@ -229,6 +229,12 @@ class AmChartJob extends Job implements ShouldQueue
         }
     }
 
+    public function imitateMerge(&$array1, &$array2) {
+        foreach($array2 as $i) {
+            $array1[] = $i;
+        }
+    }
+
     /**
      * Add to transcriptions array using designated keys.
      *
@@ -236,6 +242,7 @@ class AmChartJob extends Job implements ShouldQueue
      */
     public function setTranscriptions($results)
     {
+        /*
         if (!empty($this->transcriptions))
         {
             \Log::alert(print_r($this->transcriptions, true));
@@ -243,8 +250,14 @@ class AmChartJob extends Job implements ShouldQueue
             $this->delete();
             exit;
         }
+        */
 
-        $this->transcriptions = array_merge($this->transcriptions, $results);
+        foreach ($results as $result)
+        {
+            $this->transcriptions[] = $result;
+        }
+
+        //$this->transcriptions = array_merge($this->transcriptions, $results);
     }
 
     /**
