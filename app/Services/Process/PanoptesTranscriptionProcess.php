@@ -166,8 +166,6 @@ class PanoptesTranscriptionProcess
             $this->panoptesTranscriptionContract->update($transcript->_id, $attributes);
             return;
         }
-        \Log::alert('not going to create');
-        die();
 
         $this->panoptesTranscriptionContract->create($combined);
 
