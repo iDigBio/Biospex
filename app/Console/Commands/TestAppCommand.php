@@ -77,7 +77,13 @@ class TestAppCommand extends Command
             ->where('classification_started_at', '<', new UTCDateTime(strtotime('1970-01-20T00:00:00Z') * 1000), 'or')
             ->where('classification_finished_at', '<', new UTCDateTime(strtotime('1970-01-20T00:00:00Z') * 1000))
             ->findAll();
-        dd(count($transcriptions));
+
+        $ids = $transcriptions->map(function($transcription){
+            return $transcription->subject_expeditionId;
+        })->unique();
+
+        dd($ids);
+
 
         //dd(new UTCDateTime(strtotime('Thu, 28 Sep 2017 20:50:04 GMT') * 1000));
         //dd(new \DateTime(1506631804));
