@@ -9,6 +9,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class AmChartJob extends Job implements ShouldQueue
 {
@@ -158,7 +159,7 @@ class AmChartJob extends Job implements ShouldQueue
             ->setCacheLifetime(0)
             ->getTranscriptionCountPerDate($expedition->nfnWorkflow->workflow);
 
-        $daysArray = $this->processTranscriptionDateCounts($expedition, $transcriptCountByDate['result']);
+        $daysArray = $this->processTranscriptionDateCounts($expedition, $transcriptCountByDate);
 
         return $this->buildMissingData($expedition, $daysArray);
     }
@@ -167,7 +168,7 @@ class AmChartJob extends Job implements ShouldQueue
      * Process transcript data.
      *
      * @param $expedition
-     * @param array $transcriptCountByDate
+     * @param Collection $transcriptCountByDate
      * @return array
      */
     protected function processTranscriptionDateCounts($expedition, $transcriptCountByDate)
