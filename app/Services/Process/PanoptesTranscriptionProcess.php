@@ -163,7 +163,7 @@ class PanoptesTranscriptionProcess
                 'classification_started_at' => $combined['classification_started_at'],
                 'classification_finished_at' => $combined['classification_finished_at']
             ];
-            $this->panoptesTranscriptionContract->update($transcript->id, $attributes);
+            $this->panoptesTranscriptionContract->update($transcript->_id, $attributes);
             return;
         }
         \Log::alert('creating classification');
