@@ -76,6 +76,7 @@ class AmChartJob extends Job implements ShouldQueue
 
         foreach ($this->ids as $id)
         {
+            \Log::alert('process id ' . $id);
             $this->transcriptions = [];
             $this->transcription = $transcription;
 
@@ -99,7 +100,9 @@ class AmChartJob extends Job implements ShouldQueue
 
             $content = array_values($this->transcriptions);
 
+            \Log::alert('before update chart ' . $id);
             $chart->updateOrCreateChart(['project_id' => $id], ['data' => json_encode($content)]);
+            \Log::alert('after update chart ' . $id);
         }
     }
 
@@ -130,6 +133,7 @@ class AmChartJob extends Job implements ShouldQueue
      */
     protected function processProjectExpeditions($expeditions)
     {
+        \Log::alert('process expeditions ');
         foreach ($expeditions as $expedition)
         {
             if ( ! isset($expedition->stat->transcriptions_completed)
@@ -160,6 +164,7 @@ class AmChartJob extends Job implements ShouldQueue
             ->getTranscriptionCountPerDate($expedition->nfnWorkflow->workflow);
 
         $daysArray = $this->processTranscriptionDateCounts($expedition, $transcriptCountByDate);
+        \Log::alert('process expedition ' . $expedition->id);
 
         return $this->buildMissingData($expedition, $daysArray);
     }
