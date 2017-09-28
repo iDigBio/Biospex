@@ -65,7 +65,7 @@ class NfnTranscription extends Model
      */
     public function setFinishedAtAttribute($value)
     {
-        $this->attributes['finished_at'] = new UTCDateTime(strtotime($value));
+        $this->attributes['finished_at'] = new UTCDateTime(strtotime($value) * 1000);
     }
 
     /**
@@ -87,7 +87,7 @@ class NfnTranscription extends Model
      */
     public function setStartedAtAttribute($value)
     {
-        $this->attributes['started_at'] = new UTCDateTime(strtotime($value));
+        $this->attributes['started_at'] = new UTCDateTime(strtotime($value) * 1000);
     }
 
     /**

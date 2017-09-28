@@ -11,6 +11,7 @@ use App\Services\Process\PanoptesTranscriptionProcess;
 use App\Services\Report\Report;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use MongoDB\BSON\UTCDateTime;
 
 class TestAppCommand extends Command
 {
@@ -72,6 +73,8 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
+        //dd(new UTCDateTime(strtotime('Thu, 28 Sep 2017 20:50:04 GMT') * 1000));
+        //dd(new \DateTime(1506631804));
         /*
         $result = $this->contract->findBy('project_id', 26);
         \Log::alert(print_r(json_decode($result->data, true), true));
@@ -84,5 +87,10 @@ class TestAppCommand extends Command
         $ids = explode(',', $this->argument('ids'));
         $job = new NfnClassificationsTranscriptJob($ids);
         $job->handle($this->process, $this->report);
+        //$transcript = $this->transcription->setCacheLifetime(0)->findBy('classification_id',19829916);
+        //2016-10-28T19:55:07.000Z
+        //$date = new UTCDateTime(strtotime('28-10-2016 19:55:00'));
+        //$this->transcription->update($transcript->_id, ['classification_started_at' => 'Thu, 28 Sep 2017 20:50:04 GMT']);
+
     }
 }

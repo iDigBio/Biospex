@@ -106,7 +106,7 @@ class PanoptesTranscription extends Model
      */
     public function setClassificationFinishedAtAttribute($value)
     {
-        $this->attributes['classification_finished_at'] = new UTCDateTime(strtotime($value));
+        $this->attributes['classification_finished_at'] = new UTCDateTime(strtotime($value) * 1000);
     }
 
     /**
@@ -127,7 +127,7 @@ class PanoptesTranscription extends Model
      */
     public function setClassificationStartedAtAttribute($value)
     {
-        $this->attributes['classification_started_at'] = new UTCDateTime(strtotime($value));
+        $this->attributes['classification_started_at'] = new UTCDateTime(strtotime($value) * 1000);
     }
 
     /**
