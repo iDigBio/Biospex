@@ -155,10 +155,12 @@ class PanoptesTranscriptionProcess
 
         if ($this->validateTranscription($combined))
         {
+            \Log::alert('updating classification');
             $transcript = $this->panoptesTranscriptionContract->findBy('classification_id', $combined['classification_id']);
             $this->panoptesTranscriptionContract->update($transcript->id, $combined);
             return;
         }
+        \Log::alert('creating classification');
 
         $this->panoptesTranscriptionContract->create($combined);
 
