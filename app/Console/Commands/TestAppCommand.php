@@ -73,18 +73,11 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
-        $ids = explode(',', $this->argument('ids'));
-
-        foreach ($ids as $id)
-        {
-            $filePath = config('config.classifications_transcript') . '/' . $id . '.csv';
-            if ( ! file_exists($filePath))
-            {
-                continue;
-            }
-
-            $this->process->process($filePath);
-        }
+        $transcriptions = $this->transcription->setCacheLifetime(0)
+            ->where('classification_started_at', '>', new UTCDateTime(strtotime('1970-01-20T00:00:00Z') * 1000), 'or')
+            ->where('classification_finished_at', '>', new UTCDateTime(strtotime('1970-01-20T00:00:00Z') * 1000))
+            ->get();
+        dd($transcriptions->count());
 
         //dd(new UTCDateTime(strtotime('Thu, 28 Sep 2017 20:50:04 GMT') * 1000));
         //dd(new \DateTime(1506631804));
@@ -105,5 +98,20 @@ class TestAppCommand extends Command
         //$date = new UTCDateTime(strtotime('28-10-2016 19:55:00'));
         //$this->transcription->update($transcript->_id, ['classification_started_at' => 'Thu, 28 Sep 2017 20:50:04 GMT']);
 
+    }
+
+    /**
+     * Read directory files to process.
+     */
+    private function readDirectory()
+    {
+        $ids = [];
+        $files = \File::allFiles(config('config.classifications_transcript'));
+        foreach ($files as $file)
+        {
+            $ids[] = basename($file, '.csv');
+        }
+
+        return $ids;
     }
 }
