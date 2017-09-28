@@ -76,7 +76,6 @@ class AmChartJob extends Job implements ShouldQueue
 
         foreach ($this->ids as $id)
         {
-            \Log::alert('process id ' . $id);
             $this->transcriptions = [];
             $this->transcription = $transcription;
 
@@ -100,9 +99,7 @@ class AmChartJob extends Job implements ShouldQueue
 
             $content = array_values($this->transcriptions);
 
-            \Log::alert('before update chart ' . $id);
             $chart->updateOrCreateChart(['project_id' => $id], ['data' => json_encode($content)]);
-            \Log::alert('after update chart ' . $id);
         }
 
         $this->delete();
@@ -146,10 +143,8 @@ class AmChartJob extends Job implements ShouldQueue
 
             $resultSet = $this->processExpedition($expedition);
 
-            \Log::alert('aggregate result count ' . $expedition->id);
             $this->aggregateResultCount($resultSet);
 
-            \Log::alert('setTranscriptions ' . $expedition->id);
             $this->setTranscriptions($resultSet);
         }
     }
@@ -162,7 +157,6 @@ class AmChartJob extends Job implements ShouldQueue
      */
     public function processExpedition($expedition)
     {
-        \Log::alert('process expedition ' . $expedition->id);
         $transcriptCountByDate = $this->transcription
             ->setCacheLifetime(0)
             ->getTranscriptionCountPerDate($expedition->nfnWorkflow->workflow);
@@ -242,16 +236,6 @@ class AmChartJob extends Job implements ShouldQueue
      */
     public function setTranscriptions($results)
     {
-        /*
-        if (!empty($this->transcriptions))
-        {
-            \Log::alert(print_r($this->transcriptions, true));
-            \Log::alert(print_r($results, true));
-            $this->delete();
-            exit;
-        }
-        */
-
         foreach ($results as $result)
         {
             $this->transcriptions[] = $result;
