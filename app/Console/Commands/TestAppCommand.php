@@ -74,7 +74,6 @@ class TestAppCommand extends Command
     public function handle()
     {
         $transcriptions = $this->transcription->setCacheLifetime(0)
-            ->findWhere([])
             ->where('classification_started_at', '>', strtotime('1970-01-20T00:00:00Z') * 1000)
             //->where('classification_finished_at', '>', new UTCDateTime(strtotime('1970-01-20T00:00:00Z') * 1000))
             ->findAll();
