@@ -135,7 +135,6 @@ class AmChartJob extends Job implements ShouldQueue
      */
     protected function processProjectExpeditions($expeditions)
     {
-        \Log::alert('process expeditions ');
         foreach ($expeditions as $expedition)
         {
             if ( ! isset($expedition->stat->transcriptions_completed)
@@ -163,12 +162,12 @@ class AmChartJob extends Job implements ShouldQueue
      */
     public function processExpedition($expedition)
     {
+        \Log::alert('process expedition ' . $expedition->id);
         $transcriptCountByDate = $this->transcription
             ->setCacheLifetime(0)
             ->getTranscriptionCountPerDate($expedition->nfnWorkflow->workflow);
 
         $daysArray = $this->processTranscriptionDateCounts($expedition, $transcriptCountByDate);
-        \Log::alert('process expedition ' . $expedition->id);
 
         return $this->buildMissingData($expedition, $daysArray);
     }
@@ -202,7 +201,6 @@ class AmChartJob extends Job implements ShouldQueue
      */
     protected function buildMissingData($expedition, $daysArray)
     {
-        \Log::alert('build missing data expedition ' . $expedition->id);
         foreach ($daysArray as $day => &$data)
         {
             if ($data === '')
@@ -240,6 +238,7 @@ class AmChartJob extends Job implements ShouldQueue
     {
         \Log::alert(print_r($this->transcriptions, true));
         \Log::alert(print_r($results, true));
+        $this->delete();
         exit;
         $this->transcriptions = array_merge($this->transcriptions, $results);
     }
@@ -255,7 +254,6 @@ class AmChartJob extends Job implements ShouldQueue
      */
     protected function buildResultSet($id, $title, $day, $total = 0)
     {
-        \Log::alert('build result set expedition ' . $id);
         return [
             'expedition' => (int) $id,
             'collection' => $title,
