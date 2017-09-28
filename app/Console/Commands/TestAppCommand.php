@@ -80,9 +80,9 @@ class TestAppCommand extends Command
 
         $ids = $transcriptions->map(function($transcription){
             return $transcription->subject_expeditionId;
-        })->unique();
+        });
 
-        dd($ids);
+        dd($ids->unique());
 
 
         //dd(new UTCDateTime(strtotime('Thu, 28 Sep 2017 20:50:04 GMT') * 1000));
