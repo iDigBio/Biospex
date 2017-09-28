@@ -155,7 +155,7 @@ class PanoptesTranscriptionProcess
 
         if ($this->validateTranscription($combined))
         {
-            \Log::alert('updating classification');
+            \Log::alert('updating classification ' . $combined['classification_id']);
             $transcript = $this->panoptesTranscriptionContract->setCacheLifetime(0)
                 ->findBy('classification_id', $combined['classification_id']);
 
@@ -166,7 +166,8 @@ class PanoptesTranscriptionProcess
             $this->panoptesTranscriptionContract->update($transcript->_id, $attributes);
             return;
         }
-        \Log::alert('creating classification');
+        \Log::alert('not going to create');
+        die();
 
         $this->panoptesTranscriptionContract->create($combined);
 

@@ -73,6 +73,19 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
+        $ids = explode(',', $this->argument('ids'));
+
+        foreach ($ids as $id)
+        {
+            $filePath = config('config.classifications_transcript') . '/' . $id . '.csv';
+            if ( ! file_exists($filePath))
+            {
+                continue;
+            }
+
+            $this->process->process($filePath);
+        }
+
         //dd(new UTCDateTime(strtotime('Thu, 28 Sep 2017 20:50:04 GMT') * 1000));
         //dd(new \DateTime(1506631804));
         /*
@@ -84,9 +97,9 @@ class TestAppCommand extends Command
         $job = new AmChartJob($ids);
         $job->handle($this->projectContract, $this->contract, $this->transcription);
         */
-        $ids = explode(',', $this->argument('ids'));
-        $job = new NfnClassificationsTranscriptJob($ids);
-        $job->handle($this->process, $this->report);
+
+        //$job = new NfnClassificationsTranscriptJob($ids);
+        //$job->handle($this->process, $this->report);
         //$transcript = $this->transcription->setCacheLifetime(0)->findBy('classification_id',19829916);
         //2016-10-28T19:55:07.000Z
         //$date = new UTCDateTime(strtotime('28-10-2016 19:55:00'));
