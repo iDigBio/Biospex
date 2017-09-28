@@ -104,6 +104,8 @@ class AmChartJob extends Job implements ShouldQueue
             $chart->updateOrCreateChart(['project_id' => $id], ['data' => json_encode($content)]);
             \Log::alert('after update chart ' . $id);
         }
+
+        $this->delete();
     }
 
     /**
