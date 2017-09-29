@@ -123,10 +123,6 @@ class AmChartJob extends Job implements ShouldQueue
             $this->defaultDays[$i] = '';
             $i++;
         }
-
-        \Log::alert($this->earliest_date);
-        \Log::alert($this->latest_date);
-        \Log::alert($total);
     }
 
     /**
@@ -164,7 +160,6 @@ class AmChartJob extends Job implements ShouldQueue
         $transcriptCountByDate = $this->transcription
             ->setCacheLifetime(0)
             ->getTranscriptionCountPerDate($expedition->nfnWorkflow->workflow);
-        \Log::alert('Expedition ' . $expedition->id . ': ' . count($transcriptCountByDate));
 
         $daysArray = $this->processTranscriptionDateCounts($expedition, $transcriptCountByDate);
 
@@ -241,12 +236,7 @@ class AmChartJob extends Job implements ShouldQueue
      */
     public function setTranscriptions($results)
     {
-        foreach ($results as $result)
-        {
-            $this->transcriptions[] = $result;
-        }
-
-        //$this->transcriptions = array_merge($this->transcriptions, $results);
+        $this->transcriptions = array_merge($this->transcriptions, $results);
     }
 
     /**

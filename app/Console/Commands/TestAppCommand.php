@@ -2,17 +2,16 @@
 
 namespace App\Console\Commands;
 
-use App\Exceptions\BiospexException;
 use App\Jobs\AmChartJob;
-use App\Jobs\NfnClassificationsTranscriptJob;
+use App\Jobs\NfnClassificationsFusionTableJob;
 use App\Repositories\Contracts\AmChartContract;
+use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\PanoptesTranscriptionContract;
 use App\Repositories\Contracts\ProjectContract;
 use App\Services\Process\PanoptesTranscriptionProcess;
 use App\Services\Report\Report;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use MongoDB\BSON\UTCDateTime;
 
 class TestAppCommand extends Command
 {
@@ -48,6 +47,10 @@ class TestAppCommand extends Command
      * @var PanoptesTranscriptionProcess
      */
     private $process;
+    /**
+     * @var ExpeditionContract
+     */
+    private $expeditionContract;
 
     /**
      * TestAppCommand constructor.
@@ -57,7 +60,8 @@ class TestAppCommand extends Command
         AmChartContract $contract,
         PanoptesTranscriptionContract $transcription,
         PanoptesTranscriptionProcess $process,
-        Report $report
+        Report $report,
+        ExpeditionContract $expeditionContract
 
     )
     {
@@ -67,6 +71,7 @@ class TestAppCommand extends Command
         $this->transcription = $transcription;
         $this->report = $report;
         $this->process = $process;
+        $this->expeditionContract = $expeditionContract;
     }
 
     /**
@@ -74,63 +79,63 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
-        $ids = null === $this->argument('ids') ? $this->readDirectory() : explode(',', $this->argument('ids'));
+        $withRelations = ['project.amChart', 'nfnWorkflow', 'nfnActor', 'stat'];
 
-        collect($ids)->each(function($id) {
-            $this->processCsvFile($id);
-        });
+        $expeditions = $this->expeditionContract->setCacheLifetime(0)
+                ->has('nfnWorkflow')
+                ->with($withRelations)
+                ->findAll();
 
-        //dd(new UTCDateTime(strtotime('Thu, 28 Sep 2017 20:50:04 GMT') * 1000));
-        //dd(new \DateTime(1506631804));
-        /*
-        $result = $this->contract->findBy('project_id', 26);
-        \Log::alert(print_r(json_decode($result->data, true), true));
-        return;
+        $projectIds = [];
+        foreach ($expeditions as $expedition)
+        {
+            if ($this->checkIfExpeditionShouldProcess($expedition))
+            {
+                continue;
+            }
 
-        $ids = [26];
-        $job = new AmChartJob($ids);
+            $this->updateExpeditionStats($this->expeditionContract, $expedition);
+            $projectIds[] = $expedition->project->id;
+        }
+
+        $projectIds = array_values(array_unique($projectIds));
+
+        $job = new AmChartJob($projectIds);
         $job->handle($this->projectContract, $this->contract, $this->transcription);
-        */
 
-        //$job = new NfnClassificationsTranscriptJob($ids);
-        //$job->handle($this->process, $this->report);
-        //$transcript = $this->transcription->setCacheLifetime(0)->findBy('classification_id',19829916);
-        //2016-10-28T19:55:07.000Z
-        //$date = new UTCDateTime(strtotime('28-10-2016 19:55:00'));
-        //$this->transcription->update($transcript->_id, ['classification_started_at' => 'Thu, 28 Sep 2017 20:50:04 GMT']);
-
+        $this->dispatch((new NfnClassificationsFusionTableJob($projectIds))->onQueue(config('config.beanstalkd.classification')));
     }
 
     /**
-     * Read directory files to process.
+     * Check needed variables.
+     *
+     * @param $expedition
+     * @return bool
      */
-    private function readDirectory()
+    public function checkIfExpeditionShouldProcess($expedition)
     {
-        $ids = [];
-        $files = \File::allFiles(config('config.classifications_transcript'));
-        foreach ($files as $file)
-        {
-            $ids[] = basename($file, '.csv');
-        }
-
-        return $ids;
+        return null === $expedition
+            || ! isset($expedition->nfnWorkflow)
+            || null === $expedition->nfnWorkflow->workflow
+            || null === $expedition->nfnWorkflow->project
+            || null === $expedition->nfnActor;
     }
 
-    private function processCsvFile($id)
+    /**
+     * Update expedition stats.
+     *
+     * @param ExpeditionContract $expeditionContract
+     * @param $expedition
+     */
+    private function updateExpeditionStats(ExpeditionContract $expeditionContract, $expedition)
     {
-        try
-        {
-            $filePath = config('config.classifications_transcript') . '/' . $id . '.csv';
-            if ( ! file_exists($filePath))
-            {
-                return;
-            }
+        // Update stats
+        $count = $expeditionContract->setCacheLifetime(0)->getExpeditionSubjectCounts($expedition->id);
+        $expedition->stat->subject_count = $count;
+        $expedition->stat->transcriptions_total = transcriptions_total($count);
+        $expedition->stat->transcriptions_completed = transcriptions_completed($expedition->id);
+        $expedition->stat->percent_completed = transcriptions_percent_completed($expedition->stat->transcriptions_total, $expedition->stat->transcriptions_completed);
 
-            $this->process->process($filePath);
-        }
-        catch (BiospexException $e)
-        {
-            $this->report->addError($e->getMessage());
-        }
+        $expedition->stat->save();
     }
 }
