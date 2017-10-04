@@ -14,7 +14,6 @@
     "mcamara/laravel-localization": "1.1.*",
     "felixkiss/uniquewith-validator": "2.*",
     "cviebrock/eloquent-sluggable": "3.1.*",
-    "cviebrock/image-validator": "2.0.*",
     "davejamesmiller/laravel-breadcrumbs": "~3.0",
     "pda/pheanstalk": "~3.0",
     "msurguy/honeypot": "dev-master",
@@ -29,7 +28,9 @@
     "league/oauth2-client": "^1.4",
     "laracasts/utilities": "~2.0",
     "askedio/laravel5-soft-cascade": "^1.8",
-    "pulkitjalan/google-apiclient": "3.*"
+    "pulkitjalan/google-apiclient": "3.*",
+    "api-clients/pusher": "dev-master",
+    "api-clients/command-bus": "@dev"
   },
   "require-dev": {
     "symfony/dom-crawler": "~3.0",
@@ -52,6 +53,10 @@
     {
       "type": "git",
       "url": "git@github.com:jamisonvalenta/Laravel-4-Generators.git"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/rbruhn/pusher"
     }
   ],
   "autoload": {
@@ -61,7 +66,9 @@
     "psr-4": {
       "App\\": "app/"
     },
-    "files": ["app/Http/helpers.php"]
+    "files": [
+      "app/Http/helpers.php"
+    ]
   },
   "autoload-dev": {
     "classmap": [
