@@ -68,7 +68,6 @@ class ExpeditionEventListener
      */
     public function entityUpdated(RepositoryContract $repositoryContract, $entity)
     {
-        dd($entity);
         $this->dispatch((new BuildExpeditionOcrFile($entity))->onQueue(config('config.beanstalkd.default')));
     }
 
