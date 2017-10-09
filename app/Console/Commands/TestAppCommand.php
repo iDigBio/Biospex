@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\ExportQueueContract;
+use App\Services\Actor\ActorFactory;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -56,7 +57,7 @@ class TestAppCommand extends Command
         if ($records->isEmpty())
         {
             $data = trans('pages.processing_empty');
-            $this->dispatcher->fire(new PollExportEvent($data));
+            dd($data);
 
             return;
         }
