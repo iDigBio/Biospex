@@ -38,7 +38,9 @@ class TestAppCommand extends Command
     {
         $subjects = $this->subjectContract->findWhere(['project_id', '=', 55]);
         $subjects->each(function($subject){
-            dd($subject);
+            $array[] = 91;
+            //$subject->expedition_ids = $array;
+            print_r($array);
         });
     }
 }
