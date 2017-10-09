@@ -34,8 +34,8 @@ class ProjectFormRequest extends Request
             'blog_url'             => 'url',
             'facebook'             => 'url',
             'twitter'              => 'url',
-            'banner'               => 'image|image_size:>=1200,>=250',
-            'logo'                 => 'image|image_size:<=300,<=200',
+            'banner'               => 'image|dimensions:min_width=1200,min_height=250',
+            'logo'                 => 'image|dimensions:max_width=300,max_height=200',
         ];
 
         return $rules;
