@@ -29,8 +29,7 @@
     "laracasts/utilities": "~2.0",
     "askedio/laravel5-soft-cascade": "^1.8",
     "pulkitjalan/google-apiclient": "3.*",
-    "api-clients/pusher": "dev-master",
-    "api-clients/command-bus": "@dev"
+    "api-clients/pusher": "^1.0"
   },
   "require-dev": {
     "symfony/dom-crawler": "~3.0",
@@ -53,10 +52,6 @@
     {
       "type": "git",
       "url": "git@github.com:jamisonvalenta/Laravel-4-Generators.git"
-    },
-    {
-      "type": "git",
-      "url": "https://github.com/rbruhn/pusher"
     }
   ],
   "autoload": {

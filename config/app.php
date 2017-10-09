@@ -145,7 +145,6 @@ return [
         Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
         Felixkiss\UniqueWithValidator\UniqueWithValidatorServiceProvider::class,
         Cviebrock\EloquentSluggable\SluggableServiceProvider::class,
-        Cviebrock\ImageValidator\ImageValidatorServiceProvider::class,
         DaveJamesMiller\Breadcrumbs\ServiceProvider::class,
         Jenssegers\Mongodb\MongodbServiceProvider::class,
         Codesleeve\LaravelStapler\Providers\L5ServiceProvider::class,
