@@ -247,6 +247,10 @@ class ExpeditionsController extends Controller
      */
     public function update(ExpeditionFormRequest $request, $projectId, $expeditionId)
     {
+        session_flash_push('warning', "Expedition update temporarily disabled due to issues.");
+
+        return redirect()->route('projects.expeditions.edit', [$projectId, $expeditionId]);
+
         $project = $this->projectService->permissionCheck($projectId);
 
         if ( ! $this->checkPermissions('update', $project))
