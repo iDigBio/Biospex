@@ -249,7 +249,7 @@ class ExpeditionsController extends Controller
     {
         session_flash_push('warning', "Expedition update temporarily disabled due to issues.");
 
-        return redirect()->route('projects.expeditions.edit', [$projectId, $expeditionId]);
+        return redirect()->route('web.expeditions.edit', [$projectId, $expeditionId]);
 
         $project = $this->projectService->permissionCheck($projectId);
 
@@ -264,7 +264,7 @@ class ExpeditionsController extends Controller
         {
             session_flash_push('error', trans('expeditions.expedition_save_error'));
 
-            return redirect()->route('projects.expeditions.edit', [$projectId, $expeditionId]);
+            return redirect()->route('web.expeditions.edit', [$projectId, $expeditionId]);
         }
 
         // Success!
