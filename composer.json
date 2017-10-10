@@ -28,8 +28,7 @@
     "league/oauth2-client": "^1.4",
     "laracasts/utilities": "~2.0",
     "askedio/laravel5-soft-cascade": "^1.8",
-    "pulkitjalan/google-apiclient": "3.*",
-    "api-clients/pusher": "^1.0"
+    "pulkitjalan/google-apiclient": "3.*"
   },
   "require-dev": {
     "symfony/dom-crawler": "~3.0",
