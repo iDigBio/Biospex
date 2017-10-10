@@ -178,16 +178,16 @@ class ExpeditionService
                 $this->dispatch((new UpdateNfnWorkflowJob($nfnWorkflow))->onQueue(config('config.beanstalkd.workflow')));
             }
 
-            $existingSubjectIds = [];
-            foreach ($expedition->subjects as $subject)
-            {
-                $existingSubjectIds[] = $subject->_id;
-            }
-
-            $this->subjectContract->detachSubjects($existingSubjectIds, $expedition->id);
-
+            $existingSubjectIds = $expedition->subjects->pluck('_id');
             $subjectIds = explode(',', $attributes['subjectIds']);
-            $expedition->subjects()->attach($subjectIds);
+            $workflowManager = $this->workflowManagerContract->findBy('expedition_id', $expedition->id);
+
+            if (null === $workflowManager && ! $existingSubjectIds->isEmpty())
+            {
+                $this->subjectContract->detachSubjects($existingSubjectIds, $expedition->id);
+                $expedition->subjects()->attach($subjectIds);
+                \Cache::flush();
+            }
 
             $total = transcriptions_total(count($subjectIds));
             $completed = transcriptions_completed($expedition->id);
