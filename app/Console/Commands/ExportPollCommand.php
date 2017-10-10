@@ -78,7 +78,6 @@ class ExportPollCommand extends Command
 
         if ($records->isEmpty())
         {
-            \Log::warning("records is empty");
             $data = trans('pages.processing_empty');
             $this->dispatcher->fire(new PollExportEvent($data));
 
@@ -111,14 +110,12 @@ class ExportPollCommand extends Command
                     'count' => $count
                 ]);
 
-            \Log::warning("returning message " . $message);
             return [
                 'groupUuid'       => $queue->expedition->project->group->uuid,
                 'message'         => $message
             ];
         });
 
-        \Log::warning("Firing event " . print_r($data->toArray(), true));
         $this->dispatcher->fire(new PollExportEvent($data->toArray()));
     }
 }
