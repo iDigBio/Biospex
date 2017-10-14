@@ -26,8 +26,6 @@ class RouteServiceProvider extends ServiceProvider
     public function boot(Router $router)
     {
         parent::boot($router);
-
-        $router->bind('locale', Local::setLocale());
     }
 
     /**
@@ -56,7 +54,6 @@ class RouteServiceProvider extends ServiceProvider
             $router->group(
                 [
                     'domain'     => env('APP_DOMAIN'),
-                    'prefix'     => Local::setLocale(),
                     'middleware' => ['web'],
                     'namespace'  => 'Frontend',
                     'before'     => 'LocalRedirectFilter'
@@ -76,7 +73,6 @@ class RouteServiceProvider extends ServiceProvider
             $router->group(
                 [
                     'domain'     => env('APP_DOMAIN'),
-                    'prefix'     => Local::setLocale(),
                     'middleware' => ['web', 'auth'],
                     'namespace'  => 'Frontend',
                     'before'     => 'LocalRedirectFilter'
