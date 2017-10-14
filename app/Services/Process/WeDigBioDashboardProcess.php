@@ -2,42 +2,12 @@
 
 namespace App\Services\Process;
 
-use App\Repositories\Contracts\ExpeditionStatContract;
-use App\Repositories\Contracts\WeDigBioDashboardContract;
-
 class WeDigBioDashboardProcess
 {
-
-    /**
-     * @var WeDigBioDashboardContract
-     */
-    private $weDigBioDashboardContract;
-
-    /**
-     * @var ExpeditionStatContract
-     */
-    private $expeditionStatContract;
-
-    /**
-     * WeDigBioDashboardProcess constructor.
-     * @param WeDigBioDashboardContract $weDigBioDashboardContract
-     * @param ExpeditionStatContract $expeditionStatContract
-     */
-    public function __construct(
-        WeDigBioDashboardContract $weDigBioDashboardContract,
-        ExpeditionStatContract $expeditionStatContract
-    )
-    {
-        $this->weDigBioDashboardContract = $weDigBioDashboardContract;
-        $this->expeditionStatContract = $expeditionStatContract;
-    }
-
     public function process($transcription, $expedition)
     {
         $thumbnailUri = $this->setThumbnailUri($transcription);
-        $item = $this->buildItem($transcription, $expedition, $thumbnailUri);
-
-
+        $this->buildItem($transcription, $expedition, $thumbnailUri);
     }
 
     /**
