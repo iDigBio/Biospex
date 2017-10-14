@@ -11,7 +11,6 @@
     "laravel/framework": "5.2.*",
     "doctrine/dbal": "~2.5.2",
     "laravelcollective/html": "5.2.*",
-    "mcamara/laravel-localization": "1.1.*",
     "felixkiss/uniquewith-validator": "2.*",
     "cviebrock/eloquent-sluggable": "3.1.*",
     "davejamesmiller/laravel-breadcrumbs": "~3.0",
