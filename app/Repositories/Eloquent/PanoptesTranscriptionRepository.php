@@ -162,6 +162,6 @@ class PanoptesTranscriptionRepository extends EloquentRepository implements Pano
                 ]);
         });
 
-        return $result['result'];
+        return $result;
     }
 }
