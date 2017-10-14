@@ -92,7 +92,8 @@ return [
         'export'         => env('QUEUE_EXPORT_TUBE'),
         'stat'           => env('QUEUE_STAT_TUBE'),
         'workflow'       => env('QUEUE_WORKFLOW_TUBE'),
-        'ocr'            => env('QUEUE_OCR_TUBE')
+        'ocr'            => env('QUEUE_OCR_TUBE'),
+        'nfnpusher'      => env('QUEUE_NFN_PUSHER')
     ],
 
     'images'                => [
