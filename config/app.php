@@ -54,7 +54,7 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCAL'),
+    'locale' => env('APP_LOCAL', 'en'),
 
     /*
     |--------------------------------------------------------------------------
@@ -142,7 +142,6 @@ return [
          * Vendor Providers
          */
         Collective\Html\HtmlServiceProvider::class,
-        Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
         Felixkiss\UniqueWithValidator\UniqueWithValidatorServiceProvider::class,
         Cviebrock\EloquentSluggable\SluggableServiceProvider::class,
         DaveJamesMiller\Breadcrumbs\ServiceProvider::class,
@@ -214,7 +213,6 @@ return [
         /*
          * Other aliases
          */
-        'Local'       => Mcamara\LaravelLocalization\Facades\LaravelLocalization::class,
         'Breadcrumbs' => DaveJamesMiller\Breadcrumbs\Facade::class,
         'Form'        => Collective\Html\FormFacade::class,
         'Html'        => Collective\Html\HtmlFacade::class,
