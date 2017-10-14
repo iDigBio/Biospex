@@ -4,6 +4,16 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
 
 /**
+ * @param MongoDB\BSON\UTCDateTime $date
+ * @param string $format
+ * @return mixed
+ */
+function mongodb_date_format($date, $format = 'Y-m-d')
+{
+    return $date->toDateTime()->format($format);
+}
+
+/**
  * @param $array
  * @return \Illuminate\Support\Collection
  */
