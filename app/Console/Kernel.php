@@ -69,8 +69,7 @@ class Kernel extends ConsoleKernel
         NfnClassificationsFusionTable::class,
         ExportQueue::class,
         FixIdentifiersCommand::class,
-        WeDigBioDashboard::class,
-        NfnClassificationPusher::class
+        WeDigBioDashboard::class
     ];
 
     /**

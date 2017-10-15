@@ -5,7 +5,6 @@ namespace App\Services\Model;
 use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\PanoptesTranscriptionContract;
 use App\Repositories\Contracts\WeDigBioDashboardContract;
-use App\Services\Process\WeDigBioDashboardProcess;
 use Ramsey\Uuid\Uuid;
 
 class WeDigBioDashboardService
@@ -15,11 +14,6 @@ class WeDigBioDashboardService
      * @var WeDigBioDashboardContract
      */
     private $weDigBioDashboardContract;
-
-    /**
-     * @var WeDigBioDashboardProcess
-     */
-    private $weDigBioDashboardProcess;
 
     /**
      * @var ExpeditionContract
@@ -34,19 +28,16 @@ class WeDigBioDashboardService
     /**
      * ExpeditionService constructor.
      * @param WeDigBioDashboardContract $weDigBioDashboardContract
-     * @param WeDigBioDashboardProcess $weDigBioDashboardProcess
      * @param ExpeditionContract $expeditionContract
      * @param PanoptesTranscriptionContract $panoptesTranscriptionContract
      */
     public function __construct(
         WeDigBioDashboardContract $weDigBioDashboardContract,
-        WeDigBioDashboardProcess $weDigBioDashboardProcess,
         ExpeditionContract $expeditionContract,
         PanoptesTranscriptionContract $panoptesTranscriptionContract
     )
     {
         $this->weDigBioDashboardContract = $weDigBioDashboardContract;
-        $this->weDigBioDashboardProcess = $weDigBioDashboardProcess;
         $this->expeditionContract = $expeditionContract;
         $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
     }

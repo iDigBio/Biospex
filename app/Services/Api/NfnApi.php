@@ -132,6 +132,22 @@ class NfnApi extends HttpRequest
     }
 
     /**
+     * Get subject.
+     *
+     * @param $id
+     * @return mixed
+     * @throws NfnApiException
+     */
+    public function getSubject($id)
+    {
+        $uri = config('config.nfnApi.apiUri') . '/subject/' . $id;
+
+        $request = $this->buildAuthorizedRequest('GET', $uri);
+
+        return $this->sendAuthorizedRequest($request);
+    }
+
+    /**
      * Builds the uri specific for csv downloads by workflow.
      *
      * @param $workflowId

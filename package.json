@@ -11,10 +11,12 @@
     "laravel-elixir-replace": "latest"
   },
   "dependencies": {
-    "express": "latest",
+    "express": "^4.16.2",
     "forever": "latest",
     "ioredis": "latest",
+    "pusher-client": "^1.1.0",
     "redis": "latest",
+    "request-json": "^0.6.2",
     "socket.io": "latest"
   }
 }
