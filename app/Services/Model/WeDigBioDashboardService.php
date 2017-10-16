@@ -2,6 +2,8 @@
 
 namespace App\Services\Model;
 
+use App\Models\PanoptesTranscription;
+use App\Models\WeDigBioDashboard;
 use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\PanoptesTranscriptionContract;
 use App\Repositories\Contracts\WeDigBioDashboardContract;
@@ -58,13 +60,13 @@ class WeDigBioDashboardService
     /**
      * Return the latest timestamp.
      *
-     * @param $expeditionId
+     * @param $expeditionUuid
      * @return mixed
      */
-    public function getLatestTimestamp($expeditionId)
+    public function getLatestTimestamp($expeditionUuid)
     {
         return $this->weDigBioDashboardContract->setCacheLifetime(0)
-            ->where('expedition_id', '=', $expeditionId)
+            ->where('expedition_uuid', '=', $expeditionUuid)
             ->max('timestamp');
     }
 
@@ -111,9 +113,8 @@ class WeDigBioDashboardService
      */
     public function processTranscripts($transcription, $expedition)
     {
-        $thumbnailUri = $this->setThumbnailUri($transcription);
-        $item = $this->buildItem($transcription, $expedition, $thumbnailUri);
-        $this->weDigBioDashboardContract->create($item);
+        $classification = $this->weDigBioDashboardContract->findBy('classification_id', $transcription->classification_id);
+        $this->buildItem($transcription, $expedition, $classification);
     }
 
     /**
@@ -133,13 +134,22 @@ class WeDigBioDashboardService
      *
      * @param $transcription
      * @param $expedition
-     * @param $thumbnailUri
-     * @return array
+     * @param null $classification
      */
-    private function buildItem($transcription, $expedition, $thumbnailUri)
+    private function buildItem($transcription, $expedition, $classification = null)
     {
-        return [
+        $classification === null ?
+            $this->createItem($transcription, $expedition) :
+            $this->updateItem($transcription, $expedition, $classification);
+    }
+
+    private function createItem($transcription, $expedition)
+    {
+        $thumbnailUri = $this->setThumbnailUri($transcription);
+
+        $item = [
             'transcription_id'     => $transcription->id,
+            'classification_id'    => $transcription->classification_id,
             'project_uuid'         => $expedition->project->uuid,
             'expedition_uuid'      => $expedition->uuid,
             'project'              => $transcription->workflow_name,
@@ -177,5 +187,32 @@ class WeDigBioDashboardService
             ],
             'discretionaryState'   => 'Transcribed'
         ];
+
+        $this->weDigBioDashboardContract->create($item);
+    }
+
+    /**
+     * @param PanoptesTranscription $transcription
+     * @param $expedition
+     * @param WeDigBioDashboard $classification
+     */
+    private function updateItem($transcription, $expedition, $classification)
+    {
+        $thumbnailUri = $this->setThumbnailUri($transcription);
+
+        $classification->transcription_id = $transcription->id;
+        $classification->project_uuid = $expedition->project->uuid;
+        $classification->timestamp = $transcription->classification_finished_at;
+        $classification->subject['link'] = ! empty ($transcription->subject_references) ? $transcription->subject_references : $classification->subject['link'];
+        $classification->subject['thumbnailUri'] = ! empty ($thumbnailUri) ? $thumbnailUri : $classification->subject['thumbnailUri'];
+        $classification->contributor['transcriber'] = $transcription->user_name;
+        $classification->transcriptionContent['country'] = ! empty($transcription->Country) ? $transcription->Country : $classification->country;
+        $classification->transcriptionContent['province'] = ! empty($transcription->StateProvince) ? $transcription->StateProvince : $classification->transcriptionContent['province'];
+        $classification->transcriptionContent['county'] = ! empty($transcription->County) ? $transcription->County : $classification->transcriptionContent['county'];
+        $classification->transcriptionContent['locality'] = ! empty($transcription->Location) ? $transcription->Location : '';
+        $classification->transcriptionContent['collector'] = ! empty($transcription->CollectedBy) ? $transcription->CollectedBy : '';
+        $classification->transcriptionContent['taxon'] = ! empty($transcription->ScientificName) ? $transcription->ScientificName : $classification->taxon;
+
+        $classification->save();
     }
 }

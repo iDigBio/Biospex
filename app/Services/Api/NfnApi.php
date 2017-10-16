@@ -140,7 +140,7 @@ class NfnApi extends HttpRequest
      */
     public function getSubject($id)
     {
-        $uri = config('config.nfnApi.apiUri') . '/subject/' . $id;
+        $uri = config('config.nfnApi.apiUri') . '/subjects/' . $id;
 
         $request = $this->buildAuthorizedRequest('GET', $uri);
 

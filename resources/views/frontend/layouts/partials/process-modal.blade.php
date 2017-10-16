@@ -20,7 +20,7 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
 <script>
     var socket = io('{{ config('config.app_nodejs_url') }}');
     <?php

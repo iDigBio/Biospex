@@ -55,9 +55,10 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
             collect($this->ids)->each(function($id) use ($weDigBioDashboardService){
                 $expedition = $weDigBioDashboardService->getExpedition($id);
 
-                $timestamp = $weDigBioDashboardService->getLatestTimestamp($expedition->id);
+                $timestamp = $weDigBioDashboardService->getLatestTimestamp($expedition->uuid);
+                $date = mongo_date_interval($timestamp, 'PD1D');
 
-                $transcriptions = $weDigBioDashboardService->getTranscriptions($expedition->id, $timestamp);
+                $transcriptions = $weDigBioDashboardService->getTranscriptions($expedition->id, $date);
 
                 $transcriptions->reject(function($transcription) use ($weDigBioDashboardService) {
                     return $weDigBioDashboardService->checkIfExists($transcription->_id);

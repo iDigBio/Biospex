@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
+use MongoDB\BSON\UTCDateTime;
 
 /**
  * @param MongoDB\BSON\UTCDateTime $date
@@ -11,6 +12,19 @@ use Illuminate\Support\Facades\Session;
 function mongodb_date_format($date, $format = 'Y-m-d')
 {
     return $date->toDateTime()->format($format);
+}
+
+/**
+ * @param UTCDateTime $date
+ * @param $date
+ * @param $interval
+ * @return UTCDateTime
+ */
+function mongo_date_interval($date, $interval)
+{
+    $timestamp = $date->toDateTime()->sub(new DateInterval($interval));
+
+    return new UTCDateTime($timestamp);
 }
 
 /**
