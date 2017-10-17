@@ -150,7 +150,6 @@ class WeDigBioDashboardService
         $item = [
             'transcription_id'     => $transcription->id,
             'classification_id'    => $transcription->classification_id,
-            'project_uuid'         => $expedition->project->uuid,
             'expedition_uuid'      => $expedition->uuid,
             'project'              => $transcription->workflow_name,
             'description'          => $expedition->description,
@@ -201,7 +200,6 @@ class WeDigBioDashboardService
         $thumbnailUri = $this->setThumbnailUri($transcription);
 
         $classification->transcription_id = $transcription->id;
-        $classification->project_uuid = $expedition->project->uuid;
         $classification->timestamp = $transcription->classification_finished_at;
         $classification->subject['link'] = ! empty ($transcription->subject_references) ? $transcription->subject_references : $classification->subject['link'];
         $classification->subject['thumbnailUri'] = ! empty ($thumbnailUri) ? $thumbnailUri : $classification->subject['thumbnailUri'];
