@@ -66,7 +66,7 @@ class DownloadCleanCommand extends Command
         $this->downloadContract = $downloadContract;
         $this->handler = $handler;
 
-        $this->nfnExportDir = config('config.nfnExportDir');
+        $this->nfnExportDir = config('config.nfn_export_dir');
     }
 
     /**
@@ -100,7 +100,6 @@ class DownloadCleanCommand extends Command
             if ( ! $result)
             {
                 echo 'Deleting ' . $file . PHP_EOL;
-                $this->downloadContract->delete($result->id);
                 $this->filesystem->delete($file);
             }
         });
