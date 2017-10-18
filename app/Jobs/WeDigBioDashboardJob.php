@@ -56,7 +56,7 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
                 $expedition = $weDigBioDashboardService->getExpedition($id);
 
                 $timestamp = $weDigBioDashboardService->getLatestTimestamp($expedition->uuid);
-                $date = mongo_date_interval($timestamp, 'PD1D');
+                $date = mongo_date_interval($timestamp, 'P2D');
 
                 $transcriptions = $weDigBioDashboardService->getTranscriptions($expedition->id, $date);
 
