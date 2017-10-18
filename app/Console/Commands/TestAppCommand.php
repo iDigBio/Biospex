@@ -2,8 +2,10 @@
 
 namespace App\Console\Commands;
 
+use DateInterval;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use MongoDB\BSON\UTCDateTime;
 
 class TestAppCommand extends Command
 {
@@ -33,7 +35,6 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
-        $data = $this->argument('ids');
-        dd($data);
+
     }
 }

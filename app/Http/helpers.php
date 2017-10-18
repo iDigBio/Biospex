@@ -15,14 +15,13 @@ function mongodb_date_format($date, $format = 'Y-m-d')
 }
 
 /**
- * @param UTCDateTime $date
- * @param $date
  * @param $interval
  * @return UTCDateTime
  */
-function mongo_date_interval($date, $interval)
+function mongo_date_interval($interval)
 {
-    $timestamp = $date->toDateTime()->sub(new DateInterval($interval));
+    $date = new \DateTime();
+    $timestamp = $date->sub(new DateInterval($interval));
 
     return new UTCDateTime($timestamp);
 }

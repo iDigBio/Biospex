@@ -58,19 +58,6 @@ class WeDigBioDashboardService
     }
 
     /**
-     * Return the latest timestamp.
-     *
-     * @param $expeditionUuid
-     * @return mixed
-     */
-    public function getLatestTimestamp($expeditionUuid)
-    {
-        return $this->weDigBioDashboardContract->setCacheLifetime(0)
-            ->where('expedition_uuid', '=', $expeditionUuid)
-            ->max('timestamp');
-    }
-
-    /**
      * Get transcriptions.
      *
      * @param $expeditionId
