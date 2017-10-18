@@ -127,7 +127,7 @@ class WeDigBioDashboardService
     {
         $classification === null ?
             $this->createItem($transcription, $expedition) :
-            $this->updateItem($transcription, $expedition, $classification);
+            $this->updateItem($transcription, $classification);
     }
 
     private function createItem($transcription, $expedition)
@@ -179,25 +179,35 @@ class WeDigBioDashboardService
 
     /**
      * @param PanoptesTranscription $transcription
-     * @param $expedition
      * @param WeDigBioDashboard $classification
      */
-    private function updateItem($transcription, $expedition, $classification)
+    private function updateItem($transcription, $classification)
     {
         $thumbnailUri = $this->setThumbnailUri($transcription);
 
-        $classification->transcription_id = $transcription->id;
-        $classification->timestamp = $transcription->classification_finished_at;
-        $classification->subject['link'] = ! empty ($transcription->subject_references) ? $transcription->subject_references : $classification->subject['link'];
-        $classification->subject['thumbnailUri'] = ! empty ($thumbnailUri) ? $thumbnailUri : $classification->subject['thumbnailUri'];
-        $classification->contributor['transcriber'] = $transcription->user_name;
-        $classification->transcriptionContent['country'] = ! empty($transcription->Country) ? $transcription->Country : $classification->country;
-        $classification->transcriptionContent['province'] = ! empty($transcription->StateProvince) ? $transcription->StateProvince : $classification->transcriptionContent['province'];
-        $classification->transcriptionContent['county'] = ! empty($transcription->County) ? $transcription->County : $classification->transcriptionContent['county'];
-        $classification->transcriptionContent['locality'] = ! empty($transcription->Location) ? $transcription->Location : '';
-        $classification->transcriptionContent['collector'] = ! empty($transcription->CollectedBy) ? $transcription->CollectedBy : '';
-        $classification->transcriptionContent['taxon'] = ! empty($transcription->ScientificName) ? $transcription->ScientificName : $classification->taxon;
+        $subject = [
+            'link'         => ! empty ($transcription->subject_references) ? $transcription->subject_references : $classification->subject['link'],
+            'thumbnailUri' => ! empty ($thumbnailUri) ? $thumbnailUri : $classification->subject['thumbnailUri']
+        ];
 
-        $classification->save();
+        $transcriptionContent = [
+            'country'   => ! empty($transcription->Country) ? $transcription->Country : $classification->country,
+            'province'  => ! empty($transcription->StateProvince) ? $transcription->StateProvince : $classification->transcriptionContent['province'],
+            'county'    => ! empty($transcription->County) ? $transcription->County : $classification->transcriptionContent['county'],
+            'locality'  => ! empty($transcription->Location) ? $transcription->Location : '',
+            'collector' => ! empty($transcription->CollectedBy) ? $transcription->CollectedBy : '',
+            'taxon'     => ! empty($transcription->ScientificName) ? $transcription->ScientificName : $classification->taxon
+        ];
+
+
+        $attributes = [
+            'transcription_id'     => $transcription->_id,
+            'timestamp'            => $transcription->classification_finished_at,
+            'subject'              => array_merge($classification->subject, $subject),
+            'contributor'          => array_merge($classification->contributor, ['transcriber' => $transcription->user_name]),
+            'transcriptionContent' => array_merge($classification->transcriptionContent, $transcriptionContent)
+        ];
+
+        $this->weDigBioDashboardContract->update($classification->_id, $attributes);
     }
 }

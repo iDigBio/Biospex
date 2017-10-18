@@ -2,10 +2,8 @@
 
 namespace App\Console\Commands;
 
-use DateInterval;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use MongoDB\BSON\UTCDateTime;
 
 class TestAppCommand extends Command
 {
@@ -24,8 +22,7 @@ class TestAppCommand extends Command
     /**
      * TestAppCommand constructor.
      */
-    public function __construct(
-    )
+    public function __construct()
     {
         parent::__construct();
     }
