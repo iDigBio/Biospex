@@ -163,7 +163,7 @@ class ExpeditionService
     {
         try
         {
-            $expedition = $this->expeditionContract->update($expeditionId, $attributes);
+            $expedition = $this->expeditionContract->setCacheLifetime(0)->update($expeditionId, $attributes);
 
             if ($attributes['workflow'] !== '')
             {
@@ -180,11 +180,11 @@ class ExpeditionService
 
             $existingSubjectIds = $expedition->subjects->pluck('_id');
             $subjectIds = explode(',', $attributes['subjectIds']);
-            $workflowManager = $this->workflowManagerContract->findBy('expedition_id', $expedition->id);
+            $workflowManager = $this->workflowManagerContract->setCacheLifetime(0)->findBy('expedition_id', $expedition->id);
 
             if (null === $workflowManager && ! $existingSubjectIds->isEmpty())
             {
-                $this->subjectContract->detachSubjects($existingSubjectIds, $expedition->id);
+                $this->subjectContract->setCacheLifetime(0)->detachSubjects($existingSubjectIds, $expedition->id);
                 $expedition->subjects()->attach($subjectIds);
                 \Cache::flush();
             }
@@ -198,7 +198,7 @@ class ExpeditionService
                 'percent_completed'        => transcriptions_percent_completed($total, $completed)
             ];
 
-            $this->expeditionStatContract->updateOrCreate(['expedition_id' => $expedition->id], $values);
+            $this->expeditionStatContract->setCacheLifetime(0)->updateOrCreate(['expedition_id' => $expedition->id], $values);
 
             return true;
         }
