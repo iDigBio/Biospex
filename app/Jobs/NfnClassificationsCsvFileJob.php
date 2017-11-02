@@ -125,13 +125,11 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
     {
         if ($results->media[0]->metadata->state === 'creating')
         {
-            \Log::info('creating ' . $index);
             $this->reQueued[] = $index;
         }
 
         if ($results->media[0]->metadata->state === 'ready')
         {
-            \Log::info('ready ' . $index);
             $this->sources[$index] = $results->media[0]->src;
         }
     }
@@ -146,7 +144,6 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
             return;
         }
 
-        \Log::info('dispatching ' . count($this->sources));
         $this->dispatch((new NfnClassificationsCsvDownloadJob($this->sources))
             ->onQueue(Config::get('config.beanstalkd.classification')));
     }
@@ -161,7 +158,6 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
             return;
         }
 
-        \Log::info('requeued ' . count($this->sources));
         $this->dispatch((new NfnClassificationsCsvFileJob($this->reQueued))
             ->onQueue(Config::get('config.beanstalkd.classification'))
             ->delay(3600));
