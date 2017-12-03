@@ -1,15 +1,16 @@
-<?php namespace App\Providers;
+<?php
+
+namespace App\Providers;
 
 use DirectoryIterator;
-use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
-use Local;
 
 class RouteServiceProvider extends ServiceProvider
 {
 
     /**
-     * This namespace is applied to the controller routes in your routes file.
+     * This namespace is applied to your controller routes.
      *
      * In addition, it is set as the URL generator's root namespace.
      *
@@ -20,90 +21,128 @@ class RouteServiceProvider extends ServiceProvider
     /**
      * Define your route model bindings, pattern filters, etc.
      *
-     * @param  \Illuminate\Routing\Router $router
      * @return void
      */
-    public function boot(Router $router)
+    public function boot()
     {
-        parent::boot($router);
+        parent::boot();
     }
 
     /**
      * Define the routes for the application.
      *
-     * @param  \Illuminate\Routing\Router $router
+     * @return void
      */
-    public function map(Router $router)
+    public function map()
     {
-        $router->group(['namespace' => $this->namespace], function ($router)
-        {
+        $this->mapWebRoutes();
 
-            $router->group(
-                [
-                    'domain'     => env('APP_DOMAIN'),
-                    'prefix'     => 'admin',
-                    'middleware' => ['web', 'auth', 'admin'],
-                    'namespace'  => 'Backend'
-                ],
-                function () use ($router)
-                {
-                    $dir = app_path('Http/Routes/Backend');
-                    $this->require_files($dir, $router);
+        $this->mapApiRoutes();
+
+        $this->mapPassportRoutes();
+    }
+
+    /**
+     * Define the "web" routes for the application.
+     *
+     * These routes all receive session state, CSRF protection, etc.
+     *
+     * @return void
+     */
+    protected function mapWebRoutes()
+    {
+        Route::domain(config('config.app_domain'))
+            ->namespace($this->namespace)
+            ->middleware('web')
+            ->group(function ($router) {
+
+                $router->namespace('Frontend')->group(function ($router) {
+                    $this->require_files('routes/web', $router);
+
+                    $router->middleware('auth')->group(function ($router) {
+                        $this->require_files('routes/auth', $router);
+                    });
                 });
 
-            $router->group(
-                [
-                    'domain'     => env('APP_DOMAIN'),
-                    'middleware' => ['web'],
-                    'namespace'  => 'Frontend',
-                    'before'     => 'LocalRedirectFilter'
-                ],
-                function () use ($router)
-                {
-                    $router->get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}', [
-                        'uses' => 'DownloadsController@show',
-                        'as'   => 'projects.expeditions.downloads.get.show',
-                    ]);
+                $router->namespace('Auth')->group(base_path('routes/web/appauth/auth.php'));
+                $router->namespace('ApiAuth')->prefix('api')->group(base_path('routes/web/apiauth/auth.php'));
 
-                    $dir = app_path('Http/Routes/Frontend/Web');
-                    $this->require_files($dir, $router);
+                $router->prefix('admin')
+                    ->middleware(['auth', 'admin'])
+                    ->namespace('Backend')
+                    ->group(function ($router) {
+                        $this->require_files('routes/admin', $router);
+                    });
+            });
+    }
 
+    /**
+     * Define the "api" routes for the application.
+     *
+     * These routes are typically stateless.
+     *
+     * @return void
+     */
+    protected function mapApiRoutes()
+    {
+        $router = app('Dingo\Api\Routing\Router');
+
+        $router->version('v0', function ($router) {
+            $options = [
+                'namespace' => 'App\Http\Controllers\Api\V0',
+                'middleware' => ['api']
+            ];
+            $router->group($options, function ($router) {
+                require base_path('routes/api/v0/wedigbiodashboard.php');
+            });
+        });
+
+        $router->version('v1', function ($router) {
+            $options = [
+                'namespace' => 'App\Http\Controllers\Api\V1',
+                'middleware' => ['api']
+            ];
+
+            $router->group($options, function ($router) {
+                require base_path('routes/api/panoptes-pusher.php');
+                $this->require_files('routes/api', $router);
+                $router->group(['middleware' => 'client'], function ($router) {
+                    $this->require_files('routes/api/v1', $router);
                 });
+            });
+        });
 
-            $router->group(
-                [
-                    'domain'     => env('APP_DOMAIN'),
-                    'middleware' => ['web', 'auth'],
-                    'namespace'  => 'Frontend',
-                    'before'     => 'LocalRedirectFilter'
-                ],
-                function () use ($router)
-                {
-                    $router->put('password/{id}/pass', [
-                        'uses' => 'PasswordController@pass',
-                        'as'   => 'password.put.pass'
-                    ]);
+    }
 
-                    $dir = app_path('Http/Routes/Frontend/WebAuth');
-                    $this->require_files($dir, $router);
-                }
-            );
+    /**
+     * Map Passport routes.
+     */
+    protected function mapPassportRoutes()
+    {
+        $defaultOptions = [
+            'prefix'    => 'oauth',
+            'namespace' => '\Laravel\Passport\Http\Controllers',
+        ];
+
+        Route::group($defaultOptions, function ($router) {
+            $this->require_files('routes/passport', $router);
         });
     }
 
     /**
      * Load required files.
-     * 
+     *
      * @param $dir
      * @param $router
      */
     protected function require_files($dir, $router)
     {
-        foreach (new DirectoryIterator($dir) as $file)
+        $dirPath = base_path() . '/' . $dir . '/';
+        foreach (new DirectoryIterator($dirPath) as $file)
         {
-            if (!$file->isDot() && !$file->isDir())
+            if ( ! $file->isDot() && ! $file->isDir())
             {
-                require $dir . '/' . $file->getFilename();
+                require $dirPath . $file->getFilename();
             }
         }
     }
