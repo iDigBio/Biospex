@@ -1,20 +1,21 @@
 <?php namespace App\Exceptions;
 
+use App\Mail\BiospexException as BiospexExceptionMail;
 use Exception;
+use Mail;
 
 class BiospexException extends Exception
 {
     public function report()
     {
-        $error = [
-            'code' => $this->getCode(),
+        $exception = [
             'file' => $this->getFile(),
             'line' => $this->getLine(),
             'message' => $this->getMessage(),
             'trace' => $this->getTraceAsString()
         ];
 
-        app()->make(ExceptionNotify::class)->sendNotification($error);
+        Mail::to(config('mail.from.address'))->send(new BiospexExceptionMail($exception));
     }
 }
 
