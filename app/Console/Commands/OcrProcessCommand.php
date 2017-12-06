@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Exceptions\BiospexException;
-use App\Exceptions\RequestException;
 use App\Repositories\Contracts\OcrCsvContract;
 use App\Repositories\Contracts\OcrQueueContract;
 use App\Services\Process\OcrRequest;
@@ -120,7 +119,7 @@ class OcrProcessCommand extends Command
      * Process the record and send requests to ocr servers
      *
      * @param $record
-     * @throws RequestException
+     * @throws BiospexException
      */
     private function processRecord($record)
     {
@@ -151,7 +150,7 @@ class OcrProcessCommand extends Command
 
         if ($this->ocrRequest->checkOcrFileError($file))
         {
-            throw new RequestException(trans('errors.ocr_file_error',
+            throw new BiospexException(trans('errors.ocr_file_error',
                 ['title' => $record->title, 'id' => $record->id, 'message' => 'Json file header returned status error.']));
         }
 

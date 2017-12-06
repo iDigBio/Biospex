@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Facades\Flash;
 use Illuminate\Console\Command;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Client;
@@ -56,11 +57,11 @@ class OcrDeleteFile extends Command
             'concurrency' => 10,
             'fulfilled'   => function ($response, $file)
             {
-                session_flash_push('success', "Deleted " . $file . " successfully.");
+                Flash::success("Deleted " . $file . " successfully.");
             },
             'rejected'    => function ($reason, $file)
             {
-                session_flash_push('error', "Unable to delete file " . $file);
+                Flash::error("Unable to delete file " . $file);
             },
         ]);
 

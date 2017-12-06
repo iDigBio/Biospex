@@ -56,7 +56,7 @@ class WorkFlowManagerCommand extends Command
     public function handle()
     {
         $id = $this->argument('expedition');
-        $managers = $this->workflowManagerContract->getWorkflowManagersForProcessing($id);
+        $managers = $this->workflowManagerContract->setCacheLifetime(0)->getWorkflowManagersForProcessing($id);
 
         if ($managers->isEmpty())
         {
