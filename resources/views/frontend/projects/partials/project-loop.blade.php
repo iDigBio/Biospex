@@ -1,8 +1,6 @@
 @foreach ($groups as $group)
     @foreach ($group->projects as $project)
         <tr id="test{{ $project->id }}">
-            <td class="folder-space"><span id="{{ $project->id }}"
-                                           class="toggle fa fa-folder fa-2x pointer"></span></td>
             <td><a href="{{ route('web.projects.show', [$project->id]) }}">{{ $project->title }}</a>
             </td>
             <td><a href="{{ route('web.groups.show', [$group->id]) }}">{{ $group->title }}</a></td>
@@ -32,8 +30,14 @@
                             class="btn btn-danger btn-xs"
                             data-method="delete"
                             data-toggle="confirmation" data-placement="left"
+                            data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lg"
+                            data-btn-ok-class="btn-success"
+                            data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lg"
+                            data-btn-cancel-class="btn-danger"
+                            data-title="Delete item?"
                             data-href="{{ route('web.projects.delete', [$project->id]) }}"><span
-                                class="fa fa-remove fa-lg"></span> @lang('buttons.delete')</button>
+                                class="fa fa-remove fa-lg"></span> @lang('buttons.delete')
+                    </button>
                 @endcan
             </td>
         </tr>

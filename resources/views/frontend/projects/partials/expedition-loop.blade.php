@@ -29,6 +29,11 @@
                 class="btn btn-danger btn-xs"
                 data-method="delete"
                 data-toggle="confirmation" data-placement="left"
+                data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lg"
+                data-btn-ok-class="btn-success"
+                data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lg"
+                data-btn-cancel-class="btn-danger"
+                data-title="Delete item?"
                 data-href="{{ route('web.expeditions.delete', [$project->id, $expedition->id]) }}"><span
                     class="fa fa-remove fa-lrg"></span> <!-- @lang('buttons.delete') -->
         </button>
