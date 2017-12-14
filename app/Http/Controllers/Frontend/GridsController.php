@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Exceptions\MongoDbException;
+use App\Facades\Flash;
 use App\Http\Controllers\Controller;
+use App\Repositories\Contracts\ExpeditionContract;
 use App\Repositories\Contracts\SubjectContract;
+use App\Services\Model\SubjectService;
 use Exception;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Http\Request;
 use App\Services\Grid\JqGridJsonEncoder;
-use MongoCollection;
-use Response;
+use Illuminate\Support\Facades\Response;
 use App\Services\Csv\Csv;
 
 class GridsController extends Controller
 {
+
     /**
      * @var
      */
@@ -81,33 +83,75 @@ class GridsController extends Controller
     /**
      * Load grid data.
      *
-     * @throws Exception
+     * @return string
      */
     public function explore()
     {
-        return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
+        try
+        {
+            return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
+        }
+        catch (\Exception $e)
+        {
+            return response($e->getMessage(), 404);
+        }
     }
 
+    /**
+     * Show grid in expeditions.
+     *
+     * @return string
+     */
     public function expeditionsShow()
     {
-        return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
+        try
+        {
+            return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
+        }
+        catch (\Exception $e)
+        {
+            return response($e->getMessage(), 404);
+        }
     }
 
+    /**
+     * Show grid in expeditions edit.
+     *
+     * @return string
+     */
     public function expeditionsEdit()
     {
-        return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
+        try
+        {
+            return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
+        }
+        catch (\Exception $e)
+        {
+            return response($e->getMessage(), 404);
+        }
     }
 
+    /**
+     * Show grid in expeditions create.
+     *
+     * @return string
+     */
     public function expeditionsCreate()
     {
-        return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
+        try
+        {
+            return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
+        }
+        catch (\Exception $e)
+        {
+            return response($e->getMessage(), 404);
+        }
     }
 
     /**
      * @param $projectId
      * @param null $expeditionId
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
-     * @throws MongoDbException
      */
     public function export($projectId, $expeditionId = null)
     {
@@ -115,52 +159,66 @@ class GridsController extends Controller
         {
             $databaseManager = app(DatabaseManager::class);
             $client = $databaseManager->connection('mongodb')->getMongoClient();
-            $collection =$client->{config('database.connections.mongodb.database')}->subjects;
+            $collection = $client->{config('database.connections.mongodb.database')}->subjects;
 
             $query = null === $expeditionId ?
                 ['project_id' => (int) $projectId] :
                 ['project_id' => (int) $projectId, 'expedition_ids' => (int) $expeditionId];
 
-            $cursor = $collection->find($query);
+            $docs = $collection->find($query);
+            $docs->setTypeMap([
+                'array'    => 'array',
+                'document' => 'array',
+                'root'     => 'array'
+            ]);
 
-            $filename = 'grid_export_' . $projectId . '.csv';
+            $filename = $expeditionId === null ? 'grid_export_' . $projectId . '.csv' : 'grid_export_' . $projectId . '-' . $expeditionId . '.csv';
             $temp = storage_path('scratch/' . $filename);
             $this->csv->writerCreateFromPath($temp);
 
             $i = 0;
-            while($cursor->hasNext())
+            foreach ($docs as $doc)
             {
-                $cursor->next();
-                $record = $cursor->current();
-                unset($record['_id'], $record['occurrence']);
-                $record['expedition_ids'] = trim(implode(', ', $record['expedition_ids']), ',');
-                $record['updated_at'] = date('Y-m-d H:i:s', $record['updated_at']->sec);
-                $record['created_at'] = date('Y-m-d H:i:s', $record['created_at']->sec);
+                unset($doc['_id'], $doc['occurrence']);
+                $doc['expedition_ids'] = trim(implode(', ', $doc['expedition_ids']), ',');
+                $doc['updated_at'] = mongodb_date_format($doc['updated_at'], 'Y-m-d H:i:s');
+                $doc['created_at'] = mongodb_date_format($doc['created_at'], 'Y-m-d H:i:s');
 
                 if ($i === 0)
                 {
-                    $this->csv->insertOne(array_keys($record));
+                    $this->csv->insertOne(array_keys($doc));
                 }
 
-                $this->csv->insertOne($record);
+                $this->csv->insertOne($doc);
                 $i++;
             }
         }
         catch (Exception $e)
         {
-            throw new MongoDbException($e);
+            Flash::error($e->getMessage());
+
+            return redirect()->route('web.projects.show', [$projectId]);
         }
 
         $headers = [
-            'Content-type' => 'text/csv; charset=utf-8',
-            'Content-disposition' => 'attachment; filename="'.$filename.'"'
+            'Cache-Control'         => 'must-revalidate, post-check=0, pre-check=0'
+            , 'Content-type'        => 'text/csv'
+            , 'Content-disposition' => 'attachment; filename="' . $filename . '"'
+            , 'Expires'             => '0'
+            , 'Pragma'              => 'public'
         ];
 
         return Response::download($temp, $filename, $headers);
     }
 
 
-    public function delete(SubjectContract $subjectContract, $projectId)
+    /**
+     * Delete subject if not part of expedition process.
+     *
+     * @param SubjectService $subjectService
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function delete(SubjectService $subjectService)
     {
         if ( ! $this->request->ajax())
         {
@@ -174,11 +232,7 @@ class GridsController extends Controller
 
         $ids = explode(',', $this->request->get('id'));
 
-        foreach ($ids as $id)
-        {
-            $subjectContract->delete($id);
-        }
-
+        $subjectService->deleteSubjects($ids);
 
         return response()->json(['success']);
 
