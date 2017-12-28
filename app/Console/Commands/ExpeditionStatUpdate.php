@@ -94,7 +94,8 @@ class ExpeditionStatUpdate extends Command
      */
     private function dispatchAmCharts($projectIds)
     {
-        $projectIds = array_unique($projectIds);
-        $this->dispatch((new AmChartJob($projectIds))->onQueue(config('config.beanstalkd.chart')));
+        collect($projectIds)->unique()->each(function ($projectId){
+            $this->dispatch((new AmChartJob($projectId))->onQueue(config('config.beanstalkd.chart')));
+        });
     }
 }

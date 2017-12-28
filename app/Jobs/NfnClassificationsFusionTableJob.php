@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Models\Project;
 use App\Repositories\Contracts\ProjectContract;
 use App\Repositories\Contracts\TranscriptionLocationContract;
 use App\Services\Google\FusionTableService;
@@ -17,9 +16,14 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
     use InteractsWithQueue, SerializesModels;
 
     /**
-     * @var Project
+     * \App\Models\Project
      */
     public $project;
+
+    /**
+     * @var int
+     */
+    public $projectId;
 
     /**
      * @var ProjectContract
@@ -38,11 +42,11 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
 
     /**
      * NfnClassificationsFusionTableJob constructor.
-     * @param Project
+     * @param int $projectId
      */
-    public function __construct($project)
+    public function __construct($projectId)
     {
-        $this->project = $project;
+        $this->projectId = $projectId;
     }
 
     /**
@@ -61,6 +65,8 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
         $this->projectContract = $projectContract;
         $this->transcriptionLocationContract = $transcriptionLocationContract;
         $this->fusionTableService = $fusionTableService;
+
+        $this->project = $this->projectContract->find($this->projectId);
 
         try{
             $this->project->fusion_table_id === null ?
@@ -82,7 +88,7 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
         $counts = $this->getProjectLocationsCount($locations);
 
         $tableId = $this->fusionTableService->createTable($this->project->title);
-        $this->updateProjectTable($this->project->id, ['fusion_table_id' => $tableId]);
+        $this->updateProjectTable(['fusion_table_id' => $tableId]);
 
         $this->fusionTableService->createPermission($tableId);
 
@@ -149,7 +155,7 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
         {
             $settings = $this->fusionTableService->createTableStyle($tableId, $counts);
             $styleId = $this->fusionTableService->insertTableStyle($tableId, $settings);
-            $this->updateProjectTable($this->project->id, ['fusion_style_id' => $styleId]);
+            $this->updateProjectTable(['fusion_style_id' => $styleId]);
         }
 
         return $styleId;
@@ -165,16 +171,15 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
         if ($this->project->fusion_template_id === 0)
         {
             $templateId = $this->fusionTableService->createTemplate($tableId);
-            $this->updateProjectTable($this->project->id, ['fusion_template_id' => $templateId]);
+            $this->updateProjectTable(['fusion_template_id' => $templateId]);
         }
     }
 
     /**
-     * @param int $id
      * @param array $attributes
      */
-    public function updateProjectTable($id, array $attributes = [])
+    public function updateProjectTable(array $attributes = [])
     {
-        $this->projectContract->update($id, $attributes);
+        $this->projectContract->update($this->project->id, $attributes);
     }
 }

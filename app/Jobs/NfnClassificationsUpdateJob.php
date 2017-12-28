@@ -15,56 +15,47 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
     use InteractsWithQueue, SerializesModels, DispatchesJobs;
 
     /**
-     * @var array|null
+     * @var int expeditionId
      */
-    private $ids;
+    private $expeditionId;
 
     /**
      * NfnClassificationsUpdateJob constructor.
-     * @param array$ids
+     * @param int expeditionId
      */
-    public function __construct(array $ids = [])
+    public function __construct($expeditionId)
     {
-        $this->ids = $ids;
+        $this->expeditionId = $expeditionId;
     }
 
     /**
-     * Execute job.
+     * Execute Job.
      *
      * @param ExpeditionContract $expeditionContract
-     * @throws NfnApiException
      */
     public function handle(ExpeditionContract $expeditionContract)
     {
-        $withRelations = ['project.amChart', 'nfnWorkflow', 'nfnActor', 'stat'];
+        $withRelations = ['nfnWorkflow', 'nfnActor', 'stat'];
 
-        $expeditions = empty($this->ids) ?
-            $expeditionContract->setCacheLifetime(0)
+        $expedition = $expeditionContract->setCacheLifetime(0)
                 ->has('nfnWorkflow')
                 ->with($withRelations)
-                ->findAll() :
-            $expeditionContract->setCacheLifetime(0)
-                ->has('nfnWorkflow')
-                ->with($withRelations)
-                ->findWhereIn(['id', [$this->ids]]);
+                ->find($this->expeditionId);
 
-        $projectIds = [];
-        foreach ($expeditions as $expedition)
+        if ($this->checkIfExpeditionShouldProcess($expedition))
         {
-            if ($this->checkIfExpeditionShouldProcess($expedition))
-            {
-                continue;
-            }
+            $this->delete();
 
-            $this->updateExpeditionStats($expeditionContract, $expedition);
-            $projectIds[] = $expedition->project->id;
+            return;
         }
 
-        $projectIds = array_values(array_unique($projectIds));
+        $this->updateExpeditionStats($expeditionContract, $expedition);
 
-        $this->dispatch((new AmChartJob($projectIds))->onQueue(config('config.beanstalkd.chart')));
+        $this->dispatch((new AmChartJob($expedition->project_id))
+            ->onQueue(config('config.beanstalkd.chart')));
 
-        $this->dispatch((new NfnClassificationsFusionTableJob($projectIds))->onQueue(config('config.beanstalkd.classification')));
+        $this->dispatch((new NfnClassificationsFusionTableJob($expedition->project_id))
+            ->onQueue(config('config.beanstalkd.classification')));
 
         $this->delete();
     }

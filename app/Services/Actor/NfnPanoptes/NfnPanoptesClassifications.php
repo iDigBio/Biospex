@@ -75,7 +75,7 @@ class NfnPanoptesClassifications
                 return;
             }
 
-            $this->dispatch((new NfnClassificationsUpdateJob([$record->id]))
+            $this->dispatch((new NfnClassificationsUpdateJob($record->id))
                 ->onQueue(config('config.beanstalkd.classification')));
 
             $this->actorServiceConfig->fireActorUnQueuedEvent();

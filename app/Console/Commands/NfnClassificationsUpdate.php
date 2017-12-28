@@ -16,14 +16,14 @@ class NfnClassificationsUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'nfn:update {ids?}';
+    protected $signature = 'nfn:update {ids}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Update NfN Classifications for Expeditions. Argument can be comma separated ids or empty.';
+    protected $description = 'Update NfN Classifications for Expeditions. Argument is comma separated expedition ids.';
 
 
     /**
@@ -39,8 +39,17 @@ class NfnClassificationsUpdate extends Command
      */
     public function handle()
     {
-        $ids = null === $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
+        $ids = explode(',', $this->argument('ids'));
 
-        $this->dispatch((new NfnClassificationsUpdateJob($ids))->onQueue(config('config.beanstalkd.classification')));
+        if (empty($ids))
+        {
+            echo 'No ids passed.' . PHP_EOL;
+            return;
+        }
+
+        collect($ids)->each(function ($expeditionId){
+            $this->dispatch((new NfnClassificationsUpdateJob($expeditionId))
+                ->onQueue(config('config.beanstalkd.classification')));
+        });
     }
 }

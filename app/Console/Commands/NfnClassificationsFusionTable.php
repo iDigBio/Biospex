@@ -51,7 +51,7 @@ class NfnClassificationsFusionTable extends Command
         $projects = $this->getProjects($ids);
 
         $projects->each(function ($project){
-            $this->dispatch((new NfnClassificationsFusionTableJob($project))
+            $this->dispatch((new NfnClassificationsFusionTableJob($project->id))
                 ->onQueue(config('config.beanstalkd.classification')));
         });
     }
