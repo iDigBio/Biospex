@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Facades\Toastr;
-use App\Repositories\Contracts\UserContract;
+use App\Facades\Flash;
+use App\Interfaces\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Artisan;
 use DOMDocument;
@@ -14,12 +14,12 @@ class OcrController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param UserContract $userContract
+     * @param User $userContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(UserContract $userContract)
+    public function index(User $userContract)
     {
-        $user = $userContract->with('profile')->find(request()->user()->id);
+        $user = $userContract->findWith(request()->user()->id, ['profile']);
 
         $html = file_get_contents(config('config.ocr_get_url'));
 
@@ -46,12 +46,12 @@ class OcrController extends Controller
 
             Artisan::call('ocrfile:delete', ['files' => $files]);
 
-            Toastr::success('OCR deleted successfully.', 'OCR Delete');
+            Flash::success('OCR deleted successfully.');
 
             return redirect()->route('admin.ocr.index');
         }
 
-        Toastr::error('Deleting did not work.', 'OCR Delete');
+        Flash::error('Deleting did not work.');
 
         return redirect()->route('admin.ocr.index');
     }

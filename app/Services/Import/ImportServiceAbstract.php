@@ -5,12 +5,12 @@ namespace App\Services\Import;
 use Illuminate\Validation\Factory as Validation;
 use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Filesystem\Filesystem;
-use App\Repositories\Contracts\ImportContract;
+use App\Interfaces\Import;
 
 abstract class ImportServiceAbstract
 {
     /**
-     * @var ImportContract
+     * @var Import
      */
     protected $importContract;
 
@@ -44,13 +44,13 @@ abstract class ImportServiceAbstract
     /**
      * ImportServiceAbstract constructor.
      *
-     * @param ImportContract $importContract
+     * @param Import $importContract
      * @param Filesystem $filesystem
      * @param Validation $validation
      * @param Queue $queue
      */
     public function __construct(
-        ImportContract $importContract,
+        Import $importContract,
         Filesystem $filesystem,
         Validation $validation,
         Queue $queue

@@ -1,0 +1,95 @@
+<?php
+
+namespace App\Notifications;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
+
+class ImportComplete extends Notification implements ShouldQueue
+{
+    use Queueable;
+
+    /**
+     * @var string
+     */
+    public $project;
+
+    /**
+     * @var string|null
+     */
+    public $duplicates;
+
+    /**
+     * @var string|null
+     */
+    public $rejects;
+
+    /**
+     * Create a new notification instance.
+     *
+     * @param $project
+     * @param $duplicates
+     * @param $rejects
+     */
+    public function __construct($project, $duplicates = null, $rejects = null)
+    {
+        $this->project = $project;
+        $this->duplicates = $duplicates;
+        $this->rejects = $rejects;
+        $this->onQueue(config('config.beanstalkd.default'));
+    }
+
+    /**
+     * Get the notification's delivery channels.
+     *
+     * @param  mixed  $notifiable
+     * @return array
+     */
+    public function via($notifiable)
+    {
+        return ['mail'];
+    }
+
+    /**
+     * Get the mail representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return \Illuminate\Notifications\Messages\MailMessage
+     */
+    public function toMail($notifiable)
+    {
+        $mailMessage = new MailMessage;
+        $mailMessage->markdown('mail.importcomplete', ['project' => $this->project]);
+
+        if ($this->duplicates !== null)
+        {
+            $mailMessage->attachData($this->duplicates, 'duplicates.csv', [
+                'mime' => 'text/csv',
+            ]);
+        }
+
+        if ($this->rejects !== null)
+        {
+            $mailMessage->attachData($this->rejects, 'rejects.csv', [
+                'mime' => 'text/csv',
+            ]);
+        }
+
+        return $mailMessage;
+    }
+
+    /**
+     * Get the array representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return array
+     */
+    public function toArray($notifiable)
+    {
+        return [
+            //
+        ];
+    }
+}

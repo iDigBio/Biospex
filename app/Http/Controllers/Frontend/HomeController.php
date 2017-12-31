@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Facades\Flash;
 use App\Http\Controllers\Controller;
-use App\Jobs\SendContactEmailJob;
-use App\Repositories\Contracts\AmChartContract;
-use App\Repositories\Contracts\FaqContract;
-use App\Repositories\Contracts\PanoptesTranscriptionContract;
-use App\Repositories\Contracts\ProjectContract;
+use App\Mail\ContactForm;
+use App\Interfaces\AmChart;
+use App\Interfaces\PanoptesTranscription;
+use App\Interfaces\Project;
 use App\Http\Requests\ContactFormRequest;
+use Mail;
 
 class HomeController extends Controller
 {
@@ -16,11 +17,11 @@ class HomeController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param ProjectContract $projectContract
-     * @param PanoptesTranscriptionContract $panoptesTranscriptionContract
+     * @param Project $projectContract
+     * @param PanoptesTranscription $panoptesTranscriptionContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(ProjectContract $projectContract, PanoptesTranscriptionContract $panoptesTranscriptionContract)
+    public function index(Project $projectContract, PanoptesTranscription $panoptesTranscriptionContract)
     {
         $carouselProjects = $projectContract->getRandomProjectsForCarousel(5);
         $recentProjects = $projectContract->getRecentProjects(5);
@@ -34,38 +35,24 @@ class HomeController extends Controller
      * Show public project page.
      *
      * @param $slug
-     * @param ProjectContract $projectContract
+     * @param Project $projectContract
      * @return \Illuminate\View\View
      */
-    public function project($slug, ProjectContract $projectContract)
+    public function project($slug, Project $projectContract)
     {
-        $project = $projectContract->setCacheLifetime(0)
-            ->with(['group.users.profile', 'expeditions.stat', 'expeditions.actors', 'amChart'])
-            ->where('slug', '=', $slug)
-            ->findFirst();
-        $expeditions = null;
-        if ( ! $project->expeditions->isEmpty())
-        {
-            foreach ($project->expeditions as $expedition)
-            {
-                if (null === $expedition->deleted_at)
-                {
-                    $expeditions[] = $expedition;
-                }
-            }
-        }
+        $project = $projectContract->getProjectPageBySlug($slug);
 
-        return view('frontend.project', compact('project', 'expeditions'));
+        return view('frontend.project', compact('project'));
     }
 
     /**
      * Return project list for home page.
      *
-     * @param ProjectContract $projectContract
+     * @param Project $projectContract
      * @param $count
      * @return mixed
      */
-    public function projects(ProjectContract $projectContract, $count = 5)
+    public function projects(Project $projectContract, $count = 5)
     {
         $recentProjects = $projectContract->getRecentProjects($count+5);
 
@@ -75,28 +62,15 @@ class HomeController extends Controller
     /**
      * Load AmChart for project home page.
      *
-     * @param AmChartContract $amChartContract
+     * @param AmChart $amChartContract
      * @param $projectId
      * @return mixed
      */
-    public function loadAmChart(AmChartContract $amChartContract, $projectId)
+    public function loadAmChart(AmChart $amChartContract, $projectId)
     {
-        $record = $amChartContract->setCacheLifetime(0)->findBy('project_id', $projectId);
+        $record = $amChartContract->findBy('project_id', $projectId);
 
         return json_decode($record->data);
-    }
-
-    /**
-     * Show faq page.
-     *
-     * @param FaqContract $faqContract
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function faq(FaqContract $faqContract)
-    {
-        $faqs = $faqContract->orderBy('id','asc')->findAll();
-                
-        return view('frontend.faq', compact('faqs'));
     }
 
     /**
@@ -117,18 +91,20 @@ class HomeController extends Controller
      */
     public function postContact(ContactFormRequest $request)
     {
-        $data = $request->only('first_name', 'last_name', 'email', 'message');
+        $contact = $request->only('first_name', 'last_name', 'email', 'message');
 
-        $this->dispatch(new SendContactEmailJob($data));
+        Mail::to(config('mail.from.address'))->send(new ContactForm($contact));
 
-        return redirect()->route('home')->with('success', trans('pages.contact_success'));
+        Flash::success(trans('pages.contact_success'));
+
+        return redirect()->route('home');
     }
 
-    public function team()
-    {
-        return view('frontend.team');
-    }
-
+    /**
+     * Return vision page.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function vision()
     {
         return view('frontend.vision');

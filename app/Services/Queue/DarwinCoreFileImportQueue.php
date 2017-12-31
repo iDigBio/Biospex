@@ -1,16 +1,17 @@
-<?php namespace App\Services\Queue;
+<?php
 
-use App\Exceptions\BiospexException;
+namespace App\Services\Queue;
+
 use App\Jobs\BuildOcrBatchesJob;
-use App\Repositories\Contracts\ImportContract;
+use App\Notifications\DarwinCoreImportError;
+use App\Notifications\ImportComplete;
+use App\Interfaces\Import;
 use App\Services\File\FileService;
 use App\Services\Mailer\BiospexMailer;
-use App\Repositories\Contracts\ProjectContract;
+use App\Interfaces\Project;
 use App\Services\Process\DarwinCore;
 use App\Services\Process\Xml;
-use App\Services\Report\DarwinCoreImportReport;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use App\Exceptions\Handler;
 
 class DarwinCoreFileImportQueue extends QueueAbstract
 {
@@ -20,19 +21,14 @@ class DarwinCoreFileImportQueue extends QueueAbstract
     public $subjectImportDir;
 
     /**
-     * @var ImportContract
+     * @var Import
      */
     protected $importContract;
 
     /**
-     * @var ProjectContract
+     * @var Project
      */
     protected $projectContract;
-
-    /**
-     * @var DarwinCoreImportReport
-     */
-    protected $report;
 
     /**
      * @var DarwinCore
@@ -70,42 +66,32 @@ class DarwinCoreFileImportQueue extends QueueAbstract
      * @var FileService
      */
     protected $fileService;
-    /**
-     * @var Handler
-     */
-    private $handler;
 
     /**
      * Constructor
      *
-     * @param ImportContract $importContract
-     * @param ProjectContract $projectContract
-     * @param DarwinCoreImportReport $report
+     * @param Import $importContract
+     * @param Project $projectContract
      * @param DarwinCore $process
      * @param Xml $xml
      * @param BiospexMailer $mailer
      * @param FileService $fileService
-     * @param Handler $handler
      */
     public function __construct(
-        ImportContract $importContract,
-        ProjectContract $projectContract,
-        DarwinCoreImportReport $report,
+        Import $importContract,
+        Project $projectContract,
         DarwinCore $process,
         Xml $xml,
         BiospexMailer $mailer,
-        FileService $fileService,
-        Handler $handler
+        FileService $fileService
     )
     {
         $this->importContract = $importContract;
         $this->projectContract = $projectContract;
-        $this->report = $report;
         $this->process = $process;
         $this->xml = $xml;
         $this->mailer = $mailer;
         $this->fileService = $fileService;
-        $this->handler = $handler;
 
         $this->scratchDir = config('config.scratch_dir');
         $this->subjectImportDir = config('config.subject_import_dir');
@@ -120,33 +106,31 @@ class DarwinCoreFileImportQueue extends QueueAbstract
      *
      * @param $job
      * @param $data
-     * @throws BiospexException
      */
     public function fire($job, $data)
     {
         $this->job = $job;
         $this->data = $data;
 
-        $import = $this->importContract->setCacheLifetime(0)->find($this->data['id']);
-        $this->record = $this->projectContract->setCacheLifetime(0)
-            ->with(['group.owner', 'workflow.actors'])
-            ->find($import->project_id);
-
-        $fileName = pathinfo($this->subjectImportDir . '/' . $import->file, PATHINFO_FILENAME);
-        $this->scratchFileDir = $this->scratchDir . '/' . $import->id . '-' . md5($fileName);
-        $zipFile = $this->subjectImportDir . '/' . $import->file;
+        $import = $this->importContract->find($this->data['id']);
 
         try
         {
+            $this->record = $this->projectContract->findWith($import->project_id, ['group.owner', 'workflow.actors']);
+
+            $fileName = pathinfo($this->subjectImportDir . '/' . $import->file, PATHINFO_FILENAME);
+            $this->scratchFileDir = $this->scratchDir . '/' . $import->id . '-' . md5($fileName);
+            $zipFile = $this->subjectImportDir . '/' . $import->file;
+
             $this->fileService->makeDirectory($this->scratchFileDir);
             $this->fileService->unzip($zipFile, $this->scratchFileDir);
 
             $this->process->process($import->project_id, $this->scratchFileDir);
 
-            $duplicates = $this->process->getDuplicates();
-            $rejects = $this->process->getRejectedMedia();
+            $duplicates = create_csv($this->process->getDuplicates());
+            $rejects = create_csv($this->process->getRejectedMedia());
 
-            $this->report->complete($this->record->group->owner->email, $this->record->title, $duplicates, $rejects);
+            $this->record->group->owner->notify(new ImportComplete($this->record->title, $duplicates, $rejects));
 
             if ($this->record->workflow->actors->contains('title', 'OCR') && $this->process->getSubjectCount() > 0)
             {
@@ -159,21 +143,19 @@ class DarwinCoreFileImportQueue extends QueueAbstract
 
             $this->delete();
         }
-        catch (BiospexException $e)
+        catch (\Exception $e)
         {
             $import->error = 1;
-            $this->importContract->update($import->id, $import->toArray());
+            $this->importContract->update($import->toArray(), $import->id);
             $this->fileService->filesystem->deleteDirectory($this->scratchFileDir);
 
-            $this->report->addError(trans('errors.import_process', [
+            $message = trans('errors.import_process', [
                 'title'   => $this->record->title,
                 'id'      => $this->record->id,
                 'message' => $e->getMessage()
-            ]));
+            ]);
 
-            $this->report->reportError($this->record->group->owner->email);
-
-            $this->handler->report($e);
+            $this->record->group->owner->notify(new DarwinCoreImportError($message, __FILE__));
 
             $this->delete();
         }

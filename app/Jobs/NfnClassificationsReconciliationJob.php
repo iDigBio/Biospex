@@ -2,10 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Repositories\Contracts\DownloadContract;
-use App\Repositories\Contracts\ExpeditionContract;
-use App\Services\Model\DownloadService;
 use File;
+use App\Interfaces\Download;
+use App\Interfaces\Expedition;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -21,9 +20,9 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
     public $ids;
 
     /**
-     * @var DownloadService
+     * @var Download
      */
-    public $downloadService;
+    public $downloadContract;
 
     /**
      * NfnClassificationsCsvRequestsJob constructor.
@@ -36,12 +35,12 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
 
     /**
      * Handle the job.
-     * @param ExpeditionContract $expeditionContract
-     * @param DownloadService $downloadService
+     * @param Expedition $expeditionContract
+     * @param Download $downloadContract
      */
-    public function handle(ExpeditionContract $expeditionContract, DownloadService $downloadService)
+    public function handle(Expedition $expeditionContract, Download $downloadContract)
     {
-        $this->downloadService = $downloadService;
+        $this->downloadContract = $downloadContract;
 
         if (empty($this->ids))
         {
@@ -53,13 +52,11 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
         $ids = [];
         foreach ($this->ids as $id)
         {
-            $expedition = $expeditionContract->setCacheLifetime(0)
-                ->with('nfnWorkflow')
-                ->find($id);
+            $expedition = $expeditionContract->findWith($id, ['nfnWorkflow']);
 
             $file = config('config.classifications_download') . '/' . $expedition->id . '.csv';
 
-            if ( ! file_exists($file) || $expedition->nfnWorkflow === null)
+            if ( ! File::exists($file) || $expedition->nfnWorkflow === null)
             {
                 continue;
             }
@@ -120,6 +117,6 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
             'type' => $type
         ];
 
-        $this->downloadService->updateOrCreate($attributes, $values);
+        $this->downloadContract->updateOrCreate($attributes, $values);
     }
 }

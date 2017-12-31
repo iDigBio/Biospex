@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Facades\Toastr;
+use App\Facades\Flash;
 use App\Http\Requests\EditUserFormRequest;
 use App\Http\Requests\PasswordFormRequest;
-use App\Repositories\Contracts\UserContract;
-use App\Services\Model\ModelDeleteService;
-use App\Services\Model\ModelDestroyService;
-use App\Services\Model\ModelRestoreService;
+use App\Interfaces\User;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use App\Http\Controllers\Controller;
 
@@ -18,15 +15,15 @@ class UsersController extends Controller
     use ResetsPasswords;
 
     /**
-     * @var UserContract
+     * @var User
      */
     public $userContract;
 
     /**
      * UsersController constructor.
-     * @param UserContract $userContract
+     * @param User $userContract
      */
-    public function __construct(UserContract $userContract)
+    public function __construct(User $userContract)
     {
         $this->userContract = $userContract;
     }
@@ -37,11 +34,11 @@ class UsersController extends Controller
      */
     public function index($id = null)
     {
-        $user = $this->userContract->with('profile')->find(request()->user()->id);
-        $users = $this->userContract->with('profile')->orderBy('created_at', 'asc')->findAll();
-        $trashed = $this->userContract->onlyTrashed();
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $users = $this->userContract->getAllUsersOrderByDate();
+        $trashed = $this->userContract->getOnlyTrashed();
 
-        $editUser = $id !== null ? $this->userContract->with('profile')->find($id) : null;
+        $editUser = $id !== null ? $this->userContract->findWith($id, ['profile']) : null;
 
         $timezones = timezone_select();
 
@@ -57,15 +54,15 @@ class UsersController extends Controller
      */
     public function update(EditUserFormRequest $request, $id)
     {
-        $result = $this->userContract->update($id, $request->all());
-        $user = $this->userContract->with('profile')->find($id);
+        $result = $this->userContract->update($request->all(), $id);
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $user->profile->first_name = $request->input('first_name');
         $user->profile->last_name = $request->input('last_name');
         $user->profile->timezone = $request->input('timezone');
         $user->profile()->save($user->profile);
 
-        $result ? Toastr::success('User has been updated.', 'User Update') :
-            Toastr::error('User could not be updated.', 'User Update');
+        $result ? Flash::success('User has been updated.') :
+            Flash::error('User could not be updated.');
 
         return redirect()->route('admin.users.index');
     }
@@ -82,9 +79,7 @@ class UsersController extends Controller
             return json_encode(['Invalid']);
         }
 
-        $emails = $this->userContract->where('email', 'like', request()
-                ->get('q') . '%')
-                ->findAll(['email as text'])->toArray();
+        $emails = $this->userContract->findUsersByEmailAjax(request()->get('q'));
 
         foreach ($emails as $key => $email)
         {
@@ -107,7 +102,7 @@ class UsersController extends Controller
 
         $this->resetPassword($user, $request->input('newPassword'));
 
-        Toastr::success('User has been updated.', 'User Update');
+        Flash::success('User has been updated.');
 
         return redirect()->route('admin.users.edit', [$user->id]);
     }
@@ -115,15 +110,14 @@ class UsersController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param ModelDeleteService $service
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete(ModelDeleteService $service, $id)
+    public function delete($id)
     {
-        $service->deleteUser($id) ?
-            Toastr::success('User has been deleted.', 'User Delete') :
-            Toastr::error('User could not be deleted.', 'User Delete');
+        $this->userContract->delete($id) ?
+            Flash::success('User has been deleted.') :
+            Flash::error('User could not be deleted.');
 
         return redirect()->route('admin.users.index');
     }
@@ -131,15 +125,14 @@ class UsersController extends Controller
     /**
      * Forcefully delete trashed records.
      *
-     * @param ModelDestroyService $service
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(ModelDestroyService $service, $id)
+    public function destroy($id)
     {
-        $service->destroyUser($id) ?
-            Toastr::success('User has been forcefully deleted.', 'User Destroy') :
-            Toastr::error('User could not be forcefully deleted.', 'User Destroy');
+        $this->userContract->destroy($id) ?
+            Flash::success('User has been forcefully deleted.') :
+            Flash::error('User could not be forcefully deleted.');
 
         return redirect()->route('admin.users.index');
     }
@@ -147,15 +140,14 @@ class UsersController extends Controller
     /**
      * Restore deleted record.
      *
-     * @param ModelRestoreService $service
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function restore(ModelRestoreService $service, $id)
+    public function restore($id)
     {
-        $service->restoreUser($id) ?
-            Toastr::success('User has been restored successfully.', 'User Restore') :
-            Toastr::error('User could not be restored.', 'User Restore');
+        $this->userContract->restore($id) ?
+            Flash::success('User has been restored successfully.') :
+            Flash::error('User could not be restored.');
 
         return redirect()->route('admin.users.index');
     }

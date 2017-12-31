@@ -2,44 +2,43 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Facades\Toastr;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FaqCategoryFormRequest;
 use App\Http\Requests\FaqFormRequest;
-use App\Repositories\Contracts\FaqCategoryContract;
-use App\Repositories\Contracts\UserContract;
-use Illuminate\Http\Request;
-use App\Repositories\Contracts\FaqContract;
+use App\Interfaces\FaqCategory;
+use App\Interfaces\User;
+use App\Interfaces\Faq;
+use App\Facades\Flash;
 
 class FaqsController extends Controller
 {
 
     /**
-     * @var FaqContract
+     * @var Faq
      */
     private $faqContract;
 
     /**
-     * @var FaqCategoryContract
+     * @var FaqCategory
      */
     private $faqCategoryContract;
 
     /**
-     * @var UserContract
+     * @var User
      */
     private $userContract;
 
     /**
      * FaqController constructor.
      *
-     * @param FaqCategoryContract $faqCategoryContract
-     * @param FaqContract $faqContract
-     * @param UserContract $userContract
+     * @param FaqCategory $faqCategoryContract
+     * @param Faq $faqContract
+     * @param User $userContract
      */
     public function __construct(
-        FaqCategoryContract $faqCategoryContract,
-        FaqContract $faqContract,
-        UserContract $userContract
+        FaqCategory $faqCategoryContract,
+        Faq $faqContract,
+        User $userContract
     )
     {
         $this->faqCategoryContract = $faqCategoryContract;
@@ -49,15 +48,14 @@ class FaqsController extends Controller
 
     /**
      * Show Faq list by category.
-     * 
-     * @param Request $request
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Request $request)
+    public function index()
     {
-        $user = $this->userContract->with('profile')->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->faqCategoryContract->pluck('name', 'id')->toArray();
-        $categories = $this->faqCategoryContract->with('faqs')->groupBy('id')->findAll();
+        $user = $this->userContract->findWith(request()->user()->id,['profile']);
+        $select = [null => 'Please Select'] + $this->faqCategoryContract->getFaqCategorySelect();
+        $categories = $this->faqCategoryContract->getFaqCategoryOrderId();
         $categoryId = null;
         $faqId = null;
 
@@ -67,15 +65,14 @@ class FaqsController extends Controller
     /**
      * Show create forms for categories and faq.
      *
-     * @param Request $request
      * @param $categoryId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function create(Request $request, $categoryId)
+    public function create($categoryId)
     {
-        $user = $this->userContract->with('profile')->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->faqCategoryContract->pluck('name', 'id')->toArray();
-        $categories = $this->faqCategoryContract->with('faqs')->groupBy('id')->findAll();
+        $user = $this->userContract->findWith(request()->user()->id,['profile']);
+        $select = [null => 'Please Select'] + $this->faqCategoryContract->getFaqCategorySelect();
+        $categories = $this->faqCategoryContract->getFaqCategoryOrderId();
 
         return view('backend.faqs.index', compact('user', 'categories', 'select', 'categoryId'));
     }
@@ -90,7 +87,8 @@ class FaqsController extends Controller
     {
         $faq = $this->faqContract->create($request->all());
 
-        $faq ? Toastr::success('FAQ has been created successfully.', 'FAQ Create') : Toastr::error('FAQ could not be saved.', 'FAQ Create');
+        $faq ? Flash::success('FAQ has been created successfully.') :
+            Flash::error('FAQ could not be saved.');
 
         return redirect()->route('admin.faqs.create', $request->get('faq_category_id'));
     }
@@ -105,7 +103,8 @@ class FaqsController extends Controller
     {
         $category = $this->faqCategoryContract->create(['name' => $request->get('name')]);
 
-        $category ? Toastr::success('Category has been created successfully.', 'Category Create') : Toastr::error('Category could not be saved.', 'Category Create');
+        $category ? Flash::success('Category has been created successfully.') :
+            Flash::error('Category could not be saved.');
 
         return redirect()->route('admin.faqs.index', $category->id);
     }
@@ -113,16 +112,15 @@ class FaqsController extends Controller
     /**
      * Edit Category or Faq.
      *
-     * @param Request $request
      * @param $categoryId
      * @param $faqId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit(Request $request, $categoryId, $faqId)
+    public function edit($categoryId, $faqId)
     {
-        $user = $this->userContract->with('profile')->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->faqCategoryContract->pluck('name', 'id')->toArray();
-        $categories = $this->faqCategoryContract->with('faqs')->groupBy('id')->findAll();
+        $user = $this->userContract->findWith(request()->user()->id,['profile']);
+        $select = [null => 'Please Select'] + $this->faqCategoryContract->getFaqCategorySelect();
+        $categories = $this->faqCategoryContract->getFaqCategoryOrderId();
         $faq = $this->faqCategoryContract->find($faqId);
 
         return view('backend.faqs.index', compact('user', 'categories', 'select', 'categoryId', 'faq'));
@@ -138,10 +136,10 @@ class FaqsController extends Controller
      */
     public function update(FaqFormRequest $request, $categoryId, $faqId)
     {
-        $result = $this->faqContract->update($faqId, $request->all());
+        $result = $this->faqContract->update($request->all(), $faqId);
 
-        $result ? Toastr::success('FAQ has been updated successfully.', 'FAQ Update')
-            : Toastr::error('FAQ could not be updated.', 'FAQ Update');
+        $result ? Flash::success('FAQ has been updated successfully.')
+            : Flash::error('FAQ could not be updated.');
 
         return redirect()->route('admin.faqs.index');
     }
@@ -149,16 +147,15 @@ class FaqsController extends Controller
     /**
      * Edit Category.
      *
-     * @param Request $request
      * @param $categoryId
      * @param $faqId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function editCategory(Request $request, $categoryId, $faqId)
+    public function editCategory($categoryId, $faqId)
     {
-        $user = $this->userContract->with('profile')->find($request->user()->id);
-        $select = [null => 'Please Select'] + $this->faqCategoryContract->pluck('name', 'id')->toArray();
-        $categories = $this->faqCategoryContract->with('faqs')->groupBy('id')->findAll();
+        $user = $this->userContract->findWith(request()->user()->id,['profile']);
+        $select = [null => 'Please Select'] + $this->faqCategoryContract->getFaqCategorySelect();
+        $categories = $this->faqCategoryContract->getFaqCategoryOrderId();
         $category = $this->faqCategoryContract->find($categoryId);
 
         return view('backend.faqs.index', compact('user', 'select', 'category', 'categories', 'categoryId', 'faqId'));
@@ -173,10 +170,10 @@ class FaqsController extends Controller
      */
     public function updateCategory(FaqCategoryFormRequest $request, $categoryId)
     {
-        $result = $this->faqCategoryContract->update($categoryId, ['name' => $request->get('name')]);
+        $result = $this->faqCategoryContract->update(['name' => $request->get('name')], $categoryId);
 
-        $result ? Toastr::success('Category has been updated successfully.', 'Category Update')
-            : Toastr::error('Category could not be updated.', 'Category Update');
+        $result ? Flash::success('Category has been updated successfully.')
+            : Flash::error('Category could not be updated.');
 
         return redirect()->route('admin.faqs.index');
     }
@@ -193,15 +190,15 @@ class FaqsController extends Controller
     {
         if ((int) $faqId === 0)
         {
-            $result = $this->faqCategoryContract->delete($categoryId);
-            $result ? Toastr::success('The category and all faqs have been deleted.', 'Category Delete')
-                : Toastr::error('Category could not be deleted.', 'Category Delete');
+            $this->faqCategoryContract->delete($categoryId) ?
+                Flash::success('The category and all faqs have been deleted.') :
+                Flash::error('Category could not be deleted.');
         }
         else
         {
-            $result = $this->faq->delete($faqId);
-            $result ? Toastr::success('The FAQ has been deleted.', 'FAQ Delete')
-                : Toastr::error('The FAQ could not be deleted.', 'FAQ Delete');
+            $result = $this->faqContract->delete($faqId);
+            $result ? Flash::success('The FAQ has been deleted.')
+                : Flash::error('The FAQ could not be deleted.');
         }
 
         return redirect()->route('admin.faqs.index');

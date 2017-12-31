@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Exceptions\BiospexException;
-use App\Services\Report\Report;
+use App\Interfaces\User;
+use App\Notifications\JobError;
 use App\Services\Process\PanoptesTranscriptionProcess;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\SerializesModels;
@@ -18,12 +18,17 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
     /**
      * @var array
      */
-    public $ids;
+    private $ids;
 
     /**
      * @var bool
      */
-    public $dir;
+    private $dir;
+
+    /**
+     * @var array
+     */
+    private $errorMessages = [];
 
     /**
      * NfnClassificationsTranscriptJob constructor.
@@ -38,13 +43,13 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param PanoptesTranscriptionProcess $transcription
-     * @param Report $report
+     * @param PanoptesTranscriptionProcess $transcriptionProcess
+     * @param User $userContract
      * @return void
      */
     public function handle(
-        PanoptesTranscriptionProcess $transcription,
-        Report $report
+        PanoptesTranscriptionProcess $transcriptionProcess,
+        User $userContract
     )
     {
         if ($this->ids->isEmpty())
@@ -54,41 +59,27 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
             return;
         }
 
-        $this->ids->each(function($id) use ($transcription, $report) {
-            $this->processCsvFile($transcription, $report, $id);
-        });
-
-        if ( ! empty($transcription->getCsvError()) || $report->checkErrors())
-        {
-            $report->addError('Panoptes Transcript Error');
-            $report->reportError(null, $transcription->getCsvError());
-        }
-
-        $this->dispatch((new WeDigBioDashboardJob($this->ids))->onQueue(config('config.beanstalkd.classification')));
-    }
-
-    /**
-     * Process CSV file.
-     *
-     * @param PanoptesTranscriptionProcess $transcription
-     * @param Report $report
-     * @param $id
-     */
-    private function processCsvFile(PanoptesTranscriptionProcess $transcription, Report $report, $id)
-    {
         try
         {
-            $filePath = config('config.classifications_transcript') . '/' . $id . '.csv';
-            if ( ! file_exists($filePath))
+            $filePath = config('config.classifications_transcript');
+
+            $this->ids->filter(function($id) use ($filePath) {
+                return file_exists($filePath . '/' . $id . '.csv');
+            })->each(function($id) use ($transcriptionProcess, $filePath) {
+                $transcriptionProcess->process($filePath . '/' . $id . '.csv');
+            });
+
+            if ( ! empty($transcriptionProcess->getCsvError()))
             {
-                return;
+                $user = $userContract->find(1);
+                $user->notify(new JobError(__FILE__, $transcriptionProcess->getCsvError()));
             }
 
-            $transcription->process($filePath);
+            $this->dispatch((new WeDigBioDashboardJob($this->ids))->onQueue(config('config.beanstalkd.classification')));
         }
-        catch (BiospexException $e)
+        catch (\Exception $e)
         {
-            $report->addError($e->getMessage());
+            return;
         }
     }
 }

@@ -21,10 +21,12 @@ class RegisterFormRequest extends Request
      */
     public function rules()
     {
+        $table = $this->apiuser ? 'api_users' : 'users';
+
         return [
             'first_name'            => 'required',
             'last_name'             => 'required',
-            'email'                 => 'required|min:4|max:32|email|unique:users',
+            'email'                 => 'required|min:4|max:32|email|unique:'.$table,
             'password'              => 'required|min:6|confirmed',
             'password_confirmation' => 'required',
             'registeruser'          => 'honeypot',

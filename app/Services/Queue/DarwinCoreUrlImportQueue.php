@@ -2,55 +2,57 @@
 
 namespace App\Services\Queue;
 
-use App\Exceptions\BiospexException;
-use App\Exceptions\DownloadFileException;
-use App\Exceptions\FileSaveException;
-use App\Exceptions\FileTypeException;
-use App\Repositories\Contracts\ImportContract;
-use App\Repositories\Contracts\ProjectContract;
-use App\Services\Report\Report;
+use App\Interfaces\Import;
+use App\Interfaces\Project;
+use App\Notifications\DarwinCoreImportError;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Queue;
 use finfo;
-use App\Exceptions\Handler;
 
 class DarwinCoreUrlImportQueue extends QueueAbstract
 {
 
+    /**
+     * @var Filesystem
+     */
     protected $filesystem;
-    protected $importContract;
-    protected $report;
-    protected $importDir;
-    protected $tube;
-    protected $projectContract;
 
     /**
-     * @var Handler
+     * @var Import
      */
-    protected $handler;
+    protected $importContract;
+
+    /**
+     * @var \Illuminate\Config\Repository|mixed
+     */
+    protected $importDir;
+
+    /**
+     * @var \Illuminate\Config\Repository|mixed
+     */
+    protected $tube;
+
+    /**
+     * @var Project
+     */
+    protected $projectContract;
 
     /**
      * DarwinCoreUrlImportQueue constructor.
      *
      * @param Filesystem $filesystem
-     * @param ImportContract $importContract
-     * @param Report $report
-     * @param ProjectContract $projectContract
-     * @param Handler $handler
+     * @param Import $importContract
+     * @param Project $projectContract
      */
     public function __construct(
         Filesystem $filesystem,
-        ImportContract $importContract,
-        Report $report,
-        ProjectContract $projectContract,
-        Handler $handler
+        Import $importContract,
+        Project $projectContract
     )
     {
         $this->filesystem = $filesystem;
         $this->importContract = $importContract;
-        $this->report = $report;
         $this->projectContract = $projectContract;
-        $this->handler = $handler;
 
         $this->importDir = config('config.subject_import_dir');
         if (!$this->filesystem->isDirectory($this->importDir))
@@ -66,7 +68,6 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
      *
      * @param $job
      * @param $data
-     * @throws BiospexException
      */
     public function fire($job, $data)
     {
@@ -77,19 +78,17 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
         {
             $this->download();
         }
-        catch (BiospexException $e)
+        catch (\Exception $e)
         {
-            $project = $this->projectContract->with('group.owner')->find($this->data['project_id']);
+            $project = $this->projectContract->findWith($this->data['project_id'], ['group.owner']);
 
-            $this->report->addError(trans('errors.import_process', [
+            $message = trans('errors.import_process', [
                 'title'   => $project->title,
                 'id'      => $project->id,
                 'message' => $e->getMessage()
-            ]));
+            ]);
 
-            $this->report->reportError($project->group->owner->email);
-
-            $this->handler->report($e);
+            $project->group->owner->notify(new DarwinCoreImportError($message, __FILE__));
         }
 
         $this->delete();
@@ -98,7 +97,7 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
     /**
      * Download zip file.
      *
-     * @throws BiospexException
+     * @throws \Exception
      */
     public function download()
     {
@@ -108,17 +107,17 @@ class DarwinCoreUrlImportQueue extends QueueAbstract
         $file = file_get_contents(url_encode($this->data['url']));
         if ($file === false)
         {
-            throw new DownloadFileException(trans('errors.zip_download'));
+            throw new \Exception(trans('errors.zip_download'));
         }
 
         if (!$this->checkFileType($file))
         {
-            throw new FileTypeException(trans('errors.zip_type'));
+            throw new \Exception(trans('errors.zip_type'));
         }
 
         if (file_put_contents($filePath, $file) === false)
         {
-            throw new FileSaveException(trans('errors.save_file', [':file' => $filePath]));
+            throw new \Exception(trans('errors.save_file', [':file' => $filePath]));
         }
 
 

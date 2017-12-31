@@ -1,21 +1,21 @@
-<?php namespace App\Http\Controllers\Backend;
+<?php
 
-use Illuminate\Http\Request;
+namespace App\Http\Controllers\Backend;
+
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\UserContract;
+use App\Interfaces\User;
 
 class DashboardController extends Controller
 {
     /**
      * Show the application dashboard.
-     * 
-     * @param Request $request
-     * @param UserContract $userContract
+     * 0
+     * @param User $userContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Request $request, UserContract $userContract)
+    public function index(User $userContract)
     {
-        $user = $userContract->with('profile')->find($request->user()->id);
+        $user = $userContract->findWith(request()->user()->id, ['profile']);
 
         return view('backend.index', compact('user'));
     }

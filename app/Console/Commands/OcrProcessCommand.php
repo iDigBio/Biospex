@@ -2,13 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Exceptions\BiospexException;
-use App\Repositories\Contracts\OcrCsvContract;
-use App\Repositories\Contracts\OcrQueueContract;
+use App\Interfaces\OcrCsv;
+use App\Interfaces\OcrQueue;
+use App\Notifications\OcrProcessComplete;
 use App\Services\Process\OcrRequest;
-use App\Services\Report\OcrReport;
 use Illuminate\Console\Command;
-use App\Exceptions\Handler;
 use Illuminate\Support\Facades\Artisan;
 
 class OcrProcessCommand extends Command
@@ -34,64 +32,43 @@ class OcrProcessCommand extends Command
     private $ocrRequest;
 
     /**
-     * @var OcrQueueContract
+     * @var OcrQueue
      */
     private $ocrQueueContract;
 
     /**
-     * @var OcrReport
-     */
-    private $ocrReport;
-
-    /**
-     * @var OcrCsvContract
+     * @var OcrCsv
      */
     private $ocrCsvContract;
-
-    /**
-     * @var Handler
-     */
-    private $handler;
 
     /**
      * OcrProcessCommand constructor.
      *
      * @param OcrRequest $ocrRequest
-     * @param OcrQueueContract $ocrQueueContract
-     * @param OcrReport $ocrReport
-     * @param OcrCsvContract $ocrCsvContract
-     * @param Handler $handler
+     * @param OcrQueue $ocrQueueContract
+     * @param OcrCsv $ocrCsvContract
      */
     public function __construct(
         OcrRequest $ocrRequest,
-        OcrQueueContract $ocrQueueContract,
-        OcrReport $ocrReport,
-        OcrCsvContract $ocrCsvContract,
-        Handler $handler
+        OcrQueue $ocrQueueContract,
+        OcrCsv $ocrCsvContract
     )
     {
         parent::__construct();
 
         $this->ocrRequest = $ocrRequest;
         $this->ocrQueueContract = $ocrQueueContract;
-        $this->ocrReport = $ocrReport;
         $this->ocrCsvContract = $ocrCsvContract;
-        $this->handler = $handler;
     }
 
     /**
      * Execute the console command.
      *
-     * @throws BiospexException
+     * @throws \Exception
      */
     public function handle()
     {
-        $record = $this->ocrQueueContract->setCacheLifetime(0)
-            ->with(['project.group.owner', 'ocrCsv'])
-            ->where('status', '<=', 1)
-            ->where('error', '=', 0)
-            ->orderBy('id', 'asc')
-            ->findFirst();
+        $record = $this->ocrQueueContract->getOcrQueueForOcrProcessCommand();
 
         if ($record === null)
         {
@@ -102,12 +79,10 @@ class OcrProcessCommand extends Command
         {
             $this->processRecord($record);
         }
-        catch (BiospexException $e)
+        catch (\Exception $e)
         {
             $record->error = 1;
-            $this->ocrQueueContract->update($record->id, $record->toArray());
-
-            $this->handler->report($e);
+            $this->ocrQueueContract->update($record->toArray(), $record->id);
 
             return;
         }
@@ -119,7 +94,7 @@ class OcrProcessCommand extends Command
      * Process the record and send requests to ocr servers
      *
      * @param $record
-     * @throws BiospexException
+     * @throws \Exception
      */
     private function processRecord($record)
     {
@@ -128,7 +103,7 @@ class OcrProcessCommand extends Command
             $this->ocrRequest->sendOcrFile($record);
 
             $record->status = 1;
-            $this->ocrQueueContract->update($record->id, $record->toArray());
+            $this->ocrQueueContract->update($record->toArray(), $record->id);
 
             return;
         }
@@ -150,7 +125,7 @@ class OcrProcessCommand extends Command
 
         if ($this->ocrRequest->checkOcrFileError($file))
         {
-            throw new BiospexException(trans('errors.ocr_file_error',
+            throw new \Exception(trans('errors.ocr_file_error',
                 ['title' => $record->title, 'id' => $record->id, 'message' => 'Json file header returned status error.']));
         }
 
@@ -161,16 +136,15 @@ class OcrProcessCommand extends Command
         $this->setOcrCsv($record, $csv);
 
         $record->status = 2;
-        $this->ocrQueueContract->update($record->id, $record->toArray());
+        $this->ocrQueueContract->update($record->toArray(), $record->id);
 
         if ($record->batch)
         {
-            $this->sendReport($record);
+            $this->sendNotify($record);
             $this->ocrCsvContract->delete($record->ocrCsv->id);
         }
 
         $this->ocrRequest->deleteJsonFiles([$record->uuid . '.json']);
-
     }
 
     /**
@@ -188,15 +162,15 @@ class OcrProcessCommand extends Command
     }
 
     /**
-     * Send report for completed ocr process
+     * Send notification for completed ocr process
      *
      * @param $record
+     * @throws \Exception
      */
-    private function sendReport($record)
+    private function sendNotify($record)
     {
-        $email = $record->project->group->owner->email;
-        $title = $record->project->title;
-        $this->ocrReport->complete($email, $title, json_decode($record->ocrCsv->subjects, true));
+        $csv = create_csv(json_decode($record->ocrCsv->subjects, true));
+        $record->group->owner->notify(new OcrProcessComplete($record->project->title, $csv));
     }
 
     /**
@@ -208,6 +182,6 @@ class OcrProcessCommand extends Command
     private function updateProcessed($record, $file)
     {
         $record->processed = (int) $file->header->complete;
-        $this->ocrQueueContract->update($record->id, $record->toArray());
+        $this->ocrQueueContract->update($record->toArray(), $record->id);
     }
 }

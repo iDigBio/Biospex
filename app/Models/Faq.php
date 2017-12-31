@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Faq extends Model
 {
+    use LadaCacheTrait;
+
     /**
      * @ineritDoc
      */

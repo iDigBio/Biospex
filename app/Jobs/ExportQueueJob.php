@@ -2,9 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Listeners\ExportQueueEventListener;
-use App\Models\ExportQueue;
-use App\Repositories\Contracts\ExportQueueContract;
+use App\Models\ExportQueue as Model;
+use App\Interfaces\ExportQueue;
 use App\Services\Actor\ActorFactory;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -14,29 +13,29 @@ class ExportQueueJob extends Job implements ShouldQueue
 {
 
     use InteractsWithQueue, SerializesModels;
+    
     /**
      * @var ExportQueue
      */
-    private $record;
+    private $model;
 
     /**
      * ExportQueueJob constructor.
-     * @param ExportQueue $record
+     * @param Model $model
      */
-    public function __construct(ExportQueue $record)
+    public function __construct(Model $model)
     {
-        $this->record = $record;
+        $this->model = $model;
     }
 
     /**
      * Handle ExportQueue Job
-     * @param ExportQueueContract $exportQueueContract
-     * @see ExportQueueEventListener::exportQueueSaved() Set when new export saved and event fired.
+     * @param ExportQueue $repository
+     * @see \App\Observers\ExportQueueObserver Set when new export saved and event fired.
      */
-    public function handle(ExportQueueContract $exportQueueContract)
+    public function handle(ExportQueue $repository)
     {
-        $queue = $exportQueueContract->setCacheLifetime(0)
-            ->findByIdExpeditionActor($this->record->id, $this->record->expedition_id, $this->record->actor_id);
+        $queue = $repository->findByIdExpeditionActor($this->model->id, $this->model->expedition_id, $this->model->actor_id);
 
         $class = ActorFactory::create($queue->expedition->actor->class, $queue->expedition->actor->class);
         $class->queue($queue);

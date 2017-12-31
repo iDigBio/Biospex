@@ -2,60 +2,66 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Facades\Toastr;
+use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ActorFormRequest;
-use App\Repositories\Contracts\ActorContract;
-use App\Services\Actor\ActorAdminService;
-use Illuminate\Http\Request;
+use App\Interfaces\Actor;
+use App\Interfaces\User;
 
 class ActorsController extends Controller
 {
+
     /**
-     * @var ActorContract
+     * @var Actor
      */
     private $actorContract;
 
     /**
-     * @var ActorAdminService
+     * @var User
      */
-    private $actorAdminService;
+    private $userContract;
 
     /**
      * ActorsController constructor.
      *
-     * @param ActorAdminService $actorAdminService
-     * @param ActorContract $actorContract
+     * @param Actor $actorContract
+     * @param User $userContract
      */
     public function __construct(
-        ActorAdminService $actorAdminService,
-        ActorContract $actorContract
+        Actor $actorContract,
+        User $userContract
     )
     {
         $this->actorContract = $actorContract;
-        $this->actorAdminService = $actorAdminService;
+        $this->userContract = $userContract;
     }
 
     /**
-     * Show Faq list by category.
+     * Show Actor index.
      *
-     * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Request $request)
+    public function index()
     {
-        return $this->actorAdminService->showIndex($request);
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $actors = $this->actorContract->all();
+        $trashed = $this->actorContract->getOnlyTrashed();
+
+        return view('backend.actors.index', compact('user', 'actors', 'trashed'));
     }
 
     /**
      * Create form.
      *
-     * @param Request $request
      * @return mixed
      */
-    public function create(Request $request)
+    public function create()
     {
-        return $this->actorAdminService->showCreateForm($request);
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $actors = $this->actorContract->all();
+        $trashed = $this->actorContract->getOnlyTrashed();
+
+        return view('backend.actors.index', compact('user', 'actors', 'trashed'));
     }
 
     /**
@@ -66,9 +72,17 @@ class ActorsController extends Controller
      */
     public function store(ActorFormRequest $request)
     {
-        $this->actorAdminService->createActor($request) ?
-            Toastr::success('Actor has been created successfully.', 'Actor Create') :
-            Toastr::error('Actor could not be saved.', 'Actor Create');
+        $actor = $this->actorContract->create($request->all());
+
+        collect($request->get('contacts'))->reject(function ($contact) {
+            return $contact['email'] === '';
+        })->each(function ($contact) use ($actor) {
+            $actor->contacts()->create(['email' => $contact['email']]);
+        });
+
+        $actor ?
+            Flash::success('Actor has been created successfully.') :
+            Flash::error('Actor could not be saved.');
 
         return redirect()->route('admin.actors.index');
     }
@@ -76,13 +90,17 @@ class ActorsController extends Controller
     /**
      * Edit Actor.
      *
-     * @param Request $request
      * @param $id
      * @return mixed
      */
-    public function edit(Request $request, $id)
+    public function edit($id)
     {
-        return $this->actorAdminService->editActor($request, $id);
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $actors = $this->actorContract->all();
+        $trashed = $this->actorContract->getOnlyTrashed();
+        $actor = $this->actorContract->findWith($id, ['contacts']);
+
+        return view('backend.actors.index', compact('user', 'actors', 'actor', 'trashed'));
     }
 
     /**
@@ -94,7 +112,11 @@ class ActorsController extends Controller
      */
     public function update(ActorFormRequest $request, $id)
     {
-        return $this->actorAdminService->updateActor($request, $id);
+        $this->actorContract->update($request->all(), $id) ?
+            Flash::success('Actor has been updated successfully.') :
+            Flash::error('Actor could not be updated.');
+
+        return redirect()->route('admin.actors.index');
     }
 
     /**
@@ -105,10 +127,9 @@ class ActorsController extends Controller
      */
     public function delete($id)
     {
-        $result = $this->actorContract->delete($id);
-
-        $result ? Toastr::success('The actor has been deleted.', 'Actor Delete')
-                : Toastr::error('Actor could not be deleted.', 'Actor Delete');
+        $this->actorContract->delete($id) ?
+            Flash::success('The actor has been deleted.') :
+            Flash::error('Actor could not be deleted.');
 
         return redirect()->route('admin.actors.index');
     }
@@ -121,11 +142,10 @@ class ActorsController extends Controller
      */
     public function trash($id)
     {
-        $result = $this->actorContract->forceDelete($id);
+        $this->actorContract->destroy($id) ?
+            Flash::success('Actor has been forcefully deleted.') :
+            Flash::error('Actor could not be forcefully deleted.');
 
-        $result ? Toastr::success('Actor has been forcefully deleted.', 'Actor Destroy')
-            : Toastr::error('Actor could not be forcefully deleted.', 'Actor Destroy');
-        
         return redirect()->route('admin.actors.index');
     }
 }

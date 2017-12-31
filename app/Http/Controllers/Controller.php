@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\Flash;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -15,14 +16,17 @@ abstract class Controller extends BaseController
      * Check permissions.
      *
      * @param $ability
-     * @param $objects
+     * @param $object
      * @return bool
      */
-    public function checkPermissions($ability, $objects)
+    public function checkPermissions($ability, $object = null)
     {
-        if (request()->user()->cannot($ability, $objects))
+        try{
+            $this->authorize($ability, $object);
+        }
+        catch (\Exception $e)
         {
-            session_flash_push('warning', trans('pages.insufficient_permissions'));
+            Flash::warning(trans('pages.insufficient_permissions'));
 
             return false;
         }

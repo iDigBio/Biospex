@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Exceptions\NfnApiException;
 use App\Models\NfnWorkflow;
 use App\Services\Api\NfnApi;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\InteractsWithQueue;
@@ -33,7 +33,7 @@ class UpdateNfnWorkflowJob extends Job implements ShouldQueue
      * Execute job.
      *
      * @param NfnApi $nfnApi
-     * @throws NfnApiException
+     * @throws GuzzleException
      */
     public function handle(NfnApi $nfnApi)
     {
@@ -42,23 +42,30 @@ class UpdateNfnWorkflowJob extends Job implements ShouldQueue
             return;
         }
 
-        $this->retrieveWorkflow($nfnApi);
+        try {
+            $this->retrieveWorkflow($nfnApi);
+        }
+        catch (\Exception $e)
+        {
+            $this->delete();
+        }
 
         $this->delete();
-
     }
 
     /**
      * Retrieve workflow from api.
      *
      * @param NfnApi $nfnApi
-     * @throws NfnApiException
+     * @throws GuzzleException
      */
     private function retrieveWorkflow(NfnApi $nfnApi)
     {
         $nfnApi->setProvider();
         $nfnApi->checkAccessToken('nfnToken');
-        $result = $nfnApi->getWorkflow($this->nfnWorkflow->workflow);
+        $uri = $nfnApi->getWorkflowUri($this->nfnWorkflow->workflow);
+        $request = $nfnApi->buildAuthorizedRequest('GET', $uri);
+        $result = $nfnApi->sendAuthorizedRequest($request);
 
         $workflow = $result['workflows'][0];
 

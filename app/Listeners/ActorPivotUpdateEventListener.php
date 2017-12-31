@@ -2,21 +2,21 @@
 
 namespace App\Listeners;
 
-use App\Repositories\Contracts\ActorContract;
+use App\Interfaces\Actor;
 
 class ActorPivotUpdateEventListener
 {
 
     /**
-     * @var ActorContract
+     * @var Actor
      */
     private $actorContract;
 
     /**
      * Create the event listener.
-     * @param ActorContract $actorContract
+     * @param Actor $actorContract
      */
-    public function __construct(ActorContract $actorContract)
+    public function __construct(Actor $actorContract)
     {
         $this->actorContract = $actorContract;
     }
@@ -72,8 +72,7 @@ class ActorPivotUpdateEventListener
      */
     private function updateActorExpeditions($actor, array $attributes = [])
     {
-        $result = $this->actorContract->updateActorExpeditionPivot($actor, $actor->pivot->expedition_id, $attributes);
-        $result === 0 ?: $this->actorContract->forgetCache();
+        $this->actorContract->updateActorExpeditionPivot($actor, $actor->pivot->expedition_id, $attributes);
     }
 
     /**

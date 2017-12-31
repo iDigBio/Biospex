@@ -2,36 +2,36 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Facades\Toastr;
+use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ResourceFormRequest;
-use App\Repositories\Contracts\ResourceContract;
-use App\Repositories\Contracts\UserContract;
+use App\Interfaces\Resource;
+use App\Interfaces\User;
 use Illuminate\Support\Facades\Storage;
 
 class ResourcesController extends Controller
 {
+
     /**
-     * @var ResourceContract
+     * @var Resource
      */
     private $resourceContract;
-    
+
     /**
-     * @var UserContract
+     * @var User
      */
     private $userContract;
 
     /**
      * ResourcesController constructor.
      *
-     * ResourcesController constructor.
-     * @param ResourceContract $resourceContract
-     * @param UserContract $userContract
+     * @param Resource $resourceContract
+     * @param User $userContract
      */
-    public function __construct(ResourceContract $resourceContract, UserContract $userContract)
+    public function __construct(Resource $resourceContract, User $userContract)
     {
-        $this->resourceContract = $resourceContract;
         $this->userContract = $userContract;
+        $this->resourceContract = $resourceContract;
     }
 
     /**
@@ -41,16 +41,16 @@ class ResourcesController extends Controller
      */
     public function index()
     {
-        $user = $this->userContract->with('profile')->find(request()->user()->id);
-        $resources = $this->resourceContract->orderBy('order', 'asc')->findAll();
-        $trashed = $this->resourceContract->onlyTrashed();
-        
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $resources = $this->resourceContract->getResourcesOrdered();
+        $trashed = $this->resourceContract->getTrashedResourcesOrdered();
+
         return view('backend.resources.index', compact('user', 'resources', 'trashed'));
     }
 
     /**
      * Redirect show route.
-     * 
+     *
      * @return mixed
      */
     public function show()
@@ -86,11 +86,11 @@ class ResourcesController extends Controller
                 file_get_contents($request->file('document')->getRealPath())
             );
 
-            $resource = $this->resourceContract->update($resource->id, ['document' => $filename]);
+            $resource = $this->resourceContract->update(['document' => $filename], $resource->id);
         }
 
-        $resource ? Toastr::success('Resource has been created successfully.', 'Resource Create') :
-            Toastr::error('Resource could not be saved.', 'Resource Create');
+        $resource ? Flash::success('Resource has been created successfully.') :
+            Flash::error('Resource could not be saved.');
 
         return redirect()->route('admin.resources.index');
     }
@@ -103,10 +103,10 @@ class ResourcesController extends Controller
      */
     public function edit($id)
     {
-        $user = $this->userContract->with('profile')->find(request()->user()->id);
-        $resources = $this->resourceContract->findAll();
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $resources = $this->resourceContract->all();
         $resource = $this->resourceContract->find($id);
-        $trashed = $this->resourceContract->onlyTrashed();
+        $trashed = $this->resourceContract->findOnlyTrashed();
 
         return view('backend.resources.index', compact('user', 'resources', 'resource', 'trashed'));
     }
@@ -137,15 +137,15 @@ class ResourcesController extends Controller
         }
 
         $data = [
-            'title' => $request->get('title'),
+            'title'       => $request->get('title'),
             'description' => $request->get('description'),
-            'document' => $resource->document
+            'document'    => $resource->document
         ];
 
-        $resource = $this->resourceContract->update($id, $data);
+        $resource = $this->resourceContract->update($data, $id);
 
-        $resource ? Toastr::success('Resource has been updated successfully.', 'Resource Update')
-            : Toastr::error('Resource could not be updated.', 'Resource Update');
+        $resource ? Flash::success('Resource has been updated successfully.')
+            : Flash::error('Resource could not be updated.');
 
         return redirect()->route('admin.resources.index');
     }
@@ -158,11 +158,11 @@ class ResourcesController extends Controller
      */
     public function delete($id)
     {
-        $this->resourceContract->update($id, ['order' => 0]);
+        $this->resourceContract->update(['order' => 0], $id);
         $result = $this->resourceContract->delete($id);
 
-        $result ? Toastr::success('The resource has been deleted.', 'Resource Delete')
-                : Toastr::error('Resource could not be deleted.', 'Resource Delete');
+        $result ? Flash::success('The resource has been deleted.')
+            : Flash::error('Resource could not be deleted.');
 
         return redirect()->route('admin.resources.index');
     }
@@ -175,14 +175,14 @@ class ResourcesController extends Controller
      */
     public function trash($id)
     {
-        $resource = $this->resourceContract->onlyTrashed($id);
+        $resource = $this->resourceContract->findOnlyTrashed($id);
         Storage::disk('public')->delete('resources/' . $resource->document);
 
-        $result = $this->resourceContract->forceDelete($id);
+        $result = $this->resourceContract->destory($resource);
 
-        $result ? Toastr::success('Resource has been forcefully deleted.', 'Resource Destroy')
-            : Toastr::error('Resource could not be forcefully deleted.', 'Resource Destroy');
-        
+        $result ? Flash::success('Resource has been forcefully deleted.')
+            : Flash::error('Resource could not be forcefully deleted.');
+
         return redirect()->route('admin.resources.index');
     }
 
@@ -196,7 +196,7 @@ class ResourcesController extends Controller
     {
         if (request()->ajax())
         {
-            $this->resourceContract->update($id, ['order' => $order]);
+            $this->resourceContract->update(['order' => $order], $id);
         }
     }
 }

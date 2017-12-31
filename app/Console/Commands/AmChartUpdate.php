@@ -15,14 +15,14 @@ class AmChartUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'amchart:update {ids?}';
+    protected $signature = 'amchart:update {ids}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Build the AmChart data for project pages. Takes comma separated values or empty as params';
+    protected $description = 'Build the AmChart data for project pages. Argument is comma separated project ids.';
 
     /**
      * Create a new command instance.
@@ -38,8 +38,10 @@ class AmChartUpdate extends Command
      */
     public function handle()
     {
-        $ids = null ===  $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
+        $ids = explode(',', $this->argument('ids'));
 
-        $this->dispatch((new AmChartJob($ids))->onQueue(config('config.beanstalkd.chart')));
+        collect($ids)->each(function ($projectId){
+            $this->dispatch((new AmChartJob($projectId))->onQueue(config('config.beanstalkd.chart')));
+        });
     }
 }

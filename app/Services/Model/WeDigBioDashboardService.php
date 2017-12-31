@@ -2,12 +2,10 @@
 
 namespace App\Services\Model;
 
-use App\Helpers\DateHelper;
-use App\Models\PanoptesTranscription;
-use App\Models\WeDigBioDashboard;
-use App\Repositories\Contracts\ExpeditionContract;
-use App\Repositories\Contracts\PanoptesTranscriptionContract;
-use App\Repositories\Contracts\WeDigBioDashboardContract;
+use App\Facades\DateHelper;
+use App\Interfaces\Expedition;
+use App\Interfaces\PanoptesTranscription;
+use App\Interfaces\WeDigBioDashboard;
 use App\Services\Api\NfnApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -17,17 +15,17 @@ class WeDigBioDashboardService
 {
 
     /**
-     * @var WeDigBioDashboardContract
+     * @var WeDigBioDashboard
      */
     private $weDigBioDashboardContract;
 
     /**
-     * @var ExpeditionContract
+     * @var Expedition
      */
     private $expeditionContract;
 
     /**
-     * @var PanoptesTranscriptionContract
+     * @var PanoptesTranscription
      */
     private $panoptesTranscriptionContract;
 
@@ -38,15 +36,15 @@ class WeDigBioDashboardService
 
     /**
      * ExpeditionService constructor.
-     * @param WeDigBioDashboardContract $weDigBioDashboardContract
-     * @param ExpeditionContract $expeditionContract
-     * @param PanoptesTranscriptionContract $panoptesTranscriptionContract
+     * @param WeDigBioDashboard $weDigBioDashboardContract
+     * @param Expedition $expeditionContract
+     * @param PanoptesTranscription $panoptesTranscriptionContract
      * @param NfnApi $nfnApi
      */
     public function __construct(
-        WeDigBioDashboardContract $weDigBioDashboardContract,
-        ExpeditionContract $expeditionContract,
-        PanoptesTranscriptionContract $panoptesTranscriptionContract,
+        WeDigBioDashboard $weDigBioDashboardContract,
+        Expedition $expeditionContract,
+        PanoptesTranscription $panoptesTranscriptionContract,
         NfnApi $nfnApi
     )
     {
@@ -118,7 +116,7 @@ class WeDigBioDashboardService
             return null;
         }
 
-        return $this->expeditionContract->setCacheLifetime(60)->find($subject['metadata']['#expeditionId']);
+        return $this->expeditionContract->find($subject['metadata']['#expeditionId']);
     }
 
     /**
@@ -132,7 +130,9 @@ class WeDigBioDashboardService
         $result = Cache::remember('workflow-' . $workflowId, 60, function () use ($workflowId) {
             $this->nfnApi->setProvider();
             $this->nfnApi->checkAccessToken('nfnToken');
-            $results = $this->nfnApi->getWorkflow($workflowId);
+            $uri = $this->nfnApi->getWorkflowUri($workflowId);
+            $request = $this->nfnApi->buildAuthorizedRequest('GET', $uri);
+            $results = $this->nfnApi->sendAuthorizedRequest($request);
 
             return isset($results['workflows'][0]) ? $results['workflows'][0] : null;
         });
@@ -151,7 +151,9 @@ class WeDigBioDashboardService
         $result = Cache::remember('subject-' . $subjectId, 60, function () use ($subjectId) {
             $this->nfnApi->setProvider();
             $this->nfnApi->checkAccessToken('nfnToken');
-            $results = $this->nfnApi->getSubject($subjectId);
+            $uri = $this->nfnApi->getSubjectUri($subjectId);
+            $request = $this->nfnApi->buildAuthorizedRequest('GET', $uri);
+            $results = $this->nfnApi->sendAuthorizedRequest($request);
 
             return isset($results['subjects'][0]) ? $results['subjects'][0] : null;
         });
@@ -239,9 +241,7 @@ class WeDigBioDashboardService
      */
     public function getExpedition($expeditionId)
     {
-        return $this->expeditionContract->setCacheLifetime(0)
-            ->with('project')
-            ->find($expeditionId);
+        return $this->expeditionContract->findWith($expeditionId, ['project']);
     }
 
     /**
@@ -253,18 +253,7 @@ class WeDigBioDashboardService
      */
     public function getTranscriptions($expeditionId, $timestamp = null)
     {
-        $query = $this->panoptesTranscriptionContract->setCacheLifetime(0)
-            ->with(['subject' => function ($query) {
-                $query->select('accessURI');
-            }])
-            ->where('subject_expeditionId', '=', $expeditionId);
-
-        if ($timestamp !== null)
-        {
-            $query->where('classification_finished_at', '>=', $timestamp);
-        }
-
-        return $query->orderBy('classification_finished_at')->findAll();
+        return $this->panoptesTranscriptionContract->getTranscriptionForDashboardJob($expeditionId, $timestamp);
     }
 
     /**
@@ -275,8 +264,7 @@ class WeDigBioDashboardService
      */
     public function checkIfExists($transcriptionId)
     {
-        return $this->weDigBioDashboardContract->setCacheLifetime(0)
-            ->findWhere(['transcription_id', '=', $transcriptionId])->count();
+        return $this->weDigBioDashboardContract->findBy('transcription_id', $transcriptionId)->count();
     }
 
     /**
@@ -353,8 +341,8 @@ class WeDigBioDashboardService
     }
 
     /**
-     * @param PanoptesTranscription $transcription
-     * @param WeDigBioDashboard $classification
+     * @param $transcription
+     * @param $classification
      */
     private function updateItem($transcription, $classification)
     {
@@ -383,7 +371,7 @@ class WeDigBioDashboardService
             'transcriptionContent' => array_merge($classification->transcriptionContent, $transcriptionContent)
         ];
 
-        $this->weDigBioDashboardContract->update($classification->_id, $attributes);
+        $this->weDigBioDashboardContract->update($attributes, $classification->_id);
     }
 
     /**

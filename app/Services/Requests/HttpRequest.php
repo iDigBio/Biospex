@@ -2,7 +2,6 @@
 
 namespace App\Services\Requests;
 
-use App\Exceptions\HttpRequestException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\CurlHandler;
@@ -127,30 +126,22 @@ class HttpRequest
      *
      * @param $requests
      * @return array
-     * @throws HttpRequestException
      */
     public function poolBatchRequest($requests)
     {
-        try
-        {
-            $responses = Pool::batch($this->getHttpClient(), $requests, [
-                'concurrency' => 10,
-                'fulfilled'   => function ($response, $index)
-                {
-                    return $index;
-                },
-                'rejected'    => function ($reason, $index)
-                {
-                    return $index;
-                }
-            ]);
+        $responses = Pool::batch($this->getHttpClient(), $requests, [
+            'concurrency' => 10,
+            'fulfilled'   => function ($response, $index)
+            {
+                return $index;
+            },
+            'rejected'    => function ($reason, $index)
+            {
+                return $index;
+            }
+        ]);
 
-            return $responses;
-        }
-        catch (\InvalidArgumentException $e)
-        {
-            throw new HttpRequestException($e);
-        }
+        return $responses;
     }
 
     public function retryDecider()

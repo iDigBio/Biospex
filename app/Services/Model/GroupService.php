@@ -2,23 +2,86 @@
 
 namespace App\Services\Model;
 
-use App\Repositories\Contracts\GroupContract;
+use App\Facades\Flash;
+use App\Interfaces\Group;
 
 class GroupService
 {
 
     /**
-     * @var GroupContract
+     * @var Group
      */
     public $groupContract;
 
     /**
      * GroupService constructor.
-     * @param GroupContract $groupContract
+     * @param Group $groupContract
      */
-    public function __construct(GroupContract $groupContract)
+    public function __construct(Group $groupContract)
     {
         $this->groupContract = $groupContract;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAllGroups()
+    {
+        return $this->groupContract->all();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAllTrashedGroups()
+    {
+        return $this->groupContract->getOnlyTrashed();
+    }
+
+    /**
+     * Find a group by id with relationships if required.
+     *
+     * @param $groupId
+     * @return mixed
+     */
+    public function findGroup($groupId)
+    {
+        return $this->groupContract->find($groupId);
+    }
+
+    /**
+     * Find a group by id with relationships.
+     *
+     * @param $groupId
+     * @param array $with
+     * @return mixed
+     */
+    public function findGroupWith($groupId, array $with = [])
+    {
+        return $this->groupContract->findWith($groupId, $with);
+    }
+
+    /**
+     * Returned only trashed group by id.
+     *
+     * @param $groupId
+     * @return mixed
+     */
+    public function findTrashed($groupId)
+    {
+        return $this->groupContract->findOnlyTrashed($groupId, ['trashedProjects']);
+    }
+
+    /**
+     * Get user project list by group for logged in user.
+     *
+     * @param $user
+     * @param bool $trashed
+     * @return mixed
+     */
+    public function getUserProjectListByGroup($user, $trashed = false)
+    {
+        return $this->groupContract->getUserProjectListByGroup($user, $trashed);
     }
 
     /**
@@ -29,30 +92,133 @@ class GroupService
      */
     public function getGroupUsersSelect($groupId)
     {
-        $group = $this->groupContract->with('users.profile')->find($groupId);
+        $group = $this->groupContract->findWith($groupId, ['users.profile']);
         $select = [];
         foreach ($group->users as $user)
         {
-            $select[$user->id] = $user->profile->full_name;
+            $select[$user->id] = $user->profile->fullName;
         }
 
         return $select;
     }
 
     /**
-     * Get values for user's group select.
+     * Create a group.
      *
      * @param $user
-     * @return mixed
+     * @param $title
+     * @return bool
      */
-    public function getUsersGroupsSelect($user)
+    public function createGroup($user, $title)
     {
-        return $this->groupContract
-            ->whereHas('users', function ($query) use($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->pluck('title', 'id')
-            ->toArray();
+        $group = $this->groupContract->create(['user_id' => $user->id, 'title' => $title]);
+
+        if ($group)
+        {
+            $user->assignGroup($group);
+
+            event('group.saved');
+
+            Flash::success(trans('groups.created'));
+
+            return true;
+        }
+
+        Flash::warning(trans('groups.loginreq'));
+
+        return false;
     }
 
+    /**
+     * Update Group.
+     *
+     * @param array $attributes
+     * @param $groupId
+     */
+    public function updateGroup(array $attributes = [], $groupId)
+    {
+        $this->groupContract->update($attributes, $groupId) ?
+            Flash::success(trans('groups.updated')) :
+            Flash::error('groups.updateproblem');
+
+        return;
+    }
+
+    /**
+     * Delete Group.
+     *
+     * @param $group
+     * @return bool
+     */
+    public function deleteGroup($group)
+    {
+        try
+        {
+            foreach ($group->projects as $project)
+            {
+                if ( ! $project->nfnWorkflows->isEmpty())
+                {
+                    Flash::error(trans('expeditions.expedition_process_exists'));
+
+                    return false;
+                }
+            }
+
+            $this->groupContract->delete($group);
+
+            event('group.deleted');
+
+            Flash::success(trans('groups.group_deleted'));
+
+            return true;
+        }
+        catch (\Exception $e)
+        {
+            Flash::error(trans('groups.group_deleted_failed'));
+
+            return false;
+        }
+    }
+
+    /**
+     * Destroy Group.
+     *
+     * @param $group
+     * @return bool
+     */
+    public function destroyGroup($group)
+    {
+        try
+        {
+            if ( ! $group->trashedProjects->isNotEmpty())
+            {
+                $group->trashedProjects()->forceDelete();
+            }
+
+            $this->groupContract->destroy($group);
+
+            Flash::success(trans('groups.group_destroyed'));
+
+            return true;
+        }
+        catch (\Exception $e)
+        {
+            Flash::error(trans('groups.group_destroyed_failed'));
+
+            return false;
+        }
+    }
+
+    /**
+     * Restore Group.
+     *
+     * @param $group
+     * @return \App\Services\Facades\Flash
+     */
+    public function restoreGroup($group)
+    {
+        return $this->groupContract->restore($group) ?
+            Flash::success(trans('groups.group_restored')) :
+            Flash::error(trans('groups.group_restored_failed'));
+    }
 }

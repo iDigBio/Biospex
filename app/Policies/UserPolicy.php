@@ -24,17 +24,17 @@ class UserPolicy
 
     public function edit($user)
     {
-        return $user === null ? false : Auth::getUser()->id === $user->id;
+        return $user === null ? false : Auth::id() === $user->id;
     }
 
     public function update($user)
     {
-        return $user === null ? false : Auth::getUser()->id === $user->id;
+        return $user === null ? false : Auth::id() === $user->id;
     }
 
     public function pass($user)
     {
-        return $user === null ? false : Auth::getUser()->id === $user->id;
+        return $user === null ? false : Auth::id() === $user->id;
     }
 
     public function delete($user)

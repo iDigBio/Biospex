@@ -2,10 +2,9 @@
 
 namespace App\Services\Process;
 
-use App\Exceptions\CsvHeaderCountException;
-use App\Repositories\Contracts\SubjectContract;
-use App\Repositories\Contracts\PanoptesTranscriptionContract;
-use App\Repositories\Contracts\TranscriptionLocationContract;
+use App\Interfaces\Subject;
+use App\Interfaces\PanoptesTranscription;
+use App\Interfaces\TranscriptionLocation;
 use Illuminate\Validation\Factory as Validation;
 use ForceUTF8\Encoding;
 use App\Services\Csv\Csv;
@@ -19,12 +18,12 @@ class PanoptesTranscriptionProcess
     protected $collection;
 
     /**
-     * @var SubjectContract
+     * @var Subject
      */
     protected $subjectContract;
 
     /**
-     * @var PanoptesTranscriptionContract
+     * @var PanoptesTranscription
      */
     protected $panoptesTranscriptionContract;
 
@@ -49,23 +48,23 @@ class PanoptesTranscriptionProcess
     protected $dwcLocalityFields;
 
     /**
-     * @var TranscriptionLocationContract
+     * @var TranscriptionLocation
      */
     private $transcriptionLocationContract;
 
 
     /**
      * NfnTranscription constructor.
-     * @param SubjectContract $subjectContract
-     * @param PanoptesTranscriptionContract $panoptesTranscriptionContract
-     * @param TranscriptionLocationContract $transcriptionLocationContract
+     * @param Subject $subjectContract
+     * @param PanoptesTranscription $panoptesTranscriptionContract
+     * @param TranscriptionLocation $transcriptionLocationContract
      * @param Validation $factory
      * @param Csv $csv
      */
     public function __construct(
-        SubjectContract $subjectContract,
-        PanoptesTranscriptionContract $panoptesTranscriptionContract,
-        TranscriptionLocationContract $transcriptionLocationContract,
+        Subject $subjectContract,
+        PanoptesTranscription $panoptesTranscriptionContract,
+        TranscriptionLocation $transcriptionLocationContract,
         Validation $factory,
         Csv $csv
     )
@@ -82,7 +81,7 @@ class PanoptesTranscriptionProcess
      * Process csv file.
      *
      * @param $file
-     * @throws CsvHeaderCountException
+     * @throws \Exception
      */
     public function process($file)
     {
@@ -119,13 +118,13 @@ class PanoptesTranscriptionProcess
      * Process an individual row
      * @param $header
      * @param $row
-     * @throws CsvHeaderCountException
+     * @throws \Exception
      */
     public function processRow($header, $row)
     {
         if (count($header) !== count($row))
         {
-            throw new CsvHeaderCountException(trans('errors.csv_row_count', [
+            throw new \Exception(trans('errors.csv_row_count', [
                 'headers' => count($header),
                 'rows'    => count($row)
             ]));
@@ -205,7 +204,7 @@ class PanoptesTranscriptionProcess
         }
 
         $attributes = ['classification_id' => $combined['classification_id']];
-        $this->transcriptionLocationContract->updateOrCreateTranscriptionLocation($attributes, $data);
+        $this->transcriptionLocationContract->updateOrCreate($attributes, $data);
     }
 
 
@@ -217,7 +216,7 @@ class PanoptesTranscriptionProcess
      */
     public function getSubject($combined)
     {
-        return $this->subjectContract->setCacheLifetime(0)->find(trim($combined['subject_subjectId']));
+        return $this->subjectContract->find(trim($combined['subject_subjectId']));
     }
 
     /**

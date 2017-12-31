@@ -2,10 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Exceptions\Handler;
-use App\Exceptions\HttpRequestException;
+use App\Interfaces\User;
+use App\Notifications\JobError;
 use App\Services\Api\NfnApi;
-use App\Services\Report\Report;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -21,7 +20,12 @@ class NfnClassificationsCsvDownloadJob extends Job implements ShouldQueue
     /**
      * @var array
      */
-    public $sources;
+    private $sources;
+
+    /**
+     * @var array
+     */
+    private $errorMessages = [];
 
     /**
      * NfnClassificationsCsvDownloadJob constructor.
@@ -36,14 +40,12 @@ class NfnClassificationsCsvDownloadJob extends Job implements ShouldQueue
      * Execute the job.
      *
      * @param NfnApi $api
-     * @param Report $report
-     * @param Handler $handler
+     * @param User $userContract
      * @return void
      */
     public function handle(
         NfnApi $api,
-        Report $report,
-        Handler $handler
+        User $userContract
     )
     {
         if (count($this->sources) === 0)
@@ -51,56 +53,57 @@ class NfnClassificationsCsvDownloadJob extends Job implements ShouldQueue
             return;
         }
 
-        $api->setProvider(false);
-
-        $requests = function () use ($api)
-        {
-            foreach ($this->sources as $index => $source)
-            {
-                $filePath = config('config.classifications_download') . '/' . $index . '.csv';
-
-                yield $index => function ($poolOpts) use ($api, $source, $filePath)
-                {
-                    $reqOpts = [
-                        'sink' => $filePath
-                    ];
-                    if (is_array($poolOpts) && count($poolOpts) > 0)
-                    {
-                        $reqOpts = array_merge($poolOpts, $reqOpts); // req > pool
-                    }
-
-                    return $api->getHttpClient()->getAsync($source, $reqOpts);
-                };
-            }
-        };
-
         try
         {
+            $api->setProvider(false);
+
+            $requests = function () use ($api)
+            {
+                foreach ($this->sources as $index => $source)
+                {
+                    $filePath = config('config.classifications_download') . '/' . $index . '.csv';
+
+                    yield $index => function ($poolOpts) use ($api, $source, $filePath)
+                    {
+                        $reqOpts = [
+                            'sink' => $filePath
+                        ];
+                        if (is_array($poolOpts) && count($poolOpts) > 0)
+                        {
+                            $reqOpts = array_merge($poolOpts, $reqOpts); // req > pool
+                        }
+
+                        return $api->getHttpClient()->getAsync($source, $reqOpts);
+                    };
+                }
+            };
+
             $responses = $api->poolBatchRequest($requests());
             $ids = [];
             foreach ($responses as $index => $response)
             {
                 if ($response instanceof ServerException || $response instanceof ClientException)
                 {
-                    $report->addError('Expedition: ' . $index . '<br />' . $response->getMessage());
+                    $this->errorMessages[] = 'Expedition Id: ' . $index . '<br />' . $response->getMessage();
                     continue;
                 }
 
                 $ids[] = $index;
             }
 
-            if ($report->checkErrors())
+            if ( ! empty($this->errorMessages))
             {
-                $report->reportError();
+                $user = $userContract->find(1);
+                $user->notify(new JobError(__FILE__, $this->errorMessages));
             }
 
             $this->dispatch((new NfnClassificationsReconciliationJob($ids))
                 ->onQueue(config('config.beanstalkd.classification'))
                 ->delay(1800));
         }
-        catch (HttpRequestException $e)
+        catch (\Exception $e)
         {
-            $handler->report($e);
+            return;
         }
     }
 }

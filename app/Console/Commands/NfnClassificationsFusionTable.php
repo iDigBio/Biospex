@@ -3,11 +3,13 @@
 namespace App\Console\Commands;
 
 use App\Jobs\NfnClassificationsFusionTableJob;
+use App\Interfaces\Project;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class NfnClassificationsFusionTable extends Command
 {
+
     use DispatchesJobs;
 
     /**
@@ -23,14 +25,20 @@ class NfnClassificationsFusionTable extends Command
      * @var string
      */
     protected $description = 'Run Google Fusion Table Job for NfN Classifications. Argument can be comma separated project ids or empty.';
+    /**
+     * @var Project
+     */
+    private $projectContract;
 
 
     /**
      * Create a new command instance.
+     * @param Project $projectContract
      */
-    public function __construct()
+    public function __construct(Project $projectContract)
     {
         parent::__construct();
+        $this->projectContract = $projectContract;
     }
 
     /**
@@ -40,6 +48,13 @@ class NfnClassificationsFusionTable extends Command
     {
         $ids = null === $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new NfnClassificationsFusionTableJob($ids))->onQueue(config('config.beanstalkd.classification')));
+        $projects = empty($ids) ?
+            $this->projectContract->getProjectsHavingTranscriptionLocations() :
+            $this->projectContract->getProjectsHavingTranscriptionLocations($ids);
+
+        $projects->each(function ($project){
+            $this->dispatch((new NfnClassificationsFusionTableJob($project->id))
+                ->onQueue(config('config.beanstalkd.classification')));
+        });
     }
 }

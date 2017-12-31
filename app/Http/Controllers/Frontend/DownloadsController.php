@@ -2,26 +2,25 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Exceptions\Handler;
-use App\Exceptions\BiospexException;
+use App\Facades\Flash;
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\ExpeditionContract;
-use App\Repositories\Contracts\UserContract;
+use App\Interfaces\Expedition;
+use App\Interfaces\User;
 use File;
 use Illuminate\Contracts\Routing\ResponseFactory;
-use App\Repositories\Contracts\DownloadContract;
+use App\Interfaces\Download;
 use Queue;
 
 class DownloadsController extends Controller
 {
 
     /**
-     * @var ExpeditionContract
+     * @var Expedition
      */
     public $expeditionContract;
 
     /**
-     * @var DownloadContract
+     * @var Download
      */
     public $downloadContract;
 
@@ -31,7 +30,7 @@ class DownloadsController extends Controller
     public $response;
 
     /**
-     * @var UserContract
+     * @var User
      */
     public $userContract;
 
@@ -43,16 +42,16 @@ class DownloadsController extends Controller
     /**
      * DownloadsController constructor.
      *
-     * @param ExpeditionContract $expeditionContract
-     * @param DownloadContract $downloadContract
-     * @param UserContract $userContract
+     * @param Expedition $expeditionContract
+     * @param Download $downloadContract
+     * @param User $userContract
      * @param ResponseFactory $response
      * @internal param ResponseFactory $response0
      */
     public function __construct(
-        ExpeditionContract $expeditionContract,
-        DownloadContract $downloadContract,
-        UserContract $userContract,
+        Expedition $expeditionContract,
+        Download $downloadContract,
+        User $userContract,
         ResponseFactory $response
     )
     {
@@ -79,7 +78,7 @@ class DownloadsController extends Controller
      */
     public function index($projectId, $expeditionId)
     {
-        $user = $this->userContract->with('profile')->find(request()->user()->id);
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $expedition = $this->expeditionContract->expeditionDownloadsByActor($expeditionId);
 
         $paths = $this->paths;
@@ -101,12 +100,12 @@ class DownloadsController extends Controller
 
         if ( ! $download)
         {
-            session_flash_push('error', trans('errors.missing_download_file'));
+            Flash::error(trans('errors.missing_download_file'));
             return redirect()->route('web.downloads.index', [$projectId, $expeditionId]);
         }
 
         $download->count = $download->count + 1;
-        $this->downloadContract->update($download->id, $download->toArray());
+        $this->downloadContract->update($download->toArray(), $download->id);
 
         if ( ! empty($download->data))
         {
@@ -124,7 +123,7 @@ class DownloadsController extends Controller
             $path = $this->paths[$download->type] . '/' . $download->file;
             if ( ! file_exists($path))
             {
-                session_flash_push('error', trans('errors.missing_download_file'));
+                Flash::error(trans('errors.missing_download_file'));
                 return redirect()->route('web.downloads.index', [$projectId, $expeditionId]);
             }
 
@@ -140,17 +139,16 @@ class DownloadsController extends Controller
     /**
      * Regenerate export download.
      *
-     * @param ExpeditionContract $expeditionContract
-     * @param Handler $handler
+     * @param Expedition $expeditionContract
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function regenerate(ExpeditionContract $expeditionContract, Handler $handler, $projectId, $expeditionId)
+    public function regenerate(Expedition $expeditionContract, $projectId, $expeditionId)
     {
         $withRelations = ['nfnActor', 'stat'];
 
-        $expedition = $expeditionContract->setCacheLifetime(0)->with($withRelations)->find($expeditionId);
+        $expedition = $expeditionContract->findWith($expeditionId, $withRelations);
 
         try
         {
@@ -161,12 +159,11 @@ class DownloadsController extends Controller
             event('actor.pivot.regenerate', [$expedition->nfnActor]);
             Queue::push('App\Services\Queue\ActorQueue', serialize($expedition->nfnActor), config('config.beanstalkd.export'));
 
-            session_flash_push('success', trans('expeditions.download_regeneration_success'));
+            Flash::success(trans('expeditions.download_regeneration_success'));
         }
-        catch (BiospexException $e)
+        catch (\Exception $e)
         {
-            $handler->report($e);
-            session_flash_push('error', trans('expeditions.download_regeneration_error', ['error' => $e->getMessage()]));
+            Flash::error(trans('expeditions.download_regeneration_error', ['error' => $e->getMessage()]));
         }
 
         return redirect()->route('web.downloads.index', [$projectId, $expeditionId]);
@@ -178,19 +175,20 @@ class DownloadsController extends Controller
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse|string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function summary($projectId, $expeditionId)
     {
-        $expedition = $this->expeditionContract->with('project.group')->find($expeditionId);
+        $expedition = $this->expeditionContract->findwith($expeditionId, ['project.group']);
 
-        if ( ! $this->checkPermissions('isOwner', [$expedition->project->group]))
+        if ( ! $this->checkPermissions('isOwner', $expedition->project->group))
         {
             return redirect()->route('web.projects.show', [$projectId]);
         }
 
         if ( ! File::exists(config('config.classifications_summary') . '/' . $expeditionId . '.html'))
         {
-            session_flash_push('warning', trans('pages.file_does_not_exist'));
+            Flash::warning( trans('pages.file_does_not_exist'));
             return redirect()->route('web.projects.show', [$projectId]);
         }
 

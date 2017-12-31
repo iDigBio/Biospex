@@ -2,16 +2,17 @@
 
 namespace App\Services\Google;
 
-use App\Services\BaseService;
 use PulkitJalan\Google\Facades\Google;
 
-class GoogleBaseService extends BaseService
+class GoogleBaseService
 {
+
     /**
-     * Create a Google service and return;
+     * Create Google Service.
      *
      * @param $service
-     * @return mixed
+     * @return \Google_Service
+     * @throws \Exception
      */
     public function makeService($service)
     {

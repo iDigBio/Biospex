@@ -90,4 +90,27 @@ trait HasGroup
         
         return $group->permissions->contains('name', $permission);
     }
+
+    /**
+     * Check if user is admin group.
+     *
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return $this->hasGroup(env('ADMIN_GROUP'));
+    }
+
+    /**
+     * Check permissions.
+     *
+     * @param $group
+     * @param $permission
+     * @return bool
+     */
+    public function hasAccess($group, $permission)
+    {
+        return $this->hasPermission($group, $permission);
+
+    }
 }

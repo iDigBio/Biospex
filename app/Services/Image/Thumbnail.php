@@ -2,12 +2,8 @@
 
 namespace App\Services\Image;
 
-use App\Exceptions\BiospexException;
-use App\Exceptions\Handler;
-use App\Exceptions\ThumbnailFromUrlException;
 use App\Services\File\FileService;
 use GuzzleHttp\Client;
-use RuntimeException;
 
 class Thumbnail extends ImagickService
 {
@@ -15,11 +11,6 @@ class Thumbnail extends ImagickService
      * @var FileService
      */
     public $fileService;
-
-    /**
-     * @var Handler
-     */
-    public $handler;
 
     /**
      * @var mixed
@@ -44,12 +35,10 @@ class Thumbnail extends ImagickService
     /**
      * Thumbnail constructor.
      * @param FileService $fileService
-     * @param Handler $handler
      */
-    public function __construct(FileService $fileService, Handler $handler)
+    public function __construct(FileService $fileService)
     {
         $this->fileService = $fileService;
-        $this->handler = $handler;
 
         $this->defaultThumbImg = config('config.images.thumbDefaultImg');
         $this->tnWidth = config('config.images.thumbWidth');
@@ -64,7 +53,6 @@ class Thumbnail extends ImagickService
      *
      * @param $url
      * @return string
-     *
      */
     public function getThumbnail($url)
     {
@@ -75,28 +63,26 @@ class Thumbnail extends ImagickService
         {
             if ( ! $this->fileService->filesystem->isFile($thumbFile))
             {
-                $this->createThumbnail($url);
+                $image = $this->thumbFromUrl($url);
+                $this->createThumbnail($url, $image);
             }
         }
-        catch (BiospexException $e)
+        catch (\Exception $e)
         {
-            $this->handler->report($e);
             return $this->getFile($this->defaultThumbImg);
         }
 
         return $this->getFile($thumbFile);
-
     }
 
     /**
      * Create thumbnail.
      *
      * @param $url
-     * @throws ThumbnailFromUrlException
+     * @param $image
      */
-    protected function createThumbnail($url)
+    protected function createThumbnail($url, $image)
     {
-        $image = $this->thumbFromUrl($url);
         $this->createImagickObject();
         $this->readImagickFromBlob($image);
         $this->setDestinationImageWidth($this->tnWidth);
@@ -110,20 +96,13 @@ class Thumbnail extends ImagickService
      *
      * @param $url
      * @return string
-     * @throws ThumbnailFromUrlException
      */
     protected function thumbFromUrl($url)
     {
-        try {
-            $client = new Client();
-            $response = $client->get($url);
+        $client = new Client();
+        $response = $client->get($url);
 
-            return $response->getBody()->getContents();
-        }
-        catch(RuntimeException $e)
-        {
-            throw new ThumbnailFromUrlException($e->getMessage());
-        }
+        return $response->getBody()->getContents();
     }
 
     /**

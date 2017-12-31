@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use Auth;
 use App\Services\Model\GroupService;
-use App\Services\Model\ModelDeleteService;
-use App\Services\Model\ModelDestroyService;
-use App\Services\Model\ModelRestoreService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
-use App\Repositories\Contracts\UserContract;
+use App\Interfaces\User;
 
 class GroupsController extends Controller
 {
@@ -19,7 +17,7 @@ class GroupsController extends Controller
     public $groupService;
 
     /**
-     * @var UserContract
+     * @var User
      */
     public $userContract;
 
@@ -27,9 +25,9 @@ class GroupsController extends Controller
      * GroupsController constructor.
      *
      * @param GroupService $groupService
-     * @param UserContract $userContract
+     * @param User $userContract
      */
-    public function __construct(GroupService $groupService, UserContract $userContract)
+    public function __construct(GroupService $groupService, User $userContract)
     {
         $this->groupService = $groupService;
         $this->userContract = $userContract;
@@ -42,8 +40,8 @@ class GroupsController extends Controller
      */
     public function index()
     {
-        $user = $this->userContract->with('groups')->find(request()->user()->id);
-        $trashed = $this->userContract->with('trashedGroups')->find(request()->user()->id);
+        $user = $this->userContract->findWith(request()->user()->id, ['groups']);
+        $trashed = $this->userContract->findWith(request()->user()->id, ['trashedGroups']);
 
         return view('frontend.groups.index', compact('user', 'trashed'));
     }
@@ -55,7 +53,7 @@ class GroupsController extends Controller
      */
     public function create()
     {
-        $user = request()->user();
+        $user = Auth::user();
 
         return view('frontend.groups.create', compact('user'));
     }
@@ -68,21 +66,10 @@ class GroupsController extends Controller
      */
     public function store(GroupFormRequest $request)
     {
-        $user = request()->user();
-
-        $group = $this->groupService->groupContract->create(['user_id' => $user->id, 'title' => $request->get('title')]);
-
-        if ($group) {
-            $user->assignGroup($group);
-
-            event('group.saved');
-
-            session_flash_push('success', trans('groups.created'));
-
+        if ($this->groupService->createGroup(Auth::user(), $request->get('title')))
+        {
             return redirect()->route('web.groups.index');
         }
-
-        session_flash_push('warning', trans('groups.loginreq'));
 
         return redirect()->route('web.groups.create');
     }
@@ -90,48 +77,43 @@ class GroupsController extends Controller
     /**
      * Show group page.
      *
-     * @param $id
+     * @param $groupId
      * @return \Illuminate\View\View
      */
-    public function show($id)
+    public function show($groupId)
     {
-        $user = request()->user();
         $with = [
             'projects',
             'owner.profile',
             'users.profile'
         ];
-        $group = $this->groupService->groupContract->with($with)->find($id);
 
-        if ($user->cannot('show', $group))
+        $group = $this->groupService->findGroupWith($groupId, $with);
+
+        if ( ! $this->checkPermissions('read', $group))
         {
-            session_flash_push('warning', trans('pages.insufficient_permissions'));
-
             return redirect()->route('web.groups.index');
         }
 
         return view('frontend.groups.show', compact('group'));
-
     }
 
     /**
      * Show group edit form.
      *
-     * @param $id
+     * @param $groupId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function edit($id)
+    public function edit($groupId)
     {
-        $user = request()->user();
-        $group = $this->groupService->groupContract->with('owner')->find($id);
-        $users = $this->groupService->getGroupUsersSelect($group->id);
+        $group = $this->groupService->findGroupWith($groupId, ['owner']);
 
-        if ($user->cannot('update', $group))
+        if ( ! $this->checkPermissions('update', $group))
         {
-            session_flash_push('warning', trans('pages.insufficient_permissions'));
-
             return redirect()->route('web.groups.index');
         }
+
+        $users = $this->groupService->getGroupUsersSelect($group->id);
 
         return view('frontend.groups.edit', compact('group', 'users'));
     }
@@ -145,22 +127,14 @@ class GroupsController extends Controller
      */
     public function update(GroupFormRequest $request, $groupId)
     {
-        $user = request()->user();
+        $group = $this->groupService->findGroup($groupId);
 
-        $group = $this->groupService->groupContract->find($groupId);
-
-        if ($user->cannot('update', $group))
+        if ($this->checkPermissions('update', $group))
         {
-            session_flash_push('warning', trans('pages.insufficient_permissions'));
-
             return redirect()->route('web.groups.index');
         }
 
-        $this->groupService->groupContract->update($group->id, $request->all());
-
-        event('group.saved');
-
-        session_flash_push('success', trans('groups.updated'));
+        $this->groupService->updateGroup($request->all(), $group->id);
 
         return redirect()->route('web.groups.index');
     }
@@ -168,24 +142,19 @@ class GroupsController extends Controller
     /**
      * Soft delete the specified resource from storage.
      *
-     * @param ModelDeleteService $service
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete(ModelDeleteService $service, $id)
+    public function delete($id)
     {
-        $group = $service->groupService->groupContract->find($id);
+        $group = $this->groupService->findGroupWith($id, ['projects.nfnWorkflows']);
 
-        if (request()->user()->cannot('delete', $group))
+        if ( ! $this->checkPermissions('delete', $group))
         {
-            session_flash_push('warning', trans('pages.insufficient_permissions'));
-
             return redirect()->route('web.groups.index');
         }
 
-        $service->deleteGroup($group->id) ?
-            session_flash_push('success', trans('groups.group_deleted')) :
-            session_flash_push('error', trans('groups.group_deleted_failed'));
+        $this->groupService->deleteGroup($group);
 
         return redirect()->route('web.groups.index');
     }
@@ -193,39 +162,39 @@ class GroupsController extends Controller
     /**
      * Destroy the specified resource from storage.
      *
-     * @param ModelDestroyService $service
      * @param $groupId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(ModelDestroyService $service, $groupId)
+    public function destroy($groupId)
     {
-        $group = $this->groupService->groupContract->onlyTrashed($groupId);
+        $group = $this->groupService->findTrashed($groupId);
 
         if ( ! $this->checkPermissions('delete', $group))
         {
             return redirect()->route('web.groups.index');
         }
 
-        $service->destroyGroup($group->id) ?
-            session_flash_push('success', trans('groups.group_destroyed')) :
-            session_flash_push('error', trans('groups.group_destroyed_failed'));
+        $this->groupService->destroyGroup($group);
 
         return redirect()->route('web.groups.index');
-
     }
 
     /**
      * Restore group.
      *
-     * @param ModelRestoreService $service
      * @param $groupId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function restore(ModelRestoreService $service, $groupId)
+    public function restore($groupId)
     {
-        $service->restoreGroup($groupId) ?
-            session_flash_push('success', trans('projects.group_restored')) :
-            session_flash_push('error', trans('projects.group_restored_failed'));
+        $group = $this->groupService->findTrashed($groupId);
+
+        if ( ! $this->checkPermissions('delete', $group))
+        {
+            return redirect()->route('web.groups.index');
+        }
+
+        $this->groupService->restoreGroup($group);
 
         return redirect()->route('web.groups.index');
     }

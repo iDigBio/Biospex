@@ -2,10 +2,7 @@
 
 namespace App\Services\Process;
 
-use App\Exceptions\BiospexException;
-use App\Exceptions\DownloadFileException;
-use App\Exceptions\RequestException;
-use App\Repositories\Contracts\ImportContract;
+use App\Interfaces\Import;
 use App\Services\File\FileService;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -15,7 +12,7 @@ class RecordSet
 {
 
     /**
-     * @var ImportContract
+     * @var Import
      */
     protected $importContract;
 
@@ -46,10 +43,10 @@ class RecordSet
     /**
      * Constructor.
      *
-     * @param ImportContract $importContract
+     * @param Import $importContract
      * @param FileService $fileService
      */
-    public function __construct(ImportContract $importContract, FileService $fileService)
+    public function __construct(Import $importContract, FileService $fileService)
     {
         $this->importContract = $importContract;
         $this->fileService = $fileService;
@@ -63,7 +60,7 @@ class RecordSet
      * Process.
      *
      * @param $data
-     * @throws BiospexException
+     * @throws \Exception
      */
     public function process($data)
     {
@@ -97,7 +94,7 @@ class RecordSet
      * Send request to url.
      *
      * @param $url
-     * @throws BiospexException
+     * @throws \Exception
      */
     public function send($url)
     {
@@ -106,33 +103,27 @@ class RecordSet
 
         if ($response->getStatusCode() !== 200)
         {
-            throw new RequestException(trans('errors.http_status_code', ['url' => $url, 'code' => $response->getStatusCode()]));
+            throw new \Exception(trans('errors.http_status_code', ['url' => $url, 'code' => $response->getStatusCode()]));
         }
 
-        try {
-            $this->response = json_decode($response->getBody()->getContents());
+        $this->response = json_decode($response->getBody()->getContents());
 
-            if ($this->response->complete === true && $this->response->task_status === 'SUCCESS')
-            {
-                $this->download();
-                $this->pushToQueue();
-
-                return;
-            }
-
-            $this->pushToQueue(true);
-        }
-        catch(\RuntimeException $e)
+        if ($this->response->complete === true && $this->response->task_status === 'SUCCESS')
         {
-            throw new RequestException($e->getMessage());
+            $this->download();
+            $this->pushToQueue();
+
+            return;
         }
+
+        $this->pushToQueue(true);
     }
 
 
     /**
      * Download zip file.
      *
-     * @throws DownloadFileException
+     * @throws \Exception
      */
     public function download()
     {
@@ -140,7 +131,7 @@ class RecordSet
         $filePath = $this->importDir . '/' . $fileName;
         if ( ! file_put_contents($filePath, file_get_contents($this->response->download_url)))
         {
-            throw new DownloadFileException(trans('errors.zip_download'));
+            throw new \Exception(trans('errors.zip_download'));
         }
 
         $import = $this->importInsert($fileName);

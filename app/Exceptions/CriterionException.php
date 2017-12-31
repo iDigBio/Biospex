@@ -3,7 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
-use App\Repositories\Contracts\CriterionContract;
+use App\Interfaces\CriterionContract;
 
 class CriterionException extends Exception
 {

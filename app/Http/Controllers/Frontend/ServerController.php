@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use DOMDocument;
 use GuzzleHttp\Pool;
 use Illuminate\Support\Facades\Artisan;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Cache;
 
 class ServerController extends Controller
 {
@@ -60,7 +60,7 @@ class ServerController extends Controller
         $user = request()->user();
 
         if ( ! $user->isAdmin('admins')) {
-            return redirect()->route('login');
+            return redirect()->guest('/login');
         }
 
         ob_start();
@@ -78,13 +78,12 @@ class ServerController extends Controller
         $user = request()->user();
 
         if ( ! $user->isAdmin('admins')) {
-            return redirect()->route('login');
+            return redirect()->guest('/login');
         }
 
-        Cache::flush();
         // Need to curl to server and run php script to clear memcache
 
-        session_flash_push('success', "Cache has been flushed.");
+        Flash::success("Cache has been flushed.");
 
         return redirect()->intended('/projects');
     }

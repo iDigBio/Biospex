@@ -2,19 +2,16 @@
 
 namespace App\Services\Actor\NfnPanoptes;
 
-use App\Exceptions\ActorException;
-use App\Exceptions\BiospexException;
+use App\Notifications\NfnExportComplete;
+use App\Notifications\NfnExportError;
 use App\Services\Actor\ActorImageService;
 use App\Services\Actor\ActorRepositoryService;
 use App\Services\Actor\ActorServiceConfig;
 use App\Services\File\FileService;
+use App\Services\Csv\Csv;
 use App\Models\Actor;
 use App\Models\ExportQueue;
-use Exception;
-use App\Services\Report\Report;
-use App\Listeners\ExportQueueEventListener;
 use Illuminate\Support\Collection;
-use PDOException;
 
 putenv('MAGICK_THREAD_LIMIT=1');
 
@@ -37,9 +34,9 @@ class NfnPanoptesExport
     private $actorImageService;
 
     /**
-     * @var Report
+     * @var Csv
      */
-    private $report;
+    private $csvService;
 
     /**
      * @var mixed
@@ -81,21 +78,21 @@ class NfnPanoptesExport
      * @param ActorRepositoryService $actorRepositoryService
      * @param ActorImageService $actorImageService
      * @param FileService $fileService
-     * @param Report $report
+     * @param Csv $csvService
      */
     public function __construct(
         ActorServiceConfig $config,
         ActorRepositoryService $actorRepositoryService,
         ActorImageService $actorImageService,
         FileService $fileService,
-        Report $report
+        Csv $csvService
     )
     {
         $this->config = $config;
         $this->actorRepositoryService = $actorRepositoryService;
         $this->actorImageService = $actorImageService;
         $this->fileService = $fileService;
-        $this->report = $report;
+        $this->csvService = $csvService;
 
         $this->nfnCsvMap = config('config.nfnCsvMap');
     }
@@ -115,13 +112,12 @@ class NfnPanoptesExport
                 'expedition_id' => $actor->pivot->expedition_id,
                 'actor_id'      => $actor->id
             ];
+
             $this->actorRepositoryService->firstOrCreateExportQueue($attributes);
         }
-        catch (PDOException $e)
+        catch (\Exception $e)
         {
             $this->config->fireActorErrorEvent($actor);
-            $this->report->addError($e->getMessage());
-            $this->report->reportError();
         }
     }
 
@@ -142,29 +138,34 @@ class NfnPanoptesExport
             $method = $this->stage[$queue->stage];
             $this->{$method}();
         }
-        catch (BiospexException $e)
+        catch (\Exception $e)
         {
             $this->config->fireActorErrorEvent();
 
             $attributes = ['queued' => 0, 'error' => 1];
-            $this->actorRepositoryService->updateExportQueue($queue->id, $attributes);
+            $this->actorRepositoryService->updateExportQueue($attributes, $queue->id);
 
-            $this->report->addError($e->getMessage());
-            $this->report->reportError();
+            $message = trans('errors.nfn_export_error', [
+                'title'   => $this->config->expedition->title,
+                'id'      => $this->config->expedition->id,
+                'message' => $e->getMessage()
+            ]);
+
+            $this->config->owner->notify(new NfnExportError($message));
         }
     }
 
     /**
      * Retrieves images.
      *
-     * @throws ActorException
+     * @throws \Exception
      */
     public function retrieveImages()
     {
         $subjects = $this->actorRepositoryService->getSubjectsByExpeditionId();
         if ($subjects->isEmpty())
         {
-            throw new ActorException('Missing export subjects for Expedition ID ' . $this->config->expedition->id);
+            throw new \Exception('Missing export subjects for Expedition ID ' . $this->config->expedition->id);
         }
 
         $this->config->setSubjects($subjects);
@@ -178,7 +179,7 @@ class NfnPanoptesExport
     /**
      * Convert image stage.
      *
-     * @throws ActorException
+     * @throws \Exception
      */
     public function convertImages()
     {
@@ -204,7 +205,7 @@ class NfnPanoptesExport
 
         if (empty($this->fileService->filesystem->files($this->config->tmpDirectory)))
         {
-            throw new ActorException('Missing converted images for Expedition ' . $this->config->expedition->id);
+            throw new \Exception('Missing converted images for Expedition ' . $this->config->expedition->id);
         }
 
         $this->config->fireActorQueuedEvent();
@@ -230,14 +231,14 @@ class NfnPanoptesExport
     /**
      * Create csv file.
      *
-     * @throws ActorException
+     * @throws \Exception
      */
     public function buildCsv()
     {
         $subjects = $this->actorRepositoryService->getSubjectsByExpeditionId();
         if ($subjects->isEmpty())
         {
-            throw new ActorException('Missing export subjects for Expedition ' . $this->config->expedition->id);
+            throw new \Exception('Missing export subjects for Expedition ' . $this->config->expedition->id);
         }
 
         $existingFiles = $this->getExistingConvertedFiles();
@@ -255,7 +256,7 @@ class NfnPanoptesExport
 
         if ( ! $this->createCsv($csvExport->toArray()))
         {
-            throw new ActorException('Could not create CSV file for Expedition ID ' . $this->config->expedition->id . ' export');
+            throw new \Exception('Could not create CSV file for Expedition ID ' . $this->config->expedition->id . ' export');
         }
 
         $this->config->fireActorQueuedEvent();
@@ -276,6 +277,8 @@ class NfnPanoptesExport
 
     /**
      * Compress and move.
+     *
+     * @throws \Exception
      */
     public function compressImages()
     {
@@ -286,7 +289,7 @@ class NfnPanoptesExport
 
         if ( ! $this->fileService->filesystem->move($this->config->archiveTarGzPath, $this->config->archiveExportPath))
         {
-            throw new ActorException('Could not move compressed file to export directory ' . $this->config->expedition->id . ' export');
+            throw new \Exception('Could not move compressed file to export directory ' . $this->config->expedition->id . ' export');
         }
 
         $values = [
@@ -305,15 +308,16 @@ class NfnPanoptesExport
     }
 
     /**
-     * Send report and clean up directories.
+     * Send notification and clean up directories.
+     *
+     * @throws \Exception
      */
     public function emailReport()
     {
-        $project = $this->actorRepositoryService->getProjectGroupById();
         $this->fileService->filesystem->deleteDirectory($this->config->workingDirectory);
         $this->fileService->filesystem->delete($this->config->archiveTarPath);
 
-        $this->sendReport($project);
+        $this->notify();
 
         $this->config->fireActorStateEvent();
 
@@ -333,7 +337,7 @@ class NfnPanoptesExport
             'stage'   => $this->config->queue->stage+1,
             'missing' => array_merge($queueMissing, $this->actorImageService->getMissingImages())
         ];
-        $this->actorRepositoryService->updateExportQueue($this->config->queue->id, $attributes);
+        $this->actorRepositoryService->updateExportQueue($attributes, $this->config->queue->id);
     }
 
     /**
@@ -434,27 +438,27 @@ class NfnPanoptesExport
 
         $this->csvFileName = $this->config->expedition->uuid . '.csv';
         $this->csvFilePath = $this->config->tmpDirectory . '/' . $this->csvFileName;
-        $this->report->csv->writerCreateFromPath($this->csvFilePath);
-        $this->report->csv->insertOne(array_keys($csvExport[0]));
-        $this->report->csv->insertAll($csvExport);
+        $this->csvService->writerCreateFromPath($this->csvFilePath);
+        $this->csvService->insertOne(array_keys($csvExport[0]));
+        $this->csvService->insertAll($csvExport);
 
         return true;
     }
 
     /**
-     * Send report for process completed.
+     * Send notify for process completed.
      *
-     * @param $project
+     * @throws \Exception
      */
-    protected function sendReport($project)
+    protected function notify()
     {
-        $vars = [
-            'title'          => $this->config->expedition->title,
-            'message'        => trans('emails.expedition_export_complete_message', ['expedition' => $this->config->expedition->title]),
-            'groupId'        => $project->group->id,
-            'attachmentName' => trans('emails.missing_images_attachment_name', ['recordId' => $this->config->expedition->id])
+        $message = [
+            $this->config->expedition->title,
+            trans('emails.expedition_export_complete_message', ['expedition' => $this->config->expedition->title])
         ];
 
-        $this->report->processComplete($vars, $this->config->queue->missing);
+        $csv = create_csv($this->config->queue->missing);
+
+        $this->config->owner->notify(new NfnExportComplete($message, $csv));
     }
 }

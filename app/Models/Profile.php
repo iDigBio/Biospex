@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Codesleeve\Stapler\ORM\EloquentTrait;
 use Codesleeve\Stapler\ORM\StaplerableInterface;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Profile extends Model implements StaplerableInterface
 {
-    use EloquentTrait;
+    use EloquentTrait, LadaCacheTrait;
 
     /**
      * @inheritDoc
@@ -49,6 +50,18 @@ class Profile extends Model implements StaplerableInterface
         parent::boot();
 
         static::bootStapler();
+    }
+
+    /**
+     * Override the getAttributes in Eloquent trait due to error when updating
+     * @see https://github.com/CodeSleeve/laravel-stapler/issues/64
+     * Get all of the current attributes on the model.
+     *
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return parent::getAttributes();
     }
 
     /**

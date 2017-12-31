@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\WeDigBioDashboardJob;
 use File;
+use App\Jobs\WeDigBioDashboardJob;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 

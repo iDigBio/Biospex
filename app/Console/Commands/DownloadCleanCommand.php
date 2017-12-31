@@ -2,12 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Exceptions\BiospexException;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use App\Repositories\Contracts\DownloadContract;
-use App\Exceptions\Handler;
+use App\Interfaces\Download;
 
 class DownloadCleanCommand extends Command
 {
@@ -18,7 +15,7 @@ class DownloadCleanCommand extends Command
     public $filesystem;
 
     /**
-     * @var DownloadContract
+     * @var Download
      */
     public $downloadContract;
 
@@ -42,29 +39,22 @@ class DownloadCleanCommand extends Command
      * @var string
      */
     protected $nfnExportDir;
-    /**
-     * @var Handler
-     */
-    private $handler;
 
     /**
      * DownloadCleanCommand constructor.
      *
      * @param Filesystem $filesystem
-     * @param DownloadContract $downloadContract
-     * @param Handler $handler
+     * @param Download $downloadContract
      */
     public function __construct(
         Filesystem $filesystem,
-        DownloadContract $downloadContract,
-        Handler $handler
+        Download $downloadContract
     )
     {
         parent::__construct();
 
         $this->filesystem = $filesystem;
         $this->downloadContract = $downloadContract;
-        $this->handler = $handler;
 
         $this->nfnExportDir = config('config.nfn_export_dir');
     }
@@ -76,10 +66,7 @@ class DownloadCleanCommand extends Command
      */
     public function handle()
     {
-        $downloads = $this->downloadContract->setCacheLifetime(0)
-            ->where('type', '=', 'export')
-            ->where('created_at', '<', Carbon::now()->subDays(90))
-            ->findAll();
+        $downloads = $this->downloadContract->getDownloadsForCleaning();
 
         $downloads->each(function ($download)
         {
@@ -96,7 +83,7 @@ class DownloadCleanCommand extends Command
         $files = collect($this->filesystem->files($this->nfnExportDir));
         $files->each(function($file){
             $fileName = $this->filesystem->basename($file);
-            $result = $this->downloadContract->setCacheLifetime(0)->findBy('file', $fileName);
+            $result = $this->downloadContract->findBy('file', $fileName);
             if ( ! $result)
             {
                 echo 'Deleting ' . $file . PHP_EOL;

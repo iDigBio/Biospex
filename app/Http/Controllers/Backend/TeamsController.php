@@ -2,43 +2,43 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Facades\Toastr;
+use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TeamCategoryFormRequest;
 use App\Http\Requests\TeamFormRequest;
-use App\Repositories\Contracts\TeamContract;
-use App\Repositories\Contracts\UserContract;
-use App\Repositories\Contracts\TeamCategoryContract;
+use App\Interfaces\Team;
+use App\Interfaces\User;
+use App\Interfaces\TeamCategory;
 
 class TeamsController extends Controller
 {
 
     /**
-     * @var UserContract
+     * @var User
      */
     private $userContract;
 
     /**
-     * @var TeamCategoryContract
+     * @var TeamCategory
      */
     private $teamCategoryContract;
 
     /**
-     * @var TeamContract
+     * @var Team
      */
     private $teamContract;
 
     /**
      * TeamsController constructor.
      *
-     * @param UserContract $userContract
-     * @param TeamCategoryContract $teamCategoryContract
-     * @param TeamContract $teamContract
+     * @param User $userContract
+     * @param TeamCategory $teamCategoryContract
+     * @param Team $teamContract
      */
     public function __construct(
-        UserContract $userContract,
-        TeamCategoryContract $teamCategoryContract,
-        TeamContract $teamContract
+        User $userContract,
+        TeamCategory $teamCategoryContract,
+        Team $teamContract
     )
     {
         $this->userContract = $userContract;
@@ -53,9 +53,9 @@ class TeamsController extends Controller
      */
     public function index()
     {
-        $user = $this->userContract->with('profile')->find(request()->user()->id);
-        $select = [null => 'Please Select'] + $this->teamCategoryContract->pluck('name', 'id')->toArray();
-        $categories = $this->teamCategoryContract->with(['teams'])->groupBy('id')->findAll();
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $select = [null => 'Please Select'] + $this->teamCategoryContract->getTeamCategorySelect();
+        $categories = $this->teamCategoryContract->getCategoriesWithTeams();
         $categoryId = null;
         $teamId = null;
 
@@ -70,9 +70,9 @@ class TeamsController extends Controller
      */
     public function create($categoryId)
     {
-        $user = $this->userContract->with('profile')->find(request()->user()->id);
-        $select = [null => 'Please Select'] + $this->teamCategoryContract->pluck('name', 'id')->toArray();
-        $categories = $this->teamCategoryContract->with('teams')->groupBy('id')->findAll();
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $select = [null => 'Please Select'] + $this->teamCategoryContract->getTeamCategorySelect();
+        $categories = $this->teamCategoryContract->getCategoriesWithTeams();
 
         return view('backend.teams.index', compact('user', 'categories', 'select', 'categoryId'));
     }
@@ -88,8 +88,8 @@ class TeamsController extends Controller
         $team = $this->teamContract->create($request->all());
 
         $team ?
-            Toastr::success('Team member has been created successfully.', 'Team Member Create') :
-            Toastr::error('Team member could not be saved.', 'Team member Create');
+            Flash::success('Team member has been created successfully.') :
+            Flash::error('Team member could not be saved.');
 
         return redirect()->route('admin.teams.create', $request->get('team_category_id'));
     }
@@ -105,8 +105,8 @@ class TeamsController extends Controller
         $category = $this->teamCategoryContract->create(['name' => $request->get('name')]);
 
         $category ?
-            Toastr::success('Team category has been created successfully.', 'Team Category Create') :
-            Toastr::error('Team category could not be saved.', 'Team Category Create');
+            Flash::success('Team category has been created successfully.') :
+            Flash::error('Team category could not be saved.');
 
         return redirect()->route('admin.teams.index', $category->id);
     }
@@ -120,9 +120,9 @@ class TeamsController extends Controller
      */
     public function edit($categoryId, $teamId)
     {
-        $user = $this->userContract->with('profile')->find(request()->user()->id);
-        $select = [null => 'Please Select'] + $this->teamCategoryContract->pluck('name', 'id')->toArray();
-        $categories = $this->teamCategoryContract->with('teams')->groupBy('id')->findAll();
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $select = [null => 'Please Select'] + $this->teamCategoryContract->getTeamCategorySelect();
+        $categories = $this->teamCategoryContract->getCategoriesWithTeams();
         $team = $this->teamContract->find($teamId);
 
         return view('backend.teams.index', compact('user', 'categories', 'select', 'categoryId', 'team'));
@@ -138,10 +138,10 @@ class TeamsController extends Controller
      */
     public function update(TeamFormRequest $request, $categoryId, $teamId)
     {
-        $team = $this->teamContract->update($teamId, $request->all());
+        $team = $this->teamContract->update($request->all(), $teamId);
 
-        $team ? Toastr::success('Team member has been updated successfully.', 'Team Member Update') :
-            Toastr::error('Team member could not be updated.', 'Team Member Update');
+        $team ? Flash::success('Team member has been updated successfully.') :
+            Flash::error('Team member could not be updated.');
 
         return redirect()->route('admin.teams.index');
     }
@@ -155,9 +155,9 @@ class TeamsController extends Controller
      */
     public function editCategory($categoryId, $teamId)
     {
-        $user = $this->userContract->with('profile')->find(request()->user()->id);
-        $select = [null => 'Please Select'] + $this->teamCategoryContract->pluck('name', 'id')->toArray();
-        $categories = $this->teamCategoryContract->with('teams')->groupBy('id')->findAll();
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $select = [null => 'Please Select'] + $this->teamCategoryContract->getTeamCategorySelect();
+        $categories = $this->teamCategoryContract->getCategoriesWithTeams();
         $category = $this->teamCategoryContract->find($categoryId);
 
         return view('backend.teams.index', compact('user', 'select', 'category', 'categories', 'categoryId', 'teamId'));
@@ -172,10 +172,10 @@ class TeamsController extends Controller
      */
     public function updateCategory(TeamCategoryFormRequest $request, $categoryId)
     {
-        $category = $this->teamCategoryContract->update($categoryId, ['name' => $request->get('name')]);
+        $category = $this->teamCategoryContract->update(['name' => $request->get('name')], $categoryId);
 
-        $category ? Toastr::success('Team category has been updated successfully.', 'Team Category Update')
-            : Toastr::error('Team category could not be updated.', 'Team Category Update');
+        $category ? Flash::success('Team category has been updated successfully.')
+            : Flash::error('Team category could not be updated.');
 
         return redirect()->route('admin.teams.index');
     }
@@ -192,14 +192,14 @@ class TeamsController extends Controller
         if ((int) $teamId === 0)
         {
             $result = $this->teamCategoryContract->delete($categoryId);
-            $result ? Toastr::success('The category and all team members have been deleted.', 'Team Category Delete')
-                : Toastr::error('Team category could not be deleted.', 'Team Category Delete');
+            $result ? Flash::success('The category and all team members have been deleted.')
+                : Flash::error('Team category could not be deleted.');
         }
         else
         {
             $result = $this->teamContract->delete($teamId);
-            $result ? Toastr::success('The team member has been deleted.', 'Team Member Delete')
-                : Toastr::error('The team member could not be deleted.', 'Team Member Delete');
+            $result ? Flash::success('The team member has been deleted.')
+                : Flash::error('The team member could not be deleted.');
         }
 
         return redirect()->route('admin.teams.index');

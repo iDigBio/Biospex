@@ -5,13 +5,12 @@ namespace App\Providers;
 use App\Models\Group;
 use App\Models\User;
 use App\Models\Project;
-use App\Models\Expedition;
 use App\Policies\UserPolicy;
 use App\Policies\GroupPolicy;
 use App\Policies\ProjectPolicy;
-use App\Policies\ExpeditionPolicy;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -23,7 +22,6 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Group::class => GroupPolicy::class,
         Project::class => ProjectPolicy::class,
-        Expedition::class => ExpeditionPolicy::class,
         User::class => UserPolicy::class
     ];
 

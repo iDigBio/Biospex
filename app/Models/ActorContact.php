@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class ActorContact extends Model
 {
+    use Notifiable, LadaCacheTrait;
 
     /**
      * @inheritDoc

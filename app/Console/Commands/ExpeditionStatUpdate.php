@@ -4,8 +4,9 @@ namespace App\Console\Commands;
 
 use App\Jobs\AmChartJob;
 use App\Jobs\ExpeditionStatJob;
-use App\Repositories\Contracts\ExpeditionContract;
+use App\Interfaces\Expedition;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class ExpeditionStatUpdate extends Command
@@ -35,66 +36,36 @@ class ExpeditionStatUpdate extends Command
 
     /**
      * Execute command
-     * @param ExpeditionContract $expeditionContract
+     * @param Expedition $expeditionContract
      */
-    public function handle(ExpeditionContract $expeditionContract)
+    public function handle(Expedition $expeditionContract)
     {
         $this->expeditionIds = null ===  $this->argument('ids') ?
             null :
             explode(',', $this->argument('ids'));
 
-        $expeditions = $this->findStats($expeditionContract);
+        $expeditions = $expeditionContract->getExpeditionStats($this->expeditionIds);
 
-        $projectIds = $this->setJobs($expeditions);
-
-        $this->dispatchAmCharts($projectIds);
-    }
-
-    /**
-     * Return records from expedition_stats table.
-     *
-     * @param ExpeditionContract $expeditionContract
-     * @return mixed
-     */
-    private function findStats(ExpeditionContract $expeditionContract)
-    {
-        return null === $this->expeditionIds ?
-            $expeditionContract->setCacheLifetime(0)
-                ->has('stat')
-                ->with('project')
-                ->findAll() :
-            $expeditionContract->setCacheLifetime(0)
-                ->has('stat')
-                ->with('project')
-                ->findWhereIn(['id', [$this->expeditionIds]]);
+        $this->setJobs($expeditions);
     }
 
     /**
      * Loop stats for setting jobs.
      *
-     * @param array $expeditions
-     * @return array
+     * @param Collection $expeditions
      */
     private function setJobs($expeditions)
     {
-        $projectIds = [];
-        foreach ($expeditions as $expedition)
-        {
-            $projectIds[] = $expedition->project_id;
-            $this->dispatch((new ExpeditionStatJob($expedition->id))->onQueue(config('config.beanstalkd.stat')));
-        }
+        $projectIds = $expeditions->map(function ($expedition){
+            $this->dispatch((new ExpeditionStatJob($expedition->id))
+                ->onQueue(config('config.beanstalkd.stat')));
 
-        return $projectIds;
-    }
+            return $expedition->project_id;
+        });
 
-    /**
-     * Call AmChart update for projects.
-     *
-     * @param $projectIds
-     */
-    private function dispatchAmCharts($projectIds)
-    {
-        $projectIds = array_unique($projectIds);
-        $this->dispatch((new AmChartJob($projectIds))->onQueue(config('config.beanstalkd.chart')));
+        $projectIds->unique()->values()->each(function ($projectId){
+            $this->dispatch((new AmChartJob($projectId))
+                ->onQueue(config('config.beanstalkd.chart')));
+        });
     }
 }

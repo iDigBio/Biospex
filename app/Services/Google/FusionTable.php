@@ -11,6 +11,8 @@ class FusionTable extends GoogleBaseService
 
     /**
      * FusionTable constructor.
+     *
+     * @throws \Exception
      */
     public function __construct()
     {

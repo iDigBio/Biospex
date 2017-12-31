@@ -8,14 +8,14 @@ use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
 use Codesleeve\Stapler\ORM\EloquentTrait;
 use Codesleeve\Stapler\ORM\StaplerableInterface;
-use Cviebrock\EloquentSluggable\SluggableInterface;
-use Cviebrock\EloquentSluggable\SluggableTrait;
+use Cviebrock\EloquentSluggable\Sluggable;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class Project extends Model implements StaplerableInterface, SluggableInterface
+class Project extends Model implements StaplerableInterface
 {
-    use EloquentTrait, SluggableTrait, UuidTrait, SoftCascadeTrait, SoftDeletes, HybridRelations ;
+    use EloquentTrait, Sluggable, UuidTrait, SoftCascadeTrait, SoftDeletes, HybridRelations, LadaCacheTrait;
 
     /**
      * Enable soft delete.
@@ -31,15 +31,6 @@ class Project extends Model implements StaplerableInterface, SluggableInterface
      */
     protected $softCascade = ['expeditions', 'header', 'metas', 'amChart', 'nfnWorkflows'];
 
-    /**
-     * Sluggable value.
-     *
-     * @var array
-     */
-    protected $sluggable = [
-        'build_from' => 'title',
-        'save_to'    => 'slug',
-    ];
 
     /**
      * @inheritDoc
@@ -131,6 +122,32 @@ class Project extends Model implements StaplerableInterface, SluggableInterface
     }
 
     /**
+     * Override the getAttributes in Eloquent trait due to error when updating
+     * @see https://github.com/CodeSleeve/laravel-stapler/issues/64
+     * Get all of the current attributes on the model.
+     *
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return parent::getAttributes();
+    }
+
+    /**
+     * Return the sluggable configuration array for this model.
+     *
+     * @return array
+     */
+    public function sluggable()
+    {
+        return [
+            'slug' => [
+                'source' => 'title'
+            ]
+        ];
+    }
+
+    /**
      * Group relationship.
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -167,7 +184,17 @@ class Project extends Model implements StaplerableInterface, SluggableInterface
      */
     public function expeditions()
     {
-        return $this->hasMany(Expedition::class)->withTrashed();
+        return $this->hasMany(Expedition::class);
+    }
+
+    /**
+     * Expedition relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function expeditionsTrashed()
+    {
+        return $this->hasMany(Expedition::class)->onlyTrashed();
     }
 
     /**
@@ -178,16 +205,6 @@ class Project extends Model implements StaplerableInterface, SluggableInterface
     public function subjects()
     {
         return $this->hasMany(Subject::class);
-    }
-
-    /**
-     * Trashed subject relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function trashedSubjects()
-    {
-        return $this->hasMany(Subject::class)->withTrashed();
     }
 
     /**

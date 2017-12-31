@@ -2,10 +2,7 @@
 
 namespace App\Services\File;
 
-use App\Exceptions\CreateDirectoryException;
-use App\Exceptions\FileUnzipException;
 use Illuminate\Filesystem\Filesystem;
-use Exception;
 
 class FileService
 {
@@ -26,18 +23,18 @@ class FileService
 
     /**
      * @param $dir
-     * @throws CreateDirectoryException
+     * @throws \Exception
      */
     public function makeDirectory($dir)
     {
         if ( ! $this->filesystem->isDirectory($dir) && ! $this->filesystem->makeDirectory($dir, 0775, true))
         {
-            throw new CreateDirectoryException(trans('errors.create_dir', ['directory' => $dir]));
+            throw new \Exception(trans('errors.create_dir', ['directory' => $dir]));
         }
 
         if ( ! $this->filesystem->isWritable($dir) && ! chmod($dir, 0775))
         {
-            throw new CreateDirectoryException(trans('errors.write_dir', ['directory' => $dir]));
+            throw new \Exception(trans('errors.write_dir', ['directory' => $dir]));
         }
     }
 
@@ -104,17 +101,10 @@ class FileService
      *
      * @param $zipFile
      * @param $dir
-     * @throws FileUnzipException
      */
     public function unzip($zipFile, $dir)
     {
-        try{
-            shell_exec("unzip $zipFile -d $dir");
-        }
-        catch(Exception $e)
-        {
-            throw new FileUnzipException($e->getMessage());
-        }
+        shell_exec("unzip $zipFile -d $dir");
     }
 
     /**

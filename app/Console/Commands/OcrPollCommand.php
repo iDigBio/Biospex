@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Events\PollOcrEvent;
-use App\Repositories\Contracts\ProjectContract;
+use App\Interfaces\Project;
 use Illuminate\Console\Command;
-use App\Repositories\Contracts\OcrQueueContract;
+use App\Interfaces\OcrQueue;
 
 class OcrPollCommand extends Command
 {
@@ -25,24 +25,24 @@ class OcrPollCommand extends Command
     protected $description = 'Processes information for OCR Polling event.';
 
     /**
-     * @var OcrQueueContract
+     * @var OcrQueue
      */
     private $ocrQueueContract;
 
     /**
-     * @var ProjectContract
+     * @var Project
      */
     private $projectContract;
 
     /**
      * Create a new command instance.
      *
-     * @param OcrQueueContract $ocrQueueContract
-     * @param ProjectContract $projectContract
+     * @param OcrQueue $ocrQueueContract
+     * @param Project $projectContract
      */
     public function __construct(
-        OcrQueueContract $ocrQueueContract,
-        ProjectContract $projectContract
+        OcrQueue $ocrQueueContract,
+        Project $projectContract
     )
     {
         parent::__construct();
@@ -56,11 +56,7 @@ class OcrPollCommand extends Command
      */
     public function handle()
     {
-        $records = $this->ocrQueueContract->setCacheLifetime(0)
-            ->where('error', '=', 0)
-            ->orderBy('ocr_csv_id', 'asc')
-            ->orderBy('created_at', 'asc')
-            ->findAll();
+        $records = $this->ocrQueueContract->getOcrQueuesForPollCommand();
 
         if ($records->isEmpty())
         {
@@ -76,8 +72,7 @@ class OcrPollCommand extends Command
         $count = 0;
         foreach ($grouped as $group)
         {
-            $project = $this->projectContract->setCacheLifetime(0)
-                ->with('group')->find($group[0]['project_id']);
+            $project = $this->projectContract->findWith($group[0]['project_id'], ['group']);
 
             $total = array_sum(array_column($group, 'total'));
             $processed = array_sum(array_column($group, 'processed'));

@@ -7,10 +7,11 @@ use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Expedition extends Model
 {
-    use UuidTrait, SoftCascadeTrait, SoftDeletes, HybridRelations;
+    use UuidTrait, SoftCascadeTrait, SoftDeletes, HybridRelations, LadaCacheTrait;
 
     /**
      * Enable soft delete.

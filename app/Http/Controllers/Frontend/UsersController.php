@@ -2,23 +2,26 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Facades\Flash;
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\UserContract;
+use App\Http\Requests\PasswordFormRequest;
+use App\Interfaces\User;
 use App\Http\Requests\EditUserFormRequest;
+use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
 {
 
     /**
-     * @var UserContract
+     * @var User
      */
     public $userContract;
 
     /**
      * UsersController constructor.
-     * @param UserContract $userContract
+     * @param User $userContract
      */
-    public function __construct(UserContract $userContract)
+    public function __construct(User $userContract)
     {
         $this->userContract = $userContract;
     }
@@ -50,11 +53,11 @@ class UsersController extends Controller
      */
     public function edit($id)
     {
-        $user = $this->userContract->with('profile')->find($id);
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
 
         if ($user->cannot('update', $user))
         {
-            session_flash_push('warning', trans('pages.insufficient_permissions'));
+            Flash::warning( trans('pages.insufficient_permissions'));
 
             return redirect()->route('web.projects.index');
         }
@@ -68,33 +71,64 @@ class UsersController extends Controller
     /**
      * Update the specified resource in storage
      * @param EditUserFormRequest $request
-     * @param $users
+     * @param $userId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(EditUserFormRequest $request, $users)
+    public function update(EditUserFormRequest $request, $userId)
     {
-        $user = $this->userContract->setCacheLifetime(0)->with('profile')->find($users);
+        $user = $this->userContract->findWith($userId, ['profile']);
 
         if ($user->cannot('update', $user))
         {
-            session_flash_push('warning', trans('pages.insufficient_permissions'));
+            Flash::warning( trans('pages.insufficient_permissions'));
 
             return redirect()->route('web.projects.index');
         }
 
-        $result = $this->userContract->update($user->id, $request->all());
+        $result = $this->userContract->update($request->all(), $user->id);
 
         $user->profile->fill($request->all());
         $user->profile()->save($user->profile);
 
         if ($result)
         {
-            session_flash_push('success', trans('users.updated'));
+            Flash::success(trans('users.updated'));
         }
         else
         {
-            session_flash_push('error', trans('users.notupdated'));
+            Flash::error(trans('users.notupdated'));
         }
+
+        return redirect()->route('web.users.edit', [$user->id]);
+    }
+
+    /**
+     * Process a password change request.
+     *
+     * @param PasswordFormRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function pass(PasswordFormRequest $request)
+    {
+        $user = $this->userContract->find($request->route('id'));
+
+        if ( ! policy($user)->pass($user))
+        {
+            Flash::warning( trans('pages.insufficient_permissions'));
+
+            return redirect()->route('web.projects.index');
+        }
+
+        if ( ! Hash::check($request->input('oldPassword'), $user->password))
+        {
+            Flash::error(trans('users.oldpassword'));
+
+            return redirect()->route('web.users.edit', [$user->id]);
+        }
+
+        $this->resetPassword($user, $request->input('newPassword'));
+
+        Flash::success(trans('users.passwordchg'));
 
         return redirect()->route('web.users.edit', [$user->id]);
     }

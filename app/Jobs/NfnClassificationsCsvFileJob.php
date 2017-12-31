@@ -2,12 +2,11 @@
 
 namespace App\Jobs;
 
+use App\Interfaces\User;
+use App\Notifications\JobError;
 use Config;
-use App\Exceptions\Handler;
-use App\Exceptions\HttpRequestException;
 use App\Services\Api\NfnApi;
-use App\Services\Report\Report;
-use App\Repositories\Contracts\ExpeditionContract;
+use App\Interfaces\Expedition;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -25,17 +24,22 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
      *
      * @var null
      */
-    public $ids;
+    private $ids;
 
     /**
      * @var array
      */
-    public $sources = [];
+    private $sources = [];
 
     /**
      * @var array
      */
-    public $reQueued = [];
+    private $reQueued = [];
+
+    /**
+     * @var array
+     */
+    private $errorMessages = [];
 
     /**
      * Create a new job instance.
@@ -51,39 +55,34 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
     /**
      * Handle the job.
      *
-     * @param ExpeditionContract $expeditionContract
+     * @param Expedition $expeditionContract
      * @param NfnApi $api
-     * @param Report $report
-     * @param Handler $handler
      */
     public function handle(
-        ExpeditionContract $expeditionContract,
+        Expedition $expeditionContract,
         NfnApi $api,
-        Report $report,
-        Handler $handler
+        User $userContract
     )
     {
-
-        $requests = function ($expeditions) use ($api)
-        {
-            foreach ($expeditions as $expedition)
-            {
-                if ($api->checkForRequiredVariables($expedition))
-                {
-                    continue;
-                }
-
-                $uri = $api->buildClassificationCsvUri($expedition->nfnWorkflow->workflow);
-                $request = $api->buildAuthorizedRequest('GET', $uri);
-
-                yield $expedition->id => $request;
-            }
-        };
-
         try
         {
-            $expeditions = $expeditionContract->setCacheLifetime(0)
-                ->getExpeditionsForNfnClassificationProcess($this->ids);
+            $requests = function ($expeditions) use ($api)
+            {
+                foreach ($expeditions as $expedition)
+                {
+                    if ($api->checkForRequiredVariables($expedition))
+                    {
+                        continue;
+                    }
+
+                    $uri = $api->buildClassificationCsvUri($expedition->nfnWorkflow->workflow);
+                    $request = $api->buildAuthorizedRequest('GET', $uri);
+
+                    yield $expedition->id => $request;
+                }
+            };
+
+            $expeditions = $expeditionContract->getExpeditionsForNfnClassificationProcess($this->ids);
 
             $api->setProvider();
             $api->checkAccessToken('nfnToken');
@@ -93,7 +92,7 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
             {
                 if ($response instanceof ServerException || $response instanceof ClientException)
                 {
-                    $report->addError($response->getMessage());
+                    $this->errorMessages[] = $response->getMessage();
                     continue;
                 }
 
@@ -102,17 +101,18 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
                 $this->checkState($results, $index);
             }
 
-            if ($report->checkErrors())
+            if ( ! empty($this->errorMessages))
             {
-                $report->reportError();
+                $user = $userContract->find(1);
+                $user->notify(new JobError(__FILE__, $this->errorMessages));
             }
 
             $this->dispatchSources();
             $this->dispatchReQueued();
         }
-        catch (HttpRequestException $e)
+        catch (\Exception $e)
         {
-            $handler->report($e);
+            return;
         }
 
     }

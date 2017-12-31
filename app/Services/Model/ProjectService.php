@@ -2,71 +2,140 @@
 
 namespace App\Services\Model;
 
-use App\Jobs\BuildOcrBatchesJob;
-use App\Repositories\Contracts\OcrQueueContract;
-use App\Repositories\Contracts\ProjectContract;
-use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Facades\Flash;
+use App\Interfaces\Expedition;
+use App\Interfaces\Group;
+use App\Interfaces\Project;
+use App\Interfaces\Subject;
+use App\Interfaces\User;
+use App\Interfaces\Workflow;
+use App\Services\File\FileService;
+use Illuminate\Support\Facades\Notification;
+use JavaScript;
 
 class ProjectService
 {
-    use DispatchesJobs;
 
     /**
-     * @var ProjectContract
+     * @var Project
      */
-    public $projectContract;
+    private $projectContract;
 
     /**
-     * @var WorkflowService
+     * @var Workflow
      */
-    private $workflowService;
+    private $workflowContract;
 
     /**
-     * @var GroupService
+     * @var Group
      */
-    private $groupService;
+    private $groupContract;
+
     /**
-     * @var OcrQueueContract
+     * @var User
      */
-    private $ocrQueueContract;
+    private $userContract;
+
+    /**
+     * @var Subject
+     */
+    private $subjectContract;
+
+    /**
+     * @var FileService
+     */
+    private $fileService;
+
+    /**
+     * @var Expedition
+     */
+    private $expeditionContract;
+
+    /**
+     * @var OcrQueueService
+     */
+    private $ocrQueueService;
 
     /**
      * ProjectService constructor.
      *
-     * @param ProjectContract $projectContract
-     * @param WorkflowService $workflowService
-     * @param GroupService $groupService
-     * @param OcrQueueContract $ocrQueueContract
+     * @param Project $projectContract
+     * @param Workflow $workflowContract
+     * @param Group $groupContract
+     * @param User $userContract
+     * @param Subject $subjectContract
+     * @param FileService $fileService
+     * @param Expedition $expeditionContract
+     * @param OcrQueueService $ocrQueueService
      */
     public function __construct(
-        ProjectContract $projectContract,
-        WorkflowService $workflowService,
-        GroupService $groupService,
-        OcrQueueContract $ocrQueueContract
-    ) {
+        Project $projectContract,
+        Workflow $workflowContract,
+        Group $groupContract,
+        User $userContract,
+        Subject $subjectContract,
+        FileService $fileService,
+        Expedition $expeditionContract,
+        OcrQueueService $ocrQueueService
+    )
+    {
         $this->projectContract = $projectContract;
-        $this->workflowService = $workflowService;
-        $this->groupService = $groupService;
-        $this->ocrQueueContract = $ocrQueueContract;
+        $this->workflowContract = $workflowContract;
+        $this->groupContract = $groupContract;
+        $this->userContract = $userContract;
+        $this->subjectContract = $subjectContract;
+        $this->fileService = $fileService;
+        $this->expeditionContract = $expeditionContract;
+        $this->ocrQueueService = $ocrQueueService;
+    }
+
+    /**
+     * Find project with attributes.
+     *
+     * @param $projectId
+     * @param array $with
+     * @param bool $trashed
+     * @return mixed
+     */
+    public function findWith($projectId, array $with = [], $trashed = false)
+    {
+        return $this->projectContract->getProjectByIdWith($projectId, $with, $trashed);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getallProjects()
+    {
+        return $this->projectContract->all();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTrashedProjects()
+    {
+        return $this->projectContract->getOnlyTrashed();
     }
 
     /**
      * Set common variables.
      *
      * @param $user
-     * @return array|\Illuminate\Http\RedirectResponse
+     * @return array|bool
      */
     public function setCommonVariables($user)
     {
-        $groups = $this->groupService->getUsersGroupsSelect($user);
+        $groups = $this->groupContract->getUsersGroupsSelect($user);
 
-        if (empty($groups)) {
-            session_flash_push('success', trans('groups.group_required'));
+        if (empty($groups))
+        {
+            Flash::error(trans('groups.group_required'));
 
-            return redirect()->route('groups.create');
+            return false;
         }
 
-        $workflows = $this->workflowService->select();
+        $workflows = $this->workflowContract->getWorkflowSelect();
         $statusSelect = config('config.status_select');
         $selectGroups = ['' => '--Select--'] + $groups;
 
@@ -74,50 +143,255 @@ class ProjectService
     }
 
     /**
-     * Check permissions for project.
-     *
      * @param $projectId
-     * @return mixed
+     * @param null $expeditionId
      */
-    public function permissionCheck($projectId)
+    public function processOcr($projectId, $expeditionId = null)
     {
-        return $this->projectContract->with('group.permissions')->find($projectId);
+
+        $this->ocrQueueService->processOcr($projectId, $expeditionId) ?
+            Flash::success(trans('expeditions.ocr_process_success')) :
+            Flash::warning(trans('expeditions.ocr_process_error'));
     }
 
     /**
-     * Process Ocr.
+     * Get project list by group for logged in user.
      *
-     * @param $project
-     * @param $expeditionId
+     * @param $user
+     * @param $trashed
+     * @return mixed
      */
-    public function processOcr($project, $expeditionId)
+    public function getUserProjectListByGroup($user, $trashed = false)
     {
-        $queueCheck = $this->ocrQueueContract->setCacheLifetime(0)
-            ->where('project_id', '=', $project->id)->findFirst();
+        return $this->groupContract->getUserProjectListByGroup($user, $trashed);
+    }
 
-        if ($queueCheck === null)
-        {
-            $this->dispatch((new BuildOcrBatchesJob($project->id, $expeditionId))->onQueue(config('config.beanstalkd.ocr')));
+    /**
+     * Show project.
+     *
+     * @param $projectId
+     * @param bool $trashed
+     * @return mixed
+     */
+    public function getProjectExpeditions($projectId, $trashed = false)
+    {
+        $with = [
+            'downloads',
+            'actors',
+            'stat'
+        ];
 
-            session_flash_push('success', trans('expeditions.ocr_process_success'));
-        }
-        else
+        return $this->expeditionContract->findExpeditionsByProjectIdWith($projectId, $with, $trashed);
+    }
+
+    /**
+     * Create a project.
+     *
+     * @param $attributes
+     * @return bool|mixed
+     */
+    public function createProject($attributes)
+    {
+        $project = $this->projectContract->create($attributes);
+
+        if ($project)
         {
-            session_flash_push('warning', trans('expeditions.ocr_process_error'));
+            $this->notifyActorContacts($project->id);
+
+            Flash::success(trans('projects.project_created'));
+
+            return $project;
         }
+
+        Flash::error(trans('projects.project_save_error'));
+
+        return false;
+    }
+
+    /**
+     * Send notifications for new projects and actors.
+     *
+     * @param $projectId
+     *
+     */
+    private function notifyActorContacts($projectId)
+    {
+        $nfnNotify = config('config.nfnNotify');
+        $project = $this->findWith($projectId, ['workflow.actors.contacts']);
+
+        $project->workflow->actors->reject(function ($actor) {
+            return $actor->contacts->isEmpty();
+        })->filter(function ($actor) use ($nfnNotify) {
+            return isset($nfnNotify[$actor->id]);
+        })->each(function ($actor) use ($project, $nfnNotify) {
+            $class = '\App\Notifications\\' . $nfnNotify[$actor->id];
+            if (class_exists($class))
+            {
+                Notification::send($actor->contacts, new $class($project));
+            }
+        });
+    }
+
+    /**
+     * Duplicate a project.
+     *
+     * @param $projectId
+     * @return array|bool
+     */
+    public function duplicateProject($projectId)
+    {
+        $project = $this->findWith($projectId, ['group', 'expeditions.workflowManager']);
+
+        if ( ! $project)
+        {
+            Flash::error(trans('pages.project_repo_error'));
+
+            return false;
+        }
+
+        $common = $this->setCommonVariables(request()->user());
+        $variables = array_merge($common, ['project' => $project, 'workflowCheck' => '']);
+
+        return $variables;
+    }
+
+    /**
+     * Edit project.
+     *
+     * @param $projectId
+     * @return array|bool
+     */
+    public function editProject($projectId)
+    {
+        $project = $this->findWith($projectId, ['group.permissions', 'nfnWorkflows']);
+
+        if ( ! $project)
+        {
+            Flash::error(trans('pages.project_repo_error'));
+            return false;
+        }
+
+        $workflowEmpty = ! isset($project->nfnWorkflows) || $project->nfnWorkflows->isEmpty();
+        $common = $this->setCommonVariables(request()->user());
+
+        $variables = array_merge($common, ['project' => $project, 'workflowEmpty' => $workflowEmpty]);
+
+        return $variables;
+    }
+
+    /**
+     * Update Project.
+     *
+     * @param $attributes
+     * @param $projectId
+     * @return mixed
+     */
+    public function updateProject($attributes, $projectId)
+    {
+        $this->projectContract->update($attributes, $projectId) ?
+            Flash::success(trans('projects.project_updated')) :
+            Flash::error(trans('projects.project_updated_error'));
 
         return;
     }
 
     /**
-     * Get projects for ajax call to expeditions.
+     * Explore project page.
      *
      * @param $projectId
      * @return mixed
      */
-    public function expeditionAjax($projectId)
+    public function explore($projectId)
     {
-        return $this->projectContract->with(['expeditions.actors', 'expeditions.stat'])->find($projectId);
+        JavaScript::put([
+            'projectId'    => $projectId,
+            'expeditionId' => 0,
+            'subjectIds'   => [],
+            'maxSubjects'  => config('config.expedition_size'),
+            'url'          => route('web.grids.explore', [$projectId]),
+            'exportUrl'    => route('web.grids.project.export', [$projectId]),
+            'showCheckbox' => true,
+            'explore'      => true
+        ]);
+
+        return $this->subjectContract->getSubjectAssignedCount($projectId);
+    }
+
+    /**
+     * Delete project.
+     *
+     * @param $project
+     * @return bool
+     */
+    public function deleteProject($project)
+    {
+        try
+        {
+            if ($project->nfnWorkflows->isNotEmpty())
+            {
+                Flash::error(trans('expeditions.expedition_process_exists'));
+
+                return false;
+            }
+
+            $this->projectContract->delete($project);
+            Flash::success(trans('projects.project_deleted'));
+
+            return true;
+        }
+        catch (\Exception $e)
+        {
+            Flash::error(trans('projects.project_delete_error'));
+
+            return false;
+        }
+    }
+
+    /**
+     * Destory project.
+     *
+     * @param $project
+     */
+    public function destroyProject($project)
+    {
+        try
+        {
+            $project->expeditions->each(function ($expedition) {
+                $expedition->downloads->each(function ($download) {
+                    $this->fileService->filesystem->delete(config('config.nfn_export_dir') . '/' . $download->file);
+                });
+            });
+
+            if ( ! $project->subjects->isEmpty())
+            {
+                $project->subjects()->timeout(-1)->forceDelete();
+            }
+
+            $this->projectContract->destroy($project);
+
+            Flash::success(trans('projects.project_destroyed'));
+
+            return;
+        }
+        catch (\Exception $e)
+        {
+            Flash::error(trans('projects.project_destroy_error'));
+
+            return;
+        }
+    }
+
+    /**
+     * Restore Project.
+     *
+     * @param $project
+     * @return mixed
+     */
+    public function restoreProject($project)
+    {
+        return $this->projectContract->restore($project) ?
+            Flash::success(trans('projects.project_restored')) :
+            Flash::error(trans('projects.project_restored_error'));
     }
 }
 

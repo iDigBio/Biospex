@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Services\Import\ImportServiceFactory;
-use App\Repositories\Contracts\ProjectContract;
+use App\Interfaces\Project;
 
 class ImportsController extends Controller
 {
 
     /**
-     * @var ProjectContract
+     * @var Project
      */
     public $projectContract;
 
@@ -22,11 +23,11 @@ class ImportsController extends Controller
     /**
      * ImportsController constructor.
      * @param ImportServiceFactory $importFactory
-     * @param ProjectContract $projectContract
+     * @param Project $projectContract
      */
     public function __construct(
         ImportServiceFactory $importFactory,
-        ProjectContract $projectContract
+        Project $projectContract
     ) {
         $this->projectContract = $projectContract;
         $this->importFactory = $importFactory;
@@ -40,7 +41,7 @@ class ImportsController extends Controller
      */
     public function import($id)
     {
-        $project = $this->projectContract->with('group')->find($id);
+        $project = $this->projectContract->findWith($id, ['group']);
 
         return view('frontend.projects.add', compact('project'));
     }
@@ -55,7 +56,7 @@ class ImportsController extends Controller
     {
         $obj = $this->importFactory->create(request()->input('class'));
         if (! $obj) {
-            session_flash_push('error', trans('pages.bad_type'));
+            Flash::error(trans('pages.bad_type'));
 
             return redirect()->route('web.imports.import', [$id]);
         }
@@ -66,7 +67,7 @@ class ImportsController extends Controller
             return redirect()->route('web.imports.import', [$id])->withErrors($validate);
         }
 
-        session_flash_push('success', trans('pages.upload_trans_success'));
+        Flash::success(trans('pages.upload_trans_success'));
 
         return redirect()->route('web.projects.show', [$id]);
     }

@@ -2,8 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Exceptions\NfnApiException;
-use App\Repositories\Contracts\ExpeditionContract;
+use App\Interfaces\Expedition;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -15,56 +14,42 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
     use InteractsWithQueue, SerializesModels, DispatchesJobs;
 
     /**
-     * @var array|null
+     * @var int
      */
-    private $ids;
+    private $expeditionId;
 
     /**
      * NfnClassificationsUpdateJob constructor.
-     * @param array$ids
+     * @param int $expeditionId
      */
-    public function __construct(array $ids = [])
+    public function __construct($expeditionId)
     {
-        $this->ids = $ids;
+        $this->expeditionId = $expeditionId;
     }
 
     /**
      * Execute job.
      *
-     * @param ExpeditionContract $expeditionContract
-     * @throws NfnApiException
+     * @param Expedition $expeditionContract
      */
-    public function handle(ExpeditionContract $expeditionContract)
+    public function handle(Expedition $expeditionContract)
     {
-        $withRelations = ['project.amChart', 'nfnWorkflow', 'nfnActor', 'stat'];
+        $expedition = $expeditionContract->getExpeditionsHavingNfnWorkflows($this->expeditionId);
 
-        $expeditions = empty($this->ids) ?
-            $expeditionContract->setCacheLifetime(0)
-                ->has('nfnWorkflow')
-                ->with($withRelations)
-                ->findAll() :
-            $expeditionContract->setCacheLifetime(0)
-                ->has('nfnWorkflow')
-                ->with($withRelations)
-                ->findWhereIn(['id', [$this->ids]]);
-
-        $projectIds = [];
-        foreach ($expeditions as $expedition)
+        if ($this->checkIfExpeditionShouldProcess($expedition))
         {
-            if ($this->checkIfExpeditionShouldProcess($expedition))
-            {
-                continue;
-            }
+            $this->delete();
 
-            $this->updateExpeditionStats($expeditionContract, $expedition);
-            $projectIds[] = $expedition->project->id;
+            return;
         }
 
-        $projectIds = array_values(array_unique($projectIds));
+        $this->updateExpeditionStats($expeditionContract, $expedition);
 
-        $this->dispatch((new AmChartJob($projectIds))->onQueue(config('config.beanstalkd.chart')));
+        $this->dispatch((new AmChartJob($expedition->project_id))
+            ->onQueue(config('config.beanstalkd.chart')));
 
-        $this->dispatch((new NfnClassificationsFusionTableJob($projectIds))->onQueue(config('config.beanstalkd.classification')));
+        $this->dispatch((new NfnClassificationsFusionTableJob($expedition->project_id))
+            ->onQueue(config('config.beanstalkd.classification')));
 
         $this->delete();
     }
@@ -87,13 +72,13 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
     /**
      * Update expedition stats.
      *
-     * @param ExpeditionContract $expeditionContract
+     * @param Expedition $expeditionContract
      * @param $expedition
      */
-    private function updateExpeditionStats(ExpeditionContract $expeditionContract, $expedition)
+    private function updateExpeditionStats(Expedition $expeditionContract, $expedition)
     {
         // Update stats
-        $count = $expeditionContract->setCacheLifetime(0)->getExpeditionSubjectCounts($expedition->id);
+        $count = $expeditionContract->getExpeditionSubjectCounts($expedition->id);
         $expedition->stat->subject_count = $count;
         $expedition->stat->transcriptions_total = transcriptions_total($count);
         $expedition->stat->transcriptions_completed = transcriptions_completed($expedition->id);

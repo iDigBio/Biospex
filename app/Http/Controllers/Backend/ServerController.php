@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Repositories\Contracts\UserContract;
+use App\Interfaces\User;
 use App\Http\Controllers\Controller;
+use Appstract\Opcache\OpcacheFacade as Opcache;
 
 class ServerController extends Controller
 {
@@ -11,12 +12,12 @@ class ServerController extends Controller
     /**
      * Display listing of resource.
      *
-     * @param UserContract $userContract
+     * @param User $userContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(UserContract $userContract)
+    public function index(User $userContract)
     {
-        $user = $userContract->with(['profile'])->find(request()->user()->id);
+        $user = $userContract->findWith(request()->user()->id, ['profile']);
 
         return view('backend.servers.index', compact('user'));
     }
@@ -42,12 +43,12 @@ class ServerController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param UserContract $userContract
+     * @param User $userContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(UserContract $userContract)
+    public function show(User $userContract)
     {
-        $user = $userContract->with('profile')->find(request()->user()->id);
+        $user = $userContract->findWith(request()->user()->id, ['profile']);
 
         ob_start () ;
         phpinfo () ;
@@ -91,5 +92,18 @@ class ServerController extends Controller
     public function delete($id)
     {
         //
+    }
+
+    public function clear()
+    {
+        $user = request()->user();
+
+        if ( ! $user->isAdmin('admins')) {
+            return redirect()->guest('/login');
+        }
+
+        OPcache::clear();
+
+        return redirect()->intended('/projects');
     }
 }

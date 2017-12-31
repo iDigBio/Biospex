@@ -14,16 +14,16 @@ class BiospexException extends Mailable implements ShouldQueue
     /**
      * @var
      */
-    public $exception;
+    public $content;
 
     /**
      * Create a new message instance.
      *
-     * @param $exception
+     * @param $content
      */
-    public function __construct($exception)
+    public function __construct($content)
     {
-        $this->exception = $exception;
+        $this->content = $content;
         $this->onQueue(config('beanstalkd.default'));
     }
 
@@ -34,6 +34,6 @@ class BiospexException extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this->markdown('mail.exception')->with('exception', $this->exception);
+        return $this->markdown('mail.exception');
     }
 }

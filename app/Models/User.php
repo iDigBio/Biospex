@@ -2,24 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\Access\Authorizable;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use App\Models\Traits\HasGroup;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class User extends Model implements AuthenticatableContract,
-    AuthorizableContract,
-    CanResetPasswordContract
+class User extends Authenticatable
 {
-    use Authenticatable, Authorizable, CanResetPassword,
-        HasGroup, UuidTrait, SoftCascadeTrait, SoftDeletes;
+    use HasGroup, UuidTrait, SoftCascadeTrait, SoftDeletes, Notifiable, LadaCacheTrait;
 
     /**
      * Enable soft delete.
@@ -51,7 +44,8 @@ class User extends Model implements AuthenticatableContract,
     protected $fillable = [
         'uuid',
         'email',
-        'password'
+        'password',
+        'activated'
     ];
 
     /**
@@ -151,28 +145,4 @@ class User extends Model implements AuthenticatableContract,
 
         return substr(str_shuffle(str_repeat($pool, 5)), 0, $length);
     }
-
-    /**
-     * Check if user is admin group.
-     *
-     * @return bool
-     */
-    public function isAdmin()
-    {
-        return $this->hasGroup(env('ADMIN_GROUP'));
-    }
-
-    /**
-     * Check permissions.
-     *
-     * @param $group
-     * @param $permission
-     * @return bool
-     */
-    public function hasAccess($group, $permission)
-    {
-        return $this->hasPermission($group, $permission);
-
-    }
-
 }

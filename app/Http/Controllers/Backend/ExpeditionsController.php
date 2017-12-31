@@ -2,49 +2,46 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Facades\Toastr;
+use App\Facades\Flash;
 use App\Http\Requests\ExpeditionFormRequest;
-use App\Repositories\Contracts\ExpeditionContract;
-use App\Repositories\Contracts\UserContract;
-use App\Services\Model\ModelDeleteService;
-use App\Services\Model\ModelDestroyService;
-use App\Services\Model\ModelRestoreService;
-use Illuminate\Http\Request;
+use App\Services\Model\ExpeditionService;
+use App\Interfaces\Expedition;
+use App\Interfaces\User;
 use App\Http\Controllers\Controller;
 
 class ExpeditionsController extends Controller
 {
 
     /**
-     * @var UserContract
+     * @var User
      */
     public $userContract;
 
     /**
-     * @var ExpeditionContract
+     * @var Expedition
      */
     public $expeditionContract;
-
     /**
-     * @var Request
+     * @var ExpeditionService
      */
-    public $request;
+    private $expeditionService;
 
     /**
      * ExpeditionsController constructor.
      *
-     * @param UserContract $userContract
-     * @param ExpeditionContract $expeditionContract
-     * @param Request $request
+     * @param User $userContract
+     * @param ExpeditionService $expeditionService
+     * @param Expedition $expeditionContract
      */
     public function __construct(
-        UserContract $userContract,
-        ExpeditionContract $expeditionContract,
-        Request $request)
+        User $userContract,
+        ExpeditionService $expeditionService,
+        Expedition $expeditionContract
+    )
     {
         $this->userContract = $userContract;
         $this->expeditionContract = $expeditionContract;
-        $this->request = $request;
+        $this->expeditionService = $expeditionService;
     }
 
     /**
@@ -55,13 +52,11 @@ class ExpeditionsController extends Controller
      */
     public function index($id = null)
     {
-        $user = $this->userContract->setCacheLifetime(0)
-            ->with('profile')
-            ->find($this->request->user()->id);
-        $expeditions = $this->expeditionContract->setCacheLifetime(0)->findAll();
-        $trashed = $this->expeditionContract->setCacheLifetime(0)->onlyTrashed();
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $expeditions = $this->expeditionService->getAllExpeditions();
+        $trashed = $this->expeditionService->getOnlyTrashedExpeditions();
 
-        $editExpedition = $id !== null ? $this->expeditionContract->with(['project', 'nfnWorkflow'])->find($id) : null;
+        $editExpedition = $id !== null ? $this->expeditionService->findExpeditionWith($id, ['project', 'nfnWorkflow']) : null;
 
         $variables = array_merge(compact('user', 'expeditions', 'trashed', 'editExpedition'));
 
@@ -76,15 +71,16 @@ class ExpeditionsController extends Controller
      */
     public function store(ExpeditionFormRequest $request)
     {
-        $expedition = $this->expeditionContract->create($request->all());
+        $expedition = $this->expeditionService->create($request->all());
 
         if ($expedition)
         {
-            Toastr::success('The Expedition has been created successfully.', 'Expedition Create');
+            Flash::success('The Expedition has been created successfully.');
+
             return redirect()->route('admin.expeditions.index');
         }
 
-        Toastr::error('The Expedition could not be created.', 'Expedition Create');
+        Flash::error('The Expedition could not be created.');
 
         return redirect()->route('admin.expeditions.index')->withInput();
     }
@@ -97,11 +93,11 @@ class ExpeditionsController extends Controller
      */
     public function update(ExpeditionFormRequest $request)
     {
-        $expedition = $this->expeditionContract->update($request->input('id'), $request->all());
+        $expedition = $this->expeditionService->updateAdminExpedition($request->all(), $request->input('id'));
 
         $expedition ?
-            Toastr::success('The Expedition has been updated.', 'Expedition Update') :
-            Toastr::error('The Expedition failed to update.', 'Expedition Update');
+            Flash::success('The Expedition has been updated.') :
+            Flash::error('The Expedition failed to update.');
 
         return redirect()->route('admin.expeditions.index');
     }
@@ -109,15 +105,12 @@ class ExpeditionsController extends Controller
     /**
      * Delete expedition.
      *
-     * @param ModelDeleteService $service
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete(ModelDeleteService $service, $id)
+    public function delete($id)
     {
-        $service->deleteExpedition($id) ?
-            Toastr::success('The Expedition has been deleted.', 'Expedition Delete') :
-            Toastr::error('The Expedition could not be deleted.', 'Expedition Delete');
+        $this->expeditionService->deleteExpedition($id);
 
         return redirect()->route('admin.expeditions.index');
     }
@@ -125,15 +118,12 @@ class ExpeditionsController extends Controller
     /**
      * Destroy expedition.
      *
-     * @param ModelDestroyService $service
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(ModelDestroyService $service, $id)
+    public function destroy($id)
     {
-        $service->destroyExpedition($id) ?
-            Toastr::success('The Expedition has been forcefully deleted.', 'Expedition Destroy') :
-            Toastr::error('The Expedition could not be forcefully deleted.', 'Expedition Destroy');
+        $this->expeditionService->destroyExpedition($id);
 
         return redirect()->route('admin.expeditions.index');
     }
@@ -141,15 +131,12 @@ class ExpeditionsController extends Controller
     /**
      * Restore expedition.
      *
-     * @param ModelRestoreService $service
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function restore(ModelRestoreService $service, $id)
+    public function restore($id)
     {
-        $service->restoreExpedition($id) ?
-            Toastr::success('The Expedition has been restored successfully.', 'Expedition Restore') :
-            Toastr::error('Expedition could not be restored.', 'Expedition Restore');
+        $this->expeditionService->restoreExpedition($id);
 
         return redirect()->route('admin.expeditions.index');
     }

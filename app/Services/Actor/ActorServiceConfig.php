@@ -5,6 +5,7 @@ namespace App\Services\Actor;
 use App\Models\Actor;
 use App\Models\Expedition;
 use App\Models\ExportQueue;
+use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use PharData;
@@ -21,6 +22,11 @@ class ActorServiceConfig
      * @var Expedition
      */
     public $expedition;
+
+    /**
+     * @var User
+     */
+    public $owner;
 
     /**
      * @var Actor
@@ -95,6 +101,7 @@ class ActorServiceConfig
         $this->setQueue($queue);
         $this->setActor($queue->expedition->actor);
         $this->setExpedition($queue->expedition);
+        $this->setOwner($queue->expedition->project->group->owner);
         $this->setFolderName();
         $this->setScratchDirectory();
         $this->setWorkingDirectory();
@@ -107,7 +114,7 @@ class ActorServiceConfig
     }
 
     /**
-     * @param $queue
+     * @param ExportQueue $queue
      */
     public function setQueue($queue)
     {
@@ -115,7 +122,7 @@ class ActorServiceConfig
     }
 
     /**
-     * @param $expedition
+     * @param Expedition $expedition
      */
     public function setExpedition($expedition)
     {
@@ -123,7 +130,15 @@ class ActorServiceConfig
     }
 
     /**
-     * @param $actor
+     * @param User $owner
+     */
+    public function setOwner($owner)
+    {
+        $this->owner = $owner;
+    }
+
+    /**
+     * @param Actor $actor
      */
     public function setActor($actor)
     {

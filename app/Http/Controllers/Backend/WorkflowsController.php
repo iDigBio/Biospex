@@ -2,42 +2,42 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Facades\Toastr;
+use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WorkflowFormRequest;
-use App\Repositories\Contracts\ActorContract;
-use App\Repositories\Contracts\UserContract;
-use App\Repositories\Contracts\WorkflowContract;
+use App\Interfaces\Actor;
+use App\Interfaces\User;
+use App\Interfaces\Workflow;
 
 class WorkflowsController extends Controller
 {
 
     /**
-     * @var WorkflowContract
+     * @var Workflow
      */
     private $workflowContract;
     
     /**
-     * @var UserContract
+     * @var User
      */
     private $userContract;
     
     /**
-     * @var ActorContract
+     * @var Actor
      */
     private $actorContract;
 
     /**
      * WorkflowsController constructor.
      *
-     * @param WorkflowContract $workflowContract
-     * @param UserContract $userContract
-     * @param ActorContract $actorContract
+     * @param Workflow $workflowContract
+     * @param User $userContract
+     * @param Actor $actorContract
      */
     public function __construct(
-        WorkflowContract $workflowContract,
-        UserContract $userContract,
-        ActorContract $actorContract
+        Workflow $workflowContract,
+        User $userContract,
+        Actor $actorContract
     )
     {
         $this->workflowContract = $workflowContract;
@@ -52,10 +52,10 @@ class WorkflowsController extends Controller
      */
     public function index()
     {
-        $user = $this->userContract->with('profile')->find(request()->user()->id);
-        $workflows = $this->workflowContract->findAll();
-        $trashed = $this->workflowContract->onlyTrashed();
-        $actors = $this->actorContract->findAll();
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $workflows = $this->workflowContract->all();
+        $trashed = $this->workflowContract->getOnlyTrashed();
+        $actors = $this->actorContract->all();
 
         return view('backend.workflows.index', compact('user', 'workflows', 'trashed', 'actors'));
     }
@@ -68,11 +68,11 @@ class WorkflowsController extends Controller
      */
     public function edit($id)
     {
-        $user = $this->userContract->with('profile')->find(request()->user()->id);
-        $workflows = $this->workflowContract->findAll();
-        $trashed = $this->workflowContract->onlyTrashed();
-        $actors = $this->actorContract->findAll();
-        $workflow = $this->workflowContract->with('actors')->find($id);
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $workflows = $this->workflowContract->all();
+        $trashed = $this->workflowContract->getOnlyTrashed();
+        $actors = $this->actorContract->all();
+        $workflow = $this->workflowContract->findWith($id, ['actors']);
 
         return view('backend.workflows.index', compact('user', 'workflows', 'trashed', 'actors', 'workflow'));
     }
@@ -86,17 +86,15 @@ class WorkflowsController extends Controller
      */
     public function update(WorkflowFormRequest $request, $id)
     {
-        $workflow = $this->workflowContract->update($id, $request->all());
-        $actors = [];
-        foreach ($request->input('actors') as $key => $actor)
-        {
-            $actors[$actor['id']] = ['order' => $key];
-        }
+        $workflow = $this->workflowContract->update($request->all(), $id);
+        $actors = collect($request->input('actors'))->mapWithKeys(function ($actor, $key){
+            return [$actor['id'] => ['order' => $key]];
+        })->toArray();
 
         $workflow->actors()->sync($actors);
 
-        $workflow ? Toastr::success('Workflow has been updated.', 'Workflow Update')
-            : Toastr::error('Workflow could not be updated.', 'Workflow Update');
+        $workflow ? Flash::success('Workflow has been updated.')
+            : Flash::error('Workflow could not be updated.');
 
         return redirect()->route('admin.workflows.index');
     }
@@ -120,16 +118,14 @@ class WorkflowsController extends Controller
     public function store(WorkflowFormRequest $request)
     {
         $workflow = $this->workflowContract->create($request->all());
-        $actors = [];
-        foreach ($request->input('actors') as $key => $actor)
-        {
-            $actors[$actor['id']] = ['order' => $key];
-        }
+        $actors = collect($request->input('actors'))->mapWithKeys(function ($actor, $key){
+            return [$actor['id'] => ['order' => $key]];
+        })->toArray();
 
         $workflow->actors()->sync($actors);
 
-        $workflow ? Toastr::success('Workflow has been created.', 'Workflow Create')
-            : Toastr::error('Workflow could not be created.', 'Workflow Create');
+        $workflow ? Flash::success('Workflow has been created.')
+            : Flash::error('Workflow could not be created.');
 
         return redirect()->route('admin.workflows.index');
     }
@@ -142,12 +138,10 @@ class WorkflowsController extends Controller
      */
     public function delete($id)
     {
-        $this->workflowContract->update($id, ['enabled' => 0]);
-        $result = $this->workflowContract->delete($id);
-
-        $result ? Toastr::success('Workflow has been deleted.', 'Workflow Delete')
-            : Toastr::error('Workflow could not be deleted.', 'Workflow Delete');
-
+        $this->workflowContract->update(['enabled' => 0], $id);
+        $this->workflowContract->delete($id) ?
+            Flash::success('Workflow has been deleted.') :
+            Flash::error('Workflow could not be deleted.');
 
         return redirect()->route('admin.workflows.index');
     }
@@ -160,10 +154,9 @@ class WorkflowsController extends Controller
      */
     public function trash($id)
     {
-        $result = $this->workflowContract->forceDelete($id);
-
-        $result ? Toastr::success('Workflow has been forcefully deleted.', 'Workflow Delete')
-            : Toastr::error('Workflow could not be forcefully deleted.', 'Workflow Delete');
+        $this->workflowContract->destroy($id) ?
+            Flash::success('Workflow has been forcefully deleted.') :
+            Flash::error('Workflow could not be forcefully deleted.');
 
         return redirect()->route('admin.workflows.index');
     }
@@ -176,10 +169,9 @@ class WorkflowsController extends Controller
      */
     public function enable($id)
     {
-        $result = $this->workflowContract->update($id, ['enabled' => 1]);
-
-        $result ? Toastr::success('Workflow has been enabled.', 'Workflow Enable')
-            : Toastr::error('Workflow could not be enabled.', 'Workflow Enable');
+        $this->workflowContract->update(['enabled' => 1], $id) ?
+            Flash::success('Workflow has been enabled.') :
+            Flash::error('Workflow could not be enabled.');
 
         return redirect()->route('admin.workflows.index');
     }
@@ -192,10 +184,9 @@ class WorkflowsController extends Controller
      */
     public function disable($id)
     {
-        $result = $this->workflowContract->update($id, ['enabled' => 0]);
-
-        $result ? Toastr::success('Workflow has been disabled.', 'Workflow Disable')
-            : Toastr::error('Workflow could not be disabled.', 'Workflow Disable');
+        $this->workflowContract->update(['enabled' => 0], $id) ?
+            Flash::success('Workflow has been disabled.') :
+            Flash::error('Workflow could not be disabled.');
 
         return redirect()->route('admin.workflows.index');
     }

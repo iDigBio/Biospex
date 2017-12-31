@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Facades\Flash;
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\ResourceContract;
+use App\Interfaces\Resource;
 
 class ResourcesController extends Controller
 {
 
     /**
-     * @var ResourceContract
+     * @var Resource
      */
     private $resourceContract;
 
     /**
      * ResourcesController constructor.
-     * @param ResourceContract $resourceContract
+     * @param Resource $resourceContract
      */
-    public function __construct(ResourceContract $resourceContract)
+    public function __construct(Resource $resourceContract)
     {
         $this->resourceContract = $resourceContract;
     }
@@ -29,7 +30,7 @@ class ResourcesController extends Controller
      */
     public function index()
     {
-        $resources = $this->resourceContract->orderBy('order', 'asc')->findAll();
+        $resources = $this->resourceContract->getResourcesOrdered();
 
         return view('frontend.resources.index', compact('resources'));
     }
@@ -43,7 +44,13 @@ class ResourcesController extends Controller
     public function download($id)
     {
         $download = $this->resourceContract->find($id);
-        $file= public_path('resources/' . $download->document);
+        $file = public_path('resources/' . $download->document);
+        if ( ! file_exists($file))
+        {
+            Flash::error('File cannot be found.');
+
+            return redirect()->route('web.resources.index');
+        }
 
         return response()->download($file, $download->document, ['Content-Type: application/pdf']);
     }

@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Import extends Model
 {
+    use LadaCacheTrait;
+
     /**
      * @inheritDoc
      */

@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Group extends Model
 {
-    use UuidTrait, SoftCascadeTrait, SoftDeletes;
+    use UuidTrait, SoftCascadeTrait, SoftDeletes, LadaCacheTrait;
 
     /**
      * Enable soft delete.

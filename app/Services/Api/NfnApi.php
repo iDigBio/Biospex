@@ -2,11 +2,9 @@
 
 namespace App\Services\Api;
 
-use App\Exceptions\NfnApiException;
 use App\Services\Requests\HttpRequest;
 use GuzzleHttp\Exception\GuzzleException;
 use League\OAuth2\Client\Provider\GenericProvider;
-use Exception;
 
 class NfnApi extends HttpRequest
 {
@@ -79,72 +77,47 @@ class NfnApi extends HttpRequest
      *
      * @param $request
      * @return mixed
-     * @throws NfnApiException
+     * @throws GuzzleException
      */
     public function sendAuthorizedRequest($request)
     {
-        try
-        {
-            $response = $this->provider->getHttpClient()->send($request);
+        $response = $this->provider->getHttpClient()->send($request);
 
-            return json_decode($response->getBody()->getContents(), true);
-        }
-        catch (GuzzleException $e)
-        {
-            throw new NfnApiException($e);
-        }
-        catch (Exception $e)
-        {
-            throw new NfnApiException($e);
-        }
+        return json_decode($response->getBody()->getContents(), true);
     }
 
     /**
      * Get project.
      *
      * @param $id
-     * @return mixed
-     * @throws NfnApiException
+     * @return string
+     * @throws GuzzleException
      */
-    public function getProject($id)
+    public function getProjectUri($id)
     {
-        $uri = config('config.nfnApi.apiUri') . '/projects/' . $id;
-
-        $request = $this->buildAuthorizedRequest('GET', $uri);
-
-        return $this->sendAuthorizedRequest($request);
+        return config('config.nfnApi.apiUri') . '/projects/' . $id;
     }
 
     /**
      * Get workflow.
      *
      * @param $id
-     * @return mixed
-     * @throws NfnApiException
+     * @return string
      */
-    public function getWorkflow($id)
+    public function getWorkflowUri($id)
     {
-        $uri = config('config.nfnApi.apiUri') . '/workflows/' . $id;
-
-        $request = $this->buildAuthorizedRequest('GET', $uri);
-
-        return $this->sendAuthorizedRequest($request);
+        return config('config.nfnApi.apiUri') . '/workflows/' . $id;
     }
 
     /**
      * Get subject.
      *
      * @param $id
-     * @return mixed
-     * @throws NfnApiException
+     * @return string
      */
-    public function getSubject($id)
+    public function getSubjectUri($id)
     {
-        $uri = config('config.nfnApi.apiUri') . '/subjects/' . $id;
-
-        $request = $this->buildAuthorizedRequest('GET', $uri);
-
-        return $this->sendAuthorizedRequest($request);
+        return config('config.nfnApi.apiUri') . '/subjects/' . $id;
     }
 
     /**

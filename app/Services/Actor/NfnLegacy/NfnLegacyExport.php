@@ -2,8 +2,8 @@
 
 namespace App\Services\Actor\NfnLegacy;
 
-use App\Exceptions\BiospexException;
-use App\Services\Actor\ActorReportService;
+use App\Notifications\NfnExportComplete;
+use App\Notifications\NfnExportError;
 
 ini_set('memory_limit', '1024M');
 
@@ -73,24 +73,14 @@ class NfnLegacyExport
     private $smallWidth;
 
     /**
-     * @var ActorReportService
-     */
-    public $report;
-
-    /**
      * NfnLegacyExport constructor.
-     *
-     * @param ActorReportService $report
      */
-    public function __construct(
-        ActorReportService $report
-    )
+    public function __construct()
     {
 
-        $this->nfnExportDir = $this->service->config->get('config.nfn_export_dir');
-        $this->largeWidth = $this->service->config->get('config.images.nfnLrgWidth');
-        $this->smallWidth = $this->service->config->get('config.images.nfnSmWidth');
-        $this->report = $report;
+        $this->nfnExportDir = config('config.nfn_export_dir');
+        $this->largeWidth = config('config.images.nfnLrgWidth');
+        $this->smallWidth = config('config.images.nfnSmWidth');
     }
 
     /**
@@ -104,9 +94,8 @@ class NfnLegacyExport
         {
             $this->fileService->makeDirectory($this->nfnExportDir);
 
-            $this->record = $this->actorRepoService->expeditionContract->setCacheLifetime(0)
-                ->with(['project.group.owner', 'subjects'])
-                ->find($actor->pivot->expedition_id);
+            $this->record = $this->actorRepoService->expeditionContract
+                ->findWith($actor->pivot->expedition_id, ['project.group.owner', 'subjects']);
 
             $this->service->setWorkingDirectory("{$actor->id}-{$this->record->uuid}");
 
@@ -137,28 +126,26 @@ class NfnLegacyExport
 
             $this->fileService->filesystem->deleteDirectory($this->service->workingDir);
 
-            $this->sendReport($this->record);
+            $this->sendNotify();
 
             $actor->pivot->completed = 1;
             $actor->pivot->queued = 0;
             $actor->pivot->state = 1;
             $actor->pivot->save();
         }
-        catch (BiospexException $e)
+        catch (\Exception $e)
         {
             $actor->pivot->queued = 0;
             $actor->pivot->error = 1;
             $actor->pivot->save();
 
-            $this->report->addError(trans('errors.nfn_legacy_export_error', [
+            $message = trans('errors.nfn_export_error', [
                 'title'   => $this->record->title,
                 'id'      => $this->record->id,
                 'message' => $e->getMessage()
-            ]));
+            ]);
 
-            $this->service->report->reportError($this->record->project->group->owner->email);
-
-            $this->service->handler->report($e);
+            $this->record->project->group->owner->notify(new NfnExportError($message));
         }
     }
 
@@ -330,25 +317,19 @@ class NfnLegacyExport
         return ($size < $gb) ? $size : ceil($size / ceil(number_format($size / $gb, 2)));
     }
 
-    protected function buildImageData(&$data)
-    {
-
-    }
-
     /**
-     * Send report for process completing.
-     *
-     * @param $record
+     * Send notification for process completing.
+     * @throws \Exception
      */
-    protected function sendReport($record)
+    protected function sendNotify()
     {
-        $vars = [
-            'title'          => $record->title,
-            'message'        => trans('emails.expedition_export_complete_message', ['expedition' => $record->title]),
-            'groupId'        => $record->project->group->id,
-            'attachmentName' => trans('emails.missing_images_attachment_name', ['recordId' => $record->id])
+        $message = [
+            $this->record->title,
+            trans('emails.expedition_export_complete_message', ['expedition' => $this->record->title])
         ];
 
-        $this->report->processComplete($vars, $this->actorImageService->getMissingImages());
+        $csv = create_csv($this->actorImageService->getMissingImages());
+
+        $this->record->project->group->owner->email->notify(new NfnExportComplete($message, $csv));
     }
 }

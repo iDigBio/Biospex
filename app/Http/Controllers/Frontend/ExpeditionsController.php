@@ -2,17 +2,12 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpeditionFormRequest;
 use App\Services\Model\ExpeditionService;
-use App\Services\Model\ModelDeleteService;
-use App\Services\Model\ModelDestroyService;
-use App\Services\Model\ModelRestoreService;
-use App\Services\Model\ProjectService;
-use App\Services\Model\UserService;
-use App\Services\Model\WorkflowManagerService;
+use Illuminate\Support\Facades\Auth;
 use JavaScript;
-
 
 class ExpeditionsController extends Controller
 {
@@ -20,39 +15,17 @@ class ExpeditionsController extends Controller
      * @var ExpeditionService
      */
     private $expeditionService;
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-    /**
-     * @var WorkflowManagerService
-     */
-    private $workflowManagerService;
-
-    /**
-     * @var UserService
-     */
-    private $userService;
 
     /**
      * ExpeditionsController constructor.
      *
      * @param ExpeditionService $expeditionService
-     * @param ProjectService $projectService
-     * @param WorkflowManagerService $workflowManagerService
-     * @param UserService $userService
      */
     public function __construct(
-        ExpeditionService $expeditionService,
-        ProjectService $projectService,
-        WorkflowManagerService $workflowManagerService,
-        UserService $userService
+        ExpeditionService $expeditionService
     )
     {
         $this->expeditionService = $expeditionService;
-        $this->projectService = $projectService;
-        $this->workflowManagerService = $workflowManagerService;
-        $this->userService = $userService;
     }
 
     /**
@@ -62,31 +35,11 @@ class ExpeditionsController extends Controller
      */
     public function index()
     {
-        $user = $this->userService->getLoggedInUser();
-
+        $user = Auth::user();
+        $user->load('profile');
         $expeditions = $this->expeditionService->getExpeditionsByUserId($user->id);
 
         return view('frontend.expeditions.index', compact('expeditions', 'user'));
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @param $projectId
-     * @return \Illuminate\View\View
-     */
-    public function ajax($projectId)
-    {
-        if ( ! request('ajax'))
-        {
-            return redirect()->route('web.projects.show', [$projectId]);
-        }
-
-        $user = $this->userService->getLoggedInUser();
-
-        $project = $this->projectService->expeditionAjax($projectId);
-
-        return view('frontend.expeditions.ajax', compact('project', 'user'));
     }
 
     /**
@@ -97,9 +50,9 @@ class ExpeditionsController extends Controller
      */
     public function create($projectId)
     {
-        $project = $this->projectService->permissionCheck($projectId);
+        $project = $this->expeditionService->getProjectGroup($projectId);
 
-        if ( ! $this->checkPermissions('create', [$project, $project->group]))
+        if ( ! $this->checkPermissions('create', $project))
         {
             return redirect()->route('web.projects.index');
         }
@@ -127,9 +80,9 @@ class ExpeditionsController extends Controller
      */
     public function store(ExpeditionFormRequest $request, $projectId)
     {
-        $project = $this->projectService->permissionCheck($projectId);
+        $project = $this->expeditionService->getProjectGroup($projectId);
 
-        if ( ! $this->checkPermissions('create', [$project, $project->group]))
+        if ( ! $this->checkPermissions('create', $project))
         {
             return redirect()->route('web.projects.index');
         }
@@ -138,12 +91,12 @@ class ExpeditionsController extends Controller
 
         if ($expedition)
         {
-            session_flash_push('success', trans('expeditions.expedition_created'));
+            Flash::success(trans('expeditions.expedition_created'));
 
             return redirect()->route('web.expeditions.show', [$projectId, $expedition->id]);
         }
 
-        session_flash_push('error', trans('expeditions.expedition_save_error'));
+        Flash::error(trans('expeditions.expedition_save_error'));
         return redirect()->route('web.projects.show', [$projectId]);
     }
 
@@ -157,18 +110,12 @@ class ExpeditionsController extends Controller
     {
         $expedition = $this->expeditionService->getShowExpedition($expeditionId);
 
-        $btnDisable = ($expedition->project->ocrQueue->isEmpty() || $expedition->stat->subject_count === 0);
+        if ( ! $this->checkPermissions('read', $expedition->project))
+        {
+            return redirect()->route('web.projects.index');
+        }
 
-        JavaScript::put([
-            'projectId'    => $expedition->project->id,
-            'expeditionId' => $expedition->id,
-            'subjectIds'   => [],
-            'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('web.grids.show', [$expedition->project->id, $expedition->id]),
-            'exportUrl'    => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
-            'showCheckbox' => false,
-            'explore'      => false
-        ]);
+        $btnDisable = ($expedition->project->ocrQueue->isEmpty() || $expedition->stat->subject_count === 0);
 
         return view('frontend.expeditions.show', compact('expedition', 'btnDisable'));
     }
@@ -183,21 +130,10 @@ class ExpeditionsController extends Controller
     {
         $expedition = $this->expeditionService->getDuplicateCreateExpedition($expeditionId);
 
-        if ( ! $this->checkPermissions('create', [$expedition->project, $expedition->project->group]))
+        if ( ! $this->checkPermissions('create', $expedition->project))
         {
             return redirect()->route('web.projects.index');
         }
-
-        JavaScript::put([
-            'projectId'    => $expedition->project->id,
-            'expeditionId' => 0,
-            'subjectIds'   => [],
-            'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('web.grids.create', [$expedition->project->id]),
-            'exportUrl'    => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
-            'showCheckbox' => true,
-            'explore'      => false
-        ]);
 
         return view('frontend.expeditions.clone', compact('expedition'));
     }
@@ -217,23 +153,6 @@ class ExpeditionsController extends Controller
             return redirect()->route('web.projects.index');
         }
 
-        $subjectIds = [];
-        foreach ($expedition->subjects as $subject)
-        {
-            $subjectIds[] = $subject->_id;
-        }
-
-        JavaScript::put([
-            'projectId'    => $expedition->project->id,
-            'expeditionId' => $expedition->id,
-            'subjectIds'   => $subjectIds,
-            'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('web.grids.edit', [$expedition->project->id, $expedition->id]),
-            'exportUrl'    => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
-            'showCheckbox' => $expedition->workflowManager === null,
-            'explore'      => false
-        ]);
-
         return view('frontend.expeditions.edit', compact('expedition'));
     }
 
@@ -247,24 +166,24 @@ class ExpeditionsController extends Controller
      */
     public function update(ExpeditionFormRequest $request, $projectId, $expeditionId)
     {
-        $project = $this->projectService->permissionCheck($projectId);
+        $project = $this->expeditionService->getProjectGroup($projectId);
 
         if ( ! $this->checkPermissions('update', $project))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $result = $this->expeditionService->updateExpedition($expeditionId, $request->all());
+        $result = $this->expeditionService->updateExpedition($request->all(), $expeditionId);
 
         if ( ! $result)
         {
-            session_flash_push('error', trans('expeditions.expedition_save_error'));
+            Flash::error(trans('expeditions.expedition_save_error'));
 
             return redirect()->route('web.expeditions.edit', [$projectId, $expeditionId]);
         }
 
         // Success!
-        session_flash_push('success', trans('expeditions.expedition_updated'));
+        Flash::success(trans('expeditions.expedition_updated'));
 
         return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
     }
@@ -277,7 +196,7 @@ class ExpeditionsController extends Controller
      */
     public function process($projectId, $expeditionId)
     {
-        $project = $this->projectService->permissionCheck($projectId);
+        $project = $this->expeditionService->getProjectGroup($projectId);
 
         if ( ! $this->checkPermissions('update', $project))
         {
@@ -299,14 +218,14 @@ class ExpeditionsController extends Controller
     public function ocr($projectId, $expeditionId)
     {
 
-        $project = $this->projectService->permissionCheck($projectId);
+        $project = $this->expeditionService->getProjectGroup($projectId);
 
         if ( ! $this->checkPermissions('update', $project))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $this->projectService->processOcr($project, $expeditionId);
+        $this->expeditionService->processOcr($project->id, $expeditionId);
 
         return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
     }
@@ -320,14 +239,14 @@ class ExpeditionsController extends Controller
      */
     public function stop($projectId, $expeditionId)
     {
-        $project = $this->projectService->permissionCheck($projectId);
+        $project = $this->expeditionService->getProjectGroup($projectId);
 
         if ( ! $this->checkPermissions('update', $project))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $this->workflowManagerService->toggleExpeditionWorkflow($expeditionId);
+        $this->expeditionService->toggleExpeditionWorkflow($expeditionId);
 
         return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
     }
@@ -335,25 +254,20 @@ class ExpeditionsController extends Controller
     /**
      * Soft delete the specified resource from storage.
      *
-     * @param ModelDeleteService $service
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete(ModelDeleteService $service, $projectId, $expeditionId)
+    public function delete($projectId, $expeditionId)
     {
-        $project = $this->projectService->permissionCheck($projectId);
+        $project = $this->expeditionService->getProjectGroup($projectId);
 
         if ( ! $this->checkPermissions('delete', $project))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $result = $service->deleteExpedition($expeditionId);
-
-        $result ?
-            session_flash_push('success', trans('expeditions.expedition_deleted')) :
-            session_flash_push('error', trans('expeditions.expedition_delete_error'));
+        $result = $this->expeditionService->deleteExpedition($expeditionId);
 
         return $result ?
             redirect()->route('web.projects.show', [$projectId]) :
@@ -362,46 +276,43 @@ class ExpeditionsController extends Controller
     }
 
     /**
-     * Soft delete the specified resource from storage.
+     * Destroy the specified resource from storage.
      *
-     * @param ModelDestroyService $service
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(ModelDestroyService $service, $projectId, $expeditionId)
+    public function destroy($projectId, $expeditionId)
     {
-        $project = $this->projectService->permissionCheck($projectId);
+        $project = $this->expeditionService->getProjectGroup($projectId);
 
         if ( ! $this->checkPermissions('delete', $project))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $result = $service->destroyExpedition($expeditionId);
+        $this->expeditionService->destroyExpedition($expeditionId);
 
-        $result ? session_flash_push('success', trans('expeditions.expedition_destroyed')) :
-            session_flash_push('error', trans('expeditions.expedition_destroy_error'));
-
-        return $result ?
-            redirect()->route('web.projects.show', [$projectId]) :
-            redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
-
+        return redirect()->route('web.projects.show', [$projectId]);
     }
 
     /**
      * Restore deleted expedition.
      *
-     * @param ModelRestoreService $service
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function restore(ModelRestoreService $service, $projectId, $expeditionId)
+    public function restore($projectId, $expeditionId)
     {
-        $service->restoreExpedition($expeditionId) ?
-            session_flash_push('success', trans('expeditions.expedition_restore')) :
-            session_flash_push('error', trans('expeditions.expedition_restore_error'));
+        $project = $this->expeditionService->getProjectGroup($projectId);
+
+        if ( ! $this->checkPermissions('delete', $project))
+        {
+            return redirect()->route('web.projects.index');
+        }
+
+        $this->expeditionService->restoreExpedition($expeditionId);
 
         return redirect()->route('web.projects.show', [$projectId]);
     }

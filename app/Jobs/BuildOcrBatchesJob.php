@@ -2,17 +2,13 @@
 
 namespace App\Jobs;
 
-use Exception;
-use App\Exceptions\BiospexException;
-use App\Exceptions\MongoDbException;
-use App\Exceptions\OcrBatchProcessException;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Facades\Artisan;
-use App\Repositories\Contracts\OcrCsvContract;
-use App\Repositories\Contracts\OcrQueueContract;
+use App\Interfaces\OcrCsv;
+use App\Interfaces\OcrQueue;
 use MongoCollection;
 
 class BuildOcrBatchesJob extends Job implements ShouldQueue
@@ -50,23 +46,22 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
     /**
      * Handle Job.
      *
-     * @param OcrQueueContract $ocrQueueRepo
-     * @param OcrCsvContract $ocrCsvRepo
-     * @throws OcrBatchProcessException
+     * @param OcrQueue $ocrQueueRepo
+     * @param OcrCsv $ocrCsvRepo
+     * @throws \Exception
      */
     public function handle(
-        OcrQueueContract $ocrQueueRepo,
-        OcrCsvContract $ocrCsvRepo
+        OcrQueue $ocrQueueRepo,
+        OcrCsv $ocrCsvRepo
     )
     {
+        if (config('config.ocr_disable'))
+        {
+            return;
+        }
+
         try
         {
-
-            if (config('config.ocr_disable'))
-            {
-                return;
-            }
-
             $this->buildOcrSubjectsArray();
 
             $data = $this->getChunkQueueData();
@@ -96,38 +91,27 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
 
             Artisan::call('ocr:poll');
         }
-        catch (BiospexException $e)
+        catch (\Exception $e)
         {
-            throw new OcrBatchProcessException(trans('errors.ocr_batch_process', [
-                'id'      => $this->projectId,
-                'message' => $e->getMessage()
-            ]));
+            return;
         }
     }
 
     /**
      * Build the ocr subject array
-     * @throws MongoDbException
      */
     protected function buildOcrSubjectsArray()
     {
-        try
-        {
-            $collection = $this->setCollection();
-            $query = null === $this->expeditionId ?
-                ['project_id' => $this->projectId, 'ocr' => ''] :
-                ['project_id' => $this->projectId, 'expedition_ids' => $this->expeditionId, 'ocr' => ''];
+        $collection = $this->setCollection();
+        $query = null === $this->expeditionId ?
+            ['project_id' => $this->projectId, 'ocr' => ''] :
+            ['project_id' => $this->projectId, 'expedition_ids' => $this->expeditionId, 'ocr' => ''];
 
-            $results = $collection->find($query);
+        $results = $collection->find($query);
 
-            foreach ($results as $doc)
-            {
-                $this->buildOcrQueueData($doc);
-            }
-        }
-        catch (Exception $e)
+        foreach ($results as $doc)
         {
-            throw new MongoDbException($e);
+            $this->buildOcrQueueData($doc);
         }
     }
 
@@ -135,7 +119,6 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
      * Query MongoDB and return cursor.
      *
      * @return MongoCollection
-     * @throws \Exception
      */
     protected function setCollection()
     {

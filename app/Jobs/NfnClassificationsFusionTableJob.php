@@ -2,9 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Exceptions\GoogleFusionTableException;
-use App\Repositories\Contracts\ProjectContract;
-use App\Repositories\Contracts\TranscriptionLocationContract;
+use App\Interfaces\Project;
+use App\Interfaces\TranscriptionLocation;
 use App\Services\Google\FusionTableService;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -17,17 +16,22 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
     use InteractsWithQueue, SerializesModels;
 
     /**
-     * @var array
+     * @var \App\Models\Project
      */
-    public $projectIds;
+    public $project;
 
     /**
-     * @var ProjectContract
+     * @var
+     */
+    public $projectId;
+
+    /**
+     * @var Project
      */
     public $projectContract;
 
     /**
-     * @var TranscriptionLocationContract
+     * @var TranscriptionLocation
      */
     public $transcriptionLocationContract;
 
@@ -38,24 +42,23 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
 
     /**
      * NfnClassificationsFusionTableJob constructor.
-     * @param array $projectIds
+     * @param $projectId
      */
-    public function __construct(array $projectIds = [])
+    public function __construct($projectId)
     {
-        $this->projectIds = $projectIds;
+        $this->projectId = $projectId;
     }
 
     /**
      * Execute the job
      *
-     * @param ProjectContract $projectContract
-     * @param TranscriptionLocationContract $transcriptionLocationContract
+     * @param Project $projectContract
+     * @param TranscriptionLocation $transcriptionLocationContract
      * @param FusionTableService $fusionTableService
-     * @throws GoogleFusionTableException
      */
     public function handle(
-        ProjectContract $projectContract,
-        TranscriptionLocationContract $transcriptionLocationContract,
+        Project $projectContract,
+        TranscriptionLocation $transcriptionLocationContract,
         FusionTableService $fusionTableService
     )
     {
@@ -63,105 +66,63 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
         $this->transcriptionLocationContract = $transcriptionLocationContract;
         $this->fusionTableService = $fusionTableService;
 
-        $projects = $this->getProjects();
+        $this->project = $this->projectContract->find($this->projectId);
 
-        $projects->each(function ($project)
+        try{
+            $this->project->fusion_table_id === null ?
+                $this->createProjectFusionTable() :
+                $this->updateProjectFusionTable();
+        }
+        catch (\Exception $e)
         {
-            $project->fusion_table_id === null ?
-                $this->createProjectFusionTable($project) :
-                $this->updateProjectFusionTable($project);
-            sleep(2);
-        });
+            $this->delete();
+        }
     }
 
     /**
      * Create fusion table.
-     *
-     * @param $project
-     * @throws GoogleFusionTableException
      */
-    public function createProjectFusionTable($project)
+    public function createProjectFusionTable()
     {
-        try
-        {
-            $locations = $this->getProjectLocations($project->id);
-            $counts = $this->getProjectLocationsCount($locations);
+        $locations = $this->getProjectLocations();
+        $counts = $this->getProjectLocationsCount($locations);
 
-            $tableId = $this->fusionTableService->createTable($project->title);
-            $this->updateProjectTable($project->id, ['fusion_table_id' => $tableId]);
+        $tableId = $this->fusionTableService->createTable($this->project->title);
+        $this->updateProjectTable(['fusion_table_id' => $tableId]);
 
-            $this->fusionTableService->createPermission($tableId);
+        $this->fusionTableService->createPermission($tableId);
 
-            $this->checkStyleId($project, $tableId, $counts);
-            $this->checkTemplateId($project, $tableId);
+        $this->checkStyleId($tableId, $counts);
+        $this->checkTemplateId($tableId);
 
-            $this->fusionTableService->importTableData($tableId, $locations);
-
-        }
-        catch (\Exception $e)
-        {
-            throw new GoogleFusionTableException($e);
-        }
+        $this->fusionTableService->importTableData($tableId, $locations);
     }
 
     /**
      * Update fusion table.
-     *
-     * @param $project
-     * @throws GoogleFusionTableException
      */
-    public function updateProjectFusionTable($project)
+    public function updateProjectFusionTable()
     {
-        try
-        {
-            $locations = $this->getProjectLocations($project->id);
-            $counts = $this->getProjectLocationsCount($locations);
+        $locations = $this->getProjectLocations();
+        $counts = $this->getProjectLocationsCount($locations);
 
-            $styleId = $this->checkStyleId($project, $project->fusion_table_id, $counts);
-            $this->checkTemplateId($project, $project->fusion_table_id);
+        $styleId = $this->checkStyleId($this->project->fusion_table_id, $counts);
+        $this->checkTemplateId($this->project->fusion_table_id);
 
-            $setting = $this->fusionTableService->createTableStyle($project->fusion_table_id, $counts);
-            $this->fusionTableService->updateTableStyle($project->fusion_table_id, $styleId, $setting);
-            $this->fusionTableService->deleteTableData($project->fusion_table_id);
-            $this->fusionTableService->importTableData($project->fusion_table_id, $locations);
-        }
-        catch (\Exception $e)
-        {
-            throw new GoogleFusionTableException($e);
-        }
+        $setting = $this->fusionTableService->createTableStyle($this->project->fusion_table_id, $counts);
+        $this->fusionTableService->updateTableStyle($this->project->fusion_table_id, $styleId, $setting);
+        $this->fusionTableService->deleteTableData($this->project->fusion_table_id);
+        $this->fusionTableService->importTableData($this->project->fusion_table_id, $locations);
     }
-
-    /**
-     * Get Projects.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function getProjects()
-    {
-        $columns = ['id', 'title', 'fusion_table_id', 'fusion_style_id', 'fusion_template_id'];
-
-        $projects = empty($this->projectIds) ?
-            $this->projectContract->setCacheLifetime(0)
-                ->has('transcriptionLocations')
-                ->findAll($columns) :
-            $this->projectContract->setCacheLifetime(0)
-                ->has('transcriptionLocations')
-                ->findWhereIn(['id', $this->projectIds], $columns);
-
-        return $projects;
-    }
-
 
     /**
      * Get project locations.
      *
-     * @param $projectId
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
-    public function getProjectLocations($projectId)
+    public function getProjectLocations()
     {
-        return $this->transcriptionLocationContract->setCacheLifetime(0)
-            ->getTranscriptionFusionTableData($projectId);
+        return $this->transcriptionLocationContract->getTranscriptionFusionTableData($this->project->id);
     }
 
     /**
@@ -181,20 +142,19 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
     /**
      * Check style id.
      *
-     * @param $project
      * @param $tableId
      * @param $counts
      * @return integer
      */
-    public function checkStyleId($project, $tableId, $counts)
+    public function checkStyleId($tableId, $counts)
     {
-        $styleId = $project->fusion_style_id;
+        $styleId = $this->project->fusion_style_id;
 
         if ($styleId === 0)
         {
             $settings = $this->fusionTableService->createTableStyle($tableId, $counts);
             $styleId = $this->fusionTableService->insertTableStyle($tableId, $settings);
-            $this->updateProjectTable($project->id, ['fusion_style_id' => $styleId]);
+            $this->updateProjectTable(['fusion_style_id' => $styleId]);
         }
 
         return $styleId;
@@ -203,24 +163,22 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
     /**
      * Check template id.
      *
-     * @param $project
      * @param $tableId
      */
-    public function checkTemplateId($project, $tableId)
+    public function checkTemplateId($tableId)
     {
-        if ($project->fusion_template_id === 0)
+        if ($this->project->fusion_template_id === 0)
         {
             $templateId = $this->fusionTableService->createTemplate($tableId);
-            $this->updateProjectTable($project->id, ['fusion_template_id' => $templateId]);
+            $this->updateProjectTable(['fusion_template_id' => $templateId]);
         }
     }
 
     /**
-     * @param int $id
      * @param array $attributes
      */
-    public function updateProjectTable($id, array $attributes = [])
+    public function updateProjectTable(array $attributes)
     {
-        $this->projectContract->update($id, $attributes);
+        $this->projectContract->update($attributes, $this->project->id);
     }
 }

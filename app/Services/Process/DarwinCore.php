@@ -9,8 +9,6 @@ ini_set('max_input_time', '0');
 set_time_limit(0);
 ignore_user_abort(true);
 
-use App\Exceptions\BiospexException;
-use App\Exceptions\FileDoesNotExist;
 use App\Services\Csv\DarwinCoreCsvImport;
 
 class DarwinCore
@@ -64,7 +62,7 @@ class DarwinCore
      * 
      * @param $projectId
      * @param $directory
-     * @throws BiospexException
+     * @throws \Exception
      */
     public function process($projectId, $directory)
     {
@@ -94,13 +92,13 @@ class DarwinCore
      * Check file exists.
      *
      * @param $file
-     * @throws FileDoesNotExist
+     * @throws \Exception
      */
     protected function checkFileExists($file)
     {
         if ( ! file_exists($file))
         {
-            throw new FileDoesNotExist(trans('errors.import_file_missing', ['file' => $file]));
+            throw new \Exception(trans('errors.import_file_missing', ['file' => $file]));
         }
     }
 
@@ -108,8 +106,7 @@ class DarwinCore
      * Process a darwin core csv file
      * @param $directory
      * @param bool $loadMedia
-     * @return array
-     * @throws BiospexException
+     * @throws \Exception
      */
     protected function processCsvFile($directory, $loadMedia = true)
     {

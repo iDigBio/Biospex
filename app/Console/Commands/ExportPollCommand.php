@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Events\PollExportEvent;
-use App\Repositories\Contracts\ExpeditionContract;
-use App\Repositories\Contracts\ExportQueueContract;
+use App\Interfaces\Expedition;
+use App\Interfaces\ExportQueue;
 use App\Services\Actor\ActorFactory;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Console\Command;
@@ -37,26 +37,26 @@ class ExportPollCommand extends Command
     private $dispatcher;
 
     /**
-     * @var ExpeditionContract
+     * @var Expedition
      */
     private $expeditionContract;
     /**
-     * @var ExportQueueContract
+     * @var ExportQueue
      */
     private $exportQueueContract;
 
     /**
      * Create a new command instance.
      *
-     * @param ExpeditionContract $expeditionContract
+     * @param Expedition $expeditionContract
      * @param Dispatcher $dispatcher
-     * @param ExportQueueContract $exportQueueContract
+     * @param ExportQueue $exportQueueContract
      * @internal param Actor $actor
      */
     public function __construct(
-        ExpeditionContract $expeditionContract,
+        Expedition $expeditionContract,
         Dispatcher $dispatcher,
-        ExportQueueContract $exportQueueContract
+        ExportQueue $exportQueueContract
     )
     {
         parent::__construct();
@@ -72,9 +72,7 @@ class ExportPollCommand extends Command
      */
     public function handle()
     {
-        $records = $this->exportQueueContract->setCacheLifetime(0)
-            ->orderBy('id', 'asc')
-            ->findAll();
+        $records = $this->exportQueueContract->getAllExportQueueOrderByIdAsc();
 
         if ($records->isEmpty())
         {
@@ -87,8 +85,7 @@ class ExportPollCommand extends Command
         $count = 0;
         $data = $records->map(function($record) use ($count) {
 
-            $queue = $this->exportQueueContract->setCacheLifetime(0)
-                ->findQueueProcessData($record->id, $record->expedition_id, $record->actor_id);
+            $queue = $this->exportQueueContract->findQueueProcessData($record->id, $record->expedition_id, $record->actor_id);
 
             $actorClass = ActorFactory::create($queue->expedition->actor->class, $queue->expedition->actor->class . 'Export');
             $stage = $actorClass->stage[$queue->stage];

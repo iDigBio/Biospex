@@ -1,49 +1,6 @@
 <?php
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Session;
-use MongoDB\BSON\UTCDateTime;
-
-/**
- * @param MongoDB\BSON\UTCDateTime $date
- * @param string $format
- * @return mixed
- */
-function mongodb_date_format($date, $format = 'Y-m-d')
-{
-    return $date->toDateTime()->format($format);
-}
-
-/**
- * @param $interval
- * @return UTCDateTime
- */
-function mongo_date_interval($interval)
-{
-    $date = new \DateTime();
-    $timestamp = $date->sub(new DateInterval($interval));
-
-    return new UTCDateTime($timestamp);
-}
-
-/**
- * @param $array
- * @return \Illuminate\Support\Collection
- */
-function array_to_collection($array)
-{
-    foreach ($array as $key => $value)
-    {
-        if (is_array($value))
-        {
-            $value = array_to_collection($value);
-            $array[$key] = $value;
-        }
-    }
-
-    return collect($array);
-}
-
 
 /**
  * Encode a full url.
@@ -60,19 +17,6 @@ function url_encode($url)
         $parts['scheme'] . '://' .
         $parts['host'] .
         implode('/', array_map('rawurlencode', $path_parts));
-}
-
-/**
- * Push messages to session.
- *
- * @param $key
- * @param $value
- */
-function session_flash_push($key, $value)
-{
-    $values = Session::get($key, []);
-    $values[] = $value;
-    Session::flash($key, $values);
 }
 
 /**
@@ -106,6 +50,14 @@ function format_date($date, $format = null, $tz = null)
     return $date->copy()->tz($tz)->format($format);
 }
 
+/**
+ * Convert timezone.
+ *
+ * @param $data
+ * @param null $format
+ * @param null $tz
+ * @return string
+ */
 function convert_time_zone($data, $format = null, $tz = null)
 {
     $userTime = new DateTime($data, new DateTimeZone('UTC'));
@@ -159,68 +111,6 @@ function timezone_select()
 }
 
 /**
- * Delete directory contents.
- *
- * @param $dir
- * @param array $ignore
- * @return bool
- */
-function delete_directory_contents($dir, array $ignore = ['.gitignore'])
-{
-    if (false === file_exists($dir))
-    {
-        return false;
-    }
-
-    /** @var SplFileInfo[] $files */
-    $files = new \RecursiveIteratorIterator(
-        new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS),
-        \RecursiveIteratorIterator::CHILD_FIRST
-    );
-
-    foreach ($files as $fileinfo)
-    {
-        if ($fileinfo->isDir())
-        {
-            if (false === rmdir($fileinfo->getRealPath()))
-            {
-                return false;
-            }
-        }
-        else
-        {
-            if (in_array($fileinfo->getFilename(), $ignore))
-            {
-                continue;
-            }
-
-            if (false === unlink($fileinfo->getRealPath()))
-            {
-                return false;
-            }
-        }
-    }
-}
-
-/**
- * Turn array into object.
- *
- * @param array $array
- * @return object
- */
-function array_to_object(array $array)
-{
-    foreach ($array as $key => $value)
-    {
-        if (is_array($value))
-        {
-            $array[$key] = array_to_object($value);
-        }
-    }
-    return (object) $array;
-}
-
-/**
  * Set count for total transcriptions. 4 per subject.
  *
  * @param $count
@@ -239,9 +129,9 @@ function transcriptions_total($count)
  */
 function transcriptions_completed($expeditionId)
 {
-    $transcriptionContract = app(\App\Repositories\Contracts\PanoptesTranscriptionContract::class);
+    $transcriptionContract = app(\App\Interfaces\PanoptesTranscription::class);
 
-    return $transcriptionContract->setCacheLifetime(0)->getTranscriptionCountByExpeditionId($expeditionId);
+    return $transcriptionContract->getTranscriptionCountByExpeditionId($expeditionId);
 }
 
 /**
@@ -256,66 +146,6 @@ function transcriptions_percent_completed($total, $completed)
     $value = ($total === 0 || $completed === 0) ? 0 : ($completed / $total) * 100;
 
     return ($value > 100) ? 100 : $value;
-}
-
-
-/**
- * jTraceEx() - provide a Java style exception trace
- *
- * @param $e
- * @param array $seen - array passed to recursive calls to accumulate trace lines already seen.
- * @return array|string
- */
-function jTraceEx($e, array $seen = [])
-{
-    $starter = $seen ? 'Caused by: ' : '';
-    $result = array();
-
-    $trace = $e->getTrace();
-    $prev = $e->getPrevious();
-    $result[] = sprintf('%s%s: %s', $starter, get_class($e), $e->getMessage());
-    $file = $e->getFile();
-    $line = $e->getLine();
-
-    while (true)
-    {
-        $current = "$file:$line";
-        if (is_array($seen) && in_array($current, $seen, true))
-        {
-            $result[] = sprintf(' ... %d more', count($trace) + 1);
-            break;
-        }
-
-        $result[] = sprintf(' at %s%s%s(%s%s%s)',
-            count($trace) && array_key_exists('class', $trace[0]) ? str_replace('\\', '.', $trace[0]['class']) : '',
-            count($trace) && array_key_exists('class', $trace[0]) && array_key_exists('function', $trace[0]) ? '.' : '',
-            count($trace) && array_key_exists('function', $trace[0]) ? str_replace('\\', '.', $trace[0]['function']) : '(main)',
-            $line === null ? $file : basename($file),
-            $line === null ? '' : ':',
-            $line === null ? '' : $line);
-
-        if (count($seen) > 0)
-        {
-            $seen[] = "$file:$line";
-        }
-
-        if ( ! count($trace))
-        {
-            break;
-        }
-
-        $file = array_key_exists('file', $trace[0]) ? $trace[0]['file'] : 'Unknown Source';
-        $line = array_key_exists('file', $trace[0]) && array_key_exists('line', $trace[0]) && $trace[0]['line'] ? $trace[0]['line'] : null;
-        array_shift($trace);
-    }
-    $result = implode('<br />', $result);
-
-    if ($prev)
-    {
-        $result .= '<br />' . jTraceEx($prev, $seen);
-    }
-
-    return $result;
 }
 
 /**
@@ -425,4 +255,37 @@ function camelCaseToWords($string)
     $split_data = preg_split('/(?=[A-Z])/', $string);
 
     return ucwords(implode(' ', $split_data));
+}
+
+/**
+ * Create a csv file in memory.
+ *
+ * @param $data
+ * @return bool|string
+ * @throws \Exception
+ */
+function create_csv($data)
+{
+    if ($data === null)
+    {
+        return null;
+    }
+
+    // we use a threshold of 1 MB (1024 * 1024), it's just an example
+    $fd = fopen('php://temp/maxmemory:1048576', 'w');
+    if($fd === FALSE) {
+        throw new \Exception('Failed to open temporary file while creating csv file');
+    }
+
+    $headers = array_keys($data[0]);
+    fputcsv($fd, $headers);
+    foreach($data as $record) {
+        fputcsv($fd, $record);
+    }
+
+    rewind($fd);
+    $csv = stream_get_contents($fd);
+    fclose($fd); // releases the memory (or tempfile)
+
+    return $csv;
 }

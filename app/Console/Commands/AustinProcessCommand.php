@@ -214,6 +214,8 @@ class AustinProcessCommand extends Command
 
     /**
      * Create attachment.
+     *
+     * @throws \Exception
      */
     public function createCsv()
     {

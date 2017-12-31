@@ -10,7 +10,6 @@ use Symfony\Component\Debug\Exception\FlattenException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
 
-
 class Handler extends ExceptionHandler
 {
     /**
@@ -47,7 +46,7 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
-        if ($this->shouldReport($exception)) {
+        if ($this->shouldReport($exception) && config('app.debug') === false) {
             $this->sendEmail($exception);
         }
 

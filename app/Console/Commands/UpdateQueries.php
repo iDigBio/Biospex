@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Model\DownloadService;
-use File;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\DB;
+use File;
 
 
 class UpdateQueries extends Command
@@ -23,19 +23,13 @@ class UpdateQueries extends Command
      * The console command description.
      */
     protected $description = 'Used for custom queries when updating database';
-    /**
-     * @var DownloadService
-     */
-    private $downloadService;
 
     /**
      * UpdateQueries constructor.
-     * @param DownloadService $downloadService
      */
-    public function __construct(DownloadService $downloadService)
+    public function __construct()
     {
         parent::__construct();
-        $this->downloadService = $downloadService;
     }
 
     /**
@@ -43,6 +37,16 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
+        try
+        {
+            DB::unprepared(File::get(base_path('resources/mysql/null-columns.sql')));
+        }
+        catch(FileNotFoundException $exception)
+        {
+            echo $exception->getMessage() . PHP_EOL;
+            exit;
+        }
+        /*
         DB::table('migrations')->truncate();
         DB::insert("INSERT INTO `migrations` (`migration`, `batch`) VALUES
             ('2017_11_13_153357_create_actor_contacts_table', 0),
@@ -186,5 +190,6 @@ class UpdateQueries extends Command
             ('2017_11_13_153736_add_foreign_keys_to_user_grid_fields_table', 0),
             ('2017_11_13_153736_add_foreign_keys_to_workflow_managers_table', 0);"
         );
+        */
     }
 }

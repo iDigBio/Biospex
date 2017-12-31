@@ -68,6 +68,7 @@ class ImagickService extends ImageServiceBase
      * @param $name
      * @param $destination
      * @return bool
+     * @throws \Exception
      */
     public function generateAndSaveImage($name, $destination)
     {

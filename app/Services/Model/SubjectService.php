@@ -2,54 +2,31 @@
 
 namespace App\Services\Model;
 
-use App\Repositories\Contracts\ExpeditionContract;
-use App\Repositories\Contracts\SubjectContract;
+use App\Interfaces\Expedition;
+use App\Interfaces\Subject;
 
 class SubjectService
 {
 
     /**
-     * @var SubjectContract
+     * @var Subject
      */
     public $subjectContract;
 
     /**
-     * @var ExpeditionContract
+     * @var Expedition
      */
     public $expeditionContract;
 
     /**
      * SubjectService constructor.
-     * @param SubjectContract $subjectContract
-     * @param ExpeditionContract $expeditionContract
+     * @param Subject $subjectContract
+     * @param Expedition $expeditionContract
      */
-    public function __construct(SubjectContract $subjectContract, ExpeditionContract $expeditionContract)
+    public function __construct(Subject $subjectContract, Expedition $expeditionContract)
     {
         $this->subjectContract = $subjectContract;
         $this->expeditionContract = $expeditionContract;
-    }
-
-    /**
-     * Detach subjects from expeditions.
-     *
-     * @param $subjects
-     * @param $id
-     */
-    public function detach($subjects, $id)
-    {
-        foreach ($subjects as $subject)
-        {
-            $array = [];
-            foreach ($subject->expedition_ids as $value)
-            {
-                if ((int) $id !== (int) $value)
-                {
-                    $array[] = $value;
-                }
-            }
-            $subject->expedition_ids = $array;
-            $subject->save();
-        }
     }
 
     /**
@@ -59,12 +36,12 @@ class SubjectService
      */
     public function deleteSubjects($ids)
     {
-        $subjects = $this->subjectContract->setCacheLifetime(0)->findWhereIn(['_id', $ids]);
+        $subjects = $this->subjectContract->getWhereIn('_id', $ids);
 
         $subjects->filter(function ($subject) {
             foreach ($subject->expedition_ids as $expeditionId)
             {
-                $expedition = $this->expeditionContract->setCacheLifetime(0)->has('workflowManager')->find($expeditionId);
+                $expedition = $this->expeditionContract->findExpeditionHavingWorkflowManager($expeditionId);
                 return $expedition === null ?: false;
             }
 

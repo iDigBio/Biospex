@@ -2,8 +2,9 @@
 
 namespace App\Listeners;
 
+use App\Models\ApiUser;
 use Illuminate\Auth\Events\Login;
-use App\Repositories\Contracts\GroupContract;
+use App\Interfaces\Group;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -12,52 +13,18 @@ class GroupEventListener
 {
 
     /**
-     * @var GroupContract
+     * @var Group
      */
     private $groupContract;
 
     /**
      * GroupSessionEventListener constructor.
      *
-     * @param GroupContract $groupContract
+     * @param Group $groupContract
      */
-    public function __construct(GroupContract $groupContract)
+    public function __construct(Group $groupContract)
     {
         $this->groupContract = $groupContract;
-    }
-
-    /**
-     * Handle user login events.
-     */
-    public function onUserLogin($event)
-    {
-        $this->setUserGroupSession();
-    }
-
-    /**
-     * Handle user logout.
-     *
-     * @param $event
-     */
-    public function onUserLogout($event)
-    {
-        Session::flush();
-    }
-
-    /**
-     * Handle group saved event.
-     */
-    public function onGroupSaved()
-    {
-        $this->setUserGroupSession();
-    }
-
-    /**
-     * Handle group deleted event.
-     */
-    public function onGroupDeleted()
-    {
-        $this->setUserGroupSession();
     }
 
     /**
@@ -79,36 +46,46 @@ class GroupEventListener
 
         $events->listen(
             'group.saved',
-            'App\Listeners\GroupEventListener@onGroupSaved'
+            'App\Listeners\GroupEventListener@setUserGroupSession'
         );
 
         $events->listen(
             'group.deleted',
-            'App\Listeners\GroupEventListener@onGroupDeleted'
+            'App\Listeners\GroupEventListener@setUserGroupSession'
         );
 
     }
 
+    /**
+     * Handle user login events.
+     */
+    public function onUserLogin($event)
+    {
+        if ($event->user instanceof ApiUser)
+        {
+            return;
+        }
+
+        $this->setUserGroupSession();
+    }
+
+    /**
+     * Handle user logout.
+     *
+     * @param $event
+     */
+    public function onUserLogout($event)
+    {
+        Session::flush();
+    }
 
     /**
      * Set the user groups inside a session variable.
      */
     public function setUserGroupSession()
     {
-        $user = Auth::user();
+        $uuids = $this->groupContract->getUserGroupUuids(Auth::id());
 
-        $groups = $this->groupContract->setCacheLifetime(0)
-            ->whereHas('users', function ($query) use ($user)
-            {
-                $query->where('user_id', $user->id);
-            })
-            ->findAll();
-
-        $uuids = $groups->map(function ($item, $key)
-        {
-            return $item['uuid'];
-        });
-
-        Session::put('user-groups', $uuids);
+        Session::put('groupUuids', $uuids);
     }
 }

@@ -5,10 +5,12 @@ namespace App\Services\Import;
 
 class DarwinCoreFileImport extends ImportServiceAbstract
 {
+
     /**
      * Upload darwin core file
+     *
      * @param $id
-     * @return \Illuminate\Validation\Validator|void
+     * @return \Illuminate\Validation\Validator|mixed
      */
     public function import($id)
     {

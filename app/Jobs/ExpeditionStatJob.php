@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Repositories\Contracts\ExpeditionContract;
+use App\Interfaces\Expedition;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -30,12 +30,12 @@ class ExpeditionStatJob extends Job implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param ExpeditionContract $expedition
+     * @param Expedition $expedition
      */
-    public function handle(ExpeditionContract $expedition)
+    public function handle(Expedition $expedition)
     {
-        $record = $expedition->setCacheLifetime(0)->with('stat')->find($this->expeditionId);
-        $count = $expedition->setCacheLifetime(0)->getExpeditionSubjectCounts($this->expeditionId);
+        $record = $expedition->findWith($this->expeditionId, ['stat']);
+        $count = $expedition->getExpeditionSubjectCounts($this->expeditionId);
 
         $record->stat->subject_count = $count;
         $record->stat->transcriptions_total = transcriptions_total($count);

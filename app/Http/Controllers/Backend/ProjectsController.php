@@ -2,13 +2,9 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Facades\Toastr;
+use App\Facades\Flash;
 use App\Http\Requests\ProjectFormRequest;
-use App\Repositories\Contracts\ProjectContract;
-use App\Repositories\Contracts\UserContract;
-use App\Services\Model\ModelDeleteService;
-use App\Services\Model\ModelDestroyService;
-use App\Services\Model\ModelRestoreService;
+use App\Interfaces\User;
 use App\Services\Model\ProjectService;
 use App\Http\Controllers\Controller;
 
@@ -16,27 +12,27 @@ class ProjectsController extends Controller
 {
 
     /**
-     * @var UserContract
+     * @var ProjectService
      */
-    public $userContract;
+    private $projectService;
 
     /**
-     * @var ProjectContract
+     * @var User
      */
-    public $projectContract;
+    private $userContract;
 
     /**
      * ProjectsController constructor.
-     * @param UserContract $userContract
-     * @param ProjectContract $projectContract
+     * @param ProjectService $projectService
+     * @param User $userContract
      */
     public function __construct(
-        UserContract $userContract,
-        ProjectContract $projectContract
+        ProjectService $projectService,
+        User $userContract
     )
     {
+        $this->projectService = $projectService;
         $this->userContract = $userContract;
-        $this->projectContract = $projectContract;
     }
 
     /**
@@ -47,11 +43,11 @@ class ProjectsController extends Controller
      */
     public function index(ProjectService $service, $id = null)
     {
-        $user = $this->userContract->with('profile')->find(request()->user()->id);
-        $projects = $this->projectContract->findAll();
-        $trashed = $this->projectContract->onlyTrashed();
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $projects = $this->projectService->getallProjects();
+        $trashed = $this->projectService->getTrashedProjects();
 
-        $editProject = $id !== null ? $this->projectContract->with('nfnWorkflows')->find($id) : null;
+        $editProject = $id !== null ? $this->projectService->findWith($id, ['nfnWorkflows']) : null;
 
         $workflowEmpty = ! isset($editProject->nfnWorkflows) || $editProject->nfnWorkflows->isEmpty();
         $common = $service->setCommonVariables(request()->user());
@@ -76,15 +72,7 @@ class ProjectsController extends Controller
      */
     public function store(ProjectFormRequest $request)
     {
-        $project = $this->projectContract->create($request->all());
-
-        if ($project)
-        {
-            Toastr::success('The Project has been created successfully.', 'Project Create');
-            return redirect()->route('admin.projects.index');
-        }
-
-        Toastr::error('The Project could not be created.', 'Project Create');
+        $this->projectService->createProject($request->all());
 
         return redirect()->route('admin.projects.index')->withInput();
     }
@@ -97,11 +85,7 @@ class ProjectsController extends Controller
      */
     public function update(ProjectFormRequest $request)
     {
-        $project = $this->projectContract->update($request->input('id'), $request->all());
-
-        $project ?
-            Toastr::success('The Project has been updated.', 'Project Update') :
-            Toastr::error('The Project failed to update.', 'Project Update');
+        $this->projectService->updateProject($request->all(), $request->input('id'));
 
         return redirect()->route('admin.projects.index');
     }
@@ -109,15 +93,14 @@ class ProjectsController extends Controller
     /**
      * Delete project.
      *
-     * @param ModelDeleteService $service
-     * @param $id
+     * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete(ModelDeleteService $service, $id)
+    public function delete($projectId)
     {
-        $service->deleteProject($id) ?
-            Toastr::success('The Project has been deleted.', 'Project Delete') :
-            Toastr::error('The Project could not be deleted.', 'Project Delete');
+        $project = $this->projectService->findWith($projectId, ['nfnWorkflows']);
+
+        $this->projectService->deleteProject($project);
 
         return redirect()->route('admin.projects.index');
     }
@@ -125,15 +108,14 @@ class ProjectsController extends Controller
     /**
      * Destroy project.
      *
-     * @param ModelDestroyService $service
-     * @param $id
+     * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(ModelDestroyService $service, $id)
+    public function destroy($projectId)
     {
-        $service->destroyProject($id) ?
-            Toastr::success('The Project has been forcefully deleted.', 'Project Destroy') :
-            Toastr::error('The Project could not be forcefully deleted.', 'Project Destroy');
+        $project = $this->projectService->findWith($projectId, ['group', 'expeditions.downloads', 'subjects'], true);
+
+        $this->projectService->destroyProject($project);
 
         return redirect()->route('admin.projects.index');
     }
@@ -141,15 +123,14 @@ class ProjectsController extends Controller
     /**
      * Restore project.
      *
-     * @param ModelRestoreService $service
-     * @param $id
+     * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function restore(ModelRestoreService $service, $id)
+    public function restore($projectId)
     {
-        $service->restoreProject($id) ?
-            Toastr::success('The Project has been restored successfully.', 'Project Restore') :
-            Toastr::error('Project could not be restored.', 'Project Restore');
+        $project = $this->projectService->findWith($projectId, [], true);
+
+        $this->projectService->restoreProject($project);
 
         return redirect()->route('admin.projects.index');
     }

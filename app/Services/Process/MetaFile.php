@@ -2,15 +2,7 @@
 
 namespace App\Services\Process;
 
-use App\Exceptions\BiospexException;
-use App\Exceptions\ExtensionMissingException;
-use App\Exceptions\MissingCsvDelimiter;
-use App\Exceptions\MissingNodeException;
-use App\Exceptions\RowTypeMismatchException;
-use App\Exceptions\XmlLoadException;
-use RuntimeException;
-use App\Repositories\Contracts\MetaContract;
-use App\Services\Report\Report;
+use App\Interfaces\Meta;
 
 class MetaFile
 {
@@ -19,11 +11,6 @@ class MetaFile
      * @var Xml
      */
     protected $xml;
-
-    /**
-     * @var Report
-     */
-    protected $report;
 
     /**
      * @var null
@@ -81,7 +68,7 @@ class MetaFile
     protected $metaFields;
 
     /**
-     * @var MetaContract
+     * @var Meta
      */
     protected $metaContract;
 
@@ -98,14 +85,12 @@ class MetaFile
     /**
      * Constructor
      *
-     * @param MetaContract $metaContract
+     * @param Meta $metaContract
      * @param Xml $xml
-     * @param Report $report
      */
-    public function __construct(MetaContract $metaContract, Xml $xml, Report $report)
+    public function __construct(Meta $metaContract, Xml $xml)
     {
         $this->xml = $xml;
-        $this->report = $report;
         $this->metaContract = $metaContract;
 
         $this->dwcRequiredRowTypes = config('config.dwcRequiredRowTypes');
@@ -117,24 +102,17 @@ class MetaFile
      *
      * @param $file
      * @return string
-     * @throws BiospexException
+     * @throws \Exception
      */
     public function process($file)
     {
         $this->file = $file;
-
-        try
-        {
-            $xml = $this->xml->load($file);
-        }
-        catch (RuntimeException $e)
-        {
-            throw new XmlLoadException($e->getMessage());
-        }
-
+        $xml = $this->xml->load($file);
         $this->loadCoreNode();
         $this->setMediaIsCore();
+
         $this->loadExtensionNode();
+
         $this->checkExtensionRowType();
         $this->setCoreFile();
         $this->setExtensionFile();
@@ -172,7 +150,7 @@ class MetaFile
     /**
      * Load extension node from meta file.
      *
-     * @throws ExtensionMissingException
+     * @throws \Exception
      */
     public function loadExtensionNode()
     {
@@ -180,10 +158,10 @@ class MetaFile
 
         if ($this->loopExtensions($extensions))
         {
-            return;
+            return true;
         }
 
-        throw new ExtensionMissingException(trans('errors.missing_meta_extension', ['file' => $this->file]));
+        throw new \Exception(trans('errors.missing_meta_extension', ['file' => $this->file]));
     }
 
     /**
@@ -255,7 +233,7 @@ class MetaFile
 
     /**
      * Check row type against file given and send warning if mismatch occurs
-     * @throws RowTypeMismatchException
+     * @throws \Exception
      */
     private function checkExtensionRowType()
     {
@@ -265,7 +243,7 @@ class MetaFile
             return;
         }
 
-        throw new RowTypeMismatchException(trans('errors.rowtype_mismatch',
+        throw new \Exception(trans('errors.rowtype_mismatch',
             ['file' => $this->file, 'row_type' => $rowType, 'type_file' => $this->extension->nodeValue]
         ));
     }
@@ -283,34 +261,34 @@ class MetaFile
     /**
      * Set core file.
      *
-     * @throws MissingNodeException
+     * @throws \Exception
      */
     private function setCoreFile()
     {
         $this->coreFile = $this->core->nodeValue;
         if ($this->coreFile === '')
         {
-            throw new MissingNodeException(trans('errors.core_node_missing'));
+            throw new \Exception(trans('errors.core_node_missing'));
         }
     }
 
     /**
      * Set extension file.
-     * @throws MissingNodeException
+     * @throws \Exception
      */
     private function setExtensionFile()
     {
         $this->extensionFile = $this->extension->nodeValue;
         if ($this->extensionFile === '')
         {
-            throw new MissingNodeException(trans('errors.extension_node_missing'));
+            throw new \Exception(trans('errors.extension_node_missing'));
         }
     }
 
     /**
      * Set csv settings for core file.
      *
-     * @throws MissingCsvDelimiter
+     * @throws \Exception
      */
     private function setCoreCsvSettings()
     {
@@ -321,14 +299,14 @@ class MetaFile
 
         if ($this->coreDelimiter === '')
         {
-            throw new MissingCsvDelimiter(trans('errors.csv_core_delimiter'));
+            throw new \Exception(trans('errors.csv_core_delimiter'));
         }
     }
 
     /**
      * Set csv settings for extension file.
      *
-     * @throws MissingCsvDelimiter
+     * @throws \Exception
      */
     private function setExtensionCsvSettings()
     {
@@ -339,7 +317,7 @@ class MetaFile
 
         if ($this->extDelimiter === '')
         {
-            throw new MissingCsvDelimiter(trans('errors.csv_ext_delimiter'));
+            throw new \Exception(trans('errors.csv_ext_delimiter'));
         }
     }
 

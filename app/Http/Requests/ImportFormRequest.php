@@ -28,8 +28,6 @@ class ImportFormRequest extends Request
                 return ['core' => 'required|mimes:zip'];
             case 'darwinCoreUrlImport':
                 return ['core-url' => 'required|url'];
-            case 'nfnTranscriptionImport':
-                return ['transcription' => 'required|mimes:txt'];
             case 'recordSetImport':
                 return ['recordset' => 'required|alpha_dash'];
             default:break;

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\UuidTrait;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class OcrQueue extends Model
 {
-    use UuidTrait;
+    use UuidTrait, LadaCacheTrait;
 
     /**
      * @inheritDoc

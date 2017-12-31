@@ -8,7 +8,6 @@ use GuzzleHttp\Pool;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 
-
 class OcrDeleteFile extends Command
 {
 
@@ -36,8 +35,6 @@ class OcrDeleteFile extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
     public function handle()
     {

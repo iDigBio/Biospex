@@ -30,7 +30,7 @@ class GroupPolicy
      * @param $group
      * @return bool
      */
-    public function isOwner($user,$group)
+    public function isOwner($user, $group)
     {
         return $user->id === $group->user_id;
     }
@@ -62,11 +62,11 @@ class GroupPolicy
      * @param $group
      * @return bool|string
      */
-    public function show($user, $group)
+    public function read($user, $group)
     {
         $key = md5(__METHOD__ . $user->uuid . $group->uuid);
         $access = Cache::remember($key, 60, function() use ($user, $group) {
-            return $user->hasAccess($group, 'read-group');
+            return $user->hasGroup($group, 'read-group');
         });
 
         return $access ? true : null;
@@ -82,7 +82,7 @@ class GroupPolicy
     {
         $key = md5(__METHOD__ . $user->uuid . $group->uuid);
         $access = Cache::remember($key, 60, function() use ($user, $group) {
-            return $user->hasAccess($group, 'update-group');
+            return $user->hasGroup($group, 'update-group');
         });
 
         return $access ? true : null;

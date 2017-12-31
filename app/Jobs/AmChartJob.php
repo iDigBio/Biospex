@@ -2,14 +2,14 @@
 
 namespace App\Jobs;
 
-use App\Repositories\Contracts\PanoptesTranscriptionContract;
-use App\Repositories\Contracts\ProjectContract;
-use App\Repositories\Contracts\AmChartContract;
+use App\Interfaces\PanoptesTranscription;
+use App\Interfaces\Project;
+use App\Interfaces\AmChart;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Carbon\Carbon;
 
 class AmChartJob extends Job implements ShouldQueue
 {
@@ -17,14 +17,14 @@ class AmChartJob extends Job implements ShouldQueue
     use InteractsWithQueue, SerializesModels;
 
     /**
-     * @var PanoptesTranscriptionContract
+     * @var PanoptesTranscription
      */
     protected $transcription;
 
     /**
-     * @var array
+     * @var int
      */
-    protected $ids;
+    protected $projectId;
 
     /**
      * Array to hold all transcription results.
@@ -50,57 +50,48 @@ class AmChartJob extends Job implements ShouldQueue
 
     /**
      * AmChartJob constructor.
-     * @param array $ids
+     * @param int $projectId
      */
-    public function __construct(array $ids = [])
+    public function __construct($projectId)
     {
-        $this->ids = $ids;
+        $this->projectId = $projectId;
     }
 
     /**
-     * @param ProjectContract $projectContract
-     * @param AmChartContract $chart
-     * @param PanoptesTranscriptionContract $transcription
+     * @param Project $projectContract
+     * @param AmChart $chart
+     * @param PanoptesTranscription $transcription
      */
     public function handle(
-        ProjectContract $projectContract,
-        AmChartContract $chart,
-        PanoptesTranscriptionContract $transcription)
+        Project $projectContract,
+        AmChart $chart,
+        PanoptesTranscription $transcription
+    )
     {
-        if (count($this->ids) === 0)
+        $this->transcriptions = [];
+        $this->transcription = $transcription;
+
+        $relations = ['expeditions.stat', 'expeditions.nfnWorkflow'];
+        $project = $projectContract->findWith($this->projectId, $relations);
+        $earliest_date = $this->transcription->getMinFinishedAtDateByProjectId($project->id);
+        $finished_date = $this->transcription->getMaxFinishedAtDateByProjectId($project->id);
+
+        if (null === $earliest_date || null === $finished_date)
         {
             $this->delete();
 
             return;
         }
 
-        foreach ($this->ids as $id)
-        {
-            $this->transcriptions = [];
-            $this->transcription = $transcription;
+        $this->setDaysAndDates($earliest_date, $finished_date);
 
-            $relations = ['expeditions.stat', 'expeditions.nfnWorkflow'];
-            $project = $projectContract->setCacheLifetime(0)->with($relations)->find($id);
-            $earliest_date = $this->transcription->setCacheLifetime(0)->getMinFinishedAtDateByProjectId($project->id);
-            $finished_date = $this->transcription->setCacheLifetime(0)->getMaxFinishedAtDateByProjectId($project->id);
+        $this->processProjectExpeditions($project->expeditions);
 
-            if (null === $earliest_date || null === $finished_date)
-            {
-                $this->delete();
+        uasort($this->transcriptions, [$this, 'sort']);
 
-                return;
-            }
+        $content = array_values($this->transcriptions);
 
-            $this->setDaysAndDates($earliest_date, $finished_date);
-
-            $this->processProjectExpeditions($project->expeditions);
-
-            uasort($this->transcriptions, [$this, 'sort']);
-
-            $content = array_values($this->transcriptions);
-
-            $chart->updateOrCreateChart(['project_id' => $id], ['data' => json_encode($content)]);
-        }
+        $chart->updateOrCreate(['project_id' => $this->projectId], ['data' => json_encode($content)]);
 
         $this->delete();
     }
@@ -158,7 +149,6 @@ class AmChartJob extends Job implements ShouldQueue
     public function processExpedition($expedition)
     {
         $transcriptCountByDate = $this->transcription
-            ->setCacheLifetime(0)
             ->getTranscriptionCountPerDate($expedition->nfnWorkflow->workflow);
 
         $daysArray = $this->processTranscriptionDateCounts($expedition, $transcriptCountByDate);

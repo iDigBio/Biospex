@@ -2,10 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Exceptions\BiospexException;
+use App\Facades\DateHelper;
 use App\Models\Traits\UuidTrait;
 use App\Services\Model\WeDigBioDashboardService;
-use App\Services\Report\Report;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -19,7 +18,7 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
     /**
      * @var \Illuminate\Support\Collection
      */
-    public $ids;
+    private $ids;
 
     /**
      * WeDigBioDashboardJob constructor.
@@ -35,11 +34,9 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
      * Handle job.
      *
      * @param WeDigBioDashboardService $weDigBioDashboardService
-     * @param Report $report
      */
     public function handle(
-        WeDigBioDashboardService $weDigBioDashboardService,
-        Report $report
+        WeDigBioDashboardService $weDigBioDashboardService
     )
     {
 
@@ -55,7 +52,7 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
             collect($this->ids)->each(function($id) use ($weDigBioDashboardService){
                 $expedition = $weDigBioDashboardService->getExpedition($id);
 
-                $timestamp = mongo_date_interval('P2D');
+                $timestamp = DateHelper::mongoDbNowSubDateInterval('P2D');
 
                 $transcriptions = $weDigBioDashboardService->getTranscriptions($expedition->id, $timestamp);
 
@@ -65,15 +62,11 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
                     $weDigBioDashboardService->processTranscripts($transcription, $expedition);
                 });
             });
-
-            if ($report->checkErrors())
-            {
-                $report->reportError();
-            }
         }
-        catch (BiospexException $e)
+        catch (\Exception $e)
         {
-            $report->addError($e->getMessage());
+            $this->delete();
+            exit;
         }
     }
 }

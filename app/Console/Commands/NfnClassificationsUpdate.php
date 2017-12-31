@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\NfnClassificationsUpdateJob;
+use function foo\func;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -16,14 +17,14 @@ class NfnClassificationsUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'nfn:update {ids?}';
+    protected $signature = 'nfn:update {ids}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Update NfN Classifications for Expeditions. Argument can be comma separated ids or empty.';
+    protected $description = 'Update NfN Classifications for Expeditions. Argument is comma separated project ids.';
 
 
     /**
@@ -39,8 +40,16 @@ class NfnClassificationsUpdate extends Command
      */
     public function handle()
     {
-        $ids = null === $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
+        $ids = explode(',', $this->argument('ids'));
 
-        $this->dispatch((new NfnClassificationsUpdateJob($ids))->onQueue(config('config.beanstalkd.classification')));
+        if (empty($ids))
+        {
+            return;
+        }
+
+        collect($ids)->each(function ($projectId){
+            $this->dispatch((new NfnClassificationsUpdateJob($projectId))
+                ->onQueue(config('config.beanstalkd.classification')));
+        });
     }
 }

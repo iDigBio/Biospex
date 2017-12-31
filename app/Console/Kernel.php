@@ -1,35 +1,7 @@
-<?php namespace App\Console;
+<?php
 
-use App\Console\Commands\AustinProcessCommand;
-use App\Console\Commands\ClearOcrResults;
-use App\Console\Commands\ExportPollCommand;
-use App\Console\Commands\ExportQueue;
-use App\Console\Commands\FixIdentifiersCommand;
-use App\Console\Commands\NfnClassificationPusher;
-use App\Console\Commands\NfnClassificationsCsvCreate;
-use App\Console\Commands\NfnClassificationsCsvFile;
-use App\Console\Commands\NfnClassificationsFusionTable;
-use App\Console\Commands\NfnClassificationsReconciliation;
-use App\Console\Commands\NfnClassificationsTranscript;
-use App\Console\Commands\NfnClassificationsUpdate;
-use App\Console\Commands\AmChartUpdate;
-use App\Console\Commands\ClearBeanstalkdQueueCommand;
-use App\Console\Commands\DarwinCoreFileImportCommand;
-use App\Console\Commands\DownloadCleanCommand;
-use App\Console\Commands\Inspire;
-use App\Console\Commands\NfnWorkflowUpdate;
-use App\Console\Commands\NotificationsUpdateCommand;
-use App\Console\Commands\OcrDeleteFile;
-use App\Console\Commands\OcrPollCommand;
-use App\Console\Commands\OcrProcessCommand;
-use App\Console\Commands\OcrQueuePushCommand;
-use App\Console\Commands\ExpeditionStatUpdate;
-use App\Console\Commands\TestAppCommand;
-use App\Console\Commands\UpdateGoogleStateCountyTable;
-use App\Console\Commands\UpdateQueries;
-use App\Console\Commands\ViewsCommand;
-use App\Console\Commands\WeDigBioDashboard;
-use App\Console\Commands\WorkFlowManagerCommand;
+namespace App\Console;
+
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -41,35 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Inspire::class,
-        WorkFlowManagerCommand::class,
-        DownloadCleanCommand::class,
-        ViewsCommand::class,
-        TestAppCommand::class,
-        ClearBeanstalkdQueueCommand::class,
-        DarwinCoreFileImportCommand::class,
-        OcrQueuePushCommand::class,
-        OcrProcessCommand::class,
-        OcrDeleteFile::class,
-        AustinProcessCommand::class,
-        UpdateQueries::class,
-        AmChartUpdate::class,
-        ExpeditionStatUpdate::class,
-        ClearOcrResults::class,
-        NfnClassificationsUpdate::class,
-        NfnWorkflowUpdate::class,
-        ExportPollCommand::class,
-        OcrPollCommand::class,
-        NotificationsUpdateCommand::class,
-        NfnClassificationsCsvCreate::class,
-        NfnClassificationsCsvFile::class,
-        NfnClassificationsReconciliation::class,
-        NfnClassificationsTranscript::class,
-        UpdateGoogleStateCountyTable::class,
-        NfnClassificationsFusionTable::class,
-        ExportQueue::class,
-        FixIdentifiersCommand::class,
-        WeDigBioDashboard::class
+        //
     ];
 
     /**
@@ -80,6 +24,19 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('inspire')->hourly();
+        // $schedule->command('inspire')
+        //          ->hourly();
+    }
+
+    /**
+     * Register the commands for the application.
+     *
+     * @return void
+     */
+    protected function commands()
+    {
+        $this->load(__DIR__.'/Commands');
+
+        require base_path('routes/console/console.php');
     }
 }

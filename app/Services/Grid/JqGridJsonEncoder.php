@@ -3,26 +3,26 @@
 namespace App\Services\Grid;
 
 use Illuminate\Support\Facades\Route;
-use App\Repositories\Contracts\SubjectContract;
-use App\Repositories\Contracts\ExpeditionContract;
-use App\Repositories\Contracts\HeaderContract;
+use App\Interfaces\Subject;
+use App\Interfaces\Expedition;
+use App\Interfaces\Header;
 use Exception;
 
 class JqGridJsonEncoder
 {
 
     /**
-     * @var SubjectContract
+     * @var Subject
      */
     protected $subjectContract;
 
     /**
-     * @var ExpeditionContract
+     * @var Expedition
      */
     protected $expeditionContract;
 
     /**
-     * @var HeaderContract
+     * @var Header
      */
     protected $headerContract;
 
@@ -48,14 +48,14 @@ class JqGridJsonEncoder
 
     /**
      * JqGridJsonEncoder constructor.
-     * @param SubjectContract $subjectContract
-     * @param ExpeditionContract $expeditionContract
-     * @param HeaderContract $headerContract
+     * @param Subject $subjectContract
+     * @param Expedition $expeditionContract
+     * @param Header $headerContract
      */
     public function __construct(
-        SubjectContract $subjectContract,
-        ExpeditionContract $expeditionContract,
-        HeaderContract $headerContract
+        Subject $subjectContract,
+        Expedition $expeditionContract,
+        Header $headerContract
     )
     {
         $this->subjectContract = $subjectContract;
@@ -78,9 +78,7 @@ class JqGridJsonEncoder
 
         $this->route = $route;
 
-        $result = $this->headerContract->setCacheLifetime(0)
-            ->where('project_id', '=', $projectId)
-            ->findFirst();
+        $result = $this->headerContract->findBy('project_id', $projectId);
 
         if (empty($result))
         {
@@ -261,7 +259,7 @@ class JqGridJsonEncoder
             'expeditionId' => $expeditionId
         ];
 
-        $vars['count'] = $this->subjectContract->setCacheLifetime(0)->getTotalRowCount($vars);
+        $vars['count'] = $this->subjectContract->getTotalRowCount($vars);
 
         $vars['limit'] = count($vars['limit']) === 0 ? $vars['count'] : $vars['limit'];
 
@@ -281,7 +279,7 @@ class JqGridJsonEncoder
         if (empty($postedData['pivotRows']))
         {
             // $limit, $start, $sidx, $sord, $filters
-            $rows = $this->subjectContract->setCacheLifetime(0)->getRows($vars);
+            $rows = $this->subjectContract->getRows($vars);
         }
         else
         {
@@ -330,10 +328,7 @@ class JqGridJsonEncoder
     {
         $subjectId = Route::input('subjects');
 
-        $row = $this->subjectContract->setCacheLifetime(0)
-            ->where('_id', '=', $subjectId)
-            ->findFirst()
-            ->toArray();
+        $row = $this->subjectContract->findBy('_id', $subjectId)->toArray();
 
         if ( ! $row)
         {
@@ -346,31 +341,6 @@ class JqGridJsonEncoder
             'records' => count($row) === 0 ? 0 : 1,
             'rows'    => [$row['occurrence']],
         ]);
-    }
-
-    /**
-     * Update selected rows
-     *
-     * @param $id
-     * @param $data
-     * @return string
-     */
-    public function updateSelectedRows($id, $data)
-    {
-        $expedition = $this->expeditionContract->setCacheLifetime(0)->find($id);
-
-        if ($data['selected'] === 'true')
-        {
-            $expedition->subjects()->sync($data['ids'], false);
-        }
-        else
-        {
-            $this->subjectContract->setCacheLifetime(0)->detachSubjects($data['ids'], $id);
-        }
-
-        $count = $expedition->getSubjectsCountAttribute();
-
-        return json_encode($count);
     }
 
     /**

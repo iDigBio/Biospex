@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class NfnWorkflow extends Model
 {
 
-    use SoftCascadeTrait, SoftDeletes;
+    use SoftCascadeTrait, SoftDeletes, LadaCacheTrait;
 
     /**
      * Enable soft delete.

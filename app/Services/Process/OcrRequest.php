@@ -2,8 +2,7 @@
 
 namespace App\Services\Process;
 
-use App\Exceptions\RequestException;
-use App\Repositories\Contracts\SubjectContract;
+use App\Interfaces\Subject;
 use Illuminate\Support\Facades\Artisan;
 use GuzzleHttp\Client;
 
@@ -16,17 +15,17 @@ class OcrRequest
     protected $client;
 
     /**
-     * @var SubjectContract
+     * @var Subject
      */
     protected $subjectContract;
     
     /**
      * Ocr constructor.
      *
-     * @param SubjectContract $subjectContract
+     * @param Subject $subjectContract
      */
     public function __Construct(
-        SubjectContract $subjectContract
+        Subject $subjectContract
     )
     {
         $this->client = new Client();
@@ -37,8 +36,7 @@ class OcrRequest
      * Send json data as file.
      *
      * @param $record
-     * @return bool
-     * @throws RequestException
+     * @throws \Exception
      */
     public function sendOcrFile($record)
     {
@@ -58,7 +56,7 @@ class OcrRequest
         $response = $this->client->request('POST', config('config.ocr_post_url'), $options);
 
         if ($response->getStatusCode() !== 202) {
-            throw new RequestException(trans('errors.ocr_send_error',
+            throw new \Exception(trans('errors.ocr_send_error',
                 ['title' => $record->title, 'id' => $record->id, 'message' => print_r($response->getBody(), true)]));
         }
     }
@@ -67,22 +65,14 @@ class OcrRequest
      * Request file from ocr server
      *
      * @param $uuid
-     * @return mixed|void
-     * @throws RequestException
+     * @return mixed
      */
     public function requestOcrFile($uuid)
     {
-        try
-        {
-            $response = $this->client->get(config('config.ocr_get_url') . '/' . $uuid . '.json');
-            $contents = $response->getBody()->getContents();
+        $response = $this->client->get(config('config.ocr_get_url') . '/' . $uuid . '.json');
+        $contents = $response->getBody()->getContents();
 
-            return json_decode($contents);
-        }
-        catch (\RuntimeException $e)
-        {
-            return '';
-        }
+        return json_decode($contents);
     }
 
     /**
@@ -135,7 +125,7 @@ class OcrRequest
                 continue;
             }
 
-            $subject = $this->subjectContract->setCacheLifetime(0)->find($id);
+            $subject = $this->subjectContract->find($id);
             if ($subject === null)
             {
                 $csv[] = ['id' => $id, 'message' => 'Could not locate associated subject in database', 'url' => ''];
@@ -143,7 +133,7 @@ class OcrRequest
             }
 
             $subject->ocr = $data->ocr;
-            $this->subjectContract->update($subject->_id, $subject->toArray());
+            $this->subjectContract->update($subject->toArray(), $subject->_id);
         }
 
         return $csv;

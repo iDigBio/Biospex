@@ -3,31 +3,30 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\FaqContract;
-use App\Repositories\Contracts\FaqCategoryContract;
+use App\Interfaces\Faq;
+use App\Interfaces\FaqCategory;
 
 class FaqsController extends Controller
 {
 
     /**
-     * @var FaqContract
+     * @var Faq
      */
     public $faqContract;
     
     /**
-     * @var FaqCategoryContract
+     * @var FaqCategory
      */
     public $faqCategoryContract;
 
     /**
      * FaqController constructor.
      *
-     * @param FaqContract $faqContract
-     * @param FaqCategoryContract $faqCategoryContract
+     * @param Faq $faqContract
+     * @param FaqCategory $faqCategoryContract
      */
-    public function __construct(FaqContract $faqContract, FaqCategoryContract $faqCategoryContract)
+    public function __construct(Faq $faqContract, FaqCategory $faqCategoryContract)
     {
-
         $this->faqContract = $faqContract;
         $this->faqCategoryContract = $faqCategoryContract;
     }
@@ -39,10 +38,7 @@ class FaqsController extends Controller
      */
     public function index()
     {
-        $categories = $this->faqCategoryContract->setCacheLifetime(0)
-            ->with('faqs')
-            ->orderBy('id', 'asc')
-            ->groupBy('id')->findAll();
+        $categories = $this->faqCategoryContract->getCategoriesWithFaqOrdered();
 
         return view('frontend.faqs.index', compact('categories'));
     }

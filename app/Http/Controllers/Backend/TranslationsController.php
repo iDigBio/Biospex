@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Repositories\Contracts\UserContract;
+use App\Interfaces\User;
 use App\Http\Controllers\Controller;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Support\Collection;
@@ -14,16 +14,16 @@ class TranslationsController extends Controller
     protected $manager;
 
     /**
-     * @var UserContract
+     * @var User
      */
     private $userContract;
 
     /**
      * TranslationsController constructor.
      * @param Manager $manager
-     * @param UserContract $userContract
+     * @param User $userContract
      */
-    public function __construct(Manager $manager, UserContract $userContract)
+    public function __construct(Manager $manager, User $userContract)
     {
         $this->manager = $manager;
         $this->userContract = $userContract;
@@ -37,7 +37,7 @@ class TranslationsController extends Controller
      */
     public function getIndex($group = null)
     {
-        $user = $this->userContract->with('profile')->find(request()->user()->id);
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
 
         $locales = $this->loadLocales();
         $groups = Translation::groupBy('group');
@@ -46,7 +46,7 @@ class TranslationsController extends Controller
             $groups->whereNotIn('group', $excludedGroups);
         }
 
-        $groups = $groups->lists('group', 'group');
+        $groups = $groups->pluck('group', 'group');
         if ($groups instanceof Collection) {
             $groups = $groups->all();
         }
@@ -97,7 +97,7 @@ class TranslationsController extends Controller
     protected function loadLocales()
     {
         //Set the default locale as the first one.
-        $locales = Translation::groupBy('locale')->lists('locale');
+        $locales = Translation::groupBy('locale')->pluck('locale');
         if ($locales instanceof Collection) {
             $locales = $locales->all();
         }
@@ -223,7 +223,7 @@ class TranslationsController extends Controller
      */
     public function preview($id, $locale = null)
     {
-        $user = $this->userContract->with('profile')->find(request()->user()->id);
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $translation = Translation::where('id', $id)->first();
 
         return view('backend.translations.preview', compact('user', 'translation'));

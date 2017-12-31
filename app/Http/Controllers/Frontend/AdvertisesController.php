@@ -4,21 +4,21 @@ namespace App\Http\Controllers\Frontend;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\ProjectContract;
+use App\Interfaces\Project;
 
 class AdvertisesController extends Controller
 {
 
     /**
-     * @var ProjectContract
+     * @var Project
      */
     public $projectContract;
 
     /**
      * Advertise constructor.
-     * @param ProjectContract $projectContract
+     * @param Project $projectContract
      */
-    public function __construct(ProjectContract $projectContract)
+    public function __construct(Project $projectContract)
     {
         $this->projectContract = $projectContract;
     }
@@ -31,7 +31,7 @@ class AdvertisesController extends Controller
      */
     public function index($id)
     {
-        $project = $this->projectContract->with('group')->find($id);
+        $project = $this->projectContract->findWith($id, ['group']);
 
         if ( ! $this->checkPermissions('read', $project))
         {
@@ -39,7 +39,7 @@ class AdvertisesController extends Controller
         }
 
         if (empty($project->advertise)) {
-            $project = $this->projectContract->update($project->id, $project->toArray());
+            $project = $this->projectContract->update($project->toArray(), $project->id);
         }
 
         return view('frontend.projects.advertise', compact('project'));
@@ -54,7 +54,7 @@ class AdvertisesController extends Controller
      */
     public function show(ResponseFactory $response, $id)
     {
-        $project = $this->projectContract->with('group')->find($id);
+        $project = $this->projectContract->findWith($id, ['group']);
 
         if ( ! $this->checkPermissions('read', $project))
         {

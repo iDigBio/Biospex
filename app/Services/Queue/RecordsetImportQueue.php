@@ -2,11 +2,9 @@
 
 namespace App\Services\Queue;
 
-use App\Exceptions\BiospexException;
-use App\Repositories\Contracts\ProjectContract;
+use App\Interfaces\Project;
+use App\Notifications\DarwinCoreImportError;
 use App\Services\Process\RecordSet;
-use App\Services\Report\Report;
-use App\Exceptions\Handler;
 
 class RecordSetImportQueue extends QueueAbstract
 {
@@ -17,40 +15,23 @@ class RecordSetImportQueue extends QueueAbstract
     public $record;
 
     /**
-     * @var Report
-     */
-    public $report;
-
-    /**
-     * @var ProjectContract
+     * @var Project
      */
     protected $projectContract;
-
-    /**
-     * @var Handler
-     */
-    protected $handler;
-
 
     /**
      * RecordSetImportQueue constructor.
      *
      * @param RecordSet $record
-     * @param Report $report
-     * @param ProjectContract $projectContract
-     * @param Handler $handler
+     * @param Project $projectContract
      */
     public function __construct(
         RecordSet $record,
-        Report $report,
-        ProjectContract $projectContract,
-        Handler $handler
+        Project $projectContract
     )
     {
         $this->record = $record;
-        $this->report = $report;
         $this->projectContract = $projectContract;
-        $this->handler = $handler;
     }
 
     /**
@@ -58,7 +39,7 @@ class RecordSetImportQueue extends QueueAbstract
      *
      * @param $job
      * @param $data
-     * @throws BiospexException
+     * @throws \Exception
      */
     public function fire($job, $data)
     {
@@ -70,20 +51,17 @@ class RecordSetImportQueue extends QueueAbstract
             $this->record->process($data);
             $this->delete();
         }
-        catch (BiospexException $e)
+        catch (\Exception $e)
         {
-            $project = $this->projectContract->with('group.owner')
-                ->find($data['project_id']);
+            $project = $this->projectContract->findWith($data['project_id'],['group.owner']);
 
-            $this->report->addError(trans('errors.import_process', [
+            $message = trans('errors.import_process', [
                 'title'   => $project->title,
                 'id'      => $project->id,
                 'message' => $e->getMessage()
-            ]));
-
-            $this->report->reportError($project->group->owner->email);
-
-            $this->handler->report($e);
+            ]);
+            
+            $project->group->owner->notify(new DarwinCoreImportError($message, __FILE__));
         }
     }
 }

@@ -29,7 +29,7 @@ class ActorImageService extends ActorServiceBase
     /**
      * @var
      */
-    private $missingImages = [];
+    private $missingImages;
 
     /**
      * ActorImageService constructor.

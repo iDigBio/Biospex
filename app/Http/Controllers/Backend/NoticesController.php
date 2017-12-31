@@ -2,33 +2,32 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Facades\Toastr;
+use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\NoticeFormRequest;
-use App\Repositories\Contracts\UserContract;
-use App\Repositories\Contracts\NoticeContract;
-use Illuminate\Http\Request;
+use App\Interfaces\User;
+use App\Interfaces\Notice;
 
 class NoticesController extends Controller
 {
 
     /**
-     * @var NoticeContract
+     * @var Notice
      */
     private $noticeContract;
 
     /**
-     * @var UserContract
+     * @var User
      */
     private $userContract;
 
     /**
      * NoticesController constructor.
      *
-     * @param NoticeContract $noticeContract
-     * @param UserContract $userContract
+     * @param Notice $noticeContract
+     * @param User $userContract
      */
-    public function __construct(NoticeContract $noticeContract, UserContract $userContract)
+    public function __construct(Notice $noticeContract, User $userContract)
     {
         $this->noticeContract = $noticeContract;
         $this->userContract = $userContract;
@@ -37,14 +36,13 @@ class NoticesController extends Controller
     /**
      * Notice index.
      *
-     * @param Request $request
      * @return mixed
      */
-    public function index(Request $request)
+    public function index()
     {
-        $user = $this->userContract->with('profile')->find($request->user()->id);
-        $notices = $this->noticeContract->findAll();
-        $trashed = $this->noticeContract->onlyTrashed();
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $notices = $this->noticeContract->all();
+        $trashed = $this->noticeContract->getOnlyTrashed();
 
         return view('backend.notices.index', compact('user', 'notices', 'trashed'));
     }
@@ -52,15 +50,14 @@ class NoticesController extends Controller
     /**
      * Edit notice.
      *
-     * @param Request $request
      * @param $id
      * @return mixed
      */
-    public function edit(Request $request, $id)
+    public function edit($id)
     {
-        $user = $this->userContract->with('profile')->find($request->user()->id);
-        $notices = $this->noticeContract->findAll();
-        $trashed = $this->noticeContract->onlyTrashed();
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $notices = $this->noticeContract->all();
+        $trashed = $this->noticeContract->getOnlyTrashed();
         $notice = $this->noticeContract->find($id);
 
         return view('backend.notices.index', compact('user', 'notices', 'notice', 'trashed'));
@@ -75,10 +72,10 @@ class NoticesController extends Controller
      */
     public function update(NoticeFormRequest $request, $id)
     {
-        $notice = $this->noticeContract->update($id, $request->all());
+        $notice = $this->noticeContract->update($request->all(), $id);
         
-        $notice ? Toastr::success('Notice has been updated.', 'Notice Update')
-            : Toastr::error('Notice could not be updated.', 'Notice Update');
+        $notice ? Flash::success('Notice has been updated.')
+            : Flash::error('Notice could not be updated.');
 
         return redirect()->route('admin.notices.index');
     }
@@ -103,8 +100,8 @@ class NoticesController extends Controller
     {
         $notice = $this->noticeContract->create($request->all());
         
-        $notice ? Toastr::success('Notice has been created.', 'Notice Create')
-            : Toastr::error('Notice could not be created.', 'Notice Create');
+        $notice ? Flash::success('Notice has been created.')
+            : Flash::error('Notice could not be created.');
 
         return redirect()->route('admin.notices.index');
     }
@@ -117,11 +114,9 @@ class NoticesController extends Controller
      */
     public function delete($id)
     {
-        $this->noticeContract->update($id, ['enabled' => 0]);
-        $result = $this->noticeContract->delete($id);
-
-        $result ? Toastr::success('Notice has been deleted.', 'Notice Delete')
-            : Toastr::error('Notice could not be deleted.', 'Notice Delete');
+        $this->noticeContract->delete($id) ?
+            Flash::success('Notice has been deleted.') :
+            Flash::error('Notice could not be deleted.');
         
         return redirect()->route('admin.notices.index');
     }
@@ -134,10 +129,9 @@ class NoticesController extends Controller
      */
     public function trash($id)
     {
-        $result = $this->noticeContract->forceDelete($id);
-
-        $result ? Toastr::success('Notice has been forcefully deleted.', 'Notice Delete')
-            : Toastr::error('Notice could not be forcefully deleted.', 'Notice Delete');
+        $this->noticeContract->destroy($id) ?
+            Flash::success('Notice has been forcefully deleted.') :
+            Flash::error('Notice could not be forcefully deleted.');
 
         return redirect()->route('admin.notices.index');
     }
@@ -150,10 +144,9 @@ class NoticesController extends Controller
      */
     public function enable($id)
     {
-        $result = $this->noticeContract->update($id, ['enabled' => 1]);
-
-        $result ? Toastr::success('Notice has been enabled.', 'Notice Enable')
-            : Toastr::error('Notice could not be enabled.', 'Notice Enable');
+        $this->noticeContract->update(['enabled' => 1], $id) ?
+            Flash::success('Notice has been enabled.') :
+            Flash::error('Notice could not be enabled.');
 
         return redirect()->route('admin.notices.index');
     }
@@ -166,10 +159,9 @@ class NoticesController extends Controller
      */
     public function disable($id)
     {
-        $result = $this->noticeContract->update($id, ['enabled' => 0]);
-
-        $result ? Toastr::success('Notice has been disabled.', 'Notice Disable')
-            : Toastr::error('Notice could not be disabled.', 'Notice Disable');
+        $this->noticeContract->update(['enabled' => 0], $id) ?
+            Flash::success('Notice has been disabled.') :
+            Flash::error('Notice could not be disabled.');
 
         return redirect()->route('admin.notices.index');
     }

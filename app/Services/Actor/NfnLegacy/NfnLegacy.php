@@ -2,6 +2,8 @@
 
 namespace App\Services\Actor\NfnLegacy;
 
+use App\Models\Actor;
+use App\Models\ExportQueue;
 use App\Services\Actor\ActorInterface;
 
 class NfnLegacy implements ActorInterface
@@ -19,6 +21,22 @@ class NfnLegacy implements ActorInterface
     public function __construct(NfnLegacyExport $export)
     {
         $this->export = $export;
+    }
+
+    /**
+     * @param Actor $actor
+     */
+    public function actor(Actor $actor)
+    {
+
+    }
+
+    /**
+     * @param ExportQueue $queue
+     */
+    public function queue(ExportQueue $queue)
+    {
+
     }
 
     /**

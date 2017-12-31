@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class StateCounty extends Model
+class State extends Model
 {
+    use LadaCacheTrait;
 
     /**
      * @inheritDoc

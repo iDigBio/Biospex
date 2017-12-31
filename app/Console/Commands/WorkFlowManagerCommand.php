@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\Eloquent\WorkflowManagerRepository;
+use App\Repositories\WorkflowManagerRepository;
 use Illuminate\Console\Command;
-use App\Repositories\Contracts\WorkflowManagerContract;
+use App\Interfaces\WorkflowManager;
 use Queue;
 
 class WorkFlowManagerCommand extends Command
@@ -25,7 +25,7 @@ class WorkFlowManagerCommand extends Command
     protected $description = "Workflow manager";
 
     /**
-     * @var WorkflowManagerContract
+     * @var WorkflowManager
      */
     protected $workflowManagerContract;
 
@@ -37,9 +37,9 @@ class WorkFlowManagerCommand extends Command
     /**
      * WorkFlowManagerCommand constructor.
      *
-     * @param WorkflowManagerContract $workflowManagerContract
+     * @param WorkflowManager $workflowManagerContract
      */
-    public function __construct(WorkflowManagerContract $workflowManagerContract)
+    public function __construct(WorkflowManager $workflowManagerContract)
     {
         parent::__construct();
         $this->tube = config('config.beanstalkd.workflow');
@@ -56,7 +56,7 @@ class WorkFlowManagerCommand extends Command
     public function handle()
     {
         $id = $this->argument('expedition');
-        $managers = $this->workflowManagerContract->setCacheLifetime(0)->getWorkflowManagersForProcessing($id);
+        $managers = $this->workflowManagerContract->getWorkflowManagersForProcessing($id);
 
         if ($managers->isEmpty())
         {

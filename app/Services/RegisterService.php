@@ -1,0 +1,162 @@
+<?php
+
+namespace App\Services;
+
+use App\Facades\Flash;
+use App\Notifications\UserActivation;
+use App\Interfaces\Group;
+use App\Interfaces\Invite;
+use App\Interfaces\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Route;
+
+class RegisterService
+{
+
+    /**
+     * @var User
+     */
+    private $userContract;
+
+    /**
+     * @var Invite
+     */
+    private $inviteContract;
+
+    /**
+     * @var Group
+     */
+    private $groupContract;
+
+    /**
+     * RegisterService constructor.
+     * @param User $userContract
+     * @param Invite $inviteContract
+     * @param Group $groupContract
+     */
+    public function __construct(
+        User $userContract,
+        Invite $inviteContract,
+        Group $groupContract
+    )
+    {
+        $this->userContract = $userContract;
+        $this->inviteContract = $inviteContract;
+        $this->groupContract = $groupContract;
+    }
+
+    /**
+     * Register user.
+     *
+     * @param $request
+     * @return bool
+     */
+    public function registerUser($request)
+    {
+        try
+        {
+            $input = $request->only('email', 'password', 'first_name', 'last_name', 'invite');
+            $input['password'] = Hash::make($input['password']);
+            $user = $this->userContract->create($input);
+
+            if ( ! empty($input['invite']))
+            {
+                $result = $this->inviteContract->findBy('code', $input['invite']);
+                if ($result->email === $user->email)
+                {
+                    $group = $this->groupContract->find($result->group_id);
+                    $user->assignGroup($group);
+                    $this->inviteContract->delete($result->id);
+                }
+            }
+
+            $user->notify(new UserActivation(route('app.get.activate', [$user->id, $user->activation_code])));
+            Flash::success(trans('users.created'));
+
+            return true;
+        }
+        catch (\Exception $e)
+        {
+            return false;
+        }
+    }
+
+    /**
+     * Get invite for registration form.
+     *
+     * @return array
+     */
+    public function registrationFormInvite()
+    {
+        $code = Route::input('code');
+
+        $invite = $this->inviteContract->findBy('code', $code);
+
+        if ( ! empty($code) && ! $invite)
+        {
+            Flash::warning( trans('groups.invite_not_found'));
+        }
+
+        $code = isset($invite->code) ? $invite->code : null;
+        $email = isset($invite->email) ? $invite->email : null;
+
+        return ['code' => $code, 'email' => $email];
+    }
+
+    /**
+     * Activate the user.
+     *
+     * @return string
+     */
+    public function activateUser()
+    {
+        $id = Route::input('id');
+        $code = Route::input('code');
+        $user = $this->userContract->find($id);
+
+        if ( ! $user)
+        {
+            Flash::error(trans('users.notfound'));
+            return 'home';
+        }
+
+        if ($user->activated)
+        {
+            Flash::info(trans('users.already_activated'));
+            return 'home';
+        }
+
+        $user->attemptActivation($code);
+        Flash::success(trans('users.activated'));
+        return 'app.get.login';
+    }
+
+    /**
+     * Resend the UserRegistered email with activation link.
+     *
+     * @param $request
+     * @return string
+     */
+    public function resendActivation($request)
+    {
+        $user = $this->userContract->findBy('email', $request->only('email'));
+
+        if ( ! $user)
+        {
+            Flash::error(trans('users.notfound'));
+            return 'app.get.resend';
+        }
+
+        if ($user->activated)
+        {
+            Flash::success(trans('users.already_activated'));
+            return 'app.get.login';
+        }
+
+        $user->getActivationCode();
+        $user->notify(new UserActivation(route('app.get.activate', [$user->id, $user->activation_code])));
+        Flash::success(trans('users.emailconfirm'));
+
+        return 'home';
+    }
+}

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\Contracts\StateCountyContract;
+use App\Interfaces\State;
 use App\Services\Csv\Csv;
 use App\Services\Requests\HttpRequest;
 use Illuminate\Console\Command;
@@ -36,9 +36,10 @@ class UpdateGoogleStateCountyTable extends Command
      *
      * @param HttpRequest $httpRequest
      * @param Csv $csv
-     * @param StateCountyContract $stateCountyContract
+     * @param State $stateCountyContract
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function handle(HttpRequest $httpRequest, Csv $csv, StateCountyContract $stateCountyContract)
+    public function handle(HttpRequest $httpRequest, Csv $csv, State $stateCountyContract)
     {
         $uri = 'https://fusiontables.google.com/exporttable?query=select+*+from+1xdysxZ94uUFIit9eXmnw1fYc6VcQiXhceFd_CVKa&o=csv';
 

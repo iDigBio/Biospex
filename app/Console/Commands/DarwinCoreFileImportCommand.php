@@ -3,14 +3,14 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Repositories\Contracts\ImportContract;
+use App\Interfaces\Import;
 use Illuminate\Support\Facades\Queue;
 
 class DarwinCoreFileImportCommand extends Command
 {
 
     /**
-     * @var ImportContract
+     * @var Import
      */
     private $importContract;
 
@@ -36,9 +36,9 @@ class DarwinCoreFileImportCommand extends Command
     /**
      * DarwinCoreFileImportCommand constructor.
      * 
-     * @param ImportContract $importContract
+     * @param Import $importContract
      */
-    public function __construct(ImportContract $importContract)
+    public function __construct(Import $importContract)
     {
         parent::__construct();
 
@@ -53,7 +53,7 @@ class DarwinCoreFileImportCommand extends Command
      */
     public function handle()
     {
-        $imports = $this->importContract->setCacheLifetime(0)->findWhere(['error', '=', 0]);
+        $imports = $this->importContract->getImportsWithoutError();
 
         $count = 0;
         foreach ($imports as $import) {

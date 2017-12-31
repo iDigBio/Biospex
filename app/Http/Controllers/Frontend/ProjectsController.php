@@ -2,48 +2,27 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Http\Controllers\Controller;
-use App\Jobs\BuildOcrBatchesJob;
 use App\Models\Project;
-use App\Repositories\Contracts\OcrQueueContract;
-use App\Repositories\Contracts\SubjectContract;
-use App\Repositories\Contracts\UserContract;
-use App\Services\Model\ModelDeleteService;
-use App\Services\Model\ModelDestroyService;
-use App\Services\Model\ModelRestoreService;
-use App\Services\Report\NfnProjectCreateReport;
-use App\Repositories\Contracts\GroupContract;
-use App\Repositories\Contracts\ProjectContract;
+use App\Http\Controllers\Controller;
+use App\Interfaces\User;
 use App\Http\Requests\ProjectFormRequest;
 use App\Services\Model\ProjectService;
-use JavaScript;
 
 class ProjectsController extends Controller
 {
-
     /**
-     * @var GroupContract
+     * @var ProjectService
      */
-    public $groupContract;
-
-    /**
-     * @var ProjectContract
-     */
-    public $projectContract;
+    private $projectService;
 
     /**
      * ProjectsController constructor.
      *
-     * @param GroupContract $groupContract
-     * @param ProjectContract $projectContract
+     * @param ProjectService $projectService
      */
-    public function __construct(
-        GroupContract $groupContract,
-        ProjectContract $projectContract
-    )
+    public function __construct(ProjectService $projectService)
     {
-        $this->groupContract = $groupContract;
-        $this->projectContract = $projectContract;
+        $this->projectService = $projectService;
     }
 
     /**
@@ -54,19 +33,9 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        $groups = $this->groupContract->with('projects')
-            ->whereHas('users', function ($query)
-            {
-                $query->where('id', request()->user()->id);
-            })
-            ->findAll();
-
-        $trashed = $this->groupContract->with('trashedProjects')
-            ->whereHas('users', function ($query)
-            {
-                $query->where('id', request()->user()->id);
-            })
-            ->findAll();
+        $user = \Auth::user();
+        $groups = $this->projectService->getUserProjectListByGroup($user);
+        $trashed = $this->projectService->getUserProjectListByGroup($user, true);
 
         return view('frontend.projects.index', compact('groups', 'trashed'));
     }
@@ -74,12 +43,15 @@ class ProjectsController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param ProjectService $service
      * @return \Illuminate\View\View
      */
-    public function create(ProjectService $service)
+    public function create()
     {
-        $vars = $service->setCommonVariables(request()->user());
+        $vars = $this->projectService->setCommonVariables(request()->user());
+        if( ! $vars)
+        {
+            return redirect()->route('groups.create');
+        }
 
         return view('frontend.projects.create', $vars);
     }
@@ -87,36 +59,22 @@ class ProjectsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param UserContract $userContract
-     * @param $id
-     * @return \Illuminate\View\View
+     * @param User $userContract
+     * @param $projectId
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function show(UserContract $userContract, $id)
+    public function show(User $userContract, $projectId)
     {
-        $user = $userContract->with('profile')->find(request()->user()->id);
-
-        $with = [
-            'group',
-            'ocrQueue',
-            'expeditions.downloads',
-            'expeditions.actors',
-            'expeditions.stat'
-        ];
-        $project = $this->projectContract->with($with)->find($id);
-
-        $expeditions = null;
-        $trashed = null;
-        foreach ($project->expeditions as $expedition)
+        $project = $this->projectService->findWith($projectId, ['group', 'ocrQueue']);
+        if ( ! $this->checkPermissions('read', $project))
         {
-            if (null === $expedition->deleted_at)
-            {
-                $expeditions[] = $expedition;
-            }
-            else
-            {
-                $trashed[] = $expedition;
-            }
+            return redirect()->route('web.projects.index');
         }
+
+        $user = $userContract->findWith(request()->user()->id, ['profile']);
+
+        $expeditions = $this->projectService->getProjectExpeditions($projectId);
+        $trashed = $this->projectService->getProjectExpeditions($projectId, true);
 
         return view('frontend.projects.show', compact('user', 'project', 'expeditions', 'trashed'));
     }
@@ -125,30 +83,21 @@ class ProjectsController extends Controller
      * Store a newly created resource in storage.
      *
      * @param ProjectFormRequest $request
-     * @param NfnProjectCreateReport $report
      * @return mixed
      */
-    public function store(ProjectFormRequest $request, NfnProjectCreateReport $report)
+    public function store(ProjectFormRequest $request)
     {
-        $group = $this->groupContract->with('permissions')
-            ->find(request()->get('group_id'));
-
-        if ( ! $this->checkPermissions('create', [Project::class, $group]))
+        if ( ! $this->checkPermissions('create', Project::class))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $project = $this->projectContract->create($request->all());
+        $project = $this->projectService->createProject($request->all());
 
         if ($project)
         {
-            $report->complete($project->id);
-
-            session_flash_push('success', trans('projects.project_created'));
             return redirect()->route('web.projects.show', [$project->id]);
         }
-
-        session_flash_push('error', trans('projects.project_save_error'));
 
         return redirect()->route('projects.create')->withInput();
     }
@@ -156,23 +105,17 @@ class ProjectsController extends Controller
     /**
      * Create duplicate project
      *
-     * @param ProjectService $service
-     * @param $id
+     * @param $projectId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function duplicate(ProjectService $service, $id)
+    public function duplicate($projectId)
     {
-        $project = $this->projectContract->with(['group', 'expeditions.workflowManager'])->find($id);
+        $variables = $this->projectService->duplicateProject($projectId);
 
-        if ( ! $project)
+        if ( ! $variables)
         {
-            session_flash_push('error', trans('pages.project_repo_error'));
-
-            return redirect()->route('web.projects.show', [$id]);
+            return redirect()->route('web.projects.show', [$projectId]);
         }
-
-        $common = $service->setCommonVariables(request()->user());
-        $variables = array_merge($common, ['project' => $project, 'workflowCheck' => '']);
 
         return view('frontend.projects.clone', $variables);
     }
@@ -180,23 +123,17 @@ class ProjectsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param ProjectService $service
-     * @param $id
+     * @param $projectId
      * @return \Illuminate\View\View
      */
-    public function edit(ProjectService $service, $id)
+    public function edit($projectId)
     {
-        $project = $this->projectContract->with(['group.permissions', 'nfnWorkflows'])->find($id);
+        $variables = $this->projectService->editProject($projectId);
 
-        if ( ! $this->checkPermissions('update', $project))
+        if ( ! $variables)
         {
             return redirect()->route('web.projects.index');
         }
-
-        $workflowEmpty = ! isset($project->nfnWorkflows) || $project->nfnWorkflows->isEmpty();
-        $common = $service->setCommonVariables(request()->user());
-
-        $variables = array_merge($common, ['project' => $project, 'workflowEmpty' => $workflowEmpty]);
 
         return view('frontend.projects.edit', $variables);
     }
@@ -205,55 +142,37 @@ class ProjectsController extends Controller
      * Update project.
      *
      * @param ProjectFormRequest $request
+     * @param Project $project
      * @return $this|\Illuminate\Http\RedirectResponse
      */
-    public function update(ProjectFormRequest $request)
+    public function update(ProjectFormRequest $request, Project $project, $projectId)
     {
-        $project = $this->projectContract->find($request->input('id'));
-
         if ( ! $this->checkPermissions('update', $project))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $this->projectContract->update($project->id, $request->all());
+        $this->projectService->updateProject($request->all(), $projectId);
 
-        session_flash_push('success', trans('projects.project_updated'));
-
-        return redirect()->route('web.projects.show', [$project->id]);
+        return redirect()->route('web.projects.show', [$projectId]);
     }
 
     /**
      * Display project explore page.
      *
-     * @param SubjectContract $subjectContract
-     * @param $id
+     * @param $projectId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function explore(SubjectContract $subjectContract, $id)
+    public function explore($projectId)
     {
-        $project = $this->projectContract->with('group')->find($id);
+        $project = $this->projectService->findWith($projectId, ['group']);
 
         if ( ! $this->checkPermissions('read', $project))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $subjectAssignedCount = $subjectContract->setCacheLifetime(0)
-            ->whereRaw(['expedition_ids.0' => ['$exists' => true]])
-            ->where('project_id', '=', (int) $id)
-            ->count();
-
-        JavaScript::put([
-            'projectId'    => $project->id,
-            'expeditionId' => 0,
-            'subjectIds'   => [],
-            'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('web.grids.explore', [$project->id]),
-            'exportUrl'    => route('web.grids.project.export', [$project->id]),
-            'showCheckbox' => true,
-            'explore'      => true
-        ]);
+        $subjectAssignedCount = $this->projectService->explore($projectId);
 
         return view('frontend.projects.explore', compact('project', 'subjectAssignedCount'));
     }
@@ -261,23 +180,19 @@ class ProjectsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param ModelDeleteService $service
-     * @param $id
+     * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete(ModelDeleteService $service, $id)
+    public function delete($projectId)
     {
-        $project = $this->projectContract->with('group')->find($id);
+        $project = $this->projectService->findWith($projectId, ['group', 'nfnWorkflows']);
 
         if ( ! $this->checkPermissions('delete', $project))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $result = $service->deleteProject($project->id);
-
-        $result ? session_flash_push('success', trans('projects.project_deleted')) :
-            session_flash_push('error', trans('projects.project_delete_error'));
+        $this->projectService->deleteProject($project);
 
         return redirect()->route('web.projects.index');
     }
@@ -285,23 +200,19 @@ class ProjectsController extends Controller
     /**
      * Destroy project and related content.
      *
-     * @param ModelDestroyService $service
-     * @param $id
+     * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(ModelDestroyService $service, $id)
+    public function destroy($projectId)
     {
-        $project = $this->projectContract->with('group')->onlyTrashed($id);
+        $project = $this->projectService->findWith($projectId, ['group', 'expeditions.downloads', 'subjects'], true);
 
         if ( ! $this->checkPermissions('delete', $project))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $result = $service->destroyProject($project->id);
-
-        $result ? session_flash_push('success', trans('projects.project_destroyed')) :
-            session_flash_push('error', trans('projects.project_destroy_error'));
+        $this->projectService->destroyProject($project);
 
         return redirect()->route('web.projects.index');
     }
@@ -309,15 +220,19 @@ class ProjectsController extends Controller
     /**
      * Restore project.
      *
-     * @param ModelRestoreService $service
      * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function restore(ModelRestoreService $service, $projectId)
+    public function restore($projectId)
     {
-        $service->restoreProject($projectId) ?
-            session_flash_push('success', trans('projects.project_restore')) :
-            session_flash_push('error', trans('projects.project_restore_error'));
+        $project = $this->projectService->findWith($projectId, [], true);
+
+        if ( ! $this->checkPermissions('delete', $project))
+        {
+            return redirect()->route('web.projects.index');
+        }
+
+        $this->projectService->restoreProject($project);
 
         return redirect()->route('web.projects.show', [$projectId]);
     }
@@ -325,33 +240,19 @@ class ProjectsController extends Controller
     /**
      * Reprocess OCR.
      *
-     * @param OcrQueueContract $ocrQueueContract
      * @param $projectId
      * @return mixed
      */
-    public function ocr(OcrQueueContract $ocrQueueContract, $projectId)
+    public function ocr($projectId)
     {
-        $project = $this->projectContract->with('group.permissions')->find($projectId);
+        $project = $this->projectService->findWith($projectId, ['group.permissions']);
 
         if ( ! $this->checkPermissions('update', $project))
         {
             return redirect()->route('web.projects.index');
         }
 
-        $queueCheck = $ocrQueueContract->setCacheLifetime(0)
-            ->where('project_id', '=', $projectId)
-            ->findFirst();
-
-        if ($queueCheck === null)
-        {
-            $this->dispatch((new BuildOcrBatchesJob($project->id))->onQueue(config('config.beanstalkd.ocr')));
-
-            session_flash_push('success', trans('expeditions.ocr_process_success'));
-        }
-        else
-        {
-            session_flash_push('warning', trans('expeditions.ocr_process_error'));
-        }
+        $this->projectService->processOcr($project->id);
 
         return redirect()->route('web.projects.show', [$projectId]);
     }

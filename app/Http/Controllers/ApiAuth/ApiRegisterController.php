@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\ApiAuth;
 
+use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Notifications\UserActivation;
-use App\Repositories\Contracts\ApiUserContract;
+use App\Interfaces\ApiUser;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use App\Http\Requests\RegisterFormRequest;
 use App\Http\Requests\ResendActivationFormRequest;
@@ -35,17 +36,17 @@ class ApiRegisterController extends Controller
     protected $redirectTo = 'api';
 
     /**
-     * @var ApiUserContract
+     * @var ApiUser
      */
-    private $apiUserContract;
+    private $apiUser;
 
     /**
      * Create a new controller instance.
-     * @param ApiUserContract $apiUserContract
+     * @param ApiUser $apiUser
      */
-    public function __construct(ApiUserContract $apiUserContract)
+    public function __construct(ApiUser $apiUser)
     {
-        $this->apiUserContract = $apiUserContract;
+        $this->apiUser = $apiUser;
     }
 
     /**
@@ -69,12 +70,12 @@ class ApiRegisterController extends Controller
         $input = $request->only('email', 'password', 'first_name', 'last_name', 'invite');
         $input['password'] = Hash::make($input['password']);
         $input['name'] = $input['first_name'] . ' ' . $input['last_name'];
-        $user = $this->apiUserContract->createApiUser($input);
+        $user = $this->apiUser->create($input);
 
         if ($user)
         {
             $user->notify(new UserActivation(route('api.get.activate', [$user->id, $user->activation_code])));
-            flash()->success(trans('users.created'));
+            Flash::success(trans('users.created'));
 
             return redirect()->route('api.get.index');
         }
@@ -89,7 +90,7 @@ class ApiRegisterController extends Controller
      */
     public function getActivate($userId, $code)
     {
-        $user = $this->apiUserContract->findActivationCodeByUserId($userId);
+        $user = $this->apiUser->find($userId, ['activated', 'activation_code']);
 
         if ( ! $this->checkUserActivation($user))
         {
@@ -97,7 +98,7 @@ class ApiRegisterController extends Controller
         }
 
         $user->attemptActivation($code);
-        flash()->success(trans('users.activated'));
+        Flash::success(trans('users.activated'));
 
         return redirect()->route('api.get.login');
     }
@@ -120,7 +121,7 @@ class ApiRegisterController extends Controller
      */
     public function postResendActivation(ResendActivationFormRequest $request)
     {
-        $user = $this->apiUserContract->findActivationCodeByUserEmail($request->only('email'));
+        $user = $this->apiUser->findBy('email', $request->only('email'), ['id', 'activated', 'activation_code']);
 
         if ( ! $this->checkUserActivation($user))
         {
@@ -129,7 +130,7 @@ class ApiRegisterController extends Controller
 
         $user->getActivationCode();
         $user->notify(new UserActivation(route('api.get.activate', [$user->id, $user->activation_code])));
-        flash()->success(trans('users.emailconfirm'));
+        Flash::success(trans('users.emailconfirm'));
 
         return redirect()->route('api.get.login');
     }
@@ -153,12 +154,12 @@ class ApiRegisterController extends Controller
         $check = true;
         if ( ! $user)
         {
-            flash()->error(trans('users.notfound'));
+            Flash::error(trans('users.notfound'));
             $check = false;
         }
         elseif ($user->activated)
         {
-            flash()->info(trans('users.already_activated'));
+            Flash::info(trans('users.already_activated'));
             $check = false;
         }
 

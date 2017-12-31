@@ -1,21 +1,24 @@
-<?php namespace App\Console\Commands;
+<?php
 
-use App\Repositories\Contracts\OcrQueueContract;
-use App\Services\Report\Report;
+namespace App\Console\Commands;
+
+use App\Interfaces\OcrQueue;
+use App\Interfaces\User;
+use App\Notifications\OcrQueueCheck;
 use Illuminate\Console\Command;
 
 class OcrQueueCheckCommand extends Command
 {
 
     /**
-     * @var OcrQueueContract
+     * @var OcrQueue
      */
-    public $queueContract;
+    private $queueContract;
 
     /**
-     * @var Report
+     * @var User
      */
-    public $report;
+    private $userContract;
 
     /**
      * The console command name.
@@ -33,16 +36,16 @@ class OcrQueueCheckCommand extends Command
 
     /**
      * OcrQueueCheckCommand constructor.
-     * 
-     * @param OcrQueueContract $queueContract
-     * @param Report $report
+     *
+     * @param OcrQueue $queueContract
+     * @param User $userContract
      */
-    public function __construct(OcrQueueContract $queueContract, Report $report)
+    public function __construct(OcrQueue $queueContract, User $userContract)
     {
         parent::__construct();
 
         $this->queueContract = $queueContract;
-        $this->report = $report;
+        $this->userContract = $userContract;
     }
 
     /**
@@ -52,14 +55,15 @@ class OcrQueueCheckCommand extends Command
      */
     public function handle()
     {
-        $queues = $this->queueContract->setCacheLifetime(0)->findAll();
+        $queues = $this->queueContract->all();
 
         if ($queues->isEmpty()) {
             return;
         }
 
+        $message = '';
         foreach ($queues as $queue) {
-            $this->report->addError(trans('errors.ocr_queue',
+            $message .= (trans('errors.ocr_queue',
                 [
                     'id'      => $queue->id,
                     'message' => trans('errors.ocr_stuck_queue', ['id' => $queue->id]),
@@ -67,6 +71,8 @@ class OcrQueueCheckCommand extends Command
                 ]));
         }
 
-        $this->report->reportError();
+        $user = $this->userContract->find(1);
+
+        $user->notify(new OcrQueueCheck($message));
     }
 }

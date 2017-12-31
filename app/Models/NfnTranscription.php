@@ -5,10 +5,11 @@ namespace App\Models;
 use Jenssegers\Mongodb\Eloquent\Model;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 use MongoDB\BSON\UTCDateTime;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class NfnTranscription extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, LadaCacheTrait;
 
     /**
      * Enable soft delete.

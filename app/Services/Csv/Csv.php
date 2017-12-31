@@ -29,6 +29,8 @@ class Csv
 
     /**
      * @param string $delimiter
+     *
+     * @throws \Exception
      */
     public function setDelimiter($delimiter = ',')
     {
@@ -37,6 +39,8 @@ class Csv
 
     /**
      * @param string $enclosure
+     *
+     * @throws \Exception
      */
     public function setEnclosure($enclosure = '"')
     {
@@ -45,6 +49,8 @@ class Csv
 
     /**
      * @param string $escape
+     *
+     * @throws \Exception
      */
     public function setEscape($escape = '\\')
     {

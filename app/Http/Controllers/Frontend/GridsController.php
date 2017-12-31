@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Facades\DateHelper;
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\ExpeditionContract;
-use App\Repositories\Contracts\SubjectContract;
 use App\Services\Model\SubjectService;
 use Exception;
 use Illuminate\Database\DatabaseManager;
@@ -181,8 +180,8 @@ class GridsController extends Controller
             {
                 unset($doc['_id'], $doc['occurrence']);
                 $doc['expedition_ids'] = trim(implode(', ', $doc['expedition_ids']), ',');
-                $doc['updated_at'] = mongodb_date_format($doc['updated_at'], 'Y-m-d H:i:s');
-                $doc['created_at'] = mongodb_date_format($doc['created_at'], 'Y-m-d H:i:s');
+                $doc['updated_at'] = DateHelper::formatMongoDbDate($doc['updated_at'], 'Y-m-d H:i:s');
+                $doc['created_at'] = DateHelper::formatMongoDbDate($doc['created_at'], 'Y-m-d H:i:s');
 
                 if ($i === 0)
                 {

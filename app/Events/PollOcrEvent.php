@@ -2,14 +2,27 @@
 
 namespace App\Events;
 
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 class PollOcrEvent extends Event implements ShouldBroadcast
 {
+    use Dispatchable, InteractsWithSockets, SerializesModels;
+
     /**
      * @var array
      */
     public $data = [];
+
+    /**
+     * The name of the queue on which to place the event.
+     *
+     * @var string
+     */
+    public $broadcastQueue;
 
     /**
      * PollOcrEvent constructor.
@@ -18,35 +31,16 @@ class PollOcrEvent extends Event implements ShouldBroadcast
     public function __construct($data)
     {
         $this->data = $data;
-    }
-
-    /**
-     * Set the name of the queue the event should be placed on.
-     *
-     * @return string
-     */
-    public function onQueue()
-    {
-        return config('config.beanstalkd.event');
-    }
-
-    /**
-     * Get the broadcast event name.
-     *
-     * @return string
-     */
-    public function broadcastAs()
-    {
-        return 'app.polling';
+        $this->broadcastQueue = config('config.beanstalkd.event');
     }
 
     /**
      * Get the channels the event should be broadcast on.
      *
-     * @return array
+     * @return Channel
      */
     public function broadcastOn()
     {
-        return [config('config.poll_ocr_channel')];
+        return new Channel(config('config.poll_ocr_channel'));
     }
 }

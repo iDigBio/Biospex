@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\UpdateNfnWorkflowJob;
-use App\Repositories\Contracts\NfnWorkflowContract;
+use App\Interfaces\NfnWorkflow;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -41,10 +41,10 @@ class NfnWorkflowUpdate extends Command
     /**
      * Execute the console command.
      *
-     * @param NfnWorkflowContract $nfnWorkflow
+     * @param NfnWorkflow $nfnWorkflow
      * @return mixed
      */
-    public function handle(NfnWorkflowContract $nfnWorkflow)
+    public function handle(NfnWorkflow $nfnWorkflow)
     {
         $this->setIds();
 
@@ -68,13 +68,13 @@ class NfnWorkflowUpdate extends Command
     /**
      * Retrieve workflows.
      *
-     * @param NfnWorkflowContract $nfnWorkflow
+     * @param NfnWorkflow $nfnWorkflow
      * @return mixed
      */
-    private function getWorkflows(NfnWorkflowContract $nfnWorkflow)
+    private function getWorkflows(NfnWorkflow $nfnWorkflow)
     {
         return null === $this->expeditionIds ?
-            $nfnWorkflow->setCacheLifetime(0)->findAll() :
-            $nfnWorkflow->setCacheLifetime(0)->findWhereIn(['expedition_id', [$this->expeditionIds]]);
+            $nfnWorkflow->all() :
+            $nfnWorkflow->getWhereIn('expedition_id', $this->expeditionIds);
     }
 }

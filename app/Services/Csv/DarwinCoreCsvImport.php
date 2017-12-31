@@ -2,13 +2,9 @@
 
 namespace App\Services\Csv;
 
-use App\Exceptions\BiospexException;
-use App\Exceptions\CsvHeaderCountException;
-use App\Exceptions\CsvHeaderNameException;
-use App\Exceptions\MissingMetaIdentifier;
-use App\Repositories\Contracts\HeaderContract;
-use App\Repositories\Contracts\PropertyContract;
-use App\Repositories\Contracts\SubjectContract;
+use App\Interfaces\Header;
+use App\Interfaces\Property;
+use App\Interfaces\Subject;
 use ForceUTF8\Encoding;
 use Illuminate\Validation\Factory as Validation;
 use App\Models\Occurrence;
@@ -17,17 +13,17 @@ class DarwinCoreCsvImport
 {
 
     /**
-     * @var PropertyContract
+     * @var Property
      */
     public $propertyContract;
 
     /**
-     * @var SubjectContract
+     * @var Subject
      */
     public $subjectContract;
 
     /**
-     * @var HeaderContract
+     * @var Header
      */
     public $headerContract;
 
@@ -101,16 +97,16 @@ class DarwinCoreCsvImport
     /**
      * Construct
      *
-     * @param PropertyContract $propertyContract
-     * @param SubjectContract $subjectContract
-     * @param HeaderContract $headerContract
+     * @param Property $propertyContract
+     * @param Subject $subjectContract
+     * @param Header $headerContract
      * @param Validation $factory
      * @param \App\Services\Csv\Csv $csv
      */
     public function __construct(
-        PropertyContract $propertyContract,
-        SubjectContract $subjectContract,
-        HeaderContract $headerContract,
+        Property $propertyContract,
+        Subject $subjectContract,
+        Header $headerContract,
         Validation $factory,
         Csv $csv
     )
@@ -145,7 +141,7 @@ class DarwinCoreCsvImport
      * @param $enclosure
      * @param $type
      * @param $loadMedia
-     * @throws BiospexException
+     * @throws \Exception
      */
     public function loadCsvFile($file, $delimiter, $enclosure, $type, $loadMedia)
     {
@@ -175,7 +171,7 @@ class DarwinCoreCsvImport
      * @param $row
      * @param $type
      * @param $loadMedia
-     * @throws BiospexException
+     * @throws \Exception
      * @return bool
      */
     public function processRow($header, $row, $type, $loadMedia)
@@ -203,7 +199,7 @@ class DarwinCoreCsvImport
      * @param $header
      * @param $type
      * @return array
-     * @throws BiospexException
+     * @throws \Exception
      */
     public function processCsvHeader($header, $type)
     {
@@ -219,13 +215,13 @@ class DarwinCoreCsvImport
      *
      * @param $header
      * @param $row
-     * @throws CsvHeaderCountException
+     * @throws \Exception
      */
     public function testHeaderRowCount($header, $row)
     {
         if (count($header) !== count($row))
         {
-            throw new CsvHeaderCountException(trans('errors.csv_row_count', [
+            throw new \Exception(trans('errors.csv_row_count', [
                 'headers' => count($header),
                 'rows'    => count($row)
             ]));
@@ -250,8 +246,8 @@ class DarwinCoreCsvImport
      *
      * @param $row
      * @param $type
-     * @throws BiospexException
      * @return array
+     * @throws \Exception
      */
     public function buildHeaderUsingShortNames($row, $type)
     {
@@ -272,13 +268,13 @@ class DarwinCoreCsvImport
      * @param $qualified
      * @param $header
      * @return mixed
-     * @throws CsvHeaderNameException
+     * @throws \Exception
      */
     public function createShortNameForHeader($row, $key, $qualified, $header)
     {
         if ( ! isset($row[$key]))
         {
-            throw new CsvHeaderNameException(trans('errors.csv_build_header', ['key' => $key, 'qualified' => $qualified]));
+            throw new \Exception(trans('errors.csv_build_header', ['key' => $key, 'qualified' => $qualified]));
         }
 
         $short = $this->checkProperty($qualified, $row[$key]);
@@ -336,13 +332,9 @@ class DarwinCoreCsvImport
      */
     protected function setShortNameForQualifiedName($qualified, $short, $namespace)
     {
-        $checkQualified = $this->propertyContract->setCacheLifetime(0)
-            ->where('qualified', '=', $qualified)
-            ->findFirst();
+        $checkQualified = $this->propertyContract->findBy('qualified', $qualified);
 
-        $checkShort = $this->propertyContract->setCacheLifetime(0)
-            ->where('short', '=', $short)
-            ->findFirst();
+        $checkShort = $this->propertyContract->findBy('short', $short);
 
         if ($checkQualified !== null)
         {
@@ -382,7 +374,7 @@ class DarwinCoreCsvImport
      * Set the identifier column
      *
      * @param $type
-     * @throws MissingMetaIdentifier
+     * @throws \Exception
      */
     public function checkForIdentifierColumn($type)
     {
@@ -394,7 +386,7 @@ class DarwinCoreCsvImport
 
         if (collect($this->metaFields[$type])->intersect($this->identifiers)->isEmpty())
         {
-            throw new MissingMetaIdentifier(trans('errors.missing_identifier', ['identifiers' => implode(',', $this->identifiers)]));
+            throw new \Exception(trans('errors.missing_identifier', ['identifiers' => implode(',', $this->identifiers)]));
         }
     }
 
@@ -532,10 +524,7 @@ class DarwinCoreCsvImport
      */
     public function saveOccurrence($header, $data)
     {
-        $subjects = $this->subjectContract->setCacheLifetime(0)
-            ->where('project_id', '=', $this->projectId)
-            ->where('occurrence.id', '=', $data[$header[0]])
-            ->findAll();
+        $subjects = $this->subjectContract->getSubjectsByProjectOccurrence($this->projectId, $data[$header[0]]);
 
         if ($subjects->isEmpty())
         {
@@ -633,9 +622,7 @@ class DarwinCoreCsvImport
     {
         $type = $loadMedia ? 'image' : 'occurrence';
 
-        $result = $this->headerContract->setCacheLifetime(0)
-            ->where('project_id', '=', $this->projectId)
-            ->findFirst();
+        $result = $this->headerContract->findBy('project_id', $this->projectId);
 
         if (empty($result))
         {
@@ -651,7 +638,7 @@ class DarwinCoreCsvImport
             $existingHeader[$type] = isset($existingHeader[$type]) ?
                 $this->combineHeader($existingHeader[$type], $header) : array_unique($header);
             $result->header = $existingHeader;
-            $this->headerContract->update($result->id, $result->toArray());
+            $this->headerContract->update($result->toArray(), $result->id);
         }
 
     }

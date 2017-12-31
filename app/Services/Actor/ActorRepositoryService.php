@@ -2,64 +2,56 @@
 
 namespace App\Services\Actor;
 
-use App\Repositories\Contracts\ActorContract;
-use App\Repositories\Contracts\DownloadContract;
-use App\Repositories\Contracts\ExpeditionContract;
-use App\Repositories\Contracts\ProjectContract;
-use App\Repositories\Contracts\ExportQueueContract;
-use App\Repositories\Contracts\SubjectContract;
+use App\Interfaces\Actor;
+use App\Interfaces\Download;
+use App\Interfaces\Expedition;
+use App\Interfaces\Project;
+use App\Interfaces\ExportQueue;
+use App\Interfaces\Subject;
 
 class ActorRepositoryService extends ActorServiceBase
 {
 
     /**
-     * @var SubjectContract
+     * @var Subject
      */
     private $subjectContract;
 
     /**
-     * @var ActorContract
+     * @var Actor
      */
     private $actorContract;
 
     /**
-     * @var ExpeditionContract
+     * @var Expedition
      */
     public $expeditionContract;
 
     /**
-     * @var DownloadContract
+     * @var Download
      */
     public $downloadContract;
 
     /**
-     * @var ExportQueueContract
+     * @var ExportQueue
      */
     public $exportQueueContract;
 
     /**
-     * @var ProjectContract
-     */
-    public $projectContract;
-
-
-    /**
      * ActorServiceRepositories constructor.
      *
-     * @param SubjectContract $subjectContract
-     * @param ActorContract $actorContract
-     * @param ExpeditionContract $expeditionContract
-     * @param ExportQueueContract $exportQueueContract
-     * @param DownloadContract $downloadContract
-     * @param ProjectContract $projectContract
+     * @param Subject $subjectContract
+     * @param Actor $actorContract
+     * @param Expedition $expeditionContract
+     * @param ExportQueue $exportQueueContract
+     * @param Download $downloadContract
      */
     public function __construct(
-        SubjectContract $subjectContract,
-        ActorContract $actorContract,
-        ExpeditionContract $expeditionContract,
-        ExportQueueContract $exportQueueContract,
-        DownloadContract $downloadContract,
-        ProjectContract $projectContract
+        Subject $subjectContract,
+        Actor $actorContract,
+        Expedition $expeditionContract,
+        ExportQueue $exportQueueContract,
+        Download $downloadContract
     )
     {
         $this->subjectContract = $subjectContract;
@@ -67,7 +59,6 @@ class ActorRepositoryService extends ActorServiceBase
         $this->expeditionContract = $expeditionContract;
         $this->exportQueueContract = $exportQueueContract;
         $this->downloadContract = $downloadContract;
-        $this->projectContract = $projectContract;
     }
 
     /**
@@ -81,26 +72,13 @@ class ActorRepositoryService extends ActorServiceBase
     }
 
     /**
-     * Get the project and group using project id.
-     *
-     * @return mixed
-     */
-    public function getProjectGroupById()
-    {
-        return $this->projectContract->setCacheLifetime(0)
-            ->with('group')
-            ->find($this->config->expedition->project_id);
-    }
-
-    /**
      * Get subjects using expedition id.
      *
      * @return \Illuminate\Support\Collection
      */
     public function getSubjectsByExpeditionId()
     {
-        return $this->subjectContract->setCacheLifetime(0)
-            ->findSubjectsByExpeditionId($this->config->expedition->id);
+        return $this->subjectContract->findSubjectsByExpeditionId($this->config->expedition->id);
     }
 
     /**
@@ -112,18 +90,17 @@ class ActorRepositoryService extends ActorServiceBase
      */
     public function updateOrCreateDownload($attributes, $values)
     {
-        return $this->downloadContract->updateOrCreateDownload($attributes, $values);
+        return $this->downloadContract->updateOrCreate($attributes, $values);
     }
 
     /**
      * Create ExportQueue.
      *
      * @param $attributes
-     * @return mixed
      */
     public function firstOrCreateExportQueue($attributes)
     {
-        return $this->exportQueueContract->firstOrCreateExportQueue($attributes);
+        $this->exportQueueContract->firstOrCreate($attributes);
     }
 
     /**
@@ -133,9 +110,10 @@ class ActorRepositoryService extends ActorServiceBase
      * @param $attributes
      * @return mixed
      */
-    public function updateExportQueue($id, $attributes)
+    public function updateExportQueue($attributes, $id)
     {
-        return $this->exportQueueContract->update($id, $attributes);
+        $this->exportQueueContract->update($attributes, $id);
+
     }
 
     /**

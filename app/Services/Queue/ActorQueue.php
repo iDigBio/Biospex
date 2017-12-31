@@ -2,11 +2,9 @@
 
 namespace App\Services\Queue;
 
-use App\Exceptions\BiospexException;
-use App\Repositories\Contracts\ExpeditionContract;
+use App\Interfaces\Expedition;
+use App\Notifications\WorkflowActorError;
 use App\Services\Actor\ActorFactory;
-use App\Services\Report\Report;
-use App\Exceptions\Handler;
 
 class ActorQueue extends QueueAbstract
 {
@@ -17,27 +15,18 @@ class ActorQueue extends QueueAbstract
     protected $report;
 
     /**
-     * @var ExpeditionContract
+     * @var Expedition
      */
     protected $expeditionContract;
 
     /**
-     * @var Handler
-     */
-    protected $handler;
-
-    /**
      * ActorQueue constructor.
      *
-     * @param Report $report
-     * @param ExpeditionContract $expeditionContract
-     * @param Handler $handler
+     * @param Expedition $expeditionContract
      */
-    public function __construct(Report $report, ExpeditionContract $expeditionContract, Handler $handler)
+    public function __construct(Expedition $expeditionContract)
     {
-        $this->report = $report;
         $this->expeditionContract = $expeditionContract;
-        $this->handler = $handler;
     }
 
     /**
@@ -56,11 +45,10 @@ class ActorQueue extends QueueAbstract
             $class = ActorFactory::create($actor->class, $actor->class);
             $class->actor($actor);
         }
-        catch (BiospexException $e)
+        catch (\Exception $e)
         {
             event('actor.pivot.error', $actor);
-            $this->createError($actor, $e->getMessage());
-            $this->handler->report($e);
+            $this->notify($actor, $e->getMessage());
         }
 
         $this->delete();
@@ -72,18 +60,17 @@ class ActorQueue extends QueueAbstract
      * @param $actor
      * @param $message
      */
-    public function createError($actor, $message)
+    public function notify($actor, $message)
     {
-        $record = $this->expeditionContract->with('project.group.owner')
-            ->find($actor->pivot->expedition_id);
+        $record = $this->expeditionContract->findWith($actor->pivot->expedition_id, ['project.group.owner']);
 
-        $this->report->addError(trans('errors.workflow_actor',
+        $message = trans('errors.workflow_actor',
             [
                 'title' => $record->title,
                 'class' => $actor->class,
                 'message' => $message
-            ]));
+            ]);
 
-        $this->report->reportError($record->project->group->owner->email);
+        $record->project->group->owner->notify(new WorkflowActorError($message));
     }
 }

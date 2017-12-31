@@ -4,13 +4,13 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Queue;
-use App\Repositories\Contracts\OcrQueueContract;
+use App\Interfaces\OcrQueue;
 
 class OcrQueuePushCommand extends Command
 {
 
     /**
-     * @var OcrQueueContract
+     * @var OcrQueue
      */
     public $ocrQueueContract;
 
@@ -36,9 +36,9 @@ class OcrQueuePushCommand extends Command
     /**
      * OcrQueuePushCommand constructor.
      * 
-     * @param OcrQueueContract $ocrQueueContract
+     * @param OcrQueue $ocrQueueContract
      */
-    public function __construct(OcrQueueContract $ocrQueueContract)
+    public function __construct(OcrQueue $ocrQueueContract)
     {
         parent::__construct();
 
@@ -57,7 +57,7 @@ class OcrQueuePushCommand extends Command
         $id = $this->argument('id');
 
         // Retrieve record and update error column if needed
-        $job = $this->ocrQueueContract->setCacheLifetime(0)->find($id);
+        $job = $this->ocrQueueContract->find($id);
 
         if (empty($job))
         {

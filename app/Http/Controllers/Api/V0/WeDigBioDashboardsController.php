@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\V0;
 
-use App\Repositories\Contracts\WeDigBioDashboardContract;
+use App\Interfaces\WeDigBioDashboard;
 use App\Services\Model\WeDigBioDashboardService;
 use Illuminate\Http\Request;
 use App\Transformers\WeDigBioDashboardTransformer;
@@ -19,15 +19,15 @@ class WeDigBioDashboardsController extends ApiController
 {
 
     /**
-     * @var WeDigBioDashboardContract
+     * @var WeDigBioDashboard
      */
     private $weDigBioDashboardContract;
 
     /**
      * WeDigBioDashboardsController constructor.
-     * @param WeDigBioDashboardContract $weDigBioDashboardContract
+     * @param WeDigBioDashboard $weDigBioDashboardContract
      */
-    public function __construct(WeDigBioDashboardContract $weDigBioDashboardContract)
+    public function __construct(WeDigBioDashboard $weDigBioDashboardContract)
     {
 
         $this->weDigBioDashboardContract = $weDigBioDashboardContract;

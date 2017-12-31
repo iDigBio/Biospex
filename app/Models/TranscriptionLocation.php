@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class TranscriptionLocation extends Model
 {
 
-    use SoftDeletes;
+    use SoftDeletes, LadaCacheTrait;
 
     /**
      * Enable soft delete.
@@ -81,6 +82,6 @@ class TranscriptionLocation extends Model
      */
     public function stateCounty()
     {
-        return $this->belongsTo(StateCounty::class, 'state_county', 'state_county');
+        return $this->belongsTo(State::class, 'state_county', 'state_county');
     }
 }

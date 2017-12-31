@@ -2,27 +2,23 @@
 
 namespace App\Providers;
 
+use App\Models\ApiUser;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Queue;
-use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Support\ServiceProvider;
-use App\Events\SendErrorEvent;
 use App\Models\Group;
 use App\Models\Permission;
 use App\Models\Profile;
 use App\Models\User;
 use Barryvdh\Debugbar\ServiceProvider as Debugbar;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider as IdeHelper;
-use Sven\ArtisanView\ArtisanViewServiceProvider;
-use Way\Generators\GeneratorsServiceProvider;
-use Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+
     /**
      * Bootstrap any application services.
      * creating, created, updating, updated, saving, saved, deleting, deleted, restoring, restored
@@ -31,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->setupBlade();
-        
+
         User::created(function ($user) {
             $user->getActivationCode();
             $profile = new Profile;
@@ -40,37 +36,24 @@ class AppServiceProvider extends ServiceProvider
             $profile->last_name = $this->app['request']->input('last_name');
             $user->profile()->save($profile);
         });
-        
+
+        ApiUser::created(function ($user) {
+            $user->getActivationCode();
+        });
+
         Group::created(function ($group) {
-            $permissions = Cache::tags('model')->rememberForever('permissions.list', function() {
-                return Permission::lists('name', 'id')->all();
+            $permissions = Cache::tags('model')->rememberForever('permissions.list', function () {
+                return Permission::pluck('name', 'id')->all();
             });
             $permissions = array_keys(array_diff($permissions, ['superuser']));
 
             $group->permissions()->attach($permissions);
         });
-        
-        Queue::failing(function (JobFailed $event) {
-            if ($event->job->getQueue() == Config::get('config.beanstalkd.default')) {
-                return;
-            }
-
-            $data = [
-                'email'   => null,
-                'subject' => trans('emails.failed_job_subject'),
-                'view'    => 'frontend.emails.report-failed-jobs',
-                'data'    => ['text' => trans('errors.failed_job_message', ['id' => $event->job->getJobId(), 'jobData' => $event->job->getRawBody()])],
-                'attachments' => []
-            ];
-
-            Event::fire(new SendErrorEvent($data));
-        });
 
         if ($this->app->environment() === 'local' && env('DB_LOG'))
         {
             DB::connection('mongodb')->enableQueryLog();
-            DB::connection('mongodb')->listen(function ($sql)
-            {
+            DB::connection('mongodb')->listen(function ($sql) {
                 // $sql is an object with the properties:
                 //  sql: The query
                 //  bindings: the sql query variables
@@ -90,7 +73,7 @@ class AppServiceProvider extends ServiceProvider
                         }
                     }
                 }
-                
+
                 $query = str_replace(array('%', '?'), array('%%', '%s'), $sql->sql);
 
                 $query = vsprintf($query, $sql->bindings);
@@ -108,6 +91,10 @@ class AppServiceProvider extends ServiceProvider
 
         $blade->extend(function ($value) {
             return preg_replace('/(\s*)@(break|continue)(\s*)/', '$1<?php $2; ?>$3', $value);
+        });
+
+        Blade::if ('apiuser', function () {
+            return Auth::guard('apiuser')->check();
         });
     }
 
@@ -130,12 +117,10 @@ class AppServiceProvider extends ServiceProvider
         /*
          * Development Providers
          */
-        if ($this->app->environment('local')) {
+        if ($this->app->environment('local'))
+        {
             $this->app->register(IdeHelper::class);
             $this->app->register(Debugbar::class);
-            //$this->app->register(GeneratorsServiceProvider::class);
-            $this->app->register(MigrationsGeneratorServiceProvider::class);
-            $this->app->register(ArtisanViewServiceProvider::class);
         }
     }
 }

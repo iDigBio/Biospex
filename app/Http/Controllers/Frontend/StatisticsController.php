@@ -3,31 +3,30 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\PanoptesTranscriptionContract;
-use App\Repositories\Contracts\ProjectContract;
+use App\Interfaces\PanoptesTranscription;
+use App\Interfaces\Project;
 use JavaScript;
 
 class StatisticsController extends Controller
 {
 
     /**
-     * @var ProjectContract
+     * @var Project
      */
     private $projectContract;
     /**
-     * @var PanoptesTranscriptionContract
+     * @var PanoptesTranscription
      */
     private $panoptesTranscriptionContract;
 
-
     /**
      * DownloadsController constructor.
-     * @param ProjectContract $projectContract
-     * @param PanoptesTranscriptionContract $panoptesTranscriptionContract
+     * @param Project $projectContract
+     * @param PanoptesTranscription $panoptesTranscriptionContract
      */
     public function __construct(
-        ProjectContract $projectContract,
-        PanoptesTranscriptionContract $panoptesTranscriptionContract
+        Project $projectContract,
+        PanoptesTranscription $panoptesTranscriptionContract
     )
     {
         $this->projectContract = $projectContract;
@@ -42,7 +41,6 @@ class StatisticsController extends Controller
     {
         $project = $this->projectContract->find($projectId);
         $transcribers = collect($this->panoptesTranscriptionContract
-            ->setCacheLifetime(0)
             ->getUserTranscriptionCount($projectId))->sortByDesc('transcriptionCount');
 
         $plucked = collect(array_count_values($transcribers->pluck('transcriptionCount')->sort()->toArray()));

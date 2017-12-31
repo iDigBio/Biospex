@@ -2,47 +2,38 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Facades\Toastr;
+use App\Facades\Flash;
 use App\Http\Requests\GroupFormRequest;
 use App\Http\Requests\InviteFormRequest;
-use App\Jobs\InviteCreateJob;
-use App\Repositories\Contracts\GroupContract;
-use App\Repositories\Contracts\UserContract;
-use App\Services\Model\ModelDeleteService;
-use App\Services\Model\ModelDestroyService;
-use App\Services\Model\ModelRestoreService;
-use Illuminate\Http\Request;
+use App\Interfaces\User;
+use App\Services\Model\GroupService;
+use App\Services\Model\InviteService;
 use App\Http\Controllers\Controller;
 
 class GroupsController extends Controller
 {
 
     /**
-     * @var UserContract
+     * @var GroupService
+     */
+    private $groupService;
+
+    /**
+     * @var User
      */
     private $userContract;
 
     /**
-     * @var GroupContract
-     */
-    private $groupContract;
-
-    /**
-     * @var Request
-     */
-    private $request;
-
-    /**
      * GroupsController constructor.
-     * @param UserContract $userContract
-     * @param GroupContract $groupContract
-     * @param Request $request
+     *
+     * @param GroupService $groupService
+     * @param User $userContract
      */
-    public function __construct(UserContract $userContract, GroupContract $groupContract, Request $request)
+    public function __construct(GroupService $groupService, User $userContract)
     {
+        $this->groupService = $groupService;
         $this->userContract = $userContract;
-        $this->groupContract = $groupContract;
-        $this->request = $request;
+
     }
 
     /**
@@ -52,9 +43,9 @@ class GroupsController extends Controller
      */
     public function index()
     {
-        $user = $this->userContract->with('profile')->find(request()->user()->id);
-        $groups = $this->groupContract->findAll();
-        $trashed = $this->groupContract->onlyTrashed();
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $groups = $this->groupService->getAllGroups();
+        $trashed = $this->groupService->getAllTrashedGroups();
 
         return view('backend.groups.index', compact('user', 'groups', 'trashed'));
     }
@@ -69,34 +60,21 @@ class GroupsController extends Controller
     {
         $user = request()->user();
 
-        $group = $this->groupContract->create(['user_id' => $user->id, 'title' => $request->get('title')]);
-
-        if ($group) {
-            $user->assignGroup($group);
-
-            event('group.saved');
-
-            Toastr::success('The Group has been created.', 'Group Create');
-
-            return redirect()->route('admin.groups.index');
-        }
-
-        Toastr::error('The Group could not be updated.', 'Group Update');
-
-        return redirect()->route('admin.groups.index');
+        return $this->groupService->createGroup($user->id, $request->get('title')) ?
+            redirect()->route('admin.groups.index') :
+            redirect()->route('admin.groups.index');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param $id
+     * @param $groupId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show($id)
+    public function show($groupId)
     {
-        $user = $this->userContract->with('profile')->find(request()->user()->id);
-        $group = $this->groupContract->with(['owner.profile', 'users.profile'])->find($id);
-
+        $user = $this->userContract->findWith(request()->user()->id, ['profile']);
+        $group = $this->groupService->findGroupWith($groupId, ['owner.profile', 'users.profile']);
         return view('backend.groups.show', compact('user', 'group'));
     }
 
@@ -105,35 +83,28 @@ class GroupsController extends Controller
      * Update the specified resource in storage.
      *
      * @param GroupFormRequest $request
-     * @param $id
+     * @param $groupId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(GroupFormRequest $request, $id)
+    public function update(GroupFormRequest $request, $groupId)
     {
-        $group = $this->groupContract->find($id);
+        $group = $this->groupService->findGroup($groupId);
 
-        $result = $this->groupContract->update($group->id, $request->all());
+        $this->groupService->updateGroup($request->all(), $group->id);
 
-        event('group.saved');
-
-        $result ? Toastr::success('The Group has been updated.', 'Group Update') :
-            Toastr::error('The Group could not be updated.', 'Group Update');
-
-        return redirect()->route('admin.groups.show', [$group->id]);
+        return redirect()->route('admin.groups.index');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param ModelDeleteService $service
-     * @param $id
+     * @param $groupId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete(ModelDeleteService $service, $id)
+    public function delete($groupId)
     {
-        $service->deleteGroup($id) ?
-            Toastr::success('The Group has been deleted.', 'Group Delete') :
-            Toastr::error('The Group could not be deleted.', 'Group Delete');
+        $group = $this->groupService->findGroupWith($groupId, ['projects.nfnWorfklows']);
+        $this->groupService->deleteGroup($group);
 
         return redirect()->route('admin.groups.index');
     }
@@ -141,15 +112,13 @@ class GroupsController extends Controller
     /**
      * Forcefully delete trashed records.
      *
-     * @param ModelDestroyService $service
-     * @param $id
+     * @param $groupId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(ModelDestroyService $service, $id)
+    public function destroy($groupId)
     {
-        $service->destroyGroup($id) ?
-            Toastr::success('Group has been forcefully deleted.', 'Group Destroy') :
-            Toastr::error('Group could not be forcefully deleted.', 'Group Destroy');
+        $group = $this->groupService->findTrashed($groupId);
+        $this->groupService->destroyGroup($group);
 
         return redirect()->route('admin.groups.index');
     }
@@ -157,35 +126,30 @@ class GroupsController extends Controller
     /**
      * Restore deleted record.
      *
-     * @param ModelRestoreService $service
-     * @param $id
+     * @param $groupId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function restore(ModelRestoreService $service, $id)
+    public function restore($groupId)
     {
-        $service->restoreGroup($id) ?
-            Toastr::success('Group has been restored successfully.', 'Group Restore') :
-            Toastr::error('Group could not be restored.', 'Group Restore');
+        $group = $this->groupService->findTrashed($groupId);
+        $this->groupService->restoreGroup($group);
 
-        return redirect()->route('admin.groups.show', [$id]);
+        return redirect()->route('admin.groups.index');
     }
 
     /**
      * Invite or add user to a group.
      *
      * @param InviteFormRequest $request
-     * @param $id
+     * @param InviteService $inviteService
+     * @param $groupId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function invite(InviteFormRequest $request, $id)
+    public function invite(InviteFormRequest $request, InviteService $inviteService, $groupId)
     {
-        $group = $this->groupContract->with('invites')->find($id);
+        $inviteService->storeInvites($groupId, $request);
 
-        $this->dispatch(new InviteCreateJob($request, $group->id));
-
-        Toastr::success('The User has been invited to the Group.', 'Group User Invite');
-
-        return redirect()->route('admin.groups.show', [$group->id]);
+        return redirect()->route('admin.groups.show', [$groupId]);
     }
 
     /**
@@ -199,10 +163,9 @@ class GroupsController extends Controller
     {
         $user = $this->userContract->find($userId);
         $result = $user->detachGroup($groupId);
-        event('eloquent.deleted: *');
 
-        $result ? Toastr::success('The user has been deleted from Group.', 'Group User Delete') :
-            Toastr::error('The user could not be deleted from Group.', 'Group User Delete');
+        $result ? Flash::success('The user has been deleted from Group.') :
+            Flash::error('The user could not be deleted from Group.');
 
         return redirect()->route('admin.groups.index');
     }
