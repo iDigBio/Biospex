@@ -39,9 +39,8 @@ mix.webpackConfig({
 
 
 /* Production settings */
-/*
+
 if (mix.inProduction()) {
     mix.version();
     mix.disableNotifications();
 }
-*/
