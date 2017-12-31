@@ -1,7 +1,6 @@
 <?php
 
-
-return array(
+return [
 
     /**
      * What attributes do we use to build the slug?
@@ -18,29 +17,20 @@ return array(
      *
      * Defaults to null, which uses the toString() method on your model.
      */
-    'build_from' => 'title',
 
-    /**
-     * What field to we store the slug in?  Defaults to "slug".
-     * You need to configure this when building the SQL for your database, e.g.:
-     *
-     * Schema::create('users', function($table)
-     * {
-     *    $table->string('slug');
-     * });
-     */
-    'save_to' => 'slug',
+    'source' => 'title',
 
     /**
      * The maximum length of a generated slug.  Defaults to "null", which means
      * no length restrictions are enforced.  Set it to a positive integer if you
      * want to make sure your slugs aren't too long.
      */
-    'max_length' => null,
+
+    'maxLength' => null,
 
     /**
-     * If left to "null", then use Laravel's built-in Str::slug() method to
-     * generate the slug (with the separator defined below).
+     * If left to "null", then use the cocur/slugify package to generate the slug
+     * (with the separator defined below).
      *
      * Set this to a closure that accepts two parameters (string and separator)
      * to define a custom slugger.  e.g.:
@@ -51,13 +41,15 @@ return array(
      *
      * Otherwise, this will be treated as a callable to be used.  e.g.:
      *
-     * 		'method' => array('Str','slug'),
+     *    'method' => array('Str','slug'),
      */
+
     'method' => null,
 
     /**
-     * Separator to use if using the default Str::slug() method.  Defaults to a hyphen.
+     * Separator to use when generating slugs.  Defaults to a hyphen.
      */
+
     'separator' => '-',
 
     /**
@@ -69,7 +61,19 @@ return array(
      *     my-slug-1
      *     my-slug-2
      */
+
     'unique' => true,
+
+    /**
+     * If you are enforcing unique slugs, the default is to add an
+     * incremental value to the end of the base slug.  Alternatively, you
+     * can change this value to a closure that accepts three parameters:
+     * the base slug, the separator, and a Collection of the other
+     * "similar" slugs.  The closure should return the new unique
+     * suffix to append to the slug.
+     */
+    
+    'uniqueSuffix' => null,
 
     /**
      * Should we include the trashed items when generating a unique slug?
@@ -77,14 +81,8 @@ return array(
      * If set to "false", then a new slug could duplicate one that exists on a trashed model.
      * If set to "true", then uniqueness is enforced across trashed and existing models.
      */
-    'include_trashed' => false,
 
-    /**
-     * Whether to update the slug value when a model is being
-     * re-saved (i.e. already exists).  Defaults to false, which
-     * means slugs are not updated.
-     */
-    'on_update' => true,
+    'includeTrashed' => false,
 
     /**
      * An array of slug names that can never be used for this model,
@@ -92,36 +90,37 @@ return array(
      * Defaults to null (i.e. no reserved names).
      * Can be a static array, e.g.:
      *
-     * 		'reserved' => array('add', 'delete'),
+     *    'reserved' => array('add', 'delete'),
      *
      * or a closure that returns an array of reserved names.
      * If using a closure, it will accept one parameter: the model itself, and should
      * return an array of reserved names, or null. e.g.
      *
-     * 		'reserved' => function( Model $model) {
-     * 			return $model->some_method_that_returns_an_array();
-     * 		}
+     *    'reserved' => function( Model $model) {
+     *      return $model->some_method_that_returns_an_array();
+     *    }
      *
      * In the case of a slug that gets generated with one of these reserved names,
      * we will do:
      *
-     *  	$slug .= $seperator + "1"
+     *    $slug .= $separator + "1"
      *
      * and continue from there.
      */
+
     'reserved' => null,
 
     /**
-     * Whether or not to use Laravel's caching system to help generate
-     * incremental slug.  Defaults to false.
+     * Whether to update the slug value when a model is being
+     * re-saved (i.e. already exists).  Defaults to false, which
+     * means slugs are not updated.
      *
-     * Set it to a positive integer to use the cache (the value is the
-     * time to store slug increments in the cache).
-     *
-     * If you use this -- and we really recommend that you do, especially
-     * if 'unique' is true -- then you must use a cache backend that
-     * supports tags, i.e. not 'file' or 'database'.
+     * Be careful! If you are using slugs to generate URLs, then
+     * updating your slug automatically might change your URLs which
+     * is probably not a good idea from an SEO point of view.
+     * Only set this to true if you understand the possible consequences.
      */
-    'use_cache' => false,
+    
+    'onUpdate' => false,
 
-);
+];

@@ -8,7 +8,6 @@ return [
     'app_url'         => env('APP_URL'),
     'api_url'         => env('API_URL'),
     'app_domain'      => env('APP_DOMAIN'),
-    'app_nodejs_url'  => env('APP_NODEJS_URL'),
     'app_ip'          => env('APP_IP'),
     'app_user'        => env('APP_USER'),
     'registration'    => env('APP_REGISTRATION'),
@@ -19,7 +18,6 @@ return [
     'scratch_dir_tmp'             => storage_path('scratch/tmp'),
     'nfn_export_dir'              => storage_path('exports/nfn'),
     'subject_import_dir'          => storage_path('imports/subjects'),
-    'transcription_import_dir'    => storage_path('imports/transcriptions'),
     'export_reports_dir'          => storage_path('exports/report'),
     'classifications_dir'         => storage_path('classifications'),
     'classifications_download'    => storage_path('classifications/download'),
@@ -140,6 +138,7 @@ return [
     ],
 
     'nfnActors'  => env('NFN_ACTORS'),
+    'nfnNotify'  => [1 => 'NewNfnLegacyProject', 2 => 'NewNfnPanoptesProject'],
     'nfnSkipCsv' => env('NFN_SKIP_CSV'), // Skip csv creation for expedition ids
 
     'nfnCsvMap' => [

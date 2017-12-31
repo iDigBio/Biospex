@@ -8,17 +8,13 @@ return array(
     |--------------------------------------------------------------------------
     |
     | The default group settings for the elFinder routes.
-    |
-    */
-	/*
+    | commented out in production
+
     'route' => [
         'prefix' => 'translations',
-		'middleware' => [
-			'web',
-			'auth',
-		],
+        'middleware' => 'auth',
     ],
-	*/
+    */
 
 	/**
 	 * Enable deletion of translations
@@ -40,5 +36,10 @@ return array(
 	 *	)
 	 */
 	'exclude_groups' => array(),
+
+	/**
+	 * Export translations with keys output alphabetically.
+	 */
+	'sort_keys ' => false,
 
 );
