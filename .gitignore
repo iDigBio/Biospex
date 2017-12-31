@@ -25,6 +25,8 @@ codeception.yml
 storage/scratch/
 resources/apps/laravel-echo-server.js
 resources/apps/panoptes-pusher.js
+resources/upstart/biospex.service
+resources/upstart/panoptes-pusher.service
 tests/_output/
 backups
 
