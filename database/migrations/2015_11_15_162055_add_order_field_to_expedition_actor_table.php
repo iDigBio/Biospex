@@ -5,8 +5,6 @@ use Illuminate\Database\Migrations\Migration;
 
 class AddOrderFieldToExpeditionActorTable extends Migration {
 
-	use \DisablesForeignKeys;
-
 	/**
 	 * Run the migrations.
 	 *

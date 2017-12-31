@@ -2,10 +2,9 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class CreateWorkflowActorTable extends Migration {
-
-	use \DisablesForeignKeys;
 
 	/**
 	 * Run the migrations.
@@ -14,7 +13,7 @@ class CreateWorkflowActorTable extends Migration {
 	 */
 	public function up()
 	{
-		$this->disableForeignKeys();
+        Schema::disableForeignKeys();
 		Schema::create('actor_workflow', function (Blueprint $table) {
 			$table->increments('id');
 			$table->unsignedInteger('workflow_id');
@@ -25,7 +24,7 @@ class CreateWorkflowActorTable extends Migration {
 
 			$table->engine = 'InnoDB';
 		});
-		$this->enableForeignKeys();
+        Schema::enableForeignKeys();
 	}
 
 	/**

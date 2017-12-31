@@ -5,8 +5,6 @@ use Illuminate\Database\Migrations\Migration;
 
 class DropProjectActorTable extends Migration {
 
-    use \DisablesForeignKeys;
-
 	/**
 	 * Run the migrations.
 	 *
@@ -14,9 +12,9 @@ class DropProjectActorTable extends Migration {
 	 */
 	public function up()
 	{
-		$this->disableForeignKeys();
+        Schema::disableForeignKeys();
 		Schema::drop('project_actor');
-		$this->enableForeignKeys();
+        Schema::enableForeignKeys();
 	}
 
 	/**
@@ -26,7 +24,7 @@ class DropProjectActorTable extends Migration {
 	 */
 	public function down()
 	{
-        $this->disableForeignKeys();
+        Schema::disableForeignKeys();
 
         Schema::create('project_actor', function (Blueprint $table) {
             $table->increments('id');
@@ -38,7 +36,7 @@ class DropProjectActorTable extends Migration {
             $table->engine = 'InnoDB';
         });
 
-        $this->enableForeignKeys();
+        Schema::enableForeignKeys();
 	}
 
 }

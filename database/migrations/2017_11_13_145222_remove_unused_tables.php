@@ -13,7 +13,6 @@ class RemoveUnusedTables extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('api_subscribers');
         Schema::dropIfExists('user_grid_field');
         Schema::dropIfExists('user_grid_fields');
     }

@@ -2,10 +2,9 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateWorkflowsTable2 extends Migration {
-
-    use \DisablesForeignKeys;
 
 	/**
 	 * Run the migrations.
@@ -14,14 +13,14 @@ class CreateWorkflowsTable2 extends Migration {
 	 */
 	public function up()
 	{
-		$this->disableForeignKeys();
+        Schema::disableForeignKeys();
 		Schema::create('workflows', function (Blueprint $table) {
 			$table->increments('id');
             $table->string('workflow');
 			$table->timestamps();
 			$table->engine = 'InnoDB';
 		});
-		$this->enableForeignKeys();
+        Schema::enableForeignKeys();
 	}
 
 	/**

@@ -2,10 +2,9 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class AddWorkflowsToProjectsTable extends Migration {
-
-    use \DisablesForeignKeys;
 
 	/**
 	 * Run the migrations.
@@ -14,7 +13,7 @@ class AddWorkflowsToProjectsTable extends Migration {
 	 */
 	public function up()
 	{
-		$this->disableForeignKeys();
+        Schema::disableForeignKeys();
         if (Schema::hasColumn('projects', 'workflow_id'))
         {
             return;
@@ -23,7 +22,7 @@ class AddWorkflowsToProjectsTable extends Migration {
 			$table->unsignedInteger('workflow_id')->after('language_skills');
 			$table->foreign('workflow_id')->references('id')->on('workflows')->onDelete('cascade');
 		});
-		$this->enableForeignKeys();
+        Schema::enableForeignKeys();
 	}
 
 	/**
