@@ -40,7 +40,7 @@ $(function () {
                 text: "Cumulative Transcription Activity through Time"
             }],
             path: "/",
-            pathToImages: "/img/",
+            pathToImages: "../images/",
             fontSize: 12,
             marginTop: 10,
             categoryField: 'day',

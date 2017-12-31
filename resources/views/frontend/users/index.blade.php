@@ -45,10 +45,17 @@
                                             onClick="location.href='{{ action('UsersController@unban', array($user->id)) }}'">@lang('buttons.unban')</button>
                                 @endif
 
-                                <button class="btn btn-danger"
+                                <button class="btn btn-sm btn-danger" title="@lang('buttons.deleteTitle')"
+                                        data-href="{{ action('UsersController@destroy', array($user->id)) }}"
                                         data-method="delete"
-                                        data-toggle="confirmation" data-placement="left"
-                                        data-href="{{ action('UsersController@destroy', array($user->id)) }}">@lang('buttons.delete')</button>
+                                        data-toggle="confirmation"
+                                        data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
+                                        data-btn-ok-class="btn-success"
+                                        data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
+                                        data-btn-cancel-class="btn-danger"
+                                        data-title="Continue action?" data-content="This will destroy the item">
+                                    <span class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')
+                                </button>
                             </td>
                         </tr>
                     @endforeach

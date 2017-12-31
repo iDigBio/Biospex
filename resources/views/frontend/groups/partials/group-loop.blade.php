@@ -16,12 +16,17 @@
                             class="fa fa-users fa-lrg"></span> @lang('buttons.invite')</button>
             @endcan
             @can('delete', $group)
-                <button title="@lang('buttons.deleteTitle')"
-                        class="btn btn-danger btn-sm" type="button"
+                <button class="btn btn-sm btn-danger" title="@lang('buttons.deleteTitle')"
+                        data-href="{{ route('web.groups.delete', array($group->id)) }}"
                         data-method="delete"
-                        data-toggle="confirmation" data-placement="left"
-                        data-href="{{ route('web.groups.delete', array($group->id)) }}"><span
-                            class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
+                        data-toggle="confirmation"
+                        data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
+                        data-btn-ok-class="btn-success"
+                        data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
+                        data-btn-cancel-class="btn-danger"
+                        data-title="Continue action?" data-content="This will trash the item">
+                    <span class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')
+                </button>
             @endcan
         </td>
     </tr>

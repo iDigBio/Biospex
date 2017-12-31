@@ -1,4 +1,4 @@
-<div class="panel panel-info">
+<div class="panel panel-primary">
     <div class="panel-heading" role="tab" id="heading{{ $faq->id }}">
         <h4 class="panel-title">
             <a role="button" data-toggle="collapse" data-parent="#accordion{{ $category->id }}"

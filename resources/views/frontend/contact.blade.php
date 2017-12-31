@@ -8,9 +8,9 @@
 
 {{-- Content --}}
 @section('content')
-    <div class="row centered-form top-buffer">
+    <div class="row centered-form top30">
         <div class="col-xs-12 col-md-8 col-md-offset-2">
-            <div class="panel panel-info">
+            <div class="panel panel-primary">
                 <div class="panel-heading">
                     <h3 class="panel-title">{{ trans('pages.contact_biospex') }}</h3>
                 </div>

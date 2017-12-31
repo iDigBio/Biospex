@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-    <div class="row centered-form top-buffer">
+    <div class="row centered-form top30">
         <div class="col-xs-8 col-xs-offset-2">
             <h2>{{ trans('pages.team_biospex') }}</h2>
         </div>

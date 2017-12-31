@@ -32,12 +32,19 @@
                             <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm"
                                     onClick="location.href='{{ route('web.expeditions.edit', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
-                            <button title="@lang('buttons.deleteTitle')"
-                                    class="btn btn-danger btn-sm" type="button"
+
+                            <button class="btn btn-sm btn-danger" title="@lang('buttons.deleteTitle')"
+                                    data-href="{{ route('web.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"
                                     data-method="delete"
-                                    data-toggle="confirmation" data-placement="left"
-                                    data-href="{{ route('web.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"><span
-                                        class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
+                                    data-toggle="confirmation"
+                                    data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
+                                    data-btn-ok-class="btn-success"
+                                    data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
+                                    data-btn-cancel-class="btn-danger"
+                                    data-title="Continue action?" data-content="This will delete the item">
+                                <span class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')
+                            </button>
+
                         </div>
                         <div class="col-md-2">
                             <button title="@lang('buttons.ocrTitle')" class="btn btn-success btn-sm" type="button"
@@ -55,12 +62,18 @@
                                         onClick="location.href='{{ route('web.expeditions.process', [$expedition->project->id, $expedition->id]) }}'">
                                     <span class="fa fa-play fa-lrg"></span> @lang('buttons.process')</button>
                             @else
-                                <button title="@lang('buttons.stopTitle')"
-                                        class="btn btn-sm btn-danger" type="button"
+                                <button class="btn btn-sm btn-danger" title="@lang('buttons.stopTitle')"
+                                        data-href="{{ route('web.expeditions.stop', [$expedition->project->id, $expedition->id]) }}"
                                         data-method="delete"
-                                        data-toggle="confirmation" data-placement="left"
-                                        data-href="{{ route('web.expeditions.stop', [$expedition->project->id, $expedition->id]) }}"><span
-                                            class="fa fa-stop fa-lrg"></span> @lang('buttons.stop')</button>
+                                        data-toggle="confirmation"
+                                        data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
+                                        data-btn-ok-class="btn-success"
+                                        data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
+                                        data-btn-cancel-class="btn-danger"
+                                        data-title="Continue action?" data-content="This will stop the process">
+                                    <span class="fa fa-remove fa-lrg"></span> @lang('buttons.stop')
+                                </button>
+
                             @endif
                         </div>
                     </div>

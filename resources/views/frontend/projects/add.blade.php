@@ -125,43 +125,5 @@
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-4">
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{{ trans('pages.upload_nfn_results') }}</h3>
-                </div>
-                <div class="panel-body">
-                    {!! Form::open([
-                        'route' => ['web.imports.upload', $project->id],
-                        'method' => 'post',
-                        'files' => true,
-                        'enctype' => 'multipart/form-data',
-                        'id' => 'form-trans',
-                        'class' => 'form-horizontal',
-                        'role' => 'form'
-                    ]) !!}
-                    <p>{!! link_to("#transcriptionModal", 'Instructions', ['class' => 'btn btn-sm btn-info', 'data-toggle'=>'modal']) !!}</p>
-                    <div class="form-group {{ ($errors->has('transcription')) ? 'has-error' : '' }}">
-                        {!! Form::label('file', trans('forms.file'), ['id' => 'transcription', 'class' => 'col-sm-2 control-label']) !!}
-                        <div class="col-sm-10">
-                            {!! Form::file('transcription') !!}
-                        </div>
-                        {{ ($errors->has('transcription') ? $errors->first('transcription') : '') }}
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10">
-                            {!! Form::submit(trans('buttons.upload'), ['class' => 'btn btn-sm btn-primary']) !!}
-                            {!! link_to(URL::previous(), trans('buttons.cancel'), ['class' => 'btn btn-sm btn-primary btn-danger']) !!}
-                        </div>
-                    </div>
-                    {!! Form::hidden('class', 'NfnTranscriptionImport') !!}
-                    {!! Form::hidden('user_id', $project->group->user_id) !!}
-                    {!! Form::close() !!}
-                </div>
-            </div>
-        </div>
-    </div>
     @include('frontend.layouts.import-modal')
 @stop

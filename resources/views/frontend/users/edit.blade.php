@@ -9,7 +9,7 @@
 {{-- Content --}}
 @section('content')
     <div class="col-xs-12">
-        <div class="panel panel-info">
+        <div class="panel panel-info top20">
             <div class="panel-heading">
                 <h3 class="panel-title">{{ trans('pages.account_profile') }}</h3>
             </div>
@@ -88,7 +88,7 @@
             <div class="panel-body">
                 <h4>@lang('pages.password_change')</h4>
                 {!! Form::open([
-                    'route' => ['password.put.pass', $user->id],
+                    'route' => ['web.users.password', $user->id],
                     'method' => 'put',
                     'class' => 'form-inline',
                     'role' => 'form'

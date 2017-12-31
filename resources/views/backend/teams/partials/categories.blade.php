@@ -12,11 +12,18 @@
                             onClick="location.href='{{ route('admin.teams.categories.edit', [$category->id, 0]) }}'"><span
                                 class="fa fa-cog fa-sm"></span></button>
 
-                    <button title="@lang('buttons.deleteTitle')" class="btn btn-danger btn-sm" type="button"
-                            data-toggle="confirmation" data-placement="left"
+                    <button class="btn btn-sm btn-danger" title="@lang('buttons.deleteTitle')"
                             data-href="{{ route('admin.teams.delete', [$category->id, 0]) }}"
-                            data-method="delete">
-                        <span class="fa fa-remove fa-sm"></span></button>
+                            data-method="delete"
+                            data-toggle="confirmation"
+                            data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
+                            data-btn-ok-class="btn-success"
+                            data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
+                            data-btn-cancel-class="btn-danger"
+                            data-title="Continue action?" data-content="This will delete the item">
+                        <span class="fa fa-remove fa-sm"></span> <!-- @lang('buttons.delete') -->
+                    </button>
+
                 </div>
             </div>
         </div>

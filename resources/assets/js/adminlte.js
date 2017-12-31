@@ -1,5 +1,5 @@
 $(function () {
-
+    alert('test');
     $('.sidebar-menu li a[href="' + location.href + '"]')
         .addClass('active')
         .closest('li').addClass('active')
@@ -75,6 +75,7 @@ $(function () {
     });
 
     $('.group-select').on('change', function () {
+        alert('test');
         var group = $(this).val();
         var url = $(this).find(':selected').data('route')
         if (group) {

@@ -90,7 +90,6 @@ return array(
     'upload_darwin_url'             => 'Import Darwin Core Url',
     'upload_error'                  => 'An error occurred during import. :error',
     'upload_nfn_desc'               => 'Only CSV files from Notes from Nature accepted.',
-    'upload_nfn_results'            => 'Import Notes From Nature Results',
     'upload_recordset'              => 'Import Using Record Set Id',
     'upload_trans_success'          => 'Upload was successful. You will receive an email when your import data have been processed.',
     'recordset_id_required'         => 'Recordset Id or URL required.',
@@ -101,7 +100,6 @@ return array(
     'process_title'                 => ':type Processes',
     'no_processes'                  => 'No processes running at this time.',
     'process_warning'               => 'Stats update every 5 minutes.',
-    'retrieve_process'              => 'Retrieving :type processes...',
     'team_menu'                     => 'Team',
     'team_biospex'                  => 'BIOSPEX Team',
     'vision_menu'                   => 'Our Vision',
@@ -156,6 +154,7 @@ return array(
     'expeditions_none'              => 'No Expeditions exist for this Project.',
     'trashed_none'                  => 'No Trashed items exist.',
     'trash'                         => 'Trash',
+    'active'                        => 'Active',
     'no_notifications'              => 'No notifications',
     'count_notifications'           => 'You have :count notification|You have :count notifications',
     'view_all'                      => 'View All',
@@ -168,4 +167,5 @@ return array(
     'download_type'                 => 'Download Type',
     'project_stats'                 => 'Statistics',
     'file_does_not_exist'           => 'File does not exist',
+    'api_menu'                      => 'API'
 );

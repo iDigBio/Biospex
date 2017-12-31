@@ -3,4 +3,6 @@
 @yield('scripts')
 
 <!-- AdminLTE App -->
-<script src="{{ asset('js/backend.js') }}" type="text/javascript"></script>
+<script src="{{ mix('/js/manifest.js', '/backend') }}"></script>
+<script src="{{ mix('/js/vendor.js', '/backend') }}"></script>
+<script src="{{ mix('/js/backend.js', '/backend') }}"></script>

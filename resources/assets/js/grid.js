@@ -1,12 +1,13 @@
 $.jgrid.defaults.width = 780;
 $.jgrid.defaults.responsive = true;
-$.jgrid.defaults.styleUI = 'Bootstrap';
+$.jgrid.defaults.guiStyle = 'bootstrap';
 $.jgrid.cellattr = $.jgrid.cellattr || {};
 $.extend($.jgrid.cellattr, {
     addDataAttr: function (rowId, cellVal, rawObject, cm, rdata) {
         return 'data-toggle="modal" data-target="#jqGridModal"';
     }
 });
+
 
 var Grid = {};
 
@@ -45,26 +46,7 @@ $(function () {
 function jqBuildGrid() {
 
         return function (result) {
-        var cm = result.colModel,
-            delSettings = {
-                onclickSubmit: function () {
-                    var $this = $(this), p = $this.jqGrid("getGridParam"), newPage = p.page;
-
-                    if (p.lastpage > 1) {// on the multipage grid reload the grid
-                        if (p.reccount === 1 && newPage === p.lastpage) {
-                            // if after deliting there are no rows on the current page
-                            // which is the last page of the grid
-                            newPage--; // go to the previous page
-                        }
-                        // reload grid to make the row from the next page visable.
-                        setTimeout(function () {
-                            $this.trigger("reloadGrid", [{page: newPage}]);
-                        }, 50);
-                    }
-
-                    return true;
-                }
-            };
+        var cm = result.colModel;
         mapFormatter(cm);
         Grid.obj.jqGrid({
             jsonReader: {
@@ -82,9 +64,9 @@ function jqBuildGrid() {
             page: 1,
             colNames: result.colNames,
             colModel: cm,
-            rowNum: 10,
+            rowNum: 20,
             gridview: true,
-            rowList: [10, 20, 50, 100, 500],
+            rowList: [20, 50, 100, 500],
             multiSort: true,
             sortable: true,
             sortorder: 'asc',
@@ -153,15 +135,20 @@ function jqBuildGrid() {
                             // which is the last page of the grid
                             newPage--; // go to the previous page
                         }
-                        // reload grid to make the row from the next page visable.
+                        // reload grid to make the row from the next page visible.
                         setTimeout(function () {
                             $this.trigger("reloadGrid", [{page: newPage}]);
                         }, 50);
                     }
 
+                    //Grid.subjectCountHtmlObj.html(Grid.subjectIdsObj.data('ids').length);
+                    //Grid.subjectCountHtmlObj.html(Grid.obj.getGridParam("records"));
+
                     return true;
                 },
                 delData: {
+                    projectId: Grid.projectId,
+                    expeditionId: Grid.expeditionId,
                     _token: $('meta[name=csrf-token]').attr('content')
                 }
 
@@ -179,13 +166,15 @@ function jqBuildGrid() {
                 Grid.obj.jqGrid('columnChooser', {
                     classname: "columnChooser",
                     modal: true,
-                    width: 500,
+                    width: 600,
                     done: function (perm) {
                         if (perm) {
                             this.jqGrid("remapColumns", perm, true);
                         }
                     }
                 });
+                $('.ui-multiselect ul.selected').height('500px');
+                $('.ui-multiselect ul.available').height('500px');
             }
         }).navButtonAdd('#pager', {
             caption: '',
@@ -211,13 +200,15 @@ function jqBuildGrid() {
                 Grid.obj.jqGrid('columnChooser', {
                     classname: "columnChooser",
                     modal: true,
-                    width: 500,
+                    width: 600,
                     done: function (perm) {
                         if (perm) {
                             this.jqGrid("remapColumns", perm, true);
                         }
                     }
                 });
+                $('.ui-multiselect ul.selected').height('500px');
+                $('.ui-multiselect ul.available').height('500px');
             }
         }).navButtonAdd('#' + Grid.id + '_toppager_left', {
             caption: '',
@@ -268,12 +259,12 @@ function switchCbColumn() {
  * @returns {boolean}
  */
 function handleCellSelect(id, event) {
-    if (event.target.className == 'ocrPreview') {
+    if (event.target.className === 'ocrPreview') {
         $('#model-body').html($(event.target).text());
         return false;
     }
 
-    if (event.target.className == 'thumbPreview') {
+    if (event.target.className === 'thumbPreview') {
         return false;
     }
 
@@ -297,7 +288,7 @@ function mapFormatter(column) {
         "imagePreview": function (cellValue, opts, rowObjects) {
             var url = encodeURIComponent(cellValue);
             return '<a href="' + cellValue + '" target="_new">View Image</a>&nbsp;&nbsp;'
-                + '<a href="/img/preview?url=' + url + '" class="thumb-view">View Thumb</a>&nbsp;&nbsp;'
+                + '<a href="/images/preview?url=' + url + '" class="thumb-view">View Thumb</a>&nbsp;&nbsp;'
                 + '<a href="' + cellValue + '" class="url-view">View Url</a>';
         }
     };

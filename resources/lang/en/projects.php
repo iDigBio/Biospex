@@ -10,6 +10,7 @@ return array (
   'project_options' => 'Project Options',
   'project_save_error' => 'An error occurred when saving project.',
   'project_updated' => 'Project was updated successfully.',
+  'project_updated_error' => 'Error while updating project.',
   'projects' => 'Projects',
   'no_projects' => 'No projects exist for your groups.',
   'project_create' => 'Create project',

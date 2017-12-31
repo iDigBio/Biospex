@@ -9,4 +9,5 @@ return array (
   'notification_restored' => 'Notification has been restored.',
   'notification_workflow_title' => 'Missing NFN Workflow Id',
   'notification_workflow_message' => 'The process for Expedition ":title" has been started but is missing a Notes From Nature workflow id. In order to upate the statistics, please edit the Expedition and provide the workflow id given by Notes From Nature',
+    'reset_password_link' => 'A reset password email has been sent. Please follow the directions to reset your password.'
 );

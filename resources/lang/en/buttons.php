@@ -1,6 +1,7 @@
 <?php
 
 return array(
+    'activate'           => 'Activate',
     'addTargetTitle'     => 'Add a set of target fields to this project',
     'advertise'          => 'Advertise',
     'advertiseTitle'     => 'Advertise this project in external websites',

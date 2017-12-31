@@ -58,12 +58,17 @@
                         <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs" type="button"
                                 onClick="location.href='{{ route('web.expeditions.edit', [$expedition->project->id, $expedition->id]) }}'">
                             <span class="fa fa-cog fa-lrg"></span> <!-- @lang('buttons.edit') --></button>
-                        <button title="@lang('buttons.deleteTitle')"
-                                class="btn btn-danger btn-xs delete-form" type="button"
+                        <button class="btn btn-xs btn-danger" title="@lang('buttons.deleteTitle')"
+                                data-href="{{ route('web.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"
                                 data-method="delete"
-                                data-toggle="confirmation" data-placement="left"
-                                data-href="{{ route('web.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"><span
-                                    class="fa fa-remove fa-lrg"></span> <!-- @lang('buttons.delete') --></button>
+                                data-toggle="confirmation"
+                                data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
+                                data-btn-ok-class="btn-success"
+                                data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
+                                data-btn-cancel-class="btn-danger"
+                                data-title="Continue action?" data-content="This will delete the item">
+                            <span class="fa fa-remove fa-sm"></span> <!-- @lang('buttons.delete') -->
+                        </button>
 
                         @if (null !== $expedition->downloads)
                             <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs" type="button"

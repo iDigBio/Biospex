@@ -69,16 +69,29 @@
                                 <tr>
                                     <td>{{ $invite->email }} </td>
                                     <td class="nowrap">
-                                        <button class="btn btn-primary btn-sm" type="button"
-                                                href="{!! route('web.invites.resend', [$invite->group_id, $invite->id]) !!}'"
-                                                data-token="{{ csrf_token() }}" data-method="post"><span
-                                                    class="fa fa-envelope fa-lrg"></span> @lang('buttons.resend')
+                                        <button class="btn btn-small btn-primary"
+                                                data-href="{!! route('web.invites.resend', [$invite->group_id, $invite->id]) !!}"
+                                                data-method="post"
+                                                data-toggle="confirmation"
+                                                data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
+                                                data-btn-ok-class="btn-success"
+                                                data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
+                                                data-btn-cancel-class="btn-danger"
+                                                data-title="Continue action?" data-content="This will resend the invite">
+                                            <span class="fa fa-envelope fa-lrg"></span> @lang('buttons.resend')
                                         </button>
-                                        <button class="btn btn-danger btn-sm" type="button"
+
+                                        <button class="btn btn-small btn-danger"
+                                                data-href="{{ route('web.invites.delete', [$invite->group_id, $invite->id]) }}"
                                                 data-method="delete"
-                                                data-toggle="confirmation" data-placement="left"
-                                                data-href="{{ route('web.invites.delete', [$invite->group_id, $invite->id]) }}"><span
-                                                    class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')</button>
+                                                data-toggle="confirmation"
+                                                data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-lrg fa-share"
+                                                data-btn-ok-class="btn-success"
+                                                data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-lrg fa-ban"
+                                                data-btn-cancel-class="btn-danger"
+                                                data-title="Continue action?" data-content="This will delete the invite">
+                                            <span class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')
+                                        </button>
                                     </td>
                                 </tr>
                             @endforeach

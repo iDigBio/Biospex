@@ -27,6 +27,5 @@
 @section('scripts')
     @include('frontend.layouts.partials.scripts')
 @show
-
 </body>
 </html>

@@ -10,7 +10,7 @@
 @section('homepage')
     <div id="splash">
         <div class="pull-left col-md-6">
-        <img src="/img/logo.png" alt="biospex"/>
+        <img src="{{ asset('images/logo.png') }}" alt="biospex"/>
         {!! trans('html.homepage-header') !!}
         </div>
         <!--
@@ -60,7 +60,7 @@
                             required</p>
 
                         <form
-                                action="http://idigbio.us4.list-manage.com/subscribe/post?u=5c564b4cf1e8157b450723e1c&amp;id=5aa1451449"
+                                action="https://idigbio.us4.list-manage.com/subscribe/post?u=5c564b4cf1e8157b450723e1c&amp;id=5aa1451449"
                                 method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form"
                                 class="validate"
                                 target="_blank" novalidate>

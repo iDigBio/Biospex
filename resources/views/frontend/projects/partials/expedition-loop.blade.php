@@ -25,18 +25,18 @@
         <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs" type="button"
                 onClick="location.href='{{ route('web.expeditions.edit', [$project->id, $expedition->id]) }}'">
             <span class="fa fa-cog fa-lrg"></span> <!-- @lang('buttons.edit') --></button>
-        <button title="@lang('buttons.deleteTitle')"
-                class="btn btn-danger btn-xs"
+        <button class="btn btn-xs btn-danger" title="@lang('buttons.deleteTitle')"
+                data-href="{{ route('web.expeditions.delete', [$project->id, $expedition->id]) }}"
                 data-method="delete"
-                data-toggle="confirmation" data-placement="left"
-                data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lg"
+                data-toggle="confirmation"
+                data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
                 data-btn-ok-class="btn-success"
-                data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lg"
+                data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
                 data-btn-cancel-class="btn-danger"
-                data-title="Delete item?"
-                data-href="{{ route('web.expeditions.delete', [$project->id, $expedition->id]) }}"><span
-                    class="fa fa-remove fa-lrg"></span> <!-- @lang('buttons.delete') -->
+                data-title="Continue action?" data-content="This will trash the item">
+            <span class="fa fa-remove fa-lrg"></span> <!-- @lang('buttons.delete') -->
         </button>
+
 
         @if ( ! $expedition->downloads->isEmpty())
             <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs"

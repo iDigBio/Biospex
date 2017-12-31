@@ -1,0 +1,24 @@
+// Bootstrap
+@import "~bootstrap-sass/assets/stylesheets/bootstrap";
+
+// Font Awesome
+$fa-font-path: '/fonts/vendor/font-awesome';
+@import "~font-awesome/scss/font-awesome.scss";
+
+// Bootstrap WYSIHTML5
+//@import "~bootstrap-wysiwyg/css/style.css";
+
+// X-editable
+// Fix D:\Users\Robert\MyWebs\Sites\biospex\upgrade\node_modules\x-editable\dist\bootstrap3-editable\css\bootstrap-editable.css
+// gradient top change to top
+@import "~x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css";
+
+// iCheck
+@import "~icheck/skins/minimal/blue.css";
+
+// AdminLTE
+@import "~admin-lte/dist/css/AdminLTE.css";
+@import "~admin-lte/dist/css/skins/skin-blue.css";
+
+// Custom
+@import "../css/adminlte.css";

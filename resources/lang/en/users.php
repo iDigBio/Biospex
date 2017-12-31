@@ -8,7 +8,7 @@ return array (
   'banned' => 'You have been banned.',
   'created' => 'Your account has been created. Check your email for the confirmation link.',
   'deleted' => 'User has been deleted.',
-  'emailconfirm' => 'Check your email for the confirmation link.',
+  'emailconfirm' => 'Activation email sent. Please check your email.',
   'emailinfo' => 'Check your email for instructions.',
   'emailpassword' => 'Your password has been changed. Check your email for the new password.',
   'exists' => 'User already exists.',
