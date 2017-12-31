@@ -7,7 +7,7 @@ let pusher = new Pusher('79e8e05ea522377ba6db');
 let channel = pusher.subscribe('my-channel');
 
 const instance = axios.create({
-    baseURL: 'https://api.biospex2.loc',
+    baseURL: 'https://api.biospex.loc',
     httpsAgent: new https.Agent({
         rejectUnauthorized: false
     }),
