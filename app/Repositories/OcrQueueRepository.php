@@ -23,7 +23,7 @@ class OcrQueueRepository extends EloquentRepository implements OcrQueue
      */
     public function getOcrQueuesForPollCommand()
     {
-        $results = $this->model->where('error', '=', 0)->orderBy('ocr_csv_id', 'asc')->orderBy('created_at', 'asc')->get();
+        $results = $this->model->where('error', 0)->orderBy('ocr_csv_id', 'asc')->orderBy('created_at', 'asc')->get();
 
         $this->resetModel();
 

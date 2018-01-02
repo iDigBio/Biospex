@@ -70,10 +70,8 @@ class DarwinCore
         $file = $directory . '/meta.xml';
 
         $this->checkFileExists($file);
-        \Log::alert("check file exists");
 
         $meta = $this->metaFile->process($file);
-        \Log::alert("process meta file");
 
         $this->mediaIsCore = $this->metaFile->getMediaIsCore();
         $this->metaFields = $this->metaFile->getMetaFields();

@@ -279,7 +279,6 @@ class MetaFile
     private function setExtensionFile()
     {
         $this->extensionFile = $this->extension->nodeValue;
-        \Log::alert($this->extensionFile);
         if ($this->extensionFile === '')
         {
             throw new \Exception(trans('errors.extension_node_missing'));
