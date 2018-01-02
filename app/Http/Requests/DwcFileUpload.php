@@ -25,7 +25,7 @@ class DwcFileUpload extends FormRequest
     public function rules()
     {
         return [
-            'dwc' => 'required|mimes:zip,rar'
+            'dwc' => 'required|mimes:zip'
         ];
     }
 }
