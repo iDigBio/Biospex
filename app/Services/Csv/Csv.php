@@ -2,6 +2,7 @@
 
 namespace App\Services\Csv;
 
+use League\Csv\Statement;
 use League\Csv\Writer;
 use League\Csv\Reader;
 

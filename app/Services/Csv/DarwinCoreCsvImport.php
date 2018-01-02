@@ -2,9 +2,11 @@
 
 namespace App\Services\Csv;
 
+use App\Facades\DateHelper;
 use App\Interfaces\Header;
 use App\Interfaces\Property;
 use App\Interfaces\Subject;
+use App\Services\MongoDbService;
 use Illuminate\Validation\Factory as Validation;
 use App\Models\Occurrence;
 
@@ -97,6 +99,10 @@ class DarwinCoreCsvImport
      * @var
      */
     public $header;
+    /**
+     * @var MongoDbService
+     */
+    private $mongoDbService;
 
     /**
      * Construct
@@ -106,13 +112,15 @@ class DarwinCoreCsvImport
      * @param Header $headerContract
      * @param Validation $factory
      * @param \App\Services\Csv\Csv $csv
+     * @param MongoDbService $mongoDbService
      */
     public function __construct(
         Property $propertyContract,
         Subject $subjectContract,
         Header $headerContract,
         Validation $factory,
-        Csv $csv
+        Csv $csv,
+        MongoDbService $mongoDbService
     )
     {
         $this->identifiers = config('config.dwcRequiredFields.extension.identifier');
@@ -121,6 +129,8 @@ class DarwinCoreCsvImport
         $this->headerContract = $headerContract;
         $this->factory = $factory;
         $this->csv = $csv;
+        $this->mongoDbService = $mongoDbService;
+        $this->mongoDbService->setCollection('subjects');
     }
 
     /**
@@ -475,12 +485,23 @@ class DarwinCoreCsvImport
      */
     public function saveOccurrence($row)
     {
+        $row['_id'] = new \MongoDB\BSON\ObjectId();
+        $row['updated_at'] = DateHelper::newMongoDbDate();
+        $row['created_at'] = DateHelper::newMongoDbDate();
+
+        $criteria = ['project_id' => (int) $this->projectId, 'occurrence.id' => $row[$this->header[0]]];
+        $attributes = [ '$set' => ['occurrence' => $row]];
+
+        $this->mongoDbService->updateMany($attributes, $criteria);
+        \Log::alert('saved occurrence ' . $row[$this->header[0]]);
+        /*
         $subjects = $this->subjectContract->getSubjectsByProjectOccurrence($this->projectId, $row[$this->header[0]]);
 
         $subjects->each(function ($subject) use ($row) {
             $occurrence = new Occurrence($row);
             $subject->occurrence()->save($occurrence);
         });
+        */
     }
 
     /**
