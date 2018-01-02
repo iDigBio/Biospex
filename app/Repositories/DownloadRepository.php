@@ -24,9 +24,13 @@ class DownloadRepository extends EloquentRepository implements Download
      */
     public function getDownloadsForCleaning()
     {
-        return $this->model
+        $results = $this->model
             ->where('type', '=', 'export')
             ->where('created_at', '<', Carbon::now()->subDays(90))
             ->findAll();
+
+        $this->resetModel();
+
+        return $results;
     }
 }

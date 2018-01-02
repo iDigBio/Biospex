@@ -22,6 +22,10 @@ class ImportRepository extends EloquentRepository implements Import
      */
     public function getImportsWithoutError()
     {
-        return $this->model->where('error', 0)->get();
+        $results = $this->model->where('error', 0)->get();
+
+        $this->resetModel();
+
+        return $results;
     }
 }

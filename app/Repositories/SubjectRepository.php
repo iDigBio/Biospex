@@ -61,7 +61,11 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function findSubjectsByExpeditionId($expeditionId, array $attributes = ['*'])
     {
-        return $this->model->where('expedition_ids', $expeditionId)->get($attributes);
+        $results = $this->model->where('expedition_ids', $expeditionId)->get($attributes);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -69,10 +73,14 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function getSubjectsByProjectOccurrence($projectId, $occurrenceId)
     {
-        return $this->model
-            ->where('project_id', $projectId)
-            ->where('occurrence.id', $occurrenceId)
+        $results = $this->model
+            ->where('project_id', (int) $projectId)
+            ->where('occurrence.id', trim((string) $occurrenceId))
             ->get();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -80,9 +88,13 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function getUnassignedCount($id)
     {
-        return $this->model->where('expedition_ids', 'size', 0)
+        $results = $this->model->where('expedition_ids', 'size', 0)
             ->where('project_id', (int) $id)
             ->count();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -90,10 +102,14 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function getSubjectAssignedCount($projectId)
     {
-        return $this->model
+        $results = $this->model
             ->whereRaw(['expedition_ids.0' => ['$exists' => true]])
             ->where('project_id', '=', (int) $projectId)
             ->count();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -118,6 +134,8 @@ class SubjectRepository extends MongoDbRepository implements Subject
             ->get(['_id'])
             ->toArray();
 
+        $this->resetModel();
+
         return array_flatten($ids);
     }
 
@@ -130,6 +148,8 @@ class SubjectRepository extends MongoDbRepository implements Subject
             $subject->expedition_ids = collect($subject->expedition_ids)->diff($expeditionId)->toArray();
             $subject->save();
         });
+
+        $this->resetModel();
     }
 
     /**
@@ -137,7 +157,11 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function findByAccessUri($accessURI)
     {
-        return $this->model->where('accessURI', 'like', '%' . $accessURI . '%')->first();
+        $results = $this->model->where('accessURI', 'like', '%' . $accessURI . '%')->first();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -158,7 +182,8 @@ class SubjectRepository extends MongoDbRepository implements Subject
      *  The 'op' key will contain one of the following operators: '=', '<', '>', '<=', '>=', '<>', '!=','like', 'not like', 'is in', 'is not in'.
      *  when the 'operator' is 'like' the 'data' already contains the '%' character in the appropiate position.
      *  The 'data' key will contain the string searched by the user.
-
+     *
+     * @throws \Exception
      * @return int Total number of rows
      */
     public function getTotalRowCount(array $vars = [])
@@ -167,6 +192,8 @@ class SubjectRepository extends MongoDbRepository implements Subject
         {
             $this->buildQuery($query, $vars);
         })->count();
+
+        $this->resetModel();
 
         return (int) $count;
     }
@@ -186,6 +213,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
      *  Example: array(array('row 1 col 1','row 1 col 2'), array('row 2 col 1','row 2 col 2'))
      *
      * $limit, $start, $sidx, $sord, $filters
+     * @throws \Exception
      */
     public function getRows(array $vars = [])
     {
@@ -214,6 +242,8 @@ class SubjectRepository extends MongoDbRepository implements Subject
         }
 
         $this->setRowCheckbox($rows);
+
+        $this->resetModel();
 
         return $rows;
     }

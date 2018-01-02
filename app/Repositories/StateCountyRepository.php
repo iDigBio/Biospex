@@ -22,6 +22,10 @@ class StateCountyRepository extends EloquentRepository implements State
      */
     public function truncateTable()
     {
-        return $this->model->truncate();
+        $results = $this->model->truncate();
+
+        $this->resetModel();
+
+        return $results;
     }
 }

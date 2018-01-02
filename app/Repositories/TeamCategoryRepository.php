@@ -23,11 +23,15 @@ class TeamCategoryRepository extends EloquentRepository implements TeamCategory
      */
     public function getTeamIndexPage()
     {
-        return $this->model
+        $results = $this->model
             ->with('teams')
             ->orderBy('id', 'asc')
             ->groupBy('id')
             ->get();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -35,7 +39,11 @@ class TeamCategoryRepository extends EloquentRepository implements TeamCategory
      */
     public function getTeamCategorySelect()
     {
-        return $this->model->pluck('name', 'id')->toArray();
+        $results = $this->model->pluck('name', 'id')->toArray();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -43,6 +51,10 @@ class TeamCategoryRepository extends EloquentRepository implements TeamCategory
      */
     public function getCategoriesWithTeams()
     {
-        return $this->model->with('teams')->groupBy('id')->get();
+        $results = $this->model->with('teams')->groupBy('id')->get();
+
+        $this->resetModel();
+
+        return $results;
     }
 }

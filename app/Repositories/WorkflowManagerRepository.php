@@ -30,8 +30,12 @@ class WorkflowManagerRepository extends EloquentRepository implements WorkflowMa
                 $query->where('completed', 0);
             })->where('stopped', '=', 0);
 
-        return $expeditionId === null ? 
+        $results = $expeditionId === null ?
             $this->model->get($attributes) : 
             $this->model->where('expedition_id', $expeditionId)->get($attributes);
+
+        $this->resetModel();
+
+        return $results;
     }
 }

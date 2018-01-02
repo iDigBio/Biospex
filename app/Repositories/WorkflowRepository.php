@@ -23,10 +23,14 @@ class WorkflowRepository extends EloquentRepository implements Workflow
      */
     public function getWorkflowSelect()
     {
-        return ['--Select--'] + $this->model->where('enabled', '=',1)
+        $results = ['--Select--'] + $this->model->where('enabled', '=',1)
                 ->orderBy('title', 'asc')
                 ->pluck('title', 'id')
                 ->toArray();
+
+        $this->resetModel();
+
+        return $results;
     }
 }
 

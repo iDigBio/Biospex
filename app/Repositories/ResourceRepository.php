@@ -22,7 +22,11 @@ class ResourceRepository extends EloquentRepository implements Resource
      */
     public function getResourcesOrdered()
     {
-        return $this->model->orderBy('order', 'asc')->get();
+        $results = $this->model->orderBy('order', 'asc')->get();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -30,6 +34,10 @@ class ResourceRepository extends EloquentRepository implements Resource
      */
     public function getTrashedResourcesOrdered()
     {
-        return $this->model->onlyTrashed()->orderBy('order', 'asc')->get();
+        $results = $this->model->onlyTrashed()->orderBy('order', 'asc')->get();
+
+        $this->resetModel();
+
+        return $results;
     }
 }

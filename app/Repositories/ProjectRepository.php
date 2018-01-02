@@ -25,9 +25,13 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectByIdWith($projectId, array $with = [], $trashed = false)
     {
-        return $trashed ?
+        $results = $trashed ?
             $this->model->onlyTrashed()->with($with)->find($projectId) :
             $this->model->with($with)->find($projectId);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -39,6 +43,8 @@ class ProjectRepository extends EloquentRepository implements Project
             ->whereNotNull('banner_file_name')
             ->limit($count)
             ->get($attributes);
+
+        $this->resetModel();
 
         return $results;
     }
@@ -54,6 +60,8 @@ class ProjectRepository extends EloquentRepository implements Project
             ->limit($count)
             ->get($attributes);
 
+        $this->resetModel();
+
         return $results;
     }
 
@@ -67,6 +75,8 @@ class ProjectRepository extends EloquentRepository implements Project
             ->where('slug', '=', $slug)
             ->first();
 
+        $this->resetModel();
+
         return $results;
     }
 
@@ -75,8 +85,12 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectsHavingTranscriptionLocations(array $ids = [])
     {
-        return empty($ids) ?
+        $results = empty($ids) ?
             $this->model->has('transcriptionLocations')->get() :
             $this->model->has('transcriptionLocations')->whereIn('id', $ids)->get();
+
+        $this->resetModel();
+
+        return $results;
     }
 }

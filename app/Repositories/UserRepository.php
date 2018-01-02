@@ -22,7 +22,11 @@ class UserRepository extends EloquentRepository implements User
      */
     public function getAllUsersOrderByDate()
     {
-        return $this->model->with('profile')->orderBy('created_at', 'asc')->get();
+        $results = $this->model->with('profile')->orderBy('created_at', 'asc')->get();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -30,8 +34,12 @@ class UserRepository extends EloquentRepository implements User
      */
     public function findUsersByEmailAjax($email)
     {
-        return $this->model
+        $results = $this->model
             ->where('email', 'like', $email . '%')
             ->get(['email as text'])->toArray();
+
+        $this->resetModel();
+
+        return $results;
     }
 }

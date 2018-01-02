@@ -25,25 +25,32 @@ class GroupRepository extends EloquentRepository implements Group
     {
         $with = ! $trashed ? 'projects' : 'trashedProjects';
 
-        return $this->model->with($with)
+        $results = $this->model->with($with)
             ->whereHas('users', function ($query) use ($user) {
                 $query->where('id', $user->id);
             })->get();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
-     * Get select list of groups for a user.
-     *
      * @param $user
      * @return mixed
+     * @throws \Exception
      */
     public function getUsersGroupsSelect($user)
     {
-        return $this->model->whereHas('users', function ($query) use ($user) {
+        $results = $this->model->whereHas('users', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         })
             ->pluck('title', 'id')
             ->toArray();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -57,6 +64,8 @@ class GroupRepository extends EloquentRepository implements Group
             })->get()->map(function ($item) {
             return $item['uuid'];
         });
+
+        $this->resetModel();
 
         return $uuids;
     }

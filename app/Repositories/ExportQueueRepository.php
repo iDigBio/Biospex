@@ -23,7 +23,11 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
      */
     public function getFirstExportWithoutError(array $attributes = ['*'])
     {
-        return $this->model->where('error', 0)->findFirst($attributes);
+        $results =  $this->model->where('error', 0)->findFirst($attributes);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -31,12 +35,16 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
      */
     public function findByIdExpeditionActor($queueId, $expeditionId, $actorId, array $attributes = ['*'])
     {
-        return $this->model->with(['expedition.actor', 'expedition.project.group.owner'])
+        $results = $this->model->with(['expedition.actor', 'expedition.project.group.owner'])
             ->whereHas('actor', function ($query) use ($expeditionId, $actorId)
             {
                 $query->where('expedition_id', $expeditionId);
                 $query->where('actor_id', $actorId);
             })->find($queueId);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -44,19 +52,28 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
      */
     public function findQueueProcessData($queueId, $expeditionId, $actorId, array $attributes = ['*'])
     {
-        return $this->model->with(['expedition.actor', 'expedition.project.group'])
+        $results = $this->model->with(['expedition.actor', 'expedition.project.group'])
             ->whereHas('actor', function ($query) use ($expeditionId, $actorId)
             {
                 $query->where('expedition_id', $expeditionId);
                 $query->where('actor_id', $actorId);
             })->find($queueId);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
      * @return mixed
+     * @throws \Exception
      */
     public function getAllExportQueueOrderByIdAsc()
     {
-        return $this->model->orderBy('id', 'asc')->get();
+        $results = $this->model->orderBy('id', 'asc')->get();
+
+        $this->resetModel();
+
+        return $results;
     }
 }

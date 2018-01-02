@@ -24,7 +24,11 @@ class ActorRepository extends EloquentRepository implements Actor
      */
     public function getAllTrashed()
     {
-        return $this->model->onlyTrashed()->get();
+        $results = $this->model->onlyTrashed()->get();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -41,6 +45,8 @@ class ActorRepository extends EloquentRepository implements Actor
                 $actor->contacts()->create(['email' => $contact['email']]);
             }
         }
+
+        $this->resetModel();
 
         return $actor;
     }
@@ -68,6 +74,8 @@ class ActorRepository extends EloquentRepository implements Actor
 
         $actor = $this->model->with(['contacts'])->find($id);
 
+        $this->resetModel();
+
         return $actor;
     }
 
@@ -76,6 +84,10 @@ class ActorRepository extends EloquentRepository implements Actor
      */
     public function updateActorExpeditionPivot($actor, $expeditionId, array $attributes = [])
     {
-        return $actor->expeditions()->updateExistingPivot($expeditionId, $attributes);
+        $result = $actor->expeditions()->updateExistingPivot($expeditionId, $attributes);
+
+        $this->resetModel();
+
+        return $result;
     }
 }

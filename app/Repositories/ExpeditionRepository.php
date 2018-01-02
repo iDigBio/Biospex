@@ -29,9 +29,13 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
                 $query->where('completed', 0);
             }, '=');
 
-        return empty($ids) ?
+        $results = empty($ids) ?
             $this->model->get($attributes) :
             $this->model->whereIn('id', [1, 2, 3])->get($attributes);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -39,7 +43,11 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function getExpeditionSubjectCounts($id)
     {
-        return $this->model->find($id)->subjects()->count();
+        $results = $this->model->find($id)->subjects()->count();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -47,10 +55,14 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function expeditionsByUserId($userId, array $relations =[])
     {
-        return $this->model->with($relations)
+        $results = $this->model->with($relations)
             ->whereHas('project.group.users', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })->get();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -58,9 +70,13 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function expeditionDownloadsByActor($expeditionId)
     {
-        return $this->model->with(['project.group', 'actors.downloads' => function($query) use ($expeditionId){
+        $results = $this->model->with(['project.group', 'actors.downloads' => function($query) use ($expeditionId){
             $query->where('expedition_id', $expeditionId);
         }])->find($expeditionId);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -68,9 +84,13 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function findExpeditionsByProjectIdWith($projectId, array $with = [], $trashed = false)
     {
-        return $trashed ?
+        $results = $trashed ?
             $this->model->onlyTrashed()->with($with)->where('project_id', $projectId)->get() :
             $this->model->with($with)->where('project_id', $projectId)->get();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -78,9 +98,13 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function getExpeditionStats(array $ids = [], array $columns = ['*'])
     {
-        return empty($expeditionIds) ?
+        $results =  empty($expeditionIds) ?
             $this->model->has('stat')->with('project')->get($columns) :
             $this->model->has('stat')->with('project')->whereIn('id', $ids)->get();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -90,7 +114,11 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     {
         $withRelations = ['project.amChart', 'nfnWorkflow', 'nfnActor', 'stat'];
 
-        return $this->model->has('nfnWorkflow')->with($withRelations)->find($expeditionId);
+        $results = $this->model->has('nfnWorkflow')->with($withRelations)->find($expeditionId);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -98,6 +126,10 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function findExpeditionHavingWorkflowManager($expeditionId)
     {
-        return $this->model->has('workflowManager')->find($expeditionId);
+        $results = $this->model->has('workflowManager')->find($expeditionId);
+
+        $this->resetModel();
+
+        return $results;
     }
 }

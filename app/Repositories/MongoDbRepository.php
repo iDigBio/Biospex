@@ -38,22 +38,40 @@ abstract class MongoDbRepository implements Eloquent
     abstract function model();
 
     /**
+     * @throws \Exception
+     */
+    public function resetModel()
+    {
+        $this->makeModel();
+    }
+
+    /**
      * @param array $columns
      * @return mixed
+     * @throws \Exception
      */
     public function all(array $columns = ['*'])
     {
-        return $this->model->get($columns);
+        $results = $this->model->get($columns);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
      * @param $id
      * @param array $columns
      * @return mixed
+     * @throws \Exception
      */
     public function find($id, array $columns = ['*'])
     {
-        return $this->model->find($id, $columns);
+        $results = $this->model->find($id, $columns);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
@@ -61,125 +79,194 @@ abstract class MongoDbRepository implements Eloquent
      * @param $value
      * @param array $columns
      * @return mixed
+     * @throws \Exception
      */
     public function findBy($attribute, $value, array $columns = ['*'])
     {
-        return $this->model->where($attribute, '=', $value)->first($columns);
+        $results = $this->model->where($attribute, '=', $value)->first($columns);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
      * @param $id
      * @param array $with
-     * @return \Illuminate\Database\Eloquent\Collection|Model|null|static|static[]
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|static|static[]
+     * @throws \Exception
      */
     public function findWith($id, array $with = [])
     {
-        return $this->model->with($with)->find($id);
+        $results = $this->model->with($with)->find($id);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
-     * @inheritdoc
+     * @param $id
+     * @param array $with
+     * @return mixed
+     * @throws \Exception
      */
     public function findOnlyTrashed($id, array $with = [])
     {
-        return $this->model->with($with)->onlyTrashed()->find($id);
+        $results = $this->model->with($with)->onlyTrashed()->find($id);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
-     * @inheritdoc
+     * @param $field
+     * @param array $values
+     * @param array $columns
+     * @return mixed
+     * @throws \Exception
      */
     public function getWhereIn($field, array $values, array $columns = ['*'])
     {
-        return $this->model->whereIn($field, $values)->get($columns);
+        $results = $this->model->whereIn($field, $values)->get($columns);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
-     * @inheritdoc
+     * @param array $columns
+     * @return mixed
+     * @throws \Exception
      */
     public function getOnlyTrashed(array $columns = ['*'])
     {
-        return $this->model->onlyTrashed()->get($columns);
+        $results = $this->model->onlyTrashed()->get($columns);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
      * @param array $data
      * @return mixed
+     * @throws \Exception
      */
     public function create(array $data)
     {
-        return $this->model->create($data);
+        $results = $this->model->create($data);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
      * @param array $attributes
      * @return mixed
+     * @throws \Exception
      */
     public function firstOrCreate(array $attributes)
     {
-        return $this->model->firstOrCreate($attributes);
+        $results = $this->model->firstOrCreate($attributes);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
      * @param array $data
      * @param $id
      * @return mixed
+     * @throws \Exception
      */
     public function update(array $data, $id)
     {
-        return $this->model->find($id)->fill($data)->save();
+        $results = $this->model->find($id)->fill($data)->save();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
      * @param array $attributes
      * @param array $values
      * @return mixed
+     * @throws \Exception
      */
     public function updateOrCreate(array $attributes, array $values)
     {
-        return $this->model->updateOrCreate($attributes, $values);
+        $results = $this->model->updateOrCreate($attributes, $values);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
      * @param $model
-     * @return bool
+     * @return bool|int|null
+     * @throws \Exception
      */
     public function delete($model)
     {
-        return $model instanceof Model ?
+        $results = $model instanceof Model ?
             $model->delete() :
             $this->model->destroy($model);
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
      * @param $model
-     * @return bool
+     * @return bool|null
+     * @throws \Exception
      */
     public function destroy($model)
     {
-        return $model instanceof Model ?
+        $results = $model instanceof Model ?
             $model->forceDelete() :
             $this->model->find($model)->forceDelete();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
      * @param $model
      * @return mixed
+     * @throws \Exception
      */
     public function restore($model)
     {
-        return $model instanceof Model ?
+        $results = $model instanceof Model ?
             $model->restore() :
             $this->model->find($model)->restore();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
-     * Truncate table.
-     *
      * @return mixed
+     * @throws \Exception
      */
     public function truncate()
     {
-        return $this->model->truncate();
+        $results = $this->model->truncate();
+
+        $this->resetModel();
+
+        return $results;
     }
 
     /**
