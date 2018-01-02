@@ -176,7 +176,6 @@ return [
         Appstract\Opcache\OpcacheServiceProvider::class,
         Spiritix\LadaCache\LadaCacheServiceProvider::class,
 
-
         /*
          * Application Service Providers...
          */
