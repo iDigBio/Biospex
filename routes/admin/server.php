@@ -2,3 +2,4 @@
 
 $router->get('server')->uses('ServerController@index')->name('admin.server.index');
 $router->get('server/show')->uses('ServerController@show')->name('admin.server.show');
+$router->get('server/log')->uses('\Rap2hpoutre\LaravelLogViewer\LogViewerController@index')->name('admin.server.log');
