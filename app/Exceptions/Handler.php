@@ -23,9 +23,7 @@ class Handler extends ExceptionHandler
         \Symfony\Component\HttpKernel\Exception\HttpException::class,
         \Illuminate\Database\Eloquent\ModelNotFoundException::class,
         \Illuminate\Session\TokenMismatchException::class,
-        \Illuminate\Validation\ValidationException::class,
-        \Pheanstalk\Exception\ConnectionException::class,
-        \Predis\Connection\ConnectionException::class
+        \Illuminate\Validation\ValidationException::class
     ];
 
     /**
