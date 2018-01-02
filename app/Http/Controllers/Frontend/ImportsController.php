@@ -59,10 +59,6 @@ class ImportsController extends Controller
     {
         $project = $this->projectContract->findWith($id, ['group']);
 
-        if (request()->session()->has('errors')) {
-            dd(request()->session()->all());
-        }
-
         return view('frontend.projects.add', compact('project'));
     }
 
