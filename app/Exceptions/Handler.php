@@ -6,6 +6,7 @@ use Mail;
 use Exception;
 use App\Mail\BiospexException;
 use Illuminate\Auth\AuthenticationException;
+use Pheanstalk\Connection;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
@@ -24,6 +25,7 @@ class Handler extends ExceptionHandler
         \Illuminate\Database\Eloquent\ModelNotFoundException::class,
         \Illuminate\Session\TokenMismatchException::class,
         \Illuminate\Validation\ValidationException::class,
+        \Pheanstalk\Connection::class
     ];
 
     /**
