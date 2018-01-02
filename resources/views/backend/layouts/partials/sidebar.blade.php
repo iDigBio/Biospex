@@ -72,6 +72,7 @@
 
             <li class="{!! Html::active('admin.notices.') !!}">{!! Html::linkWithIcon(route('admin.notices.index'), 'Notices', [], ['before' => 'fa fa-newspaper-o']) !!}</li>
             <li class="{!! Html::active('admin.server.') !!}">{!! Html::linkWithIcon(route('admin.server.show'), 'PHP Info', [], ['before' => 'fa fa-circle-o']) !!}</li>
+            <li class="{!! Html::active('admin.server.') !!}">{!! Html::linkWithIcon(route('admin.server.log'), 'Log', [], ['before' => 'fa fa-circle-o']) !!}</li>
         </ul><!-- /.sidebar-menu -->
     </section>
     <!-- /.sidebar -->
