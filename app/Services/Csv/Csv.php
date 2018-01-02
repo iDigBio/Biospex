@@ -57,8 +57,6 @@ class Csv
         $this->reader->setEscape($escape);
     }
 
-
-
     /**
      * Create writer from file path.
      * 
@@ -70,39 +68,41 @@ class Csv
     }
 
     /**
-     * Fetch rows.
-     * 
-     * @return mixed
+     * Set header offset.
+     *
+     * @param int $offset
+     * @throws \League\Csv\Exception
      */
-    public function fetch()
+    public function setHeaderOffset($offset = 0)
     {
-        return $this->reader->setOffset(1)->fetch();
-    }
-
-    /**
-     * Fetch all rows.
-     * 
-     * @return mixed
-     */
-    public function fetchAll()
-    {
-        return $this->reader->fetchAll();
+        $this->reader->setHeaderOffset($offset);
     }
 
     /**
      * Return header row.
-     * 
+     *
      * @return mixed
      */
-    public function getHeaderRow()
+    public function getHeader()
     {
-        return $this->reader->fetchOne();
+        return $this->reader->getHeader();
+    }
+
+    /**
+     * Fetch all rows.
+     *
+     * @param array $header
+     * @return mixed
+     */
+    public function getRecords($header = [])
+    {
+        return $this->reader->getRecords($header);
     }
 
     /**
      * Insert one row.
-     * 
      * @param $row
+     * @throws \League\Csv\CannotInsertRecord
      */
     public function insertOne($row)
     {
@@ -111,11 +111,16 @@ class Csv
 
     /**
      * Insert all rows.
-     * 
      * @param $rows
+     * @throws \TypeError
      */
     public function insertAll($rows)
     {
         $this->writer->insertAll($rows);
+    }
+
+    public function unset()
+    {
+        unset($this->reader);
     }
 }

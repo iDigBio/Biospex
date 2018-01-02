@@ -10,11 +10,6 @@ class ActorQueue extends QueueAbstract
 {
 
     /**
-     * @var Report
-     */
-    protected $report;
-
-    /**
      * @var Expedition
      */
     protected $expeditionContract;

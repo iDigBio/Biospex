@@ -3,7 +3,7 @@
 namespace App\Services\Process;
 
 ini_set("auto_detect_line_endings", "1");
-ini_set("memory_limit", "7G");
+ini_set("memory_limit", "2048M");
 ini_set('max_execution_time', '0');
 ini_set('max_input_time', '0');
 set_time_limit(0);
@@ -70,8 +70,10 @@ class DarwinCore
         $file = $directory . '/meta.xml';
 
         $this->checkFileExists($file);
+        \Log::alert("check file exists");
 
         $meta = $this->metaFile->process($file);
+        \Log::alert("process meta file");
 
         $this->mediaIsCore = $this->metaFile->getMediaIsCore();
         $this->metaFields = $this->metaFile->getMetaFields();

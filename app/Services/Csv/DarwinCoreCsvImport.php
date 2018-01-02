@@ -5,7 +5,6 @@ namespace App\Services\Csv;
 use App\Interfaces\Header;
 use App\Interfaces\Property;
 use App\Interfaces\Subject;
-use ForceUTF8\Encoding;
 use Illuminate\Validation\Factory as Validation;
 use App\Models\Occurrence;
 
@@ -95,6 +94,11 @@ class DarwinCoreCsvImport
     public $identifierColumn;
 
     /**
+     * @var
+     */
+    public $header;
+
+    /**
      * Construct
      *
      * @param Property $propertyContract
@@ -148,49 +152,38 @@ class DarwinCoreCsvImport
         $this->csv->readerCreateFromPath($file);
         $this->csv->setDelimiter($delimiter);
         $this->csv->setEnclosure($enclosure);
+        $this->csv->setHeaderOffset();
 
-        $header = $this->processCsvHeader($this->csv->getHeaderRow(), $type);
+        $this->header = $this->processCsvHeader($this->csv->getHeader(), $type);
 
-        $rows = $this->csv->fetch();
-        foreach ($rows as $row)
+        $rows = $this->csv->getRecords($this->header);
+        foreach ($rows as $offset => $row)
         {
-            if (empty($row[0]))
-            {
-                continue;
-            }
-            $this->processRow($header, $row, $type, $loadMedia);
+            $this->processRow($row, $type, $loadMedia);
         }
 
-        $this->saveHeaderArray($header, $loadMedia);
+        $this->saveHeaderArray($this->header, $loadMedia);
+
+        unset($rows);
+        unset($this->header);
+        unset($this->csv->reader);
     }
 
     /**
      * Process an individual row.
      *
-     * @param $header
      * @param $row
      * @param $type
      * @param $loadMedia
      * @throws \Exception
-     * @return bool
      */
-    public function processRow($header, $row, $type, $loadMedia)
+    public function processRow($row, $type, $loadMedia)
     {
-        $row = $this->filterByMetaFileIndex($row, $type);
-
-        $this->testHeaderRowCount($header, $row);
-
-        array_walk($row, function (&$value) {
-            $value = Encoding::toUTF8($value);
-        });
-
-        $combined = array_combine($header, $row);
+        $this->testHeaderRowCount($row);
 
         $loadMedia ?
-            $this->prepareSubject($header, $combined, $this->metaFields[$type])
-            : $this->saveOccurrence($header, $combined);
-
-        return true;
+            $this->prepareSubject($row, $this->metaFields[$type])
+            : $this->saveOccurrence($row);
     }
 
     /**
@@ -213,16 +206,15 @@ class DarwinCoreCsvImport
     /**
      * Test header and row count are equal for combine
      *
-     * @param $header
      * @param $row
      * @throws \Exception
      */
-    public function testHeaderRowCount($header, $row)
+    public function testHeaderRowCount($row)
     {
-        if (count($header) !== count($row))
+        if (count($this->header) !== count($row))
         {
             throw new \Exception(trans('errors.csv_row_count', [
-                'headers' => count($header),
+                'headers' => count($this->header),
                 'rows'    => count($row)
             ]));
         }
@@ -393,37 +385,35 @@ class DarwinCoreCsvImport
     /**
      * Set the unique id for each record.
      *
-     * @param $header
-     * @param $combined
+     * @param $row
      * @param $metaFields
      * @return mixed
      */
-    public function setUniqueId($header, $combined, $metaFields)
+    public function setUniqueId($row, $metaFields)
     {
         return trim($this->identifierColumn) ?
-            $this->getIdentifierValue($combined[$this->identifierColumn])
-            : $this->getIdentifierColumn($header, $combined, $metaFields);
+            $this->getIdentifierValue($row[$this->identifierColumn])
+            : $this->getIdentifierColumn($row, $metaFields);
     }
 
     /**
      * Get the identifier column we are using.
      *
-     * @param $header
-     * @param $combined
+     * @param $row
      * @param $metaFields
      * @return mixed|null
      */
-    public function getIdentifierColumn($header, $combined, $metaFields)
+    public function getIdentifierColumn($row, $metaFields)
     {
         $this->identifierColumn = collect($metaFields)->intersect($this->identifiers)
-            ->filter(function ($identifier, $key) use ($combined, $header) {
-                return strpos($combined[$header[$key]], 'http') === false;
+            ->filter(function ($identifier, $key) use ($row) {
+                return strpos($row[$this->header[$key]], 'http') === false;
             })
-            ->map(function ($identifier, $key) use ($header) {
-                return $header[$key];
+            ->map(function ($identifier, $key) {
+                return $this->header[$key];
             })->first();
 
-        return trim($this->identifierColumn) ? $this->getIdentifierValue($combined[$this->identifierColumn]) : null;
+        return trim($this->identifierColumn) ? $this->getIdentifierValue($row[$this->identifierColumn]) : null;
     }
 
     /**
@@ -439,63 +429,25 @@ class DarwinCoreCsvImport
     }
 
     /**
-     * Set UUID values
-     * @param $combined
-     * @param $type
-     * @return mixed
-     */
-    public function setUuids(&$combined, $type)
-    {
-        return (isset($combined[$this->identifierColumn]) && ! empty($combined[$this->identifierColumn])) ?
-            $this->uuidFromIdentifier($combined) : $this->uuidFromMetaFields($combined, $type);
-    }
-
-    /**
-     * Pull UUID from identifier values or send original if not UUID format
-     * @param $combined
-     * @return mixed
-     */
-    protected function uuidFromIdentifier(&$combined)
-    {
-        $pattern = '/\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/i';
-        return preg_match($pattern, $combined[$this->identifierColumn], $matches) ?
-            $matches[0] : $combined[$this->identifierColumn];
-    }
-
-    /**
-     * Pull UUID from column values or send original value if not UUID format
-     * @param $combined
-     * @param $type
-     * @return mixed
-     */
-    protected function uuidFromMetaFields(&$combined, $type)
-    {
-        $pattern = '/\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/i';
-        return preg_match($pattern, $combined[$this->metaFields[$type][0]], $matches) ?
-            $matches[0] : $combined[$this->metaFields[$type][0]];
-    }
-
-    /**
      * Works under the assumption Occurrence is the core, not Media.
      *
-     * @param $header
-     * @param $combined
+     * @param $row
      * @param $metaFields
      */
-    public function prepareSubject($header, $combined, $metaFields)
+    public function prepareSubject($row, $metaFields)
     {
-        $occurrenceId = $this->mediaIsCore ? null : $combined[$header[0]];
-        $combined['id'] = $this->mediaIsCore ? $combined[$header[0]] : $this->setUniqueId($header, $combined, $metaFields);
+        $occurrenceId = $this->mediaIsCore ? null : $row[$this->header[0]];
+        $row['id'] = $this->mediaIsCore ? $row[$this->header[0]] : $this->setUniqueId($row, $metaFields);
 
-        if ($this->reject($combined))
+        if ($this->reject($row))
         {
             return;
         }
 
         $fields = ['project_id' => (int) $this->projectId, 'ocr' => '', 'expedition_ids' => []];
 
-        $occurrence = is_null($occurrenceId) ? [] : ['occurrence' => ['id' => $occurrenceId]];
-        $subject = $fields + $combined + $occurrence;
+        $occurrence = is_null($occurrenceId) ? [] : ['occurrence' => ['id' => (string) $occurrenceId]];
+        $subject = $fields + $row + $occurrence;
 
         if ($this->validateDoc($subject))
         {
@@ -519,20 +471,14 @@ class DarwinCoreCsvImport
     /**
      * Save Occurrence
      *
-     * @param $header
-     * @param $data
+     * @param $row
      */
-    public function saveOccurrence($header, $data)
+    public function saveOccurrence($row)
     {
-        $subjects = $this->subjectContract->getSubjectsByProjectOccurrence($this->projectId, $data[$header[0]]);
+        $subjects = $this->subjectContract->getSubjectsByProjectOccurrence($this->projectId, $row[$this->header[0]]);
 
-        if ($subjects->isEmpty())
-        {
-            return;
-        }
-
-        $subjects->each(function ($subject) use ($data) {
-            $occurrence = new Occurrence($data);
+        $subjects->each(function ($subject) use ($row) {
+            $occurrence = new Occurrence($row);
             $subject->occurrence()->save($occurrence);
         });
     }
@@ -540,14 +486,14 @@ class DarwinCoreCsvImport
     /**
      * Add to rejected media if subject id is not determined
      *
-     * @param $combined
+     * @param $row
      * @return bool
      */
-    public function reject($combined)
+    public function reject($row)
     {
-        if ( ! trim($combined['id']))
+        if ( ! trim($row['id']))
         {
-            $this->rejectedMultimedia[] = $combined;
+            $this->rejectedMultimedia[] = $row;
 
             return true;
         }

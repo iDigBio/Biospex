@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
 use MongoDB\BSON\UTCDateTime;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class PanoptesTranscription extends Model
 {

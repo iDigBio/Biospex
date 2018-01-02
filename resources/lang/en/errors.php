@@ -10,7 +10,7 @@ return array(
     'write_dir'                 => 'Unable to make directory writable: :directory',
     'save_file'                 => 'An error occurred while attempting to save file: :file',
     'import_process_title'      => 'An error occurred while importing the Darwin Core Archive.',
-    'import_process'            => 'Project: :title<br />ID:  :id<br />Message: :message<br /><br />The Biospex Administration has been notified and will investigate the issue. Please do not attempt to restart or perform other functions on this project.',
+    'import_process'            => 'Project: :title<br>ID:  :id<br>Message: :message<br><br>The Biospex Administration has been notified and will investigate the issue. Please do not attempt to restart or perform other functions on this project.',
     'zip_download'              => 'Unable to complete zip download for Darwin Core Archive.',
     'zip_type'                  => 'Wrong file type for zip download',
     'rowtype_mismatch'          => 'Row Type mismatch in reading meta xml file. :file, :row_type, :type_file',

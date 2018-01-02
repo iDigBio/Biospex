@@ -22,7 +22,7 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                        'route' => ['web.imports.upload', $project->id],
+                        'route' => ['web.dwcfile.upload', $project->id],
                         'method' => 'post',
                         'files' => true,
                         'enctype' => 'multipart/form-data',
@@ -46,7 +46,6 @@
                             {!! link_to(URL::previous(), trans('buttons.cancel'), ['class' => 'btn btn-sm btn-primary btn-danger']) !!}
                         </div>
                     </div>
-                    {!! Form::hidden('class', 'DarwinCoreFileImport') !!}
                     {!! Form::hidden('user_id', $project->group->user_id) !!}
                     {!! Form::close() !!}
                 </div>
@@ -60,7 +59,7 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                        'route' => ['web.imports.upload', $project->id],
+                        'route' => ['web.recordset.upload', $project->id],
                         'method' => 'post',
                         'id' => 'form-recordset',
                         'class' => 'form-horizontal',
@@ -82,7 +81,6 @@
                             {!! link_to(URL::previous(), trans('buttons.cancel'), ['class' => 'btn btn-sm btn-primary btn-danger']) !!}
                         </div>
                     </div>
-                    {!! Form::hidden('class', 'RecordSetImport') !!}
                     {!! Form::hidden('user_id', $project->group->user_id) !!}
                     {!! Form::close() !!}
                 </div>
@@ -96,7 +94,7 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                        'route' => ['web.imports.upload', $project->id],
+                        'route' => ['web.dwcuri.upload', $project->id],
                         'method' => 'post',
                         'id' => 'form-data-url',
                         'class' => 'form-horizontal',
@@ -118,7 +116,6 @@
                             {!! link_to(URL::previous(), trans('buttons.cancel'), ['class' => 'btn btn-sm btn-primary btn-danger']) !!}
                         </div>
                     </div>
-                    {!! Form::hidden('class', 'DarwinCoreUrlImport') !!}
                     {!! Form::hidden('user_id', $project->group->user_id) !!}
                     {!! Form::close() !!}
                 </div>

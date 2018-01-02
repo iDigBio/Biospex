@@ -28,7 +28,7 @@ class TestAppCommand extends Command
     }
 
     /**
-     *
+     * @throws \Exception
      */
     public function handle()
     {

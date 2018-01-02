@@ -76,6 +76,10 @@ class AustinProcessCommand extends Command
         return;
     }
 
+    /**
+     * @return mixed
+     * @throws \League\Csv\Exception
+     */
     public function loadCsv()
     {
         $reader = Reader::createFromPath(storage_path('austin/occurrences.csv'));
@@ -83,7 +87,7 @@ class AustinProcessCommand extends Command
         $reader->setEnclosure('"');
 
         $this->header = $reader->fetchOne();
-        $rows = $this->reader->setOffset(1)->fetch(function($row) {
+        $rows = $reader->setOffset(1)->fetch(function($row) {
             return array_combine($this->header, $row);
         });
 

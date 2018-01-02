@@ -47,7 +47,7 @@ return [
             'host' => 'localhost',
             'queue' => 'default',
             'ttr' => env('QUEUE_TTR', 3600),
-            'retry_after' => 90,
+            'retry_after' => 3600,
         ],
 
         'sqs' => [

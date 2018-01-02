@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use Illuminate\Bus\Queueable;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,7 +16,7 @@ use MongoCollection;
 class BuildOcrBatchesJob extends Job implements ShouldQueue
 {
 
-    use InteractsWithQueue, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var
@@ -41,6 +43,7 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
     {
         $this->projectId = (int) $projectId;
         $this->expeditionId = $expeditionId === null ? null : (int) $expeditionId;
+        $this->onQueue(config('config.beanstalkd.ocr'));
     }
 
     /**

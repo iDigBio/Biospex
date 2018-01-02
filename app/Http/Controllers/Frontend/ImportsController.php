@@ -4,33 +4,49 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
-use App\Services\Import\ImportServiceFactory;
+use App\Http\Requests\DwcFileUpload;
+use App\Http\Requests\DwcUriUpload;
+use App\Http\Requests\RecordsetUpload;
+use App\Interfaces\Import;
+use App\Jobs\DwcFileImportJob;
+use App\Jobs\DwcUriImportJob;
+use App\Jobs\RecordsetImportJob;
+use App\Services\File\FileService;
 use App\Interfaces\Project;
 
 class ImportsController extends Controller
 {
 
     /**
-     * @var Project
+     * @var FileService
      */
-    public $projectContract;
+    private $fileService;
 
     /**
-     * @var ImportServiceFactory
+     * @var Project
      */
-    public $importFactory;
+    private $projectContract;
+
+    /**
+     * @var Import
+     */
+    private $importContract;
 
     /**
      * ImportsController constructor.
-     * @param ImportServiceFactory $importFactory
+     * @param FileService $fileService
      * @param Project $projectContract
+     * @param Import $importContract
      */
     public function __construct(
-        ImportServiceFactory $importFactory,
-        Project $projectContract
-    ) {
+        FileService $fileService,
+        Project $projectContract,
+        Import $importContract
+    )
+    {
+        $this->fileService = $fileService;
         $this->projectContract = $projectContract;
-        $this->importFactory = $importFactory;
+        $this->importContract = $importContract;
     }
 
     /**
@@ -47,28 +63,102 @@ class ImportsController extends Controller
     }
 
     /**
-     * Upload data file
+     * Upload DWC file.
      *
-     * @param $id
+     * @param DwcFileUpload $request
+     * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function upload($id)
+    public function uploadDwcFile(DwcFileUpload $request, $projectId)
     {
-        $obj = $this->importFactory->create(request()->input('class'));
-        if (! $obj) {
-            Flash::error(trans('pages.bad_type'));
+        try {
 
-            return redirect()->route('web.imports.import', [$id]);
+            $path = $request->file('dwc')->store('imports/subjects');
+            /*
+            $file = $request->file('dwc');
+            $filename = md5($file->getClientOriginalName()) . '.' . $file->guessExtension();
+            $request->file('dwc')->move(config('config.subject_import_dir'), $filename);
+            */
+
+            $import = $this->importContract->create([
+                'user_id'    => $request->input('user_id'),
+                'project_id' => $projectId,
+                'file'       => $path
+            ]);
+
+            DwcFileImportJob::dispatch($import);
+
+            Flash::success(trans('pages.upload_trans_success'));
+
+            return redirect()->route('web.projects.show', [$projectId]);
         }
+        catch(\Exception $e)
+        {
+            Flash::error('Error uploading the file.');
 
-        $validate = $obj->import($id);
-
-        if ( ! empty($validate)) {
-            return redirect()->route('web.imports.import', [$id])->withErrors($validate);
+            return redirect()->route('web.projects.show', [$projectId]);
         }
+    }
 
-        Flash::success(trans('pages.upload_trans_success'));
+    /**
+     * Upload record set.
+     *
+     * @param RecordsetUpload $request
+     * @param $projectId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function uploadRecordSet(RecordsetUpload $request, $projectId)
+    {
+        try
+        {
+            $data = [
+                'id'         => $request->input('recordset'),
+                'user_id'    => request()->input('user_id'),
+                'project_id' => $projectId
+            ];
 
-        return redirect()->route('web.projects.show', [$id]);
+            RecordsetImportJob::dispatch($data);
+
+            Flash::success(trans('pages.upload_trans_success'));
+
+            return redirect()->route('web.projects.show', [$projectId]);
+        }
+        catch(\Exception $e)
+        {
+            Flash::error('Error uploading the file.');
+
+            return redirect()->route('web.projects.show', [$projectId]);
+        }
+    }
+
+    /**
+     * Upload Dwc uri.
+     *
+     * @param DwcUriUpload $request
+     * @param $projectId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function uploadDwcUri(DwcUriUpload $request, $projectId)
+    {
+        try
+        {
+            $data = [
+                'id'      => $projectId,
+                'user_id' => $request->input('user_id'),
+                'url'     => $request->input('data-url')
+            ];
+
+            DwcUriImportJob::dispatch($data);
+
+            Flash::success(trans('pages.upload_trans_success'));
+
+            return redirect()->route('web.projects.show', [$projectId]);
+        }
+        catch(\Exception $e)
+        {
+            Flash::error('Error uploading the file.');
+
+            return redirect()->route('web.projects.show', [$projectId]);
+        }
     }
 }

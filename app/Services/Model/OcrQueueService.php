@@ -38,7 +38,7 @@ class OcrQueueService
 
         if ($queueCheck === null)
         {
-            $this->dispatch((new BuildOcrBatchesJob($project->id, $expeditionId))->onQueue(config('config.beanstalkd.ocr')));
+            $this->dispatch(new BuildOcrBatchesJob($project->id, $expeditionId));
 
             return true;
         }

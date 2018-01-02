@@ -18,7 +18,6 @@ return [
     'scratch_dir_tmp'             => storage_path('scratch/tmp'),
     'nfn_export_dir'              => storage_path('exports/nfn'),
     'subject_import_dir'          => storage_path('imports/subjects'),
-    'export_reports_dir'          => storage_path('exports/report'),
     'classifications_dir'         => storage_path('classifications'),
     'classifications_download'    => storage_path('classifications/download'),
     'classifications_reconcile'   => storage_path('classifications/reconcile'),
@@ -95,7 +94,7 @@ return [
     ],
 
     'images'                => [
-        'thumbDefaultImg' => public_path('/img/default_image.jpg'),
+        'thumbDefaultImg' => public_path('/images/default_image.jpg'),
         'thumbOutputDir'  => storage_path('images'),
         'thumbWidth'      => 300,
         'thumbHeight'     => 300,

@@ -3,11 +3,9 @@
 namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Occurrence extends Model
 {
-    use LadaCacheTrait;
 
     /**
      * @inheritDoc

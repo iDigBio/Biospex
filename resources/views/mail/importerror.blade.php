@@ -1,8 +1,8 @@
 @component('mail::message')
-# @lang('errors.import_process_title)
+#@lang('errors.import_process_title')
 
 {!! $message !!}
-<br />
+<br>
 {{ $file }}
 
 Thanks,<br>
