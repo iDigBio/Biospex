@@ -73,7 +73,7 @@ class DwcFileImportJob implements ShouldQueue
 
             if ($project->workflow->actors->contains('title', 'OCR') && $dwcProcess->getSubjectCount() > 0)
             {
-                $this->dispatch(new BuildOcrBatchesJob($project->id));
+                BuildOcrBatchesJob::dispatch($project->id);
             }
 
             $fileService->filesystem->deleteDirectory($scratchFileDir);
