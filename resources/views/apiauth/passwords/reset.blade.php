@@ -15,7 +15,7 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                    'route' => 'api.password.request',
+                    'route' => 'api.password.post',
                     'method' => 'post',
                     'class' => 'form-horizontal',
                     'role' => 'form'

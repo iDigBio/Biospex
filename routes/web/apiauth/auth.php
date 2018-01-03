@@ -10,7 +10,7 @@ $router->get('logout')->uses('ApiLoginController@logout')->name('api.get.logout'
 $router->get('password/reset', 'ApiForgotPasswordController@showLinkRequestForm')->name('api.password.request');
 $router->post('password/email', 'ApiForgotPasswordController@sendResetLinkEmail')->name('api.password.email');
 $router->get('password/reset/{token}', 'ApiResetPasswordController@showResetForm')->name('api.password.reset');
-$router->post('password/reset', 'ApiResetPasswordController@reset');
+$router->post('password/reset', 'ApiResetPasswordController@reset')->name('api.password.post');
 
 // Begin RegistrationController
 $router->get('register')->uses('ApiRegisterController@showRegistrationForm')->name('api.get.register');

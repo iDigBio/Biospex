@@ -90,7 +90,7 @@ class ApiRegisterController extends Controller
      */
     public function getActivate($userId, $code)
     {
-        $user = $this->apiUser->find($userId, ['activated', 'activation_code']);
+        $user = $this->apiUser->find($userId);
 
         if ( ! $this->checkUserActivation($user))
         {
@@ -121,7 +121,7 @@ class ApiRegisterController extends Controller
      */
     public function postResendActivation(ResendActivationFormRequest $request)
     {
-        $user = $this->apiUser->findBy('email', $request->only('email'), ['id', 'activated', 'activation_code']);
+        $user = $this->apiUser->findBy('email', $request->only('email'));
 
         if ( ! $this->checkUserActivation($user))
         {
@@ -151,18 +151,18 @@ class ApiRegisterController extends Controller
      */
     protected function checkUserActivation($user)
     {
-        $check = true;
         if ( ! $user)
         {
             Flash::error(trans('users.notfound'));
-            $check = false;
-        }
-        elseif ($user->activated)
-        {
-            Flash::info(trans('users.already_activated'));
-            $check = false;
+            return false;
         }
 
-        return $check;
+        if ($user->activated)
+        {
+            Flash::info(trans('users.already_activated'));
+            return false;
+        }
+
+        return true;
     }
 }

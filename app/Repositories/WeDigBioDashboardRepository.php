@@ -39,7 +39,7 @@ class WeDigBioDashboardRepository extends MongoDbRepository implements WeDigBioD
         $rows = $rows > 500 ? 200 : $rows;
         $start = $request->has('start') ? (int) $request->input('start') : 0;
 
-        $results = $this->where(function ($query) use ($request) {
+        $results = $this->model->where(function ($query) use ($request) {
             $this->buildQuery($query, $request);
         })->limit($rows)->offset($start)->orderBy('timestamp', 'desc')->get();
 

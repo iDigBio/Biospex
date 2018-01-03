@@ -60,8 +60,9 @@ class OcrPollCommand extends Command
 
         if ($records->isEmpty())
         {
+            \Log::alert("empty");
             $data = trans('pages.processing_empty');
-            event(new PollOcrEvent($data));
+            PollOcrEvent::dispatch($data);
 
             return;
         }
@@ -91,6 +92,8 @@ class OcrPollCommand extends Command
             $count++;
         }
 
-        event(new PollOcrEvent($data));
+        \Log::alert(print_r($data, true));
+
+        PollOcrEvent::dispatch($data);
     }
 }

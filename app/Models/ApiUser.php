@@ -10,6 +10,7 @@ use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class ApiUser extends Authenticatable
 {
+
     use HasApiTokens, Notifiable, LadaCacheTrait;
 
     /**
@@ -54,9 +55,10 @@ class ApiUser extends Authenticatable
      */
     public function attemptActivation($activationCode)
     {
-        if ($activationCode == $this->activation_code) {
+        if ($activationCode === $this->activation_code)
+        {
             $this->activation_code = null;
-            $this->activated = true;
+            $this->activated = 1;
             $this->save();
 
             return true;
@@ -72,10 +74,12 @@ class ApiUser extends Authenticatable
      */
     public function getRandomString($length = 42)
     {
-        if (function_exists('openssl_random_pseudo_bytes')) {
+        if (function_exists('openssl_random_pseudo_bytes'))
+        {
             $bytes = openssl_random_pseudo_bytes($length * 2);
 
-            if ($bytes === false) {
+            if ($bytes === false)
+            {
                 throw new \RuntimeException('Unable to generate random string.');
             }
 
