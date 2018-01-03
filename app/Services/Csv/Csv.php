@@ -2,7 +2,6 @@
 
 namespace App\Services\Csv;
 
-use League\Csv\Statement;
 use League\Csv\Writer;
 use League\Csv\Reader;
 
@@ -26,6 +25,16 @@ class Csv
     public function readerCreateFromPath($file)
     {
         $this->reader = Reader::createFromPath($file);
+    }
+
+    /**
+     * Create writer from file path.
+     *
+     * @param $filePath
+     */
+    public function writerCreateFromPath($filePath)
+    {
+        $this->writer = Writer::createFromPath($filePath, 'w+');
     }
 
     /**
@@ -56,16 +65,6 @@ class Csv
     public function setEscape($escape = '\\')
     {
         $this->reader->setEscape($escape);
-    }
-
-    /**
-     * Create writer from file path.
-     * 
-     * @param $filePath
-     */
-    public function writerCreateFromPath($filePath)
-    {
-        $this->writer = Writer::createFromPath(new \SplFileObject($filePath, 'a+'), 'w');
     }
 
     /**
@@ -118,10 +117,5 @@ class Csv
     public function insertAll($rows)
     {
         $this->writer->insertAll($rows);
-    }
-
-    public function unset()
-    {
-        unset($this->reader);
     }
 }
