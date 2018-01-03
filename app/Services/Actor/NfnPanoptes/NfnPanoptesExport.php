@@ -428,6 +428,8 @@ class NfnPanoptesExport
      *
      * @param $csvExport
      * @return bool
+     * @throws \League\Csv\CannotInsertRecord
+     * @throws \TypeError
      */
     private function createCsv($csvExport)
     {

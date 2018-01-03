@@ -7,6 +7,6 @@
 Join Now
 @endcomponent
 
-Thanks,<br>
+Thank you,<br>
 {{ config('app.name') }}
 @endcomponent

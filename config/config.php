@@ -17,6 +17,7 @@ return [
     'scratch_dir'                 => storage_path('scratch'),
     'scratch_dir_tmp'             => storage_path('scratch/tmp'),
     'nfn_export_dir'              => storage_path('exports/nfn'),
+    'export_reports_dir'          => storage_path('exports/report'),
     'subject_import_dir'          => storage_path('imports/subjects'),
     'classifications_dir'         => storage_path('classifications'),
     'classifications_download'    => storage_path('classifications/download'),

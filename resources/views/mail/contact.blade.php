@@ -6,6 +6,6 @@
 **@lang('emails.contact_message'):**
 {{ $contact['message'] }}
 
-Thanks,
+Thank you,<br>
 {{ config('app.name') }}
 @endcomponent

@@ -7,6 +7,6 @@
 {{ $title }}<br>
 {{ $description }}<br>
 
-Thanks,<br>
+Thank you,<br>
 {{ config('app.name') }}
 @endcomponent

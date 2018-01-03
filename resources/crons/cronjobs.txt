@@ -7,6 +7,7 @@
 */5 * * * * /usr/bin/php /data/web/biospex/production/artisan export:poll >> /var/log/apache2/export.poll.log 2>&1
 */5 * * * * /usr/bin/php /data/web/biospex/production/artisan ocr:poll >> /var/log/apache2/ocr.poll.log 2>&1
 0 5 * * * /usr/bin/php /data/web/biospex/production/artisan notifications:update >> /var/log/apache2/notifications-prod.log 2>&1
+0 23 * * * /usr/bin/php /data/web/biospex/production/artisan report:clean >> /var/log/apache2/report-clean.log 2>&1
 
 #Cron jobs for biospex staging
 #*/5 * * * * /usr/bin/php /data/web/biospex/staging/artisan ocrprocess:records >> /var/log/apache2/ocrprocess-stage.poll.log 2>&1

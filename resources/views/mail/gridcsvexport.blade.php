@@ -1,5 +1,5 @@
 @component('mail::message')
-# Notes From Nature Export Completed
+#@lang('emails.grid_export_csv')
 
 {!! $message !!}
 

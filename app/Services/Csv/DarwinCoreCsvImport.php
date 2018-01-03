@@ -176,7 +176,6 @@ class DarwinCoreCsvImport
 
         unset($rows);
         unset($this->header);
-        unset($this->csv->reader);
     }
 
     /**

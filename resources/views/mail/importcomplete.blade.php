@@ -5,6 +5,6 @@
 
 @lang('emails.import_ocr_message')<br>
 
-Thanks,<br>
+Thank you,<br>
 {{ config('app.name') }}
 @endcomponent
