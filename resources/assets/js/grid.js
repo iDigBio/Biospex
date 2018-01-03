@@ -189,8 +189,10 @@ function jqBuildGrid() {
             buttonicon: "glyphicon glyphicon-file",
             title: "Export to CSV",
             onClickButton: function (event) {
-                event.preventDefault();
-                Grid.obj.jqGrid('excelExport',{tag:'excel', url:Grid.exportUrl});
+                $.get(Grid.exportUrl, function( data ) {
+                    alert( "The export will be emailed when compiled.");
+                });
+                return false;
             }
         }).navButtonAdd('#' + Grid.id + '_toppager_left', {
             caption: '',
