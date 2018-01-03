@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Facades\DateHelper;
-use App\Facades\Flash;
 use App\Http\Controllers\Controller;
+use App\Jobs\GridExportCsvJob;
 use App\Services\Model\SubjectService;
-use Exception;
-use Illuminate\Database\DatabaseManager;
+use App\Services\MongoDbService;
 use Illuminate\Http\Request;
 use App\Services\Grid\JqGridJsonEncoder;
-use Illuminate\Support\Facades\Response;
 use App\Services\Csv\Csv;
 
 class GridsController extends Controller
@@ -50,17 +47,23 @@ class GridsController extends Controller
      * @var Csv
      */
     public $csv;
+    /**
+     * @var MongoDbService
+     */
+    private $mongoDbService;
 
     /**
      * GridsController constructor.
      * @param JqGridJsonEncoder $grid
      * @param Request $request
      * @param Csv $csv
+     * @param MongoDbService $mongoDbService
      */
     public function __construct(
         JqGridJsonEncoder $grid,
         Request $request,
-        Csv $csv
+        Csv $csv,
+        MongoDbService $mongoDbService
     )
     {
         $this->grid = $grid;
@@ -69,6 +72,7 @@ class GridsController extends Controller
 
         $this->projectId = (int) $this->request->route('projects');
         $this->expeditionId = (int) $this->request->route('expeditions');
+        $this->mongoDbService = $mongoDbService;
     }
 
     /**
@@ -148,66 +152,16 @@ class GridsController extends Controller
     }
 
     /**
+     * Export csv from grid button.
+     *
      * @param $projectId
      * @param null $expeditionId
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function export($projectId, $expeditionId = null)
     {
-        try
-        {
-            $databaseManager = app(DatabaseManager::class);
-            $client = $databaseManager->connection('mongodb')->getMongoClient();
-            $collection = $client->{config('database.connections.mongodb.database')}->subjects;
+        GridExportCsvJob::dispatch(\Auth::user(), $projectId, $expeditionId);
 
-            $query = null === $expeditionId ?
-                ['project_id' => (int) $projectId] :
-                ['project_id' => (int) $projectId, 'expedition_ids' => (int) $expeditionId];
-
-            $docs = $collection->find($query);
-            $docs->setTypeMap([
-                'array'    => 'array',
-                'document' => 'array',
-                'root'     => 'array'
-            ]);
-
-            $filename = $expeditionId === null ? 'grid_export_' . $projectId . '.csv' : 'grid_export_' . $projectId . '-' . $expeditionId . '.csv';
-            $temp = storage_path('scratch/' . $filename);
-            $this->csv->writerCreateFromPath($temp);
-
-            $i = 0;
-            foreach ($docs as $doc)
-            {
-                unset($doc['_id'], $doc['occurrence']);
-                $doc['expedition_ids'] = trim(implode(', ', $doc['expedition_ids']), ',');
-                $doc['updated_at'] = DateHelper::formatMongoDbDate($doc['updated_at'], 'Y-m-d H:i:s');
-                $doc['created_at'] = DateHelper::formatMongoDbDate($doc['created_at'], 'Y-m-d H:i:s');
-
-                if ($i === 0)
-                {
-                    $this->csv->insertOne(array_keys($doc));
-                }
-
-                $this->csv->insertOne($doc);
-                $i++;
-            }
-        }
-        catch (Exception $e)
-        {
-            Flash::error($e->getMessage());
-
-            return redirect()->route('web.projects.show', [$projectId]);
-        }
-
-        $headers = [
-            'Cache-Control'         => 'must-revalidate, post-check=0, pre-check=0'
-            , 'Content-type'        => 'text/csv'
-            , 'Content-disposition' => 'attachment; filename="' . $filename . '"'
-            , 'Expires'             => '0'
-            , 'Pragma'              => 'public'
-        ];
-
-        return Response::download($temp, $filename, $headers);
+        return;
     }
 
 
