@@ -9,6 +9,9 @@ class TestAppCommand extends Command
 {
 
     use DispatchesJobs;
+
+    public $projectId;
+    public $expeditionId;
     /**
      * The console command name.
      */
@@ -20,7 +23,8 @@ class TestAppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * TestAppCommand constructor.
+     * Create a new job instance.
+     *
      */
     public function __construct()
     {
@@ -28,9 +32,10 @@ class TestAppCommand extends Command
     }
 
     /**
-     * @throws \Exception
+     * Execute the job.
      */
     public function handle()
     {
+
     }
 }
