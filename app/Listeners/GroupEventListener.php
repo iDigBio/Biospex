@@ -84,8 +84,8 @@ class GroupEventListener
      */
     public function setUserGroupSession()
     {
-        $uuids = $this->groupContract->getUserGroupUuids(Auth::id());
+        $ids = $this->groupContract->getUserGroupIds(Auth::id());
 
-        Session::put('groupUuids', $uuids);
+        Session::put('groupIds', $ids->toArray());
     }
 }

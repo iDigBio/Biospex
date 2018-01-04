@@ -82,17 +82,15 @@ class OcrPollCommand extends Command
 
             $ocr = trans_choice('pages.ocr_records', $processed, ['processed' => $processed, 'total' => $total]);
 
-            $message = trans('pages.ocr_processing', ['title' => $project->title, 'ocr' => $ocr, 'batches' => $batches]);
+            $notice = trans('pages.ocr_processing', ['title' => $project->title, 'ocr' => $ocr, 'batches' => $batches]);
 
             $data[] = [
-                'groupUuid' => $project->group->uuid,
-                'message'   => $message,
+                'groupId' => $project->group->id,
+                'notice'   => $notice,
             ];
 
             $count++;
         }
-
-        \Log::alert(print_r($data, true));
 
         PollOcrEvent::dispatch($data);
     }

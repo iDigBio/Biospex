@@ -144,15 +144,14 @@ $(document).ready(function () {
     if ($('#processModal').length) {
         Echo.channel(Laravel.ocrChannel)
             .listen('PollOcrEvent', (e) => {
-                let uuids = Laravel.groupUuids;
+                let groupIds = $.parseJSON(Laravel.groupIds);
                 let ocrHtml = '';
-
                 if ($.isArray(e.data)) {
                     $.each(e.data, function (index) {
-                        if ($.inArray(e.data[index].groupUuid, uuids) === -1) {
+                        if ($.inArray(e.data[index].groupId, groupIds) === -1) {
                             return true;
                         }
-                        ocrHtml += e.data[index].message;
+                        ocrHtml += e.data[index].notice;
                     });
                 } else {
                     ocrHtml = e.data;
@@ -163,15 +162,15 @@ $(document).ready(function () {
 
         Echo.channel(Laravel.exportChannel)
             .listen('PollExportEvent', (e) => {
-                let uuids = Laravel.groupUuids;
+                let groupIds = $.parseJSON(Laravel.groupIds);
                 let exportHtml = '';
 
                 if ($.isArray(e.data)) {
                     $.each(e.data, function (index) {
-                        if ($.inArray(e.data[index].groupUuid, uuids) === -1) {
+                        if ($.inArray(e.data[index].groupId, groupIds) === -1) {
                             return true;
                         }
-                        exportHtml += e.data[index].message;
+                        exportHtml += e.data[index].notice;
                     });
                 } else {
                     exportHtml = e.data;

@@ -26,5 +26,5 @@ interface Group extends Eloquent
      * @param $userId
      * @return mixed
      */
-    public function getUserGroupUuids($userId);
+    public function getUserGroupIds($userId);
 }

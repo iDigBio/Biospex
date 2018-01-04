@@ -18,7 +18,7 @@ class EchoVarsComposer
     public function compose(View $view)
     {
         JavaScript::put([
-            'groupUuids'    => json_encode(Session::get('groupUuids')),
+            'groupIds'      => json_encode(Session::get('groupIds')),
             'ocrChannel'    => config('config.poll_ocr_channel'),
             'exportChannel' => config('config.poll_export_channel')
         ]);

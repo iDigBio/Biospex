@@ -56,17 +56,17 @@ class GroupRepository extends EloquentRepository implements Group
     /**
      * @inheritdoc
      */
-    public function getUserGroupUuids($userId)
+    public function getUserGroupIds($userId)
     {
-        $uuids = $this->model
+        $ids = $this->model
             ->whereHas('users', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })->get()->map(function ($item) {
-            return $item['uuid'];
+            return $item['id'];
         });
 
         $this->resetModel();
 
-        return $uuids;
+        return $ids;
     }
 }
