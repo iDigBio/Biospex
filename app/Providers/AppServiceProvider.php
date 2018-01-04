@@ -28,28 +28,6 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->setupBlade();
 
-        User::created(function ($user) {
-            $user->getActivationCode();
-            $profile = new Profile;
-            $profile->user_id = $user->id;
-            $profile->first_name = $this->app['request']->input('first_name');
-            $profile->last_name = $this->app['request']->input('last_name');
-            $user->profile()->save($profile);
-        });
-
-        ApiUser::created(function ($user) {
-            $user->getActivationCode();
-        });
-
-        Group::created(function ($group) {
-            $permissions = Cache::tags('model')->rememberForever('permissions.list', function () {
-                return Permission::pluck('name', 'id')->all();
-            });
-            $permissions = array_keys(array_diff($permissions, ['superuser']));
-
-            $group->permissions()->attach($permissions);
-        });
-
         if ($this->app->environment() === 'local' && env('DB_LOG'))
         {
             DB::connection('mongodb')->enableQueryLog();
