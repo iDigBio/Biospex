@@ -34,6 +34,18 @@ class ApiUser extends Authenticatable
     protected $hidden = ['password', 'remember_token'];
 
     /**
+     * Boot functions.
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($model) {
+            $model->getActivationCode();
+        });
+    }
+
+    /**
      * Return activation code.
      *
      * @return string

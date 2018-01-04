@@ -60,6 +60,21 @@ class User extends Authenticatable
      */
     protected $hashableAttributes = ['password'];
 
+    /**
+     * Boot functions.
+     */
+    public static function boot()
+    {
+        static::created(function ($model) {
+            $model->getActivationCode();
+            $profile = new Profile;
+            $profile->user_id = $model->id;
+            $profile->first_name = request()->input('first_name');
+            $profile->last_name = request()->input('last_name');
+            $model->profile()->save($profile);
+        });
+    }
+
 
     /**
      * Import relationship.

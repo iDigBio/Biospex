@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Cache;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
@@ -45,6 +46,21 @@ class Group extends Model
         'title',
         'permissions',
     ];
+
+    /**
+     * Boot functions.
+     */
+    public static function boot()
+    {
+        static::created(function ($group) {
+            $permissions = Cache::tags('model')->rememberForever('permissions.list', function () {
+                return Permission::pluck('name', 'id')->all();
+            });
+            $permissions = array_keys(array_diff($permissions, ['superuser']));
+
+            $group->permissions()->attach($permissions);
+        });
+    }
 
     /**
      * User as owner relationship
