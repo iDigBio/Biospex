@@ -191,18 +191,16 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getTranscriptionForDashboardJob($expeditionId, $timestamp)
     {
-        $this->model
-            ->with(['subject' => function ($query) {
-                $query->select('accessURI');
-            }])
-            ->where('subject_expeditionId', '=', $expeditionId);
+        $model = $this->model->with(['subject' => function ($query) {
+            $query->select('accessURI');
+        }])->where('subject_expeditionId', '=', $expeditionId);
 
         if ($timestamp !== null)
         {
-            $this->model->where('classification_finished_at', '>=', $timestamp);
+            $model->where('classification_finished_at', '>=', $timestamp);
         }
 
-        $results = $this->model->orderBy('classification_finished_at')->get();
+        $results = $model->orderBy('classification_finished_at')->get();
 
         $this->resetModel();
 
