@@ -22,6 +22,7 @@ class ExportQueue extends Model
         'actor_id',
         'stage',
         'queued',
+        'error',
         'missing'
     ];
 
