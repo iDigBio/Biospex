@@ -58,7 +58,7 @@ class OcrProcessComplete extends Notification implements ShouldQueue
 
         if ($this->csv !== null)
         {
-            $mailMessage->attachData($this->csv, 'ocr.csv', [
+            $mailMessage->attach($this->csv, [
                 'mime' => 'text/csv',
             ]);
         }

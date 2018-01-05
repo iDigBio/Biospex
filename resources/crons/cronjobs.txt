@@ -1,12 +1,13 @@
 # Cron jobs for biospex production
-#00 00 * * * /usr/bin/php /data/web/biospex/production/artisan download:clean >> /var/log/apache2/download.clean.log 2>&1
-#00 00 * * * /usr/bin/php /data/web/biospex/production/artisan ocrqueue:check >> /var/log/apache2/ocrqueue.check.log 2>&1
-#0 0 * * * /usr/bin/php /data/web/biospex/production/artisan nfn:csvcreate >> /var/log/apache2/nfncsv.create.prod.log 2>&1
-#0 6 * * * /usr/bin/php /data/web/biospex/production/artisan workflow:manage >> /var/log/apache2/workflow.manage.prod.log 2>&1
-*/5 * * * * /usr/bin/php /data/web/biospex/production/artisan ocrprocess:records >> /var/log/apache2/ocrprocess-prod.poll.log 2>$
-*/5 * * * * /usr/bin/php /data/web/biospex/production/artisan export:poll >> /var/log/apache2/export.poll.log 2>&1
-*/5 * * * * /usr/bin/php /data/web/biospex/production/artisan ocr:poll >> /var/log/apache2/ocr.poll.log 2>&1
-0 23 * * * /usr/bin/php /data/web/biospex/production/artisan report:clean >> /var/log/apache2/report-clean.log 2>&1
+#00 00 * * * /usr/bin/php /data/web/biospex/production/artisan download:clean >> /var/log/biospex/download.clean.log 2>&1
+#00 00 * * * /usr/bin/php /data/web/biospex/production/artisan ocrqueue:check >> /var/log/biospex/ocrqueue.check.log 2>&1
+#0 0 * * * /usr/bin/php /data/web/biospex/production/artisan nfn:csvcreate >> /var/log/biospex/nfncsv.create.log 2>&1
+#0 6 * * * /usr/bin/php /data/web/biospex/production/artisan workflow:manage >> /var/log/biospex/workflow.manage.log 2>&1
+
+*/5 * * * * /usr/bin/php /data/web/biospex/production/artisan ocrprocess:records >> /var/log/biospex/ocrprocess.poll.log 2>$
+*/5 * * * * /usr/bin/php /data/web/biospex/production/artisan export:poll >> /var/log/biospex/export.poll.log 2>&1
+*/5 * * * * /usr/bin/php /data/web/biospex/production/artisan ocr:poll >> /var/log/biospex/ocr.poll.log 2>&1
+0 23 * * * /usr/bin/php /data/web/biospex/production/artisan report:clean >> /var/log/biospex/report-clean.log 2>&1
 
 # Cron for auto-renew letsencrypt certs run twice a day (recommended)
 0 11,23 * * * ./opt/certbot-auto renew --quiet --no-self-upgrade >> /var/log/cert-bot.renew.log 2>&1
