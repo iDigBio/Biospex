@@ -5,12 +5,9 @@ namespace App\Observers;
 use App\Interfaces\ExportQueue;
 use App\Jobs\ExportQueueJob;
 use App\Models\ExportQueue as Model;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class ExportQueueObserver
 {
-
-    use DispatchesJobs;
 
     /**
      * @var ExportQueue
@@ -55,7 +52,7 @@ class ExportQueueObserver
     {
         if ($model->queued && ! $model->error)
         {
-            $this->dispatch((new ExportQueueJob($model))->onQueue(config('config.beanstalkd.export')));
+            ExportQueueJob::dispatch($model);
 
             return;
         }

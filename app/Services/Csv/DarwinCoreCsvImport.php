@@ -492,15 +492,6 @@ class DarwinCoreCsvImport
         $attributes = [ '$set' => ['occurrence' => $row]];
 
         $this->mongoDbService->updateMany($attributes, $criteria);
-        \Log::alert('saved occurrence ' . $row[$this->header[0]]);
-        /*
-        $subjects = $this->subjectContract->getSubjectsByProjectOccurrence($this->projectId, $row[$this->header[0]]);
-
-        $subjects->each(function ($subject) use ($row) {
-            $occurrence = new Occurrence($row);
-            $subject->occurrence()->save($occurrence);
-        });
-        */
     }
 
     /**

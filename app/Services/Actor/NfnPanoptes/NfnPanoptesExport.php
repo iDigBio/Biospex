@@ -102,23 +102,16 @@ class NfnPanoptesExport
      *
      * @param Actor $actor
      * @see NfnPanoptes::actor() To set actor for this method.
-     * @see ExportQueueEventListener::entityCreated() Event fired when queues saved.
+     * @see ExportQueueEventListener::created() Event fired when queues saved.
      */
     public function exportQueue(Actor $actor)
     {
-        try
-        {
-            $attributes = [
-                'expedition_id' => $actor->pivot->expedition_id,
-                'actor_id'      => $actor->id
-            ];
+        $attributes = [
+            'expedition_id' => $actor->pivot->expedition_id,
+            'actor_id'      => $actor->id
+        ];
 
-            $this->actorRepositoryService->firstOrCreateExportQueue($attributes);
-        }
-        catch (\Exception $e)
-        {
-            $this->config->fireActorErrorEvent($actor);
-        }
+        $this->actorRepositoryService->firstOrCreateExportQueue($attributes);
     }
 
     /**
@@ -129,30 +122,12 @@ class NfnPanoptesExport
      */
     public function queue(ExportQueue $queue)
     {
-        try
-        {
-            $this->config->setProperties($queue);
-            $this->actorRepositoryService->setActorServiceConfig($this->config);
-            $this->actorImageService->setActorServiceConfig($this->config);
+        $this->config->setProperties($queue);
+        $this->actorRepositoryService->setActorServiceConfig($this->config);
+        $this->actorImageService->setActorServiceConfig($this->config);
 
-            $method = $this->stage[$queue->stage];
-            $this->{$method}();
-        }
-        catch (\Exception $e)
-        {
-            $this->config->fireActorErrorEvent();
-
-            $attributes = ['queued' => 0, 'error' => 1];
-            $this->actorRepositoryService->updateExportQueue($attributes, $queue->id);
-
-            $message = trans('errors.nfn_export_error', [
-                'title'   => $this->config->expedition->title,
-                'id'      => $this->config->expedition->id,
-                'message' => $e->getMessage()
-            ]);
-
-            $this->config->owner->notify(new NfnExportError($message));
-        }
+        $method = $this->stage[$queue->stage];
+        $this->{$method}();
     }
 
     /**
@@ -187,20 +162,11 @@ class NfnPanoptesExport
         $files = collect($this->fileService->filesystem->files($this->config->workingDirectory));
         $this->config->setSubjects($files);
 
-        $files->reject(function ($file) use ($existingFiles)
-        {
-            if ($this->checkConvertedFile($file, $existingFiles))
-            {
-                $this->config->fireActorProcessedEvent();
-
-                return true;
-            }
-
-            return false;
-        })->each(function ($file)
-        {
+        $files->reject(function ($file) use ($existingFiles) {
+            return $this->checkConvertedFile($file, $existingFiles);
+        })->each(function ($file) {
             $fileName = $this->fileService->filesystem->name($file);
-            $this->actorImageService->writeImagickFile($file, $fileName);
+            return $this->actorImageService->writeImagickFile($file, $fileName);
         });
 
         if (empty($this->fileService->filesystem->files($this->config->tmpDirectory)))
@@ -219,7 +185,7 @@ class NfnPanoptesExport
     {
         $files = collect($this->fileService->filesystem->files($this->config->workingDirectory));
 
-        $files->each(function($file){
+        $files->each(function ($file) {
             $this->fileService->filesystem->delete($file);
         });
 
@@ -244,11 +210,9 @@ class NfnPanoptesExport
         $existingFiles = $this->getExistingConvertedFiles();
         $this->config->setSubjects($subjects);
 
-        $csvExport = $subjects->filter(function ($subject) use ($existingFiles)
-        {
+        $csvExport = $subjects->filter(function ($subject) use ($existingFiles) {
             return $existingFiles->contains($subject->_id);
-        })->map(function ($subject)
-        {
+        })->map(function ($subject) {
             $this->config->fireActorProcessedEvent();
 
             return $this->mapNfnCsvColumns($subject);
@@ -294,13 +258,13 @@ class NfnPanoptesExport
 
         $values = [
             'expedition_id' => $this->config->expedition->id,
-            'actor_id' => $this->config->actor->id,
-            'file' => $this->config->archiveTarGz
+            'actor_id'      => $this->config->actor->id,
+            'file'          => $this->config->archiveTarGz
         ];
         $attributes = [
             'expedition_id' => $this->config->expedition->id,
-            'actor_id' => $this->config->actor->id,
-            'file' => $this->config->archiveTarGz
+            'actor_id'      => $this->config->actor->id,
+            'file'          => $this->config->archiveTarGz
         ];
 
         $this->actorRepositoryService->updateOrCreateDownload($attributes, $values);
@@ -334,7 +298,7 @@ class NfnPanoptesExport
         $queueMissing = empty($this->config->queue->missing) ? [] : $this->config->queue->missing;
 
         $attributes = [
-            'stage'   => $this->config->queue->stage+1,
+            'stage'   => $this->config->queue->stage + 1,
             'missing' => array_merge($queueMissing, $this->actorImageService->getMissingImages())
         ];
         $this->actorRepositoryService->updateExportQueue($attributes, $this->config->queue->id);
@@ -348,7 +312,7 @@ class NfnPanoptesExport
     private function getExistingConvertedFiles()
     {
         $files = collect($this->fileService->filesystem->files($this->config->tmpDirectory));
-        $existingFiles = $files->map(function ($file){
+        $existingFiles = $files->map(function ($file) {
             return $this->fileService->filesystem->name($file);
         });
 
@@ -368,7 +332,14 @@ class NfnPanoptesExport
         $exists = $existingFiles->contains($this->fileService->filesystem->name($file));
         $fileSize = $exists && filesize($tmpFile) < 600000;
 
-        return $exists && $fileSize;
+        if ($exists && $fileSize)
+        {
+            $this->config->fireActorProcessedEvent();
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -410,7 +381,7 @@ class NfnPanoptesExport
                 {
                     if ($key === 'eol' || $key === 'mol' || $key === 'idigbio')
                     {
-                        $csvArray[$key] = str_replace('SCIENTIFIC_NAME', rawurlencode($subject->{$doc}->{$value}), config('config.nfnSearch.' . $key) );
+                        $csvArray[$key] = str_replace('SCIENTIFIC_NAME', rawurlencode($subject->{$doc}->{$value}), config('config.nfnSearch.' . $key));
                         break;
                     }
 

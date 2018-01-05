@@ -29,7 +29,7 @@ class ActorImageService extends ActorServiceBase
     /**
      * @var
      */
-    private $missingImages;
+    private $missingImages = [];
 
     /**
      * ActorImageService constructor.
@@ -206,6 +206,7 @@ class ActorImageService extends ActorServiceBase
      * @param $file
      * @param $filename
      * @return bool
+     * @throws \Exception
      */
     public function writeImagickFile($file, $filename)
     {

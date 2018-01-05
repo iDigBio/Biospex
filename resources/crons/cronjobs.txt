@@ -1,28 +1,12 @@
 # Cron jobs for biospex production
-#0 * * * * /usr/bin/php /data/web/biospex/production/artisan workflow:manage >> /var/log/apache2/workflow.manage.log 2>&1
 #00 00 * * * /usr/bin/php /data/web/biospex/production/artisan download:clean >> /var/log/apache2/download.clean.log 2>&1
 #00 00 * * * /usr/bin/php /data/web/biospex/production/artisan ocrqueue:check >> /var/log/apache2/ocrqueue.check.log 2>&1
-10 0 * * * /usr/bin/php /data/web/biospex/production/artisan classifications:update >> /var/log/apache2/classifications.log 2>&1
-*/5 * * * * /usr/bin/php /data/web/biospex/production/artisan ocrprocess:records >> /var/log/apache2/ocrprocess-prod.poll.log 2>&1
+#0 0 * * * /usr/bin/php /data/web/biospex/production/artisan nfn:csvcreate >> /var/log/apache2/nfncsv.create.prod.log 2>&1
+#0 6 * * * /usr/bin/php /data/web/biospex/production/artisan workflow:manage >> /var/log/apache2/workflow.manage.prod.log 2>&1
+*/5 * * * * /usr/bin/php /data/web/biospex/production/artisan ocrprocess:records >> /var/log/apache2/ocrprocess-prod.poll.log 2>$
 */5 * * * * /usr/bin/php /data/web/biospex/production/artisan export:poll >> /var/log/apache2/export.poll.log 2>&1
 */5 * * * * /usr/bin/php /data/web/biospex/production/artisan ocr:poll >> /var/log/apache2/ocr.poll.log 2>&1
-0 5 * * * /usr/bin/php /data/web/biospex/production/artisan notifications:update >> /var/log/apache2/notifications-prod.log 2>&1
 0 23 * * * /usr/bin/php /data/web/biospex/production/artisan report:clean >> /var/log/apache2/report-clean.log 2>&1
 
-#Cron jobs for biospex staging
-#*/5 * * * * /usr/bin/php /data/web/biospex/staging/artisan ocrprocess:records >> /var/log/apache2/ocrprocess-stage.poll.log 2>&1
-#*/5 * * * * /usr/bin/php /data/web/biospex/staging/artisan export:poll >> /var/log/apache2/export-stage.poll.log 2>&1
-#*/5 * * * * /usr/bin/php /data/web/biospex/staging/artisan ocr:poll >> /var/log/apache2/ocr-stage.poll.log 2>&1
-#0 5 * * * /usr/bin/php /data/web/biospex/staging/artisan notifications:update >> /var/log/apache2/notifications-stage.log 2>&1
-
-#Cron jobs for biospex development
-0 0 * * * /usr/bin/php /data/web/biospex/development/artisan nfncsv:request >> /var/log/apache2/nfncsv.request.dev.log 2>&1
-0 4 * * * /usr/bin/php /data/web/biospex/development/artisan nfnfile:request >> /var/log/apache2/nfnfile.request.dev.log 2>&1
-0 6 * * * /usr/bin/php /data/web/biospex/development/artisan workflow:manage >> /var/log/apache2/workflow.manage.dev.log 2>&1
-#0 5 * * * /usr/bin/php /data/web/biospex/development/artisan notifications:update >> /var/log/apache2/notifications-dev.log 2>&1
-#*/5 * * * * /usr/bin/php /data/web/biospex/development/artisan export:poll >> /var/log/apache2/export-dev.poll.log 2>&1
-#*/5 * * * * /usr/bin/php /data/web/biospex/development/artisan ocr:poll >> /var/log/apache2/ocr-dev.poll.log 2>&1
-#*/5 * * * * /usr/bin/php /data/web/biospex/development/artisan ocrprocess:records >> /var/log/apache2/ocrprocess-dev.poll.log 2>&1
-
 # Cron for auto-renew letsencrypt certs run twice a day (recommended)
-0 11,23 * * * ./opt/certbot-auto renew --quiet --no-self-upgrade
+0 11,23 * * * ./opt/certbot-auto renew --quiet --no-self-upgrade >> /var/log/cert-bot.renew.log 2>&1

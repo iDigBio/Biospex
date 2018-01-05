@@ -23,7 +23,7 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
      */
     public function getFirstExportWithoutError(array $attributes = ['*'])
     {
-        $results =  $this->model->where('error', 0)->findFirst($attributes);
+        $results =  $this->model->where('error', 0)->first($attributes);
 
         $this->resetModel();
 

@@ -12,12 +12,11 @@ class ImagickService extends ImageServiceBase
     public $imagick;
 
     /**
-     * @param $source
+     * @param string $source
      */
     public function createImagickObject($source = null)
     {
-        $this->imagick = is_null($source) ? new Imagick() : new Imagick($source);
-        //$this->imagick->setRegistry('temporary-path', $this->setScratchTmpDir());
+        $this->imagick = is_null($source) ? new Imagick() : new Imagick((string) $source);
         $this->imagick->setResourceLimit (6, 1);
     }
 
@@ -52,12 +51,18 @@ class ImagickService extends ImageServiceBase
     /**
      * @param $destination
      * @return bool
+     * @throws \Exception
      */
     public function writeImagickImageToFile($destination)
     {
-        $this->imagick->setImageFormat('jpg');
-        $this->imagick->setOption('jpeg:extent', '600kb');
-        $this->imagick->stripImage();
+
+        if ( ! $this->imagick->setImageFormat('jpg') ||
+            ! $this->imagick->setOption('jpeg:extent', '600kb') ||
+            ! $this->imagick->stripImage()
+        )
+        {
+            throw new \Exception('Error while setting image options during write to file.');
+        }
 
         return $this->imagick->writeImage($destination);
     }

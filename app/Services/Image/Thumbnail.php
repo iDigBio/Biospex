@@ -77,9 +77,9 @@ class Thumbnail extends ImagickService
 
     /**
      * Create thumbnail.
-     *
      * @param $url
      * @param $image
+     * @throws \Exception
      */
     protected function createThumbnail($url, $image)
     {

@@ -55,7 +55,7 @@ class ExportQueueCommand extends Command
 
         if ($record->queued && ! $record->error)
         {
-            $this->dispatch((new ExportQueueJob($record))->onQueue(config('config.beanstalkd.export')));
+            ExportQueueJob::dispatch($record);
 
             return;
         }
