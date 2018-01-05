@@ -16,7 +16,7 @@ class ImagickService extends ImageServiceBase
      */
     public function createImagickObject($source = null)
     {
-        $this->imagick = is_null($source) ? new Imagick() : new Imagick((string) $source);
+        $this->imagick = is_null($source) ? new Imagick() : new Imagick($source);
         $this->imagick->setResourceLimit (6, 1);
     }
 

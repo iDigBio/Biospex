@@ -203,7 +203,7 @@ class ActorImageService extends ActorServiceBase
     /**
      * Write imagick to file.
      *
-     * @param $file
+     * @param string $file
      * @param $filename
      * @return bool
      * @throws \Exception

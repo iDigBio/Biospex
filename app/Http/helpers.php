@@ -266,7 +266,7 @@ function camelCaseToWords($string)
  */
 function create_csv($data)
 {
-    if ($data === null)
+    if ($data === null || empty($data))
     {
         return null;
     }

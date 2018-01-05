@@ -166,7 +166,7 @@ class NfnPanoptesExport
             return $this->checkConvertedFile($file, $existingFiles);
         })->each(function ($file) {
             $fileName = $this->fileService->filesystem->name($file);
-            return $this->actorImageService->writeImagickFile($file, $fileName);
+            return $this->actorImageService->writeImagickFile((string) $file, $fileName);
         });
 
         if (empty($this->fileService->filesystem->files($this->config->tmpDirectory)))
