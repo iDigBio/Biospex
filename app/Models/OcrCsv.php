@@ -30,4 +30,25 @@ class OcrCsv extends Model
     {
         return $this->hasMany(OcrQueue::class);
     }
+
+    /**
+     * Mutator for subjects column.
+     *
+     * @param $value
+     */
+    public function setSubjectsAttribute($value)
+    {
+        $this->attributes['subjects'] = serialize($value);
+    }
+
+    /**
+     * Accessor for subjects column.
+     *
+     * @param $value
+     * @return mixed
+     */
+    public function getSubjectsAttribute($value)
+    {
+        return empty($value) ? [] : unserialize($value);
+    }
 }
