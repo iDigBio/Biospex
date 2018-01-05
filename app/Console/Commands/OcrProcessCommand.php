@@ -49,7 +49,9 @@ class OcrProcessCommand extends Command
     {
         $record = $this->ocrQueueContract->getOcrQueueForOcrProcessCommand();
         if ($record === null)
+        {
             return;
+        }
 
         OcrProcessJob::dispatch($record);
     }

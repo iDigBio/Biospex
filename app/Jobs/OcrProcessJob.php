@@ -128,7 +128,7 @@ class OcrProcessJob implements ShouldQueue
         if ($this->record->batch)
         {
             $this->sendNotify($csvService);
-            $this->record->delete();
+            $this->record->ocrCsv->delete();
         }
 
         $ocrRequest->deleteJsonFiles([$this->record->uuid . '.json']);

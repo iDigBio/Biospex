@@ -4,9 +4,9 @@
 #0 0 * * * /usr/bin/php /data/web/biospex/production/artisan nfn:csvcreate >> /var/log/biospex/nfncsv.create.log 2>&1
 #0 6 * * * /usr/bin/php /data/web/biospex/production/artisan workflow:manage >> /var/log/biospex/workflow.manage.log 2>&1
 
-*/5 * * * * /usr/bin/php /data/web/biospex/production/artisan ocrprocess:records >> /var/log/biospex/ocrprocess.poll.log 2>$
 */5 * * * * /usr/bin/php /data/web/biospex/production/artisan export:poll >> /var/log/biospex/export.poll.log 2>&1
-*/5 * * * * /usr/bin/php /data/web/biospex/production/artisan ocr:poll >> /var/log/biospex/ocr.poll.log 2>&1
+*/5 * * * * /usr/bin/php /data/web/biospex/production/artisan ocrprocess:records >> /var/log/biospex/ocrprocess.poll.log 2>$
+# no longer needed */5 * * * * /usr/bin/php /data/web/biospex/production/artisan ocr:poll >> /var/log/biospex/ocr.poll.log 2>&1
 0 23 * * * /usr/bin/php /data/web/biospex/production/artisan report:clean >> /var/log/biospex/report-clean.log 2>&1
 
 # Cron for auto-renew letsencrypt certs run twice a day (recommended)
