@@ -259,12 +259,14 @@ class NfnPanoptesExport
         $values = [
             'expedition_id' => $this->config->expedition->id,
             'actor_id'      => $this->config->actor->id,
-            'file'          => $this->config->archiveTarGz
+            'file'          => $this->config->archiveTarGz,
+            'type'          => 'export'
         ];
         $attributes = [
             'expedition_id' => $this->config->expedition->id,
             'actor_id'      => $this->config->actor->id,
-            'file'          => $this->config->archiveTarGz
+            'file'          => $this->config->archiveTarGz,
+            'type'          => 'export'
         ];
 
         $this->actorRepositoryService->updateOrCreateDownload($attributes, $values);
