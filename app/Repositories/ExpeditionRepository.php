@@ -31,7 +31,7 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
 
         $results = empty($ids) ?
             $model->get($attributes) :
-            $model->whereIn('id', [1, 2, 3])->get($attributes);
+            $model->whereIn('id', $ids)->get($attributes);
 
         $this->resetModel();
 
