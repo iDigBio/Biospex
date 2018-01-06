@@ -7,13 +7,9 @@ use App\Jobs\ExpeditionStatJob;
 use App\Interfaces\Expedition;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class ExpeditionStatUpdate extends Command
 {
-
-    use DispatchesJobs;
-
     /**
      * The name and signature of the console command.
      *
@@ -57,15 +53,13 @@ class ExpeditionStatUpdate extends Command
     private function setJobs($expeditions)
     {
         $projectIds = $expeditions->map(function ($expedition){
-            $this->dispatch((new ExpeditionStatJob($expedition->id))
-                ->onQueue(config('config.beanstalkd.stat')));
+            ExpeditionStatJob::dispatch($expedition->id);
 
             return $expedition->project_id;
         });
 
         $projectIds->unique()->values()->each(function ($projectId){
-            $this->dispatch((new AmChartJob($projectId))
-                ->onQueue(config('config.beanstalkd.chart')));
+            AmChartJob::dispatch($projectId);
         });
     }
 }

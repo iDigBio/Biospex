@@ -4,12 +4,9 @@ namespace App\Console\Commands;
 
 use App\Jobs\AmChartJob;
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class AmChartUpdate extends Command
 {
-    use DispatchesJobs;
-
     /**
      * The name and signature of the console command.
      *
@@ -41,7 +38,7 @@ class AmChartUpdate extends Command
         $ids = explode(',', $this->argument('ids'));
 
         collect($ids)->each(function ($projectId){
-            $this->dispatch((new AmChartJob($projectId))->onQueue(config('config.beanstalkd.chart')));
+            AmChartJob::dispatch($projectId);
         });
     }
 }

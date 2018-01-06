@@ -5,12 +5,9 @@ namespace App\Console\Commands;
 use File;
 use App\Jobs\WeDigBioDashboardJob;
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class WeDigBioDashboard extends Command
 {
-    use DispatchesJobs;
-
     /**
      * The name and signature of the console command.
      * ids are comma delimited expedition ids.
@@ -37,13 +34,12 @@ class WeDigBioDashboard extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
      */
     public function handle()
     {
         $ids = null === $this->argument('ids') ? $this->readDirectory() : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new WeDigBioDashboardJob($ids))->onQueue(config('config.beanstalkd.classification')));
+        WeDigBioDashboardJob::dispatch($ids);
     }
 
     /**

@@ -3,14 +3,16 @@
 namespace App\Jobs;
 
 use App\Interfaces\Expedition;
+use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 
 class ExpeditionStatJob extends Job implements ShouldQueue
 {
 
-    use InteractsWithQueue, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var
@@ -25,6 +27,7 @@ class ExpeditionStatJob extends Job implements ShouldQueue
     public function __construct($expeditionId)
     {
         $this->expeditionId = (int) $expeditionId;
+        $this->onQueue(config('config.beanstalkd.stat'));
     }
 
     /**

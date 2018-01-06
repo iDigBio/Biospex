@@ -286,7 +286,8 @@ class ExpeditionService
 
                 $nfnWorkflow = $this->nfnWorkflowContract->updateOrCreate(['expedition_id' => $expedition->id], $values);
 
-                $this->dispatch((new UpdateNfnWorkflowJob($nfnWorkflow))->onQueue(config('config.beanstalkd.workflow')));
+                UpdateNfnWorkflowJob::dispatch($nfnWorkflow);
+
             }
 
             // If process already in place, do not update subjects.

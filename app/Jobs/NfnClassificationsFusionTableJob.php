@@ -5,15 +5,18 @@ namespace App\Jobs;
 use App\Interfaces\Project;
 use App\Interfaces\TranscriptionLocation;
 use App\Services\Google\FusionTableService;
+use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Collection;
+
 
 class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
 {
 
-    use InteractsWithQueue, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var \App\Models\Project
@@ -47,6 +50,7 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
     public function __construct($projectId)
     {
         $this->projectId = $projectId;
+        $this->onQueue(config('config.beanstalkd.classification'));
     }
 
     /**

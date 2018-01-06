@@ -32,7 +32,7 @@ class PanoptesPusherController extends ApiController
         }
 
         $data = json_decode($request->getContent(), true);
-        dispatch(new NfnClassificationWeDigBioJob($data));
+        NfnClassificationWeDigBioJob::dispatch($data);
     }
 
     /**

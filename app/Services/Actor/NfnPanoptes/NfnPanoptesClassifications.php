@@ -7,12 +7,9 @@ use App\Interfaces\Expedition;
 use App\Notifications\NfnTranscriptionsComplete;
 use App\Notifications\NfnTranscriptionsError;
 use App\Services\Actor\ActorServiceConfig;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class NfnPanoptesClassifications
 {
-
-    use DispatchesJobs;
 
     /**
      * @var Expedition
@@ -65,8 +62,7 @@ class NfnPanoptesClassifications
                 return;
             }
 
-            $this->dispatch((new NfnClassificationsUpdateJob($record->id))
-                ->onQueue(config('config.beanstalkd.classification')));
+            NfnClassificationsUpdateJob::dispatch($record->id);
 
             $this->actorServiceConfig->fireActorUnQueuedEvent();
 

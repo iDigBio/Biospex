@@ -5,12 +5,9 @@ namespace App\Console\Commands;
 use App\Jobs\NfnClassificationsTranscriptJob;
 use File;
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class NfnClassificationsTranscript extends Command
 {
-    use DispatchesJobs;
-
     /**
      * The name and signature of the console command.
      *
@@ -40,7 +37,7 @@ class NfnClassificationsTranscript extends Command
     {
         $ids = null === $this->argument('ids') ? $this->readDirectory() : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new NfnClassificationsTranscriptJob($ids))->onQueue(config('config.beanstalkd.classification')));
+        NfnClassificationsTranscriptJob::dispatch($ids);
     }
 
     /**

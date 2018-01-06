@@ -47,13 +47,6 @@ class DwcFileImportJob implements ShouldQueue
         FileService $fileService
     )
     {
-        /*
-        $scratchDir = config('config.scratch_dir');
-        $subjectImportDir = config('config.subject_import_dir');
-        $fileName = pathinfo($subjectImportDir . '/' . $this->import->file, PATHINFO_FILENAME);
-        $scratchFileDir = $scratchDir . '/' . $this->import->id . '-' . md5($fileName);
-        $zipFile = $subjectImportDir . '/' . $this->import->file;
-        */
 
         $scratchFileDir = config('config.scratch_dir') . '/' . md5($this->import->file);
 

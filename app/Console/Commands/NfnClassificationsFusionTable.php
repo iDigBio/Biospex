@@ -53,8 +53,7 @@ class NfnClassificationsFusionTable extends Command
             $this->projectContract->getProjectsHavingTranscriptionLocations($ids);
 
         $projects->each(function ($project){
-            $this->dispatch((new NfnClassificationsFusionTableJob($project->id))
-                ->onQueue(config('config.beanstalkd.classification')));
+            NfnClassificationsFusionTableJob::dispatch($project->id);
         });
     }
 }

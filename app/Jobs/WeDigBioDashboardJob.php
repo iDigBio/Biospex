@@ -5,15 +5,16 @@ namespace App\Jobs;
 use App\Facades\DateHelper;
 use App\Models\Traits\UuidTrait;
 use App\Services\Model\WeDigBioDashboardService;
-use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 
 class WeDigBioDashboardJob extends Job implements ShouldQueue
 {
 
-    use InteractsWithQueue, SerializesModels, DispatchesJobs, UuidTrait;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, UuidTrait;
 
     /**
      * @var \Illuminate\Support\Collection
@@ -28,6 +29,7 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
     public function __construct($ids)
     {
         $this->ids = $ids;
+        $this->onQueue(config('config.beanstalkd.classification'));
     }
 
     /**

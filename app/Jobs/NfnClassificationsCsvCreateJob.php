@@ -8,14 +8,15 @@ use App\Notifications\JobError;
 use App\Services\Api\NfnApi;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
-use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 
 class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels, DispatchesJobs;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Expedition ids pass to the job.
@@ -100,9 +101,7 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
             }
 
             empty($ids) ? $this->delete() :
-                $this->dispatch((new NfnClassificationsCsvFileJob($ids))
-                    ->onQueue(config('config.beanstalkd.classification'))
-                    ->delay(14400));
+                NfnClassificationsCsvFileJob::dispatch($ids)->delay(14400);
         }
         catch (\Exception $e)
         {

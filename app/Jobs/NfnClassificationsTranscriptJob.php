@@ -5,30 +5,21 @@ namespace App\Jobs;
 use App\Interfaces\User;
 use App\Notifications\JobError;
 use App\Services\Process\PanoptesTranscriptionProcess;
-use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 
 class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
 {
 
-    use InteractsWithQueue, SerializesModels, DispatchesJobs;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var array
      */
     private $ids;
-
-    /**
-     * @var bool
-     */
-    private $dir;
-
-    /**
-     * @var array
-     */
-    private $errorMessages = [];
 
     /**
      * NfnClassificationsTranscriptJob constructor.
@@ -38,6 +29,7 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
     public function __construct(array $ids = [])
     {
         $this->ids = collect($ids);
+        $this->onQueue(config('config.beanstalkd.classification'));
     }
 
     /**
@@ -75,7 +67,7 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
                 $user->notify(new JobError(__FILE__, $transcriptionProcess->getCsvError()));
             }
 
-            $this->dispatch((new WeDigBioDashboardJob($this->ids))->onQueue(config('config.beanstalkd.classification')));
+            WeDigBioDashboardJob::dispatch($this->ids);
         }
         catch (\Exception $e)
         {

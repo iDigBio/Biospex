@@ -3,15 +3,16 @@
 namespace App\Jobs;
 
 use App\Interfaces\Expedition;
-use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 
 class NfnClassificationsUpdateJob extends Job implements ShouldQueue
 {
 
-    use InteractsWithQueue, SerializesModels, DispatchesJobs;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var int
@@ -25,6 +26,7 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
     public function __construct($expeditionId)
     {
         $this->expeditionId = $expeditionId;
+        $this->onQueue(config('config.beanstalkd.classification'));
     }
 
     /**
@@ -45,11 +47,8 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
 
         $this->updateExpeditionStats($expeditionContract, $expedition);
 
-        $this->dispatch((new AmChartJob($expedition->project_id))
-            ->onQueue(config('config.beanstalkd.chart')));
-
-        $this->dispatch((new NfnClassificationsFusionTableJob($expedition->project_id))
-            ->onQueue(config('config.beanstalkd.classification')));
+        AmChartJob::dispatch($expedition->project_id);
+        NfnClassificationsFusionTableJob::dispatch($expedition->project_id);
 
         $this->delete();
     }

@@ -5,14 +5,15 @@ namespace App\Jobs;
 use App\Models\NfnWorkflow;
 use App\Services\Api\NfnApi;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 
 class UpdateNfnWorkflowJob extends Job implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels, DispatchesJobs;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var NfnWorkflow
@@ -27,6 +28,7 @@ class UpdateNfnWorkflowJob extends Job implements ShouldQueue
     public function __construct(NfnWorkflow $nfnWorkflow)
     {
         $this->nfnWorkflow = $nfnWorkflow;
+        $this->onQueue(config('config.beanstalkd.classification'));
     }
 
     /**

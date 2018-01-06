@@ -5,14 +5,15 @@ namespace App\Jobs;
 use File;
 use App\Interfaces\Download;
 use App\Interfaces\Expedition;
-use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 
 class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels, DispatchesJobs;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var array
@@ -31,6 +32,7 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
     public function __construct(array $ids = [])
     {
         $this->ids = $ids;
+        $this->onQueue(config('config.beanstalkd.classification'));
     }
 
     /**
@@ -93,7 +95,7 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
 
         }
 
-        $this->dispatch((new NfnClassificationsTranscriptJob($ids))->onQueue(config('config.beanstalkd.classification')));
+        NfnClassificationsTranscriptJob::dispatch($ids);
     }
 
     /**

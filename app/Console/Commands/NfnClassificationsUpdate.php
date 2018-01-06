@@ -3,15 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Jobs\NfnClassificationsUpdateJob;
-use function foo\func;
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class NfnClassificationsUpdate extends Command
 {
-
-    use DispatchesJobs;
-
     /**
      * The name and signature of the console command.
      *
@@ -48,8 +43,7 @@ class NfnClassificationsUpdate extends Command
         }
 
         collect($ids)->each(function ($projectId){
-            $this->dispatch((new NfnClassificationsUpdateJob($projectId))
-                ->onQueue(config('config.beanstalkd.classification')));
+            NfnClassificationsUpdateJob::dispatch($projectId);
         });
     }
 }

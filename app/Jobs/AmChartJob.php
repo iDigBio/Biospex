@@ -2,19 +2,21 @@
 
 namespace App\Jobs;
 
+use Illuminate\Support\Collection;
+use Carbon\Carbon;
 use App\Interfaces\PanoptesTranscription;
 use App\Interfaces\Project;
 use App\Interfaces\AmChart;
+use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Collection;
-use Carbon\Carbon;
+use Illuminate\Foundation\Bus\Dispatchable;
 
 class AmChartJob extends Job implements ShouldQueue
 {
 
-    use InteractsWithQueue, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var PanoptesTranscription
@@ -55,6 +57,7 @@ class AmChartJob extends Job implements ShouldQueue
     public function __construct($projectId)
     {
         $this->projectId = $projectId;
+        $this->onQueue(config('config.beanstalkd.chart'));
     }
 
     /**

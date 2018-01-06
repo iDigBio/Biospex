@@ -2,16 +2,15 @@
 
 namespace App\Jobs;
 
+use App\Services\MongoDbService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\DatabaseManager;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Artisan;
 use App\Interfaces\OcrCsv;
 use App\Interfaces\OcrQueue;
-use MongoCollection;
 
 class BuildOcrBatchesJob extends Job implements ShouldQueue
 {
@@ -51,11 +50,12 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
      *
      * @param OcrQueue $ocrQueueRepo
      * @param OcrCsv $ocrCsvRepo
-     * @throws \Exception
+     * @param MongoDbService $mongoDbService
      */
     public function handle(
         OcrQueue $ocrQueueRepo,
-        OcrCsv $ocrCsvRepo
+        OcrCsv $ocrCsvRepo,
+        MongoDbService $mongoDbService
     )
     {
         if (config('config.ocr_disable'))
@@ -65,7 +65,7 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
 
         try
         {
-            $this->buildOcrSubjectsArray();
+            $this->buildOcrSubjectsArray($mongoDbService);
 
             $data = $this->getChunkQueueData();
 
@@ -102,34 +102,21 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
 
     /**
      * Build the ocr subject array
+     * @param MongoDbService $mongoDbService
      */
-    protected function buildOcrSubjectsArray()
+    protected function buildOcrSubjectsArray($mongoDbService)
     {
-        $collection = $this->setCollection();
+        $mongoDbService->setCollection('subjects');
         $query = null === $this->expeditionId ?
             ['project_id' => $this->projectId, 'ocr' => ''] :
             ['project_id' => $this->projectId, 'expedition_ids' => $this->expeditionId, 'ocr' => ''];
 
-        $results = $collection->find($query);
+        $results = $mongoDbService->find($query);
 
         foreach ($results as $doc)
         {
             $this->buildOcrQueueData($doc);
         }
-    }
-
-    /**
-     * Query MongoDB and return cursor.
-     *
-     * @return MongoCollection
-     */
-    protected function setCollection()
-    {
-        $databaseManager = app(DatabaseManager::class);
-        $client = $databaseManager->connection('mongodb')->getMongoClient();
-        $collection =$client->{config('database.connections.mongodb.database')}->subjects;
-
-        return $collection;
     }
 
     /**

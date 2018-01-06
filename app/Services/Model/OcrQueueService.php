@@ -4,11 +4,9 @@ namespace App\Services\Model;
 
 use App\Interfaces\OcrQueue;
 use App\Jobs\BuildOcrBatchesJob;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class OcrQueueService
 {
-    use DispatchesJobs;
 
     /**
      * @var OcrQueue
@@ -38,7 +36,7 @@ class OcrQueueService
 
         if ($queueCheck === null)
         {
-            $this->dispatch(new BuildOcrBatchesJob($project->id, $expeditionId));
+            BuildOcrBatchesJob::dispatch($project->id, $expeditionId);
 
             return true;
         }

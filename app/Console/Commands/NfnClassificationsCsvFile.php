@@ -3,13 +3,10 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Jobs\NfnClassificationsCsvFileJob;
 
 class NfnClassificationsCsvFile extends Command
 {
-    use DispatchesJobs;
-
     /**
      * The name and signature of the console command.
      *
@@ -39,6 +36,6 @@ class NfnClassificationsCsvFile extends Command
     {
         $ids = null ===  $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
 
-        $this->dispatch((new NfnClassificationsCsvFileJob($ids))->onQueue(config('config.beanstalkd.classification')));
+        NfnClassificationsCsvFileJob::dispatch($ids);
     }
 }

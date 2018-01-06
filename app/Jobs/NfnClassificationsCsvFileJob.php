@@ -4,20 +4,21 @@ namespace App\Jobs;
 
 use App\Interfaces\User;
 use App\Notifications\JobError;
-use Config;
 use App\Services\Api\NfnApi;
 use App\Interfaces\Expedition;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
-use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+
 
 class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
 {
 
-    use InteractsWithQueue, SerializesModels, DispatchesJobs;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Expedition ids pass to the job.
@@ -50,6 +51,7 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
     public function __construct(array $ids = [])
     {
         $this->ids = $ids;
+        $this->onQueue(config('config.beanstalkd.classification'));
     }
 
     /**
@@ -144,8 +146,7 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
             return;
         }
 
-        $this->dispatch((new NfnClassificationsCsvDownloadJob($this->sources))
-            ->onQueue(Config::get('config.beanstalkd.classification')));
+        NfnClassificationsCsvDownloadJob::dispatch($this->sources);
     }
 
     /**
@@ -158,8 +159,6 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
             return;
         }
 
-        $this->dispatch((new NfnClassificationsCsvFileJob($this->reQueued))
-            ->onQueue(Config::get('config.beanstalkd.classification'))
-            ->delay(3600));
+        NfnClassificationsCsvFileJob::dispatch($this->reQueued)->delay(3600);
     }
 }

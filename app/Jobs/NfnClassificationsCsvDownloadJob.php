@@ -7,15 +7,16 @@ use App\Notifications\JobError;
 use App\Services\Api\NfnApi;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
-use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 
 class NfnClassificationsCsvDownloadJob extends Job implements ShouldQueue
 {
 
-    use InteractsWithQueue, SerializesModels, DispatchesJobs;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * @var array
@@ -34,6 +35,7 @@ class NfnClassificationsCsvDownloadJob extends Job implements ShouldQueue
     public function __construct(array $sources = [])
     {
         $this->sources = $sources;
+        $this->onQueue(config('config.beanstalkd.classification'));
     }
 
     /**
@@ -97,9 +99,7 @@ class NfnClassificationsCsvDownloadJob extends Job implements ShouldQueue
                 $user->notify(new JobError(__FILE__, $this->errorMessages));
             }
 
-            $this->dispatch((new NfnClassificationsReconciliationJob($ids))
-                ->onQueue(config('config.beanstalkd.classification'))
-                ->delay(1800));
+            NfnClassificationsReconciliationJob::dispatch($ids)->delay(1800);
         }
         catch (\Exception $e)
         {

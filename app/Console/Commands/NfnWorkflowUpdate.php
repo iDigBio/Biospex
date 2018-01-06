@@ -5,12 +5,9 @@ namespace App\Console\Commands;
 use App\Jobs\UpdateNfnWorkflowJob;
 use App\Interfaces\NfnWorkflow;
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class NfnWorkflowUpdate extends Command
 {
-    use DispatchesJobs;
-
     /**
      * The name and signature of the console command.
      *
@@ -42,7 +39,6 @@ class NfnWorkflowUpdate extends Command
      * Execute the console command.
      *
      * @param NfnWorkflow $nfnWorkflow
-     * @return mixed
      */
     public function handle(NfnWorkflow $nfnWorkflow)
     {
@@ -52,7 +48,7 @@ class NfnWorkflowUpdate extends Command
 
         foreach ($workflows as $workflow)
         {
-            $this->dispatch((new UpdateNfnWorkflowJob($workflow))->onQueue(config('config.beanstalkd.classification')));
+            UpdateNfnWorkflowJob::dispatch($workflow);
         }
 
     }
