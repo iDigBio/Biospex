@@ -74,11 +74,6 @@ class ImportsController extends Controller
         try {
 
             $path = $request->file('dwc')->store('imports/subjects');
-            /*
-            $file = $request->file('dwc');
-            $filename = md5($file->getClientOriginalName()) . '.' . $file->guessExtension();
-            $request->file('dwc')->move(config('config.subject_import_dir'), $filename);
-            */
 
             $import = $this->importContract->create([
                 'user_id'    => $request->input('user_id'),
