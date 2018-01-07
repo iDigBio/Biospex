@@ -171,7 +171,9 @@ class NfnPanoptesExport
 
         if (empty($this->fileService->filesystem->files($this->config->tmpDirectory)))
         {
-            throw new \Exception('Missing converted images for Expedition ' . $this->config->expedition->id);
+            $this->emailReport();
+
+            return;
         }
 
         $this->config->fireActorQueuedEvent();
