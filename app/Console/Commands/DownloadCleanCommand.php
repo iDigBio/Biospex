@@ -73,7 +73,6 @@ class DownloadCleanCommand extends Command
             $file = $this->nfnExportDir . '/' . $download->file;
             if ($this->filesystem->isFile($file))
             {
-                echo 'Deleting ' . $file . PHP_EOL;
                 $this->filesystem->delete($file);
             }
 
@@ -86,7 +85,6 @@ class DownloadCleanCommand extends Command
             $result = $this->downloadContract->findBy('file', $fileName);
             if ( ! $result)
             {
-                echo 'Deleting ' . $file . PHP_EOL;
                 $this->filesystem->delete($file);
             }
         });
