@@ -45,7 +45,7 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
-        if ($this->shouldReport($exception) && config('app.debug') === false) {
+        if ($this->shouldReport($exception) && config('app.debug') === true) {
             $this->sendEmail($exception);
         }
 
