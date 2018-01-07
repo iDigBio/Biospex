@@ -46,8 +46,8 @@ return [
             'driver' => 'beanstalkd',
             'host' => 'localhost',
             'queue' => 'default',
-            'ttr' => env('QUEUE_TTR', 3600),
-            'retry_after' => 3600,
+            'ttr' => env('QUEUE_TTR', 36000),
+            'retry_after' => 36000,
         ],
 
         'sqs' => [
