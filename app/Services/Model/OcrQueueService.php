@@ -26,17 +26,17 @@ class OcrQueueService
     /**
      * Process Ocr.
      *
-     * @param $project
+     * @param $projectId
      * @param null $expeditionId
      * @return bool
      */
-    public function processOcr($project, $expeditionId = null)
+    public function processOcr($projectId, $expeditionId = null)
     {
-        $queueCheck = $this->ocrQueueContract->findBy('project_id', $project->id);
+        $queueCheck = $this->ocrQueueContract->findBy('project_id', $projectId);
 
         if ($queueCheck === null)
         {
-            BuildOcrBatchesJob::dispatch($project->id, $expeditionId);
+            BuildOcrBatchesJob::dispatch($projectId, $expeditionId);
 
             return true;
         }
