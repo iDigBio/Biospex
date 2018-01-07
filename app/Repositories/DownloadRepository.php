@@ -27,7 +27,7 @@ class DownloadRepository extends EloquentRepository implements Download
         $results = $this->model
             ->where('type', '=', 'export')
             ->where('created_at', '<', Carbon::now()->subDays(90))
-            ->findAll();
+            ->get();
 
         $this->resetModel();
 
