@@ -3,10 +3,16 @@ $(document).ready(function () {
     // If process modal, prevent click and return without active class
     // get current URL path and assign 'active' class
     let href = window.location.href;
-    $('.nav > li > a[href="'+href+'"]').parent().addClass('active');
+    $('.nav > li > a[href="' + href + '"]').parent().addClass('active');
 
     $(".preventDefault").click(function (e) {
         e.preventDefault();
+    });
+
+    $('a.polling').click(function (event) {
+        $('#ocrHtml').html('Retrieving data');
+        $('#exportHtml').html('Retrieving data');
+        $.get("/poll");
     });
 
     let tableSort = $(".table-sort");
@@ -14,8 +20,8 @@ $(document).ready(function () {
         // this will apply the bootstrap theme if "uitheme" widget is included
         // the widgetOptions.uitheme is no longer required to be set
         theme: "bootstrap",
-        widgets : [ 'uitheme', 'zebra' ],
-        headerTemplate : '{content}{icon}'
+        widgets: ['uitheme', 'zebra'],
+        headerTemplate: '{content}{icon}'
     });
 
     tableSort.bind("sortStart", function () {

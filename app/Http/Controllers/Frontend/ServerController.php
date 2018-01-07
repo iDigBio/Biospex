@@ -119,7 +119,10 @@ class ServerController extends Controller
 
         return view('frontend.ocr', compact('elements'));
     }
-    
+
+    /**
+     * Call polling command when process modal opened. Trigger inside biospex.js
+     */
     public function poll()
     {
         if (request()->ajax()) {
