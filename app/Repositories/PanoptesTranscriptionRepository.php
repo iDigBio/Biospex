@@ -88,7 +88,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getTranscriptionCountPerDate($workflowId)
     {
-        $results = $this->raw(function ($collection) use ($workflowId) {
+        $results = $this->model->raw(function ($collection) use ($workflowId) {
             return $collection->aggregate(
                 [
                     ['$match' => ['workflow_id' => $workflowId]],
