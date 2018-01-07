@@ -6,7 +6,6 @@ use App\Interfaces\Subject;
 use App\Interfaces\PanoptesTranscription;
 use App\Interfaces\TranscriptionLocation;
 use Illuminate\Validation\Factory as Validation;
-use ForceUTF8\Encoding;
 use App\Services\Csv\Csv;
 
 class PanoptesTranscriptionProcess
@@ -89,15 +88,12 @@ class PanoptesTranscriptionProcess
         $this->csv->setDelimiter();
         $this->csv->setEnclosure();
         $this->csv->setEscape('"');
+        $this->csv->setHeaderOffset();
 
-        $header = $this->prepareHeader($this->csv->getHeaderRow());
-        $rows = $this->csv->fetch();
-        foreach ($rows as $row)
+        $header = $this->prepareHeader($this->csv->getHeader());
+        $rows = $this->csv->getRecords($header);
+        foreach ($rows as $offset => $row)
         {
-            if (empty($row[0]))
-            {
-                continue;
-            }
             $this->processRow($header, $row);
         }
     }
@@ -130,52 +126,45 @@ class PanoptesTranscriptionProcess
             ]));
         }
 
-        array_walk($row, function ($value)
-        {
-            return Encoding::toUTF8($value);
-        });
-
-        $combined = array_combine($header, $row);
-
-        $subject = $this->getSubject($combined);
+        $subject = $this->getSubject($row);
 
         if ($subject === null)
         {
-            $this->csvError[] = array_merge(['error' => 'Could not find subject id for classification'], $combined);
+            $this->csvError[] = array_merge(['error' => 'Could not find subject id for classification'], $row);
 
             return;
         }
 
-        $this->buildTranscriptionLocation($combined, $subject);
+        $this->buildTranscriptionLocation($row, $subject);
 
-        $combined = array_merge($combined, ['subject_projectId' => $subject->project_id]);
+        $row = array_merge($row, ['subject_projectId' => $subject->project_id]);
 
-        $this->convertStringToIntegers($combined);
+        $this->convertStringToIntegers($row);
 
-        if ($this->validateTranscription($combined))
+        if ($this->validateTranscription($row))
         {
             return;
         }
 
-        $this->panoptesTranscriptionContract->create($combined);
+        $this->panoptesTranscriptionContract->create($row);
 
     }
 
     /**
-     * @param $combined
+     * @param $row
      * @param $subject
      *
      * Transcripts: StateProvince, County
      * Subject: stateProvince, county
      */
-    private function buildTranscriptionLocation($combined, $subject)
+    private function buildTranscriptionLocation($row, $subject)
     {
         $data = [];
         foreach ($this->dwcLocalityFields as $transcriptField => $subjectField)
         {
-            if (isset($combined[$transcriptField]) && ! empty($combined[$transcriptField]))
+            if (isset($row[$transcriptField]) && ! empty($row[$transcriptField]))
             {
-                $data[decamelize($transcriptField)] = $combined[$transcriptField];
+                $data[decamelize($transcriptField)] = $row[$transcriptField];
 
                 continue;
             }
@@ -186,9 +175,9 @@ class PanoptesTranscriptionProcess
             }
         }
 
-        $data['classification_id'] = $combined['classification_id'];
+        $data['classification_id'] = $row['classification_id'];
         $data['project_id'] = $subject->project_id;
-        $data['expedition_id'] = $combined['subject_expeditionId'];
+        $data['expedition_id'] = $row['subject_expeditionId'];
 
         if (array_key_exists('state_province', $data) && strtolower($data['state_province']) === 'district of columbia')
         {
@@ -203,7 +192,7 @@ class PanoptesTranscriptionProcess
             return;
         }
 
-        $attributes = ['classification_id' => $combined['classification_id']];
+        $attributes = ['classification_id' => $row['classification_id']];
         $this->transcriptionLocationContract->updateOrCreate($attributes, $data);
     }
 
@@ -211,33 +200,33 @@ class PanoptesTranscriptionProcess
     /**
      * Get subject from db to set projectId
      *
-     * @param $combined
+     * @param $row
      * @return mixed
      */
-    public function getSubject($combined)
+    public function getSubject($row)
     {
-        return $this->subjectContract->find(trim($combined['subject_subjectId']));
+        return $this->subjectContract->find(trim($row['subject_subjectId']));
     }
 
     /**
      * Convert string numbers to integers for MongoDB
-     * @param $combined
+     * @param $row
      */
-    public function convertStringToIntegers(&$combined)
+    public function convertStringToIntegers(&$row)
     {
-        $cols = [
+        $cols = collect([
             'subject_id',
             'classification_id',
             'workflow_id',
             'subject_expeditionId',
             'subject_projectId'
-        ];
+        ]);
 
         foreach ($cols as $col)
         {
-            if (isset($combined[$col]))
+            if (isset($row[$col]))
             {
-                $combined[$col] = (int)$combined[$col];
+                $row[$col] = (int) $row[$col];
             }
         }
     }
@@ -245,14 +234,14 @@ class PanoptesTranscriptionProcess
     /**
      * Validate transcription to prevent duplicates.
      *
-     * @param $combined
+     * @param $row
      * @return mixed
      */
-    public function validateTranscription($combined)
+    public function validateTranscription($row)
     {
 
         $rules = ['classification_id' => 'unique_with:panoptes_transcriptions,classification_id'];
-        $values = ['classification_id' => $combined['classification_id']];
+        $values = ['classification_id' => $row['classification_id']];
         $validator = $this->factory->make($values, $rules);
         $validator->getPresenceVerifier()->setConnection('mongodb');
 
