@@ -15,7 +15,7 @@
 # Trigger polling for export
 */5 * * * * /usr/bin/php /data/web/biospex/production/artisan export:poll >> /var/log/biospex/export.poll.log 2>&1
 
-#
+# Trigger ocr process of records
 */5 * * * * /usr/bin/php /data/web/biospex/production/artisan ocrprocess:records >> /var/log/biospex/ocrprocess.poll.log 2>&1
 
 # Clean reports directory
