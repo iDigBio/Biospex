@@ -73,7 +73,7 @@ class ExportQueueObserver
      */
     public function deleted(Model $model)
     {
-        $record = $this->exportQueue->getFirst();
+        $record = $this->exportQueue->getFirstExportWithoutError();
         if ($record !== null && ! $record->queued)
         {
             $record->queued = 1;
