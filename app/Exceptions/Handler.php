@@ -23,7 +23,8 @@ class Handler extends ExceptionHandler
         \Symfony\Component\HttpKernel\Exception\HttpException::class,
         \Illuminate\Database\Eloquent\ModelNotFoundException::class,
         \Illuminate\Session\TokenMismatchException::class,
-        \Illuminate\Validation\ValidationException::class
+        \Illuminate\Validation\ValidationException::class,
+        \Predis\Connection\ConnectionException::class
     ];
 
     /**
@@ -45,7 +46,7 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
-        if ($this->shouldReport($exception) && config('app.debug') === true) {
+        if ($this->shouldReport($exception)) {
             $this->sendEmail($exception);
         }
 
