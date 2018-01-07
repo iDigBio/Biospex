@@ -12,6 +12,9 @@
 # Process the workflow manager each morning
 0 6 * * * /usr/bin/php /data/web/biospex/production/artisan workflow:manage >> /var/log/biospex/workflow.manage.log 2>&1
 
+# Trigger export process
+*/5 * * * * /usr/bin/php /data/web/biospex/production/artisan export:queue >> /var/log/biospex/exportqueue.log 2>&1
+
 # Trigger polling for export
 */5 * * * * /usr/bin/php /data/web/biospex/production/artisan export:poll >> /var/log/biospex/export.poll.log 2>&1
 

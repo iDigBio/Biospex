@@ -45,6 +45,7 @@ class ExportQueueJob extends Job implements ShouldQueue
         {
             $class = ActorFactory::create($queue->expedition->actor->class, $queue->expedition->actor->class);
             $class->queue($queue);
+            $this->delete();
         }
         catch (\Exception $e)
         {
@@ -63,7 +64,5 @@ class ExportQueueJob extends Job implements ShouldQueue
 
             $this->delete();
         }
-
-        $this->delete();
     }
 }

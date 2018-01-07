@@ -3,7 +3,6 @@
 namespace App\Services\Actor\NfnPanoptes;
 
 use App\Notifications\NfnExportComplete;
-use App\Notifications\NfnExportError;
 use App\Services\Actor\ActorImageService;
 use App\Services\Actor\ActorRepositoryService;
 use App\Services\Actor\ActorServiceConfig;
@@ -149,6 +148,8 @@ class NfnPanoptesExport
         $this->config->fireActorQueuedEvent();
 
         $this->advanceQueue();
+
+        return;
     }
 
     /**
@@ -178,6 +179,8 @@ class NfnPanoptesExport
 
         $this->config->fireActorQueuedEvent();
         $this->advanceQueue();
+
+        return;
     }
 
     /**
@@ -194,6 +197,8 @@ class NfnPanoptesExport
         $this->config->deleteScratchTmpDir();
         $this->config->fireActorQueuedEvent();
         $this->advanceQueue();
+
+        return;
     }
 
     /**
@@ -227,6 +232,8 @@ class NfnPanoptesExport
 
         $this->config->fireActorQueuedEvent();
         $this->advanceQueue();
+
+        return;
     }
 
     /**
@@ -239,6 +246,8 @@ class NfnPanoptesExport
         $this->config->fireActorQueuedEvent();
 
         $this->advanceQueue();
+
+        return;
     }
 
     /**
@@ -273,6 +282,8 @@ class NfnPanoptesExport
 
         $this->actorRepositoryService->updateOrCreateDownload($attributes, $values);
         $this->advanceQueue();
+
+        return;
     }
 
     /**
@@ -292,6 +303,8 @@ class NfnPanoptesExport
         $this->actorRepositoryService->deleteExportQueue($this->config->queue->id);
 
         $this->config->fireActorUnQueuedEvent();
+
+        return;
     }
 
     /**
@@ -303,9 +316,13 @@ class NfnPanoptesExport
 
         $attributes = [
             'stage'   => $this->config->queue->stage + 1,
+            'queued'  => 0,
             'missing' => array_merge($queueMissing, $this->actorImageService->getMissingImages())
         ];
+
         $this->actorRepositoryService->updateExportQueue($attributes, $this->config->queue->id);
+
+        return;
     }
 
     /**

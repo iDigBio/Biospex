@@ -53,16 +53,10 @@ class ExportQueueCommand extends Command
             return;
         }
 
-        if ($record->queued && ! $record->error)
-        {
-            ExportQueueJob::dispatch($record);
-
-            return;
-        }
-
-        if (! $record->queued)
+        if ( ! $record->queued)
         {
             $this->exportQueueContract->update(['queued' => 1], $record->id);
+            ExportQueueJob::dispatch($record);
         }
 
         return;
