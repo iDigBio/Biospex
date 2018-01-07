@@ -22,11 +22,14 @@ _ide_helper.php
 /config/debugbar.php
 .env.behat
 codeception.yml
-storage/scratch/
+storage/scratch/*
+storage/classifications/*
+storage/exports/*
+storage/imports/*
+storage/images/*
+
 resources/apps/laravel-echo-server.js
 resources/apps/panoptes-pusher.js
-resources/upstart/biospex.service
-resources/upstart/panoptes-pusher.service
 tests/_output/
 backups
 
@@ -36,7 +39,6 @@ resources/lang/*/[a-zA-Z]*20[0-9][0-9][0-1][0-9][0-3][0-9]_[0-2][0-9][0-5][0-9][
 /resources/supervisord/queue.loc.conf
 /resources/upstart/biospex-socket.conf
 /resources/upstart/panoptes-pusher.conf
-panoptes-pusher.js
 
 out/
 biospex-heat-map.json
