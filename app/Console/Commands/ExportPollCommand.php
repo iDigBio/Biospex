@@ -93,7 +93,7 @@ class ExportPollCommand extends Command
             $total = $queue->expedition->actor->pivot->total;
             $count++;
 
-            $message = $record->queued ?
+            $notice = $record->queued ?
                 trans('pages.export_processing', [
                     'stage' => camelCaseToWords($stage),
                     'title' => $queue->expedition->title,
@@ -108,8 +108,8 @@ class ExportPollCommand extends Command
                 ]);
 
             return [
-                'groupUuid'       => $queue->expedition->project->group->uuid,
-                'message'         => $message
+                'groupId'       => $queue->expedition->project->group->id,
+                'notice'         => $notice
             ];
         });
 
