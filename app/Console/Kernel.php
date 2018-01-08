@@ -24,6 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        /*
         // Clean imports directory
         $schedule->command('download:clean')->dailyAt('22:00');
 
@@ -44,6 +45,7 @@ class Kernel extends ConsoleKernel
 
         // Create Notes From Nature csv files
         $schedule->command('nfn:csvcreate')->daily();
+        */
     }
 
     /**
