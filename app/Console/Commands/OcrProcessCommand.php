@@ -3,7 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Interfaces\OcrQueue;
-use App\Jobs\OcrProcessJob;
+use App\Interfaces\User;
+use App\Notifications\JobError;
+use App\Services\Process\OcrProcess;
+use Artisan;
 use Illuminate\Console\Command;
 
 class OcrProcessCommand extends Command
@@ -29,15 +32,34 @@ class OcrProcessCommand extends Command
     private $ocrQueueContract;
 
     /**
+     * @var User
+     */
+    private $userContract;
+
+    /**
+     * @var OcrProcess
+     */
+    private $ocrProcess;
+
+    /**
      * OcrProcessCommand constructor.
      *
+     * OcrProcessCommand constructor.
      * @param OcrQueue $ocrQueueContract
+     * @param User $userContract
+     * @param OcrProcess $ocrProcess
      */
-    public function __construct(OcrQueue $ocrQueueContract)
+    public function __construct(
+        OcrQueue $ocrQueueContract,
+        User $userContract,
+        OcrProcess $ocrProcess
+    )
     {
         parent::__construct();
 
         $this->ocrQueueContract = $ocrQueueContract;
+        $this->userContract = $userContract;
+        $this->ocrProcess = $ocrProcess;
     }
 
     /**
@@ -53,6 +75,26 @@ class OcrProcessCommand extends Command
             return;
         }
 
-        OcrProcessJob::dispatch($record);
+        try
+        {
+            $this->ocrProcess->process($record);
+        }
+        catch (\Exception $e)
+        {
+            $user = $this->userContract->find(1);
+            $record->error = 1;
+            $record->save();
+
+            $messages = [
+                $record->title,
+                'Error processing ocr record ' . $record->id,
+                'Message: ' . $e->getMessage(),
+                'Line: ' . $e->getLine()
+            ];
+
+            $user->notify(new JobError(__FILE__, $messages));
+        }
+
+        Artisan::call('ocr:poll');
     }
 }

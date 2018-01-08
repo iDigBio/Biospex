@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Services\Process;
+namespace App\Services\Requests;
 
-use App\Interfaces\Subject;
 use Illuminate\Support\Facades\Artisan;
 use GuzzleHttp\Client;
 
-class OcrRequest
+class OcrRequest extends HttpRequest
 {
 
     /**
@@ -15,21 +14,12 @@ class OcrRequest
     protected $client;
 
     /**
-     * @var Subject
-     */
-    protected $subjectContract;
-    
-    /**
      * Ocr constructor.
-     *
-     * @param Subject $subjectContract
      */
-    public function __Construct(
-        Subject $subjectContract
-    )
+    public function __Construct()
     {
-        $this->client = new Client();
-        $this->subjectContract = $subjectContract;
+        $this->setHttpProvider();
+        $this->client = $this->getHttpClient();
     }
 
     /**
@@ -53,7 +43,8 @@ class OcrRequest
                 ]
             ]];
 
-        $response = $this->client->request('POST', config('config.ocr_post_url'), $options);
+        $request = $this->buildREquest('POST', config('config.ocr_post_url'), $options);
+        $response = $this->client->send($request);
 
         if ($response->getStatusCode() !== 202) {
             throw new \Exception(trans('errors.ocr_send_error',
@@ -108,36 +99,6 @@ class OcrRequest
         return $file->header->status === 'error';
     }
 
-    /**
-     * Update subject ocr fields based on ocr file results
-     *
-     * @param $file
-     * @return array
-     */
-    public function updateSubjectsFromOcrFile($file)
-    {
-        $csv = [];
-        foreach ($file->subjects as $id => $data)
-        {
-            if ($data->ocr === 'error')
-            {
-                $csv[] = ['id' => $id, 'message' => implode(' -- ', $data->messages), 'url' => $data->url];
-                continue;
-            }
-
-            $subject = $this->subjectContract->find($id);
-            if ($subject === null)
-            {
-                $csv[] = ['id' => $id, 'message' => 'Could not locate associated subject in database', 'url' => ''];
-                continue;
-            }
-
-            $subject->ocr = $data->ocr;
-            $this->subjectContract->update($subject->toArray(), $subject->_id);
-        }
-
-        return $csv;
-    }
 
     /**
      * Send request to delete json files on ocr server.
