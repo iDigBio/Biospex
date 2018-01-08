@@ -316,7 +316,6 @@ class NfnPanoptesExport
 
         $attributes = [
             'stage'   => $this->config->queue->stage + 1,
-            'queued'  => 0,
             'missing' => array_merge($queueMissing, $this->actorImageService->getMissingImages())
         ];
 

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Observers\ExportQueueObserver;
 use App\Observers\PanoptesTranscriptionObserver;
 use Illuminate\Support\ServiceProvider;
 
@@ -112,6 +113,7 @@ class BiospexServiceProvider extends ServiceProvider
      */
     public function setObservers()
     {
+        \App\Models\ExportQueue::observe(ExportQueueObserver::class);
         \App\Models\PanoptesTranscription::observe(PanoptesTranscriptionObserver::class);
     }
 
