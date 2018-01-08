@@ -175,7 +175,7 @@ class ActorServiceConfig
     public function setWorkingDirectory()
     {
         $this->workingDirectory = $this->scratchDirectory . '/' . $this->folderName;
-        File::makeDirectory($this->workingDirectory, 0775, true, true);
+        File::makeDirectory($this->workingDirectory, 0777, true, true);
     }
 
     /**
@@ -184,7 +184,7 @@ class ActorServiceConfig
     public function setTmpDirectory()
     {
         $this->tmpDirectory = $this->workingDirectory . '/tmp';
-        File::makeDirectory($this->tmpDirectory, 0775, true, true);
+        File::makeDirectory($this->tmpDirectory, 0777, true, true);
     }
 
     /**
