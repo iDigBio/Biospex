@@ -101,6 +101,7 @@ class ActorRepositoryService extends ActorServiceBase
     public function firstOrCreateExportQueue($attributes)
     {
         $this->exportQueueContract->firstOrCreate($attributes);
+        event('exportQueue.updated');
     }
 
     /**
@@ -125,6 +126,7 @@ class ActorRepositoryService extends ActorServiceBase
      */
     public function deleteExportQueue($id)
     {
+        event('exportQueue.updated');
         return $this->exportQueueContract->delete($id);
     }
 }
