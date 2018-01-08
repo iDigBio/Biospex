@@ -215,7 +215,6 @@ class ActorImageService extends ActorServiceBase
         $destination = $this->config->tmpDirectory . '/' . $filename . '.jpg';
         if ( ! $this->imagickService->writeImagickImageToFile($destination))
         {
-            \Log::alert("could not write file " . $file);
             $attributes = [
                 'subjectId' => $filename,
                 'accessURI' => '',
@@ -226,7 +225,6 @@ class ActorImageService extends ActorServiceBase
 
             return false;
         }
-        \Log::alert("file written " . $file);
 
         $this->clearAndFire();
         return true;

@@ -17,6 +17,13 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, UuidTrait;
 
     /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 1800;
+
+    /**
      * @var \Illuminate\Support\Collection
      */
     private $ids;

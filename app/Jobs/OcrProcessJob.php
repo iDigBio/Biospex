@@ -20,6 +20,13 @@ class OcrProcessJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 120;
+
+    /**
      * @var Model
      */
     public $record;

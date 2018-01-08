@@ -55,7 +55,6 @@ class ImagickService extends ImageServiceBase
      */
     public function writeImagickImageToFile($destination)
     {
-
         if ( ! $this->imagick->setImageFormat('jpg') ||
             ! $this->imagick->setOption('jpeg:extent', '600kb') ||
             ! $this->imagick->stripImage()

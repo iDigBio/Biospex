@@ -17,6 +17,13 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 7200;
+
+    /**
      * @var array
      */
     private $ids;

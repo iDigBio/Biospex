@@ -164,14 +164,11 @@ class NfnPanoptesExport
         $this->config->setSubjects($files);
 
         $files->reject(function ($file) use ($existingFiles) {
-            \Log::alert("checking file " . $file);
             return $this->checkConvertedFile($file, $existingFiles);
         })->each(function ($file) {
             $fileName = $this->fileService->filesystem->name($file);
-            \Log::alert("writing file " . $file);
             return $this->actorImageService->writeImagickFile((string) $file, $fileName);
         });
-        \Log::alert("out of loop");
 
         if (empty($this->fileService->filesystem->files($this->config->tmpDirectory)))
         {
