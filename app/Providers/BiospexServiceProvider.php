@@ -113,7 +113,7 @@ class BiospexServiceProvider extends ServiceProvider
      */
     public function setObservers()
     {
-        \App\Models\ExportQueue::observe(ExportQueueObserver::class);
+        //\App\Models\ExportQueue::observe(ExportQueueObserver::class);
         \App\Models\PanoptesTranscription::observe(PanoptesTranscriptionObserver::class);
     }
 

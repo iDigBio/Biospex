@@ -113,6 +113,7 @@ class ActorRepositoryService extends ActorServiceBase
     public function updateExportQueue($attributes, $id)
     {
         $this->exportQueueContract->update($attributes, $id);
+        event('exportQueue.updated');
 
     }
 

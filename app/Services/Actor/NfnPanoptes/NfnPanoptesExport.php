@@ -111,6 +111,7 @@ class NfnPanoptesExport
         ];
 
         $this->actorRepositoryService->firstOrCreateExportQueue($attributes);
+        event('exportQueue.updated');
     }
 
     /**
@@ -301,6 +302,7 @@ class NfnPanoptesExport
         $this->config->fireActorStateEvent();
 
         $this->actorRepositoryService->deleteExportQueue($this->config->queue->id);
+        event('exportQueue.updated');
 
         $this->config->fireActorUnQueuedEvent();
 

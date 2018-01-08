@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Listeners\ActorPivotUpdateEventListener;
+use App\Listeners\ExportQueueEventListener;
 use App\Listeners\GroupEventListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -22,7 +23,8 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $subscribe = [
         GroupEventListener::class,
-        ActorPivotUpdateEventListener::class
+        ActorPivotUpdateEventListener::class,
+        ExportQueueEventListener::class
     ];
 
     /**
