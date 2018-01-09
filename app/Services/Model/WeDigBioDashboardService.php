@@ -264,7 +264,9 @@ class WeDigBioDashboardService
      */
     public function checkIfExists($transcriptionId)
     {
-        return $this->weDigBioDashboardContract->findBy('transcription_id', $transcriptionId)->count();
+        $result = $this->weDigBioDashboardContract->findBy('transcription_id', $transcriptionId);
+
+        return $result === null;
     }
 
     /**
