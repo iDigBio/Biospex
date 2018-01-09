@@ -24,7 +24,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        /*
         // Clean imports directory
         $schedule->command('download:clean')->dailyAt('22:00');
 
@@ -34,7 +33,7 @@ class Kernel extends ConsoleKernel
         // Clean report directory
         $schedule->command('report:clean')->dailyAt('22:30');
 
-        // Check ocr processing records and calling ocr polling
+        // Check ocr processing records and call ocr polling
         $schedule->command('ocrprocess:records')->everyFiveMinutes();
 
         // Trigger export polling
@@ -45,7 +44,7 @@ class Kernel extends ConsoleKernel
 
         // Create Notes From Nature csv files
         $schedule->command('nfn:csvcreate')->daily();
-        */
+
     }
 
     /**
