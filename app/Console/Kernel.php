@@ -24,6 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+
         // Clean imports directory
         $schedule->command('download:clean')->dailyAt('22:00');
 
@@ -39,11 +40,14 @@ class Kernel extends ConsoleKernel
         // Trigger export polling
         $schedule->command('export:poll')->everyFiveMinutes();
 
-        // Trigger workflow manager to update expeditions and projects
-        $schedule->command('workflow:manage')->dailyAt('06:00');
+        if ($this->app->environment() === 'production')
+        {
+            // Trigger workflow manager to update expeditions and projects
+            $schedule->command('workflow:manage')->dailyAt('06:00');
 
-        // Create Notes From Nature csv files
-        $schedule->command('nfn:csvcreate')->daily();
+            // Create Notes From Nature csv files
+            $schedule->command('nfn:csvcreate')->daily();
+        }
 
     }
 
