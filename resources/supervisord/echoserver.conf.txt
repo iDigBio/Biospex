@@ -1,9 +1,8 @@
 [program:echo-server]
-# /usr/lib/node_modules/laravel-echo-server/dist
-directory=/home/vagrant/sites/biospex/production/resources/apps
+directory=/path/to/application
 command=laravel-echo-server start
 autostart=true
 autorestart=true
-user=vagrant
+user=user
 redirect_stderr=true
 stdout_logfile=/var/log/supervisor/echoserver.log

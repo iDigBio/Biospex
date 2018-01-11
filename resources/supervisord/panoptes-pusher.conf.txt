@@ -1,0 +1,8 @@
+[program:panoptes-pusher]
+directory=/path/to/application
+command=nodejs panoptes-pusher.js
+autostart=true
+autorestart=true
+user=user
+redirect_stderr=true
+stdout_logfile=/var/log/supervisor/panoptes-pusher.log
