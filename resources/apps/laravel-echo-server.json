@@ -1,0 +1,32 @@
+{
+    "authHost": "https://biospex.loc",
+    "authEndpoint": "/broadcasting/auth",
+    "clients": [
+        {
+            "appId": "500950b04bdc9b75",
+            "key": "68710efaee9568782d4ccf009c64afb9"
+        }
+    ],
+    "database": "redis",
+    "databaseConfig": {
+        "redis": {},
+        "sqlite": {
+            "databasePath": "/database/laravel-echo-server.sqlite"
+        }
+    },
+    "devMode": true,
+    "host": null,
+    "port": "6001",
+    "protocol": "https",
+    "socketio": {},
+    "sslCertPath": "/etc/nginx/ssl/biospex.loc.crt",
+    "sslKeyPath": "/etc/nginx/ssl/biospex.loc.key",
+    "sslCertChainPath": "",
+    "sslPassphrase": "",
+    "apiOriginAllow": {
+        "allowCors": true,
+        "allowOrigin": "https://biospex.loc:80",
+        "allowMethods": "GET, POST",
+        "allowHeaders": "Origin, Content-Type, X-Auth-Token, X-Requested-With, Accept, Authorization, X-CSRF-TOKEN, X-Socket-Id"
+    }
+}
