@@ -7,7 +7,6 @@ sudo: false
 
 before_script:
   - cp .env.travis .env
-  - printf "\n" | pecl install -f redis
   - phpenv config-rm xdebug.ini
   - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
