@@ -93,7 +93,7 @@ class RouteServiceProvider extends ServiceProvider
                 'middleware' => ['api']
             ];
             $router->group($options, function ($router) {
-                require base_path('routes/api/v0/wedigbiodashboard.php');
+                $this->require_files('routes/api/v0', $router);
             });
         });
 
@@ -104,8 +104,6 @@ class RouteServiceProvider extends ServiceProvider
             ];
 
             $router->group($options, function ($router) {
-                require base_path('routes/api/panoptes-pusher.php');
-                $this->require_files('routes/api', $router);
                 $router->group(['middleware' => 'client'], function ($router) {
                     $this->require_files('routes/api/v1', $router);
                 });

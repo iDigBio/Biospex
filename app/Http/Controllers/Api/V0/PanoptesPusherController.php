@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Http\Controllers\Api\V0;
 
 use App\Jobs\NfnClassificationWeDigBioJob;
 use Illuminate\Http\Request;
@@ -32,8 +32,6 @@ class PanoptesPusherController extends ApiController
         }
 
         NfnClassificationWeDigBioJob::dispatch($request->getContent());
-
-        return;
     }
 
     /**
