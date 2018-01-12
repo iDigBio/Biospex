@@ -1,4 +1,4 @@
-@foreach ($trashed->trashedGroups as $group)
+@foreach ($trashed->groupsTrashed as $group)
     <tr>
         <td>{{ $group->title }}</td>
         <td class="buttons-sm">

@@ -75,6 +75,36 @@ class User extends Authenticatable
         });
     }
 
+    /**
+     * Group relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function groups()
+    {
+        return $this->belongsToMany(Group::class);
+    }
+
+    /**
+     * Trashed group relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function groupsTrashed()
+    {
+        return $this->belongsToMany(Group::class)->whereNotNull('groups.deleted_at');
+    }
+
+    /**
+     * Group owner relationship.
+     *
+     * @return mixed
+     */
+    public function ownGroups()
+    {
+        return $this->hasMany(Group::class);
+    }
+
 
     /**
      * Import relationship.

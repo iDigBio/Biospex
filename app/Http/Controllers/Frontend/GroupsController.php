@@ -41,7 +41,7 @@ class GroupsController extends Controller
     public function index()
     {
         $user = $this->userContract->findWith(request()->user()->id, ['groups']);
-        $trashed = $this->userContract->findWith(request()->user()->id, ['trashedGroups']);
+        $trashed = $this->userContract->findWith(request()->user()->id, ['groupsTrashed']);
 
         return view('frontend.groups.index', compact('user', 'trashed'));
     }

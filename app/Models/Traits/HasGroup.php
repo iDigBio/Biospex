@@ -8,36 +8,6 @@ use App\Models\Permission;
 trait HasGroup
 {
     /**
-     * Group relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function groups()
-    {
-        return $this->belongsToMany(Group::class);
-    }
-
-    /**
-     * Trashed group relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function trashedGroups()
-    {
-        return $this->belongsToMany(Group::class)->onlyTrashed();
-    }
-
-    /**
-     * Group owner relationship.
-     *
-     * @return mixed
-     */
-    public function ownGroups()
-    {
-        return $this->hasMany(Group::class);
-    }
-
-    /**
      * Assign the given group to the user.
      * 
      * @param $group
