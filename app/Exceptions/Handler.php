@@ -46,9 +46,11 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
+        /*
         if ($this->shouldReport($exception) && app()->environment() !== 'local') {
             $this->sendEmail($exception);
         }
+        */
 
         parent::report($exception);
     }
