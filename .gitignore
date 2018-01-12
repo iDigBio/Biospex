@@ -11,6 +11,8 @@ _ide_helper.php
 /config/ide-helper.php
 /config/debugbar.php
 .env.behat
+.env.production
+.env.development
 codeception.yml
 storage/scratch/*
 storage/classifications/*
@@ -19,9 +21,7 @@ storage/imports/*
 storage/images/*
 
 /resources/assets/vendor
-resources/apps/*.js
-resources/apps/*.json
-resources/supervisord/*.conf
+
 tests/_output/
 backups
 biospex-heat-map.json
