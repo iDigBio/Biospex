@@ -6,6 +6,7 @@ return [
      * Site variables
      */
     'app_url'           => env('APP_URL'),
+    'app_current_path'  => env('APP_CURRENT_PATH'),
     'app_user'          => env('APP_USER'),
     'registration'      => env('APP_REGISTRATION'),
     'translate'         => env('APP_TRANSLATE'),

@@ -148,7 +148,7 @@ class AppFileDeployment extends Command
         $this->configs = collect([
             'APP_ENV',
             'APPS_PATH',
-            'BASE_PATH',
+            'APP_CURRENT_PATH',
             'APP_USER',
 
             'QUEUE_CHART_TUBE',
@@ -165,8 +165,7 @@ class AppFileDeployment extends Command
 
         $this->lookUp = [
             'APP_ENV'   => \App::environment(),
-            'APPS_PATH' => base_path(),
-            'BASE_PATH' => $this->appPath
+            'APPS_PATH' => storage_path('app/apps')
         ];
     }
 }

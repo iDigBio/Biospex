@@ -1,5 +1,5 @@
 [program:QUEUE_CHART_TUBE]
-directory=BASE_PATH
+directory=APP_CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_CHART_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/chart.log
 redirect_stderr=true
@@ -8,7 +8,7 @@ autorestart=true
 user=APP_USER
 
 [program:QUEUE_CLASSIFICATION_TUBE]
-directory=BASE_PATH
+directory=APP_CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_CLASSIFICATION_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/classification.log
 redirect_stderr=true
@@ -17,7 +17,7 @@ autorestart=true
 user=APP_USER
 
 [program:QUEUE_DEFAULT_TUBE]
-directory=BASE_PATH
+directory=APP_CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_DEFAULT_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/default.log
 redirect_stderr=true
@@ -26,7 +26,7 @@ autorestart=true
 user=APP_USER
 
 [program:QUEUE_EVENT_TUBE]
-directory=BASE_PATH
+directory=APP_CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_EVENT_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/event.log
 redirect_stderr=true
@@ -35,7 +35,7 @@ autorestart=true
 user=APP_USER
 
 [program:QUEUE_EXPORT_TUBE]
-directory=BASE_PATH
+directory=APP_CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_EXPORT_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/export.log
 redirect_stderr=true
@@ -44,7 +44,7 @@ autorestart=true
 user=APP_USER
 
 [program:QUEUE_IMPORT_TUBE]
-directory=BASE_PATH
+directory=APP_CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_IMPORT_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/import.log
 redirect_stderr=true
@@ -53,7 +53,7 @@ autorestart=true
 user=APP_USER
 
 [program:QUEUE_OCR_TUBE]
-directory=BASE_PATH
+directory=APP_CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_OCR_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/ocr.log
 redirect_stderr=true
@@ -62,7 +62,7 @@ autorestart=true
 user=APP_USER
 
 [program:QUEUE_STAT_TUBE]
-directory=BASE_PATH
+directory=APP_CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_STAT_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/stat.log
 redirect_stderr=true
@@ -71,7 +71,7 @@ autorestart=true
 user=APP_USER
 
 [program:QUEUE_WORKFLOW_TUBE]
-directory=BASE_PATH
+directory=APP_CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_WORKFLOW_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/workflow.log
 redirect_stderr=true
@@ -80,7 +80,7 @@ autorestart=true
 user=APP_USER
 
 [program:QUEUE_NFN_PUSHER]
-directory=BASE_PATH
+directory=APP_CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_NFN_PUSHER --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/nfnpusher.log
 redirect_stderr=true
