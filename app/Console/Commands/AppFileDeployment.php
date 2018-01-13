@@ -74,15 +74,18 @@ class AppFileDeployment extends Command
     {
         // copy needed files to locations
         $appFiles = \File::files($this->resPath . '/apps');
-        collect($appFiles)->each(function ($file) {
+        collect($appFiles)->reject(function($file){
+            return \File::name($file) === 'laravel-echo-server.json' && \App::environment() === 'dev';
+        })->each(function ($file) {
             $target = $this->appPath . '/' . \File::name($file);
             $this->copyFile($file, $target);
             $this->searchAndReplaceApps($target);
-
         });
 
         $supFiles = \File::files($this->resPath . '/supervisord');
-        collect($supFiles)->each(function ($file) {
+        collect($supFiles)->reject(function($file){
+            return \File::name($file) === 'echo-server.conf' && \App::environment() === 'dev';
+        })->each(function ($file) {
             $target = $this->supPath . '/' . \File::name($file);
             $this->copyFile($file, $target);
             $this->searchAndReplaceConfigs($target);

@@ -3,6 +3,6 @@ directory=APPS_PATH
 command=laravel-echo-server start
 autostart=true
 autorestart=true
-user=APP_USER
+user=root
 redirect_stderr=true
 stdout_logfile=/var/log/supervisor/APP_ENV/echoserver.log
