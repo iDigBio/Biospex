@@ -164,7 +164,7 @@ class AppFileDeployment extends Command
         ]);
 
         $this->lookUp = [
-            'APPS_PATH' => storage_path('app/apps')
+            'APPS_PATH' => env('APP_CURRENT_PATH') . '/storage/app/apps'
         ];
     }
 }
