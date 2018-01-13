@@ -21,7 +21,6 @@ mix.webpackConfig({
     .autoload({
         jquery: ['$', 'window.jQuery', "jQuery", "window.$", "jquery", "window.jquery"]
     })
-    //.setPublicPath(path.normalize('public'))
     .js('resources/assets/js/app.js', 'js/frontend.js')
     .sass('resources/assets/sass/frontend.scss', 'css/frontend.css')
     .extract([
