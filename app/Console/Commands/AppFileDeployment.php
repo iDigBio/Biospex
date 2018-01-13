@@ -84,7 +84,7 @@ class AppFileDeployment extends Command
 
         $supFiles = \File::files($this->resPath . '/supervisord');
         collect($supFiles)->reject(function($file){
-            return \File::name($file) === 'echo-server.conf' && \App::environment() === 'dev';
+            return \File::name($file) === 'echoserver.conf' && \App::environment() === 'dev';
         })->each(function ($file) {
             $target = $this->supPath . '/' . \File::name($file);
             $this->copyFile($file, $target);
