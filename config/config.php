@@ -5,14 +5,27 @@ return [
     /**
      * Site variables
      */
-    'app_url'         => env('APP_URL'),
-    'api_url'         => env('API_URL'),
-    'app_domain'      => env('APP_DOMAIN'),
-    'app_ip'          => env('APP_IP'),
-    'app_user'        => env('APP_USER'),
-    'registration'    => env('APP_REGISTRATION'),
-    'translate'       => env('APP_TRANSLATE'),
-    'expedition_size' => env('APP_EXPEDITION_SIZE'),
+    'app_url'           => env('APP_URL'),
+    'app_user'          => env('APP_USER'),
+    'registration'      => env('APP_REGISTRATION'),
+    'translate'         => env('APP_TRANSLATE'),
+    'expedition_size'   => env('APP_EXPEDITION_SIZE'),
+    'app_echo_id'       => env('APP_ECHO_ID'),
+    'app_echo_key'      => env('APP_ECHO_KEY'),
+    'app_echo_ssl_cert' => env('APP_ECHO_SSL_CRT'),
+    'app_echo_ssl_key'  => env('APP_ECHO_SSL_KEY'),
+
+    'api_url'           => env('API_URL'),
+    'api_version'       => env('API_VERSION'),
+    'api_client_id'     => env('API_CLIENT_ID'),
+    'api_client_secret' => env('API_CLIENT_SECRET'),
+
+    'map_project_id'      => env('MAP_PROJECT_ID'),
+    'map_private_key_id'  => env('MAP_PRIVATE_KEY_ID'),
+    'map_private_key'     => env('MAP_PRIVATE_KEY'),
+    'map_client_email'    => env('MAP_CLIENT_EMAIL'),
+    'map_client_id'       => env('MAP_CLIENT_ID'),
+    'map_client_cert_url' => env('MAP_CLIENT_CERT_URL'),
 
     'scratch_dir'                 => storage_path('scratch'),
     'scratch_dir_tmp'             => storage_path('scratch/tmp'),

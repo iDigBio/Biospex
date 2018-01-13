@@ -69,14 +69,13 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
             {
                 continue;
             }
-
-            $appUser = config('config.app_user');
+            
             $csvPath = config('config.classifications_download') . '/' . $expedition->id . '.csv';
             $recPath = config('config.classifications_reconcile') . '/' . $expedition->id . '.csv';
             $tranPath = config('config.classifications_transcript') . '/' . $expedition->id . '.csv';
             $sumPath = config('config.classifications_summary') . '/' . $expedition->id . '.html';
             $pythonPath = config('config.label_reconciliations_path');
-            $command = "sudo -u $appUser python3 $pythonPath -w {$expedition->nfnWorkflow->workflow} -r $recPath -u $tranPath -s $sumPath $csvPath";
+            $command = "python3 $pythonPath -w {$expedition->nfnWorkflow->workflow} -r $recPath -u $tranPath -s $sumPath $csvPath";
             exec($command);
             $ids[] = $expedition->id;
 

@@ -1,8 +1,8 @@
-[program:echo-server]
-directory=/path/to/application
+[program:APP_ENV-echo-server]
+directory=APPS_PATH
 command=laravel-echo-server start
 autostart=true
 autorestart=true
-user=user
+user=APP_USER
 redirect_stderr=true
-stdout_logfile=/var/log/supervisor/echoserver.log
+stdout_logfile=/var/log/supervisor/APP_ENV/echoserver.log

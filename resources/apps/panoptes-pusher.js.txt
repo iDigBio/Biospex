@@ -7,30 +7,30 @@ let token;
 
 let params = JSON.stringify({
     grant_type: 'client_credentials',
-    client_id: 'client_id',
-    client_secret: 'client_secret'
+    client_id: 'API_CLIENT_ID',
+    client_secret: 'API_CLIENT_SECRET'
 });
 
 axios.post('/oauth/token', params, {
-    baseURL: 'https://site_domain',
+    baseURL: 'APP_URL',
     httpsAgent: new https.Agent({
         rejectUnauthorized: false
     }),
     headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/vnd.api.v1+json',
+        'Accept': 'application/vnd.api.API_VERSION+json',
         'X-Requested-With': 'XMLHttpRequest'
     }
 }).then(function (response) {
     token = response.data.access_token;
     let instance = axios.create({
-        baseURL: 'https://api_domain',
+        baseURL: 'API_URL',
         httpsAgent: new https.Agent({
             rejectUnauthorized: false
         }),
         headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/vnd.api.v1+json',
+            'Accept': 'application/vnd.api.API_VERSION+json',
             'X-Requested-With': 'XMLHttpRequest',
             'Authorization': 'Bearer '.concat(token)
         }
