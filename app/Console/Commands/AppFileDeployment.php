@@ -113,7 +113,7 @@ class AppFileDeployment extends Command
     private function searchAndReplaceConfigs($file)
     {
         $this->configs->each(function ($search) use ($file) {
-            $replace = in_array($search, $this->lookUp) ? env($this->lookUp[$search]) : env($search);
+            $replace = isset($this->lookUp[$search]) ? $this->lookUp[$search] : env($search);
             exec("sed -i 's*$search*$replace*g' " . $file);
         });
     }
@@ -164,7 +164,6 @@ class AppFileDeployment extends Command
         ]);
 
         $this->lookUp = [
-            'APP_ENV'   => \App::environment(),
             'APPS_PATH' => storage_path('app/apps')
         ];
     }
