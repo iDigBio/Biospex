@@ -1,6 +1,16 @@
 /node_modules
 /storage/*.key
 /vendor
+public/backend/css/*
+public/backend/fonts/vendor
+public/backend/images/vendor
+public/backend/js/*
+public/css/*
+public/fonts/vendor
+public/images/vendor
+public/js/*
+public/vendor
+public/mix-manifest.json
 .env
 .gitattributes
 .idea

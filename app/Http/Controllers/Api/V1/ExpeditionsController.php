@@ -18,7 +18,6 @@ class ExpeditionsController extends ApiController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
@@ -28,7 +27,6 @@ class ExpeditionsController extends ApiController
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
@@ -38,56 +36,56 @@ class ExpeditionsController extends ApiController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Request
      */
     public function store(Request $request)
     {
-        //
+        return $request;
     }
 
     /**
-     * Display the specified resource.
+     * Show expedition.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param $expeditionId
+     * @return mixed
      */
-    public function show($id)
+    public function show($expeditionId)
     {
-        //
+        return $expeditionId;
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param $expeditionId
+     * @return mixed
      */
-    public function edit($id)
+    public function edit($expeditionId)
     {
-        //
+        return $expeditionId;
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param $expeditionId
+     * @return mixed
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $expeditionId)
     {
-        //
+        return $expeditionId;
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param $expeditionId
+     * @return mixed
      */
-    public function destroy($id)
+    public function destroy($expeditionId)
     {
-        //
+        return $expeditionId;
     }
 }
