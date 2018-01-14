@@ -43,16 +43,6 @@ class AppFileDeployment extends Command
     private $apps;
 
     /**
-     * @var Collection
-     */
-    private $configs;
-
-    /**
-     * @var array
-     */
-    private $lookUp;
-
-    /**
      * Create a new command instance.
      *
      * @return void
@@ -62,7 +52,7 @@ class AppFileDeployment extends Command
         parent::__construct();
 
         $this->resPath = base_path('resources');
-        $this->appPath = storage_path('app/apps');
+        $this->appPath = base_path();
         $this->supPath = storage_path('app/supervisord');
         $this->setAppsConfigs();
     }
@@ -79,7 +69,7 @@ class AppFileDeployment extends Command
         })->each(function ($file) {
             $target = $this->appPath . '/' . \File::name($file);
             $this->copyFile($file, $target);
-            $this->searchAndReplaceApps($target);
+            $this->searchAndReplace($target);
         });
 
         $supFiles = \File::files($this->resPath . '/supervisord');
@@ -88,7 +78,7 @@ class AppFileDeployment extends Command
         })->each(function ($file) {
             $target = $this->supPath . '/' . \File::name($file);
             $this->copyFile($file, $target);
-            $this->searchAndReplaceConfigs($target);
+            $this->searchAndReplace($target);
         });
     }
 
@@ -101,23 +91,11 @@ class AppFileDeployment extends Command
      * Search and replace strings for apps
      * @param $file
      */
-    private function searchAndReplaceApps($file)
+    private function searchAndReplace($file)
     {
         $this->apps->each(function ($search) use ($file) {
             $replace = $search === 'MAP_PRIVATE_KEY' ? json_encode(env($search)) : env($search);
-            exec("sed -i 's*$search*$replace*g' " . $file);
-        });
-    }
-
-    /**
-     * Search and replace strings for supervisord configs
-     * @param $file
-     */
-    private function searchAndReplaceConfigs($file)
-    {
-        $this->configs->each(function ($search) use ($file) {
-            $replace = isset($this->lookUp[$search]) ? $this->lookUp[$search] : env($search);
-            exec("sed -i 's*$search*$replace*g' " . $file);
+            exec("sed -i 's*$search*$replace*g' $file");
         });
     }
 
@@ -129,6 +107,8 @@ class AppFileDeployment extends Command
         $this->apps = collect([
             'APP_URL',
             'APP_USER',
+            'APP_CURRENT_PATH',
+            'APP_ENV',
 
             'APP_ECHO_ID',
             'APP_ECHO_KEY',
@@ -145,14 +125,7 @@ class AppFileDeployment extends Command
             'MAP_PRIVATE_KEY',
             'MAP_CLIENT_EMAIL',
             'MAP_CLIENT_ID',
-            'MAP_CLIENT_CERT_URL'
-        ]);
-
-        $this->configs = collect([
-            'APP_ENV',
-            'APPS_PATH',
-            'APP_CURRENT_PATH',
-            'APP_USER',
+            'MAP_CLIENT_CERT_URL',
 
             'QUEUE_CHART_TUBE',
             'QUEUE_CLASSIFICATION_TUBE',
@@ -165,9 +138,5 @@ class AppFileDeployment extends Command
             'QUEUE_OCR_TUBE',
             'QUEUE_NFN_PUSHER'
         ]);
-
-        $this->lookUp = [
-            'APPS_PATH' => env('APP_CURRENT_PATH') . '/storage/app/apps'
-        ];
     }
 }

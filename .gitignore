@@ -26,4 +26,6 @@ storage/images/*
 tests/_output/
 backups
 biospex-heat-map.json
+laravel-echo-server.json
+panoptes-pusher.js
 

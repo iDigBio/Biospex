@@ -1,6 +1,6 @@
 [program:APP_ENV-panoptes-pusher]
-directory=APPS_PATH
-command=nodejs panoptes-pusher.js
+directory=APP_CURRENT_PATH
+command=node panoptes-pusher.js
 autostart=true
 autorestart=true
 user=APP_USER
