@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel
         // Trigger export polling
         $schedule->command('export:poll')->everyFiveMinutes();
 
-        if ($this->app->environment() === 'production')
+        if ($this->app->environment() === 'prod')
         {
             // Trigger workflow manager to update expeditions and projects
             $schedule->command('workflow:manage')->dailyAt('11:00');
