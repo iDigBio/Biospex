@@ -107,13 +107,13 @@ class ActorRepositoryService extends ActorServiceBase
     /**
      * Update ExportQueue record.
      *
-     * @param $id
+     * @param $exportId
      * @param $attributes
      * @return mixed
      */
-    public function updateExportQueue($attributes, $id)
+    public function updateExportQueue($attributes, $exportId)
     {
-        $this->exportQueueContract->update($attributes, $id);
+        $this->exportQueueContract->update($attributes, $exportId);
         event('exportQueue.updated');
 
     }
@@ -121,12 +121,12 @@ class ActorRepositoryService extends ActorServiceBase
     /**
      * Delete staged queue.
      *
-     * @param $id
+     * @param $exportId
      * @return mixed
      */
-    public function deleteExportQueue($id)
+    public function deleteExportQueue($exportId)
     {
         event('exportQueue.updated');
-        return $this->exportQueueContract->delete($id);
+        return $this->exportQueueContract->delete($exportId);
     }
 }

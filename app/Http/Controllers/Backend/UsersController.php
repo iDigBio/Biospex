@@ -29,16 +29,16 @@ class UsersController extends Controller
     }
 
     /**
-     * @param null $id
+     * @param null $userId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index($id = null)
+    public function index($userId = null)
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $users = $this->userContract->getAllUsersOrderByDate();
         $trashed = $this->userContract->getOnlyTrashed();
 
-        $editUser = $id !== null ? $this->userContract->findWith($id, ['profile']) : null;
+        $editUser = $userId !== null ? $this->userContract->findWith($userId, ['profile']) : null;
 
         $timezones = timezone_select();
 
@@ -49,12 +49,12 @@ class UsersController extends Controller
      * Update user information.
      *
      * @param EditUserFormRequest $request
-     * @param $id
+     * @param $userId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(EditUserFormRequest $request, $id)
+    public function update(EditUserFormRequest $request, $userId)
     {
-        $result = $this->userContract->update($request->all(), $id);
+        $result = $this->userContract->update($request->all(), $userId);
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $user->profile->first_name = $request->input('first_name');
         $user->profile->last_name = $request->input('last_name');
@@ -91,14 +91,15 @@ class UsersController extends Controller
     }
 
     /**
-     * Process a password change request.
+     * Process password request.
      *
      * @param PasswordFormRequest $request
+     * @param $userId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function pass(PasswordFormRequest $request, $id)
+    public function pass(PasswordFormRequest $request, $userId)
     {
-        $user = $this->userContract->find($id);
+        $user = $this->userContract->find($userId);
 
         $this->resetPassword($user, $request->input('newPassword'));
 
@@ -110,12 +111,12 @@ class UsersController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param $id
+     * @param $userId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete($id)
+    public function delete($userId)
     {
-        $this->userContract->delete($id) ?
+        $this->userContract->delete($userId) ?
             Flash::success('User has been deleted.') :
             Flash::error('User could not be deleted.');
 
@@ -125,12 +126,12 @@ class UsersController extends Controller
     /**
      * Forcefully delete trashed records.
      *
-     * @param $id
+     * @param $userId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy($id)
+    public function destroy($userId)
     {
-        $this->userContract->destroy($id) ?
+        $this->userContract->destroy($userId) ?
             Flash::success('User has been forcefully deleted.') :
             Flash::error('User could not be forcefully deleted.');
 
@@ -140,12 +141,12 @@ class UsersController extends Controller
     /**
      * Restore deleted record.
      *
-     * @param $id
+     * @param $userId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function restore($id)
+    public function restore($userId)
     {
-        $this->userContract->restore($id) ?
+        $this->userContract->restore($userId) ?
             Flash::success('User has been restored successfully.') :
             Flash::error('User could not be restored.');
 

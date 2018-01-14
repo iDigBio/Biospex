@@ -21,7 +21,7 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     /**
      * @inheritdoc
      */
-    public function getExpeditionsForNfnClassificationProcess(array $ids = [], array $attributes = ['*'])
+    public function getExpeditionsForNfnClassificationProcess(array $expeditionIds = [], array $attributes = ['*'])
     {
         $model = $this->model->with(['nfnWorkflow', 'stat'])->has('nfnWorkflow')
             ->whereHas('actors', function ($query)
@@ -29,9 +29,9 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
                 $query->where('completed', 0);
             });
 
-        $results = empty($ids) ?
+        $results = empty($expeditionIds) ?
             $model->get($attributes) :
-            $model->whereIn('id', $ids)->get($attributes);
+            $model->whereIn('id', $expeditionIds)->get($attributes);
 
         $this->resetModel();
 
@@ -41,9 +41,9 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     /**
      * @inheritdoc
      */
-    public function getExpeditionSubjectCounts($id)
+    public function getExpeditionSubjectCounts($expeditionId)
     {
-        $results = $this->model->find($id)->subjects()->count();
+        $results = $this->model->find($expeditionId)->subjects()->count();
 
         $this->resetModel();
 
@@ -96,11 +96,11 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     /**
      * @inheritdoc
      */
-    public function getExpeditionStats(array $ids = [], array $columns = ['*'])
+    public function getExpeditionStats(array $expeditionIds = [], array $columns = ['*'])
     {
         $results =  empty($expeditionIds) ?
             $this->model->has('stat')->with('project')->get($columns) :
-            $this->model->has('stat')->with('project')->whereIn('id', $ids)->get();
+            $this->model->has('stat')->with('project')->whereIn('id', $expeditionIds)->get();
 
         $this->resetModel();
 

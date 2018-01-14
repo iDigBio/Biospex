@@ -59,14 +59,14 @@ abstract class EloquentRepository implements Eloquent
     }
 
     /**
-     * @param $id
+     * @param $resourceId
      * @param array $columns
      * @return mixed
      * @throws \Exception
      */
-    public function find($id, array $columns = ['*'])
+    public function find($resourceId, array $columns = ['*'])
     {
-        $results = $this->model->find($id, $columns);
+        $results = $this->model->find($resourceId, $columns);
 
         $this->resetModel();
 
@@ -90,14 +90,14 @@ abstract class EloquentRepository implements Eloquent
     }
 
     /**
-     * @param $id
+     * @param $resourceId
      * @param array $with
      * @return \Illuminate\Database\Eloquent\Collection|Model|null|static|static[]
      * @throws \Exception
      */
-    public function findWith($id, array $with = [])
+    public function findWith($resourceId, array $with = [])
     {
-        $results = $this->model->with($with)->find($id);
+        $results = $this->model->with($with)->find($resourceId);
 
         $this->resetModel();
 
@@ -105,14 +105,14 @@ abstract class EloquentRepository implements Eloquent
     }
 
     /**
-     * @param $id
+     * @param $resourceId
      * @param array $with
      * @return mixed
      * @throws \Exception
      */
-    public function findOnlyTrashed($id, array $with = [])
+    public function findOnlyTrashed($resourceId, array $with = [])
     {
-        $results = $this->model->with($with)->onlyTrashed()->find($id);
+        $results = $this->model->with($with)->onlyTrashed()->find($resourceId);
 
         $this->resetModel();
 
@@ -179,13 +179,13 @@ abstract class EloquentRepository implements Eloquent
 
     /**
      * @param array $data
-     * @param $id
+     * @param $resourceId
      * @return bool
      * @throws \Exception
      */
-    public function update(array $data, $id)
+    public function update(array $data, $resourceId)
     {
-        $model = $this->model->find($id);
+        $model = $this->model->find($resourceId);
         $result = $model->fill($data)->save();
 
         $this->resetModel();

@@ -6,14 +6,14 @@ interface TranscriptionLocation extends Eloquent
 {
 
     /**
-     * @param $id
+     * @param $projectId
      * @return mixed
      */
-    public function getStateGroupByCountByProjectId($id);
+    public function getStateGroupByCountByProjectId($projectId);
 
     /**
-     * @param $id
+     * @param $projectId
      * @return mixed
      */
-    public function getTranscriptionFusionTableData($id);
+    public function getTranscriptionFusionTableData($projectId);
 }

@@ -50,15 +50,15 @@ class NoticesController extends Controller
     /**
      * Edit notice.
      *
-     * @param $id
+     * @param $noticeId
      * @return mixed
      */
-    public function edit($id)
+    public function edit($noticeId)
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $notices = $this->noticeContract->all();
         $trashed = $this->noticeContract->getOnlyTrashed();
-        $notice = $this->noticeContract->find($id);
+        $notice = $this->noticeContract->find($noticeId);
 
         return view('backend.notices.index', compact('user', 'notices', 'notice', 'trashed'));
     }
@@ -67,12 +67,12 @@ class NoticesController extends Controller
      * Update notice.
      *
      * @param NoticeFormRequest $request
-     * @param $id
+     * @param $noticeId
      * @return mixed
      */
-    public function update(NoticeFormRequest $request, $id)
+    public function update(NoticeFormRequest $request, $noticeId)
     {
-        $notice = $this->noticeContract->update($request->all(), $id);
+        $notice = $this->noticeContract->update($request->all(), $noticeId);
         
         $notice ? Flash::success('Notice has been updated.')
             : Flash::error('Notice could not be updated.');
@@ -109,12 +109,12 @@ class NoticesController extends Controller
     /**
      * Soft delete notice.
      *
-     * @param $id
+     * @param $noticeId
      * @return mixed
      */
-    public function delete($id)
+    public function delete($noticeId)
     {
-        $this->noticeContract->delete($id) ?
+        $this->noticeContract->delete($noticeId) ?
             Flash::success('Notice has been deleted.') :
             Flash::error('Notice could not be deleted.');
         
@@ -124,12 +124,12 @@ class NoticesController extends Controller
     /**
      * Force delete soft deleted records.
      *
-     * @param $id
+     * @param $noticeId
      * @return mixed
      */
-    public function trash($id)
+    public function trash($noticeId)
     {
-        $this->noticeContract->destroy($id) ?
+        $this->noticeContract->destroy($noticeId) ?
             Flash::success('Notice has been forcefully deleted.') :
             Flash::error('Notice could not be forcefully deleted.');
 
@@ -139,12 +139,12 @@ class NoticesController extends Controller
     /**
      * Enable Actor.
      *
-     * @param $id
+     * @param $noticeId
      * @return mixed
      */
-    public function enable($id)
+    public function enable($noticeId)
     {
-        $this->noticeContract->update(['enabled' => 1], $id) ?
+        $this->noticeContract->update(['enabled' => 1], $noticeId) ?
             Flash::success('Notice has been enabled.') :
             Flash::error('Notice could not be enabled.');
 
@@ -154,12 +154,12 @@ class NoticesController extends Controller
     /**
      * Disable Notice.
      *
-     * @param $id
+     * @param $noticeId
      * @return mixed
      */
-    public function disable($id)
+    public function disable($noticeId)
     {
-        $this->noticeContract->update(['enabled' => 0], $id) ?
+        $this->noticeContract->update(['enabled' => 0], $noticeId) ?
             Flash::success('Notice has been disabled.') :
             Flash::error('Notice could not be disabled.');
 

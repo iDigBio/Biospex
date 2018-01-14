@@ -38,12 +38,12 @@ class ResourcesController extends Controller
     /**
      * Download resource file.
      *
-     * @param $id
+     * @param $resourceId
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function download($id)
+    public function download($resourceId)
     {
-        $download = $this->resourceContract->find($id);
+        $download = $this->resourceContract->find($resourceId);
         $file = public_path('resources/' . $download->document);
         if ( ! file_exists($file))
         {

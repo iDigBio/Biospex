@@ -84,8 +84,8 @@ class GroupEventListener
      */
     public function setUserGroupSession()
     {
-        $ids = $this->groupContract->getUserGroupIds(Auth::id());
+        $groupIds = $this->groupContract->getUserGroupIds(Auth::id());
 
-        Session::put('groupIds', $ids->toArray());
+        Session::put('groupIds', $groupIds->toArray());
     }
 }

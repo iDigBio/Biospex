@@ -83,11 +83,11 @@ class ProjectRepository extends EloquentRepository implements Project
     /**
      * @inheritdoc
      */
-    public function getProjectsHavingTranscriptionLocations(array $ids = [])
+    public function getProjectsHavingTranscriptionLocations(array $projectIds = [])
     {
-        $results = empty($ids) ?
+        $results = empty($projectIds) ?
             $this->model->has('transcriptionLocations')->get() :
-            $this->model->has('transcriptionLocations')->whereIn('id', $ids)->get();
+            $this->model->has('transcriptionLocations')->whereIn('id', $projectIds)->get();
 
         $this->resetModel();
 

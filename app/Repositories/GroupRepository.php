@@ -58,7 +58,7 @@ class GroupRepository extends EloquentRepository implements Group
      */
     public function getUserGroupIds($userId)
     {
-        $ids = $this->model
+        $groupIds = $this->model
             ->whereHas('users', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })->get()->map(function ($item) {
@@ -67,6 +67,6 @@ class GroupRepository extends EloquentRepository implements Group
 
         $this->resetModel();
 
-        return $ids;
+        return $groupIds;
     }
 }

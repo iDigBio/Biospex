@@ -26,16 +26,16 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
     /**
      * @var array
      */
-    private $ids;
+    private $expeditionIds;
 
     /**
      * NfnClassificationsTranscriptJob constructor.
      *
-     * @param array $ids
+     * @param array $expeditionIds
      */
-    public function __construct(array $ids = [])
+    public function __construct(array $expeditionIds = [])
     {
-        $this->ids = collect($ids);
+        $this->expeditionIds = collect($expeditionIds);
         $this->onQueue(config('config.beanstalkd.classification'));
     }
 
@@ -51,7 +51,7 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
         User $userContract
     )
     {
-        if ($this->ids->isEmpty())
+        if ($this->expeditionIds->isEmpty())
         {
             $this->delete();
 
@@ -62,10 +62,10 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
         {
             $filePath = config('config.classifications_transcript');
 
-            $this->ids->filter(function($id) use ($filePath) {
-                return file_exists($filePath . '/' . $id . '.csv');
-            })->each(function($id) use ($transcriptionProcess, $filePath) {
-                $transcriptionProcess->process($filePath . '/' . $id . '.csv');
+            $this->expeditionIds->filter(function($expeditionId) use ($filePath) {
+                return file_exists($filePath . '/' . $expeditionId . '.csv');
+            })->each(function($expeditionId) use ($transcriptionProcess, $filePath) {
+                $transcriptionProcess->process($filePath . '/' . $expeditionId . '.csv');
             });
 
             if ( ! empty($transcriptionProcess->getCsvError()))
@@ -74,7 +74,7 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
                 $user->notify(new JobError(__FILE__, $transcriptionProcess->getCsvError()));
             }
 
-            WeDigBioDashboardJob::dispatch($this->ids);
+            WeDigBioDashboardJob::dispatch($this->expeditionIds);
         }
         catch (\Exception $e)
         {

@@ -86,10 +86,10 @@ class SubjectRepository extends MongoDbRepository implements Subject
     /**
      * @inheritdoc
      */
-    public function getUnassignedCount($id)
+    public function getUnassignedCount($projectId)
     {
         $results = $this->model->where('expedition_ids', 'size', 0)
-            ->where('project_id', (int) $id)
+            ->where('project_id', (int) $projectId)
             ->count();
 
         $this->resetModel();
@@ -117,7 +117,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
      */
     public function getSubjectIds($projectId, $take = null, $expeditionId = null)
     {
-        $ids = $this->model->whereNested(function ($query) use ($projectId, $take, $expeditionId)
+        $subjectIds = $this->model->whereNested(function ($query) use ($projectId, $take, $expeditionId)
         {
             if ($expeditionId !== null)
             {
@@ -136,7 +136,7 @@ class SubjectRepository extends MongoDbRepository implements Subject
 
         $this->resetModel();
 
-        return array_flatten($ids);
+        return array_flatten($subjectIds);
     }
 
     /**

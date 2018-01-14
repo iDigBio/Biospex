@@ -26,11 +26,11 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
     public $timeout = 900;
 
     /**
-     * Expedition ids pass to the job.
+     * Expedition expeditionIds pass to the job.
      *
      * @var null
      */
-    private $ids;
+    private $expeditionIds;
 
     /**
      * @var array
@@ -41,11 +41,11 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
      * Create a new job instance.
      *
      * NfNClassificationsCsvJob constructor.
-     * @param array $ids
+     * @param array $expeditionIds
      */
-    public function __construct(array $ids = [])
+    public function __construct(array $expeditionIds = [])
     {
-        $this->ids = $ids;
+        $this->expeditionIds = $expeditionIds;
         $this->onQueue(config('config.beanstalkd.classification'));
     }
 
@@ -84,12 +84,12 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
                 }
             };
 
-            $expeditions = $expeditionContract->getExpeditionsForNfnClassificationProcess($this->ids);
+            $expeditions = $expeditionContract->getExpeditionsForNfnClassificationProcess($this->expeditionIds);
 
             $api->setProvider();
             $api->checkAccessToken('nfnToken');
 
-            $ids = [];
+            $expeditionIds = [];
             $responses = $api->poolBatchRequest($requests($expeditions));
             foreach ($responses as $index => $response)
             {
@@ -99,7 +99,7 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
                     continue;
                 }
 
-                $ids[] = $index;
+                $expeditionIds[] = $index;
             }
 
             if ( ! empty($this->errorMessages))
@@ -108,8 +108,8 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
                 $user->notify(new JobError(__FILE__, $this->errorMessages));
             }
 
-            empty($ids) ? $this->delete() :
-                NfnClassificationsCsvFileJob::dispatch($ids)->delay(14400);
+            empty($expeditionIds) ? $this->delete() :
+                NfnClassificationsCsvFileJob::dispatch($expeditionIds)->delay(14400);
         }
         catch (\Exception $e)
         {

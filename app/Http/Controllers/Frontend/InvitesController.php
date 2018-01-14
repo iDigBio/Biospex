@@ -45,16 +45,16 @@ class InvitesController extends Controller
     /**
      * Show invite form
      *
-     * @param $id
+     * @param $groupId
      * @return \Illuminate\View\View
      */
-    public function index($id)
+    public function index($groupId)
     {
-        $group = $this->groupContract->find($id);
+        $group = $this->groupContract->find($groupId);
 
         if ( ! $this->checkPermissions('update', $group))
         {
-            return redirect()->route('web.groups.show', [$id]);
+            return redirect()->route('web.groups.show', [$groupId]);
         }
 
         return view('frontend.invites.index', compact('group'));
@@ -64,16 +64,16 @@ class InvitesController extends Controller
      * Send invites to emails
      *
      * @param InviteFormRequest $request
-     * @param $id
+     * @param $groupId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(InviteFormRequest $request, $id)
+    public function store(InviteFormRequest $request, $groupId)
     {
-        $group = $this->groupContract->find($id);
+        $group = $this->groupContract->find($groupId);
 
         if ( ! $this->checkPermissions('update', $group))
         {
-            return redirect()->route('web.groups.show', [$id]);
+            return redirect()->route('web.groups.show', [$groupId]);
         }
 
         $this->inviteService->storeInvites($group->id, $request);
@@ -103,21 +103,21 @@ class InvitesController extends Controller
 
     /**
      * Delete invite
-     * @param $id
+     * @param $groupId
      * @param $inviteId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete($id, $inviteId)
+    public function delete($groupId, $inviteId)
     {
-        $group = $this->groupContract->find($id);
+        $group = $this->groupContract->find($groupId);
 
         if ( ! $this->checkPermissions('delete', $group))
         {
-            return redirect()->route('web.groups.show', [$id]);
+            return redirect()->route('web.groups.show', [$groupId]);
         }
 
         $this->inviteService->deleteInvite($inviteId);
 
-        return redirect()->route('web.invites.index', [$id]);
+        return redirect()->route('web.invites.index', [$groupId]);
     }
 }

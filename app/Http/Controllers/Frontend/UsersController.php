@@ -39,21 +39,20 @@ class UsersController extends Controller
     /**
      * Redirect to edit page.
      *
-     * @param $id
+     * @param $userId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function show($id)
+    public function show($userId)
     {
-        return redirect()->route('web.users.edit', [$id]);
+        return redirect()->route('web.users.edit', [$userId]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function edit($id)
+    public function edit()
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
 

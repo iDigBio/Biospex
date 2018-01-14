@@ -13,11 +13,11 @@ class NfnClassificationsReconciliation extends Command
 
     /**
      * The name and signature of the console command.
-     * ids are comma delimited expedition ids.
+     * Ids are comma delimited expedition expeditionIds.
      *
      * @var string
      */
-    protected $signature = 'nfn:reconcile {ids?}';
+    protected $signature = 'nfn:reconcile {expeditionIds?}';
 
     /**
      * The console command description.
@@ -39,9 +39,9 @@ class NfnClassificationsReconciliation extends Command
      */
     public function handle()
     {
-        $ids = null === $this->argument('ids') ? $this->readDirectory() : explode(',', $this->argument('ids'));
+        $expeditionIds = null === $this->argument('expeditionIds') ? $this->readDirectory() : explode(',', $this->argument('expeditionIds'));
 
-        NfnClassificationsReconciliationJob::dispatch($ids);
+        NfnClassificationsReconciliationJob::dispatch($expeditionIds);
     }
 
     /**
@@ -49,13 +49,13 @@ class NfnClassificationsReconciliation extends Command
      */
     private function readDirectory()
     {
-        $ids = [];
+        $expeditionIds = [];
         $files = File::allFiles(config('config.classifications_download'));
         foreach ($files as $file)
         {
-            $ids[] = basename($file, '.csv');
+            $expeditionIds[] = basename($file, '.csv');
         }
 
-        return $ids;
+        return $expeditionIds;
     }
 }

@@ -15,7 +15,7 @@ class WorkFlowManagerCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'workflow:manage {expedition?}';
+    protected $signature = 'workflow:manage {expeditionId?}';
 
     /**
      * The console command description.
@@ -55,8 +55,8 @@ class WorkFlowManagerCommand extends Command
      */
     public function handle()
     {
-        $id = $this->argument('expedition');
-        $managers = $this->workflowManagerContract->getWorkflowManagersForProcessing($id);
+        $expeditionId = $this->argument('expeditionId');
+        $managers = $this->workflowManagerContract->getWorkflowManagersForProcessing($expeditionId);
 
         if ($managers->isEmpty())
         {

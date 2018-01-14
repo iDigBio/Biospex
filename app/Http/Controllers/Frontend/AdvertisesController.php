@@ -26,12 +26,12 @@ class AdvertisesController extends Controller
     /**
      * Show advertise page.
      *
-     * @param $id
+     * @param $projectId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function index($id)
+    public function index($projectId)
     {
-        $project = $this->projectContract->findWith($id, ['group']);
+        $project = $this->projectContract->findWith($projectId, ['group']);
 
         if ( ! $this->checkPermissions('read', $project))
         {
@@ -49,12 +49,12 @@ class AdvertisesController extends Controller
      * Advertise download.
      *
      * @param ResponseFactory $response
-     * @param $id
+     * @param $projectId
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
-    public function show(ResponseFactory $response, $id)
+    public function show(ResponseFactory $response, $projectId)
     {
-        $project = $this->projectContract->findWith($id, ['group']);
+        $project = $this->projectContract->findWith($projectId, ['group']);
 
         if ( ! $this->checkPermissions('read', $project))
         {

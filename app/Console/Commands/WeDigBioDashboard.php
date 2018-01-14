@@ -10,11 +10,11 @@ class WeDigBioDashboard extends Command
 {
     /**
      * The name and signature of the console command.
-     * ids are comma delimited expedition ids.
+     * expeditionIds are comma delimited expedition expeditionIds.
      *
      * @var string
      */
-    protected $signature = 'wedigbio:dashboard {ids?}';
+    protected $signature = 'wedigbio:dashboard {expeditionIds?}';
 
     /**
      * The console command description.
@@ -37,9 +37,9 @@ class WeDigBioDashboard extends Command
      */
     public function handle()
     {
-        $ids = null === $this->argument('ids') ? $this->readDirectory() : explode(',', $this->argument('ids'));
+        $expeditionIds = null === $this->argument('expeditionIds') ? $this->readDirectory() : explode(',', $this->argument('expeditionIds'));
 
-        WeDigBioDashboardJob::dispatch($ids);
+        WeDigBioDashboardJob::dispatch($expeditionIds);
     }
 
     /**
@@ -47,13 +47,13 @@ class WeDigBioDashboard extends Command
      */
     private function readDirectory()
     {
-        $ids = [];
+        $expeditionIds = [];
         $files = File::allFiles(config('config.classifications_transcript'));
         foreach ($files as $file)
         {
-            $ids[] = basename($file, '.csv');
+            $expeditionIds[] = basename($file, '.csv');
         }
 
-        return $ids;
+        return $expeditionIds;
     }
 }

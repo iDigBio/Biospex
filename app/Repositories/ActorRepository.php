@@ -54,9 +54,9 @@ class ActorRepository extends EloquentRepository implements Actor
     /**
      * @inheritdoc
      */
-    public function updateActor($id, array $attributes = [])
+    public function updateActor(array $attributes = [], $actorId)
     {
-        $actor = $this->model->with(['contacts'])->find($id);
+        $actor = $this->model->with(['contacts'])->find($actorId);
         $actor->fill($attributes);
         $actor->save();
 
@@ -72,7 +72,7 @@ class ActorRepository extends EloquentRepository implements Actor
 
         $actor->contacts()->saveMany($contacts);
 
-        $actor = $this->model->with(['contacts'])->find($id);
+        $actor = $this->model->with(['contacts'])->find($actorId);
 
         $this->resetModel();
 

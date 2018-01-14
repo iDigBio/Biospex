@@ -98,14 +98,14 @@ class ResourcesController extends Controller
     /**
      * Edit Resource.
      *
-     * @param $id
+     * @param $resourceId
      * @return mixed
      */
-    public function edit($id)
+    public function edit($resourceId)
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $resources = $this->resourceContract->all();
-        $resource = $this->resourceContract->find($id);
+        $resource = $this->resourceContract->find($resourceId);
         $trashed = $this->resourceContract->findOnlyTrashed();
 
         return view('backend.resources.index', compact('user', 'resources', 'resource', 'trashed'));
@@ -115,12 +115,12 @@ class ResourcesController extends Controller
      * Update Resource.
      *
      * @param ResourceFormRequest $request
-     * @param $id
+     * @param $resourceId
      * @return mixed
      */
-    public function update(ResourceFormRequest $request, $id)
+    public function update(ResourceFormRequest $request, $resourceId)
     {
-        $resource = $this->resourceContract->find($id);
+        $resource = $this->resourceContract->find($resourceId);
 
         if (null !== $request->file('document'))
         {
@@ -142,7 +142,7 @@ class ResourcesController extends Controller
             'document'    => $resource->document
         ];
 
-        $resource = $this->resourceContract->update($data, $id);
+        $resource = $this->resourceContract->update($data, $resourceId);
 
         $resource ? Flash::success('Resource has been updated successfully.')
             : Flash::error('Resource could not be updated.');
@@ -153,13 +153,13 @@ class ResourcesController extends Controller
     /**
      * Delete resource.
      *
-     * @param $id
+     * @param $resourceId
      * @return mixed
      */
-    public function delete($id)
+    public function delete($resourceId)
     {
-        $this->resourceContract->update(['order' => 0], $id);
-        $result = $this->resourceContract->delete($id);
+        $this->resourceContract->update(['order' => 0], $resourceId);
+        $result = $this->resourceContract->delete($resourceId);
 
         $result ? Flash::success('The resource has been deleted.')
             : Flash::error('Resource could not be deleted.');
@@ -170,12 +170,12 @@ class ResourcesController extends Controller
     /**
      * Force delete soft deleted records.
      *
-     * @param $id
+     * @param $resourceId
      * @return mixed
      */
-    public function trash($id)
+    public function trash($resourceId)
     {
-        $resource = $this->resourceContract->findOnlyTrashed($id);
+        $resource = $this->resourceContract->findOnlyTrashed($resourceId);
         Storage::disk('public')->delete('resources/' . $resource->document);
 
         $result = $this->resourceContract->destory($resource);
@@ -189,14 +189,14 @@ class ResourcesController extends Controller
     /**
      * Update ordering on resources.
      *
-     * @param $id
+     * @param $resourceId
      * @param $order
      */
-    public function order($id, $order)
+    public function order($resourceId, $order)
     {
         if (request()->ajax())
         {
-            $this->resourceContract->update(['order' => $order], $id);
+            $this->resourceContract->update(['order' => $order], $resourceId);
         }
     }
 }

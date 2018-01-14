@@ -47,16 +47,16 @@ class ExpeditionsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param null $id
+     * @param null $expeditionId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index($id = null)
+    public function index($expeditionId = null)
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $expeditions = $this->expeditionService->getAllExpeditions();
         $trashed = $this->expeditionService->getOnlyTrashedExpeditions();
 
-        $editExpedition = $id !== null ? $this->expeditionService->findExpeditionWith($id, ['project', 'nfnWorkflow']) : null;
+        $editExpedition = $expeditionId !== null ? $this->expeditionService->findExpeditionWith($expeditionId, ['project', 'nfnWorkflow']) : null;
 
         $variables = array_merge(compact('user', 'expeditions', 'trashed', 'editExpedition'));
 
@@ -105,12 +105,12 @@ class ExpeditionsController extends Controller
     /**
      * Delete expedition.
      *
-     * @param $id
+     * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete($id)
+    public function delete($expeditionId)
     {
-        $this->expeditionService->deleteExpedition($id);
+        $this->expeditionService->deleteExpedition($expeditionId);
 
         return redirect()->route('admin.expeditions.index');
     }
@@ -118,12 +118,12 @@ class ExpeditionsController extends Controller
     /**
      * Destroy expedition.
      *
-     * @param $id
+     * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy($id)
+    public function destroy($expeditionId)
     {
-        $this->expeditionService->destroyExpedition($id);
+        $this->expeditionService->destroyExpedition($expeditionId);
 
         return redirect()->route('admin.expeditions.index');
     }
@@ -131,12 +131,12 @@ class ExpeditionsController extends Controller
     /**
      * Restore expedition.
      *
-     * @param $id
+     * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function restore($id)
+    public function restore($expeditionId)
     {
-        $this->expeditionService->restoreExpedition($id);
+        $this->expeditionService->restoreExpedition($expeditionId);
 
         return redirect()->route('admin.expeditions.index');
     }

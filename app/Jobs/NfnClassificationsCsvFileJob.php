@@ -28,11 +28,11 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
     public $timeout = 3600;
 
     /**
-     * Expedition ids pass to the job.
+     * Expedition expeditionIds pass to the job.
      *
      * @var null
      */
-    private $ids;
+    private $expeditionIds;
 
     /**
      * @var array
@@ -53,11 +53,11 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
      * Create a new job instance.
      *
      * NfNClassificationsCsvJob constructor.
-     * @param array $ids
+     * @param array $expeditionIds
      */
-    public function __construct(array $ids = [])
+    public function __construct(array $expeditionIds = [])
     {
-        $this->ids = $ids;
+        $this->expeditionIds = $expeditionIds;
         $this->onQueue(config('config.beanstalkd.classification'));
     }
 
@@ -91,7 +91,7 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
                 }
             };
 
-            $expeditions = $expeditionContract->getExpeditionsForNfnClassificationProcess($this->ids);
+            $expeditions = $expeditionContract->getExpeditionsForNfnClassificationProcess($this->expeditionIds);
 
             $api->setProvider();
             $api->checkAccessToken('nfnToken');

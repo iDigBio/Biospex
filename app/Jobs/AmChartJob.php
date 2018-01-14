@@ -242,16 +242,16 @@ class AmChartJob extends Job implements ShouldQueue
     /**
      * Build result set into proper format for am chart.
      *
-     * @param $id
+     * @param $expeditionId
      * @param $title
      * @param $day
      * @param int $total
      * @return array
      */
-    protected function buildResultSet($id, $title, $day, $total = 0)
+    protected function buildResultSet($expeditionId, $title, $day, $total = 0)
     {
         return [
-            'expedition' => (int) $id,
+            'expedition' => (int) $expeditionId,
             'collection' => $title,
             'count'      => $total,
             'day'        => (int) $day

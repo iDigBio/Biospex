@@ -13,14 +13,14 @@ class NfnClassificationsCsvCreate extends Command
      *
      * @var string
      */
-    protected $signature = 'nfn:csvcreate {ids?}';
+    protected $signature = 'nfn:csvcreate {expeditionIds?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Sends requests to create Nfn Workflow Classifications CSV files. Argument can be comma separated ids.';
+    protected $description = 'Sends requests to create Nfn Workflow Classifications CSV files. Argument can be comma separated expeditionIds.';
 
     /**
      * NfNClassificationsCsvRequests constructor.
@@ -35,7 +35,7 @@ class NfnClassificationsCsvCreate extends Command
      */
     public function handle()
     {
-        $ids = null ===  $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
-        NfnClassificationsCsvCreateJob::dispatch($ids);
+        $expeditionIds = null ===  $this->argument('expeditionIds') ? [] : explode(',', $this->argument('expeditionIds'));
+        NfnClassificationsCsvCreateJob::dispatch($expeditionIds);
     }
 }

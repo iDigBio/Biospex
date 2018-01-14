@@ -52,12 +52,12 @@ class ImportsController extends Controller
     /**
      * Add data to project
      *
-     * @param $id
+     * @param $projectId
      * @return \Illuminate\View\View
      */
-    public function import($id)
+    public function import($projectId)
     {
-        $project = $this->projectContract->findWith($id, ['group']);
+        $project = $this->projectContract->findWith($projectId, ['group']);
 
         return view('frontend.projects.add', compact('project'));
     }

@@ -39,10 +39,9 @@ class PanoptesPusherController extends ApiController
     /**
      * Display the specified resource.
      *
-     * @param $id
      * @return \Illuminate\Support\Facades\Response
      */
-    public function show($id)
+    public function show()
     {
         return $this->errorNotFound();
     }
@@ -50,11 +49,9 @@ class PanoptesPusherController extends ApiController
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param $id
      * @return \Illuminate\Support\Facades\Response
      */
-    public function update(Request $request, $id)
+    public function update()
     {
         return $this->errorNotFound();
     }
@@ -62,10 +59,9 @@ class PanoptesPusherController extends ApiController
     /**
      * Remove the specified resource from storage.
      *
-     * @param $id
      * @return \Illuminate\Support\Facades\Response
      */
-    public function delete($id)
+    public function delete()
     {
         return $this->errorNotFound();
     }

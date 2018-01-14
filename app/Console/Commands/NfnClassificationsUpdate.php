@@ -12,14 +12,14 @@ class NfnClassificationsUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'nfn:update {ids}';
+    protected $signature = 'nfn:update {expeditionIds}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Update NfN Classifications for Expeditions. Argument is comma separated project ids.';
+    protected $description = 'Update NfN Classifications for Expeditions. Argument is comma separated expeditionIds.';
 
 
     /**
@@ -35,15 +35,15 @@ class NfnClassificationsUpdate extends Command
      */
     public function handle()
     {
-        $ids = explode(',', $this->argument('ids'));
+        $expeditionIds = explode(',', $this->argument('expeditionIds'));
 
-        if (empty($ids))
+        if (empty($expeditionIds))
         {
             return;
         }
 
-        collect($ids)->each(function ($projectId){
-            NfnClassificationsUpdateJob::dispatch($projectId);
+        collect($expeditionIds)->each(function ($expeditionId){
+            NfnClassificationsUpdateJob::dispatch($expeditionId);
         });
     }
 }

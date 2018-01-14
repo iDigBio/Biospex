@@ -32,11 +32,11 @@ class SubjectService
     /**
      * Delete subjects. Check if expedition is assigned and if workflow is in process.
      *
-     * @param $ids
+     * @param $subjectIds
      */
-    public function deleteSubjects($ids)
+    public function deleteSubjects($subjectIds)
     {
-        $subjects = $this->subjectContract->getWhereIn('_id', $ids);
+        $subjects = $this->subjectContract->getWhereIn('_id', $subjectIds);
 
         $subjects->filter(function ($subject) {
             foreach ($subject->expedition_ids as $expeditionId)

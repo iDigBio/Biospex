@@ -115,12 +115,12 @@ class ExpeditionService
     /**
      * Find expedition with relations.
      *
-     * @param $id
+     * @param $expeditionId
      * @param array $with
      */
-    public function findExpeditionWith($id, array $with = [])
+    public function findExpeditionWith($expeditionId, array $with = [])
     {
-        return $this->expeditionContract->findWith($id, $with);
+        return $this->expeditionContract->findWith($expeditionId, $with);
     }
 
     /**

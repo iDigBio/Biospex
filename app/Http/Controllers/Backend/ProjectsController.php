@@ -38,16 +38,16 @@ class ProjectsController extends Controller
     /**
      * Display a listing of the resource.
      * @param ProjectService $service
-     * @param null $id
+     * @param null $projectId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(ProjectService $service, $id = null)
+    public function index(ProjectService $service, $projectId = null)
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $projects = $this->projectService->getallProjects();
         $trashed = $this->projectService->getTrashedProjects();
 
-        $editProject = $id !== null ? $this->projectService->findWith($id, ['nfnWorkflows']) : null;
+        $editProject = $projectId !== null ? $this->projectService->findWith($projectId, ['nfnWorkflows']) : null;
 
         $workflowEmpty = ! isset($editProject->nfnWorkflows) || $editProject->nfnWorkflows->isEmpty();
         $common = $service->setCommonVariables(request()->user());

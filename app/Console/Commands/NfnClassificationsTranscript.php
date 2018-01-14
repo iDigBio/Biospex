@@ -13,7 +13,7 @@ class NfnClassificationsTranscript extends Command
      *
      * @var string
      */
-    protected $signature = 'nfn:transcript {ids?}';
+    protected $signature = 'nfn:transcript {expeditionIds?}';
 
     /**
      * The console command description.
@@ -35,9 +35,9 @@ class NfnClassificationsTranscript extends Command
      */
     public function handle()
     {
-        $ids = null === $this->argument('ids') ? $this->readDirectory() : explode(',', $this->argument('ids'));
+        $expeditionIds = null === $this->argument('expeditionIds') ? $this->readDirectory() : explode(',', $this->argument('expeditionIds'));
 
-        NfnClassificationsTranscriptJob::dispatch($ids);
+        NfnClassificationsTranscriptJob::dispatch($expeditionIds);
     }
 
     /**
@@ -45,13 +45,13 @@ class NfnClassificationsTranscript extends Command
      */
     private function readDirectory()
     {
-        $ids = [];
+        $expeditionIds = [];
         $files = File::allFiles(config('config.classifications_transcript'));
         foreach ($files as $file)
         {
-            $ids[] = basename($file, '.csv');
+            $expeditionIds[] = basename($file, '.csv');
         }
 
-        return $ids;
+        return $expeditionIds;
     }
 }

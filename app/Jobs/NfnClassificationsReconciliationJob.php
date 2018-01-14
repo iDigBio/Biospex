@@ -25,7 +25,7 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
     /**
      * @var array
      */
-    public $ids;
+    public $expeditionIds;
 
     /**
      * @var Download
@@ -34,11 +34,11 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
 
     /**
      * NfnClassificationsCsvRequestsJob constructor.
-     * @param array $ids
+     * @param array $expeditionIds
      */
-    public function __construct(array $ids = [])
+    public function __construct(array $expeditionIds = [])
     {
-        $this->ids = $ids;
+        $this->expeditionIds = $expeditionIds;
         $this->onQueue(config('config.beanstalkd.classification'));
     }
 
@@ -51,17 +51,17 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
     {
         $this->downloadContract = $downloadContract;
 
-        if (empty($this->ids))
+        if (empty($this->expeditionIds))
         {
             $this->delete();
 
             return;
         }
 
-        $ids = [];
-        foreach ($this->ids as $id)
+        $expeditionIds = [];
+        foreach ($this->expeditionIds as $expeditionId)
         {
-            $expedition = $expeditionContract->findWith($id, ['nfnWorkflow']);
+            $expedition = $expeditionContract->findWith($expeditionId, ['nfnWorkflow']);
 
             $file = config('config.classifications_download') . '/' . $expedition->id . '.csv';
 
@@ -77,7 +77,7 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
             $pythonPath = config('config.label_reconciliations_path');
             $command = "python3 $pythonPath -w {$expedition->nfnWorkflow->workflow} -r $recPath -u $tranPath -s $sumPath $csvPath";
             exec($command);
-            $ids[] = $expedition->id;
+            $expeditionIds[] = $expedition->id;
 
             if (File::exists($csvPath))
             {
@@ -101,7 +101,7 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
 
         }
 
-        NfnClassificationsTranscriptJob::dispatch($ids);
+        NfnClassificationsTranscriptJob::dispatch($expeditionIds);
     }
 
     /**

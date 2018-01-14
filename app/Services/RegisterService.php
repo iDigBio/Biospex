@@ -110,9 +110,9 @@ class RegisterService
      */
     public function activateUser()
     {
-        $id = Route::input('id');
+        $userId = Route::input('id');
         $code = Route::input('code');
-        $user = $this->userContract->find($id);
+        $user = $this->userContract->find($userId);
 
         if ( ! $user)
         {

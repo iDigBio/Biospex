@@ -90,15 +90,15 @@ class ActorsController extends Controller
     /**
      * Edit Actor.
      *
-     * @param $id
+     * @param $actorId
      * @return mixed
      */
-    public function edit($id)
+    public function edit($actorId)
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $actors = $this->actorContract->all();
         $trashed = $this->actorContract->getOnlyTrashed();
-        $actor = $this->actorContract->findWith($id, ['contacts']);
+        $actor = $this->actorContract->findWith($actorId, ['contacts']);
 
         return view('backend.actors.index', compact('user', 'actors', 'actor', 'trashed'));
     }
@@ -107,12 +107,12 @@ class ActorsController extends Controller
      * Update Actor.
      *
      * @param ActorFormRequest $request
-     * @param $id
+     * @param $actorId
      * @return mixed
      */
-    public function update(ActorFormRequest $request, $id)
+    public function update(ActorFormRequest $request, $actorId)
     {
-        $this->actorContract->update($request->all(), $id) ?
+        $this->actorContract->updateActor($request->all(), $actorId) ?
             Flash::success('Actor has been updated successfully.') :
             Flash::error('Actor could not be updated.');
 
@@ -122,12 +122,12 @@ class ActorsController extends Controller
     /**
      * Delete actor.
      *
-     * @param $id
+     * @param $actorId
      * @return mixed
      */
-    public function delete($id)
+    public function delete($actorId)
     {
-        $this->actorContract->delete($id) ?
+        $this->actorContract->delete($actorId) ?
             Flash::success('The actor has been deleted.') :
             Flash::error('Actor could not be deleted.');
 
@@ -137,12 +137,12 @@ class ActorsController extends Controller
     /**
      * Force delete soft deleted records.
      *
-     * @param $id
+     * @param $actorId
      * @return mixed
      */
-    public function trash($id)
+    public function trash($actorId)
     {
-        $this->actorContract->destroy($id) ?
+        $this->actorContract->destroy($actorId) ?
             Flash::success('Actor has been forcefully deleted.') :
             Flash::error('Actor could not be forcefully deleted.');
 

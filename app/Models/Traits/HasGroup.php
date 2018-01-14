@@ -21,12 +21,12 @@ trait HasGroup
     /**
      * Detach Group.
      *
-     * @param $id
+     * @param $groupId
      * @return int
      */
-    public function detachGroup($id)
+    public function detachGroup($groupId)
     {
-        return $this->groups()->detach($id);
+        return $this->groups()->detach($groupId);
     }
 
     /**

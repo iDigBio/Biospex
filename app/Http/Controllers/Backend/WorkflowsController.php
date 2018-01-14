@@ -63,16 +63,16 @@ class WorkflowsController extends Controller
     /**
      * Edit workflow.
      *
-     * @param $id
+     * @param $workflowId
      * @return mixed
      */
-    public function edit($id)
+    public function edit($workflowId)
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $workflows = $this->workflowContract->all();
         $trashed = $this->workflowContract->getOnlyTrashed();
         $actors = $this->actorContract->all();
-        $workflow = $this->workflowContract->findWith($id, ['actors']);
+        $workflow = $this->workflowContract->findWith($workflowId, ['actors']);
 
         return view('backend.workflows.index', compact('user', 'workflows', 'trashed', 'actors', 'workflow'));
     }
@@ -81,12 +81,12 @@ class WorkflowsController extends Controller
      * Update workflow.
      *
      * @param WorkflowFormRequest $request
-     * @param $id
+     * @param $workflowId
      * @return mixed
      */
-    public function update(WorkflowFormRequest $request, $id)
+    public function update(WorkflowFormRequest $request, $workflowId)
     {
-        $workflow = $this->workflowContract->update($request->all(), $id);
+        $workflow = $this->workflowContract->update($request->all(), $workflowId);
         $actors = collect($request->input('actors'))->mapWithKeys(function ($actor, $key){
             return [$actor['id'] => ['order' => $key]];
         })->toArray();
@@ -133,13 +133,13 @@ class WorkflowsController extends Controller
     /**
      * Soft delete workflow.
      *
-     * @param $id
+     * @param $workflowId
      * @return mixed
      */
-    public function delete($id)
+    public function delete($workflowId)
     {
-        $this->workflowContract->update(['enabled' => 0], $id);
-        $this->workflowContract->delete($id) ?
+        $this->workflowContract->update(['enabled' => 0], $workflowId);
+        $this->workflowContract->delete($workflowId) ?
             Flash::success('Workflow has been deleted.') :
             Flash::error('Workflow could not be deleted.');
 
@@ -149,12 +149,12 @@ class WorkflowsController extends Controller
     /**
      * Force delete soft deleted records.
      * 
-     * @param $id
+     * @param $workflowId
      * @return mixed
      */
-    public function trash($id)
+    public function trash($workflowId)
     {
-        $this->workflowContract->destroy($id) ?
+        $this->workflowContract->destroy($workflowId) ?
             Flash::success('Workflow has been forcefully deleted.') :
             Flash::error('Workflow could not be forcefully deleted.');
 
@@ -164,12 +164,12 @@ class WorkflowsController extends Controller
     /**
      * Enable Actor.
      *
-     * @param $id
+     * @param $workflowId
      * @return mixed
      */
-    public function enable($id)
+    public function enable($workflowId)
     {
-        $this->workflowContract->update(['enabled' => 1], $id) ?
+        $this->workflowContract->update(['enabled' => 1], $workflowId) ?
             Flash::success('Workflow has been enabled.') :
             Flash::error('Workflow could not be enabled.');
 
@@ -179,12 +179,12 @@ class WorkflowsController extends Controller
     /**
      * Disable Workflow.
      *
-     * @param $id
+     * @param $workflowId
      * @return mixed
      */
-    public function disable($id)
+    public function disable($workflowId)
     {
-        $this->workflowContract->update(['enabled' => 0], $id) ?
+        $this->workflowContract->update(['enabled' => 0], $workflowId) ?
             Flash::success('Workflow has been disabled.') :
             Flash::error('Workflow could not be disabled.');
 

@@ -89,35 +89,35 @@ class NfnApi extends HttpRequest
     /**
      * Get project.
      *
-     * @param $id
+     * @param $projectId
      * @return string
      * @throws GuzzleException
      */
-    public function getProjectUri($id)
+    public function getProjectUri($projectId)
     {
-        return config('config.nfnApi.apiUri') . '/projects/' . $id;
+        return config('config.nfnApi.apiUri') . '/projects/' . $projectId;
     }
 
     /**
      * Get workflow.
      *
-     * @param $id
+     * @param $workflowId
      * @return string
      */
-    public function getWorkflowUri($id)
+    public function getWorkflowUri($workflowId)
     {
-        return config('config.nfnApi.apiUri') . '/workflows/' . $id;
+        return config('config.nfnApi.apiUri') . '/workflows/' . $workflowId;
     }
 
     /**
      * Get subject.
      *
-     * @param $id
+     * @param $subjectId
      * @return string
      */
-    public function getSubjectUri($id)
+    public function getSubjectUri($subjectId)
     {
-        return config('config.nfnApi.apiUri') . '/subjects/' . $id;
+        return config('config.nfnApi.apiUri') . '/subjects/' . $subjectId;
     }
 
     /**

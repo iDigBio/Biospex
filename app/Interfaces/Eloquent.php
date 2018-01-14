@@ -7,13 +7,13 @@ interface Eloquent
 
     public function all(array $columns = ['*']);
 
-    public function find($id, array $columns = ['*']);
+    public function find($resourceId, array $columns = ['*']);
 
     public function findBy($field, $value, array $columns = ['*']);
 
-    public function findWith($id, array $with = []);
+    public function findWith($resourceId, array $with = []);
 
-    public function findOnlyTrashed($id, array $with = []);
+    public function findOnlyTrashed($resourceId, array $with = []);
 
     public function getWhereIn($field, array $values, array $columns = ['*']);
 
@@ -23,7 +23,7 @@ interface Eloquent
 
     public function firstOrCreate(array $attributes);
 
-    public function update(array $data, $id);
+    public function update(array $data, $resourceId);
 
     public function updateOrCreate(array $attributes, array $values);
 

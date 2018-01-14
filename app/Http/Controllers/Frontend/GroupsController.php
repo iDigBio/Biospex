@@ -142,12 +142,12 @@ class GroupsController extends Controller
     /**
      * Soft delete the specified resource from storage.
      *
-     * @param $id
+     * @param $groupId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete($id)
+    public function delete($groupId)
     {
-        $group = $this->groupService->findGroupWith($id, ['projects.nfnWorkflows']);
+        $group = $this->groupService->findGroupWith($groupId, ['projects.nfnWorkflows']);
 
         if ( ! $this->checkPermissions('delete', $group))
         {

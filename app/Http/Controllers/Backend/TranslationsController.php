@@ -217,14 +217,14 @@ class TranslationsController extends Controller
     /**
      * Show preview for html pages.
      *
-     * @param $id
+     * @param $translationId
      * @param null $locale
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function preview($id, $locale = null)
+    public function preview($translationId, $locale = null)
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
-        $translation = Translation::where('id', $id)->first();
+        $translation = Translation::where('id', $translationId)->first();
 
         return view('backend.translations.preview', compact('user', 'translation'));
     }

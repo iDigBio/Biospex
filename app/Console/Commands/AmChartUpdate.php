@@ -12,14 +12,14 @@ class AmChartUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'amchart:update {ids}';
+    protected $signature = 'amchart:update {projectIds}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Build the AmChart data for project pages. Argument is comma separated project ids.';
+    protected $description = 'Build the AmChart data for project pages. Argument is comma separated project projectIds.';
 
     /**
      * Create a new command instance.
@@ -35,9 +35,9 @@ class AmChartUpdate extends Command
      */
     public function handle()
     {
-        $ids = explode(',', $this->argument('ids'));
+        $projectIds = explode(',', $this->argument('projectIds'));
 
-        collect($ids)->each(function ($projectId){
+        collect($projectIds)->each(function ($projectId){
             AmChartJob::dispatch($projectId);
         });
     }

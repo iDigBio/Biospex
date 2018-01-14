@@ -26,16 +26,16 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
     /**
      * @var \Illuminate\Support\Collection
      */
-    private $ids;
+    private $expeditionIds;
 
     /**
      * WeDigBioDashboardJob constructor.
      *
-     * @param $ids array
+     * @param $expeditionIds array
      */
-    public function __construct($ids)
+    public function __construct($expeditionIds)
     {
-        $this->ids = $ids;
+        $this->expeditionIds = $expeditionIds;
         $this->onQueue(config('config.beanstalkd.classification'));
     }
 
@@ -49,7 +49,7 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
     )
     {
 
-        if (empty($this->ids))
+        if (empty($this->expeditionIds))
         {
             $this->delete();
 
@@ -58,8 +58,8 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
 
         try
         {
-            collect($this->ids)->each(function($id) use ($weDigBioDashboardService){
-                $expedition = $weDigBioDashboardService->getExpedition($id);
+            collect($this->expeditionIds)->each(function($expeditionId) use ($weDigBioDashboardService){
+                $expedition = $weDigBioDashboardService->getExpedition($expeditionId);
 
                 $timestamp = DateHelper::mongoDbNowSubDateInterval('P2D');
 

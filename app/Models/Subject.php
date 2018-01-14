@@ -63,22 +63,22 @@ class Subject extends Model
 
     /**
      * @param $query
-     * @param $id
+     * @param $projectId
      * @return mixed
      */
-    public function scopeProjectId($query, $id)
+    public function scopeProjectId($query, $projectId)
     {
-        return $query->where('project_id', (int) $id);
+        return $query->where('project_id', (int) $projectId);
     }
 
     /**
      * @param $query
-     * @param $id
+     * @param $subjectId
      * @return mixed
      */
-    public function scopeSubjectId($query, $id)
+    public function scopeSubjectId($query, $subjectId)
     {
-        return $query->where('_id', $id);
+        return $query->where('_id', $subjectId);
     }
 
 }

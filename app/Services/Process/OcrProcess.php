@@ -160,18 +160,18 @@ class OcrProcess
     public function updateSubjectsFromOcrFile($file)
     {
         $csv = [];
-        foreach ($file->subjects as $id => $data)
+        foreach ($file->subjects as $subjectId => $data)
         {
             if ($data->ocr === 'error')
             {
-                $csv[] = ['id' => $id, 'message' => implode(' -- ', $data->messages), 'url' => $data->url];
+                $csv[] = ['id' => $subjectId, 'message' => implode(' -- ', $data->messages), 'url' => $data->url];
                 continue;
             }
 
-            $subject = $this->subjectContract->find($id);
+            $subject = $this->subjectContract->find($subjectId);
             if ($subject === null)
             {
-                $csv[] = ['id' => $id, 'message' => 'Could not locate associated subject in database', 'url' => ''];
+                $csv[] = ['id' => $subjectId, 'message' => 'Could not locate associated subject in database', 'url' => ''];
                 continue;
             }
 

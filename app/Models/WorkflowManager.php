@@ -47,11 +47,11 @@ class WorkflowManager extends Model
      * Scope
      *
      * @param $query
-     * @param $id
+     * @param $expeditionId
      * @return mixed
      */
-    public function scopeExpeditionId($query, $id)
+    public function scopeExpeditionId($query, $expeditionId)
     {
-        return $query->where('expedition_id', '=', $id);
+        return $query->where('expedition_id', '=', $expeditionId);
     }
 }

@@ -88,7 +88,7 @@ class NfnClassificationsCsvDownloadJob extends Job implements ShouldQueue
             };
 
             $responses = $api->poolBatchRequest($requests());
-            $ids = [];
+            $expeditionIds = [];
             foreach ($responses as $index => $response)
             {
                 if ($response instanceof ServerException || $response instanceof ClientException)
@@ -97,7 +97,7 @@ class NfnClassificationsCsvDownloadJob extends Job implements ShouldQueue
                     continue;
                 }
 
-                $ids[] = $index;
+                $expeditionIds[] = $index;
             }
 
             if ( ! empty($this->errorMessages))
@@ -106,7 +106,7 @@ class NfnClassificationsCsvDownloadJob extends Job implements ShouldQueue
                 $user->notify(new JobError(__FILE__, $this->errorMessages));
             }
 
-            NfnClassificationsReconciliationJob::dispatch($ids)->delay(1800);
+            NfnClassificationsReconciliationJob::dispatch($expeditionIds)->delay(1800);
         }
         catch (\Exception $e)
         {

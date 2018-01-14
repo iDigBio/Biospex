@@ -26,10 +26,10 @@ interface Subject extends Eloquent
     /**
      * Get Unassigned count.
      *
-     * @param $id
+     * @param $projectId
      * @return mixed
      */
-    public function getUnassignedCount($id);
+    public function getUnassignedCount($projectId);
 
     /**
      * @param $projectId

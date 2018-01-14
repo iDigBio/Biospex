@@ -10,19 +10,19 @@ interface Expedition extends Eloquent
     /**
      * Retrieve expeditions for Notes From Nature classification process.
      *
-     * @param array $ids
+     * @param array $expeditionIds
      * @param array $attributes
      * @return mixed
      */
-    public function getExpeditionsForNfnClassificationProcess(array $ids = [], array $attributes = ['*']);
+    public function getExpeditionsForNfnClassificationProcess(array $expeditionIds = [], array $attributes = ['*']);
 
     /**
      * Get count of Expedition Subjects.
      *
-     * @param $id
+     * @param $expeditionId
      * @return mixed
      */
-    public function getExpeditionSubjectCounts($id);
+    public function getExpeditionSubjectCounts($expeditionId);
 
     /**
      * Get Expeditions Visible to user.
@@ -54,11 +54,11 @@ interface Expedition extends Eloquent
     /**
      * Get Expedition stats.
      *
-     * @param array $ids
+     * @param array $expeditionIds
      * @param array $columns
      * @return Collection
      */
-    public function getExpeditionStats(array $ids = [], array $columns = ['*']);
+    public function getExpeditionStats(array $expeditionIds = [], array $columns = ['*']);
 
     /**
      * Get expeditions having nfnworkflows.

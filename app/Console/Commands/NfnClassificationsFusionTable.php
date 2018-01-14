@@ -17,14 +17,14 @@ class NfnClassificationsFusionTable extends Command
      *
      * @var string
      */
-    protected $signature = 'nfn:fusion {ids?}';
+    protected $signature = 'nfn:fusion {projectIds?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Run Google Fusion Table Job for NfN Classifications. Argument can be comma separated project ids or empty.';
+    protected $description = 'Run Google Fusion Table Job for NfN Classifications. Argument can be comma separated projectIds or empty.';
     /**
      * @var Project
      */
@@ -46,11 +46,11 @@ class NfnClassificationsFusionTable extends Command
      */
     public function handle()
     {
-        $ids = null === $this->argument('ids') ? [] : explode(',', $this->argument('ids'));
+        $projectIds = null === $this->argument('projectIds') ? [] : explode(',', $this->argument('projectIds'));
 
-        $projects = empty($ids) ?
+        $projects = empty($projectIds) ?
             $this->projectContract->getProjectsHavingTranscriptionLocations() :
-            $this->projectContract->getProjectsHavingTranscriptionLocations($ids);
+            $this->projectContract->getProjectsHavingTranscriptionLocations($projectIds);
 
         $projects->each(function ($project){
             NfnClassificationsFusionTableJob::dispatch($project->id);

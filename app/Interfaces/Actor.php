@@ -21,11 +21,11 @@ interface Actor extends Eloquent
     /**
      * Update actor.
      *
-     * @param $id
+     * @param $actorId
      * @param array $attributes
      * @return mixed
      */
-    public function updateActor($id, array $attributes = []);
+    public function updateActor(array $attributes = [], $actorId);
 
     /**
      * Update existing pivot table for ActorExpeditions.

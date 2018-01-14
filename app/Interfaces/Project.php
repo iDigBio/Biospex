@@ -42,9 +42,9 @@ interface Project extends Eloquent
     public function getProjectPageBySlug($slug);
 
     /**
-     * @param array $ids
+     * @param array $projectIds
      * @return mixed
      */
-    public function getProjectsHavingTranscriptionLocations(array $ids = []);
+    public function getProjectsHavingTranscriptionLocations(array $projectIds = []);
 
 }

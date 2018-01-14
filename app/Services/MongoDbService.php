@@ -74,12 +74,12 @@ class MongoDbService
 
     /**
      * @param array $attributes
-     * @param $id
+     * @param $resourceId
      */
-    public function updateOneById(array $attributes = [], $id)
+    public function updateOneById(array $attributes = [], $resourceId)
     {
         $this->clientCollection->updateOne(
-            ['_id' => new ObjectId($id)],
+            ['_id' => new ObjectId($resourceId)],
             ['$set' => $attributes]
         );
     }

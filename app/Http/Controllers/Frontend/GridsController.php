@@ -183,9 +183,9 @@ class GridsController extends Controller
             return response()->json(['error' => 'Only delete operation allowed.'], 404);
         }
 
-        $ids = explode(',', $this->request->get('id'));
+        $subjectIds = explode(',', $this->request->get('id'));
 
-        $subjectService->deleteSubjects($ids);
+        $subjectService->deleteSubjects($subjectIds);
 
         return response()->json(['success']);
 
