@@ -2,19 +2,11 @@
 
 namespace App\Providers;
 
-use App\Models\ApiUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
-use App\Models\Group;
-use App\Models\Permission;
-use App\Models\Profile;
-use App\Models\User;
-use Barryvdh\Debugbar\ServiceProvider as Debugbar;
-use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider as IdeHelper;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -97,8 +89,8 @@ class AppServiceProvider extends ServiceProvider
          */
         if ($this->app->environment('local'))
         {
-            $this->app->register(IdeHelper::class);
-            $this->app->register(Debugbar::class);
+            $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+            $this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);
         }
     }
 }
