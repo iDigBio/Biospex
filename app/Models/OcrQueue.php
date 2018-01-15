@@ -47,15 +47,4 @@ class OcrQueue extends Model
     {
         return $this->belongsTo(OcrCsv::class);
     }
-
-    /**
-     * Find by uuid.
-     *
-     * @param $uuid
-     * @return mixed
-     */
-    public function findByUuid($uuid)
-    {
-        return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
-    }
 }

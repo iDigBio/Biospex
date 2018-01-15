@@ -51,7 +51,6 @@ class Handler extends ExceptionHandler
             $this->sendEmail($exception);
         }
 
-
         parent::report($exception);
     }
 
@@ -96,7 +95,6 @@ class Handler extends ExceptionHandler
             Mail::to(config('mail.from.address'))->send(new BiospexException($html));
         } catch (Exception $ex) {
             \Log::error('Could not send mail for thrown exception');
-            exit;
         }
     }
 }

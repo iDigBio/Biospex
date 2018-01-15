@@ -72,12 +72,11 @@ class DownloadsController extends Controller
     /**
      * Index showing downloads for Expedition.
      *
-     * @param $projectId
-     * @param $expeditionId
      * @return \Illuminate\View\View
      */
-    public function index($projectId, $expeditionId)
+    public function index()
     {
+        $expeditionId = request('expeditionId');
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $expedition = $this->expeditionContract->expeditionDownloadsByActor($expeditionId);
 

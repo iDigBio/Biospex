@@ -223,39 +223,6 @@ class Expedition extends Model
     }
 
     /**
-     * NfnClassifications relationship count.
-     * @return mixed
-     */
-    public function nfnClassificationsCount()
-    {
-        return $this->hasManyThrough(NfnClassification::class, NfnWorkflow::class)
-            ->selectRaw('nfn_workflow_id, count(*) as aggregate')->groupBy('nfn_workflow_id');
-    }
-
-    /**
-     * NfnClassificationsCount attribute.
-     *
-     * @return int
-     */
-    public function getNfnClassificationsCountAttribute()
-    {
-        $related = $this->getRelationValue('nfnClassificationsCount')->first();
-
-        return $related ? (int) $related->aggregate : 0;
-    }
-
-    /**
-     * Find by uuid.
-     *
-     * @param $uuid
-     * @return mixed
-     */
-    public function findByUuid($uuid)
-    {
-        return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
-    }
-
-    /**
      * Set uuid for binary storage.
      *
      * @param $value
@@ -274,7 +241,7 @@ class Expedition extends Model
     public function getUuidAttribute($value)
     {
         if ($value === null) {
-            return;
+            return null;
         }
 
         $uuid = bin2hex($value);

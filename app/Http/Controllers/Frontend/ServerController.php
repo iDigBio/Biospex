@@ -37,9 +37,7 @@ class ServerController extends Controller
      */
     public function postTest()
     {
-        http_response_code(200);
 
-        exit;
     }
 
     /**
@@ -47,9 +45,7 @@ class ServerController extends Controller
      */
     public function getTest()
     {
-        http_response_code(200);
 
-        exit;
     }
 
     /**
@@ -131,9 +127,4 @@ class ServerController extends Controller
         }
     }
 
-
-    public function test()
-    {
-        
-    }
 }

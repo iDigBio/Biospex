@@ -14,10 +14,9 @@ interface PanoptesTranscription extends RepositoryInterface
 
     /**
      * @param $expeditionId
-     * @param array $attributes
      * @return mixed
      */
-    public function getTranscriptionCountByExpeditionId($expeditionId, array $attributes = ['*']);
+    public function getTranscriptionCountByExpeditionId($expeditionId);
 
     /**
      * @param $projectId

@@ -36,11 +36,10 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     /**
      * Retrieve transcription count using expedition id.
      * @param $expeditionId
-     * @param array $attributes
      * @return mixed
      * @throws \Exception
      */
-    public function getTranscriptionCountByExpeditionId($expeditionId, array $attributes = ['*'])
+    public function getTranscriptionCountByExpeditionId($expeditionId)
     {
         //return $this->findWhere(['subject_expeditionId', '=', $expeditionId], $attributes)->count();
         $results = $this->model->where('subject_expeditionId', $expeditionId)->count();

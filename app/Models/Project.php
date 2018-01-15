@@ -333,17 +333,6 @@ class Project extends Model implements StaplerableInterface
     }
 
     /**
-     * Find by uuid.
-     *
-     * @param $uuid
-     * @return mixed
-     */
-    public function findByUuid($uuid)
-    {
-        return $this->where('uuid', pack('H*', str_replace('-', '', $uuid)))->get();
-    }
-
-    /**
      * Set tag uri for rfc 4151 specs.
      *
      * @return string
