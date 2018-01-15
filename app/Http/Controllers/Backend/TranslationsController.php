@@ -160,10 +160,9 @@ class TranslationsController extends Controller
      *
      * @param $group
      * @param $key
-     * @param null $sub_group
      * @return array
      */
-    public function postDelete($group, $key, $sub_group = null)
+    public function postDelete($group, $key)
     {
         if(!in_array($group, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
             Translation::where('group', $group)->where('key', $key)->delete();
@@ -205,11 +204,9 @@ class TranslationsController extends Controller
      */
     public function postPublish($group, $sub_group = null)
     {
-        if ($sub_group) {
-            $this->manager->exportTranslations($group.'/'.$sub_group);
-        } else {
+        $sub_group ?
+            $this->manager->exportTranslations($group.'/'.$sub_group) :
             $this->manager->exportTranslations($group);
-        }
 
         return ['status' => 'ok'];
     }

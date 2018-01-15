@@ -26,6 +26,7 @@ class InviteRepository extends EloquentRepository implements Invite
         $results = $this->model
             ->with('group')
             ->where('group_id', $groupId)
+            ->whereNotNull('email')
             ->get();
 
         $this->resetModel();

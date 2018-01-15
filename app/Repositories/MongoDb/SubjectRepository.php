@@ -119,14 +119,9 @@ class SubjectRepository extends MongoDbRepository implements Subject
     {
         $subjectIds = $this->model->whereNested(function ($query) use ($projectId, $take, $expeditionId)
         {
-            if ($expeditionId !== null)
-            {
-                $query->where('expedition_ids', (int) $expeditionId);
-            }
-            else
-            {
+            $expeditionId !== null ?
+                $query->where('expedition_ids', (int) $expeditionId) :
                 $query->where('expedition_ids', 'size', 0);
-            }
 
             $query->where('project_id', (int) $projectId);
         })
@@ -490,13 +485,13 @@ class SubjectRepository extends MongoDbRepository implements Subject
      * Set where/orWhere clause for query
      * @param $query
      * @param $field
-     * @param $op
+     * @param $operation
      * @param $data
      */
-    protected function setWhere(&$query, $field, $op, $data)
+    protected function setWhere(&$query, $field, $operation, $data)
     {
         ($this->groupAnd || ! $this->groupOpProcessed) ?
-            $query->where($field, $op, $data) : $query->orWhere($field, $op, $data);
+            $query->where($field, $operation, $data) : $query->orWhere($field, $operation, $data);
 
         $this->setGroupOpProcessed(true);
     }

@@ -43,7 +43,7 @@ class ClearOcrResults extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @throws \MongoCursorException
      */
     public function handle()
     {

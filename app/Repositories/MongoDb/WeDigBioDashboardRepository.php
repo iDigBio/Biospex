@@ -50,7 +50,7 @@ class WeDigBioDashboardRepository extends MongoDbRepository implements WeDigBioD
 
     /**
      * @param $query
-     * @param Request $request
+     * @param $request
      */
     private function buildQuery(&$query, $request)
     {
@@ -64,11 +64,13 @@ class WeDigBioDashboardRepository extends MongoDbRepository implements WeDigBioD
                 DateHelper::toMongoDbTimestamp($request->input('date_end'))
             ];
             $query->whereBetween('timestamp', $timestamps);
+
+            return;
         }
-        else
-        {
-            $request->has('date_start') ? $query->where('timestamp', '>=', DateHelper::toMongoDbTimestamp($request->input('date_start'))) : false;
-            $request->has('date_end') ? $query->where('timestamp', '<=', DateHelper::toMongoDbTimestamp($request->input('date_end'))) : false;
-        }
+
+        $request->has('date_start') ? $query->where('timestamp', '>=', DateHelper::toMongoDbTimestamp($request->input('date_start'))) : false;
+        $request->has('date_end') ? $query->where('timestamp', '<=', DateHelper::toMongoDbTimestamp($request->input('date_end'))) : false;
+
+        return;
     }
 }

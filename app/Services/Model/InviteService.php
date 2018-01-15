@@ -56,12 +56,15 @@ class InviteService
         try {
             $group = $this->groupContract->find($groupId);
             $existing = $this->getExistingInvites($group->id);
-            $requestInvites = collect($request->get('invites'))->diff($existing->pluck('email'));
 
-            $newInvites = $requestInvites->reject(function ($email) use($group) {
-                return $this->checkExistingUser($email, $group);
-            })->map(function ($email) use ($group) {
-                return $this->createNewInvite($email, $group);
+            $requestInvites = collect($request->get('invites'))->reject(function($invite){
+                return empty($invite['email']);
+            })->diff($existing->pluck('email'));
+
+            $newInvites = $requestInvites->reject(function ($invite) use($group) {
+                return $this->checkExistingUser($invite['email'], $group);
+            })->map(function ($invite) use ($group) {
+                return $this->createNewInvite($invite['email'], $group);
             });
 
             Notification::send($newInvites, new GroupInvite($group));
