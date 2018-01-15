@@ -28,10 +28,9 @@ class ApiUserResetPasswordNotification extends Notification implements ShouldQue
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
      * @return array
      */
-    public function via($notifiable)
+    public function via()
     {
         return ['mail'];
     }
@@ -39,10 +38,9 @@ class ApiUserResetPasswordNotification extends Notification implements ShouldQue
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable)
+    public function toMail()
     {
         return (new MailMessage)
             ->line('You are receiving this email because we received a password reset request for your account.')
@@ -53,10 +51,9 @@ class ApiUserResetPasswordNotification extends Notification implements ShouldQue
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
      * @return array
      */
-    public function toArray($notifiable)
+    public function toArray()
     {
         return [
             //
