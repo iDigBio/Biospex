@@ -42,10 +42,10 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
     /**
      * Handle job.
      *
-     * @param WeDigBioDashboardService $weDigBioDashboardService
+     * @param WeDigBioDashboardService $dashboardService
      */
     public function handle(
-        WeDigBioDashboardService $weDigBioDashboardService
+        WeDigBioDashboardService $dashboardService
     )
     {
 
@@ -58,17 +58,17 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
 
         try
         {
-            collect($this->expeditionIds)->each(function($expeditionId) use ($weDigBioDashboardService){
-                $expedition = $weDigBioDashboardService->getExpedition($expeditionId);
+            collect($this->expeditionIds)->each(function($expeditionId) use ($dashboardService){
+                $expedition = $dashboardService->getExpedition($expeditionId);
 
                 $timestamp = DateHelper::mongoDbNowSubDateInterval('P2D');
 
-                $transcriptions = $weDigBioDashboardService->getTranscriptions($expedition->id, $timestamp);
+                $transcriptions = $dashboardService->getTranscriptions($expedition->id, $timestamp);
 
-                $transcriptions->reject(function($transcription) use ($weDigBioDashboardService) {
-                    return $weDigBioDashboardService->checkIfExists($transcription->_id);
-                })->each(function ($transcription) use ($weDigBioDashboardService, $expedition) {
-                    $weDigBioDashboardService->processTranscripts($transcription, $expedition);
+                $transcriptions->reject(function($transcription) use ($dashboardService) {
+                    return $dashboardService->checkIfExists($transcription->_id);
+                })->each(function ($transcription) use ($dashboardService, $expedition) {
+                    $dashboardService->processTranscripts($transcription, $expedition);
                 });
             });
         }
