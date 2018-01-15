@@ -75,7 +75,6 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
         catch (\Exception $e)
         {
             $this->delete();
-            exit;
         }
     }
 }
