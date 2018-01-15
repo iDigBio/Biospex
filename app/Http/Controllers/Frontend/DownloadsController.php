@@ -93,6 +93,7 @@ class DownloadsController extends Controller
      * @param $expeditionId
      * @param $downloadId
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @throws \Throwable
      */
     public function show($projectId, $expeditionId, $downloadId)
     {
@@ -118,22 +119,20 @@ class DownloadsController extends Controller
 
             return $this->response->make(stripslashes($view), 200, $headers);
         }
-        else
+
+        $path = $this->paths[$download->type] . '/' . $download->file;
+        if ( ! file_exists($path))
         {
-            $path = $this->paths[$download->type] . '/' . $download->file;
-            if ( ! file_exists($path))
-            {
-                Flash::error(trans('errors.missing_download_file'));
-                return redirect()->route('web.downloads.index', [$projectId, $expeditionId]);
-            }
-
-            $headers = [
-                'Content-Type'        => 'application/x-compressed',
-                'Content-disposition' => 'attachment; filename="' . $download->type . '-' . $download->file . '"'
-            ];
-
-            return $this->response->download($path, $download->type . '-' . $download->file, $headers);
+            Flash::error(trans('errors.missing_download_file'));
+            return redirect()->route('web.downloads.index', [$projectId, $expeditionId]);
         }
+
+        $headers = [
+            'Content-Type'        => 'application/x-compressed',
+            'Content-disposition' => 'attachment; filename="' . $download->type . '-' . $download->file . '"'
+        ];
+
+        return $this->response->download($path, $download->type . '-' . $download->file, $headers);
     }
 
     /**
