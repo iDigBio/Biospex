@@ -3,9 +3,9 @@
 namespace App\Services\Csv;
 
 use App\Facades\DateHelper;
-use App\Interfaces\Header;
-use App\Interfaces\Property;
-use App\Interfaces\Subject;
+use App\Repositories\Interfaces\Header;
+use App\Repositories\Interfaces\Property;
+use App\Repositories\Interfaces\Subject;
 use App\Services\MongoDbService;
 use Illuminate\Validation\Factory as Validation;
 use App\Models\Occurrence;

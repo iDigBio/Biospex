@@ -6,9 +6,9 @@ use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TeamCategoryFormRequest;
 use App\Http\Requests\TeamFormRequest;
-use App\Interfaces\Team;
-use App\Interfaces\User;
-use App\Interfaces\TeamCategory;
+use App\Repositories\Interfaces\Team;
+use App\Repositories\Interfaces\User;
+use App\Repositories\Interfaces\TeamCategory;
 
 class TeamsController extends Controller
 {

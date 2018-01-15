@@ -3,7 +3,7 @@
 namespace App\Http\ViewComposers;
 
 use Illuminate\Contracts\View\View;
-use App\Interfaces\Notice;
+use App\Repositories\Interfaces\Notice;
 
 class NoticesComposer
 {

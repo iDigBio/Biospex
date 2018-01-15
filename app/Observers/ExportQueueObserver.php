@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\Interfaces\ExportQueue;
+use App\Repositories\Interfaces\ExportQueue;
 use App\Jobs\ExportQueueJob;
 use App\Models\ExportQueue as Model;
 

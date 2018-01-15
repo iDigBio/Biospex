@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Interfaces\State;
+use App\Repositories\Interfaces\State;
 use App\Services\Csv\Csv;
 use App\Services\Requests\HttpRequest;
 use Illuminate\Console\Command;

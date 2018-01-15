@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Interfaces\Subject;
+use App\Repositories\Interfaces\Subject;
 use Illuminate\Console\Command;
 use Illuminate\Database\DatabaseManager;
 use MongoCollection;

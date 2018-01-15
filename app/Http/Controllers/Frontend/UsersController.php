@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PasswordFormRequest;
-use App\Interfaces\User;
+use App\Repositories\Interfaces\User;
 use App\Http\Requests\EditUserFormRequest;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Support\Facades\Hash;

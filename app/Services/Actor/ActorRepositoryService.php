@@ -2,12 +2,12 @@
 
 namespace App\Services\Actor;
 
-use App\Interfaces\Actor;
-use App\Interfaces\Download;
-use App\Interfaces\Expedition;
-use App\Interfaces\Project;
-use App\Interfaces\ExportQueue;
-use App\Interfaces\Subject;
+use App\Repositories\Interfaces\Actor;
+use App\Repositories\Interfaces\Download;
+use App\Repositories\Interfaces\Expedition;
+use App\Repositories\Interfaces\Project;
+use App\Repositories\Interfaces\ExportQueue;
+use App\Repositories\Interfaces\Subject;
 
 class ActorRepositoryService extends ActorServiceBase
 {

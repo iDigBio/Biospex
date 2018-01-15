@@ -2,7 +2,7 @@
 
 namespace App\Services\Process;
 
-use App\Interfaces\Meta;
+use App\Repositories\Interfaces\Meta;
 
 class MetaFile
 {

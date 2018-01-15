@@ -3,12 +3,12 @@
 namespace App\Services\Model;
 
 use App\Facades\Flash;
-use App\Interfaces\Expedition;
-use App\Interfaces\Group;
-use App\Interfaces\Project;
-use App\Interfaces\Subject;
-use App\Interfaces\User;
-use App\Interfaces\Workflow;
+use App\Repositories\Interfaces\Expedition;
+use App\Repositories\Interfaces\Group;
+use App\Repositories\Interfaces\Project;
+use App\Repositories\Interfaces\Subject;
+use App\Repositories\Interfaces\User;
+use App\Repositories\Interfaces\Workflow;
 use App\Services\File\FileService;
 use Illuminate\Support\Facades\Notification;
 use JavaScript;

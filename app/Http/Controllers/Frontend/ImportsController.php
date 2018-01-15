@@ -7,12 +7,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DwcFileUpload;
 use App\Http\Requests\DwcUriUpload;
 use App\Http\Requests\RecordsetUpload;
-use App\Interfaces\Import;
+use App\Repositories\Interfaces\Import;
 use App\Jobs\DwcFileImportJob;
 use App\Jobs\DwcUriImportJob;
 use App\Jobs\RecordsetImportJob;
 use App\Services\File\FileService;
-use App\Interfaces\Project;
+use App\Repositories\Interfaces\Project;
 
 class ImportsController extends Controller
 {

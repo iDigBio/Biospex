@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Events\PollOcrEvent;
-use App\Interfaces\Project;
+use App\Repositories\Interfaces\Project;
 use Illuminate\Console\Command;
-use App\Interfaces\OcrQueue;
+use App\Repositories\Interfaces\OcrQueue;
 
 class OcrPollCommand extends Command
 {

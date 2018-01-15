@@ -2,7 +2,7 @@
 
 namespace App\Services\Queue;
 
-use App\Interfaces\Expedition;
+use App\Repositories\Interfaces\Expedition;
 use App\Notifications\WorkflowActorError;
 use App\Services\Actor\ActorFactory;
 

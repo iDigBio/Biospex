@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Backend;
 use App\Facades\Flash;
 use App\Http\Requests\ExpeditionFormRequest;
 use App\Services\Model\ExpeditionService;
-use App\Interfaces\Expedition;
-use App\Interfaces\User;
+use App\Repositories\Interfaces\Expedition;
+use App\Repositories\Interfaces\User;
 use App\Http\Controllers\Controller;
 
 class ExpeditionsController extends Controller

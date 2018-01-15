@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\AmChartJob;
 use App\Jobs\ExpeditionStatJob;
-use App\Interfaces\Expedition;
+use App\Repositories\Interfaces\Expedition;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 

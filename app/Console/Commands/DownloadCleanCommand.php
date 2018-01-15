@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use App\Interfaces\Download;
+use App\Repositories\Interfaces\Download;
 
 class DownloadCleanCommand extends Command
 {

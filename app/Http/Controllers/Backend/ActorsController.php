@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Backend;
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ActorFormRequest;
-use App\Interfaces\Actor;
-use App\Interfaces\User;
+use App\Repositories\Interfaces\Actor;
+use App\Repositories\Interfaces\User;
 
 class ActorsController extends Controller
 {

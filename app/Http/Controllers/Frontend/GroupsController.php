@@ -6,7 +6,7 @@ use Auth;
 use App\Services\Model\GroupService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
-use App\Interfaces\User;
+use App\Repositories\Interfaces\User;
 
 class GroupsController extends Controller
 {

@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Interfaces\Project;
+use App\Repositories\Interfaces\Project;
 use App\Models\Import;
 use App\Notifications\DarwinCoreImportError;
 use App\Notifications\ImportComplete;

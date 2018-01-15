@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\WorkflowManagerRepository;
+use App\Repositories\Eloquent\WorkflowManagerRepository;
 use Illuminate\Console\Command;
-use App\Interfaces\WorkflowManager;
+use App\Repositories\Interfaces\WorkflowManager;
 use Queue;
 
 class WorkFlowManagerCommand extends Command

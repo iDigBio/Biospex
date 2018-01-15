@@ -3,9 +3,9 @@
 namespace App\Services\Model;
 
 use App\Facades\DateHelper;
-use App\Interfaces\Expedition;
-use App\Interfaces\PanoptesTranscription;
-use App\Interfaces\WeDigBioDashboard;
+use App\Repositories\Interfaces\Expedition;
+use App\Repositories\Interfaces\PanoptesTranscription;
+use App\Repositories\Interfaces\WeDigBioDashboard;
 use App\Services\Api\NfnApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;

@@ -2,7 +2,7 @@
 
 namespace App\Services\Model;
 
-use App\Interfaces\OcrQueue;
+use App\Repositories\Interfaces\OcrQueue;
 use App\Jobs\BuildOcrBatchesJob;
 
 class OcrQueueService

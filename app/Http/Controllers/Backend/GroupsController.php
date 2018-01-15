@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Facades\Flash;
 use App\Http\Requests\GroupFormRequest;
 use App\Http\Requests\InviteFormRequest;
-use App\Interfaces\User;
+use App\Repositories\Interfaces\User;
 use App\Services\Model\GroupService;
 use App\Services\Model\InviteService;
 use App\Http\Controllers\Controller;

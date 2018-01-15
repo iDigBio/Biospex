@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Backend;
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ResourceFormRequest;
-use App\Interfaces\Resource;
-use App\Interfaces\User;
+use App\Repositories\Interfaces\Resource;
+use App\Repositories\Interfaces\User;
 use Illuminate\Support\Facades\Storage;
 
 class ResourcesController extends Controller

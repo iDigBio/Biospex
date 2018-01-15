@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Backend;
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WorkflowFormRequest;
-use App\Interfaces\Actor;
-use App\Interfaces\User;
-use App\Interfaces\Workflow;
+use App\Repositories\Interfaces\Actor;
+use App\Repositories\Interfaces\User;
+use App\Repositories\Interfaces\Workflow;
 
 class WorkflowsController extends Controller
 {

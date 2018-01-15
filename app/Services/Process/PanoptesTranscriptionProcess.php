@@ -2,9 +2,9 @@
 
 namespace App\Services\Process;
 
-use App\Interfaces\Subject;
-use App\Interfaces\PanoptesTranscription;
-use App\Interfaces\TranscriptionLocation;
+use App\Repositories\Interfaces\Subject;
+use App\Repositories\Interfaces\PanoptesTranscription;
+use App\Repositories\Interfaces\TranscriptionLocation;
 use Illuminate\Validation\Factory as Validation;
 use App\Services\Csv\Csv;
 

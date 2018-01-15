@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
-use App\Interfaces\Expedition;
-use App\Interfaces\User;
+use App\Repositories\Interfaces\Expedition;
+use App\Repositories\Interfaces\User;
 use File;
 use Illuminate\Contracts\Routing\ResponseFactory;
-use App\Interfaces\Download;
+use App\Repositories\Interfaces\Download;
 use Queue;
 
 class DownloadsController extends Controller

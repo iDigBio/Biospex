@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FaqCategoryFormRequest;
 use App\Http\Requests\FaqFormRequest;
-use App\Interfaces\FaqCategory;
-use App\Interfaces\User;
-use App\Interfaces\Faq;
+use App\Repositories\Interfaces\FaqCategory;
+use App\Repositories\Interfaces\User;
+use App\Repositories\Interfaces\Faq;
 use App\Facades\Flash;
 
 class FaqsController extends Controller

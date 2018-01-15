@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Interfaces\Group;
-use App\Interfaces\User;
+use App\Repositories\Interfaces\Group;
+use App\Repositories\Interfaces\User;
 use App\Http\Requests\InviteFormRequest;
 use App\Services\Model\InviteService;
 

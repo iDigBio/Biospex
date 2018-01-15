@@ -4,9 +4,9 @@ namespace App\Services;
 
 use App\Facades\Flash;
 use App\Notifications\UserActivation;
-use App\Interfaces\Group;
-use App\Interfaces\Invite;
-use App\Interfaces\User;
+use App\Repositories\Interfaces\Group;
+use App\Repositories\Interfaces\Invite;
+use App\Repositories\Interfaces\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 

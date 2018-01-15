@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 
-use App\Interfaces\ExportQueue;
+use App\Repositories\Interfaces\ExportQueue;
 use App\Jobs\ExportQueueJob;
 
 class ExportQueueEventListener

@@ -4,9 +4,9 @@ namespace App\Jobs;
 
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
-use App\Interfaces\PanoptesTranscription;
-use App\Interfaces\Project;
-use App\Interfaces\AmChart;
+use App\Repositories\Interfaces\PanoptesTranscription;
+use App\Repositories\Interfaces\Project;
+use App\Repositories\Interfaces\AmChart;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;

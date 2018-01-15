@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Interfaces\Faq;
-use App\Interfaces\FaqCategory;
+use App\Repositories\Interfaces\Faq;
+use App\Repositories\Interfaces\FaqCategory;
 
 class FaqsController extends Controller
 {

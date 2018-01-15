@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Facades\Flash;
-use App\Interfaces\User;
+use App\Repositories\Interfaces\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Artisan;
 use DOMDocument;

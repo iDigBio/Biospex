@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Interfaces\OcrQueue;
-use App\Interfaces\User;
+use App\Repositories\Interfaces\OcrQueue;
+use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
 use App\Services\Process\OcrProcess;
 use Artisan;

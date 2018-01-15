@@ -129,7 +129,7 @@ function transcriptions_total($count)
  */
 function transcriptions_completed($expeditionId)
 {
-    $transcriptionContract = app(\App\Interfaces\PanoptesTranscription::class);
+    $transcriptionContract = app(\App\Repositories\Interfaces\PanoptesTranscription::class);
 
     return $transcriptionContract->getTranscriptionCountByExpeditionId($expeditionId);
 }

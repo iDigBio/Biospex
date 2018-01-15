@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Http\Controllers\Controller;
-use App\Interfaces\Project;
+use App\Repositories\Interfaces\Project;
 
 class AdvertisesController extends Controller
 {

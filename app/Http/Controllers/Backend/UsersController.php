@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Facades\Flash;
 use App\Http\Requests\EditUserFormRequest;
 use App\Http\Requests\PasswordFormRequest;
-use App\Interfaces\User;
+use App\Repositories\Interfaces\User;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use App\Http\Controllers\Controller;
 

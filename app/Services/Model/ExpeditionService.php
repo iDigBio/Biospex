@@ -3,13 +3,13 @@
 namespace App\Services\Model;
 
 use App\Facades\Flash;
-use App\Interfaces\Project;
+use App\Repositories\Interfaces\Project;
 use App\Jobs\UpdateNfnWorkflowJob;
-use App\Interfaces\Expedition;
-use App\Interfaces\ExpeditionStat;
-use App\Interfaces\NfnWorkflow;
-use App\Interfaces\Subject;
-use App\Interfaces\WorkflowManager;
+use App\Repositories\Interfaces\Expedition;
+use App\Repositories\Interfaces\ExpeditionStat;
+use App\Repositories\Interfaces\NfnWorkflow;
+use App\Repositories\Interfaces\Subject;
+use App\Repositories\Interfaces\WorkflowManager;
 use App\Services\File\FileService;
 use Artisan;
 use Illuminate\Foundation\Bus\DispatchesJobs;

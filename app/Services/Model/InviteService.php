@@ -3,9 +3,9 @@
 namespace App\Services\Model;
 
 use App\Notifications\GroupInvite;
-use App\Interfaces\Group;
-use App\Interfaces\Invite;
-use App\Interfaces\User;
+use App\Repositories\Interfaces\Group;
+use App\Repositories\Interfaces\Invite;
+use App\Repositories\Interfaces\User;
 use App\Facades\Flash;
 use Illuminate\Support\Facades\Notification;
 

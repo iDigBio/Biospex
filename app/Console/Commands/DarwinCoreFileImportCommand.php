@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Interfaces\Import;
+use App\Repositories\Interfaces\Import;
 use Illuminate\Support\Facades\Queue;
 
 class DarwinCoreFileImportCommand extends Command

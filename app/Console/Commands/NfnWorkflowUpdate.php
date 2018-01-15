@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\UpdateNfnWorkflowJob;
-use App\Interfaces\NfnWorkflow;
+use App\Repositories\Interfaces\NfnWorkflow;
 use Illuminate\Console\Command;
 
 class NfnWorkflowUpdate extends Command

@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\NfnClassificationsFusionTableJob;
-use App\Interfaces\Project;
+use App\Repositories\Interfaces\Project;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 

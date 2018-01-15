@@ -3,7 +3,7 @@
 namespace App\Services\Actor\NfnPanoptes;
 
 use App\Jobs\NfnClassificationsUpdateJob;
-use App\Interfaces\Expedition;
+use App\Repositories\Interfaces\Expedition;
 use App\Notifications\NfnTranscriptionsComplete;
 use App\Notifications\NfnTranscriptionsError;
 use App\Services\Actor\ActorServiceConfig;

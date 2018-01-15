@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Interfaces\Actor;
+use App\Repositories\Interfaces\Actor;
 
 class ActorPivotUpdateEventListener
 {

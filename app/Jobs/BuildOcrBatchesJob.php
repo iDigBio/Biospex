@@ -9,8 +9,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Artisan;
-use App\Interfaces\OcrCsv;
-use App\Interfaces\OcrQueue;
+use App\Repositories\Interfaces\OcrCsv;
+use App\Repositories\Interfaces\OcrQueue;
 
 class BuildOcrBatchesJob extends Job implements ShouldQueue
 {

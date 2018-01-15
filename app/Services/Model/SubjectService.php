@@ -2,8 +2,8 @@
 
 namespace App\Services\Model;
 
-use App\Interfaces\Expedition;
-use App\Interfaces\Subject;
+use App\Repositories\Interfaces\Expedition;
+use App\Repositories\Interfaces\Subject;
 
 class SubjectService
 {

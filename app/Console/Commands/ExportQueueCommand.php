@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ExportQueueJob;
-use App\Interfaces\ExportQueue;
+use App\Repositories\Interfaces\ExportQueue;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 

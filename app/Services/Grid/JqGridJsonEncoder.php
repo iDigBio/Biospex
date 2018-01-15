@@ -3,9 +3,9 @@
 namespace App\Services\Grid;
 
 use Illuminate\Support\Facades\Route;
-use App\Interfaces\Subject;
-use App\Interfaces\Expedition;
-use App\Interfaces\Header;
+use App\Repositories\Interfaces\Subject;
+use App\Repositories\Interfaces\Expedition;
+use App\Repositories\Interfaces\Header;
 use Exception;
 
 class JqGridJsonEncoder

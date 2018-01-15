@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
-use App\Interfaces\Resource;
+use App\Repositories\Interfaces\Resource;
 
 class ResourcesController extends Controller
 {

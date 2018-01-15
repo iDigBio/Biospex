@@ -2,7 +2,7 @@
 
 namespace App\Services\Process;
 
-use App\Interfaces\Subject;
+use App\Repositories\Interfaces\Subject;
 use App\Models\OcrQueue;
 use App\Notifications\OcrProcessComplete;
 use App\Services\Csv\Csv;

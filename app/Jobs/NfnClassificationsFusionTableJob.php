@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Interfaces\Project;
-use App\Interfaces\TranscriptionLocation;
+use App\Repositories\Interfaces\Project;
+use App\Repositories\Interfaces\TranscriptionLocation;
 use App\Services\Google\FusionTableService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;

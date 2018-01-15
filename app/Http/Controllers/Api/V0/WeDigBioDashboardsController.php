@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\V0;
 
-use App\Interfaces\WeDigBioDashboard;
+use App\Repositories\Interfaces\WeDigBioDashboard;
 use App\Services\Model\WeDigBioDashboardService;
 use Illuminate\Http\Request;
 use App\Transformers\WeDigBioDashboardTransformer;

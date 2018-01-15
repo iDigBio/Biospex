@@ -3,7 +3,7 @@
 namespace App\Services\Model;
 
 use App\Facades\Flash;
-use App\Interfaces\Group;
+use App\Repositories\Interfaces\Group;
 
 class GroupService
 {

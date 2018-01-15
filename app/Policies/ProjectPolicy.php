@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Interfaces\Group;
+use App\Repositories\Interfaces\Group;
 use Illuminate\Support\Facades\Cache;
 
 class ProjectPolicy

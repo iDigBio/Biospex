@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Interfaces\Expedition;
-use App\Interfaces\User;
+use App\Repositories\Interfaces\Expedition;
+use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
 use App\Services\Api\NfnApi;
 use GuzzleHttp\Exception\ClientException;

@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Events\PollExportEvent;
-use App\Interfaces\Expedition;
-use App\Interfaces\ExportQueue;
+use App\Repositories\Interfaces\Expedition;
+use App\Repositories\Interfaces\ExportQueue;
 use App\Services\Actor\ActorFactory;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Console\Command;

@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\ExportQueue as Model;
-use App\Interfaces\ExportQueue;
+use App\Repositories\Interfaces\ExportQueue;
 use App\Services\Actor\ActorFactory;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Models\Project;
 use App\Http\Controllers\Controller;
-use App\Interfaces\User;
+use App\Repositories\Interfaces\User;
 use App\Http\Requests\ProjectFormRequest;
 use App\Services\Model\ProjectService;
 

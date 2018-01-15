@@ -3,8 +3,8 @@
 namespace App\Jobs;
 
 use File;
-use App\Interfaces\Download;
-use App\Interfaces\Expedition;
+use App\Repositories\Interfaces\Download;
+use App\Repositories\Interfaces\Expedition;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;

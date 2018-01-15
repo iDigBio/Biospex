@@ -2,11 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Actor\ActorImageService;
-use App\Services\Image\ImagickService;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Imagick;
 
 class TestAppCommand extends Command
 {
@@ -25,8 +22,10 @@ class TestAppCommand extends Command
      */
     protected $description = 'Used to test code';
 
+
     /**
      * Create a new job instance.
+     *
      */
     public function __construct()
     {
@@ -38,6 +37,5 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
-
     }
 }

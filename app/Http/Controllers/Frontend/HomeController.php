@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Frontend;
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Mail\ContactForm;
-use App\Interfaces\AmChart;
-use App\Interfaces\PanoptesTranscription;
-use App\Interfaces\Project;
+use App\Repositories\Interfaces\AmChart;
+use App\Repositories\Interfaces\PanoptesTranscription;
+use App\Repositories\Interfaces\Project;
 use App\Http\Requests\ContactFormRequest;
 use Mail;
 

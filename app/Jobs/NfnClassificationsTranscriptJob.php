@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Interfaces\User;
+use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
 use App\Services\Process\PanoptesTranscriptionProcess;
 use Illuminate\Bus\Queueable;

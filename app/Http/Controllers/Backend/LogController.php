@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Interfaces\User;
+use App\Repositories\Interfaces\User;
 use App\Services\LogViewer;
 
 class LogController extends Controller

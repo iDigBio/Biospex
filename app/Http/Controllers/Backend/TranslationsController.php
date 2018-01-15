@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Interfaces\User;
+use App\Repositories\Interfaces\User;
 use App\Http\Controllers\Controller;
 use Barryvdh\TranslationManager\Models\Translation;
 use Illuminate\Support\Collection;

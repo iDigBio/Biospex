@@ -4,7 +4,7 @@ namespace App\Listeners;
 
 use App\Models\ApiUser;
 use Illuminate\Auth\Events\Login;
-use App\Interfaces\Group;
+use App\Repositories\Interfaces\Group;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;

@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Interfaces\Import;
-use App\Interfaces\Project;
+use App\Repositories\Interfaces\Import;
+use App\Repositories\Interfaces\Project;
 use App\Notifications\DarwinCoreImportError;
 use finfo;
 use Illuminate\Bus\Queueable;

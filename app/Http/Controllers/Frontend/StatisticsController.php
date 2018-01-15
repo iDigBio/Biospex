@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Interfaces\PanoptesTranscription;
-use App\Interfaces\Project;
+use App\Repositories\Interfaces\PanoptesTranscription;
+use App\Repositories\Interfaces\Project;
 use JavaScript;
 
 class StatisticsController extends Controller

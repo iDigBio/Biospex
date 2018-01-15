@@ -2,10 +2,10 @@
 
 namespace App\Jobs;
 
-use App\Interfaces\User;
+use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
 use App\Services\Api\NfnApi;
-use App\Interfaces\Expedition;
+use App\Repositories\Interfaces\Expedition;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Bus\Queueable;

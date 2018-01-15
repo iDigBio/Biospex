@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Interfaces\Expedition;
+use App\Repositories\Interfaces\Expedition;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;

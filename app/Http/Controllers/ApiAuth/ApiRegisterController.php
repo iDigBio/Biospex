@@ -5,7 +5,7 @@ namespace App\Http\Controllers\ApiAuth;
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Notifications\UserActivation;
-use App\Interfaces\ApiUser;
+use App\Repositories\Interfaces\ApiUser;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use App\Http\Requests\RegisterFormRequest;
 use App\Http\Requests\ResendActivationFormRequest;

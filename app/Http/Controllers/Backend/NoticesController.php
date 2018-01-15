@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Backend;
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\NoticeFormRequest;
-use App\Interfaces\User;
-use App\Interfaces\Notice;
+use App\Repositories\Interfaces\User;
+use App\Repositories\Interfaces\Notice;
 
 class NoticesController extends Controller
 {

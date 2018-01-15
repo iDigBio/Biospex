@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Interfaces\TeamCategory;
+use App\Repositories\Interfaces\TeamCategory;
 
 class TeamsController extends Controller
 {
