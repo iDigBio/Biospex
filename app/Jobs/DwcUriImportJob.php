@@ -113,7 +113,7 @@ class DwcUriImportJob implements ShouldQueue
     protected function checkFileType($file)
     {
         $finfo = new finfo(FILEINFO_MIME);
-        list($mime, $char) = explode(';', $finfo->buffer($file));
+        list($mime) = explode(';', $finfo->buffer($file));
         $types = ['application/zip', 'application/octet-stream'];
         if (!in_array(trim($mime), $types))
         {
