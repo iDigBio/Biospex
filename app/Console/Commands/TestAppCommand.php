@@ -10,8 +10,6 @@ class TestAppCommand extends Command
 
     use DispatchesJobs;
 
-    public $projectId;
-    public $expeditionId;
     /**
      * The console command name.
      */
@@ -21,7 +19,6 @@ class TestAppCommand extends Command
      * The console command description.
      */
     protected $description = 'Used to test code';
-
 
     /**
      * Create a new job instance.

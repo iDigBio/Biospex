@@ -38,10 +38,11 @@ interface Expedition extends RepositoryInterface
     /**
      * Retrieve expedition project, group, actors, and downloads.
      *
+     * @param $projectId
      * @param $expeditionId
      * @return mixed
      */
-    public function expeditionDownloadsByActor($expeditionId);
+    public function expeditionDownloadsByActor($projectId, $expeditionId);
 
     /**
      * Find expeditions for project with relationships. Find only trashed if needed.
