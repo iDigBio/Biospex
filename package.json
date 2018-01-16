@@ -33,7 +33,8 @@
         "uglify-js": "^3.2.2",
         "x-editable": "^1.5.1",
         "codemirror": "^5.32.0",
-        "summernote": "^0.8.8"
+        "summernote": "^0.8.8",
+        "cross-env": "^5.1.3"
     },
     "dependencies": {
         "laravel-echo": "^1.3.2",
@@ -43,7 +44,6 @@
         "vue": "^2.5.11",
         "path": "^0.12.7",
         "graceful-fs": "^4.1.11",
-        "cross-env.js": "^0.0.2-security",
         "axios": "^0.17.1"
     }
 }
