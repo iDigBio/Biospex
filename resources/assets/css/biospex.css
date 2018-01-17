@@ -566,50 +566,6 @@ h2.project-page-header {
     text-align: center;
 }
 
-@media (max-width: 991px) {
-    .navbar-nav > .notifications-menu > .dropdown-menu > li.footer > a {
-        background: #fff !important;
-        color: #444 !important;
-    }
-}
-
-.navbar-nav > .notifications-menu > .dropdown-menu > li.footer > a:hover {
-    text-decoration: none;
-    font-weight: normal;
-}
-
-.navbar-nav > .notifications-menu > .dropdown-menu > li .menu {
-    max-height: 200px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    overflow-x: hidden;
-}
-
-.navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a {
-    display: block;
-    white-space: nowrap;
-    /* Prevent text from breaking */
-    border-bottom: 1px solid #f4f4f4;
-}
-
-.navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a:hover {
-    background: #f4f4f4;
-    text-decoration: none;
-}
-
-.navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a {
-    color: #444444;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 10px;
-}
-
-.navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a > .glyphicon,
-.navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a > .fa,
-.navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a > .ion {
-    width: 20px;
-}
 
 .organizers dl {
     width: 100%;
@@ -1024,8 +980,14 @@ div#chartTranscriptionsDiv {
     margin: 0;
 }
 
+/* Google translate */
 .goog-te-gadget-icon {display:none;}
 .goog-te-gadget-simple a {text-decoration: none !important;}
 
 .goog-te-banner-frame.skiptranslate {display: none !important;}
 body { top: 0px !important; }
+
+.nav li.translate {
+    margin-top: 5px;
+    margin-right: 5px;
+}

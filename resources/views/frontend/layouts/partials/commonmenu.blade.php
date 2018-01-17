@@ -7,7 +7,7 @@
 @can('admin', Auth::getUser())
     <li><a href="{{ route('admin.dashboard.index') }}">{{ trans('pages.admin') }}</a></li>
 @endcan
-<li><div id="google_translate_element"></div><script type="text/javascript">
+<li class="translate"><div id="google_translate_element"></div><script type="text/javascript">
         function googleTranslateElementInit() {
             new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
         }
