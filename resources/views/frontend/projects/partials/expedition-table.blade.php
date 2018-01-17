@@ -8,7 +8,7 @@
         <th>Transcriptions Goal</th>
         <th>Transcriptions Completed</th>
         <th>Percent Complete</th>
-        <th class="sorter-false">Options</th>
+        <th class="fit sorter-false">Options</th>
     </tr>
     </thead>
     <tbody>

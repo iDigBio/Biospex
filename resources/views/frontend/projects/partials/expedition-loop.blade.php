@@ -14,7 +14,7 @@
     @else
         <td class="nowrap" colspan="3">{{ trans('expeditions.processing_not_started') }}</td>
     @endif
-    <td class="buttons-xs">
+    <td class="fit">
         <button title="@lang('buttons.viewTitle')" class="btn btn-primary btn-xs" type="button"
                 onClick="location.href='{{ route('web.expeditions.show', [$project->id, $expedition->id]) }}'">
             <span class="fa fa-eye fa-lrg"></span> <!-- @lang('buttons.view') --></button>

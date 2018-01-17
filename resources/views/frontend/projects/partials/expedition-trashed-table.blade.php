@@ -5,7 +5,7 @@
         <th>Title</th>
         <th>Description</th>
         <th>Created</th>
-        <th class="sorter-false">Options</th>
+        <th class="fit sorter-false">Options</th>
     </tr>
     </thead>
     <tbody>

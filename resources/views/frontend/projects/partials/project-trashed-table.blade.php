@@ -3,7 +3,7 @@
     <tr>
         <th>@lang('pages.title')</th>
         <th>@lang('pages.group')</th>
-        <th class="nowrap sorter-false">@lang('projects.project_options')</th>
+        <th class="fit sorter-false">@lang('projects.project_options')</th>
     </tr>
     </thead>
     <tbody>

@@ -3,7 +3,7 @@
         <tr id="test{{ $project->id }}">
             <td>{{ $project->title }}</td>
             <td><a href="{{ route('web.groups.show', [$group->id]) }}">{{ $group->title }}</a></td>
-            <td class="buttons-sm">
+            <td class="fit">
                 <button title="@lang('buttons.restoreTitle')"
                         class="btn btn-success btn-xs"
                         type="button"
