@@ -22,6 +22,7 @@
                 @include('frontend.layouts.partials.authmenu')
             @endif
             @include('frontend.layouts.partials.commonmenu')
+
         </ul>
         <ul class="nav navbar-nav  pull-right">
             @if (Auth::check())
