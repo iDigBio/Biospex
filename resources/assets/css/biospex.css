@@ -394,6 +394,12 @@ table.th-center th {
     text-align: center;
 }
 
+.table td.fit,
+.table th.fit {
+    white-space: nowrap;
+    width: 1%;
+}
+
 td span.fa-folder, span.fa-folder-open {
     cursor: pointer;
 }
@@ -412,9 +418,11 @@ td.ocrPreview {
     cursor: pointer;
 }
 
+/*
 td.buttons-sm {
     width: 410px;
 }
+*/
 
 td.buttons-smxs {
     width: 250px;
@@ -422,10 +430,6 @@ td.buttons-smxs {
 
 td.buttons-xs {
     width: 180px;
-}
-
-td.folder-space {
-    width: 50px;
 }
 
 .modal.fade:not(.in).left .modal-dialog {

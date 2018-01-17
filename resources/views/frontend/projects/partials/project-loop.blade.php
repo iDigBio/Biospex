@@ -4,7 +4,7 @@
             <td><a href="{{ route('web.projects.show', [$project->id]) }}">{{ $project->title }}</a>
             </td>
             <td><a href="{{ route('web.groups.show', [$group->id]) }}">{{ $group->title }}</a></td>
-            <td class="buttons-sm">
+            <td class="fit buttons-sm">
                 <button title="@lang('buttons.viewTitle')" class="btn btn-primary btn-xs"
                         type="button"
                         onClick="location.href='{{ route('web.projects.show', [$project->id]) }}'"><span
