@@ -11,14 +11,14 @@ class ChangeSubjectCountSubjectRemainingActorExpeditionTable extends Migration
      */
     public function up()
     {
-        if (table_has_index('ocr_queues', 'ocr_queues_subject_count_index'))
+        if (\App\Facades\GeneralHelper::tableHasIndex('ocr_queues', 'ocr_queues_subject_count_index'))
         {
             Schema::table('ocr_queues', function ($table) {
                 $table->dropIndex('ocr_queues_subject_count_index');
             });
         }
 
-        if (table_has_index('ocr_queues', 'ocr_queues_subject_remaining_index'))
+        if (\App\Facades\GeneralHelper::tableHasIndex('ocr_queues', 'ocr_queues_subject_remaining_index'))
         {
             Schema::table('ocr_queues', function ($table) {
                 $table->dropIndex('ocr_queues_subject_remaining_index');
