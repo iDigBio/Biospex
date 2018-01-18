@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Facades\GeneralHelper;
 use App\Repositories\Interfaces\Expedition;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -86,9 +87,9 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
         // Update stats
         $count = $expeditionContract->getExpeditionSubjectCounts($expedition->id);
         $expedition->stat->subject_count = $count;
-        $expedition->stat->transcriptions_total = transcriptions_total($count);
-        $expedition->stat->transcriptions_completed = transcriptions_completed($expedition->id);
-        $expedition->stat->percent_completed = transcriptions_percent_completed($expedition->stat->transcriptions_total, $expedition->stat->transcriptions_completed);
+        $expedition->stat->GeneralHelper::transcriptionsTotal = GeneralHelper::transcriptionsTotal($count);
+        $expedition->stat->GeneralHelper::transcriptionsCompleted = GeneralHelper::transcriptionsCompleted($expedition->id);
+        $expedition->stat->percent_completed = GeneralHelper::transcriptionsPercentCompleted($expedition->stat->transcriptions_total, $expedition->stat->transcriptions_completed);
 
         $expedition->stat->save();
     }

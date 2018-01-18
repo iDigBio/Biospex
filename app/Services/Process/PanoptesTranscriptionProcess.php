@@ -2,6 +2,7 @@
 
 namespace App\Services\Process;
 
+use App\Facades\GeneralHelper;
 use App\Repositories\Interfaces\Subject;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\TranscriptionLocation;
@@ -164,14 +165,14 @@ class PanoptesTranscriptionProcess
         {
             if (isset($row[$transcriptField]) && ! empty($row[$transcriptField]))
             {
-                $data[decamelize($transcriptField)] = $row[$transcriptField];
+                $data[GeneralHelper::decamelize($transcriptField)] = $row[$transcriptField];
 
                 continue;
             }
 
             if (isset($subject->occurrence->{$subjectField}) && ! empty($subject->occurrence->{$subjectField}))
             {
-                $data[decamelize($subjectField)] = $subject->occurrence->{$subjectField};
+                $data[GeneralHelper::decamelize($subjectField)] = $subject->occurrence->{$subjectField};
             }
         }
 
@@ -185,7 +186,7 @@ class PanoptesTranscriptionProcess
         }
 
         $data['state_county'] = empty($data['state_province']) || empty($data['county']) ?
-            null : get_state($data['state_province']) . '-' . trim(str_ireplace('county', '', $data['county']));
+            null : GeneralHelper::getState($data['state_province']) . '-' . trim(str_ireplace('county', '', $data['county']));
 
         if (null === $data['state_county'])
         {

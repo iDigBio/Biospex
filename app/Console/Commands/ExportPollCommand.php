@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Events\PollExportEvent;
+use App\Facades\GeneralHelper;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\ExportQueue;
 use App\Services\Actor\ActorFactory;
@@ -95,7 +96,7 @@ class ExportPollCommand extends Command
 
             $notice = $record->queued ?
                 trans('pages.export_processing', [
-                    'stage' => camelCaseToWords($stage),
+                    'stage' => GeneralHelper::camelCaseToWords($stage),
                     'title' => $queue->expedition->title,
                     'processedRecords' => trans_choice('pages.processed_records', $processed, [
                         'processed' => $processed,

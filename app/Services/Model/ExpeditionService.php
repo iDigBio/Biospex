@@ -3,6 +3,7 @@
 namespace App\Services\Model;
 
 use App\Facades\Flash;
+use App\Facades\GeneralHelper;
 use App\Repositories\Interfaces\Project;
 use App\Jobs\UpdateNfnWorkflowJob;
 use App\Repositories\Interfaces\Expedition;
@@ -207,7 +208,7 @@ class ExpeditionService
 
         $values = [
             'subject_count'        => count($subjects),
-            'transcriptions_total' => transcriptions_total(count($subjects)),
+            'transcriptions_total' => GeneralHelper::transcriptionsTotal(count($subjects)),
         ];
 
         $expedition->stat()->updateOrCreate(['expedition_id' => $expedition->id], $values);
@@ -302,13 +303,13 @@ class ExpeditionService
             $this->subjectContract->detachSubjects($expedition->subjects, $expedition->id);
             $expedition->subjects()->attach($subjectIds);
 
-            $total = transcriptions_total(count($subjectIds));
-            $completed = transcriptions_completed($expedition->id);
+            $total = GeneralHelper::transcriptionsTotal(count($subjectIds));
+            $completed = GeneralHelper::transcriptionsCompleted($expedition->id);
             $values = [
                 'subject_count'            => count($subjectIds),
                 'transcriptions_total'     => $total,
                 'transcriptions_completed' => $completed,
-                'percent_completed'        => transcriptions_percent_completed($total, $completed)
+                'percent_completed'        => GeneralHelper::transcriptionsPercentCompleted($total, $completed)
             ];
 
             $this->expeditionStatContract->updateOrCreate(['expedition_id' => $expedition->id], $values);

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Facades\GeneralHelper;
 use App\Repositories\Interfaces\Expedition;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -48,9 +49,11 @@ class ExpeditionStatJob extends Job implements ShouldQueue
         $count = $expedition->getExpeditionSubjectCounts($this->expeditionId);
 
         $record->stat->subject_count = $count;
-        $record->stat->transcriptions_total = transcriptions_total($count);
-        $record->stat->transcriptions_completed = transcriptions_completed($this->expeditionId);
-        $record->stat->percent_completed = transcriptions_percent_completed($record->stat->transcriptions_total, $record->stat->transcriptions_completed);
+        $record->stat->GeneralHelper::transcriptionsTotal = GeneralHelper::transcriptionsTotal($count);
+        $record->stat->GeneralHelper::transcriptionsCompleted = GeneralHelper::transcriptionsCompleted($this->expeditionId);
+        $record->stat->percent_completed = GeneralHelper::transcriptionsPercentCompleted($record->stat->GeneralHelper::transcriptionsTotal, $record->stat->GeneralHelper::transcriptionsCompleted);
+        $record->stat->percent_completed = GeneralHelper::transcriptionsPercentCompleted($record->stat->transcriptions_total, $record->stat->transcriptions_completed);
+
 
         $record->stat->save();
     }

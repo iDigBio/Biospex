@@ -2,6 +2,7 @@
 
 namespace App\Services\Actor\NfnPanoptes;
 
+use App\Facades\GeneralHelper;
 use App\Notifications\NfnExportComplete;
 use App\Services\Actor\ActorImageService;
 use App\Services\Actor\ActorRepositoryService;
@@ -450,7 +451,7 @@ class NfnPanoptesExport
             trans('emails.expedition_export_complete_message', ['expedition' => $this->config->expedition->title])
         ];
 
-        $csv = create_csv($this->config->queue->missing);
+        $csv = GeneralHelper::createCsv($this->config->queue->missing);
 
         $this->config->owner->notify(new NfnExportComplete($message, $csv));
     }

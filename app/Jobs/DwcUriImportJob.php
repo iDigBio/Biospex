@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Facades\GeneralHelper;
 use App\Repositories\Interfaces\Import;
 use App\Repositories\Interfaces\Project;
 use App\Notifications\DarwinCoreImportError;
@@ -66,7 +67,7 @@ class DwcUriImportJob implements ShouldQueue
             $fileName = basename($this->data['url']);
             $filePath = config('config.subject_import_dir') . '/' . $fileName;
 
-            $file = file_get_contents(url_encode($this->data['url']));
+            $file = file_get_contents(GeneralHelper::urlEncode($this->data['url']));
             if ($file === false)
             {
                 throw new \Exception(trans('errors.zip_download'));

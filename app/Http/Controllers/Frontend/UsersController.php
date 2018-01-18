@@ -63,7 +63,7 @@ class UsersController extends Controller
             return redirect()->route('web.projects.index');
         }
 
-        $timezones = timezone_select();
+        $timezones = DateHelper::timeZoneSelect();
         $cancel = route('web.projects.index');
 
         return view('frontend.users.edit', compact('user', 'timezones', 'cancel'));

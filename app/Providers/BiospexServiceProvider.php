@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Observers\PanoptesTranscriptionObserver;
-use App\Repositories\Eloquent\MongoDb\SubjectTestRepository;
 use Illuminate\Support\ServiceProvider;
 
 use App\Repositories\Interfaces\ActorContact;
@@ -113,7 +112,6 @@ class BiospexServiceProvider extends ServiceProvider
      */
     public function setObservers()
     {
-        //\App\Models\ExportQueue::observe(ExportQueueObserver::class);
         \App\Models\PanoptesTranscription::observe(PanoptesTranscriptionObserver::class);
     }
 
@@ -167,11 +165,15 @@ class BiospexServiceProvider extends ServiceProvider
     {
         $this->app->singleton('flash', function ()
         {
-            return new \App\Services\Facades\Flash();
+            return new \App\Services\Helpers\Flash();
         });
 
         $this->app->singleton('datehelper', function(){
-            return new \App\Services\Facades\DateHelper();
+            return new \App\Services\Helpers\DateHelper();
+        });
+
+        $this->app->singleton('generalhelper', function(){
+            return new \App\Services\Helpers\GeneralHelper();
         });
     }
 }

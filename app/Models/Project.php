@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Facades\DateHelper;
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
@@ -258,14 +259,6 @@ class Project extends Model implements StaplerableInterface
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
-     */
-    public function classifications()
-    {
-        return $this->hasManyThrough(NfnClassification::class, NfnWorkflow::class);
-    }
-
-    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function panoptesTranscriptions()
@@ -282,14 +275,11 @@ class Project extends Model implements StaplerableInterface
     }
 
     /**
-     * NfnClassificationsEarliestFinishedAtDate relationship.
-     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function classificationsEarliestFinishedAtDate()
+    public function resources()
     {
-        return $this->hasManyThrough(NfnClassification::class, NfnWorkflow::class)
-            ->selectRaw('DATE_FORMAT(MIN(finished_at), \'%Y-%m-%d\') as earliest_finished_at_date');
+        return $this->hasMany(ProjectResource::class);
     }
 
     /**
@@ -304,29 +294,11 @@ class Project extends Model implements StaplerableInterface
         return $related ? $related->earliest_finished_at_date : null;
     }
 
-    /**
-     * NfnClassificationsLateFinishedAtDate relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function classificationsLatestFinishedAtDate()
-    {
-        return $this->hasManyThrough(NfnClassification::class, NfnWorkflow::class)
-            ->selectRaw('DATE_FORMAT(MAX(finished_at), \'%Y-%m-%d\') as latest_finished_at_date');
-    }
 
     /**
-     * NfnClassificationsLatestFinishedAtDate attribute.
-     *
-     * @return int
+     * Get earliest last finished_at date
+     * @return mixed
      */
-    public function getLatestFinishedAtDateAttribute()
-    {
-        $related = $this->getRelationValue('classificationsLatestFinishedAtDate')->first();
-
-        return $related ? $related->latest_finished_at_date : null;
-    }
-
     public function getTranscriptionsEarliestFinishedAtDate()
     {
         return $this->hasMany(PanoptesTranscription::class)->min('classification_finished_at');
@@ -408,7 +380,7 @@ class Project extends Model implements StaplerableInterface
 
                 if ($type === 'date') {
                     $build[$field] = isset($this->{$value}) ?
-                        format_date($this->{$value}, 'Y-m-d m:d:s') : format_date(null);
+                        DateHelper::formatDate($this->{$value},'Y-m-d m:d:s') : DateHelper::formatDate(null);
                 }
 
                 if ($type === 'column') {

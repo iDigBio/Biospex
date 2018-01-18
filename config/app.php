@@ -242,6 +242,7 @@ return [
 
         'DateHelper' => \App\Facades\DateHelper::class,
         'Flash'      => \App\Facades\Flash::class,
+        'GeneralHelper' => \App\Facades\GeneralHelper::class
     ],
 
 ];

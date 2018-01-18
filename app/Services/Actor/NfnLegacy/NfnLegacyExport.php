@@ -2,6 +2,7 @@
 
 namespace App\Services\Actor\NfnLegacy;
 
+use App\Facades\GeneralHelper;
 use App\Notifications\NfnExportComplete;
 use App\Notifications\NfnExportError;
 
@@ -328,7 +329,7 @@ class NfnLegacyExport
             trans('emails.expedition_export_complete_message', ['expedition' => $this->record->title])
         ];
 
-        $csv = create_csv($this->actorImageService->getMissingImages());
+        $csv = GeneralHelper::createCsv($this->actorImageService->getMissingImages());
 
         $this->record->project->group->owner->email->notify(new NfnExportComplete($message, $csv));
     }

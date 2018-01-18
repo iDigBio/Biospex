@@ -5,12 +5,11 @@ namespace App\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * Class DateHelper
+ * Class GeneralHelper
  * @package App\Facades
  */
-class DateHelper extends Facade
+class GeneralHelper extends Facade
 {
-
     /**
      * Get the registered name of the component.
      *
@@ -18,6 +17,6 @@ class DateHelper extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return \App\Services\Helpers\DateHelper::class;
+        return \App\Services\Helpers\GeneralHelper::class;
     }
 }

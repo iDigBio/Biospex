@@ -16,14 +16,14 @@
             <tr>
                 <td>{{ $expedition->title }}</td>
                 <td>{{ $expedition->description }}</td>
-                <td>{{ format_date($expedition->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
+                <td>{{ DateHelper::formatDate($expedition->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
                 <td>{{ $expedition->subjectsCount }}</td>
                 @if( ! $expedition->actors->isEmpty())
                     <td>{{ $expedition->stat->transcriptions_total }}</td>
                     <td>{{ $expedition->stat->transcriptions_completed }}</td>
                     <td class="nowrap">
                 <span class="complete">
-                    <span class="complete{{ round_up_to_any_five($expedition->stat->percent_completed) }}">&nbsp;</span>
+                    <span class="complete{{ GeneralHelper::roundUpToAnyFive($expedition->stat->percent_completed) }}">&nbsp;</span>
                 </span> {{ $expedition->stat->percent_completed }}%
                     </td>
                 @else

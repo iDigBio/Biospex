@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Facades\GeneralHelper;
 use App\Repositories\Interfaces\Project;
 use App\Models\Import;
 use App\Notifications\DarwinCoreImportError;
@@ -66,8 +67,8 @@ class DwcFileImportJob implements ShouldQueue
 
             $dwcProcess->process($this->import->project_id, $scratchFileDir);
 
-            $duplicates = create_csv($dwcProcess->getDuplicates());
-            $rejects = create_csv($dwcProcess->getRejectedMedia());
+            $duplicates = GeneralHelper::createCsv($dwcProcess->getDuplicates());
+            $rejects = GeneralHelper::createCsv($dwcProcess->getRejectedMedia());
 
             $project->group->owner->notify(new ImportComplete($project->title, $duplicates, $rejects));
 

@@ -4,12 +4,9 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Project as Model;
 use App\Repositories\Interfaces\Project;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class ProjectRepository extends EloquentRepository implements Project
 {
-    use LadaCacheTrait;
-
     /**
      * Specify Model class name
      *

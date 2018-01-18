@@ -40,7 +40,7 @@ class UsersController extends Controller
 
         $editUser = $userId !== null ? $this->userContract->findWith($userId, ['profile']) : null;
 
-        $timezones = timezone_select();
+        $timezones = DateHelper::timeZoneSelect();
 
         return view('backend.users.index', compact('user', 'users', 'trashed', 'editUser', 'timezones'));
     }

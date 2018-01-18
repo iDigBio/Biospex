@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Facades\DateHelper;
+use App\Facades\GeneralHelper;
 use App\Models\User;
 use App\Notifications\GridCsvExport;
 use App\Services\Csv\Csv;
@@ -93,7 +94,7 @@ class GridExportCsvJob implements ShouldQueue
 
             $records = $docs->map(function($doc) use ($csv){
                 unset($doc['_id'], $doc['occurrence']);
-                $doc['orc'] = force_utf8($doc['ocr']);
+                $doc['orc'] = GeneralHelper::forceUtf8($doc['ocr']);
                 $doc['expedition_ids'] = trim(implode(', ', $doc['expedition_ids']), ',');
                 $doc['updated_at'] = DateHelper::formatMongoDbDate($doc['updated_at'], 'Y-m-d H:i:s');
                 $doc['created_at'] = DateHelper::formatMongoDbDate($doc['created_at'], 'Y-m-d H:i:s');

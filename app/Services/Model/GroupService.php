@@ -213,7 +213,7 @@ class GroupService
      * Restore Group.
      *
      * @param $group
-     * @return \App\Services\Facades\Flash
+     * @return \App\Services\Helpers\Flash
      */
     public function restoreGroup($group)
     {

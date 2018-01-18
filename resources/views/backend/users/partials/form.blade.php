@@ -24,10 +24,10 @@
                             </div>
                             <div class="col-md-4">
                                 <p><em>{{ trans('pages.account_created') }}
-                                        : {{ format_date($editUser->created_at, 'Y-m-d', $editUser->profile->timezone) }}</em>
+                                        : {{ DateHelper::formatDate($editUser->created_at, 'Y-m-d', $editUser->profile->timezone) }}</em>
                                 </p>
                                 <p><em>{{ trans('pages.last_updated') }}
-                                        : {{ format_date($editUser->updated_at, 'Y-m-d', $editUser->profile->timezone) }}</em>
+                                        : {{ DateHelper::formatDate($editUser->updated_at, 'Y-m-d', $editUser->profile->timezone) }}</em>
                                 </p>
                             </div>
                         </div>

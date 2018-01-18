@@ -3,7 +3,7 @@
     @if( ! $expedition->actors->isEmpty())
         <td class="nowrap">
             <span class="complete">
-            <span class="complete{{ round_up_to_any_five($expedition->stat->percent_completed) }}">&nbsp;</span>
+            <span class="complete{{ GeneralHelper::roundUpToAnyFive($expedition->stat->percent_completed) }}">&nbsp;</span>
             </span> {{ $expedition->stat->percent_completed }}%
         </td>
     @else

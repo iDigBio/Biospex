@@ -1,7 +1,7 @@
 <tr>
     <td>{{ $expedition->title }}</td>
     <td>{{ $expedition->description }}</td>
-    <td>{{ format_date($expedition->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
+    <td>{{ DateHelper::formatDate($expedition->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
     <td class="fit">
         <button title="@lang('buttons.restoreTitle')"
                 class="btn btn-success btn-xs"

@@ -21,8 +21,8 @@
                     <p><strong>{{ trans('pages.email') }}:</strong> {{ $user->email }}</p>
                 </div>
                 <div class="col-md-4">
-                    <p><em>{{ trans('pages.account_created') }}: {{ format_date($user->created_at, 'Y-m-d', $user->profile->timezone) }}</em></p>
-                    <p><em>{{ trans('pages.last_updated') }}: {{ format_date($user->updated_at, 'Y-m-d', $user->profile->timezone) }}</em></p>
+                    <p><em>{{ trans('pages.account_created') }}: {{ DateHelper::formatDate($user->created_at, 'Y-m-d', $user->profile->timezone) }}</em></p>
+                    <p><em>{{ trans('pages.last_updated') }}: {{ DateHelper::formatDate($user->updated_at, 'Y-m-d', $user->profile->timezone) }}</em></p>
                 </div>
                 </div>
                 {!! Form::open([

@@ -33,7 +33,7 @@
                 <tr>
                     <td>{{ link_to_route('web.expeditions.show', $expedition->title, ['projects' => $expedition->project_id, 'expeditions' => $expedition->id]) }}</td>
                     <td>{{ $expedition->description }}</td>
-                    <td>{{ convert_time_zone($expedition->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
+                    <td>{{ DateHelper::convertTimeZone($expedition->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
                     <td>{{ link_to_route('web.groups.show', $expedition->project->group->title, ['groups' => $expedition->project->group->id]) }}</td>
                     <td>{{ link_to_route('web.projects.show', $expedition->project->title, ['projects' => $expedition->project->id]) }}</td>
                     <td>{{ $expedition->stat->subject_count }}</td>
@@ -42,7 +42,7 @@
                         <td>{{ $expedition->stat->transcriptions_completed }}</td>
                         <td class="nowrap">
                             <span class="complete">
-                                <span class="complete{{ round_up_to_any_five($expedition->stat->percent_completed) }}">&nbsp;</span>
+                                <span class="complete{{ GeneralHelper::roundUpToAnyFive($expedition->stat->percent_completed) }}">&nbsp;</span>
                             </span> {{ $expedition->stat->percent_completed }}%
                         </td>
                     @else

@@ -50,7 +50,7 @@
             "App\\": "app/"
         },
         "files": [
-            "app/Http/helpers.php"
+
         ]
     },
     "autoload-dev": {
