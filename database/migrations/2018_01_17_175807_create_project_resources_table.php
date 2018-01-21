@@ -17,13 +17,13 @@ class CreateProjectResourcesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('project_id');
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
-            $table->enum('type', ['website url', 'video url', 'file download'])->default('website url');
+            $table->enum('type', ['Website URL', 'Video URL', 'File Download'])->nullable();
             $table->string('name');
             $table->string('description');
-            $table->string('upload_file_name')->nullable();
-            $table->integer('upload_file_size')->nullable();
-            $table->string('upload_content_type')->nullable();
-            $table->timestamp('upload_updated_at')->nullable();
+            $table->string('download_file_name')->nullable();
+            $table->integer('download_file_size')->nullable();
+            $table->string('download_content_type')->nullable();
+            $table->timestamp('download_updated_at')->nullable();
             $table->timestamps();
         });
     }
