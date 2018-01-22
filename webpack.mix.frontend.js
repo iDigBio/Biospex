@@ -29,7 +29,6 @@ mix.webpackConfig({
         'free-jqgrid/js/jquery.jqgrid.min',
         'bootstrap-sass',
         'bootstrap-notify/bootstrap-notify',
-        'bootstrap-select',
         'codemirror/lib/codemirror',
         'summernote/dist/summernote',
         'jquery-validation/dist/jquery.validate',
