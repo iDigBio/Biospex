@@ -25,16 +25,16 @@
 
                 <div class="form-group required {{ ($errors->has('group_id')) ? 'has-error' : '' }}" for="group">
                     {!! Form::label('group_id', trans('forms.group'), ['class' => 'col-sm-2 control-label']) !!}
-                    <div class="col-sm-10">
-                        {!! Form::select('group_id', $selectGroups, null, ['class' => 'selectpicker']) !!}
+                    <div class="col-sm-3">
+                        {!! Form::select('group_id', $selectGroups, null, ['class' => 'form-control']) !!}
                     </div>
                     {{ ($errors->has('group_id') ? $errors->first('group_id') : '') }}
                 </div>
 
                 <div class="form-group required {{ ($errors->has('status')) ? 'has-error' : '' }}" for="group">
                     {!! Form::label('status', trans('forms.status'), ['class' => 'col-sm-2 control-label']) !!}
-                    <div class="col-sm-10">
-                        {!! Form::select('status', $statusSelect, null, ['class' => 'selectpicker']) !!}
+                    <div class="col-sm-3">
+                        {!! Form::select('status', $statusSelect, null, ['class' => 'form-control']) !!}
                     </div>
                     {{ ($errors->has('status') ? $errors->first('status') : '') }}
                 </div>
@@ -202,7 +202,7 @@
                 <div class="form-group required {{ ($errors->has('workflow_id')) ? 'has-error' : '' }}">
                     {!! Form::label('workflow_id', trans('forms.workflows'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-4">
-                        {!! Form::select('workflow_id', $workflows, null, ['class' => 'selectpicker', 'data-width' => 'fit']) !!}
+                        {!! Form::select('workflow_id', $workflows, null, ['class' => 'form-control']) !!}
                     </div>
                     {{ ($errors->has('workflow_id') ? $errors->first('workflow_id') : '') }}
                 </div>
@@ -226,23 +226,7 @@
                 <div class="form-group">
                     {!! Form::label('', trans('forms.project_resources'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="controls col-sm-10">
-                        <div class="entry">
-                            <div class="form-group input-group">
-                        <span class="input-group-btn">
-                            {!! Form::button('<i class="fa fa-plus fa-lrg"></i> ', ['type' => 'button', 'class' => 'btn btn-success btn-add']) !!}
-                        </span>
-                                {!! Form::select('resource[][type]', GeneralHelper::getEnumValues('project_resources', 'type', true), null, ['class' => 'selectpicker', 'data-width' => 'fit']) !!}
-                                <div class="col-sm-4">
-                                    {!! Form::text('resource[][name]', null, ['class' => 'form-control', 'placeholder' => trans('forms.project_resources_name')]) !!}
-                                </div>
-                                <div class="col-sm-5">
-                                    {!! Form::text('resource[][description]', null, ['class' => 'form-control', 'placeholder' => trans('forms.project_resources_description')]) !!}
-                                </div>
-                                <div class="col-sm-1">
-                                    {!! Form::file('resource[][upload]') !!}
-                                </div>
-                            </div>
-                        </div>
+                        @include('frontend.projects.partials.project-resource-create')
                     </div>
                 </div>
 

@@ -26,16 +26,16 @@
 
                 <div class="form-group required {{ ($errors->has('group_id')) ? 'has-error' : '' }}" for="group">
                     {!! Form::label('group_id', trans('forms.group'), array('class' => 'col-sm-2 control-label')) !!}
-                    <div class="col-sm-10">
-                        {!! Form::select('group_id', $selectGroups, $project->group_id, ['class' => 'selectpicker']) !!}
+                    <div class="col-sm-3">
+                        {!! Form::select('group_id', $selectGroups, $project->group_id, ['class' => 'form-control']) !!}
                     </div>
                     {{ ($errors->has('group_id') ? $errors->first('group_id') : '') }}
                 </div>
 
                 <div class="form-group required {{ ($errors->has('status')) ? 'has-error' : '' }}" for="group">
                     {!! Form::label('status', trans('forms.status'), array('class' => 'col-sm-2 control-label')) !!}
-                    <div class="col-sm-10">
-                        {!! Form::select('status', $statusSelect, $project->status, ['class' => 'selectpicker']) !!}
+                    <div class="col-sm-3">
+                        {!! Form::select('status', $statusSelect, $project->status, ['class' => 'form-control']) !!}
                     </div>
                     {{ ($errors->has('status') ? $errors->first('status') : '') }}
                 </div>
@@ -203,16 +203,16 @@
                 @if($workflowEmpty)
                     <div class="form-group required {{ ($errors->has('workflow_id')) ? 'has-error' : '' }}">
                         {!! Form::label('workflow_id', trans('forms.workflows'), array('class' => 'col-sm-2 control-label')) !!}
-                        <div class="col-sm-4">
-                            {!! Form::select('workflow_id', $workflows, $project->workflow_id, ['class' => 'selectpicker', 'data-width' => 'fit']) !!}
+                        <div class="col-sm-3">
+                            {!! Form::select('workflow_id', $workflows, $project->workflow_id, ['class' => 'form-control']) !!}
                         </div>
                         {{ ($errors->has('workflow_id') ? $errors->first('workflow_id') : '') }}
                     </div>
                 @else
                     <div class="form-group required {{ ($errors->has('workflow_id')) ? 'has-error' : '' }}">
                         {!! Form::label('workflow_id', trans('forms.workflows'), array('class' => 'col-sm-2 control-label')) !!}
-                        <div class="col-sm-4">
-                            {!! Form::select('workflow_id', $workflows, $project->workflow_id, ['disabled', 'data-width' => 'fit']) !!}
+                        <div class="col-sm-3">
+                            {!! Form::select('workflow_id', $workflows, $project->workflow_id, ['disabled']) !!}
                         </div>
                         @if( ! $workflowEmpty)
                             {!! Form::hidden('workflow_id', $project->workflow_id) !!}
@@ -233,7 +233,7 @@
                 </div>
 
                 <div class="form-group {{ ($errors->has('banner')) ? 'has-error' : '' }}">
-                    {!! Form::label('banner', trans('forms.banner'), array('class' => 'col-sm-2 control-label')) !!}
+                    {!! Form::label('', trans('forms.banner'), array('class' => 'col-sm-2 control-label')) !!}
                     <div class="col-sm-5">
                         {!! Form::file('banner') !!} {{ trans('forms.banner_min') }}
                     </div>
@@ -244,7 +244,21 @@
                 </div>
 
                 <div class="form-group">
+                    {!! Form::label('', trans('forms.project_resources'), ['class' => 'col-sm-2 control-label']) !!}
+                    <div class="controls col-sm-10">
+                        @if($errors->has('resource.*'))
+                            @for($i=0; $i<Input::old('resources'); $i++)
+                                @include('frontend.projects.partials.project-resource-edit')
+                            @endfor
+                        @else
+                            @include('frontend.projects.partials.project-resource-create')
+                        @endif
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
+                        {!! Form::hidden('resources', 1) !!}
                         {!! Form::hidden('id', $project->id) !!}
                         {!! Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary')) !!}
                         {!! link_to(URL::previous(), trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger']) !!}

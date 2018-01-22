@@ -25,16 +25,16 @@
 
                 <div class="form-group required {{ ($errors->has('group_id')) ? 'has-error' : '' }}" for="group">
                     {!! Form::label('group_id', trans('forms.group'), array('class' => 'col-sm-2 control-label')) !!}
-                    <div class="col-sm-10">
-                        {!! Form::select('group_id', $selectGroups, $project->group_id, ['class' => 'selectpicker']) !!}
+                    <div class="col-sm-3">
+                        {!! Form::select('group_id', $selectGroups, $project->group_id, ['class' => 'form-control']) !!}
                     </div>
                     {{ ($errors->has('group_id') ? $errors->first('group_id') : '') }}
                 </div>
 
                 <div class="form-group required {{ ($errors->has('status')) ? 'has-error' : '' }}" for="group">
                     {!! Form::label('status', trans('forms.status'), array('class' => 'col-sm-2 control-label')) !!}
-                    <div class="col-sm-10">
-                        {!! Form::select('status', $statusSelect, $project->status, ['class' => 'selectpicker']) !!}
+                    <div class="col-sm-3">
+                        {!! Form::select('status', $statusSelect, $project->status, ['class' => 'form-control']) !!}
                     </div>
                     {{ ($errors->has('status') ? $errors->first('status') : '') }}
                 </div>
@@ -202,7 +202,7 @@
                 <div class="form-group required {{ ($errors->has('workflow_id')) ? 'has-error' : '' }}">
                     {!! Form::label('workflow_id', trans('forms.workflows'), array('class' => 'col-sm-2 control-label')) !!}
                     <div class="col-sm-4">
-                        {!! Form::select('workflow_id', $workflows, $project->workflow_id, ['class' => 'selectpicker', 'data-width' => 'fit']) !!}
+                        {!! Form::select('workflow_id', $workflows, $project->workflow_id, ['class' => 'form-control']) !!}
                     </div>
                     {{ ($errors->has('workflow_id') ? $errors->first('workflow_id') : '') }}
                 </div>
@@ -227,6 +227,13 @@
                         <img src="{{ $project->banner->url('thumb') }}"/>
                     </div>
                     {{ ($errors->has('banner') ? $errors->first('banner') : '') }}
+                </div>
+
+                <div class="form-group">
+                    {!! Form::label('', trans('forms.project_resources'), ['class' => 'col-sm-2 control-label']) !!}
+                    <div class="controls col-sm-10">
+                        @include('frontend.projects.partials.project-resource-create')
+                    </div>
                 </div>
 
                 <div class="form-group">
