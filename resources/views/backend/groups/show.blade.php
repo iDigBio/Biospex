@@ -48,7 +48,7 @@
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="fa fa-user fa-lg"
                                                                            title="Group Owner"></i></span>
-                                        {!! Form::select('owner', $group->users->pluck('email', 'id'), $group->owner->id, ['class' => 'selectpicker form-control']) !!}
+                                        {!! Form::select('owner', $group->users->pluck('email', 'id'), $group->owner->id, ['class' => 'form-control']) !!}
                                     </div>
                                     {{ ($errors->has('owner') ? $errors->first('owner') : '') }}
                                 </div>
