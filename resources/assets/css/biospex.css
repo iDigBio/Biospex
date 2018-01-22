@@ -418,12 +418,6 @@ td.ocrPreview {
     cursor: pointer;
 }
 
-/*
-td.buttons-sm {
-    width: 410px;
-}
-*/
-
 td.buttons-smxs {
     width: 250px;
 }
@@ -440,12 +434,6 @@ td.buttons-xs {
 .modal-open .modal, a.noClick:focus {
     outline: none !important
 }
-
-/*
-.red {
-    color: #FF0000;
-}
-*/
 
 .processes span.title {
     font-weight: bold;
@@ -982,6 +970,10 @@ div#chartTranscriptionsDiv {
 }
 .subgrid-data .ui-jqgrid-legacy-subgrid  {
     margin: 0;
+}
+
+.project-resource div.form-group {
+    margin-right:0px;
 }
 
 /* Google translate */

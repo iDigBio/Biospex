@@ -200,11 +200,25 @@ $(function () {
             .removeClass('btn-add').addClass('btn-remove')
             .removeClass('btn-success').addClass('btn-danger')
             .html('<span class="fa fa-minus fa-lrg"></span>');
+        renumber_resources()
     }).on('click', '.btn-remove', function (e) {
         $(this).parents('.entry:first').remove();
-
+        renumber_resources()
         e.preventDefault();
         return false;
     });
 });
+
+$.fn.getType = function(){ return this[0].tagName == "INPUT" ? this[0].type.toLowerCase() : this[0].tagName.toLowerCase(); }
+
+function renumber_resources() {
+    let controls = $('.controls');
+    controls.children('.entry').each(function(index) {
+        let prefix = "resource[" + index + "]";
+        $(this).find(":input").each(function() {
+            this.name = this.name.replace(/resource\[\d+\]/, prefix);
+        });
+    });
+    $("[name='resources']").val(controls.children().length);
+}
 

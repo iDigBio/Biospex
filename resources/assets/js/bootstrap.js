@@ -17,7 +17,6 @@ try {
 
     require('bootstrap-sass');
     require('bootstrap-notify/bootstrap-notify');
-    require('bootstrap-select/dist/js/bootstrap-select');
     require('codemirror/lib/codemirror');
     require('summernote/dist/summernote');
 
