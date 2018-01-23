@@ -18,6 +18,6 @@
     </div>
     <div class="col-sm-2">
         {!! Form::label('', trans('File'), ['class' => 'control-label']) !!}
-        {!! Form::file('resources[0][upload]') !!}
+        {!! Form::file('resources[0][download]') !!}
     </div>
 </div>
