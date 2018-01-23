@@ -21,25 +21,25 @@ class ProjectFormRequest extends Request
     public function rules()
     {
         $rules = [
-            'group_id'               => 'required|integer|min:1',
-            'status'                 => 'required',
-            'title'                  => 'required|between:6,140|unique:projects,title,' . $this->route('projects'),
-            'contact'                => 'required',
-            'contact_email'          => 'required|min:4|max:32|email',
-            'contact_title'          => 'required',
-            'description_short'      => 'required|between:6,140',
-            'description_long'       => 'required',
-            'keywords'               => 'required',
-            'workflow_id'            => 'required',
-            'organization_website'   => 'nullable|url',
-            'blog_url'               => 'nullable|url',
-            'facebook'               => 'nullable|url',
-            'twitter'                => 'nullable|url',
-            'banner'                 => 'image|dimensions:min_width=1200,min_height=250',
-            'logo'                   => 'image|dimensions:max_width=300,max_height=200',
-            'resource.*.name'        => new ResourceNameValidation(),
-            'resource.*.description' => 'required_with:resource.*.type',
-            'resource.*.download'    => 'required_if:resource.*.type, "File Download"|file|mimes:txt,doc,csv,pdf'
+            'group_id'                => 'required|integer|min:1',
+            'status'                  => 'required',
+            'title'                   => 'required|between:6,140|unique:projects,title,' . $this->route('projects'),
+            'contact'                 => 'required',
+            'contact_email'           => 'required|min:4|max:32|email',
+            'contact_title'           => 'required',
+            'description_short'       => 'required|between:6,140',
+            'description_long'        => 'required',
+            'keywords'                => 'required',
+            'workflow_id'             => 'required',
+            'organization_website'    => 'nullable|url',
+            'blog_url'                => 'nullable|url',
+            'facebook'                => 'nullable|url',
+            'twitter'                 => 'nullable|url',
+            'banner'                  => 'image|dimensions:min_width=1200,min_height=250',
+            'logo'                    => 'image|dimensions:max_width=300,max_height=200',
+            'resources.*.name'        => new ResourceNameValidation(),
+            'resources.*.description' => 'required_with:resources.*.type',
+            'resources.*.download'    => 'required_if:resources.*.type, "File Download"|file|mimes:txt,doc,csv,pdf'
 
         ];
 
@@ -63,11 +63,11 @@ class ProjectFormRequest extends Request
     public function messages()
     {
         return [
-            'resource.*.name.required_with'        => 'Type selected',
-            'resource.*.description.required_with' => 'Type selected',
-            'resource.*.download.required_if'      => 'Type is File',
-            'resource.*.download.file'             => 'Upload incomplete',
-            'resource.*.download.mimes'            => 'Accepted files: txt,doc,csv,pdf',
+            'resources.*.name.required_with'        => 'Type selected',
+            'resources.*.description.required_with' => 'Type selected',
+            'resources.*.download.required_if'      => 'Type is File',
+            'resources.*.download.file'             => 'Upload incomplete',
+            'resources.*.download.mimes'            => 'Accepted files: txt,doc,csv,pdf',
         ];
     }
 }
