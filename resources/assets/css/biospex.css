@@ -972,10 +972,6 @@ div#chartTranscriptionsDiv {
     margin: 0;
 }
 
-.project-resource div.form-group {
-    margin-right:0px;
-}
-
 /* Google translate */
 .goog-te-gadget-icon {display:none;}
 .goog-te-gadget-simple a {text-decoration: none !important;}

@@ -35,7 +35,7 @@ class ProjectResource extends Model implements StaplerableInterface
         'type',
         'name',
         'description',
-        'upload'
+        'download'
     ];
 
     /**
@@ -45,7 +45,7 @@ class ProjectResource extends Model implements StaplerableInterface
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('upload', ['styles' => []]);
+        $this->hasAttachedFile('download', ['styles' => []]);
 
         parent::__construct($attributes);
     }

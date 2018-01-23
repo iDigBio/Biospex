@@ -246,8 +246,8 @@
                 <div class="form-group">
                     {!! Form::label('', trans('forms.project_resources'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="controls col-sm-10">
-                        @if($errors->has('resource.*'))
-                            @for($i=0; $i<Input::old('resources'); $i++)
+                        @if($errors->has('resources.*'))
+                            @for($i=0; $i<Input::old('resourceFields'); $i++)
                                 @include('frontend.projects.partials.project-resource-edit')
                             @endfor
                         @else
@@ -258,7 +258,7 @@
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        {!! Form::hidden('resources', 1) !!}
+                        {!! Form::hidden('resourceFields', 1) !!}
                         {!! Form::hidden('id', $project->id) !!}
                         {!! Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary')) !!}
                         {!! link_to(URL::previous(), trans('buttons.cancel'), ['class' => 'btn btn-large btn-primary btn-danger']) !!}

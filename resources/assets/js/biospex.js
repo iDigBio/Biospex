@@ -209,16 +209,14 @@ $(function () {
     });
 });
 
-$.fn.getType = function(){ return this[0].tagName == "INPUT" ? this[0].type.toLowerCase() : this[0].tagName.toLowerCase(); }
-
 function renumber_resources() {
     let controls = $('.controls');
     controls.children('.entry').each(function(index) {
-        let prefix = "resource[" + index + "]";
+        let prefix = "resources[" + index + "]";
         $(this).find(":input").each(function() {
-            this.name = this.name.replace(/resource\[\d+\]/, prefix);
+            this.name = this.name.replace(/resources\[\d+\]/, prefix);
         });
     });
-    $("[name='resources']").val(controls.children().length);
+    $("[name='resourceFields']").val(controls.children().length);
 }
 

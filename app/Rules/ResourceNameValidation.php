@@ -31,17 +31,17 @@ class ResourceNameValidation implements Rule
      */
     public function passes($attribute, $value)
     {
-        list($resource, $i, $field) = explode('.', $attribute);
-        $resources = request()->get($resource);
+        $parts = explode('.', $attribute);
+        $resources = request()->get('resources');
 
-        if ($resources[$i]['type'] !== null && $value === null)
+        if ($resources[$parts[1]]['type'] !== null && $value === null)
         {
             $this->message = trans('errors.resource_empty');
 
             return false;
         }
 
-        if ($resources[$i]['type'] === 'Website URL' || $resources[$i]['type'] === 'Video URL')
+        if ($resources[$parts[1]]['type'] === 'Website URL' || $resources[$parts[1]]['type'] === 'Video URL')
         {
             $regex = '/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/';
 
