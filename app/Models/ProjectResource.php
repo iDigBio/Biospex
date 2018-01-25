@@ -59,4 +59,13 @@ class ProjectResource extends Model implements StaplerableInterface
     {
         return $this->belongsTo(Project::class, 'project_id');
     }
+
+    public function getDirty()
+    {
+        $dirty = parent::getDirty();
+
+        return array_filter($dirty, function ($var) {
+            return !($var instanceof \Codesleeve\Stapler\Attachment);
+        });
+    }
 }

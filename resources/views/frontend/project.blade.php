@@ -104,6 +104,20 @@
                         <dt>{{ trans('forms.twitter') }}</dt>
                         <dd><a href="{{ $project->twitter }}" target="_blank">{{ $project->twitter }}</a></dd>
                     @endisset
+                    @if($project->resources->isNotEmpty())
+                        <dt>{{ trans('forms.project_resources') }}</dt>
+                        <dd>
+                            @foreach($project->resources as $resource)
+                                @if($resource->type === 'File Download')
+                                    <a href="{{ $resource->download->url() }}" target="_blank" data-toggle="tooltip"
+                                       title="{{ $resource->description }}">{{ $resource->name }}</a><br />
+                                @else
+                                    <a href="{{ $resource->name }}" target="_blank" data-toggle="tooltip"
+                                       title="{{ $resource->description }}">{{ $resource->name }}</a><br />
+                                @endif
+                            @endforeach
+                        </dd>
+                    @endif
                 </dl>
             </div>
         </div>
@@ -117,19 +131,6 @@
         @if ($project->fusion_table_id !== null)
             @include('frontend.layouts.partials.projectmap')
         @endif
-        <!---
-            <div class="col-md-4 organizers">
-                <h2 class="project-page-header">{{ trans('pages.project_page_organizers') }}</h2>
-                <dl>
-                    @foreach($project->group->users as $user)
-            <dt>
-                <img src="{{ $user->profile->avatar->url('small') }}"/>
-                        </dt>
-                        <dd>{!! HTML::mailto($user->email, $user->profile->full_name) !!}</dd>
-                    @endforeach
-                </dl>
-            </div>
-            -->
         </div>
         <!-- ./ content -->
     </div>

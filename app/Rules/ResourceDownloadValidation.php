@@ -4,14 +4,8 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 
-class ResourceNameValidation implements Rule
+class ResourceDownloadValidation implements Rule
 {
-    /**
-     * messages
-     */
-    public $message;
-
-
     /**
      * Create a new rule instance.
      *
@@ -24,9 +18,9 @@ class ResourceNameValidation implements Rule
 
     /**
      * Determine if the validation rule passes.
-     * attribute = resource.*.name
-     * @param  string  $attribute
-     * @param  mixed  $value
+     *
+     * @param  string $attribute
+     * @param  mixed $value
      * @return bool
      */
     public function passes($attribute, $value)
@@ -34,13 +28,15 @@ class ResourceNameValidation implements Rule
         $parts = explode('.', $attribute);
         $resources = request()->get('resources');
 
-        if ($resources[$parts[1]]['type'] === 'Website URL' || $resources[$parts[1]]['type'] === 'Video URL')
+        if ($resources[$parts[1]]['type'] !== 'File Download')
         {
-            return filter_var($value, FILTER_VALIDATE_URL);
+            return true;
         }
 
-        return true;
+        $fileUpload = request()->hasFile('resources.' . $parts[1] . '.download');
+        $fileExists = isset($resources[$parts[1]]['download_file_name']) &&  ! empty($resources[$parts[1]]['download_file_name']) ? true : false;
 
+        return $fileUpload || $fileExists;
     }
 
     /**
@@ -50,6 +46,6 @@ class ResourceNameValidation implements Rule
      */
     public function message()
     {
-        return trans('errors.resource_url_required');
+        return 'Must upload file.';
     }
 }

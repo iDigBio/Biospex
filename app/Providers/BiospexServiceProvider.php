@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Observers\PanoptesTranscriptionObserver;
+use App\Repositories\Eloquent\ProjectResourceRepository;
+use App\Repositories\Interfaces\ProjectResource;
 use Illuminate\Support\ServiceProvider;
 
 use App\Repositories\Interfaces\ActorContact;
@@ -156,6 +158,7 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(WeDigBioDashboard::class, WeDigBioDashboardRepository::class);
         $this->app->bind(Workflow::class, WorkflowRepository::class);
         $this->app->bind(WorkflowManager::class, WorkflowManagerRepository::class);
+        $this->app->bind(ProjectResource::class, ProjectResourceRepository::class);
     }
 
     /**

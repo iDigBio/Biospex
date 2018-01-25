@@ -185,6 +185,8 @@ $(document).ready(function () {
                 $('#exportHtml').html(exportHtml);
             });
     }
+
+    $('[data-toggle="tooltip"]').tooltip();
 });
 
 $(function () {
@@ -195,7 +197,10 @@ $(function () {
             currentEntry = $(this).parents('.entry:first'),
             newEntry = $(currentEntry.clone()).appendTo(controls);
 
-        newEntry.find('input').val('');
+        newEntry.find(":input").each(function(){
+            $(this).val('');
+        });
+        newEntry.find('.fileName').html('');
         controls.find('.entry:not(:last) .btn-add')
             .removeClass('btn-add').addClass('btn-remove')
             .removeClass('btn-success').addClass('btn-danger')

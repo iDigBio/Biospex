@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\ResourceDownloadValidation;
 use Illuminate\Support\Facades\Auth;
 use App\Rules\ResourceNameValidation;
 
 class ProjectFormRequest extends Request
 {
-
     public function authorize()
     {
         return Auth::check();
@@ -23,7 +23,7 @@ class ProjectFormRequest extends Request
         $rules = [
             'group_id'                => 'required|integer|min:1',
             'status'                  => 'required',
-            'title'                   => 'required|between:6,140|unique:projects,title,' . $this->route('projects'),
+            'title'                   => 'required|between:6,140|unique:projects,title,'.$this->route('projects'),
             'contact'                 => 'required',
             'contact_email'           => 'required|min:4|max:32|email',
             'contact_title'           => 'required',
@@ -37,10 +37,10 @@ class ProjectFormRequest extends Request
             'twitter'                 => 'nullable|url',
             'banner'                  => 'image|dimensions:min_width=1200,min_height=250',
             'logo'                    => 'image|dimensions:max_width=300,max_height=200',
-            'resources.*.name'        => new ResourceNameValidation(),
+            'resources.*.type'        => [new ResourceDownloadValidation()],
+            'resources.*.name'        => ['required_with:resources.*.type', new ResourceNameValidation()],
             'resources.*.description' => 'required_with:resources.*.type',
-            'resources.*.download'    => 'required_if:resources.*.type, "File Download"|file|mimes:txt,doc,csv,pdf'
-
+            'resources.*.download'    => 'mimes:txt,doc,csv,pdf',
         ];
 
         return $rules;
@@ -65,8 +65,7 @@ class ProjectFormRequest extends Request
         return [
             'resources.*.name.required_with'        => 'Type selected',
             'resources.*.description.required_with' => 'Type selected',
-            'resources.*.download.required_if'      => 'Type is File',
-            'resources.*.download.file'             => 'Upload incomplete',
+            'resources.*.download.required_if'      => 'Type selected',
             'resources.*.download.mimes'            => 'Accepted files: txt,doc,csv,pdf',
         ];
     }

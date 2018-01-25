@@ -3,6 +3,9 @@
 namespace App\Services\Model;
 
 use App\Facades\Flash;
+use App\Facades\GeneralHelper;
+use App\Models\ProjectResource as ProjectResourceModel;
+use App\Repositories\Interfaces\ProjectResource;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\Group;
 use App\Repositories\Interfaces\Project;
@@ -15,7 +18,6 @@ use JavaScript;
 
 class ProjectService
 {
-
     /**
      * @var Project
      */
@@ -57,6 +59,11 @@ class ProjectService
     private $ocrQueueService;
 
     /**
+     * @var \App\Repositories\Interfaces\ProjectResource
+     */
+    private $projectResource;
+
+    /**
      * ProjectService constructor.
      *
      * @param Project $projectContract
@@ -67,6 +74,7 @@ class ProjectService
      * @param FileService $fileService
      * @param Expedition $expeditionContract
      * @param OcrQueueService $ocrQueueService
+     * @param \App\Repositories\Interfaces\ProjectResource $projectResource
      */
     public function __construct(
         Project $projectContract,
@@ -76,9 +84,9 @@ class ProjectService
         Subject $subjectContract,
         FileService $fileService,
         Expedition $expeditionContract,
-        OcrQueueService $ocrQueueService
-    )
-    {
+        OcrQueueService $ocrQueueService,
+        ProjectResource $projectResource
+    ) {
         $this->projectContract = $projectContract;
         $this->workflowContract = $workflowContract;
         $this->groupContract = $groupContract;
@@ -87,6 +95,7 @@ class ProjectService
         $this->fileService = $fileService;
         $this->expeditionContract = $expeditionContract;
         $this->ocrQueueService = $ocrQueueService;
+        $this->projectResource = $projectResource;
     }
 
     /**
@@ -128,8 +137,7 @@ class ProjectService
     {
         $groups = $this->groupContract->getUsersGroupsSelect($user);
 
-        if (empty($groups))
-        {
+        if (empty($groups)) {
             Flash::error(trans('groups.group_required'));
 
             return false;
@@ -138,8 +146,9 @@ class ProjectService
         $workflows = $this->workflowContract->getWorkflowSelect();
         $statusSelect = config('config.status_select');
         $selectGroups = ['' => '--Select--'] + $groups;
+        $resourcesSelect = GeneralHelper::getEnumValues('project_resources', 'type', true);
 
-        return compact('workflows', 'statusSelect', 'selectGroups');
+        return compact('workflows', 'statusSelect', 'selectGroups', 'resourcesSelect');
     }
 
     /**
@@ -149,9 +158,7 @@ class ProjectService
     public function processOcr($projectId, $expeditionId = null)
     {
 
-        $this->ocrQueueService->processOcr($projectId, $expeditionId) ?
-            Flash::success(trans('expeditions.ocr_process_success')) :
-            Flash::warning(trans('expeditions.ocr_process_error'));
+        $this->ocrQueueService->processOcr($projectId, $expeditionId) ? Flash::success(trans('expeditions.ocr_process_success')) : Flash::warning(trans('expeditions.ocr_process_error'));
     }
 
     /**
@@ -178,7 +185,7 @@ class ProjectService
         $with = [
             'downloads',
             'actors',
-            'stat'
+            'stat',
         ];
 
         return $this->expeditionContract->findExpeditionsByProjectIdWith($projectId, $with, $trashed);
@@ -194,8 +201,15 @@ class ProjectService
     {
         $project = $this->projectContract->create($attributes);
 
-        if ($project)
-        {
+        $resources = collect($attributes['resources'])->reject(function ($resource) {
+            return $this->filterOrDeleteResources($resource);
+        })->map(function ($resource) {
+            return new ProjectResourceModel($resource);
+        });
+
+        $project->resources()->saveMany($resources->all());
+
+        if ($project) {
             $this->notifyActorContacts($project->id);
 
             Flash::success(trans('projects.project_created'));
@@ -224,9 +238,8 @@ class ProjectService
         })->filter(function ($actor) use ($nfnNotify) {
             return isset($nfnNotify[$actor->id]);
         })->each(function ($actor) use ($project, $nfnNotify) {
-            $class = '\App\Notifications\\' . $nfnNotify[$actor->id];
-            if (class_exists($class))
-            {
+            $class = '\App\Notifications\\'.$nfnNotify[$actor->id];
+            if (class_exists($class)) {
                 Notification::send($actor->contacts, new $class($project));
             }
         });
@@ -242,8 +255,7 @@ class ProjectService
     {
         $project = $this->findWith($projectId, ['group', 'expeditions.workflowManager']);
 
-        if ( ! $project)
-        {
+        if (! $project) {
             Flash::error(trans('pages.project_repo_error'));
 
             return false;
@@ -263,11 +275,11 @@ class ProjectService
      */
     public function editProject($projectId)
     {
-        $project = $this->findWith($projectId, ['group.permissions', 'nfnWorkflows']);
+        $project = $this->findWith($projectId, ['group.permissions', 'nfnWorkflows', 'resources']);
 
-        if ( ! $project)
-        {
+        if (! $project) {
             Flash::error(trans('pages.project_repo_error'));
+
             return false;
         }
 
@@ -288,11 +300,65 @@ class ProjectService
      */
     public function updateProject($attributes, $projectId)
     {
-        $this->projectContract->update($attributes, $projectId) ?
-            Flash::success(trans('projects.project_updated')) :
-            Flash::error(trans('projects.project_updated_error'));
+        $project = $this->projectContract->update($attributes, $projectId);
+
+        $resources = collect($attributes['resources'])->reject(function ($resource) {
+            return $this->filterOrDeleteResources($resource);
+        })->reject(function ($resource) {
+            return empty($resource['id']) ? false : $this->updateProjectResource($resource);
+        })->map(function ($resource) {
+            return new ProjectResourceModel($resource);
+        });
+
+        $project->resources()->saveMany($resources->all());
+
+        $project ? Flash::success(trans('projects.project_updated')) : Flash::error(trans('projects.project_updated_error'));
 
         return;
+    }
+
+    /**
+     * Update project resource.
+     *
+     * @param $resource
+     * @return bool
+     */
+    public function updateProjectResource($resource)
+    {
+        $record = $this->projectResource->find($resource['id']);
+        $record->type = $resource['type'];
+        $record->name = $resource['name'];
+        $record->description = $resource['description'];
+        if (isset($resource['download'])) {
+            $record->download = $resource['download'];
+        }
+
+        $record->save();
+
+        return true;
+    }
+
+    /**
+     * Filter or delete resource.
+     *
+     * @param $resource
+     * @return bool
+     */
+    public function filterOrDeleteResources($resource)
+    {
+        if ($resource['type'] === null)
+        {
+            return true;
+        }
+
+        if ($resource['type'] === 'delete')
+        {
+            $this->projectResource->delete($resource['id']);
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -311,7 +377,7 @@ class ProjectService
             'url'          => route('web.grids.explore', [$projectId]),
             'exportUrl'    => route('web.grids.project.export', [$projectId]),
             'showCheckbox' => true,
-            'explore'      => true
+            'explore'      => true,
         ]);
 
         return $this->subjectContract->getSubjectAssignedCount($projectId);
@@ -325,10 +391,8 @@ class ProjectService
      */
     public function deleteProject($project)
     {
-        try
-        {
-            if ($project->nfnWorkflows->isNotEmpty())
-            {
+        try {
+            if ($project->nfnWorkflows->isNotEmpty()) {
                 Flash::error(trans('expeditions.expedition_process_exists'));
 
                 return false;
@@ -338,9 +402,7 @@ class ProjectService
             Flash::success(trans('projects.project_deleted'));
 
             return true;
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             Flash::error(trans('projects.project_delete_error'));
 
             return false;
@@ -354,16 +416,14 @@ class ProjectService
      */
     public function destroyProject($project)
     {
-        try
-        {
+        try {
             $project->expeditions->each(function ($expedition) {
                 $expedition->downloads->each(function ($download) {
-                    $this->fileService->filesystem->delete(config('config.nfn_export_dir') . '/' . $download->file);
+                    $this->fileService->filesystem->delete(config('config.nfn_export_dir').'/'.$download->file);
                 });
             });
 
-            if ( ! $project->subjects->isEmpty())
-            {
+            if (! $project->subjects->isEmpty()) {
                 $project->subjects()->timeout(-1)->forceDelete();
             }
 
@@ -372,9 +432,7 @@ class ProjectService
             Flash::success(trans('projects.project_destroyed'));
 
             return;
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             Flash::error(trans('projects.project_destroy_error'));
 
             return;
@@ -389,9 +447,7 @@ class ProjectService
      */
     public function restoreProject($project)
     {
-        return $this->projectContract->restore($project) ?
-            Flash::success(trans('projects.project_restored')) :
-            Flash::error(trans('projects.project_restored_error'));
+        return $this->projectContract->restore($project) ? Flash::success(trans('projects.project_restored')) : Flash::error(trans('projects.project_restored_error'));
     }
 }
 
