@@ -54,7 +54,8 @@ class PanoptesTranscriptionProcess
 
 
     /**
-     * NfnTranscription constructor.
+     * PanoptesTranscriptionProcess constructor.
+     *
      * @param Subject $subjectContract
      * @param PanoptesTranscription $panoptesTranscriptionContract
      * @param TranscriptionLocation $transcriptionLocationContract
