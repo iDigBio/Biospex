@@ -17,13 +17,15 @@
                     <i class="fa fa-expand pull-right"></i>
                 </div>
                 <div id="transcribers" class="panel-body">
-                    <table class="table-responsive">
+                    <table class="table-responsive table-sort">
+                        <thead>
                         <tr>
                             <th>User</th>
                             <th>Expeditions</th>
                             <th>Transcriptions</th>
                             <th>Last Date</th>
                         </tr>
+                        </thead>
                         @each('frontend.statistics.partials.transcriber', $transcribers, 'transcriber')
                     </table>
                 </div>
