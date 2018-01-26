@@ -8,7 +8,7 @@ use App\Services\Image\ImagickService;
 use App\Services\Image\GdService;
 use App\Services\Requests\HttpRequest;
 
-class ActorImageService extends ActorServiceBase
+class ActorImageService extends ActorServiceConfig
 {
 
     /**
@@ -51,16 +51,6 @@ class ActorImageService extends ActorServiceBase
     }
 
     /**
-     * Set actor service configuration.
-     *
-     * @param ActorServiceConfig $config
-     */
-    public function setActorServiceConfig(ActorServiceConfig $config)
-    {
-        $this->config = $config;
-    }
-
-    /**
      * Process expedition for export.
      */
     public function getImages()
@@ -69,11 +59,11 @@ class ActorImageService extends ActorServiceBase
 
         $requests = function ()
         {
-            foreach ($this->config->subjects as $index => $subject)
+            foreach ($this->subjects as $index => $subject)
             {
                 if ($this->checkPropertiesExist($subject))
                 {
-                    $this->config->fireActorProcessedEvent();
+                    $this->fireActorProcessedEvent();
                     continue;
                 }
 
@@ -91,10 +81,10 @@ class ActorImageService extends ActorServiceBase
             },
             'rejected'    => function ($reason, $index)
             {
-                $this->config->fireActorProcessedEvent();
+                $this->fireActorProcessedEvent();
                 $attributes = [
-                    'subjectId' => $this->config->subjects[$index]->_id,
-                    'accessURI' => $this->config->subjects[$index]->accessURI,
+                    'subjectId' => $this->subjects[$index]->_id,
+                    'accessURI' => $this->subjects[$index]->accessURI,
                     'message' => 'Could not retrieve image from uri.'
                 ];
                 $this->setMissingImages($attributes);
@@ -118,8 +108,8 @@ class ActorImageService extends ActorServiceBase
         $response->getBody()->close();
 
         $attributes = [
-            'subjectId' => $this->config->subjects[$index]->_id,
-            'accessURI' => $this->config->subjects[$index]->accessURI,
+            'subjectId' => $this->subjects[$index]->_id,
+            'accessURI' => $this->subjects[$index]->accessURI,
             'message' => 'Image corrupt: ' . $response->getStatusCode()
         ];
 
@@ -138,14 +128,14 @@ class ActorImageService extends ActorServiceBase
         }
 
         $ext = $this->gdService->getSourceExtension();
-        if ( ! $this->gdService->writeImageToFile($this->config->workingDirectory . '/' . $this->config->subjects[$index]->_id . $ext, $image))
+        if ( ! $this->gdService->writeImageToFile($this->workingDirectory . '/' . $this->subjects[$index]->_id . $ext, $image))
         {
             $this->setMissingImages($attributes);
 
             return;
         }
 
-        $this->config->fireActorProcessedEvent();
+        $this->fireActorProcessedEvent();
     }
 
     /**
@@ -192,7 +182,7 @@ class ActorImageService extends ActorServiceBase
             return true;
         }
 
-        if (count(glob($this->config->workingDirectory . '/' . $subject->_id . '.*')) > 0)
+        if (count(glob($this->workingDirectory . '/' . $subject->_id . '.*')) > 0)
         {
             return true;
         }
@@ -212,7 +202,7 @@ class ActorImageService extends ActorServiceBase
     {
         $this->imagickService->createImagickObject($file);
 
-        $destination = $this->config->tmpDirectory . '/' . $filename . '.jpg';
+        $destination = $this->tmpDirectory . '/' . $filename . '.jpg';
         if ( ! $this->imagickService->writeImagickImageToFile($destination))
         {
             $attributes = [
@@ -234,6 +224,6 @@ class ActorImageService extends ActorServiceBase
     private function clearAndFire()
     {
         $this->imagickService->clearImagickObject();
-        $this->config->fireActorProcessedEvent();
+        $this->fireActorProcessedEvent();
     }
 }

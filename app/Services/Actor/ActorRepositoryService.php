@@ -5,11 +5,10 @@ namespace App\Services\Actor;
 use App\Repositories\Interfaces\Actor;
 use App\Repositories\Interfaces\Download;
 use App\Repositories\Interfaces\Expedition;
-use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\ExportQueue;
 use App\Repositories\Interfaces\Subject;
 
-class ActorRepositoryService extends ActorServiceBase
+class ActorRepositoryService
 {
 
     /**
@@ -62,23 +61,14 @@ class ActorRepositoryService extends ActorServiceBase
     }
 
     /**
-     * Set actor service configuration.
-     *
-     * @param ActorServiceConfig $config
-     */
-    public function setActorServiceConfig(ActorServiceConfig $config)
-    {
-        $this->config = $config;
-    }
-
-    /**
      * Get subjects using expedition id.
      *
-     * @return \Illuminate\Support\Collection
+     * @param $expeditionId
+     * @return mixed
      */
-    public function getSubjectsByExpeditionId()
+    public function getSubjectsByExpeditionId($expeditionId)
     {
-        return $this->subjectContract->findSubjectsByExpeditionId($this->config->expedition->id);
+        return $this->subjectContract->findSubjectsByExpeditionId($expeditionId);
     }
 
     /**

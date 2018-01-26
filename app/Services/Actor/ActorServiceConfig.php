@@ -12,6 +12,10 @@ use PharData;
 
 class ActorServiceConfig
 {
+    /**
+     * @var
+     */
+    public $config;
 
     /**
      * @var ExportQueue
