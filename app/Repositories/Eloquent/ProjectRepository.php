@@ -100,6 +100,6 @@ class ProjectRepository extends EloquentRepository implements Project
 
         $this->resetModel();
 
-        return $results;
+        return ['' => 'Select'] + $results->toArray();
     }
 }
