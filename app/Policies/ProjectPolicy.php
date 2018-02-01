@@ -83,11 +83,12 @@ class ProjectPolicy
      * Check if user can update project for this group.
      *
      * @param $user
+     * @param null $project
      * @return bool|null
      */
-    public function update($user)
+    public function update($user, $project = null)
     {
-        $group = $this->groupContract->findWith(request()->get('group_id'), ['permissions']);
+        $group = $project !== null ? $project->group : $this->groupContract->findWith(request()->get('group_id'), ['permissions']);
 
         $key = md5(__METHOD__ . $user->uuid . $group->uuid);
         $access = Cache::remember($key, 60, function() use ($user, $group) {
