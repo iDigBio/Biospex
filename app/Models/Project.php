@@ -111,6 +111,8 @@ class Project extends Model implements StaplerableInterface
     {
         parent::boot();
 
+        static::bootUuidTrait();
+
         static::bootStapler();
 
         static::creating(function ($model) {

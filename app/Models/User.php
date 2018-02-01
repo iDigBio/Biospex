@@ -65,6 +65,10 @@ class User extends Authenticatable
      */
     public static function boot()
     {
+        parent::boot();
+
+        static::bootUuidTrait();
+
         static::created(function ($model) {
             $model->getActivationCode();
             $profile = new Profile;

@@ -52,6 +52,10 @@ class Group extends Model
      */
     public static function boot()
     {
+        parent::boot();
+
+        static::bootUuidTrait();
+
         static::created(function ($group) {
             $permissions = Cache::tags('model')->rememberForever('permissions.list', function () {
                 return Permission::pluck('name', 'id')->all();
