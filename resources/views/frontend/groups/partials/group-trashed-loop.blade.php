@@ -5,11 +5,11 @@
             <button title="@lang('buttons.restoreTitle')"
                     class="btn btn-success btn-sm"
                     type="button"
-                    onClick="location.href='{{ route('web.groups.restore', [$group->id]) }}'">
+                    onClick="location.href='{{ route('webauth.groups.restore', [$group->id]) }}'">
                 <span class="fa fa-plus fa-lg"></span> @lang('buttons.restore') </button>
             @can('delete', $group)
                 <button class="btn btn-sm btn-danger" title="@lang('buttons.deleteTitle')"
-                        data-href="{{ route('web.groups.destroy', array($group->id)) }}"
+                        data-href="{{ route('webauth.groups.destroy', array($group->id)) }}"
                         data-method="delete"
                         data-toggle="confirmation"
                         data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"

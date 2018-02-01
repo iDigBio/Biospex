@@ -6,7 +6,6 @@
  */
 
 try {
-    //window.$ = window.jQuery = require('jquery');
 
     require("jquery-ui/dialog");
     require("jquery-ui/draggable");
@@ -22,6 +21,7 @@ try {
 
     require('jquery-validation/dist/jquery.validate');
     require('jquery-validation/dist/additional-methods');
+    require('jquery-datetimepicker/build/jquery.datetimepicker.full');
     require('tablesorter/dist/js/jquery.tablesorter');
     require('tablesorter/dist/js/jquery.tablesorter.widgets.js');
     require('amcharts3/amcharts/amcharts');

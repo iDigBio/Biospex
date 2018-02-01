@@ -6,10 +6,10 @@
         <button title="@lang('buttons.restoreTitle')"
                 class="btn btn-success btn-xs"
                 type="button"
-                onClick="location.href='{{ route('web.expeditions.restore', [$project->id, $expedition->id]) }}'">
+                onClick="location.href='{{ route('webauth.expeditions.restore', [$project->id, $expedition->id]) }}'">
             <span class="fa fa-plus fa-lg"></span><!-- @lang('buttons.view') --></button>
         <button class="btn btn-xs btn-danger" title="@lang('buttons.deleteTitle')"
-                data-href="{{ route('web.expeditions.destroy', [$project->id, $expedition->id]) }}"
+                data-href="{{ route('webauth.expeditions.destroy', [$project->id, $expedition->id]) }}"
                 data-method="delete"
                 data-toggle="confirmation"
                 data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"

@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('web.groups.show.invite', $group) !!}
+    {!! Breadcrumbs::render('webauth.groups.show.invite', $group) !!}
     <div class="jumbotron">
         <h2>{{ $group->title }}</h2>
         <p>{{ trans('groups.invite_explained') }}</p>
@@ -21,7 +21,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                    'route' => ['web.invites.store', $group->id],
+                    'route' => ['webauth.invites.store', $group->id],
                     'method' => 'post',
                     'class' => 'form-horizontal',
                     'role' => 'form'
@@ -70,7 +70,7 @@
                                     <td>{{ $invite->email }} </td>
                                     <td class="nowrap">
                                         <button class="btn btn-small btn-primary"
-                                                data-href="{!! route('web.invites.resend', [$invite->group_id, $invite->id]) !!}"
+                                                data-href="{!! route('webauth.invites.resend', [$invite->group_id, $invite->id]) !!}"
                                                 data-method="post"
                                                 data-toggle="confirmation"
                                                 data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
@@ -82,7 +82,7 @@
                                         </button>
 
                                         <button class="btn btn-small btn-danger"
-                                                data-href="{{ route('web.invites.delete', [$invite->group_id, $invite->id]) }}"
+                                                data-href="{{ route('webauth.invites.delete', [$invite->group_id, $invite->id]) }}"
                                                 data-method="delete"
                                                 data-toggle="confirmation"
                                                 data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-lrg fa-share"

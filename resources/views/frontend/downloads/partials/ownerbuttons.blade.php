@@ -7,7 +7,7 @@
     </button>
     @if ($download->type === 'summary')
         <button title="@lang('buttons.summaryTitle')" class="btn btn-primary btn-xs" type="button"
-                onClick="window.open('{{ route('web.downloads.summary', [$expedition->project->id, $expedition->id]) }}', '_blank')">
+                onClick="window.open('{{ route('webauth.downloads.summary', [$expedition->project->id, $expedition->id]) }}', '_blank')">
             <span class="fa fa-eye fa-lrg"></span> @lang('buttons.summary')
         </button>
     @endif

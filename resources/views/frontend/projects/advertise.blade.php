@@ -7,11 +7,11 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('web.projects.show.title', $project, trans('pages.advertise_title')) !!}
+    {!! Breadcrumbs::render('webauth.projects.show.title', $project, trans('pages.advertise_title')) !!}
 <div class="jumbotron">
     <h3>{{ $project->title }}</h3>
     <p>@lang('pages.advertise_title')</p>
-    <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-sm" type="button" onClick="location.href='{{ route('web.advertises.show', [$project->id]) }}'"><span class="fa fa-download fa-lrg"></span> @lang('buttons.download') </button>
+    <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-sm" type="button" onClick="location.href='{{ route('webauth.advertises.show', [$project->id]) }}'"><span class="fa fa-download fa-lrg"></span> @lang('buttons.download') </button>
 </div>
 <div class="col-xs-12">
     <div class="panel panel-info">

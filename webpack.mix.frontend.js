@@ -1,4 +1,5 @@
 let mix = require('laravel-mix');
+let path = require('path');
 
 /*
  |--------------------------------------------------------------------------
@@ -14,8 +15,9 @@ let mix = require('laravel-mix');
 mix.webpackConfig({
     resolve: {
         alias: {
-            'jquery-ui': 'jquery-ui/ui/widgets'
-        }
+            'jquery-ui': 'jquery-ui/ui/widgets',
+        },
+
     }
 })
     .autoload({
@@ -23,6 +25,10 @@ mix.webpackConfig({
     })
     .js('resources/assets/js/app.js', 'js/frontend.js')
     .sass('resources/assets/sass/frontend.scss', 'css/frontend.css')
+    .copy('node_modules/bootstrap-sass/assets/fonts/bootstrap/', 'public/fonts/')
+    .copy('node_modules/font-awesome/fonts/', 'public/fonts/')
+    .copy('node_modules/summernote/dist/font/', 'public/fonts/')
+    .options({ processCssUrls: false })
     .extract([
         'jquery',
         'free-jqgrid/dist/plugins/ui.multiselect',
@@ -33,6 +39,7 @@ mix.webpackConfig({
         'summernote/dist/summernote',
         'jquery-validation/dist/jquery.validate',
         'jquery-validation/dist/additional-methods',
+        'jquery-datetimepicker/build/jquery.datetimepicker.full',
         'tablesorter/dist/js/jquery.tablesorter',
         'tablesorter/dist/js/jquery.tablesorter.widgets',
         'amcharts3/amcharts/amcharts',
@@ -42,6 +49,7 @@ mix.webpackConfig({
         'bootstrap-confirmation2/bootstrap-confirmation',
         'socket.io-client/dist/socket.io',
     ]);
+
 
 
 /* Production settings */

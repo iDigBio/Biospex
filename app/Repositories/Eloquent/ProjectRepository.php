@@ -90,4 +90,16 @@ class ProjectRepository extends EloquentRepository implements Project
 
         return $results;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getProjectEventSelect()
+    {
+        $results = $this->model->orderBy('title')->get(['id', 'title'])->pluck('title', 'id');
+
+        $this->resetModel();
+
+        return $results;
+    }
 }

@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('web.projects.show.title', $project, 'Import') !!}
+    {!! Breadcrumbs::render('webauth.projects.show.title', $project, 'Import') !!}
     <div class="jumbotron">
         <h3>{{ $project->title }}</h3>
         <p>{{ $project->description_short }}</p>
@@ -22,7 +22,7 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                        'route' => ['web.dwcfile.upload', $project->id],
+                        'route' => ['webauth.imports.dwcfile.upload', $project->id],
                         'method' => 'post',
                         'files' => true,
                         'enctype' => 'multipart/form-data',
@@ -59,7 +59,7 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                        'route' => ['web.recordset.upload', $project->id],
+                        'route' => ['webauth.imports.recordset.upload', $project->id],
                         'method' => 'post',
                         'id' => 'form-recordset',
                         'class' => 'form-horizontal',
@@ -94,7 +94,7 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                        'route' => ['web.dwcuri.upload', $project->id],
+                        'route' => ['webauth.imports.dwcuri.upload', $project->id],
                         'method' => 'post',
                         'id' => 'form-data-url',
                         'class' => 'form-horizontal',

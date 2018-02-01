@@ -7,7 +7,7 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('web.projects.show', $project) !!}
+    {!! Breadcrumbs::render('webauth.projects.show', $project) !!}
     @include('frontend.projects.partials.project-info')
     @include('frontend.projects.partials.expedition-table')
     @include('frontend.projects.partials.expedition-trashed-table')

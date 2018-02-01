@@ -16,7 +16,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                'route' => ['web.projects.store'],
+                'route' => ['webauth.projects.store'],
                 'method' => 'post',
                 'enctype' => 'multipart/form-data',
                 'class' => 'form-horizontal',

@@ -160,8 +160,8 @@ class ExpeditionService
             'expeditionId' => $expedition->id,
             'subjectIds'   => [],
             'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('web.grids.show', [$expedition->project->id, $expedition->id]),
-            'exportUrl'    => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
+            'url'          => route('webauth.grids.show', [$expedition->project->id, $expedition->id]),
+            'exportUrl'    => route('webauth.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'showCheckbox' => false,
             'explore'      => false
         ]);
@@ -184,8 +184,8 @@ class ExpeditionService
             'expeditionId' => 0,
             'subjectIds'   => [],
             'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('web.grids.create', [$expedition->project->id]),
-            'exportUrl'    => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
+            'url'          => route('webauth.grids.create', [$expedition->project->id]),
+            'exportUrl'    => route('webauth.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'showCheckbox' => true,
             'explore'      => false
         ]);
@@ -255,8 +255,8 @@ class ExpeditionService
             'expeditionId' => $expedition->id,
             'subjectIds'   => $subjectIds,
             'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('web.grids.edit', [$expedition->project->id, $expedition->id]),
-            'exportUrl'    => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
+            'url'          => route('webauth.grids.edit', [$expedition->project->id, $expedition->id]),
+            'exportUrl'    => route('webauth.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'showCheckbox' => $expedition->workflowManager === null,
             'explore'      => false
         ]);

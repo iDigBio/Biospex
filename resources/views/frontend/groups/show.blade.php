@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('web.groups.show', $group) !!}
+    {!! Breadcrumbs::render('webauth.groups.show', $group) !!}
     <div class="jumbotron">
         <h3>{{ $group->title }}</h3>
     </div>
@@ -17,15 +17,15 @@
         <div style="padding: 10px;">
             @can('update', $group)
                 <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm"
-                        onClick="location.href='{{ route('web.groups.edit', array($group->id)) }}'"><span
+                        onClick="location.href='{{ route('webauth.groups.edit', array($group->id)) }}'"><span
                             class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
                 <button title="@lang('buttons.inviteTitle')" class="btn btn-default btn-reverse btn-sm" type="button"
-                        onClick="location.href='{{ route('web.invites.index', [$group->id]) }}'"><span
+                        onClick="location.href='{{ route('webauth.invites.index', [$group->id]) }}'"><span
                             class="fa fa-users fa-lrg"></span> @lang('buttons.invite')</button>
             @endcan
             @can('delete', $group)
                 <button class="btn btn-sm btn-danger" title="@lang('buttons.deleteTitle')"
-                        data-href="{{ route('web.groups.delete', array($group->id)) }}"
+                        data-href="{{ route('webauth.groups.delete', array($group->id)) }}"
                         data-method="delete"
                         data-toggle="confirmation"
                         data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
@@ -65,7 +65,7 @@
                 <td>
                     <ul>
                         @foreach ($group->projects as $project)
-                            <li>{!! link_to_route('web.projects.show', $project->title, $project->id) !!}</li>
+                            <li>{!! link_to_route('webauth.projects.show', $project->title, $project->id) !!}</li>
                         @endforeach
                     </ul>
                 </td>

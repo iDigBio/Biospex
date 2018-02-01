@@ -32,6 +32,16 @@ class HomeController extends Controller
     }
 
     /**
+     * Show welcome to new registered users.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function welcome()
+    {
+        return view('frontend.welcome');
+    }
+
+    /**
      * Show public project page.
      *
      * @param $slug

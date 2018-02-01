@@ -35,7 +35,7 @@ class AdvertisesController extends Controller
 
         if ( ! $this->checkPermissions('read', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         if (empty($project->advertise)) {
@@ -58,7 +58,7 @@ class AdvertisesController extends Controller
 
         if ( ! $this->checkPermissions('read', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         return $response->make(json_encode($project->advertise, JSON_UNESCAPED_SLASHES), '200', [

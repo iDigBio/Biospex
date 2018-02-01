@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('web.projects.show.title', $project, trans('pages.edit')) !!}
+    {!! Breadcrumbs::render('webauth.projects.show.title', $project, trans('pages.edit')) !!}
     <div class="col-xs-12">
         <div class="panel panel-info">
             <div class="panel-heading">
@@ -16,7 +16,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                    'route' => ['web.projects.update', $project->id],
+                    'route' => ['webauth.projects.update', $project->id],
                     'method' => 'put',
                     'enctype' => 'multipart/form-data',
                     'files' => true,

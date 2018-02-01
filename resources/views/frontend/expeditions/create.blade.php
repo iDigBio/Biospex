@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('web.projects.show.title', $project, trans('pages.create') . ' ' . trans('expeditions.expedition')) !!}
+    {!! Breadcrumbs::render('webauth.projects.show.title', $project, trans('pages.create') . ' ' . trans('expeditions.expedition')) !!}
     <div class="col-xs-12">
         <div class="panel panel-info">
             <div class="panel-heading">
@@ -16,7 +16,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                'route' => ['web.expeditions.store', $project->id],
+                'route' => ['webauth.expeditions.store', $project->id],
                 'method' => 'post',
                 'class' => 'form-horizontal gridForm',
                 'role' => 'form'

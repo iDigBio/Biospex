@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('web.expeditions.show.title', $expedition, 'Downloads') !!}
+    {!! Breadcrumbs::render('webauth.expeditions.show.title', $expedition, 'Downloads') !!}
 
     <div class="jumbotron">
         <h2>{{ $expedition->title }} @lang('expeditions.transcriptions')</h2>
@@ -20,7 +20,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     <button title="Back to Expedition Details" class="btn btn-info btn-xs" type="button"
-                            onClick="location.href='{{ route('web.expeditions.show', [$expedition->project->id, $expedition->id]) }}'">
+                            onClick="location.href='{{ route('webauth.expeditions.show', [$expedition->project->id, $expedition->id]) }}'">
                         <span class="glyphicon glyphicon-eye-open"></span> Return
                     </button>
                 </div>

@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'activate'           => 'Activate',
     'addTargetTitle'     => 'Add a set of target fields to this project',
     'advertise'          => 'Advertise',
@@ -11,6 +11,7 @@ return array(
     'createTitleE'       => 'Create a new Expedition',
     'createTitleG'       => 'Create a new Group',
     'createTitleP'       => 'Create a new Project',
+    'createTitleEv'      => 'Create a new Event',
     'data'               => 'Import',
     'dataTitle'          => 'Import to this project via upload',
     'dataView'           => 'Explore',
@@ -58,4 +59,4 @@ return array(
     'projectStatsTitle'  => 'Project Statistics',
     'summary'            => 'Summary',
     'summaryTitle'       => 'Summary',
-);
+];

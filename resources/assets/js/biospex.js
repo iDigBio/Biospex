@@ -187,6 +187,9 @@ $(document).ready(function () {
     }
 
     $('[data-toggle="tooltip"]').tooltip();
+
+    $.datetimepicker.setLocale('en');
+    $('.datetimepicker').datetimepicker();
 });
 
 $(function () {

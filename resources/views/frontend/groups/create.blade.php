@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-{!! Breadcrumbs::render('web.groups.show.create') !!}
+{!! Breadcrumbs::render('webauth.groups.show.create') !!}
 <div class="row centered-form ">
     <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
         <div class="panel panel-info">
@@ -17,7 +17,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                'route' => 'web.groups.store',
+                'route' => 'webauth.groups.store',
                 'method' => 'post',
                 'class' => 'form-horizontal',
                 'role' => 'form'

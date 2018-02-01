@@ -374,8 +374,8 @@ class ProjectService
             'expeditionId' => 0,
             'subjectIds'   => [],
             'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('web.grids.explore', [$projectId]),
-            'exportUrl'    => route('web.grids.project.export', [$projectId]),
+            'url'          => route('webauth.grids.explore', [$projectId]),
+            'exportUrl'    => route('webauth.grids.project.export', [$projectId]),
             'showCheckbox' => true,
             'explore'      => true,
         ]);

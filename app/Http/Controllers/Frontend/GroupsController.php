@@ -68,10 +68,10 @@ class GroupsController extends Controller
     {
         if ($this->groupService->createGroup(Auth::user(), $request->get('title')))
         {
-            return redirect()->route('web.groups.index');
+            return redirect()->route('webauth.groups.index');
         }
 
-        return redirect()->route('web.groups.create');
+        return redirect()->route('webauth.groups.create');
     }
 
     /**
@@ -92,7 +92,7 @@ class GroupsController extends Controller
 
         if ( ! $this->checkPermissions('read', $group))
         {
-            return redirect()->route('web.groups.index');
+            return redirect()->route('webauth.groups.index');
         }
 
         return view('frontend.groups.show', compact('group'));
@@ -110,7 +110,7 @@ class GroupsController extends Controller
 
         if ( ! $this->checkPermissions('update', $group))
         {
-            return redirect()->route('web.groups.index');
+            return redirect()->route('webauth.groups.index');
         }
 
         $users = $this->groupService->getGroupUsersSelect($group->id);
@@ -131,12 +131,12 @@ class GroupsController extends Controller
 
         if ($this->checkPermissions('update', $group))
         {
-            return redirect()->route('web.groups.index');
+            return redirect()->route('webauth.groups.index');
         }
 
         $this->groupService->updateGroup($request->all(), $group->id);
 
-        return redirect()->route('web.groups.index');
+        return redirect()->route('webauth.groups.index');
     }
 
     /**
@@ -151,12 +151,12 @@ class GroupsController extends Controller
 
         if ( ! $this->checkPermissions('delete', $group))
         {
-            return redirect()->route('web.groups.index');
+            return redirect()->route('webauth.groups.index');
         }
 
         $this->groupService->deleteGroup($group);
 
-        return redirect()->route('web.groups.index');
+        return redirect()->route('webauth.groups.index');
     }
 
     /**
@@ -171,12 +171,12 @@ class GroupsController extends Controller
 
         if ( ! $this->checkPermissions('delete', $group))
         {
-            return redirect()->route('web.groups.index');
+            return redirect()->route('webauth.groups.index');
         }
 
         $this->groupService->destroyGroup($group);
 
-        return redirect()->route('web.groups.index');
+        return redirect()->route('webauth.groups.index');
     }
 
     /**
@@ -191,11 +191,11 @@ class GroupsController extends Controller
 
         if ( ! $this->checkPermissions('delete', $group))
         {
-            return redirect()->route('web.groups.index');
+            return redirect()->route('webauth.groups.index');
         }
 
         $this->groupService->restoreGroup($group);
 
-        return redirect()->route('web.groups.index');
+        return redirect()->route('webauth.groups.index');
     }
 }

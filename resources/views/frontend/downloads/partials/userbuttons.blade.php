@@ -7,7 +7,7 @@
 @if ($download->type === 'export')
     <button title="@lang('buttons.regenerateDownload')"
             class="btn btn-success btn-xs" type="button"
-            onClick="location.href='{{ route('web.downloads.regenerate', [$expedition->project->id, $expedition->id]) }}'">
+            onClick="location.href='{{ route('webauth.downloads.regenerate', [$expedition->project->id, $expedition->id]) }}'">
         <span class="fa fa-refresh"></span> @lang('buttons.regenerateDownload')
     </button>
 @endif

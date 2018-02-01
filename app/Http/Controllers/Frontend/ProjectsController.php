@@ -37,6 +37,11 @@ class ProjectsController extends Controller
         $groups = $this->projectService->getUserProjectListByGroup($user);
         $trashed = $this->projectService->getUserProjectListByGroup($user, true);
 
+        if (! $groups->count())
+        {
+            return redirect()->route('webauth.home.welcome');
+        }
+
         return view('frontend.projects.index', compact('groups', 'trashed'));
     }
 
@@ -68,7 +73,7 @@ class ProjectsController extends Controller
         $project = $this->projectService->findWith($projectId, ['group', 'ocrQueue']);
         if ( ! $this->checkPermissions('read', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $user = $userContract->findWith(request()->user()->id, ['profile']);
@@ -89,14 +94,14 @@ class ProjectsController extends Controller
     {
         if ( ! $this->checkPermissions('create', Project::class))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $project = $this->projectService->createProject($request->all());
 
         if ($project)
         {
-            return redirect()->route('web.projects.show', [$project->id]);
+            return redirect()->route('webauth.projects.show', [$project->id]);
         }
 
         return redirect()->route('projects.create')->withInput();
@@ -114,7 +119,7 @@ class ProjectsController extends Controller
 
         if ( ! $variables)
         {
-            return redirect()->route('web.projects.show', [$projectId]);
+            return redirect()->route('webauth.projects.show', [$projectId]);
         }
 
         return view('frontend.projects.clone', $variables);
@@ -132,7 +137,7 @@ class ProjectsController extends Controller
 
         if ( ! $variables)
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         return view('frontend.projects.edit', $variables);
@@ -149,12 +154,12 @@ class ProjectsController extends Controller
     {
         if ( ! $this->checkPermissions('update', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $this->projectService->updateProject($request->all(), $projectId);
 
-        return redirect()->route('web.projects.show', [$projectId]);
+        return redirect()->route('webauth.projects.show', [$projectId]);
     }
 
     /**
@@ -169,7 +174,7 @@ class ProjectsController extends Controller
 
         if ( ! $this->checkPermissions('read', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $subjectAssignedCount = $this->projectService->explore($projectId);
@@ -189,12 +194,12 @@ class ProjectsController extends Controller
 
         if ( ! $this->checkPermissions('delete', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $this->projectService->deleteProject($project);
 
-        return redirect()->route('web.projects.index');
+        return redirect()->route('webauth.projects.index');
     }
 
     /**
@@ -209,12 +214,12 @@ class ProjectsController extends Controller
 
         if ( ! $this->checkPermissions('delete', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $this->projectService->destroyProject($project);
 
-        return redirect()->route('web.projects.index');
+        return redirect()->route('webauth.projects.index');
     }
 
     /**
@@ -229,12 +234,12 @@ class ProjectsController extends Controller
 
         if ( ! $this->checkPermissions('delete', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $this->projectService->restoreProject($project);
 
-        return redirect()->route('web.projects.show', [$projectId]);
+        return redirect()->route('webauth.projects.show', [$projectId]);
     }
 
     /**
@@ -249,11 +254,11 @@ class ProjectsController extends Controller
 
         if ( ! $this->checkPermissions('update', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $this->projectService->processOcr($project->id);
 
-        return redirect()->route('web.projects.show', [$projectId]);
+        return redirect()->route('webauth.projects.show', [$projectId]);
     }
 }

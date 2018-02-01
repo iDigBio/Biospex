@@ -8,7 +8,7 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('web.expeditions.show.title', $expedition, trans('pages.edit') . ' ' . trans('expeditions.expedition')) !!}
+    {!! Breadcrumbs::render('webauth.expeditions.show.title', $expedition, trans('pages.edit') . ' ' . trans('expeditions.expedition')) !!}
     <div class="col-xs-12">
         <div class="panel panel-info">
             <div class="panel-heading">
@@ -16,7 +16,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                'route' => ['web.expeditions.update', $expedition->project->id, $expedition->id],
+                'route' => ['webauth.expeditions.update', $expedition->project->id, $expedition->id],
                 'method' => 'put',
                 'class' => 'form-horizontal gridForm',
                 'role' => 'form'

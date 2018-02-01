@@ -33,7 +33,7 @@ class UsersController extends Controller
      */
     public function index()
     {
-        return redirect()->route('web.users.edit', [request()->user()->id]);
+        return redirect()->route('webauth.users.edit', [request()->user()->id]);
     }
 
     /**
@@ -44,7 +44,7 @@ class UsersController extends Controller
      */
     public function show($userId)
     {
-        return redirect()->route('web.users.edit', [$userId]);
+        return redirect()->route('webauth.users.edit', [$userId]);
     }
 
     /**
@@ -60,11 +60,11 @@ class UsersController extends Controller
         {
             Flash::warning( trans('pages.insufficient_permissions'));
 
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $timezones = DateHelper::timeZoneSelect();
-        $cancel = route('web.projects.index');
+        $cancel = route('webauth.projects.index');
 
         return view('frontend.users.edit', compact('user', 'timezones', 'cancel'));
     }
@@ -83,7 +83,7 @@ class UsersController extends Controller
         {
             Flash::warning( trans('pages.insufficient_permissions'));
 
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $result = $this->userContract->update($request->all(), $user->id);
@@ -100,7 +100,7 @@ class UsersController extends Controller
             Flash::error(trans('users.notupdated'));
         }
 
-        return redirect()->route('web.users.edit', [$user->id]);
+        return redirect()->route('webauth.users.edit', [$user->id]);
     }
 
     /**
@@ -117,20 +117,20 @@ class UsersController extends Controller
         {
             Flash::warning( trans('pages.insufficient_permissions'));
 
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         if ( ! Hash::check($request->input('oldPassword'), $user->password))
         {
             Flash::error(trans('users.oldpassword'));
 
-            return redirect()->route('web.users.edit', [$user->id]);
+            return redirect()->route('webauth.users.edit', [$user->id]);
         }
 
         $this->resetPassword($user, $request->input('newPassword'));
 
         Flash::success(trans('users.passwordchg'));
 
-        return redirect()->route('web.users.edit', [$user->id]);
+        return redirect()->route('webauth.users.edit', [$user->id]);
     }
 }

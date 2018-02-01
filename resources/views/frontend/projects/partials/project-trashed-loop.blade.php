@@ -2,16 +2,16 @@
     @foreach ($group->trashedProjects as $project)
         <tr id="test{{ $project->id }}">
             <td>{{ $project->title }}</td>
-            <td><a href="{{ route('web.groups.show', [$group->id]) }}">{{ $group->title }}</a></td>
+            <td><a href="{{ route('webauth.groups.show', [$group->id]) }}">{{ $group->title }}</a></td>
             <td class="fit">
                 <button title="@lang('buttons.restoreTitle')"
                         class="btn btn-success btn-xs"
                         type="button"
-                        onClick="location.href='{{ route('web.projects.restore', [$project->id]) }}'">
+                        onClick="location.href='{{ route('webauth.projects.restore', [$project->id]) }}'">
                     <span class="fa fa-plus fa-lg"></span> @lang('buttons.restore') </button>
                 @can('delete', $group)
                 <button class="btn btn-xs btn-danger" title="@lang('buttons.deleteTitle')"
-                        data-href="{{ route('web.projects.destroy', [$project->id]) }}"
+                        data-href="{{ route('webauth.projects.destroy', [$project->id]) }}"
                         data-method="delete"
                         data-toggle="confirmation"
                         data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
