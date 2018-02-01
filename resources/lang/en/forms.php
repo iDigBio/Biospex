@@ -62,4 +62,6 @@ return [
     'project_resources_description' => 'Resource Description',
     'event_groups'                  => 'Groups',
     'event_groups_title'            => 'Group Title',
+    'event_timezone'                => 'Times are set to your profile timezone',
+    'date'                          => 'Date',
 ];

@@ -67,16 +67,16 @@
                     <div class="form-inline col-md-10">
                         <div class="input-group col-md-4">
                             {!! Form::label('start_date', trans('Start'), ['class' => 'control-label']) !!}
-                            {!! Form::text('start_date', null, ['class' => 'form-control datetimepicker', 'placeholder' => trans('Times are set to your profile timezones')]) !!}
+                            {!! Form::text('start_date', null, ['class' => 'form-control datetimepicker', 'placeholder' => trans('forms.event_timezone')]) !!}
                         </div>
                         <div class="input-group col-md-4">
                             {!! Form::label('end_date', trans('End'), ['class' => 'control-label']) !!}
-                            {!! Form::text('end_date', null, ['class' => 'form-control datetimepicker', 'placeholder' => trans('Times are set to your profile timezones')]) !!}
+                            {!! Form::text('end_date', null, ['class' => 'form-control datetimepicker', 'placeholder' => trans('forms.event_timezone')]) !!}
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group required">
+                <div class="form-group">
                     {!! Form::label('', trans('forms.event_groups'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="controls col-sm-10">
                         @if($errors->has('groups.*'))
