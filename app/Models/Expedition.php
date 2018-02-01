@@ -222,30 +222,4 @@ class Expedition extends Model
         return $this->subjects()->count();
     }
 
-    /**
-     * Set uuid for binary storage.
-     *
-     * @param $value
-     */
-    public function setUuidAttribute($value)
-    {
-        $this->attributes['uuid'] = pack('H*', str_replace('-', '', $value));
-    }
-
-    /**
-     * Return uuid in normal format.
-     *
-     * @param $value
-     * @return string
-     */
-    public function getUuidAttribute($value)
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        $uuid = bin2hex($value);
-
-        return substr($uuid, 0, 8) . '-' . substr($uuid, 8, 4) . '-' . substr($uuid, 12, 4) . '-' . substr($uuid, 16, 4) . '-' . substr($uuid, 20);
-    }
 }
