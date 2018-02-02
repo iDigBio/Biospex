@@ -87,8 +87,8 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
         // Update stats
         $count = $expeditionContract->getExpeditionSubjectCounts($expedition->id);
         $expedition->stat->subject_count = $count;
-        $expedition->stat->GeneralHelper::transcriptionsTotal = GeneralHelper::transcriptionsTotal($count);
-        $expedition->stat->GeneralHelper::transcriptionsCompleted = GeneralHelper::transcriptionsCompleted($expedition->id);
+        $expedition->stat->transcriptions_total = GeneralHelper::transcriptionsTotal($count);
+        $expedition->stat->transcriptions_completed = GeneralHelper::transcriptionsCompleted($expedition->id);
         $expedition->stat->percent_completed = GeneralHelper::transcriptionsPercentCompleted($expedition->stat->transcriptions_total, $expedition->stat->transcriptions_completed);
 
         $expedition->stat->save();

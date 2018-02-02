@@ -49,11 +49,9 @@ class ExpeditionStatJob extends Job implements ShouldQueue
         $count = $expedition->getExpeditionSubjectCounts($this->expeditionId);
 
         $record->stat->subject_count = $count;
-        $record->stat->GeneralHelper::transcriptionsTotal = GeneralHelper::transcriptionsTotal($count);
-        $record->stat->GeneralHelper::transcriptionsCompleted = GeneralHelper::transcriptionsCompleted($this->expeditionId);
-        $record->stat->percent_completed = GeneralHelper::transcriptionsPercentCompleted($record->stat->GeneralHelper::transcriptionsTotal, $record->stat->GeneralHelper::transcriptionsCompleted);
+        $record->stat->transcriptions_total = GeneralHelper::transcriptionsTotal($count);
+        $record->stat->transcriptions_completed = GeneralHelper::transcriptionsCompleted($this->expeditionId);
         $record->stat->percent_completed = GeneralHelper::transcriptionsPercentCompleted($record->stat->transcriptions_total, $record->stat->transcriptions_completed);
-
 
         $record->stat->save();
     }
