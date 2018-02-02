@@ -21,11 +21,6 @@ class JobError extends Notification implements ShouldQueue
     private $file;
 
     /**
-     * @var \Illuminate\Config\Repository|mixed
-     */
-    private $adminEmail;
-
-    /**
      * Create a new notification instance.
      *
      * @param string $file
@@ -35,7 +30,6 @@ class JobError extends Notification implements ShouldQueue
     {
         $this->messages = $messages;
         $this->file = $file;
-        $this->adminEmail = config('mail.from.address');
         $this->onQueue(config('config.beanstalkd.default'));
     }
 
@@ -52,20 +46,13 @@ class JobError extends Notification implements ShouldQueue
     /**
      * Get the mail representation of the notification.
      *
-     * @param $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable)
+    public function toMail()
     {
         $message = implode('<br /><br />', $this->messages);
 
-        $newMessage = new MailMessage;
-        if ($notifiable->email !== $this->adminEmail)
-        {
-            $newMessage->bcc($this->adminEmail);
-        }
-
-        return $newMessage->markdown('mail.joberror', ['file' => $this->file, 'message' => $message]);
+        return (new MailMessage)->markdown('mail.joberror', ['file' => $this->file, 'message' => $message]);
     }
 
     /**
