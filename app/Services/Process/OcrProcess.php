@@ -80,8 +80,8 @@ class OcrProcess
         if ($this->ocrRequest->checkOcrFileError($file))
         {
             throw new \Exception(trans('errors.ocr_file_error', [
-                'title' => $record->title,
-                'id' => $record->id,
+                'title' => $record->project->title,
+                'id' => $record->project->id,
                 'message' => 'Json file header returned status error.'
             ]));
         }

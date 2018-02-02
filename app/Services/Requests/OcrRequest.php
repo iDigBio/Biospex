@@ -46,9 +46,9 @@ class OcrRequest extends HttpRequest
         $request = $this->buildREquest('POST', config('config.ocr_post_url'), $options);
         $response = $this->client->send($request);
 
-        if ($response->getStatusCode() !== 202) {
+        if ($response->getStatusCode() !== 200) {
             throw new \Exception(trans('errors.ocr_send_error',
-                ['title' => $record->title, 'id' => $record->id, 'message' => print_r($response->getBody(), true)]));
+                ['title' => $record->project->title, 'id' => $record->project->id, 'message' => print_r($response->getBody(), true)]));
         }
     }
 
