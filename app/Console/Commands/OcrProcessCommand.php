@@ -81,18 +81,19 @@ class OcrProcessCommand extends Command
         }
         catch (\Exception $e)
         {
-            $user = $this->userContract->find(1);
             $record->error = 1;
             $record->save();
 
             $messages = [
-                $record->title,
+                $record->project->title,
                 'Error processing ocr record ' . $record->id,
                 'Message: ' . $e->getMessage(),
                 'Line: ' . $e->getLine()
             ];
 
+            $user = $this->userContract->find(1);
             $user->notify(new JobError(__FILE__, $messages));
+            //$record->project->group->owner->notify(new JobError(__FILE__, $messages));
         }
 
         Artisan::call('ocr:poll');
