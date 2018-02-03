@@ -7,7 +7,6 @@ use GuzzleHttp\Client;
 
 class OcrRequest extends HttpRequest
 {
-
     /**
      * @var Client
      */
@@ -16,7 +15,7 @@ class OcrRequest extends HttpRequest
     /**
      * Ocr constructor.
      */
-    public function __Construct()
+    public function __construct()
     {
         $this->setHttpProvider();
         $this->client = $this->getHttpClient();
@@ -39,16 +38,19 @@ class OcrRequest extends HttpRequest
                 [
                     'name'     => 'file',
                     'contents' => $record->data,
-                    'filename' => $record->uuid . '.json',
-                ]
-            ]];
+                    'filename' => $record->uuid.'.json',
+                ],
+            ],
+        ];
 
-        $request = $this->buildREquest('POST', config('config.ocr_post_url'), $options);
-        $response = $this->client->send($request);
+        $response = $this->client->request('POST', config('config.ocr_post_url'), $options);
 
         if ($response->getStatusCode() !== 202) {
-            throw new \Exception(trans('errors.ocr_send_error',
-                ['title' => $record->project->title, 'id' => $record->project->id, 'message' => print_r($response->getBody(), true)]));
+            throw new \Exception(trans('errors.ocr_send_error', [
+                'title'   => $record->project->title,
+                'id'      => $record->project->id,
+                'message' => print_r($response->getBody(), true),
+            ]));
         }
     }
 
@@ -60,7 +62,7 @@ class OcrRequest extends HttpRequest
      */
     public function requestOcrFile($uuid)
     {
-        $response = $this->client->get(config('config.ocr_get_url') . '/' . $uuid . '.json');
+        $response = $this->client->get(config('config.ocr_get_url').'/'.$uuid.'.json');
         $contents = $response->getBody()->getContents();
 
         return json_decode($contents);
@@ -98,7 +100,6 @@ class OcrRequest extends HttpRequest
     {
         return $file->header->status === 'error';
     }
-
 
     /**
      * Send request to delete json files on ocr server.
