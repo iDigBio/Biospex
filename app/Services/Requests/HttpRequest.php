@@ -104,19 +104,6 @@ class HttpRequest
     }
 
     /**
-     * Build unauthenticated request
-     *
-     * @param $method
-     * @param $uri
-     * @param array $options
-     * @return \Psr\Http\Message\RequestInterface
-     */
-    public function buildRequest($method, $uri, array $options = [])
-    {
-        return $this->provider->getRequest($method, $uri, $options);
-    }
-
-    /**
      * Pool batch requests.
      *
      * - concurrency: (int) Maximum number of requests to send concurrently
