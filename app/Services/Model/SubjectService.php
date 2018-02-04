@@ -38,14 +38,15 @@ class SubjectService
     {
         $subjects = $this->subjectContract->getWhereIn('_id', $subjectIds);
 
-        $subjects->filter(function ($subject) {
+        $subjects->reject(function ($subject) {
             foreach ($subject->expedition_ids as $expeditionId)
             {
                 $expedition = $this->expeditionContract->findExpeditionHavingWorkflowManager($expeditionId);
-                return $expedition === null ?: false;
+                if ($expedition !== null)
+                    return true;
             }
 
-            return true;
+            return false;
         })->each(function ($subject) {
             $this->subjectContract->delete($subject->_id);
         });
