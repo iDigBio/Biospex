@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Repositories\Interfaces\OcrQueue;
-use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
 use App\Services\Process\OcrProcess;
 use Artisan;
@@ -32,11 +31,6 @@ class OcrProcessCommand extends Command
     private $ocrQueueContract;
 
     /**
-     * @var User
-     */
-    private $userContract;
-
-    /**
      * @var OcrProcess
      */
     private $ocrProcess;
@@ -46,19 +40,16 @@ class OcrProcessCommand extends Command
      *
      * OcrProcessCommand constructor.
      * @param OcrQueue $ocrQueueContract
-     * @param User $userContract
      * @param OcrProcess $ocrProcess
      */
     public function __construct(
         OcrQueue $ocrQueueContract,
-        User $userContract,
         OcrProcess $ocrProcess
     )
     {
         parent::__construct();
 
         $this->ocrQueueContract = $ocrQueueContract;
-        $this->userContract = $userContract;
         $this->ocrProcess = $ocrProcess;
     }
 
@@ -81,18 +72,17 @@ class OcrProcessCommand extends Command
         }
         catch (\Exception $e)
         {
-            $user = $this->userContract->find(1);
             $record->error = 1;
             $record->save();
 
             $messages = [
-                $record->title,
+                $record->project->title,
                 'Error processing ocr record ' . $record->id,
                 'Message: ' . $e->getMessage(),
                 'Line: ' . $e->getLine()
             ];
 
-            $user->notify(new JobError(__FILE__, $messages));
+            $record->project->group->owner->notify(new JobError(__FILE__, $messages));
         }
 
         Artisan::call('ocr:poll');

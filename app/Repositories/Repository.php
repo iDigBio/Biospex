@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use Illuminate\Container\Container as App;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Jenssegers\Mongodb\Eloquent\Model as MongdbModel;
 
 abstract class Repository
 {
@@ -210,7 +212,7 @@ abstract class Repository
      */
     public function delete($model)
     {
-        $results = $model instanceof Model ?
+        $results = $model instanceof EloquentModel || $model instanceof MongdbModel  ?
             $model->delete() :
             $this->model->destroy($model);
 
@@ -226,7 +228,7 @@ abstract class Repository
      */
     public function destroy($model)
     {
-        $results = $model instanceof Model ?
+        $results = $model instanceof EloquentModel || $model instanceof MongdbModel ?
             $model->forceDelete() :
             $this->model->find($model)->forceDelete();
 
@@ -242,7 +244,7 @@ abstract class Repository
      */
     public function restore($model)
     {
-        $results = $model instanceof Model ?
+        $results = $model instanceof EloquentModel || $model instanceof MongdbModel ?
             $model->restore() :
             $this->model->onlyTrashed()->find($model)->restore();
 
