@@ -361,7 +361,7 @@ class ExpeditionService
                 $this->workflowManagerContract->create(['expedition_id' => $expeditionId]);
             }
 
-            Artisan::call('workflow:manage', ['expedition' => $expeditionId]);
+            Artisan::call('workflow:manage', ['expeditionId' => $expeditionId]);
 
             Flash::success(trans('expeditions.expedition_process_success'));
         }
