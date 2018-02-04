@@ -390,7 +390,7 @@ class NfnPanoptesExport
                 {
                     if ($key === 'eol' || $key === 'mol' || $key === 'idigbio')
                     {
-                        $csvArray[$key] = str_replace('SCIENTIFIC_NAME', rawurlencode($subject->{$doc}->{$value}), actorImageService('actorImageService.nfnSearch.' . $key));
+                        $csvArray[$key] = str_replace('SCIENTIFIC_NAME', rawurlencode($subject->{$doc}->{$value}), config('config.nfnSearch.' . $key));
                         break;
                     }
 
