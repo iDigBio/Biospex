@@ -63,7 +63,7 @@ class OcrQueueCheckCommand extends Command
 
         $message = '';
         foreach ($queues as $queue) {
-            $message .= (trans('errors.ocr_queue',
+            $message .= (trans('errors.ocr_queue_check',
                 [
                     'id'      => $queue->id,
                     'message' => trans('errors.ocr_stuck_queue', ['id' => $queue->id]),

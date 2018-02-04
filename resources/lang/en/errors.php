@@ -16,7 +16,7 @@ return array(
     'rowtype_mismatch'          => 'Row Type mismatch in reading meta xml file. :file, :row_type, :type_file',
     'csv_build_header'          => 'Undefined index for :key => :qualified when building header for csv import.',
     'ocr_queue_check_title'     => 'There was an error while processing the following queued OCR.',
-    'ocr_queue_check'           => 'Project ":title"<br />ID: :id<br />Message: :message<br /><br />',
+    'ocr_queue_check'           => 'ID: :id<br />Message: :message<br /><br />',
     'failed_job_message'        => 'Job queue :id has failed.<br />Job Data: :jobData ',
     'core_node_missing'         => 'Core node missing from xml meta file.',
     'extension_node_missing'    => 'Extension node missing from xml meta file',
