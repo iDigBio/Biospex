@@ -64,4 +64,6 @@ return [
     'event_groups_title'            => 'Group Title',
     'event_timezone'                => 'Times are set to your profile timezone',
     'date'                          => 'Date',
+    'start_date'                    => 'Start Date',
+    'end_date'                      => "End Date",
 ];

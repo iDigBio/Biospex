@@ -128,16 +128,16 @@
         },
         {
             "name": "askedio/laravel5-soft-cascade",
-            "version": "5.5.12",
+            "version": "5.5.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Askedio/laravel5-soft-cascade.git",
-                "reference": "efe36dce2fbd0adc7a1d96e8edb14fda98af865c"
+                "reference": "2873dace0b308dcbfb38c1300316733dd461d447"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Askedio/laravel5-soft-cascade/zipball/efe36dce2fbd0adc7a1d96e8edb14fda98af865c",
-                "reference": "efe36dce2fbd0adc7a1d96e8edb14fda98af865c",
+                "url": "https://api.github.com/repos/Askedio/laravel5-soft-cascade/zipball/2873dace0b308dcbfb38c1300316733dd461d447",
+                "reference": "2873dace0b308dcbfb38c1300316733dd461d447",
                 "shasum": ""
             },
             "require": {
@@ -165,7 +165,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "Soft Delete & Restore Cascader",
-            "time": "2018-01-26T12:19:43+00:00"
+            "time": "2018-02-05T07:14:03+00:00"
         },
         {
             "name": "barryvdh/laravel-translation-manager",
@@ -1539,16 +1539,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.44",
+            "version": "v0.45",
             "source": {
                 "type": "git",
                 "url": "https://github.com/google/google-api-php-client-services.git",
-                "reference": "7f1b3a3f387fc3435f27003977ebf5989f8bcca2"
+                "reference": "35909fbc909bf9f9e0d36dd05b62f4b1d5ffe3ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-api-php-client-services/zipball/7f1b3a3f387fc3435f27003977ebf5989f8bcca2",
-                "reference": "7f1b3a3f387fc3435f27003977ebf5989f8bcca2",
+                "url": "https://api.github.com/repos/google/google-api-php-client-services/zipball/35909fbc909bf9f9e0d36dd05b62f4b1d5ffe3ae",
+                "reference": "35909fbc909bf9f9e0d36dd05b62f4b1d5ffe3ae",
                 "shasum": ""
             },
             "require": {
@@ -1572,7 +1572,7 @@
             "keywords": [
                 "google"
             ],
-            "time": "2018-01-28T00:23:18+00:00"
+            "time": "2018-02-03T00:23:12+00:00"
         },
         {
             "name": "google/auth",
@@ -2546,16 +2546,16 @@
         },
         {
             "name": "league/csv",
-            "version": "9.1.1",
+            "version": "9.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/csv.git",
-                "reference": "66118f5c2a7e4da77e743e69f74773c63b73e8f9"
+                "reference": "90bedd96fa3e3d2a988be985b9b1ee29cdb38301"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/csv/zipball/66118f5c2a7e4da77e743e69f74773c63b73e8f9",
-                "reference": "66118f5c2a7e4da77e743e69f74773c63b73e8f9",
+                "url": "https://api.github.com/repos/thephpleague/csv/zipball/90bedd96fa3e3d2a988be985b9b1ee29cdb38301",
+                "reference": "90bedd96fa3e3d2a988be985b9b1ee29cdb38301",
                 "shasum": ""
             },
             "require": {
@@ -2606,7 +2606,7 @@
                 "read",
                 "write"
             ],
-            "time": "2017-11-28T08:29:49+00:00"
+            "time": "2018-02-05T14:07:11+00:00"
         },
         {
             "name": "league/event",

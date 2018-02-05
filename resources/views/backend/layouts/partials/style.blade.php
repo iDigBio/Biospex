@@ -11,10 +11,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-wysiwyg/0.3.3/bootstrap3-wysihtml5.min.css">
 -->
 
-@yield('styles')
-
 <!-- Theme style -->
 <link href="{{ mix('/css/backend.css', '/backend') }}" rel="stylesheet" type="text/css" />
+
+@yield('styles')
 
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->

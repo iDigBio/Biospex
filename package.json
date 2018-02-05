@@ -31,6 +31,7 @@
     "jquery-ujs": "^1.2.2",
     "jquery-validation": "^1.17.0",
     "laravel-mix": "^1.7.2",
+    "select2": "^4.0.6-rc.1",
     "summernote": "^0.8.9",
     "tablesorter": "^2.29.3",
     "uglify-js": "^3.3.7",

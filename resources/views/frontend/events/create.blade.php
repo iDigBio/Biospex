@@ -66,11 +66,11 @@
                     {!! Form::label('date', trans('forms.date'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="form-inline col-md-10">
                         <div class="input-group col-md-4">
-                            {!! Form::label('start_date', trans('Start'), ['class' => 'control-label']) !!}
+                            {!! Form::label('start_date', trans('forms.start_date'), ['class' => 'control-label']) !!}
                             {!! Form::text('start_date', null, ['class' => 'form-control datetimepicker', 'placeholder' => trans('forms.event_timezone')]) !!}
                         </div>
                         <div class="input-group col-md-4">
-                            {!! Form::label('end_date', trans('End'), ['class' => 'control-label']) !!}
+                            {!! Form::label('end_date', trans('forms.end_date'), ['class' => 'control-label']) !!}
                             {!! Form::text('end_date', null, ['class' => 'form-control datetimepicker', 'placeholder' => trans('forms.event_timezone')]) !!}
                         </div>
                     </div>
