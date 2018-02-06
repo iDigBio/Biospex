@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Facades\DateHelper;
 use App\Facades\Flash;
 use App\Http\Requests\EditUserFormRequest;
 use App\Http\Requests\PasswordFormRequest;
