@@ -32,7 +32,7 @@
                 'enctype' => 'multipart/form-data',
                 'role' => 'form'
                 ]) !!}
-                <div class="form-group clearfix required {{ ($errors->has('first_name')) ? 'has-error' : '' }}" for="first_name">
+                <div class="form-group clearfix required {{ ($errors->has('first_name')) ? 'has-error' : '' }}">
                     {!! Form::label('edit_first_name', trans('pages.first_name'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-6">
                       {!! Form::text('first_name', $user->profile->first_name, array('class' => 'form-control', 'placeholder' => trans('pages.first_name'))) !!}
@@ -40,7 +40,7 @@
                     {{ ($errors->has('first_name') ? $errors->first('first_name') : '') }}
                 </div>
 
-                <div class="form-group required {{ ($errors->has('last_name')) ? 'has-error' : '' }}" for="last_name">
+                <div class="form-group required {{ ($errors->has('last_name')) ? 'has-error' : '' }}">
                     {!! Form::label('edit_last_name', trans('pages.last_name'), array('class' => 'col-sm-2 control-label')) !!}
                     <div class="col-sm-6">
                       {!! Form::text('last_name', $user->profile->last_name, array('class' => 'form-control', 'placeholder' => trans('pages.last_name'), 'id' => 'edit_last_name')) !!}
@@ -48,7 +48,7 @@
                     {{ ($errors->has('last_name') ? $errors->first('last_name') : '') }}
                 </div>
 
-                <div class="form-group required {{ ($errors->has('email')) ? 'has-error' : '' }}" for="email">
+                <div class="form-group required {{ ($errors->has('email')) ? 'has-error' : '' }}">
                     {!! Form::label('edit_email', trans('pages.email'), array('class' => 'col-sm-2 control-label')) !!}
                     <div class="col-sm-6">
                         {!! Form::text('email', $user->email, array('class' => 'form-control', 'placeholder' => trans('pages.email'), 'id' => 'edit_email')) !!}
@@ -56,7 +56,7 @@
                     {{ ($errors->has('email') ? $errors->first('email') : '') }}
                 </div>
 
-                <div class="form-group {{ ($errors->has('timezone')) ? 'has-error' : '' }}" for="timezone">
+                <div class="form-group {{ ($errors->has('timezone')) ? 'has-error' : '' }}">
                     {!! Form::label('timezone', trans('forms.timezone'), array('class' => 'col-sm-2 control-label')) !!}
                     <div class="col-sm-6">
                         {!! Form::select('timezone', $timezones, $user->profile->timezone, array('class' => 'form-control')) !!}
