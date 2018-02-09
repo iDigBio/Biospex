@@ -21,10 +21,10 @@ class CreateEventGroupsTable extends Migration
             $table->timestamps();
 
             $table->unique(['event_id', 'title'], 'event_group_title');
-
-            DB::statement("ALTER TABLE event_groups ADD uuid BINARY(16) NULL id");
-            DB::statement('CREATE UNIQUE INDEX uuid_unique ON event_groups (uuid);');
         });
+
+        DB::statement("ALTER TABLE event_groups ADD uuid BINARY(16) NULL AFTER id");
+        DB::statement('CREATE UNIQUE INDEX uuid_unique ON event_groups (uuid);');
     }
 
     /**
