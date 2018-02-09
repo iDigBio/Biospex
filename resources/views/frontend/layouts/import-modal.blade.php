@@ -7,7 +7,7 @@
                 <h4 class="modal-title">@lang('pages.recordset_modal_header')</h4>
             </div>
             <div class="modal-body">
-                @lang('modal.recordset_modal_message')
+                @lang('html.recordset_modal_message')
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">@lang('pages.close')</button>

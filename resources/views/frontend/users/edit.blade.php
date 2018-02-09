@@ -57,7 +57,7 @@
                 </div>
 
                 <div class="form-group {{ ($errors->has('timezone')) ? 'has-error' : '' }}">
-                    {!! Form::label('timezone', trans('forms.timezone'), array('class' => 'col-sm-2 control-label')) !!}
+                    {!! Form::label('timezone', trans('pages.timezone'), array('class' => 'col-sm-2 control-label')) !!}
                     <div class="col-sm-6">
                         {!! Form::select('timezone', $timezones, $user->profile->timezone, array('class' => 'form-control')) !!}
                     </div>
@@ -65,7 +65,7 @@
                 </div>
 
                 <div class="form-group {{ ($errors->has('avatar')) ? 'has-error' : '' }}">
-                    {!! Form::label('avatar', trans('forms.avatar'), ['class' => 'col-sm-2 control-label']) !!}
+                    {!! Form::label('avatar', trans('pages.avatar'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-6">
                         {!! Form::file('avatar') !!}
                     </div>
@@ -77,8 +77,8 @@
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        {!! Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary')) !!}
-                        {!! Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-default', 'onClick' => "location.href='$cancel'"]) !!}
+                        {!! Form::submit(trans('pages.update'), array('class' => 'btn btn-primary')) !!}
+                        {!! Form::button(trans('pages.cancel'), ['class' => 'btn btn-large btn-default', 'onClick' => "location.href='$cancel'"]) !!}
                     </div>
                 </div>
                 {!! Form::hidden('id', $user->id) !!}
@@ -108,7 +108,7 @@
                     {!! Form::password('newPassword_confirmation', array('class' => 'form-control', 'placeholder' => trans('pages.password_new_confirm'))) !!}
                 </div>
                 {!! Form::hidden('id', $user->id) !!}
-                {!! Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary')) !!}
+                {!! Form::submit(trans('pages.update'), array('class' => 'btn btn-primary')) !!}
 
                 {!! ($errors->has('oldPassword') ? '<br />' . $errors->first('oldPassword') : '') !!}
                 {!! ($errors->has('newPassword') ?  '<br />' . $errors->first('newPassword') : '') !!}

@@ -10,11 +10,11 @@
     </div>
     <div class="col-sm-3">
         {!! Form::label('', trans('forms.name_url'), ['class' => 'control-label']) !!}
-        {!! Form::text('resources['. $key .'][name]', $resource->name, ['class' => 'form-control', 'placeholder' => trans('forms.project_resources_name')]) !!}
+        {!! Form::text('resources['. $key .'][name]', $resource->name, ['class' => 'form-control', 'placeholder' => trans('pages.project_resources_name')]) !!}
     </div>
     <div class="col-sm-4">
         {!! Form::label('', trans('Description'), ['class' => 'control-label']) !!}
-        {!! Form::text('resources['. $key .'][description]', $resource->description, ['class' => 'form-control', 'placeholder' => trans('forms.project_resources_description')]) !!}
+        {!! Form::text('resources['. $key .'][description]', $resource->description, ['class' => 'form-control', 'placeholder' => trans('pages.project_resources_description')]) !!}
     </div>
     <div class="col-sm-2">
         {!! Form::label('', trans('File'), ['class' => 'control-label']) !!}

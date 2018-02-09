@@ -91,12 +91,12 @@ class ExpeditionsController extends Controller
 
         if ($expedition)
         {
-            Flash::success(trans('expeditions.expedition_created'));
+            Flash::success(trans('messages.record_created'));
 
             return redirect()->route('webauth.expeditions.show', [$projectId, $expedition->id]);
         }
 
-        Flash::error(trans('expeditions.expedition_save_error'));
+        Flash::error(trans('messages.record_save_error'));
         return redirect()->route('webauth.projects.show', [$projectId]);
     }
 
@@ -177,13 +177,13 @@ class ExpeditionsController extends Controller
 
         if ( ! $result)
         {
-            Flash::error(trans('expeditions.expedition_save_error'));
+            Flash::error(trans('messages.record_save_error'));
 
             return redirect()->route('webauth.expeditions.edit', [$projectId, $expeditionId]);
         }
 
         // Success!
-        Flash::success(trans('expeditions.expedition_updated'));
+        Flash::success(trans('messages.record_updated'));
 
         return redirect()->route('webauth.expeditions.show', [$projectId, $expeditionId]);
     }

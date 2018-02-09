@@ -5,7 +5,7 @@
         <span class="input-group-btn">
             {!! Form::button('<i class="fa fa-plus fa-lrg"></i> ', ['type' => 'button', 'class' => 'btn btn-success btn-add']) !!}
         </span>
-            {!! Form::text('groups[' . $i . '][title]', old('groups.[' . $i . '].title'), ['class' => 'form-control', 'placeholder' => trans('forms.event_groups_title')]) !!}
+            {!! Form::text('groups[' . $i . '][title]', old('groups.[' . $i . '].title'), ['class' => 'form-control', 'placeholder' => trans('pages.event_groups_title')]) !!}
         </div>
     </div>
     {!! Form::hidden('groups['. $i .'][id]', old('groups.[' . $i . '].id')) !!}

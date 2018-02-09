@@ -25,7 +25,7 @@
                     </thead>
                     @include('backend.ocr.partials.files-loop')
                 </table>
-                {!! Form::submit(trans('buttons.delete'), array('class' => 'btn btn-danger')) !!}
+                {!! Form::submit(trans('pages.delete'), array('class' => 'btn btn-danger')) !!}
                 {!! Form::close() !!}
             </div>
             <!-- /.box-body -->

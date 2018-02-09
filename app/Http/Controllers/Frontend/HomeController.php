@@ -105,7 +105,7 @@ class HomeController extends Controller
 
         Mail::to(config('mail.from.address'))->send(new ContactForm($contact));
 
-        Flash::success(trans('pages.contact_success'));
+        Flash::success(trans('messages.contact_success'));
 
         return redirect()->route('home');
     }

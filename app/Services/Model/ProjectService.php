@@ -138,7 +138,7 @@ class ProjectService
         $groups = $this->groupContract->getUsersGroupsSelect($user);
 
         if (empty($groups)) {
-            Flash::error(trans('groups.group_required'));
+            Flash::error(trans('messages.group_required'));
 
             return false;
         }
@@ -158,7 +158,7 @@ class ProjectService
     public function processOcr($projectId, $expeditionId = null)
     {
 
-        $this->ocrQueueService->processOcr($projectId, $expeditionId) ? Flash::success(trans('expeditions.ocr_process_success')) : Flash::warning(trans('expeditions.ocr_process_error'));
+        $this->ocrQueueService->processOcr($projectId, $expeditionId) ? Flash::success(trans('messages.ocr_process_success')) : Flash::warning(trans('messages.ocr_process_error'));
     }
 
     /**
@@ -212,12 +212,12 @@ class ProjectService
         if ($project) {
             $this->notifyActorContacts($project->id);
 
-            Flash::success(trans('projects.project_created'));
+            Flash::success(trans('message.record_created'));
 
             return $project;
         }
 
-        Flash::error(trans('projects.project_save_error'));
+        Flash::error(trans('messages.record_save_error'));
 
         return false;
     }
@@ -312,7 +312,7 @@ class ProjectService
 
         $project->resources()->saveMany($resources->all());
 
-        $project ? Flash::success(trans('projects.project_updated')) : Flash::error(trans('projects.project_updated_error'));
+        $project ? Flash::success(trans('messages.record_updated')) : Flash::error(trans('messages.record_updated_error'));
 
         return;
     }
@@ -393,17 +393,17 @@ class ProjectService
     {
         try {
             if ($project->nfnWorkflows->isNotEmpty()) {
-                Flash::error(trans('expeditions.expedition_process_exists'));
+                Flash::error(trans('messages.expedition_process_exists'));
 
                 return false;
             }
 
             $this->projectContract->delete($project);
-            Flash::success(trans('projects.project_deleted'));
+            Flash::success(trans('messages.record_deleted'));
 
             return true;
         } catch (\Exception $e) {
-            Flash::error(trans('projects.project_delete_error'));
+            Flash::error(trans('messages.record_delete_error'));
 
             return false;
         }
@@ -429,11 +429,11 @@ class ProjectService
 
             $this->projectContract->destroy($project);
 
-            Flash::success(trans('projects.project_destroyed'));
+            Flash::success(trans('messages.record_destroyed'));
 
             return;
         } catch (\Exception $e) {
-            Flash::error(trans('projects.project_destroy_error'));
+            Flash::error(trans('messages.record_destroy_error'));
 
             return;
         }
@@ -447,7 +447,7 @@ class ProjectService
      */
     public function restoreProject($project)
     {
-        return $this->projectContract->restore($project) ? Flash::success(trans('projects.project_restored')) : Flash::error(trans('projects.project_restored_error'));
+        return $this->projectContract->restore($project) ? Flash::success(trans('messages.record_restored')) : Flash::error(trans('messages.record_restored_error'));
     }
 }
 

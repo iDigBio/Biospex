@@ -21,19 +21,19 @@
                     <div class="row">
                         <div class="col-md-6">
                             @if ( ! $expedition->downloads->isEmpty())
-                                <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-sm"
+                                <button title="@lang('pages.downloadTitle')" class="btn btn-success btn-sm"
                                         type="button"
                                         onClick="location.href='{{ route('webauth.downloads.index', [$expedition->project->id, $expedition->id]) }}'">
-                                    <span class="fa fa-download fa-lrg"></span> @lang('buttons.download') </button>
+                                    <span class="fa fa-download fa-lrg"></span> @lang('pages.download') </button>
                             @endif
-                            <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-sm" type="button"
+                            <button title="@lang('pages.duplicateTitle')" class="btn btn-success btn-sm" type="button"
                                     onClick="location.href='{{ route('webauth.expeditions.duplicate', [$expedition->project->id, $expedition->id]) }}'">
-                                <span class="fa fa-copy fa-lrg"></span> @lang('buttons.duplicate')</button>
-                            <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm"
+                                <span class="fa fa-copy fa-lrg"></span> @lang('pages.duplicate')</button>
+                            <button title="@lang('pages.editTitle')" class="btn btn-warning btn-sm"
                                     onClick="location.href='{{ route('webauth.expeditions.edit', [$expedition->project->id, $expedition->id]) }}'">
-                                <span class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
+                                <span class="fa fa-cog fa-lrg"></span> @lang('pages.edit')</button>
 
-                            <button class="btn btn-sm btn-danger" title="@lang('buttons.deleteTitle')"
+                            <button class="btn btn-sm btn-danger" title="@lang('pages.deleteTitle')"
                                     data-href="{{ route('webauth.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"
                                     data-method="delete"
                                     data-toggle="confirmation"
@@ -42,27 +42,27 @@
                                     data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
                                     data-btn-cancel-class="btn-danger"
                                     data-title="Continue action?" data-content="This will delete the item">
-                                <span class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')
+                                <span class="fa fa-remove fa-lrg"></span> @lang('pages.delete')
                             </button>
 
                         </div>
                         <div class="col-md-2">
-                            <button title="@lang('buttons.ocrTitle')" class="btn btn-success btn-sm" type="button"
+                            <button title="@lang('pages.ocrTitle')" class="btn btn-success btn-sm" type="button"
                                     {{ $btnDisable ? '' : 'disabled' }}
                                     onClick="location.href='{{ route('webauth.expeditions.ocr', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-repeat fa-lrg"></span>
-                                {{ $btnDisable ? trans('buttons.ocr') : trans('buttons.ocrDisabled') }}
+                                {{ $btnDisable ? trans('pages.ocr') : trans('pages.ocrDisabled') }}
                             </button>
 
                         </div>
                         <div class="col-md-2">
                             @if (null === $expedition->workflowManager || $expedition->workflowManager->stopped === 1)
-                                <button title="@lang('buttons.processTitle')" class="btn btn-success btn-sm" type="button"
+                                <button title="@lang('pages.processTitle')" class="btn btn-success btn-sm" type="button"
                                         {{ $expedition->stat->subject_count === 0 ? 'disabled' : '' }}
                                         onClick="location.href='{{ route('webauth.expeditions.process', [$expedition->project->id, $expedition->id]) }}'">
-                                    <span class="fa fa-play fa-lrg"></span> @lang('buttons.process')</button>
+                                    <span class="fa fa-play fa-lrg"></span> @lang('pages.process')</button>
                             @else
-                                <button class="btn btn-sm btn-danger" title="@lang('buttons.stopTitle')"
+                                <button class="btn btn-sm btn-danger" title="@lang('pages.stopTitle')"
                                         data-href="{{ route('webauth.expeditions.stop', [$expedition->project->id, $expedition->id]) }}"
                                         data-method="delete"
                                         data-toggle="confirmation"
@@ -71,7 +71,7 @@
                                         data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
                                         data-btn-cancel-class="btn-danger"
                                         data-title="Continue action?" data-content="This will stop the process">
-                                    <span class="fa fa-remove fa-lrg"></span> @lang('buttons.stop')
+                                    <span class="fa fa-remove fa-lrg"></span> @lang('pages.stop')
                                 </button>
 
                             @endif

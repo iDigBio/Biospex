@@ -119,12 +119,12 @@ class GroupService
 
             event('group.saved');
 
-            Flash::success(trans('groups.created'));
+            Flash::success(trans('messages.record_created'));
 
             return true;
         }
 
-        Flash::warning(trans('groups.loginreq'));
+        Flash::warning(trans('messages.loginreq'));
 
         return false;
     }
@@ -138,8 +138,8 @@ class GroupService
     public function updateGroup(array $attributes = [], $groupId)
     {
         $this->groupContract->update($attributes, $groupId) ?
-            Flash::success(trans('groups.updated')) :
-            Flash::error('groups.updateproblem');
+            Flash::success(trans('messages.record_updated')) :
+            Flash::error('messages.record_updated_error');
 
         return;
     }
@@ -158,7 +158,7 @@ class GroupService
             {
                 if ( ! $project->nfnWorkflows->isEmpty())
                 {
-                    Flash::error(trans('expeditions.expedition_process_exists'));
+                    Flash::error(trans('messages.expedition_process_exists'));
 
                     return false;
                 }
@@ -168,13 +168,13 @@ class GroupService
 
             event('group.deleted');
 
-            Flash::success(trans('groups.group_deleted'));
+            Flash::success(trans('messages.record_deleted'));
 
             return true;
         }
         catch (\Exception $e)
         {
-            Flash::error(trans('groups.group_deleted_failed'));
+            Flash::error(trans('messages.record_delete_error'));
 
             return false;
         }
@@ -197,13 +197,13 @@ class GroupService
 
             $this->groupContract->destroy($group);
 
-            Flash::success(trans('groups.group_destroyed'));
+            Flash::success(trans('messages.record_destroyed'));
 
             return true;
         }
         catch (\Exception $e)
         {
-            Flash::error(trans('groups.group_destroyed_failed'));
+            Flash::error(trans('messages.record_destroy_error'));
 
             return false;
         }
@@ -211,14 +211,12 @@ class GroupService
 
     /**
      * Restore Group.
-     *
      * @param $group
-     * @return \App\Services\Helpers\Flash
      */
     public function restoreGroup($group)
     {
-        return $this->groupContract->restore($group) ?
-            Flash::success(trans('groups.group_restored')) :
-            Flash::error(trans('groups.group_restored_failed'));
+        $this->groupContract->restore($group) ?
+            Flash::success(trans('messages.record_restored')) :
+            Flash::error(trans('messages.record_restored_error'));
     }
 }

@@ -7,7 +7,6 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class TestAppCommand extends Command
 {
-
     use DispatchesJobs;
 
     /**
@@ -34,16 +33,6 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
-
-        $lngArray = \Lang::get('buttons');
-        foreach ($lngArray as $key => $value)
-        {
-            $result = \App\Models\Translation::where('group', 'buttons')->where('key', $key)->first();
-            if ($result === null) {
-                echo $key . PHP_EOL;
-            }
-        }
-
 
     }
 }

@@ -3,7 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
     @parent
-    @lang('groups.group_view')
+    @lang('pages.group')
 @stop
 
 {{-- Content --}}
@@ -16,15 +16,15 @@
     <div class="panel panel-primary">
         <div style="padding: 10px;">
             @can('update', $group)
-                <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm"
+                <button title="@lang('pages.editTitle')" class="btn btn-warning btn-sm"
                         onClick="location.href='{{ route('webauth.groups.edit', array($group->id)) }}'"><span
-                            class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
-                <button title="@lang('buttons.inviteTitle')" class="btn btn-default btn-reverse btn-sm" type="button"
+                            class="fa fa-cog fa-lrg"></span> @lang('pages.edit')</button>
+                <button title="@lang('pages.inviteTitle')" class="btn btn-default btn-reverse btn-sm" type="button"
                         onClick="location.href='{{ route('webauth.invites.index', [$group->id]) }}'"><span
-                            class="fa fa-users fa-lrg"></span> @lang('buttons.invite')</button>
+                            class="fa fa-users fa-lrg"></span> @lang('pages.invite')</button>
             @endcan
             @can('delete', $group)
-                <button class="btn btn-sm btn-danger" title="@lang('buttons.deleteTitle')"
+                <button class="btn btn-sm btn-danger" title="@lang('pages.deleteTitle')"
                         data-href="{{ route('webauth.groups.delete', array($group->id)) }}"
                         data-method="delete"
                         data-toggle="confirmation"
@@ -33,7 +33,7 @@
                         data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
                         data-btn-cancel-class="btn-danger"
                         data-title="Continue action?" data-content="This will delete the item">
-                    <span class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')
+                    <span class="fa fa-remove fa-lrg"></span> @lang('pages.delete')
                 </button>
             @endcan
         </div>
@@ -43,9 +43,9 @@
         <table class="table table-striped table-hover dataTable">
             <thead>
             <tr>
-                <th>{{ trans('groups.group_admin') }}</th>
-                <th>{{ trans('users.users') }}</th>
-                <th>{{ trans('projects.projects') }}</th>
+                <th>@lang('pages.group') @lang('pages.owner)</th>
+                <th>{{ trans('pages.users') }}</th>
+                <th>{{ trans('pages.projects') }}</th>
             </tr>
             </thead>
             <tbody>

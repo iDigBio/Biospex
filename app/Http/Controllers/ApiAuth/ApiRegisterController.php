@@ -75,7 +75,7 @@ class ApiRegisterController extends Controller
         if ($user)
         {
             $user->notify(new UserActivation(route('api.get.activate', [$user->id, $user->activation_code])));
-            Flash::success(trans('users.created'));
+            Flash::success(trans('messages.new_account'));
 
             return redirect()->route('api.get.index');
         }
@@ -98,7 +98,7 @@ class ApiRegisterController extends Controller
         }
 
         $user->attemptActivation($code);
-        Flash::success(trans('users.activated'));
+        Flash::success(trans('messages.activated'));
 
         return redirect()->route('api.get.login');
     }
@@ -130,7 +130,7 @@ class ApiRegisterController extends Controller
 
         $user->getActivationCode();
         $user->notify(new UserActivation(route('api.get.activate', [$user->id, $user->activation_code])));
-        Flash::success(trans('users.emailconfirm'));
+        Flash::success(trans('messages.email_confirm'));
 
         return redirect()->route('api.get.login');
     }
@@ -153,13 +153,13 @@ class ApiRegisterController extends Controller
     {
         if ( ! $user)
         {
-            Flash::error(trans('users.notfound'));
+            Flash::error(trans('messages.not_found'));
             return false;
         }
 
         if ($user->activated)
         {
-            Flash::info(trans('users.already_activated'));
+            Flash::info(trans('messages.already_activated'));
             return false;
         }
 

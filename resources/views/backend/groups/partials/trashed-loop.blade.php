@@ -4,12 +4,12 @@
         <td>{{ $group->title }}</td>
         <td>
             <div class="btn-toolbar">
-                <button title="@lang('buttons.restoreTitle')"
+                <button title="@lang('pages.restoreTitle')"
                         class="btn btn-success btn-xs"
                         type="button"
                         onClick="location.href='{{ route('admin.groups.restore', [$group->id]) }}'">
-                    <span class="fa fa-plus fa-lg"></span><!-- @lang('buttons.view') --></button>
-                <button class="btn btn-xs btn-danger" title="@lang('buttons.deleteTitle')"
+                    <span class="fa fa-plus fa-lg"></span><!-- @lang('pages.view') --></button>
+                <button class="btn btn-xs btn-danger" title="@lang('pages.deleteTitle')"
                         data-href="{{ route('admin.groups.destroy', [$group->id]) }}"
                         data-method="delete"
                         data-toggle="confirmation"
@@ -18,7 +18,7 @@
                         data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
                         data-btn-cancel-class="btn-danger"
                         data-title="Continue action?" data-content="This will destroy the item">
-                    <span class="fa fa-remove fa-sm"></span> <!-- @lang('buttons.delete') -->
+                    <span class="fa fa-remove fa-sm"></span> <!-- @lang('pages.delete') -->
                 </button>
             </div>
         </td>

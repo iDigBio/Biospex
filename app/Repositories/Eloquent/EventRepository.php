@@ -36,12 +36,12 @@ class EventRepository extends EloquentRepository implements Event
         if ($project) {
             $this->notifyActorContacts($project->id);
 
-            Flash::success(trans('projects.project_created'));
+            Flash::success(trans('messages.record_created'));
 
             return $project;
         }
 
-        Flash::error(trans('projects.project_save_error'));
+        Flash::error(trans('messages.record_save_error'));
 
         return false;
     }

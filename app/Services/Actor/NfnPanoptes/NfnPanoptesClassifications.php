@@ -72,7 +72,7 @@ class NfnPanoptesClassifications
         {
             $this->actorServiceConfig->fireActorErrorEvent();
 
-            $message = trans('errors.nfn_classifications_error', [
+            $message = trans('messages.nfn_classifications_error', [
                 'title'   => $record->title,
                 'id'      => $record->id,
                 'message' => $e->getMessage()
@@ -90,7 +90,7 @@ class NfnPanoptesClassifications
      */
     protected function notify($record)
     {
-        $message = trans('emails.nfn_transcriptions_complete_message', ['expedition' => $record->title]);
+        $message = trans('messages.nfn_transcriptions_complete_message', ['expedition' => $record->title]);
 
         $record->project->group->owner->notify(new NfnTranscriptionsComplete($message));
     }
@@ -105,7 +105,7 @@ class NfnPanoptesClassifications
         {
             /*
             $this->actorServiceConfig->fireActorUnQueuedEvent();
-            $message = trans('errors.missing_nfnworkflow', ['title'   => $record->title]);
+            $message = trans('messages.missing_nfnworkflow', ['title'   => $record->title]);
             $record->project->group->owner->notify(new NfnTranscriptionsComplete($message));
             */
             return true;

@@ -41,71 +41,71 @@
             <div class="col-md-5">
                 <dl>
                     @isset($project->organization)
-                        <dt class="firstdl">{{ trans('forms.organization') }}</dt>
+                        <dt class="firstdl">{{ trans('pages.organization') }}</dt>
                         <dd class="firstdl">{{ $project->organization }}&nbsp;</dd>
                     @endisset
                     @isset($project->contact_email)
-                        <dt>{{ trans('forms.contact') }}</dt>
+                        <dt>{{ trans('pages.contact') }}</dt>
                         <dd><a href="mailto:{{ $project->contact_email }}">{{ $project->contact }}</a>&nbsp;</dd>
                     @endisset
                     @isset($project->contact_title)
-                        <dt>{{ trans('forms.contact_title') }}</dt>
+                        <dt>{{ trans('pages.contact').' '.trans('pages.title') }}</dt>
                         <dd>{{ $project->contact_title }}&nbsp;</dd>
                     @endisset
                     @isset($project->organization_website)
-                        <dt>{{ trans('forms.organization_website') }}</dt>
+                        <dt>{{ trans('pages.organization_website') }}</dt>
                         <dd><a href="{{ $project->organization_website }}">{{ $project->organization_website }}</a></dd>
                     @endisset
                     @isset($project->project_partners)
-                        <dt>{{ trans('forms.project_partners') }}</dt>
+                        <dt>{{ trans('pages.project_partners') }}</dt>
                         <dd>{{ $project->project_partners }}&nbsp;</dd>
                     @endisset
                     @isset($project->funding_source)
-                        <dt>{{ trans('forms.funding_source') }}</dt>
+                        <dt>{{ trans('pages.funding_source') }}</dt>
                         <dd>{{ $project->funding_source }}&nbsp;</dd>
                     @endisset
                     @isset($project->incentives)
-                        <dt>{{ trans('forms.incentives') }}</dt>
+                        <dt>{{ trans('pages.incentives') }}</dt>
                         <dd>{{ $project->incentives }}&nbsp;</dd>
                     @endisset
                     @isset($project->geographic_scope)
-                        <dt>{{ trans('forms.geographic_scope') }}</dt>
+                        <dt>{{ trans('pages.geographic_scope') }}</dt>
                         <dd>{{ $project->geographic_scope }}&nbsp;</dd>
                     @endisset
                     @isset($project->taxonomic_scope)
-                        <dt>{{ trans('forms.taxonomic_scope') }}</dt>
+                        <dt>{{ trans('pages.taxonomic_scope') }}</dt>
                         <dd>{{ $project->taxonomic_scope }}&nbsp;</dd>
                     @endisset
                     @isset($project->temporal_scope)
-                        <dt>{{ trans('forms.temporal_scope') }}</dt>
+                        <dt>{{ trans('pages.temporal_scope') }}</dt>
                         <dd>{{ $project->temporal_scope }}&nbsp;</dd>
                     @endisset
                     @isset($project->language_skills)
-                        <dt>{{ trans('forms.language_skills') }}</dt>
+                        <dt>{{ trans('pages.language_skills') }}</dt>
                         <dd>{{ $project->language_skills }}&nbsp;</dd>
                     @endisset
                     @isset($project->activities)
-                        <dt>{{ trans('forms.activities') }}</dt>
+                        <dt>{{ trans('pages.activities') }}</dt>
                         <dd>{{ $project->activities }}&nbsp;</dd>
                     @endisset
                     @isset($project->keywords)
-                        <dt>{{ trans('forms.keywords') }}</dt>
+                        <dt>{{ trans('pages.keywords') }}</dt>
                         <dd>{{ $project->keywords }}&nbsp;</dd>
                     @endisset
                     @isset($project->blog_url)
-                        <dt>{{ trans('forms.blog_url') }}</dt>
+                        <dt>{{ trans('pages.blog_url') }}</dt>
                         <dd><a href="{{ $project->blog_url }}">{{ $project->blog_url }}</a></dd>
                     @endisset
                     @isset($project->facebook)
-                        <dt>{{ trans('forms.facebook') }}</dt>
+                        <dt>{{ trans('pages.facebook') }}</dt>
                         <dd><a href="{{ $project->facebook }}">{{ $project->facebook }}</a></dd>
                     @endisset
                     @isset($project->twitter)
-                        <dt>{{ trans('forms.twitter') }}</dt>
+                        <dt>{{ trans('pages.twitter') }}</dt>
                         <dd><a href="{{ $project->twitter }}" target="_blank">{{ $project->twitter }}</a></dd>
                     @endisset
                     @if($project->resources->isNotEmpty())
-                        <dt>{{ trans('forms.project_resources') }}</dt>
+                        <dt>{{ trans('pages.project_resources') }}</dt>
                         <dd>
                             @foreach($project->resources as $resource)
                                 @if($resource->type === 'File Download')

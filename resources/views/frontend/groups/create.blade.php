@@ -3,7 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
 @parent
-@lang('groups.group_create')
+    @lang('pages.create') @lang('pages.create')
 @stop
 
 {{-- Content --}}
@@ -13,7 +13,7 @@
     <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
         <div class="panel panel-info">
             <div class="panel-heading">
-                <h3 class="panel-title">@lang('groups.group_create')</h3>
+                <h3 class="panel-title">@lang('pages.create) @lang('pages.group')</h3>
             </div>
             <div class="panel-body">
                 {!! Form::open([
@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 {!! Form::hidden('owner', $user->id) !!}
-                {!!Form::submit(trans('buttons.create'), array('class' => 'btn btn-primary')) !!}
+                {!!Form::submit(trans('pages.create'), array('class' => 'btn btn-primary')) !!}
                 {!! Form::close() !!}
             </div>
         </div>

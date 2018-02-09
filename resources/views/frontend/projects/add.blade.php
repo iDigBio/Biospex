@@ -33,7 +33,7 @@
                     <p>{!! link_to("#dataFileModal", 'Instructions', ['class' => 'btn btn-sm btn-info', 'data-toggle'=>'modal']) !!}</p>
 
                     <div class="form-group {{ ($errors->has('dwc')) ? 'has-error' : '' }}">
-                        {!! Form::label('dwc', trans('forms.file'), ['id' => 'dwc', 'class' => 'col-sm-2 control-label']) !!}
+                        {!! Form::label('dwc', trans('pages.file'), ['id' => 'dwc', 'class' => 'col-sm-2 control-label']) !!}
                         <div class="col-md-10">
                             {!! Form::file('dwc') !!}
                         </div>
@@ -42,8 +42,8 @@
 
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            {!! Form::submit(trans('buttons.upload'), ['class' => 'btn btn-sm btn-primary']) !!}
-                            {!! link_to(URL::previous(), trans('buttons.cancel'), ['class' => 'btn btn-sm btn-primary btn-danger']) !!}
+                            {!! Form::submit(trans('pages.upload'), ['class' => 'btn btn-sm btn-primary']) !!}
+                            {!! link_to(URL::previous(), trans('pages.cancel'), ['class' => 'btn btn-sm btn-primary btn-danger']) !!}
                         </div>
                     </div>
                     {!! Form::hidden('user_id', $project->group->user_id) !!}
@@ -68,7 +68,7 @@
                     <p>{!! link_to("#recordsetModal", 'Instructions', ['class' => 'btn btn-sm btn-info', 'data-toggle'=>'modal']) !!}</p>
 
                     <div class="form-group {{ ($errors->has('recordset')) ? 'has-error' : '' }}">
-                        {!! Form::label('recordset', trans('forms.recordset'), ['id' => 'recordset', 'class' => 'col-sm-2 control-label']) !!}
+                        {!! Form::label('recordset', trans('pages.recordset'), ['id' => 'recordset', 'class' => 'col-sm-2 control-label']) !!}
                         <div class="col-md-10">
                             {!! Form::text('recordset', Input::old('recordset'), ['id' => 'recordset', 'class' => 'form-control input-sm', 'placeholder' => trans('pages.recordset'),]) !!}
                         </div>
@@ -77,8 +77,8 @@
 
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            {!! Form::submit(trans('buttons.upload'), ['class' => 'btn btn-sm btn-primary']) !!}
-                            {!! link_to(URL::previous(), trans('buttons.cancel'), ['class' => 'btn btn-sm btn-primary btn-danger']) !!}
+                            {!! Form::submit(trans('pages.upload'), ['class' => 'btn btn-sm btn-primary']) !!}
+                            {!! link_to(URL::previous(), trans('pages.cancel'), ['class' => 'btn btn-sm btn-primary btn-danger']) !!}
                         </div>
                     </div>
                     {!! Form::hidden('user_id', $project->group->user_id) !!}
@@ -103,7 +103,7 @@
                     <p>{!! link_to("#dataUrlModal", 'Instructions', ['class' => 'btn btn-sm btn-info', 'data-toggle'=>'modal']) !!}</p>
 
                     <div class="form-group {{ ($errors->has('data-url')) ? 'has-error' : '' }}">
-                        {!! Form::label('data-url', trans('forms.url'), array('id' => 'data-url', 'class' => 'col-sm-2 control-label')) !!}
+                        {!! Form::label('data-url', trans('pages.url'), array('id' => 'data-url', 'class' => 'col-sm-2 control-label')) !!}
                         <div class="col-md-10">
                             {!! Form::text('data-url', Input::old('data-url'), ['id' => 'data-url', 'class' => 'form-control input-sm', 'placeholder' => trans('pages.core_url'),]) !!}
                         </div>
@@ -112,8 +112,8 @@
 
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            {!! Form::submit(trans('buttons.upload'), ['class' => 'btn btn-sm btn-primary']) !!}
-                            {!! link_to(URL::previous(), trans('buttons.cancel'), ['class' => 'btn btn-sm btn-primary btn-danger']) !!}
+                            {!! Form::submit(trans('pages.upload'), ['class' => 'btn btn-sm btn-primary']) !!}
+                            {!! link_to(URL::previous(), trans('pages.cancel'), ['class' => 'btn btn-sm btn-primary btn-danger']) !!}
                         </div>
                     </div>
                     {!! Form::hidden('user_id', $project->group->user_id) !!}

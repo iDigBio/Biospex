@@ -25,12 +25,12 @@
     </div>
     <div class="row col-sm-10 col-md-offset-1">
         <div class="col-md-6 text-center">
-            <button class="btn btn-primary btn-lg" title="@lang('buttons.createTitleG')"
+            <button class="btn btn-primary btn-lg" title="@lang('pages.createTitleG')"
                     onClick="location.href='{{ route('webauth.groups.create') }}'"><span
                         class="fa fa-group fa-3x"></span></button>
         </div>
         <div class="col-md-6 text-center">
-            <button class="btn btn-primary btn-lrg" title="@lang('buttons.createTitleEv')"
+            <button class="btn btn-primary btn-lrg" title="@lang('pages.createTitleEv')"
                     onClick="location.href='{{ route('webauth.events.create') }}'"><span
                         class="fa fa-calendar fa-5x"></span></button>
         </div>

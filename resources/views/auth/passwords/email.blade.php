@@ -30,7 +30,7 @@
                         {{ ($errors->has('email') ?  $errors->first('email') : '') }}
                     </div>
                 </div>
-                {!! Form::submit(trans('buttons.send_instructions'), array('class' => 'btn btn-primary btn-block')) !!}
+                {!! Form::submit(trans('pages.send_instructions'), array('class' => 'btn btn-primary btn-block')) !!}
                 {!! Form::close() !!}
                 <div class="col-md-6 col-md-offset-3 top15 text-center">
                     {!! link_to_route('app.get.login', trans('pages.back_to_login')) !!}

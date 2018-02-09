@@ -101,7 +101,7 @@ class DownloadsController extends Controller
 
         if ( ! $download)
         {
-            Flash::error(trans('errors.missing_download_file'));
+            Flash::error(trans('messages.missing_download_file'));
             return redirect()->route('webauth.downloads.index', [$projectId, $expeditionId]);
         }
 
@@ -123,7 +123,7 @@ class DownloadsController extends Controller
         $path = $this->paths[$download->type] . '/' . $download->file;
         if ( ! file_exists($path))
         {
-            Flash::error(trans('errors.missing_download_file'));
+            Flash::error(trans('messages.missing_download_file'));
             return redirect()->route('webauth.downloads.index', [$projectId, $expeditionId]);
         }
 
@@ -158,11 +158,11 @@ class DownloadsController extends Controller
             event('actor.pivot.regenerate', [$expedition->nfnActor]);
             Queue::push('App\Services\Queue\ActorQueue', serialize($expedition->nfnActor), config('config.beanstalkd.export'));
 
-            Flash::success(trans('expeditions.download_regeneration_success'));
+            Flash::success(trans('messages.download_regeneration_success'));
         }
         catch (\Exception $e)
         {
-            Flash::error(trans('expeditions.download_regeneration_error', ['error' => $e->getMessage()]));
+            Flash::error(trans('messages.download_regeneration_error', ['error' => $e->getMessage()]));
         }
 
         return redirect()->route('webauth.downloads.index', [$projectId, $expeditionId]);

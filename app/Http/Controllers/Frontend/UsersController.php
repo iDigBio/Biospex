@@ -94,11 +94,11 @@ class UsersController extends Controller
 
         if ($result)
         {
-            Flash::success(trans('users.updated'));
+            Flash::success(trans('messages.record_updated'));
         }
         else
         {
-            Flash::error(trans('users.notupdated'));
+            Flash::error(trans('messages.record_updated_error'));
         }
 
         return redirect()->route('webauth.users.edit', [$user->id]);
@@ -123,14 +123,14 @@ class UsersController extends Controller
 
         if ( ! Hash::check($request->input('oldPassword'), $user->password))
         {
-            Flash::error(trans('users.oldpassword'));
+            Flash::error(trans('messages.old_password'));
 
             return redirect()->route('webauth.users.edit', [$user->id]);
         }
 
         $this->resetPassword($user, $request->input('newPassword'));
 
-        Flash::success(trans('users.passwordchg'));
+        Flash::success(trans('messages.password_chg'));
 
         return redirect()->route('webauth.users.edit', [$user->id]);
     }

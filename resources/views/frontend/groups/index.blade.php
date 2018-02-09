@@ -3,17 +3,17 @@
 {{-- Web site Title --}}
 @section('title')
     @parent
-    @lang('groups.groups')
+    @lang('pages.groups')
 @stop
 
 {{-- Content --}}
 @section('content')
 
     <div class="jumbotron">
-        <h3>{{ trans('groups.groups') }}
-            <button title="@lang('buttons.createTitleG')" class="btn btn-success"
+        <h3>{{ trans('pages.groups') }}
+            <button title="@lang('pages.createTitleG')" class="btn btn-success"
                     onClick="location.href='{{ route('webauth.groups.create') }}'"><span
-                        class="fa fa-plus fa-lg"></span> @lang('buttons.create')</button>
+                        class="fa fa-plus fa-lg"></span> @lang('pages.create')</button>
         </h3>
     </div>
     <div class="row">
