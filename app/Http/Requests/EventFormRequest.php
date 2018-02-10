@@ -25,10 +25,13 @@ class EventFormRequest extends FormRequest
     public function rules()
     {
         $rules = [
+            'project_id' => 'required',
             'title' => 'required|between:6,140|unique:expeditions,title,' . $this->route('expeditions'),
             'description' => 'required|between:6,140',
             'contact' => 'required',
-            'contact_email' => 'required|email'
+            'contact_email' => 'required|email',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date'
         ];
 
         return $rules;

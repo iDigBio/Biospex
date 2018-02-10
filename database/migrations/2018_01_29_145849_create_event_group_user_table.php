@@ -16,9 +16,6 @@ class CreateEventGroupUserTable extends Migration
         Schema::create('event_group_user', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->unsignedInteger('event_id');
-            $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
-
             $table->unsignedInteger('group_id');
             $table->foreign('group_id')->references('id')->on('event_groups')->onDelete('cascade');
 
@@ -27,7 +24,7 @@ class CreateEventGroupUserTable extends Migration
 
             $table->timestamps();
 
-            $table->unique(['event_id', 'group_id', 'user_id'], 'event_group_user');
+            $table->unique(['group_id', 'user_id'], 'event_group_user');
         });
     }
 

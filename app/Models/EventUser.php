@@ -24,11 +24,11 @@ class EventUser extends Model
     /**
      * Events relationship.
      *
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function events()
     {
-        return $this->belongsToMany(Event::class, 'event_group_user');
+        return $this->hasManyThrough(Event::class, EventGroup::class);
     }
 
     /**

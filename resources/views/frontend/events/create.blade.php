@@ -80,9 +80,9 @@
                     {!! Form::label('', trans('pages.event_groups'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="controls col-sm-10">
                         @if($errors->has('groups.*'))
-                            @for($i = 0; $i < Input::old('groupsNum'); $i++)
+                            @foreach(Input::old('groups') as $key => $title)
                                 @include('frontend.events.partials.group-error')
-                            @endfor
+                            @endforeach
                         @else
                             @include('frontend.events.partials.group-create')
                         @endif
@@ -91,6 +91,7 @@
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
+                        {!! Form::hidden('owner_id', Auth::id()) !!}
                         {!! Form::hidden('groupsNum', 1) !!}
                         {!! Form::submit(trans('pages.create'), ['class' => 'btn btn-primary']) !!}
                         {!! link_to(URL::previous(), trans('pages.cancel'), ['class' => 'btn btn-large btn-primary btn-danger']) !!}

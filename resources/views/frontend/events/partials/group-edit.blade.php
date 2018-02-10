@@ -7,5 +7,4 @@
             {!! Form::text('groups[' . $key . '][title]', $group->title, ['class' => 'form-control', 'placeholder' => trans('pages.event_groups_title')]) !!}
         </div>
     </div>
-    {!! Form::hidden('groups['. $key .'][id]', $resource->id) !!}
 </div>

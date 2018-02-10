@@ -3,6 +3,7 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Event as Model;
+use App\Models\EventGroup;
 use App\Repositories\Interfaces\Event;
 
 class EventRepository extends EloquentRepository implements Event
@@ -23,25 +24,32 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function create(array $attributes)
     {
-        $this->create($attributes);
+        $event = $this->model->create($attributes);
 
-        $groups = collect($attributes['groups'])->reject(function ($resource) {
-            return $this->filterOrDeleteResources($resource);
-        })->map(function ($resource) {
-            return new ProjectResourceModel($resource);
+        $groups = collect($attributes['groups'])->reject(function ($group) {
+            return empty($group['title']);
+        })->map(function ($group) {
+            return new EventGroup($group);
         });
 
-        $project->resources()->saveMany($resources->all());
+        $event->groups()->saveMany($groups->all());
 
-        if ($project) {
-            $this->notifyActorContacts($project->id);
+        return $event;
+    }
 
-            Flash::success(trans('messages.record_created'));
-
-            return $project;
+    public function filterOrDeleteResources($resource)
+    {
+        if ($resource['type'] === null)
+        {
+            return true;
         }
 
-        Flash::error(trans('messages.record_save_error'));
+        if ($resource['type'] === 'delete')
+        {
+            $this->projectResource->delete($resource['id']);
+
+            return true;
+        }
 
         return false;
     }

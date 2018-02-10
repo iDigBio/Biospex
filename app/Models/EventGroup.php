@@ -25,11 +25,11 @@ class EventGroup extends Model
     /**
      * Event relationship.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function events()
     {
-        return $this->belongsToMany(Event::class, 'event_group_user');
+        return $this->belongsTo(Event::class);
     }
 
     /**

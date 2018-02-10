@@ -18,6 +18,7 @@ class Event extends Model
      * @inheritDoc
      */
     protected $fillable = [
+        'project_id',
         'owner_id',
         'title',
         'description',
@@ -26,6 +27,16 @@ class Event extends Model
         'start_date',
         'end_date',
     ];
+
+    /**
+     * Project relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
 
     /**
      * Owner relationship.
@@ -40,20 +51,20 @@ class Event extends Model
     /**
      * EventGroup relationship.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function groups()
     {
-        return $this->belongsToMany(EventGroup::class, 'event_group_user');
+        return $this->hasMany(EventGroup::class, 'event_group_user');
     }
 
     /**
      * EventUser Relationship.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function users()
     {
-        return $this->belongsToMany(EventUser::class, 'event_group_user');
+        return $this->hasManyThrough(EventUser::class,EventGroup::class);
     }
 }

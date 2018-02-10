@@ -56,7 +56,7 @@ class EventsController extends Controller
 
     public function show()
     {
-        
+
     }
 
     public function create()
@@ -66,34 +66,39 @@ class EventsController extends Controller
         return view('frontend.events.create', compact('projects'));
     }
 
+    /**
+     * Store Event.
+     *
+     * @param \App\Http\Requests\EventFormRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(EventFormRequest $request)
     {
         $event = $this->event->create($request->all());
 
-        if ($event)
-        {
-            Flash::success(trans('event.create_success'));
+        if ($event) {
+            Flash::success(trans('messages.record_created'));
 
-            return redirect()->route('webaut.events.show', [$event->id]);
+            return redirect()->route('webauth.events.show', [$event->id]);
         }
 
-        Flash::error(trans('events.create_fail'));
+        Flash::error(trans('messages.record_save_error'));
 
-        return redirect()->route('webaut.events.index');
+        return redirect()->route('webauth.events.index');
     }
 
-    public function edit()
+    public function edit($eventId, EventFormRequest $request)
     {
-        
+        dd('test');
     }
 
     public function update()
     {
-        
+
     }
 
     public function delete()
     {
-        
+
     }
 }
