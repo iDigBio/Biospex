@@ -59,7 +59,7 @@ return array (
   'event' => 'Events',
   'event_groups' => 'Groups',
   'event_groups_title' => 'Group Title',
-  'event_timezone' => 'Times are set to your profile timezone',
+  'event_timezone' => 'Times will be displayed as EST',
   'events' => 'Events',
   'existing_invites' => 'Existing Invites',
   'expedition' => 'Expedition',
