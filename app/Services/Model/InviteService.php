@@ -59,12 +59,12 @@ class InviteService
 
             $requestInvites = collect($request->get('invites'))->reject(function($invite){
                 return empty($invite['email']);
-            })->diff($existing->pluck('email'));
+            })->pluck('email')->diff($existing->pluck('email'));
 
             $newInvites = $requestInvites->reject(function ($invite) use($group) {
-                return $this->checkExistingUser($invite['email'], $group);
+                return $this->checkExistingUser($invite, $group);
             })->map(function ($invite) use ($group) {
-                return $this->createNewInvite($invite['email'], $group);
+                return $this->createNewInvite($invite, $group);
             });
 
             Notification::send($newInvites, new GroupInvite($group));
