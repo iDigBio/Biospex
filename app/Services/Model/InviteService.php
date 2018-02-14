@@ -75,7 +75,13 @@ class InviteService
         }
         catch (\Exception $e)
         {
-            Flash::error(trans('groups.send_invite_error', ['group' => $e->getMessage()]));
+            Flash::error(trans('groups.send_invite_error', ['group' => $group->title]));
+
+            \Log::error($e->getLine());
+            \Log::error($e->getFile());
+            \Log::error($e->getMessage());
+            \Log::error($e->getTrace());
+
 
             return false;
         }
