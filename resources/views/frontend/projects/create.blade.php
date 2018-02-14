@@ -227,7 +227,7 @@
                     {!! Form::label('', trans('pages.project_resources'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="controls col-sm-10">
                         @if($errors->has('resources.*'))
-                            @for($i = 0; $i < Input::old('resourceFields'); $i++)
+                            @for($i = 0; $i < old('entries'); $i++)
                                 @include('frontend.projects.partials.resource-error')
                             @endfor
                         @else
@@ -238,7 +238,7 @@
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        {!! Form::hidden('resourceFields', 1) !!}
+                        {!! Form::hidden('entries', 1) !!}
                         {!! Form::submit(trans('pages.create'), ['class' => 'btn btn-primary']) !!}
                         {!! link_to(URL::previous(), trans('pages.cancel'), ['class' => 'btn btn-large btn-primary btn-danger']) !!}
                     </div>
