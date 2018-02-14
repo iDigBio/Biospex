@@ -6,5 +6,6 @@
         </span>
         {!! Form::text('groups[0][title]', null, ['class' => 'form-control', 'placeholder' => trans('pages.event_groups_title')]) !!}
         </div>
+        {!! Form::hidden('groups[0][id]', old('groups.[0].id')) !!}
     </div>
 </div>

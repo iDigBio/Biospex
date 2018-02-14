@@ -148,7 +148,7 @@ abstract class Repository
 
     /**
      * @param array $data
-     * @return static
+     * @return $this|\Illuminate\Database\Eloquent\Model
      * @throws \Exception
      */
     public function create(array $data)

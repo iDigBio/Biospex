@@ -189,7 +189,16 @@ $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
 
     $.datetimepicker.setLocale('en');
-    $('.datetimepicker').datetimepicker();
+    $('.datetimepicker').datetimepicker({
+        format:'Y-m-d H:i',
+        allowTimes:[
+            '00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30', '04:00', '04:30', '05:00',
+            '05:30', '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
+            '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00',
+            '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:30', '22:00',
+            '22:30'
+        ]
+    });
 });
 
 $(function () {
@@ -204,27 +213,26 @@ $(function () {
             $(this).val('');
         });
         newEntry.find('.fileName').html('');
-        controls.find('.entry:not(:last) .btn-add')
+        controls.find('.entry:last .btn-add')
             .removeClass('btn-add').addClass('btn-remove')
             .removeClass('btn-success').addClass('btn-danger')
             .html('<span class="fa fa-minus fa-lrg"></span>');
-        renumber_resources()
+        renumber_prefix()
     }).on('click', '.btn-remove', function (e) {
         $(this).parents('.entry:first').remove();
-        renumber_resources()
+        renumber_prefix()
         e.preventDefault();
         return false;
     });
 });
 
-function renumber_resources() {
+function renumber_prefix() {
     let controls = $('.controls');
     controls.children('.entry').each(function(index) {
-        let prefix = "resources[" + index + "]";
         $(this).find(":input").each(function() {
-            this.name = this.name.replace(/resources\[\d+\]/, prefix);
+            this.name = this.name.replace(/\[[0-9]+\]/g, '['+index+']');
         });
     });
-    $("[name='resourceFields']").val(controls.children().length);
+    $("[name='entries']").val(controls.children().length);
 }
 

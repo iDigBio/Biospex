@@ -9,6 +9,7 @@ use App\Repositories\Interfaces\Event;
 use App\Repositories\Interfaces\EventGroup;
 use App\Repositories\Interfaces\EventUser;
 use App\Repositories\Interfaces\Project;
+use Auth;
 
 class EventsController extends Controller
 {
@@ -51,12 +52,21 @@ class EventsController extends Controller
 
     public function index()
     {
+        $events = $this->event->getUserEvents(Auth::id());
         return view('frontend.events.index');
     }
 
-    public function show()
+    /**
+     * Show event.
+     *
+     * @param $eventId
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function show($eventId)
     {
+        $event = $this->event->findWith($eventId, ['groups']);
 
+        return view('frontend.events.show', compact('event'));
     }
 
     public function create()
@@ -74,7 +84,7 @@ class EventsController extends Controller
      */
     public function store(EventFormRequest $request)
     {
-        $event = $this->event->create($request->all());
+        $event = $this->event->createEvent($request->all());
 
         if ($event) {
             Flash::success(trans('messages.record_created'));
@@ -87,14 +97,33 @@ class EventsController extends Controller
         return redirect()->route('webauth.events.index');
     }
 
-    public function edit($eventId, EventFormRequest $request)
+    /**
+     * Edit event.
+     *
+     * @param $eventId
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function edit($eventId)
     {
-        dd('test');
+        $event = $this->event->findWith($eventId, ['groups']);
+        $projects = $this->project->getProjectEventSelect();
+
+        return view('frontend.events.edit', compact('event', 'projects'));
     }
 
-    public function update()
+    public function update($eventId, EventFormRequest $request)
     {
+        $event = $this->event->updateEvent($request->all(), $eventId);
 
+        if ($event) {
+            Flash::success(trans('messages.record_updated'));
+
+            return redirect()->route('webauth.events.show', [$eventId]);
+        }
+
+        Flash::error(trans('messages.record_updated_error'));
+
+        return redirect()->route('webauth.events.edit', [$eventId]);
     }
 
     public function delete()

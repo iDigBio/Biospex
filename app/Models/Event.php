@@ -2,17 +2,42 @@
 
 namespace App\Models;
 
+use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Event extends Model
 {
-    use LadaCacheTrait;
+    use LadaCacheTrait, SoftCascadeTrait;
 
     /**
      * @inheritDoc
      */
     protected $table = 'events';
+
+    /**
+     * @var array
+     */
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'start_date',
+        'end_date'
+    ];
+
+    /**
+     * @var array
+     */
+    protected $casts = [
+        'project_id' => 'integer',
+        'owner_id' => 'integer',
+        'title' => 'string',
+        'description' => 'string',
+        'contact' => 'string',
+        'contact_email' => 'string',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+    ];
 
     /**
      * @inheritDoc
@@ -27,6 +52,13 @@ class Event extends Model
         'start_date',
         'end_date',
     ];
+
+    /**
+     * Soft delete cascades.
+     *
+     * @var array
+     */
+    protected $softCascade = ['groups'];
 
     /**
      * Project relationship.
@@ -55,7 +87,7 @@ class Event extends Model
      */
     public function groups()
     {
-        return $this->hasMany(EventGroup::class, 'event_group_user');
+        return $this->hasMany(EventGroup::class);
     }
 
     /**
@@ -66,5 +98,27 @@ class Event extends Model
     public function users()
     {
         return $this->hasManyThrough(EventUser::class,EventGroup::class);
+    }
+
+    /**
+     * Set start date attribute.
+     *
+     * @param $value
+     * @return string
+     */
+    public function setStartDateAttribute($value)
+    {
+        $this->attributes['start_date'] = $value . ':00';
+    }
+
+    /**
+     * Set end date attribute.
+     *
+     * @param $value
+     * @return string
+     */
+    public function setEndDateAttribute($value)
+    {
+        $this->attributes['end_date'] = $value . ':00';
     }
 }

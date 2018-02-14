@@ -3,7 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
     @parent
-    @lang('pages.create') @lang('pages.events')
+    @lang('pages.edit') @lang('pages.event')
 @stop
 
 {{-- Content --}}
@@ -11,21 +11,23 @@
     <div class="col-md-10 col-md-offset-1  top20">
         <div class="panel panel-info">
             <div class="panel-heading">
-                <h3 class="panel-title">{{ trans('pages.create') }}</h3>
+                <h3 class="panel-title">{{ trans('pages.edit') }}</h3>
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                'route' => ['webauth.events.store'],
-                'method' => 'post',
-                'class' => 'form-horizontal',
-                'role' => 'form'
+                'route' => ['webauth.events.update', $event->id],
+                    'method' => 'put',
+                    'files' => true,
+                    'class' => 'form-horizontal',
+                    'role' => 'form'
                 ]) !!}
+                {!! method_field('put') !!}
 
                 <div class="form-group required {{ ($errors->has('project_id')) ? 'has-error' : '' }}">
                     {!! Form::label('project_id', trans('pages.project'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-3">
                         {{ ($errors->has('project_id') ? $errors->first('project_id') : '') }}
-                        {!! Form::select('project_id', $projects, null, ['class' => 'form-control']) !!}
+                        {!! Form::select('project_id', $projects, $event->project_id, ['class' => 'form-control']) !!}
                     </div>
                 </div>
 
@@ -33,7 +35,7 @@
                     {!! Form::label('title', trans('pages.title'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-10">
                         {{ ($errors->has('title') ? $errors->first('title') : '') }}
-                        {!! Form::text('title', null, ['class' => 'form-control', 'placeholder' => trans('pages.title')]) !!}
+                        {!! Form::text('title', $event->title, ['class' => 'form-control', 'placeholder' => trans('pages.title')]) !!}
                     </div>
                 </div>
 
@@ -41,7 +43,7 @@
                     {!! Form::label('description_short', trans('pages.description'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-10">
                         {{ ($errors->has('description') ? $errors->first('description') : '') }}
-                        {!! Form::text('description', null, ['class' => 'form-control', 'placeholder' => trans('pages.description_short_max')]) !!}
+                        {!! Form::text('description', $event->description, ['class' => 'form-control', 'placeholder' => trans('pages.description_short_max')]) !!}
                     </div>
                 </div>
 
@@ -49,7 +51,7 @@
                     {!! Form::label('contact', trans('pages.contact'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-10">
                         {{ ($errors->has('contact') ? $errors->first('contact') : '') }}
-                        {!! Form::text('contact', null, ['class' => 'form-control', 'placeholder' => trans('pages.contact')]) !!}
+                        {!! Form::text('contact', $event->contact, ['class' => 'form-control', 'placeholder' => trans('pages.contact')]) !!}
                     </div>
                 </div>
 
@@ -57,7 +59,7 @@
                     {!! Form::label('contact_email', trans('pages.contact') . ' ' . trans('pages.email'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-10">
                         {{ ($errors->has('contact_email') ? $errors->first('contact_email') : '') }}
-                        {!! Form::text('contact_email', null, ['class' => 'form-control', 'placeholder' => trans('pages.contact') . ' ' . trans('pages.email')]) !!}
+                        {!! Form::text('contact_email', $event->contact_email, ['class' => 'form-control', 'placeholder' => trans('pages.contact') . ' ' . trans('pages.email')]) !!}
                     </div>
                 </div>
 
@@ -66,11 +68,11 @@
                     <div class="form-inline col-md-10">
                         <div class="input-group col-md-4">
                             {!! Form::label('start_date', trans('pages.start_date'), ['class' => 'control-label']) !!}
-                            {!! Form::text('start_date', null, ['class' => 'form-control datetimepicker', 'placeholder' => trans('pages.event_timezone')]) !!}
+                            {!! Form::text('start_date', $event->start_date->format('Y-m-d H:i'), ['class' => 'form-control datetimepicker', 'placeholder' => trans('pages.event_timezone')]) !!}
                         </div>
                         <div class="input-group col-md-4">
                             {!! Form::label('end_date', trans('pages.end_date'), ['class' => 'control-label']) !!}
-                            {!! Form::text('end_date', null, ['class' => 'form-control datetimepicker', 'placeholder' => trans('pages.event_timezone')]) !!}
+                            {!! Form::text('end_date', $event->end_date->format('Y-m-d H:i'), ['class' => 'form-control datetimepicker', 'placeholder' => trans('pages.event_timezone')]) !!}
                         </div>
                     </div>
                 </div>
@@ -78,21 +80,27 @@
                 <div class="form-group">
                     {!! Form::label('', trans('pages.event_groups'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="controls col-sm-10">
-                        @if($errors->has('groups.*'))
-                            @for($i = 0; $i < old('entries'); $i++)
-                                @include('frontend.events.partials.group-error')
-                            @endfor
-                        @else
-                            @include('frontend.events.partials.group-create')
-                        @endif
+                        <div class="controls col-sm-10">
+                            @if($errors->has('groups.*'))
+                                @for($i = 0; $i < old('entries'); $i++)
+                                    @include('frontend.events.partials.group-error')
+                                @endfor
+                            @elseif($event->groups->isNotEmpty())
+                                @foreach($event->groups as $key => $group)
+                                    @include('frontend.events.partials.group-edit')
+                                @endforeach
+                            @else
+                                @include('frontend.events.partials.group-create')
+                            @endif
+                        </div>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        {!! Form::hidden('owner_id', Auth::id()) !!}
+                        {!! Form::hidden('owner_id', $event->id) !!}
                         {!! Form::hidden('entries', 1) !!}
-                        {!! Form::submit(trans('pages.create'), ['class' => 'btn btn-primary']) !!}
+                        {!! Form::submit(trans('pages.update'), ['class' => 'btn btn-primary']) !!}
                         {!! link_to(URL::previous(), trans('pages.cancel'), ['class' => 'btn btn-large btn-primary btn-danger']) !!}
                     </div>
                 </div>

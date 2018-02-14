@@ -47,11 +47,11 @@ class WeDigBioDashboard extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\belongsTo
      */
     public function transcription()
     {
-        return $this->belongsTo(PanoptesTranscription::class, 'transcription_id', '_id');
+        return $this->belongsTo(PanoptesTranscription::class, 'classification_id', 'classification_id');
     }
 
     /**

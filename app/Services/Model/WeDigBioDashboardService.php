@@ -94,13 +94,15 @@ class WeDigBioDashboardService
      */
     public function processDataFromPusher($data)
     {
-        $workflow = $this->getNfnWorkflow($data->workflow_id);
-
         $subject = $this->getNfnSubject($data->subject_ids[0]);
 
         $expedition = $this->getExpeditionBySubject($subject);
 
-        $this->createDashboardFromPusher($data, $workflow, $subject, $expedition);
+        if ($expedition === null){
+            return;
+        }
+
+        $this->createDashboardFromPusher($data, $subject, $expedition);
     }
 
     /**
@@ -117,27 +119,6 @@ class WeDigBioDashboardService
         }
 
         return $this->expeditionContract->find($subject['metadata']['#expeditionId']);
-    }
-
-    /**
-     * Get nfn subject.
-     *
-     * @param $workflowId
-     * @return null
-     */
-    public function getNfnWorkflow($workflowId)
-    {
-        $result = Cache::remember('workflow-' . $workflowId, 60, function () use ($workflowId) {
-            $this->nfnApi->setProvider();
-            $this->nfnApi->checkAccessToken('nfnToken');
-            $uri = $this->nfnApi->getWorkflowUri($workflowId);
-            $request = $this->nfnApi->buildAuthorizedRequest('GET', $uri);
-            $results = $this->nfnApi->sendAuthorizedRequest($request);
-
-            return isset($results['workflows'][0]) ? $results['workflows'][0] : null;
-        });
-
-        return $result;
     }
 
     /**
@@ -165,7 +146,6 @@ class WeDigBioDashboardService
      * Build item for dashboard.
      *
      * @param $data
-     * @param $workflow
      * @param $subject
      * @param $expedition
      *
@@ -173,16 +153,16 @@ class WeDigBioDashboardService
      * $this->buildItem($data, $workflow, $subject, $expedition);
      *
      */
-    private function createDashboardFromPusher($data, $workflow, $subject, $expedition)
+    private function createDashboardFromPusher($data, $subject, $expedition)
     {
         $thumbnailUri = $this->setPusherThumbnailUri($data);
 
         $item = [
             'transcription_id'     => '',
             'classification_id'    => $data->classification_id,
-            'expedition_uuid'      => ! empty($expedition->uuid) ? $expedition->uuid : '',
-            'project'              => ! empty($expedition->title) ? $expedition->title : $workflow['display_name'],
-            'description'          => ! empty($expedition->description) ? $expedition->description : '',
+            'expedition_uuid'      => $expedition->uuid,
+            'project'              => $expedition->title,
+            'description'          => $expedition->description,
             'guid'                 => Uuid::uuid4()->toString(),
             'timestamp'            => DateHelper::newMongoDbDate(),
             'subject'              => [
@@ -241,7 +221,7 @@ class WeDigBioDashboardService
      */
     public function getExpedition($expeditionId)
     {
-        return $this->expeditionContract->findWith($expeditionId, ['project']);
+        return $this->expeditionContract->find($expeditionId);
     }
 
     /**

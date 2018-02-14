@@ -70,3 +70,14 @@ Breadcrumbs::register('web.transcriptions.show.title', function ($breadcrumbs, $
     $breadcrumbs->parent('webauth.expeditions.show', $expedition, true);
     $breadcrumbs->push($title);
 });
+
+
+// Events Pages
+Breadcrumbs::register('webauth.events.index', function ($breadcrumbs) {
+    $breadcrumbs->push('Events', route('webauth.events.index'));
+});
+
+Breadcrumbs::register('webauth.events.show', function ($breadcrumbs, $event) {
+    $breadcrumbs->parent('webauth.events.index');
+    $breadcrumbs->push('Events', route('webauth.events.show', $event->id));
+});

@@ -10,5 +10,18 @@ interface Event extends RepositoryInterface
      * @param array $attributes
      * @return mixed
      */
-    public function create(array $attributes);
+    public function createEvent(array $attributes);
+
+    /**
+     * @param array $attributes
+     * @param $resourceId
+     * @return mixed
+     */
+    public function updateEvent(array $attributes, $resourceId);
+
+    /**
+     * @param $userId
+     * @return mixed
+     */
+    public function getUserEvents($userId);
 }

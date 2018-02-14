@@ -8,6 +8,7 @@
 
 {{-- Content --}}
 @section('content')
+    {!! Breadcrumbs::render('webauth.events.index') !!}
     <div class="row top10">
         <div class="col-md-10 col-md-offset-1 text-center">
         <button title="@lang('pages.createTitleEv')" class="btn btn-success btn-lg"
