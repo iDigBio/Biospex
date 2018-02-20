@@ -239,14 +239,14 @@ class WeDigBioDashboardService
     /**
      * Check if dashboard document already exists.
      *
-     * @param $transcriptionId
+     * @param $transcription
      * @return int
      */
-    public function checkIfExists($transcriptionId)
+    public function checkClassification($transcription)
     {
-        $result = $this->weDigBioDashboardContract->findBy('transcription_id', $transcriptionId);
+        $exists = $this->weDigBioDashboardContract->findBy('transcription_id', $transcription->_id);
 
-        return $result === null;
+        return $exists === null;
     }
 
     /**
@@ -271,11 +271,17 @@ class WeDigBioDashboardService
     private function buildItem($transcription, $expedition, $classification = null)
     {
         $classification === null ?
-            $this->createItem($transcription, $expedition) :
-            $this->updateItem($transcription, $classification);
+            $this->createClassification($transcription, $expedition) :
+            $this->updateClassification($transcription, $classification);
     }
 
-    private function createItem($transcription, $expedition)
+    /**
+     * Create classification if it doesn't exist.
+     *
+     * @param $transcription
+     * @param $expedition
+     */
+    private function createClassification($transcription, $expedition)
     {
         $thumbnailUri = $this->setThumbnailUri($transcription);
 
@@ -323,10 +329,12 @@ class WeDigBioDashboardService
     }
 
     /**
+     * Update Classification.
+     *
      * @param $transcription
      * @param $classification
      */
-    private function updateItem($transcription, $classification)
+    private function updateClassification($transcription, $classification)
     {
         $thumbnailUri = $this->setThumbnailUri($transcription);
 
