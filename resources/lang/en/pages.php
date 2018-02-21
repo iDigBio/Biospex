@@ -59,7 +59,6 @@ return array (
   'event' => 'Events',
   'event_groups' => 'Groups',
   'event_groups_title' => 'Group Title',
-  'event_timezone' => 'Times are displayed as UTC',
   'events' => 'Events',
   'existing_invites' => 'Existing Invites',
   'expedition' => 'Expedition',
