@@ -51,6 +51,7 @@ class Event extends Model
         'contact_email',
         'start_date',
         'end_date',
+        'timezone'
     ];
 
     /**
