@@ -73,7 +73,7 @@ class PanoptesTranscription extends Model
      */
     public function dashboard()
     {
-        return $this->hasOne(WeDigBioDashboard::class, 'classification_id', 'classification_id');
+        return $this->hasOne(PusherTranscription::class, 'classification_id', 'classification_id');
     }
 
     /**

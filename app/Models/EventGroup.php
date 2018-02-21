@@ -49,4 +49,14 @@ class EventGroup extends Model
     {
         return $this->belongsToMany(EventUser::class, 'event_group_user');
     }
+
+    /**
+     * Event transcription relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function transcriptions()
+    {
+        return $this->hasMany(EventTranscription::class);
+    }
 }

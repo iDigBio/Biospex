@@ -88,14 +88,14 @@ class ApiController extends BaseController
     }
 
     /**
-     * Respond with WeDigBioDashboard Collection.
+     * Respond with PusherTranscription Collection.
      *
      * @param $collection
      * @param $callback
      * @param null $resourceKey
      * @return mixed
      */
-    protected function respondWithDashboardCollection($collection, $callback, $resourceKey = null)
+    protected function respondWithPusherCollection($collection, $callback, $resourceKey = null)
     {
         $this->setManager();
 

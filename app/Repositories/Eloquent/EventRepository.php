@@ -49,16 +49,16 @@ class EventRepository extends EloquentRepository implements Event
     {
         $event = $this->update($attributes, $resourceId);
 
-        collect($attributes['groups'])->each(function ($group, $key) use ($event) {
-            $this->handleGroup($group, $key, $event);
+        collect($attributes['groups'])->each(function ($group) use ($event) {
+            $this->handleGroup($group, $event);
         });
 
         return $event;
     }
 
-    public function handleGroup($group, $key, $event)
+    public function handleGroup($group, $event)
     {
-        $record = EventGroup::where('id', $key)->where('event_id', $event->id)->first();
+        $record = EventGroup::where('id', $group['id'])->where('event_id', $event->id)->first();
         if ($record && $group['title'] !== null) {
             $record->fill($group)->save();
 
@@ -88,7 +88,10 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function getUserEvents($id)
     {
-       $results = $this->model->with()->where('owner', $id)->get();
+       $results = $this->model->withCount(['transcriptions' => function($query) {
+           $query->groupBy('event_id');
+       }])->where('owner_id', $id)->get();
+
        $this->resetModel();
 
        return $results;

@@ -3,10 +3,10 @@
 namespace App\Console\Commands;
 
 use File;
-use App\Jobs\WeDigBioDashboardJob;
+use App\Jobs\NfnClassificationPusherTranscriptionsJob;
 use Illuminate\Console\Command;
 
-class WeDigBioDashboard extends Command
+class PusherTranscription extends Command
 {
     /**
      * The name and signature of the console command.
@@ -24,7 +24,7 @@ class WeDigBioDashboard extends Command
     protected $description = 'Run WeDigBio dashboard to create/update records';
 
     /**
-     * WeDigBioDashboard constructor.
+     * PusherTranscription constructor.
      */
     public function __construct()
     {
@@ -39,7 +39,7 @@ class WeDigBioDashboard extends Command
     {
         $expeditionIds = null === $this->argument('expeditionIds') ? $this->readDirectory() : explode(',', $this->argument('expeditionIds'));
 
-        WeDigBioDashboardJob::dispatch($expeditionIds);
+        NfnClassificationPusherTranscriptionsJob::dispatch($expeditionIds);
     }
 
     /**

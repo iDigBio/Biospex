@@ -6,7 +6,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 use MongoDB\BSON\ObjectID;
 use MongoDB\BSON\UTCDateTime;
 
-class WeDigBioDashboard extends Model
+class PusherTranscription extends Model
 {
     /**
      * @inheritDoc
@@ -16,7 +16,7 @@ class WeDigBioDashboard extends Model
     /**
      * Set Collection
      */
-    protected $collection = 'wedigbio_dashboard';
+    protected $collection = 'pusher_transcriptions';
 
     /**
      * @inheritDoc

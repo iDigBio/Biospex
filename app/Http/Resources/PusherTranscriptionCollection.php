@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class WeDigBioDashboardCollection extends ResourceCollection
+class PusherTranscriptionCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
@@ -15,7 +15,7 @@ class WeDigBioDashboardCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'data' => WeDigBioDashboardResource::collection($this->collection)
+            'data' => PusherTranscriptionResource::collection($this->collection)
         ];
     }
 

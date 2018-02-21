@@ -41,7 +41,7 @@ use App\Repositories\Interfaces\Team;
 use App\Repositories\Interfaces\TranscriptionLocation;
 use App\Repositories\Interfaces\Translation;
 use App\Repositories\Interfaces\User;
-use App\Repositories\Interfaces\WeDigBioDashboard;
+use App\Repositories\Interfaces\PusherTranscription;
 use App\Repositories\Interfaces\Workflow;
 use App\Repositories\Interfaces\WorkflowManager;
 
@@ -79,7 +79,7 @@ use App\Repositories\Eloquent\TeamRepository;
 use App\Repositories\Eloquent\TranscriptionLocationRepository;
 use App\Repositories\Eloquent\TranslationRepository;
 use App\Repositories\Eloquent\UserRepository;
-use App\Repositories\MongoDb\WeDigBioDashboardRepository;
+use App\Repositories\MongoDb\PusherTranscriptionsRepository;
 use App\Repositories\Eloquent\WorkflowManagerRepository;
 use App\Repositories\Eloquent\WorkflowRepository;
 
@@ -161,7 +161,7 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(TranscriptionLocation::class, TranscriptionLocationRepository::class);
         $this->app->bind(Translation::class, TranslationRepository::class);
         $this->app->bind(User::class, UserRepository::class);
-        $this->app->bind(WeDigBioDashboard::class, WeDigBioDashboardRepository::class);
+        $this->app->bind(PusherTranscription::class, PusherTranscriptionsRepository::class);
         $this->app->bind(Workflow::class, WorkflowRepository::class);
         $this->app->bind(WorkflowManager::class, WorkflowManagerRepository::class);
         $this->app->bind(ProjectResource::class, ProjectResourceRepository::class);

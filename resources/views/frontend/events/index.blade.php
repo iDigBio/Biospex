@@ -16,5 +16,9 @@
             <i class="fa fa-calendar fa-5x"></i><h2>@lang('pages.create') @lang('pages.event')</h2></button>
         </div>
     </div>
-    @include('frontend.events.partials.event-list')
+    <div class="row top10">
+        <div class="col-md-10 col-md-offset-1">
+            @each('frontend.events.partials.event-list', $events, 'event')
+        </div>
+    </div>
 @stop

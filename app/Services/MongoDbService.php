@@ -43,6 +43,21 @@ class MongoDbService
     }
 
     /**
+     * Get client.
+     *
+     * @return \MongoClient
+     */
+    public function getClient()
+    {
+        if (empty($this->client))
+        {
+            $this->setClient();
+        }
+
+        return $this->client;
+    }
+
+    /**
      * @param $collection
      */
     public function setCollection($collection)

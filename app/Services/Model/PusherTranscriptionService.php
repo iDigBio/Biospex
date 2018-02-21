@@ -5,19 +5,19 @@ namespace App\Services\Model;
 use App\Facades\DateHelper;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\PanoptesTranscription;
-use App\Repositories\Interfaces\WeDigBioDashboard;
+use App\Repositories\Interfaces\PusherTranscription;
 use App\Services\Api\NfnApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Ramsey\Uuid\Uuid;
 
-class WeDigBioDashboardService
+class PusherTranscriptionService
 {
 
     /**
-     * @var WeDigBioDashboard
+     * @var PusherTranscription
      */
-    private $weDigBioDashboardContract;
+    private $pusherTranscriptionContract;
 
     /**
      * @var Expedition
@@ -36,19 +36,20 @@ class WeDigBioDashboardService
 
     /**
      * ExpeditionService constructor.
-     * @param WeDigBioDashboard $weDigBioDashboardContract
+     *
+     * @param PusherTranscription $pusherTranscriptionContract
      * @param Expedition $expeditionContract
      * @param PanoptesTranscription $panoptesTranscriptionContract
      * @param NfnApi $nfnApi
      */
     public function __construct(
-        WeDigBioDashboard $weDigBioDashboardContract,
+        PusherTranscription $pusherTranscriptionContract,
         Expedition $expeditionContract,
         PanoptesTranscription $panoptesTranscriptionContract,
         NfnApi $nfnApi
     )
     {
-        $this->weDigBioDashboardContract = $weDigBioDashboardContract;
+        $this->pusherTranscriptionContract = $pusherTranscriptionContract;
         $this->expeditionContract = $expeditionContract;
         $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
         $this->nfnApi = $nfnApi;
@@ -62,7 +63,7 @@ class WeDigBioDashboardService
      */
     public function listApiDashboardCount($request)
     {
-        return $this->weDigBioDashboardContract->getWeDigBioDashboardApi($request, true);
+        return $this->pusherTranscriptionContract->getWeDigBioDashboardApi($request, true);
     }
 
     /**
@@ -73,7 +74,7 @@ class WeDigBioDashboardService
      */
     public function listApiDashboard($request)
     {
-        return $this->weDigBioDashboardContract->getWeDigBioDashboardApi($request);
+        return $this->pusherTranscriptionContract->getWeDigBioDashboardApi($request);
     }
 
     /**
@@ -84,7 +85,7 @@ class WeDigBioDashboardService
      */
     public function showApiDashboard($guid)
     {
-        return $this->weDigBioDashboardContract->where('guid', $guid)->first();
+        return $this->pusherTranscriptionContract->where('guid', $guid)->first();
     }
 
     /**
@@ -197,7 +198,7 @@ class WeDigBioDashboardService
             'discretionaryState'   => 'Transcribed'
         ];
 
-        $this->weDigBioDashboardContract->create($item);
+        $this->pusherTranscriptionContract->create($item);
     }
 
     /**
@@ -244,7 +245,7 @@ class WeDigBioDashboardService
      */
     public function checkClassification($transcription)
     {
-        $exists = $this->weDigBioDashboardContract->findBy('transcription_id', $transcription->_id);
+        $exists = $this->pusherTranscriptionContract->findBy('transcription_id', $transcription->_id);
 
         return $exists === null;
     }
@@ -257,7 +258,7 @@ class WeDigBioDashboardService
      */
     public function processTranscripts($transcription, $expedition)
     {
-        $classification = $this->weDigBioDashboardContract->findBy('classification_id', $transcription->classification_id);
+        $classification = $this->pusherTranscriptionContract->findBy('classification_id', $transcription->classification_id);
         $this->buildItem($transcription, $expedition, $classification);
     }
 
@@ -325,7 +326,7 @@ class WeDigBioDashboardService
             'discretionaryState'   => 'Transcribed'
         ];
 
-        $this->weDigBioDashboardContract->create($item);
+        $this->pusherTranscriptionContract->create($item);
     }
 
     /**
@@ -361,7 +362,7 @@ class WeDigBioDashboardService
             'transcriptionContent' => array_merge($classification->transcriptionContent, $transcriptionContent)
         ];
 
-        $this->weDigBioDashboardContract->update($attributes, $classification->_id);
+        $this->pusherTranscriptionContract->update($attributes, $classification->_id);
     }
 
     /**

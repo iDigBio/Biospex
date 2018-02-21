@@ -101,6 +101,16 @@ class Event extends Model
     }
 
     /**
+     * Event transcription relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function transcriptions()
+    {
+        return $this->hasMany(EventTranscription::class);
+    }
+
+    /**
      * Set start date attribute.
      *
      * @param $value

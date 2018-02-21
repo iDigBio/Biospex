@@ -2,41 +2,42 @@
 
 namespace App\Http\Controllers\Api\V0;
 
-use App\Repositories\Interfaces\WeDigBioDashboard;
-use App\Services\Model\WeDigBioDashboardService;
+use App\Repositories\Interfaces\PusherTranscription;
+use App\Services\Model\PusherTranscriptionService;
 use Illuminate\Http\Request;
-use App\Transformers\WeDigBioDashboardTransformer;
+use App\Transformers\PusherTranscriptionTransformer;
 
 /**
- * WeDigBioDashboards representation.
+ * PusherTranscriptions representation.
  *
- * @Resource("WeDigBioDashboard", uri="/wedigbiodashboard")
+ * @Resource("PusherTranscription", uri="/PusherTranscription")
  *
  * @package App\Http\Controllers\V1
  */
 
-class WeDigBioDashboardsController extends ApiController
+class PusherTranscriptionsController extends ApiController
 {
 
     /**
-     * @var WeDigBioDashboard
+     * @var PusherTranscription
      */
-    private $weDigBioDashboardContract;
+    private $pusherTranscriptionContract;
 
     /**
-     * WeDigBioDashboardsController constructor.
-     * @param WeDigBioDashboard $weDigBioDashboardContract
+     * PusherTranscriptionsController constructor.
+     *
+     * @param PusherTranscription $pusherTranscriptionContract
      */
-    public function __construct(WeDigBioDashboard $weDigBioDashboardContract)
+    public function __construct(PusherTranscription $pusherTranscriptionContract)
     {
 
-        $this->weDigBioDashboardContract = $weDigBioDashboardContract;
+        $this->pusherTranscriptionContract = $pusherTranscriptionContract;
     }
 
     /**
-     * WeDigBioDashboard List.
+     * PusherTranscription List.
      *
-     * Show JSON representation of WeDigBioDashboard items.
+     * Show JSON representation of PusherTranscription items.
      *
      * @Get("/{?start,rows,date_start,date_end,project_uuid,expedition_uuid}")
      * @Versions({"v1"})
@@ -50,10 +51,10 @@ class WeDigBioDashboardsController extends ApiController
      * })
      *
      * @param Request $request
-     * @param WeDigBioDashboardService $service
+     * @param PusherTranscriptionService $service
      * @return mixed
      */
-    public function index(Request $request, WeDigBioDashboardService $service)
+    public function index(Request $request, PusherTranscriptionService $service)
     {
         $count = $service->listApiDashboardCount($request);
         $data = $service->listApiDashboard($request);
@@ -66,13 +67,13 @@ class WeDigBioDashboardsController extends ApiController
         $previous = (int) $start;
         $this->paginate($start, $previous, $next, $count);
 
-        return $this->respondWithDashboardCollection($data, new WeDigBioDashboardTransformer(), 'items');
+        return $this->respondWithPusherCollection($data, new PusherTranscriptionTransformer(), 'items');
     }
 
     /**
-     * Create a WeDigBioDashboard Item.
+     * Create a PusherTranscription Item.
      *
-     * Show JSON representation of WeDigBioDashboard items.
+     * Show JSON representation of PusherTranscription items.
      *
      * @POST("/")
      * @Versions({"v1"})
@@ -85,9 +86,9 @@ class WeDigBioDashboardsController extends ApiController
     }
 
     /**
-     * WeDigBioDashboard List.
+     * PusherTranscription List.
      *
-     * Show JSON representation of WeDigBioDashboard items.
+     * Show JSON representation of PusherTranscription items.
      *
      * @Get("/{guid}")
      * @Versions({"v1"})
@@ -95,17 +96,17 @@ class WeDigBioDashboardsController extends ApiController
      *     @Parameter("guid", description="GUID of specific resource item", required=true)
      * })
      *
-     * @param WeDigBioDashboardService $service
+     * @param PusherTranscriptionService $service
      * @param $guid
      * @return mixed
      */
-    public function show(WeDigBioDashboardService $service, $guid)
+    public function show(PusherTranscriptionService $service, $guid)
     {
         $result = $service->showApiDashboard($guid);
 
         return $result === null ?
             $this->errorNotFound() :
-            $this->respondWithItem($result, new WeDigBioDashboardTransformer(), 'items');
+            $this->respondWithItem($result, new PusherTranscriptionTransformer(), 'items');
     }
 
     /**

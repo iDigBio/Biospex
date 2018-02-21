@@ -201,7 +201,7 @@ class Expedition extends Model
      */
     public function dashboard()
     {
-        return $this->hasMany(WeDigBioDashboard::class, 'expedition_id');
+        return $this->hasMany(PusherTranscription::class, 'expedition_id');
     }
 
     /**

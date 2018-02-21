@@ -53,7 +53,7 @@ class EventsController extends Controller
     public function index()
     {
         $events = $this->event->getUserEvents(Auth::id());
-        return view('frontend.events.index');
+        return view('frontend.events.index', compact('events'));
     }
 
     /**
