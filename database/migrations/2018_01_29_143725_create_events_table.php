@@ -25,6 +25,7 @@ class CreateEventsTable extends Migration
             $table->string('contact_email');
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
+            $table->string('timezone')->default('America/New_York');
             $table->timestamps();
         });
     }
