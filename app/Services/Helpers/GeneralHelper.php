@@ -2,6 +2,7 @@
 
 namespace App\Services\Helpers;
 
+use Carbon\Carbon;
 use DB;
 use Schema;
 
@@ -311,5 +312,49 @@ class GeneralHelper
         $factor = floor((strlen($bytes) - 1) / 3);
 
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$size[$factor];
+    }
+
+    /**
+     * Display date as percentage from start to finish.
+     *
+     * @param $start_date
+     * @param $end_date
+     * @return float|string
+     */
+    public function eventStartEndAsPercentage($start_date, $end_date)
+    {
+        $now = Carbon::now()->timestamp;
+        $begin = $start_date->timestamp;
+        $end = $end_date->timestamp;
+
+        if ($now < $begin)
+        {
+            return '0';
+        }
+        elseif ($now > $end)
+        {
+            return '100';
+        }
+        else
+        {
+            return round(($now - $begin) / ($end - $begin) * 100);
+        }
+    }
+
+    /**
+     * Event time left in human form.
+     *
+     * @param $start_date
+     * @param $end_date
+     * @return string
+     */
+    public function eventHoursLeft($start_date, $end_date)
+    {
+        if (Carbon::now()->timestamp > $end_date->timestamp)
+        {
+            return 'Completed';
+        }
+
+        return $end_date->diffInHours($start_date) . trans('pages.hours_remaining');
     }
 }
