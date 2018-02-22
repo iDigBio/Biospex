@@ -5,9 +5,12 @@
 
             <div class="info-box-content">
                 <span class="info-box-text">{{ $event->title }}</span>
-                <span class="info-box-number">{{ $event->transcriptions_count == 0 ? 0 : $event->transcriptions_count }} Transcriptions</span>
+                <span class="info-box-number">{{ $event->transcriptions_count == 0 ? 0 : $event->transcriptions_count }} {{ trans('pages.transcriptions') }}</span>
+                <div class="progress">
+                    <div class="progress-bar" style="width: {{ GeneralHelper::eventStartEndAsPercentage($event->start_date, $event->end_date) }}%"></div>
+                </div>
                 <span class="progress-description">
-                    {{ $event->start_date->diffInHours($event->end_date) }} Hours Remaining
+                    {{ GeneralHelper::eventHoursLeft($event->start_date, $event->end_date) }}
                   </span>
             </div>
             <!-- /.info-box-content -->
