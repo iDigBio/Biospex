@@ -64,13 +64,17 @@
                 <div class="form-group required {{ ($errors->has('start_date')) ? 'has-error' : '' }}">
                     {!! Form::label('date', trans('pages.date'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="form-inline col-md-10">
-                        <div class="input-group col-md-4">
+                        <div class="input-group col-md-3">
                             {!! Form::label('start_date', trans('pages.start_date'), ['class' => 'control-label']) !!}
-                            {!! Form::text('start_date', null, ['class' => 'form-control datetimepicker', 'placeholder' => trans('pages.event_timezone')]) !!}
+                            {!! Form::text('start_date', null, ['class' => 'form-control datetimepicker']) !!}
+                        </div>
+                        <div class="input-group col-md-3">
+                            {!! Form::label('end_date', trans('pages.end_date'), ['class' => 'control-label']) !!}
+                            {!! Form::text('end_date', null, ['class' => 'form-control datetimepicker']) !!}
                         </div>
                         <div class="input-group col-md-4">
-                            {!! Form::label('end_date', trans('pages.end_date'), ['class' => 'control-label']) !!}
-                            {!! Form::text('end_date', null, ['class' => 'form-control datetimepicker', 'placeholder' => trans('pages.event_timezone')]) !!}
+                            {!! Form::label('timezone', trans('pages.timezone'), ['class' => 'control-label']) !!}
+                            {!! Form::select('timezone', $timezones, 'America/New_York', ['class' => 'form-control']) !!}
                         </div>
                     </div>
                 </div>
