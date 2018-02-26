@@ -96,4 +96,20 @@ class EventRepository extends EloquentRepository implements Event
 
        return $results;
     }
+
+    /**
+     * Get records for show event page.
+     *
+     * @param $eventId
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection|mixed|static[]
+     * @throws \Exception
+     */
+    public function getEventShow($eventId)
+    {
+        $results = $this->model->with(['groups.users.transcriptionCount'])->find($eventId);
+
+        $this->resetModel();
+
+        return $results;
+    }
 }

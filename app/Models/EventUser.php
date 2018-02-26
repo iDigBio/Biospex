@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
+use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class EventUser extends Model
 {
-    use LadaCacheTrait;
+    use LadaCacheTrait, SoftCascadeTrait;
 
     /**
      * @inheritDoc
      */
-    protected $table = 'events';
+    protected $table = 'event_users';
 
     /**
      * @inheritDoc
@@ -22,14 +23,11 @@ class EventUser extends Model
     ];
 
     /**
-     * Events relationship.
+     * Soft delete cascades.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     * @var array
      */
-    public function events()
-    {
-        return $this->hasManyThrough(Event::class, EventGroup::class);
-    }
+    protected $softCascade = ['event_transcriptions'];
 
     /**
      * EventGroup relationship.
@@ -38,7 +36,7 @@ class EventUser extends Model
      */
     public function groups()
     {
-        return $this->belongsToMany(EventGroup::class, 'event_group_user');
+        return $this->belongsToMany(EventGroup::class, 'event_group_user', 'user_id', 'group_id');
     }
 
     /**
@@ -48,6 +46,25 @@ class EventUser extends Model
      */
     public function transcriptions()
     {
-        return $this->hasMany(EventTranscription::class);
+        return $this->hasMany(EventTranscription::class, 'user_id');
+    }
+
+    public function transcriptionCount()
+    {
+        return $this->hasOne(EventTranscription::class, 'user_id')
+        ->selectRaw('user_id, count(*) as aggregate')
+            ->groupBy('user_id');
+    }
+
+    public function getTranscriptionCountAttribute()
+    {
+        // if relation is not loaded already, let's do it first
+        if ( ! $this->relationLoaded('transcriptionCount'))
+            $this->load('transcriptionCount');
+
+        $related = $this->getRelation('transcriptionCount');
+
+        // then return the count directly
+        return ($related) ? (int) $related->aggregate : 0;
     }
 }

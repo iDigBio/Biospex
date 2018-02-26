@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Facades\DateHelper;
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
@@ -64,16 +65,22 @@ class EventsController extends Controller
      */
     public function show($eventId)
     {
-        $event = $this->event->findWith($eventId, ['groups']);
+        $event = $this->event->getEventShow($eventId);
 
         return view('frontend.events.show', compact('event'));
     }
 
+    /**
+     * Create event.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function create()
     {
         $projects = $this->project->getProjectEventSelect();
+        $timezones = DateHelper::timeZoneSelect();
 
-        return view('frontend.events.create', compact('projects'));
+        return view('frontend.events.create', compact('projects', 'timezones'));
     }
 
     /**
@@ -107,10 +114,18 @@ class EventsController extends Controller
     {
         $event = $this->event->findWith($eventId, ['groups']);
         $projects = $this->project->getProjectEventSelect();
+        $timezones = DateHelper::timeZoneSelect();
 
-        return view('frontend.events.edit', compact('event', 'projects'));
+        return view('frontend.events.edit', compact('event', 'projects', 'timezones'));
     }
 
+    /**
+     * Update Event.
+     *
+     * @param $eventId
+     * @param \App\Http\Requests\EventFormRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update($eventId, EventFormRequest $request)
     {
         $event = $this->event->updateEvent($request->all(), $eventId);
@@ -126,8 +141,23 @@ class EventsController extends Controller
         return redirect()->route('webauth.events.edit', [$eventId]);
     }
 
-    public function delete()
+    /**
+     * Delete Event.
+     *
+     * @param $eventId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function delete($eventId)
     {
+        if ($this->event->delete($eventId))
+        {
+            Flash::success(trans('messages.record_deleted'));
 
+            return redirect()->route('webauth.events.index');
+        }
+
+        Flash::error(trans('messages.record_delete_error'));
+
+        return redirect()->route('webauth.events.edit', [$eventId]);
     }
 }

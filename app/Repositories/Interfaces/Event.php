@@ -24,4 +24,10 @@ interface Event extends RepositoryInterface
      * @return mixed
      */
     public function getUserEvents($userId);
+
+    /**
+     * @param $eventId
+     * @return mixed
+     */
+    public function getEventShow($eventId);
 }

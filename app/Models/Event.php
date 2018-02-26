@@ -37,6 +37,7 @@ class Event extends Model
         'contact_email' => 'string',
         'start_date' => 'datetime',
         'end_date' => 'datetime',
+        'timezone' => 'string'
     ];
 
     /**
@@ -59,7 +60,7 @@ class Event extends Model
      *
      * @var array
      */
-    protected $softCascade = ['groups'];
+    protected $softCascade = ['event_group','event_user', 'event_transcription'];
 
     /**
      * Project relationship.
@@ -89,16 +90,6 @@ class Event extends Model
     public function groups()
     {
         return $this->hasMany(EventGroup::class);
-    }
-
-    /**
-     * EventUser Relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
-     */
-    public function users()
-    {
-        return $this->hasManyThrough(EventUser::class,EventGroup::class);
     }
 
     /**

@@ -28,7 +28,7 @@ class EventGroup extends Model
      *
      * @var array
      */
-    protected $softCascade = ['users'];
+    protected $softCascade = ['event_users', 'event_transcriptions'];
 
     /**
      * Event relationship.
@@ -47,7 +47,7 @@ class EventGroup extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(EventUser::class, 'event_group_user');
+        return $this->belongsToMany(EventUser::class, 'event_group_user', 'group_id', 'user_id');
     }
 
     /**
@@ -59,4 +59,6 @@ class EventGroup extends Model
     {
         return $this->hasMany(EventTranscription::class);
     }
+
+
 }

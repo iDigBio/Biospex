@@ -9,4 +9,5 @@
 @section('content')
     {!! Breadcrumbs::render('webauth.events.show', $event) !!}
     @include('frontend.events.partials.event-info')
+    @include('frontend.events.partials.group-table')
 @stop
