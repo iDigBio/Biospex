@@ -3,8 +3,6 @@
 namespace App\Providers;
 
 use App\Observers\PanoptesTranscriptionObserver;
-use App\Repositories\Eloquent\ProjectResourceRepository;
-use App\Repositories\Interfaces\ProjectResource;
 use Illuminate\Support\ServiceProvider;
 
 use App\Repositories\Interfaces\ActorContact;
@@ -14,6 +12,7 @@ use App\Repositories\Interfaces\ApiUser;
 use App\Repositories\Interfaces\Download;
 use App\Repositories\Interfaces\Event;
 use App\Repositories\Interfaces\EventGroup;
+use App\Repositories\Interfaces\EventTranscription;
 use App\Repositories\Interfaces\EventUser;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\ExpeditionStat;
@@ -32,6 +31,7 @@ use App\Repositories\Interfaces\OcrQueue;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Permission;
 use App\Repositories\Interfaces\Project;
+use App\Repositories\Interfaces\ProjectResource;
 use App\Repositories\Interfaces\Property;
 use App\Repositories\Interfaces\Resource;
 use App\Repositories\Interfaces\State;
@@ -52,6 +52,7 @@ use App\Repositories\Eloquent\ApiUserRepository;
 use App\Repositories\Eloquent\DownloadRepository;
 use App\Repositories\Eloquent\EventRepository;
 use App\Repositories\Eloquent\EventGroupRepository;
+use App\Repositories\Eloquent\EventTranscriptionRepository;
 use App\Repositories\Eloquent\EventUserRepository;
 use App\Repositories\Eloquent\ExpeditionRepository;
 use App\Repositories\Eloquent\ExpeditionStatRepository;
@@ -70,6 +71,7 @@ use App\Repositories\Eloquent\OcrQueueRepository;
 use App\Repositories\MongoDb\PanoptesTranscriptionRepository;
 use App\Repositories\Eloquent\PermissionRepository;
 use App\Repositories\Eloquent\ProjectRepository;
+use App\Repositories\Eloquent\ProjectResourceRepository;
 use App\Repositories\Eloquent\PropertyRepository;
 use App\Repositories\Eloquent\ResourceRepository;
 use App\Repositories\Eloquent\StateCountyRepository;
@@ -133,6 +135,7 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(Download::class, DownloadRepository::class);
         $this->app->bind(Event::class, EventRepository::class);
         $this->app->bind(EventGroup::class, EventGroupRepository::class);
+        $this->app->bind(EventTranscription::class, EventTranscriptionRepository::class);
         $this->app->bind(EventUser::class, EventUserRepository::class);
         $this->app->bind(Expedition::class, ExpeditionRepository::class);
         $this->app->bind(ExpeditionStat::class, ExpeditionStatRepository::class);
