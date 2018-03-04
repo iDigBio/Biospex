@@ -65,7 +65,7 @@ class NfnClassificationPusherTranscriptionsJob extends Job implements ShouldQueu
 
                 $transcriptions = $dashboardService->getTranscriptions($expedition->id, $timestamp);
 
-                $transcriptions->reject(function($transcription) use ($dashboardService) {
+                $transcriptions->filter(function($transcription) use ($dashboardService) {
                     return $dashboardService->checkClassification($transcription);
                 })->each(function ($transcription) use ($dashboardService, $expedition) {
                     $dashboardService->processTranscripts($transcription, $expedition);
