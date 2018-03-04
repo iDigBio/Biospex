@@ -59,6 +59,4 @@ class EventGroup extends Model
     {
         return $this->hasMany(EventTranscription::class);
     }
-
-
 }

@@ -24,7 +24,7 @@ class EventTranscription extends Model
      * @inheritDoc
      */
     protected $fillable = [
-        'transcription_id',
+        'classification_id',
         'event_id',
         'group_id',
         'user_id',
@@ -37,7 +37,7 @@ class EventTranscription extends Model
      */
     public function transcription()
     {
-        return $this->hasOne(PanoptesTranscription::class,'_id', 'transcription_id');
+        return $this->hasOne(PanoptesTranscription::class,'_id', 'classification_id');
     }
 
     /**
