@@ -35,24 +35,32 @@ class PusherTranscriptionService
     private $nfnApi;
 
     /**
+     * @var \App\Services\Model\EventService
+     */
+    private $eventService;
+
+    /**
      * ExpeditionService constructor.
      *
      * @param PusherTranscription $pusherTranscriptionContract
      * @param Expedition $expeditionContract
      * @param PanoptesTranscription $panoptesTranscriptionContract
      * @param NfnApi $nfnApi
+     * @param \App\Services\Model\EventService $eventService
      */
     public function __construct(
         PusherTranscription $pusherTranscriptionContract,
         Expedition $expeditionContract,
         PanoptesTranscription $panoptesTranscriptionContract,
-        NfnApi $nfnApi
+        NfnApi $nfnApi,
+        EventService $eventService
     )
     {
         $this->pusherTranscriptionContract = $pusherTranscriptionContract;
         $this->expeditionContract = $expeditionContract;
         $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
         $this->nfnApi = $nfnApi;
+        $this->eventService = $eventService;
     }
 
     /**
@@ -103,7 +111,10 @@ class PusherTranscriptionService
             return;
         }
 
+        $data->user_name = $data->user_id !== null ? $this->getNfnUser($data->user_id) : null;
+
         $this->createDashboardFromPusher($data, $subject, $expedition);
+        $this->eventService->updateOrCreateEventTranscription($data, $expedition);
     }
 
     /**
@@ -144,6 +155,27 @@ class PusherTranscriptionService
     }
 
     /**
+     * Get nfn user.
+     *
+     * @param $userId
+     * @return mixed
+     */
+    public function getNfnUser($userId)
+    {
+        $result = Cache::remember('user-' . $userId, 60, function () use ($userId) {
+            $this->nfnApi->setProvider();
+            $this->nfnApi->checkAccessToken('nfnToken');
+            $uri = $this->nfnApi->getUserUri($userId);
+            $request = $this->nfnApi->buildAuthorizedRequest('GET', $uri);
+            $results = $this->nfnApi->sendAuthorizedRequest($request);
+
+            return isset($results['users'][0]) ? $results['users'][0] : null;
+        });
+
+        return $result['login'];
+    }
+
+    /**
      * Build item for dashboard.
      *
      * @param $data
@@ -174,7 +206,7 @@ class PusherTranscriptionService
                 'decimalLatitude'  => $data->geo->latitude,
                 'decimalLongitude' => $data->geo->longitude,
                 'ipAddress'        => '',
-                'transcriber'      => '',
+                'transcriber'      => $data->user_name,
                 'physicalLocation' => [
                     'country'      => $data->geo->country_name,
                     'province'     => '',
