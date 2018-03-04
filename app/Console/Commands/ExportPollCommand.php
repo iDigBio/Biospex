@@ -77,7 +77,7 @@ class ExportPollCommand extends Command
 
         if ($records->isEmpty())
         {
-            $data = trans('pages.processing_empty');
+            $data = trans('html.processing_empty');
             $this->dispatcher->fire(new PollExportEvent($data));
 
             return;

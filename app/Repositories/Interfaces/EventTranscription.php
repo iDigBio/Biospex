@@ -4,6 +4,7 @@ namespace App\Repositories\Interfaces;
 
 use App\Repositories\RepositoryInterface;
 
-interface EventUser extends RepositoryInterface
+interface EventTranscription extends RepositoryInterface
 {
+
 }

@@ -30,4 +30,17 @@ interface Event extends RepositoryInterface
      * @return mixed
      */
     public function getEventShow($eventId);
+
+    /**
+     * @param $eventId
+     * @return mixed
+     */
+    public function getEventClassificationIds($eventId);
+
+    /**
+     * @param $projectId
+     * @param $user
+     * @return mixed
+     */
+    public function checkEventExistsForClassificationUser($projectId, $user);
 }

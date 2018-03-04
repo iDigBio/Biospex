@@ -7,6 +7,7 @@ use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
 use App\Jobs\EventTranscriptionExportCsvJob;
+use App\Jobs\EventUserExportCsvJob;
 use App\Repositories\Interfaces\Project;
 use App\Services\Model\EventService;
 use Auth;
@@ -174,16 +175,29 @@ class EventsController extends Controller
     }
 
     /**
-     * Export csv from event.
+     * Export transcription csv from event.
      *
      * @param $eventId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function export($eventId)
+    public function exportTranscriptsion($eventId)
     {
+        EventTranscriptionExportCsvJob::dispatch(\Auth::user(), $eventId);
         Flash::success(trans('messages.event_export_success'));
 
-        EventTranscriptionExportCsvJob::dispatch(\Auth::user(), $eventId);
+        return redirect()->route('webauth.events.show', [$eventId]);
+    }
+
+    /**
+     * Export users csv from event.
+     *
+     * @param $eventId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function exportUsers($eventId)
+    {
+        EventUserExportCsvJob::dispatch(\Auth::user(), $eventId);
+        Flash::success(trans('messages.event_export_success'));
 
         return redirect()->route('webauth.events.show', [$eventId]);
     }

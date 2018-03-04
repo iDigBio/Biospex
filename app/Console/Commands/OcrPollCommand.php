@@ -60,7 +60,7 @@ class OcrPollCommand extends Command
 
         if ($records->isEmpty())
         {
-            $data = trans('pages.processing_empty');
+            $data = trans('html.processing_empty');
             PollOcrEvent::dispatch($data);
 
             return;
