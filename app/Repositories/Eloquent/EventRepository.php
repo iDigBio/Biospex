@@ -106,7 +106,7 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function getEventShow($eventId)
     {
-        $results = $this->model->with(['groups.users.transcriptionCount'])->find($eventId);
+        $results = $this->model->with(['transcriptionCount', 'groups.users.transcriptionCount'])->find($eventId);
 
         $this->resetModel();
 
