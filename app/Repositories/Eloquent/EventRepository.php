@@ -112,4 +112,43 @@ class EventRepository extends EloquentRepository implements Event
 
         return $results;
     }
+
+    /**
+     * Return transcriptions ids for event.
+     *
+     * @param $eventId
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getEventClassificationIds($eventId)
+    {
+        $event = $this->model->with(['transcriptions'])->find($eventId);
+        $ids = $event->transcriptions->pluck('classification_id');
+
+        $this->resetModel();
+
+        return $ids;
+    }
+
+    /**
+     * Check if an event exists with group and user.
+     *
+     * @param $projectId
+     * @param $user
+     * @return \Illuminate\Database\Eloquent\Model|mixed|null|object|static
+     * @throws \Exception
+     */
+    public function checkEventExistsForClassificationUser($projectId, $user)
+    {
+        $event = \DB::table('events')
+            ->join('event_groups', 'events.id', '=', 'event_groups.event_id')
+            ->join('event_group_user', 'event_groups.id', '=', 'event_group_user.group_id')
+            ->join('event_users', 'event_group_user.user_id', '=', 'event_users.id')
+            ->select('events.id as event_id', 'event_group_user.group_id', 'event_group_user.user_id')
+            ->where('events.project_id', $projectId)
+            ->where('event_users.nfn_user', $user)
+            ->first();
+
+        return $event;
+    }
 }
