@@ -8,3 +8,5 @@ $router->get('events/{events}')->uses('EventsController@show')->name('webauth.ev
 $router->get('events/{events}/edit')->uses('EventsController@edit')->name('webauth.events.edit');
 $router->put('events/{events}')->uses('EventsController@update')->name('webauth.events.update');
 $router->delete('events/{events}')->uses('EventsController@delete')->name('webauth.events.delete');
+$router->get('events/{events}/export')->uses('EventsController@exportTranscriptions')->name('webauth.events.exportTranscriptions');
+$router->get('events/{events}/export')->uses('EventsController@exportUsers')->name('webauth.events.exportUsers');
