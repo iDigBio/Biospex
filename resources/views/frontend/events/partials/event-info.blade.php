@@ -1,8 +1,20 @@
 <div class="jumbotron">
-    <h3>{{ $event->title }}</h3>
-    <p>{{ $event->description }}</p>
+    <div class="row">
+        <div class="col-md-6">
+            <h3>{{ $event->title }}</h3>
+            <p>{{ $event->description }}</p>
+        </div>
+        <div class="col-md-6">
+            <h3>{{ $event->transcriptionCount }} @lang('pages.transcriptions')</h3>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-4">
+            <button title="@lang('pages.downloadTitle')" class="btn btn-success btn-sm"
+                    type="button"
+                    onClick="location.href='{{ route('webauth.events.exportTranscriptions', [$event->id]) }}'">
+                <span class="fa fa-download fa-lrg"></span> @lang('pages.download')
+            </button>
             <button title="@lang('pages.editTitle')" class="btn btn-warning btn-sm" type="button"
                     onClick="location.href='{{ route('webauth.events.edit', [$event->id]) }}'"><span
                         class="fa fa-cog fa-lrg"></span> @lang('pages.edit')</button>
