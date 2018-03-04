@@ -6,28 +6,17 @@ use App\Facades\DateHelper;
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
-use App\Repositories\Interfaces\Event;
-use App\Repositories\Interfaces\EventGroup;
-use App\Repositories\Interfaces\EventUser;
+use App\Jobs\EventTranscriptionExportCsvJob;
 use App\Repositories\Interfaces\Project;
+use App\Services\Model\EventService;
 use Auth;
 
 class EventsController extends Controller
 {
     /**
-     * @var \App\Repositories\Interfaces\Event
+     * @var \App\Services\Model\EventService
      */
-    private $event;
-
-    /**
-     * @var \App\Repositories\Interfaces\EventGroup
-     */
-    private $eventGroup;
-
-    /**
-     * @var \App\Repositories\Interfaces\EventUser
-     */
-    private $eventUser;
+    private $eventService;
 
     /**
      * @var \App\Repositories\Interfaces\Project
@@ -37,23 +26,23 @@ class EventsController extends Controller
     /**
      * EventsController constructor.
      *
-     * @param \App\Repositories\Interfaces\Event $event
-     * @param \App\Repositories\Interfaces\EventGroup $eventGroup
-     * @param \App\Repositories\Interfaces\EventUser $eventUser
+     * @param \App\Services\Model\EventService $eventService
      * @param \App\Repositories\Interfaces\Project $project
      */
-    public function __construct(Event $event, EventGroup $eventGroup, EventUser $eventUser, Project $project)
+    public function __construct(EventService $eventService, Project $project)
     {
-
-        $this->event = $event;
-        $this->eventGroup = $eventGroup;
-        $this->eventUser = $eventUser;
+        $this->eventService = $eventService;
         $this->project = $project;
     }
 
+    /**
+     * Get index page.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function index()
     {
-        $events = $this->event->getUserEvents(Auth::id());
+        $events = $this->eventService->getIndex();
         return view('frontend.events.index', compact('events'));
     }
 
@@ -65,7 +54,11 @@ class EventsController extends Controller
      */
     public function show($eventId)
     {
-        $event = $this->event->getEventShow($eventId);
+        $event = $this->eventService->getShow($eventId);
+        if ( ! $this->checkPermissions('read', $event))
+        {
+            return redirect()->route('webauth.events.index');
+        }
 
         return view('frontend.events.show', compact('event'));
     }
@@ -91,7 +84,7 @@ class EventsController extends Controller
      */
     public function store(EventFormRequest $request)
     {
-        $event = $this->event->createEvent($request->all());
+        $event = $this->eventService->storeEvent($request->all());
 
         if ($event) {
             Flash::success(trans('messages.record_created'));
@@ -112,7 +105,12 @@ class EventsController extends Controller
      */
     public function edit($eventId)
     {
-        $event = $this->event->findWith($eventId, ['groups']);
+        $event = $this->eventService->editEvent($eventId);
+        if ( ! $this->checkPermissions('update', $event))
+        {
+            return redirect()->route('webauth.events.index');
+        }
+
         $projects = $this->project->getProjectEventSelect();
         $timezones = DateHelper::timeZoneSelect();
 
@@ -128,9 +126,15 @@ class EventsController extends Controller
      */
     public function update($eventId, EventFormRequest $request)
     {
-        $event = $this->event->updateEvent($request->all(), $eventId);
+        $event = $this->eventService->findEvent($eventId);
+        if ( ! $this->checkPermissions('update', $event))
+        {
+            return redirect()->route('webauth.events.index');
+        }
 
-        if ($event) {
+        $result = $this->eventService->updateEvent($request->all(), $eventId);
+
+        if ($result) {
             Flash::success(trans('messages.record_updated'));
 
             return redirect()->route('webauth.events.show', [$eventId]);
@@ -149,7 +153,15 @@ class EventsController extends Controller
      */
     public function delete($eventId)
     {
-        if ($this->event->delete($eventId))
+        $event = $this->eventService->findEvent($eventId);
+        if ( ! $this->checkPermissions('delete', $event))
+        {
+            return redirect()->route('webauth.events.index');
+        }
+
+        $result = $this->eventService->deleteEvent($event);
+
+        if ($result)
         {
             Flash::success(trans('messages.record_deleted'));
 
@@ -159,5 +171,20 @@ class EventsController extends Controller
         Flash::error(trans('messages.record_delete_error'));
 
         return redirect()->route('webauth.events.edit', [$eventId]);
+    }
+
+    /**
+     * Export csv from event.
+     *
+     * @param $eventId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function export($eventId)
+    {
+        Flash::success(trans('messages.event_export_success'));
+
+        EventTranscriptionExportCsvJob::dispatch(\Auth::user(), $eventId);
+
+        return redirect()->route('webauth.events.show', [$eventId]);
     }
 }
