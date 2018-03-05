@@ -60,7 +60,7 @@ return [
     'end_date'                      => 'End Date',
     'event'                         => 'Events',
     'event_groups'                  => 'Groups',
-    'event_groups_title'            => 'Group Title',
+    'event_groups_title'            => 'Group Title - 20 chr limit',
     'events'                        => 'Events',
     'existing_invites'              => 'Existing Invites',
     'expedition'                    => 'Expedition',
