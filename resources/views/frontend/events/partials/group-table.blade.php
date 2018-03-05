@@ -1,8 +1,3 @@
-<button title="@lang('pages.downloadTitle')" class="btn btn-success btn-sm"
-        type="button"
-        onClick="location.href='{{ route('webauth.events.exportUsers', [$event->id]) }}'">
-    <span class="fa fa-download fa-lrg"></span> @lang('pages.download')
-</button>
 <table class="table-sort th-center top5">
     <thead>
     <tr>
