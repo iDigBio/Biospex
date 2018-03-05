@@ -200,6 +200,14 @@ $(document).ready(function () {
             '20:00', '20:30', '21:00', '21:30', '22:00', '22:30'
         ]
     });
+
+    $('.js-tooltip').tooltip();
+    $('.js-copy').click(function() {
+        let text = $(this).attr('data-copy');
+        let el = $(this);
+        copyToClipboard(text, el);
+    });
+
 });
 
 $(function () {
@@ -236,4 +244,29 @@ function renumber_prefix() {
     });
     $("[name='entries']").val(controls.children().length);
 }
+
+function copyToClipboard(text, el) {
+    let copyTest = document.queryCommandSupported('copy');
+    let elOriginalText = el.attr('data-original-title');
+
+    if (copyTest === true) {
+        let copyTextArea = document.createElement("textarea");
+        copyTextArea.value = text;
+        document.body.appendChild(copyTextArea);
+        copyTextArea.select();
+        try {
+            let successful = document.execCommand('copy');
+            let msg = successful ? 'Copied!' : 'Whoops, not copied!';
+            el.attr('data-original-title', msg).tooltip('show');
+        } catch (err) {
+            console.log('Oops, unable to copy');
+        }
+        document.body.removeChild(copyTextArea);
+        el.attr('data-original-title', elOriginalText);
+    } else {
+        // Fallback if browser doesn't support .execCommand('copy')
+        window.prompt("Copy to clipboard: Ctrl+C or Command+C, Enter", text);
+    }
+}
+
 
