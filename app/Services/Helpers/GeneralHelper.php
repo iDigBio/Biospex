@@ -357,4 +357,15 @@ class GeneralHelper
 
         return $end_date->diffInHours($start_date) . trans('pages.hours_remaining');
     }
+
+    /**
+     * Convert uuid value to bin for lookup.
+     *
+     * @param $value
+     * @return string
+     */
+    public function uuidToBin($value)
+    {
+        return pack('H*', str_replace('-', '', $value));
+    }
 }
