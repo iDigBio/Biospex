@@ -35,7 +35,7 @@ class EventGroup extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function events()
+    public function event()
     {
         return $this->belongsTo(Event::class);
     }
