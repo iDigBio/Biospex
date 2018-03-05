@@ -118,6 +118,14 @@
                             @endforeach
                         </dd>
                     @endif
+                    @if($project->events->isNotEmpty())
+                        <dt>{{ trans('pages.events') }}</dt>
+                        <dd>
+                            @foreach($project->events as $event)
+                                <p>{{ $event->title }} : {{ $event->transcriptionCount }} @lang('pages.transcriptions')</p>
+                            @endforeach
+                        </dd>
+                    @endif
                 </dl>
             </div>
         </div>
