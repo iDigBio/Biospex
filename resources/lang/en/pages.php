@@ -48,6 +48,8 @@ return [
     'description_short_max'         => 'Short Description (max 140 characters)',
     'download'                      => 'Download',
     'downloadTitle'                 => 'Download generated files',
+    'downloadTitleTranscriptions'                 => 'Download transcriptions',
+    'downloadTitleUsers'                 => 'Download users',
     'download_type'                 => 'Download Type',
     'duplicate'                     => 'Clone',
     'duplicateTitle'                => 'Clone this item to make a new entity',
