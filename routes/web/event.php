@@ -1,4 +1,4 @@
 <?php
 
-$router->get('events/{groups}/join')->uses('EventsController@eventJoin')->name('webauth.events.join');
-$router->post('events/{groups}/join')->uses('EventsController@eventJoinStore')->name('webauth.events.joinStore');
+$router->get('events/{uuid}/join')->uses('EventsController@eventJoin')->name('web.events.join');
+$router->post('events/join/create')->uses('EventsController@eventJoinCreate')->name('web.events.join-create');
