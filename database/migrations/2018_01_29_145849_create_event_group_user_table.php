@@ -22,8 +22,6 @@ class CreateEventGroupUserTable extends Migration
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('event_users')->onDelete('cascade');
 
-            $table->timestamps();
-
             $table->unique(['group_id', 'user_id'], 'event_group_user');
         });
     }
