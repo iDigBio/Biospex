@@ -101,7 +101,7 @@ class EventService
      */
     public function storeEvent($request)
     {
-        return $this->event->createEvent($request->all());
+        return $this->event->createEvent($request);
     }
 
     /**
@@ -124,7 +124,7 @@ class EventService
      */
     public function updateEvent($request, $eventId)
     {
-        return $this->event->updateEvent($request->all(), $eventId);
+        return $this->event->updateEvent($request, $eventId);
     }
 
     /**
