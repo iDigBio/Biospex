@@ -355,7 +355,7 @@ class GeneralHelper
             return 'Completed';
         }
 
-        return $end_date->diffInHours($start_date) . trans('pages.hours_remaining');
+        return $end_date->diffInHours($start_date) . ' ' . trans('pages.hours_remaining');
     }
 
     /**
