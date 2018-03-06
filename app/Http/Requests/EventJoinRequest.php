@@ -13,7 +13,7 @@ class EventJoinRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,9 +25,18 @@ class EventJoinRequest extends FormRequest
     {
         $rules = [
             'group_id' => 'required',
-            'nfn_user' => 'required|between:6,100'
+            'nfn_user' => 'required|between:3,30'
         ];
 
         return $rules;
+    }
+
+    public function messages()
+    {
+        return [
+            'group_id.required'        => 'Group Id missing',
+            'nfn_user.required' => 'Notes from Nature username required',
+            'nfn_user.between' => 'Username must be between 3-30 characters',
+        ];
     }
 }
