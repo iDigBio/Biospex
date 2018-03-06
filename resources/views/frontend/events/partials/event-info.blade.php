@@ -6,14 +6,23 @@
             <h4>@lang('pages.project'): {{ $event->project->title }}</h4>
         </div>
         <div class="col-md-6">
-            <h3>{{ $event->transcriptionCount }} @lang('pages.transcriptions')</h3>
+            <h3>@lang('pages.transcriptions'): {{ $event->transcriptionCount }}</h3>
+            <h3>Group Invite Links</h3>
+            @foreach($event->groups as $group)
+                <button type="button" class="btn btn-default btn-copy js-tooltip js-copy"
+                        data-toggle="tooltip"
+                        data-placement="bottom"
+                        data-copy="{{ route('web.events.join', [$group->uuid]) }}" title="Copy to clipboard">
+                    <span class="fa fa-clipboard fa-lg"></span> {{ $group->title }}
+                </button>
+            @endforeach
         </div>
     </div>
 </div>
 <div class="panel panel-default">
     <div class="panel-body">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-12">
                 <button title="@lang('pages.downloadTitleTranscriptions')" class="btn btn-success btn-sm"
                         type="button"
                         onClick="location.href='{{ route('webauth.events.exportUsers', [$event->id]) }}'">
