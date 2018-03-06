@@ -181,7 +181,7 @@ class EventsController extends Controller
      * @param $eventId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function exportTranscriptsion($eventId)
+    public function exportTranscriptions($eventId)
     {
         EventTranscriptionExportCsvJob::dispatch(\Auth::user(), $eventId);
         Flash::success(trans('messages.event_export_success'));
