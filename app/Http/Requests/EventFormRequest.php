@@ -31,9 +31,17 @@ class EventFormRequest extends FormRequest
             'contact' => 'required',
             'contact_email' => 'required|email',
             'start_date' => 'required|date',
-            'end_date' => 'required|date'
+            'end_date' => 'required|date',
+            'groups.*.title' => 'max:20'
         ];
 
         return $rules;
+    }
+
+    public function messages()
+    {
+        return [
+            'groups.*.title.max' => 'Title is 20 character max'
+        ];
     }
 }
