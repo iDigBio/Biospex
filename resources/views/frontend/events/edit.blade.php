@@ -102,7 +102,7 @@
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        {!! Form::hidden('owner_id', $event->id) !!}
+                        {!! Form::hidden('owner_id', Auth::id()) !!}
                         {!! Form::hidden('entries', $event->groups->count() === 0 ? 1 : $event->groups->count()) !!}
                         {!! Form::submit(trans('pages.update'), ['class' => 'btn btn-primary']) !!}
                         {!! link_to(URL::previous(), trans('pages.cancel'), ['class' => 'btn btn-large btn-primary btn-danger']) !!}
