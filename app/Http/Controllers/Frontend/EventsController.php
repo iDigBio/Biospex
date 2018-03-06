@@ -6,6 +6,7 @@ use App\Facades\DateHelper;
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
+use App\Http\Requests\EventJoinRequest;
 use App\Jobs\EventTranscriptionExportCsvJob;
 use App\Jobs\EventUserExportCsvJob;
 use App\Repositories\Interfaces\Project;
@@ -200,5 +201,38 @@ class EventsController extends Controller
         Flash::success(trans('messages.event_export_success'));
 
         return redirect()->route('webauth.events.show', [$eventId]);
+    }
+
+    /**
+     * Group join page for events.
+     *
+     * @param $uuid
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function eventJoin($uuid)
+    {
+        $group = $this->eventService->getGroupByUuid($uuid);
+
+        if ($group === null) {
+            Flash::error(trans('messages.event_join_group_error'));
+        }
+
+        return view('frontend.events.join', compact('group'));
+    }
+
+    /**
+     * Store user for event group.
+     *
+     * @param \App\Http\Requests\EventJoinRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function eventJoinCreate(EventJoinRequest $request)
+    {
+        $result = $this->eventService->updateOrCreateEventJoin($request);
+
+        $result ? Flash::success(trans('messages.event_join_group_success'))
+            : Flash::error(trans('messages.event_join_group_error'));
+
+        return redirect()->route('web.events.join', [$request->get('uuid')]);
     }
 }
