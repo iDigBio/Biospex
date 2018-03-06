@@ -79,5 +79,5 @@ Breadcrumbs::register('webauth.events.index', function ($breadcrumbs) {
 
 Breadcrumbs::register('webauth.events.show', function ($breadcrumbs, $event) {
     $breadcrumbs->parent('webauth.events.index');
-    $breadcrumbs->push('Events', route('webauth.events.show', $event->id));
+    $breadcrumbs->push($event->title);
 });
