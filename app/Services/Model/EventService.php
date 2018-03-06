@@ -151,18 +151,49 @@ class EventService
         }
 
         $event = $this->event->checkEventExistsForClassificationUser($expedition->project_id, $data->user_name);
-        if ($event === null){
+        if ($event === null) {
             return;
         }
 
         $attributes = ['classification_id' => $data->classification_id];
         $values = [
             'classification_id' => $data->classification_id,
-            'event_id' => $event->event_id,
-            'group_id' => $event->group_id,
-            'user_id' => $event->user_id
+            'event_id'          => $event->event_id,
+            'group_id'          => $event->group_id,
+            'user_id'           => $event->user_id,
         ];
 
         $this->eventTranscription->updateOrCreate($attributes, $values);
+    }
+
+    /**
+     * Get group by uuid for invite page.
+     *
+     * @param $uuid
+     * @return mixed
+     */
+    public function getGroupByUuid($uuid)
+    {
+        return $this->eventGroup->getGroupByUuid($uuid);
+    }
+
+    /**
+     * Create or update user and assign to event group.
+     *
+     * @param \App\Http\Requests\EventJoinRequest $request
+     * @return bool
+     */
+    public function updateOrCreateEventJoin($request)
+    {
+        $user = $this->eventUser->updateOrCreate(['nfn_user' => $request->get('nfn_user')], ['nfn_user' => $request->get('nfn_user')]);
+
+        if ($user !== null) {
+            $group = $this->eventGroup->find($request->get('group_id'));
+            $group->users()->save($user);
+
+            return true;
+        }
+
+        return false;
     }
 }
