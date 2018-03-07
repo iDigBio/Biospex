@@ -135,7 +135,6 @@ class Event extends Model
      * Set start date attribute.
      *
      * @param $value
-     * @return string
      */
     public function setStartDateAttribute($value)
     {
@@ -146,7 +145,6 @@ class Event extends Model
      * Set end date attribute.
      *
      * @param $value
-     * @return string
      */
     public function setEndDateAttribute($value)
     {

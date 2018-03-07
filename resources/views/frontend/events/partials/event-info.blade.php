@@ -3,7 +3,9 @@
         <div class="col-md-6">
             <h3>{{ $event->title }}</h3>
             <p>{{ $event->description }}</p>
-            <h4>@lang('pages.project'): {{ $event->project->title }}</h4>
+            <p>@lang('pages.project'): {{ $event->project->title }}</p>
+            @lang('pages.start_date'): {{ $event->start_date->toDayDateTimeString() }} {{ str_replace('_', ' ', $event->timezone) }}<br />
+            @lang('pages.end_date'): {{ $event->end_date->toDayDateTimeString() }} {{ str_replace('_', ' ', $event->timezone) }}<br />
         </div>
         <div class="col-md-6">
             <h3>@lang('pages.transcriptions'): {{ $event->transcriptionCount }}</h3>

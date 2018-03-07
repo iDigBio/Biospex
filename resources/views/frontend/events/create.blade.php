@@ -65,10 +65,12 @@
                     {!! Form::label('date', trans('pages.date'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="form-inline col-md-10">
                         <div class="input-group col-md-3">
+                            {{ ($errors->has('start_date') ? $errors->first('start_date') : '') }}
                             {!! Form::label('start_date', trans('pages.start_date'), ['class' => 'control-label']) !!}
                             {!! Form::text('start_date', null, ['class' => 'form-control datetimepicker']) !!}
                         </div>
                         <div class="input-group col-md-3">
+                            {{ ($errors->has('end_date') ? $errors->first('end_date') : '') }}
                             {!! Form::label('end_date', trans('pages.end_date'), ['class' => 'control-label']) !!}
                             {!! Form::text('end_date', null, ['class' => 'form-control datetimepicker']) !!}
                         </div>

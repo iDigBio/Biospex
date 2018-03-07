@@ -30,8 +30,8 @@ class EventFormRequest extends FormRequest
             'description' => 'required|between:6,140',
             'contact' => 'required',
             'contact_email' => 'required|email',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
+            'start_date' => 'required|date|before:end_date',
+            'end_date' => 'required|date|after:start_date',
             'groups.*.title' => 'max:20'
         ];
 
@@ -41,6 +41,8 @@ class EventFormRequest extends FormRequest
     public function messages()
     {
         return [
+            'start_date.before' => 'Date must be greater than End',
+            'end_date.after' => 'Date must be greater than Start',
             'groups.*.title.max' => 'Title is 20 character max'
         ];
     }

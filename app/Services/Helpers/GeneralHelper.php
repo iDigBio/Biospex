@@ -3,6 +3,7 @@
 namespace App\Services\Helpers;
 
 use Carbon\Carbon;
+use DateTimeZone;
 use DB;
 use Schema;
 
@@ -319,9 +320,10 @@ class GeneralHelper
      *
      * @param $start_date
      * @param $end_date
+     * @param $timezone
      * @return float|string
      */
-    public function eventStartEndAsPercentage($start_date, $end_date)
+    public function eventStartEndAsPercentage($start_date, $end_date, $timezone)
     {
         $now = Carbon::now()->timestamp;
         $begin = $start_date->timestamp;
@@ -346,16 +348,19 @@ class GeneralHelper
      *
      * @param $start_date
      * @param $end_date
+     * @param $timezone
      * @return string
      */
-    public function eventHoursLeft($start_date, $end_date)
+    public function eventHoursLeft($start_date, $end_date, $timezone)
     {
         if (Carbon::now()->timestamp > $end_date->timestamp)
         {
             return 'Completed';
         }
 
-        return $end_date->diffInHours($start_date) . ' ' . trans('pages.hours_remaining');
+        $hours = $end_date->diffInHours($start_date);
+
+        return $end_date->diffInHours($start_date) . ' ' . trans_choice('pages.hours_remaining', $hours);
     }
 
     /**
