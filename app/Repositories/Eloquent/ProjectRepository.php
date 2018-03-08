@@ -68,7 +68,7 @@ class ProjectRepository extends EloquentRepository implements Project
     public function getProjectPageBySlug($slug)
     {
         $results = $this->model
-            ->with(['group.users.profile', 'expeditions.stat', 'expeditions.actors', 'amChart', 'resources', 'events.transcriptionCount'])
+            ->with(['group.users.profile', 'expeditions.stat', 'expeditions.actors', 'amChart', 'resources', 'events.groups'])
             ->where('slug', '=', $slug)
             ->first();
 

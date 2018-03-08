@@ -99,7 +99,7 @@ class GeneralHelper
     {
         $value = ($total === 0 || $completed === 0) ? 0 : ($completed / $total) * 100;
 
-        return ($value > 100) ? 100 : $value;
+        return ($value > 100) ? 100 : round($value, 2);
     }
 
     /**

@@ -110,23 +110,47 @@
                             @foreach($project->resources as $resource)
                                 @if($resource->type === 'File Download')
                                     <a href="{{ $resource->download->url() }}" target="_blank" data-toggle="tooltip"
-                                       title="{{ $resource->description }}">{{ $resource->name }}</a><br />
+                                       title="{{ $resource->description }}">{{ $resource->name }}</a><br/>
                                 @else
                                     <a href="{{ $resource->name }}" target="_blank" data-toggle="tooltip"
-                                       title="{{ $resource->description }}">{{ $resource->name }}</a><br />
+                                       title="{{ $resource->description }}">{{ $resource->name }}</a><br/>
                                 @endif
                             @endforeach
                         </dd>
                     @endif
-                    @if($project->events->isNotEmpty())
-                        <dt>{{ trans('pages.events') }}</dt>
-                        <dd>
-                            @foreach($project->events as $event)
-                                <p>{{ $event->title }} : {{ $event->transcriptionCount }} @lang('pages.transcriptions')</p>
-                            @endforeach
-                        </dd>
-                    @endif
                 </dl>
+
+                @if($project->events->isNotEmpty())
+                    <h2>{{ trans('pages.events') }}</h2>
+                    @foreach($project->events as $event)
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">{{ $event->title }}</h3>
+                            </div>
+                            <div class="panel-body">
+                                @foreach($event->groups as $group)
+                                    <div class="row">
+                                        <div class="col-md-4">{{ $group->title }}</div>
+                                        <div class="col-md-6">
+                                            <div class="bar-container">
+                                                <div class="bar" style="width: {{ GeneralHelper::transcriptionsPercentCompleted($event->transcriptionCount, $group->transcriptionCount) }}%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div>{{ $group->transcriptionCount }}</div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                                <div class="row top5">
+                                    <div class="col-md-4"></div>
+                                    <div class="col-md-6">@lang('pages.total') @lang('pages.transcriptions')</div>
+                                    <div class="col-md-2">{{ $event->transcriptionCount }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
+
             </div>
         </div>
         @if ($project->amChart !== null)
@@ -136,9 +160,9 @@
             </div>
         @endif
         <div class="row">
-        @if ($project->fusion_table_id !== null)
-            @include('frontend.layouts.partials.projectmap')
-        @endif
+            @if ($project->fusion_table_id !== null)
+                @include('frontend.layouts.partials.projectmap')
+            @endif
         </div>
         <!-- ./ content -->
     </div>

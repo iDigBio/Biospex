@@ -59,4 +59,33 @@ class EventGroup extends Model
     {
         return $this->hasMany(EventTranscription::class);
     }
+
+    /**
+     * Transcription count relationship.
+     *
+     * \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function transcriptionCount()
+    {
+        return $this->hasOne(EventTranscription::class, 'group_id')
+            ->selectRaw('group_id, count(*) as aggregate')
+            ->groupBy('group_id');
+    }
+
+    /**
+     * Transcription count attribute.
+     *
+     * @return int
+     */
+    public function getTranscriptionCountAttribute()
+    {
+        // if relation is not loaded already, let's do it first
+        if ( ! $this->relationLoaded('transcriptionCount'))
+            $this->load('transcriptionCount');
+
+        $related = $this->getRelation('transcriptionCount');
+
+        // then return the count directly
+        return ($related) ? (int) $related->aggregate : 0;
+    }
 }

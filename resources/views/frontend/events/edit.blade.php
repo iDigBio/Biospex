@@ -3,7 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
     @parent
-    @lang('pages.edit') @lang('pages.event')
+    @lang('pages.edit') @lang('pages.events')
 @stop
 
 {{-- Content --}}

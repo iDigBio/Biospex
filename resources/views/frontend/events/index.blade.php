@@ -13,7 +13,7 @@
         <div class="col-md-10 col-md-offset-1 text-center">
         <button title="@lang('pages.createTitleEv')" class="btn btn-success btn-lg"
                 onClick="location.href='{{ route('webauth.events.create') }}'">
-            <i class="fa fa-calendar fa-5x"></i><h2>@lang('pages.create') @lang('pages.event')</h2></button>
+            <i class="fa fa-calendar fa-5x"></i><h2>@lang('pages.create') @lang('pages.events')</h2></button>
         </div>
     </div>
     <div class="row top10">
