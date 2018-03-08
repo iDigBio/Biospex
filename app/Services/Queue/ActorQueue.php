@@ -59,7 +59,7 @@ class ActorQueue extends QueueAbstract
     {
         $record = $this->expeditionContract->findWith($actor->pivot->expedition_id, ['project.group.owner']);
 
-        $message = trans('errors.workflow_actor',
+        $message = trans('messages.workflow_actor',
             [
                 'title' => $record->title,
                 'class' => $actor->class,

@@ -54,7 +54,7 @@ class InvitesController extends Controller
 
         if ( ! $this->checkPermissions('update', $group))
         {
-            return redirect()->route('web.groups.show', [$groupId]);
+            return redirect()->route('webauth.groups.show', [$groupId]);
         }
 
         return view('frontend.invites.index', compact('group'));
@@ -73,12 +73,12 @@ class InvitesController extends Controller
 
         if ( ! $this->checkPermissions('update', $group))
         {
-            return redirect()->route('web.groups.show', [$groupId]);
+            return redirect()->route('webauth.groups.show', [$groupId]);
         }
 
         $this->inviteService->storeInvites($group->id, $request);
 
-        return redirect()->route('web.invites.index', [$group->id]);
+        return redirect()->route('webauth.invites.index', [$group->id]);
     }
 
     /**
@@ -93,12 +93,12 @@ class InvitesController extends Controller
 
         if ( ! $this->checkPermissions('update', $group))
         {
-            return redirect()->route('web.groups.show', [$groupId]);
+            return redirect()->route('webauth.groups.show', [$groupId]);
         }
 
         $this->inviteService->resendInvite($group, $inviteId);
 
-        return redirect()->route('web.invites.index', [$group->id]);
+        return redirect()->route('webauth.invites.index', [$group->id]);
     }
 
     /**
@@ -113,11 +113,11 @@ class InvitesController extends Controller
 
         if ( ! $this->checkPermissions('delete', $group))
         {
-            return redirect()->route('web.groups.show', [$groupId]);
+            return redirect()->route('webauth.groups.show', [$groupId]);
         }
 
         $this->inviteService->deleteInvite($inviteId);
 
-        return redirect()->route('web.invites.index', [$groupId]);
+        return redirect()->route('webauth.invites.index', [$groupId]);
     }
 }

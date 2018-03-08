@@ -49,4 +49,9 @@ interface Project extends RepositoryInterface
      */
     public function getProjectsHavingTranscriptionLocations(array $projectIds = []);
 
+    /**
+     * @return mixed
+     */
+    public function getProjectEventSelect();
+
 }

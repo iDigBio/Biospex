@@ -53,7 +53,7 @@
                                     {{ ($errors->has('owner') ? $errors->first('owner') : '') }}
                                 </div>
                             </div>
-                            {!! Form::submit(trans('buttons.update'), ['class' => 'btn btn-primary']) !!}
+                            {!! Form::submit(trans('pages.update'), ['class' => 'btn btn-primary']) !!}
                             {!! Form::close() !!}
 
                         </div>
@@ -77,7 +77,7 @@
                                         <span class="contacts-list-name">
                                             {{  $user->profile->full_name }}
                                             <small class="contacts-list-date pull-right">
-                                                <button class="btn btn-xs btn-danger" title="@lang('buttons.deleteTitle')"
+                                                <button class="btn btn-xs btn-danger" title="@lang('pages.deleteTitle')"
                                                         data-href="{{ route('admin.groups.deleteUser', [$group->id, $user->id]) }}"
                                                         data-method="delete"
                                                         data-toggle="confirmation"
@@ -86,7 +86,7 @@
                                                         data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
                                                         data-btn-cancel-class="btn-danger"
                                                         data-title="Continue action?" data-content="This will delete the item">
-                                                    <span class="fa fa-remove fa-sm"></span> <!-- @lang('buttons.delete') -->
+                                                    <span class="fa fa-remove fa-sm"></span> <!-- @lang('pages.delete') -->
                                                 </button>
 
                                             </small>
@@ -119,7 +119,7 @@
                                     </div>
                                 </div>
                             </div>
-                            {!! Form::submit(trans('buttons.invite'), ['class' => 'btn btn-primary']) !!}
+                            {!! Form::submit(trans('pages.invite'), ['class' => 'btn btn-primary']) !!}
                             {!! Form::close() !!}
                         </div>
                     </div>

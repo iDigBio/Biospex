@@ -2,6 +2,8 @@
 
 namespace App\Services\Helpers;
 
+use Carbon\Carbon;
+use DateTimeZone;
 use DB;
 use Schema;
 
@@ -97,7 +99,7 @@ class GeneralHelper
     {
         $value = ($total === 0 || $completed === 0) ? 0 : ($completed / $total) * 100;
 
-        return ($value > 100) ? 100 : $value;
+        return ($value > 100) ? 100 : round($value, 2);
     }
 
     /**
@@ -311,5 +313,64 @@ class GeneralHelper
         $factor = floor((strlen($bytes) - 1) / 3);
 
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$size[$factor];
+    }
+
+    /**
+     * Display date as percentage from start to finish.
+     *
+     * @param $start_date
+     * @param $end_date
+     * @param $timezone
+     * @return float|string
+     */
+    public function eventStartEndAsPercentage($start_date, $end_date, $timezone)
+    {
+        $now = Carbon::now()->timestamp;
+        $begin = $start_date->timestamp;
+        $end = $end_date->timestamp;
+
+        if ($now < $begin)
+        {
+            return '0';
+        }
+        elseif ($now > $end)
+        {
+            return '100';
+        }
+        else
+        {
+            return round(($now - $begin) / ($end - $begin) * 100);
+        }
+    }
+
+    /**
+     * Event time left in human form.
+     *
+     * @param $start_date
+     * @param $end_date
+     * @param $timezone
+     * @return string
+     */
+    public function eventHoursLeft($start_date, $end_date, $timezone)
+    {
+        if (Carbon::now()->timestamp > $end_date->timestamp)
+        {
+            return 'Completed';
+        }
+
+        $hours = $end_date->diffInHours($start_date);
+
+        return $end_date->diffInHours($start_date) . ' ' . trans_choice('pages.hours_remaining', $hours);
+    }
+
+    /**
+     * Convert uuid value to bin for lookup.
+     *
+     * @param $value
+     * @return string
+     */
+    public function uuidToBin($value)
+    {
+        return pack('H*', str_replace('-', '', $value));
     }
 }

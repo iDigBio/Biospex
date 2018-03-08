@@ -6,4 +6,16 @@ $navbar-default-link-hover-bg: #232322;
 $navbar-default-link-active-color: darken($navbar-default-link-color, 6.5%);
 $navbar-default-link-active-bg: darken($navbar-default-bg, 6.5%);
 
+// Info box
+$info-box-color: #ffffff;
+$info-box-min-height: 90px;
+$info-box-default-background: #fff;
+$info-box-shadow: 0 3px 3px rgba(0, 0, 0, 0.5);
+$info-box-progress: rgba(0, 0, 0, 0.2);
+$info-box-progress-background: #fff;
+$info-box-icon-background: rgba(0, 0, 0, 0.2);
 
+
+// Background
+$bg-aqua: #00c0ef;
+$bg-auqa-hover: darken($bg-aqua, 6.5%);

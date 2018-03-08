@@ -4,15 +4,15 @@
         <div class="box-tools">
             <div class="input-group input-group-sm" style="width: 150px;">
                 <div class="btn-toolbar">
-                    <button title="@lang('buttons.create')" class="btn btn-primary btn-sm" type="button"
+                    <button title="@lang('pages.create')" class="btn btn-primary btn-sm" type="button"
                             onClick="location.href='{{ route('admin.faqs.create', [$category->id]) }}'">
                         <span class="fa fa-plus fa-sm"></span></button>
 
-                    <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-sm" type="button"
+                    <button title="@lang('pages.editTitle')" class="btn btn-warning btn-sm" type="button"
                             onClick="location.href='{{ route('admin.faqs.categories.edit', [$category->id, 0]) }}'"><span
                                 class="fa fa-cog fa-sm"></span></button>
 
-                    <button class="btn btn-sm btn-danger" title="@lang('buttons.deleteTitle')"
+                    <button class="btn btn-sm btn-danger" title="@lang('pages.deleteTitle')"
                             data-href="{{ route('admin.faqs.delete', [$category->id, 0]) }}"
                             data-method="delete"
                             data-toggle="confirmation"

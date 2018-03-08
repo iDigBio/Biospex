@@ -71,7 +71,7 @@ class RegisterService
             }
 
             $user->notify(new UserActivation(route('app.get.activate', [$user->id, $user->activation_code])));
-            Flash::success(trans('users.created'));
+            Flash::success(trans('messages.new_account'));
 
             return true;
         }
@@ -94,7 +94,7 @@ class RegisterService
 
         if ( ! empty($code) && ! $invite)
         {
-            Flash::warning( trans('groups.invite_not_found'));
+            Flash::warning( trans('messages.invite_not_found'));
         }
 
         $code = isset($invite->code) ? $invite->code : null;
@@ -116,18 +116,18 @@ class RegisterService
 
         if ( ! $user)
         {
-            Flash::error(trans('users.notfound'));
+            Flash::error(trans('messages.not_found'));
             return 'home';
         }
 
         if ($user->activated)
         {
-            Flash::info(trans('users.already_activated'));
+            Flash::info(trans('messages.already_activated'));
             return 'home';
         }
 
         $user->attemptActivation($code);
-        Flash::success(trans('users.activated'));
+        Flash::success(trans('messages.activated'));
         return 'app.get.login';
     }
 
@@ -143,19 +143,19 @@ class RegisterService
 
         if ( ! $user)
         {
-            Flash::error(trans('users.notfound'));
+            Flash::error(trans('messages.not_found'));
             return 'app.get.resend';
         }
 
         if ($user->activated)
         {
-            Flash::success(trans('users.already_activated'));
+            Flash::success(trans('messages.already_activated'));
             return 'app.get.login';
         }
 
         $user->getActivationCode();
         $user->notify(new UserActivation(route('app.get.activate', [$user->id, $user->activation_code])));
-        Flash::success(trans('users.emailconfirm'));
+        Flash::success(trans('messages.email_confirm'));
 
         return 'home';
     }

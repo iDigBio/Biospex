@@ -60,7 +60,7 @@ class RouteServiceProvider extends ServiceProvider
                     $this->require_files('routes/web', $router);
 
                     $router->middleware('auth')->group(function ($router) {
-                        $this->require_files('routes/auth', $router);
+                        $this->require_files('routes/webauth', $router);
                     });
                 });
 

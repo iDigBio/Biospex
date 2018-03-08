@@ -10,14 +10,14 @@
         </div>
     </div>
     <div class="col-sm-3 {!! $errors->has('resources.'.  $i  . '.name') ? 'has-error' : '' !!}">
-        {!! Form::label('', trans('Name/URL'), ['class' => 'control-label']) !!}
+        {!! Form::label('', trans('pages.url'), ['class' => 'control-label']) !!}
         {!! $errors->has('resources.'.  $i  . '.name') ? '&nbsp;' . $errors->first('resources.'.  $i  . '.name') : '' !!}
-        {!! Form::text('resources['. $i .'][name]', old('resources.'. $i .'.name'), ['class' => 'form-control', 'placeholder' => trans('forms.project_resources_name')]) !!}
+        {!! Form::text('resources['. $i .'][name]', old('resources.'. $i .'.name'), ['class' => 'form-control', 'placeholder' => trans('pages.project_resources_name')]) !!}
     </div>
     <div class="col-sm-4 {!! $errors->has('resources.'.  $i  . '.description') ? 'has-error' : '' !!}">
         {!! Form::label('', trans('Description'), ['class' => 'control-label']) !!}
         {!! $errors->has('resources.'.  $i  . '.description') ? '&nbsp;' . $errors->first('resources.'.  $i  . '.description') : '' !!}
-        {!! Form::text('resources['. $i .'][description]', old('resources'. $i .'description'), ['class' => 'form-control', 'placeholder' => trans('forms.project_resources_description')]) !!}
+        {!! Form::text('resources['. $i .'][description]', old('resources'. $i .'description'), ['class' => 'form-control', 'placeholder' => trans('pages.project_resources_description')]) !!}
     </div>
     <div class="col-sm-2 {!! $errors->has('resources.'.  $i  . '.download') ? 'has-error' : '' !!}">
         {!! Form::label('', trans('File'), ['class' => 'control-label']) !!}

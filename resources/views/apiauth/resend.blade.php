@@ -32,7 +32,7 @@
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-12">
                     <div class="form-group">
-                        {!! Form::submit(trans('buttons.resend'), array('class' => 'btn btn-primary btn-block')) !!}
+                        {!! Form::submit(trans('pages.resend'), array('class' => 'btn btn-primary btn-block')) !!}
                         {!! Form::close() !!}
                     </div>
                 </div>

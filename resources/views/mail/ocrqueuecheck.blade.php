@@ -1,5 +1,5 @@
 @component('mail::message')
-# @lang('errors.ocr_queue_check_title')
+# @lang('messages.ocr_queue_check_title')
 
 {!! $message !!}
 

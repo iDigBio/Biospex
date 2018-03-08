@@ -7,7 +7,7 @@
         <td>{!! $item->nodeValue !!}</td>
         <td><td class="button-fix">
             <div class="btn-toolbar">
-                <button class="btn btn-xs btn-danger" title="@lang('buttons.deleteTitle')"
+                <button class="btn btn-xs btn-danger" title="@lang('pages.deleteTitle')"
                         data-href="{{ route('admin.ocr.delete', [$item->nodeValue]) }}"
                         data-method="delete"
                         data-toggle="confirmation"
@@ -16,7 +16,7 @@
                         data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
                         data-btn-cancel-class="btn-danger"
                         data-title="Continue action?" data-content="This will destroy the item">
-                    <span class="fa fa-remove fa-sm"></span> <!-- @lang('buttons.delete') -->
+                    <span class="fa fa-remove fa-sm"></span> <!-- @lang('pages.delete') -->
                 </button>
             </div>
         </td>

@@ -121,6 +121,17 @@ class NfnApi extends HttpRequest
     }
 
     /**
+     * Get user.
+     *
+     * @param $userId
+     * @return string
+     */
+    public function getUserUri($userId)
+    {
+        return config('config.nfnApi.apiUri') . '/users/' . $userId;
+    }
+
+    /**
      * Builds the uri specific for csv downloads by workflow.
      *
      * @param $workflowId

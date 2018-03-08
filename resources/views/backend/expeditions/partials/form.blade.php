@@ -22,34 +22,34 @@
                     ]) !!}
 
                     <div class="form-group required {{ ($errors->has('title')) ? 'has-error' : '' }}" for="title">
-                        {!! Form::label('title', trans('forms.title'), ['class' => 'col-sm-2 control-label']) !!}
+                        {!! Form::label('title', trans('pages.title'), ['class' => 'col-sm-2 control-label']) !!}
                         <div class="col-sm-10">
-                            {!! Form::text('title', isset($editExpedition->title) ? $editExpedition->title : null, ['class' => 'form-control', 'placeholder' => trans('forms.title')]) !!}
+                            {!! Form::text('title', isset($editExpedition->title) ? $editExpedition->title : null, ['class' => 'form-control', 'placeholder' => trans('pages.title')]) !!}
                             {{ ($errors->has('title') ? $errors->first('title') : '') }}
                         </div>
                     </div>
 
                     <div class="form-group required {{ ($errors->has('description')) ? 'has-error' : '' }}">
-                        {!! Form::label('description', trans('forms.description'), ['class' => 'col-sm-2 control-label']) !!}
+                        {!! Form::label('description', trans('pages.description'), ['class' => 'col-sm-2 control-label']) !!}
                         <div class="col-sm-10">
-                            {!! Form::text('description', isset($editExpedition->description) ? $editExpedition->description : null, ['class' => 'form-control', 'placeholder' => trans('forms.description')]) !!}
+                            {!! Form::text('description', isset($editExpedition->description) ? $editExpedition->description : null, ['class' => 'form-control', 'placeholder' => trans('pages.description')]) !!}
                             {{ ($errors->has('description') ? $errors->first('description') : '') }}
                         </div>
                     </div>
 
                     <div class="form-group required {{ ($errors->has('keywords')) ? 'has-error' : '' }}">
-                        {!! Form::label('keywords', trans('forms.keywords'), ['class' => 'col-sm-2 control-label']) !!}
+                        {!! Form::label('keywords', trans('pages.keywords'), ['class' => 'col-sm-2 control-label']) !!}
                         <div class="col-sm-10">
-                            {!! Form::text('keywords', isset($editExpedition->keywords) ? $editExpedition->keywords : null, ['class' => 'form-control', 'placeholder' => trans('forms.keywords')]) !!}
+                            {!! Form::text('keywords', isset($editExpedition->keywords) ? $editExpedition->keywords : null, ['class' => 'form-control', 'placeholder' => trans('pages.keywords')]) !!}
                             {{ ($errors->has('keywords') ? $errors->first('keywords') : '') }}
                         </div>
                     </div>
 
                     @if(isset($editExpedition->project->workflow_id) && in_array($editExpedition->project->workflow_id, Config::get('config.nfnWorkflows'), false))
                         <div class="form-group {{ ($errors->has('workflow')) ? 'has-error' : '' }}">
-                            {!! Form::label('workflow', trans('forms.nfn_workflow_id'), ['class' => 'col-sm-2 control-label']) !!}
+                            {!! Form::label('workflow', trans('pages.nfn_workflow_id'), ['class' => 'col-sm-2 control-label']) !!}
                             <div class="col-sm-4">
-                                {!! Form::text('workflow', isset($editExpedition->nfnWorkflow->workflow) ? $editExpedition->nfnWorkflow->workflow : null, ['class' => 'form-control', 'placeholder' => trans('forms.nfn_workflow_id_note')]) !!}
+                                {!! Form::text('workflow', isset($editExpedition->nfnWorkflow->workflow) ? $editExpedition->nfnWorkflow->workflow : null, ['class' => 'form-control', 'placeholder' => trans('pages.nfn_workflow_id_note')]) !!}
                                 {{ ($errors->has('workflow') ? $errors->first('workflow') : '') }}
                             </div>
                         </div>

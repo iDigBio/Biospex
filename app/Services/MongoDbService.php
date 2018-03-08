@@ -43,6 +43,21 @@ class MongoDbService
     }
 
     /**
+     * Get client.
+     *
+     * @return \MongoClient
+     */
+    public function getClient()
+    {
+        if (empty($this->client))
+        {
+            $this->setClient();
+        }
+
+        return $this->client;
+    }
+
+    /**
      * @param $collection
      */
     public function setCollection($collection)
@@ -76,6 +91,18 @@ class MongoDbService
      * @param array $attributes
      * @param $resourceId
      */
+    public function updateOne(array $attributes = [], $resourceId)
+    {
+        $this->clientCollection->updateOne(
+            ['_id' => $resourceId],
+            ['$set' => $attributes]
+        );
+    }
+
+    /**
+     * @param array $attributes
+     * @param $resourceId
+     */
     public function updateOneById(array $attributes = [], $resourceId)
     {
         $this->clientCollection->updateOne(
@@ -87,6 +114,14 @@ class MongoDbService
     public function updateMany(array $attributes, array $criteria)
     {
         $this->clientCollection->updateMany($criteria, $attributes);
+    }
+
+    /**
+     * @param array $query
+     */
+    public function deleteOne(array $query)
+    {
+        $this->clientCollection->deleteOne($query);
     }
     
 }

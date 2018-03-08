@@ -50,6 +50,6 @@ class ResourceNameValidation implements Rule
      */
     public function message()
     {
-        return trans('errors.resource_url_required');
+        return trans('messages.resource_url_required');
     }
 }

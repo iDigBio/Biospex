@@ -74,7 +74,7 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
                 $user->notify(new JobError(__FILE__, $transcriptionProcess->getCsvError()));
             }
 
-            WeDigBioDashboardJob::dispatch($this->expeditionIds);
+            NfnClassificationPusherTranscriptionsJob::dispatch($this->expeditionIds);
         }
         catch (\Exception $e)
         {

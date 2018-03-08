@@ -1,4 +1,5 @@
-let mix = require('laravel-mix');
+let mix = require("laravel-mix");
+let path = require("path");
 
 /*
  |--------------------------------------------------------------------------
@@ -11,30 +12,30 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.webpackConfig({
-    resolve: {
-        alias: {
-            'jquery-ui': 'jquery-ui/ui/widgets'
-        }
-    }
-})
-    .autoload({
-        jquery: ['$', 'window.jQuery', "jQuery", "window.$", "jquery", "window.jquery"]
+mix.autoload({
+        jquery: ["$", "window.jQuery", "jQuery", "window.$", "jquery", "window.jquery"]
     })
-    .setPublicPath(path.normalize('public/backend'))
-    .js('resources/assets/js/backend.js', 'js/backend.js')
-    .sass('resources/assets/sass/backend.scss', 'css/backend.css')
+    .setPublicPath(path.normalize("public/backend"))
+    .js("resources/assets/js/backend.js", "js/backend.js")
+    .sass("resources/assets/sass/backend.scss", "css/backend.css")
     .extract([
-        'jquery',
-        'bootstrap-sass',
-        'bootstrap-notify/bootstrap-notify',
-        'bootstrap-confirmation2/bootstrap-confirmation',
-        'x-editable/dist/bootstrap3-editable/js/bootstrap-editable',
-        'x-editable/dist/inputs-ext/wysihtml5/wysihtml5',
-        //'jquery-ujs/src/rails',
-        //'toastr',
-        'icheck',
-        'admin-lte/dist/js/adminlte',
+        "jquery",
+        "select2/dist/js/select2.full",
+        "jquery-ui/ui/disable-selection",
+        "jquery-ui/ui/widgets/selectable",
+        "jquery-ui/ui/widgets/sortable",
+        "jquery-ui/ui/widgets/draggable",
+        "jquery-ui/ui/widgets/droppable",
+
+        "bootstrap-sass",
+        "bootstrap-notify/bootstrap-notify",
+        "bootstrap-confirmation2/bootstrap-confirmation",
+        "x-editable/dist/bootstrap3-editable/js/bootstrap-editable",
+        "codemirror/lib/codemirror",
+        "summernote/dist/summernote",
+        "jquery-ujs/src/rails",
+        "icheck",
+        "admin-lte/dist/js/adminlte",
     ]);
 
 

@@ -2,11 +2,13 @@
 @import "~bootstrap-sass/assets/stylesheets/bootstrap";
 
 // Font Awesome
-$fa-font-path: '/fonts/vendor/font-awesome';
 @import "~font-awesome/scss/font-awesome.scss";
 
-// Bootstrap WYSIHTML5
-//@import "~bootstrap-wysiwyg/css/style.css";
+// Summernote WYSIWG
+@import "~summernote/dist/summernote.css";
+
+// Select2
+@import "~select2/dist/css/select2.css";
 
 // X-editable
 // Fix D:\Users\Robert\MyWebs\Sites\biospex\upgrade\node_modules\x-editable\dist\bootstrap3-editable\css\bootstrap-editable.css

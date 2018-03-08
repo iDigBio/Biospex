@@ -32,6 +32,16 @@ class HomeController extends Controller
     }
 
     /**
+     * Show welcome to new registered users.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function welcome()
+    {
+        return view('frontend.welcome');
+    }
+
+    /**
      * Show public project page.
      *
      * @param $slug
@@ -95,7 +105,7 @@ class HomeController extends Controller
 
         Mail::to(config('mail.from.address'))->send(new ContactForm($contact));
 
-        Flash::success(trans('pages.contact_success'));
+        Flash::success(trans('messages.contact_success'));
 
         return redirect()->route('home');
     }

@@ -85,13 +85,13 @@ class ImportsController extends Controller
 
             Flash::success(trans('pages.upload_trans_success'));
 
-            return redirect()->route('web.projects.show', [$projectId]);
+            return redirect()->route('webauth.projects.show', [$projectId]);
         }
         catch(\Exception $e)
         {
             Flash::error('Error uploading the file.');
 
-            return redirect()->route('web.projects.show', [$projectId]);
+            return redirect()->route('webauth.projects.show', [$projectId]);
         }
     }
 
@@ -116,13 +116,13 @@ class ImportsController extends Controller
 
             Flash::success(trans('pages.upload_trans_success'));
 
-            return redirect()->route('web.projects.show', [$projectId]);
+            return redirect()->route('webauth.projects.show', [$projectId]);
         }
         catch(\Exception $e)
         {
             Flash::error('Error uploading the file.');
 
-            return redirect()->route('web.projects.show', [$projectId]);
+            return redirect()->route('webauth.projects.show', [$projectId]);
         }
     }
 
@@ -147,13 +147,13 @@ class ImportsController extends Controller
 
             Flash::success(trans('pages.upload_trans_success'));
 
-            return redirect()->route('web.projects.show', [$projectId]);
+            return redirect()->route('webauth.projects.show', [$projectId]);
         }
         catch(\Exception $e)
         {
             Flash::error('Error uploading the file.');
 
-            return redirect()->route('web.projects.show', [$projectId]);
+            return redirect()->route('webauth.projects.show', [$projectId]);
         }
     }
 }

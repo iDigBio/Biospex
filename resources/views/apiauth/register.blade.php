@@ -71,7 +71,7 @@
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             {!! Honeypot::generate('registeruser', 'registertime') !!}
-                            {!! Form::submit(trans('buttons.register'), array('class' => 'btn btn-primary btn-block')) !!}
+                            {!! Form::submit(trans('pages.register'), array('class' => 'btn btn-primary btn-block')) !!}
                             {!! Form::hidden('apiuser', 1) !!}
                             {!! Form::close() !!}
                         </div>

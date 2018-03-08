@@ -7,7 +7,6 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class TestAppCommand extends Command
 {
-
     use DispatchesJobs;
 
     /**
@@ -22,7 +21,6 @@ class TestAppCommand extends Command
 
     /**
      * Create a new job instance.
-     *
      */
     public function __construct()
     {

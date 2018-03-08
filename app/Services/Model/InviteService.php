@@ -59,23 +59,29 @@ class InviteService
 
             $requestInvites = collect($request->get('invites'))->reject(function($invite){
                 return empty($invite['email']);
-            })->diff($existing->pluck('email'));
+            })->pluck('email')->diff($existing->pluck('email'));
 
             $newInvites = $requestInvites->reject(function ($invite) use($group) {
-                return $this->checkExistingUser($invite['email'], $group);
+                return $this->checkExistingUser($invite, $group);
             })->map(function ($invite) use ($group) {
-                return $this->createNewInvite($invite['email'], $group);
+                return $this->createNewInvite($invite, $group);
             });
 
             Notification::send($newInvites, new GroupInvite($group));
 
-            Flash::success(trans('groups.send_invite_success', ['group' => $group->title]));
+            Flash::success(trans('messages.send_invite_success', ['group' => $group->title]));
 
             return true;
         }
         catch (\Exception $e)
         {
-            Flash::error(trans('groups.send_invite_error', ['group' => $group->title]));
+            Flash::error(trans('messages.send_invite_error', ['group' => $group->title]));
+
+            \Log::error($e->getLine());
+            \Log::error($e->getFile());
+            \Log::error($e->getMessage());
+            \Log::error($e->getTrace());
+
 
             return false;
         }
@@ -95,13 +101,13 @@ class InviteService
 
             $invite->notify(new GroupInvite($group));
 
-            Flash::success(trans('groups.send_invite_success', ['group' => $group->title]));
+            Flash::success(trans('messages.send_invite_success', ['group' => $group->title]));
 
             return true;
         }
         catch (\Exception $e)
         {
-            Flash::error( trans('groups.send_invite_error', ['group' => $group->title]));
+            Flash::error( trans('messages.send_invite_error', ['group' => $group->title]));
 
             return false;
         }
@@ -118,13 +124,13 @@ class InviteService
         try{
             $this->inviteContract->delete($inviteId);
 
-            Flash::success(trans('groups.invite_destroyed'));
+            Flash::success(trans('messages.record_destroyed'));
 
             return true;
         }
         catch(\Exception $e)
         {
-            Flash::error(trans('groups.invite_destroyed_failed'));
+            Flash::error(trans('messages.record_destroy_error'));
 
             return false;
         }

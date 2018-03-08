@@ -68,7 +68,7 @@ class ProjectRepository extends EloquentRepository implements Project
     public function getProjectPageBySlug($slug)
     {
         $results = $this->model
-            ->with(['group.users.profile', 'expeditions.stat', 'expeditions.actors', 'amChart', 'resources'])
+            ->with(['group.users.profile', 'expeditions.stat', 'expeditions.actors', 'amChart', 'resources', 'events.groups'])
             ->where('slug', '=', $slug)
             ->first();
 
@@ -89,5 +89,17 @@ class ProjectRepository extends EloquentRepository implements Project
         $this->resetModel();
 
         return $results;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getProjectEventSelect()
+    {
+        $results = $this->model->orderBy('title')->get(['id', 'title'])->pluck('title', 'id');
+
+        $this->resetModel();
+
+        return ['' => 'Select'] + $results->toArray();
     }
 }

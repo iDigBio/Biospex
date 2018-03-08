@@ -11,7 +11,7 @@
 @import "~summernote/dist/summernote.css";
 
 // jQuery-ui
-@import "~jquery-ui/../../themes/base/all.css";
+@import "~jquery-ui/themes/base/all.css";
 
 // tablesorter
 @import "~tablesorter/dist/css/theme.bootstrap_3.min.css";
@@ -25,5 +25,10 @@
 // Animate
 @import "~animate.css/animate.css";
 
+// Datetimepicker
+@import "~jquery-datetimepicker/build/jquery.datetimepicker.min.css";
+
 // biospex
 @import "../css/biospex.css";
+
+@import "biospex";

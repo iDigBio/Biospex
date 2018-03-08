@@ -222,7 +222,7 @@ class DarwinCoreCsvImport
     {
         if (count($this->header) !== count($row))
         {
-            throw new \Exception(trans('errors.csv_row_count', [
+            throw new \Exception(trans('messages.csv_row_count', [
                 'headers' => count($this->header),
                 'rows'    => count($row)
             ]));
@@ -275,7 +275,7 @@ class DarwinCoreCsvImport
     {
         if ( ! isset($row[$key]))
         {
-            throw new \Exception(trans('errors.csv_build_header', ['key' => $key, 'qualified' => $qualified]));
+            throw new \Exception(trans('messages.csv_build_header', ['key' => $key, 'qualified' => $qualified]));
         }
 
         $short = $this->checkProperty($qualified, $row[$key]);
@@ -387,7 +387,7 @@ class DarwinCoreCsvImport
 
         if (collect($this->metaFields[$type])->intersect($this->identifiers)->isEmpty())
         {
-            throw new \Exception(trans('errors.missing_identifier', ['identifiers' => implode(',', $this->identifiers)]));
+            throw new \Exception(trans('messages.missing_identifier', ['identifiers' => implode(',', $this->identifiers)]));
         }
     }
 

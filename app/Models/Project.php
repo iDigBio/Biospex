@@ -261,6 +261,16 @@ class Project extends Model implements StaplerableInterface
     }
 
     /**
+     * Events relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function events()
+    {
+        return $this->hasMany(Event::class);
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function panoptesTranscriptions()

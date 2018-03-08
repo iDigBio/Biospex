@@ -7,7 +7,7 @@
             </span> {{ $expedition->stat->percent_completed }}%
         </td>
     @else
-        <td class="nowrap" colspan="3">{{ trans('expeditions.processing_not_started') }}</td>
+        <td class="nowrap" colspan="3">{{ trans('messages.processing_not_started') }}</td>
     @endif
     <td>
         @foreach($expedition->actors as $actor)
