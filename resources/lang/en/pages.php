@@ -83,7 +83,7 @@ return [
     'group'                         => 'Group',
     'groups'                        => 'Groups',
     'home'                          => 'Home',
-    'hours_remaining'               => 'Hour Remaining|Hours Remaining',
+    'time_remaining'                => 'Time Remaining:',
     'incentives'                    => 'Incentives',
     'insufficient_permissions'      => 'You do not have sufficient permissions.',
     'invite'                        => 'Invite',

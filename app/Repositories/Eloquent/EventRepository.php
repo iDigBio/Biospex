@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Models\Event as Model;
 use App\Models\EventGroup;
 use App\Repositories\Interfaces\Event;
+use Carbon\Carbon;
 
 class EventRepository extends EloquentRepository implements Event
 {
@@ -24,6 +25,9 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function createEvent(array $attributes)
     {
+        $attributes['start_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['start_date'] . ':00', $attributes['timezone']);
+        $attributes['end_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['end_date'] . ':00', $attributes['timezone']);
+
         $event = $this->create($attributes);
 
         $groups = collect($attributes['groups'])->reject(function ($group) {
@@ -47,6 +51,9 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function updateEvent(array $attributes, $resourceId)
     {
+        $attributes['start_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['start_date'] . ':00', $attributes['timezone']);
+        $attributes['end_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['end_date'] . ':00', $attributes['timezone']);
+
         $event = $this->update($attributes, $resourceId);
 
         collect($attributes['groups'])->each(function ($group) use ($event) {
