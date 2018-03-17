@@ -73,11 +73,22 @@ Breadcrumbs::register('web.transcriptions.show.title', function ($breadcrumbs, $
 
 
 // Events Pages
-Breadcrumbs::register('webauth.events.index', function ($breadcrumbs) {
+Breadcrumbs::register('events', function ($breadcrumbs) {
     $breadcrumbs->push('Events', route('webauth.events.index'));
 });
 
 Breadcrumbs::register('webauth.events.show', function ($breadcrumbs, $event) {
-    $breadcrumbs->parent('webauth.events.index');
+    $breadcrumbs->parent('events');
     $breadcrumbs->push($event->title);
+});
+
+Breadcrumbs::register('webauth.events.create', function ($breadcrumbs) {
+    $breadcrumbs->parent('events');
+    $breadcrumbs->push(Lang::get('pages.create'));
+});
+
+Breadcrumbs::register('webauth.events.show.title', function ($breadcrumbs, $event) {
+    $breadcrumbs->parent('events');
+    $breadcrumbs->push($event->title, route('webauth.events.show', $event->id));
+    $breadcrumbs->push(Lang::get('pages.edit'));
 });
