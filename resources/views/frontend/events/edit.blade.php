@@ -8,10 +8,11 @@
 
 {{-- Content --}}
 @section('content')
+    {!! Breadcrumbs::render('webauth.events.show.title', $event) !!}
     <div class="col-md-10 col-md-offset-1  top20">
         <div class="panel panel-info">
             <div class="panel-heading">
-                <h3 class="panel-title">{{ trans('pages.edit') }}</h3>
+                <h3 class="panel-title">@lang('pages.edit') @lang('pages.event')</h3>
             </div>
             <div class="panel-body">
                 {!! Form::open([
