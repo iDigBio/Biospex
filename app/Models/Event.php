@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
@@ -130,7 +131,7 @@ class Event extends Model
      */
     public function setStartDateAttribute($value)
     {
-        $this->attributes['start_date'] = $value . ':00';
+        $this->attributes['start_date'] = $value->setTimezone(config('app.timezone'));
     }
 
     /**
@@ -140,6 +141,7 @@ class Event extends Model
      */
     public function setEndDateAttribute($value)
     {
-        $this->attributes['end_date'] = $value . ':00';
+        $this->attributes['end_date'] = $value->setTimezone(config('app.timezone'));
     }
+
 }
