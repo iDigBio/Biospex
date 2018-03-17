@@ -172,7 +172,7 @@ return [
     'team_biospex'                  => 'BIOSPEX Team',
     'team_menu'                     => 'Team',
     'temporal_scope'                => 'Temporal Scope',
-    'timezone'                      => 'timezone',
+    'timezone'                      => 'Timezone',
     'title'                         => 'Title',
     'total'                         => 'Total',
     'transcriber_summary'           => 'Transcriber Summary',
