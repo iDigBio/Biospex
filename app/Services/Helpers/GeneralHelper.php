@@ -346,6 +346,7 @@ class GeneralHelper
     public function eventHoursLeft($start_date, $end_date, $timezone)
     {
         $now = Carbon::now(new DateTimeZone($timezone));
+        $begin = $start_date->setTimezone($timezone);
         $end = $end_date->setTimezone($timezone);
 
         if ($now->timestamp > $end->timestamp)
@@ -353,7 +354,12 @@ class GeneralHelper
             return 'Completed';
         }
 
-        return trans('pages.time_remaining') . ' ' . $end->diff($now)->format('%H:%i');
+        if ($now->timestamp < $begin->timestamp)
+        {
+            return trans('pages.event_starting') . $now->diffForHumans($begin, true);
+        }
+
+        return trans('pages.event_ending') . $end->diffForHumans($now, true);
     }
 
     /**
