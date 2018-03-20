@@ -96,7 +96,10 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectEventSelect()
     {
-        $results = $this->model->orderBy('title')->get(['id', 'title'])->pluck('title', 'id');
+        $results = $this->model->whereHas('nfnWorkflows')
+            ->orderBy('title')
+            ->get(['id', 'title'])
+            ->pluck('title', 'id');
 
         $this->resetModel();
 
