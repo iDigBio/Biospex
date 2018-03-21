@@ -163,7 +163,7 @@ $(document).ready(function () {
                     ocrHtml = e.data;
                 }
 
-                $('#ocrHtml').html(ocrHtml);
+                $('#ocrHtml').html(ocrHtml === "" ? "No processes running at this time." : ocrHtml);
             });
 
         Echo.channel(Laravel.exportChannel)
@@ -182,7 +182,7 @@ $(document).ready(function () {
                     exportHtml = e.data;
                 }
 
-                $('#exportHtml').html(exportHtml);
+                $('#exportHtml').html(exportHtml === "" ? "No processes running at this time." : exportHtml);
             });
     }
 
