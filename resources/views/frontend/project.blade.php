@@ -127,9 +127,18 @@
                             <div class="panel-heading">
                                 <h3 class="panel-title">{{ $event->title }}</h3>
                             </div>
-                            <div class="panel-body">
+                            <div class="panel-body" style="font-size: small">
+                                <div class="row">
+                                    <div class="col-md-4"><b>@lang('pages.groups')</b></div>
+                                    <div class="col-md-6">
+                                        <b>% of Total Transcriptions</b>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <b>Count</b>
+                                    </div>
+                                </div>
                                 @foreach($event->groups as $group)
-                                    <div class="row">
+                                    <div class="row top5">
                                         <div class="col-md-4">{{ $group->title }}</div>
                                         <div class="col-md-6">
                                             <div class="bar-container">
@@ -142,8 +151,10 @@
                                     </div>
                                 @endforeach
                                 <div class="row top5">
-                                    <div class="col-md-4"></div>
-                                    <div class="col-md-6">@lang('pages.total') @lang('pages.transcriptions')</div>
+                                    <div class="col-md-5">
+                                        Total Transcriptions
+                                    </div>
+                                    <div class="col-md-5"></div>
                                     <div class="col-md-2">{{ $event->transcriptionCount }}</div>
                                 </div>
                             </div>
