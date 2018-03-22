@@ -24,15 +24,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-
         // Clean imports directory
-        $schedule->command('download:clean')->dailyAt('4:00');
+        $schedule->command('download:clean')->dailyAt('23:00');
 
         // Check ocr queue for error records
-        $schedule->command('ocrqueue:check')->dailyAt('4:15');
+        $schedule->command('ocrqueue:check')->dailyAt('23:15');
 
         // Clean report directory
-        $schedule->command('report:clean')->dailyAt('4:30');
+        $schedule->command('report:clean')->dailyAt('23:30');
 
         // Check ocr processing records and call ocr polling
         $schedule->command('ocrprocess:records')->everyFiveMinutes();
@@ -42,13 +41,12 @@ class Kernel extends ConsoleKernel
 
         if ($this->app->environment() === 'prod')
         {
-            // Trigger workflow manager to update expeditions and projects
-            $schedule->command('workflow:manage')->dailyAt('11:00');
-
             // Create Notes From Nature csv files
-            $schedule->command('nfn:csvcreate')->dailyAt('5:00');
-        }
+            $schedule->command('nfn:csvcreate')->daily();
 
+            // Trigger workflow manager to update expeditions and projects
+            $schedule->command('workflow:manage')->dailyAt('6:00');
+        }
     }
 
     /**
