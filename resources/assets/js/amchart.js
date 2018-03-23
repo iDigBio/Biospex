@@ -75,7 +75,7 @@ $(function () {
                 includeHidden: true
             }],
             "dataLoader": {
-                "url": "/project/" + $("#projectId").val() + "/chart",
+                "url": "/project/" + $("#projectId").data('value') + "/chart",
                 "format": "json",
                 "showErrors": true,
                 "postProcess": function (data, config, chart) {
