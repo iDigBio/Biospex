@@ -43,4 +43,10 @@ interface Event extends RepositoryInterface
      * @return mixed
      */
     public function checkEventExistsForClassificationUser($projectId, $user);
+
+    /**
+     * @param $projectId
+     * @return mixed
+     */
+    public function getEventsByProjectId($projectId);
 }

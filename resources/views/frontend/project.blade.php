@@ -11,7 +11,7 @@
     <div id="banner" style="background: url({{ $project->banner->url() }});">
         <img src="{{ $project->logo->url() }}" alt="{{ $project->title }}"/>
     </div>
-    <div class="container">
+    <div class="container" id="projectId" data-value="{{ $project->id }}">
         <!-- Notifications -->
         <!-- ./ notifications -->
         <!-- Content -->
@@ -120,53 +120,12 @@
                     @endif
                 </dl>
 
-                @if($project->events->isNotEmpty())
-                    <h2>{{ trans('pages.events') }}</h2>
-                    @foreach($project->events as $event)
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">{{ $event->title }}</h3>
-                            </div>
-                            <div class="panel-body" style="font-size: small">
-                                <div class="row">
-                                    <div class="col-md-4"><b>@lang('pages.groups')</b></div>
-                                    <div class="col-md-6">
-                                        <b>@lang('pages.event_board_percent')</b>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <b>@lang('pages.event_board_count')</b>
-                                    </div>
-                                </div>
-                                @foreach($event->groups as $group)
-                                    <div class="row top5">
-                                        <div class="col-md-4">{{ $group->title }}</div>
-                                        <div class="col-md-6">
-                                            <div class="bar-container">
-                                                <div class="bar" style="width: {{ GeneralHelper::transcriptionsPercentCompleted($event->transcriptionCount, $group->transcriptionCount) }}%"></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div>{{ $group->transcriptionCount }}</div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                                <div class="row top5">
-                                    <div class="col-md-5">
-                                        @lang('pages.event_board_total')
-                                    </div>
-                                    <div class="col-md-5"></div>
-                                    <div class="col-md-2">{{ $event->transcriptionCount }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                @endif
+                <div id="event-boards"></div>
 
             </div>
         </div>
         @if ($project->amChart !== null)
             <div class="row">
-                <input type="hidden" id="projectId" value="{{ $project->id }}"/>
                 <div id="chartdiv" class="amchart col-md-12" style="width: 100%; height: 600px"></div>
             </div>
         @endif

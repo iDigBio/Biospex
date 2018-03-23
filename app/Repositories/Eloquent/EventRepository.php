@@ -158,4 +158,20 @@ class EventRepository extends EloquentRepository implements Event
 
         return $event;
     }
+
+    /**
+     * Get events using project id.
+     *
+     * @param $projectId
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|mixed|null|static|static[]
+     * @throws \Exception
+     */
+    public function getEventsByProjectId($projectId)
+    {
+        $results = $this->model->with(['groups'])->whereHas('groups')->where('project_id', $projectId)->get();
+
+        $this->resetModel();
+
+        return $results;
+    }
 }

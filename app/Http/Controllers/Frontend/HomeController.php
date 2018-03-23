@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Http\Controllers\Frontend;
 
@@ -6,6 +6,7 @@ use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Mail\ContactForm;
 use App\Repositories\Interfaces\AmChart;
+use App\Repositories\Interfaces\Event;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Project;
 use App\Http\Requests\ContactFormRequest;
@@ -13,7 +14,6 @@ use Mail;
 
 class HomeController extends Controller
 {
-
     /**
      * Display a listing of the resource.
      *
@@ -64,7 +64,7 @@ class HomeController extends Controller
      */
     public function projects(Project $projectContract, $count = 5)
     {
-        $recentProjects = $projectContract->getRecentProjects($count+5);
+        $recentProjects = $projectContract->getRecentProjects($count + 5);
 
         return view('frontend.layouts.partials.home-project-list', compact('recentProjects'));
     }
@@ -118,5 +118,26 @@ class HomeController extends Controller
     public function vision()
     {
         return view('frontend.vision');
+    }
+
+    /**
+     * Ajax call for project event boards.
+     *
+     * @param $projectId
+     * @param \App\Repositories\Interfaces\Event $eventContract
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function events($projectId, Event $eventContract)
+    {
+        $events = $eventContract->getEventsByProjectId($projectId);
+
+        if (! request()->ajax() || $events->isEmpty()) {
+            return response()->json(['html' => '']);
+        }
+
+        $returnHTML = view('frontend.events.board', ['events' => $events])->render();
+
+        return response()->json(['html' => $returnHTML]);
     }
 }

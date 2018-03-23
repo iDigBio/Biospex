@@ -186,12 +186,39 @@ $(document).ready(function () {
             });
     }
 
+    if ($('#event-boards').length) {
+        let projectId = $("#projectId").data('value');
+        let url = "/project/" + projectId + "/events";
+        $.getJSON(url, function(data) {
+            $('#event-boards').html(data['html']);
+        });
+        /*
+        Echo.channel(Laravel.ocrChannel)
+            .listen('PollOcrEvent', (e) => {
+                let groupIds = $.parseJSON(Laravel.groupIds);
+                let ocrHtml = '';
+                if ($.isArray(e.data)) {
+                    $.each(e.data, function (index) {
+                        if ($.inArray(e.data[index].groupId, groupIds) === -1) {
+                            return true;
+                        }
+                        ocrHtml += e.data[index].notice;
+                    });
+                } else {
+                    ocrHtml = e.data;
+                }
+
+                $('#ocrHtml').html(ocrHtml === "" ? "No processes running at this time." : ocrHtml);
+            });
+            */
+    }
+
     $('[data-toggle="tooltip"]').tooltip();
 
     $.datetimepicker.setLocale('en');
     $('.datetimepicker').datetimepicker({
-        format:'Y-m-d H:i',
-        allowTimes:[
+        format: 'Y-m-d H:i',
+        allowTimes: [
             '00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30',
             '04:00', '04:30', '05:00', '05:30', '06:00', '06:30', '07:00', '07:30',
             '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
@@ -202,7 +229,7 @@ $(document).ready(function () {
     });
 
     $('.js-tooltip').tooltip();
-    $('.js-copy').click(function() {
+    $('.js-copy').click(function () {
         let text = $(this).attr('data-copy');
         let el = $(this);
         copyToClipboard(text, el);
@@ -218,7 +245,7 @@ $(function () {
             currentEntry = $(this).parents('.entry:first'),
             newEntry = $(currentEntry.clone()).appendTo(controls);
 
-        newEntry.find(":input").each(function(){
+        newEntry.find(":input").each(function () {
             $(this).val('');
         });
         newEntry.find('.fileName').html('');
@@ -237,9 +264,9 @@ $(function () {
 
 function renumber_prefix() {
     let controls = $('.controls');
-    controls.children('.entry').each(function(index) {
-        $(this).find(":input").each(function() {
-            this.name = this.name.replace(/\[[0-9]+\]/g, '['+index+']');
+    controls.children('.entry').each(function (index) {
+        $(this).find(":input").each(function () {
+            this.name = this.name.replace(/\[[0-9]+\]/g, '[' + index + ']');
         });
     });
     $("[name='entries']").val(controls.children().length);
