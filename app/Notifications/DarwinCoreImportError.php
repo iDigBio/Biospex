@@ -22,20 +22,13 @@ class DarwinCoreImportError extends Notification implements ShouldQueue
     private $message;
 
     /**
-     * @var string
-     */
-    private $file;
-
-    /**
      * Create a new notification instance.
      *
      * @param string $message
-     * @param string $file
      */
-    public function __construct($message, $file)
+    public function __construct($message)
     {
         $this->message = $message;
-        $this->file = $file;
         $this->adminEmail = config('mail.from.address');
         $this->onQueue(config('config.beanstalkd.default'));
     }
@@ -59,7 +52,7 @@ class DarwinCoreImportError extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->bcc($this->adminEmail)
-            ->markdown('mail.importerror', ['message' => $this->message, 'file' => $this->file]);
+            ->markdown('mail.importerror', ['message' => $this->message]);
     }
 
     /**

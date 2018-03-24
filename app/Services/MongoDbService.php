@@ -21,12 +21,14 @@ class MongoDbService
 
     /**
      * Collection being accessed.
+     *
      * @var Collection
      */
     public $clientCollection;
 
     /**
      * MongoDbService constructor.
+     *
      * @param DatabaseManager $databaseManager
      */
     public function __construct(DatabaseManager $databaseManager)
@@ -43,25 +45,74 @@ class MongoDbService
     }
 
     /**
-     * @param $collection
+     * Set database dynamically.
+     *
+     * @param null $database
+     * @return null
      */
-    public function setCollection($collection)
+    public function setDatabase($database = null)
     {
-        if (empty($this->client))
-        {
-            $this->setClient();
-        }
-
-        $this->clientCollection = $this->client->{config('database.connections.mongodb.database')}->{$collection};
+        return null === $database ? config('database.connections.mongodb.database') : $database;
     }
 
     /**
+     * Set mongo collection.
+     *
+     * @param $collection
+     * @param null $database
+     */
+    public function setCollection($collection, $database = null)
+    {
+        if (empty($this->client)) {
+            $this->setClient();
+        }
+
+        $this->clientCollection = $this->client->{$this->setDatabase($database)}->{$collection};
+    }
+
+    /**
+     * Set a mongo id object.
+     *
+     * @param $value
+     * @return \MongoDB\BSON\ObjectId
+     */
+    public function setMongoObjectId($value)
+    {
+        return new ObjectId($value);
+    }
+
+    /**
+     * Find all matching query.
+     *
      * @param array $query
      * @return mixed
      */
     public function find(array $query = [])
     {
         return $this->clientCollection->find($query);
+    }
+
+    /**
+     * Find one matching query.
+     *
+     * @param array $query
+     * @return array|null|object
+     */
+    public function findOne(array $query = [])
+    {
+        return $this->clientCollection->findOne($query);
+    }
+
+    /**
+     * Find one and replace.
+     *
+     * @param $filter
+     * @param $replacement
+     * @return array|null|object
+     */
+    public function findOneAndReplace($filter, $replacement)
+    {
+        return $this->clientCollection->findOneAndReplace($filter, $replacement);
     }
 
     /**
@@ -73,20 +124,24 @@ class MongoDbService
     }
 
     /**
+     * Update single record.
+     *
      * @param array $attributes
      * @param $resourceId
      */
     public function updateOneById(array $attributes = [], $resourceId)
     {
-        $this->clientCollection->updateOne(
-            ['_id' => new ObjectId($resourceId)],
-            ['$set' => $attributes]
-        );
+        $this->clientCollection->updateOne(['_id' => $this->setMongoObjectId($resourceId)], ['$set' => $attributes]);
     }
 
+    /**
+     * Update many.
+     *
+     * @param array $attributes
+     * @param array $criteria
+     */
     public function updateMany(array $attributes, array $criteria)
     {
         $this->clientCollection->updateMany($criteria, $attributes);
     }
-    
 }

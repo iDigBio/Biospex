@@ -8,6 +8,7 @@ use App\Repositories\Interfaces\Group;
 use App\Repositories\Interfaces\OcrQueue;
 use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\User;
+use App\Services\MongoDbService;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -61,6 +62,11 @@ class UpdateQueries extends Command
     private $download;
 
     /**
+     * @var \App\Services\MongoDbService
+     */
+    private $mongoDbService;
+
+    /**
      * UpdateQueries constructor.
      *
      * @param \App\Repositories\Interfaces\User $user
@@ -69,8 +75,17 @@ class UpdateQueries extends Command
      * @param \App\Repositories\Interfaces\Group $group
      * @param \App\Repositories\Interfaces\Expedition $expedition
      * @param \App\Repositories\Interfaces\Download $download
+     * @param \App\Services\MongoDbService $mongoDbService
      */
-    public function __construct(User $user, Project $project, OcrQueue $queue, Group $group, Expedition $expedition, Download $download)
+    public function __construct(
+        User $user,
+        Project $project,
+        OcrQueue $queue,
+        Group $group,
+        Expedition $expedition,
+        Download $download,
+        MongoDbService $mongoDbService
+    )
     {
         parent::__construct();
         $this->user = $user;
@@ -79,12 +94,32 @@ class UpdateQueries extends Command
         $this->group = $group;
         $this->expedition = $expedition;
         $this->download = $download;
+        $this->mongoDbService = $mongoDbService;
     }
 
     /**
      * Fire command
      */
     public function handle()
+    {
+        $this->updateUuids();
+        $this->updateProjectMongoDb(26);
+    }
+
+    public function updateProjectMongoDb($projectId)
+    {
+        $this->mongoDbService->setCollection('subjects', 'biospex_bk');
+        $query = ['project_id' => $projectId];
+        $results = $this->mongoDbService->find($query);
+
+        foreach ($results as $doc)
+        {
+            $this->mongoDbService->setCollection('subjects', 'biospex');
+            $this->mongoDbService->findOneAndReplace(['_id' => $doc->_id], $doc->getArrayCopy());
+        }
+    }
+
+    public function updateUuids()
     {
         $users = $this->user->all();
         $users->each(function($user){
