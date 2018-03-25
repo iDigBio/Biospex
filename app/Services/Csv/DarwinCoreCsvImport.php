@@ -7,6 +7,7 @@ use App\Repositories\Interfaces\Header;
 use App\Repositories\Interfaces\Property;
 use App\Repositories\Interfaces\Subject;
 use App\Services\MongoDbService;
+use ForceUTF8\Encoding;
 use Illuminate\Validation\Factory as Validation;
 use App\Models\Occurrence;
 
@@ -189,6 +190,10 @@ class DarwinCoreCsvImport
     public function processRow($row, $type, $loadMedia)
     {
         $this->testHeaderRowCount($row);
+
+        array_walk($row, function (&$value) {
+            $value = Encoding::toUTF8($value);
+        });
 
         $loadMedia ?
             $this->prepareSubject($row, $this->metaFields[$type])

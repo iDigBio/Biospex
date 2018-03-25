@@ -79,7 +79,7 @@ class RecordsetImportJob implements ShouldQueue
                 'message' => $e->getMessage()
             ]);
 
-            $project->group->owner->notify(new DarwinCoreImportError($message, __FILE__));
+            $project->group->owner->notify(new DarwinCoreImportError($message));
         }
     }
 

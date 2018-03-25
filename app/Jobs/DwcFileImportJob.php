@@ -36,7 +36,7 @@ class DwcFileImportJob implements ShouldQueue
      *
      * @param Import $import
      */
-    public function __construct($import)
+    public function __construct(Import $import)
     {
         $this->import = $import;
         $this->onQueue(config('config.beanstalkd.import'));
@@ -55,7 +55,6 @@ class DwcFileImportJob implements ShouldQueue
         FileService $fileService
     )
     {
-
         $scratchFileDir = config('config.scratch_dir') . '/' . md5($this->import->file);
 
         $project = $projectContract->findWith($this->import->project_id, ['group.owner', 'workflow.actors']);
@@ -95,7 +94,7 @@ class DwcFileImportJob implements ShouldQueue
                 'message' => $e->getMessage()
             ]);
 
-            $project->group->owner->notify(new DarwinCoreImportError($message, __FILE__));
+            $project->group->owner->notify(new DarwinCoreImportError($message));
 
             $this->delete();
         }
