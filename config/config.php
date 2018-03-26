@@ -52,6 +52,7 @@ return [
 
     'poll_ocr_channel'    => env('POLL_OCR_CHANNEL'),
     'poll_export_channel' => env('POLL_EXPORT_CHANNEL'),
+    'poll_board_channel' => env('POLL_BOARD_CHANNEL'),
 
     'cache_enabled'       => env('CACHE_ENABLED', true),
     'cache_minutes'       => env('CACHE_MINUTES', 60),
