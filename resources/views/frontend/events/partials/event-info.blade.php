@@ -4,20 +4,29 @@
             <h3>{{ $event->title }}</h3>
             <p>{{ $event->description }}</p>
             <p>@lang('pages.project'): {{ $event->project->title }}</p>
-            @lang('pages.start_date'): {{ $event->start_date->setTimezone($event->timezone)->toDayDateTimeString() }} {{ str_replace('_', ' ', $event->timezone) }}<br />
-            @lang('pages.end_date'): {{ $event->end_date->setTimezone($event->timezone)->toDayDateTimeString() }} {{ str_replace('_', ' ', $event->timezone) }}<br />
+            @lang('pages.start_date')
+            : {{ $event->start_date->setTimezone($event->timezone)->toDayDateTimeString() }} {{ str_replace('_', ' ', $event->timezone) }}
+            <br/>
+            @lang('pages.end_date')
+            : {{ $event->end_date->setTimezone($event->timezone)->toDayDateTimeString() }} {{ str_replace('_', ' ', $event->timezone) }}
+            <br/>
         </div>
         <div class="col-md-6">
-            <h3>@lang('pages.transcriptions'): {{ $event->transcriptionCount }}</h3>
-            <h3>Group Invite Links</h3>
-            @foreach($event->groups as $group)
-                <button type="button" class="btn btn-default btn-copy js-tooltip js-copy"
-                        data-toggle="tooltip"
-                        data-placement="bottom"
-                        data-copy="{{ route('web.events.join', [$group->uuid]) }}" title="Copy to clipboard">
-                    <span class="fa fa-clipboard fa-lg"></span> {{ $group->title }}
-                </button>
-            @endforeach
+            <div class="row">
+                <h3>@lang('pages.transcriptions'): {{ $event->transcriptionCount }}</h3>
+                <h3>Group Invite Links</h3>
+                @foreach($event->groups as $group)
+                    <button type="button" class="btn btn-default btn-copy js-tooltip js-copy"
+                            data-toggle="tooltip"
+                            data-placement="bottom"
+                            data-copy="{{ route('web.events.join', [$group->uuid]) }}" title="Copy to clipboard">
+                        <span class="fa fa-clipboard fa-lg"></span> {{ $group->title }}
+                    </button>
+                @endforeach
+            </div>
+            <div class="row top20">@lang('pages.project_url')
+                : {!! link_to_route('home.get.project', $event->project->title, [$event->project->slug]) !!}
+            </div>
         </div>
     </div>
 </div>
