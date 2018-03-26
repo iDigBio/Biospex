@@ -8,7 +8,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class PollExportEvent extends Event implements ShouldBroadcast
+class PollBoardEvent extends Event implements ShouldBroadcast
 {
 
     use Dispatchable, InteractsWithSockets, SerializesModels;
@@ -42,6 +42,6 @@ class PollExportEvent extends Event implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel(config('config.poll_export_channel'));
+        return new Channel(config('config.poll_board_channel'));
     }
 }
