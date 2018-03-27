@@ -2,6 +2,7 @@
 
 namespace App\Services\Model;
 
+use App\Jobs\EventBoardJob;
 use App\Repositories\Interfaces\Event;
 use App\Repositories\Interfaces\EventGroup;
 use App\Repositories\Interfaces\EventTranscription;
@@ -164,6 +165,8 @@ class EventService
         ];
 
         $this->eventTranscription->updateOrCreate($attributes, $values);
+
+        EventBoardJob::dispatch($expedition->project_id);
     }
 
     /**
