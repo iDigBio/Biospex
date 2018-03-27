@@ -3,6 +3,7 @@
 namespace App\Services\Model;
 
 use App\Facades\DateHelper;
+use App\Jobs\EventBoardJob;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\PusherTranscription;
@@ -115,6 +116,8 @@ class PusherTranscriptionService
 
         $this->createDashboardFromPusher($data, $subject, $expedition);
         $this->eventService->updateOrCreateEventTranscription($data, $expedition);
+
+        EventBoardJob::dispatch($expedition->project_id);
     }
 
     /**
