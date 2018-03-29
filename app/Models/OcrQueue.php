@@ -46,4 +46,25 @@ class OcrQueue extends Model
     {
         return $this->belongsTo(OcrCsv::class);
     }
+
+    /**
+     * Mutator for subjects column.
+     *
+     * @param $value
+     */
+    public function setDataAttribute($value)
+    {
+        $this->attributes['data'] = serialize($value);
+    }
+
+    /**
+     * Accessor for subjects column.
+     *
+     * @param $value
+     * @return mixed
+     */
+    public function getDataAttribute($value)
+    {
+        return empty($value) ? '' : unserialize($value);
+    }
 }

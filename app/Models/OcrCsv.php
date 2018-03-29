@@ -7,8 +7,6 @@ use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class OcrCsv extends Model
 {
-    use LadaCacheTrait;
-
     /**
      * @inheritDoc
      */
