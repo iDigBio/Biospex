@@ -26,7 +26,8 @@ class PollBoardEvent extends Event implements ShouldBroadcast
     public $broadcastQueue;
 
     /**
-     * PollExportEvent constructor.
+     * PollBoardEvent constructor.
+     *
      * @param $data
      */
     public function __construct($data)
@@ -38,10 +39,10 @@ class PollBoardEvent extends Event implements ShouldBroadcast
     /**
      * Get the channels the event should be broadcast on.
      *
-     * @return Channel
+     * @return \Illuminate\Broadcasting\Channel|\Illuminate\Broadcasting\Channel[]
      */
     public function broadcastOn()
     {
-        return new Channel(config('config.poll_board_channel'));
+        return new Channel(config('config.poll_board_channel') . '.' . $this->data['id']);
     }
 }

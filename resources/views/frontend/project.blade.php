@@ -120,7 +120,9 @@
                     @endif
                 </dl>
 
-                <div id="event-boards"></div>
+                <div id="event-boards">
+                    @include('frontend.events.board')
+                </div>
 
             </div>
         </div>

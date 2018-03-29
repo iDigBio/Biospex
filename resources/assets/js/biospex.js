@@ -188,29 +188,13 @@ $(document).ready(function () {
 
     if ($('#event-boards').length) {
         let projectId = $("#projectId").data('value');
-        let url = "/project/" + projectId + "/events";
-        $.getJSON(url, function(data) {
-            $('#event-boards').html(data['html']);
-        });
-        /*
-        Echo.channel(Laravel.ocrChannel)
-            .listen('PollOcrEvent', (e) => {
-                let groupIds = $.parseJSON(Laravel.groupIds);
-                let ocrHtml = '';
-                if ($.isArray(e.data)) {
-                    $.each(e.data, function (index) {
-                        if ($.inArray(e.data[index].groupId, groupIds) === -1) {
-                            return true;
-                        }
-                        ocrHtml += e.data[index].notice;
-                    });
-                } else {
-                    ocrHtml = e.data;
+        //Echo.private(Laravel.boardChannel + '.' + projectId)
+        Echo.channel(`boardloc.53`)
+            .listen('PollBoardEvent', (e) => {
+                if (e.data['id'] === projectId) {
+                    $('#event-boards').html(e.data['html']);
                 }
-
-                $('#ocrHtml').html(ocrHtml === "" ? "No processes running at this time." : ocrHtml);
             });
-            */
     }
 
     $('[data-toggle="tooltip"]').tooltip();

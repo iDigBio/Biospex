@@ -111,8 +111,13 @@ class BiospexServiceProvider extends ServiceProvider
         );
 
         view()->composer(
-            'frontend.layouts.partials.process-modal', 'App\Http\ViewComposers\EchoVarsComposer'
+            'frontend.layouts.partials.process-modal', 'App\Http\ViewComposers\PollComposer'
         );
+
+        view()->composer(
+            'frontend.events.board', 'App\Http\ViewComposers\BoardComposer'
+        );
+
     }
 
     /**
