@@ -27,6 +27,7 @@ class ExpeditionStat extends Model
      */
     protected $fillable = [
         'expedition_id',
+        'local_subject_count',
         'subject_count',
         'transcriptions_total',
         'transcriptions_completed',
