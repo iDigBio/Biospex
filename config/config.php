@@ -154,6 +154,7 @@ return [
     'nfnActors'  => env('NFN_ACTORS'),
     'nfnNotify'  => [1 => 'NewNfnLegacyProject', 2 => 'NewNfnPanoptesProject'],
     'nfnSkipCsv' => env('NFN_SKIP_CSV'), // Skip csv creation for expedition ids
+    'nfnTranscriptionsComplete' => env('NFN_TRANSCRIPTIONS_COMPLETE', 3),
 
     'nfnCsvMap' => [
         'subjectId'        => '_id',
