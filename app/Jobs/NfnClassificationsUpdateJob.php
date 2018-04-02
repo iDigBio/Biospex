@@ -53,8 +53,6 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
             return;
         }
 
-        $this->updateExpeditionStats($expeditionContract, $expedition);
-
         AmChartJob::dispatch($expedition->project_id);
         NfnClassificationsFusionTableJob::dispatch($expedition->project_id);
 
@@ -74,23 +72,5 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
             || null === $expedition->nfnWorkflow->workflow
             || null === $expedition->nfnWorkflow->project
             || null === $expedition->nfnActor;
-    }
-
-    /**
-     * Update expedition stats.
-     *
-     * @param Expedition $expeditionContract
-     * @param $expedition
-     */
-    private function updateExpeditionStats(Expedition $expeditionContract, $expedition)
-    {
-        // Update stats
-        $count = $expeditionContract->getExpeditionSubjectCounts($expedition->id);
-        $expedition->stat->subject_count = $count;
-        $expedition->stat->transcriptions_total = GeneralHelper::transcriptionsTotal($count);
-        $expedition->stat->transcriptions_completed = GeneralHelper::transcriptionsCompleted($expedition->id);
-        $expedition->stat->percent_completed = GeneralHelper::transcriptionsPercentCompleted($expedition->stat->transcriptions_total, $expedition->stat->transcriptions_completed);
-
-        $expedition->stat->save();
     }
 }
