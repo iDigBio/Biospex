@@ -2,7 +2,6 @@
 
 namespace App\Services\Helpers;
 
-use DB;
 use Schema;
 
 /**
@@ -70,20 +69,7 @@ class GeneralHelper
      */
     public function transcriptionsTotal($count)
     {
-        return (int)$count * 3;
-    }
-
-    /**
-     * Return completed transcriptions count.
-     *
-     * @param $expeditionId
-     * @return mixed
-     */
-    public function transcriptionsCompleted($expeditionId)
-    {
-        $transcriptionContract = app(\App\Repositories\Interfaces\PanoptesTranscription::class);
-
-        return $transcriptionContract->getTranscriptionCountByExpeditionId($expeditionId);
+        return (int)$count * (int)config('config.nfnTranscriptionsComplete');
     }
 
     /**
