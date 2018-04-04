@@ -49,6 +49,8 @@ class NfnPanoptesClassifications
 
         if ($this->workflowIdDoesNotExist($record))
         {
+            $this->actorServiceConfig->fireActorUnQueuedEvent();
+
             return;
         }
 
