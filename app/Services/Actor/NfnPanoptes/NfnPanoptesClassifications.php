@@ -7,6 +7,8 @@ use App\Repositories\Interfaces\Expedition;
 use App\Notifications\NfnTranscriptionsComplete;
 use App\Notifications\NfnTranscriptionsError;
 use App\Services\Actor\ActorServiceConfig;
+use App\Services\Api\NfnApi;
+use App\Facades\GeneralHelper;
 
 class NfnPanoptesClassifications
 {
@@ -22,23 +24,33 @@ class NfnPanoptesClassifications
     public $actorServiceConfig;
 
     /**
+     * @var \App\Services\Api\NfnApi
+     */
+    private $api;
+
+    /**
      * NfnPanoptesClassifications constructor.
      *
      * @param Expedition $expeditionContract
      * @param ActorServiceConfig $actorServiceConfig
+     * @param \App\Services\Api\NfnApi $api
      */
     public function __construct(
         Expedition $expeditionContract,
-        ActorServiceConfig $actorServiceConfig
+        ActorServiceConfig $actorServiceConfig,
+        NfnApi $api
     )
     {
         $this->expeditionContract = $expeditionContract;
         $this->actorServiceConfig = $actorServiceConfig;
+        $this->api = $api;
     }
 
     /**
-     * Process current state
+     * Process current state.
+     *
      * @param $actor
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function processActor($actor)
     {
@@ -54,12 +66,29 @@ class NfnPanoptesClassifications
 
         try
         {
-            if ((int) $record->stat->percent_completed === 100)
+            $this->api->setProvider();
+            $this->api->checkAccessToken('nfnToken');
+            $uri = $this->api->getWorkflowUri($record->nfnWorkflow->workflow);
+            $request = $this->api->buildAuthorizedRequest('GET', $uri);
+            $result = $this->api->sendAuthorizedRequest($request);
+
+            $workflow = $result['workflows'][0];
+            $count = $workflow['subjects_count'];
+            $transcriptionCompleted = $workflow['classifications_count'];
+            $transcriptionTotal = GeneralHelper::transcriptionsTotal($workflow['subjects_count']);
+            $percentCompleted = GeneralHelper::transcriptionsPercentCompleted($transcriptionTotal, $transcriptionCompleted);
+
+            $record->stat->subject_count = $count;
+            $record->stat->transcriptions_total = $transcriptionTotal;
+            $record->stat->transcriptions_completed = $transcriptionCompleted;
+            $record->stat->percent_completed = $percentCompleted;
+            $record->stat->save();
+
+
+            if ($workflow['finished_at'] !== null)
             {
                 $this->actorServiceConfig->fireActorCompletedEvent();
                 $this->notify($record);
-
-                return;
             }
 
             NfnClassificationsUpdateJob::dispatch($record->id);

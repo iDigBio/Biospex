@@ -48,7 +48,7 @@ class ExpeditionStatJob extends Job implements ShouldQueue
      */
     public function handle(Expedition $expedition, NfnApi $api)
     {
-        $record = $expedition->findWith($this->expeditionId, ['stat']);
+        $record = $expedition->findWith($this->expeditionId, ['stat', 'nfnActor']);
         $count = $expedition->getExpeditionSubjectCounts($this->expeditionId);
 
         $api->setProvider();
@@ -70,5 +70,9 @@ class ExpeditionStatJob extends Job implements ShouldQueue
         $record->stat->percent_completed = $percentCompleted;
 
         $record->stat->save();
+
+        if ($workflow['finished_at'] !== null) {
+            event('actor.pivot.completed', $record->nfnActor);
+        }
     }
 }
