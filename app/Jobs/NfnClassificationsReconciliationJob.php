@@ -59,6 +59,10 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
         }
 
         $expeditionIds = [];
+
+        $chown = "chown -R www-data.www.data ";
+        $chmod = "chmod -R 777 ";
+
         foreach ($this->expeditionIds as $expeditionId)
         {
             $expedition = $expeditionContract->findWith($expeditionId, ['nfnWorkflow']);
@@ -74,6 +78,10 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
             $recPath = config('config.classifications_reconcile') . '/' . $expedition->id . '.csv';
             $tranPath = config('config.classifications_transcript') . '/' . $expedition->id . '.csv';
             $sumPath = config('config.classifications_summary') . '/' . $expedition->id . '.html';
+
+            exec($chown . $csvPath);
+            exec($chmod . $csvPath);
+
             $pythonPath = config('config.label_reconciliations_path');
             $command = "python3 $pythonPath -w {$expedition->nfnWorkflow->workflow} -r $recPath -u $tranPath -s $sumPath $csvPath";
             exec($command);
@@ -86,16 +94,22 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
 
             if (File::exists($tranPath))
             {
+                exec($chown . $tranPath);
+                exec($chmod . $tranPath);
                 $this->updateOrCreateDownloads($expedition->id, 'transcriptions');
             }
 
             if (File::exists($recPath))
             {
+                exec($chown . $recPath);
+                exec($chmod . $recPath);
                 $this->updateOrCreateDownloads($expedition->id, 'reconciled');
             }
 
             if (File::exists($sumPath))
             {
+                exec($chown . $sumPath);
+                exec($chmod . $sumPath);
                 $this->updateOrCreateDownloads($expedition->id, 'summary');
             }
 
