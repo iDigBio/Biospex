@@ -84,14 +84,10 @@ class NfnPanoptesClassifications
             $record->stat->transcriptions_total = $transcriptionTotal;
             $record->stat->transcriptions_completed = $transcriptionCompleted;
             $record->stat->percent_completed = $percentCompleted;
+
+            $this->checkFinishedAt($record, $workflow);
+
             $record->stat->save();
-
-
-            if ($workflow['finished_at'] !== null)
-            {
-                $this->actorServiceConfig->fireActorCompletedEvent();
-                $this->notify($record);
-            }
 
             NfnClassificationsUpdateJob::dispatch($record->id);
 
@@ -124,6 +120,22 @@ class NfnPanoptesClassifications
         $message = trans('emails.nfn_transcriptions_complete_message', ['expedition' => $record->title]);
 
         $record->project->group->owner->notify(new NfnTranscriptionsComplete($message));
+    }
+
+    /**
+     * Check if finished_at date and set percentage.
+     *
+     * @param $record
+     * @param $workflow
+     */
+    protected function checkFinishedAt(&$record, $workflow)
+    {
+        if ($workflow['finished_at'] !== null)
+        {
+            $record->percentage = 100;
+            $this->actorServiceConfig->fireActorCompletedEvent();
+            $this->notify($record);
+        }
     }
 
     /**
