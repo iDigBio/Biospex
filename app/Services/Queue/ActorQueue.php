@@ -43,7 +43,8 @@ class ActorQueue extends QueueAbstract
         catch (\Exception $e)
         {
             event('actor.pivot.error', $actor);
-            $this->notify($actor, $e->getMessage());
+            $message = $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage();
+            $this->notify($actor, $message);
         }
 
         $this->delete();

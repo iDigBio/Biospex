@@ -10,7 +10,6 @@ use App\Services\File\FileService;
 use App\Services\Csv\Csv;
 use App\Models\Actor;
 use App\Models\ExportQueue;
-use Illuminate\Support\Collection;
 
 putenv('MAGICK_THREAD_LIMIT=1');
 
@@ -148,15 +147,20 @@ class NfnPanoptesExport
      */
     public function convertImages()
     {
-        $existingFiles = $this->getExistingConvertedFiles();
         $files = collect($this->fileService->filesystem->files($this->actorImageService->workingDirectory));
         $this->actorImageService->setSubjects($files);
 
-        $files->reject(function ($file) use ($existingFiles) {
-            return $this->checkConvertedFile($file, $existingFiles);
+        $files->reject(function ($file) {
+            return $this->checkConvertedFile($file);
         })->each(function ($file) {
             $fileName = $this->fileService->filesystem->name($file);
-            return $this->actorImageService->writeImagickFile((string) $file, $fileName);
+
+            $this->actorImageService->imagickService->createImagickObject();
+            $this->actorImageService->imagickService->setOption('jpeg:size', '1540x1540');
+            $this->actorImageService->imagickService->readImageFromPath($file);
+            $this->actorImageService->imagickService->setJpegExtent();
+
+            return $this->actorImageService->writeImagickFile($this->actorImageService->tmpDirectory, $fileName);
         });
 
         if (empty($this->fileService->filesystem->files($this->actorImageService->tmpDirectory)))
@@ -203,11 +207,10 @@ class NfnPanoptesExport
             throw new \Exception('Missing export subjects for Expedition ' . $this->actorImageService->expedition->id);
         }
 
-        $existingFiles = $this->getExistingConvertedFiles();
         $this->actorImageService->setSubjects($subjects);
 
-        $csvExport = $subjects->filter(function ($subject) use ($existingFiles) {
-            return $existingFiles->contains($subject->_id);
+        $csvExport = $subjects->filter(function ($subject) {
+            return $this->checkConvertedFile($subject->_id, true);
         })->map(function ($subject) {
             $this->actorImageService->fireActorProcessedEvent();
 
@@ -314,34 +317,19 @@ class NfnPanoptesExport
     }
 
     /**
-     * Retrieve any existing files in phar archive.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    private function getExistingConvertedFiles()
-    {
-        $files = collect($this->fileService->filesystem->files($this->actorImageService->tmpDirectory));
-        $existingFiles = $files->map(function ($file) {
-            return $this->fileService->filesystem->name($file);
-        });
-
-        return $existingFiles;
-    }
-
-    /**
      * Check if converted file exists and is under file size.
      *
      * @param $file
-     * @param Collection $existingFiles
+     * @param bool $subject used if passing a subject id as file
      * @return bool
      */
-    private function checkConvertedFile($file, $existingFiles)
+    private function checkConvertedFile($file, $subject = false)
     {
-        $tmpFile = $this->actorImageService->tmpDirectory . '/' . $this->fileService->filesystem->name($file) . '.jpg';
-        $exists = $existingFiles->contains($this->fileService->filesystem->name($file));
-        $fileSize = $exists && filesize($tmpFile) < 600000;
+        $fileName = ! $subject ? $this->fileService->filesystem->name($file) : $file;
+        $tmpFile = $this->actorImageService->tmpDirectory . '/' . $fileName . '.jpg';
+        $pass = $this->actorImageService->checkFileExists($tmpFile) && filesize($tmpFile) < 600000;
 
-        if ($exists && $fileSize)
+        if ($pass)
         {
             $this->actorImageService->fireActorProcessedEvent();
 
