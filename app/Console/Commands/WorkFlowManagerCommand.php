@@ -78,7 +78,7 @@ class WorkFlowManagerCommand extends Command
     {
         $expedition->actors->each(function ($actor) use ($expedition)
         {
-            $actor->pivot->total = $expedition->stat->subject_count;
+            $actor->pivot->total = $expedition->stat->local_subject_count;
             event('actor.pivot.queued', [$actor]);
             Queue::push('App\Services\Queue\ActorQueue', serialize($actor), $this->tube);
         });

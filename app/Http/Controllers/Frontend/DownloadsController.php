@@ -152,7 +152,7 @@ class DownloadsController extends Controller
         try
         {
             $expedition->nfnActor->pivot->state = 0;
-            $expedition->nfnActor->pivot->total = $expedition->stat->subject_count;
+            $expedition->nfnActor->pivot->total = $expedition->stat->local_subject_count;
             $expedition->nfnActor->pivot->processed = 0;
             $expedition->nfnActor->pivot->queued = 1;
             event('actor.pivot.regenerate', [$expedition->nfnActor]);
