@@ -37,7 +37,7 @@ class UpdateQueries extends Command
         $expeditions = Expedition::with('stat')->get();
         $expeditions->each(function($expedition){
             if ($expedition->stat !== null) {
-                $expedition->stat->local_subject_count = $expedition->subjectCount;
+                $expedition->stat->local_subject_count = $expedition->subjectsCount;
                 $expedition->stat->save();
             }
         });
