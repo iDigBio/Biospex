@@ -38,7 +38,7 @@ class ExpeditionStatUpdate extends Command
     public function handle(Expedition $expeditionContract)
     {
         $this->expeditionIds = null ===  $this->argument('ids') ?
-            null :
+            [] :
             explode(',', $this->argument('ids'));
 
         $expeditions = $expeditionContract->getExpeditionStats($this->expeditionIds);
