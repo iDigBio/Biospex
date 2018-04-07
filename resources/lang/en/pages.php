@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'default'                       => 'Default Text',
     'account_created'               => 'Account Created',
     'account_profile'               => 'Account Profile',
@@ -167,5 +167,7 @@ return array(
     'download_type'                 => 'Download Type',
     'project_stats'                 => 'Statistics',
     'file_does_not_exist'           => 'File does not exist',
-    'api_menu'                      => 'API'
-);
+    'api_menu'                      => 'API',
+    'biospex_subjects_header'       => 'Subjects uploaded to Biospex',
+    'nfn_subjects_header'           => 'Subjects uploaded to NotesFromNature',
+];

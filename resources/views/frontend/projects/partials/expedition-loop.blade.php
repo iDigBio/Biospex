@@ -3,6 +3,7 @@
     <td>{{ $expedition->description }}</td>
     <td>{{ DateHelper::formatDate($expedition->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
     <td>{{ $expedition->subjectsCount }}</td>
+    <td>{{ $expedition->stat->local_subject_count }}</td>
     @if( ! $expedition->actors->isEmpty())
         <td>{{ $expedition->stat->transcriptions_total }}</td>
         <td>{{ $expedition->stat->transcriptions_completed }}</td>

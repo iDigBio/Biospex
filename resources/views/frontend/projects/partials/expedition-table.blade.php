@@ -4,7 +4,8 @@
         <th>Title</th>
         <th>Description</th>
         <th>Created</th>
-        <th>Subjects</th>
+        <th><span data-toggle="tooltip" title="Subjects uploaded to Biospex">Biospex Subjects</th>
+        <th><span data-toggle="tooltip" title="Subjects uploaded to NotesFromNature">NfN Subjects</span></th>
         <th>Transcriptions Goal</th>
         <th>Transcriptions Completed</th>
         <th>Percent Complete</th>
