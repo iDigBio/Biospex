@@ -15,14 +15,12 @@ class GroupPolicy
      */
     public function before($user)
     {
-        /*
         $key = md5(__METHOD__ . $user->uuid);
         $access = Cache::remember($key, 60, function() use ($user) {
             return $user->isAdmin();
         });
         
         return $access ? true : null;
-        */
     }
 
     /**
