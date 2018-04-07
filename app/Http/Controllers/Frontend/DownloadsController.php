@@ -81,6 +81,11 @@ class DownloadsController extends Controller
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $expedition = $this->expeditionContract->expeditionDownloadsByActor($projectId, $expeditionId);
 
+        if ( ! $this->checkPermissions('read', $expedition->project))
+        {
+            return redirect()->route('web.projects.index');
+        }
+
         $paths = $this->paths;
 
         return view('frontend.downloads.index', compact('expedition', 'user', 'paths'));
@@ -97,12 +102,17 @@ class DownloadsController extends Controller
      */
     public function show($projectId, $expeditionId, $downloadId)
     {
-        $download = $this->downloadContract->find($downloadId);
+        $download = $this->downloadContract->findWith($downloadId, ['expedition.project.group']);
 
         if ( ! $download)
         {
             Flash::error(trans('errors.missing_download_file'));
             return redirect()->route('web.downloads.index', [$projectId, $expeditionId]);
+        }
+
+        if ($download->type !== 'export' && ! $this->checkPermissions('isOwner', $download->expedition->project->group))
+        {
+            return redirect()->route('web.projects.index');
         }
 
         $download->count = $download->count + 1;
