@@ -46,13 +46,12 @@ class Thumbnail extends ImagickService
         $this->thumbDirectory = config('config.images.thumbOutputDir') . '/' . $this->tnWidth . '_' . $this->tnHeight;
     }
 
-
-
     /**
      * Return thumbnail or create if not exists.
      *
      * @param $url
      * @return string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function getThumbnail($url)
     {
@@ -87,7 +86,8 @@ class Thumbnail extends ImagickService
         $this->readImagickFromBlob($image);
         $this->setDestinationImageWidth($this->tnWidth);
         $this->setDestinationImageHeight($this->tnHeight);
-        $this->generateAndSaveImage(md5($url), $this->thumbDirectory);
+        $this->resizeImage();
+        $this->writeImagickImageToFile($this->thumbDirectory . '/' . md5($url) . '.jpg');
         $this->clearImagickObject();
     }
 
@@ -110,6 +110,7 @@ class Thumbnail extends ImagickService
      *
      * @param $thumbFile
      * @return string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function getFile($thumbFile)
     {
