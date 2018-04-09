@@ -22,7 +22,7 @@ class ContactForm extends Mailable implements ShouldQueue
     {
         $this->contact = $contact;
 
-        $this->onQueue(config('beanstalkd.default'));
+        $this->onQueue(config('config.beanstalkd.default'));
     }
 
     /**
