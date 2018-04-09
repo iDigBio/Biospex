@@ -37,7 +37,7 @@ class OcrRequest extends HttpRequest
                 ],
                 [
                     'name'     => 'file',
-                    'contents' => $record->data,
+                    'contents' => json_encode($record->data),
                     'filename' => $record->uuid.'.json',
                 ],
             ],

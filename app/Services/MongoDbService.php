@@ -157,5 +157,5 @@ class MongoDbService
     {
         $this->clientCollection->updateMany($criteria, $attributes);
     }
-    
+
 }

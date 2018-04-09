@@ -19,7 +19,7 @@ class EventPolicy
         $access = Cache::remember($key, 60, function() use ($user) {
             return $user->isAdmin();
         });
-        
+
         return $access ? true : null;
     }
 

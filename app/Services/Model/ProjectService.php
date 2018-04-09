@@ -447,7 +447,9 @@ class ProjectService
      */
     public function restoreProject($project)
     {
-        return $this->projectContract->restore($project) ? Flash::success(trans('messages.record_restored')) : Flash::error(trans('messages.record_restored_error'));
+        return $this->projectContract->restore($project) ?
+            Flash::success(trans('messages.record_restored')) :
+            Flash::error(trans('messages.record_restored_error'));
     }
 }
 

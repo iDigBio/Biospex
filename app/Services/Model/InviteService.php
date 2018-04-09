@@ -77,12 +77,6 @@ class InviteService
         {
             Flash::error(trans('messages.send_invite_error', ['group' => $group->title]));
 
-            \Log::error($e->getLine());
-            \Log::error($e->getFile());
-            \Log::error($e->getMessage());
-            \Log::error($e->getTrace());
-
-
             return false;
         }
     }

@@ -234,6 +234,17 @@ class ActorServiceConfig
     }
 
     /**
+     * Check file exists.
+     *
+     * @param $file
+     * @return bool
+     */
+    public function isFile($file)
+    {
+        return File::isFile($file);
+    }
+
+    /**
      * Delete tmp directory
      */
     public function deleteScratchTmpDir()
@@ -252,15 +263,6 @@ class ActorServiceConfig
 
         $this->actor->pivot->processed++;
         event('actor.pivot.processed', $this->actor);
-
-        /* TODO figure out how to use subject count so update is not happening each time image is processed
-        /* TODO When compressing files,
-        $count = null !== $this->subjects ? $this->subjects->count() : $this->actor->pivot->total;
-        if ($this->actor->pivot->processed % 25 === 0 || ($count - $this->actor->pivot->processed === 0) )
-        {
-
-        }
-        */
     }
 
     /**

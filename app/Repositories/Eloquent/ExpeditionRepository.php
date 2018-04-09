@@ -113,7 +113,7 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function getExpeditionsHavingNfnWorkflows($expeditionId)
     {
-        $withRelations = ['project.amChart', 'nfnWorkflow', 'nfnActor', 'stat'];
+        $withRelations = ['nfnWorkflow', 'nfnActor', 'stat'];
 
         $results = $this->model->has('nfnWorkflow')->with($withRelations)->find($expeditionId);
 

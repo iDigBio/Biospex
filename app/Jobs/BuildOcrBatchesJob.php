@@ -92,7 +92,7 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
                 $ocrQueueRepo->create([
                     'project_id' => $this->projectId,
                     'ocr_csv_id' => $ocrCsv->id,
-                    'data'       => json_encode(['subjects' => $chunk]),
+                    'data'       => ['subjects' => $chunk],
                     'total'      => $count,
                     'processed'  => 0,
                     'batch'      => $batch

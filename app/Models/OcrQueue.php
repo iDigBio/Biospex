@@ -4,11 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\UuidTrait;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class OcrQueue extends Model
 {
-    use UuidTrait, LadaCacheTrait;
+    use UuidTrait;
 
     /**
      * @inheritDoc
@@ -46,5 +45,26 @@ class OcrQueue extends Model
     public function ocrCsv()
     {
         return $this->belongsTo(OcrCsv::class);
+    }
+
+    /**
+     * Mutator for subjects column.
+     *
+     * @param $value
+     */
+    public function setDataAttribute($value)
+    {
+        $this->attributes['data'] = serialize($value);
+    }
+
+    /**
+     * Accessor for subjects column.
+     *
+     * @param $value
+     * @return mixed
+     */
+    public function getDataAttribute($value)
+    {
+        return empty($value) ? '' : unserialize($value);
     }
 }

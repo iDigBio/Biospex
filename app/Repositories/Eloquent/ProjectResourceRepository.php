@@ -17,4 +17,3 @@ class ProjectResourceRepository extends EloquentRepository implements ProjectRes
         return Model::class;
     }
 }
-

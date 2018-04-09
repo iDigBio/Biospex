@@ -50,7 +50,7 @@ class EventUser extends Model
     public function transcriptionCount()
     {
         return $this->hasOne(EventTranscription::class, 'user_id')
-        ->selectRaw('user_id, count(*) as aggregate')
+            ->selectRaw('user_id, count(*) as aggregate')
             ->groupBy('user_id');
     }
 

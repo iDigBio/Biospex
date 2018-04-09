@@ -37,7 +37,6 @@ class ExportQueueObserver
         $record = $this->exportQueue->getFirstExportWithoutError();
         if ($record !== null && ! $record->queued)
         {
-            \Log::alerts('created and updated');
             $record->queued = 1;
             $record->save();
         }
@@ -53,7 +52,6 @@ class ExportQueueObserver
     {
         if ($model->queued && ! $model->error)
         {
-            \Log::alerts('dispatched');
             ExportQueueJob::dispatch($model);
 
             return;

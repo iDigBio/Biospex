@@ -7,6 +7,8 @@ use App\Repositories\Interfaces\Expedition;
 use App\Notifications\NfnTranscriptionsComplete;
 use App\Notifications\NfnTranscriptionsError;
 use App\Services\Actor\ActorServiceConfig;
+use App\Services\Api\NfnApi;
+use App\Facades\GeneralHelper;
 
 class NfnPanoptesClassifications
 {
@@ -22,23 +24,33 @@ class NfnPanoptesClassifications
     public $actorServiceConfig;
 
     /**
+     * @var \App\Services\Api\NfnApi
+     */
+    private $api;
+
+    /**
      * NfnPanoptesClassifications constructor.
      *
      * @param Expedition $expeditionContract
      * @param ActorServiceConfig $actorServiceConfig
+     * @param \App\Services\Api\NfnApi $api
      */
     public function __construct(
         Expedition $expeditionContract,
-        ActorServiceConfig $actorServiceConfig
+        ActorServiceConfig $actorServiceConfig,
+        NfnApi $api
     )
     {
         $this->expeditionContract = $expeditionContract;
         $this->actorServiceConfig = $actorServiceConfig;
+        $this->api = $api;
     }
 
     /**
-     * Process current state
+     * Process current state.
+     *
      * @param $actor
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function processActor($actor)
     {
@@ -49,18 +61,33 @@ class NfnPanoptesClassifications
 
         if ($this->workflowIdDoesNotExist($record))
         {
+            $this->actorServiceConfig->fireActorUnQueuedEvent();
+
             return;
         }
 
         try
         {
-            if ((int) $record->stat->percent_completed === 100)
-            {
-                $this->actorServiceConfig->fireActorCompletedEvent();
-                $this->notify($record);
+            $this->api->setProvider();
+            $this->api->checkAccessToken('nfnToken');
+            $uri = $this->api->getWorkflowUri($record->nfnWorkflow->workflow);
+            $request = $this->api->buildAuthorizedRequest('GET', $uri);
+            $result = $this->api->sendAuthorizedRequest($request);
 
-                return;
-            }
+            $workflow = $result['workflows'][0];
+            $count = $workflow['subjects_count'];
+            $transcriptionCompleted = $workflow['classifications_count'];
+            $transcriptionTotal = GeneralHelper::transcriptionsTotal($workflow['subjects_count']);
+            $percentCompleted = GeneralHelper::transcriptionsPercentCompleted($transcriptionTotal, $transcriptionCompleted);
+
+            $record->stat->subject_count = $count;
+            $record->stat->transcriptions_total = $transcriptionTotal;
+            $record->stat->transcriptions_completed = $transcriptionCompleted;
+            $record->stat->percent_completed = $percentCompleted;
+
+            $this->checkFinishedAt($record, $workflow);
+
+            $record->stat->save();
 
             NfnClassificationsUpdateJob::dispatch($record->id);
 
@@ -96,6 +123,22 @@ class NfnPanoptesClassifications
     }
 
     /**
+     * Check if finished_at date and set percentage.
+     *
+     * @param $record
+     * @param $workflow
+     */
+    protected function checkFinishedAt(&$record, $workflow)
+    {
+        if ($workflow['finished_at'] !== null)
+        {
+            $record->percentage = 100;
+            $this->actorServiceConfig->fireActorCompletedEvent();
+            $this->notify($record);
+        }
+    }
+
+    /**
      * @param $record
      * @return bool
      */
@@ -105,7 +148,7 @@ class NfnPanoptesClassifications
         {
             /*
             $this->actorServiceConfig->fireActorUnQueuedEvent();
-            $message = trans('messages.missing_nfnworkflow', ['title'   => $record->title]);
+            $message = trans('errors.missing_nfnworkflow', ['title'   => $record->title]);
             $record->project->group->owner->notify(new NfnTranscriptionsComplete($message));
             */
             return true;

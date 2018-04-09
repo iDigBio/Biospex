@@ -115,7 +115,7 @@ class ExpeditionsController extends Controller
             return redirect()->route('webauth.projects.index');
         }
 
-        $btnDisable = ($expedition->project->ocrQueue->isEmpty() || $expedition->stat->subject_count === 0);
+        $btnDisable = ($expedition->project->ocrQueue->isEmpty() || $expedition->stat->local_subject_count === 0);
 
         return view('frontend.expeditions.show', compact('expedition', 'btnDisable'));
     }

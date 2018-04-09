@@ -95,13 +95,13 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function getUserEvents($id)
     {
-       $results = $this->model->withCount(['transcriptions' => function($query) {
-           $query->groupBy('event_id');
-       }])->where('owner_id', $id)->get();
+        $results = $this->model->withCount(['transcriptions' => function($query) {
+            $query->groupBy('event_id');
+        }])->where('owner_id', $id)->get();
 
-       $this->resetModel();
+        $this->resetModel();
 
-       return $results;
+        return $results;
     }
 
     /**
