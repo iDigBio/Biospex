@@ -1,7 +1,7 @@
 @component('mail::message')
-# @lang('emails.welcome')
+# @lang('messages.welcome')
 
-@lang('emails.group_invite_message', ['title' => $title])
+@lang('messages.group_invite_message', ['title' => $title])
 
 @component('mail::button', ['url' => $url])
 Join Now

@@ -12,7 +12,7 @@
         <div class="col-xs-12 col-md-8 col-md-offset-2">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{{ trans('pages.contact_biospex') }}</h3>
+                    <h3 class="panel-title">{{ trans('pages.contact').' '.trans('pages.biospex_team') }}</h3>
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
@@ -61,7 +61,7 @@
                     <div class="col-xs-12">
                         <div class="form-group">
                             <div class="col-xs-6 col-sm-6 col-md-6">
-                                {!! Form::submit(trans('buttons.send'), array('class' => 'btn btn-primary')) !!}
+                                {!! Form::submit(trans('pages.send'), array('class' => 'btn btn-primary')) !!}
                             </div>
                         </div>
                     </div>

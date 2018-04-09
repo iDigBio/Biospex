@@ -3,7 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
     @parent
-    @lang('projects.projects')
+    @lang('pages.projects')
 @stop
 
 {{-- Content --}}

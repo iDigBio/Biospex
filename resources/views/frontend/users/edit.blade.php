@@ -26,13 +26,13 @@
                 </div>
                 </div>
                 {!! Form::open([
-                'route' => ['web.users.update', $user->id],
+                'route' => ['webauth.users.update', $user->id],
                 'method' => 'put',
                 'class' => 'form-horizontal',
                 'enctype' => 'multipart/form-data',
                 'role' => 'form'
                 ]) !!}
-                <div class="form-group clearfix required {{ ($errors->has('first_name')) ? 'has-error' : '' }}" for="first_name">
+                <div class="form-group clearfix required {{ ($errors->has('first_name')) ? 'has-error' : '' }}">
                     {!! Form::label('edit_first_name', trans('pages.first_name'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-6">
                       {!! Form::text('first_name', $user->profile->first_name, array('class' => 'form-control', 'placeholder' => trans('pages.first_name'))) !!}
@@ -40,7 +40,7 @@
                     {{ ($errors->has('first_name') ? $errors->first('first_name') : '') }}
                 </div>
 
-                <div class="form-group required {{ ($errors->has('last_name')) ? 'has-error' : '' }}" for="last_name">
+                <div class="form-group required {{ ($errors->has('last_name')) ? 'has-error' : '' }}">
                     {!! Form::label('edit_last_name', trans('pages.last_name'), array('class' => 'col-sm-2 control-label')) !!}
                     <div class="col-sm-6">
                       {!! Form::text('last_name', $user->profile->last_name, array('class' => 'form-control', 'placeholder' => trans('pages.last_name'), 'id' => 'edit_last_name')) !!}
@@ -48,7 +48,7 @@
                     {{ ($errors->has('last_name') ? $errors->first('last_name') : '') }}
                 </div>
 
-                <div class="form-group required {{ ($errors->has('email')) ? 'has-error' : '' }}" for="email">
+                <div class="form-group required {{ ($errors->has('email')) ? 'has-error' : '' }}">
                     {!! Form::label('edit_email', trans('pages.email'), array('class' => 'col-sm-2 control-label')) !!}
                     <div class="col-sm-6">
                         {!! Form::text('email', $user->email, array('class' => 'form-control', 'placeholder' => trans('pages.email'), 'id' => 'edit_email')) !!}
@@ -56,8 +56,8 @@
                     {{ ($errors->has('email') ? $errors->first('email') : '') }}
                 </div>
 
-                <div class="form-group {{ ($errors->has('timezone')) ? 'has-error' : '' }}" for="timezone">
-                    {!! Form::label('timezone', trans('forms.timezone'), array('class' => 'col-sm-2 control-label')) !!}
+                <div class="form-group {{ ($errors->has('timezone')) ? 'has-error' : '' }}">
+                    {!! Form::label('timezone', trans('pages.timezone'), array('class' => 'col-sm-2 control-label')) !!}
                     <div class="col-sm-6">
                         {!! Form::select('timezone', $timezones, $user->profile->timezone, array('class' => 'form-control')) !!}
                     </div>
@@ -65,7 +65,7 @@
                 </div>
 
                 <div class="form-group {{ ($errors->has('avatar')) ? 'has-error' : '' }}">
-                    {!! Form::label('avatar', trans('forms.avatar'), ['class' => 'col-sm-2 control-label']) !!}
+                    {!! Form::label('avatar', trans('pages.avatar'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-6">
                         {!! Form::file('avatar') !!}
                     </div>
@@ -77,8 +77,8 @@
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        {!! Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary')) !!}
-                        {!! Form::button(trans('buttons.cancel'), ['class' => 'btn btn-large btn-default', 'onClick' => "location.href='$cancel'"]) !!}
+                        {!! Form::submit(trans('pages.update'), array('class' => 'btn btn-primary')) !!}
+                        {!! Form::button(trans('pages.cancel'), ['class' => 'btn btn-large btn-default', 'onClick' => "location.href='$cancel'"]) !!}
                     </div>
                 </div>
                 {!! Form::hidden('id', $user->id) !!}
@@ -88,7 +88,7 @@
             <div class="panel-body">
                 <h4>@lang('pages.password_change')</h4>
                 {!! Form::open([
-                    'route' => ['web.users.password', $user->id],
+                    'route' => ['webauth.users.password', $user->id],
                     'method' => 'put',
                     'class' => 'form-inline',
                     'role' => 'form'
@@ -108,7 +108,7 @@
                     {!! Form::password('newPassword_confirmation', array('class' => 'form-control', 'placeholder' => trans('pages.password_new_confirm'))) !!}
                 </div>
                 {!! Form::hidden('id', $user->id) !!}
-                {!! Form::submit(trans('buttons.update'), array('class' => 'btn btn-primary')) !!}
+                {!! Form::submit(trans('pages.update'), array('class' => 'btn btn-primary')) !!}
 
                 {!! ($errors->has('oldPassword') ? '<br />' . $errors->first('oldPassword') : '') !!}
                 {!! ($errors->has('newPassword') ?  '<br />' . $errors->first('newPassword') : '') !!}

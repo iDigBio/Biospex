@@ -1,6 +1,6 @@
 <?php
 
-// Home and Welcome
+// Home
 $router->get('/')->uses('HomeController@index')->name('home');
 $router->get('/project-list/{count?}')->uses('HomeController@projects')->name('home.project-list');
 
@@ -14,4 +14,5 @@ $router->get('ourvision')->uses('HomeController@vision')->name('home.get.vision'
 // Begin Project Page
 $router->get('project/{slug}')->uses('HomeController@project')->name('home.get.project');
 $router->get('project/{project}/chart')->uses('HomeController@loadAmChart')->name('home.get.chart');
+$router->get('project/{project}/events')->uses('HomeController@events')->name('home.get.events');
 
