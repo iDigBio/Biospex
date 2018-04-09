@@ -12,35 +12,39 @@
         <h3>Expeditions</h3>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-sort dataTable th-center">
-            <thead>
-            <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Created</th>
-                <th>@lang('pages.group')</th>
-                <th>Project</th>
-                <th>Subjects</th>
-                <th>Transcriptions Goal</th>
-                <th>Transcriptions Completed</th>
-                <th>Percent Complete</th>
-                <th class="fit sorter-false">Options</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach ($expeditions as $expedition)
+    <div class="row">
+        <div class="table-responsive">
+            <table class="table table-sort dataTable th-center">
+                <thead>
                 <tr>
-                    <td>{{ link_to_route('webauth.expeditions.show', $expedition->title, ['projects' => $expedition->project_id, 'expeditions' => $expedition->id]) }}</td>
-                    <td>{{ $expedition->description }}</td>
-                    <td>{{ DateHelper::convertTimeZone($expedition->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
-                    <td>{{ link_to_route('webauth.groups.show', $expedition->project->group->title, ['groups' => $expedition->project->group->id]) }}</td>
-                    <td>{{ link_to_route('webauth.projects.show', $expedition->project->title, ['projects' => $expedition->project->id]) }}</td>
-                    <td>{{ $expedition->stat->subject_count }}</td>
-                    @if(null !== $expedition->actors)
-                        <td>{{ $expedition->stat->transcriptions_total }}</td>
-                        <td>{{ $expedition->stat->transcriptions_completed }}</td>
-                        <td class="nowrap">
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Created</th>
+                    <th>Group</th>
+                    <th>Project</th>
+                    <th><span data-toggle="tooltip"
+                              title="@lang('pages.biospex_subjects_header')" data-placement="bottom">Biospex Subjects</span></th>
+                    <th><span data-toggle="tooltip" title="@lang('pages.nfn_subjects_header')" data-placement="bottom">NfN Subjects</span></th>
+                    <th>Transcriptions Goal</th>
+                    <th>Transcriptions Completed</th>
+                    <th>Percent Complete</th>
+                    <th class="fit sorter-false">Options</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach ($expeditions as $expedition)
+                    <tr>
+                        <td>{{ link_to_route('web.expeditions.show', $expedition->title, ['projects' => $expedition->project_id, 'expeditions' => $expedition->id]) }}</td>
+                        <td>{{ $expedition->description }}</td>
+                        <td>{{ DateHelper::convertTimeZone($expedition->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
+                        <td>{{ link_to_route('web.groups.show', $expedition->project->group->title, ['groups' => $expedition->project->group->id]) }}</td>
+                        <td>{{ link_to_route('web.projects.show', $expedition->project->title, ['projects' => $expedition->project->id]) }}</td>
+                        <td>{{ $expedition->stat->local_subject_count }}</td>
+                        <td>{{ $expedition->stat->subject_count }}</td>
+                        @if(null !== $expedition->actors)
+                            <td>{{ $expedition->stat->transcriptions_total }}</td>
+                            <td>{{ $expedition->stat->transcriptions_completed }}</td>
+                            <td class="nowrap">
                             <span class="complete">
                                 <span class="complete{{ GeneralHelper::roundUpToAnyFive($expedition->stat->percent_completed) }}">&nbsp;</span>
                             </span> {{ $expedition->stat->percent_completed }}%
@@ -80,5 +84,6 @@
             @endforeach
             </tbody>
         </table>
+    </div>
     </div>
 @stop
