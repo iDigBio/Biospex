@@ -52,7 +52,7 @@ class RegisterController extends Controller
     public function showRegistrationForm(RegisterService $registerService)
     {
         if ( ! config('config.registration')) {
-            return redirect()->route('home')->with('error', trans('users.inactive_reg'));
+            return redirect()->route('home')->with('error', trans('messages.inactive_reg'));
         }
 
         $formVars = $registerService->registrationFormInvite();

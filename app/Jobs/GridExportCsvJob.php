@@ -104,11 +104,11 @@ class GridExportCsvJob implements ShouldQueue
 
             $csv->insertAll($records->toArray());
 
-            $this->user->notify(new GridCsvExport(trans('emails.grid_export_csv_complete'), $file));
+            $this->user->notify(new GridCsvExport(trans('messages.grid_export_csv_complete'), $file));
         }
         catch (\Exception $e)
         {
-            $this->user->notify(new GridCsvExport(trans('emails.grid_export_csv_error', ['error' => $e->getMessage()])));
+            $this->user->notify(new GridCsvExport(trans('messages.grid_export_csv_error', ['error' => $e->getMessage()])));
         }
     }
 }

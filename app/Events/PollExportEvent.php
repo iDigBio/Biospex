@@ -26,7 +26,7 @@ class PollExportEvent extends Event implements ShouldBroadcast
     public $broadcastQueue;
 
     /**
-     * PollOcrEvent constructor.
+     * PollExportEvent constructor.
      * @param $data
      */
     public function __construct($data)

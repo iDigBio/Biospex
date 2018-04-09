@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Services\Model\WeDigBioDashboardService;
+use App\Services\Model\PusherTranscriptionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -10,7 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
 
-class NfnClassificationWeDigBioJob extends Job implements ShouldQueue
+class PusherTranscriptionsJob extends Job implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -40,10 +40,10 @@ class NfnClassificationWeDigBioJob extends Job implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param WeDigBioDashboardService $service
+     * @param PusherTranscriptionService $service
      * @return void
      */
-    public function handle(WeDigBioDashboardService $service)
+    public function handle(PusherTranscriptionService $service)
     {
         if ( ! isset($this->data->workflow_id))
         {

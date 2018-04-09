@@ -24,8 +24,7 @@ class Handler extends ExceptionHandler
         \Illuminate\Database\Eloquent\ModelNotFoundException::class,
         \Illuminate\Session\TokenMismatchException::class,
         \Illuminate\Validation\ValidationException::class,
-        \Predis\Connection\ConnectionException::class,
-        \Symfony\Component\Console\Exception\CommandNotFoundException::class
+        \Predis\Connection\ConnectionException::class
     ];
 
     /**

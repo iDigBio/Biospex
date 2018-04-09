@@ -21,14 +21,12 @@ class MongoDbService
 
     /**
      * Collection being accessed.
-     *
      * @var Collection
      */
     public $clientCollection;
 
     /**
      * MongoDbService constructor.
-     *
      * @param DatabaseManager $databaseManager
      */
     public function __construct(DatabaseManager $databaseManager)
@@ -42,6 +40,21 @@ class MongoDbService
     public function setClient()
     {
         $this->client = $this->databaseManager->connection('mongodb')->getMongoClient();
+    }
+
+    /**
+     * Get client.
+     *
+     * @return \MongoClient
+     */
+    public function getClient()
+    {
+        if (empty($this->client))
+        {
+            $this->setClient();
+        }
+
+        return $this->client;
     }
 
     /**
@@ -144,4 +157,5 @@ class MongoDbService
     {
         $this->clientCollection->updateMany($criteria, $attributes);
     }
+
 }

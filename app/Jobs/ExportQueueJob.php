@@ -61,7 +61,7 @@ class ExportQueueJob extends Job implements ShouldQueue
             $attributes = ['queued' => 0, 'error' => 1];
             $repository->update($attributes, $queue->id);
 
-            $message = trans('errors.nfn_export_error', [
+            $message = trans('messages.nfn_export_error', [
                 'title'   => $queue->expedition->title,
                 'id'      => $queue->expedition->id,
                 'message' => $e->getMessage()

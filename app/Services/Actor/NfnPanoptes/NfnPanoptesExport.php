@@ -424,7 +424,7 @@ class NfnPanoptesExport
     {
         $message = [
             $this->actorImageService->expedition->title,
-            trans('emails.expedition_export_complete_message', ['expedition' => $this->actorImageService->expedition->title])
+            trans('messages.expedition_export_complete_message', ['expedition' => $this->actorImageService->expedition->title])
         ];
 
         $csv = GeneralHelper::createCsv($this->actorImageService->queue->missing);

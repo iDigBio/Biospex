@@ -60,7 +60,7 @@ class OcrPollCommand extends Command
 
         if ($records->isEmpty())
         {
-            $data = trans('pages.processing_empty');
+            $data = trans('html.processing_empty');
             PollOcrEvent::dispatch($data);
 
             return;
@@ -77,11 +77,11 @@ class OcrPollCommand extends Command
             $total = array_sum(array_column($group, 'total'));
             $processed = array_sum(array_column($group, 'processed'));
 
-            $batches = $count === 0 ? '' : trans_choice('pages.ocr_queue', $count, ['batches_queued' => $count]);
+            $batches = $count === 0 ? '' : trans_choice('html.ocr_queue', $count, ['batches_queued' => $count]);
 
-            $ocr = trans_choice('pages.ocr_records', $processed, ['processed' => $processed, 'total' => $total]);
+            $ocr = trans_choice('html.ocr_records', $processed, ['processed' => $processed, 'total' => $total]);
 
-            $notice = trans('pages.ocr_processing', ['title' => $project->title, 'ocr' => $ocr, 'batches' => $batches]);
+            $notice = trans('html.ocr_processing', ['title' => $project->title, 'ocr' => $ocr, 'batches' => $batches]);
 
             $data[] = [
                 'groupId' => $project->group->id,

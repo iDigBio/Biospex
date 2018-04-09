@@ -6,7 +6,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Session;
 use JavaScript;
 
-class EchoVarsComposer
+class PollComposer
 {
 
     /**

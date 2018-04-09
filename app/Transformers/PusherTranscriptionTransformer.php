@@ -2,11 +2,11 @@
 
 namespace App\Transformers;
 
-use App\Models\WeDigBioDashboard as Model;
+use App\Models\PusherTranscription as Model;
 use Illuminate\Support\Facades\Config;
 use League\Fractal\TransformerAbstract;
 
-class WeDigBioDashboardTransformer extends TransformerAbstract
+class PusherTranscriptionTransformer extends TransformerAbstract
 {
 
     public function transform(Model $model)

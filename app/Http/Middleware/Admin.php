@@ -16,7 +16,7 @@ class Admin
     public function handle($request, Closure $next)
     {
         if ( ! $request->user()->isAdmin()) {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         return $next($request);

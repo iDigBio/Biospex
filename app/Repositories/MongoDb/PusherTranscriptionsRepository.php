@@ -3,11 +3,11 @@
 namespace App\Repositories\MongoDb;
 
 use App\Facades\DateHelper;
-use App\Models\WeDigBioDashboard as Model;
-use App\Repositories\Interfaces\WeDigBioDashboard;
+use App\Models\PusherTranscription as Model;
+use App\Repositories\Interfaces\PusherTranscription;
 use Illuminate\Http\Request;
 
-class WeDigBioDashboardRepository extends MongoDbRepository implements WeDigBioDashboard
+class PusherTranscriptionsRepository extends MongoDbRepository implements PusherTranscription
 {
 
     /**

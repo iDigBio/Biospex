@@ -4,14 +4,14 @@ namespace App\Jobs;
 
 use App\Facades\DateHelper;
 use App\Models\Traits\UuidTrait;
-use App\Services\Model\WeDigBioDashboardService;
+use App\Services\Model\PusherTranscriptionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class WeDigBioDashboardJob extends Job implements ShouldQueue
+class NfnClassificationPusherTranscriptionsJob extends Job implements ShouldQueue
 {
 
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, UuidTrait;
@@ -29,7 +29,7 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
     private $expeditionIds;
 
     /**
-     * WeDigBioDashboardJob constructor.
+     * NfnClassificationPusherTranscriptionsJob constructor.
      *
      * @param $expeditionIds array
      */
@@ -42,10 +42,10 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
     /**
      * Handle job.
      *
-     * @param WeDigBioDashboardService $dashboardService
+     * @param PusherTranscriptionService $dashboardService
      */
     public function handle(
-        WeDigBioDashboardService $dashboardService
+        PusherTranscriptionService $dashboardService
     )
     {
 
@@ -65,8 +65,8 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
 
                 $transcriptions = $dashboardService->getTranscriptions($expedition->id, $timestamp);
 
-                $transcriptions->reject(function($transcription) use ($dashboardService) {
-                    return $dashboardService->checkIfExists($transcription->_id);
+                $transcriptions->filter(function($transcription) use ($dashboardService) {
+                    return $dashboardService->checkClassification($transcription);
                 })->each(function ($transcription) use ($dashboardService, $expedition) {
                     $dashboardService->processTranscripts($transcription, $expedition);
                 });

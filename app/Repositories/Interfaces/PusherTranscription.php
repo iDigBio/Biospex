@@ -5,7 +5,7 @@ namespace App\Repositories\Interfaces;
 use App\Repositories\RepositoryInterface;
 use Illuminate\Http\Request;
 
-interface WeDigBioDashboard extends RepositoryInterface
+interface PusherTranscription extends RepositoryInterface
 {
 
     /**

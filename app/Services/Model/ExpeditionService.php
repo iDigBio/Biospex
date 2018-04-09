@@ -159,8 +159,8 @@ class ExpeditionService
             'expeditionId' => $expedition->id,
             'subjectIds'   => [],
             'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('web.grids.show', [$expedition->project->id, $expedition->id]),
-            'exportUrl'    => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
+            'url'          => route('webauth.grids.show', [$expedition->project->id, $expedition->id]),
+            'exportUrl'    => route('webauth.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'showCheckbox' => false,
             'explore'      => false
         ]);
@@ -183,8 +183,8 @@ class ExpeditionService
             'expeditionId' => 0,
             'subjectIds'   => [],
             'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('web.grids.create', [$expedition->project->id]),
-            'exportUrl'    => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
+            'url'          => route('webauth.grids.create', [$expedition->project->id]),
+            'exportUrl'    => route('webauth.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'showCheckbox' => true,
             'explore'      => false
         ]);
@@ -253,8 +253,8 @@ class ExpeditionService
             'expeditionId' => $expedition->id,
             'subjectIds'   => $subjectIds,
             'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('web.grids.edit', [$expedition->project->id, $expedition->id]),
-            'exportUrl'    => route('web.grids.expedition.export', [$expedition->project->id, $expedition->id]),
+            'url'          => route('webauth.grids.edit', [$expedition->project->id, $expedition->id]),
+            'exportUrl'    => route('webauth.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'showCheckbox' => $expedition->workflowManager === null,
             'explore'      => false
         ]);
@@ -356,11 +356,11 @@ class ExpeditionService
 
             Artisan::call('workflow:manage', ['expeditionId' => $expeditionId]);
 
-            Flash::success(trans('expeditions.expedition_process_success'));
+            Flash::success(trans('messages.expedition_process_success'));
         }
         catch (\Exception $e)
         {
-            Flash::error(trans('expeditions.expedition_process_error', ['error' => $e->getMessage()]));
+            Flash::error(trans('messages.expedition_process_error', ['error' => $e->getMessage()]));
         }
     }
 
@@ -384,8 +384,8 @@ class ExpeditionService
     public function processOcr($projectId, $expeditionId = null)
     {
         $this->ocrQueueService->processOcr($projectId, $expeditionId) ?
-            Flash::success(trans('expeditions.ocr_process_success')) :
-            Flash::warning(trans('expeditions.ocr_process_error'));
+            Flash::success(trans('messages.ocr_process_success')) :
+            Flash::warning(trans('messages.ocr_process_error'));
     }
 
     /**
@@ -399,14 +399,14 @@ class ExpeditionService
 
         if ($workflow === null)
         {
-            Flash::error(trans('expeditions.process_no_exists'));
+            Flash::error(trans('messages.process_no_exists'));
 
             return;
         }
 
         $workflow->stopped = 1;
         $this->workflowManagerContract->update(['stopped' => 1], $workflow->id);
-        Flash::success(trans('expeditions.process_stopped'));
+        Flash::success(trans('messages.process_stopped'));
 
         return;
     }
@@ -425,7 +425,7 @@ class ExpeditionService
 
             if (isset($record->nfnWorkflow))
             {
-                Flash::error(trans('expeditions.expedition_process_exists'));
+                Flash::error(trans('messages.expedition_process_exists'));
 
                 return false;
             }
@@ -448,13 +448,13 @@ class ExpeditionService
 
             $this->expeditionContract->delete($expedition);
 
-            Flash::success(trans('expeditions.expedition_deleted'));
+            Flash::success(trans('messages.record_deleted'));
 
             return true;
         }
         catch (\Exception $e)
         {
-            Flash::error(trans('expeditions.expedition_delete_error'));
+            Flash::error(trans('record.record_delete_error'));
 
             return false;
         }
@@ -478,13 +478,13 @@ class ExpeditionService
 
             $this->expeditionContract->destroy($expedition);
 
-            Flash::success(trans('expeditions.expedition_destroyed'));
+            Flash::success(trans('messages.record_destroyed'));
 
             return true;
         }
         catch (\Exception $e)
         {
-            Flash::error(trans('expeditions.expedition_destroy_error'));
+            Flash::error(trans('messages.record_destroy_error'));
 
             return false;
         }
@@ -498,8 +498,8 @@ class ExpeditionService
     public function restoreExpedition($expeditionId)
     {
         $this->expeditionContract->restore($expeditionId) ?
-            Flash::success(trans('expeditions.expedition_restore')) :
-            Flash::error(trans('expeditions.expedition_restore_error'));
+            Flash::success(trans('messages.record_restore')) :
+            Flash::error(trans('messages.record_restore_error'));
 
         return;
     }

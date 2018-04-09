@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 
-class WeDigBioDashboardResource extends Resource
+class PusherTranscriptionResource extends Resource
 {
 
     /**

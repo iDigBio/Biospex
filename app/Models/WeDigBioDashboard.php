@@ -6,7 +6,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 use MongoDB\BSON\ObjectID;
 use MongoDB\BSON\UTCDateTime;
 
-class WeDigBioDashboard extends Model
+class PusherTranscription extends Model
 {
     /**
      * @inheritDoc
@@ -16,7 +16,7 @@ class WeDigBioDashboard extends Model
     /**
      * Set Collection
      */
-    protected $collection = 'wedigbio_dashboard';
+    protected $collection = 'pusher_transcriptions';
 
     /**
      * @inheritDoc
@@ -47,11 +47,11 @@ class WeDigBioDashboard extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\belongsTo
      */
     public function transcription()
     {
-        return $this->belongsTo(PanoptesTranscription::class, 'transcription_id', '_id');
+        return $this->belongsTo(PanoptesTranscription::class, 'classification_id', 'classification_id');
     }
 
     /**

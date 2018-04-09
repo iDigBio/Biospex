@@ -54,7 +54,7 @@ class NfnExportComplete extends Notification implements ShouldQueue
     {
         $mailMessage = new MailMessage;
 
-        $mailMessage->subject(trans('emails.biospex_export_completed'));
+        $mailMessage->subject(trans('messages.biospex_export_completed'));
 
         if ($this->csv !== null)
         {

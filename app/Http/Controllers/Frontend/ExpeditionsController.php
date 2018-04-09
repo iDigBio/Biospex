@@ -54,7 +54,7 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions('create', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         JavaScript::put([
@@ -62,7 +62,7 @@ class ExpeditionsController extends Controller
             'expeditionId' => 0,
             'subjectIds'   => [],
             'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('web.grids.create', [$project->id]),
+            'url'          => route('webauth.grids.create', [$project->id]),
             'exportUrl'    => '',
             'showCheckbox' => true,
             'explore'      => false
@@ -84,20 +84,20 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions('create', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $expedition = $this->expeditionService->createExpedition($request->all());
 
         if ($expedition)
         {
-            Flash::success(trans('expeditions.expedition_created'));
+            Flash::success(trans('messages.record_created'));
 
-            return redirect()->route('web.expeditions.show', [$projectId, $expedition->id]);
+            return redirect()->route('webauth.expeditions.show', [$projectId, $expedition->id]);
         }
 
-        Flash::error(trans('expeditions.expedition_save_error'));
-        return redirect()->route('web.projects.show', [$projectId]);
+        Flash::error(trans('messages.record_save_error'));
+        return redirect()->route('webauth.projects.show', [$projectId]);
     }
 
     /**
@@ -112,7 +112,7 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions('read', $expedition->project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $btnDisable = ($expedition->project->ocrQueue->isEmpty() || $expedition->stat->local_subject_count === 0);
@@ -132,7 +132,7 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions('create', $expedition->project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         return view('frontend.expeditions.clone', compact('expedition'));
@@ -150,7 +150,7 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions('update', $expedition->project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         return view('frontend.expeditions.edit', compact('expedition'));
@@ -170,22 +170,22 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions('update', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $result = $this->expeditionService->updateExpedition($request->all(), $expeditionId);
 
         if ( ! $result)
         {
-            Flash::error(trans('expeditions.expedition_save_error'));
+            Flash::error(trans('messages.record_save_error'));
 
-            return redirect()->route('web.expeditions.edit', [$projectId, $expeditionId]);
+            return redirect()->route('webauth.expeditions.edit', [$projectId, $expeditionId]);
         }
 
         // Success!
-        Flash::success(trans('expeditions.expedition_updated'));
+        Flash::success(trans('messages.record_updated'));
 
-        return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
+        return redirect()->route('webauth.expeditions.show', [$projectId, $expeditionId]);
     }
 
     /**
@@ -200,12 +200,12 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions('update', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $this->expeditionService->processExpedition($expeditionId);
 
-        return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
+        return redirect()->route('webauth.expeditions.show', [$projectId, $expeditionId]);
     }
 
     /**
@@ -222,12 +222,12 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions('update', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $this->expeditionService->processOcr($project->id, $expeditionId);
 
-        return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
+        return redirect()->route('webauth.expeditions.show', [$projectId, $expeditionId]);
     }
 
     /**
@@ -243,12 +243,12 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions('update', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $this->expeditionService->toggleExpeditionWorkflow($expeditionId);
 
-        return redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
+        return redirect()->route('webauth.expeditions.show', [$projectId, $expeditionId]);
     }
 
     /**
@@ -264,14 +264,14 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions('delete', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $result = $this->expeditionService->deleteExpedition($expeditionId);
 
         return $result ?
-            redirect()->route('web.projects.show', [$projectId]) :
-            redirect()->route('web.expeditions.show', [$projectId, $expeditionId]);
+            redirect()->route('webauth.projects.show', [$projectId]) :
+            redirect()->route('webauth.expeditions.show', [$projectId, $expeditionId]);
 
     }
 
@@ -288,12 +288,12 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions('delete', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $this->expeditionService->destroyExpedition($expeditionId);
 
-        return redirect()->route('web.projects.show', [$projectId]);
+        return redirect()->route('webauth.projects.show', [$projectId]);
     }
 
     /**
@@ -309,11 +309,11 @@ class ExpeditionsController extends Controller
 
         if ( ! $this->checkPermissions('delete', $project))
         {
-            return redirect()->route('web.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         $this->expeditionService->restoreExpedition($expeditionId);
 
-        return redirect()->route('web.projects.show', [$projectId]);
+        return redirect()->route('webauth.projects.show', [$projectId]);
     }
 }

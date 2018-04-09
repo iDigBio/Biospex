@@ -161,7 +161,7 @@ class MetaFile
             return true;
         }
 
-        throw new \Exception(trans('errors.missing_meta_extension', ['file' => $this->file]));
+        throw new \Exception(trans('messages.missing_meta_extension', ['file' => $this->file]));
     }
 
     /**

@@ -168,7 +168,6 @@ return [
          * Package Service Providers...
          */
         Collective\Html\HtmlServiceProvider::class,
-        Barryvdh\TranslationManager\ManagerServiceProvider::class,
         Felixkiss\UniqueWithValidator\ServiceProvider::class,
         Jenssegers\Mongodb\MongodbServiceProvider::class,
         Codesleeve\LaravelStapler\Providers\L5ServiceProvider::class,

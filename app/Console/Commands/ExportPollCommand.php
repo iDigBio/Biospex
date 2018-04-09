@@ -77,7 +77,7 @@ class ExportPollCommand extends Command
 
         if ($records->isEmpty())
         {
-            $data = trans('pages.processing_empty');
+            $data = trans('html.processing_empty');
             $this->dispatcher->fire(new PollExportEvent($data));
 
             return;
@@ -95,15 +95,15 @@ class ExportPollCommand extends Command
             $count++;
 
             $notice = $record->queued ?
-                trans('pages.export_processing', [
+                trans('html.export_processing', [
                     'stage' => GeneralHelper::camelCaseToWords($stage),
                     'title' => $queue->expedition->title,
-                    'processedRecords' => trans_choice('pages.processed_records', $processed, [
+                    'processedRecords' => trans_choice('html.processed_records', $processed, [
                         'processed' => $processed,
                         'total' => $total
                     ]),
                 ]) :
-                trans_choice('pages.export_queued', $count, [
+                trans_choice('html.export_queued', $count, [
                     'title' => $queue->expedition->title,
                     'count' => $count
                 ]);

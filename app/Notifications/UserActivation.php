@@ -47,9 +47,9 @@ class UserActivation extends Notification implements ShouldQueue
     public function toMail()
     {
         return (new MailMessage)
-            ->line(trans('emails.activate_intro'))
-            ->line(trans('emails.activate_message'))
-            ->action(trans('buttons.activate'), $this->route);
+            ->line(trans('messages.activate_intro'))
+            ->line(trans('messages.activate_message'))
+            ->action(trans('pages.activate'), $this->route);
     }
 
     /**

@@ -2,10 +2,14 @@
 
 namespace App\Services\Helpers;
 
+use Carbon\Carbon;
+use DateTimeZone;
+use DB;
 use Schema;
 
 /**
  * Class GeneralHelper
+ *
  * @package App\Services\Helpers
  */
 class GeneralHelper
@@ -83,7 +87,7 @@ class GeneralHelper
     {
         $value = ($total === 0 || $completed === 0) ? 0 : ($completed / $total) * 100;
 
-        return ($value > 100) ? 100 : $value;
+        return ($value > 100) ? 100 : round($value, 2);
     }
 
     /**
@@ -296,6 +300,69 @@ class GeneralHelper
         $size = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         $factor = floor((strlen($bytes) - 1) / 3);
 
-        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$size[$factor];
+        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)).@$size[$factor];
+    }
+
+    /**
+     * Display date as percentage from start to finish.
+     *
+     * @param $start_date
+     * @param $end_date
+     * @param $timezone
+     * @return float|string
+     */
+    public function eventStartEndAsPercentage($start_date, $end_date, $timezone)
+    {
+        $now = Carbon::now(new DateTimeZone($timezone));
+        $begin = $start_date->setTimezone($timezone);
+        $end = $end_date->setTimezone($timezone);
+
+        if ($now->timestamp < $begin->timestamp) {
+            return '0';
+        }
+
+        if ($now->timestamp > $end->timestamp) {
+            return '100';
+        }
+
+        return round(($now->timestamp - $begin->timestamp) / ($end->timestamp - $begin->timestamp) * 100);
+    }
+
+    /**
+     * Event time left in human form.
+     *
+     * @param $start_date
+     * @param $end_date
+     * @param $timezone
+     * @return string
+     */
+    public function eventHoursLeft($start_date, $end_date, $timezone)
+    {
+        $now = Carbon::now(new DateTimeZone($timezone));
+        $begin = $start_date->setTimezone($timezone);
+        $end = $end_date->setTimezone($timezone);
+
+        if ($now->timestamp > $end->timestamp)
+        {
+            return 'Completed';
+        }
+
+        if ($now->timestamp < $begin->timestamp)
+        {
+            return trans('pages.event_starting') . $now->diffForHumans($begin, true);
+        }
+
+        return trans('pages.event_ending') . $end->diffForHumans($now, true);
+    }
+
+    /**
+     * Convert uuid value to bin for lookup.
+     *
+     * @param $value
+     * @return string
+     */
+    public function uuidToBin($value)
+    {
+        return pack('H*', str_replace('-', '', $value));
     }
 }

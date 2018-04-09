@@ -52,6 +52,7 @@ return [
 
     'poll_ocr_channel'    => env('POLL_OCR_CHANNEL'),
     'poll_export_channel' => env('POLL_EXPORT_CHANNEL'),
+    'poll_board_channel' => env('POLL_BOARD_CHANNEL'),
 
     'cache_enabled'       => env('CACHE_ENABLED', true),
     'cache_minutes'       => env('CACHE_MINUTES', 60),
@@ -113,8 +114,8 @@ return [
         'thumbOutputDir'  => storage_path('images'),
         'thumbWidth'      => 300,
         'thumbHeight'     => 300,
-        'nfnLrgWidth'     => env('NFN_LRG_WIDTH', 1540),
-        'nfnSmWidth'      => env('NFN_SM_WIDTH', 500),
+        'nfnLrgWidth'     => env('NFN_LRG_WIDTH', 1500),
+        'nfnSmWidth'      => env('NFN_SM_WIDTH', 500)
     ],
 
     /** Min and max logo and banner sizes used in Project model for Codesleve Stapler */
