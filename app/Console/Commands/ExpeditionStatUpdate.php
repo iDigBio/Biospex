@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\AmChartJob;
 use App\Jobs\ExpeditionStatJob;
+use App\Jobs\NfnClassificationsFusionTableJob;
 use App\Repositories\Interfaces\Expedition;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
@@ -37,7 +38,7 @@ class ExpeditionStatUpdate extends Command
     public function handle(Expedition $expeditionContract)
     {
         $this->expeditionIds = null ===  $this->argument('ids') ?
-            null :
+            [] :
             explode(',', $this->argument('ids'));
 
         $expeditions = $expeditionContract->getExpeditionStats($this->expeditionIds);
@@ -60,6 +61,7 @@ class ExpeditionStatUpdate extends Command
 
         $projectIds->unique()->values()->each(function ($projectId){
             AmChartJob::dispatch($projectId);
+            NfnClassificationsFusionTableJob::dispatch($projectId);
         });
     }
 }
