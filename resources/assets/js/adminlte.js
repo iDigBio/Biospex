@@ -7,7 +7,20 @@ $(function () {
         .closest('li')
         .addClass('active');
 
-    $('.textarea').wysihtml5();
+    let textarea = $('.textarea');
+    if (textarea.length) {
+        textarea.summernote({
+            height: 200,
+            toolbar: [
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']]
+            ]
+        });
+    }
 
     $(".source li").draggable({
         addClasses: false,

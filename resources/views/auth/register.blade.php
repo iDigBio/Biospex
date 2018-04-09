@@ -72,7 +72,7 @@
                         <div class="form-group">
                             <div class="input-group {{ ($errors->has('invite')) ? 'has-error' : '' }}">
                                 <span class="input-group-addon"><i class="fa fa-users fa-lg"></i></span>
-                                {!! Form::text('invite', $code, array('class' => 'form-control', 'placeholder' => trans('groups.invite_code'))) !!}
+                                {!! Form::text('invite', $code, array('class' => 'form-control', 'placeholder' => trans('pages.invite_code'))) !!}
                             </div>
                             {{ ($errors->has('invite') ?  $errors->first('invite') : '') }}
                         </div>
@@ -80,7 +80,7 @@
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group">
                             {!! Honeypot::generate('registeruser', 'registertime') !!}
-                            {!! Form::submit(trans('buttons.register'), array('class' => 'btn btn-primary btn-block')) !!}
+                            {!! Form::submit(trans('pages.register'), array('class' => 'btn btn-primary btn-block')) !!}
                             {!! Form::hidden('apiuser', 0) !!}
                             {!! Form::close() !!}
                         </div>

@@ -21,7 +21,7 @@
                     'role' => 'form'
                     ]) !!}
                     <div class="form-group required {{ ($errors->has('group_id')) ? 'has-error' : '' }}" for="group">
-                        {!! Form::label('group_id', trans('forms.group'), array('class' => 'col-sm-2 control-label')) !!}
+                        {!! Form::label('group_id', trans('pages.group'), array('class' => 'col-sm-2 control-label')) !!}
                         <div class="col-sm-10">
                             {!! Form::select('group_id', $selectGroups, isset($editProject->group_id) ? $editProject->group_id : null, ['class' => 'form-control']) !!}
                         </div>
@@ -29,7 +29,7 @@
                     </div>
 
                     <div class="form-group required {{ ($errors->has('status')) ? 'has-error' : '' }}" for="group">
-                        {!! Form::label('status', trans('forms.status'), array('class' => 'col-sm-2 control-label')) !!}
+                        {!! Form::label('status', trans('pages.status'), array('class' => 'col-sm-2 control-label')) !!}
                         <div class="col-sm-10">
                             {!! Form::select('status', $statusSelect, isset($editProject->status)  ? $editProject->status : null, ['class' => 'form-control']) !!}
                         </div>
@@ -37,17 +37,17 @@
                     </div>
 
                     <div class="form-group required {{ ($errors->has('title')) ? 'has-error' : '' }}" for="title">
-                        {!! Form::label('title', trans('forms.title'), array('class' => 'col-sm-2 control-label')) !!}
+                        {!! Form::label('title', trans('pages.title'), array('class' => 'col-sm-2 control-label')) !!}
                         <div class="col-sm-10">
-                            {!! Form::text('title', isset($editProject->title) ? $editProject->title : null, array('class' => 'form-control', 'placeholder' => trans('forms.title'))) !!}
+                            {!! Form::text('title', isset($editProject->title) ? $editProject->title : null, array('class' => 'form-control', 'placeholder' => trans('pages.title'))) !!}
                         </div>
                         {{ ($errors->has('title') ? $errors->first('title') : '') }}
                     </div>
 
                     <div class="form-group required {{ ($errors->has('contact')) ? 'has-error' : '' }}">
-                        {!! Form::label('contact', trans('forms.contact'), array('class' => 'col-sm-2 control-label')) !!}
+                        {!! Form::label('contact', trans('pages.contact'), array('class' => 'col-sm-2 control-label')) !!}
                         <div class="col-sm-10">
-                            {!! Form::text('contact', isset($editProject->contact) ? $editProject->contact : null, array('class' => 'form-control', 'placeholder' => trans('forms.contact'))) !!}
+                            {!! Form::text('contact', isset($editProject->contact) ? $editProject->contact : null, array('class' => 'form-control', 'placeholder' => trans('pages.contact'))) !!}
                         </div>
                         {{ ($errors->has('contact') ? $errors->first('contact') : '') }}
                     </div>

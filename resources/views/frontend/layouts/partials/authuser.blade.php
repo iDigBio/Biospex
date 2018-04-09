@@ -13,7 +13,7 @@
             <div class="pull-left">
                 <a href="/users/{{ Auth::user()->id }}/edit" class="btn btn-primary btn-flat">Profile</a>
             </div>
-            <div class="pull-left">
+            <div class="pull-right">
                 <a href="{{ route('app.get.logout') }}"
                    class="btn btn-danger btn-flat">{{ trans('pages.logout') }}</a>
             </div>
