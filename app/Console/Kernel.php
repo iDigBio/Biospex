@@ -12,21 +12,22 @@ class Kernel extends ConsoleKernel
      *
      * @var array
      */
-    protected $commands = [
-        //
+    protected $commands = [//
     ];
 
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @param  \Illuminate\Console\Scheduling\Schedule $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
     {
 
         // Clean imports directory
-        $schedule->command('download:clean')->dailyAt('4:00');
+        $schedule->command('download:clean')->dailyAt('4:00')->before(function () {
+            \Artisan::call('lada-cache:flush');
+        });
 
         // Check ocr queue for error records
         $schedule->command('ocrqueue:check')->dailyAt('4:15');
@@ -40,15 +41,17 @@ class Kernel extends ConsoleKernel
         // Trigger export polling
         $schedule->command('export:poll')->everyFiveMinutes();
 
-        if ($this->app->environment() === 'prod')
-        {
+        if ($this->app->environment() === 'prod') {
             // Create Notes From Nature csv files
-            $schedule->command('nfn:csvcreate')->dailyAt('5:00');
+            $schedule->command('nfn:csvcreate')->dailyAt('5:00')->before(function () {
+                \Artisan::call('lada-cache:flush');
+            });
 
             // Trigger workflow manager to update expeditions and projects
-            $schedule->command('workflow:manage')->dailyAt('11:00');
+            $schedule->command('workflow:manage')->dailyAt('11:00')->before(function () {
+                \Artisan::call('lada-cache:flush');
+            });
         }
-
     }
 
     /**

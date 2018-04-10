@@ -261,7 +261,6 @@ class ActorServiceConfig
     public function fireActorProcessedEvent()
     {
 
-        $this->actor->pivot->processed++;
         event('actor.pivot.processed', $this->actor);
     }
 
@@ -286,7 +285,6 @@ class ActorServiceConfig
      */
     public function fireActorStateEvent()
     {
-        $this->actor->pivot->state++;
         event('actor.pivot.state', $this->actor);
     }
 

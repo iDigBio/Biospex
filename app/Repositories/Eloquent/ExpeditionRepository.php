@@ -23,8 +23,8 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function getExpeditionsForNfnClassificationProcess(array $expeditionIds = [], array $attributes = ['*'])
     {
-        $model = $this->model->with(['nfnWorkflow', 'stat'])->has('nfnWorkflow')
-            ->whereHas('actors', function ($query) {
+        $model = $this->model->with(['nfnWorkflow', 'stat', 'nfnActor'])->has('nfnWorkflow')
+            ->whereHas('nfnActor', function ($query) {
                 $query->where('completed', 0);
             });
 

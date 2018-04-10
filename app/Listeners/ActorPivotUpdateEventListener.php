@@ -83,7 +83,7 @@ class ActorPivotUpdateEventListener
     public function actorPivotProcessed($actor)
     {
         $attributes = [
-            'processed' => $actor->pivot->processed
+            'processed' => $actor->pivot->processed + 1
         ];
         $this->updateActorExpeditions($actor, $attributes);
     }
@@ -126,7 +126,7 @@ class ActorPivotUpdateEventListener
     public function actorPivotState($actor)
     {
         $attributes = [
-            'state'     => $actor->pivot->state,
+            'state'     => $actor->pivot->state + 1,
             'processed' => 0,
             'queued'    => 0,
         ];
@@ -171,7 +171,7 @@ class ActorPivotUpdateEventListener
     public function actorPivotCompleted($actor)
     {
         $attributes = [
-            'state'     => $actor->pivot->state++,
+            'state'     => $actor->pivot->state + 1,
             'queued'    => 0,
             'completed' => 1
         ];
