@@ -85,6 +85,7 @@ class ActorPivotUpdateEventListener
         $attributes = [
             'processed' => $actor->pivot->processed
         ];
+
         $this->updateActorExpeditions($actor, $attributes);
     }
 
@@ -97,8 +98,8 @@ class ActorPivotUpdateEventListener
     {
         $attributes = [
             'total'     => $actor->pivot->total,
-            'processed' => 0,
-            'queued'    => 1
+            'processed' => $actor->pivot->processed,
+            'queued'    => $actor->pivot->queued
         ];
         $this->updateActorExpeditions($actor, $attributes);
     }
@@ -112,8 +113,8 @@ class ActorPivotUpdateEventListener
     {
         $attributes = [
             'total'     => $actor->pivot->total,
-            'processed' => 0,
-            'queued'    => 0
+            'processed' => $actor->pivot->processed,
+            'queued'    => $actor->pivot->queued
         ];
         $this->updateActorExpeditions($actor, $attributes);
     }
@@ -127,8 +128,22 @@ class ActorPivotUpdateEventListener
     {
         $attributes = [
             'state'     => $actor->pivot->state,
-            'processed' => 0,
-            'queued'    => 0,
+            'processed' => $actor->pivot->processed,
+            'queued'    => $actor->pivot->queued
+        ];
+        $this->updateActorExpeditions($actor, $attributes);
+    }
+
+    /**
+     * Set error on ActorExpeditions.
+     *
+     * @param $actor
+     */
+    public function actorPivotError($actor)
+    {
+        $attributes = [
+            'queued' => $actor->queued,
+            'error'  => $actor->error
         ];
         $this->updateActorExpeditions($actor, $attributes);
     }
@@ -150,20 +165,6 @@ class ActorPivotUpdateEventListener
     }
 
     /**
-     * Set error on ActorExpeditions.
-     *
-     * @param $actor
-     */
-    public function actorPivotError($actor)
-    {
-        $attributes = [
-            'queued' => 0,
-            'error'  => 1
-        ];
-        $this->updateActorExpeditions($actor, $attributes);
-    }
-
-    /**
      * Set actor completed.
      *
      * @param $actor
@@ -171,10 +172,11 @@ class ActorPivotUpdateEventListener
     public function actorPivotCompleted($actor)
     {
         $attributes = [
-            'state'     => $actor->pivot->state++,
-            'queued'    => 0,
-            'completed' => 1
+            'state'     => $actor->pivot->state,
+            'queued'    => $actor->pivot->queued,
+            'completed' => $actor->pivot->completed
         ];
+
         $this->updateActorExpeditions($actor, $attributes);
     }
 }

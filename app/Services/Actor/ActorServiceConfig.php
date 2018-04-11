@@ -260,7 +260,6 @@ class ActorServiceConfig
      */
     public function fireActorProcessedEvent()
     {
-
         $this->actor->pivot->processed++;
         event('actor.pivot.processed', $this->actor);
     }
@@ -270,6 +269,9 @@ class ActorServiceConfig
      */
     public function fireActorQueuedEvent()
     {
+        $this->actor->pivot->processed = 0;
+        $this->actor->pivot->queued = 1;
+
         event('actor.pivot.queued', $this->actor);
     }
 
@@ -278,6 +280,9 @@ class ActorServiceConfig
      */
     public function fireActorUnQueuedEvent()
     {
+        $this->actor->pivot->processed = 0;
+        $this->actor->pivot->queued = 0;
+
         event('actor.pivot.unqueued', $this->actor);
     }
 
@@ -287,6 +292,9 @@ class ActorServiceConfig
     public function fireActorStateEvent()
     {
         $this->actor->pivot->state++;
+        $this->actor->pivot->processed = 0;
+        $this->actor->pivot->queued = 0;
+
         event('actor.pivot.state', $this->actor);
     }
 
@@ -298,6 +306,9 @@ class ActorServiceConfig
     public function fireActorErrorEvent($actor = null)
     {
         $collection = $actor === null ? $this->actor : $actor;
+        $collection->queued = 0;
+        $collection->error = 1;
+
         event('actor.pivot.error', $collection);
     }
 
@@ -306,6 +317,10 @@ class ActorServiceConfig
      */
     public function fireActorCompletedEvent()
     {
+        $this->actor->pivot->state++;
+        $this->actor->pivot->queued = 0;
+        $this->actor->pivot->completed = 1;
+
         event('actor.pivot.completed', $this->actor);
     }
 

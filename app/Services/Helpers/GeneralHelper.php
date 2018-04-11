@@ -4,7 +4,6 @@ namespace App\Services\Helpers;
 
 use Carbon\Carbon;
 use DateTimeZone;
-use DB;
 use Schema;
 
 /**

@@ -131,7 +131,6 @@ class NfnPanoptesExport
         }
 
         $this->actorImageService->setSubjects($subjects);
-
         $this->actorImageService->getImages();
         $this->actorImageService->fireActorQueuedEvent();
 
@@ -159,8 +158,8 @@ class NfnPanoptesExport
             $this->actorImageService->imagickService->setOption('jpeg:size', '1540x1540');
             $this->actorImageService->imagickService->readImageFromPath($file);
             $this->actorImageService->imagickService->setJpegExtent();
-
-            return $this->actorImageService->writeImagickFile($this->actorImageService->tmpDirectory, $fileName);
+            $this->actorImageService->writeImagickFile($this->actorImageService->tmpDirectory, $fileName);
+            $this->actorImageService->fireActorProcessedEvent();
         });
 
         if (empty($this->fileService->filesystem->files($this->actorImageService->tmpDirectory)))

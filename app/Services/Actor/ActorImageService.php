@@ -110,7 +110,9 @@ class ActorImageService extends ActorServiceConfig
 
         if ($image === '' || $response->getStatusCode() !== 200)
         {
+            $message = 'Image string empty or status code not 200.';
             $this->setMissingImages($this->subjects[$index]->_id, $this->subjects[$index]->accessURI, $message);
+            $this->fireActorProcessedEvent();
 
             return;
         }
@@ -119,10 +121,7 @@ class ActorImageService extends ActorServiceConfig
         $this->imagickService->readImagickFromBlob($image);
         $this->imagickService->setImageFormat();
         $this->imagickService->stripImage();
-        if ( ! $this->writeImagickFile($this->workingDirectory, $this->subjects[$index]->_id))
-        {
-            return;
-        }
+        $this->writeImagickFile($this->workingDirectory, $this->subjects[$index]->_id);
 
         $this->fireActorProcessedEvent();
     }
@@ -188,7 +187,6 @@ class ActorImageService extends ActorServiceConfig
      *
      * @param string $dir
      * @param $fileName
-     * @return bool
      * @throws \Exception
      */
     public function writeImagickFile($dir, $fileName)
@@ -197,19 +195,8 @@ class ActorImageService extends ActorServiceConfig
         if ( ! $this->imagickService->writeImagickImageToFile($destination))
         {
             $this->setMissingImages($fileName, '', 'Could not write image to ' . $dir);
-            $this->clearAndFire();
-
-            return false;
         }
 
-        $this->clearAndFire();
-        return true;
-    }
-
-
-    private function clearAndFire()
-    {
         $this->imagickService->clearImagickObject();
-        $this->fireActorProcessedEvent();
     }
 }

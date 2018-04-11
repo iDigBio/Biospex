@@ -38,6 +38,7 @@ class NfnPanoptes extends ActorBase
     /**
      * @inheritdoc
      * @see ActorQueue::fire()
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function actor(Actor $actor)
     {
