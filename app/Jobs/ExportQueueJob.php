@@ -64,7 +64,7 @@ class ExportQueueJob extends Job implements ShouldQueue
             $message = trans('messages.nfn_export_error', [
                 'title'   => $queue->expedition->title,
                 'id'      => $queue->expedition->id,
-                'message' => $e->getMessage()
+                'message' => $e->getFile() . ':' . $e->getLine() . ' - ' . $e->getMessage()
             ]);
 
             $queue->expedition->project->group->owner->notify(new NfnExportError($message));
