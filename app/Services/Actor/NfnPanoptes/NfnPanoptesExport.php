@@ -131,7 +131,6 @@ class NfnPanoptesExport
         }
 
         $this->actorImageService->setSubjects($subjects);
-
         $this->actorImageService->getImages();
         $this->actorImageService->fireActorQueuedEvent();
 
