@@ -326,9 +326,7 @@ class NfnPanoptesExport
     {
         $fileName = ! $subject ? $this->fileService->filesystem->name($file) : $file;
         $tmpFile = $this->actorImageService->tmpDirectory . '/' . $fileName . '.jpg';
-        $pass = $this->actorImageService->checkFileExists($tmpFile) && filesize($tmpFile) < 600000;
-
-        if ($pass)
+        if ($this->actorImageService->checkFileExists($tmpFile))
         {
             $this->actorImageService->fireActorProcessedEvent();
 
