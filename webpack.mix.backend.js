@@ -15,6 +15,7 @@ let path = require("path");
 mix.autoload({
         jquery: ["$", "window.jQuery", "jQuery", "window.$", "jquery", "window.jquery"]
     })
+    .copy("resources/assets/css/bootstrap-editable.css", "node_modules/x-editable/dist/bootstrap3-editable/css/")
     .setPublicPath(path.normalize("public/backend"))
     .js("resources/assets/js/backend.js", "js/backend.js")
     .sass("resources/assets/sass/backend.scss", "css/backend.css")
