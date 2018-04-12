@@ -85,6 +85,7 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
             };
 
             $expeditions = $expeditionContract->getExpeditionsForNfnClassificationProcess($this->expeditionIds);
+            \Log::info("Initial Create Expeditions: " . print_r($expeditions->pluck('id'), true));
 
             $api->setProvider();
             $api->checkAccessToken('nfnToken');
@@ -107,6 +108,8 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
                 $user = $userContract->find(1);
                 $user->notify(new JobError(__FILE__, $this->errorMessages));
             }
+
+            \Log::info("Response Create Expeditions: " . print_r($expeditionIds, true));
 
             empty($expeditionIds) ? $this->delete() :
                 NfnClassificationsCsvFileJob::dispatch($expeditionIds)->delay(14400);
