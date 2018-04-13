@@ -87,7 +87,6 @@ class NfnClassificationsCsvDownloadJob extends Job implements ShouldQueue
                 }
             };
 
-            \Log::info("Initital Download Resources: " . print_r($this->sources, true));
             $responses = $api->poolBatchRequest($requests());
             $expeditionIds = [];
             foreach ($responses as $index => $response)

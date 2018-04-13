@@ -91,9 +91,7 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
                 }
             };
 
-            \Log::info("Initial File Expeditions: " . print_r($this->expeditionIds, true));
             $expeditions = $expeditionContract->getExpeditionsForNfnClassificationProcess($this->expeditionIds);
-            \Log::info("Query File Expeditions: " . print_r($expeditions->pluck('id'), true));
 
             $api->setProvider();
             $api->checkAccessToken('nfnToken');
@@ -155,7 +153,6 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
             return;
         }
 
-        \Log::info("File Resource Dispatches: " . print_r($this->sources, true));
         NfnClassificationsCsvDownloadJob::dispatch($this->sources);
     }
 
@@ -169,7 +166,6 @@ class NfnClassificationsCsvFileJob extends Job implements ShouldQueue
             return;
         }
 
-        \Log::info("File Requeued Dispatches: " . print_r($this->reQueued, true));
         NfnClassificationsCsvFileJob::dispatch($this->reQueued)->delay(3600);
     }
 }
