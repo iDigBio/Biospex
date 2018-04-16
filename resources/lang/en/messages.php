@@ -26,6 +26,7 @@ return [
     'event_join_group_success'            => 'Thank you for your registration.',
     'event_join_error'                    => 'There was an error registering your join request. Please use the contact form and submit the link you used.',
     'event_join_group_error'              => 'The event group could not be found. Please check you are using the correct link or contact event coordinator.',
+    'event_join_user_error'               => 'User already assigned to Event group.',
     'expedition_export_complete_message'  => 'The export process for ":expedition" has been completed successfully. If a download file was created during this process, you may access the link on the Expedition view page. If there were errors, an attachment will be included with this email.',
     'expedition_process_error'            => 'An error occurred when trying to process the expedition: :error',
     'expedition_process_exists'           => 'An Expedition process exists and cannot be deleted. Even if the process has been stopped locally. Other services may need to refer to the existing Expedition.',
