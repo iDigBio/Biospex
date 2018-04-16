@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\EventJoinUniqueUserGroupValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EventJoinRequest extends FormRequest
@@ -25,7 +26,7 @@ class EventJoinRequest extends FormRequest
     {
         $rules = [
             'group_id' => 'required',
-            'nfn_user' => 'required|between:3,30'
+            'nfn_user' => ['required', 'between:3,30', new EventJoinUniqueUserGroupValidation()]
         ];
 
         return $rules;
