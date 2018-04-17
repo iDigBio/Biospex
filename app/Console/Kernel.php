@@ -42,7 +42,6 @@ class Kernel extends ConsoleKernel
             // Create Notes From Nature csv files
             $schedule->command('nfn:csvcreate')->daily()->before(function () {
                 \Artisan::call('lada-cache:flush');
-                \Artisan::call('test:test');
             });
 
             // Trigger workflow manager to update expeditions and projects
