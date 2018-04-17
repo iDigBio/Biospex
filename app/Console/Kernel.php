@@ -25,15 +25,10 @@ class Kernel extends ConsoleKernel
     {
 
         // Clean imports directory
-        $schedule->command('download:clean')->dailyAt('23:00')->before(function () {
-            \Artisan::call('lada-cache:flush');
-        });
-
-        // Check ocr queue for error records
-        $schedule->command('ocrqueue:check')->dailyAt('23:15');
+        $schedule->command('download:clean')->dailyAt('03:00');
 
         // Clean report directory
-        $schedule->command('report:clean')->dailyAt('23:30');
+        $schedule->command('report:clean')->dailyAt('03:30');
 
         // Check ocr processing records and call ocr polling
         $schedule->command('ocrprocess:records')->everyFiveMinutes();
@@ -45,11 +40,10 @@ class Kernel extends ConsoleKernel
             // Create Notes From Nature csv files
             $schedule->command('nfn:csvcreate')->daily()->before(function () {
                 \Artisan::call('lada-cache:flush');
-                \Artisan::call('test:test');
             });
 
             // Trigger workflow manager to update expeditions and projects
-            $schedule->command('workflow:manage')->dailyAt('6:00')->before(function () {
+            $schedule->command('workflow:manage')->dailyAt('10:00')->before(function () {
                 \Artisan::call('lada-cache:flush');
             });
         }

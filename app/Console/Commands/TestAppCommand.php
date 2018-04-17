@@ -34,6 +34,5 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
-        exec("truncate -s 0 /data/web/biospex/prod/storage/logs/laravel.log");
     }
 }
