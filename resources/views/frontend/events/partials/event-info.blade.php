@@ -34,12 +34,12 @@
     <div class="panel-body">
         <div class="row">
             <div class="col-md-12">
-                <button title="@lang('pages.downloadTitleTranscriptions')" class="btn btn-success btn-sm"
+                <button title="@lang('pages.downloadTitleUsers')" class="btn btn-success btn-sm"
                         type="button"
                         onClick="location.href='{{ route('webauth.events.exportUsers', [$event->id]) }}'">
                     <span class="fa fa-download fa-lrg"></span> @lang('pages.users')
                 </button>
-                <button title="@lang('pages.downloadTitleUsers')" class="btn btn-success btn-sm"
+                <button title="@lang('pages.downloadTitleTranscriptions')" class="btn btn-success btn-sm"
                         type="button"
                         onClick="location.href='{{ route('webauth.events.exportTranscriptions', [$event->id]) }}'">
                     <span class="fa fa-download fa-lrg"></span> @lang('pages.transcriptions')
@@ -48,7 +48,7 @@
                         onClick="location.href='{{ route('webauth.events.edit', [$event->id]) }}'"><span
                             class="fa fa-cog fa-lrg"></span> @lang('pages.edit')</button>
                 @can('delete', $event)
-                    <button class="btn btn-sm btn-danger" title="@lang('pages.deleteTitle')"
+                    <button title="@lang('pages.deleteTitle')" class="btn btn-sm btn-danger"
                             data-href="{{ route('webauth.events.delete', [$event->id]) }}"
                             data-method="delete"
                             data-toggle="confirmation"

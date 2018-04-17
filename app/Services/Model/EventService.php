@@ -151,6 +151,7 @@ class EventService
             return;
         }
 
+        // TODO get all events associated with user and project using this check. Loop through to create event transcriptions.
         $event = $this->event->checkEventExistsForClassificationUser($expedition->project_id, $data->user_name);
         if ($event === null) {
             return;
@@ -166,6 +167,7 @@ class EventService
 
         $this->eventTranscription->updateOrCreate($attributes, $values);
 
+        // TODO Dispatch multiple project ids to refersh all boards.
         EventBoardJob::dispatch($expedition->project_id);
     }
 
