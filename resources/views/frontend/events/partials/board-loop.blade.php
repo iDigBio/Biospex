@@ -1,6 +1,12 @@
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title">{{ $event->title }}</h3>
+        <h4>{{ $event->title }}</h4>
+        @lang('pages.start_date')
+        : {{ $event->start_date->setTimezone($event->timezone)->toDayDateTimeString() }} {{ str_replace('_', ' ', $event->timezone) }}
+        <br/>
+        @lang('pages.end_date')
+        : {{ $event->end_date->setTimezone($event->timezone)->toDayDateTimeString() }} {{ str_replace('_', ' ', $event->timezone) }}
+        <br/>
     </div>
     <div class="panel-body" style="font-size: small">
         <div class="row">
@@ -12,7 +18,7 @@
                 <b>@lang('pages.event_board_count')</b>
             </div>
         </div>
-        @foreach($event->groups as $group)
+        @foreach($event->groups->sortByDesc('transcriptionCount') as $group)
             @include('frontend.events.partials.board-group-loop')
         @endforeach
         <div class="row top5">
