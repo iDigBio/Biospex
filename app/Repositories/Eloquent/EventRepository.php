@@ -168,8 +168,7 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function getEventsByProjectId($projectId)
     {
-        // TODO add groups being returned by count. Desc.
-        $results = $this->model->with(['groups'])->whereHas('groups')->where('project_id', $projectId)->get();
+        $results = $this->model->with(['groups.transcriptionCount'])->whereHas('groups')->where('project_id', $projectId)->get();
 
         $this->resetModel();
 
