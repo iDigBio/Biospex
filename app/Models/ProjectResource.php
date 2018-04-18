@@ -68,4 +68,14 @@ class ProjectResource extends Model implements StaplerableInterface
             return !($var instanceof \Codesleeve\Stapler\Attachment);
         });
     }
+
+    /**
+     * Set download file name to remove unwanted characters.
+     *
+     * @param $value
+     */
+    public function setDownloadFileNameAttribute($value)
+    {
+        $this->attributes['download_file_name'] = preg_replace("/[^\w\-\.]/", '', $value);
+    }
 }

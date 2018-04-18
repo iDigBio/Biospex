@@ -25,9 +25,7 @@ class Kernel extends ConsoleKernel
     {
 
         // Clean imports directory
-        $schedule->command('download:clean')->dailyAt('03:00')->before(function () {
-            \Artisan::call('lada-cache:flush');
-        });
+        $schedule->command('download:clean')->dailyAt('03:00');
 
         // Clean report directory
         $schedule->command('report:clean')->dailyAt('03:30');

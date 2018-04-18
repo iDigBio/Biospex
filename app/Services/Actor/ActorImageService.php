@@ -117,13 +117,50 @@ class ActorImageService extends ActorServiceConfig
             return;
         }
 
-        $this->imagickService->createImagickObject();
-        $this->imagickService->readImagickFromBlob($image);
-        $this->imagickService->setImageFormat();
-        $this->imagickService->stripImage();
-        $this->writeImagickFile($this->workingDirectory, $this->subjects[$index]->_id);
-
+        $this->processBlobImage($image, $index);
         $this->fireActorProcessedEvent();
+    }
+
+    /**
+     * Process Image.
+     *
+     * @param $image
+     * @param $index
+     * @throws \Exception
+     */
+    public function processBlobImage($image, $index){
+        try {
+            $this->imagickService->createImagickObject();
+            $this->imagickService->readImagickFromBlob($image);
+            $this->imagickService->setImageFormat();
+            $this->imagickService->stripImage();
+            $this->writeImagickFile($this->workingDirectory, $this->subjects[$index]->_id);
+            $this->imagickService->clearImagickObject();
+        }
+        catch (\ImagickException $e){
+            $this->setMissingImages($this->subjects[$index]->_id, '', 'Could not write blob image to directory.');
+            $this->imagickService->clearImagickObject();
+        }
+    }
+
+    /**
+     * @param $file
+     * @param $fileName
+     * @throws \Exception
+     */
+    public function processFileImage($file, $fileName){
+        try{
+            $this->imagickService->createImagickObject();
+            $this->imagickService->setOption('jpeg:size', '1540x1540');
+            $this->imagickService->readImageFromPath($file);
+            $this->imagickService->setJpegExtent();
+            $this->writeImagickFile($this->tmpDirectory, $fileName);
+            $this->imagickService->clearImagickObject();
+        }
+        catch (\ImagickException $e){
+            $this->setMissingImages($fileName, '', 'Could not write file image to directory.');
+            $this->imagickService->clearImagickObject();
+        }
     }
 
     /**
@@ -194,9 +231,7 @@ class ActorImageService extends ActorServiceConfig
         $destination = $dir . '/' . $fileName . '.jpg';
         if ( ! $this->imagickService->writeImagickImageToFile($destination))
         {
-            $this->setMissingImages($fileName, '', 'Could not write image to ' . $dir);
+            throw new \ImagickException('Could not write image ' . $destination);
         }
-
-        $this->imagickService->clearImagickObject();
     }
 }

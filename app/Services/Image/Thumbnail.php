@@ -34,6 +34,7 @@ class Thumbnail extends ImagickService
 
     /**
      * Thumbnail constructor.
+     *
      * @param FileService $fileService
      */
     public function __construct(FileService $fileService)
@@ -43,7 +44,7 @@ class Thumbnail extends ImagickService
         $this->defaultThumbImg = config('config.images.thumbDefaultImg');
         $this->tnWidth = config('config.images.thumbWidth');
         $this->tnHeight = config('config.images.thumbHeight');
-        $this->thumbDirectory = config('config.images.thumbOutputDir') . '/' . $this->tnWidth . '_' . $this->tnHeight;
+        $this->thumbDirectory = config('config.images.thumbOutputDir').'/'.$this->tnWidth.'_'.$this->tnHeight;
     }
 
     /**
@@ -55,19 +56,15 @@ class Thumbnail extends ImagickService
      */
     public function getThumbnail($url)
     {
-        $thumbName = md5($url) . '.jpg';
-        $thumbFile = $this->thumbDirectory . '/' . $thumbName;
+        $thumbName = md5($url).'.jpg';
+        $thumbFile = $this->thumbDirectory.'/'.$thumbName;
 
-        try
-        {
-            if ( ! $this->fileService->filesystem->isFile($thumbFile))
-            {
+        try {
+            if (! $this->fileService->filesystem->isFile($thumbFile)) {
                 $image = $this->thumbFromUrl($url);
                 $this->createThumbnail($url, $image);
             }
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return $this->getFile($this->defaultThumbImg);
         }
 
@@ -76,6 +73,7 @@ class Thumbnail extends ImagickService
 
     /**
      * Create thumbnail.
+     *
      * @param $url
      * @param $image
      * @throws \Exception
@@ -87,8 +85,7 @@ class Thumbnail extends ImagickService
         $this->setDestinationImageWidth($this->tnWidth);
         $this->setDestinationImageHeight($this->tnHeight);
         $this->resizeImage();
-        $this->writeImagickImageToFile($this->thumbDirectory . '/' . md5($url) . '.jpg');
-        $this->clearImagickObject();
+        $this->writeImagickImageToFile($this->thumbDirectory.'/'.md5($url).'.jpg');
     }
 
     /**
@@ -114,8 +111,7 @@ class Thumbnail extends ImagickService
      */
     protected function getFile($thumbFile)
     {
-        if ($this->fileService->filesystem->isFile($thumbFile))
-        {
+        if ($this->fileService->filesystem->isFile($thumbFile)) {
             return $this->fileService->filesystem->get($thumbFile);
         }
 
