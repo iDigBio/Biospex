@@ -136,11 +136,9 @@ class ActorImageService extends ActorServiceConfig
             $this->imagickService->stripImage();
             $this->writeImagickFile($this->workingDirectory, $this->subjects[$index]->_id);
             $this->imagickService->clearImagickObject();
-            \Log::info("wrote image blob " . $this->subjects[$index]->_id);
         }
         catch (\ImagickException $e){
-            \Log::info("catching image blob " . $this->subjects[$index]->_id);
-            $this->setMissingImages($this->subjects[$index]->_id, '', 'Could not write blob image to directory.');
+            $this->setMissingImages($this->subjects[$index]->_id, '', $e->getMessage());
             $this->imagickService->clearImagickObject();
         }
     }
@@ -155,15 +153,13 @@ class ActorImageService extends ActorServiceConfig
             $this->imagickService->createImagickObject();
             $this->imagickService->setOption('jpeg:size', '1540x1540');
             $this->imagickService->readImageFromPath($file);
-            $this->imagickService->setJpegExtent();
+            $this->imagickService->setOption('jpeg:extent', '600kb');
             $this->writeImagickFile($this->tmpDirectory, $fileName);
             $this->imagickService->clearImagickObject();
-            \Log::info("wrote image file " . $fileName);
         }
         catch (\ImagickException $e){
-            $this->setMissingImages($fileName, '', 'Could not write file image to directory.');
+            $this->setMissingImages($fileName, '', $e->getMessage());
             $this->imagickService->clearImagickObject();
-            \Log::info("catching image file " . $fileName);
         }
     }
 

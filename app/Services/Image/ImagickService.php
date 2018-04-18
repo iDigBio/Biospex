@@ -119,19 +119,6 @@ class ImagickService
     }
 
     /**
-     * Set jpeg extent.
-     *
-     * @param $size
-     * @throws \ImagickException
-     */
-    public function setJpegExtent($size = '600kb')
-    {
-        if ( ! $this->setOption('jpeg:extent', $size)) {
-            throw new \ImagickException('Error while setting image jpeg extent format.');
-        }
-    }
-
-    /**
      * Strip metadata.
      *
      * @throws \Exception
