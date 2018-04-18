@@ -124,6 +124,8 @@ class NfnPanoptesExport
      */
     public function retrieveImages()
     {
+        \Log::info(__METHOD__);
+
         $subjects = $this->actorRepositoryService->getSubjectsByExpeditionId($this->actorImageService->expedition->id);
         if ($subjects->isEmpty())
         {
@@ -146,6 +148,7 @@ class NfnPanoptesExport
      */
     public function convertImages()
     {
+        \Log::info(__METHOD__);
         $files = collect($this->fileService->filesystem->files($this->actorImageService->workingDirectory));
         $this->actorImageService->setSubjects($files);
 
@@ -175,6 +178,7 @@ class NfnPanoptesExport
      */
     public function deleteOriginalImages()
     {
+        \Log::info(__METHOD__);
         $files = collect($this->fileService->filesystem->files($this->actorImageService->workingDirectory));
 
         $files->each(function ($file) {
@@ -195,6 +199,7 @@ class NfnPanoptesExport
      */
     public function buildCsv()
     {
+        \Log::info(__METHOD__);
         $subjects = $this->actorRepositoryService->getSubjectsByExpeditionId($this->actorImageService->expedition->id);
         if ($subjects->isEmpty())
         {
@@ -227,6 +232,7 @@ class NfnPanoptesExport
      */
     public function tarImages()
     {
+        \Log::info(__METHOD__);
         $this->actorImageService->archivePhar->buildFromDirectory($this->actorImageService->tmpDirectory);
 
         $this->actorImageService->fireActorQueuedEvent();
@@ -243,6 +249,7 @@ class NfnPanoptesExport
      */
     public function compressImages()
     {
+        \Log::info(__METHOD__);
         if ( ! $this->fileService->filesystem->exists($this->actorImageService->archiveTarGzPath))
         {
             $this->actorImageService->archivePhar->compress(\Phar::GZ); // copies to /path/to/my.tar.gz
@@ -279,6 +286,7 @@ class NfnPanoptesExport
      */
     public function emailReport()
     {
+        \Log::info(__METHOD__);
         $this->fileService->filesystem->deleteDirectory($this->actorImageService->workingDirectory);
         $this->fileService->filesystem->delete($this->actorImageService->archiveTarPath);
 
@@ -298,6 +306,7 @@ class NfnPanoptesExport
      */
     private function advanceQueue()
     {
+        \Log::info(__METHOD__);
         $queueMissing = empty($this->actorImageService->queue->missing) ? [] : $this->actorImageService->queue->missing;
 
         $attributes = [
