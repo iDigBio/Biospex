@@ -153,12 +153,7 @@ class NfnPanoptesExport
             return $this->checkConvertedFile($file);
         })->each(function ($file) {
             $fileName = $this->fileService->filesystem->name($file);
-
-            $this->actorImageService->imagickService->createImagickObject();
-            $this->actorImageService->imagickService->setOption('jpeg:size', '1540x1540');
-            $this->actorImageService->imagickService->readImageFromPath($file);
-            $this->actorImageService->imagickService->setJpegExtent();
-            $this->actorImageService->writeImagickFile($this->actorImageService->tmpDirectory, $fileName);
+            $this->actorImageService->processFileImage($file, $fileName);
             $this->actorImageService->fireActorProcessedEvent();
         });
 

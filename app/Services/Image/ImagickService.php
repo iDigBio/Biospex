@@ -96,22 +96,25 @@ class ImagickService
      * @param $option
      * @param $value
      * @return bool
+     * @throws \ImagickException
      */
     public function setOption($option, $value)
     {
-        return $this->imagick->setOption($option, $value);
+        if ( ! $this->imagick->setOption($option, $value)){
+            throw new \ImagickException('Error setting Imagick option.');
+        }
     }
 
     /**
      * Set imagick image format.
      *
      * @param string $format
-     * @throws \Exception
+     * @throws \ImagickException(
      */
     public function setImageFormat($format = 'jpg')
     {
         if ( ! $this->imagick->setImageFormat($format)) {
-            throw new \Exception('Error while setting image format.');
+            throw new \ImagickException('Error while setting image format.');
         }
     }
 
@@ -119,12 +122,12 @@ class ImagickService
      * Set jpeg extent.
      *
      * @param $size
-     * @throws \Exception
+     * @throws \ImagickException
      */
     public function setJpegExtent($size = '600kb')
     {
         if ( ! $this->setOption('jpeg:extent', $size)) {
-            throw new \Exception('Error while setting image jpeg extent format.');
+            throw new \ImagickException('Error while setting image jpeg extent format.');
         }
     }
 
@@ -136,7 +139,7 @@ class ImagickService
     public function stripImage()
     {
         if ( ! $this->imagick->stripImage()) {
-            throw new \Exception('Error while stripping image metadata.');
+            throw new \ImagickException('Error while stripping image metadata.');
         }
     }
 
@@ -145,7 +148,6 @@ class ImagickService
      *
      * @param $destination
      * @return bool
-     * @throws \Exception
      */
     public function writeImagickImageToFile($destination)
     {
