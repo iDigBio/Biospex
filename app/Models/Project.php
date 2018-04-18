@@ -423,8 +423,34 @@ class Project extends Model implements StaplerableInterface
         $this->attributes['advertise'] = serialize($advertise);
     }
 
+    /**
+     * Advertise attribute.
+     *
+     * @param $value
+     * @return mixed
+     */
     public function getAdvertiseAttribute($value)
     {
         return unserialize($value);
+    }
+
+    /**
+     * Set logo file name to remove unwanted characters.
+     *
+     * @param $value
+     */
+    public function setLogoFileNameAttribute($value)
+    {
+        $this->attributes['logo_file_name'] = preg_replace("/[^\w\-\.]/", '', $value);
+    }
+
+    /**
+     * Set banner file name to remove unwanted characters.
+     *
+     * @param $value
+     */
+    public function setBannerFileNameAttribute($value)
+    {
+        $this->attributes['banner_file_name'] = preg_replace("/[^\w\-\.]/", '', $value);
     }
 }

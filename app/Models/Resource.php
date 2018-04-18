@@ -36,4 +36,14 @@ class Resource extends Model
      * @inheritDoc
      */
     protected $dates = ['deleted_at'];
+
+    /**
+     * Set document to remove unwanted characters.
+     *
+     * @param $value
+     */
+    public function setDocumentFileNameAttribute($value)
+    {
+        $this->attributes['document'] = preg_replace("/[^\w\-\.]/", '', $value);
+    }
 }
