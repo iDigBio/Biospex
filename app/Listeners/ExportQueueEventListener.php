@@ -34,11 +34,6 @@ class ExportQueueEventListener
             'exportQueue.updated',
             'App\Listeners\ExportQueueEventListener@updated'
         );
-
-        $events->listen(
-            'exportQueue.deleted',
-            'App\Listeners\ExportQueueEventListener@updated'
-        );
     }
 
     /**
