@@ -99,7 +99,6 @@ class ActorRepositoryService
      *
      * @param $exportId
      * @param $attributes
-     * @return mixed
      */
     public function updateExportQueue($attributes, $exportId)
     {
@@ -112,11 +111,10 @@ class ActorRepositoryService
      * Delete staged queue.
      *
      * @param $exportId
-     * @return mixed
      */
     public function deleteExportQueue($exportId)
     {
+        $this->exportQueueContract->delete($exportId);
         event('exportQueue.updated');
-        return $this->exportQueueContract->delete($exportId);
     }
 }
