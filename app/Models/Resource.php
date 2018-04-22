@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
+use Czim\Paperclip\Contracts\AttachableInterface;
+use Czim\Paperclip\Model\PaperclipTrait;
 
-class Resource extends Model
+class Resource extends Model implements AttachableInterface
 {
-    use SoftDeletes, LadaCacheTrait;
+    use SoftDeletes, LadaCacheTrait, PaperclipTrait;
 
     /**
      * Enable soft delete.
@@ -38,12 +40,11 @@ class Resource extends Model
     protected $dates = ['deleted_at'];
 
     /**
-     * Set document to remove unwanted characters.
-     *
-     * @param $value
      */
-    public function setDocumentFileNameAttribute($value)
+    public function __construct(array $attributes = [])
     {
-        $this->attributes['document'] = preg_replace("/[^\w\-\.]/", '', $value);
+        $this->hasAttachedFile('document');
+
+        parent::__construct($attributes);
     }
 }

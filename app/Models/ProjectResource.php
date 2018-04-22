@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
-use Codesleeve\Stapler\ORM\EloquentTrait;
-use Codesleeve\Stapler\ORM\StaplerableInterface;
+use Czim\Paperclip\Contracts\AttachableInterface;
+use Czim\Paperclip\Model\PaperclipTrait;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class ProjectResource extends Model implements StaplerableInterface
+class ProjectResource extends Model implements AttachableInterface
 {
-    use EloquentTrait, LadaCacheTrait;
+    use PaperclipTrait, LadaCacheTrait;
 
     /**
      * @inheritDoc
@@ -45,7 +45,7 @@ class ProjectResource extends Model implements StaplerableInterface
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('download', ['styles' => []]);
+        $this->hasAttachedFile('download');
 
         parent::__construct($attributes);
     }
@@ -58,24 +58,5 @@ class ProjectResource extends Model implements StaplerableInterface
     public function project()
     {
         return $this->belongsTo(Project::class, 'project_id');
-    }
-
-    public function getDirty()
-    {
-        $dirty = parent::getDirty();
-
-        return array_filter($dirty, function ($var) {
-            return !($var instanceof \Codesleeve\Stapler\Attachment);
-        });
-    }
-
-    /**
-     * Set download file name to remove unwanted characters.
-     *
-     * @param $value
-     */
-    public function setDownloadFileNameAttribute($value)
-    {
-        $this->attributes['download_file_name'] = preg_replace("/[^\w\-\.]/", '', $value);
     }
 }

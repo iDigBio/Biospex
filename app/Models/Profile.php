@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Codesleeve\Stapler\ORM\EloquentTrait;
-use Codesleeve\Stapler\ORM\StaplerableInterface;
+use Czim\Paperclip\Contracts\AttachableInterface;
+use Czim\Paperclip\Model\PaperclipTrait;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class Profile extends Model implements StaplerableInterface
+class Profile extends Model implements AttachableInterface
 {
-    use EloquentTrait, LadaCacheTrait;
+    use PaperclipTrait, LadaCacheTrait;
 
     /**
      * @inheritDoc
@@ -37,7 +37,7 @@ class Profile extends Model implements StaplerableInterface
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('avatar', ['styles' => ['medium' => '160x160', 'small' => '25x25']]);
+        $this->hasAttachedFile('avatar', ['variants' => ['medium' => '160x160', 'small' => '25x25']]);
 
         parent::__construct($attributes);
     }
@@ -48,20 +48,6 @@ class Profile extends Model implements StaplerableInterface
     public static function boot()
     {
         parent::boot();
-
-        static::bootStapler();
-    }
-
-    /**
-     * Override the getAttributes in Eloquent trait due to error when updating
-     * @see https://github.com/CodeSleeve/laravel-stapler/issues/64
-     * Get all of the current attributes on the model.
-     *
-     * @return array
-     */
-    public function getAttributes()
-    {
-        return parent::getAttributes();
     }
 
     /**

@@ -7,16 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
-use Codesleeve\Stapler\ORM\EloquentTrait;
-use Codesleeve\Stapler\ORM\StaplerableInterface;
+use Czim\Paperclip\Contracts\AttachableInterface;
+use Czim\Paperclip\Model\PaperclipTrait;
 use Cviebrock\EloquentSluggable\Sluggable;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class Project extends Model implements StaplerableInterface
+class Project extends Model implements AttachableInterface
 {
-    use EloquentTrait, Sluggable, UuidTrait, SoftCascadeTrait, SoftDeletes, HybridRelations, LadaCacheTrait;
+    use PaperclipTrait, Sluggable, UuidTrait, SoftCascadeTrait, SoftDeletes, HybridRelations, LadaCacheTrait;
 
     /**
      * Enable soft delete.
@@ -98,8 +98,8 @@ class Project extends Model implements StaplerableInterface
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('logo', ['styles' => ['thumb' => '100x67', 'avatar' => '32x32']]);
-        $this->hasAttachedFile('banner', ['styles' => ['thumb' => '200x50', 'carousel' => '650x225']]);
+        $this->hasAttachedFile('logo', ['variants' => ['thumb' => '100x67', 'avatar' => '32x32']]);
+        $this->hasAttachedFile('banner', ['variants' => ['thumb' => '200x50', 'carousel' => '650x225']]);
 
         parent::__construct($attributes);
     }
@@ -112,8 +112,6 @@ class Project extends Model implements StaplerableInterface
         parent::boot();
 
         static::bootUuidTrait();
-
-        static::bootStapler();
 
         static::creating(function ($model) {
             $model->advertise = $model->attributes;
@@ -442,25 +440,5 @@ class Project extends Model implements StaplerableInterface
     public function getAdvertiseAttribute($value)
     {
         return unserialize($value);
-    }
-
-    /**
-     * Set logo file name to remove unwanted characters.
-     *
-     * @param $value
-     */
-    public function setLogoFileNameAttribute($value)
-    {
-        $this->attributes['logo_file_name'] = preg_replace("/[^\w\-\.]/", '', $value);
-    }
-
-    /**
-     * Set banner file name to remove unwanted characters.
-     *
-     * @param $value
-     */
-    public function setBannerFileNameAttribute($value)
-    {
-        $this->attributes['banner_file_name'] = preg_replace("/[^\w\-\.]/", '', $value);
     }
 }

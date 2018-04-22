@@ -170,7 +170,6 @@ return [
         Collective\Html\HtmlServiceProvider::class,
         Felixkiss\UniqueWithValidator\ServiceProvider::class,
         Jenssegers\Mongodb\MongodbServiceProvider::class,
-        Codesleeve\LaravelStapler\Providers\L5ServiceProvider::class,
         Msurguy\Honeypot\HoneypotServiceProvider::class,
         Appstract\Opcache\OpcacheServiceProvider::class,
         Spiritix\LadaCache\LadaCacheServiceProvider::class,
