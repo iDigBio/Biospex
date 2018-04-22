@@ -20,7 +20,7 @@ storage/classifications/*
 storage/exports/*
 storage/imports/*
 storage/images/*
-
+public/system
 /resources/assets/vendor
 
 tests/_output/
