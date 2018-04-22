@@ -23,8 +23,10 @@ class PusherTranscriptionsRepository extends MongoDbRepository implements Pusher
     /**
      * Get API WeDigBioDashboard record count.
      *
-     * @inheritdoc
-     * @return int|mixed
+     * @param \Illuminate\Http\Request $request
+     * @param bool $count
+     * @return \Illuminate\Support\Collection|int|mixed
+     * @throws \Exception
      */
     public function getWeDigBioDashboardApi(Request $request, $count = false)
     {
@@ -35,13 +37,13 @@ class PusherTranscriptionsRepository extends MongoDbRepository implements Pusher
             })->count();
         }
 
-        $rows = $request->has('rows') ? (int) $request->input('rows') : 200;
-        $rows = $rows > 500 ? 200 : $rows;
-        $start = $request->has('start') ? (int) $request->input('start') : 0;
+        $count = $request->has('rows') ? (int) $request->input('rows') : 200;
+        $count = $count > 500 ? 200 : $count;                                              //count
+        $current = $request->has('start') ? (int) $request->input('start') : 0; // current
 
         $results = $this->model->where(function ($query) use ($request) {
             $this->buildQuery($query, $request);
-        })->limit($rows)->offset($start)->orderBy('timestamp', 'desc')->get();
+        })->limit($count)->offset($current)->orderBy('timestamp', 'desc')->get();
 
         $this->resetModel();
 
