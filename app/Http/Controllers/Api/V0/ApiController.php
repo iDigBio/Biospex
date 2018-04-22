@@ -92,10 +92,11 @@ class ApiController extends BaseController
      *
      * @param $collection
      * @param $callback
+     * @param $totalCount
      * @param null $resourceKey
      * @return mixed
      */
-    protected function respondWithPusherCollection($collection, $callback, $resourceKey = null)
+    protected function respondWithPusherCollection($collection, $callback, $totalCount, $resourceKey = null)
     {
         $this->setManager();
 
@@ -105,9 +106,9 @@ class ApiController extends BaseController
 
         $rootScope = $this->fractal->createData($resource)->toArray();
 
-        $newScope['numFound'] = $rootScope['meta']['cursor']['count'];
+        $newScope['numFound'] = $totalCount;
         $newScope['start'] = $rootScope['meta']['cursor']['current'];
-        $newScope['rows'] = $rootScope['meta']['cursor']['next'];
+        $newScope['rows'] = $rootScope['meta']['cursor']['count'];
 
         $rootScope = $newScope + $rootScope;
 
