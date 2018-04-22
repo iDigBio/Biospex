@@ -41,7 +41,7 @@
                         <div class="form-group {{ ($errors->has('document')) ? 'has-error' : '' }}" for="document">
                             {!! Form::label('document', 'Document', ['class' => 'col-sm-2 control-label']) !!}
                             <div class="col-sm-4">
-                                {{ isset($resource->document) ? $resource->document : null }}
+                                {{ isset($resource->document) ? $resource->document_url : null }}
                                 {!! Form::file('document') !!}
                                 {{ ($errors->has('document') ? $errors->first('document') : '') }}
                             </div>

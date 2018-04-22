@@ -6,6 +6,6 @@
     </div>
     <div class="panel-body">
         {!! $resource->description !!}<br /><br />
-        {{ link_to_route('web.resources.download', $resource->document, [$resource->id]) }}
+        {{ $resource->document_url }}
     </div>
 </div>

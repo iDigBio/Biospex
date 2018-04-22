@@ -62,10 +62,6 @@
                 {!! Html::linkWithIcon(route('admin.resources.index'), 'Resources', [], ['before' => 'fa fa-files-o']) !!}
             </li>
 
-            <li class="{!! Html::active('admin.translations.') !!}">
-                {!! Html::linkWithIcon(route('admin.translations.index'), 'Translations', [], ['before' => 'fa fa-language']) !!}
-            </li>
-
             <li class="{!! Html::active('admin.ocr') !!}">
                 {!! Html::linkWithIcon(route('admin.ocr.index'), 'OCR', [], ['before' => 'fa fa-file-image-o']) !!}
             </li>

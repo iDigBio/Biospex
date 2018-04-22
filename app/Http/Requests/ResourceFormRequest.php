@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\FileUploadNameValidation;
+
 class ResourceFormRequest extends Request
 {
     /**
@@ -24,7 +26,7 @@ class ResourceFormRequest extends Request
         return [
             'title' => 'required|between:3,255|unique:resources,title,' . $this->route('resources'),
             'description' => 'required',
-            'document.file' => 'mimes:pdf'
+            'document' => ['mimes:pdf', new FileUploadNameValidation()]
         ];
     }
 }

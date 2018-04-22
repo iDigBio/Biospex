@@ -35,8 +35,9 @@ class ResourceDownloadValidation implements Rule
 
         $fileUpload = request()->hasFile('resources.' . $parts[1] . '.download');
         $fileExists = isset($resources[$parts[1]]['download_file_name']) &&  ! empty($resources[$parts[1]]['download_file_name']) ? true : false;
+        $fileName = $fileExists ? preg_match('/^[\w-.]+$/', $resources[$parts[1]]['download_file_name']) : false;
 
-        return $fileUpload || $fileExists;
+        return $fileUpload || $fileExists || $fileName;
     }
 
     /**

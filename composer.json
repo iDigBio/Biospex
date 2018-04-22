@@ -23,6 +23,7 @@
         "laravelcollective/html": "^5.6.6",
         "league/csv": "^9.1",
         "league/oauth2-client": "^2.3",
+        "mccool/laravel-auto-presenter": "^7.0",
         "msurguy/honeypot": "dev-master",
         "neitanod/forceutf8": "~2.0",
         "pda/pheanstalk": "^3.1",

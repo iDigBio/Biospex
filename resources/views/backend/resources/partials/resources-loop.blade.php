@@ -3,7 +3,7 @@
         <td class="order">{{ $resource->order }}</td>
         <td>{!! $resource->title !!}</td>
         <td>{!! $resource->description !!}</td>
-        <td>{{ link_to_route('web.resources.download', $resource->document, [$resource->id]) }}</td>
+        <td>{{ $resource->document_url }}</td>
         <td><td class="button-fix">
             <div class="btn-toolbar">
                 <button title="@lang('pages.editTitle')" class="btn btn-warning btn-xs" type="button"

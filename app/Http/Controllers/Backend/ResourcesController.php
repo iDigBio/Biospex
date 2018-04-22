@@ -78,17 +78,6 @@ class ResourcesController extends Controller
     {
         $resource = $this->resourceContract->create($request->all());
 
-        if (null !== $request->file('document'))
-        {
-            $filename = $resource->id . '-' . $request->file('document')->getClientOriginalName();
-            Storage::disk('public')->put(
-                'resources/' . $filename,
-                file_get_contents($request->file('document')->getRealPath())
-            );
-
-            $resource = $this->resourceContract->update(['document' => $filename], $resource->id);
-        }
-
         $resource ? Flash::success('Resource has been created successfully.') :
             Flash::error('Resource could not be saved.');
 
@@ -106,7 +95,7 @@ class ResourcesController extends Controller
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $resources = $this->resourceContract->all();
         $resource = $this->resourceContract->find($resourceId);
-        $trashed = $this->resourceContract->findOnlyTrashed();
+        $trashed = $this->resourceContract->getTrashedResourcesOrdered();
 
         return view('backend.resources.index', compact('user', 'resources', 'resource', 'trashed'));
     }
@@ -120,29 +109,7 @@ class ResourcesController extends Controller
      */
     public function update(ResourceFormRequest $request, $resourceId)
     {
-        $resource = $this->resourceContract->find($resourceId);
-
-        if (null !== $request->file('document'))
-        {
-            if ($resource->document)
-            {
-                Storage::disk('public')->delete('resources/' . $resource->document);
-            }
-
-            $resource->document = $resource->id . '-' . $request->file('document')->getClientOriginalName();
-            Storage::disk('public')->put(
-                'resources/' . $resource->document,
-                file_get_contents($request->file('document')->getRealPath())
-            );
-        }
-
-        $data = [
-            'title'       => $request->get('title'),
-            'description' => $request->get('description'),
-            'document'    => $resource->document
-        ];
-
-        $resource = $this->resourceContract->update($data, $resourceId);
+        $resource = $this->resourceContract->update($request->all(), $resourceId);
 
         $resource ? Flash::success('Resource has been updated successfully.')
             : Flash::error('Resource could not be updated.');
@@ -176,9 +143,7 @@ class ResourcesController extends Controller
     public function trash($resourceId)
     {
         $resource = $this->resourceContract->findOnlyTrashed($resourceId);
-        Storage::disk('public')->delete('resources/' . $resource->document);
-
-        $result = $this->resourceContract->destory($resource);
+        $result = $this->resourceContract->destroy($resource);
 
         $result ? Flash::success('Resource has been forcefully deleted.')
             : Flash::error('Resource could not be forcefully deleted.');
