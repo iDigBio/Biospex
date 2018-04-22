@@ -56,18 +56,18 @@ class PusherTranscriptionsController extends ApiController
      */
     public function index(Request $request, PusherTranscriptionService $service)
     {
-        $count = $service->listApiDashboardCount($request);
+        $totalCount = $service->listApiDashboardCount($request);
         $data = $service->listApiDashboard($request);
 
-        $rows = $request->has('rows') ? (int) $request->input('rows') : 200;
-        $rows = $rows > 500 ? 200 : $rows;
-        $start = $request->has('start') ? (int) $request->input('start') : 0;
+        $count = $request->has('rows') ? (int) $request->input('rows') : 200;
+        $count = $count > 500 ? 200 : $count;                                              //count
+        $current = $request->has('start') ? (int) $request->input('start') : 0; // current
 
-        $next = (int) ($start + $rows);
-        $previous = (int) $start;
-        $this->paginate($start, $previous, $next, $count);
+        $next = (int) ($current + $count); // current + count
+        $previous = (int) max($current - $count, 0); // current - count
+        $this->paginate($current, $previous, $next, $count);
 
-        return $this->respondWithPusherCollection($data, new PusherTranscriptionTransformer(), 'items');
+        return $this->respondWithPusherCollection($data, new PusherTranscriptionTransformer(), $totalCount, 'items');
     }
 
     /**
