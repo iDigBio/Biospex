@@ -3,15 +3,15 @@
     <!-- Menu Toggle Button -->
     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
         <!-- The user image in the navbar-->
-        <img src="{{ Auth::user()->profile->avatar->url('small') }}" class="user-image" alt="User Image"/>
+        <img src="{{ $authUser->profile->avatar_small }}" class="user-image" alt="User Image"/>
         <!-- hidden-xs hides the username on small devices so only the image appears. -->
-        <span class="hidden-xs">{{ Auth::user()->email }}</span>
+        <span class="hidden-xs">{{ $authUser->email }}</span>
     </a>
     <ul class="dropdown-menu">
         <!-- Menu Body -->
         <li class="user-body">
             <div class="pull-left">
-                <a href="/users/{{ Auth::user()->id }}/edit" class="btn btn-primary btn-flat">Profile</a>
+                <a href="/users/{{ $authUser->id }}/edit" class="btn btn-primary btn-flat">Profile</a>
             </div>
             <div class="pull-right">
                 <a href="{{ route('app.get.logout') }}"
