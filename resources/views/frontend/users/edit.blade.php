@@ -66,11 +66,11 @@
 
                 <div class="form-group {{ ($errors->has('avatar')) ? 'has-error' : '' }}">
                     {!! Form::label('avatar', trans('pages.avatar'), ['class' => 'col-sm-2 control-label']) !!}
-                    <div class="col-sm-6">
+                    <div class="col-sm-5">
                         {!! Form::file('avatar') !!}
                     </div>
                     <div class="col-sm-5">
-                        <img src="{{ $user->profile->avatar->url('medium') }}"/>
+                        <img src="{{ $user->profile->avatar_medium }}"/>
                     </div>
                     {{ ($errors->has('avatar') ? $errors->first('avatar') : '') }}
                 </div>
