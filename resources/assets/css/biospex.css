@@ -105,6 +105,10 @@ p a:hover {
     font-weight: bold;
 }
 
+.has-error{
+    color: #ff0000;
+}
+
 
 #logo-list {
     margin-right: 0;
