@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Presenters\ProfilePresenter;
 use Illuminate\Database\Eloquent\Model;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
+use McCool\LaravelAutoPresenter\HasPresenter;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class Profile extends Model implements AttachableInterface
+class Profile extends Model implements AttachableInterface, HasPresenter
 {
     use PaperclipTrait, LadaCacheTrait;
 
@@ -51,6 +53,16 @@ class Profile extends Model implements AttachableInterface
     }
 
     /**
+     * Get Resource Presenter.
+     *
+     * @return string
+     */
+    public function getPresenterClass()
+    {
+        return ProfilePresenter::class;
+    }
+
+    /**
      * User relationship.
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -58,15 +70,5 @@ class Profile extends Model implements AttachableInterface
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-
-    /**
-     * Get full name.
-     *
-     * @return string
-     */
-    public function getFullNameAttribute() {
-        return $this->first_name . ' ' . $this->last_name;
     }
 }

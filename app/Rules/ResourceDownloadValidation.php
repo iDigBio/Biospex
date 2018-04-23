@@ -13,7 +13,27 @@ class ResourceDownloadValidation implements Rule
      */
     public function __construct()
     {
-        //
+        /**
+        [resources] => Array
+        (
+        [1] => Array
+        (
+        [download] => Illuminate\Http\UploadedFile Object
+        (
+        [test:Symfony\Component\HttpFoundation\File\UploadedFile:private] =>
+        [originalName:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 21_Cryptos Magazine January 2018-3.pdf
+        [mimeType:Symfony\Component\HttpFoundation\File\UploadedFile:private] => application/pdf
+        [size:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 5375683
+        [error:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 0
+        [hashName:protected] =>
+        [pathName:SplFileInfo:private] => /tmp/php1hX8bG
+        [fileName:SplFileInfo:private] => php1hX8bG
+        )
+
+        )
+
+        )
+         */
     }
 
     /**
@@ -27,26 +47,25 @@ class ResourceDownloadValidation implements Rule
     {
         $parts = explode('.', $attribute);
         $resources = request()->get('resources');
+        $fileUpload = request()->hasFile('resources.'.$parts[1].'.download');
 
-        if ($resources[$parts[1]]['type'] !== 'File Download')
-        {
+        if ($resources[$parts[1]]['type'] !== 'File Download'||
+            $resources[$parts[1]]['type'] === 'delete' ||
+            ! $fileUpload) {
             return true;
         }
 
-        $fileUpload = request()->hasFile('resources.' . $parts[1] . '.download');
-        $fileExists = isset($resources[$parts[1]]['download_file_name']) &&  ! empty($resources[$parts[1]]['download_file_name']) ? true : false;
-        $fileName = $fileExists ? preg_match('/^[\w-.]+$/', $resources[$parts[1]]['download_file_name']) : false;
+        $file = request()->file('resources.'.$parts[1].'.download');
+        $fileName = preg_match('/^[\w-.]+$/', $file->getClientOriginalName()) === 1 ? true : false;
 
-        return $fileUpload || $fileExists || $fileName;
+        return $fileName;
     }
 
     /**
      * Get the validation error message.
-     *
-     * @return string
      */
     public function message()
     {
-        return 'Must upload file.';
+        return 'File required and name can only contain alphanumeric, dash, or underscore.';
     }
 }

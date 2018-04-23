@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
+use App\Presenters\UserPresenter;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\HasGroup;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use McCool\LaravelAutoPresenter\HasPresenter;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasPresenter
 {
     use HasGroup, UuidTrait, SoftCascadeTrait, SoftDeletes, Notifiable, LadaCacheTrait;
 
@@ -77,6 +79,16 @@ class User extends Authenticatable
             $profile->last_name = request()->input('last_name');
             $model->profile()->save($profile);
         });
+    }
+
+    /**
+     * Get Resource Presenter.
+     *
+     * @return string
+     */
+    public function getPresenterClass()
+    {
+        return UserPresenter::class;
     }
 
     /**

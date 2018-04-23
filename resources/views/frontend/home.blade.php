@@ -26,7 +26,7 @@
                 <?php $i = 0 ?>
                 @foreach($carouselProjects as $project)
                     <div class="item {{ $i===0 ? 'active' : '' }}">
-                        <img src="{{ $project->banner->url() }}" alt="{{ $project->title }}"/>
+                        <img src="{{ $project->banner_carousel_url }}" alt="{{ $project->title }}"/>
                         <div class="carousel-caption">
                             <h3>{{ $project->title }}</h3>
                         </div>

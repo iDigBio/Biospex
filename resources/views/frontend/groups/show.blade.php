@@ -4,7 +4,7 @@
 @section('title')
     @parent
     @lang('pages.group')
-@stop
+@endsection
 
 {{-- Content --}}
 @section('content')
@@ -43,22 +43,18 @@
         <table class="table table-striped table-hover dataTable">
             <thead>
             <tr>
-                <th>@lang('pages.group') @lang('pages.owner)</th>
+                <th>@lang('pages.group') @lang('pages.owner')</th>
                 <th>{{ trans('pages.users') }}</th>
                 <th>{{ trans('pages.projects') }}</th>
             </tr>
             </thead>
             <tbody>
             <tr>
-                <td>{!! Html::mailto($group->owner->email, $group->owner->profile->first_name.' '.$group->owner->profile->last_name) !!}</td>
+                <td>{!! Html::mailto($group->owner->email, $group->owner->full_name_or_email) !!}</td>
                 <td>
                     <ul>
                         @foreach ($group->users as $user)
-                            @if (null === $user->profile->first_name && null === $user->profile->last_name)
-                                <li>{!! Html::mailto($user->email, $user->email) !!}</li>
-                            @else
-                                <li>{!! Html::mailto($user->email, $user->profile->fullNam) !!}</li>
-                            @endif
+                            <li>{!! Html::mailto($user->email, $user->full_name_or_email) !!}</li>
                         @endforeach
                     </ul>
                 </td>
@@ -73,4 +69,4 @@
             </tbody>
         </table>
     </div>
-@stop
+@endsection

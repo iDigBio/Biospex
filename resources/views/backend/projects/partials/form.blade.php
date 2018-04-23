@@ -223,7 +223,7 @@
                             {!! Form::file('logo') !!} {{ trans('pages.logo_max') }}
                         </div>
                         <div class="col-sm-5">
-                            <img src="{{ isset($editProject) ? $editProject->logo->url('thumb') : null }}"/>
+                            <img src="{{ isset($editProject) ? $editProject->logo_thumb_url : null }}"/>
                         </div>
                         {{ ($errors->has('logo') ? $errors->first('logo') : '') }}
                     </div>
@@ -234,7 +234,7 @@
                             {!! Form::file('banner') !!} {{ trans('pages.banner_min') }}
                         </div>
                         <div class="col-sm-5">
-                            <img src="{{ isset($editProject) ? $editProject->banner->url('thumb') : null }}"/>
+                            <img src="{{ isset($editProject) ? $editProject->banner_thumb_url : null }}"/>
                         </div>
                         {{ ($errors->has('banner') ? $errors->first('banner') : '') }}
                     </div>

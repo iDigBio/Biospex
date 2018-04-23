@@ -119,14 +119,14 @@
                             <!-- The user image in the navbar-->
                             <img src="/images/user-default-160x160.png" class="user-image" alt="User Image"/>
                             <!-- hidden-xs hides the username on small devices so only the image appears. -->
-                            <span class="hidden-xs">{{ $user->profile->fullName }}</span>
+                            <span class="hidden-xs">{{ $user->profile->full_name }}</span>
                         </a>
                         <ul class="dropdown-menu">
                             <!-- The user image in the menu -->
                             <li class="user-header">
                                 <img src="/images/user-default-160x160.png" class="img-circle" alt="User Image" />
                                 <p>
-                                    {{ $user->profile->fullName }}
+                                    {{ $user->profile->full_name }}
                                     <small>Member since Nov. 2012</small>
                                 </p>
                             </li>

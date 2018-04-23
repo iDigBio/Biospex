@@ -96,7 +96,7 @@ class GroupService
         $select = [];
         foreach ($group->users as $user)
         {
-            $select[$user->id] = $user->profile->fullName;
+            $select[$user->id] = $user->profile->full_name;
         }
 
         return $select;

@@ -229,7 +229,7 @@
                         {!! Form::file('logo') !!} {{ trans('pages.logo_max') }}
                     </div>
                     <div class="col-sm-5">
-                        <img src="{{ $project->logo->url('thumb') }}"/>
+                        <img src="{{ $project->logo_avatar_url }}"/>
                     </div>
                 </div>
 
@@ -240,18 +240,17 @@
                         {!! Form::file('banner') !!} {{ trans('pages.banner_min') }}
                     </div>
                     <div class="col-sm-5">
-                        <img src="{{ $project->banner->url('thumb') }}"/>
+                        <img src="{{ $project->banner_thumb_url }}"/>
                     </div>
                 </div>
 
                 <div class="form-group">
                     {!! Form::label('', trans('pages.project_resources'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="controls col-sm-10">
-                        @if($errors->has('resources.*'))
-                            @for($i = 0; $i < old('entries'); $i++)
-                                @include('frontend.projects.partials.resource-error')
-                            @endfor
-                        @elseif($project->resources->isNotEmpty())
+                        @if($project->resources->isNotEmpty())
+                            @if($errors->has('resources.*'))
+                                <span class="has-error">{{ $errors->first('resources.*') }}</span>
+                            @endif
                             @foreach($project->resources as $key => $resource)
                                 @include('frontend.projects.partials.resource-edit')
                             @endforeach

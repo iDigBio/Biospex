@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Presenters\ProjectResourcePresenter;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Config;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
+use McCool\LaravelAutoPresenter\HasPresenter;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class ProjectResource extends Model implements AttachableInterface
+class ProjectResource extends Model implements AttachableInterface, HasPresenter
 {
     use PaperclipTrait, LadaCacheTrait;
 
@@ -48,6 +49,16 @@ class ProjectResource extends Model implements AttachableInterface
         $this->hasAttachedFile('download');
 
         parent::__construct($attributes);
+    }
+
+    /**
+     * Get Resource Presenter.
+     *
+     * @return string
+     */
+    public function getPresenterClass()
+    {
+        return ProjectResourcePresenter::class;
     }
 
     /**

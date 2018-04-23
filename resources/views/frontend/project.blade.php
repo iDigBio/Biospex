@@ -8,8 +8,8 @@
 
 {{-- Content --}}
 @section('project')
-    <div id="banner" style="background: url({{ $project->banner->url() }});">
-        <img src="{{ $project->logo->url() }}" alt="{{ $project->title }}"/>
+    <div id="banner" style="background: url({{ $project->banner_url }});">
+        <img src="{{ $project->logo_url }}" alt="{{ $project->title }}"/>
     </div>
     <div class="container" id="projectId" data-value="{{ $project->id }}">
         <!-- Notifications -->

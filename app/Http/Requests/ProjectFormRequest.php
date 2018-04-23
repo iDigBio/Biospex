@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\FileUploadNameValidation;
 use App\Rules\ResourceDownloadValidation;
 use Illuminate\Support\Facades\Auth;
 use App\Rules\ResourceNameValidation;
@@ -35,8 +36,16 @@ class ProjectFormRequest extends Request
             'blog_url'                => 'nullable|url',
             'facebook'                => 'nullable|url',
             'twitter'                 => 'nullable|url',
-            'banner'                  => 'image|dimensions:min_width=1200,min_height=250',
-            'logo'                    => 'image|dimensions:max_width=300,max_height=200',
+            'banner'                  => [
+                'image',
+                'dimensions:min_width=1200,min_height=250',
+                new FileUploadNameValidation(),
+            ],
+            'logo'                    => [
+                'image',
+                'dimensions:max_width=300,max_height=200',
+                new FileUploadNameValidation(),
+            ],
             'resources.*.type'        => [new ResourceDownloadValidation()],
             'resources.*.name'        => ['required_with:resources.*.type', new ResourceNameValidation()],
             'resources.*.description' => 'required_with:resources.*.type',

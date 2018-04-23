@@ -53,6 +53,11 @@ class Resource extends Model implements AttachableInterface, HasPresenter
         parent::__construct($attributes);
     }
 
+    /**
+     * Get Resource Presenter.
+     *
+     * @return string
+     */
     public function getPresenterClass()
     {
         return ResourcePresenter::class;

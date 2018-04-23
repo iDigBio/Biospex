@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DateHelper;
+use App\Presenters\ProjectPresenter;
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
@@ -12,9 +13,10 @@ use Czim\Paperclip\Model\PaperclipTrait;
 use Cviebrock\EloquentSluggable\Sluggable;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
+use McCool\LaravelAutoPresenter\HasPresenter;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class Project extends Model implements AttachableInterface
+class Project extends Model implements AttachableInterface, HasPresenter
 {
     use PaperclipTrait, Sluggable, UuidTrait, SoftCascadeTrait, SoftDeletes, HybridRelations, LadaCacheTrait;
 
@@ -123,15 +125,13 @@ class Project extends Model implements AttachableInterface
     }
 
     /**
-     * Override the getAttributes in Eloquent trait due to error when updating
-     * @see https://github.com/CodeSleeve/laravel-stapler/issues/64
-     * Get all of the current attributes on the model.
+     * Get Resource Presenter.
      *
-     * @return array
+     * @return string
      */
-    public function getAttributes()
+    public function getPresenterClass()
     {
-        return parent::getAttributes();
+        return ProjectPresenter::class;
     }
 
     /**
