@@ -2,11 +2,8 @@
 
 namespace App\Policies;
 
-use Illuminate\Support\Facades\Cache;
-
 class GroupPolicy
 {
-
     /**
      * Allow admins.
      *
@@ -15,12 +12,7 @@ class GroupPolicy
      */
     public function before($user)
     {
-        $key = md5(__METHOD__ . $user->uuid);
-        $access = Cache::remember($key, 60, function() use ($user) {
-            return $user->isAdmin();
-        });
-        
-        return $access ? true : null;
+        return $user->isAdmin() ? true : null;
     }
 
     /**
@@ -37,6 +29,7 @@ class GroupPolicy
 
     /**
      * Check if user can create group
+     *
      * @param $user
      * @return bool
      */
@@ -47,6 +40,7 @@ class GroupPolicy
 
     /**
      * Check if user can store group
+     *
      * @param $user
      * @return bool
      */
@@ -64,43 +58,42 @@ class GroupPolicy
      */
     public function read($user, $group)
     {
-        $key = md5(__METHOD__ . $user->uuid . $group->uuid);
-        $access = Cache::remember($key, 60, function() use ($user, $group) {
-            return $user->hasGroup($group, 'read-group');
-        });
-
-        return $access ? true : null;
+        return $user->hasGroup($group) ? true : null;
     }
 
     /**
-     * Check if user can update group
+     * Check if user can read project for this group.
+     *
      * @param $user
      * @param $group
-     * @return mixed
+     * @return bool|null
      */
-    public function update($user, $group)
+    public function readProject($user, $group)
     {
-        $key = md5(__METHOD__ . $user->uuid . $group->uuid);
-        $access = Cache::remember($key, 60, function() use ($user, $group) {
-            return $user->hasGroup($group, 'update-group');
-        });
-
-        return $access ? true : null;
+        return $user->hasGroup($group);
     }
 
     /**
-     * Check if user can delete group
+     * Check if user can create project in group.
+     *
      * @param $user
      * @param $group
-     * @return bool
+     * @return bool|null
      */
-    public function delete($user, $group)
+    public function createProject($user, $group)
     {
-        $key = md5(__METHOD__ . $user->uuid . $group->uuid);
-        $access = Cache::remember($key, 60, function() use ($user, $group) {
-            return $user->id === $group->user_id;
-        });
+        return $user->hasGroup($group);
+    }
 
-        return $access ? true : null;
+    /**
+     * Check if user can create project in group.
+     *
+     * @param $user
+     * @param $group
+     * @return bool|null
+     */
+    public function updateProject($user, $group)
+    {
+        return $user->hasGroup($group);
     }
 }

@@ -33,7 +33,7 @@ class AdvertisesController extends Controller
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
 
-        if ( ! $this->checkPermissions('read', $project))
+        if ( ! $this->checkPermissions('readProject', $project->group))
         {
             return redirect()->route('web.projects.index');
         }
@@ -56,7 +56,7 @@ class AdvertisesController extends Controller
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
 
-        if ( ! $this->checkPermissions('read', $project))
+        if ( ! $this->checkPermissions('readProject', $project->group))
         {
             return redirect()->route('web.projects.index');
         }

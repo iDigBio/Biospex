@@ -27,7 +27,7 @@ class GroupRepository extends EloquentRepository implements Group
 
         $results = $this->model->with($with)
             ->whereHas('users', function ($query) use ($user) {
-                $query->where('id', $user->id);
+                $query->where('users.id', $user->id);
             })->get();
 
         $this->resetModel();

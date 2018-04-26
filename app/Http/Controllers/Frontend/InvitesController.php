@@ -52,7 +52,7 @@ class InvitesController extends Controller
     {
         $group = $this->groupContract->find($groupId);
 
-        if ( ! $this->checkPermissions('update', $group))
+        if ( ! $this->checkPermissions('isOwner', $group))
         {
             return redirect()->route('web.groups.show', [$groupId]);
         }
@@ -71,7 +71,7 @@ class InvitesController extends Controller
     {
         $group = $this->groupContract->find($groupId);
 
-        if ( ! $this->checkPermissions('update', $group))
+        if ( ! $this->checkPermissions('isOwner', $group))
         {
             return redirect()->route('web.groups.show', [$groupId]);
         }
@@ -91,7 +91,7 @@ class InvitesController extends Controller
     {
         $group = $this->groupContract->find($groupId);
 
-        if ( ! $this->checkPermissions('update', $group))
+        if ( ! $this->checkPermissions('isOwner', $group))
         {
             return redirect()->route('web.groups.show', [$groupId]);
         }
@@ -111,7 +111,7 @@ class InvitesController extends Controller
     {
         $group = $this->groupContract->find($groupId);
 
-        if ( ! $this->checkPermissions('delete', $group))
+        if ( ! $this->checkPermissions('isOwner', $group))
         {
             return redirect()->route('web.groups.show', [$groupId]);
         }

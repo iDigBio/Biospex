@@ -150,44 +150,33 @@ $(document).ready(function () {
     if ($('#processModal').length) {
         Echo.channel(Laravel.ocrChannel)
             .listen('PollOcrEvent', (e) => {
-                let groupIds = $.parseJSON(Laravel.groupIds);
-                let ocrHtml = '';
-                if ($.isArray(e.data)) {
-                    $.each(e.data, function (index) {
-                        if ($.inArray(e.data[index].groupId, groupIds) === -1) {
-                            return true;
-                        }
-                        ocrHtml += e.data[index].notice;
-                    });
-                } else {
-                    ocrHtml = e.data;
-                }
-
+                let ocrHtml = polling_data(e.data);
                 $('#ocrHtml').html(ocrHtml);
             });
 
         Echo.channel(Laravel.exportChannel)
             .listen('PollExportEvent', (e) => {
-                let groupIds = $.parseJSON(Laravel.groupIds);
-                let exportHtml = '';
-
-                if ($.isArray(e.data)) {
-                    $.each(e.data, function (index) {
-                        if ($.inArray(e.data[index].groupId, groupIds) === -1) {
-                            return true;
-                        }
-                        exportHtml += e.data[index].notice;
-                    });
-                } else {
-                    exportHtml = e.data;
-                }
-
+                let exportHtml = polling_data(e.data);
                 $('#exportHtml').html(exportHtml);
             });
     }
 
     $('[data-toggle="tooltip"]').tooltip();
 });
+
+// Loop data from polling
+function polling_data(data) {
+    let groupIds = $.parseJSON(Laravel.groupIds);
+    let groupData = '';
+    $.each(data['payload'], function (index) {
+        if ($.inArray(data['payload'][index].groupId, groupIds) === -1) {
+            return true;
+        }
+        groupData += data['payload'][index].notice;
+    });
+
+    return !groupData ? data['message'] : groupData;
+}
 
 $(function () {
     $(document).on('click', '.btn-add', function (e) {
@@ -197,7 +186,7 @@ $(function () {
             currentEntry = $(this).parents('.entry:first'),
             newEntry = $(currentEntry.clone()).appendTo(controls);
 
-        newEntry.find(":input").each(function(){
+        newEntry.find(":input").each(function () {
             $(this).val('');
         });
         newEntry.find('.fileName').html('');
@@ -216,9 +205,9 @@ $(function () {
 
 function renumber_resources() {
     let controls = $('.controls');
-    controls.children('.entry').each(function(index) {
+    controls.children('.entry').each(function (index) {
         let prefix = "resources[" + index + "]";
-        $(this).find(":input").each(function() {
+        $(this).find(":input").each(function () {
             this.name = this.name.replace(/resources\[\d+\]/, prefix);
         });
     });

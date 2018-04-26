@@ -75,16 +75,17 @@ class ExportPollCommand extends Command
     {
         $records = $this->exportQueueContract->getAllExportQueueOrderByIdAsc();
 
+        $data = ['message' => trans('pages.processing_empty'), 'payload' => []];
+
         if ($records->isEmpty())
         {
-            $data = trans('pages.processing_empty');
             $this->dispatcher->fire(new PollExportEvent($data));
 
             return;
         }
 
         $count = 0;
-        $data = $records->map(function($record) use ($count) {
+        $data['payload'] = $records->map(function($record) use ($count) {
 
             $queue = $this->exportQueueContract->findQueueProcessData($record->id, $record->expedition_id, $record->actor_id);
 
@@ -112,8 +113,8 @@ class ExportPollCommand extends Command
                 'groupId'       => $queue->expedition->project->group->id,
                 'notice'         => $notice
             ];
-        });
+        })->toArray();
 
-        $this->dispatcher->fire(new PollExportEvent($data->toArray()));
+        $this->dispatcher->fire(new PollExportEvent($data));
     }
 }

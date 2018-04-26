@@ -33,17 +33,19 @@
                                     onClick="location.href='{{ route('web.expeditions.edit', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-cog fa-lrg"></span> @lang('buttons.edit')</button>
 
-                            <button class="btn btn-sm btn-danger" title="@lang('buttons.deleteTitle')"
-                                    data-href="{{ route('web.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"
-                                    data-method="delete"
-                                    data-toggle="confirmation"
-                                    data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
-                                    data-btn-ok-class="btn-success"
-                                    data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
-                                    data-btn-cancel-class="btn-danger"
-                                    data-title="Continue action?" data-content="This will delete the item">
-                                <span class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')
-                            </button>
+                            @can('isOwner', $expedition->project->group)
+                                <button class="btn btn-sm btn-danger" title="@lang('buttons.deleteTitle')"
+                                        data-href="{{ route('web.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"
+                                        data-method="delete"
+                                        data-toggle="confirmation"
+                                        data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
+                                        data-btn-ok-class="btn-success"
+                                        data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
+                                        data-btn-cancel-class="btn-danger"
+                                        data-title="Continue action?" data-content="This will delete the item">
+                                    <span class="fa fa-remove fa-lrg"></span> @lang('buttons.delete')
+                                </button>
+                            @endcan
 
                         </div>
                         <div class="col-md-2">
@@ -57,7 +59,8 @@
                         </div>
                         <div class="col-md-2">
                             @if (null === $expedition->workflowManager || $expedition->workflowManager->stopped === 1)
-                                <button title="@lang('buttons.processTitle')" class="btn btn-success btn-sm" type="button"
+                                <button title="@lang('buttons.processTitle')" class="btn btn-success btn-sm"
+                                        type="button"
                                         {{ $expedition->stat->local_subject_count === 0 ? 'disabled' : '' }}
                                         onClick="location.href='{{ route('web.expeditions.process', [$expedition->project->id, $expedition->id]) }}'">
                                     <span class="fa fa-play fa-lrg"></span> @lang('buttons.process')</button>

@@ -9,7 +9,7 @@
                         type="button"
                         onClick="location.href='{{ route('web.projects.restore', [$project->id]) }}'">
                     <span class="fa fa-plus fa-lg"></span> @lang('buttons.restore') </button>
-                @can('delete', $group)
+                @can('isOwner', $group)
                 <button class="btn btn-xs btn-danger" title="@lang('buttons.deleteTitle')"
                         data-href="{{ route('web.projects.destroy', [$project->id]) }}"
                         data-method="delete"

@@ -66,7 +66,8 @@ class ProjectsController extends Controller
     public function show(User $userContract, $projectId)
     {
         $project = $this->projectService->findWith($projectId, ['group', 'ocrQueue']);
-        if ( ! $this->checkPermissions('read', $project))
+
+        if ( ! $this->checkPermissions('readProject', $project->group))
         {
             return redirect()->route('web.projects.index');
         }
@@ -87,7 +88,9 @@ class ProjectsController extends Controller
      */
     public function store(ProjectFormRequest $request)
     {
-        if ( ! $this->checkPermissions('create', Project::class))
+        $group = $this->projectService->findGroup(request()->get('group_id'));
+
+        if ( ! $this->checkPermissions('createProject', $group))
         {
             return redirect()->route('web.projects.index');
         }
@@ -147,7 +150,9 @@ class ProjectsController extends Controller
      */
     public function update(ProjectFormRequest $request, Project $project, $projectId)
     {
-        if ( ! $this->checkPermissions('update', $project))
+        $group = $this->projectService->findGroup(request()->get('group_id'));
+
+        if ( ! $this->checkPermissions('updateProject', $group))
         {
             return redirect()->route('web.projects.index');
         }
@@ -167,7 +172,7 @@ class ProjectsController extends Controller
     {
         $project = $this->projectService->findWith($projectId, ['group']);
 
-        if ( ! $this->checkPermissions('read', $project))
+        if ( ! $this->checkPermissions('readProject', $project->group))
         {
             return redirect()->route('web.projects.index');
         }
@@ -187,7 +192,7 @@ class ProjectsController extends Controller
     {
         $project = $this->projectService->findWith($projectId, ['group', 'nfnWorkflows']);
 
-        if ( ! $this->checkPermissions('delete', $project))
+        if ( ! $this->checkPermissions('isOwner', $project->group))
         {
             return redirect()->route('web.projects.index');
         }
@@ -207,7 +212,7 @@ class ProjectsController extends Controller
     {
         $project = $this->projectService->findWith($projectId, ['group', 'expeditions.downloads', 'subjects'], true);
 
-        if ( ! $this->checkPermissions('delete', $project))
+        if ( ! $this->checkPermissions('isOwner', $project->group))
         {
             return redirect()->route('web.projects.index');
         }
@@ -225,9 +230,9 @@ class ProjectsController extends Controller
      */
     public function restore($projectId)
     {
-        $project = $this->projectService->findWith($projectId, [], true);
+        $project = $this->projectService->findWith($projectId, ['group'], true);
 
-        if ( ! $this->checkPermissions('delete', $project))
+        if ( ! $this->checkPermissions('isOwner', $project->group))
         {
             return redirect()->route('web.projects.index');
         }
@@ -245,9 +250,9 @@ class ProjectsController extends Controller
      */
     public function ocr($projectId)
     {
-        $project = $this->projectService->findWith($projectId, ['group.permissions']);
+        $project = $this->projectService->findWith($projectId, ['group']);
 
-        if ( ! $this->checkPermissions('update', $project))
+        if ( ! $this->checkPermissions('updateProject', $project->group))
         {
             return redirect()->route('web.projects.index');
         }

@@ -3,14 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class NfnWorkflow extends Model
 {
 
-    use SoftCascadeTrait, SoftDeletes, LadaCacheTrait;
+    use SoftDeletes, LadaCacheTrait;
 
     /**
      * Enable soft delete.
@@ -18,13 +17,6 @@ class NfnWorkflow extends Model
      * @var boolean
      */
     protected $softDelete = true;
-
-    /**
-     * Soft delete cascades.
-     *
-     * @var array
-     */
-    protected $softCascade = ['classifications'];
 
     /**
      * @inheritDoc
@@ -66,16 +58,6 @@ class NfnWorkflow extends Model
     public function expedition()
     {
         return $this->belongsTo(Expedition::class);
-    }
-
-    /**
-     * Classifications relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function classifications()
-    {
-        return $this->hasMany(NfnClassification::class);
     }
 
     /**

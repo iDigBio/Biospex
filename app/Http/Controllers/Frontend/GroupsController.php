@@ -108,7 +108,7 @@ class GroupsController extends Controller
     {
         $group = $this->groupService->findGroupWith($groupId, ['owner']);
 
-        if ( ! $this->checkPermissions('update', $group))
+        if ( ! $this->checkPermissions('isOwner', $group))
         {
             return redirect()->route('web.groups.index');
         }
@@ -129,7 +129,7 @@ class GroupsController extends Controller
     {
         $group = $this->groupService->findGroup($groupId);
 
-        if ($this->checkPermissions('update', $group))
+        if ($this->checkPermissions('isOwner', $group))
         {
             return redirect()->route('web.groups.index');
         }
@@ -149,7 +149,7 @@ class GroupsController extends Controller
     {
         $group = $this->groupService->findGroupWith($groupId, ['projects.nfnWorkflows']);
 
-        if ( ! $this->checkPermissions('delete', $group))
+        if ( ! $this->checkPermissions('isOwner', $group))
         {
             return redirect()->route('web.groups.index');
         }
@@ -169,7 +169,7 @@ class GroupsController extends Controller
     {
         $group = $this->groupService->findTrashed($groupId);
 
-        if ( ! $this->checkPermissions('delete', $group))
+        if ( ! $this->checkPermissions('isOwner', $group))
         {
             return redirect()->route('web.groups.index');
         }
@@ -189,7 +189,7 @@ class GroupsController extends Controller
     {
         $group = $this->groupService->findTrashed($groupId);
 
-        if ( ! $this->checkPermissions('delete', $group))
+        if ( ! $this->checkPermissions('isOwner', $group))
         {
             return redirect()->route('web.groups.index');
         }

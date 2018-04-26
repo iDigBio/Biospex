@@ -62,6 +62,7 @@
                             <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs" type="button"
                                     onClick="location.href='{{ route('web.expeditions.edit', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-cog fa-lrg"></span> <!-- @lang('buttons.edit') --></button>
+                            @can('isOwner', $expedition->project->group)
                             <button class="btn btn-xs btn-danger" title="@lang('buttons.deleteTitle')"
                                     data-href="{{ route('web.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"
                                     data-method="delete"
@@ -73,7 +74,7 @@
                                     data-title="Continue action?" data-content="This will delete the item">
                                 <span class="fa fa-remove fa-sm"></span> <!-- @lang('buttons.delete') -->
                             </button>
-
+                            @endcan
                             @if (null !== $expedition->downloads)
                                 <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs"
                                         type="button"

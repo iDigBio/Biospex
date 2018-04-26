@@ -25,7 +25,7 @@
                         type="button"
                         onClick="location.href='{{ route('web.projects.edit', [$project->id]) }}'"><span
                             class="fa fa-cog fa-lg"></span> @lang('buttons.edit')</button>
-                @can('delete', $group)
+                @can('isOwner', $group)
                     <button class="btn btn-xs btn-danger" title="@lang('buttons.deleteTitle')"
                             data-href="{{ route('web.projects.delete', [$project->id]) }}"
                             data-method="delete"
