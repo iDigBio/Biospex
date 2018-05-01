@@ -3,18 +3,12 @@
 namespace App\Policies;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 
 class UserPolicy
 {
     public function before($user)
     {
-        $key = md5(__METHOD__ . $user->uuid);
-        $access = Cache::remember($key, 60, function() use ($user) {
-            return $user->isAdmin();
-        });
-
-        return $access ? true : null;
+        return $user->isAdmin() ? true : null;
     }
 
     public function admin()
@@ -39,11 +33,6 @@ class UserPolicy
 
     public function delete($user)
     {
-        $key = md5(__METHOD__ . $user->uuid);
-        $access = Cache::remember($key, 60, function() use ($user) {
-            return $user === null ? false : $user->isAdmin('superuser');
-        });
-
-        return $access ? true : null;
+        return $user === null ? false : ($user->isAdmin('superuser') ? true : null);
     }
 }

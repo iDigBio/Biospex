@@ -150,41 +150,18 @@ $(document).ready(function () {
     if ($('#processModal').length) {
         Echo.channel(Laravel.ocrChannel)
             .listen('PollOcrEvent', (e) => {
-                let groupIds = $.parseJSON(Laravel.groupIds);
-                let ocrHtml = '';
-                if ($.isArray(e.data)) {
-                    $.each(e.data, function (index) {
-                        if ($.inArray(e.data[index].groupId, groupIds) === -1) {
-                            return true;
-                        }
-                        ocrHtml += e.data[index].notice;
-                    });
-                } else {
-                    ocrHtml = e.data;
-                }
-
-                $('#ocrHtml').html(ocrHtml === "" ? "No processes running at this time." : ocrHtml);
+                let ocrHtml = polling_data(e.data);
+                $('#ocrHtml').html(ocrHtml);
             });
 
         Echo.channel(Laravel.exportChannel)
             .listen('PollExportEvent', (e) => {
-                let groupIds = $.parseJSON(Laravel.groupIds);
-                let exportHtml = '';
-
-                if ($.isArray(e.data)) {
-                    $.each(e.data, function (index) {
-                        if ($.inArray(e.data[index].groupId, groupIds) === -1) {
-                            return true;
-                        }
-                        exportHtml += e.data[index].notice;
-                    });
-                } else {
-                    exportHtml = e.data;
-                }
-
-                $('#exportHtml').html(exportHtml === "" ? "No processes running at this time." : exportHtml);
+                let exportHtml = polling_data(e.data);
+                $('#exportHtml').html(exportHtml);
             });
     }
+
+    $('[data-toggle="tooltip"]').tooltip();
 
     if ($('#event-boards').length) {
         let projectId = $("#projectId").data('value');
@@ -218,8 +195,21 @@ $(document).ready(function () {
         let el = $(this);
         copyToClipboard(text, el);
     });
-
 });
+
+// Loop data from polling
+function polling_data(data) {
+    let groupIds = $.parseJSON(Laravel.groupIds);
+    let groupData = '';
+    $.each(data['payload'], function (index) {
+        if ($.inArray(data['payload'][index].groupId, groupIds) === -1) {
+            return true;
+        }
+        groupData += data['payload'][index].notice;
+    });
+
+    return !groupData ? data['message'] : groupData;
+}
 
 $(function () {
     $(document).on('click', '.btn-add', function (e) {

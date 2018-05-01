@@ -176,7 +176,7 @@ class ExpeditionService
      */
     public function getDuplicateCreateExpedition($expeditionId)
     {
-        $expedition = $this->findExpeditionWith($expeditionId, ['project.group.permissions']);
+        $expedition = $this->findExpeditionWith($expeditionId, ['project.group']);
 
         JavaScript::put([
             'projectId'    => $expedition->project->id,
@@ -201,12 +201,12 @@ class ExpeditionService
     public function createExpedition($attributes)
     {
         $expedition = $this->expeditionContract->create($attributes);
-
-        $subjects = explode(',', $attributes['subjectIds']);
+        $subjects = $attributes['subjectIds'] === null ? [] : explode(',', $attributes['subjectIds']);
+        $count = count($subjects);
         $expedition->subjects()->sync($subjects);
 
         $values = [
-            'local_subject_count' => count($subjects)
+            'local_subject_count' => $count
         ];
 
         $expedition->stat()->updateOrCreate(['expedition_id' => $expedition->id], $values);
@@ -234,7 +234,7 @@ class ExpeditionService
     public function getEditExpedition($expeditionId)
     {
         $relations = [
-            'project.group.permissions',
+            'project.group',
             'workflowManager',
             'subjects',
             'nfnWorkflow'
@@ -297,12 +297,13 @@ class ExpeditionService
             }
 
             $expedition->load('subjects');
-            $subjectIds = explode(',', $attributes['subjectIds']);
+            $subjectIds = $attributes['subjectIds'] === null ? [] : explode(',', $attributes['subjectIds']);
+            $count = count($subjectIds);
             $this->subjectContract->detachSubjects($expedition->subjects, $expedition->id);
             $expedition->subjects()->attach($subjectIds);
 
             $values = [
-                'local_subject_count' => count($subjectIds)
+                'local_subject_count' => $count
             ];
 
             $this->expeditionStatContract->updateOrCreate(['expedition_id' => $expedition->id], $values);
@@ -372,7 +373,7 @@ class ExpeditionService
      */
     public function getProjectGroup($projectId)
     {
-        return $this->projectContract->findWith($projectId, ['group.permissions']);
+        return $this->projectContract->findWith($projectId, ['group']);
     }
 
     /**

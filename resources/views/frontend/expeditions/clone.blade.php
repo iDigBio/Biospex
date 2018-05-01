@@ -67,7 +67,7 @@
                 <br />
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        {!! Form::hidden('subjectIds', '', ['name' => 'subjectIds', 'id' => 'subjectIds']) !!}
+                        {!! Form::hidden('subjectIds', null, ['name' => 'subjectIds', 'id' => 'subjectIds']) !!}
                         {!! Form::hidden('project_id', $expedition->project->id) !!}
                         {!! Form::submit(trans('pages.create'), ['class' => 'btn btn-primary']) !!}
                         {!! link_to(URL::previous(), trans('pages.cancel'), ['class' => 'btn btn-large btn-primary btn-danger']) !!}

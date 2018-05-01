@@ -57,7 +57,7 @@ class DarwinCoreFileImportCommand extends Command
 
         $count = 0;
         foreach ($imports as $import) {
-            Queue::push('App\Services\Queue\DarwinCoreFileImportQueue', ['id' => $import->id], $this->tube);
+            DwcFileImportJob::dispatch($import);
             $count++;
         }
 

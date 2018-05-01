@@ -81,7 +81,7 @@ class DownloadsController extends Controller
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $expedition = $this->expeditionContract->expeditionDownloadsByActor($projectId, $expeditionId);
 
-        if ( ! $this->checkPermissions('read', $expedition->project))
+        if ( ! $this->checkPermissions('readProject', $expedition->project->group))
         {
             return redirect()->route('web.projects.index');
         }

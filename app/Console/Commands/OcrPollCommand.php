@@ -58,9 +58,10 @@ class OcrPollCommand extends Command
     {
         $records = $this->ocrQueueContract->getOcrQueuesForPollCommand();
 
+        $data = ['message' => trans('html.processing_empty'), 'payload' => []];
+
         if ($records->isEmpty())
         {
-            $data = trans('html.processing_empty');
             PollOcrEvent::dispatch($data);
 
             return;
@@ -68,7 +69,6 @@ class OcrPollCommand extends Command
 
         $grouped = $records->groupBy('ocr_csv_id')->toArray();
 
-        $data = [];
         $count = 0;
         foreach ($grouped as $group)
         {

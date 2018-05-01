@@ -26,6 +26,7 @@
         <button title="@lang('pages.editTitle')" class="btn btn-warning btn-xs" type="button"
                 onClick="location.href='{{ route('webauth.expeditions.edit', [$project->id, $expedition->id]) }}'">
             <span class="fa fa-cog fa-lrg"></span> <!-- @lang('pages.edit') --></button>
+        @can('isOwner', $project->group)
         <button class="btn btn-xs btn-danger" title="@lang('pages.deleteTitle')"
                 data-href="{{ route('webauth.expeditions.delete', [$project->id, $expedition->id]) }}"
                 data-method="delete"
@@ -37,7 +38,7 @@
                 data-title="Continue action?" data-content="This will trash the item">
             <span class="fa fa-remove fa-lrg"></span> <!-- @lang('pages.delete') -->
         </button>
-
+        @endcan
 
         @if ( ! $expedition->downloads->isEmpty())
             <button title="@lang('pages.downloadTitle')" class="btn btn-success btn-xs"

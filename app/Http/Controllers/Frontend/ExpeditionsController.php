@@ -52,7 +52,7 @@ class ExpeditionsController extends Controller
     {
         $project = $this->expeditionService->getProjectGroup($projectId);
 
-        if ( ! $this->checkPermissions('create', $project))
+        if ( ! $this->checkPermissions('createProject', $project->group))
         {
             return redirect()->route('webauth.projects.index');
         }
@@ -82,7 +82,7 @@ class ExpeditionsController extends Controller
     {
         $project = $this->expeditionService->getProjectGroup($projectId);
 
-        if ( ! $this->checkPermissions('create', $project))
+        if ( ! $this->checkPermissions('createProject', $project->group))
         {
             return redirect()->route('webauth.projects.index');
         }
@@ -110,7 +110,7 @@ class ExpeditionsController extends Controller
     {
         $expedition = $this->expeditionService->getShowExpedition($expeditionId);
 
-        if ( ! $this->checkPermissions('read', $expedition->project))
+        if ( ! $this->checkPermissions('readProject', $expedition->project->group))
         {
             return redirect()->route('webauth.projects.index');
         }
@@ -148,7 +148,7 @@ class ExpeditionsController extends Controller
     {
         $expedition = $this->expeditionService->getEditExpedition($expeditionId);
 
-        if ( ! $this->checkPermissions('update', $expedition->project))
+        if ( ! $this->checkPermissions('updateProject', $expedition->project->group))
         {
             return redirect()->route('webauth.projects.index');
         }
@@ -168,7 +168,7 @@ class ExpeditionsController extends Controller
     {
         $project = $this->expeditionService->getProjectGroup($projectId);
 
-        if ( ! $this->checkPermissions('update', $project))
+        if ( ! $this->checkPermissions('updateProject', $project->group))
         {
             return redirect()->route('webauth.projects.index');
         }
@@ -198,7 +198,7 @@ class ExpeditionsController extends Controller
     {
         $project = $this->expeditionService->getProjectGroup($projectId);
 
-        if ( ! $this->checkPermissions('update', $project))
+        if ( ! $this->checkPermissions('updateProject', $project->group))
         {
             return redirect()->route('webauth.projects.index');
         }
@@ -220,7 +220,7 @@ class ExpeditionsController extends Controller
 
         $project = $this->expeditionService->getProjectGroup($projectId);
 
-        if ( ! $this->checkPermissions('update', $project))
+        if ( ! $this->checkPermissions('updateProject', $project->group))
         {
             return redirect()->route('webauth.projects.index');
         }
@@ -241,7 +241,7 @@ class ExpeditionsController extends Controller
     {
         $project = $this->expeditionService->getProjectGroup($projectId);
 
-        if ( ! $this->checkPermissions('update', $project))
+        if ( ! $this->checkPermissions('updateProject', $project->group))
         {
             return redirect()->route('webauth.projects.index');
         }
@@ -262,7 +262,7 @@ class ExpeditionsController extends Controller
     {
         $project = $this->expeditionService->getProjectGroup($projectId);
 
-        if ( ! $this->checkPermissions('delete', $project))
+        if ( ! $this->checkPermissions('isOwner', $project->group))
         {
             return redirect()->route('webauth.projects.index');
         }
@@ -286,7 +286,7 @@ class ExpeditionsController extends Controller
     {
         $project = $this->expeditionService->getProjectGroup($projectId);
 
-        if ( ! $this->checkPermissions('delete', $project))
+        if ( ! $this->checkPermissions('isOwner', $project->group))
         {
             return redirect()->route('webauth.projects.index');
         }
@@ -307,7 +307,7 @@ class ExpeditionsController extends Controller
     {
         $project = $this->expeditionService->getProjectGroup($projectId);
 
-        if ( ! $this->checkPermissions('delete', $project))
+        if ( ! $this->checkPermissions('isOwner', $project->group))
         {
             return redirect()->route('webauth.projects.index');
         }

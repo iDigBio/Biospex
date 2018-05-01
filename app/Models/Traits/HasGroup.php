@@ -45,23 +45,6 @@ trait HasGroup
     }
 
     /**
-     * Determine if the user may perform the given permission.
-     *
-     * @param  Permission $permission
-     * @param $group
-     * @return bool
-     */
-    public function hasPermission($group, $permission)
-    {
-        if ( ! $this->hasGroup($group))
-        {
-            return false;
-        }
-        
-        return $group->permissions->contains('name', $permission);
-    }
-
-    /**
      * Check if user is admin group.
      *
      * @return bool
@@ -71,16 +54,4 @@ trait HasGroup
         return $this->hasGroup(env('ADMIN_GROUP'));
     }
 
-    /**
-     * Check permissions.
-     *
-     * @param $group
-     * @param $permission
-     * @return bool
-     */
-    public function hasAccess($group, $permission)
-    {
-        return $this->hasPermission($group, $permission);
-
-    }
 }

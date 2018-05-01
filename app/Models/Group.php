@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Presenters\ProfilePresenter;
-use Cache;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
@@ -45,8 +44,7 @@ class Group extends Model implements HasPresenter
     protected $fillable = [
         'uuid',
         'user_id',
-        'title',
-        'permissions',
+        'title'
     ];
 
     /**
@@ -57,15 +55,6 @@ class Group extends Model implements HasPresenter
         parent::boot();
 
         static::bootUuidTrait();
-
-        static::created(function ($group) {
-            $permissions = Cache::tags('model')->rememberForever('permissions.list', function () {
-                return Permission::pluck('name', 'id')->all();
-            });
-            $permissions = array_keys(array_diff($permissions, ['superuser']));
-
-            $group->permissions()->attach($permissions);
-        });
     }
 
     /**
@@ -96,16 +85,6 @@ class Group extends Model implements HasPresenter
     public function users()
     {
         return $this->belongsToMany(User::class);
-    }
-
-    /**
-     * Permissions relationship.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function permissions()
-    {
-        return $this->belongsToMany(Permission::class);
     }
 
     /**

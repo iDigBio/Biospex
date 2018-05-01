@@ -99,6 +99,17 @@ class ProjectService
     }
 
     /**
+     * Find group for project by group id.
+     *
+     * @param $groupId
+     * @return mixed
+     */
+    public function findGroup($groupId)
+    {
+        return $this->groupContract->find($groupId);
+    }
+
+    /**
      * Find project with attributes.
      *
      * @param $projectId
@@ -275,7 +286,7 @@ class ProjectService
      */
     public function editProject($projectId)
     {
-        $project = $this->findWith($projectId, ['group.permissions', 'nfnWorkflows', 'resources']);
+        $project = $this->findWith($projectId, ['group', 'nfnWorkflows', 'resources']);
 
         if (! $project) {
             Flash::error(trans('pages.project_repo_error'));

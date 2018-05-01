@@ -33,6 +33,7 @@
                                     onClick="location.href='{{ route('webauth.expeditions.edit', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-cog fa-lrg"></span> @lang('pages.edit')</button>
 
+                                @can('isOwner', $expedition->project->group)
                             <button class="btn btn-sm btn-danger" title="@lang('pages.deleteTitle')"
                                     data-href="{{ route('webauth.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"
                                     data-method="delete"
@@ -44,6 +45,7 @@
                                     data-title="Continue action?" data-content="This will delete the item">
                                 <span class="fa fa-remove fa-lrg"></span> @lang('pages.delete')
                             </button>
+                                @endcan
 
                         </div>
                         <div class="col-md-2">
