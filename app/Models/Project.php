@@ -121,6 +121,7 @@ class Project extends Model implements StaplerableInterface
 
         static::updating(function ($model) {
             $model->advertise = $model->attributes;
+            $model->slug = null;
         });
     }
 
