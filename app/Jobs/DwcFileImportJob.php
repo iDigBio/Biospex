@@ -59,11 +59,12 @@ class DwcFileImportJob implements ShouldQueue
         $scratchFileDir = config('config.scratch_dir') . '/' . md5($this->import->file);
 
         $project = $projectContract->findWith($this->import->project_id, ['group.owner', 'workflow.actors']);
-
+        \Log::info('Retrieve project');
         try
         {
             $fileService->makeDirectory($scratchFileDir);
             $fileService->unzip(storage_path($this->import->file), $scratchFileDir);
+            \Log::info('Unzip');
 
             $dwcProcess->process($this->import->project_id, $scratchFileDir);
 
@@ -72,12 +73,15 @@ class DwcFileImportJob implements ShouldQueue
 
             $duplicates = GeneralHelper::createCsv($dwcProcess->getDuplicates(), $dupsCsv);
             $rejects = GeneralHelper::createCsv($dwcProcess->getRejectedMedia(), $rejCsv);
+            \Log::info('Create CSV');
 
             $project->group->owner->notify(new ImportComplete($project->title, $duplicates, $rejects));
 
+            \Log::info('Notify');
             if ($project->workflow->actors->contains('title', 'OCR') && $dwcProcess->getSubjectCount() > 0)
             {
                 BuildOcrBatchesJob::dispatch($project->id);
+                \Log::info('Dispatch Ocr');
             }
 
             $fileService->filesystem->deleteDirectory($scratchFileDir);
@@ -85,8 +89,8 @@ class DwcFileImportJob implements ShouldQueue
             $fileService->filesystem->delete($dupsCsv);
             $fileService->filesystem->delete($rejCsv);
             $this->import->delete();
-
             $this->delete();
+            \Log::info('Delete All');
         }
         catch (\Exception $e)
         {
