@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class RemoveUnusedTables extends Migration
+class RemovePermsTables extends Migration
 {
     /**
      * Run the migrations.
