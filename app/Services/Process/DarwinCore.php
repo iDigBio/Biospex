@@ -78,18 +78,14 @@ class DarwinCore
 
         // Set meta properties needed in handling csv file.
         $this->csv->setCsvMetaProperties($this->mediaIsCore, $this->metaFields, $this->projectId);
-        \Log::info('Processed Metafile');
 
         // Load media first to create subjects
         $this->processCsvFile($directory);
-        \Log::info('Processed media');
 
         // Load occurrences
         $this->processCsvFile($directory, false);
-        \Log::info('Processed occurrences');
 
         $this->metaFile->saveMetaFile($projectId, $meta);
-        \Log::info('Saved Meta info');
     }
 
     /**

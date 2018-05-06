@@ -234,6 +234,7 @@ class GeneralHelper
         foreach ($data as $record) {
             fputcsv($fd, $record);
         }
+        fclose($fd);
 
         return $storage;
     }

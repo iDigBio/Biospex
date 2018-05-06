@@ -64,33 +64,26 @@ class DwcFileImportJob implements ShouldQueue
         {
             $fileService->makeDirectory($scratchFileDir);
             $fileService->unzip(storage_path($this->import->file), $scratchFileDir);
-            \Log::info('Unzip');
 
             $dwcProcess->process($this->import->project_id, $scratchFileDir);
 
-            $dupsCsv = storage_path('imports/'. $this->import->id . '-duplicates.csv');
-            $rejCsv = storage_path('imports/'. $this->import->id . '-rejects.csv');
+            $dupsCsv = storage_path('imports/reports/'. md5($this->import->id) . 'dup.csv');
+            $rejCsv = storage_path('imports/reports/'. md5($this->import->id) . 'rej.csv');
 
             $duplicates = GeneralHelper::createCsv($dwcProcess->getDuplicates(), $dupsCsv);
             $rejects = GeneralHelper::createCsv($dwcProcess->getRejectedMedia(), $rejCsv);
-            \Log::info('Create CSV');
 
             $project->group->owner->notify(new ImportComplete($project->title, $duplicates, $rejects));
 
-            \Log::info('Notify');
             if ($project->workflow->actors->contains('title', 'OCR') && $dwcProcess->getSubjectCount() > 0)
             {
                 BuildOcrBatchesJob::dispatch($project->id);
-                \Log::info('Dispatch Ocr');
             }
 
             $fileService->filesystem->deleteDirectory($scratchFileDir);
             $fileService->filesystem->delete(storage_path($this->import->file));
-            $fileService->filesystem->delete($dupsCsv);
-            $fileService->filesystem->delete($rejCsv);
             $this->import->delete();
             $this->delete();
-            \Log::info('Delete All');
         }
         catch (\Exception $e)
         {

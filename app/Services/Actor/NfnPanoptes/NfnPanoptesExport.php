@@ -424,7 +424,5 @@ class NfnPanoptesExport
         $csv = GeneralHelper::createCsv($this->actorImageService->queue->missing, $csvPath);
 
         $this->actorImageService->owner->notify(new NfnExportComplete($message, $csv));
-
-        $this->fileService->filesystem->delete($csvPath);
     }
 }
