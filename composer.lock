@@ -2552,16 +2552,16 @@
         },
         {
             "name": "league/csv",
-            "version": "9.1.3",
+            "version": "9.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/csv.git",
-                "reference": "0d0b12f1a0093a6c39014a5d118f6ba4274539ee"
+                "reference": "9c8ad06fb5d747c149875beb6133566c00eaa481"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/csv/zipball/0d0b12f1a0093a6c39014a5d118f6ba4274539ee",
-                "reference": "0d0b12f1a0093a6c39014a5d118f6ba4274539ee",
+                "url": "https://api.github.com/repos/thephpleague/csv/zipball/9c8ad06fb5d747c149875beb6133566c00eaa481",
+                "reference": "9c8ad06fb5d747c149875beb6133566c00eaa481",
                 "shasum": ""
             },
             "require": {
@@ -2615,7 +2615,7 @@
                 "read",
                 "write"
             ],
-            "time": "2018-03-12T07:20:01+00:00"
+            "time": "2018-05-01T18:32:48+00:00"
         },
         {
             "name": "league/event",

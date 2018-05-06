@@ -58,7 +58,8 @@ class NfnExportComplete extends Notification implements ShouldQueue
 
         if ($this->csv !== null)
         {
-            $mailMessage->attachData($this->csv, 'missingImages.csv', [
+            $mailMessage->attach($this->csv, [
+                'as' => 'missingImages.csv',
                 'mime' => 'text/csv',
             ]);
         }

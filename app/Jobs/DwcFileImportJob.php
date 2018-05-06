@@ -45,9 +45,10 @@ class DwcFileImportJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param Project $projectContract
-     * @param DarwinCore $dwcProcess
-     * @param FileService $fileService
+     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Services\Process\DarwinCore $dwcProcess
+     * @param \App\Services\File\FileService $fileService
+     * @throws \Exception
      */
     public function handle(
         Project $projectContract,
@@ -66,8 +67,11 @@ class DwcFileImportJob implements ShouldQueue
 
             $dwcProcess->process($this->import->project_id, $scratchFileDir);
 
-            $duplicates = GeneralHelper::createCsv($dwcProcess->getDuplicates());
-            $rejects = GeneralHelper::createCsv($dwcProcess->getRejectedMedia());
+            $dupsCsv = storage_path('imports/'. $this->import->id . '-duplicates.csv');
+            $rejCsv = storage_path('imports/'. $this->import->id . '-rejects.csv');
+
+            $duplicates = GeneralHelper::createCsv($dwcProcess->getDuplicates(), $dupsCsv);
+            $rejects = GeneralHelper::createCsv($dwcProcess->getRejectedMedia(), $rejCsv);
 
             $project->group->owner->notify(new ImportComplete($project->title, $duplicates, $rejects));
 
@@ -78,6 +82,8 @@ class DwcFileImportJob implements ShouldQueue
 
             $fileService->filesystem->deleteDirectory($scratchFileDir);
             $fileService->filesystem->delete(storage_path($this->import->file));
+            $fileService->filesystem->delete($dupsCsv);
+            $fileService->filesystem->delete($rejCsv);
             $this->import->delete();
 
             $this->delete();

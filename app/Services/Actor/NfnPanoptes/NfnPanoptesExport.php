@@ -419,8 +419,12 @@ class NfnPanoptesExport
             trans('emails.expedition_export_complete_message', ['expedition' => $this->actorImageService->expedition->title])
         ];
 
-        $csv = GeneralHelper::createCsv($this->actorImageService->queue->missing);
+        $csvPath = storage_path('exports/report/' . md5($this->actorImageService->queue->id) . '.csv');
+
+        $csv = GeneralHelper::createCsv($this->actorImageService->queue->missing, $csvPath);
 
         $this->actorImageService->owner->notify(new NfnExportComplete($message, $csv));
+
+        $this->fileService->filesystem->delete($csvPath);
     }
 }
