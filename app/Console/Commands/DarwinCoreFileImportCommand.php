@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\DwcFileImportJob;
 use Illuminate\Console\Command;
 use App\Repositories\Interfaces\Import;
-use Illuminate\Support\Facades\Queue;
 
 class DarwinCoreFileImportCommand extends Command
 {
@@ -53,15 +53,14 @@ class DarwinCoreFileImportCommand extends Command
      */
     public function handle()
     {
-        $imports = $this->importContract->getImportsWithoutError();
+        $import = $this->importContract->getFirstImportWithoutError();
 
-        $count = 0;
-        foreach ($imports as $import) {
-            DwcFileImportJob::dispatch($import);
-            $count++;
-        }
+        if ($import === null)
+            return;
 
-        echo $count . " Imports added to Queue." . PHP_EOL;
+        DwcFileImportJob::dispatch($import);
+
+        echo "Import added to Queue." . PHP_EOL;
 
     }
 }

@@ -10,5 +10,5 @@ interface Import extends RepositoryInterface
     /**
      * @return mixed
      */
-    public function getImportsWithoutError();
+    public function getFirstImportWithoutError();
 }

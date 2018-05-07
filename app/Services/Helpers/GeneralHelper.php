@@ -200,19 +200,36 @@ class GeneralHelper
      * Create a csv file in memory.
      *
      * @param $data
-     * @return bool|string
+     * @param null $storage
+     * @return null|string
      * @throws \Exception
      */
-    public function createCsv($data)
+    public function createCsv($data, $storage = null)
     {
         if ($data === null || empty($data)) {
             return null;
         }
 
-        // we use a threshold of 1 MB (1024 * 1024), it's just an example
-        $fd = fopen('php://temp/maxmemory:1048576', 'w');
+        $fd = $storage === null ?
+            fopen('php://temp/maxmemory:1048576', 'w') :
+            fopen($storage, 'w');
+
         if ($fd === FALSE) {
             throw new \Exception('Failed to open temporary file while creating csv file');
+        }
+
+        if ($storage === null) {
+            $headers = array_keys($data[0]);
+            fputcsv($fd, $headers);
+            foreach ($data as $record) {
+                fputcsv($fd, $record);
+            }
+
+            rewind($fd);
+            $csv = stream_get_contents($fd);
+            fclose($fd); // releases the memory (or tempfile)
+
+            return $csv;
         }
 
         $headers = array_keys($data[0]);
@@ -220,12 +237,9 @@ class GeneralHelper
         foreach ($data as $record) {
             fputcsv($fd, $record);
         }
+        fclose($fd);
 
-        rewind($fd);
-        $csv = stream_get_contents($fd);
-        fclose($fd); // releases the memory (or tempfile)
-
-        return $csv;
+        return $storage;
     }
 
     /**

@@ -63,14 +63,16 @@ class ImportComplete extends Notification implements ShouldQueue
 
         if ($this->duplicates !== null)
         {
-            $mailMessage->attachData($this->duplicates, 'duplicates.csv', [
+            $mailMessage->attach($this->duplicates, [
+                'as' => 'duplicates.csv',
                 'mime' => 'text/csv',
             ]);
         }
 
         if ($this->rejects !== null)
         {
-            $mailMessage->attachData($this->rejects, 'rejects.csv', [
+            $mailMessage->attach('/path/to/file', [
+                'as' => 'rejects.csv',
                 'mime' => 'text/csv',
             ]);
         }

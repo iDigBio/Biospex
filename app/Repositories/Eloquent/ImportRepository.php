@@ -20,9 +20,9 @@ class ImportRepository extends EloquentRepository implements Import
     /**
      * @inheritdoc
      */
-    public function getImportsWithoutError()
+    public function getFirstImportWithoutError()
     {
-        $results = $this->model->where('error', 0)->get();
+        $results = $this->model->where('error', 0)->first();
 
         $this->resetModel();
 

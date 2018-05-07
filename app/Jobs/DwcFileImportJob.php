@@ -66,8 +66,11 @@ class DwcFileImportJob implements ShouldQueue
 
             $dwcProcess->process($this->import->project_id, $scratchFileDir);
 
-            $duplicates = GeneralHelper::createCsv($dwcProcess->getDuplicates());
-            $rejects = GeneralHelper::createCsv($dwcProcess->getRejectedMedia());
+            $dupsCsv = storage_path('imports/reports/'. md5($this->import->id) . 'dup.csv');
+            $rejCsv = storage_path('imports/reports/'. md5($this->import->id) . 'rej.csv');
+
+            $duplicates = GeneralHelper::createCsv($dwcProcess->getDuplicates(), $dupsCsv);
+            $rejects = GeneralHelper::createCsv($dwcProcess->getRejectedMedia(), $rejCsv);
 
             $project->group->owner->notify(new ImportComplete($project->title, $duplicates, $rejects));
 
@@ -79,7 +82,6 @@ class DwcFileImportJob implements ShouldQueue
             $fileService->filesystem->deleteDirectory($scratchFileDir);
             $fileService->filesystem->delete(storage_path($this->import->file));
             $this->import->delete();
-
             $this->delete();
         }
         catch (\Exception $e)
