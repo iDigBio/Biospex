@@ -7,7 +7,7 @@
                     type="button"
                     onClick="location.href='{{ route('web.groups.restore', [$group->id]) }}'">
                 <span class="fa fa-plus fa-lg"></span> @lang('buttons.restore') </button>
-            @can('delete', $group)
+            @can('isOwner', $group)
                 <button class="btn btn-sm btn-danger" title="@lang('buttons.deleteTitle')"
                         data-href="{{ route('web.groups.destroy', array($group->id)) }}"
                         data-method="delete"

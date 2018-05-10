@@ -5,7 +5,7 @@
             <button title="@lang('buttons.viewTitle')" class="btn btn-default btn-primary btn-sm"
                     type="button" onClick="location.href='{{ route('web.groups.show', [$group->id]) }}'">
                 <span class="fa fa-eye fa-lrg"></span> @lang('buttons.view')</button>
-            @can('update', $group)
+            @can('isOwner', $group)
                 <button title="@lang('buttons.editTitle')" class="btn btn-default btn-warning btn-sm"
                         type="button"
                         onClick="location.href='{{ route('web.groups.edit', array($group->id)) }}'"><span
@@ -15,7 +15,7 @@
                         onClick="location.href='{{ route('web.invites.index', [$group->id]) }}'"><span
                             class="fa fa-users fa-lrg"></span> @lang('buttons.invite')</button>
             @endcan
-            @can('delete', $group)
+            @can('isOwner', $group)
                 <button class="btn btn-sm btn-danger" title="@lang('buttons.deleteTitle')"
                         data-href="{{ route('web.groups.delete', array($group->id)) }}"
                         data-method="delete"
