@@ -9,7 +9,7 @@
         "appstract/laravel-opcache": "^2.0",
         "askedio/laravel5-soft-cascade": "^5.6",
         "cviebrock/eloquent-sluggable": "^4.5",
-        "czim/laravel-paperclip": "^1.5",
+        "czim/laravel-paperclip": "^2.5",
         "davejamesmiller/laravel-breadcrumbs": "^5.0",
         "dingo/api": "2.0.0-alpha2",
         "doctrine/dbal": "^2.7",
