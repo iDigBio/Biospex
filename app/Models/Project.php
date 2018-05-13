@@ -121,7 +121,6 @@ class Project extends Model implements AttachableInterface, HasPresenter
 
         static::updating(function ($model) {
             $model->advertise = $model->attributes;
-            $model->slug = null;
         });
     }
 

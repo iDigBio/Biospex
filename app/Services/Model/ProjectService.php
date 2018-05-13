@@ -311,6 +311,7 @@ class ProjectService
      */
     public function updateProject($attributes, $projectId)
     {
+        $attributes['slug'] = null;
         $project = $this->projectContract->update($attributes, $projectId);
 
         $resources = collect($attributes['resources'])->reject(function ($resource) {
