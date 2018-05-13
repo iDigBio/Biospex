@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Http\Controllers\Frontend;
 
@@ -8,7 +8,6 @@ use App\Repositories\Interfaces\Resource;
 
 class ResourcesController extends Controller
 {
-
     /**
      * @var Resource
      */
@@ -16,6 +15,7 @@ class ResourcesController extends Controller
 
     /**
      * ResourcesController constructor.
+     *
      * @param Resource $resourceContract
      */
     public function __construct(Resource $resourceContract)
@@ -25,7 +25,7 @@ class ResourcesController extends Controller
 
     /**
      * Show categories.
-     * 
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
@@ -44,14 +44,14 @@ class ResourcesController extends Controller
     public function download($resourceId)
     {
         $download = $this->resourceContract->find($resourceId);
-        $file = public_path('resources/' . $download->document);
-        if ( ! file_exists($file))
-        {
+        $document = $download->document;
+
+        if (! $document->exists() || ! file_exists(public_path($document->path()))) {
             Flash::error('File cannot be found.');
 
             return redirect()->route('web.resources.index');
         }
 
-        return response()->download($file, $download->document, ['Content-Type: application/pdf']);
+        return response()->download(public_path($document->path()), $document->originalFilename(), ['Content-Type: ' . $document->contentType()]);
     }
 }
