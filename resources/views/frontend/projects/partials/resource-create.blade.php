@@ -9,7 +9,7 @@
         </div>
     </div>
     <div class="col-sm-3">
-        {!! Form::label('', trans('pages.url'), ['class' => 'control-label']) !!}
+        {!! Form::label('', trans('pages.url_or_name'), ['class' => 'control-label']) !!}
         {!! Form::text('resources[0][name]', null, ['class' => 'form-control', 'placeholder' => trans('pages.project_resources_name')]) !!}
     </div>
     <div class="col-sm-4">
