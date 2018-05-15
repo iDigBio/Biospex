@@ -129,13 +129,13 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
         $values = [
             'expedition_id' => $expeditionId,
             'actor_id' => 2,
-            'file' => $expeditionId . '.csv',
+            'file' => $type !== 'summary' ? $expeditionId . '.csv' : $expeditionId . '.html',
             'type' => $type
         ];
         $attributes = [
             'expedition_id' => $expeditionId,
             'actor_id' => 2,
-            'file' => $expeditionId . '.csv',
+            'file' => $type !== 'summary' ? $expeditionId . '.csv' : $expeditionId . '.html',
             'type' => $type
         ];
 
