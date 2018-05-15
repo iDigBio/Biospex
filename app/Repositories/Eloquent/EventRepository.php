@@ -147,6 +147,13 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function checkEventExistsForClassificationUser($projectId, $user)
     {
+        $events = $this->model->with(['groups.users' => function($query) use($user){
+            $query->where('nfn_user', $user);
+        }])->where('project_id', $projectId)->get();
+
+        return $events;
+
+        /*
         $event = \DB::table('events')
             ->join('event_groups', 'events.id', '=', 'event_groups.event_id')
             ->join('event_group_user', 'event_groups.id', '=', 'event_group_user.group_id')
@@ -157,6 +164,7 @@ class EventRepository extends EloquentRepository implements Event
             ->first();
 
         return $event;
+        */
     }
 
     /**

@@ -147,10 +147,6 @@ class EventService
      */
     public function updateOrCreateEventTranscription($data, $expedition)
     {
-        if ($data->user_name === null) {
-            return;
-        }
-
         // TODO get all events associated with user and project using this check. Loop through to create event transcriptions.
         $event = $this->event->checkEventExistsForClassificationUser($expedition->project_id, $data->user_name);
         if ($event === null) {

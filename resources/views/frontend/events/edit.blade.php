@@ -87,19 +87,17 @@
                 <div class="form-group">
                     {!! Form::label('', trans('pages.event_groups'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="controls col-sm-10">
-                        <div class="controls col-sm-10">
-                            @if($errors->has('groups.*'))
-                                @for($i = 0; $i < old('entries'); $i++)
-                                    @include('frontend.events.partials.group-error')
-                                @endfor
-                            @elseif($event->groups->isNotEmpty())
-                                @foreach($event->groups as $key => $group)
-                                    @include('frontend.events.partials.group-edit')
-                                @endforeach
-                            @else
-                                @include('frontend.events.partials.group-create')
-                            @endif
-                        </div>
+                        @if($errors->has('groups.*'))
+                            @for($i = 0; $i < old('entries'); $i++)
+                                @include('frontend.events.partials.group-error')
+                            @endfor
+                        @elseif($event->groups->isNotEmpty())
+                            @foreach($event->groups as $key => $group)
+                                @include('frontend.events.partials.group-edit')
+                            @endforeach
+                        @else
+                            @include('frontend.events.partials.group-create')
+                        @endif
                     </div>
                 </div>
 
