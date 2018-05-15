@@ -114,6 +114,11 @@ class PusherTranscriptionService
         $data->user_name = $data->user_id !== null ? $this->getNfnUser($data->user_id) : null;
 
         $this->createDashboardFromPusher($data, $subject, $expedition);
+
+        if ($data->user_name === null) {
+            return;
+        }
+
         $this->eventService->updateOrCreateEventTranscription($data, $expedition);
     }
 
