@@ -21,7 +21,7 @@ return [
     'email_confirm'                       => 'Activation email sent. Please check your email.',
     'event_export_success'                => 'An email with attached export will be sent.',
     'event_export_csv'                    => 'Event Export CSV',
-    'event_export_csv_complete'           => 'Your export is attached. If no attachment is found, it is due to no records being located for the action. If you believe this is an error, please contact the Administration.',
+    'event_export_csv_complete'           => 'Your export is attached. If an attachment is not included, it is due to no records being located for the action. If you believe this is an error, please contact the Administration.',
     'event_export_csv_error'              => 'There was an error while exporting. Please forward this message to the Administration<br><br>Error: :error',
     'event_join_group_success'            => 'Thank you for your registration.',
     'event_join_error'                    => 'There was an error registering your join request. Please use the contact form and submit the link you used.',
