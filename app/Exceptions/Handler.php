@@ -2,32 +2,12 @@
 
 namespace App\Exceptions;
 
-use Mail;
 use Exception;
-use App\Mail\BiospexException;
 use Illuminate\Auth\AuthenticationException;
-use Symfony\Component\Debug\Exception\FlattenException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
 
 class Handler extends ExceptionHandler
 {
-    /**
-     * A list of the exception types that are not reported.
-     *
-     * @var array
-     */
-    protected $dontReport = [
-        \Illuminate\Auth\AuthenticationException::class,
-        \Illuminate\Auth\Access\AuthorizationException::class,
-        \Symfony\Component\HttpKernel\Exception\HttpException::class,
-        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
-        \Illuminate\Session\TokenMismatchException::class,
-        \Illuminate\Validation\ValidationException::class,
-        \Predis\Connection\ConnectionException::class,
-        \Symfony\Component\Console\Exception\CommandNotFoundException::class
-    ];
-
     /**
      * A list of the inputs that are never flashed for validation exceptions.
      *
@@ -47,11 +27,6 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
-
-        if ($this->shouldReport($exception)) {
-            $this->sendEmail($exception);
-        }
-
         parent::report($exception);
     }
 
@@ -79,23 +54,5 @@ class Handler extends ExceptionHandler
         return $request->expectsJson()
             ? response()->json(['message' => $exception->getMessage()], 401)
             : redirect()->guest(route('app.get.login'));
-    }
-
-    /**
-     * Sends an email to the developer about the exception.
-     *
-     * @param  \Exception  $exception
-     * @return void
-     */
-    public function sendEmail(Exception $exception)
-    {
-        try {
-            $e = FlattenException::create($exception);
-            $handler = new SymfonyExceptionHandler();
-            $html = $handler->getHtml($e);
-            Mail::to(config('mail.from.address'))->send(new BiospexException($html));
-        } catch (Exception $ex) {
-            \Log::error('Could not send mail for thrown exception');
-        }
     }
 }

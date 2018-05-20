@@ -151,20 +151,9 @@ class EventRepository extends EloquentRepository implements Event
             $query->where('nfn_user', $user);
         }])->where('project_id', $projectId)->get();
 
+        $this->resetModel();
+
         return $events;
-
-        /*
-        $event = \DB::table('events')
-            ->join('event_groups', 'events.id', '=', 'event_groups.event_id')
-            ->join('event_group_user', 'event_groups.id', '=', 'event_group_user.group_id')
-            ->join('event_users', 'event_group_user.user_id', '=', 'event_users.id')
-            ->select('events.id as event_id', 'event_group_user.group_id', 'event_group_user.user_id')
-            ->where('events.project_id', $projectId)
-            ->where('event_users.nfn_user', $user)
-            ->first();
-
-        return $event;
-        */
     }
 
     /**

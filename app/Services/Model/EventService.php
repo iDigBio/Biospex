@@ -9,6 +9,7 @@ use App\Repositories\Interfaces\EventTranscription;
 use App\Repositories\Interfaces\EventUser;
 use App\Repositories\Interfaces\Project;
 use Auth;
+use Carbon\Carbon;
 
 class EventService
 {
@@ -148,22 +149,26 @@ class EventService
     public function updateOrCreateEventTranscription($data, $expedition)
     {
         // TODO get all events associated with user and project using this check. Loop through to create event transcriptions.
-        $event = $this->event->checkEventExistsForClassificationUser($expedition->project_id, $data->user_name);
-        if ($event === null) {
-            return;
-        }
+        $this->event->checkEventExistsForClassificationUser($expedition->project_id, $data->user_name)
+            ->filter(function ($event) {
 
-        $attributes = ['classification_id' => $data->classification_id];
-        $values = [
-            'classification_id' => $data->classification_id,
-            'event_id'          => $event->event_id,
-            'group_id'          => $event->group_id,
-            'user_id'           => $event->user_id,
-        ];
+                $start_date = $event->start_date->setTimezone($event->timezone);
+                $end_date = $event->end_date->setTimezone($event->timezone);
 
-        $this->eventTranscription->updateOrCreate($attributes, $values);
+                return Carbon::now($event->timezone)->between($start_date, $end_date);
 
-        // TODO Dispatch multiple project ids to refersh all boards.
+            })->each(function ($event) use ($data){
+                $attributes = ['classification_id' => $data->classification_id];
+                $values = [
+                    'classification_id' => $data->classification_id,
+                    'event_id'          => $event->event_id,
+                    'group_id'          => $event->group_id,
+                    'user_id'           => $event->user_id,
+                ];
+
+                $this->eventTranscription->updateOrCreate($attributes, $values);
+            });
+
         EventBoardJob::dispatch($expedition->project_id);
     }
 

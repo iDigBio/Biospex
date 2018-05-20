@@ -128,23 +128,23 @@
         },
         {
             "name": "askedio/laravel5-soft-cascade",
-            "version": "5.6.2",
+            "version": "5.6.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Askedio/laravel5-soft-cascade.git",
-                "reference": "534fa5dee0c36db9ab56fe3b11a235bf98b39ed7"
+                "url": "https://github.com/Askedio/laravel-soft-cascade.git",
+                "reference": "fc129408594434a9847b73181dde90ce2e0d02c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Askedio/laravel5-soft-cascade/zipball/534fa5dee0c36db9ab56fe3b11a235bf98b39ed7",
-                "reference": "534fa5dee0c36db9ab56fe3b11a235bf98b39ed7",
+                "url": "https://api.github.com/repos/Askedio/laravel-soft-cascade/zipball/fc129408594434a9847b73181dde90ce2e0d02c3",
+                "reference": "fc129408594434a9847b73181dde90ce2e0d02c3",
                 "shasum": ""
             },
             "require": {
-                "illuminate/container": "^5.6",
-                "illuminate/database": "^5.6",
-                "illuminate/events": "^5.6",
-                "illuminate/support": "^5.6",
+                "illuminate/container": "5.6.*",
+                "illuminate/database": "5.6.*",
+                "illuminate/events": "5.6.*",
+                "illuminate/support": "5.6.*",
                 "php": ">=7.1.3"
             },
             "require-dev": {
@@ -166,8 +166,8 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
-            "description": "Soft Delete & Restore Cascader",
-            "time": "2018-04-17T06:51:38+00:00"
+            "description": "Laravel Cascade Soft Delete & Restore",
+            "time": "2018-04-28T10:31:56+00:00"
         },
         {
             "name": "cocur/slugify",
@@ -1532,16 +1532,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.58",
+            "version": "v0.59",
             "source": {
                 "type": "git",
                 "url": "https://github.com/google/google-api-php-client-services.git",
-                "reference": "e21760a34daea7bc29e2866b62f8c8db4e91228d"
+                "reference": "1dbfb1e7ff596c9fe17f4ba8e6a74bb073adbe0f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-api-php-client-services/zipball/e21760a34daea7bc29e2866b62f8c8db4e91228d",
-                "reference": "e21760a34daea7bc29e2866b62f8c8db4e91228d",
+                "url": "https://api.github.com/repos/google/google-api-php-client-services/zipball/1dbfb1e7ff596c9fe17f4ba8e6a74bb073adbe0f",
+                "reference": "1dbfb1e7ff596c9fe17f4ba8e6a74bb073adbe0f",
                 "shasum": ""
             },
             "require": {
@@ -1565,7 +1565,7 @@
             "keywords": [
                 "google"
             ],
-            "time": "2018-05-06T00:22:52+00:00"
+            "time": "2018-05-14T00:23:02+00:00"
         },
         {
             "name": "google/auth",
@@ -2068,16 +2068,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.6.21",
+            "version": "v5.6.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "458a89b1c5ff73072c27308566f444c790f76f28"
+                "reference": "637fd797a6dde8d24a9f07da77e375ec251c5d24"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/458a89b1c5ff73072c27308566f444c790f76f28",
-                "reference": "458a89b1c5ff73072c27308566f444c790f76f28",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/637fd797a6dde8d24a9f07da77e375ec251c5d24",
+                "reference": "637fd797a6dde8d24a9f07da77e375ec251c5d24",
                 "shasum": ""
             },
             "require": {
@@ -2203,7 +2203,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2018-05-08T13:30:15+00:00"
+            "time": "2018-05-15T13:34:20+00:00"
         },
         {
             "name": "laravel/passport",
@@ -2276,16 +2276,16 @@
         },
         {
             "name": "laravel/tinker",
-            "version": "v1.0.6",
+            "version": "v1.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/tinker.git",
-                "reference": "b22fe905fcefdffae76b011e27c7ac09e07e052b"
+                "reference": "e3086ee8cb1f54a39ae8dcb72d1c37d10128997d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/tinker/zipball/b22fe905fcefdffae76b011e27c7ac09e07e052b",
-                "reference": "b22fe905fcefdffae76b011e27c7ac09e07e052b",
+                "url": "https://api.github.com/repos/laravel/tinker/zipball/e3086ee8cb1f54a39ae8dcb72d1c37d10128997d",
+                "reference": "e3086ee8cb1f54a39ae8dcb72d1c37d10128997d",
                 "shasum": ""
             },
             "require": {
@@ -2335,7 +2335,7 @@
                 "laravel",
                 "psysh"
             ],
-            "time": "2018-04-16T12:10:37+00:00"
+            "time": "2018-05-17T13:42:07+00:00"
         },
         {
             "name": "laravelcollective/html",
@@ -4149,16 +4149,16 @@
         },
         {
             "name": "spiritix/lada-cache",
-            "version": "v2.1.1",
+            "version": "v2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spiritix/lada-cache.git",
-                "reference": "07a53f611ea5365fa0bac5b791e82863318e7860"
+                "reference": "189dd9e7f2cf3a437622288f49ab12eb834a69c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spiritix/lada-cache/zipball/07a53f611ea5365fa0bac5b791e82863318e7860",
-                "reference": "07a53f611ea5365fa0bac5b791e82863318e7860",
+                "url": "https://api.github.com/repos/spiritix/lada-cache/zipball/189dd9e7f2cf3a437622288f49ab12eb834a69c1",
+                "reference": "189dd9e7f2cf3a437622288f49ab12eb834a69c1",
                 "shasum": ""
             },
             "require": {
@@ -4206,7 +4206,7 @@
                 "php",
                 "redis"
             ],
-            "time": "2018-01-29T09:26:07+00:00"
+            "time": "2018-05-14T12:40:22+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
