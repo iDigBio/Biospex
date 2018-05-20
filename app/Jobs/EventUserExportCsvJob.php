@@ -70,10 +70,7 @@ class EventUserExportCsvJob implements ShouldQueue
                 }
             });
 
-            $file = config('config.export_reports_dir') . '/' . str_random() . '.csv';
-            $csv->writerCreateFromPath($file);
-            $csv->insertOne(['Group', 'User', 'Transcriptions']);
-            $csv->insertAll($this->rows);
+            $file = empty($this->rows) ? null : $this->setCsv($csv);
 
             $this->user->notify(new EventCsvExport(trans('messages.event_export_csv_complete'), $file));
         }
@@ -81,5 +78,17 @@ class EventUserExportCsvJob implements ShouldQueue
         {
             $this->user->notify(new EventCsvExport(trans('messages.event_export_csv_error', ['error' => $e->getMessage()])));
         }
+    }
+
+    /**
+     * @param \App\Services\Csv\Csv $csv
+     * @throws \League\Csv\CannotInsertRecord
+     */
+    private function setCsv(Csv $csv)
+    {
+        $file = config('config.export_reports_dir') . '/' . str_random() . '.csv';
+        $csv->writerCreateFromPath($file);
+        $csv->insertOne(['Group', 'User', 'Transcriptions']);
+        $csv->insertAll($this->rows);
     }
 }
