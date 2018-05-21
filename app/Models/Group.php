@@ -2,15 +2,13 @@
 
 namespace App\Models;
 
-use App\Presenters\ProfilePresenter;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use McCool\LaravelAutoPresenter\HasPresenter;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class Group extends Model implements HasPresenter
+class Group extends Model
 {
     use UuidTrait, SoftCascadeTrait, SoftDeletes, LadaCacheTrait;
 
@@ -57,15 +55,7 @@ class Group extends Model implements HasPresenter
         static::bootUuidTrait();
     }
 
-    /**
-     * Get Resource Presenter.
-     *
-     * @return string
-     */
-    public function getPresenterClass()
-    {
-        return ProfilePresenter::class;
-    }
+
 
     /**
      * User as owner relationship
