@@ -7,7 +7,7 @@
                     type="button"
                     onClick="location.href='{{ route('webauth.groups.restore', [$group->id]) }}'">
                 <span class="fa fa-plus fa-lg"></span> @lang('pages.restore') </button>
-            @can('isOwner', $group)
+            @can('isOwner', $group->getWrappedObject())
                 <button class="btn btn-sm btn-danger" title="@lang('pages.deleteTitle')"
                         data-href="{{ route('webauth.groups.destroy', array($group->id)) }}"
                         data-method="delete"
