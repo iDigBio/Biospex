@@ -25,7 +25,7 @@
                         type="button"
                         onClick="location.href='{{ route('webauth.projects.edit', [$project->id]) }}'"><span
                             class="fa fa-cog fa-lg"></span> @lang('pages.edit')</button>
-                @can('delete', $group)
+                @can('isOwner', $group->getWrappedObject())
                     <button class="btn btn-xs btn-danger" title="@lang('pages.deleteTitle')"
                             data-href="{{ route('webauth.projects.delete', [$project->id]) }}"
                             data-method="delete"

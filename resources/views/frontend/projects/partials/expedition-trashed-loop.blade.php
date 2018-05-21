@@ -8,7 +8,7 @@
                 type="button"
                 onClick="location.href='{{ route('webauth.expeditions.restore', [$project->id, $expedition->id]) }}'">
             <span class="fa fa-plus fa-lg"></span><!-- @lang('pages.view') --></button>
-        @can('isOwner', $project->group)
+        @can('isOwner', $project->group->getWrappedObject())
         <button class="btn btn-xs btn-danger" title="@lang('pages.deleteTitle')"
                 data-href="{{ route('webauth.expeditions.destroy', [$project->id, $expedition->id]) }}"
                 data-method="delete"

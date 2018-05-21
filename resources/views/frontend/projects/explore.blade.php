@@ -30,7 +30,7 @@
                     <button title="@lang('pages.editTitle')" class="btn btn-warning btn-sm" type="button"
                             onClick="location.href='{{ route('webauth.projects.edit', [$project->id]) }}'"><span
                                 class="fa fa-cog fa-lrg"></span> @lang('pages.edit')</button>
-                    @can('delete', $project)
+                    @can('isOwner', $project->group->getWrappedObject())
                         <button class="btn btn-sm btn-danger" title="@lang('pages.deleteTitle')"
                                 data-href="{{ route('webauth.projects.delete', [$project->id]) }}"
                                 data-method="delete"

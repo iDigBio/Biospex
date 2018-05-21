@@ -39,7 +39,7 @@ class StatisticsController extends Controller
      */
     public function index($projectId)
     {
-        $project = $this->projectContract->find($projectId);
+        $project = $this->projectContract->findWith($projectId, ['group']);
         $transcribers = collect($this->panoptesTranscriptionContract
             ->getUserTranscriptionCount($projectId))->sortByDesc('transcriptionCount');
 

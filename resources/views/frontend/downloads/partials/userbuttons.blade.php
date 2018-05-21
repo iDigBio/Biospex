@@ -1,5 +1,5 @@
 @if ($download->type != 'export')
-    @can('isOwner', $expedition->project->group)
+    @can('isOwner', $expedition->project->group->getWrappedObject())
         <button title="@lang('pages.downloadTitle')"
                 class="btn btn-success btn-xs"
                 type="button"
