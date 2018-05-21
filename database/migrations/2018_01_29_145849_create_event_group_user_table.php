@@ -13,17 +13,19 @@ class CreateEventGroupUserTable extends Migration
      */
     public function up()
     {
-        Schema::create('event_group_user', function (Blueprint $table) {
-            $table->increments('id');
+        if (! Schema::hasTable('event_group_user')) {
+            Schema::create('event_group_user', function (Blueprint $table) {
+                $table->increments('id');
 
-            $table->unsignedInteger('group_id');
-            $table->foreign('group_id')->references('id')->on('event_groups')->onDelete('cascade');
+                $table->unsignedInteger('group_id');
+                $table->foreign('group_id')->references('id')->on('event_groups')->onDelete('cascade');
 
-            $table->unsignedInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('event_users')->onDelete('cascade');
+                $table->unsignedInteger('user_id');
+                $table->foreign('user_id')->references('id')->on('event_users')->onDelete('cascade');
 
-            $table->unique(['group_id', 'user_id'], 'event_group_user');
-        });
+                $table->unique(['group_id', 'user_id'], 'event_group_user');
+            });
+        }
     }
 
     /**

@@ -13,21 +13,23 @@ class CreateEventsTable extends Migration
      */
     public function up()
     {
-        Schema::create('events', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('project_id');
-            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
-            $table->unsignedInteger('owner_id');
-            $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string('title');
-            $table->string('description', 104);
-            $table->string('contact');
-            $table->string('contact_email');
-            $table->timestamp('start_date')->nullable();
-            $table->timestamp('end_date')->nullable();
-            $table->string('timezone')->default('America/New_York');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('events')) {
+            Schema::create('events', function (Blueprint $table) {
+                $table->increments('id');
+                $table->unsignedInteger('project_id');
+                $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
+                $table->unsignedInteger('owner_id');
+                $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
+                $table->string('title');
+                $table->string('description', 104);
+                $table->string('contact');
+                $table->string('contact_email');
+                $table->timestamp('start_date')->nullable();
+                $table->timestamp('end_date')->nullable();
+                $table->string('timezone')->default('America/New_York');
+                $table->timestamps();
+            });
+        }
     }
 
     /**
