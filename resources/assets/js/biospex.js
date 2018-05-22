@@ -167,9 +167,7 @@ $(document).ready(function () {
         let projectId = $("#projectId").data('value');
         Echo.channel(Laravel.boardChannel + '.' + projectId)
             .listen('PollBoardEvent', (e) => {
-                if (e.data['id'] === projectId) {
-                    $('#event-boards').html(e.data['html']);
-                }
+                $('#event-boards').html(e.data['html']);
             });
     }
 
