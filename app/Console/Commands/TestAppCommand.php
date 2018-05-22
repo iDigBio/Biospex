@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\EventBoardJob;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -13,7 +14,7 @@ class TestAppCommand extends Command
     /**
      * The console command name.
      */
-    protected $signature = 'test:test {ids?}';
+    protected $signature = 'test:test {id?}';
 
     /**
      * The console command description.
@@ -34,6 +35,15 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
+        $id = $this->argument('id');
+        if (null === $id) {
+            echo 'Project Id required' . PHP_EOL;
 
+            return;
+        }
+
+        EventBoardJob::dispatch($id);
+
+        return;
     }
 }
