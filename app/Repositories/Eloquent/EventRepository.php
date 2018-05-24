@@ -9,7 +9,6 @@ use Carbon\Carbon;
 
 class EventRepository extends EloquentRepository implements Event
 {
-
     /**
      * Specify Model class name
      *
@@ -25,8 +24,8 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function createEvent(array $attributes)
     {
-        $attributes['start_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['start_date'] . ':00', $attributes['timezone']);
-        $attributes['end_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['end_date'] . ':00', $attributes['timezone']);
+        $attributes['start_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['start_date'].':00', $attributes['timezone']);
+        $attributes['end_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['end_date'].':00', $attributes['timezone']);
 
         $event = $this->create($attributes);
 
@@ -51,8 +50,8 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function updateEvent(array $attributes, $resourceId)
     {
-        $attributes['start_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['start_date'] . ':00', $attributes['timezone']);
-        $attributes['end_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['end_date'] . ':00', $attributes['timezone']);
+        $attributes['start_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['start_date'].':00', $attributes['timezone']);
+        $attributes['end_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['end_date'].':00', $attributes['timezone']);
 
         $event = $this->update($attributes, $resourceId);
 
@@ -78,7 +77,7 @@ class EventRepository extends EloquentRepository implements Event
             return;
         }
 
-        if (!$record && $group['title'] !== null) {
+        if (! $record && $group['title'] !== null) {
             $group = new EventGroup($group);
             $event->groups()->save($group);
         }
@@ -95,9 +94,11 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function getUserEvents($id)
     {
-        $results = $this->model->withCount(['transcriptions' => function($query) {
-            $query->groupBy('event_id');
-        }])->where('owner_id', $id)->get();
+        $results = $this->model->withCount([
+            'transcriptions' => function ($query) {
+                $query->groupBy('event_id');
+            },
+        ])->where('owner_id', $id)->get();
 
         $this->resetModel();
 
@@ -113,7 +114,11 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function getEventShow($eventId)
     {
-        $results = $this->model->with(['transcriptionCount', 'groups.users.transcriptionCount', 'project'])->find($eventId);
+        $results = $this->model->with([
+            'transcriptionCount',
+            'groups.users.transcriptionCount',
+            'project',
+        ])->find($eventId);
 
         $this->resetModel();
 
@@ -147,8 +152,10 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function checkEventExistsForClassificationUser($projectId, $user)
     {
-        $events = $this->model->with(['groups.users' => function($query) use($user){
-            $query->where('nfn_user', $user);
+        $events = $this->model->with(['groups' => function($q) use ($user) {
+            $q->with(['users'])->whereHas('users', function($q) use ($user){
+                $q->where('nfn_user', $user);
+            });
         }])->where('project_id', $projectId)->get();
 
         $this->resetModel();

@@ -144,32 +144,33 @@ class EventService
      * Update or create event transcription for user.
      *
      * @param $data
-     * @param $expedition
+     * @param $projectId
      */
-    public function updateOrCreateEventTranscription($data, $expedition)
+    public function updateOrCreateEventTranscription($data, $projectId)
     {
-        // TODO get all events associated with user and project using this check. Loop through to create event transcriptions.
-        $this->event->checkEventExistsForClassificationUser($expedition->project_id, $data->user_name)
-            ->filter(function ($event) {
+        $events = $this->event->checkEventExistsForClassificationUser($projectId, $data->user_name);
+        $filtered = $events->filter(function ($event) {
+            $start_date = $event->start_date->setTimezone($event->timezone);
+            $end_date = $event->end_date->setTimezone($event->timezone);
 
-                $start_date = $event->start_date->setTimezone($event->timezone);
-                $end_date = $event->end_date->setTimezone($event->timezone);
-
-                return Carbon::now($event->timezone)->between($start_date, $end_date);
-
-            })->each(function ($event) use ($data){
+            return Carbon::now($event->timezone)->between($start_date, $end_date);
+        })->each(function ($event) use ($data) {
+            foreach ($event->groups as $group) {
                 $attributes = ['classification_id' => $data->classification_id];
                 $values = [
                     'classification_id' => $data->classification_id,
-                    'event_id'          => $event->event_id,
-                    'group_id'          => $event->group_id,
-                    'user_id'           => $event->user_id,
+                    'event_id'          => $event->id,
+                    'group_id'          => $group->id,
+                    'user_id'           => $group->users->first()->id,
                 ];
 
                 $this->eventTranscription->updateOrCreate($attributes, $values);
-            });
+            }
+        });
 
-        EventBoardJob::dispatch($expedition->project_id);
+        if ($filtered->isNotEmpty()) {
+            EventBoardJob::dispatch($projectId);
+        };
     }
 
     /**

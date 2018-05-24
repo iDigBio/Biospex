@@ -119,7 +119,7 @@ class PusherTranscriptionService
             return;
         }
 
-        $this->eventService->updateOrCreateEventTranscription($data, $expedition);
+        $this->eventService->updateOrCreateEventTranscription($data, $expedition->project_id);
     }
 
     /**

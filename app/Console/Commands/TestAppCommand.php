@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\EventBoardJob;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -22,6 +21,11 @@ class TestAppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \App\Repositories\Interfaces\Event
+     */
+    private $event;
+
+    /**
      * Create a new job instance.
      *
      */
@@ -35,15 +39,6 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
-        $id = $this->argument('id');
-        if (null === $id) {
-            echo 'Project Id required' . PHP_EOL;
 
-            return;
-        }
-
-        EventBoardJob::dispatch($id);
-
-        return;
     }
 }
