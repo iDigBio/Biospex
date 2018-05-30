@@ -26,7 +26,7 @@ try {
     require("amcharts3/amcharts/serial");
     require("amcharts3/amcharts/plugins/dataloader/dataloader");
     require("amcharts3/amcharts/plugins/responsive/responsive");
-    require("bootstrap-confirmation2/bootstrap-confirmation");
+    require("bootstrap-confirmation2/dist/bootstrap-confirmation");
     require("socket.io-client/dist/socket.io");
     require("./amchart");
     require("./delete-form");

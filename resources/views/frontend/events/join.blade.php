@@ -38,7 +38,11 @@
                             <div class="form-group">
                                 <div class="input-group {{ ($errors->has('nfn_user')) ? 'has-error' : '' }}">
                                     <span class="input-group-addon"><i class="fa fa-user fa-lg"></i></span>
-                                    {!! Form::text('nfn_user', '', ['id' => 'nfn_user', 'class' => 'form-control', 'placeholder' => trans('pages.nfn_user'),]) !!}
+                                    @if($active)
+                                    {!! Form::text('nfn_user', '', ['id' => 'nfn_user', 'class' => 'form-control', 'placeholder' => trans('pages.nfn_user')]) !!}
+                                    @else
+                                        {!! Form::text('nfn_user', '', ['id' => 'nfn_user', 'class' => 'form-control', 'placeholder' => trans('pages.nfn_user_disabled'), 'disabled' => 'disabled']) !!}
+                                        @endif
                                 </div>
                                 {{ $errors->first('nfn_user') }}
                             </div>

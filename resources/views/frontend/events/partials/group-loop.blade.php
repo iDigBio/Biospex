@@ -3,7 +3,7 @@
         <tr>
             <td>{{ $group->title }}</td>
             <td>{{ $user->nfn_user }}</td>
-            <td>{{ $user->transcriptionCount }}</td>
+            <td>{{ $user->transcriptions_count }}</td>
         </tr>
     @endforeach
 @endforeach

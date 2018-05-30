@@ -69,7 +69,10 @@ class ProjectRepository extends EloquentRepository implements Project
     {
         $results = $this->model
             ->with(['group.users.profile', 'expeditions.stat', 'expeditions.actors', 'amChart', 'resources', 'events' => function($query){
-                $query->with('groups')->whereHas('groups');
+                $query->withCount('transcriptions')
+                    ->with(['groups' => function($query){
+                        $query->withCount('transcriptions');
+                    }])->whereHas('groups');
             }])
             ->where('slug', '=', $slug)
             ->first();

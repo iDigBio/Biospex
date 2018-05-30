@@ -114,10 +114,15 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function getEventShow($eventId)
     {
-        $results = $this->model->with([
-            'transcriptionCount',
-            'groups.users.transcriptionCount',
+        $results = $this->model->withCount('transcriptions')->with([
             'project',
+            'groups.users' => function ($q) use ($eventId) {
+                $q->withcount([
+                    'transcriptions' => function ($q) use ($eventId) {
+                        $q->where('event_id', $eventId);
+                    },
+                ]);
+            },
         ])->find($eventId);
 
         $this->resetModel();
@@ -152,11 +157,13 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function checkEventExistsForClassificationUser($projectId, $user)
     {
-        $events = $this->model->with(['groups' => function($q) use ($user) {
-            $q->with(['users'])->whereHas('users', function($q) use ($user){
-                $q->where('nfn_user', $user);
-            });
-        }])->where('project_id', $projectId)->get();
+        $events = $this->model->with([
+            'groups' => function ($q) use ($user) {
+                $q->with(['users'])->whereHas('users', function ($q) use ($user) {
+                    $q->where('nfn_user', $user);
+                });
+            },
+        ])->where('project_id', $projectId)->get();
 
         $this->resetModel();
 
@@ -172,7 +179,11 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function getEventsByProjectId($projectId)
     {
-        $results = $this->model->with(['groups.transcriptionCount'])->whereHas('groups')->where('project_id', $projectId)->get();
+        $results = $this->model->withCount('transcriptions')->with([
+                'groups' => function ($q) {
+                    $q->withCount('transcriptions');
+                },
+            ])->whereHas('groups')->where('project_id', $projectId)->get();
 
         $this->resetModel();
 

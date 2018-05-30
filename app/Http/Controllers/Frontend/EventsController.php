@@ -12,6 +12,7 @@ use App\Jobs\EventUserExportCsvJob;
 use App\Repositories\Interfaces\Project;
 use App\Services\Model\EventService;
 use Auth;
+use Illuminate\Support\Carbon;
 
 class EventsController extends Controller
 {
@@ -57,6 +58,7 @@ class EventsController extends Controller
     public function show($eventId)
     {
         $event = $this->eventService->getShow($eventId);
+
         if ( ! $this->checkPermissions('read', $event))
         {
             return redirect()->route('webauth.events.index');
@@ -213,11 +215,15 @@ class EventsController extends Controller
     {
         $group = $this->eventService->getGroupByUuid($uuid);
 
+        $start_date = $group->event->start_date->setTimezone($group->event->timezone);
+        $end_date = $group->event->end_date->setTimezone($group->event->timezone);
+        $active = Carbon::now($group->event->timezone)->between($start_date, $end_date);
+
         if ($group === null) {
             Flash::error(trans('messages.event_join_group_error'));
         }
 
-        return view('frontend.events.join', compact('group'));
+        return view('frontend.events.join', compact('group', 'active'));
     }
 
     /**

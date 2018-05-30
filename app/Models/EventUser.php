@@ -41,33 +41,4 @@ class EventUser extends Model
     {
         return $this->hasMany(EventTranscription::class, 'user_id');
     }
-
-    /**
-     * Transcription count relationship.
-     *
-     * \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function transcriptionCount()
-    {
-        return $this->hasOne(EventTranscription::class, 'user_id')
-            ->selectRaw('user_id, count(*) as aggregate')
-            ->groupBy('user_id');
-    }
-
-    /**
-     * Transcription count attribute.
-     *
-     * @return int
-     */
-    public function getTranscriptionCountAttribute()
-    {
-        // if relation is not loaded already, let's do it first
-        if ( ! $this->relationLoaded('transcriptionCount'))
-            $this->load('transcriptionCount');
-
-        $related = $this->getRelation('transcriptionCount');
-
-        // then return the count directly
-        return ($related) ? (int) $related->aggregate : 0;
-    }
 }

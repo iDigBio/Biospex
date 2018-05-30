@@ -112,6 +112,7 @@ return [
     'nfn_workflow_id_note'          => 'Workflow Id from Notes From Nature',
     'nfn_workflow_id_note_create'   => 'Once Expedition is submitted to NfN, add NfN workflow id here by editing Expedition',
     'nfn_user'                      => 'Notes from Nature Username',
+    'nfn_user_disabled' => 'Event has expired',
     'nfn_subjects_header'           => 'Subjects uploaded to NotesFromNature',
     'ocr'                           => 'Reprocess Ocr',
     'ocrDisabled'                   => 'OCR is processing',

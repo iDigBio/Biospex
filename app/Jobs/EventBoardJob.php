@@ -44,9 +44,7 @@ class EventBoardJob extends Job implements ShouldQueue
     )
     {
         $events = $eventContract->getEventsByProjectId($this->projectId);
-
         $returnHTML = view('frontend.events.board', ['events' => $events])->render();
-
         $data = [
             'id' => $this->projectId,
             'html' => $returnHTML

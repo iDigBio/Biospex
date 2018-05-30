@@ -17,7 +17,6 @@ class CreateEventTranscriptionsTable extends Migration
             Schema::create('event_transcriptions', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('classification_id');
-                $table->unique('classification_id');
                 $table->unsignedInteger('event_id');
                 $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
                 $table->unsignedInteger('group_id');

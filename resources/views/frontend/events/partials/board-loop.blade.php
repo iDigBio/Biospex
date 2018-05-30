@@ -26,7 +26,7 @@
                 @lang('pages.event_board_total')
             </div>
             <div class="col-md-5"></div>
-            <div class="col-md-2">{{ $event->transcriptionCount }}</div>
+            <div class="col-md-2">{{ $event->transcriptions_count }}</div>
         </div>
     </div>
 </div>

@@ -51,7 +51,7 @@ class HomeController extends Controller
     public function project($slug, Project $projectContract)
     {
         $project = $projectContract->getProjectPageBySlug($slug);
-        $events = $project->events;
+        $events = $project->events->sortByDesc('start_date');
 
         return view('frontend.project', compact('project', 'events'));
     }

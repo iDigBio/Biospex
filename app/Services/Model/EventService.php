@@ -149,6 +149,7 @@ class EventService
     public function updateOrCreateEventTranscription($data, $projectId)
     {
         $events = $this->event->checkEventExistsForClassificationUser($projectId, $data->user_name);
+
         $filtered = $events->filter(function ($event) {
             $start_date = $event->start_date->setTimezone($event->timezone);
             $end_date = $event->end_date->setTimezone($event->timezone);
@@ -156,7 +157,6 @@ class EventService
             return Carbon::now($event->timezone)->between($start_date, $end_date);
         })->each(function ($event) use ($data) {
             foreach ($event->groups as $group) {
-                $attributes = ['classification_id' => $data->classification_id];
                 $values = [
                     'classification_id' => $data->classification_id,
                     'event_id'          => $event->id,
@@ -164,7 +164,7 @@ class EventService
                     'user_id'           => $group->users->first()->id,
                 ];
 
-                $this->eventTranscription->updateOrCreate($attributes, $values);
+                $this->eventTranscription->create($values);
             }
         });
 

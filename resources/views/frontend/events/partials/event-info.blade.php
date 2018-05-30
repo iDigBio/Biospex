@@ -13,7 +13,7 @@
         </div>
         <div class="col-md-6">
             <div class="row">
-                <h3>@lang('pages.transcriptions'): {{ $event->transcriptionCount }}</h3>
+                <h3>@lang('pages.transcriptions'): {{ $event->transcriptions_count }}</h3>
                 <h3>Group Invite Links</h3>
                 @foreach($event->groups as $group)
                     <button type="button" class="btn btn-default btn-copy js-tooltip js-copy"

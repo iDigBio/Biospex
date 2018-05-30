@@ -96,35 +96,6 @@ class Event extends Model
     }
 
     /**
-     * Transcription count relationship.
-     *
-     * \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function transcriptionCount()
-    {
-        return $this->hasOne(EventTranscription::class, 'event_id')
-            ->selectRaw('event_id, count(*) as aggregate')
-            ->groupBy('event_id');
-    }
-
-    /**
-     * Transcription count attribute.
-     *
-     * @return int
-     */
-    public function getTranscriptionCountAttribute()
-    {
-        // if relation is not loaded already, let's do it first
-        if ( ! $this->relationLoaded('transcriptionCount'))
-            $this->load('transcriptionCount');
-
-        $related = $this->getRelation('transcriptionCount');
-
-        // then return the count directly
-        return ($related) ? (int) $related->aggregate : 0;
-    }
-
-    /**
      * Set start date attribute.
      *
      * @param $value
