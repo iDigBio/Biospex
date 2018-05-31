@@ -44,7 +44,7 @@ mix.webpackConfig({
         "amcharts3/amcharts/serial",
         "amcharts3/amcharts/plugins/dataloader/dataloader",
         "amcharts3/amcharts/plugins/responsive/responsive",
-        "bootstrap-confirmation2/dist/bootstrap-confirmation",
+        "bootstrap-confirmation2/bootstrap-confirmation",
         "socket.io-client/dist/socket.io",
     ]);
 
