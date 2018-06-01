@@ -8,7 +8,6 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('webauth.expeditions.show', $expedition) !!}
     <div class="jumbotron">
         <h3>{{ $expedition->title }}</h3>
         <p>{{ $expedition->description }}

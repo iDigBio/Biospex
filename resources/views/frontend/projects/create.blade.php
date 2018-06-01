@@ -8,7 +8,6 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('projects.title', trans('pages.create') . ' ' . trans('pages.project')) !!}
     <div class="col-xs-12">
         <div class="panel panel-info">
             <div class="panel-heading">

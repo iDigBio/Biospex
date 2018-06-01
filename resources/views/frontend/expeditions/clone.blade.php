@@ -8,7 +8,6 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('webauth.projects.show.title', $expedition->project, trans('pages.clone') . ' ' . trans('pages.expedition')) !!}
     <div class="col-xs-12">
         <div class="panel panel-info">
             <div class="panel-heading">

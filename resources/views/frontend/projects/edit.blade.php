@@ -8,7 +8,6 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('webauth.projects.show.title', $project, trans('pages.edit')) !!}
     <div class="col-xs-12">
         <div class="panel panel-info">
             <div class="panel-heading">

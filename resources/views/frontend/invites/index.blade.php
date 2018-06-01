@@ -8,7 +8,6 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('webauth.groups.show.invite', $group) !!}
     <div class="jumbotron">
         <h2>{{ $group->title }}</h2>
         <p>{{ trans('pages.invite_explained') }}</p>

@@ -3,17 +3,16 @@
 {{-- Web site Title --}}
 @section('title')
 @parent
-    @lang('pages.create') @lang('pages.create')
+{{ trans('pages.create') }} {{ trans('pages.group') }}
 @stop
 
 {{-- Content --}}
 @section('content')
-{!! Breadcrumbs::render('webauth.groups.show.create') !!}
 <div class="row centered-form ">
     <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
         <div class="panel panel-info">
             <div class="panel-heading">
-                <h3 class="panel-title">@lang('pages.create) @lang('pages.group')</h3>
+                <h3 class="panel-title">{{ trans('pages.create') }} {{ trans('pages.group') }}</h3>
             </div>
             <div class="panel-body">
                 {!! Form::open([

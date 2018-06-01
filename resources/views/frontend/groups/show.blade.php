@@ -8,7 +8,6 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('webauth.groups.show', $group) !!}
     <div class="jumbotron">
         <h3>{{ $group->title }}</h3>
     </div>

@@ -8,7 +8,6 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('webauth.events.create') !!}
     <div class="col-md-10 col-md-offset-1  top20">
         <div class="panel panel-info">
             <div class="panel-heading">

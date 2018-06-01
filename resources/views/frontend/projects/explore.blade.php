@@ -7,7 +7,6 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('webauth.projects.show.title', $project, 'Explore') !!}
     <div class="jumbotron">
         <h3>{{ $project->title }}</h3>
         <p>{{ $project->description_short }}</p>

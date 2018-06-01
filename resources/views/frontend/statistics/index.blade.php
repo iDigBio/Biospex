@@ -7,7 +7,6 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('webauth.projects.show.title', $project, trans('pages.project_stats')) !!}
     @include('frontend.statistics.partials.project-info')
     <div class="row">
         <div class="col-md-6">

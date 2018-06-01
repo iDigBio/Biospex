@@ -8,8 +8,6 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('webauth.expeditions.show.title', $expedition, 'Downloads') !!}
-
     <div class="jumbotron">
         <h2>{{ $expedition->title }} @lang('pages.transcriptions')</h2>
         <p>{{ $expedition->description }}</p>

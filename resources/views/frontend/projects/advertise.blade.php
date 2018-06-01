@@ -7,7 +7,6 @@
 
 {{-- Content --}}
 @section('content')
-    {!! Breadcrumbs::render('webauth.projects.show.title', $project, trans('pages.advertise_title')) !!}
 <div class="jumbotron">
     <h3>{{ $project->title }}</h3>
     <p>@lang('pages.advertise_title')</p>
