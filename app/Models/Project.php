@@ -189,16 +189,6 @@ class Project extends Model implements AttachableInterface, HasPresenter
     }
 
     /**
-     * Expedition relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function expeditionsTrashed()
-    {
-        return $this->hasMany(Expedition::class)->onlyTrashed();
-    }
-
-    /**
      * Subject relationship.
      * 
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

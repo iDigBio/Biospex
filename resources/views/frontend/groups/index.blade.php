@@ -17,13 +17,9 @@
         </h3>
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-12">
             <h3>{{ trans('pages.active') }}</h3>
             @include('frontend.groups.partials.group-table')
-        </div>
-        <div class="col-md-6">
-            <h3>{{ trans('pages.trash') }}</h3>
-            @include('frontend.groups.partials.group-trashed-table')
         </div>
     </div>
 @stop

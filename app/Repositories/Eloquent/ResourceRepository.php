@@ -28,16 +28,4 @@ class ResourceRepository extends EloquentRepository implements Resource
 
         return $results;
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function getTrashedResourcesOrdered()
-    {
-        $results = $this->model->onlyTrashed()->orderBy('order', 'asc')->get();
-
-        $this->resetModel();
-
-        return $results;
-    }
 }

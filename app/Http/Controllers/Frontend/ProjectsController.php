@@ -35,14 +35,13 @@ class ProjectsController extends Controller
     {
         $user = \Auth::user();
         $groups = $this->projectService->getUserProjectListByGroup($user);
-        $trashed = $this->projectService->getUserProjectListByGroup($user, true);
 
         if (! $groups->count())
         {
             return redirect()->route('webauth.home.welcome');
         }
 
-        return view('frontend.projects.index', compact('groups', 'trashed'));
+        return view('frontend.projects.index', compact('groups'));
     }
 
     /**
@@ -80,9 +79,8 @@ class ProjectsController extends Controller
         $user = $userContract->findWith(request()->user()->id, ['profile']);
 
         $expeditions = $this->projectService->getProjectExpeditions($projectId);
-        $trashed = $this->projectService->getProjectExpeditions($projectId, true);
 
-        return view('frontend.projects.show', compact('user', 'project', 'expeditions', 'trashed'));
+        return view('frontend.projects.show', compact('user', 'project', 'expeditions'));
     }
 
     /**
@@ -195,7 +193,7 @@ class ProjectsController extends Controller
      */
     public function delete($projectId)
     {
-        $project = $this->projectService->findWith($projectId, ['group', 'nfnWorkflows']);
+        $project = $this->projectService->findWith($projectId, ['group', 'nfnWorkflows', 'expeditions.downloads', 'subjects']);
 
         if ( ! $this->checkPermissions('isOwner', $project->group))
         {
@@ -205,46 +203,6 @@ class ProjectsController extends Controller
         $this->projectService->deleteProject($project);
 
         return redirect()->route('webauth.projects.index');
-    }
-
-    /**
-     * Destroy project and related content.
-     *
-     * @param $projectId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy($projectId)
-    {
-        $project = $this->projectService->findWith($projectId, ['group', 'expeditions.downloads', 'subjects'], true);
-
-        if ( ! $this->checkPermissions('isOwner', $project->group))
-        {
-            return redirect()->route('webauth.projects.index');
-        }
-
-        $this->projectService->destroyProject($project);
-
-        return redirect()->route('webauth.projects.index');
-    }
-
-    /**
-     * Restore project.
-     *
-     * @param $projectId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function restore($projectId)
-    {
-        $project = $this->projectService->findWith($projectId, ['group'], true);
-
-        if ( ! $this->checkPermissions('isOwner', $project->group))
-        {
-            return redirect()->route('webauth.projects.index');
-        }
-
-        $this->projectService->restoreProject($project);
-
-        return redirect()->route('webauth.projects.show', [$projectId]);
     }
 
     /**

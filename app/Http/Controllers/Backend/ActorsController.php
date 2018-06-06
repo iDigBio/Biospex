@@ -45,9 +45,8 @@ class ActorsController extends Controller
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $actors = $this->actorContract->all();
-        $trashed = $this->actorContract->getOnlyTrashed();
 
-        return view('backend.actors.index', compact('user', 'actors', 'trashed'));
+        return view('backend.actors.index', compact('user', 'actors'));
     }
 
     /**
@@ -59,9 +58,8 @@ class ActorsController extends Controller
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $actors = $this->actorContract->all();
-        $trashed = $this->actorContract->getOnlyTrashed();
 
-        return view('backend.actors.index', compact('user', 'actors', 'trashed'));
+        return view('backend.actors.index', compact('user', 'actors'));
     }
 
     /**
@@ -97,10 +95,9 @@ class ActorsController extends Controller
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $actors = $this->actorContract->all();
-        $trashed = $this->actorContract->getOnlyTrashed();
         $actor = $this->actorContract->findWith($actorId, ['contacts']);
 
-        return view('backend.actors.index', compact('user', 'actors', 'actor', 'trashed'));
+        return view('backend.actors.index', compact('user', 'actors', 'actor'));
     }
 
     /**
@@ -130,21 +127,6 @@ class ActorsController extends Controller
         $this->actorContract->delete($actorId) ?
             Flash::success('The actor has been deleted.') :
             Flash::error('Actor could not be deleted.');
-
-        return redirect()->route('admin.actors.index');
-    }
-
-    /**
-     * Force delete soft deleted records.
-     *
-     * @param $actorId
-     * @return mixed
-     */
-    public function trash($actorId)
-    {
-        $this->actorContract->destroy($actorId) ?
-            Flash::success('Actor has been forcefully deleted.') :
-            Flash::error('Actor could not be forcefully deleted.');
 
         return redirect()->route('admin.actors.index');
     }

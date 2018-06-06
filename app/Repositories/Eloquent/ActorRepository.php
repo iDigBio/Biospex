@@ -22,18 +22,6 @@ class ActorRepository extends EloquentRepository implements Actor
     /**
      * @inheritdoc
      */
-    public function getAllTrashed()
-    {
-        $results = $this->model->onlyTrashed()->get();
-
-        $this->resetModel();
-
-        return $results;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function createActor(array $attributes = [])
     {
         $actor = $this->model->create($attributes);

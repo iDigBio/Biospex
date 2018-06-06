@@ -43,9 +43,8 @@ class ResourcesController extends Controller
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $resources = $this->resourceContract->getResourcesOrdered();
-        $trashed = $this->resourceContract->getTrashedResourcesOrdered();
 
-        return view('backend.resources.index', compact('user', 'resources', 'trashed'));
+        return view('backend.resources.index', compact('user', 'resources'));
     }
 
     /**
@@ -95,9 +94,8 @@ class ResourcesController extends Controller
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $resources = $this->resourceContract->all();
         $resource = $this->resourceContract->find($resourceId);
-        $trashed = $this->resourceContract->getTrashedResourcesOrdered();
 
-        return view('backend.resources.index', compact('user', 'resources', 'resource', 'trashed'));
+        return view('backend.resources.index', compact('user', 'resources', 'resource'));
     }
 
     /**
@@ -125,7 +123,6 @@ class ResourcesController extends Controller
      */
     public function delete($resourceId)
     {
-        $this->resourceContract->update(['order' => 0], $resourceId);
         $result = $this->resourceContract->delete($resourceId);
 
         $result ? Flash::success('The resource has been deleted.')
@@ -134,22 +131,6 @@ class ResourcesController extends Controller
         return redirect()->route('admin.resources.index');
     }
 
-    /**
-     * Force delete soft deleted records.
-     *
-     * @param $resourceId
-     * @return mixed
-     */
-    public function trash($resourceId)
-    {
-        $resource = $this->resourceContract->findOnlyTrashed($resourceId);
-        $result = $this->resourceContract->destroy($resource);
-
-        $result ? Flash::success('Resource has been forcefully deleted.')
-            : Flash::error('Resource could not be forcefully deleted.');
-
-        return redirect()->route('admin.resources.index');
-    }
 
     /**
      * Update ordering on resources.

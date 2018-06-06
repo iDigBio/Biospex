@@ -103,16 +103,6 @@ class ExpeditionService
     }
 
     /**
-     * Get all trashed expeditions.
-     *
-     * @return mixed
-     */
-    public function getOnlyTrashedExpeditions()
-    {
-        return $this->expeditionContract->getOnlyTrashed();
-    }
-
-    /**
      * Find expedition with relations.
      *
      * @param $expeditionId
@@ -422,7 +412,7 @@ class ExpeditionService
     {
         try
         {
-            $expedition = $this->findExpeditionWith($expeditionId, ['nfnWorkflow']);
+            $expedition = $this->findExpeditionWith($expeditionId, ['nfnWorkflow', 'downloads']);
 
             if (isset($record->nfnWorkflow))
             {
@@ -430,6 +420,10 @@ class ExpeditionService
 
                 return false;
             }
+
+            $expedition->downloads->each(function($download){
+                $this->fileService->filesystem->delete(config('config.nfn_export_dir') . '/' . $download->file);
+            });
 
             $subjects = $this->subjectContract->findSubjectsByExpeditionId($expedition->id);
 
@@ -459,49 +453,5 @@ class ExpeditionService
 
             return false;
         }
-    }
-
-    /**
-     * Destory expedition.
-     *
-     * @param $expeditionId
-     * @return bool
-     */
-    public function destroyExpedition($expeditionId)
-    {
-        try
-        {
-            $expedition = $this->expeditionContract->findOnlyTrashed($expeditionId, ['downloads']);
-
-            $expedition->downloads->each(function($download){
-                $this->fileService->filesystem->delete(config('config.nfn_export_dir') . '/' . $download->file);
-            });
-
-            $this->expeditionContract->destroy($expedition);
-
-            Flash::success(trans('messages.record_destroyed'));
-
-            return true;
-        }
-        catch (\Exception $e)
-        {
-            Flash::error(trans('messages.record_destroy_error'));
-
-            return false;
-        }
-    }
-
-    /**
-     * Restore deleted expedition.
-     *
-     * @param $expeditionId
-     */
-    public function restoreExpedition($expeditionId)
-    {
-        $this->expeditionContract->restore($expeditionId) ?
-            Flash::success(trans('messages.record_restore')) :
-            Flash::error(trans('messages.record_restore_error'));
-
-        return;
     }
 }

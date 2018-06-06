@@ -20,11 +20,9 @@ class ProjectRepository extends EloquentRepository implements Project
     /**
      * @inheritdoc
      */
-    public function getProjectByIdWith($projectId, array $with = [], $trashed = false)
+    public function getProjectByIdWith($projectId, array $with = [])
     {
-        $results = $trashed ?
-            $this->model->onlyTrashed()->with($with)->find($projectId) :
-            $this->model->with($with)->find($projectId);
+        $results = $this->model->with($with)->find($projectId);
 
         $this->resetModel();
 

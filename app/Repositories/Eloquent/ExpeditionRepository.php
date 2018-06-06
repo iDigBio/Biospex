@@ -83,11 +83,9 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     /**
      * @inheritdoc
      */
-    public function findExpeditionsByProjectIdWith($projectId, array $with = [], $trashed = false)
+    public function findExpeditionsByProjectIdWith($projectId, array $with = [])
     {
-        $results = $trashed ?
-            $this->model->onlyTrashed()->with($with)->where('project_id', $projectId)->get() :
-            $this->model->with($with)->where('project_id', $projectId)->get();
+        $results = $this->model->with($with)->where('project_id', $projectId)->get();
 
         $this->resetModel();
 

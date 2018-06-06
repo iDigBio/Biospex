@@ -54,10 +54,9 @@ class WorkflowsController extends Controller
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $workflows = $this->workflowContract->all();
-        $trashed = $this->workflowContract->getOnlyTrashed();
         $actors = $this->actorContract->all();
 
-        return view('backend.workflows.index', compact('user', 'workflows', 'trashed', 'actors'));
+        return view('backend.workflows.index', compact('user', 'workflows', 'actors'));
     }
 
     /**
@@ -70,11 +69,10 @@ class WorkflowsController extends Controller
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $workflows = $this->workflowContract->all();
-        $trashed = $this->workflowContract->getOnlyTrashed();
         $actors = $this->actorContract->all();
         $workflow = $this->workflowContract->findWith($workflowId, ['actors']);
 
-        return view('backend.workflows.index', compact('user', 'workflows', 'trashed', 'actors', 'workflow'));
+        return view('backend.workflows.index', compact('user', 'workflows', 'actors', 'workflow'));
     }
 
     /**
@@ -138,25 +136,9 @@ class WorkflowsController extends Controller
      */
     public function delete($workflowId)
     {
-        $this->workflowContract->update(['enabled' => 0], $workflowId);
         $this->workflowContract->delete($workflowId) ?
             Flash::success('Workflow has been deleted.') :
             Flash::error('Workflow could not be deleted.');
-
-        return redirect()->route('admin.workflows.index');
-    }
-
-    /**
-     * Force delete soft deleted records.
-     * 
-     * @param $workflowId
-     * @return mixed
-     */
-    public function trash($workflowId)
-    {
-        $this->workflowContract->destroy($workflowId) ?
-            Flash::success('Workflow has been forcefully deleted.') :
-            Flash::error('Workflow could not be forcefully deleted.');
 
         return redirect()->route('admin.workflows.index');
     }

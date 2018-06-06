@@ -118,13 +118,13 @@ class InviteService
         try{
             $this->inviteContract->delete($inviteId);
 
-            Flash::success(trans('messages.record_destroyed'));
+            Flash::success(trans('messages.record_deleted'));
 
             return true;
         }
         catch(\Exception $e)
         {
-            Flash::error(trans('messages.record_destroy_error'));
+            Flash::error(trans('messages.record_delete_error'));
 
             return false;
         }

@@ -98,16 +98,6 @@ class Group extends Model implements HasPresenter
     }
 
     /**
-     * Trashed projects relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function trashedProjects()
-    {
-        return $this->hasMany(Project::class)->orderBy('title')->onlyTrashed();
-    }
-
-    /**
      * Invites relationship.
      * 
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

@@ -10,5 +10,4 @@
 @section('main-content')
     @include('backend.notices.partials.form')
     @include('backend.notices.partials.notices')
-    @include('backend.notices.partials.trashed')
 @endsection

@@ -274,46 +274,4 @@ class ExpeditionsController extends Controller
             redirect()->route('webauth.expeditions.show', [$projectId, $expeditionId]);
 
     }
-
-    /**
-     * Destroy the specified resource from storage.
-     *
-     * @param $projectId
-     * @param $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy($projectId, $expeditionId)
-    {
-        $project = $this->expeditionService->getProjectGroup($projectId);
-
-        if ( ! $this->checkPermissions('isOwner', $project->group))
-        {
-            return redirect()->route('webauth.projects.index');
-        }
-
-        $this->expeditionService->destroyExpedition($expeditionId);
-
-        return redirect()->route('webauth.projects.show', [$projectId]);
-    }
-
-    /**
-     * Restore deleted expedition.
-     *
-     * @param $projectId
-     * @param $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function restore($projectId, $expeditionId)
-    {
-        $project = $this->expeditionService->getProjectGroup($projectId);
-
-        if ( ! $this->checkPermissions('isOwner', $project->group))
-        {
-            return redirect()->route('webauth.projects.index');
-        }
-
-        $this->expeditionService->restoreExpedition($expeditionId);
-
-        return redirect()->route('webauth.projects.show', [$projectId]);
-    }
 }

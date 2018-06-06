@@ -48,11 +48,6 @@ class Actor extends Model
         {
             $actor->workflows()->delete();
         });
-
-        self::restored(function ($actor)
-        {
-            $actor->workflows()->restore();
-        });
     }
 
     /**

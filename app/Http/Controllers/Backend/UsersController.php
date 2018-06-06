@@ -37,13 +37,12 @@ class UsersController extends Controller
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $users = $this->userContract->getAllUsersOrderByDate();
-        $trashed = $this->userContract->getOnlyTrashed();
 
         $editUser = $userId !== null ? $this->userContract->findWith($userId, ['profile']) : null;
 
         $timezones = DateHelper::timeZoneSelect();
 
-        return view('backend.users.index', compact('user', 'users', 'trashed', 'editUser', 'timezones'));
+        return view('backend.users.index', compact('user', 'users', 'editUser', 'timezones'));
     }
 
     /**
@@ -120,36 +119,6 @@ class UsersController extends Controller
         $this->userContract->delete($userId) ?
             Flash::success('User has been deleted.') :
             Flash::error('User could not be deleted.');
-
-        return redirect()->route('admin.users.index');
-    }
-
-    /**
-     * Forcefully delete trashed records.
-     *
-     * @param $userId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy($userId)
-    {
-        $this->userContract->destroy($userId) ?
-            Flash::success('User has been forcefully deleted.') :
-            Flash::error('User could not be forcefully deleted.');
-
-        return redirect()->route('admin.users.index');
-    }
-
-    /**
-     * Restore deleted record.
-     *
-     * @param $userId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function restore($userId)
-    {
-        $this->userContract->restore($userId) ?
-            Flash::success('User has been restored successfully.') :
-            Flash::error('User could not be restored.');
 
         return redirect()->route('admin.users.index');
     }

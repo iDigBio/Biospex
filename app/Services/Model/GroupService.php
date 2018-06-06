@@ -31,14 +31,6 @@ class GroupService
     }
 
     /**
-     * @return mixed
-     */
-    public function getAllTrashedGroups()
-    {
-        return $this->groupContract->getOnlyTrashed();
-    }
-
-    /**
      * Find a group by id with relationships if required.
      *
      * @param $groupId
@@ -62,26 +54,14 @@ class GroupService
     }
 
     /**
-     * Returned only trashed group by id.
-     *
-     * @param $groupId
-     * @return mixed
-     */
-    public function findTrashed($groupId)
-    {
-        return $this->groupContract->findOnlyTrashed($groupId, ['trashedProjects']);
-    }
-
-    /**
      * Get user project list by group for logged in user.
      *
      * @param $user
-     * @param bool $trashed
      * @return mixed
      */
-    public function getUserProjectListByGroup($user, $trashed = false)
+    public function getUserProjectListByGroup($user)
     {
-        return $this->groupContract->getUserProjectListByGroup($user, $trashed);
+        return $this->groupContract->getUserProjectListByGroup($user);
     }
 
     /**
@@ -178,45 +158,5 @@ class GroupService
 
             return false;
         }
-    }
-
-    /**
-     * Destroy Group.
-     *
-     * @param $group
-     * @return bool
-     */
-    public function destroyGroup($group)
-    {
-        try
-        {
-            if ( ! $group->trashedProjects->isNotEmpty())
-            {
-                $group->trashedProjects()->forceDelete();
-            }
-
-            $this->groupContract->destroy($group);
-
-            Flash::success(trans('messages.record_destroyed'));
-
-            return true;
-        }
-        catch (\Exception $e)
-        {
-            Flash::error(trans('messages.record_destroy_error'));
-
-            return false;
-        }
-    }
-
-    /**
-     * Restore Group.
-     * @param $group
-     */
-    public function restoreGroup($group)
-    {
-        $this->groupContract->restore($group) ?
-            Flash::success(trans('messages.record_restored')) :
-            Flash::error(trans('messages.record_restored_error'));
     }
 }

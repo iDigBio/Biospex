@@ -16,6 +16,4 @@
     </h3>
 </div>
 @include('frontend.projects.partials.project-table')
-<h3>{!! trans('pages.trash') !!}</h3>
-@include('frontend.projects.partials.project-trashed-table')
 @stop

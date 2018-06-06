@@ -45,9 +45,8 @@ class GroupsController extends Controller
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $groups = $this->groupService->getAllGroups();
-        $trashed = $this->groupService->getAllTrashedGroups();
 
-        return view('backend.groups.index', compact('user', 'groups', 'trashed'));
+        return view('backend.groups.index', compact('user', 'groups'));
     }
 
     /**
@@ -105,34 +104,6 @@ class GroupsController extends Controller
     {
         $group = $this->groupService->findGroupWith($groupId, ['projects.nfnWorfklows']);
         $this->groupService->deleteGroup($group);
-
-        return redirect()->route('admin.groups.index');
-    }
-
-    /**
-     * Forcefully delete trashed records.
-     *
-     * @param $groupId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy($groupId)
-    {
-        $group = $this->groupService->findTrashed($groupId);
-        $this->groupService->destroyGroup($group);
-
-        return redirect()->route('admin.groups.index');
-    }
-
-    /**
-     * Restore deleted record.
-     *
-     * @param $groupId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function restore($groupId)
-    {
-        $group = $this->groupService->findTrashed($groupId);
-        $this->groupService->restoreGroup($group);
 
         return redirect()->route('admin.groups.index');
     }

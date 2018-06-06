@@ -114,28 +114,19 @@ class ProjectService
      *
      * @param $projectId
      * @param array $with
-     * @param bool $trashed
      * @return mixed
      */
-    public function findWith($projectId, array $with = [], $trashed = false)
+    public function findWith($projectId, array $with = [])
     {
-        return $this->projectContract->getProjectByIdWith($projectId, $with, $trashed);
+        return $this->projectContract->getProjectByIdWith($projectId, $with);
     }
 
     /**
      * @return mixed
      */
-    public function getallProjects()
+    public function getAllProjects()
     {
         return $this->projectContract->all();
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTrashedProjects()
-    {
-        return $this->projectContract->getOnlyTrashed();
     }
 
     /**
@@ -176,22 +167,20 @@ class ProjectService
      * Get project list by group for logged in user.
      *
      * @param $user
-     * @param $trashed
      * @return mixed
      */
-    public function getUserProjectListByGroup($user, $trashed = false)
+    public function getUserProjectListByGroup($user)
     {
-        return $this->groupContract->getUserProjectListByGroup($user, $trashed);
+        return $this->groupContract->getUserProjectListByGroup($user);
     }
 
     /**
      * Show project.
      *
      * @param $projectId
-     * @param bool $trashed
      * @return mixed
      */
-    public function getProjectExpeditions($projectId, $trashed = false)
+    public function getProjectExpeditions($projectId)
     {
         $with = [
             'downloads',
@@ -199,7 +188,7 @@ class ProjectService
             'stat',
         ];
 
-        return $this->expeditionContract->findExpeditionsByProjectIdWith($projectId, $with, $trashed);
+        return $this->expeditionContract->findExpeditionsByProjectIdWith($projectId, $with);
     }
 
     /**
@@ -410,25 +399,6 @@ class ProjectService
                 return false;
             }
 
-            $this->projectContract->delete($project);
-            Flash::success(trans('messages.record_deleted'));
-
-            return true;
-        } catch (\Exception $e) {
-            Flash::error(trans('messages.record_delete_error'));
-
-            return false;
-        }
-    }
-
-    /**
-     * Destory project.
-     *
-     * @param $project
-     */
-    public function destroyProject($project)
-    {
-        try {
             $project->expeditions->each(function ($expedition) {
                 $expedition->downloads->each(function ($download) {
                     $this->fileService->filesystem->delete(config('config.nfn_export_dir').'/'.$download->file);
@@ -441,27 +411,14 @@ class ProjectService
 
             $this->projectContract->destroy($project);
 
-            Flash::success(trans('messages.record_destroyed'));
+            Flash::success(trans('messages.record_deleted'));
 
-            return;
+            return true;
         } catch (\Exception $e) {
-            Flash::error(trans('messages.record_destroy_error'));
+            Flash::error(trans('messages.record_delete_error'));
 
-            return;
+            return false;
         }
-    }
-
-    /**
-     * Restore Project.
-     *
-     * @param $project
-     * @return mixed
-     */
-    public function restoreProject($project)
-    {
-        return $this->projectContract->restore($project) ?
-            Flash::success(trans('messages.record_restored')) :
-            Flash::error(trans('messages.record_restored_error'));
     }
 }
 

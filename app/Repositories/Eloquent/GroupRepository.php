@@ -21,11 +21,9 @@ class GroupRepository extends EloquentRepository implements Group
     /**
      * @inheritdoc
      */
-    public function getUserProjectListByGroup($user, $trashed = false)
+    public function getUserProjectListByGroup($user)
     {
-        $with = ! $trashed ? 'projects' : 'trashedProjects';
-
-        $results = $this->model->with($with)
+        $results = $this->model->with('projects')
             ->whereHas('users', function ($query) use ($user) {
                 $query->where('users.id', $user->id);
             })->get();

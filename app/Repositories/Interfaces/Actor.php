@@ -7,12 +7,6 @@ use App\Repositories\RepositoryInterface;
 interface Actor extends RepositoryInterface
 {
     /**
-     * Get only trashed records
-     * @return mixed
-     */
-    public function getAllTrashed();
-
-    /**
      * Create new Actor.
      *
      * @param array $attributes

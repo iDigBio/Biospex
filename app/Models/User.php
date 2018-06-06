@@ -102,16 +102,6 @@ class User extends Authenticatable implements HasPresenter
     }
 
     /**
-     * Trashed group relationship.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function groupsTrashed()
-    {
-        return $this->belongsToMany(Group::class)->whereNotNull('groups.deleted_at');
-    }
-
-    /**
      * Group owner relationship.
      *
      * @return mixed

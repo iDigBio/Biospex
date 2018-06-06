@@ -42,9 +42,8 @@ class NoticesController extends Controller
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $notices = $this->noticeContract->all();
-        $trashed = $this->noticeContract->getOnlyTrashed();
 
-        return view('backend.notices.index', compact('user', 'notices', 'trashed'));
+        return view('backend.notices.index', compact('user', 'notices'));
     }
 
     /**
@@ -57,10 +56,9 @@ class NoticesController extends Controller
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $notices = $this->noticeContract->all();
-        $trashed = $this->noticeContract->getOnlyTrashed();
         $notice = $this->noticeContract->find($noticeId);
 
-        return view('backend.notices.index', compact('user', 'notices', 'notice', 'trashed'));
+        return view('backend.notices.index', compact('user', 'notices', 'notice'));
     }
 
     /**
@@ -118,21 +116,6 @@ class NoticesController extends Controller
             Flash::success('Notice has been deleted.') :
             Flash::error('Notice could not be deleted.');
         
-        return redirect()->route('admin.notices.index');
-    }
-
-    /**
-     * Force delete soft deleted records.
-     *
-     * @param $noticeId
-     * @return mixed
-     */
-    public function trash($noticeId)
-    {
-        $this->noticeContract->destroy($noticeId) ?
-            Flash::success('Notice has been forcefully deleted.') :
-            Flash::error('Notice could not be forcefully deleted.');
-
         return redirect()->route('admin.notices.index');
     }
 

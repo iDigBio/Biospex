@@ -45,14 +45,13 @@ interface Expedition extends RepositoryInterface
     public function expeditionDownloadsByActor($projectId, $expeditionId);
 
     /**
-     * Find expeditions for project with relationships. Find only trashed if needed.
+     * Find expeditions for project with relationships.
      *
      * @param $projectId
      * @param array $with
-     * @param bool $trashed
      * @return mixed
      */
-    public function findExpeditionsByProjectIdWith($projectId, array $with = [], $trashed = false);
+    public function findExpeditionsByProjectIdWith($projectId, array $with = []);
 
     /**
      * Get Expedition stats.

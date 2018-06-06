@@ -13,11 +13,7 @@ interface RepositoryInterface
 
     public function findWith($resourceId, array $with = []);
 
-    public function findOnlyTrashed($resourceId, array $with = []);
-
     public function getWhereIn($field, array $values, array $columns = ['*']);
-
-    public function getOnlyTrashed(array $columns = ['*']);
 
     public function create(array $data);
 
@@ -28,10 +24,6 @@ interface RepositoryInterface
     public function updateOrCreate(array $attributes, array $values);
 
     public function delete($model);
-
-    public function destroy($model);
-
-    public function restore($model);
 
     public function truncate();
 }

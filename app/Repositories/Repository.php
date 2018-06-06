@@ -102,21 +102,6 @@ abstract class Repository
     }
 
     /**
-     * @param $resourceId
-     * @param array $with
-     * @return mixed
-     * @throws \Exception
-     */
-    public function findOnlyTrashed($resourceId, array $with = [])
-    {
-        $results = $this->model->with($with)->onlyTrashed()->find($resourceId);
-
-        $this->resetModel();
-
-        return $results;
-    }
-
-    /**
      * @param $field
      * @param array $values
      * @param array $columns
@@ -126,20 +111,6 @@ abstract class Repository
     public function getWhereIn($field, array $values, array $columns = ['*'])
     {
         $results = $this->model->whereIn($field, $values)->get($columns);
-
-        $this->resetModel();
-
-        return $results;
-    }
-
-    /**
-     * @param array $columns
-     * @return mixed
-     * @throws \Exception
-     */
-    public function getOnlyTrashed(array $columns = ['*'])
-    {
-        $results = $this->model->onlyTrashed()->get($columns);
 
         $this->resetModel();
 
@@ -215,38 +186,6 @@ abstract class Repository
         $results = $model instanceof EloquentModel || $model instanceof MongdbModel  ?
             $model->delete() :
             $this->model->destroy($model);
-
-        $this->resetModel();
-
-        return $results;
-    }
-
-    /**
-     * @param $model
-     * @return bool|null
-     * @throws \Exception
-     */
-    public function destroy($model)
-    {
-        $results = $model instanceof EloquentModel || $model instanceof MongdbModel ?
-            $model->forceDelete() :
-            $this->model->find($model)->forceDelete();
-
-        $this->resetModel();
-
-        return $results;
-    }
-
-    /**
-     * @param $model
-     * @return mixed
-     * @throws \Exception
-     */
-    public function restore($model)
-    {
-        $results = $model instanceof EloquentModel || $model instanceof MongdbModel ?
-            $model->restore() :
-            $this->model->onlyTrashed()->find($model)->restore();
 
         $this->resetModel();
 

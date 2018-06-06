@@ -13,10 +13,4 @@ interface Resource extends RepositoryInterface
      */
     public function getResourcesOrdered();
 
-    /**
-     * get trashed resources.
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function getTrashedResourcesOrdered();
 }

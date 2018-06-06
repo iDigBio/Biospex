@@ -12,10 +12,9 @@ interface Project extends RepositoryInterface
      *
      * @param $projectId
      * @param array $with
-     * @param bool $trashed
      * @return mixed
      */
-    public function getProjectByIdWith($projectId, array $with = [], $trashed = false);
+    public function getProjectByIdWith($projectId, array $with = []);
 
     /**
      * Get random projects for carousel.

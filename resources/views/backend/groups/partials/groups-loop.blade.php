@@ -19,7 +19,7 @@
                         data-btn-ok-class="btn-success"
                         data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
                         data-btn-cancel-class="btn-danger"
-                        data-title="Continue action?" data-content="This will trash the item">
+                        data-title="Continue action?" data-content="This will delete the item">
                     <span class="fa fa-remove fa-sm"></span> <!-- @lang('pages.delete') -->
                 </button>
 

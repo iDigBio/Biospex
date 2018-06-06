@@ -44,8 +44,7 @@ class ProjectsController extends Controller
     public function index(ProjectService $service, $projectId = null)
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
-        $projects = $this->projectService->getallProjects();
-        $trashed = $this->projectService->getTrashedProjects();
+        $projects = $this->projectService->getAllProjects();
 
         $editProject = $projectId !== null ? $this->projectService->findWith($projectId, ['nfnWorkflows']) : null;
 
@@ -54,7 +53,6 @@ class ProjectsController extends Controller
         $vars = [
             'user' => $user,
             'projects' => $projects,
-            'trashed' => $trashed,
             'editProject' => $editProject,
             'workflowEmpty' => $workflowEmpty
         ];
@@ -98,40 +96,11 @@ class ProjectsController extends Controller
      */
     public function delete($projectId)
     {
-        $project = $this->projectService->findWith($projectId, ['nfnWorkflows']);
+        $project = $this->projectService->findWith($projectId, ['group', 'expeditions.downloads', 'subjects', 'nfnWorkflows']);
 
         $this->projectService->deleteProject($project);
 
         return redirect()->route('admin.projects.index');
     }
 
-    /**
-     * Destroy project.
-     *
-     * @param $projectId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy($projectId)
-    {
-        $project = $this->projectService->findWith($projectId, ['group', 'expeditions.downloads', 'subjects'], true);
-
-        $this->projectService->destroyProject($project);
-
-        return redirect()->route('admin.projects.index');
-    }
-
-    /**
-     * Restore project.
-     *
-     * @param $projectId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function restore($projectId)
-    {
-        $project = $this->projectService->findWith($projectId, [], true);
-
-        $this->projectService->restoreProject($project);
-
-        return redirect()->route('admin.projects.index');
-    }
 }

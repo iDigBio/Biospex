@@ -10,5 +10,4 @@
 @section('main-content')
     @include('backend.groups.partials.form')
     @include('backend.groups.partials.groups')
-    @include('backend.groups.partials.trashed')
 @endsection

@@ -54,11 +54,10 @@ class ExpeditionsController extends Controller
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
         $expeditions = $this->expeditionService->getAllExpeditions();
-        $trashed = $this->expeditionService->getOnlyTrashedExpeditions();
 
         $editExpedition = $expeditionId !== null ? $this->expeditionService->findExpeditionWith($expeditionId, ['project', 'nfnWorkflow']) : null;
 
-        $variables = array_merge(compact('user', 'expeditions', 'trashed', 'editExpedition'));
+        $variables = array_merge(compact('user', 'expeditions', 'editExpedition'));
 
         return view('backend.expeditions.index', $variables);
     }
@@ -115,29 +114,4 @@ class ExpeditionsController extends Controller
         return redirect()->route('admin.expeditions.index');
     }
 
-    /**
-     * Destroy expedition.
-     *
-     * @param $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy($expeditionId)
-    {
-        $this->expeditionService->destroyExpedition($expeditionId);
-
-        return redirect()->route('admin.expeditions.index');
-    }
-
-    /**
-     * Restore expedition.
-     *
-     * @param $expeditionId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function restore($expeditionId)
-    {
-        $this->expeditionService->restoreExpedition($expeditionId);
-
-        return redirect()->route('admin.expeditions.index');
-    }
 }

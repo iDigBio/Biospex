@@ -11,10 +11,9 @@ interface Group extends RepositoryInterface
      * Get project list by group using logged in user.
      *
      * @param $user
-     * @param bool $trashed
      * @return mixed
      */
-    public function getUserProjectListByGroup($user, $trashed = false);
+    public function getUserProjectListByGroup($user);
 
     /**
      * Get select list of groups for a user.

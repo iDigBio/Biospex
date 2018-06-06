@@ -41,9 +41,8 @@ class GroupsController extends Controller
     public function index()
     {
         $user = $this->userContract->findWith(request()->user()->id, ['groups']);
-        $trashed = $this->userContract->findWith(request()->user()->id, ['groupsTrashed']);
 
-        return view('frontend.groups.index', compact('user', 'trashed'));
+        return view('frontend.groups.index', compact('user'));
     }
 
     /**
@@ -155,46 +154,6 @@ class GroupsController extends Controller
         }
 
         $this->groupService->deleteGroup($group);
-
-        return redirect()->route('webauth.groups.index');
-    }
-
-    /**
-     * Destroy the specified resource from storage.
-     *
-     * @param $groupId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy($groupId)
-    {
-        $group = $this->groupService->findTrashed($groupId);
-
-        if ( ! $this->checkPermissions('isOwner', $group))
-        {
-            return redirect()->route('webauth.groups.index');
-        }
-
-        $this->groupService->destroyGroup($group);
-
-        return redirect()->route('webauth.groups.index');
-    }
-
-    /**
-     * Restore group.
-     *
-     * @param $groupId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function restore($groupId)
-    {
-        $group = $this->groupService->findTrashed($groupId);
-
-        if ( ! $this->checkPermissions('isOwner', $group))
-        {
-            return redirect()->route('webauth.groups.index');
-        }
-
-        $this->groupService->restoreGroup($group);
 
         return redirect()->route('webauth.groups.index');
     }
