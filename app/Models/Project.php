@@ -6,7 +6,6 @@ use App\Facades\DateHelper;
 use App\Presenters\ProjectPresenter;
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
-use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
@@ -18,14 +17,7 @@ use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Project extends Model implements AttachableInterface, HasPresenter
 {
-    use PaperclipTrait, Sluggable, UuidTrait, SoftCascadeTrait, SoftDeletes, HybridRelations, LadaCacheTrait;
-
-    /**
-     * Enable soft delete.
-     *
-     * @var boolean
-     */
-    protected $softDelete = true;
+    use PaperclipTrait, Sluggable, UuidTrait, SoftCascadeTrait, HybridRelations, LadaCacheTrait;
 
     /**
      * Soft delete cascades.
@@ -44,11 +36,6 @@ class Project extends Model implements AttachableInterface, HasPresenter
         'transcriptionLocations',
         'resources',
     ];
-
-    /**
-     * @inheritDoc
-     */
-    protected $dates = ['deleted_at'];
 
     /**
      * @inheritDoc

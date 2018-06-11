@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Presenters\ResourcePresenter;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
@@ -12,14 +11,7 @@ use McCool\LaravelAutoPresenter\HasPresenter;
 
 class Resource extends Model implements AttachableInterface, HasPresenter
 {
-    use SoftDeletes, LadaCacheTrait, PaperclipTrait;
-
-    /**
-     * Enable soft delete.
-     *
-     * @var boolean
-     */
-    protected $softDelete = true;
+    use LadaCacheTrait, PaperclipTrait;
 
     /**
      * @inheritDoc
@@ -35,11 +27,6 @@ class Resource extends Model implements AttachableInterface, HasPresenter
         'document',
         'order'
     ];
-
-    /**
-     * @inheritDoc
-     */
-    protected $dates = ['deleted_at'];
 
     /**
      * Resource constructor.

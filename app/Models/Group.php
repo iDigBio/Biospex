@@ -6,20 +6,12 @@ use App\Presenters\GroupPresenter;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use McCool\LaravelAutoPresenter\HasPresenter;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Group extends Model implements HasPresenter
 {
-    use UuidTrait, SoftCascadeTrait, SoftDeletes, LadaCacheTrait;
-
-    /**
-     * Enable soft delete.
-     *
-     * @var boolean
-     */
-    protected $softDelete = true;
+    use UuidTrait, SoftCascadeTrait, LadaCacheTrait;
 
     /**
      * Soft delete cascades.
@@ -27,11 +19,6 @@ class Group extends Model implements HasPresenter
      * @var array
      */
     protected $softCascade = ['projects', 'invites'];
-
-    /**
-     * @inheritDoc
-     */
-    protected $dates = ['deleted_at'];
 
     /**
      * @inheritDoc

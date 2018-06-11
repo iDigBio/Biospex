@@ -3,19 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class AmChart extends Model
 {
-    use SoftDeletes, LadaCacheTrait;
-
-    /**
-     * Enable soft delete.
-     *
-     * @var boolean
-     */
-    protected $softDelete = true;
+    use LadaCacheTrait;
 
     /**
      * @inheritDoc

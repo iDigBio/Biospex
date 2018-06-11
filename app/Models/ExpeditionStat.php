@@ -3,19 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class ExpeditionStat extends Model
 {
-    use SoftDeletes, LadaCacheTrait;
-
-    /**
-     * Enable soft delete.
-     *
-     * @var boolean
-     */
-    protected $softDelete = true;
+    use LadaCacheTrait;
 
     /**
      * @inheritDoc
@@ -34,11 +26,6 @@ class ExpeditionStat extends Model
         'percentage_completed',
         'classifiction_process'
     ];
-
-    /**
-     * @inheritDoc
-     */
-    protected $dates = ['deleted_at'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

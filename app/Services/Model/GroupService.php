@@ -154,6 +154,7 @@ class GroupService
         }
         catch (\Exception $e)
         {
+            dd($e->getMessage());
             Flash::error(trans('messages.record_delete_error'));
 
             return false;

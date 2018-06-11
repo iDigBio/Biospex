@@ -4,19 +4,11 @@ namespace App\Models;
 
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Workflow extends Model
 {
-    use SoftDeletes, LadaCacheTrait, SoftCascadeTrait;
-
-    /**
-     * Enable soft delete.
-     *
-     * @var boolean
-     */
-    protected $softDelete = true;
+    use LadaCacheTrait, SoftCascadeTrait;
 
     /**
      * @inheritDoc
@@ -27,11 +19,6 @@ class Workflow extends Model
      * @inheritDoc
      */
     protected $fillable = ['title', 'enabled'];
-
-    /**
-     * @inheritDoc
-     */
-    protected $dates = ['deleted_at'];
 
     /**
      * Soft delete cascades.

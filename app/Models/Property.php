@@ -15,11 +15,6 @@ class Property extends Model
     protected $table = 'properties';
 
     /**
-     * @inhertiDoc
-     */
-    protected $dates = ['deleted_at'];
-
-    /**
      * @inheritDoc
      */
     protected $fillable = [

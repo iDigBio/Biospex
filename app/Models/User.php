@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Presenters\UserPresenter;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\HasGroup;
 use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
@@ -14,19 +13,7 @@ use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class User extends Authenticatable implements HasPresenter
 {
-    use HasGroup, UuidTrait, SoftCascadeTrait, SoftDeletes, Notifiable, LadaCacheTrait;
-
-    /**
-     * Enable soft delete.
-     *
-     * @var boolean
-     */
-    protected $softDelete = true;
-
-    /**
-     * @inheritDoc
-     */
-    protected $dates = ['deleted_at'];
+    use HasGroup, UuidTrait, SoftCascadeTrait, Notifiable, LadaCacheTrait;
 
     /**
      * @inheritDoc

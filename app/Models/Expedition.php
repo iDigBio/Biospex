@@ -6,19 +6,11 @@ use App\Models\Traits\UuidTrait;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
-use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Expedition extends Model
 {
-    use UuidTrait, SoftCascadeTrait, SoftDeletes, HybridRelations, LadaCacheTrait;
-
-    /**
-     * Enable soft delete.
-     *
-     * @var boolean
-     */
-    protected $softDelete = true;
+    use UuidTrait, SoftCascadeTrait, HybridRelations, LadaCacheTrait;
 
     /**
      * Soft delete cascades.
@@ -26,11 +18,6 @@ class Expedition extends Model
      * @var array
      */
     protected $softCascade = ['stat', 'nfnWorkflow', 'workflowManager', 'downloads', 'exportQueue'];
-
-    /**
-     * @inheritDoc
-     */
-    protected $dates = ['deleted_at'];
 
     /**
      * @inheritDoc
