@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Event extends Model
 {
-    use LadaCacheTrait;
+    use LadaCacheTrait, SoftCascadeTrait;
 
     /**
      * @inheritDoc
@@ -53,6 +53,15 @@ class Event extends Model
         'start_date',
         'end_date',
         'timezone'
+    ];
+
+    /**
+     * Soft delete cascades.
+     *
+     * @var array
+     */
+    protected $softCascade = [
+        'groups'
     ];
 
     /**

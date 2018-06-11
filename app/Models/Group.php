@@ -26,7 +26,7 @@ class Group extends Model implements HasPresenter
      *
      * @var array
      */
-    protected $softCascade = ['projects'];
+    protected $softCascade = ['projects', 'invites'];
 
     /**
      * @inheritDoc

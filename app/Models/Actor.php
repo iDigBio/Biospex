@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Actor extends Model
 {
-    use SoftDeletes, LadaCacheTrait;
+    use SoftDeletes, LadaCacheTrait, SoftCascadeTrait;
 
     /**
      * Enable soft delete.
@@ -38,17 +39,12 @@ class Actor extends Model
     protected $dates = ['deleted_at'];
 
     /**
-     * Boot method for model.
+     * Soft delete cascades.
+     *
+     * @var array
      */
-    protected static function boot()
-    {
-        parent::boot();
+    protected $softCascade = ['workflows', 'downloads', 'contacts', 'exportQueues'];
 
-        self::deleting(function ($actor)
-        {
-            $actor->workflows()->delete();
-        });
-    }
 
     /**
      * Workflow relationship.

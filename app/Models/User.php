@@ -24,13 +24,6 @@ class User extends Authenticatable implements HasPresenter
     protected $softDelete = true;
 
     /**
-     * Soft delete cascades.
-     *
-     * @var array
-     */
-    protected $softCascade = ['ownGroups'];
-
-    /**
      * @inheritDoc
      */
     protected $dates = ['deleted_at'];
@@ -47,13 +40,20 @@ class User extends Authenticatable implements HasPresenter
         'uuid',
         'email',
         'password',
-        'activated'
+        'activated',
     ];
 
     /**
      * @inheritDoc
      */
     protected $hidden = ['password', 'remember_token'];
+
+    /**
+     * Soft delete cascades.
+     *
+     * @var array
+     */
+    protected $softCascade = ['ownGroups', 'imports', 'profile', 'events'];
 
     /**
      * Attributes that should be hashed.
@@ -111,10 +111,9 @@ class User extends Authenticatable implements HasPresenter
         return $this->hasMany(Group::class);
     }
 
-
     /**
      * Import relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function imports()
@@ -124,7 +123,7 @@ class User extends Authenticatable implements HasPresenter
 
     /**
      * Profile relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function profile()

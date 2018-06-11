@@ -25,7 +25,7 @@ class Expedition extends Model
      *
      * @var array
      */
-    protected $softCascade = ['stat', 'nfnWorkflow', 'workflowManager'];
+    protected $softCascade = ['stat', 'nfnWorkflow', 'workflowManager', 'downloads', 'exportQueue'];
 
     /**
      * @inheritDoc

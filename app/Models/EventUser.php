@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class EventUser extends Model
 {
-    use LadaCacheTrait;
+    use LadaCacheTrait, SoftCascadeTrait;
 
     /**
      * @inheritDoc
@@ -19,6 +20,16 @@ class EventUser extends Model
      */
     protected $fillable = [
         'nfn_user'
+    ];
+
+    /**
+     * Soft delete cascades.
+     *
+     * @var array
+     */
+    protected $softCascade = [
+        'groups',
+        'transcriptions'
     ];
 
     /**

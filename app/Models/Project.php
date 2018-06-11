@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Models;
 
@@ -32,8 +32,18 @@ class Project extends Model implements AttachableInterface, HasPresenter
      *
      * @var array
      */
-    protected $softCascade = ['expeditions', 'header', 'metas', 'amChart', 'nfnWorkflows'];
-
+    protected $softCascade = [
+        'header',
+        'expeditions',
+        'metas',
+        'imports',
+        'ocrQueue',
+        'amChart',
+        'nfnWorkflows',
+        'events',
+        'transcriptionLocations',
+        'resources',
+    ];
 
     /**
      * @inheritDoc
@@ -90,12 +100,12 @@ class Project extends Model implements AttachableInterface, HasPresenter
         'advertise',
         'fusion_table_id',
         'fusion_style_id',
-        'fusion_template_id'
+        'fusion_template_id',
     ];
 
     /**
      * Project constructor.
-     * 
+     *
      * @param array $attributes
      */
     public function __construct(array $attributes = [])
@@ -143,14 +153,14 @@ class Project extends Model implements AttachableInterface, HasPresenter
     {
         return [
             'slug' => [
-                'source' => 'title'
-            ]
+                'source' => 'title',
+            ],
         ];
     }
 
     /**
      * Group relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function group()
@@ -170,7 +180,7 @@ class Project extends Model implements AttachableInterface, HasPresenter
 
     /**
      * Header relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function header()
@@ -180,7 +190,7 @@ class Project extends Model implements AttachableInterface, HasPresenter
 
     /**
      * Expedition relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function expeditions()
@@ -190,7 +200,7 @@ class Project extends Model implements AttachableInterface, HasPresenter
 
     /**
      * Subject relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function subjects()
@@ -200,7 +210,7 @@ class Project extends Model implements AttachableInterface, HasPresenter
 
     /**
      * Meta relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function metas()
@@ -210,7 +220,7 @@ class Project extends Model implements AttachableInterface, HasPresenter
 
     /**
      * Imports relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function imports()
@@ -220,7 +230,7 @@ class Project extends Model implements AttachableInterface, HasPresenter
 
     /**
      * OcrQueue relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function ocrQueue()
@@ -230,7 +240,7 @@ class Project extends Model implements AttachableInterface, HasPresenter
 
     /**
      * AmChart relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function amChart()
@@ -294,9 +304,9 @@ class Project extends Model implements AttachableInterface, HasPresenter
         return $related ? $related->earliest_finished_at_date : null;
     }
 
-
     /**
      * Get earliest last finished_at date
+     *
      * @return mixed
      */
     public function getTranscriptionsEarliestFinishedAtDate()
@@ -311,7 +321,7 @@ class Project extends Model implements AttachableInterface, HasPresenter
      */
     public function setTagUriAttribute($input)
     {
-        return 'tag:' . $_ENV['site.domain'] . ',' . date('Y-m-d') . ':' . $this->attributes['slug'];
+        return 'tag:'.$_ENV['site.domain'].','.date('Y-m-d').':'.$this->attributes['slug'];
     }
 
     /**
@@ -368,7 +378,7 @@ class Project extends Model implements AttachableInterface, HasPresenter
     public function setAdvertiseAttribute($input)
     {
         $extra = isset($input['advertiseExtra']) ? $input['advertiseExtra'] : '';
-        
+
         $build = [];
         $ppsrFields = Config::get('config.ppsr');
 
@@ -379,8 +389,7 @@ class Project extends Model implements AttachableInterface, HasPresenter
                 }
 
                 if ($type === 'date') {
-                    $build[$field] = isset($this->{$value}) ?
-                        DateHelper::formatDate($this->{$value},'Y-m-d m:d:s') : DateHelper::formatDate(null);
+                    $build[$field] = isset($this->{$value}) ? DateHelper::formatDate($this->{$value}, 'Y-m-d m:d:s') : DateHelper::formatDate(null);
                 }
 
                 if ($type === 'column') {
@@ -396,7 +405,7 @@ class Project extends Model implements AttachableInterface, HasPresenter
                 if ($type === 'array') {
                     $combined = '';
                     foreach ($value as $col) {
-                        $combined .= $input[$col] . ", ";
+                        $combined .= $input[$col].", ";
                     }
                     $build[$field] = rtrim($combined, ', ');
                     continue;
@@ -404,12 +413,12 @@ class Project extends Model implements AttachableInterface, HasPresenter
 
                 if ($type === 'url') {
                     if ($value === 'slug') {
-                        $build[$field] = $_ENV['APP_URL'] . '/' . $this->{$value};
+                        $build[$field] = $_ENV['APP_URL'].'/'.$this->{$value};
                         continue;
                     }
 
                     if ($value === 'logo') {
-                        $build[$field] = $_ENV['APP_URL'] . $this->{$value}->url();
+                        $build[$field] = $_ENV['APP_URL'].$this->{$value}->url();
                         continue;
                     }
                 }
