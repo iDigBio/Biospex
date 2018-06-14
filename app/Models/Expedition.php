@@ -3,21 +3,13 @@
 namespace App\Models;
 
 use App\Models\Traits\UuidTrait;
-use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Expedition extends Model
 {
-    use UuidTrait, SoftCascadeTrait, HybridRelations, LadaCacheTrait;
-
-    /**
-     * Soft delete cascades.
-     *
-     * @var array
-     */
-    protected $softCascade = ['stat', 'nfnWorkflow', 'workflowManager', 'downloads', 'exportQueue'];
+    use UuidTrait, HybridRelations, LadaCacheTrait;
 
     /**
      * @inheritDoc

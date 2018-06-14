@@ -8,6 +8,5 @@ $router->get('notices/{notices}')->uses('NoticesController@show')->name('admin.n
 $router->get('notices/{notices}/edit')->uses('NoticesController@edit')->name('admin.notices.edit');
 $router->put('notices/{notices}')->uses('NoticesController@update')->name('admin.notices.update');
 $router->delete('notices/{notices}')->uses('NoticesController@delete')->name('admin.notices.delete');
-$router->delete('notices/{notices}/trash')->uses('NoticesController@trash')->name('admin.notices.trash');
 $router->get('notices/{notices}/enable')->uses('NoticesController@enable')->name('admin.notices.enable');
 $router->get('notices/{notices}/disable')->uses('NoticesController@disable')->name('admin.notices.disable');

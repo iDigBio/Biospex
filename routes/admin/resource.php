@@ -8,5 +8,4 @@ $router->get('resources/{resources}')->uses('ResourcesController@show')->name('a
 $router->get('resources/{resources}/edit')->uses('ResourcesController@edit')->name('admin.resources.edit');
 $router->put('resources/{resources}')->uses('ResourcesController@update')->name('admin.resources.update');
 $router->delete('resources/{resources}')->uses('ResourcesController@delete')->name('admin.resources.delete');
-$router->delete('resources/{resources}/trash')->uses('ResourcesController@trash')->name('admin.resources.trash');
 $router->post('resources/{resources}/order/{order}')->uses('ResourcesController@order')->name('admin.resources.order');

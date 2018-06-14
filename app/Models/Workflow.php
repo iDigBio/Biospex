@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Workflow extends Model
 {
-    use LadaCacheTrait, SoftCascadeTrait;
+    use LadaCacheTrait;
 
     /**
      * @inheritDoc
@@ -19,13 +18,6 @@ class Workflow extends Model
      * @inheritDoc
      */
     protected $fillable = ['title', 'enabled'];
-
-    /**
-     * Soft delete cascades.
-     *
-     * @var array
-     */
-    protected $softCascade = ['actors'];
 
     /**
      * @return mixed

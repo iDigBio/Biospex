@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class FaqCategory extends Model
 {
-    use LadaCacheTrait, SoftCascadeTrait;
+    use LadaCacheTrait;
 
     /**
      * @inheritDoc
@@ -19,15 +18,6 @@ class FaqCategory extends Model
      * @inheritDoc
      */
     protected $fillable = ['name'];
-
-    /**
-     * Soft delete cascades.
-     *
-     * @var array
-     */
-    protected $softCascade = [
-        'faqs'
-    ];
 
     /**
      * Faq relationship.

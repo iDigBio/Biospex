@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class TeamCategory extends Model
 {
 
-    use LadaCacheTrait, SoftCascadeTrait;
+    use LadaCacheTrait;
 
     /**
      * @inheritDoc
@@ -20,15 +19,6 @@ class TeamCategory extends Model
      * @inhritDoc
      */
     protected $fillable = ['name'];
-
-    /**
-     * Soft delete cascades.
-     *
-     * @var array
-     */
-    protected $softCascade = [
-        'teams'
-    ];
 
     /**
      * Faq relationship.

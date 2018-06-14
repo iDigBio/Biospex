@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 use App\Models\Traits\UuidTrait;
 
 class EventGroup extends Model
 {
-    use LadaCacheTrait, UuidTrait, SoftCascadeTrait;
+    use LadaCacheTrait, UuidTrait;
 
     /**
      * @inheritDoc
@@ -22,15 +21,6 @@ class EventGroup extends Model
     protected $fillable = [
         'title',
         'users'
-    ];
-
-    /**
-     * Soft delete cascades.
-     *
-     * @var array
-     */
-    protected $softCascade = [
-        'transcriptions'
     ];
 
     /**

@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Actor extends Model
 {
-    use LadaCacheTrait, SoftCascadeTrait;
+    use LadaCacheTrait;
 
     /**
      * @inheritDoc
@@ -24,14 +23,6 @@ class Actor extends Model
         'class',
         'private'
     ];
-
-    /**
-     * Soft delete cascades.
-     *
-     * @var array
-     */
-    protected $softCascade = ['workflows', 'downloads', 'contacts', 'exportQueues'];
-
 
     /**
      * Workflow relationship.

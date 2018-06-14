@@ -11,31 +11,12 @@ use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
 use Cviebrock\EloquentSluggable\Sluggable;
 use App\Models\Traits\UuidTrait;
-use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use McCool\LaravelAutoPresenter\HasPresenter;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Project extends Model implements AttachableInterface, HasPresenter
 {
-    use PaperclipTrait, Sluggable, UuidTrait, SoftCascadeTrait, HybridRelations, LadaCacheTrait;
-
-    /**
-     * Soft delete cascades.
-     *
-     * @var array
-     */
-    protected $softCascade = [
-        'header',
-        'expeditions',
-        'metas',
-        'imports',
-        'ocrQueue',
-        'amChart',
-        'nfnWorkflows',
-        'events',
-        'transcriptionLocations',
-        'resources',
-    ];
+    use PaperclipTrait, Sluggable, UuidTrait, HybridRelations, LadaCacheTrait;
 
     /**
      * @inheritDoc

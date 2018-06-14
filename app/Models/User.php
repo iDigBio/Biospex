@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Presenters\UserPresenter;
 use App\Models\Traits\HasGroup;
 use App\Models\Traits\UuidTrait;
-use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use McCool\LaravelAutoPresenter\HasPresenter;
@@ -13,7 +12,7 @@ use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class User extends Authenticatable implements HasPresenter
 {
-    use HasGroup, UuidTrait, SoftCascadeTrait, Notifiable, LadaCacheTrait;
+    use HasGroup, UuidTrait, Notifiable, LadaCacheTrait;
 
     /**
      * @inheritDoc
@@ -34,13 +33,6 @@ class User extends Authenticatable implements HasPresenter
      * @inheritDoc
      */
     protected $hidden = ['password', 'remember_token'];
-
-    /**
-     * Soft delete cascades.
-     *
-     * @var array
-     */
-    protected $softCascade = ['ownGroups', 'imports', 'profile', 'events'];
 
     /**
      * Attributes that should be hashed.

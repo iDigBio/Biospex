@@ -8,6 +8,5 @@ $router->get('workflows/{workflows}')->uses('WorkflowsController@show')->name('a
 $router->get('workflows/{workflows}/edit')->uses('WorkflowsController@edit')->name('admin.workflows.edit');
 $router->put('workflows/{workflows}')->uses('WorkflowsController@update')->name('admin.workflows.update');
 $router->delete('workflows/{workflows}')->uses('WorkflowsController@delete')->name('admin.workflows.delete');
-$router->delete('workflows/{workflows}/trash')->uses('WorkflowsController@trash')->name('admin.workflows.trash');
 $router->get('workflows/{workflows}/enable')->uses('WorkflowsController@enable')->name('admin.workflows.enable');
 $router->get('workflows/{workflows}/disable')->uses('WorkflowsController@disable')->name('admin.workflows.disable');

@@ -5,20 +5,12 @@ namespace App\Models;
 use App\Presenters\GroupPresenter;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\UuidTrait;
-use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use McCool\LaravelAutoPresenter\HasPresenter;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Group extends Model implements HasPresenter
 {
-    use UuidTrait, SoftCascadeTrait, LadaCacheTrait;
-
-    /**
-     * Soft delete cascades.
-     *
-     * @var array
-     */
-    protected $softCascade = ['projects', 'invites'];
+    use UuidTrait, LadaCacheTrait;
 
     /**
      * @inheritDoc
