@@ -412,9 +412,9 @@ class ExpeditionService
     {
         try
         {
-            $expedition = $this->findExpeditionWith($expeditionId, ['nfnWorkflow', 'downloads']);
+            $expedition = $this->findExpeditionWith($expeditionId, ['nfnWorkflow', 'downloads', 'workflowManager']);
 
-            if (isset($record->nfnWorkflow))
+            if (isset($expedition->workflowManager) || isset($expedition->nfnWorkflow))
             {
                 Flash::error(trans('messages.expedition_process_exists'));
 
@@ -431,15 +431,6 @@ class ExpeditionService
             {
                 $this->subjectContract->detachSubjects($subjects, $expedition->id);
             }
-
-            $values = [
-                'subject_count'            => 0,
-                'transcriptions_total'     => 0,
-                'transcriptions_completed' => 0,
-                'percent_completed'        => 0.00
-            ];
-
-            $expedition->stat()->updateOrCreate(['expedition_id' => $expedition->id], $values);
 
             $this->expeditionContract->delete($expedition);
 
