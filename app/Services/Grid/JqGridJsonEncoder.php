@@ -261,13 +261,12 @@ class JqGridJsonEncoder
 
         $vars['count'] = $this->subjectContract->getTotalRowCount($vars);
 
-        $vars['limit'] = count($vars['limit']) === 0 ? $vars['count'] : $vars['limit'];
+        $vars['limit'] = (int) $vars['limit'] === 0 ? (int) $vars['count'] : (int) $vars['limit'];
 
         if ( ! is_int($vars['count']))
         {
             throw new Exception('The method getTotalNumberOfRows must return an integer');
         }
-
         $totalPages = $this->setTotalPages($vars['count'], $vars['limit']);
 
         $vars['page'] = ($vars['page'] > $totalPages) ? $totalPages : $vars['page'];
