@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Backend;
 use App\Facades\Flash;
 use App\Http\Requests\GroupFormRequest;
 use App\Http\Requests\InviteFormRequest;
+use App\Jobs\DeleteGroup;
+use App\Repositories\Interfaces\Group;
 use App\Repositories\Interfaces\User;
-use App\Services\Model\GroupService;
 use App\Services\Model\InviteService;
 use App\Http\Controllers\Controller;
 
@@ -14,9 +15,9 @@ class GroupsController extends Controller
 {
 
     /**
-     * @var GroupService
+     * @var Group
      */
-    private $groupService;
+    private $groupContract;
 
     /**
      * @var User
@@ -26,12 +27,12 @@ class GroupsController extends Controller
     /**
      * GroupsController constructor.
      *
-     * @param GroupService $groupService
+     * @param Group $groupContract
      * @param User $userContract
      */
-    public function __construct(GroupService $groupService, User $userContract)
+    public function __construct(Group $groupContract, User $userContract)
     {
-        $this->groupService = $groupService;
+        $this->groupContract = $groupContract;
         $this->userContract = $userContract;
 
     }
@@ -44,7 +45,7 @@ class GroupsController extends Controller
     public function index()
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
-        $groups = $this->groupService->getAllGroups();
+        $groups = $this->groupContract->all();
 
         return view('backend.groups.index', compact('user', 'groups'));
     }
@@ -59,7 +60,7 @@ class GroupsController extends Controller
     {
         $user = request()->user();
 
-        return $this->groupService->createGroup($user->id, $request->get('title')) ?
+        return $this->groupContract->create($user->id, $request->get('title')) ?
             redirect()->route('admin.groups.index') :
             redirect()->route('admin.groups.index');
     }
@@ -73,7 +74,7 @@ class GroupsController extends Controller
     public function show($groupId)
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
-        $group = $this->groupService->findGroupWith($groupId, ['owner.profile', 'users.profile']);
+        $group = $this->groupContract->findWith($groupId, ['owner.profile', 'users.profile']);
         return view('backend.groups.show', compact('user', 'group'));
     }
 
@@ -87,9 +88,9 @@ class GroupsController extends Controller
      */
     public function update(GroupFormRequest $request, $groupId)
     {
-        $group = $this->groupService->findGroup($groupId);
+        $group = $this->groupContract->find($groupId);
 
-        $this->groupService->updateGroup($request->all(), $group->id);
+        $this->groupContract->update($request->all(), $group->id);
 
         return redirect()->route('admin.groups.index');
     }
@@ -102,8 +103,20 @@ class GroupsController extends Controller
      */
     public function delete($groupId)
     {
-        $group = $this->groupService->findGroupWith($groupId, ['projects.nfnWorfklows']);
-        $this->groupService->deleteGroup($group);
+        $group = $this->groupContract->findWith($groupId, ['projects.nfnWorkflows', 'workflowManagers']);
+
+        foreach ($group->projects as $project)
+        {
+            if ($project->nfnWorkflows->isNotEmpty() || $project->workflowManagers->isNotEmpty())
+            {
+                Flash::error(trans('messages.expedition_process_exists'));
+                return redirect()->route('webauth.groups.index');
+            }
+        }
+
+        DeleteGroup::dispatch($group);
+
+        event('group.deleted', $group->id);
 
         return redirect()->route('admin.groups.index');
     }

@@ -261,6 +261,14 @@ class Project extends Model implements AttachableInterface, HasPresenter
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function workflowManagers()
+    {
+        return $this->hasManyThrough(WorkflowManager::class, Expedition::class);
+    }
+
+    /**
      * NfnClassificationsEarliestFinishedAtDate attribute.
      *
      * @return int
@@ -408,4 +416,13 @@ class Project extends Model implements AttachableInterface, HasPresenter
     {
         return unserialize($value);
     }
+
+    /**
+     * @return int
+     */
+    public function subjectsCount()
+    {
+        return $this->subjects()->count();
+    }
+
 }

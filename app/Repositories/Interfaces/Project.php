@@ -53,4 +53,10 @@ interface Project extends RepositoryInterface
      */
     public function getProjectEventSelect();
 
+    /**
+     * @param $projectId
+     * @return mixed
+     */
+    public function getProjectForDelete($projectId);
+
 }

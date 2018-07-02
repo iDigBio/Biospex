@@ -3,11 +3,15 @@
 namespace App\Services\Model;
 
 use App\Facades\DateHelper;
+use App\Jobs\EventBoardJob;
+use App\Repositories\Interfaces\Event;
+use App\Repositories\Interfaces\EventTranscription;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\PusherTranscription;
 use App\Services\Api\NfnApi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Ramsey\Uuid\Uuid;
 
@@ -35,9 +39,14 @@ class PusherTranscriptionService
     private $nfnApi;
 
     /**
-     * @var \App\Services\Model\EventService
+     * @var \App\Repositories\Interfaces\Event
      */
-    private $eventService;
+    private $eventContract;
+
+    /**
+     * @var \App\Repositories\Interfaces\EventTranscription
+     */
+    private $eventTranscriptionContract;
 
     /**
      * ExpeditionService constructor.
@@ -46,21 +55,24 @@ class PusherTranscriptionService
      * @param Expedition $expeditionContract
      * @param PanoptesTranscription $panoptesTranscriptionContract
      * @param NfnApi $nfnApi
-     * @param \App\Services\Model\EventService $eventService
+     * @param \App\Repositories\Interfaces\Event $eventContract
+     * @param \App\Repositories\Interfaces\EventTranscription $eventTranscriptionContract
      */
     public function __construct(
         PusherTranscription $pusherTranscriptionContract,
         Expedition $expeditionContract,
         PanoptesTranscription $panoptesTranscriptionContract,
         NfnApi $nfnApi,
-        EventService $eventService
+        Event $eventContract,
+        EventTranscription $eventTranscriptionContract
     )
     {
         $this->pusherTranscriptionContract = $pusherTranscriptionContract;
         $this->expeditionContract = $expeditionContract;
         $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
         $this->nfnApi = $nfnApi;
-        $this->eventService = $eventService;
+        $this->eventContract = $eventContract;
+        $this->eventTranscriptionContract = $eventTranscriptionContract;
     }
 
     /**
@@ -119,7 +131,7 @@ class PusherTranscriptionService
             return;
         }
 
-        $this->eventService->updateOrCreateEventTranscription($data, $expedition->project_id);
+        $this->updateOrCreateEventTranscription($data, $expedition->project_id);
     }
 
     /**
@@ -412,5 +424,38 @@ class PusherTranscriptionService
     {
         return ( ! isset($transcription->subject_imageURL) || empty($transcription->subject_imageURL)) ?
             $transcription->subject->accessURI : $transcription->subject_imageURL;
+    }
+
+    /**
+     * Update or create event transcription for user.
+     *
+     * @param $data
+     * @param $projectId
+     */
+    public function updateOrCreateEventTranscription($data, $projectId)
+    {
+        $events = $this->eventContract->checkEventExistsForClassificationUser($projectId, $data->user_name);
+
+        $filtered = $events->filter(function ($event) {
+            $start_date = $event->start_date->setTimezone($event->timezone);
+            $end_date = $event->end_date->setTimezone($event->timezone);
+
+            return Carbon::now($event->timezone)->between($start_date, $end_date);
+        })->each(function ($event) use ($data) {
+            foreach ($event->groups as $group) {
+                $values = [
+                    'classification_id' => $data->classification_id,
+                    'event_id'          => $event->id,
+                    'group_id'          => $group->id,
+                    'user_id'           => $group->users->first()->id,
+                ];
+
+                $this->eventTranscriptionContract->create($values);
+            }
+        });
+
+        if ($filtered->isNotEmpty()) {
+            EventBoardJob::dispatch($projectId);
+        };
     }
 }

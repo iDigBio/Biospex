@@ -4,52 +4,73 @@ namespace App\Http\Controllers\Backend;
 
 use App\Facades\Flash;
 use App\Http\Requests\ProjectFormRequest;
+use App\Jobs\DeleteProject;
+use App\Repositories\Interfaces\Group;
+use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\User;
+use App\Services\Model\CommonVariables;
 use App\Services\Model\ProjectService;
 use App\Http\Controllers\Controller;
 
 class ProjectsController extends Controller
 {
-
-    /**
-     * @var ProjectService
-     */
-    private $projectService;
-
     /**
      * @var User
      */
     private $userContract;
 
     /**
+     * @var \App\Repositories\Interfaces\Project
+     */
+    private $projectContract;
+
+    /**
+     * @var \App\Services\Model\CommonVariables
+     */
+    private $commonVariables;
+
+    /**
+     * @var \App\Repositories\Interfaces\Group
+     */
+    private $groupContract;
+
+    /**
      * ProjectsController constructor.
-     * @param ProjectService $projectService
+     *
+     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Repositories\Interfaces\Group $groupContract
+     * @param \App\Services\Model\CommonVariables $commonVariables
      * @param User $userContract
      */
     public function __construct(
-        ProjectService $projectService,
+        Project $projectContract,
+        Group $groupContract,
+        CommonVariables $commonVariables,
         User $userContract
     )
     {
-        $this->projectService = $projectService;
         $this->userContract = $userContract;
+        $this->projectContract = $projectContract;
+        $this->commonVariables = $commonVariables;
+        $this->groupContract = $groupContract;
     }
 
     /**
      * Display a listing of the resource.
-     * @param ProjectService $service
+     *
      * @param null $projectId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(ProjectService $service, $projectId = null)
+    public function index($projectId = null)
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
-        $projects = $this->projectService->getAllProjects();
+        $projects = $this->projectContract->all();
 
-        $editProject = $projectId !== null ? $this->projectService->findWith($projectId, ['nfnWorkflows']) : null;
+        $editProject = $projectId !== null ? $this->projectContract->findWith($projectId, ['nfnWorkflows']) : null;
 
         $workflowEmpty = ! isset($editProject->nfnWorkflows) || $editProject->nfnWorkflows->isEmpty();
-        $common = $service->setCommonVariables(request()->user());
+        $groups = $groups = $this->groupContract->getUsersGroupsSelect(request()->user());
+        $common = $this->commonVariables->setCommonVariables(request()->user(), $groups);
         $vars = [
             'user' => $user,
             'projects' => $projects,
@@ -70,7 +91,7 @@ class ProjectsController extends Controller
      */
     public function store(ProjectFormRequest $request)
     {
-        $this->projectService->createProject($request->all());
+        $this->projectContract->create($request->all());
 
         return redirect()->route('admin.projects.index')->withInput();
     }
@@ -83,7 +104,7 @@ class ProjectsController extends Controller
      */
     public function update(ProjectFormRequest $request)
     {
-        $this->projectService->updateProject($request->all(), $request->input('id'));
+        $this->projectContract->update($request->all(), $request->input('id'));
 
         return redirect()->route('admin.projects.index');
     }
@@ -96,9 +117,15 @@ class ProjectsController extends Controller
      */
     public function delete($projectId)
     {
-        $project = $this->projectService->findWith($projectId, ['group', 'expeditions.downloads', 'subjects', 'nfnWorkflows']);
+        $project = $this->projectContract->getProjectForDelete($projectId);
 
-        $this->projectService->deleteProject($project);
+        if ($project->nfnWorkflows->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
+            Flash::error(trans('messages.expedition_process_exists'));
+
+            redirect()->route('admin.projects.index');
+        }
+
+        DeleteProject::dispatch($project);
 
         return redirect()->route('admin.projects.index');
     }

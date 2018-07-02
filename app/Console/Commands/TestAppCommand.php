@@ -2,12 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\Interfaces\Group;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class TestAppCommand extends Command
 {
-
     use DispatchesJobs;
 
     /**
@@ -21,17 +21,17 @@ class TestAppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Repositories\Interfaces\Event
+     * @var \App\Repositories\Interfaces\Group
      */
-    private $event;
+    private $group;
 
     /**
      * Create a new job instance.
-     *
      */
-    public function __construct()
+    public function __construct(Group $group)
     {
         parent::__construct();
+        $this->group = $group;
     }
 
     /**
@@ -39,5 +39,9 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
+        $groups = $this->group->getUserGroupIds(1);
+
+        $diff = $groups->diff([8]);
+        dd($diff);
     }
 }

@@ -81,11 +81,15 @@ class GroupEventListener
 
     /**
      * Set the user groups inside a session variable.
+     *
+     * @param null $groupId
      */
-    public function setUserGroupSession()
+    public function setUserGroupSession($groupId = null)
     {
         $groupIds = $this->groupContract->getUserGroupIds(Auth::id());
 
-        Session::put('groupIds', $groupIds->toArray());
+        $groups = $groupId === null ? $groupIds : $groupIds->diff([$groupId]);
+
+        Session::put('groupIds', $groups->toArray());
     }
 }

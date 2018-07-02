@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Models;
 
@@ -25,7 +25,7 @@ class Profile extends Model implements AttachableInterface, HasPresenter
         'first_name',
         'last_name',
         'timezone',
-        'avatar'
+        'avatar',
     ];
 
     /**
@@ -35,6 +35,7 @@ class Profile extends Model implements AttachableInterface, HasPresenter
 
     /**
      * Profile constructor.
+     *
      * @param array $attributes
      */
     public function __construct(array $attributes = [])
@@ -64,11 +65,19 @@ class Profile extends Model implements AttachableInterface, HasPresenter
 
     /**
      * User relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullNameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
     }
 }

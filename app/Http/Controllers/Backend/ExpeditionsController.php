@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Facades\Flash;
 use App\Http\Requests\ExpeditionFormRequest;
-use App\Services\Model\ExpeditionService;
+use App\Jobs\DeleteExpedition;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\User;
 use App\Http\Controllers\Controller;
@@ -21,27 +21,20 @@ class ExpeditionsController extends Controller
      * @var Expedition
      */
     public $expeditionContract;
-    /**
-     * @var ExpeditionService
-     */
-    private $expeditionService;
 
     /**
      * ExpeditionsController constructor.
      *
      * @param User $userContract
-     * @param ExpeditionService $expeditionService
      * @param Expedition $expeditionContract
      */
     public function __construct(
         User $userContract,
-        ExpeditionService $expeditionService,
         Expedition $expeditionContract
     )
     {
         $this->userContract = $userContract;
         $this->expeditionContract = $expeditionContract;
-        $this->expeditionService = $expeditionService;
     }
 
     /**
@@ -53,9 +46,10 @@ class ExpeditionsController extends Controller
     public function index($expeditionId = null)
     {
         $user = $this->userContract->findWith(request()->user()->id, ['profile']);
-        $expeditions = $this->expeditionService->getAllExpeditions();
+        $expeditions = $this->expeditionContract->all();
 
-        $editExpedition = $expeditionId !== null ? $this->expeditionService->findExpeditionWith($expeditionId, ['project', 'nfnWorkflow']) : null;
+        $editExpedition = $expeditionId !== null ?
+            $this->expeditionContract->findWith($expeditionId, ['project', 'nfnWorkflow']) : null;
 
         $variables = array_merge(compact('user', 'expeditions', 'editExpedition'));
 
@@ -70,7 +64,7 @@ class ExpeditionsController extends Controller
      */
     public function store(ExpeditionFormRequest $request)
     {
-        $expedition = $this->expeditionService->create($request->all());
+        $expedition = $this->expeditionContract->create($request->all());
 
         if ($expedition)
         {
@@ -92,7 +86,7 @@ class ExpeditionsController extends Controller
      */
     public function update(ExpeditionFormRequest $request)
     {
-        $expedition = $this->expeditionService->updateAdminExpedition($request->all(), $request->input('id'));
+        $expedition = $this->expeditionContract->update($request->all(), $request->input('id'));
 
         $expedition ?
             Flash::success('The Expedition has been updated.') :
@@ -109,7 +103,18 @@ class ExpeditionsController extends Controller
      */
     public function delete($expeditionId)
     {
-        $this->expeditionService->deleteExpedition($expeditionId);
+        $expedition = $this->expeditionContract->findWith($expeditionId, ['nfnWorkflow', 'downloads', 'workflowManager']);
+
+        if (isset($expedition->workflowManager) || isset($expedition->nfnWorkflow))
+        {
+            Flash::error(trans('messages.expedition_process_exists'));
+
+            return redirect()->route('admin.expeditions.index');
+        }
+
+        DeleteExpedition::dispatch($expedition);
+
+        Flash::success(trans('messages.record_deleted'));
 
         return redirect()->route('admin.expeditions.index');
     }

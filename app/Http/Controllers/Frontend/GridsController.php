@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\GridExportCsvJob;
+use App\Repositories\Interfaces\Expedition;
+use App\Repositories\Interfaces\Subject;
 use App\Services\Model\SubjectService;
 use App\Services\MongoDbService;
 use Illuminate\Http\Request;
@@ -47,23 +49,39 @@ class GridsController extends Controller
      * @var Csv
      */
     public $csv;
+
     /**
      * @var MongoDbService
      */
     private $mongoDbService;
 
     /**
+     * @var \App\Repositories\Interfaces\Subject
+     */
+    private $subjectContract;
+
+    /**
+     * @var \App\Repositories\Interfaces\Expedition
+     */
+    private $expeditionContract;
+
+    /**
      * GridsController constructor.
+     *
      * @param JqGridJsonEncoder $grid
      * @param Request $request
      * @param Csv $csv
      * @param MongoDbService $mongoDbService
+     * @param \App\Repositories\Interfaces\Subject $subjectContract
+     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      */
     public function __construct(
         JqGridJsonEncoder $grid,
         Request $request,
         Csv $csv,
-        MongoDbService $mongoDbService
+        MongoDbService $mongoDbService,
+        Subject $subjectContract,
+        Expedition $expeditionContract
     )
     {
         $this->grid = $grid;
@@ -73,6 +91,8 @@ class GridsController extends Controller
         $this->projectId = (int) $this->request->route('projects');
         $this->expeditionId = (int) $this->request->route('expeditions');
         $this->mongoDbService = $mongoDbService;
+        $this->subjectContract = $subjectContract;
+        $this->expeditionContract = $expeditionContract;
     }
 
     /**
@@ -168,10 +188,9 @@ class GridsController extends Controller
     /**
      * Delete subject if not part of expedition process.
      *
-     * @param SubjectService $subjectService
      * @return \Illuminate\Http\JsonResponse
      */
-    public function delete(SubjectService $subjectService)
+    public function delete()
     {
         if ( ! $this->request->ajax())
         {
@@ -185,7 +204,20 @@ class GridsController extends Controller
 
         $subjectIds = explode(',', $this->request->get('id'));
 
-        $subjectService->deleteSubjects($subjectIds);
+        $subjects = $this->subjectContract->getWhereIn('_id', $subjectIds);
+
+        $subjects->reject(function ($subject) {
+            foreach ($subject->expedition_ids as $expeditionId)
+            {
+                $expedition = $this->expeditionContract->findExpeditionHavingWorkflowManager($expeditionId);
+                if ($expedition !== null)
+                    return true;
+            }
+
+            return false;
+        })->each(function ($subject) {
+            $this->subjectContract->delete($subject->_id);
+        });
 
         return response()->json(['success']);
 

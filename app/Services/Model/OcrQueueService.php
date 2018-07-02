@@ -19,7 +19,6 @@ class OcrQueueService
      */
     public function __construct(OcrQueue $ocrQueueContract)
     {
-
         $this->ocrQueueContract = $ocrQueueContract;
     }
 

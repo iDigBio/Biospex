@@ -95,6 +95,15 @@ class MongoDbService
     }
 
     /**
+     * @param $criteria
+     * @return int
+     */
+    public function count($criteria)
+    {
+        return $this->clientCollection->count($criteria);
+    }
+
+    /**
      * Find all matching query.
      *
      * @param array $query
@@ -156,6 +165,14 @@ class MongoDbService
     public function updateMany(array $attributes, array $criteria)
     {
         $this->clientCollection->updateMany($criteria, $attributes);
+    }
+
+    /**
+     * @param array $criteria
+     */
+    public function deleteMany(array $criteria)
+    {
+        $this->clientCollection->deleteMany($criteria);
     }
 
 }

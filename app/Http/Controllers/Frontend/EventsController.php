@@ -9,6 +9,9 @@ use App\Http\Requests\EventFormRequest;
 use App\Http\Requests\EventJoinRequest;
 use App\Jobs\EventTranscriptionExportCsvJob;
 use App\Jobs\EventUserExportCsvJob;
+use App\Models\EventGroup;
+use App\Repositories\Interfaces\Event;
+use App\Repositories\Interfaces\EventUser;
 use App\Repositories\Interfaces\Project;
 use App\Services\Model\EventService;
 use Auth;
@@ -17,25 +20,44 @@ use Illuminate\Support\Carbon;
 class EventsController extends Controller
 {
     /**
-     * @var \App\Services\Model\EventService
-     */
-    private $eventService;
-
-    /**
      * @var \App\Repositories\Interfaces\Project
      */
     private $project;
 
     /**
+     * @var \App\Repositories\Interfaces\Event
+     */
+    private $eventContract;
+
+    /**
+     * @var \App\Models\EventGroup
+     */
+    private $eventGroupContract;
+
+    /**
+     * @var \App\Repositories\Interfaces\EventUser
+     */
+    private $eventUserContract;
+
+    /**
      * EventsController constructor.
      *
-     * @param \App\Services\Model\EventService $eventService
      * @param \App\Repositories\Interfaces\Project $project
+     * @param \App\Repositories\Interfaces\Event $eventContract
+     * @param \App\Models\EventGroup $eventGroupContract
+     * @param \App\Repositories\Interfaces\EventUser $eventUserContract
      */
-    public function __construct(EventService $eventService, Project $project)
+    public function __construct(
+        Project $project,
+        Event $eventContract,
+        EventGroup $eventGroupContract,
+        EventUser $eventUserContract
+    )
     {
-        $this->eventService = $eventService;
         $this->project = $project;
+        $this->eventContract = $eventContract;
+        $this->eventGroupContract = $eventGroupContract;
+        $this->eventUserContract = $eventUserContract;
     }
 
     /**
@@ -45,7 +67,7 @@ class EventsController extends Controller
      */
     public function index()
     {
-        $events = $this->eventService->getIndex();
+        $events = $this->eventContract->getUserEvents(Auth::id());
         return view('frontend.events.index', compact('events'));
     }
 
@@ -57,7 +79,7 @@ class EventsController extends Controller
      */
     public function show($eventId)
     {
-        $event = $this->eventService->getShow($eventId);
+        $event = $this->eventContract->getEventShow($eventId);
 
         if ( ! $this->checkPermissions('read', $event))
         {
@@ -88,7 +110,7 @@ class EventsController extends Controller
      */
     public function store(EventFormRequest $request)
     {
-        $event = $this->eventService->storeEvent($request->all());
+        $event = $this->eventContract->createEvent($request->all());
 
         if ($event) {
             Flash::success(trans('messages.record_created'));
@@ -109,7 +131,8 @@ class EventsController extends Controller
      */
     public function edit($eventId)
     {
-        $event = $this->eventService->editEvent($eventId);
+        $event = $this->eventContract->findWith($eventId, ['groups']);
+
         if ( ! $this->checkPermissions('update', $event))
         {
             return redirect()->route('webauth.events.index');
@@ -130,13 +153,14 @@ class EventsController extends Controller
      */
     public function update($eventId, EventFormRequest $request)
     {
-        $event = $this->eventService->findEvent($eventId);
+        $event = $this->eventContract->findWith($eventId, ['groups']);
+
         if ( ! $this->checkPermissions('update', $event))
         {
             return redirect()->route('webauth.events.index');
         }
 
-        $result = $this->eventService->updateEvent($request->all(), $eventId);
+        $result = $this->eventContract->updateEvent($request->all(), $eventId);
 
         if ($result) {
             Flash::success(trans('messages.record_updated'));
@@ -157,13 +181,14 @@ class EventsController extends Controller
      */
     public function delete($eventId)
     {
-        $event = $this->eventService->findEvent($eventId);
+        $event = $this->eventContract->find($eventId);
+
         if ( ! $this->checkPermissions('delete', $event))
         {
             return redirect()->route('webauth.events.index');
         }
 
-        $result = $this->eventService->deleteEvent($event);
+        $result = $this->eventContract->delete($event);
 
         if ($result)
         {
@@ -213,7 +238,7 @@ class EventsController extends Controller
      */
     public function eventJoin($uuid)
     {
-        $group = $this->eventService->getGroupByUuid($uuid);
+        $group = $this->eventGroupContract->getGroupByUuid($uuid);
 
         $start_date = $group->event->start_date->setTimezone($group->event->timezone);
         $end_date = $group->event->end_date->setTimezone($group->event->timezone);
@@ -234,10 +259,17 @@ class EventsController extends Controller
      */
     public function eventJoinCreate(EventJoinRequest $request)
     {
-        $result = $this->eventService->updateOrCreateEventJoin($request);
+        $user = $this->eventUserContract->updateOrCreate(['nfn_user' => $request->get('nfn_user')], ['nfn_user' => $request->get('nfn_user')]);
 
-        $result ? Flash::success(trans('messages.event_join_group_success'))
-            : Flash::error(trans('messages.event_join_group_error'));
+        if ($user !== null) {
+            $group = $this->eventGroupContract->find($request->get('group_id'));
+            $group->users()->save($user);
+
+            Flash::success(trans('messages.event_join_group_success'));
+            return redirect()->route('web.events.join', [$request->get('uuid')]);
+        }
+
+        Flash::error(trans('messages.event_join_group_error'));
 
         return redirect()->route('web.events.join', [$request->get('uuid')]);
     }
