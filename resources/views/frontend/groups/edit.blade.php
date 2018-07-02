@@ -3,7 +3,7 @@
 {{-- Web site Title --}}
 @section('title')
     @parent
-    @lang('pages.edit') @lang('pages.group)
+    {{ trans('pages.edit') }} {{ trans('pages.group') }}
 @stop
 
 {{-- Content --}}
@@ -46,4 +46,5 @@
                 </div>
             </div>
         </div>
+    </div>
 @stop
