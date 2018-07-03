@@ -38,8 +38,8 @@
         </div>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-striped table-hover dataTable">
+    <div class="row">
+        <table class="table">
             <thead>
             <tr>
                 <th>@lang('pages.group') @lang('pages.owner')</th>
@@ -51,16 +51,29 @@
             <tr>
                 <td>{!! Html::mailto($group->owner->email, $group->owner->full_name_or_email) !!}</td>
                 <td>
-                    <ul>
+                    <ul class="list-group">
                         @foreach ($group->users as $user)
-                            <li>{!! Html::mailto($user->email, $user->full_name_or_email) !!}</li>
+                            <li class="list-group-item">
+                                <button class="btn btn-xs btn-danger" title="@lang('pages.deleteTitle')"
+                                        data-href="{{ route('webauth.groups.deleteUser', [$group->id, $user->id]) }}"
+                                        data-method="delete"
+                                        data-toggle="confirmation"
+                                        data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
+                                        data-btn-ok-class="btn-success"
+                                        data-btn-cancel-label="Stop" data-btn-cancel-icon="fa fa-ban fa-lrg"
+                                        data-btn-cancel-class="btn-danger"
+                                        data-title="Continue action?" data-content="This will delete the item">
+                                    <span class="fa fa-remove fa-sm"></span> <!-- @lang('pages.delete') -->
+                                </button>
+                                {!! Html::mailto($user->email, $user->full_name_or_email) !!}
+                            </li>
                         @endforeach
                     </ul>
                 </td>
                 <td>
-                    <ul>
+                    <ul class="list-group">
                         @foreach ($group->projects as $project)
-                            <li>{!! link_to_route('webauth.projects.show', $project->title, $project->id) !!}</li>
+                            <li class="list-group-item">{!! link_to_route('webauth.projects.show', $project->title, $project->id) !!}</li>
                         @endforeach
                     </ul>
                 </td>

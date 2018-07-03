@@ -8,5 +8,7 @@ $router->get('groups/{groups}')->uses('GroupsController@show')->name('webauth.gr
 $router->get('groups/{groups}/edit')->uses('GroupsController@edit')->name('webauth.groups.edit');
 $router->put('groups/{groups}')->uses('GroupsController@update')->name('webauth.groups.update');
 $router->delete('groups/{groups}')->uses('GroupsController@delete')->name('webauth.groups.delete');
+$router->delete('groups/{groups}/{user}')->uses('GroupsController@deleteUser')->name('webauth.groups.deleteUser');
+
 $router->delete('groups/{groups}/destroy')->uses('GroupsController@destroy')->name('webauth.groups.destroy');
 $router->get('groups/{groups}/restore')->uses('GroupsController@restore')->name('webauth.groups.restore');
