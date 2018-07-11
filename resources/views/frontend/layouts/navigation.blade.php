@@ -14,9 +14,6 @@
         </div>
     </div>
     <div class="collapse navbar-collapse">
-        @if (config('config.translate'))
-            @include('frontend.layouts.partials.translate')
-        @endif
         <ul class="nav navbar-nav pull-left">
             @if(Auth::check())
                 @include('frontend.layouts.partials.authmenu')
@@ -24,12 +21,6 @@
             @include('frontend.layouts.partials.commonmenu')
         </ul>
         <ul class="nav navbar-nav  pull-right">
-            <li class="translate"><div id="google_translate_element"></div><script type="text/javascript">
-                    function googleTranslateElementInit() {
-                        new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
-                    }
-                </script><script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-            </li>
             @if (Auth::check())
                 @include('frontend.layouts.partials.authuser')
             @else

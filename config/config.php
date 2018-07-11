@@ -9,7 +9,6 @@ return [
     'app_current_path'  => env('APP_CURRENT_PATH'),
     'app_user'          => env('APP_USER'),
     'registration'      => env('APP_REGISTRATION'),
-    'translate'         => env('APP_TRANSLATE'),
     'expedition_size'   => env('APP_EXPEDITION_SIZE'),
     'app_echo_id'       => env('APP_ECHO_ID'),
     'app_echo_key'      => env('APP_ECHO_KEY'),
