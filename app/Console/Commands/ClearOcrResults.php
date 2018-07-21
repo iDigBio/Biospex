@@ -2,10 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\Interfaces\Subject;
+use App\Services\MongoDbService;
 use Illuminate\Console\Command;
-use Illuminate\Database\DatabaseManager;
-use MongoCollection;
 
 class ClearOcrResults extends Command
 {
@@ -22,22 +20,22 @@ class ClearOcrResults extends Command
      * @var string
      */
     protected $description = 'Clear project expeditions ocr values.';
-    
+
     /**
-     * @var Subject
+     * @var \App\Services\MongoDbService
      */
-    private $subjectContract;
+    private $mongoDbService;
 
     /**
      * Create a new command instance.
      *
-     * @param Subject $subjectContract
+     * @param \App\Services\MongoDbService $mongoDbService
      */
-    public function __construct(Subject $subjectContract)
+    public function __construct(MongoDbService $mongoDbService)
     {
         parent::__construct();
 
-        $this->subjectContract = $subjectContract;
+        $this->mongoDbService = $mongoDbService;
     }
 
     /**
@@ -50,29 +48,12 @@ class ClearOcrResults extends Command
         $projectId = $this->argument('projectId');
         $expeditionId = $this->argument('expeditionId');
 
-        $collection = $this->setCollection($projectId, $expeditionId);
-        $query = $expeditionId === null ?
+        $this->mongoDbService->setCollection('subjects');
+        $criteria = null === $expeditionId ?
             ['project_id' => (int) $projectId] :
             ['project_id' => (int) $projectId, 'expedition_ids' => (int) $expeditionId];
-        $result = $collection->find($query);
+        $attributes = [ '$set' => ['ocr' => '']];
 
-        foreach ($result as $doc)
-        {
-            $doc['ocr'] = '';
-            $collection->update(['_id' => (string) $doc['_id']], $doc);
-        }
-    }
-
-    /**
-     * Query MongoDB and return cursor
-     * @return MongoCollection
-     */
-    protected function setCollection()
-    {
-        $databaseManager = app(DatabaseManager::class);
-        $client = $databaseManager->connection('mongodb')->getMongoClient();
-        $collection =$client->{config('database.connections.mongodb.database')}->subjects;
-
-         return $collection;
+        $this->mongoDbService->updateMany($attributes, $criteria);
     }
 }
