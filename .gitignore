@@ -15,12 +15,13 @@ _ide_helper.php
 .env.production
 .env.development
 codeception.yml
-storage/scratch/*
-storage/classifications/*
-storage/exports/*
-storage/imports/*
-storage/images/*
-public/system
+storage/app/classifications/*
+storage/app/exports/*
+storage/app/imports/*
+storage/app/images/*
+storage/app/reports/*
+storage/app/scratch/*
+public/storage
 /resources/assets/vendor
 
 tests/_output/
