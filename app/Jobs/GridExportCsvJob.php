@@ -88,7 +88,7 @@ class GridExportCsvJob implements ShouldQueue
             unset($first['_id'], $first['occurrence']);
             $header = array_keys($first);
 
-            $file = config('config.export_reports_dir') . '/' . str_random() . '.csv';
+            $file = config('config.reports_dir') . '/' . str_random() . '.csv';
             $csv->writerCreateFromPath($file);
             $csv->insertOne($header);
 
