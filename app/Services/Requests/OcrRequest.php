@@ -25,7 +25,7 @@ class OcrRequest extends HttpRequest
      * Send json data as file.
      *
      * @param $record
-     * @throws \Exception
+     * @throws \GuzzleHttp\Exception\GuzzleException|\Exception
      */
     public function sendOcrFile($record)
     {
