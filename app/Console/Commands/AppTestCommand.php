@@ -3,12 +3,9 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 
-class TestAppCommand extends Command
+class AppTestCommand extends Command
 {
-    use DispatchesJobs;
-
     /**
      * The console command name.
      */
@@ -32,5 +29,6 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
+
     }
 }

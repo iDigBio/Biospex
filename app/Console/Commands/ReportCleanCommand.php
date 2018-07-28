@@ -37,6 +37,6 @@ class ReportCleanCommand extends Command
      */
     public function handle()
     {
-        \File::cleanDirectory(config('config.export_reports_dir'));
+        \File::cleanDirectory(config('config.reports_dir'));
     }
 }
