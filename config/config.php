@@ -27,19 +27,21 @@ return [
     'map_client_id'       => env('MAP_CLIENT_ID'),
     'map_client_cert_url' => env('MAP_CLIENT_CERT_URL'),
 
-    'scratch_dir'                 => storage_path('scratch'),
-    'scratch_dir_tmp'             => storage_path('scratch/tmp'),
-    'nfn_export_dir'              => storage_path('exports/nfn'),
-    'export_reports_dir'          => storage_path('exports/report'),
-    'subject_import_dir'          => storage_path('imports/subjects'),
-    'classifications_dir'         => storage_path('classifications'),
-    'classifications_download'    => storage_path('classifications/download'),
-    'classifications_reconcile'   => storage_path('classifications/reconcile'),
-    'classifications_summary'     => storage_path('classifications/summary'),
-    'classifications_transcript'  => storage_path('classifications/transcript'),
-    'classifications_fusiontable' => storage_path('classifications/fusiontable'),
-    'label_reconciliations_path'  => env('LABEL_RECONCILIATIONS_PATH'),
-    'nfn_table_prefix'            => env('NFN_TABLE_PREFIX', ''),
+    'scratch_dir'                 => storage_path('app/scratch'),
+    'scratch_dir_tmp'             => storage_path('app/scratch/tmp'),
+    'nfn_export_dir'              => storage_path('app/exports'),
+    'reports_dir'                 => storage_path('app/reports'),
+    'subject_import_dir'          => storage_path('app/imports/subjects'),
+    'classifications_dir'         => storage_path('app/classifications'),
+    'classifications_download'    => storage_path('app/classifications/download'),
+    'classifications_reconcile'   => storage_path('app/classifications/reconcile'),
+    'classifications_summary'     => storage_path('app/classifications/summary'),
+    'classifications_transcript'  => storage_path('app/classifications/transcript'),
+    'classifications_fusiontable' => storage_path('app/classifications/fusiontable'),
+
+    'python_path'      => env('LABEL_RECONCILIATIONS_PATH').'/venv/bin/python3',
+    'reconcile_path'   => env('LABEL_RECONCILIATIONS_PATH').'/reconcile.py',
+    'nfn_table_prefix' => env('NFN_TABLE_PREFIX', ''),
 
     'ocr_post_url'   => env('OCR_POSTURL'),
     'ocr_get_url'    => env('OCR_GETURL'),
@@ -51,7 +53,7 @@ return [
 
     'poll_ocr_channel'    => env('POLL_OCR_CHANNEL'),
     'poll_export_channel' => env('POLL_EXPORT_CHANNEL'),
-    'poll_board_channel' => env('POLL_BOARD_CHANNEL'),
+    'poll_board_channel'  => env('POLL_BOARD_CHANNEL'),
 
     'cache_enabled'       => env('CACHE_ENABLED', true),
     'cache_minutes'       => env('CACHE_MINUTES', 60),
@@ -72,7 +74,7 @@ return [
     'dwcRequiredRowTypes' => [
         'http://rs.tdwg.org/ac/terms/multimedia',
         'http://rs.gbif.org/terms/1.0/image',
-        'http://rs.tdwg.org/dwc/terms/occurrence'
+        'http://rs.tdwg.org/dwc/terms/occurrence',
     ],
 
     'dwcRequiredFields' => [
@@ -85,13 +87,13 @@ return [
                 'http://rs.tdwg.org/ac/terms/providerManagedID',
                 'http://portal.idigbio.org/terms/uuid',
                 'http://portal.idigbio.org/terms/recordId',
-            ]
-        ]
+            ],
+        ],
     ],
 
     'dwcLocalityFields' => [
         'StateProvince' => 'stateProvince',
-        'County'        => 'county'
+        'County'        => 'county',
     ],
 
     /* Added Tubes */
@@ -105,16 +107,16 @@ return [
         'stat'           => env('QUEUE_STAT_TUBE'),
         'workflow'       => env('QUEUE_WORKFLOW_TUBE'),
         'ocr'            => env('QUEUE_OCR_TUBE'),
-        'nfnpusher'      => env('QUEUE_NFN_PUSHER')
+        'nfnpusher'      => env('QUEUE_NFN_PUSHER'),
     ],
 
     'images'                => [
         'thumbDefaultImg' => public_path('/images/default_image.jpg'),
-        'thumbOutputDir'  => storage_path('images'),
+        'thumbOutputDir'  => storage_path('app/public/thumbs'),
         'thumbWidth'      => 300,
         'thumbHeight'     => 300,
         'nfnLrgWidth'     => env('NFN_LRG_WIDTH', 1500),
-        'nfnSmWidth'      => env('NFN_SM_WIDTH', 500)
+        'nfnSmWidth'      => env('NFN_SM_WIDTH', 500),
     ],
 
     /** Min and max logo and banner sizes used in Project model for Codesleve Stapler */
@@ -128,7 +130,7 @@ return [
         'Assigned',
         'Id',
         'AccessURI',
-        'Ocr'
+        'Ocr',
     ],
 
     /**
@@ -137,7 +139,7 @@ return [
     'defaultGridVisible'    => [
         'id',
         'accessURI',
-        'ocr'
+        'ocr',
     ],
     'defaultSubGridVisible' => [
         'id',
@@ -151,9 +153,9 @@ return [
         env('NFN_WORKFLOWS_2'),
     ],
 
-    'nfnActors'  => env('NFN_ACTORS'),
-    'nfnNotify'  => [1 => 'NewNfnLegacyProject', 2 => 'NewNfnPanoptesProject'],
-    'nfnSkipCsv' => env('NFN_SKIP_CSV'), // Skip csv creation for expedition ids
+    'nfnActors'                 => env('NFN_ACTORS'),
+    'nfnNotify'                 => [1 => 'NewNfnLegacyProject', 2 => 'NewNfnPanoptesProject'],
+    'nfnSkipCsv'                => env('NFN_SKIP_CSV'), // Skip csv creation for expedition ids
     'nfnTranscriptionsComplete' => env('NFN_TRANSCRIPTIONS_COMPLETE', 3),
 
     'nfnCsvMap' => [
@@ -181,7 +183,7 @@ return [
         'clientSecret' => env('NFN_API_CLIENT_SECRET'),
         'apiUri'       => env('NFN_API_URI'),
         'tokenUri'     => env('NFN_API_TOKEN_URI'),
-        'redirectUri'  => env('NFN_REDIRECT_URI')
+        'redirectUri'  => env('NFN_REDIRECT_URI'),
     ],
 
     'nfnSearch' => [
@@ -220,6 +222,6 @@ return [
         'starting' => 'Starting',
         'active'   => 'Active',
         'complete' => 'Complete',
-        'hiatus'   => 'Hiatus'
+        'hiatus'   => 'Hiatus',
     ],
 ];
