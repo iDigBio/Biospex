@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\Resource;
+use Storage;
 
 class ResourcesController extends Controller
 {
@@ -39,19 +40,19 @@ class ResourcesController extends Controller
      * Download resource file.
      *
      * @param $resourceId
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function download($resourceId)
     {
         $download = $this->resourceContract->find($resourceId);
         $document = $download->document;
 
-        if (! $document->exists() || ! file_exists(public_path($document->path()))) {
+        if (! $document->exists() || ! file_exists(public_path('storage' . $document->path()))) {
             Flash::error('File cannot be found.');
 
             return redirect()->route('web.resources.index');
         }
 
-        return response()->download(public_path($document->path()), $document->originalFilename(), ['Content-Type: ' . $document->contentType()]);
+        return Storage::download('public/' . $document->path());
     }
 }

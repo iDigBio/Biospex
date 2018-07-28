@@ -28,6 +28,7 @@ class ImagesController extends Controller
      * Return resized image
      *
      * @return string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function preview()
     {
