@@ -129,7 +129,7 @@ class OcrProcess
         $csv = null;
         if ( ! empty($record->ocrCsv->subjects))
         {
-            $csv = config('config.export_reports_dir') . '/' . str_random() . '.csv';
+            $csv = config('config.reports_dir') . '/' . str_random() . '.csv';
             $this->csvService->writerCreateFromPath($csv);
             $headers = array_keys($record->ocrCsv->subjects[0]);
             $this->csvService->insertOne($headers);
