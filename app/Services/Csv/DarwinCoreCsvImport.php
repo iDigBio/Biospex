@@ -9,7 +9,6 @@ use App\Repositories\Interfaces\Subject;
 use App\Services\MongoDbService;
 use ForceUTF8\Encoding;
 use Illuminate\Validation\Factory as Validation;
-use App\Models\Occurrence;
 
 class DarwinCoreCsvImport
 {
