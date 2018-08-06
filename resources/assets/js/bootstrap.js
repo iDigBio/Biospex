@@ -6,30 +6,34 @@
  */
 
 try {
-    require("jquery");
+    window.$ = window.jQuery = require('jquery');
+    //require('bootstrap');
+    require("bootstrap-sass/assets/javascripts/bootstrap");
+    require("bootstrap-notify/bootstrap-notify");
+
     require("jquery-ui/ui/widgets/dialog");
     require("jquery-ui/ui/widgets/draggable");
     require("jquery-ui/ui/widgets/droppable");
     require("jquery-ui/ui/widgets/resizable");
-    require("free-jqgrid/dist/plugins/ui.multiselect");
-    require("free-jqgrid/js/jquery.jqgrid.min");
-    require("bootstrap-sass");
-    require("bootstrap-notify/bootstrap-notify");
-    require("codemirror/lib/codemirror");
-    require("summernote/dist/summernote");
     require("jquery-validation/dist/jquery.validate");
     require("jquery-validation/dist/additional-methods");
     require("jquery-datetimepicker/build/jquery.datetimepicker.full");
+    require("free-jqgrid/dist/plugins/ui.multiselect");
+    require("free-jqgrid/js/jquery.jqgrid.min");
+
+    require("codemirror/lib/codemirror");
+    require("summernote/dist/summernote");
+
     require("tablesorter/dist/js/jquery.tablesorter");
     require("tablesorter/dist/js/jquery.tablesorter.widgets.js");
     require("amcharts3/amcharts/amcharts");
     require("amcharts3/amcharts/serial");
     require("amcharts3/amcharts/plugins/dataloader/dataloader");
     require("amcharts3/amcharts/plugins/responsive/responsive");
-    require("bootstrap-confirmation2/bootstrap-confirmation");
+
     require("socket.io-client/dist/socket.io");
     require("./amchart");
-    require("./delete-form");
+    require("./bootbox");
     require("./flash");
     require("./biospex");
     require("./grid");

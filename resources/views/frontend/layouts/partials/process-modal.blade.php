@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h2 class="modal-title">@lang('pages.processes')</h2>
             </div>
             <div class="modal-body">
@@ -17,6 +17,6 @@
                 <span class="text-danger pull-left">@lang('pages.process_warning')</span>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+        </div>
+    </div>
+</div>

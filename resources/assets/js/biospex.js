@@ -9,7 +9,7 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
-    $('a.polling').click(function (event) {
+    $('a.polling').on('click', function (event) {
         $('#ocrHtml').html('Retrieving data');
         $('#exportHtml').html('Retrieving data');
         $.get("/poll");
@@ -48,6 +48,7 @@ $(document).ready(function () {
         }
         $('#targetCount').val($("div.target:visible").length);
     });
+
     $('#remove_target').click(function () {
         let target = $('div.target');
         if (target.length === 1) {
@@ -161,8 +162,6 @@ $(document).ready(function () {
             });
     }
 
-    $('[data-toggle="tooltip"]').tooltip();
-
     if ($('#event-boards').length) {
         let projectId = $("#projectId").data('value');
         Echo.channel(Laravel.boardChannel + '.' + projectId)
@@ -172,6 +171,12 @@ $(document).ready(function () {
     }
 
     $('[data-toggle="tooltip"]').tooltip();
+    $('.js-tooltip').tooltip();
+    $('.js-copy').click(function () {
+        let text = $(this).attr('data-copy');
+        let el = $(this);
+        copyToClipboard(text, el);
+    });
 
     $.datetimepicker.setLocale('en');
     $('.datetimepicker').datetimepicker({
@@ -184,13 +189,6 @@ $(document).ready(function () {
             '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30',
             '20:00', '20:30', '21:00', '21:30', '22:00', '22:30'
         ]
-    });
-
-    $('.js-tooltip').tooltip();
-    $('.js-copy').click(function () {
-        let text = $(this).attr('data-copy');
-        let el = $(this);
-        copyToClipboard(text, el);
     });
 });
 
@@ -266,5 +264,3 @@ function copyToClipboard(text, el) {
         window.prompt("Copy to clipboard: Ctrl+C or Command+C, Enter", text);
     }
 }
-
-
