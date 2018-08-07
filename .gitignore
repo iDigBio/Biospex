@@ -21,7 +21,6 @@ panoptes-pusher.js
 .env.production
 .env.development
 composer.json
-package.json
 codeception.yml
 .env
 .gitattributes
@@ -32,4 +31,3 @@ _ide_helper.php
 /config/ide-helper.php
 /config/debugbar.php
 yarn-error.log
-webpack*
