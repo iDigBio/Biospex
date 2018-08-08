@@ -20,7 +20,6 @@ panoptes-pusher.js
 .env.behat
 .env.production
 .env.development
-composer.json
 codeception.yml
 .env
 .gitattributes
