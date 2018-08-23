@@ -3,6 +3,7 @@
 namespace App\Presenters;
 
 use McCool\LaravelAutoPresenter\BasePresenter;
+use Storage;
 
 class ResourcePresenter extends BasePresenter
 {
@@ -15,7 +16,7 @@ class ResourcePresenter extends BasePresenter
         $id = $this->wrappedObject->id;
         $attachment = $this->wrappedObject->document;
 
-        return $attachment->exists() ?
+        return $attachment->exists()  && Storage::disk('public')->exists($attachment->variantPath()) ?
             link_to_route('web.resources.download', $attachment->originalFilename(), [$id]) : '';
     }
 }
