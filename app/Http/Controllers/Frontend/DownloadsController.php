@@ -61,7 +61,7 @@ class DownloadsController extends Controller
         $this->userContract = $userContract;
 
         $this->paths = [
-            'export' => config('config.nfn_export_dir'),
+            'export' => config('config.export_dir'),
             'classifications' => config('config.classifications_download'),
             'transcriptions' => config('config.classifications_transcript'),
             'reconciled' => config('config.classifications_reconcile'),

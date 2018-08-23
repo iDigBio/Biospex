@@ -46,7 +46,7 @@ class DeleteGroup implements ShouldQueue
         $group->projects->each(function ($project) use ($mongoDbService) {
             $project->expeditions->each(function ($expedition) use ($mongoDbService) {
                 $expedition->downloads->each(function ($download) {
-                    File::delete(config('config.nfn_export_dir').'/'.$download->file);
+                    File::delete(config('config.export_dir').'/'.$download->file);
                 });
 
                 $mongoDbService->setCollection('panoptes_transcriptions');

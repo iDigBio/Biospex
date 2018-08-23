@@ -66,8 +66,8 @@ class DwcFileImportJob implements ShouldQueue
 
             $dwcProcess->process($this->import->project_id, $scratchFileDir);
 
-            $dupsCsv = config('config.reports_dir') . '/' . md5($this->import->id) . 'dup.csv';
-            $rejCsv = config('config.reports_dir') . '/' . md5($this->import->id) . 'rej.csv';
+            $dupsCsv = config('config.reports_dir') . '/' . str_random() . 'dup.csv';
+            $rejCsv = config('config.reports_dir') . '/' . str_random() . 'rej.csv';
 
             $duplicates = GeneralHelper::createCsv($dwcProcess->getDuplicates(), $dupsCsv);
             $rejects = GeneralHelper::createCsv($dwcProcess->getRejectedMedia(), $rejCsv);

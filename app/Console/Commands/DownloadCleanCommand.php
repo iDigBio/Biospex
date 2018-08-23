@@ -56,7 +56,7 @@ class DownloadCleanCommand extends Command
         $this->filesystem = $filesystem;
         $this->downloadContract = $downloadContract;
 
-        $this->nfnExportDir = config('config.nfn_export_dir');
+        $this->nfnExportDir = config('config.export_dir');
     }
 
     /**

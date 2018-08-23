@@ -65,7 +65,7 @@ class DwcUriImportJob implements ShouldQueue
         try
         {
             $fileName = basename($this->data['url']);
-            $filePath = config('config.subject_import_dir') . '/' . $fileName;
+            $filePath = config('config.import_dir') . '/' . $fileName;
 
             $file = file_get_contents(GeneralHelper::urlEncode($this->data['url']));
             if ($file === false)

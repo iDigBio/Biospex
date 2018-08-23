@@ -196,7 +196,7 @@ class ActorServiceConfig
      */
     public function setNfnExportDirectory()
     {
-        $this->nfnExportDirectory = config('config.nfn_export_dir');
+        $this->nfnExportDirectory = config('config.export_dir');
     }
 
     /**

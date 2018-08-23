@@ -49,7 +49,7 @@ class DeleteExpedition implements ShouldQueue
         $expedition = $expeditionContract->findWith($this->expedition->id, ['downloads']);
 
         $expedition->downloads->each(function ($download){
-            File::delete(config('config.nfn_export_dir').'/'.$download->file);
+            File::delete(config('config.export_dir').'/'.$download->file);
         });
 
         $mongoDbService->setCollection('pusher_transcriptions');
