@@ -29,9 +29,9 @@ return [
 
     'scratch_dir'                 => storage_path('app/scratch'),
     'scratch_dir_tmp'             => storage_path('app/scratch/tmp'),
-    'nfn_export_dir'              => storage_path('app/exports'),
+    'export_dir'                  => storage_path('app/exports'),
     'reports_dir'                 => storage_path('app/reports'),
-    'subject_import_dir'          => storage_path('app/imports/subjects'),
+    'import_dir'                  => storage_path('app/subjects'),
     'classifications_dir'         => storage_path('app/classifications'),
     'classifications_download'    => storage_path('app/classifications/download'),
     'classifications_reconcile'   => storage_path('app/classifications/reconcile'),
