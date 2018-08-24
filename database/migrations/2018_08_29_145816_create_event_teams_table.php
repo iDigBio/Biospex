@@ -23,6 +23,9 @@ class CreateEventTeamsTable extends Migration
 
                 $table->unique(['event_id', 'title'], 'event_team_title');
             });
+
+            DB::statement("ALTER TABLE event_teams ADD uuid BINARY(16) NULL AFTER id");
+            DB::statement('CREATE UNIQUE INDEX uuid_unique ON event_teams (uuid);');
         }
     }
 
