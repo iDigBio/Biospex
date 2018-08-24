@@ -1,3 +1,5 @@
+body { top: 0px !important; }
+
 .container, .container-fluid {
     padding-top: 50px;
 }
@@ -943,7 +945,6 @@ div#chartTranscriptionsDiv {
 .goog-te-gadget-simple a {text-decoration: none !important;}
 
 .goog-te-banner-frame.skiptranslate {display: none !important;}
-body { top: 0px !important; }
 
 .nav li.translate {
     margin-top: 12px;
@@ -978,4 +979,9 @@ body { top: 0px !important; }
     .right {
         display: none;
     }
+}
+
+div.event-card {
+    box-shadow: 0 0 10px black;
+    border-radius:5px;
 }
