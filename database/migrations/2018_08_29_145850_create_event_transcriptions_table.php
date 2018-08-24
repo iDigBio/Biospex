@@ -19,8 +19,8 @@ class CreateEventTranscriptionsTable extends Migration
                 $table->integer('classification_id');
                 $table->unsignedInteger('event_id');
                 $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
-                $table->unsignedInteger('group_id');
-                $table->foreign('group_id')->references('id')->on('event_groups')->onDelete('cascade');
+                $table->unsignedInteger('team_id');
+                $table->foreign('team_id')->references('id')->on('event_teams')->onDelete('cascade');
                 $table->unsignedInteger('user_id');
                 $table->foreign('user_id')->references('id')->on('event_users')->onDelete('cascade');
 

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateEventGroupsTable extends Migration
+class CreateEventTeamsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,16 @@ class CreateEventGroupsTable extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('event_groups')) {
-            Schema::create('event_groups', function (Blueprint $table) {
+        if (!Schema::hasTable('event_teams')) {
+            Schema::create('event_teams', function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedInteger('event_id');
                 $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
                 $table->string('title');
                 $table->timestamps();
 
-                $table->unique(['event_id', 'title'], 'event_group_title');
+                $table->unique(['event_id', 'title'], 'event_team_title');
             });
-
-            DB::statement("ALTER TABLE event_groups ADD uuid BINARY(16) NULL AFTER id");
-            DB::statement('CREATE UNIQUE INDEX uuid_unique ON event_groups (uuid);');
         }
     }
 
@@ -36,6 +33,6 @@ class CreateEventGroupsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('event_groups');
+        Schema::dropIfExists('event_teams');
     }
 }
