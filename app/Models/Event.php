@@ -81,7 +81,7 @@ class Event extends Model
      */
     public function groups()
     {
-        return $this->hasMany(EventGroup::class);
+        return $this->hasMany(EventTeam::class);
     }
 
     /**

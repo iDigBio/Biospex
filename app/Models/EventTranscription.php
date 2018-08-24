@@ -26,7 +26,7 @@ class EventTranscription extends Model
     protected $fillable = [
         'classification_id',
         'event_id',
-        'group_id',
+        'team_id',
         'user_id',
     ];
 
@@ -51,13 +51,13 @@ class EventTranscription extends Model
     }
 
     /**
-     * Event Group relationship.
+     * Event Team relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function group()
     {
-        return $this->belongsTo(EventGroup::class);
+        return $this->belongsTo(EventTeam::class);
     }
 
     /**

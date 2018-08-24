@@ -4,8 +4,8 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\EventCsvExport;
+use App\Repositories\Interfaces\Event;
 use App\Services\Csv\Csv;
-use App\Services\Model\EventService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -33,6 +33,9 @@ class EventUserExportCsvJob implements ShouldQueue
      */
     private $eventId;
 
+    /**
+     * @var
+     */
     private $rows;
 
     /**
@@ -51,22 +54,22 @@ class EventUserExportCsvJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Model\EventService $eventService
+     * @param \App\Repositories\Interfaces\Event $eventContract
      * @param Csv $csv
      * @return void
      */
     public function handle(
-        EventService $eventService,
+        Event $eventContract,
         Csv $csv
     )
     {
         try
         {
-            $event = $eventService->getShow($this->eventId);
-            $event->groups->each(function($group){
-                foreach ($group->users as $user)
+            $event = $eventContract->getEventShow($this->eventId);
+            $event->teams->each(function($team){
+                foreach ($team->users as $user)
                 {
-                    $this->rows[] = [$group->title, $user->nfn_user, $user->transcriptionCount];
+                    $this->rows[] = [$team->title, $user->nfn_user, $user->transcriptionCount];
                 }
             });
 
@@ -88,7 +91,7 @@ class EventUserExportCsvJob implements ShouldQueue
     {
         $file = config('config.reports_dir') . '/' . str_random() . '.csv';
         $csv->writerCreateFromPath($file);
-        $csv->insertOne(['Group', 'User', 'Transcriptions']);
+        $csv->insertOne(['Team', 'User', 'Transcriptions']);
         $csv->insertAll($this->rows);
     }
 }

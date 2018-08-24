@@ -3,7 +3,7 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Event as Model;
-use App\Models\EventGroup;
+use App\Models\EventTeam;
 use App\Repositories\Interfaces\Event;
 use Carbon\Carbon;
 
@@ -29,19 +29,19 @@ class EventRepository extends EloquentRepository implements Event
 
         $event = $this->create($attributes);
 
-        $groups = collect($attributes['groups'])->reject(function ($group) {
-            return empty($group['title']);
-        })->map(function ($group) {
-            return new EventGroup($group);
+        $teams = collect($attributes['teams'])->reject(function ($team) {
+            return empty($team['title']);
+        })->map(function ($team) {
+            return new EventTeam($team);
         });
 
-        $event->groups()->saveMany($groups->all());
+        $event->teams()->saveMany($teams->all());
 
         return $event;
     }
 
     /**
-     * Update event and groups.
+     * Update event and teams.
      *
      * @param array $attributes
      * @param $resourceId
@@ -55,31 +55,31 @@ class EventRepository extends EloquentRepository implements Event
 
         $event = $this->update($attributes, $resourceId);
 
-        collect($attributes['groups'])->each(function ($group) use ($event) {
-            $this->handleGroup($group, $event);
+        collect($attributes['teams'])->each(function ($team) use ($event) {
+            $this->handleGroup($team, $event);
         });
 
         return $event;
     }
 
-    public function handleGroup($group, $event)
+    public function handleGroup($team, $event)
     {
-        $record = EventGroup::where('id', $group['id'])->where('event_id', $event->id)->first();
-        if ($record && $group['title'] !== null) {
-            $record->fill($group)->save();
+        $record = EventTeam::where('id', $team['id'])->where('event_id', $event->id)->first();
+        if ($record && $team['title'] !== null) {
+            $record->fill($team)->save();
 
             return;
         }
 
-        if ($record && $group['title'] === null) {
+        if ($record && $team['title'] === null) {
             $record->delete();
 
             return;
         }
 
-        if (! $record && $group['title'] !== null) {
-            $group = new EventGroup($group);
-            $event->groups()->save($group);
+        if (! $record && $team['title'] !== null) {
+            $team = new EventTeam($team);
+            $event->teams()->save($team);
         }
 
         return;
@@ -116,7 +116,7 @@ class EventRepository extends EloquentRepository implements Event
     {
         $results = $this->model->withCount('transcriptions')->with([
             'project',
-            'groups.users' => function ($q) use ($eventId) {
+            'teams.users' => function ($q) use ($eventId) {
                 $q->withcount([
                     'transcriptions' => function ($q) use ($eventId) {
                         $q->where('event_id', $eventId);
@@ -148,7 +148,7 @@ class EventRepository extends EloquentRepository implements Event
     }
 
     /**
-     * Check if an event exists with group and user.
+     * Check if an event exists with team and user.
      *
      * @param $projectId
      * @param $user
@@ -158,7 +158,7 @@ class EventRepository extends EloquentRepository implements Event
     public function checkEventExistsForClassificationUser($projectId, $user)
     {
         $events = $this->model->with([
-            'groups' => function ($q) use ($user) {
+            'teams' => function ($q) use ($user) {
                 $q->with(['users'])->whereHas('users', function ($q) use ($user) {
                     $q->where('nfn_user', $user);
                 });
@@ -180,10 +180,10 @@ class EventRepository extends EloquentRepository implements Event
     public function getEventsByProjectId($projectId)
     {
         $results = $this->model->withCount('transcriptions')->with([
-                'groups' => function ($q) {
+                'teams' => function ($q) {
                     $q->withCount('transcriptions');
                 },
-            ])->whereHas('groups')->where('project_id', $projectId)->get();
+            ])->whereHas('teams')->where('project_id', $projectId)->get();
 
         $this->resetModel();
 

@@ -4,11 +4,11 @@ namespace App\Repositories\Interfaces;
 
 use App\Repositories\RepositoryInterface;
 
-interface EventGroup extends RepositoryInterface
+interface EventTeam extends RepositoryInterface
 {
     /**
      * @param $uuid
      * @return mixed
      */
-    public function getGroupByUuid($uuid);
+    public function getTeamByUuid($uuid);
 }

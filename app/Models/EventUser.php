@@ -28,8 +28,8 @@ class EventUser extends Model
      */
     public function groups()
     {
-        return $this->belongsToMany(EventGroup::class, 'event_group_user', 'user_id', 'group_id')
-            ->withPivot('group_id', 'user_id');
+        return $this->belongsToMany(EventTeam::class, 'event_team_user', 'user_id', 'team_id')
+            ->withPivot('team_id', 'user_id');
     }
 
     /**

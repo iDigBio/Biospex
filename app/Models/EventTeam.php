@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 use App\Models\Traits\UuidTrait;
 
-class EventGroup extends Model
+class EventTeam extends Model
 {
     use LadaCacheTrait, UuidTrait;
 
     /**
      * @inheritDoc
      */
-    protected $table = 'event_groups';
+    protected $table = 'event_teams';
 
     /**
      * @inheritDoc
@@ -40,7 +40,7 @@ class EventGroup extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(EventUser::class, 'event_group_user', 'group_id', 'user_id');
+        return $this->belongsToMany(EventUser::class, 'event_team_user', 'team_id', 'user_id');
     }
 
     /**
@@ -50,6 +50,6 @@ class EventGroup extends Model
      */
     public function transcriptions()
     {
-        return $this->hasMany(EventTranscription::class, 'group_id');
+        return $this->hasMany(EventTranscription::class, 'team_id');
     }
 }

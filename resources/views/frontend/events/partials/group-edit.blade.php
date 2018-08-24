@@ -6,7 +6,7 @@
         </span>
             {!! Form::text('groups[' . $key . '][title]', $group->title, [
                 'class' => 'form-control',
-                'placeholder' => trans('pages.event_groups_title'),
+                'placeholder' => trans('pages.event_teams_title'),
                 'data-type' => 'groups'
                 ]) !!}
         </div>

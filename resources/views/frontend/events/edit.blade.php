@@ -84,7 +84,7 @@
                 </div>
 
                 <div class="form-group">
-                    {!! Form::label('', trans('pages.event_groups'), ['class' => 'col-sm-2 control-label']) !!}
+                    {!! Form::label('', trans('pages.event_teams'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="controls col-sm-10">
                         @if($errors->has('groups.*'))
                             @for($i = 0; $i < old('entries'); $i++)

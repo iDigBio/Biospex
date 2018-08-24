@@ -3,10 +3,10 @@
 namespace App\Repositories\Eloquent;
 
 use App\Facades\GeneralHelper;
-use App\Models\EventGroup as Model;
-use App\Repositories\Interfaces\EventGroup;
+use App\Models\EventTeam as Model;
+use App\Repositories\Interfaces\EventTeam;
 
-class EventGroupRepository extends EloquentRepository implements EventGroup
+class EventTeamRepository extends EloquentRepository implements EventTeam
 {
 
     /**
@@ -24,7 +24,7 @@ class EventGroupRepository extends EloquentRepository implements EventGroup
      * @return \Illuminate\Database\Eloquent\Model|null|object|static
      * @throws \Exception
      */
-    public function getGroupByUuid($uuid)
+    public function getTeamByUuid($uuid)
     {
         $results = $this->model->with(['event'])->where('uuid', GeneralHelper::uuidToBin($uuid))->first();
 

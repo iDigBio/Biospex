@@ -8,7 +8,7 @@
             {!! Form::text('groups[' . $i . '][title]', old('groups.[' . $i . '].title'), [
                 'class' => 'form-control',
                 'placeholder' =>
-                trans('pages.event_groups_title')
+                trans('pages.event_teams_title')
                 ]) !!}
         </div>
         {!! Form::hidden('groups['. $i .'][id]', old('groups.[' . $i . '].id')) !!}
