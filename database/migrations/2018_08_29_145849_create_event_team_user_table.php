@@ -23,7 +23,7 @@ class CreateEventTeamUserTable extends Migration
                 $table->unsignedInteger('user_id');
                 $table->foreign('user_id')->references('id')->on('event_teams')->onDelete('cascade');
 
-                $table->unique(['group_id', 'user_id'], 'event_team_user');
+                $table->unique(['team_id', 'user_id'], 'event_team_user');
             });
         }
     }

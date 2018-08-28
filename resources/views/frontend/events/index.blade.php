@@ -19,7 +19,11 @@
     <div class="row top25">
         <div class="col-md-3 col-sm-6 col-xs-12">
             <div class="panel panel-default event-card">
-                <div class="panel-thumbnail"><img src="/storage/logos/original/missing.png" width="100%" class="img-responsive">
+                <div class="panel-thumbnail">
+                    <img src="/storage/logos/original/missing.png" class="image img-responsive">
+                    <div class="project-overlay">
+                        <div class="text">Hello World</div>
+                    </div>
                 </div>
                 <div class="panel-body">
                     <p class="lead">Hacker News</p>
@@ -36,7 +40,8 @@
 
         <div class="col-md-3 col-sm-6 col-xs-12">
             <div class="panel panel-default event-card">
-                <div class="panel-thumbnail"><img src="/storage/logos/original/missing.png" width="100%" class="img-responsive">
+                <div class="panel-thumbnail"><img src="/storage/logos/original/missing.png" width="100%"
+                                                  class="img-responsive">
                 </div>
                 <div class="panel-body">
                     <p class="lead">Hacker News</p>
@@ -53,7 +58,8 @@
 
         <div class="col-md-3 col-sm-6 col-xs-12">
             <div class="panel panel-default event-card">
-                <div class="panel-thumbnail"><img src="/storage/logos/original/missing.png" width="100%" class="img-responsive">
+                <div class="panel-thumbnail"><img src="/storage/logos/original/missing.png" width="100%"
+                                                  class="img-responsive">
                 </div>
                 <div class="panel-body">
                     <p class="lead">Hacker News</p>
@@ -70,7 +76,8 @@
 
         <div class="col-md-3 col-sm-6 col-xs-12">
             <div class="panel panel-default event-card">
-                <div class="panel-thumbnail"><img src="/storage/logos/original/missing.png" width="100%" class="img-responsive">
+                <div class="panel-thumbnail"><img src="/storage/logos/original/missing.png" width="100%"
+                                                  class="img-responsive">
                 </div>
                 <div class="panel-body">
                     <p class="lead">Hacker News</p>

@@ -14,7 +14,6 @@ class AddDocumentFieldsToResourcesTable extends Migration {
     {
         Schema::table('resources', function(Blueprint $table) {
 
-            $table->dropColumn('document');
             $table->string('document_file_name')->nullable()->after('description');
             $table->integer('document_file_size')->nullable()->after('document_file_name');
             $table->string('document_content_type')->nullable()->after('document_file_size');

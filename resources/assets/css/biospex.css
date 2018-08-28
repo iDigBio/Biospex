@@ -985,3 +985,35 @@ div.event-card {
     box-shadow: 0 0 10px black;
     border-radius:5px;
 }
+
+.panel-thumbnail {
+    position: relative;
+}
+
+.image {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.project-overlay {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 50px;
+    background-color: rgba(125, 128, 131, 0.3);
+    color: #fff;
+    padding: 50%;
+}
+
+.text {
+    color: white;
+    font-size: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
