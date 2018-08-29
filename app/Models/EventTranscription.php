@@ -55,7 +55,7 @@ class EventTranscription extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function group()
+    public function team()
     {
         return $this->belongsTo(EventTeam::class);
     }

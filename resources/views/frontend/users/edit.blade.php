@@ -70,7 +70,7 @@
                         {!! Form::file('avatar') !!}
                     </div>
                     <div class="col-sm-5">
-                        <img src="{{ $user->profile->avatar_medium }}"/>
+                        <img src="{{ $user->profile->present()->avatar_medium }}"/>
                     </div>
                     {{ ($errors->has('avatar') ? $errors->first('avatar') : '') }}
                 </div>

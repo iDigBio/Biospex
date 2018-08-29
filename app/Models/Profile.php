@@ -6,12 +6,17 @@ use App\Presenters\ProfilePresenter;
 use Illuminate\Database\Eloquent\Model;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
-use McCool\LaravelAutoPresenter\HasPresenter;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
+use App\Models\Traits\Presentable;
 
-class Profile extends Model implements AttachableInterface, HasPresenter
+class Profile extends Model implements AttachableInterface
 {
-    use PaperclipTrait, LadaCacheTrait;
+    use PaperclipTrait, LadaCacheTrait, Presentable;
+
+    /**
+     * @inheritDoc
+     */
+    protected $table = 'profiles';
 
     /**
      * @inheritDoc
@@ -29,9 +34,9 @@ class Profile extends Model implements AttachableInterface, HasPresenter
     ];
 
     /**
-     * @inheritDoc
+     * @var string
      */
-    protected $table = 'profiles';
+    protected $presenter = ProfilePresenter::class;
 
     /**
      * Profile constructor.
@@ -51,16 +56,6 @@ class Profile extends Model implements AttachableInterface, HasPresenter
     public static function boot()
     {
         parent::boot();
-    }
-
-    /**
-     * Get Resource Presenter.
-     *
-     * @return string
-     */
-    public function getPresenterClass()
-    {
-        return ProfilePresenter::class;
     }
 
     /**

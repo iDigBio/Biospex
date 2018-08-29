@@ -6,12 +6,12 @@ use App\Presenters\ProjectResourcePresenter;
 use Illuminate\Database\Eloquent\Model;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
-use McCool\LaravelAutoPresenter\HasPresenter;
+use App\Models\Traits\Presentable;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class ProjectResource extends Model implements AttachableInterface, HasPresenter
+class ProjectResource extends Model implements AttachableInterface
 {
-    use PaperclipTrait, LadaCacheTrait;
+    use PaperclipTrait, LadaCacheTrait, Presentable;
 
     /**
      * @inheritDoc
@@ -40,6 +40,11 @@ class ProjectResource extends Model implements AttachableInterface, HasPresenter
     ];
 
     /**
+     * @var string
+     */
+    protected $presenter = ProjectResourcePresenter::class;
+
+    /**
      * Project constructor.
      *
      * @param array $attributes
@@ -49,16 +54,6 @@ class ProjectResource extends Model implements AttachableInterface, HasPresenter
         $this->hasAttachedFile('download');
 
         parent::__construct($attributes);
-    }
-
-    /**
-     * Get Resource Presenter.
-     *
-     * @return string
-     */
-    public function getPresenterClass()
-    {
-        return ProjectResourcePresenter::class;
     }
 
     /**

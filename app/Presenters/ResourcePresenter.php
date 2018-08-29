@@ -2,21 +2,18 @@
 
 namespace App\Presenters;
 
-use McCool\LaravelAutoPresenter\BasePresenter;
-use Storage;
-
-class ResourcePresenter extends BasePresenter
+class ResourcePresenter extends Presenter
 {
     /**
      * Build link to document if it exists.
      *
      * @return string
      */
-    public function document_url() {
-        $id = $this->wrappedObject->id;
-        $attachment = $this->wrappedObject->document;
+    public function documentUrl() {
+        $id = $this->model->id;
+        $document = $this->model->document;
 
-        return $attachment->exists()  && Storage::disk('public')->exists($attachment->variantPath()) ?
-            link_to_route('web.resources.download', $attachment->originalFilename(), [$id]) : '';
+        return $this->variantExists($document) ?
+            link_to_route('web.resources.download', $document->originalFilename(), [$id]) : '';
     }
 }

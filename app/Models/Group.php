@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use App\Presenters\GroupPresenter;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\UuidTrait;
-use McCool\LaravelAutoPresenter\HasPresenter;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class Group extends Model implements HasPresenter
+class Group extends Model
 {
     use UuidTrait, LadaCacheTrait;
 
@@ -34,16 +32,6 @@ class Group extends Model implements HasPresenter
         parent::boot();
 
         static::bootUuidTrait();
-    }
-
-    /**
-     * Get Resource Presenter.
-     *
-     * @return string
-     */
-    public function getPresenterClass()
-    {
-        return GroupPresenter::class;
     }
 
     /**

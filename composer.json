@@ -13,6 +13,7 @@
     "doctrine/dbal": "^2.7",
     "felixkiss/uniquewith-validator": "^3.1",
     "fideloper/proxy": "~4.0",
+    "guilhermegonzaga/presenter": "^1.0",
     "jenssegers/mongodb": "^3.4",
     "laracasts/utilities": "^3.0",
     "laravel/framework": "5.6.*",
@@ -27,8 +28,7 @@
     "pda/pheanstalk": "^3.1",
     "predis/predis": "^1.1",
     "pulkitjalan/google-apiclient": "^3.1",
-    "ramsey/uuid": "^3.7",
-    "spiritix/lada-cache": "^2.1"
+    "ramsey/uuid": "^3.7"
   },
   "require-dev": {
     "barryvdh/laravel-debugbar": "^3.1",
