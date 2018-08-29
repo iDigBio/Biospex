@@ -6,6 +6,6 @@
     </div>
     <div class="panel-body">
         {!! $resource->description !!}<br /><br />
-        {{ $resource->document_url }}
+        {{ $resource->present()->document_url }}
     </div>
 </div>
