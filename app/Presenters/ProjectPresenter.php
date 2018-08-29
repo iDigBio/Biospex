@@ -2,21 +2,20 @@
 
 namespace App\Presenters;
 
-use McCool\LaravelAutoPresenter\BasePresenter;
 use Storage;
 
-class ProjectPresenter extends BasePresenter
+class ProjectPresenter extends Presenter
 {
     /**
      * Build link to logo thumb.
      *
      * @return string
      */
-    public function logo_url() {
-        $attachment = $this->wrappedObject->logo;
+    public function logoUrl() {
+        $logo = $this->model->logo;
 
-        return $attachment->exists() && Storage::disk('public')->exists($attachment->variantPath()) ?
-            $attachment->url() : Storage::url('logos/original/missing.png');
+        return $this->variantExists($logo) ?
+            $logo->url() : Storage::url('logos/original/missing.png');
     }
 
     /**
@@ -24,11 +23,11 @@ class ProjectPresenter extends BasePresenter
      *
      * @return string
      */
-    public function logo_thumb_url() {
-        $attachment = $this->wrappedObject->logo;
+    public function logoThumbUrl() {
+        $logo = $this->model->logo;
 
-        return $attachment->exists('thumb') && Storage::disk('public')->exists($attachment->variantPath('thumb')) ?
-            $attachment->url('thumb') : Storage::url('logos/thumb/missing.png');
+        return $this->variantExists($logo, 'thumb') ?
+            $logo->url('thumb') : Storage::url('logos/thumb/missing.png');
     }
 
     /**
@@ -36,11 +35,11 @@ class ProjectPresenter extends BasePresenter
      *
      * @return string
      */
-    public function logo_avatar_url() {
-        $attachment = $this->wrappedObject->logo;
+    public function logoAvatarUrl() {
+        $logo = $this->model->logo;
 
-        return $attachment->exists('avatar') && Storage::disk('public')->exists($attachment->variantPath('avatar')) ?
-            $attachment->url('avatar') : Storage::url('logos/avatar/missing.png');
+        return $this->variantExists($logo,'avatar') ?
+            $logo->url('avatar') : Storage::url('logos/avatar/missing.png');
     }
 
     /**
@@ -48,11 +47,11 @@ class ProjectPresenter extends BasePresenter
      *
      * @return string
      */
-    public function banner_url() {
-        $attachment = $this->wrappedObject->banner;
+    public function bannerUrl() {
+        $banner = $this->model->banner;
 
-        return $attachment->exists() && Storage::disk('public')->exists($attachment->variantPath()) ?
-                $attachment->url() : Storage::url('banners/original/missing.png');
+        return $this->variantExists($banner) ?
+                $banner->url() : Storage::url('banners/original/missing.png');
     }
 
     /**
@@ -60,11 +59,11 @@ class ProjectPresenter extends BasePresenter
      *
      * @return string
      */
-    public function banner_thumb_url() {
-        $attachment = $this->wrappedObject->banner;
+    public function bannerThumbUrl() {
+        $banner = $this->model->banner;
 
-        return $attachment->exists('thumb') && Storage::disk('public')->exists($attachment->variantPath('thumb')) ?
-                $attachment->url('thumb') : Storage::url('banners/thumb/missing.png');
+        return $this->variantExists($banner, 'thumb') ?
+                $banner->url('thumb') : Storage::url('banners/thumb/missing.png');
     }
 
     /**
@@ -72,10 +71,10 @@ class ProjectPresenter extends BasePresenter
      *
      * @return string
      */
-    public function banner_carousel_url() {
-        $attachment = $this->wrappedObject->banner;
+    public function bannerCarouselUrl() {
+        $banner = $this->model->banner;
 
-        return $attachment->exists('carousel') && Storage::disk('public')->exists($attachment->variantPath()) ?
-            $attachment->url('carousel') : Storage::url('banners/carousel/missing.png');
+        return $this->variantExists($banner, 'carousel') ?
+            $banner->url('carousel') : Storage::url('banners/carousel/missing.png');
     }
 }

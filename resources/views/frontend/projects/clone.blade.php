@@ -213,7 +213,7 @@
                         {!! Form::file('logo') !!} {{ trans('pages.logo_max') }}
                     </div>
                     <div class="col-sm-5">
-                        <img src="{{ $project->logo_avatar_url }}"/>
+                        <img src="{{ $project->present()->logo_avatar_url }}"/>
                     </div>
                 </div>
 
@@ -224,7 +224,7 @@
                         {!! Form::file('banner') !!} {{ trans('pages.banner_min') }}
                     </div>
                     <div class="col-sm-5">
-                        <img src="{{ $project->banner_thumb_url }}"/>
+                        <img src="{{ $project->present()->banner_thumb_url }}"/>
                     </div>
                 </div>
 

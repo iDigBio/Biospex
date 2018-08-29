@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
-use McCool\LaravelAutoPresenter\HasPresenter;
+use App\Models\Traits\Presentable;
 
-class Resource extends Model implements AttachableInterface, HasPresenter
+class Resource extends Model implements AttachableInterface
 {
-    use LadaCacheTrait, PaperclipTrait;
+    use LadaCacheTrait, PaperclipTrait, Presentable;
 
     /**
      * @inheritDoc
@@ -29,6 +29,11 @@ class Resource extends Model implements AttachableInterface, HasPresenter
     ];
 
     /**
+     * @var string
+     */
+    protected $presenter = ResourcePresenter::class;
+
+    /**
      * Resource constructor.
      *
      * @param array $attributes
@@ -40,13 +45,4 @@ class Resource extends Model implements AttachableInterface, HasPresenter
         parent::__construct($attributes);
     }
 
-    /**
-     * Get Resource Presenter.
-     *
-     * @return string
-     */
-    public function getPresenterClass()
-    {
-        return ResourcePresenter::class;
-    }
 }

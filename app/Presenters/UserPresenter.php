@@ -2,15 +2,13 @@
 
 namespace App\Presenters;
 
-use McCool\LaravelAutoPresenter\BasePresenter;
-
-class UserPresenter extends BasePresenter
+class UserPresenter extends Presenter
 {
-    public function full_name_or_email()
+    public function fullNameOrEmail()
     {
-        $firstName = $this->wrappedObject->profile->first_name;
-        $lastName = $this->wrappedObject->profile->last_name;
-        $email = $this->wrappedObject->email;
+        $firstName = $this->model->profile()->first_name;
+        $lastName = $this->model->profile()->last_name;
+        $email = $this->model->email;
 
         $isNull = null === $firstName || null === $lastName ? true : false;
 

@@ -11,12 +11,12 @@ use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
 use Cviebrock\EloquentSluggable\Sluggable;
 use App\Models\Traits\UuidTrait;
-use McCool\LaravelAutoPresenter\HasPresenter;
+use App\Models\Traits\Presentable;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class Project extends Model implements AttachableInterface, HasPresenter
+class Project extends Model implements AttachableInterface
 {
-    use PaperclipTrait, Sluggable, UuidTrait, HybridRelations, LadaCacheTrait;
+    use PaperclipTrait, Sluggable, UuidTrait, HybridRelations, LadaCacheTrait, Presentable;
 
     /**
      * @inheritDoc
@@ -72,6 +72,11 @@ class Project extends Model implements AttachableInterface, HasPresenter
     ];
 
     /**
+     * @var string
+     */
+    protected $presenter = ProjectPresenter::class;
+
+    /**
      * Project constructor.
      *
      * @param array $attributes
@@ -100,16 +105,6 @@ class Project extends Model implements AttachableInterface, HasPresenter
         static::updating(function ($model) {
             $model->advertise = $model->attributes;
         });
-    }
-
-    /**
-     * Get Resource Presenter.
-     *
-     * @return string
-     */
-    public function getPresenterClass()
-    {
-        return ProjectPresenter::class;
     }
 
     /**

@@ -22,11 +22,11 @@ class EventUser extends Model
     ];
 
     /**
-     * EventGroup relationship.
+     * EventTeam relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function groups()
+    public function teams()
     {
         return $this->belongsToMany(EventTeam::class, 'event_team_user', 'user_id', 'team_id')
             ->withPivot('team_id', 'user_id');

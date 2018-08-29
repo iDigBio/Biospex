@@ -75,11 +75,11 @@ class Event extends Model
     }
 
     /**
-     * EventGroup relationship.
+     * EventTeam relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function groups()
+    public function teams()
     {
         return $this->hasMany(EventTeam::class);
     }

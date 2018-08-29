@@ -49,7 +49,7 @@
             </thead>
             <tbody>
             <tr>
-                <td>{!! Html::mailto($group->owner->email, $group->owner->full_name_or_email) !!}</td>
+                <td>{!! Html::mailto($group->owner->email, $group->owner->present()->full_name_or_email) !!}</td>
                 <td>
                     <ul class="list-group">
                         @foreach ($group->users as $user)
@@ -65,7 +65,7 @@
                                         data-title="Continue action?" data-content="This will delete the item">
                                     <span class="fa fa-remove fa-sm"></span> <!-- @lang('pages.delete') -->
                                 </button>
-                                {!! Html::mailto($user->email, $user->full_name_or_email) !!}
+                                {!! Html::mailto($user->email, $user->present()->full_name_or_email) !!}
                             </li>
                         @endforeach
                     </ul>

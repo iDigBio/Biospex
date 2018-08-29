@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
-use App\Presenters\UserPresenter;
 use App\Models\Traits\HasGroup;
 use App\Models\Traits\UuidTrait;
+use App\Presenters\UserPresenter;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use McCool\LaravelAutoPresenter\HasPresenter;
+use App\Models\Traits\Presentable;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class User extends Authenticatable implements HasPresenter
+class User extends Authenticatable
 {
-    use HasGroup, UuidTrait, Notifiable, LadaCacheTrait;
+    use HasGroup, UuidTrait, Notifiable, LadaCacheTrait, Presentable;
 
     /**
      * @inheritDoc
@@ -42,6 +42,11 @@ class User extends Authenticatable implements HasPresenter
     protected $hashableAttributes = ['password'];
 
     /**
+     * @var string
+     */
+    protected $presenter = UserPresenter::class;
+
+    /**
      * Boot functions.
      */
     public static function boot()
@@ -58,16 +63,6 @@ class User extends Authenticatable implements HasPresenter
             $profile->last_name = request()->input('last_name');
             $model->profile()->save($profile);
         });
-    }
-
-    /**
-     * Get Resource Presenter.
-     *
-     * @return string
-     */
-    public function getPresenterClass()
-    {
-        return UserPresenter::class;
     }
 
     /**
