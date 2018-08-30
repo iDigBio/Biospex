@@ -4,12 +4,12 @@
         <span class="input-group-btn">
             {!! Form::button('<i class="fa fa-plus fa-lrg"></i> ', ['type' => 'button', 'class' => 'btn btn-success btn-add']) !!}
         </span>
-            {!! Form::text('groups[' . $key . '][title]', $group->title, [
+            {!! Form::text('teams[' . $key . '][title]', $team->title, [
                 'class' => 'form-control',
                 'placeholder' => trans('pages.event_teams_title'),
-                'data-type' => 'groups'
+                'data-type' => 'teams'
                 ]) !!}
         </div>
-        {!! Form::hidden('groups['. $key .'][id]', $group->id) !!}
+        {!! Form::hidden('teams['. $key .'][id]', $team->id) !!}
     </div>
 </div>

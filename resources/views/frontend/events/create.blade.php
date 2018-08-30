@@ -84,12 +84,12 @@
                 <div class="form-group">
                     {!! Form::label('', trans('pages.event_teams'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="controls col-sm-10">
-                        @if($errors->has('groups.*'))
+                        @if($errors->has('teams.*'))
                             @for($i = 0; $i < old('entries'); $i++)
-                                @include('frontend.events.partials.group-error')
+                                @include('frontend.events.partials.team-error')
                             @endfor
                         @else
-                            @include('frontend.events.partials.group-create')
+                            @include('frontend.events.partials.team-create')
                         @endif
                     </div>
                 </div>

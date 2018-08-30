@@ -14,13 +14,13 @@
         <div class="col-md-6">
             <div class="row">
                 <h3>@lang('pages.transcriptions'): {{ $event->transcriptions_count }}</h3>
-                <h3>Group Invite Links</h3>
-                @foreach($event->groups as $group)
+                <h3>Team Invite Links</h3>
+                @foreach($event->teams as $team)
                     <button type="button" class="btn btn-default btn-copy js-tooltip js-copy"
                             data-toggle="tooltip"
                             data-placement="bottom"
-                            data-copy="{{ route('web.events.join', [$group->uuid]) }}" title="Copy to clipboard">
-                        <span class="fa fa-clipboard fa-lg"></span> {{ $group->title }}
+                            data-copy="{{ route('web.events.join', [$team->uuid]) }}" title="Copy to clipboard">
+                        <span class="fa fa-clipboard fa-lg"></span> {{ $team->title }}
                     </button>
                 @endforeach
             </div>

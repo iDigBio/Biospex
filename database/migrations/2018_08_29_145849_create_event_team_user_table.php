@@ -16,14 +16,8 @@ class CreateEventTeamUserTable extends Migration
         if (! Schema::hasTable('event_team_user')) {
             Schema::create('event_team_user', function (Blueprint $table) {
                 $table->increments('id');
-
                 $table->unsignedInteger('team_id');
-                $table->foreign('team_id')->references('id')->on('event_teams')->onDelete('cascade');
-
                 $table->unsignedInteger('user_id');
-                $table->foreign('user_id')->references('id')->on('event_teams')->onDelete('cascade');
-
-                $table->unique(['team_id', 'user_id'], 'event_team_user');
             });
         }
     }

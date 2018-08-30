@@ -14,6 +14,9 @@ class AddDocumentFieldsToResourcesTable extends Migration {
     {
         Schema::table('resources', function(Blueprint $table) {
 
+            if (Schema::hasColumn('resources', 'document')) {
+                $table->dropColumn('document');
+            }
             $table->string('document_file_name')->nullable()->after('description');
             $table->integer('document_file_size')->nullable()->after('document_file_name');
             $table->string('document_content_type')->nullable()->after('document_file_size');
@@ -32,7 +35,9 @@ class AddDocumentFieldsToResourcesTable extends Migration {
     {
         Schema::table('resources', function(Blueprint $table) {
 
-            $table->string('document')->nullable()->after('description');
+            if (!Schema::hasColumn('resources', 'document')) {
+                $table->string('document')->nullable()->after('description');
+            }
             $table->dropColumn('document_file_name');
             $table->dropColumn('document_file_size');
             $table->dropColumn('document_content_type');

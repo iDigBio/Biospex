@@ -25,14 +25,14 @@ class EventFormRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            'project_id' => 'required',
-            'title' => 'required|between:6,140|unique:expeditions,title,' . $this->route('expeditions'),
-            'description' => 'required|between:6,140',
-            'contact' => 'required',
+            'project_id'    => 'required',
+            'title'         => 'required|between:6,140|unique:expeditions,title,'.$this->route('expeditions'),
+            'description'   => 'required|between:6,140',
+            'contact'       => 'required',
             'contact_email' => 'required|email',
-            'start_date' => 'required|date|before:end_date',
-            'end_date' => 'required|date|after:start_date',
-            'groups.*.title' => 'max:20'
+            'start_date'    => 'required|date|before:end_date',
+            'end_date'      => 'required|date|after:start_date',
+            'teams.*.title' => 'max:20',
         ];
 
         return $rules;
@@ -42,8 +42,8 @@ class EventFormRequest extends FormRequest
     {
         return [
             'start_date.before' => 'Date must be greater than End',
-            'end_date.after' => 'Date must be greater than Start',
-            'groups.*.title.max' => 'Title is 20 character max'
+            'end_date.after'    => 'Date must be greater than Start',
+            'teams.*.title.max' => 'Title is 20 character max',
         ];
     }
 }

@@ -4,8 +4,8 @@
         <span class="input-group-btn">
             {!! Form::button('<i class="fa fa-plus fa-lrg"></i> ', ['type' => 'button', 'class' => 'btn btn-success btn-add']) !!}
         </span>
-        {!! Form::text('groups[0][title]', null, ['class' => 'form-control', 'placeholder' => trans('pages.event_teams_title')]) !!}
+        {!! Form::text('teams[0][title]', null, ['class' => 'form-control', 'placeholder' => trans('pages.event_teams_title')]) !!}
         </div>
-        {!! Form::hidden('groups[0][id]', old('groups.[0].id')) !!}
+        {!! Form::hidden('teams[0][id]', old('teams.[0].id')) !!}
     </div>
 </div>

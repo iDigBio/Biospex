@@ -18,12 +18,8 @@ class CreateEventTranscriptionsTable extends Migration
                 $table->increments('id');
                 $table->integer('classification_id');
                 $table->unsignedInteger('event_id');
-                $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
                 $table->unsignedInteger('team_id');
-                $table->foreign('team_id')->references('id')->on('event_teams')->onDelete('cascade');
                 $table->unsignedInteger('user_id');
-                $table->foreign('user_id')->references('id')->on('event_users')->onDelete('cascade');
-
                 $table->timestamps();
             });
         }

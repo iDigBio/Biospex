@@ -106,10 +106,10 @@ class ProjectRepository extends EloquentRepository implements Project
                 'resources',
                 'events' => function ($query) {
                     $query->withCount('transcriptions')->with([
-                            'groups' => function ($query) {
+                            'teams' => function ($query) {
                                 $query->withCount('transcriptions');
                             },
-                        ])->whereHas('groups');
+                        ])->whereHas('teams');
                 },
             ])->where('slug', '=', $slug)->first();
 

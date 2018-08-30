@@ -17,20 +17,19 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                    'route' => ['web.events.join-create', $group->uuid],
+                    'route' => ['web.events.join-create', $team->uuid],
                     'method' => 'post',
                     'class' => 'form-horizontal',
                     'role' => 'form'
                     ]) !!}
-                    {!! csrf_field() !!}
                     <div class="row">
                         <div class="col-md-10 col-md-offset-2">
-                            <h4>@lang('pages.event'): {{ $group->event->title }}</h4>
+                            <h4>@lang('pages.event'): {{ $team->event->title }}</h4>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-10 col-md-offset-2">
-                            <h4>@lang('pages.group'): {{ $group->title }}</h4>
+                            <h4>@lang('pages.team'): {{ $team->title }}</h4>
                         </div>
                     </div>
                     <div class="row top10">
@@ -53,8 +52,8 @@
                             <div class="form-group">
                                 {!! Honeypot::generate('registeruser', 'registertime') !!}
                                 {!! Form::submit(trans('pages.register'), array('class' => 'btn btn-primary btn-block')) !!}
-                                {!! Form::hidden('group_id', $group->id) !!}
-                                {!! Form::hidden('uuid', $group->uuid) !!}
+                                {!! Form::hidden('team_id', $team->id) !!}
+                                {!! Form::hidden('uuid', $team->uuid) !!}
                                 {!! Form::close() !!}
                             </div>
                         </div>

@@ -10,7 +10,7 @@
     </div>
     <div class="panel-body" style="font-size: small">
         <div class="row">
-            <div class="col-md-4"><b>@lang('pages.groups')</b></div>
+            <div class="col-md-4"><b>@lang('pages.teams')</b></div>
             <div class="col-md-6">
                 <b>@lang('pages.event_board_percent')</b>
             </div>
@@ -18,8 +18,8 @@
                 <b>@lang('pages.event_board_count')</b>
             </div>
         </div>
-        @foreach($event->groups->sortByDesc('transcriptionCount') as $group)
-            @include('frontend.events.partials.board-group-loop')
+        @foreach($event->teams->sortByDesc('transcriptionCount') as $team)
+            @include('frontend.events.partials.board-team-loop')
         @endforeach
         <div class="row top5">
             <div class="col-md-5">

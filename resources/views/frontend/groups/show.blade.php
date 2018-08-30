@@ -14,7 +14,7 @@
 
     <div class="panel panel-primary">
         <div style="padding: 10px;">
-            @can('isOwner', $group->getWrappedObject())
+            @can('isOwner', $group)
                 <button title="@lang('pages.editTitle')" class="btn btn-warning btn-sm"
                         onClick="location.href='{{ route('webauth.groups.edit', array($group->id)) }}'"><span
                             class="fa fa-cog fa-lrg"></span> @lang('pages.edit')</button>
@@ -22,7 +22,7 @@
                         onClick="location.href='{{ route('webauth.invites.index', [$group->id]) }}'"><span
                             class="fa fa-users fa-lrg"></span> @lang('pages.invite')</button>
             @endcan
-            @can('isOwner', $group->getWrappedObject())
+            @can('isOwner', $group)
                 <button class="btn btn-sm btn-danger" title="@lang('pages.deleteTitle')"
                         data-href="{{ route('webauth.groups.delete', array($group->id)) }}"
                         data-method="delete"

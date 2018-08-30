@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\EventJoinUniqueUserGroupValidation;
+use App\Rules\EventJoinUniqueUserTeamValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EventJoinRequest extends FormRequest
@@ -25,8 +25,8 @@ class EventJoinRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            'group_id' => 'required',
-            'nfn_user' => ['required', 'between:3,30', new EventJoinUniqueUserGroupValidation()]
+            'team_id' => 'required',
+            'nfn_user' => ['required', 'between:3,30', new EventJoinUniqueUserTeamValidation()]
         ];
 
         return $rules;
@@ -35,7 +35,7 @@ class EventJoinRequest extends FormRequest
     public function messages()
     {
         return [
-            'group_id.required'        => 'Group Id missing',
+            'team_id.required'        => 'Group Id missing',
             'nfn_user.required' => 'Notes from Nature username required',
             'nfn_user.between' => 'Username must be between 3-30 characters',
         ];

@@ -218,7 +218,7 @@ class ExpeditionsController extends Controller
     {
         $expedition = $this->expeditionContract->findWith($expeditionId, ['project.group']);
 
-        if ( ! $this->checkPermissions('create', $expedition->project))
+        if ( ! $this->checkPermissions('create', $expedition->project->group))
         {
             return redirect()->route('webauth.projects.index');
         }

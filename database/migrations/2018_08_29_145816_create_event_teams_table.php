@@ -17,7 +17,6 @@ class CreateEventTeamsTable extends Migration
             Schema::create('event_teams', function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedInteger('event_id');
-                $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
                 $table->string('title');
                 $table->timestamps();
 
@@ -25,7 +24,6 @@ class CreateEventTeamsTable extends Migration
             });
 
             DB::statement("ALTER TABLE event_teams ADD uuid BINARY(16) NULL AFTER id");
-            DB::statement('CREATE UNIQUE INDEX uuid_unique ON event_teams (uuid);');
         }
     }
 

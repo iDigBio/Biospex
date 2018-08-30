@@ -9,7 +9,7 @@ use App\Http\Requests\EventFormRequest;
 use App\Http\Requests\EventJoinRequest;
 use App\Jobs\EventTranscriptionExportCsvJob;
 use App\Jobs\EventUserExportCsvJob;
-use App\Models\EventTeam;
+use App\Repositories\Interfaces\EventTeam;
 use App\Repositories\Interfaces\Event;
 use App\Repositories\Interfaces\EventUser;
 use App\Repositories\Interfaces\Project;
@@ -130,7 +130,7 @@ class EventsController extends Controller
      */
     public function edit($eventId)
     {
-        $event = $this->eventContract->findWith($eventId, ['groups']);
+        $event = $this->eventContract->findWith($eventId, ['teams']);
 
         if ( ! $this->checkPermissions('update', $event))
         {
@@ -152,7 +152,7 @@ class EventsController extends Controller
      */
     public function update($eventId, EventFormRequest $request)
     {
-        $event = $this->eventContract->findWith($eventId, ['groups']);
+        $event = $this->eventContract->findWith($eventId, ['teams']);
 
         if ( ! $this->checkPermissions('update', $event))
         {
@@ -241,7 +241,8 @@ class EventsController extends Controller
 
         $start_date = $team->event->start_date->setTimezone($team->event->timezone);
         $end_date = $team->event->end_date->setTimezone($team->event->timezone);
-        $active = Carbon::now($team->event->timezone)->between($start_date, $end_date);
+        $now = Carbon::now($team->event->timezone);
+        $active = $now->between($start_date, $end_date);
 
         if ($team === null) {
             Flash::error(trans('messages.event_join_team_error'));
@@ -261,8 +262,8 @@ class EventsController extends Controller
         $user = $this->eventUserContract->updateOrCreate(['nfn_user' => $request->get('nfn_user')], ['nfn_user' => $request->get('nfn_user')]);
 
         if ($user !== null) {
-            $group = $this->eventTeamContract->find($request->get('group_id'));
-            $group->users()->save($user);
+            $team = $this->eventTeamContract->find($request->get('team_id'));
+            $team->users()->save($user);
 
             Flash::success(trans('messages.event_join_team_success'));
             return redirect()->route('web.events.join', [$request->get('uuid')]);

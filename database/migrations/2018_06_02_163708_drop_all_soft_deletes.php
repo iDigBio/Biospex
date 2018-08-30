@@ -33,8 +33,11 @@ class DropAllSoftDeletes extends Migration
 
         foreach ($softDeletes as $softDelete)
         {
-            Schema::table($softDelete, function ($table) {
-                $table->dropSoftDeletes();
+            Schema::table($softDelete, function(Blueprint $table) use ($softDelete) {
+
+                if (!Schema::hasColumn($softDelete, 'deleted_at')) {
+                    $table->dropSoftDeletes();
+                }
             });
         }
     }

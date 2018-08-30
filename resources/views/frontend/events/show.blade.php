@@ -8,5 +8,5 @@
 {{-- Content --}}
 @section('content')
     @include('frontend.events.partials.event-info')
-    @include('frontend.events.partials.group-table')
+    @include('frontend.events.partials.team-table')
 @stop

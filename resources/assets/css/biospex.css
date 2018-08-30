@@ -1066,3 +1066,7 @@ div.event-card {
     font-weight: 700;
     font-size: 18px
 }
+
+.progress-description {
+    text-align: center;
+}

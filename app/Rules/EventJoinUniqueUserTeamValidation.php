@@ -5,7 +5,7 @@ namespace App\Rules;
 use App\Models\Event;
 use Illuminate\Contracts\Validation\Rule;
 
-class EventJoinUniqueUserGroupValidation implements Rule
+class EventJoinUniqueUserTeamValidation implements Rule
 {
     /**
      * Create a new rule instance.
@@ -23,12 +23,12 @@ class EventJoinUniqueUserGroupValidation implements Rule
      */
     public function passes($attribute, $value)
     {
-        $groupId = request()->get('group_id');
+        $groupId = request()->get('team_id');
         $nfnUser = request()->get('nfn_user');
 
-        $result = Event::whereHas('groups', function($query) use ($groupId){
+        $result = Event::whereHas('teams', function($query) use ($groupId){
             $query->where('id', $groupId);
-        })->whereHas('groups.users', function($query) use($nfnUser){
+        })->whereHas('teams.users', function($query) use($nfnUser){
             $query->where('nfn_user', $nfnUser);
         })->count();
 

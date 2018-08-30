@@ -442,12 +442,12 @@ class PusherTranscriptionService
 
             return Carbon::now($event->timezone)->between($start_date, $end_date);
         })->each(function ($event) use ($data) {
-            foreach ($event->groups as $group) {
+            foreach ($event->teams as $team) {
                 $values = [
                     'classification_id' => $data->classification_id,
                     'event_id'          => $event->id,
-                    'group_id'          => $group->id,
-                    'user_id'           => $group->users->first()->id,
+                    'team_id'          => $team->id,
+                    'user_id'           => $team->users->first()->id,
                 ];
 
                 $this->eventTranscriptionContract->create($values);

@@ -1,7 +1,7 @@
-@foreach ($event->groups as $group)
-    @foreach ($group->users as $user)
+@foreach ($event->teams as $team)
+    @foreach ($team->users as $user)
         <tr>
-            <td>{{ $group->title }}</td>
+            <td>{{ $team->title }}</td>
             <td>{{ $user->nfn_user }}</td>
             <td>{{ $user->transcriptions_count }}</td>
         </tr>

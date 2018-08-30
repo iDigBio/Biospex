@@ -86,16 +86,16 @@
                 <div class="form-group">
                     {!! Form::label('', trans('pages.event_teams'), ['class' => 'col-sm-2 control-label']) !!}
                     <div class="controls col-sm-10">
-                        @if($errors->has('groups.*'))
+                        @if($errors->has('teams.*'))
                             @for($i = 0; $i < old('entries'); $i++)
-                                @include('frontend.events.partials.group-error')
+                                @include('frontend.events.partials.team-error')
                             @endfor
-                        @elseif($event->groups->isNotEmpty())
-                            @foreach($event->groups as $key => $group)
-                                @include('frontend.events.partials.group-edit')
+                        @elseif($event->teams->isNotEmpty())
+                            @foreach($event->teams as $key => $team)
+                                @include('frontend.events.partials.team-edit')
                             @endforeach
                         @else
-                            @include('frontend.events.partials.group-create')
+                            @include('frontend.events.partials.team-create')
                         @endif
                     </div>
                 </div>
@@ -103,7 +103,7 @@
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
                         {!! Form::hidden('owner_id', Auth::id()) !!}
-                        {!! Form::hidden('entries', $event->groups->count() === 0 ? 1 : $event->groups->count()) !!}
+                        {!! Form::hidden('entries', $event->teams->count() === 0 ? 1 : $event->teams->count()) !!}
                         {!! Form::submit(trans('pages.update'), ['class' => 'btn btn-primary']) !!}
                         {!! link_to(URL::previous(), trans('pages.cancel'), ['class' => 'btn btn-large btn-primary btn-danger']) !!}
                     </div>

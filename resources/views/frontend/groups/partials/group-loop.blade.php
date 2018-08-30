@@ -5,7 +5,7 @@
             <button title="@lang('pages.viewTitle')" class="btn btn-default btn-primary btn-sm"
                     type="button" onClick="location.href='{{ route('webauth.groups.show', [$group->id]) }}'">
                 <span class="fa fa-eye fa-lrg"></span> @lang('pages.view')</button>
-            @can('isOwner', $group->getWrappedObject())
+            @can('isOwner', $group)
                 <button title="@lang('pages.editTitle')" class="btn btn-default btn-warning btn-sm"
                         type="button"
                         onClick="location.href='{{ route('webauth.groups.edit', array($group->id)) }}'"><span
@@ -15,7 +15,7 @@
                         onClick="location.href='{{ route('webauth.invites.index', [$group->id]) }}'"><span
                             class="fa fa-users fa-lrg"></span> @lang('pages.invite')</button>
             @endcan
-            @can('isOwner', $group->getWrappedObject())
+            @can('isOwner', $group)
                 <button class="btn btn-sm btn-danger" title="@lang('pages.deleteTitle')"
                         data-href="{{ route('webauth.groups.delete', array($group->id)) }}"
                         data-method="delete"

@@ -17,9 +17,7 @@ class CreateEventsTable extends Migration
             Schema::create('events', function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedInteger('project_id');
-                $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
                 $table->unsignedInteger('owner_id');
-                $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
                 $table->string('title');
                 $table->string('description', 104);
                 $table->string('contact');
