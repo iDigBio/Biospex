@@ -76,8 +76,8 @@ class NfnClassificationsReconciliationJob extends Job implements ShouldQueue
             $tranPath = config('config.classifications_transcript') . '/' . $expedition->id . '.csv';
             $sumPath = config('config.classifications_summary') . '/' . $expedition->id . '.html';
 
-            $pythonPath = config('config.python_path');
-            $reconcilePath = config('config.reconcile_path');
+            $pythonPath = config('config.reconcile_path') . "/venv/bin/python";
+            $reconcilePath = config('config.reconcile_path') . "/reconcile.py";
             $logPath = storage_path('logs/reconcile.log');
             $command = "$pythonPath $reconcilePath -w {$expedition->nfnWorkflow->workflow} -r $recPath -u $tranPath -s $sumPath $csvPath &> $logPath";
             exec($command);
