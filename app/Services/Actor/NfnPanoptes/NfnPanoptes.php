@@ -5,7 +5,6 @@ namespace App\Services\Actor\NfnPanoptes;
 use App\Models\Actor;
 use App\Models\ExportQueue;
 use App\Services\Actor\ActorBase;
-use App\Services\Queue\ActorQueue;
 
 class NfnPanoptes extends ActorBase
 {
@@ -37,7 +36,6 @@ class NfnPanoptes extends ActorBase
 
     /**
      * @inheritdoc
-     * @see ActorQueue::fire()
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function actor(Actor $actor)

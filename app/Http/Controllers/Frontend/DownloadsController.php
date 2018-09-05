@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
+use App\Jobs\ActorJob;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\User;
-use File;
+use Illuminate\Support\Facades\File;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Repositories\Interfaces\Download;
-use Queue;
 
 class DownloadsController extends Controller
 {
@@ -166,7 +166,8 @@ class DownloadsController extends Controller
             $expedition->nfnActor->pivot->processed = 0;
             $expedition->nfnActor->pivot->queued = 1;
             event('actor.pivot.regenerate', [$expedition->nfnActor]);
-            Queue::push('App\Services\Queue\ActorQueue', serialize($expedition->nfnActor), config('config.beanstalkd.export'));
+
+            ActorJob::dispatch($expedition->nfnActor);
 
             Flash::success(trans('expeditions.download_regeneration_success'));
         }

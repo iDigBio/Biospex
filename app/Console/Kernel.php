@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -39,12 +40,12 @@ class Kernel extends ConsoleKernel
         if ($this->app->environment() === 'prod') {
             // Create Notes From Nature csv files
             $schedule->command('nfn:csvcreate')->daily()->before(function () {
-                \Artisan::call('lada-cache:flush');
+                Artisan::call('lada-cache:flush');
             });
 
             // Trigger workflow manager to update expeditions and projects
             $schedule->command('workflow:manage')->dailyAt('10:00')->before(function () {
-                \Artisan::call('lada-cache:flush');
+                Artisan::call('lada-cache:flush');
             });
         }
     }
