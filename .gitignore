@@ -6,7 +6,7 @@ node_modules
 .gitattributes
 .idea
 Thumbs.db
-/znotes
+/biospex-notes
 _ide_helper.php
 .phpstorm.meta.php
 /config/ide-helper.php
