@@ -90,10 +90,10 @@ return [
     ],
 
     'dwcLocalityFields' => [
-        'StateProvince' => 'stateProvince',
-        'State_Province'=> 'stateProvince',
-        'State'         => 'stateProvince',
-        'County'        => 'county',
+        'StateProvince'  => 'stateProvince',
+        'State_Province' => 'stateProvince',
+        'State'          => 'stateProvince',
+        'County'         => 'county',
     ],
 
     /* Added Tubes */
@@ -102,6 +102,7 @@ return [
         'classification' => env('QUEUE_CLASSIFICATION_TUBE'),
         'default'        => env('QUEUE_DEFAULT_TUBE'),
         'event'          => env('QUEUE_EVENT_TUBE'),
+        'fusion'         => env('QUEUE_FUSION_TUBE'),
         'import'         => env('QUEUE_IMPORT_TUBE'),
         'export'         => env('QUEUE_EXPORT_TUBE'),
         'stat'           => env('QUEUE_STAT_TUBE'),

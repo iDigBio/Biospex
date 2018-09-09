@@ -53,6 +53,17 @@ autostart=true
 autorestart=true
 user=APP_USER
 
+[program:QUEUE_FUSION_TUBE]
+directory=APP_CURRENT_PATH
+command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_FUSION_TUBE --tries=3
+stdout_logfile=/var/log/supervisor/APP_ENV/fusion.log
+redirect_stderr=true
+logfile_maxbytes=50MB
+logfile_backups=5
+autostart=true
+autorestart=true
+user=APP_USER
+
 [program:QUEUE_IMPORT_TUBE]
 directory=APP_CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_IMPORT_TUBE --tries=3
