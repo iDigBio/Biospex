@@ -131,6 +131,7 @@ class AppFileDeployment extends Command
             'QUEUE_CLASSIFICATION_TUBE',
             'QUEUE_DEFAULT_TUBE',
             'QUEUE_EVENT_TUBE',
+            'QUEUE_FUSION_TUBE',
             'QUEUE_IMPORT_TUBE',
             'QUEUE_EXPORT_TUBE',
             'QUEUE_STAT_TUBE',
