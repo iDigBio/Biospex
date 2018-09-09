@@ -94,7 +94,7 @@ class AppFileDeployment extends Command
     private function searchAndReplace($file)
     {
         $this->apps->each(function ($search) use ($file) {
-            $replace = $search === 'MAP_PRIVATE_KEY' ? json_encode(env($search)) : env($search);
+            $replace = $search === 'MAP_PRIVATE_KEY' ? env($search) : env($search);
             exec("sed -i 's*$search*$replace*g' $file");
         });
     }

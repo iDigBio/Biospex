@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Notifications\JobError;
+use App\Repositories\Interfaces\User;
 use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\TranscriptionLocation;
 use App\Services\Google\FusionTableService;
@@ -66,11 +68,13 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
      * @param Project $projectContract
      * @param TranscriptionLocation $transcriptionLocationContract
      * @param FusionTableService $fusionTableService
+     * @param \App\Repositories\Interfaces\User $userContract
      */
     public function handle(
         Project $projectContract,
         TranscriptionLocation $transcriptionLocationContract,
-        FusionTableService $fusionTableService
+        FusionTableService $fusionTableService,
+        User $userContract
     )
     {
         $this->projectContract = $projectContract;
@@ -86,6 +90,14 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
         }
         catch (\Exception $e)
         {
+            $message = [
+                $e->getFile(),
+                $e->getLine(),
+                $e->getMessage()
+            ];
+
+            $user = $userContract->find(1);
+            $user->notify(new JobError(__FILE__, $message));
             $this->delete();
         }
     }

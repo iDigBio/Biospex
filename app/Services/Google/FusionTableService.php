@@ -81,7 +81,8 @@ class FusionTableService
             'setRole'         => 'writer',
             'setEmailAddress' => $this->email['address']
         ];
-        $this->googleDrive->createTablePermissions($tableId, $user);
+
+        return $this->googleDrive->createTablePermissions($tableId, $user);
     }
 
     public function createTableStyle($tableId, $counts)
@@ -233,6 +234,14 @@ class FusionTableService
         fclose($fh);
 
         return $csv;
+    }
+
+    /**
+     * @param $tableId
+     * @return \GuzzleHttp\Psr7\Response
+     */
+    public function deleteTable($tableId) {
+        return $this->fusionTable->deleteTable($tableId);
     }
 
 }
