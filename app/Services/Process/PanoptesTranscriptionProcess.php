@@ -11,7 +11,6 @@ use App\Services\Csv\Csv;
 
 class PanoptesTranscriptionProcess
 {
-
     /**
      * @var mixed
      */
@@ -52,7 +51,6 @@ class PanoptesTranscriptionProcess
      */
     private $transcriptionLocationContract;
 
-
     /**
      * PanoptesTranscriptionProcess constructor.
      *
@@ -68,8 +66,7 @@ class PanoptesTranscriptionProcess
         TranscriptionLocation $transcriptionLocationContract,
         Validation $factory,
         Csv $csv
-    )
-    {
+    ) {
         $this->subjectContract = $subjectContract;
         $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
         $this->factory = $factory;
@@ -82,22 +79,29 @@ class PanoptesTranscriptionProcess
      * Process csv file.
      *
      * @param $file
-     * @throws \Exception
      */
     public function process($file)
     {
-        $this->csv->readerCreateFromPath($file);
-        $this->csv->setDelimiter();
-        $this->csv->setEnclosure();
-        $this->csv->setEscape('"');
-        $this->csv->setHeaderOffset();
+        try {
+            $this->csv->readerCreateFromPath($file);
+            $this->csv->setDelimiter();
+            $this->csv->setEnclosure();
+            $this->csv->setEscape('"');
+            $this->csv->setHeaderOffset();
 
-        $header = $this->prepareHeader($this->csv->getHeader());
-        $rows = $this->csv->getRecords($header);
-        foreach ($rows as $offset => $row)
-        {
-            $this->processRow($header, $row);
+            $header = $this->prepareHeader($this->csv->getHeader());
+            $rows = $this->csv->getRecords($header);
+            foreach ($rows as $offset => $row) {
+                $this->processRow($header, $row);
+            }
+        } catch (\Exception $e) {
+
+            $this->csvError[] = $file . ': ' . $e->getMessage();
+
+            return;
         }
+
+        return;
     }
 
     /**
@@ -114,42 +118,39 @@ class PanoptesTranscriptionProcess
 
     /**
      * Process an individual row
+     *
      * @param $header
      * @param $row
      * @throws \Exception
      */
     public function processRow($header, $row)
     {
-        if (count($header) !== count($row))
-        {
+        if (count($header) !== count($row)) {
             throw new \Exception(trans('errors.csv_row_count', [
                 'headers' => count($header),
-                'rows'    => count($row)
+                'rows'    => count($row),
             ]));
         }
 
         $subject = $this->getSubject($row);
 
-        if ($subject === null)
-        {
+        if ($subject === null) {
             $this->csvError[] = array_merge(['error' => 'Could not find subject id for classification'], $row);
 
             return;
         }
 
-        $this->buildTranscriptionLocation($row, $subject);
-
-        $row = array_merge($row, ['subject_projectId' => $subject->project_id]);
-
         $this->convertStringToIntegers($row);
 
-        if ($this->validateTranscription($row))
-        {
+        $this->buildTranscriptionLocation($row, $subject);
+
+        $row = array_merge($row, ['subject_projectId' => (int) $subject->project_id]);
+
+        if ($this->validateTranscription($row)) {
             return;
         }
 
         $this->panoptesTranscriptionContract->create($row);
-
     }
 
     /**
@@ -161,36 +162,19 @@ class PanoptesTranscriptionProcess
      */
     private function buildTranscriptionLocation($row, $subject)
     {
-        $data = [];
-        foreach ($this->dwcLocalityFields as $transcriptField => $subjectField)
-        {
-            if (isset($row[$transcriptField]) && ! empty($row[$transcriptField]))
-            {
-                $data[GeneralHelper::decamelize($transcriptField)] = $row[$transcriptField];
-
-                continue;
-            }
-
-            if (isset($subject->occurrence->{$subjectField}) && ! empty($subject->occurrence->{$subjectField}))
-            {
-                $data[GeneralHelper::decamelize($subjectField)] = $subject->occurrence->{$subjectField};
-            }
-        }
+        $data = $this->setDwcLocalityFields($row, $subject);
 
         $data['classification_id'] = $row['classification_id'];
         $data['project_id'] = $subject->project_id;
         $data['expedition_id'] = $row['subject_expeditionId'];
 
-        if (array_key_exists('state_province', $data) && strtolower($data['state_province']) === 'district of columbia')
-        {
+        if (array_key_exists('state_province', $data) && strtolower($data['state_province']) === 'district of columbia') {
             $data['county'] = $data['state_province'];
         }
 
-        $data['state_county'] = empty($data['state_province']) || empty($data['county']) ?
-            null : GeneralHelper::getState($data['state_province']) . '-' . trim(str_ireplace('county', '', $data['county']));
+        $data['state_county'] = empty($data['state_province']) || empty($data['county']) ? null : GeneralHelper::getState($data['state_province']).'-'.trim(str_ireplace('county', '', $data['county']));
 
-        if (null === $data['state_county'])
-        {
+        if (null === $data['state_county']) {
             return;
         }
 
@@ -198,6 +182,31 @@ class PanoptesTranscriptionProcess
         $this->transcriptionLocationContract->updateOrCreate($attributes, $data);
     }
 
+    /**
+     * Set the dwc locality fields.
+     *
+     * @param $row
+     * @param $subject
+     * @return array
+     */
+    private function setDwcLocalityFields($row, $subject): array
+    {
+        $data = [];
+
+        foreach ($this->dwcLocalityFields as $transcriptField => $subjectField) {
+            if (isset($row[$transcriptField]) && ! empty($row[$transcriptField])) {
+                $data[GeneralHelper::decamelize($transcriptField)] = $row[$transcriptField];
+
+                continue;
+            }
+
+            if (isset($subject->occurrence->{$subjectField}) && ! empty($subject->occurrence->{$subjectField})) {
+                $data[GeneralHelper::decamelize($subjectField)] = $subject->occurrence->{$subjectField};
+            }
+        }
+
+        return $data;
+    }
 
     /**
      * Get subject from db to set projectId
@@ -212,6 +221,7 @@ class PanoptesTranscriptionProcess
 
     /**
      * Convert string numbers to integers for MongoDB
+     *
      * @param $row
      */
     public function convertStringToIntegers(&$row)
@@ -221,13 +231,11 @@ class PanoptesTranscriptionProcess
             'classification_id',
             'workflow_id',
             'subject_expeditionId',
-            'subject_projectId'
+            'subject_projectId',
         ]);
 
-        foreach ($cols as $col)
-        {
-            if (isset($row[$col]))
-            {
+        foreach ($cols as $col) {
+            if (isset($row[$col])) {
                 $row[$col] = (int) $row[$col];
             }
         }

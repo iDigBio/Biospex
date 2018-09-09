@@ -59,7 +59,7 @@ class DwcFileImportJob implements ShouldQueue
         $scratchFileDir = config('config.scratch_dir') . '/' . md5($this->import->file);
 
         $project = $projectContract->findWith($this->import->project_id, ['group.owner', 'workflow.actors']);
-        \Log::info('Retrieve project');
+
         try
         {
             $fileService->makeDirectory($scratchFileDir);

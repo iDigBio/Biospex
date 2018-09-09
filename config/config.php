@@ -72,7 +72,7 @@ return [
     'dwcRequiredRowTypes' => [
         'http://rs.tdwg.org/ac/terms/multimedia',
         'http://rs.gbif.org/terms/1.0/image',
-        'http://rs.tdwg.org/dwc/terms/occurrence'
+        'http://rs.tdwg.org/dwc/terms/occurrence',
     ],
 
     'dwcRequiredFields' => [
@@ -85,13 +85,15 @@ return [
                 'http://rs.tdwg.org/ac/terms/providerManagedID',
                 'http://portal.idigbio.org/terms/uuid',
                 'http://portal.idigbio.org/terms/recordId',
-            ]
-        ]
+            ],
+        ],
     ],
 
     'dwcLocalityFields' => [
         'StateProvince' => 'stateProvince',
-        'County'        => 'county'
+        'State_Province'=> 'stateProvince',
+        'State'         => 'stateProvince',
+        'County'        => 'county',
     ],
 
     /* Added Tubes */
@@ -105,7 +107,7 @@ return [
         'stat'           => env('QUEUE_STAT_TUBE'),
         'workflow'       => env('QUEUE_WORKFLOW_TUBE'),
         'ocr'            => env('QUEUE_OCR_TUBE'),
-        'nfnpusher'      => env('QUEUE_NFN_PUSHER')
+        'nfnpusher'      => env('QUEUE_NFN_PUSHER'),
     ],
 
     'images'                => [
@@ -128,7 +130,7 @@ return [
         'Assigned',
         'Id',
         'AccessURI',
-        'Ocr'
+        'Ocr',
     ],
 
     /**
@@ -137,7 +139,7 @@ return [
     'defaultGridVisible'    => [
         'id',
         'accessURI',
-        'ocr'
+        'ocr',
     ],
     'defaultSubGridVisible' => [
         'id',
@@ -151,9 +153,9 @@ return [
         env('NFN_WORKFLOWS_2'),
     ],
 
-    'nfnActors'  => env('NFN_ACTORS'),
-    'nfnNotify'  => [1 => 'NewNfnLegacyProject', 2 => 'NewNfnPanoptesProject'],
-    'nfnSkipCsv' => env('NFN_SKIP_CSV'), // Skip csv creation for expedition ids
+    'nfnActors'                 => env('NFN_ACTORS'),
+    'nfnNotify'                 => [1 => 'NewNfnLegacyProject', 2 => 'NewNfnPanoptesProject'],
+    'nfnSkipCsv'                => env('NFN_SKIP_CSV'), // Skip csv creation for expedition ids
     'nfnTranscriptionsComplete' => env('NFN_TRANSCRIPTIONS_COMPLETE', 3),
 
     'nfnCsvMap' => [
@@ -181,7 +183,7 @@ return [
         'clientSecret' => env('NFN_API_CLIENT_SECRET'),
         'apiUri'       => env('NFN_API_URI'),
         'tokenUri'     => env('NFN_API_TOKEN_URI'),
-        'redirectUri'  => env('NFN_REDIRECT_URI')
+        'redirectUri'  => env('NFN_REDIRECT_URI'),
     ],
 
     'nfnSearch' => [
@@ -220,6 +222,6 @@ return [
         'starting' => 'Starting',
         'active'   => 'Active',
         'complete' => 'Complete',
-        'hiatus'   => 'Hiatus'
+        'hiatus'   => 'Hiatus',
     ],
 ];

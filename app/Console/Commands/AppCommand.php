@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
-class TestAppCommand extends Command
+class AppCommand extends Command
 {
 
     use DispatchesJobs;
@@ -34,5 +34,6 @@ class TestAppCommand extends Command
      */
     public function handle()
     {
+
     }
 }

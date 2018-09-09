@@ -13,7 +13,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 
 class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
 {
-
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
@@ -49,35 +48,39 @@ class NfnClassificationsTranscriptJob extends Job implements ShouldQueue
     public function handle(
         PanoptesTranscriptionProcess $transcriptionProcess,
         User $userContract
-    )
-    {
-        if ($this->expeditionIds->isEmpty())
-        {
-            $this->delete();
+    ) {
+        $user = $userContract->find(1);
 
-            return;
-        }
+        try {
+            if ($this->expeditionIds->isEmpty()) {
+                $this->delete();
 
-        try
-        {
+                return;
+            }
+
             $filePath = config('config.classifications_transcript');
 
-            $this->expeditionIds->filter(function($expeditionId) use ($filePath) {
-                return file_exists($filePath . '/' . $expeditionId . '.csv');
-            })->each(function($expeditionId) use ($transcriptionProcess, $filePath) {
-                $transcriptionProcess->process($filePath . '/' . $expeditionId . '.csv');
+            $this->expeditionIds->filter(function ($expeditionId) use ($filePath) {
+                return file_exists($filePath.'/'.$expeditionId.'.csv');
+            })->each(function ($expeditionId) use ($transcriptionProcess, $filePath) {
+                $transcriptionProcess->process($filePath.'/'.$expeditionId.'.csv');
             });
 
-            if ( ! empty($transcriptionProcess->getCsvError()))
-            {
-                $user = $userContract->find(1);
+            if (! empty($transcriptionProcess->getCsvError())) {
                 $user->notify(new JobError(__FILE__, $transcriptionProcess->getCsvError()));
             }
 
             WeDigBioDashboardJob::dispatch($this->expeditionIds);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
+            $message = [
+                $e->getFile(),
+                $e->getLine(),
+                $e->getMessage()
+            ];
+
+            $user = $userContract->find(1);
+            $user->notify(new JobError(__FILE__, $message));
+
             return;
         }
     }
