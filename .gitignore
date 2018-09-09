@@ -2,7 +2,7 @@
 node_modules
 /storage/*.key
 /vendor
-/znotes
+/biospex-notes
 storage/app/classifications/*
 storage/app/exports/*
 storage/app/imports/*
