@@ -36,7 +36,6 @@ class NfnClassificationsTranscript extends Command
     public function handle()
     {
         $expeditionIds = null === $this->argument('expeditionIds') ? $this->readDirectory() : explode(',', $this->argument('expeditionIds'));
-
         NfnClassificationsTranscriptJob::dispatch($expeditionIds);
     }
 

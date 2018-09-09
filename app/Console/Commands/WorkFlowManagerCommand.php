@@ -6,7 +6,6 @@ use App\Jobs\ActorJob;
 use App\Repositories\Eloquent\WorkflowManagerRepository;
 use Illuminate\Console\Command;
 use App\Repositories\Interfaces\WorkflowManager;
-use Queue;
 
 class WorkFlowManagerCommand extends Command
 {
