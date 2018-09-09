@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Jobs\NfnClassificationsUpdateJob;
-use File;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 
 class NfnClassificationsUpdate extends Command
 {

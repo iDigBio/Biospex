@@ -2,17 +2,15 @@
 
 namespace App\Services\Actor;
 
-use App\Services\Queue\ActorQueue;
-
 class ActorFactory
 {
 
     /**
-     * @see ActorQueue::fire()
+     * Used to create class for different actors.
      *
      * @param $actorPath
      * @param $actorClass
-     * @return \Illuminate\Foundation\Application|\Laravel\Lumen\Application|mixed
+     * @return \Illuminate\Foundation\Application
      */
     public static function create($actorPath, $actorClass)
     {
