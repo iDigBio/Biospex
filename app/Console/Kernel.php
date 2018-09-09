@@ -26,10 +26,14 @@ class Kernel extends ConsoleKernel
     {
 
         // Clean imports directory
-        $schedule->command('download:clean')->dailyAt('03:00');
+        $schedule->command('download:clean')
+            ->timezone('America/New_York')
+            ->dailyAt('06:00');
 
         // Clean report directory
-        $schedule->command('report:clean')->dailyAt('03:30');
+        $schedule->command('report:clean')
+            ->timezone('America/New_York')
+            ->dailyAt('06:30');
 
         // Check ocr processing records and call ocr polling
         $schedule->command('ocrprocess:records')->everyFiveMinutes();
@@ -39,12 +43,16 @@ class Kernel extends ConsoleKernel
 
         if ($this->app->environment() === 'prod') {
             // Create Notes From Nature csv files
-            $schedule->command('nfn:csvcreate')->daily()->before(function () {
+            $schedule->command('nfn:csvcreate')
+                ->timezone('America/New_York')
+                ->daily()->before(function () {
                 Artisan::call('lada-cache:flush');
             });
 
             // Trigger workflow manager to update expeditions and projects
-            $schedule->command('workflow:manage')->dailyAt('10:00')->before(function () {
+            $schedule->command('workflow:manage')
+                ->timezone('America/New_York')
+                ->dailyAt('04:00')->before(function () {
                 Artisan::call('lada-cache:flush');
             });
         }
