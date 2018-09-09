@@ -3,13 +3,17 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 
-class AppTestCommand extends Command
+class AppCommand extends Command
 {
+
+    use DispatchesJobs;
+
     /**
      * The console command name.
      */
-    protected $signature = 'test:test {id?}';
+    protected $signature = 'test:test {ids?}';
 
     /**
      * The console command description.
@@ -18,6 +22,7 @@ class AppTestCommand extends Command
 
     /**
      * Create a new job instance.
+     *
      */
     public function __construct()
     {
@@ -29,5 +34,6 @@ class AppTestCommand extends Command
      */
     public function handle()
     {
+
     }
 }

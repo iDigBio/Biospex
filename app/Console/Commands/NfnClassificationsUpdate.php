@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\NfnClassificationsUpdateJob;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 
 class NfnClassificationsUpdate extends Command
 {
@@ -12,7 +13,7 @@ class NfnClassificationsUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'nfn:update {expeditionIds}';
+    protected $signature = 'nfn:update {expeditionIds?} {--files=}';
 
     /**
      * The console command description.
@@ -35,15 +36,35 @@ class NfnClassificationsUpdate extends Command
      */
     public function handle()
     {
-        $expeditionIds = explode(',', $this->argument('expeditionIds'));
+        $expeditionIds = $this->argument('expeditionIds') === null ?
+            null : explode(',', $this->argument('expeditionIds'));
 
-        if (empty($expeditionIds))
+        $files = $this->option('files');
+
+        if ($expeditionIds === null && $files === null)
         {
             return;
         }
 
+        $expeditionIds = $files !== "true" ? $expeditionIds : $this->readDirectory();
+
         collect($expeditionIds)->each(function ($expeditionId){
             NfnClassificationsUpdateJob::dispatch($expeditionId);
         });
+    }
+
+    /**
+     * Read directory files to process.
+     */
+    private function readDirectory()
+    {
+        $expeditionIds = [];
+        $files = File::allFiles(config('config.classifications_transcript'));
+        foreach ($files as $file)
+        {
+            $expeditionIds[] = basename($file, '.csv');
+        }
+
+        return $expeditionIds;
     }
 }
