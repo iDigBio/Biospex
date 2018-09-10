@@ -261,7 +261,7 @@ class JqGridJsonEncoder
 
         $vars['count'] = $this->subjectContract->getTotalRowCount($vars);
 
-        $vars['limit'] = count($vars['limit']) === 0 ? $vars['count'] : $vars['limit'];
+        $vars['limit'] = $vars['limit'] === 0 ? $vars['count'] : $vars['limit'];
 
         if ( ! is_int($vars['count']))
         {
