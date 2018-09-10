@@ -52,6 +52,11 @@ class PanoptesTranscriptionProcess
     private $transcriptionLocationContract;
 
     /**
+     * @var \App\Services\Csv\Csv
+     */
+    private $csv;
+
+    /**
      * PanoptesTranscriptionProcess constructor.
      *
      * @param Subject $subjectContract
