@@ -63,71 +63,56 @@ class AppFileDeployment extends Command
     {
         // copy needed files to locations
         $appFiles = \File::files($this->resPath.'/apps');
-        collect($appFiles)->reject(function ($file) {
+        $appTargets = collect($appFiles)->reject(function ($file) {
             return \File::name($file) === 'laravel-echo-server.json' && \App::environment() === 'dev';
-        })->each(function ($file) {
+        })->map(function ($file) {
             $target = $this->appPath.'/'.\File::name($file);
-            $this->copyFile($file, $target);
-            $this->searchAndReplace($target);
+            \File::copy($file, $target);
+
+            return $target;
         });
 
         $supFiles = \File::files($this->resPath.'/supervisord');
-        collect($supFiles)->reject(function ($file) {
+        $subTargets = collect($supFiles)->reject(function ($file) {
             return \File::name($file) === 'echoserver.conf' && \App::environment() === 'dev';
-        })->each(function ($file) {
+        })->map(function ($file) {
             $target = $this->supPath.'/'.\File::name($file);
-            $this->copyFile($file, $target);
-            $this->searchAndReplace($target);
-        });
-    }
+            \File::copy($file, $target);
 
-    private function copyFile($source, $target)
-    {
-        \File::copy($source, $target);
+            return $target;
+        });
+
+        $files = $appTargets->merge($subTargets);
+
+        $this->apps->each(function ($search) use ($files) {
+            $replace = $this->configureReplace($search);
+            $files->each(function ($file) use ($search, $replace) {
+                exec("sed -i 's*$search*$replace*g' $file");
+            });
+        });
     }
 
     /**
-     * Search and replace strings for apps
-     *
-     * @param $file
+     * @param $search
+     * @return false|\Illuminate\Config\Repository|mixed|string
      */
-    private function searchAndReplace($file)
+    private function configureReplace($search)
     {
-        $this->apps->each(function ($search) use ($file) {
-            if ($search === 'APP_URL' || $search === 'APP_ENV') {
-                $replace = config(str_replace('_', '.', strtolower($search)));
-                $this->command($search, $replace, $file);
+        if ($search === 'APP_URL' || $search === 'APP_ENV') {
+            return config(str_replace('_', '.', strtolower($search)));
+        }
 
-                return;
-            }
+        if (strpos($search, 'QUEUE_') === 0) {
+            $replace = strtolower(str_replace('QUEUE_', '', $search));
 
-            if (strpos($search, 'QUEUE_') === 0) {
-                $replace = strtolower(str_replace('QUEUE_', '', $search));
-                $replace = config('config.beanstalkd.'.$replace);
-                $this->command($search, $replace, $file);
+            return config('config.beanstalkd.'.$replace);
+        }
 
-                return;
-            }
+        if ($search === 'MAP_PRIVATE_KEY') {
+            return json_encode(base64_decode(config('config.'.strtolower($search))));
+        }
 
-            if ($search === 'MAP_PRIVATE_KEY') {
-                $replace = json_encode(base64_decode(config('config.'.strtolower($search))));
-                $this->command($search, $replace, $file);
-
-                return;
-            }
-
-            $replace = config('config.'.strtolower($search));
-            $this->command($search, $replace, $file);
-
-            return;
-        });
-    }
-
-    private function command($search, $replace, $file)
-    {
-        exec("sed -i 's*$search*$replace*g' $file");
-
-        return;
+        return config('config.'.strtolower($search));
     }
 
     /**
