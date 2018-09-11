@@ -31,7 +31,7 @@ class OcrProcessComplete extends Notification implements ShouldQueue
     {
         $this->title = $title;
         $this->csv = $csv;
-        $this->onQueue(config('config.beanstalkd.default'));
+        $this->onQueue(config('config.beanstalkd.default_tube'));
     }
 
     /**

@@ -7,7 +7,6 @@ use Illuminate\Support\Collection;
 
 class AppFileDeployment extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -63,20 +62,20 @@ class AppFileDeployment extends Command
     public function handle()
     {
         // copy needed files to locations
-        $appFiles = \File::files($this->resPath . '/apps');
-        collect($appFiles)->reject(function($file){
+        $appFiles = \File::files($this->resPath.'/apps');
+        collect($appFiles)->reject(function ($file) {
             return \File::name($file) === 'laravel-echo-server.json' && \App::environment() === 'dev';
         })->each(function ($file) {
-            $target = $this->appPath . '/' . \File::name($file);
+            $target = $this->appPath.'/'.\File::name($file);
             $this->copyFile($file, $target);
             $this->searchAndReplace($target);
         });
 
-        $supFiles = \File::files($this->resPath . '/supervisord');
-        collect($supFiles)->reject(function($file){
+        $supFiles = \File::files($this->resPath.'/supervisord');
+        collect($supFiles)->reject(function ($file) {
             return \File::name($file) === 'echoserver.conf' && \App::environment() === 'dev';
         })->each(function ($file) {
-            $target = $this->supPath . '/' . \File::name($file);
+            $target = $this->supPath.'/'.\File::name($file);
             $this->copyFile($file, $target);
             $this->searchAndReplace($target);
         });
@@ -89,14 +88,46 @@ class AppFileDeployment extends Command
 
     /**
      * Search and replace strings for apps
+     *
      * @param $file
      */
     private function searchAndReplace($file)
     {
         $this->apps->each(function ($search) use ($file) {
-            $replace = $search === 'MAP_PRIVATE_KEY' ? env($search) : env($search);
-            exec("sed -i 's*$search*$replace*g' $file");
+            if ($search === 'APP_URL' || $search === 'APP_ENV') {
+                $replace = config(str_replace('_', '.', strtolower($search)));
+                $this->command($search, $replace, $file);
+
+                return;
+            }
+
+            if (strpos($search, 'QUEUE_') === 0) {
+                $replace = strtolower(str_replace('QUEUE_', '', $search));
+                $replace = config('config.beanstalkd.'.$replace);
+                $this->command($search, $replace, $file);
+
+                return;
+            }
+
+            if ($search === 'MAP_PRIVATE_KEY') {
+                $replace = json_encode(base64_decode(config('config.'.strtolower($search))));
+                $this->command($search, $replace, $file);
+
+                return;
+            }
+
+            $replace = config('config.'.strtolower($search));
+            $this->command($search, $replace, $file);
+
+            return;
         });
+    }
+
+    private function command($search, $replace, $file)
+    {
+        exec("sed -i 's*$search*$replace*g' $file");
+
+        return;
     }
 
     /**
@@ -106,14 +137,15 @@ class AppFileDeployment extends Command
     {
         $this->apps = collect([
             'APP_URL',
-            'APP_USER',
-            'APP_CURRENT_PATH',
             'APP_ENV',
 
-            'APP_ECHO_ID',
-            'APP_ECHO_KEY',
-            'APP_ECHO_SSL_CRT',
-            'APP_ECHO_SSL_KEY',
+            'SERVER_USER',
+            'CURRENT_PATH',
+
+            'ECHO_ID',
+            'ECHO_KEY',
+            'ECHO_SSL_CRT',
+            'ECHO_SSL_KEY',
 
             'API_URL',
             'API_VERSION',
@@ -137,7 +169,7 @@ class AppFileDeployment extends Command
             'QUEUE_STAT_TUBE',
             'QUEUE_WORKFLOW_TUBE',
             'QUEUE_OCR_TUBE',
-            'QUEUE_NFN_PUSHER'
+            'QUEUE_PUSHER_TUBE',
         ]);
     }
 }

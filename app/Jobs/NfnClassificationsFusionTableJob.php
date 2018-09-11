@@ -59,7 +59,7 @@ class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
     public function __construct($projectId)
     {
         $this->projectId = $projectId;
-        $this->onQueue(config('config.beanstalkd.fusion'));
+        $this->onQueue(config('config.beanstalkd.fusion_tube'));
     }
 
     /**

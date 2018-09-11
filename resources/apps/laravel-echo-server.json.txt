@@ -3,8 +3,8 @@
     "authEndpoint": "/broadcasting/auth",
     "clients": [
         {
-            "appId": "APP_ECHO_ID",
-            "key": "APP_ECHO_KEY"
+            "appId": "ECHO_ID",
+            "key": "ECHO_KEY"
         }
     ],
     "database": "redis",
@@ -19,8 +19,8 @@
     "port": "6001",
     "protocol": "https",
     "socketio": {},
-    "sslCertPath": "APP_ECHO_SSL_CRT",
-    "sslKeyPath": "APP_ECHO_SSL_KEY",
+    "sslCertPath": "ECHO_SSL_CRT",
+    "sslKeyPath": "ECHO_SSL_KEY",
     "sslCertChainPath": "",
     "sslPassphrase": "",
     "apiOriginAllow": {

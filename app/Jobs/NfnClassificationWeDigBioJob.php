@@ -34,7 +34,7 @@ class NfnClassificationWeDigBioJob extends Job implements ShouldQueue
     public function __construct($data)
     {
         $this->data = json_decode($data);
-        $this->onQueue(config('config.beanstalkd.nfnpusher'));
+        $this->onQueue(config('config.beanstalkd.pusher_tube'));
     }
 
     /**

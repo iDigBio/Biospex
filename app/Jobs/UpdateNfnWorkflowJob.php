@@ -28,7 +28,7 @@ class UpdateNfnWorkflowJob extends Job implements ShouldQueue
     public function __construct(NfnWorkflow $nfnWorkflow)
     {
         $this->nfnWorkflow = $nfnWorkflow;
-        $this->onQueue(config('config.beanstalkd.classification'));
+        $this->onQueue(config('config.beanstalkd.classification_tube'));
     }
 
     /**

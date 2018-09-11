@@ -49,7 +49,7 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
     {
         $this->projectId = (int) $projectId;
         $this->expeditionId = $expeditionId === null ? null : (int) $expeditionId;
-        $this->onQueue(config('config.beanstalkd.ocr'));
+        $this->onQueue(config('config.beanstalkd.ocr_tube'));
     }
 
     /**

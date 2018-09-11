@@ -36,7 +36,7 @@ class ExpeditionStatJob extends Job implements ShouldQueue
     public function __construct($expeditionId)
     {
         $this->expeditionId = (int) $expeditionId;
-        $this->onQueue(config('config.beanstalkd.stat'));
+        $this->onQueue(config('config.beanstalkd.stat_tube'));
     }
 
     /**

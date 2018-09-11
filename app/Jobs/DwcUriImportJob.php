@@ -47,7 +47,7 @@ class DwcUriImportJob implements ShouldQueue
     public function __construct($data)
     {
         $this->data = $data;
-        $this->onQueue(config('config.beanstalkd.import'));
+        $this->onQueue(config('config.beanstalkd.import_tube'));
     }
 
     /**

@@ -1,5 +1,5 @@
 [program:APP_ENV-echo-server]
-directory=APP_CURRENT_PATH
+directory=CURRENT_PATH
 command=laravel-echo-server start
 autostart=true
 autorestart=true

@@ -44,7 +44,7 @@ class DarwinCoreFileImportCommand extends Command
         parent::__construct();
 
         $this->importContract = $importContract;
-        $this->tube = config('config.beanstalkd.import');
+        $this->tube = config('config.beanstalkd.import_tube');
     }
 
     /**

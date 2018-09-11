@@ -64,7 +64,7 @@ class AmChartJob extends Job implements ShouldQueue
     public function __construct($projectId)
     {
         $this->projectId = $projectId;
-        $this->onQueue(config('config.beanstalkd.chart'));
+        $this->onQueue(config('config.beanstalkd.chart_tube'));
     }
 
     /**

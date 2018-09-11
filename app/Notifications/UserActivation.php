@@ -26,7 +26,7 @@ class UserActivation extends Notification implements ShouldQueue
     public function __construct($route)
     {
         $this->route = $route;
-        $this->onQueue(config('config.beanstalkd.default'));
+        $this->onQueue(config('config.beanstalkd.default_tube'));
     }
 
     /**

@@ -37,7 +37,7 @@ class ActorJob extends Job implements ShouldQueue
     public function __construct(Actor $actor)
     {
         $this->actor = $actor;
-        $this->onQueue(config('config.beanstalkd.workflow'));
+        $this->onQueue(config('config.beanstalkd.workflow_tube'));
     }
 
     /**
@@ -50,7 +50,7 @@ class ActorJob extends Job implements ShouldQueue
     {
         try
         {
-            $actor = $actorContract->find($this->actor->id);
+            $actor = $actorContract->findWith($this->actor->id, ['expedition']);
             $classPath = __NAMESPACE__ . '\\' . $actor->class . '\\' . $actor->class;
             $class = app($classPath);
             $class->actor($actor);

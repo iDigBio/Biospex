@@ -30,7 +30,7 @@ class DarwinCoreImportError extends Notification implements ShouldQueue
     {
         $this->message = $message;
         $this->adminEmail = config('mail.from.address');
-        $this->onQueue(config('config.beanstalkd.default'));
+        $this->onQueue(config('config.beanstalkd.default_tube'));
     }
 
     /**

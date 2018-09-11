@@ -36,7 +36,7 @@ class ExportQueueJob extends Job implements ShouldQueue
     public function __construct(Model $model)
     {
         $this->model = $model;
-        $this->onQueue(config('config.beanstalkd.export'));
+        $this->onQueue(config('config.beanstalkd.export_tube'));
     }
 
     /**

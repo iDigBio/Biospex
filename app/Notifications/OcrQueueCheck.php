@@ -24,7 +24,7 @@ class OcrQueueCheck extends Notification implements ShouldQueue
     public function __construct($message)
     {
         $this->message = $message;
-        $this->onQueue(config('config.beanstalkd.default'));
+        $this->onQueue(config('config.beanstalkd.default_tube'));
     }
 
     /**

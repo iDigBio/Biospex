@@ -36,7 +36,7 @@ class WeDigBioDashboardJob extends Job implements ShouldQueue
     public function __construct($expeditionIds)
     {
         $this->expeditionIds = $expeditionIds;
-        $this->onQueue(config('config.beanstalkd.classification'));
+        $this->onQueue(config('config.beanstalkd.classification_tube'));
     }
 
     /**

@@ -52,7 +52,7 @@ class GridExportCsvJob implements ShouldQueue
         $this->user = $user;
         $this->projectId = $projectId;
         $this->expeditionId = $expeditionId;
-        $this->onQueue(config('config.beanstalkd.default'));
+        $this->onQueue(config('config.beanstalkd.default_tube'));
     }
 
     /**
