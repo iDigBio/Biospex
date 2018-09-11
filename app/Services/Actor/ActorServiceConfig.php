@@ -306,8 +306,6 @@ class ActorServiceConfig
     public function fireActorErrorEvent($actor = null)
     {
         $collection = $actor === null ? $this->actor : $actor;
-        $collection->queued = 0;
-        $collection->error = 1;
 
         event('actor.pivot.error', $collection);
     }

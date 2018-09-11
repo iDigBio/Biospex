@@ -142,8 +142,8 @@ class ActorPivotUpdateEventListener
     public function actorPivotError($actor)
     {
         $attributes = [
-            'queued' => $actor->queued,
-            'error'  => $actor->error
+            'queued' => 0,
+            'error'  => 1
         ];
         $this->updateActorExpeditions($actor, $attributes);
     }

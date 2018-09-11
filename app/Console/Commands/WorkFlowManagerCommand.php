@@ -73,14 +73,16 @@ class WorkFlowManagerCommand extends Command
      * Decide what actor to include in the array and being processed.
      *
      * @param $expedition
+     * Actor is serialized to keep pivot table information.
      */
     protected function processActors($expedition)
     {
         $expedition->actors->each(function ($actor) use ($expedition)
         {
             $actor->pivot->total = $expedition->stat->local_subject_count;
+            $actor->pivot->queued = 1;
             event('actor.pivot.queued', [$actor]);
-            ActorJob::dispatch($actor);
+            ActorJob::dispatch(serialize($actor));
         });
     }
 }
