@@ -3,6 +3,7 @@ node_modules
 /storage/*.key
 /vendor
 .env
+.env.production
 .gitattributes
 .idea
 Thumbs.db
