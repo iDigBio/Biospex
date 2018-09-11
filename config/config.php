@@ -11,7 +11,7 @@ return [
     'expedition_size' => env('EXPEDITION_SIZE'),
     'echo_id'         => env('ECHO_ID'),
     'echo_key'        => env('ECHO_KEY'),
-    'echo_ssl_cert'   => env('ECHO_SSL_CRT'),
+    'echo_ssl_crt'    => env('ECHO_SSL_CRT'),
     'echo_ssl_key'    => env('ECHO_SSL_KEY'),
 
     'api_url'           => env('API_URL'),
