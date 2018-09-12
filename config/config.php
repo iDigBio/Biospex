@@ -5,15 +5,14 @@ return [
     /**
      * Site variables
      */
-    'app_url'           => env('APP_URL'),
-    'app_current_path'  => env('APP_CURRENT_PATH'),
-    'app_user'          => env('APP_USER'),
-    'registration'      => env('APP_REGISTRATION'),
-    'expedition_size'   => env('APP_EXPEDITION_SIZE'),
-    'app_echo_id'       => env('APP_ECHO_ID'),
-    'app_echo_key'      => env('APP_ECHO_KEY'),
-    'app_echo_ssl_cert' => env('APP_ECHO_SSL_CRT'),
-    'app_echo_ssl_key'  => env('APP_ECHO_SSL_KEY'),
+    'current_path'    => env('CURRENT_PATH'),
+    'server_user'     => env('SERVER_USER'),
+    'registration'    => env('REGISTRATION'),
+    'expedition_size' => env('EXPEDITION_SIZE'),
+    'echo_id'         => env('ECHO_ID'),
+    'echo_key'        => env('ECHO_KEY'),
+    'echo_ssl_crt'        => env('ECHO_SSL_CRT'),
+    'echo_ssl_key'    => env('ECHO_SSL_KEY'),
 
     'api_url'           => env('API_URL'),
     'api_version'       => env('API_VERSION'),
@@ -64,11 +63,6 @@ return [
     'recordset_url'       => 'https://beta-api.idigbio.org/v2/download/?rq={"recordset":"RECORDSET_ID"}',
 
     /**
-     * Match used in Notes From Nature transcription import for matching.
-     */
-    'collection'          => env('APP_nfncollection'),
-
-    /**
      * DCA import row types for multimedia.
      */
     'dwcRequiredRowTypes' => [
@@ -92,23 +86,25 @@ return [
     ],
 
     'dwcLocalityFields' => [
-        'StateProvince' => 'stateProvince',
-        'County'        => 'county',
+        'StateProvince'  => 'stateProvince',
+        'State_Province' => 'stateProvince',
+        'State'          => 'stateProvince',
+        'County'         => 'county',
     ],
 
     /* Added Tubes */
     'beanstalkd'        => [
-        'chart'          => env('QUEUE_CHART_TUBE'),
-        'classification' => env('QUEUE_CLASSIFICATION_TUBE'),
-        'default'        => env('QUEUE_DEFAULT_TUBE'),
-        'event'          => env('QUEUE_EVENT_TUBE'),
-        'fusion'         => env('QUEUE_FUSION_TUBE'),
-        'import'         => env('QUEUE_IMPORT_TUBE'),
-        'export'         => env('QUEUE_EXPORT_TUBE'),
-        'stat'           => env('QUEUE_STAT_TUBE'),
-        'workflow'       => env('QUEUE_WORKFLOW_TUBE'),
-        'ocr'            => env('QUEUE_OCR_TUBE'),
-        'nfnpusher'      => env('QUEUE_NFN_PUSHER'),
+        'chart_tube'          => env('QUEUE_CHART_TUBE'),
+        'classification_tube' => env('QUEUE_CLASSIFICATION_TUBE'),
+        'default_tube'        => env('QUEUE_DEFAULT_TUBE'),
+        'event_tube'          => env('QUEUE_EVENT_TUBE'),
+        'fusion_tube'         => env('QUEUE_FUSION_TUBE'),
+        'import_tube'         => env('QUEUE_IMPORT_TUBE'),
+        'export_tube'         => env('QUEUE_EXPORT_TUBE'),
+        'stat_tube'           => env('QUEUE_STAT_TUBE'),
+        'workflow_tube'       => env('QUEUE_WORKFLOW_TUBE'),
+        'ocr_tube'            => env('QUEUE_OCR_TUBE'),
+        'pusher_tube'         => env('QUEUE_NFN_PUSHER'),
     ],
 
     'images'                => [
