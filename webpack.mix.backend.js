@@ -17,10 +17,10 @@ mix.autoload({
     'bootbox/bootbox.min.js': ['bootbox', 'window.bootbox']
 })
 // keeps breaking. just copy by hand and mix
-//    .copy("resources/assets/css/bootstrap-editable.css", "/node_modules/x-editable/dist/bootstrap3-editable/css/")
+//    .copy("resources/css/bootstrap-editable.css", "/node_modules/x-editable/dist/bootstrap3-editable/css/")
     .setPublicPath(path.normalize("public/backend"))
-    .js("resources/assets/js/backend.js", "js/backend.js")
-    .sass("resources/assets/sass/backend.scss", "css/backend.css")
+    .js("resources/js/backend.js", "js/backend.js")
+    .sass("resources/sass/backend.scss", "css/backend.css")
     .extract([
         "jquery",
         "bootstrap-sass",

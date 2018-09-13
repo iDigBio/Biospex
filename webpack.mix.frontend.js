@@ -20,8 +20,8 @@ mix.webpackConfig({
         jquery: ["$", "window.jQuery", "jQuery", "window.$", "jquery", "window.jquery"],
         'bootbox/bootbox.min.js': ['bootbox', 'window.bootbox']
     })
-    .js("resources/assets/js/app.js", "js/frontend.js")
-    .sass("resources/assets/sass/frontend.scss", "css/frontend.css")
+    .js("resources/js/app.js", "js/frontend.js")
+    .sass("resources/sass/frontend.scss", "css/frontend.css")
     .extract([
         "jquery",
         "bootstrap-sass/assets/javascripts/bootstrap",

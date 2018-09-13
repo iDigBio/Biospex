@@ -16,16 +16,18 @@ Broadcast::channel('App.User.{id}', function ($user, $id) {
 });
 */
 
-Broadcast::channel(config('config.poll_ocr_channel'), function() {
+Broadcast::channel(config('config.poll_ocr_channel'), function () {
     return true;
 });
 
-Broadcast::channel(config('config.poll_export_channel'), function() {
+Broadcast::channel(config('config.poll_export_channel'), function () {
     return true;
 });
 
-Broadcast::channel(config('config.poll_board_channel') . '.{project}', function ($user, $project) {
+Broadcast::channel(config('config.poll_board_channel').'.{project}', function () {
     return true;
 });
 
-Broadcast::channel('scoreboard.{project}', function(){ return true; });
+Broadcast::channel('scoreboard.{project}', function () {
+    return true;
+});
