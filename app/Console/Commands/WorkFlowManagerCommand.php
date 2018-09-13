@@ -42,7 +42,7 @@ class WorkFlowManagerCommand extends Command
     public function __construct(WorkflowManager $workflowManagerContract)
     {
         parent::__construct();
-        $this->tube = config('config.beanstalkd.workflow');
+        $this->tube = config('config.beanstalkd.workflow_tube');
         $this->workflowManagerContract = $workflowManagerContract;
     }
 
@@ -79,8 +79,9 @@ class WorkFlowManagerCommand extends Command
         $expedition->actors->each(function ($actor) use ($expedition)
         {
             $actor->pivot->total = $expedition->stat->local_subject_count;
+            $actor->pivot->queued = 1;
             event('actor.pivot.queued', [$actor]);
-            ActorJob::dispatch($actor);
+            ActorJob::dispatch(serialize($actor));
         });
     }
 }

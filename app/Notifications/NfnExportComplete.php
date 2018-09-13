@@ -32,7 +32,7 @@ class NfnExportComplete extends Notification implements ShouldQueue
     {
         $this->message = $message;
         $this->csv = $csv;
-        $this->onQueue(config('config.beanstalkd.default'));
+        $this->onQueue(config('config.beanstalkd.default_tube'));
     }
 
     /**

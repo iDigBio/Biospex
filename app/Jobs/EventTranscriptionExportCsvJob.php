@@ -44,7 +44,7 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
     {
         $this->user = $user;
         $this->eventId = $eventId;
-        $this->onQueue(config('config.beanstalkd.default'));
+        $this->onQueue(config('config.beanstalkd.default_tube'));
     }
 
     /**

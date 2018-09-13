@@ -29,7 +29,7 @@ class DeleteProject implements ShouldQueue
     public function __construct(Project $project)
     {
         $this->project = $project;
-        $this->onQueue(config('config.beanstalkd.default'));
+        $this->onQueue(config('config.beanstalkd.default_tube'));
     }
 
     /**

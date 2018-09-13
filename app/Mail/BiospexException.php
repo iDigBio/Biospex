@@ -24,7 +24,7 @@ class BiospexException extends Mailable implements ShouldQueue
     public function __construct($content)
     {
         $this->content = $content;
-        $this->onQueue(config('config.beanstalkd.default'));
+        $this->onQueue(config('config.beanstalkd.default_tube'));
     }
 
     /**

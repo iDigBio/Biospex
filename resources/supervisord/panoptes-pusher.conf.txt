@@ -1,9 +1,9 @@
 [program:APP_ENV-panoptes-pusher]
-directory=APP_CURRENT_PATH
+directory=CURRENT_PATH
 command=node panoptes-pusher.js
 autostart=true
 autorestart=true
-user=APP_USER
+user=SERVER_USER
 stdout_logfile=/var/log/supervisor/APP_ENV/panoptes-pusher.log
 redirect_stderr=true
 logfile_maxbytes=50MB

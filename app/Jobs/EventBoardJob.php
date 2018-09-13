@@ -30,7 +30,7 @@ class EventBoardJob extends Job implements ShouldQueue
     public function __construct($projectId)
     {
         $this->projectId = $projectId;
-        $this->onQueue(config('config.beanstalkd.event'));
+        $this->onQueue(config('config.beanstalkd.event_tube'));
     }
 
     /**

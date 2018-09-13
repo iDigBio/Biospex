@@ -168,7 +168,7 @@ class DownloadsController extends Controller
             $expedition->nfnActor->pivot->queued = 1;
             event('actor.pivot.regenerate', [$expedition->nfnActor]);
 
-            ActorJob::dispatch($expedition->nfnActor);
+            ActorJob::dispatch(serialize($expedition->nfnActor));
 
             Flash::success(trans('messages.download_regeneration_success'));
         }

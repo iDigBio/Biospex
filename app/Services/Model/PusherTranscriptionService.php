@@ -456,6 +456,7 @@ class PusherTranscriptionService
 
         if ($filtered->isNotEmpty()) {
             EventBoardJob::dispatch($projectId);
+            // ScoreBoardJob::dispatch($projectId);
         };
     }
 }

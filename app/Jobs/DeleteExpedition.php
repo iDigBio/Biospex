@@ -30,7 +30,7 @@ class DeleteExpedition implements ShouldQueue
     public function __construct(Expedition $expedition)
     {
         $this->expedition = $expedition;
-        $this->onQueue(config('config.beanstalkd.default'));
+        $this->onQueue(config('config.beanstalkd.default_tube'));
     }
 
     /**

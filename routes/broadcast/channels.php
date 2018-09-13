@@ -27,3 +27,5 @@ Broadcast::channel(config('config.poll_export_channel'), function() {
 Broadcast::channel(config('config.poll_board_channel') . '.{project}', function ($user, $project) {
     return true;
 });
+
+Broadcast::channel('scoreboard.{project}', function(){ return true; });

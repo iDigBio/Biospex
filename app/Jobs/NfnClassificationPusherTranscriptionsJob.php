@@ -36,7 +36,7 @@ class NfnClassificationPusherTranscriptionsJob extends Job implements ShouldQueu
     public function __construct($expeditionIds)
     {
         $this->expeditionIds = $expeditionIds;
-        $this->onQueue(config('config.beanstalkd.classification'));
+        $this->onQueue(config('config.beanstalkd.classification_tube'));
     }
 
     /**

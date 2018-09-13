@@ -22,13 +22,11 @@ class WorkflowManagerRepository extends EloquentRepository implements WorkflowMa
      */
     public function getWorkflowManagersForProcessing($expeditionId = null, array $attributes = ['*'])
     {
-        $model =$this->model->with(['expedition.actors', 'expedition.stat'])
-            ->whereHas('expedition.actors', function($query)
-            {
-                $query->where('error', 0);
-                $query->where('queued', 0);
-                $query->where('completed', 0);
-            })->where('stopped', '=', 0);
+        $model =$this->model->with(['expedition.stat', 'expedition.actors' => function($query){
+            $query->where('error', 0);
+            $query->where('queued', 0);
+            $query->where('completed', 0);
+        }])->where('stopped', '=', 0);
 
         $results = $expeditionId === null ?
             $model->get($attributes) :

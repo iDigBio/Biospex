@@ -2,12 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Models\Actor;
-use App\Notifications\WorkflowActorError;
-use App\Repositories\Interfaces\Actor as ActorContract;
-use App\Repositories\Interfaces\Expedition;
+use App\Models\User;
+use App\Notifications\JobError;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,7 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 class ActorJob extends Job implements ShouldQueue
 {
 
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -30,59 +27,42 @@ class ActorJob extends Job implements ShouldQueue
     private $actor;
 
     /**
-     * WorkFlowManagerJob constructor.
+     * ActorJob constructor.
      *
-     * @param \App\Models\Actor $actor
+     * @param $actor string
      */
-    public function __construct(Actor $actor)
+    public function __construct($actor)
     {
-        $this->actor = $actor;
-        $this->onQueue(config('config.beanstalkd.workflow'));
+        $this->onQueue(config('config.beanstalkd.workflow_tube'));
+        $this->actor = unserialize($actor);
     }
 
     /**
      * Handle Job.
-     *
-     * @param \App\Repositories\Interfaces\Actor $actorContract
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      */
-    public function handle(ActorContract $actorContract, Expedition $expeditionContract)
+    public function handle()
     {
         try
         {
-            $actor = $actorContract->find($this->actor->id);
-            $classPath = __NAMESPACE__ . '\\' . $actor->class . '\\' . $actor->class;
+            $classPath = __NAMESPACE__ . '\\' . $this->actor->class . '\\' . $this->actor->class;
             $class = app($classPath);
-            $class->actor($actor);
+            $class->actor($this->actor);
             $this->delete();
         }
         catch (\Exception $e)
         {
-            event('actor.pivot.error', $actor);
-            $message = $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage();
-            $this->notify($expeditionContract, $actor, $message);
+            event('actor.pivot.error', $this->actor);
+
+            $user = User::find(1);
+            $message = [
+                'Actor:' . $this->actor->id,
+                'Expedition: ' . $this->actor->pivot->expedition_id,
+                'Message:' . $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage()
+            ];
+            $user->notify(new JobError(__FILE__, $message));
+
             $this->delete();
         }
     }
-
-    /**
-     * Create and send error email.
-     *
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
-     * @param $actor
-     * @param $message
-     */
-    public function notify(Expedition $expeditionContract, $actor, $message)
-    {
-        $record = $expeditionContract->findWith($actor->pivot->expedition_id, ['project.group.owner']);
-
-        $message = trans('errors.workflow_actor',
-            [
-                'title' => $record->title,
-                'class' => $actor->class,
-                'message' => $message
-            ]);
-
-        $record->project->group->owner->notify(new WorkflowActorError($message));
-    }
 }
+
