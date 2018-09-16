@@ -29,7 +29,7 @@ class DeleteGroup implements ShouldQueue
     public function __construct(Group $group)
     {
         $this->group = $group;
-        $this->onQueue(config('config.beanstalkd.default_tube'));
+        $this->onQueue(config('config.default_tube'));
     }
 
     /**

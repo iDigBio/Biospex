@@ -42,7 +42,7 @@ class NfnClassificationsCsvDownloadJob extends Job implements ShouldQueue
     public function __construct(array $sources = [])
     {
         $this->sources = $sources;
-        $this->onQueue(config('config.beanstalkd.classification_tube'));
+        $this->onQueue(config('config.classification_tube'));
     }
 
     /**

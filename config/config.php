@@ -11,7 +11,7 @@ return [
     'expedition_size' => env('EXPEDITION_SIZE'),
     'echo_id'         => env('ECHO_ID'),
     'echo_key'        => env('ECHO_KEY'),
-    'echo_ssl_crt'        => env('ECHO_SSL_CRT'),
+    'echo_ssl_crt'    => env('ECHO_SSL_CRT'),
     'echo_ssl_key'    => env('ECHO_SSL_KEY'),
 
     'api_url'           => env('API_URL'),
@@ -50,9 +50,10 @@ return [
     'ocr_chunk'      => env('OCR_CHUNK'),
     'ocr_api_key'    => env('OCR_API_KEY'),
 
-    'poll_ocr_channel'    => env('POLL_OCR_CHANNEL'),
-    'poll_export_channel' => env('POLL_EXPORT_CHANNEL'),
-    'poll_board_channel'  => env('POLL_BOARD_CHANNEL'),
+    'poll_ocr_channel'        => env('POLL_OCR_CHANNEL'),
+    'poll_export_channel'     => env('POLL_EXPORT_CHANNEL'),
+    'poll_board_channel'      => env('POLL_BOARD_CHANNEL'),
+    'poll_scoreboard_channel' => env('POLL_SCOREBOARD_CHANNEL'),
 
     'cache_enabled'       => env('CACHE_ENABLED', true),
     'cache_minutes'       => env('CACHE_MINUTES', 60),
@@ -85,38 +86,34 @@ return [
         ],
     ],
 
-    'dwcLocalityFields' => [
+    'dwcLocalityFields'     => [
         'StateProvince'  => 'stateProvince',
         'State_Province' => 'stateProvince',
         'State'          => 'stateProvince',
         'County'         => 'county',
     ],
 
-    /* Added Tubes */
-    'beanstalkd'        => [
-        'chart_tube'          => env('QUEUE_CHART_TUBE'),
-        'classification_tube' => env('QUEUE_CLASSIFICATION_TUBE'),
-        'default_tube'        => env('QUEUE_DEFAULT_TUBE'),
-        'event_tube'          => env('QUEUE_EVENT_TUBE'),
-        'fusion_tube'         => env('QUEUE_FUSION_TUBE'),
-        'import_tube'         => env('QUEUE_IMPORT_TUBE'),
-        'export_tube'         => env('QUEUE_EXPORT_TUBE'),
-        'stat_tube'           => env('QUEUE_STAT_TUBE'),
-        'workflow_tube'       => env('QUEUE_WORKFLOW_TUBE'),
-        'ocr_tube'            => env('QUEUE_OCR_TUBE'),
-        'pusher_tube'         => env('QUEUE_NFN_PUSHER'),
-    ],
+    /* Beanstalk Tubes */
+    'chart_tube'            => env('QUEUE_CHART_TUBE'),
+    'classification_tube'   => env('QUEUE_CLASSIFICATION_TUBE'),
+    'default_tube'          => env('QUEUE_DEFAULT_TUBE'),
+    'event_tube'            => env('QUEUE_EVENT_TUBE'),
+    'fusion_tube'           => env('QUEUE_FUSION_TUBE'),
+    'import_tube'           => env('QUEUE_IMPORT_TUBE'),
+    'export_tube'           => env('QUEUE_EXPORT_TUBE'),
+    'stat_tube'             => env('QUEUE_STAT_TUBE'),
+    'workflow_tube'         => env('QUEUE_WORKFLOW_TUBE'),
+    'ocr_tube'              => env('QUEUE_OCR_TUBE'),
+    'pusher_tube'           => env('QUEUE_PUSHER_TUBE'),
 
-    'images'                => [
-        'thumbDefaultImg' => public_path('/images/default_image.jpg'),
-        'thumbOutputDir'  => storage_path('app/public/thumbs'),
-        'thumbWidth'      => 300,
-        'thumbHeight'     => 300,
-        'nfnLrgWidth'     => env('NFN_LRG_WIDTH', 1500),
-        'nfnSmWidth'      => env('NFN_SM_WIDTH', 500),
-    ],
-
-    /** Min and max logo and banner sizes used in Project model for Codesleve Stapler */
+    /* Images */
+    /* Min and max logo and banner sizes used in Project model for Codesleve Stapler */
+    'thumbDefaultImg'       => public_path('/images/default_image.jpg'),
+    'thumbOutputDir'        => storage_path('app/public/thumbs'),
+    'thumbWidth'            => 300,
+    'thumbHeight'           => 300,
+    'nfnLrgWidth'           => env('NFN_LRG_WIDTH', 1500),
+    'nfnSmWidth'            => env('NFN_SM_WIDTH', 500),
     'logo'                  => '300x200',
     'banner'                => '1200x250',
 

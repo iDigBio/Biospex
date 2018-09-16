@@ -46,7 +46,7 @@ class NfnClassificationsCsvCreateJob extends Job implements ShouldQueue
     public function __construct(array $expeditionIds = [])
     {
         $this->expeditionIds = $expeditionIds;
-        $this->onQueue(config('config.beanstalkd.classification_tube'));
+        $this->onQueue(config('config.classification_tube'));
     }
 
     /**

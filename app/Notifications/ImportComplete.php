@@ -38,7 +38,7 @@ class ImportComplete extends Notification implements ShouldQueue
         $this->project = $project;
         $this->duplicates = $duplicates;
         $this->rejects = $rejects;
-        $this->onQueue(config('config.beanstalkd.default_tube'));
+        $this->onQueue(config('config.default_tube'));
     }
 
     /**

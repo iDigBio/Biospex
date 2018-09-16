@@ -8,7 +8,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class PollExportEvent extends Event implements ShouldBroadcast
+class ScoreboardEvent extends Event implements ShouldBroadcast
 {
 
     use Dispatchable, InteractsWithSockets, SerializesModels;
@@ -19,6 +19,11 @@ class PollExportEvent extends Event implements ShouldBroadcast
     public $data = [];
 
     /**
+     * @var
+     */
+    public $projectId;
+
+    /**
      * The name of the queue on which to place the event.
      *
      * @var string
@@ -26,13 +31,22 @@ class PollExportEvent extends Event implements ShouldBroadcast
     public $broadcastQueue;
 
     /**
-     * PollExportEvent constructor.
+     * @var
+     */
+    public $channel;
+
+    /**
+     * ScoreboardEvent constructor.
+     *
+     * @param $projectId
      * @param $data
      */
-    public function __construct($data)
+    public function __construct($projectId, $data)
     {
+        $this->projectId = $projectId;
         $this->data = $data;
         $this->broadcastQueue = config('config.event_tube');
+        $this->channel = config('config.poll_scoreboard_channel') . '.' . $this->projectId;
     }
 
     /**
@@ -42,6 +56,6 @@ class PollExportEvent extends Event implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel(config('config.poll_export_channel'));
+        return new Channel($this->channel);
     }
 }

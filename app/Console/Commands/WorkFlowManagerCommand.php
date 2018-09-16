@@ -42,7 +42,7 @@ class WorkFlowManagerCommand extends Command
     public function __construct(WorkflowManager $workflowManagerContract)
     {
         parent::__construct();
-        $this->tube = config('config.beanstalkd.workflow_tube');
+        $this->tube = config('config.workflow_tube');
         $this->workflowManagerContract = $workflowManagerContract;
     }
 

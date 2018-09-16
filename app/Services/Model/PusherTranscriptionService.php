@@ -455,7 +455,7 @@ class PusherTranscriptionService
         });
 
         if ($filtered->isNotEmpty()) {
-            EventBoardJob::dispatch($projectId);
+            // EventBoardJob::dispatch($projectId);
             // ScoreBoardJob::dispatch($projectId);
         };
     }

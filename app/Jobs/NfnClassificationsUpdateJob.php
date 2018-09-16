@@ -34,7 +34,7 @@ class NfnClassificationsUpdateJob extends Job implements ShouldQueue
     public function __construct($expeditionId)
     {
         $this->expeditionId = $expeditionId;
-        $this->onQueue(config('config.beanstalkd.classification_tube'));
+        $this->onQueue(config('config.classification_tube'));
     }
 
     /**

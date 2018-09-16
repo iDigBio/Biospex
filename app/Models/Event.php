@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Presentable;
+use App\Presenters\EventPresenter;
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Event extends Model
 {
-    use LadaCacheTrait;
+    use LadaCacheTrait, Presentable;
 
     /**
      * @inheritDoc
@@ -53,6 +55,11 @@ class Event extends Model
         'end_date',
         'timezone'
     ];
+
+    /**
+     * @var string
+     */
+    protected $presenter = EventPresenter::class;
 
     /**
      * Project relationship.
@@ -101,7 +108,7 @@ class Event extends Model
      */
     public function setStartDateAttribute($value)
     {
-        $this->attributes['start_date'] = $value->setTimezone(config('app.timezone'));
+        $this->attributes['start_date'] = $value->setTimezone(new \DateTimeZone(config('app.timezone')));
     }
 
     /**
@@ -111,7 +118,6 @@ class Event extends Model
      */
     public function setEndDateAttribute($value)
     {
-        $this->attributes['end_date'] = $value->setTimezone(config('app.timezone'));
+        $this->attributes['end_date'] = $value->setTimezone(new \DateTimeZone(config('app.timezone')));
     }
-
 }

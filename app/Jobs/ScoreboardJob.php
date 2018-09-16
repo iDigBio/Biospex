@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Events\PollBoardEvent;
+use App\Events\ScoreboardEvent;
 use App\Repositories\Interfaces\Event;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -10,15 +10,17 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class EventBoardJob extends Job implements ShouldQueue
+class ScoreboardJob implements ShouldQueue
 {
-
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * @var int
+     */
     private $projectId;
 
     /**
-     * EventBoardJob constructor.
+     * ScoreBoardJob constructor.
      *
      * @param $projectId
      */
@@ -34,17 +36,14 @@ class EventBoardJob extends Job implements ShouldQueue
      * @param \App\Repositories\Interfaces\Event $eventContract
      * @throws \Throwable
      */
-    public function handle(
-        Event $eventContract
-    )
+    public function handle(Event $eventContract)
     {
         $events = $eventContract->getEventsByProjectId($this->projectId);
-        $returnHTML = view('frontend.events.board', ['events' => $events])->render();
-        $data = [
-            'id' => $this->projectId,
-            'html' => $returnHTML
-        ];
+        $data = $events->mapWithKeys(function($event) {
+            $event->teams->sortBy('transcription_count');
+            return [$event->id => view('frontend.events.scoreboard-content', ['event' => $event])->render()];
+        });
 
-        event(new PollBoardEvent($data));
+        ScoreboardEvent::dispatch($this->projectId, $data->toArray());
     }
 }

@@ -1070,3 +1070,86 @@ div.event-card {
 .progress-description {
     text-align: center;
 }
+
+
+/**
+Bootstrap 4 design
+ */
+svg, p, .text, i, h1, h2, h3, h4, h5 {
+    color: #383333;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+p, .text {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 18px;
+}
+
+/*modal
+*/
+.modal-backdrop.show {
+    opacity: .925;
+}
+#clockdiv{
+    color: #111;
+    display: inline-block;
+    font-weight: 100;
+    text-align: center;
+    font-size: 30px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+#clockdiv > div{
+    padding: 10px;
+    border-radius: 3px;
+    background: #ececec;
+    display: inline-block;
+}
+
+#clockdiv div > span{
+    padding: 15px;
+    border-radius: 3px;
+    background: #ededed;
+    display: inline-block;
+}
+
+.modal-footer {
+    display: initial;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: initial;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+h2.modal-number {
+    font-size: 68px !important;
+    line-height: 32px;
+}
+
+.color-action {
+    color: #e83f29 !important;
+}
+
+.text-white {
+    color: #ffffff !important;
+}
+
+.text-center {
+    text-align: center !important
+}
+
+.smalltext{
+    padding-top: 5px !important;
+    font-size: 16px !important;
+}
+
+.padding-zero{
+    padding: 0 !important;
+}
+
+

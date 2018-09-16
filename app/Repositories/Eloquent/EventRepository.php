@@ -189,4 +189,29 @@ class EventRepository extends EloquentRepository implements Event
 
         return $results;
     }
+
+    /**
+     * Get event for scoreboard.
+     *
+     * @param $eventId
+     * @param array $columns
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getEventScoreboard($eventId, array $columns = ['*'])
+    {
+        $results = $this->model->withCount('transcriptions')->with([
+            'teams' => function ($q) use ($eventId) {
+                $q->withcount([
+                    'transcriptions' => function ($q) use ($eventId) {
+                        $q->where('event_id', $eventId);
+                    },
+                ]);
+            },
+        ])->find($eventId, $columns);
+
+        $this->resetModel();
+
+        return $results;
+    }
 }

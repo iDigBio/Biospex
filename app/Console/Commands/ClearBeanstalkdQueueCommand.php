@@ -41,7 +41,7 @@ class ClearBeanstalkdQueueCommand extends Command
      */
     public function handle()
     {
-        $this->tubes = $this->argument('tube') === null ? config('config.beanstalkd') : explode(',', $this->argument('tube'));
+        $this->tubes = $this->argument('tube') === null ? config('config') : explode(',', $this->argument('tube'));
 
         collect($this->tubes)->each(function ($tube){
             $this->clearQueue($tube);

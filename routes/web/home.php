@@ -15,4 +15,5 @@ $router->get('ourvision')->uses('HomeController@vision')->name('home.get.vision'
 $router->get('project/{slug}')->uses('HomeController@project')->name('home.get.project');
 $router->get('project/{project}/chart')->uses('HomeController@loadAmChart')->name('home.get.chart');
 $router->get('project/{project}/events')->uses('HomeController@events')->name('home.get.events');
+$router->get('scoreboard/{event}')->uses('HomeController@scoreboard')->name('home.get.scoreboard');
 

@@ -8,8 +8,6 @@
             <div class="modal-body">
                 <div><h4>@lang('pages.process_title', ['type' => 'OCR'])</h4></div>
                 <div id="ocrHtml">@lang('html.processing_empty')</div>
-            </div>
-            <div class="modal-body">
                 <div><h4>@lang('pages.process_title', ['type' => 'Export'])</h4></div>
                 <div id="exportHtml">@lang('html.processing_empty')</div>
             </div>

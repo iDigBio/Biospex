@@ -49,7 +49,7 @@ class ActorImageService extends ActorServiceConfig
     {
         $this->imagickService = $imagickService;
         $this->httpRequest = $httpRequest;
-        $this->nfnLrgWidth = config('config.images.nfnLrgWidth');
+        $this->nfnLrgWidth = config('config.nfnLrgWidth');
     }
 
     /**

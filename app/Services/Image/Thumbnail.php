@@ -41,10 +41,10 @@ class Thumbnail extends ImagickService
     {
         $this->fileService = $fileService;
 
-        $this->defaultThumbImg = config('config.images.thumbDefaultImg');
-        $this->tnWidth = config('config.images.thumbWidth');
-        $this->tnHeight = config('config.images.thumbHeight');
-        $this->thumbDirectory = config('config.images.thumbOutputDir').'/'.$this->tnWidth.'_'.$this->tnHeight;
+        $this->defaultThumbImg = config('config.thumbDefaultImg');
+        $this->tnWidth = config('config.thumbWidth');
+        $this->tnHeight = config('config.thumbHeight');
+        $this->thumbDirectory = config('config.thumbOutputDir').'/'.$this->tnWidth.'_'.$this->tnHeight;
     }
 
     /**

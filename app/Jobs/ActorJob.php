@@ -33,7 +33,7 @@ class ActorJob extends Job implements ShouldQueue
      */
     public function __construct($actor)
     {
-        $this->onQueue(config('config.beanstalkd.workflow_tube'));
+        $this->onQueue(config('config.workflow_tube'));
         $this->actor = unserialize($actor);
     }
 

@@ -105,7 +105,7 @@ class AppFileDeployment extends Command
         if (strpos($search, 'QUEUE_') === 0) {
             $replace = strtolower(str_replace('QUEUE_', '', $search));
 
-            return config('config.beanstalkd.'.$replace);
+            return config('config.'.$replace);
         }
 
         if ($search === 'MAP_PRIVATE_KEY') {

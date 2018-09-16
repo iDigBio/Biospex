@@ -33,7 +33,7 @@ class PollBoardEvent extends Event implements ShouldBroadcast
     public function __construct($data)
     {
         $this->data = $data;
-        $this->broadcastQueue = config('config.beanstalkd.event_tube');
+        $this->broadcastQueue = config('config.event_tube');
     }
 
     /**

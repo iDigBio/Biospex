@@ -24,7 +24,7 @@ class GroupInvite extends Notification implements ShouldQueue
     public function __construct($group)
     {
         $this->group = $group;
-        $this->onQueue(config('config.beanstalkd.default_tube'));
+        $this->onQueue(config('config.default_tube'));
     }
 
     /**

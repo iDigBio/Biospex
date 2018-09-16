@@ -7,7 +7,6 @@ use App\Facades\GeneralHelper;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\ExportQueue;
 use App\Services\Actor\ActorFactory;
-use Illuminate\Events\Dispatcher;
 use Illuminate\Console\Command;
 
 class ExportPollCommand extends Command
@@ -33,11 +32,6 @@ class ExportPollCommand extends Command
     private $nfnActors;
 
     /**
-     * @var \Illuminate\Foundation\Application|\Laravel\Lumen\Application|mixed
-     */
-    private $dispatcher;
-
-    /**
      * @var Expedition
      */
     private $expeditionContract;
@@ -50,13 +44,11 @@ class ExportPollCommand extends Command
      * Create a new command instance.
      *
      * @param Expedition $expeditionContract
-     * @param Dispatcher $dispatcher
      * @param ExportQueue $exportQueueContract
      * @internal param Actor $actor
      */
     public function __construct(
         Expedition $expeditionContract,
-        Dispatcher $dispatcher,
         ExportQueue $exportQueueContract
     )
     {
@@ -64,7 +56,6 @@ class ExportPollCommand extends Command
 
         $this->nfnActors = explode(',', config('config.nfnActors'));
         $this->expeditionContract = $expeditionContract;
-        $this->dispatcher = $dispatcher;
         $this->exportQueueContract = $exportQueueContract;
     }
 
@@ -79,8 +70,7 @@ class ExportPollCommand extends Command
 
         if ($records->isEmpty())
         {
-            $this->dispatcher->fire(new PollExportEvent($data));
-
+            PollExportEvent::dispatch($data);
             return;
         }
 
@@ -115,6 +105,6 @@ class ExportPollCommand extends Command
             ];
         })->toArray();
 
-        $this->dispatcher->fire(new PollExportEvent($data));
+        PollExportEvent::dispatch($data);
     }
 }

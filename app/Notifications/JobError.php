@@ -37,7 +37,7 @@ class JobError extends Notification implements ShouldQueue
         $this->messages = $messages;
         $this->file = $file;
         $this->adminEmail = config('mail.from.address');
-        $this->onQueue(config('config.beanstalkd.default_tube'));
+        $this->onQueue(config('config.default_tube'));
     }
 
     /**

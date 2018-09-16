@@ -141,4 +141,31 @@ class HomeController extends Controller
 
         return response()->json(['html' => $returnHTML]);
     }
+
+    /**
+     * @param $eventId
+     * @param \App\Repositories\Interfaces\Event $eventContract
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function scoreboard($eventId, Event $eventContract)
+    {
+        $event = $eventContract->getEventScoreboard($eventId, ['id']);
+
+        if (! request()->ajax() || is_null($event)) {
+            return response()->json(['html' => 'Error retrieving the Event']);
+        }
+
+        return view('frontend.events.scoreboard-content', ['event' => $event]);
+
+        //return response()->json(['html' => $returnHTML]);
+
+        /* format date for date countdown
+        $timestamp = '2018-09-13 16:34:00';
+        $date = Carbon::createFromFormat('Y-m-d H:i:s', $timestamp, 'America/New_York');
+        $date->setTimezone('UTC');
+        echo $date .PHP_EOL;
+         */
+
+    }
 }

@@ -49,4 +49,11 @@ interface Event extends RepositoryInterface
      * @return mixed
      */
     public function getEventsByProjectId($projectId);
+
+    /**
+     * @param $eventId
+     * @param array $columns
+     * @return mixed
+     */
+    public function getEventScoreboard($eventId, array $columns = ['*']);
 }
