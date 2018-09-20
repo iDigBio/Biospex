@@ -254,7 +254,7 @@ class ProjectsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $project = $this->projectContract->update(request()->all(), $projectId);
+        $project = $this->projectContract->update($request->all(), $projectId);
 
         $project ? Flash::success(trans('messages.record_updated')) : Flash::error(trans('messages.record_updated_error'));
 
