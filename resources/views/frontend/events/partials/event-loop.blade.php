@@ -13,7 +13,7 @@
                 </p>
             </div>
         </a>
-        <div class="panel-footer">
+        <div class="panel-footer text-center">
             <button type="button" class="btn btn-info btn-lg" data-toggle="modal"
                     data-remote="false"
                     data-target="#scoreboardModal"
