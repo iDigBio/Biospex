@@ -1,6 +1,6 @@
-<div class="text-center" style="background-color:#e83f29;padding-top:35px;">
-    <h2 class="text-white text modal-number">{{ $event->transcriptions_count }}<br>
-        <small>Transcriptions</small></h2>
+<div class="text-center" style="background-color:#e83f29;padding-top:20px;">
+    <h2 class="text-white text modal-number" style="padding-bottom: 10px;">{{ $event->transcriptions_count }}<br>
+        <small style="color: #fff;">Transcriptions</small><br></h2>
 </div>
 <table class="table table-striped">
     <thead>
@@ -36,6 +36,7 @@
     <div>
         <span class="seconds"></span>
         <div class="smalltext">Seconds</div>
+    </div>
     </div>
 </div>
 <div id="date" style="display: none">{{ $event->present()->scoreboard_date }}</div>

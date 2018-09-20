@@ -4,12 +4,12 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <div><h2 class="color-action text-center">SCOREBOARD</h2></div>
                 <div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true"><i class="far fa-times-circle"></i></span>
+                        <span aria-hidden="true"><i class="fa fa-times-circle"></i></span>
                     </button>
                 </div>
+                <div><h2 class="color-action text-center">SCOREBOARD</h2></div>
             </div>
 
             <div class="modal-body padding-zero">
@@ -17,7 +17,7 @@
             </div>
 
             <div class="modal-footer text-center">
-                <button type="button" class="btn btn-outline-primary color-action align-self-center"
+                <button type="button" class="btn btn-outline-primary color-action"
                         data-dismiss="modal">EXIT
                 </button>
             </div>
