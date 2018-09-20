@@ -38,13 +38,14 @@ class ProjectRepository extends EloquentRepository implements Project
      *
      * @param array $attributes
      * @param $resourceId
-     * @return bool|void
+     * @return bool
      */
     public function update(array $attributes, $resourceId)
     {
+        $model = $this->model->find($resourceId);
 
         $attributes['slug'] = null;
-        $project = $this->model->update($attributes, $resourceId);
+        $model->fill($attributes)->save();
 
         $resources = collect($attributes['resources'])->reject(function ($resource) {
             return $this->filterOrDeleteResources($resource);
@@ -54,7 +55,12 @@ class ProjectRepository extends EloquentRepository implements Project
             return new ProjectResource($resource);
         });
 
-        $project->resources()->saveMany($resources->all());
+        if ($resources->isEmpty()) {
+            return true;
+        }
+
+        return $model->resources()->saveMany($resources->all());
+
     }
 
     /**
