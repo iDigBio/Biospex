@@ -10,7 +10,7 @@
 <div class="jumbotron">
     <h3>{{ $project->title }}</h3>
     <p>@lang('pages.advertise_title')</p>
-    <button title="@lang('pages.downloadTitle')" class="btn btn-success btn-sm" type="button" onClick="location.href='{{ route('webauth.advertises.show', [$project->id]) }}'"><span class="fa fa-download fa-lrg"></span> @lang('pages.download') </button>
+    <button title="@lang('pages.downloadTitle')" class="btn btn-success btn-sm" type="button" onClick="location.href='{{ route('admin.advertises.show', [$project->id]) }}'"><span class="fa fa-download fa-lrg"></span> @lang('pages.download') </button>
 </div>
 <div class="col-xs-12">
     <div class="panel panel-info">

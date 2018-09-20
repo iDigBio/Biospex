@@ -9,7 +9,6 @@ return [
     'contact'                             => 'Contact Form',
     'contact_email'                       => 'Email',
     'contact_name'                        => 'Name',
-    'contact_success'                     => 'Your message has been sent. Thank you.',
     'core_node_missing'                   => 'Core node missing from xml meta file.',
     'create_dir'                          => 'Unable to create directory: :directory',
     'csv_build_header'                    => 'Undefined index for :key => :qualified when building header for csv import.',

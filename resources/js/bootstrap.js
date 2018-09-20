@@ -7,9 +7,9 @@
 
 try {
     window.$ = window.jQuery = require('jquery');
-    //require('bootstrap');
-    require("bootstrap-sass/assets/javascripts/bootstrap");
+    require('bootstrap');
     require("bootstrap-notify/bootstrap-notify");
+    require("@fortawesome/fontawesome-free");
 
     require("jquery-ui/ui/widgets/dialog");
     require("jquery-ui/ui/widgets/draggable");
@@ -33,9 +33,7 @@ try {
 
     require("socket.io-client/dist/socket.io");
     require("./amchart");
-    require("./bootbox");
-    require("./flash");
-    require("./biospex");
+    require("./main");
     require("./grid");
 
 } catch (e) {}

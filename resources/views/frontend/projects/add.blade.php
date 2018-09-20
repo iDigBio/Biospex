@@ -21,7 +21,7 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                        'route' => ['webauth.imports.dwcfile.upload', $project->id],
+                        'route' => ['admin.imports.dwcfile.upload', $project->id],
                         'method' => 'post',
                         'files' => true,
                         'enctype' => 'multipart/form-data',
@@ -58,7 +58,7 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                        'route' => ['webauth.imports.recordset.upload', $project->id],
+                        'route' => ['admin.imports.recordset.upload', $project->id],
                         'method' => 'post',
                         'id' => 'form-recordset',
                         'class' => 'form-horizontal',
@@ -93,7 +93,7 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                        'route' => ['webauth.imports.dwcuri.upload', $project->id],
+                        'route' => ['admin.imports.dwcuri.upload', $project->id],
                         'method' => 'post',
                         'id' => 'form-data-url',
                         'class' => 'form-horizontal',

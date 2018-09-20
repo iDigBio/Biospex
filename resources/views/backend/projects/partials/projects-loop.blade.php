@@ -6,7 +6,7 @@
         <td>
             <div class="btn-toolbar">
                 <button title="@lang('pages.viewTitle')" class="btn btn-primary btn-xs" type="button"
-                        onClick="window.open('{{ route('home.get.project', [$project->slug]) }}', '_blank')">
+                        onClick="window.open('{{ route('projects.get.slug', [$project->slug]) }}', '_blank')">
                     <span class="fa fa-eye fa-lrg"></span> <!-- @lang('pages.view') --></button>
 
                 <button title="@lang('pages.editTitle')" class="btn btn-warning btn-xs" type="button"

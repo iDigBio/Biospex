@@ -26,7 +26,7 @@
                 </div>
                 </div>
                 {!! Form::open([
-                'route' => ['webauth.users.update', $user->id],
+                'route' => ['admin.users.update', $user->id],
                 'method' => 'put',
                 'class' => 'form-horizontal',
                 'enctype' => 'multipart/form-data',
@@ -88,7 +88,7 @@
             <div class="panel-body">
                 <h4>@lang('pages.password_change')</h4>
                 {!! Form::open([
-                    'route' => ['webauth.users.password', $user->id],
+                    'route' => ['admin.users.password', $user->id],
                     'method' => 'put',
                     'class' => 'form-inline',
                     'role' => 'form'

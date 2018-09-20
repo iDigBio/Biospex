@@ -8,5 +8,5 @@
         @section('title')
         @show
     </title>
-    @include('frontend.layouts.partials.style')
+    @include('frontend.layout.partial.style')
 </head>

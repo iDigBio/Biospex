@@ -264,27 +264,27 @@ class SubjectRepository extends MongoDbRepository implements Subject
             });
         }
 
-        if ($vars['route'] !== 'webauth.grids.explore') {
+        if ($vars['route'] !== 'admin.grids.explore') {
             $this->setExpeditionWhere($query, $vars);
         }
     }
 
     protected function setExpeditionWhere(&$query, $vars)
     {
-        // webauth.grids.explore: Project Explore (show all)
-        // webauth.grids.show: Expedition Show page (show only assigned)
-        // webauth.grids.edit: Expedition edit (show all)
-        // webauth.grids.create: Expedition create (show not assigned)
-        if ($vars['route'] === 'webauth.grids.edit')
+        // admin.grids.explore: Project Explore (show all)
+        // admin.grids.show: Expedition Show page (show only assigned)
+        // admin.grids.edit: Expedition edit (show all)
+        // admin.grids.create: Expedition create (show not assigned)
+        if ($vars['route'] === 'admin.grids.edit')
         {
             if ($this->assignedRuleData === '' || $this->assignedRuleData === 'all')
                 return;
         }
-        elseif ($vars['route'] === 'webauth.grids.show')
+        elseif ($vars['route'] === 'admin.grids.show')
         {
             $this->setWhereIn($query, 'expedition_ids', [$vars['expeditionId']]);
         }
-        elseif ($vars['route'] === 'webauth.grids.create')
+        elseif ($vars['route'] === 'admin.grids.create')
         {
             $this->setWhere($query, 'expedition_ids', 'size', 0);
         }

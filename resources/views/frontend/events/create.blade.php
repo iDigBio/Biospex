@@ -15,7 +15,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                'route' => ['webauth.events.store'],
+                'route' => ['admin.events.store'],
                 'method' => 'post',
                 'class' => 'form-horizontal',
                 'role' => 'form'

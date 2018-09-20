@@ -17,24 +17,6 @@ interface Project extends RepositoryInterface
     public function getProjectByIdWith($projectId, array $with = []);
 
     /**
-     * Get random projects for carousel.
-     *
-     * @param int $count
-     * @param array $attributes
-     * @return mixed
-     */
-    public function getRandomProjectsForCarousel($count = 5, array $attributes = ['*']);
-
-    /**
-     * Get recent projects for The Projects widget.
-     *
-     * @param int $count
-     * @param array $attributes
-     * @return mixed
-     */
-    public function getRecentProjects($count = 5, array $attributes = ['*']);
-
-    /**
      * Get the project public page.
      *
      * @param $slug
@@ -58,5 +40,11 @@ interface Project extends RepositoryInterface
      * @return mixed
      */
     public function getProjectForDelete($projectId);
+
+    /**
+     * @param array $attributes
+     * @return mixed
+     */
+    public function getPublicIndex(array $attributes = []);
 
 }

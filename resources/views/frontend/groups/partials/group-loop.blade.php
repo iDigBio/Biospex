@@ -3,21 +3,21 @@
         <td>{{ $group->title }}</td>
         <td class="buttons-sm">
             <button title="@lang('pages.viewTitle')" class="btn btn-default btn-primary btn-sm"
-                    type="button" onClick="location.href='{{ route('webauth.groups.show', [$group->id]) }}'">
+                    type="button" onClick="location.href='{{ route('admin.groups.show', [$group->id]) }}'">
                 <span class="fa fa-eye fa-lrg"></span> @lang('pages.view')</button>
             @can('isOwner', $group)
                 <button title="@lang('pages.editTitle')" class="btn btn-default btn-warning btn-sm"
                         type="button"
-                        onClick="location.href='{{ route('webauth.groups.edit', array($group->id)) }}'"><span
+                        onClick="location.href='{{ route('admin.groups.edit', array($group->id)) }}'"><span
                             class="fa fa-cog fa-lrg"></span> @lang('pages.edit')</button>
                 <button title="@lang('pages.inviteTitle')" class="btn btn-default btn-reverse btn-sm"
                         type="button"
-                        onClick="location.href='{{ route('webauth.invites.index', [$group->id]) }}'"><span
+                        onClick="location.href='{{ route('admin.invites.index', [$group->id]) }}'"><span
                             class="fa fa-users fa-lrg"></span> @lang('pages.invite')</button>
             @endcan
             @can('isOwner', $group)
                 <button class="btn btn-sm btn-danger" title="@lang('pages.deleteTitle')"
-                        data-href="{{ route('webauth.groups.delete', array($group->id)) }}"
+                        data-href="{{ route('admin.groups.delete', array($group->id)) }}"
                         data-method="delete"
                         data-toggle="confirmation"
                         data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"

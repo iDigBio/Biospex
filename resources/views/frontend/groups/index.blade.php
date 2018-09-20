@@ -12,7 +12,7 @@
     <div class="jumbotron">
         <h3>{{ trans('pages.groups') }}
             <button title="@lang('pages.createTitleG')" class="btn btn-success"
-                    onClick="location.href='{{ route('webauth.groups.create') }}'"><span
+                    onClick="location.href='{{ route('admin.groups.create') }}'"><span
                         class="fa fa-plus fa-lg"></span> @lang('pages.create')</button>
         </h3>
     </div>

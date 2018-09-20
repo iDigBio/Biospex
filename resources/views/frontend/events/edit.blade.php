@@ -15,7 +15,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                'route' => ['webauth.events.update', $event->id],
+                'route' => ['admin.events.update', $event->id],
                     'method' => 'put',
                     'files' => true,
                     'class' => 'form-horizontal',

@@ -15,7 +15,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                    'route' => ['webauth.projects.update', $project->id],
+                    'route' => ['admin.projects.update', $project->id],
                     'method' => 'put',
                     'enctype' => 'multipart/form-data',
                     'files' => true,

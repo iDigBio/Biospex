@@ -1,46 +1,49 @@
-@extends('frontend.layouts.default')
+@extends('front.layout.default')
 
 {{-- Web site Title --}}
 @section('title')
-@parent
-@lang('pages.resend_activation')
+    {{ __('Resend Activation') }}
 @stop
 
 {{-- Content --}}
+@section('header')
+    <header>
+        <nav class="header navbar navbar-expand-md box-shadow" style="background-image: url(/images/banner-binoculars.jpg);">
+            <a href="/"><img src="/images/biospex_logo.svg" alt="BIOSPEX"
+                             class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
+            @include('common.nav')
+        </nav>
+    </header>
+@endsection
+
 @section('content')
-<div class="row centered-form top30">
-    <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
-        <div class="panel panel-primary middle-panel">
-            <div class="panel-heading">
-                <h3 class="panel-title">{{  trans('pages.resend_activation_email') }}</h3>
-            </div>
-            <div class="panel-body">
-                {!! Form::open([
-                'route' => 'app.post.resend',
-                'method' => 'post',
-                'class' => 'form-horizontal',
-                'role' => 'form'
-                ]) !!}
-                <div class="col-xs-12 col-sm-12 col-md-12">
+    <h2 class="text-center pt-4">{{ __('Resend Activation') }}</h2>
+    <hr class="header mx-auto" style="width:300px;">
+    <div class="col-12 col-md-10 offset-md-1">
+        <div class="card white box-shadow py-5 my-5 p-sm-5">
+            <div class="col-6 mx-auto">
+                <form action="{{ route('app.post.resend') }}" method="post" role="form" class="form-horizontal">
+                    {!! csrf_field() !!}
                     <div class="form-group {{ ($errors->has('email')) ? 'has-error' : '' }}">
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-envelope fa-lrg"></i></span>
-                            {!! Form::email('email', '', ['id' => 'email', 'class' => 'form-control', 'placeholder' => trans('pages.email'), 'autofocus']) !!}
-                        </div>
-                        {{ ($errors->has('email') ?  $errors->first('email') : '') }}
+                        <label for="email">{{ __('Email') }} <span class="color-action">*</span></label>
+                        <input type="text" name="email" id="email" class="form-control" value="{{ old('email') }}"
+                               required>
+                        {{ $errors->first('email') }}
                     </div>
-                </div>
-                <div class="col-xs-12 col-sm-12 col-md-12">
-                    <div class="form-group">
-                        {!! Form::submit(trans('pages.resend'), array('class' => 'btn btn-primary btn-block')) !!}
-                        {!! Form::close() !!}
+                    {!! Honeypot::generate('activateemail', 'activatetime') !!}
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-danger pl-4 pr-4">{{ __('SUBMIT') }}</button>
                     </div>
-                </div>
-                <div class="col-xs-12 col-sm-12 col-md-12 top15 text-center">
-                    {!! link_to_route('app.get.login', trans('pages.back_to_login')) !!}
+                </form>
+                <div class="mt-4 text-center">
+                    {!! link_to_route('app.get.login', __('Back to Login')) !!}
                 </div>
             </div>
         </div>
     </div>
-</div>
-@stop
+@endsection
+
+@section('footer')
+    @include('common.footer')
+    @include('common.contributors')
+@endsection

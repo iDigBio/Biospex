@@ -23,12 +23,15 @@ class HomeController extends Controller
      */
     public function index(Project $projectContract, PanoptesTranscription $panoptesTranscriptionContract)
     {
+        return view('front.home');
+        /*
         $carouselProjects = $projectContract->getRandomProjectsForCarousel(5);
         $recentProjects = $projectContract->getRecentProjects(5);
         $transcriptionCount = number_format($panoptesTranscriptionContract->getTotalTranscriptions());
         $contributorCount = number_format($panoptesTranscriptionContract->getContributorCount());
 
         return view('frontend.home', compact('carouselProjects', 'recentProjects', 'transcriptionCount', 'contributorCount'));
+        */
     }
 
     /**
@@ -41,20 +44,6 @@ class HomeController extends Controller
         return view('frontend.welcome');
     }
 
-    /**
-     * Show public project page.
-     *
-     * @param $slug
-     * @param Project $projectContract
-     * @return \Illuminate\View\View
-     */
-    public function project($slug, Project $projectContract)
-    {
-        $project = $projectContract->getProjectPageBySlug($slug);
-        $events = $project->events->sortByDesc('start_date');
-
-        return view('frontend.project', compact('project', 'events'));
-    }
 
     /**
      * Return project list for home page.
@@ -68,104 +57,5 @@ class HomeController extends Controller
         $recentProjects = $projectContract->getRecentProjects($count + 5);
 
         return view('frontend.layouts.partials.home-project-list', compact('recentProjects'));
-    }
-
-    /**
-     * Load AmChart for project home page.
-     *
-     * @param AmChart $amChartContract
-     * @param $projectId
-     * @return mixed
-     */
-    public function loadAmChart(AmChart $amChartContract, $projectId)
-    {
-        $record = $amChartContract->findBy('project_id', $projectId);
-
-        return json_decode($record->data);
-    }
-
-    /**
-     * Display contact form.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function getContact()
-    {
-        return view('frontend.contact');
-    }
-
-    /**
-     * Send contact form.
-     *
-     * @param ContactFormRequest $request
-     * @return mixed
-     */
-    public function postContact(ContactFormRequest $request)
-    {
-        $contact = $request->only('first_name', 'last_name', 'email', 'message');
-
-        Mail::to(config('mail.from.address'))->send(new ContactForm($contact));
-
-        Flash::success(trans('messages.contact_success'));
-
-        return redirect()->route('home');
-    }
-
-    /**
-     * Return vision page.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function vision()
-    {
-        return view('frontend.vision');
-    }
-
-    /**
-     * Ajax call for project event boards.
-     *
-     * @param $projectId
-     * @param \App\Repositories\Interfaces\Event $eventContract
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Throwable
-     */
-    public function events($projectId, Event $eventContract)
-    {
-        $events = $eventContract->getEventsByProjectId($projectId);
-
-        if (! request()->ajax() || $events->isEmpty()) {
-            return response()->json(['html' => '']);
-        }
-
-        $returnHTML = view('frontend.events.board', ['events' => $events])->render();
-
-        return response()->json(['html' => $returnHTML]);
-    }
-
-    /**
-     * @param $eventId
-     * @param \App\Repositories\Interfaces\Event $eventContract
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Throwable
-     */
-    public function scoreboard($eventId, Event $eventContract)
-    {
-        $event = $eventContract->getEventScoreboard($eventId, ['id']);
-
-        if (! request()->ajax() || is_null($event)) {
-            return response()->json(['html' => 'Error retrieving the Event']);
-        }
-
-        return view('frontend.events.scoreboard-content', ['event' => $event]);
-
-        //return response()->json(['html' => $returnHTML]);
-
-        /* format date for date countdown
-        $timestamp = '2018-09-13 16:34:00';
-        $date = Carbon::createFromFormat('Y-m-d H:i:s', $timestamp, 'America/New_York');
-        $date->setTimezone('UTC');
-        echo $date .PHP_EOL;
-         */
-
     }
 }

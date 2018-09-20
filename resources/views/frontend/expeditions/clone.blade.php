@@ -15,7 +15,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                'route' => ['webauth.expeditions.store', $expedition->project->id],
+                'route' => ['admin.expeditions.store', $expedition->project->id],
                 'method' => 'post',
                 'class' => 'form-horizontal gridForm',
                 'role' => 'form'

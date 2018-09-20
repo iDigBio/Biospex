@@ -17,7 +17,7 @@
                 </div>
                 <div class="panel-body">
                     {!! Form::open([
-                    'route' => ['web.events.join-create', $team->uuid],
+                    'route' => ['events.get.join-create', $team->uuid],
                     'method' => 'post',
                     'class' => 'form-horizontal',
                     'role' => 'form'

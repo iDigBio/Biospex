@@ -18,7 +18,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     <button title="Back to Expedition Details" class="btn btn-info btn-xs" type="button"
-                            onClick="location.href='{{ route('webauth.expeditions.show', [$expedition->project->id, $expedition->id]) }}'">
+                            onClick="location.href='{{ route('admin.expeditions.show', [$expedition->project->id, $expedition->id]) }}'">
                         <span class="glyphicon glyphicon-eye-open"></span> Return
                     </button>
                 </div>

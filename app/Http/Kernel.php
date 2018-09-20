@@ -2,7 +2,6 @@
 
 namespace App\Http;
 
-use App\Http\Middleware\Admin;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\FlashMessage;
 use App\Http\Middleware\RedirectIfAuthenticated;
@@ -79,6 +78,5 @@ class Kernel extends HttpKernel
         'guest'      => RedirectIfAuthenticated::class,
         'throttle'   => ThrottleRequests::class,
         'client'     => CheckClientCredentials::class,
-        'admin'      => Admin::class
     ];
 }

@@ -2,12 +2,9 @@
 
 // Begin UsersController
 $router->get('users')->uses('UsersController@index')->name('admin.users.index');
-$router->get('users/{users}/edit')->uses('UsersController@index')->name('admin.users.edit');
+$router->get('users/{users}')->uses('UsersController@show')->name('admin.users.show');
+$router->get('users/{users}/edit')->uses('UsersController@edit')->name('admin.users.edit');
 $router->put('users/{users}')->uses('UsersController@update')->name('admin.users.update');
-$router->put('users/{users}')->uses('UsersController@update')->name('admin.users.update');
-$router->put('users/{id}/pass')->uses('UsersController@pass')->name('admin.users.pass');
-$router->get('users/search')->uses('UsersController@search')->name('admin.users.search');
-$router->post('users')->uses('UsersController@store')->name('admin.users.store');
-$router->delete('users/{users}')->uses('UsersController@delete')->name('admin.users.delete');
-$router->delete('users/{users}/destroy')->uses('UsersController@destroy')->name('admin.users.destroy');
-$router->get('users/{users}/restore')->uses('UsersController@restore')->name('admin.users.restore');
+$router->delete('users/{users}')->uses('UsersController@destroy')->name('admin.users.delete');
+
+$router->put('password/{id}/pass')->uses('UsersController@pass')->name('admin.users.password');

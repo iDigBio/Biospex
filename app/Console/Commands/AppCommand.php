@@ -2,8 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Events\ScoreboardEvent;
-use App\Models\EventTranscription;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -24,14 +22,24 @@ class AppCommand extends Command
     private $eventContract;
 
     /**
-     * Create a new job instance.
+     * @var \App\Repositories\Interfaces\Project
+     */
+    private $projectContract;
+
+    /**
+     * AppCommand constructor.
      *
+     * @param \App\Repositories\Interfaces\Event $eventContract
+     * @param \App\Repositories\Interfaces\Project $projectContract
      */
     public function __construct(
-        \App\Repositories\Interfaces\Event $eventContract)
+        \App\Repositories\Interfaces\Event $eventContract,
+        \App\Repositories\Interfaces\Project $projectContract
+    )
     {
         parent::__construct();
         $this->eventContract = $eventContract;
+        $this->projectContract = $projectContract;
     }
 
     /**
@@ -39,6 +47,11 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        $results = $this->projectContract->getPublicIndex();
+        $results->each(function($result){
+            echo $result->expeditions . PHP_EOL;
+        });
+        /*
         EventTranscription::create($this->create());
         EventTranscription::create($this->create());
 
@@ -54,6 +67,7 @@ class AppCommand extends Command
         });
 
         ScoreboardEvent::dispatch($projectId, $data->toArray());
+        */
     }
 
     public function create() {

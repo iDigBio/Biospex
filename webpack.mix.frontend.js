@@ -17,15 +17,16 @@ mix.webpackConfig({
         }
     }
 }).autoload({
-        jquery: ["$", "window.jQuery", "jQuery", "window.$", "jquery", "window.jquery"],
-        'bootbox/bootbox.min.js': ['bootbox', 'window.bootbox']
+        jquery: ["$", "window.jQuery", "jQuery", "window.$", "jquery", "window.jquery"]
     })
     .js("resources/js/app.js", "js/frontend.js")
     .sass("resources/sass/frontend.scss", "css/frontend.css")
     .extract([
         "jquery",
-        "bootstrap-sass/assets/javascripts/bootstrap",
-        "bootbox/bootbox.min",
+        "bootstrap",
+        "@fortawesome/fontawesome-free",
+        "hamburgers",
+        "holderjs",
 
         "jquery-ui/ui/widgets/dialog",
         "jquery-ui/ui/widgets/draggable",
@@ -50,7 +51,8 @@ mix.webpackConfig({
         "amcharts3/amcharts/plugins/responsive/responsive",
 
         "socket.io-client/dist/socket.io",
-    ]);
+    ])
+    .copy( 'resources/img', 'public/images', false );
 
 /* Production settings */
 

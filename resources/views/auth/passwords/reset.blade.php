@@ -1,10 +1,66 @@
-@extends('frontend.layouts.default')
+@extends('front.layout.default')
 
 {{-- Web site Title --}}
 @section('title')
-    @parent
-    @lang('pages.password_reset')
+    {{ __('Login') }}
 @stop
+
+{{-- Content --}}
+@section('header')
+    <header>
+        <nav class="header navbar navbar-expand-md box-shadow" style="background-image: url(/images/banner-binoculars.jpg);">
+            <a href="/"><img src="/images/biospex_logo.svg" alt="BIOSPEX"
+                             class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
+            @include('common.nav')
+        </nav>
+    </header>
+@endsection
+
+@section('content')
+    <h2 class="text-center pt-4">{{ __('Login') }}</h2>
+    <hr class="header mx-auto" style="width:300px;">
+    <div class="col-12 col-md-10 offset-md-1">
+        <div class="card white box-shadow py-5 my-5 p-sm-5">
+            <div class="col-6 mx-auto">
+                <form action="{{ route('app.password.request') }}" method="post" role="form" class="form-horizontal">
+                    {!! csrf_field() !!}
+                    <div class="form-group {{ ($errors->has('email')) ? 'has-error' : '' }}">
+                        <label for="email">{{ __('Email') }} <span class="color-action">*</span></label>
+                        <input type="text" name="email" id="email" class="form-control" value="{{ old('email') }}"
+                               required>
+                        {{ $errors->first('email') }}
+                    </div>
+                    <div class="form-group {{ ($errors->has('password')) ? 'has-error' : '' }}">
+                        <label for="password">{{ __('Password') }} <span class="color-action">*</span></label>
+                        <input type="password" name="password" id="password" class="form-control" required>
+                        {{ ($errors->has('password') ?  $errors->first('password') : '') }}
+                    </div>
+                    <div class="form-group {{ ($errors->has('password_confirmation')) ? 'has-error' : '' }}">
+                        <label for="password_confirmation">{{ __('Password Confirmation') }} <span class="color-action">*</span></label>
+                        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
+                        {{ ($errors->has('password_confirmation') ?  $errors->first('password_confirmation') : '') }}
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" value=""> {{ __('Remember Me') }}</label>
+                    </div>
+                    {!! Honeypot::generate('resetemail', 'testtime') !!}
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-danger pl-4 pr-4">{{ __('SUBMIT') }}</button>
+                    </div>
+                </form>
+                <div class="mt-4 text-center">
+                    {!! link_to_route('app.get.login', __('Back to Login')) !!}
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('footer')
+    @include('common.footer')
+    @include('common.contributors')
+@endsection
+
 
 @section('content')
     <div class="row top30">
@@ -21,33 +77,9 @@
                     'role' => 'form'
                     ]) !!}
                     {!! Form::hidden('token', $token) !!}
-                    <div class="col-md-12">
-                        <div class="form-group {{ ($errors->has('email')) ? 'has-error' : '' }}">
-                            <div class="input-group">
-                                <span class="input-group-addon"><i class="fa fa-envelope fa-lg"></i></span>
-                                {!! Form::email('email', '', ['id' => 'email', 'class' => 'form-control', 'placeholder' => 'Email address']) !!}
-                            </div>
-                            {{ ($errors->has('email') ?  $errors->first('email') : '') }}
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <div class="input-group {{ ($errors->has('password')) ? 'has-error' : '' }}">
-                                <span class="input-group-addon"><i class="fa fa-lock fa-lg"></i></span>
-                                {!! Form::password('password', ['id' => 'password', 'class' => 'form-control', 'placeholder' => trans('pages.password')]) !!}
-                            </div>
-                            {{ $errors->first('password') }}
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <div class="input-group {{ ($errors->has('password_confirmation')) ? 'has-error' : '' }}">
-                                <span class="input-group-addon"><i class="fa fa-lock fa-lg"></i></span>
-                                {!! Form::password('password_confirmation', ['class' => 'form-control', 'id' =>'password_confirmation', 'placeholder' => trans('pages.password_confirmation')]) !!}
-                            </div>
-                            {{ $errors->first('password_confirmation') }}
-                        </div>
-                    </div>
+
+
+
                     <div class="form-group">
                         <div class="col-md-6 col-md-offset-3">
                             {!! Form::submit(trans('pages.password_reset'), array('class' => 'btn btn-primary btn-block')) !!}

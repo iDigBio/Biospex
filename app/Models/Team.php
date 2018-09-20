@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Presentable;
+use App\Presenters\TeamPresenter;
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class Team extends Model
 {
 
-    use LadaCacheTrait;
+    use LadaCacheTrait, Presentable;
 
     /**
      * @inheritDoc
@@ -27,6 +29,11 @@ class Team extends Model
     ];
 
     /**
+     * @var string
+     */
+    protected $presenter = TeamPresenter::class;
+
+    /**
      * TeamCategory relationship.
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -34,14 +41,5 @@ class Team extends Model
     public function category()
     {
         return $this->belongsTo(TeamCategory::class);
-    }
-
-    /**
-     * Get full name.
-     *
-     * @return string
-     */
-    public function getFullNameAttribute() {
-        return $this->first_name . ' ' . $this->last_name;
     }
 }

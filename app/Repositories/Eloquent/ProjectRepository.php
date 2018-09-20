@@ -69,29 +69,6 @@ class ProjectRepository extends EloquentRepository implements Project
         return $results;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getRandomProjectsForCarousel($count = 5, array $attributes = ['*'])
-    {
-        $results = $this->model->inRandomOrder()->whereNotNull('banner_file_name')->limit($count)->get($attributes);
-
-        $this->resetModel();
-
-        return $results;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getRecentProjects($count = 5, array $attributes = ['*'])
-    {
-        $results = $this->model->whereHas('nfnWorkflows')->orderBy('created_at', 'desc')->limit($count)->get($attributes);
-
-        $this->resetModel();
-
-        return $results;
-    }
 
     /**
      * @inheritdoc
@@ -201,5 +178,32 @@ class ProjectRepository extends EloquentRepository implements Project
         $record->save();
 
         return true;
+    }
+
+    /**
+     * @param array $attributes
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getPublicIndex(array $attributes = [])
+    {
+        /*
+        $results = $this->model->withCount(['expeditions' => function($query) {
+            $query->groupBy('project_id');
+        }])->whereHas('nfnWorkflows')
+            ->orderBy('created_at', 'desc')->find(13);
+        */
+
+        $results = $this->model->withCount('expeditions')->with(['expeditions.stat' => function($q){
+            $q->sum('transcriptions_completed');
+        }])
+            ->whereHas('nfnWorkflows')->orderBy('created_at', 'desc')->get();
+
+
+        $this->resetModel();
+
+        return $results;
+
+        //    ->whereHas('nfnWorkflows')->orderBy('created_at', 'desc')->limit($count)->get($attributes);
     }
 }

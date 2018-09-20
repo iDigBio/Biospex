@@ -16,7 +16,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                'route' => 'webauth.groups.store',
+                'route' => 'admin.groups.store',
                 'method' => 'post',
                 'class' => 'form-horizontal',
                 'role' => 'form'
