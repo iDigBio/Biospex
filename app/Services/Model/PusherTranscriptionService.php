@@ -4,6 +4,7 @@ namespace App\Services\Model;
 
 use App\Facades\DateHelper;
 use App\Jobs\EventBoardJob;
+use App\Jobs\ScoreboardJob;
 use App\Repositories\Interfaces\Event;
 use App\Repositories\Interfaces\EventTranscription;
 use App\Repositories\Interfaces\Expedition;
@@ -455,8 +456,8 @@ class PusherTranscriptionService
         });
 
         if ($filtered->isNotEmpty()) {
-            // EventBoardJob::dispatch($projectId);
-            // ScoreBoardJob::dispatch($projectId);
+            EventBoardJob::dispatch($projectId);
+            ScoreboardJob::dispatch($projectId);
         };
     }
 }
