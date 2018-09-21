@@ -30,5 +30,4 @@ Thumbs.db
 _ide_helper.php
 .phpstorm.meta.php
 /config/ide-helper.php
-/config/debugbar.php
 yarn-error.log
