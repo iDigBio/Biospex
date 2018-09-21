@@ -43,9 +43,6 @@ class AppCommand extends Command
         EventTranscription::create($this->create());
 
         $projectId = 13;
-        //$eventId = 1;
-        //$event = $this->eventContract->getEventScoreboard($eventId, ['id']);
-        //$data = $event->teams->map(function )
 
         $events = $this->eventContract->getEventsByProjectId($projectId);
         $data = $events->mapWithKeys(function($event) {
