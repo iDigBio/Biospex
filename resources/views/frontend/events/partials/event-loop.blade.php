@@ -20,7 +20,7 @@
                     data-channel="{{ config('config.poll_scoreboard_channel') .'.'. $event->project_id }}"
                     data-event="{{ $event->id }}"
                     data-href="{{ route('home.get.scoreboard', [$event->id]) }}"
-            >Open Modal</button>
+            >Scoreboard</button>
         </div>
     </div>
 </div>

@@ -206,14 +206,6 @@ $(document).ready(function () {
             });
     }
 
-    if ($('#event-boards').length) {
-        let projectId = $('#projectId').data('value');
-        Echo.channel(Laravel.boardChannel + '.' + projectId)
-            .listen('PollBoardEvent', (e) => {
-                $('#event-boards').html(e.data['html']);
-            });
-    }
-
     $('#scoreboardModal').on('show.bs.modal', function(e) {
         let $modal = $(this).find('.modal-body');
         let $button = $(e.relatedTarget); // Button that triggered the modal
@@ -242,7 +234,7 @@ $(document).ready(function () {
                 });
         });
     }).on('hidden.bs.modal', function () {
-        $(this).find('.modal-body').html('');
+        $(this).find('.modal-body').html('<h2 class="text-center">Loading Scoreboard...</h2>');
         clearInterval(timeInterval);
     })
 });

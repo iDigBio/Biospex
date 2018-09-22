@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Events\ScoreboardEvent;
 use App\Models\EventTranscription;
+use App\Repositories\Interfaces\Event;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -37,8 +38,18 @@ class AppCommand extends Command
     /**
      * Execute the job.
      */
-    public function handle()
+    public function handle(Event $eventContract)
     {
+
+        $events = $eventContract->getEventsByProjectId(13);
+        $data = $events->mapWithKeys(function($event) {
+            $event->teams->sortBy('transcription_count');
+            dd($event->teams);
+            return [$event->id => view('frontend.events.scoreboard-content', ['event' => $event])->render()];
+        });
+
+
+        /*
         EventTranscription::create($this->create());
         EventTranscription::create($this->create());
 
@@ -51,6 +62,7 @@ class AppCommand extends Command
         });
 
         ScoreboardEvent::dispatch($projectId, $data->toArray());
+        */
     }
 
     public function create() {

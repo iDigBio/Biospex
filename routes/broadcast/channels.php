@@ -24,10 +24,6 @@ Broadcast::channel(config('config.poll_export_channel'), function () {
     return true;
 });
 
-Broadcast::channel(config('config.poll_board_channel') .'.{project}', function () {
-    return true;
-});
-
 Broadcast::channel(config('config.poll_scoreboard_channel') . '.{project}', function () {
     return true;
 });

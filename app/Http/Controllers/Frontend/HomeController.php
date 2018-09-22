@@ -122,27 +122,6 @@ class HomeController extends Controller
     }
 
     /**
-     * Ajax call for project event boards.
-     *
-     * @param $projectId
-     * @param \App\Repositories\Interfaces\Event $eventContract
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Throwable
-     */
-    public function events($projectId, Event $eventContract)
-    {
-        $events = $eventContract->getEventsByProjectId($projectId);
-
-        if (! request()->ajax() || $events->isEmpty()) {
-            return response()->json(['html' => '']);
-        }
-
-        $returnHTML = view('frontend.events.board', ['events' => $events])->render();
-
-        return response()->json(['html' => $returnHTML]);
-    }
-
-    /**
      * @param $eventId
      * @param \App\Repositories\Interfaces\Event $eventContract
      * @return \Illuminate\Http\JsonResponse

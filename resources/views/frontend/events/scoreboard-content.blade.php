@@ -5,16 +5,20 @@
 <table class="table table-striped">
     <thead>
     <tr>
+        <th>#</th>
         <th scope="col">Team</th>
         <th scope="col">Transcriptions</th>
     </tr>
     </thead>
     <tbody id="table-rows">
+    @php($i = 1)
     @foreach($event->teams as $team)
         <tr>
+            <td>{{ $i }}</td>
             <td>{{ $team->title }}</td>
             <td>{{ $team->transcriptions_count }}</td>
         </tr>
+        @php($i++)
     @endforeach
     </tbody>
 </table>
