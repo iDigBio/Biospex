@@ -136,15 +136,5 @@ class HomeController extends Controller
         }
 
         return view('frontend.events.scoreboard-content', ['event' => $event]);
-
-        //return response()->json(['html' => $returnHTML]);
-
-        /* format date for date countdown
-        $timestamp = '2018-09-13 16:34:00';
-        $date = Carbon::createFromFormat('Y-m-d H:i:s', $timestamp, 'America/New_York');
-        $date->setTimezone('UTC');
-        echo $date .PHP_EOL;
-         */
-
     }
 }
