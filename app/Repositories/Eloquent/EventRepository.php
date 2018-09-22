@@ -181,7 +181,7 @@ class EventRepository extends EloquentRepository implements Event
     {
         $results = $this->model->withCount('transcriptions')->with([
                 'teams' => function ($q) {
-                    $q->withCount('transcriptions');
+                    $q->withCount('transcriptions')->orderBy('transcriptions_count', 'desc');
                 },
             ])->whereHas('teams')->where('project_id', $projectId)->get();
 

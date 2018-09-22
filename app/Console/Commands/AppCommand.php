@@ -38,17 +38,8 @@ class AppCommand extends Command
     /**
      * Execute the job.
      */
-    public function handle(Event $eventContract)
+    public function handle()
     {
-
-        $events = $eventContract->getEventsByProjectId(13);
-        $data = $events->mapWithKeys(function($event) {
-            $event->teams->sortBy('transcription_count');
-            dd($event->teams);
-            return [$event->id => view('frontend.events.scoreboard-content', ['event' => $event])->render()];
-        });
-
-
         /*
         EventTranscription::create($this->create());
         EventTranscription::create($this->create());
