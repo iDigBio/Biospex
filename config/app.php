@@ -171,7 +171,6 @@ return [
         Felixkiss\UniqueWithValidator\ServiceProvider::class,
         Jenssegers\Mongodb\MongodbServiceProvider::class,
         Msurguy\Honeypot\HoneypotServiceProvider::class,
-        Appstract\Opcache\OpcacheServiceProvider::class,
         Spiritix\LadaCache\LadaCacheServiceProvider::class,
 
         /*

@@ -66,13 +66,6 @@ class RouteServiceProvider extends ServiceProvider
 
                 $router->namespace('Auth')->group(base_path('routes/web/appauth/auth.php'));
                 $router->namespace('ApiAuth')->prefix('api')->group(base_path('routes/web/apiauth/auth.php'));
-
-                $router->prefix('admin')
-                    ->middleware(['auth', 'admin'])
-                    ->namespace('Backend')
-                    ->group(function ($router) {
-                        $this->require_files('routes/admin', $router);
-                    });
             });
     }
 
