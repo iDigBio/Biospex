@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Config;
 use Codesleeve\Stapler\ORM\EloquentTrait;
 use Codesleeve\Stapler\ORM\StaplerableInterface;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
@@ -60,13 +59,16 @@ class ProjectResource extends Model implements StaplerableInterface
         return $this->belongsTo(Project::class, 'project_id');
     }
 
-    public function getDirty()
+    /**
+     * Override the getAttributes in Eloquent trait due to error when updating
+     * @see https://github.com/CodeSleeve/laravel-stapler/issues/64
+     * Get all of the current attributes on the model.
+     *
+     * @return array
+     */
+    public function getAttributes()
     {
-        $dirty = parent::getDirty();
-
-        return array_filter($dirty, function ($var) {
-            return !($var instanceof \Codesleeve\Stapler\Attachment);
-        });
+        return parent::getAttributes();
     }
 
     /**
