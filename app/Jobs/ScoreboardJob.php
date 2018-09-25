@@ -40,7 +40,6 @@ class ScoreboardJob implements ShouldQueue
     {
         $events = $eventContract->getEventsByProjectId($this->projectId);
         $data = $events->mapWithKeys(function($event) {
-            $event->teams->sortBy('transcription_count');
             return [$event->id => view('frontend.events.scoreboard-content', ['event' => $event])->render()];
         });
 

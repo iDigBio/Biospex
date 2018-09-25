@@ -40,8 +40,8 @@ class PusherTranscriptionsJob extends Job implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param PusherTranscriptionService $service
-     * @return void
+     * @param \App\Services\Model\PusherTranscriptionService $service
+     * @throws \Exception
      */
     public function handle(PusherTranscriptionService $service)
     {

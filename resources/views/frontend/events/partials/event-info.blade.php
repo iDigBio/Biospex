@@ -5,10 +5,10 @@
             <p>{{ $event->description }}</p>
             <p>@lang('pages.project'): {{ $event->project->title }}</p>
             @lang('pages.start_date')
-            : {{ $event->present()->start_date_timezone }} {{ str_replace('_', ' ', $event->timezone) }}
+            : {{ $event->present()->start_date_to_string }} {{ str_replace('_', ' ', $event->timezone) }}
             <br/>
             @lang('pages.end_date')
-            : {{ $event->present()->end_date_timezone }} {{ str_replace('_', ' ', $event->timezone) }}
+            : {{ $event->present()->end_date_to_string }} {{ str_replace('_', ' ', $event->timezone) }}
             <br/>
         </div>
         <div class="col-md-6">

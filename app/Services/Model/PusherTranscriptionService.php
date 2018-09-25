@@ -3,21 +3,14 @@
 namespace App\Services\Model;
 
 use App\Facades\DateHelper;
-use App\Jobs\EventBoardJob;
-use App\Repositories\Interfaces\Event;
-use App\Repositories\Interfaces\EventTranscription;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\PusherTranscription;
-use App\Services\Api\NfnApi;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 use Ramsey\Uuid\Uuid;
 
 class PusherTranscriptionService
 {
-
     /**
      * @var PusherTranscription
      */
@@ -34,19 +27,9 @@ class PusherTranscriptionService
     private $panoptesTranscriptionContract;
 
     /**
-     * @var NfnApi
+     * @var \App\Services\Model\EventTranscriptionService
      */
-    private $nfnApi;
-
-    /**
-     * @var \App\Repositories\Interfaces\Event
-     */
-    private $eventContract;
-
-    /**
-     * @var \App\Repositories\Interfaces\EventTranscription
-     */
-    private $eventTranscriptionContract;
+    private $eventTranscriptionService;
 
     /**
      * ExpeditionService constructor.
@@ -54,25 +37,18 @@ class PusherTranscriptionService
      * @param PusherTranscription $pusherTranscriptionContract
      * @param Expedition $expeditionContract
      * @param PanoptesTranscription $panoptesTranscriptionContract
-     * @param NfnApi $nfnApi
-     * @param \App\Repositories\Interfaces\Event $eventContract
-     * @param \App\Repositories\Interfaces\EventTranscription $eventTranscriptionContract
+     * @param \App\Services\Model\EventTranscriptionService $eventTranscriptionService
      */
     public function __construct(
         PusherTranscription $pusherTranscriptionContract,
         Expedition $expeditionContract,
         PanoptesTranscription $panoptesTranscriptionContract,
-        NfnApi $nfnApi,
-        Event $eventContract,
-        EventTranscription $eventTranscriptionContract
-    )
-    {
+        EventTranscriptionService $eventTranscriptionService
+    ) {
         $this->pusherTranscriptionContract = $pusherTranscriptionContract;
         $this->expeditionContract = $expeditionContract;
         $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
-        $this->nfnApi = $nfnApi;
-        $this->eventContract = $eventContract;
-        $this->eventTranscriptionContract = $eventTranscriptionContract;
+        $this->eventTranscriptionService = $eventTranscriptionService;
     }
 
     /**
@@ -112,18 +88,20 @@ class PusherTranscriptionService
      * Process classification data from Pusher.
      *
      * @param $data
+     * @throws \Exception
      */
     public function processDataFromPusher($data)
     {
-        $subject = $this->getNfnSubject($data->subject_ids[0]);
+        $subject = $this->eventTranscriptionService->getNfnSubject($data->subject_ids[0]);
 
         $expedition = $this->getExpeditionBySubject($subject);
 
-        if ($expedition === null){
+        if ($expedition === null) {
             return;
         }
 
-        $data->user_name = $data->user_id !== null ? $this->getNfnUser($data->user_id) : null;
+        $data->user_name = $data->user_id !== null ?
+            $this->eventTranscriptionService->getNfnUser($data->user_id) : null;
 
         $this->createDashboardFromPusher($data, $subject, $expedition);
 
@@ -131,7 +109,7 @@ class PusherTranscriptionService
             return;
         }
 
-        $this->updateOrCreateEventTranscription($data, $expedition->project_id);
+        $this->eventTranscriptionService->updateOrCreateEventTranscription($data, $expedition->project_id);
     }
 
     /**
@@ -142,54 +120,11 @@ class PusherTranscriptionService
      */
     public function getExpeditionBySubject($subject)
     {
-        if (empty($subject['metadata']['#expeditionId']))
-        {
+        if (empty($subject['metadata']['#expeditionId'])) {
             return null;
         }
 
-        return $this->expeditionContract->find($subject['metadata']['#expeditionId']);
-    }
-
-    /**
-     * Get nfn subject.
-     *
-     * @param $subjectId
-     * @return null
-     */
-    public function getNfnSubject($subjectId)
-    {
-        $result = Cache::remember('subject-' . $subjectId, 60, function () use ($subjectId) {
-            $this->nfnApi->setProvider();
-            $this->nfnApi->checkAccessToken('nfnToken');
-            $uri = $this->nfnApi->getSubjectUri($subjectId);
-            $request = $this->nfnApi->buildAuthorizedRequest('GET', $uri);
-            $results = $this->nfnApi->sendAuthorizedRequest($request);
-
-            return isset($results['subjects'][0]) ? $results['subjects'][0] : null;
-        });
-
-        return $result;
-    }
-
-    /**
-     * Get nfn user.
-     *
-     * @param $userId
-     * @return mixed
-     */
-    public function getNfnUser($userId)
-    {
-        $result = Cache::remember('user-' . $userId, 60, function () use ($userId) {
-            $this->nfnApi->setProvider();
-            $this->nfnApi->checkAccessToken('nfnToken');
-            $uri = $this->nfnApi->getUserUri($userId);
-            $request = $this->nfnApi->buildAuthorizedRequest('GET', $uri);
-            $results = $this->nfnApi->sendAuthorizedRequest($request);
-
-            return isset($results['users'][0]) ? $results['users'][0] : null;
-        });
-
-        return $result['login'];
+        return $this->getExpedition($subject['metadata']['#expeditionId']);
     }
 
     /**
@@ -201,6 +136,8 @@ class PusherTranscriptionService
      *
      * This is built during the posted data from Pusher
      * $this->buildItem($data, $workflow, $subject, $expedition);
+     *
+     * @throws \Exception
      *
      */
     private function createDashboardFromPusher($data, $subject, $expedition)
@@ -217,7 +154,7 @@ class PusherTranscriptionService
             'timestamp'            => DateHelper::newMongoDbDate(),
             'subject'              => [
                 'link'         => isset($subject['metadata']['references']) ? $subject['metadata']['references'] : '',
-                'thumbnailUri' => $thumbnailUri
+                'thumbnailUri' => $thumbnailUri,
             ],
             'contributor'          => [
                 'decimalLatitude'  => $data->geo->latitude,
@@ -229,8 +166,8 @@ class PusherTranscriptionService
                     'province'     => '',
                     'county'       => '',
                     'municipality' => $data->geo->city_name,
-                    'locality'     => ''
-                ]
+                    'locality'     => '',
+                ],
             ],
             'transcriptionContent' => [
                 'lat'          => '',
@@ -244,7 +181,7 @@ class PusherTranscriptionService
                 'collector'    => '',
                 'taxon'        => isset($subject['metadata']['scientificName']) ? $subject['metadata']['scientificName'] : '',
             ],
-            'discretionaryState'   => 'Transcribed'
+            'discretionaryState'   => 'Transcribed',
         ];
 
         $this->pusherTranscriptionContract->create($item);
@@ -300,10 +237,11 @@ class PusherTranscriptionService
     }
 
     /**
-     * Process transcripts.
+     * Process transcripts
      *
      * @param $transcription
      * @param $expedition
+     * @throws \Exception
      */
     public function processTranscripts($transcription, $expedition)
     {
@@ -317,12 +255,11 @@ class PusherTranscriptionService
      * @param $transcription
      * @param $expedition
      * @param null $classification
+     * @throws \Exception
      */
     private function buildItem($transcription, $expedition, $classification = null)
     {
-        $classification === null ?
-            $this->createClassification($transcription, $expedition) :
-            $this->updateClassification($transcription, $classification);
+        $classification === null ? $this->createClassification($transcription, $expedition) : $this->updateClassification($transcription, $classification);
     }
 
     /**
@@ -330,6 +267,7 @@ class PusherTranscriptionService
      *
      * @param $transcription
      * @param $expedition
+     * @throws \Exception
      */
     private function createClassification($transcription, $expedition)
     {
@@ -345,7 +283,7 @@ class PusherTranscriptionService
             'timestamp'            => $transcription->classification_finished_at,
             'subject'              => [
                 'link'         => $transcription->subject_references,
-                'thumbnailUri' => $thumbnailUri
+                'thumbnailUri' => $thumbnailUri,
             ],
             'contributor'          => [
                 'decimalLatitude'  => '',
@@ -357,8 +295,8 @@ class PusherTranscriptionService
                     'province'     => '',
                     'county'       => '',
                     'municipality' => '',
-                    'locality'     => ''
-                ]
+                    'locality'     => '',
+                ],
             ],
             'transcriptionContent' => [
                 'lat'          => '',
@@ -372,7 +310,7 @@ class PusherTranscriptionService
                 'collector'    => $transcription->Collected_By,
                 'taxon'        => $transcription->Scientific_Name,
             ],
-            'discretionaryState'   => 'Transcribed'
+            'discretionaryState'   => 'Transcribed',
         ];
 
         $this->pusherTranscriptionContract->create($item);
@@ -390,7 +328,7 @@ class PusherTranscriptionService
 
         $subject = [
             'link'         => ! empty ($transcription->subject_references) ? $transcription->subject_references : $classification->subject['link'],
-            'thumbnailUri' => ! empty ($thumbnailUri) ? $thumbnailUri : $classification->subject['thumbnailUri']
+            'thumbnailUri' => ! empty ($thumbnailUri) ? $thumbnailUri : $classification->subject['thumbnailUri'],
         ];
 
         $transcriptionContent = [
@@ -399,16 +337,15 @@ class PusherTranscriptionService
             'county'    => ! empty($transcription->County) ? $transcription->County : $classification->transcriptionContent['county'],
             'locality'  => ! empty($transcription->Location) ? $transcription->Location : '',
             'collector' => ! empty($transcription->CollectedBy) ? $transcription->CollectedBy : '',
-            'taxon'     => ! empty($transcription->ScientificName) ? $transcription->ScientificName : $classification->taxon
+            'taxon'     => ! empty($transcription->ScientificName) ? $transcription->ScientificName : $classification->taxon,
         ];
-
 
         $attributes = [
             'transcription_id'     => $transcription->_id,
             'timestamp'            => $transcription->classification_finished_at,
             'subject'              => array_merge($classification->subject, $subject),
             'contributor'          => array_merge($classification->contributor, ['transcriber' => $transcription->user_name]),
-            'transcriptionContent' => array_merge($classification->transcriptionContent, $transcriptionContent)
+            'transcriptionContent' => array_merge($classification->transcriptionContent, $transcriptionContent),
         ];
 
         $this->pusherTranscriptionContract->update($attributes, $classification->_id);
@@ -422,41 +359,6 @@ class PusherTranscriptionService
      */
     private function setThumbnailUri($transcription)
     {
-        return ( ! isset($transcription->subject_imageURL) || empty($transcription->subject_imageURL)) ?
-            $transcription->subject->accessURI : $transcription->subject_imageURL;
-    }
-
-    /**
-     * Update or create event transcription for user.
-     *
-     * @param $data
-     * @param $projectId
-     */
-    public function updateOrCreateEventTranscription($data, $projectId)
-    {
-        $events = $this->eventContract->checkEventExistsForClassificationUser($projectId, $data->user_name);
-
-        $filtered = $events->filter(function ($event) {
-            $start_date = $event->start_date->setTimezone($event->timezone);
-            $end_date = $event->end_date->setTimezone($event->timezone);
-
-            return Carbon::now($event->timezone)->between($start_date, $end_date);
-        })->each(function ($event) use ($data) {
-            foreach ($event->teams as $team) {
-                $values = [
-                    'classification_id' => $data->classification_id,
-                    'event_id'          => $event->id,
-                    'team_id'          => $team->id,
-                    'user_id'           => $team->users->first()->id,
-                ];
-
-                $this->eventTranscriptionContract->create($values);
-            }
-        });
-
-        if ($filtered->isNotEmpty()) {
-            // EventBoardJob::dispatch($projectId);
-            // ScoreBoardJob::dispatch($projectId);
-        };
+        return (! isset($transcription->subject_imageURL) || empty($transcription->subject_imageURL)) ? $transcription->subject->accessURI : $transcription->subject_imageURL;
     }
 }

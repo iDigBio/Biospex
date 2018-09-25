@@ -8,13 +8,23 @@ use DateTimeZone;
 class EventPresenter extends Presenter
 {
     /**
-     * Returns event date as string.
+     * Returns start date according to timezone.
      *
-     * @return string
+     * @return mixed
      */
     public function startDateTimezone()
     {
-        return $this->model->start_date->setTimezone($this->model->timezone)->toDayDateTimeString();
+        return $this->model->start_date->setTimezone($this->model->timezone);
+    }
+
+    /**
+     * Return start date formatted for calender picker.
+     *
+     * @return mixed
+     */
+    public function startDateCalendar()
+    {
+        return $this->startDateTimezone()->format('Y-m-d H:i');
     }
 
     /**
@@ -22,19 +32,30 @@ class EventPresenter extends Presenter
      *
      * @return string
      */
-    public function startDateUtcTimezone()
+    public function startDateToString()
     {
-        return $this->model->start_date->setTimezone('UTC')->toDayDateTimeString();
+        return $this->startDateTimezone()->toDayDateTimeString();
     }
 
     /**
-     * Returns event date as string.
+     * Returns end date according to timezone.
      *
-     * @return string
+     * @return mixed
      */
     public function endDateTimezone()
     {
-        return $this->model->end_date->setTimezone($this->model->timezone)->toDayDateTimeString();
+        return $this->model->end_date->setTimezone($this->model->timezone);
+    }
+
+
+    /**
+     * Returns event date as string.
+     *
+     * @return string
+     */
+    public function endDateCalendar()
+    {
+        return $this->endDateTimezone()->format('Y-m-d H:i');
     }
 
     /**
@@ -42,9 +63,9 @@ class EventPresenter extends Presenter
      *
      * @return string
      */
-    public function endDateUtcTimezone()
+    public function endDateToString()
     {
-        return $this->model->end_date->setTimezone('UTC')->toDayDateTimeString();
+        return $this->endDateTimezone()->toDayDateTimeString();
     }
 
     /**
@@ -58,13 +79,14 @@ class EventPresenter extends Presenter
      */
     public function scoreboardDate()
     {
-        $now = Carbon::now(new DateTimeZone('UTC'));
+        $now = Carbon::now(new \DateTimeZone('UTC'));
         $start_date = $this->model->start_date->setTimezone('UTC');
-        $end_date = $this->model->end_date->setTimezone('UTC');
+        $end_date = $this->model->end_date->setTimeZone('UTC');
+
         if ($now->gt($end_date)) {
             return 'Completed';
         }
 
-        return $end_date->gt($start_date) ? $end_date->toDayDateTimeString() : $start_date->toDayDateTimeString();
+        return $end_date->gt($start_date) ? $end_date->toIso8601ZuluString() : $start_date->toIso8601ZuluString();
     }
 }

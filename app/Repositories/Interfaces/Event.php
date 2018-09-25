@@ -39,10 +39,10 @@ interface Event extends RepositoryInterface
 
     /**
      * @param $projectId
-     * @param $user
+     * @param $userId
      * @return mixed
      */
-    public function checkEventExistsForClassificationUser($projectId, $user);
+    public function checkEventExistsForClassificationUser($projectId, $userId);
 
     /**
      * @param $projectId

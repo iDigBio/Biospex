@@ -10,7 +10,6 @@ use App\Repositories\Interfaces\User;
 use File;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Repositories\Interfaces\Download;
-use Queue;
 
 class DownloadsController extends Controller
 {

@@ -108,7 +108,7 @@ class Event extends Model
      */
     public function setStartDateAttribute($value)
     {
-        $this->attributes['start_date'] = $value->setTimezone(new \DateTimeZone(config('app.timezone')));
+        $this->attributes['start_date'] = $value->setTimezone(new \DateTimeZone('UTC'));
     }
 
     /**
@@ -118,6 +118,6 @@ class Event extends Model
      */
     public function setEndDateAttribute($value)
     {
-        $this->attributes['end_date'] = $value->setTimezone(new \DateTimeZone(config('app.timezone')));
+        $this->attributes['end_date'] = $value->setTimezone(new \DateTimeZone('UTC'));
     }
 }
