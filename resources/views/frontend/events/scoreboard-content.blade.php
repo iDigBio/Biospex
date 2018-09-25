@@ -1,5 +1,7 @@
 <div class="text-center" style="background-color:#e83f29;padding-top:20px;">
-    <h2 class="text-white text modal-number" style="padding-bottom: 10px;">{{ $event->transcriptions_count }}<br>
+    <h3 class="text-white text modal-number">{{ $event->title }}</h3>
+    <h2 class="text-white text modal-number" style="padding-bottom: 10px;">
+        {{ $event->transcriptions_count }}<br>
         <small style="color: #fff;">Transcriptions</small><br></h2>
 </div>
 <table class="table table-striped">

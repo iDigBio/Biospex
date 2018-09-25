@@ -69,12 +69,12 @@
                         <div class="input-group col-md-3">
                             {{ ($errors->has('start_date') ? $errors->first('start_date') : '') }}
                             {!! Form::label('start_date', trans('pages.start_date'), ['class' => 'control-label']) !!}
-                            {!! Form::text('start_date', $event->start_date->setTimezone($event->timezone)->format('Y-m-d H:i'), ['class' => 'form-control datetimepicker', 'placeholder' => trans('pages.event_timezone')]) !!}
+                            {!! Form::text('start_date', $event->present()->start_date_calendar, ['class' => 'form-control datetimepicker', 'placeholder' => trans('pages.event_timezone')]) !!}
                         </div>
                         <div class="input-group col-md-3">
                             {{ ($errors->has('end_date') ? $errors->first('end_date') : '') }}
                             {!! Form::label('end_date', trans('pages.end_date'), ['class' => 'control-label']) !!}
-                            {!! Form::text('end_date', $event->end_date->setTimezone($event->timezone)->format('Y-m-d H:i'), ['class' => 'form-control datetimepicker', 'placeholder' => trans('pages.event_timezone')]) !!}
+                            {!! Form::text('end_date', $event->present()->end_date_calendar, ['class' => 'form-control datetimepicker', 'placeholder' => trans('pages.event_timezone')]) !!}
                         </div>
                         <div class="input-group col-md-4">
                             {!! Form::label('timezone', trans('pages.timezone'), ['class' => 'control-label']) !!}

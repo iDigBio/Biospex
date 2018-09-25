@@ -2,10 +2,10 @@
     <div class="panel-heading">
         <h4>{{ $event->title }}</h4>
         @lang('pages.start_date')
-        : {{ $event->start_date->setTimezone($event->timezone)->toDayDateTimeString() }} {{ str_replace('_', ' ', $event->timezone) }}
+        : {{ $event->present()->start_date_to_string }} {{ str_replace('_', ' ', $event->timezone) }}
         <br/>
         @lang('pages.end_date')
-        : {{ $event->end_date->setTimezone($event->timezone)->toDayDateTimeString() }} {{ str_replace('_', ' ', $event->timezone) }}
+        : {{ $event->present()->end_date_to_string }} {{ str_replace('_', ' ', $event->timezone) }}
         <br/>
     </div>
     <div class="panel-body text-center">
