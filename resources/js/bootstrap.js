@@ -21,6 +21,8 @@ try {
     require("free-jqgrid/dist/plugins/ui.multiselect");
     require("free-jqgrid/js/jquery.jqgrid.min");
 
+    require("aos/dist/aos");
+
     require("codemirror/lib/codemirror");
     require("summernote/dist/summernote");
 
@@ -32,6 +34,7 @@ try {
     require("amcharts3/amcharts/plugins/responsive/responsive");
 
     require("socket.io-client/dist/socket.io");
+    require("./smooth-scroll");
     require("./amchart");
     require("./main");
     require("./grid");

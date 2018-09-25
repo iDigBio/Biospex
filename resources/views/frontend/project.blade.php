@@ -121,7 +121,8 @@
                 </dl>
 
                 <div id="event-boards">
-                    @include('frontend.events.board')
+                    <h2>{{ trans('pages.events') }}</h2>
+                    @each('frontend.events.partials.projectevent-loop', $events, 'event')
                 </div>
 
             </div>

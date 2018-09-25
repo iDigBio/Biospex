@@ -38,6 +38,8 @@ mix.webpackConfig({
         "free-jqgrid/dist/plugins/ui.multiselect",
         "free-jqgrid/js/jquery.jqgrid.min",
 
+        "aos/dist/aos",
+
         "bootstrap-notify/bootstrap-notify",
 
         "codemirror/lib/codemirror",

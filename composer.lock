@@ -4,128 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bdb79af2f7d7eb31d44ba7c7760baa2c",
+    "content-hash": "02162a93e8ae75ebee69beebf9373deb",
     "packages": [
-        {
-            "name": "appstract/laravel-opcache",
-            "version": "2.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/appstract/laravel-opcache.git",
-                "reference": "ef41a0f5e6d717317d5434b39add6e17152b620b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/appstract/laravel-opcache/zipball/ef41a0f5e6d717317d5434b39add6e17152b620b",
-                "reference": "ef41a0f5e6d717317d5434b39add6e17152b620b",
-                "shasum": ""
-            },
-            "require": {
-                "appstract/lush-http": "^0.5",
-                "illuminate/console": ">=5.5",
-                "illuminate/filesystem": ">=5.5",
-                "illuminate/routing": ">=5.5",
-                "illuminate/support": ">=5.5",
-                "php": ">=5.6"
-            },
-            "require-dev": {
-                "orchestra/testbench": "^3.3",
-                "phpunit/phpunit": "5.*"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Appstract\\Opcache\\OpcacheServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Appstract\\Opcache\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Olav van Schie",
-                    "email": "hello@appstract.team",
-                    "homepage": "https://appstract.team",
-                    "role": "Developer"
-                }
-            ],
-            "description": "OPcache helper for Laravel.",
-            "homepage": "https://github.com/appstract/laravel-opcache",
-            "keywords": [
-                "Opcache",
-                "appstract",
-                "laravel",
-                "php"
-            ],
-            "time": "2018-07-19T12:41:58+00:00"
-        },
-        {
-            "name": "appstract/lush-http",
-            "version": "0.5.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/appstract/lush-http.git",
-                "reference": "771c501e1ea6a16b6c33917f595a04e5e37ad9b7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/appstract/lush-http/zipball/771c501e1ea6a16b6c33917f595a04e5e37ad9b7",
-                "reference": "771c501e1ea6a16b6c33917f595a04e5e37ad9b7",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/support": ">=5.4",
-                "php": ">=5.6"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^5.7"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "Lush": "Appstract\\LushHttp\\LushFacade"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Appstract\\LushHttp\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Olav van Schie",
-                    "email": "hello@appstract.team",
-                    "homepage": "https://appstract.team",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Smart Http Client for PHP.",
-            "homepage": "https://github.com/appstract/lush-http",
-            "keywords": [
-                "appstract",
-                "client",
-                "curl",
-                "http",
-                "lush",
-                "lush-http",
-                "php"
-            ],
-            "time": "2018-05-28T08:35:31+00:00"
-        },
         {
             "name": "cocur/slugify",
             "version": "v3.1",
@@ -1905,16 +1785,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.7.4",
+            "version": "v5.7.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "f6e8f6562120e0063313e81716666cfcd362569b"
+                "reference": "ddb87a87471b452456fbbe1365e1b9ae55483515"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/f6e8f6562120e0063313e81716666cfcd362569b",
-                "reference": "f6e8f6562120e0063313e81716666cfcd362569b",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/ddb87a87471b452456fbbe1365e1b9ae55483515",
+                "reference": "ddb87a87471b452456fbbe1365e1b9ae55483515",
                 "shasum": ""
             },
             "require": {
@@ -2042,7 +1922,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2018-09-18T13:34:05+00:00"
+            "time": "2018-09-20T14:03:45+00:00"
         },
         {
             "name": "laravel/passport",
@@ -2983,16 +2863,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "1.33.0",
+            "version": "1.34.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "55667c1007a99e82030874b1bb14d24d07108413"
+                "reference": "1dbd3cb01c5645f3e7deda7aa46ef780d95fcc33"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/55667c1007a99e82030874b1bb14d24d07108413",
-                "reference": "55667c1007a99e82030874b1bb14d24d07108413",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/1dbd3cb01c5645f3e7deda7aa46ef780d95fcc33",
+                "reference": "1dbd3cb01c5645f3e7deda7aa46ef780d95fcc33",
                 "shasum": ""
             },
             "require": {
@@ -3034,7 +2914,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2018-08-07T08:39:47+00:00"
+            "time": "2018-09-20T19:36:25+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -3138,16 +3018,16 @@
         },
         {
             "name": "pda/pheanstalk",
-            "version": "v3.2.0",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pda/pheanstalk.git",
-                "reference": "a48ccdcf4bda5a37d1a3331b132b0d8e25b67d0d"
+                "reference": "57b6e76f1b06ca798e739a8dee92c2dac04fd170"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pda/pheanstalk/zipball/a48ccdcf4bda5a37d1a3331b132b0d8e25b67d0d",
-                "reference": "a48ccdcf4bda5a37d1a3331b132b0d8e25b67d0d",
+                "url": "https://api.github.com/repos/pda/pheanstalk/zipball/57b6e76f1b06ca798e739a8dee92c2dac04fd170",
+                "reference": "57b6e76f1b06ca798e739a8dee92c2dac04fd170",
                 "shasum": ""
             },
             "require": {
@@ -3184,7 +3064,7 @@
             "keywords": [
                 "beanstalkd"
             ],
-            "time": "2018-08-30T14:10:00+00:00"
+            "time": "2018-09-19T12:16:28+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -3473,53 +3353,6 @@
                 "redis"
             ],
             "time": "2016-06-16T16:22:20+00:00"
-        },
-        {
-            "name": "propaganistas/email-obfuscator",
-            "version": "1.0.7",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Propaganistas/Email-Obfuscator.git",
-                "reference": "76160733eefb7a73f7277fea4b2d093922e551b5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Propaganistas/Email-Obfuscator/zipball/76160733eefb7a73f7277fea4b2d093922e551b5",
-                "reference": "76160733eefb7a73f7277fea4b2d093922e551b5",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Propaganistas\\EmailObfuscator\\": "src/"
-                },
-                "files": [
-                    "src/Obfuscator.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Propaganistas",
-                    "email": "Propaganistas@users.noreply.github.com"
-                }
-            ],
-            "description": "Provides an email obfuscator for use in various platforms.",
-            "keywords": [
-                "antispam",
-                "email",
-                "laravel",
-                "obfuscation",
-                "spam",
-                "twig"
-            ],
-            "time": "2016-12-22T16:34:03+00:00"
         },
         {
             "name": "psr/cache",

@@ -206,7 +206,7 @@ class EventRepository extends EloquentRepository implements Event
                     'transcriptions' => function ($q) use ($eventId) {
                         $q->where('event_id', $eventId);
                     },
-                ]);
+                ])->orderBy('transcriptions_count', 'desc');
             },
         ])->find($eventId, $columns);
 
