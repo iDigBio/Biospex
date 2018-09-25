@@ -2,9 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Events\ScoreboardEvent;
-use App\Models\EventTranscription;
-use App\Repositories\Interfaces\Event;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -20,19 +17,12 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Repositories\Interfaces\Event
-     */
-    private $eventContract;
-
-    /**
      * Create a new job instance.
      *
      */
-    public function __construct(
-        \App\Repositories\Interfaces\Event $eventContract)
+    public function __construct()
     {
         parent::__construct();
-        $this->eventContract = $eventContract;
     }
 
     /**
@@ -40,6 +30,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
+
         /*
         EventTranscription::create($this->create());
         EventTranscription::create($this->create());

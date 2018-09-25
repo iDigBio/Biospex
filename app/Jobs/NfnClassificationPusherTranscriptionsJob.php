@@ -42,10 +42,10 @@ class NfnClassificationPusherTranscriptionsJob extends Job implements ShouldQueu
     /**
      * Handle job.
      *
-     * @param PusherTranscriptionService $dashboardService
+     * @param PusherTranscriptionService $pusherTranscriptionService
      */
     public function handle(
-        PusherTranscriptionService $dashboardService
+        PusherTranscriptionService $pusherTranscriptionService
     )
     {
 
@@ -58,17 +58,17 @@ class NfnClassificationPusherTranscriptionsJob extends Job implements ShouldQueu
 
         try
         {
-            collect($this->expeditionIds)->each(function($expeditionId) use ($dashboardService){
-                $expedition = $dashboardService->getExpedition($expeditionId);
+            collect($this->expeditionIds)->each(function($expeditionId) use ($pusherTranscriptionService){
+                $expedition = $pusherTranscriptionService->getExpedition($expeditionId);
 
                 $timestamp = DateHelper::mongoDbNowSubDateInterval('P2D');
 
-                $transcriptions = $dashboardService->getTranscriptions($expedition->id, $timestamp);
+                $transcriptions = $pusherTranscriptionService->getTranscriptions($expedition->id, $timestamp);
 
-                $transcriptions->filter(function($transcription) use ($dashboardService) {
-                    return $dashboardService->checkClassification($transcription);
-                })->each(function ($transcription) use ($dashboardService, $expedition) {
-                    $dashboardService->processTranscripts($transcription, $expedition);
+                $transcriptions->filter(function($transcription) use ($pusherTranscriptionService) {
+                    return $pusherTranscriptionService->checkClassification($transcription);
+                })->each(function ($transcription) use ($pusherTranscriptionService, $expedition) {
+                    $pusherTranscriptionService->processTranscripts($transcription, $expedition);
                 });
             });
         }
