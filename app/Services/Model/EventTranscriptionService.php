@@ -107,7 +107,7 @@ class EventTranscriptionService
     {
         $user = $this->eventUserContract->getUserByName($data->user_name);
 
-        $events = $this->eventContract->checkEventExistsForClassificationUser($projectId, $user->id);
+        $events = $this->eventContract->checkEventExistsForClassificationUser($projectId, $user);
 
         $events->filter(function ($event) {
             $start_date = $event->start_date->setTimezone($event->timezone);

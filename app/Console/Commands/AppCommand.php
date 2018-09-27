@@ -2,6 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Events\ScoreboardEvent;
+use App\Models\EventTranscription;
+use App\Repositories\Interfaces\Event;
+use App\Repositories\Interfaces\EventUser;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -17,12 +21,24 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \App\Repositories\Interfaces\EventUser
+     */
+    private $eventUser;
+
+    /**
+     * @var \App\Repositories\Interfaces\Event
+     */
+    private $eventContract;
+
+    /**
      * Create a new job instance.
      *
      */
-    public function __construct()
+    public function __construct(EventUser $eventUser, Event $eventContract)
     {
         parent::__construct();
+        $this->eventUser = $eventUser;
+        $this->eventContract = $eventContract;
     }
 
     /**
@@ -31,7 +47,9 @@ class AppCommand extends Command
     public function handle()
     {
 
-        /*
+        $user = $this->eventUser->getUserByName('zorrobis', ['id']);
+        dd($user->id);
+
         EventTranscription::create($this->create());
         EventTranscription::create($this->create());
 
@@ -44,7 +62,6 @@ class AppCommand extends Command
         });
 
         ScoreboardEvent::dispatch($projectId, $data->toArray());
-        */
     }
 
     public function create() {
