@@ -105,9 +105,13 @@ class EventTranscriptionService
      */
     public function updateOrCreateEventTranscription($data, $projectId)
     {
-        $user = $this->eventUserContract->getUserByName($data->user_name);
+        $user = $this->eventUserContract->getEventUserByName($data->user_name);
 
-        $events = $this->eventContract->checkEventExistsForClassificationUser($projectId, $user->id);
+        if ($user === null) {
+            return;
+        }
+
+        $events = $this->eventContract->checkEventExistsForClassificationUser($projectId, $user);
 
         $events->filter(function ($event) {
             $start_date = $event->start_date->setTimezone($event->timezone);
@@ -116,30 +120,14 @@ class EventTranscriptionService
             return Carbon::now($event->timezone)->between($start_date, $end_date) ? true : false;
         })->each(function ($event) use ($data, $user) {
             $event->teams->each(function ($team) use ($event, $data, $user) {
-
                 $classificationId = $data->classification_id;
                 $eventId = $event->id;
                 $teamId = $team->id;
                 $userId = $user->id;
 
-                $values = [
-                    'classification_id' => $classificationId,
-                    'event_id'          => $eventId,
-                    'team_id'           => $teamId,
-                    'user_id'           => $userId,
-                ];
+                $values = $this->createValues($classificationId, $eventId, $teamId, $userId);
 
-                $validator = Validator::make($values, [
-                    'classification_id' => Rule::unique('event_transcriptions')
-                        ->where(function ($query) use($classificationId, $eventId, $teamId, $userId) {
-                            return $query->where('classification_id', $classificationId)
-                                ->where('event_id', $eventId)
-                                ->where('team_id', $teamId)
-                                ->where('user_id', $userId);
-                        })
-                ]);
-
-                if ($validator->fails()) {
+                if ($this->validateClassification($values, $classificationId, $eventId, $teamId, $userId)) {
                     return;
                 }
 
@@ -150,5 +138,55 @@ class EventTranscriptionService
         if ($events->isNotEmpty()) {
             ScoreboardJob::dispatch($projectId);
         };
+    }
+
+    /**
+     * Create values to store in database.
+     *
+     * @param $classificationId
+     * @param $eventId
+     * @param $teamId
+     * @param $userId
+     * @return array
+     */
+    private function createValues($classificationId, $eventId, $teamId, $userId) {
+
+        $values = [
+            'classification_id' => $classificationId,
+            'event_id'          => $eventId,
+            'team_id'           => $teamId,
+            'user_id'           => $userId,
+        ];
+
+        return $values;
+    }
+
+    /**
+     * Validate classification.
+     *
+     * @param $values
+     * @param $classificationId
+     * @param $eventId
+     * @param $teamId
+     * @param $userId
+     * @return bool
+     */
+    private function validateClassification($values, $classificationId, $eventId, $teamId, $userId)
+    {
+        $validator = Validator::make($values, [
+            'classification_id' => Rule::unique('event_transcriptions')->where(function ($query) use (
+                $classificationId,
+                $eventId,
+                $teamId,
+                $userId
+            ) {
+                return $query->where('classification_id', $classificationId)
+                    ->where('event_id', $eventId)
+                    ->where('team_id', $teamId)
+                    ->where('user_id', $userId);
+            })
+        ]);
+
+        return $validator->fails();
     }
 }

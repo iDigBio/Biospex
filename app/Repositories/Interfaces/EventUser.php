@@ -7,8 +7,8 @@ use App\Repositories\RepositoryInterface;
 interface EventUser extends RepositoryInterface
 {
     /**
-     * @param $userName
+     * @param $name
      * @return mixed
      */
-    public function getUserByName($userName);
+    public function getEventUserByName($name);
 }

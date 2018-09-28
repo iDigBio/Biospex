@@ -151,20 +151,19 @@ class EventRepository extends EloquentRepository implements Event
      * Check if an event exists with team and user.
      *
      * @param $projectId
-     * @param $userId
-     * @return \Illuminate\Database\Eloquent\Model|mixed|null|object|static
+     * @param $user
+     * @return \Illuminate\Database\Eloquent\Model
      * @throws \Exception
      */
-    public function checkEventExistsForClassificationUser($projectId, $userId)
+    public function checkEventExistsForClassificationUser($projectId, $user)
     {
-        $events = $this->model->with(['teams' => function($q) use($userId) {
-            $q->whereHas('users', function($query) use ($userId){
-                $query->where('user_id', $userId);
+        $events = $this->model->with(['teams' => function($q) use($user) {
+            $q->whereHas('users', function($query) use ($user){
+                $query->where('user_id', $user->id);
             });
-        }])->whereHas('teams', function($q) use ($userId, $projectId) {
-            //$q->where('project_id', $projectId);
-            $q->whereHas('users', function($query) use ($userId){
-                $query->where('user_id', $userId);
+        }])->whereHas('teams', function($q) use ($user, $projectId) {
+            $q->whereHas('users', function($query) use ($user){
+                $query->where('user_id', $user->id);
             });
         })->where('project_id', $projectId)->get();
 
