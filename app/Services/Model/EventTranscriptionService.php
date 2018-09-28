@@ -108,15 +108,10 @@ class EventTranscriptionService
         $user = $this->eventUserContract->getEventUserByName($data->user_name);
 
         if ($user === null) {
-            \Log::alert('EventUser null');
             return;
         }
 
-        \Log::alert('retrieved user from EventUser' . $user->id);
-
         $events = $this->eventContract->checkEventExistsForClassificationUser($projectId, $user);
-
-        \Log::alert('checked for events: ' . $events->count());
 
         $events->filter(function ($event) {
             $start_date = $event->start_date->setTimezone($event->timezone);
@@ -132,19 +127,15 @@ class EventTranscriptionService
 
                 $values = $this->createValues($classificationId, $eventId, $teamId, $userId);
 
-                if ($this->validateClassification($values,$team, $data, $event, $userId)) {
-                    \Log::alert('validation failed');
+                if ($this->validateClassification($values, $classificationId, $eventId, $teamId, $userId)) {
                     return;
                 }
-
-                \Log::alert('creating event transcription');
 
                 $this->eventTranscriptionContract->create($values);
             });
         });
 
         if ($events->isNotEmpty()) {
-            \Log::alert('sending to scoreboard');
             ScoreboardJob::dispatch($projectId);
         };
     }
