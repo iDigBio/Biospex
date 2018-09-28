@@ -47,9 +47,9 @@ class AppCommand extends Command
     public function handle()
     {
 
-        $user = $this->eventUser->getUserByName('zorrobis', ['id']);
-        dd($user->id);
-
+        $user = $this->eventUser->getEventUserByName('zorrobis');
+        dd($user);
+        /*
         EventTranscription::create($this->create());
         EventTranscription::create($this->create());
 
@@ -62,6 +62,7 @@ class AppCommand extends Command
         });
 
         ScoreboardEvent::dispatch($projectId, $data->toArray());
+        */
     }
 
     public function create() {

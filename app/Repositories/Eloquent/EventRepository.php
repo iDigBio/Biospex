@@ -152,7 +152,7 @@ class EventRepository extends EloquentRepository implements Event
      *
      * @param $projectId
      * @param $user
-     * @return \Illuminate\Database\Eloquent\Model|mixed|null|object|static
+     * @return \Illuminate\Database\Eloquent\Model
      * @throws \Exception
      */
     public function checkEventExistsForClassificationUser($projectId, $user)
