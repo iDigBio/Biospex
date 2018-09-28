@@ -51,6 +51,8 @@ class PusherTranscriptionsJob extends Job implements ShouldQueue
             return;
         }
 
+        \Log::alert(json_encode($this->data));
+
         $service->processDataFromPusher($this->data);
 
         $this->delete();

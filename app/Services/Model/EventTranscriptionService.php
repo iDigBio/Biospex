@@ -106,8 +106,11 @@ class EventTranscriptionService
     public function updateOrCreateEventTranscription($data, $projectId)
     {
         $user = $this->eventUserContract->getUserByName($data->user_name);
+        \Log::alert('retrieved user from EventUser' . $user->id);
 
         $events = $this->eventContract->checkEventExistsForClassificationUser($projectId, $user);
+
+        \Log::alert('checked for events: ' . $events->count());
 
         $events->filter(function ($event) {
             $start_date = $event->start_date->setTimezone($event->timezone);
@@ -140,14 +143,18 @@ class EventTranscriptionService
                 ]);
 
                 if ($validator->fails()) {
+                    \Log::alert('validation failed');
                     return;
                 }
+
+                \Log::alert('creating event transcription');
 
                 $this->eventTranscriptionContract->create($values);
             });
         });
 
         if ($events->isNotEmpty()) {
+            \Log::alert('sending to scoreboard');
             ScoreboardJob::dispatch($projectId);
         };
     }

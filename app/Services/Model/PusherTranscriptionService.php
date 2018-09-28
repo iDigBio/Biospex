@@ -92,20 +92,28 @@ class PusherTranscriptionService
      */
     public function processDataFromPusher($data)
     {
+        \Log::alert('processing');
         $subject = $this->eventTranscriptionService->getNfnSubject($data->subject_ids[0]);
-
+        \Log::alert('retrieved subject');
         $expedition = $this->getExpeditionBySubject($subject);
-
+        \Log::alert('retrieved expedition');
         if ($expedition === null) {
+            \Log::alert('expedition null');
             return;
         }
+        \Log::alert('expedition: ' . $expedition);
 
         $data->user_name = $data->user_id !== null ?
             $this->eventTranscriptionService->getNfnUser($data->user_id) : null;
 
+        \Log::alert('user name: ' . $data->user_name);
+
         $this->createDashboardFromPusher($data, $subject, $expedition);
 
+        \Log::alert('created dashboard');
+
         if ($data->user_name === null) {
+            \Log::alert('user name null');
             return;
         }
 
