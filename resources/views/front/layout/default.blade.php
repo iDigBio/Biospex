@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-@include('common.head')
+<head>
+    @include('common.head')
+    @yield('custom-style')
+</head>
 <body>
+@include('common.notices')
 @yield('header')
-
 <div class="container">
-@yield('content')
+    @yield('content')
 </div>
-@yield('footer')
+@include('common.footer')
 @include('common.script')
+@yield('custom-script')
 </body>
 </html>

@@ -30,6 +30,7 @@
     "jquery-validation": "^1.18.0",
     "laravel-mix": "^2.1.14",
     "popper.js": "^1.14.4",
+    "slick-carousel":"^1.8.1",
     "summernote": "^0.8.10",
     "tablesorter": "^2.31.0"
   },

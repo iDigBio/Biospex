@@ -50,9 +50,8 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        Route::domain(config('config.app_domain'))->namespace($this->namespace)->middleware('web')->group(function (
-                $router
-            ) {
+        Route::domain(config('config.app_domain'))
+            ->namespace($this->namespace)->middleware('web')->group(function ($router) {
 
                 $router->namespace('Frontend')->group(function ($router) {
                     $this->require_files('routes/frontend', $router);

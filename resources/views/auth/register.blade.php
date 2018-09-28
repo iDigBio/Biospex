@@ -57,10 +57,10 @@
                         <input type="text" name="invite" id="invite" class="form-control">
                         {{ ($errors->has('invite') ?  $errors->first('invite') : '') }}
                     </div>
-                    {!! Honeypot::generate('registeremail', 'registertime') !!}
+                    {!! Honeypot::generate('formuser', 'formtime') !!}
                     {!! Form::hidden('apiuser', 0) !!}
                     <div class="text-center">
-                        <button type="submit" class="btn btn-danger pl-4 pr-4">{{ __('SUBMIT') }}</button>
+                        <button type="submit" class="btn btn-primary pl-4 pr-4">{{ __('SUBMIT') }}</button>
                     </div>
                 </form>
                 <div class="mt-4 text-center">

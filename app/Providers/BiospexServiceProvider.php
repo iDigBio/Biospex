@@ -103,16 +103,18 @@ class BiospexServiceProvider extends ServiceProvider
     public function setViewComposers()
     {
         view()->composer(
-            'frontend.layouts.notices', 'App\Http\ViewComposers\NoticesComposer'
+            'common.notices', 'App\Http\ViewComposers\NoticesComposer'
         );
 
         view()->composer(
-            'frontend.layouts.partials.process-modal', 'App\Http\ViewComposers\PollComposer'
+            'common.process-modal', 'App\Http\ViewComposers\PollComposer'
         );
 
+        /*
         view()->composer(
             'frontend.layouts.navigation', 'App\Http\ViewComposers\AuthUserComposer'
         );
+        */
 
     }
 

@@ -41,11 +41,11 @@ return array (
       'numeric' => 'Minutes must be a number',
       'required' => 'You must specify suspension length in minutes',
     ),
-    'registeruser' =>
+    'formuser' =>
     array (
       'honeypot' => 'Form required to be submitted on time.',
     ),
-    'registertime' =>
+    'formtime' =>
     array (
       'honeytime' => 'Too much time has elapse. Please refresh form.',
     ),

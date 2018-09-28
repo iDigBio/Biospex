@@ -500,6 +500,7 @@ cards */
     margin-end: 0px;
     padding-start: 0px;
 }
+
 .card-project ul li {
     list-style: none;
     font-size: 13px;
@@ -712,3 +713,49 @@ h1.project-wide {
     -o-transform: translateY(-13px) rotate(90deg);
     transform: translateY(-13px) rotate(90deg);
 }
+
+
+
+/*
+circle div*/
+
+/*
+.circle-slider {
+    position: relative;
+    overflow: hidden;
+    width: 500px;
+    height: 500px;
+    padding: 35px;
+    padding-top: 130px;
+    background-color: #f8f9fa;
+    border: 2px solid #8cc640;
+    background-size: cover;
+    border-radius: 50%;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    display: block;
+}
+@media only screen and (max-width: 768px) {
+    .circle-slider {
+        position: relative;
+        overflow: hidden;
+        width: 400px;
+        height: 400px;
+        padding: 25px;
+    }
+}
+*/
+.circle-slider h3 {
+    color: #8cc640;
+    font-size: 23px;
+    text-transform: uppercase;
+}
+
+.circle-slider p {
+    font-size: 16px;
+    color: black;
+    text-align: center;
+}
+
+

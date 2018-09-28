@@ -5,6 +5,10 @@
     {{ __('Lead Public Digitization Expeditions') }}
 @stop
 
+@section('custom-style')
+    <link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet">
+@endsection
+
 {{-- Content --}}
 @section('header')
     <header class="header home">
@@ -16,8 +20,10 @@
         <div class="container text-center">
             <div class="row py-5">
                 <div class="col-12" data-aos="fade-right" data-aos-easing="ease-in" data-aos-duration="2000">
-                    <h1 class="text-white align-middle home-banner-tag">{{ __('Provision, advertise and lead expeditions.') }}<br>
-                        <a href="#learn-more" data-scroll class="btn btn-primary mt-4" data-aos="fade-right" data-aos-easing="ease-out" data-aos-duration="3000">Learn More</a>
+                    <h1 class="text-white align-middle home-banner-tag">{{ __('Provision, advertise and lead expeditions.') }}
+                        <br>
+                        <a href="#learn-more" data-scroll class="btn btn-primary mt-4" data-aos="fade-right"
+                           data-aos-easing="ease-out" data-aos-duration="3000">Learn More</a>
                     </h1>
 
                 </div>
@@ -31,8 +37,13 @@
 
     <section class="jumbotron text-center">
         <div class="container">
-            <h1>{{ __('BIOSPEX Expeditions') }}</h1>
-            <p>{{ __('BIOSPEX Expeditions are your way to contribute to the digitization of collections all over the world') }}</p>
+            <img src="/images/logo-tagline.png" align="Biospex Tag Line">
+            <p class="text-justify mt-4">{{ __('BIOSPEX is a base camp for launching, advertising and managing targeted efforts to digitize
+            the world\'s 3 billion biodiversity research specimens in ways that involve the public. It enables you
+            to package projects in one or a series of digitized expeditions, launch the expeditions at crowdsourcing
+            tools, widely recruit others to participate, and layer resrouces on the experience to advance science
+            literacy. In the end, you can download the new data for specimen curation, research, conservation, natural
+            resource management, public policy, or other activities.') }}</p>
         </div>
     </section>
 
@@ -47,7 +58,8 @@
                 <div class="col-md-6 mt-5 p-1 pb-md-3">
                     <h2 class="home-header-cta">The Project</h2>
 
-                    <div class="card-project mb-4 px-4 box-shadow" data-aos="fade-down" data-aos-easing="ease-in" data-aos-duration="2000" data-aos-once="true">
+                    <div class="card-project mb-4 px-4 box-shadow" data-aos="fade-down" data-aos-easing="ease-in"
+                         data-aos-duration="2000" data-aos-once="true">
                         <h2 class="text-center pt-4">Project Tile Project Name</h2>
                         <hr>
                         <div class="row card-body">
@@ -82,7 +94,8 @@
 
                 <div class="col-12 col-sm-12 col-md-6 col-lg-6 p-1 p-md-5 tutorial-right-section">
                     <h2 class="home-header-cta flex-nowrap">An Expedition</h2>
-                    <div class="card mb-4 box-shadow" data-aos="fade-up" data-aos-duration="1500" data data-aos-anchor-placement="bottom-bottom" data-aos-once="true">
+                    <div class="card mb-4 box-shadow" data-aos="fade-up" data-aos-duration="1500" data
+                         data-aos-anchor-placement="bottom-bottom" data-aos-once="true">
                         <!-- overlay -->
                         <div id="overlay">
                             <div class="overlay-text">
@@ -122,7 +135,63 @@
             </div>
         </div>
     </section>
+
+    <section class="mb-5">
+        <div class="row">
+            <div class="col d-flex justify-content-center">
+                    <div class="col-md-4 text-center" role="group" aria-label="External carousel buttons">
+                        <h2>The Process<br>
+                            <span class="smallertext">Specimen digitization is easy as 123</span></h2>
+                        <ul id="externalIndicators" class="list-inline">
+                            <li data-target="#processCarousel" data-slide-to="0" class="active list-inline-item">1</li>
+                            <li data-target="#processCarousel" data-slide-to="1" class="list-inline-item">2</li>
+                            <li data-target="#processCarousel" data-slide-to="2" class="list-inline-item">3</li>
+                        </ul>
+                    </div>
+                    <div id="processCarousel" class="carousel slide col-md-5">
+                        <div class="carousel-inner box-shadow">
+                            <div class="carousel-item active"
+                                 style="background-image: url(/images/slider/slider1.png);">
+                                <div class="circle-slider p-5">
+                                    <h3 class="text-center">PROJECT</h3>
+                                    <p>Create a Project for your digital images and use BIOSPEX to run optical character
+                                        recognition (OCR) on the images. Bundle the specimen images using the OCR text
+                                        string,
+                                        or similar traits like State, County, or collection date, into various
+                                        Expeditions
+                                        that will ignite public interest.</p>
+                                </div>
+                            </div>
+                            <div class="carousel-item" style="background-image: url(/images/slider/slider2.png);">
+                                <div class="circle-slider p-5">
+                                    <h3 class="text-center">EXPEDITIONS</h3>
+                                    <p>The curator then uses BIOSPEX to deploy the expeditions a few at a time to an
+                                        existing
+                                        website with a large citizen science community for label transcription.</p>
+                                </div>
+                            </div>
+                            <div class="carousel-item" style="background-image: url(/images/slider/slider3.png);">
+                                <div class="circle-slider p-5">
+                                    <h3 class="text-center">EXPORT</h3>
+                                    <p>The curator processes the resulting transcriptions in BIOSPEX later and exports
+                                        the data back to her local data management system.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+            </div>
+        </div>
+    </section>
 @endsection
-@section('footer')
-    @include('common.footer')
+@section('custom-script')
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            mirror: true
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
+    <script>var scroll = new SmoothScroll('a[href*="#"]');</script>
 @endsection

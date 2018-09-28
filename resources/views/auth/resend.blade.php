@@ -30,9 +30,9 @@
                                required>
                         {{ $errors->first('email') }}
                     </div>
-                    {!! Honeypot::generate('activateemail', 'activatetime') !!}
+                    {!! Honeypot::generate('formuser', 'formtime') !!}
                     <div class="text-center">
-                        <button type="submit" class="btn btn-danger pl-4 pr-4">{{ __('SUBMIT') }}</button>
+                        <button type="submit" class="btn btn-primary pl-4 pr-4">{{ __('SUBMIT') }}</button>
                     </div>
                 </form>
                 <div class="mt-4 text-center">

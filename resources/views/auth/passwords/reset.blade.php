@@ -45,7 +45,7 @@
                     </div>
                     {!! Honeypot::generate('resetemail', 'testtime') !!}
                     <div class="text-center">
-                        <button type="submit" class="btn btn-danger pl-4 pr-4">{{ __('SUBMIT') }}</button>
+                        <button type="submit" class="btn btn-primary pl-4 pr-4">{{ __('SUBMIT') }}</button>
                     </div>
                 </form>
                 <div class="mt-4 text-center">
@@ -77,14 +77,12 @@
                     'role' => 'form'
                     ]) !!}
                     {!! Form::hidden('token', $token) !!}
-
-
-
                     <div class="form-group">
                         <div class="col-md-6 col-md-offset-3">
                             {!! Form::submit(trans('pages.password_reset'), array('class' => 'btn btn-primary btn-block')) !!}
                         </div>
                     </div>
+                    {!! Honeypot::generate('formuser', 'formtime') !!}
                     {!! Form::close() !!}
                     <div class="col-md-6 col-md-offset-3 top15 text-center">
                         {!! link_to_route('app.get.login', trans('pages.back_to_login')) !!}

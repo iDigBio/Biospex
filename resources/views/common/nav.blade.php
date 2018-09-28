@@ -30,13 +30,11 @@
         <li class="nav-item mr-2">
             <a class="nav-link" href="{{ route('contact.get.index') }}">{{ __('CONTACT') }}</a>
         </li>
-    </ul>
-    @if(Auth::check())
-        <div class="btn-group">
-            <button type="button" class="btn btn-danger pl-4 pr-4 dropdown-toggle" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">{{ __('ADMIN') }}
-            </button>
-            <div class="dropdown-menu dropdown-menu-right">
+        @if(Auth::check())
+        <li class="nav-item nav-btn mr-2 dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown02" data-toggle="dropdown" aria-haspopup="true"
+               aria-expanded="false">{{ __('ADMIN') }}</a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown02">
                 <a href="{{ route('admin.groups.index') }}" class="dropdown-item"
                    type="button">{{ _('GROUPS') }}</a>
                 <a href="{{ route('admin.projects.index') }}" class="dropdown-item"
@@ -48,8 +46,11 @@
                 <a href="{{ route('app.get.logout') }}" class="dropdown-item"
                    type="button">{{ _('LOG OUT') }}</a>
             </div>
-        </div>
-    @else
-        <a href="{{ route('app.get.login') }}" type="button" class="btn btn-danger pl-4 pr-4">{{ __('LOGIN') }}</a>
-    @endif
+        </li>
+        @else
+        <li class="nav-item nav-btn mr-2">
+            <a class="nav-link" href="{{ route('app.get.login') }}">{{ __('LOGIN') }}</a>
+        </li>
+        @endif
+    </ul>
 </div>
