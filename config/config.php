@@ -37,7 +37,7 @@ return [
     'classifications_summary'     => storage_path('classifications/summary'),
     'classifications_transcript'  => storage_path('classifications/transcript'),
     'classifications_fusiontable' => storage_path('classifications/fusiontable'),
-    'label_reconciliations_path'  => env('LABEL_RECONCILIATIONS_PATH'),
+    'reconcile_path'              => env('LABEL_RECONCILIATIONS_PATH'),
     'nfn_table_prefix'            => env('NFN_TABLE_PREFIX', ''),
 
     'ocr_post_url'   => env('OCR_POSTURL'),
