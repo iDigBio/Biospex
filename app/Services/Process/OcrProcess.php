@@ -45,11 +45,11 @@ class OcrProcess
     }
 
     /**
-     * Process the record and send requests to ocr servers
-     * @param OcrQueue $record
-     * @throws \Exception
+     * Process the record and send requests to ocr servers.
+     *
+     * @param $record
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \League\Csv\CannotInsertRecord
-     * @throws \TypeError
      */
     public function process($record)
     {
