@@ -98,6 +98,14 @@ class Expedition extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function ocrQueue()
+    {
+        return $this->hasMany(OcrQueue::class);
+    }
+
+    /**
      * @return mixed
      */
     public function actors()

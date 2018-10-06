@@ -1,11 +1,11 @@
-<?php 
+<?php
 
-namespace App\Repositories\Eloquent;
+namespace App\Repositories\MongoDb;
 
-use App\Models\OcrCsv as Model;
-use App\Repositories\Interfaces\OcrCsv;
+use App\Models\OcrFile as Model;
+use App\Repositories\Interfaces\OcrFile;
 
-class OcrCsvRepository extends EloquentRepository implements OcrCsv
+class OcrFileRepository extends MongoDbRepository implements OcrFile
 {
 
     /**
@@ -18,5 +18,3 @@ class OcrCsvRepository extends EloquentRepository implements OcrCsv
         return Model::class;
     }
 }
-
-

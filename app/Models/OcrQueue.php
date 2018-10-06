@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Traits\UuidTrait;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class OcrQueue extends Model
 {
-    use UuidTrait;
+    use LadaCacheTrait;
 
     /**
      * @inheritDoc
@@ -19,19 +19,19 @@ class OcrQueue extends Model
      */
     protected $fillable = [
         'project_id',
-        'ocr_csv_id',
-        'uuid',
-        'data',
+        'expedition_id',
+        'mongo_id',
         'total',
         'processed',
-        'tries',
-        'batch',
         'status',
+        'queued',
         'error',
-        'attachments'
+        'csv'
     ];
 
     /**
+     * Project relation.
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function project()
@@ -40,31 +40,33 @@ class OcrQueue extends Model
     }
 
     /**
+     * Expedition relation.
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function ocrCsv()
+    public function expedition()
     {
-        return $this->belongsTo(OcrCsv::class);
+        return $this->belongsTo(Expedition::class);
     }
 
     /**
-     * Mutator for subjects column.
-     *
-     * @param $value
-     */
-    public function setDataAttribute($value)
-    {
-        $this->attributes['data'] = serialize($value);
-    }
-
-    /**
-     * Accessor for subjects column.
+     * Get csv attribute.
      *
      * @param $value
      * @return mixed
      */
-    public function getDataAttribute($value)
+    public function getCsvAttribute($value)
     {
-        return empty($value) ? '' : unserialize($value);
+        return unserialize($value);
+    }
+
+    /**
+     * Set csv attribute.
+     *
+     * @param $value
+     */
+    public function setCsvAttribute($value)
+    {
+        $this->attributes['csv'] = serialize($value);
     }
 }

@@ -13,7 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Collection;
 
 
-class NfnClassificationsFusionTableJob extends Job implements ShouldQueue
+class NfnClassificationsFusionTableJob implements ShouldQueue
 {
 
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

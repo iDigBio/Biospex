@@ -11,7 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class NfnClassificationPusherTranscriptionsJob extends Job implements ShouldQueue
+class NfnClassificationPusherTranscriptionsJob implements ShouldQueue
 {
 
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, UuidTrait;

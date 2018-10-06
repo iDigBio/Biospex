@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
+use Storage;
 
 class AppFileDeployment extends Command
 {
@@ -52,7 +53,7 @@ class AppFileDeployment extends Command
 
         $this->resPath = base_path('resources');
         $this->appPath = base_path();
-        $this->supPath = storage_path('app/supervisord');
+        $this->supPath = Storage::path('supervisord');
         $this->setAppsConfigs();
     }
 

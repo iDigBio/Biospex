@@ -4,9 +4,8 @@ namespace App\Services\Actor\NfnPanoptes;
 
 use App\Models\Actor;
 use App\Models\ExportQueue;
-use App\Services\Actor\ActorBase;
 
-class NfnPanoptes extends ActorBase
+class NfnPanoptes
 {
 
     /**

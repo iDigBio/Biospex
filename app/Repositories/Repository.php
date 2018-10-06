@@ -133,12 +133,13 @@ abstract class Repository
 
     /**
      * @param array $attributes
+     * @param array $data
      * @return mixed
      * @throws \Exception
      */
-    public function firstOrCreate(array $attributes)
+    public function firstOrCreate(array $attributes, array $data = [])
     {
-        $results = $this->model->firstOrCreate($attributes);
+        $results = $this->model->firstOrCreate($attributes, $data);
 
         $this->resetModel();
 

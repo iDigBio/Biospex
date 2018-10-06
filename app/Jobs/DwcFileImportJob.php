@@ -14,6 +14,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Storage;
 
 class DwcFileImportJob implements ShouldQueue
 {
@@ -61,9 +62,8 @@ class DwcFileImportJob implements ShouldQueue
 
         try
         {
-            $fileService->makeDirectory($scratchFileDir);
-            $fileService->unzip(storage_path($this->import->file), $scratchFileDir);
-
+            Storage::makeDirectory($scratchFileDir);
+            $fileService->unzip(Storage::path($this->import->file), $scratchFileDir);
             $dwcProcess->process($this->import->project_id, $scratchFileDir);
 
             $dupsCsv = config('config.reports_dir') . '/' . str_random() . 'dup.csv';
@@ -76,11 +76,11 @@ class DwcFileImportJob implements ShouldQueue
 
             if ($project->workflow->actors->contains('title', 'OCR') && $dwcProcess->getSubjectCount() > 0)
             {
-                BuildOcrBatchesJob::dispatch($project->id);
+                OcrCreateJob::dispatch($project->id);
             }
 
-            $fileService->filesystem->deleteDirectory($scratchFileDir);
-            $fileService->filesystem->delete(storage_path($this->import->file));
+            Storage::deleteDirectory($scratchFileDir);
+            Storage::delete($this->import->file);
             $this->import->delete();
             $this->delete();
         }

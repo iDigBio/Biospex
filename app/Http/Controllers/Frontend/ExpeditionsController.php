@@ -6,6 +6,7 @@ use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpeditionFormRequest;
 use App\Jobs\DeleteExpedition;
+use App\Jobs\OcrCreateJob;
 use App\Jobs\UpdateNfnWorkflowJob;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\ExpeditionStat;
@@ -13,7 +14,6 @@ use App\Repositories\Interfaces\NfnWorkflow;
 use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\Subject;
 use App\Repositories\Interfaces\WorkflowManager;
-use App\Services\Model\OcrQueueService;
 use Artisan;
 use Illuminate\Support\Facades\Auth;
 use JavaScript;
@@ -52,11 +52,6 @@ class ExpeditionsController extends Controller
     private $workflowManagerContract;
 
     /**
-     * @var \App\Services\Model\OcrQueueService
-     */
-    private $ocrQueueService;
-
-    /**
      * ExpeditionsController constructor.
      *
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
@@ -65,7 +60,6 @@ class ExpeditionsController extends Controller
      * @param \App\Repositories\Interfaces\Subject $subjectContract
      * @param \App\Repositories\Interfaces\ExpeditionStat $expeditionStatContract
      * @param \App\Repositories\Interfaces\WorkflowManager $workflowManagerContract
-     * @param \App\Services\Model\OcrQueueService $ocrQueueService
      */
     public function __construct(
         Expedition $expeditionContract,
@@ -73,8 +67,7 @@ class ExpeditionsController extends Controller
         NfnWorkflow $nfnWorkflowContract,
         Subject $subjectContract,
         ExpeditionStat $expeditionStatContract,
-        WorkflowManager $workflowManagerContract,
-        OcrQueueService $ocrQueueService
+        WorkflowManager $workflowManagerContract
     )
     {
         $this->expeditionContract = $expeditionContract;
@@ -83,7 +76,6 @@ class ExpeditionsController extends Controller
         $this->subjectContract = $subjectContract;
         $this->expeditionStatContract = $expeditionStatContract;
         $this->workflowManagerContract = $workflowManagerContract;
-        $this->ocrQueueService = $ocrQueueService;
     }
 
     /**
@@ -400,9 +392,9 @@ class ExpeditionsController extends Controller
             return redirect()->route('webauth.projects.index');
         }
 
-        $this->ocrQueueService->processOcr($projectId, $expeditionId) ?
-            Flash::success(trans('messages.ocr_process_success')) :
-            Flash::warning(trans('messages.ocr_process_error'));
+        OcrCreateJob::dispatch($projectId, $expeditionId);
+
+        Flash::success(trans('messages.ocr_process_success'));
 
         return redirect()->route('webauth.expeditions.show', [$projectId, $expeditionId]);
     }

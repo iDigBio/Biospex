@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
 use App\Jobs\DeleteProject;
+use App\Jobs\OcrCreateJob;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\Group;
 use App\Repositories\Interfaces\Project;
@@ -13,7 +14,6 @@ use App\Repositories\Interfaces\User;
 use App\Http\Requests\ProjectFormRequest;
 use App\Services\File\FileService;
 use App\Services\Model\CommonVariables;
-use App\Services\Model\OcrQueueService;
 use App\Services\MongoDbService;
 use JavaScript;
 
@@ -45,11 +45,6 @@ class ProjectsController extends Controller
     private $subjectContract;
 
     /**
-     * @var \App\Services\Model\OcrQueueService
-     */
-    private $ocrQueueService;
-
-    /**
      * @var \App\Services\File\FileService
      */
     private $fileService;
@@ -66,7 +61,6 @@ class ProjectsController extends Controller
      * @param \App\Repositories\Interfaces\Project $projectContract
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      * @param \App\Repositories\Interfaces\Subject $subjectContract
-     * @param \App\Services\Model\OcrQueueService $ocrQueueService
      * @param \App\Services\File\FileService $fileService
      * @param \App\Services\MongoDbService $mongoDbService
      * @param \App\Services\Model\CommonVariables $commonVariables
@@ -76,7 +70,6 @@ class ProjectsController extends Controller
         Project $projectContract,
         Expedition $expeditionContract,
         Subject $subjectContract,
-        OcrQueueService $ocrQueueService,
         FileService $fileService,
         MongoDbService $mongoDbService,
         CommonVariables $commonVariables
@@ -86,7 +79,6 @@ class ProjectsController extends Controller
         $this->projectContract = $projectContract;
         $this->expeditionContract = $expeditionContract;
         $this->subjectContract = $subjectContract;
-        $this->ocrQueueService = $ocrQueueService;
         $this->fileService = $fileService;
         $this->mongoDbService = $mongoDbService;
     }
@@ -335,9 +327,9 @@ class ProjectsController extends Controller
             return redirect()->route('webauth.projects.index');
         }
 
-        $this->ocrQueueService->processOcr($projectId) ?
-            Flash::success(trans('messages.ocr_process_success')) :
-            Flash::warning(trans('messages.ocr_process_error'));
+        OcrCreateJob::dispatch($projectId);
+
+        Flash::success(trans('messages.ocr_process_success'));
 
         return redirect()->route('webauth.projects.show', [$projectId]);
     }

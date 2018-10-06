@@ -9,7 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class ActorJob extends Job implements ShouldQueue
+class ActorJob implements ShouldQueue
 {
 
     use Dispatchable, InteractsWithQueue, Queueable;

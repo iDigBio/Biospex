@@ -6,6 +6,7 @@ use App\Repositories\Interfaces\State;
 use App\Services\Csv\Csv;
 use App\Services\Requests\HttpRequest;
 use Illuminate\Console\Command;
+use Storage;
 
 class UpdateGoogleStateCountyTable extends Command
 {
@@ -43,12 +44,12 @@ class UpdateGoogleStateCountyTable extends Command
     {
         $uri = 'https://fusiontables.google.com/exporttable?query=select+*+from+1xdysxZ94uUFIit9eXmnw1fYc6VcQiXhceFd_CVKa&o=csv';
 
-        $filePath = storage_path('United States Counties.csv');
+        $filePath = Storage::path('United States Counties.csv');
 
         $httpRequest->setHttpProvider();
         $httpRequest->getHttpClient()->request('GET', $uri, ['sink' => $filePath]);
 
-        $csv->readerCreateFromPath(storage_path('United States Counties.csv'));
+        $csv->readerCreateFromPath(Storage::path('United States Counties.csv'));
         $csv->setDelimiter();
         $csv->setEnclosure();
         $csv->setEscape();

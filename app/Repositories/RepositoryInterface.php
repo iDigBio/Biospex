@@ -17,7 +17,7 @@ interface RepositoryInterface
 
     public function create(array $data);
 
-    public function firstOrCreate(array $attributes);
+    public function firstOrCreate(array $attributes, array $data = []);
 
     public function update(array $data, $resourceId);
 
