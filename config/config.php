@@ -107,8 +107,8 @@ return [
 
     /* Images */
     /* Min and max logo and banner sizes used in Project model for Codesleve Stapler */
-    'thumbDefaultImg'       => public_path('/images/default_image.jpg'),
-    'thumbOutputDir'        => storage_path('app/public/thumbs'),
+    'thumbDefaultImg'       => 'thumbs/default_thumb.png',
+    'thumbOutputDir'        => 'thumbs',
     'thumbWidth'            => 300,
     'thumbHeight'           => 300,
     'nfnLrgWidth'           => env('NFN_LRG_WIDTH', 1500),
