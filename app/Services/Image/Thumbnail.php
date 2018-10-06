@@ -4,6 +4,7 @@ namespace App\Services\Image;
 
 use App\Services\File\FileService;
 use GuzzleHttp\Client;
+use Storage;
 
 class Thumbnail extends ImagickService
 {
@@ -41,10 +42,10 @@ class Thumbnail extends ImagickService
     {
         $this->fileService = $fileService;
 
-        $this->defaultThumbImg = config('config.thumbDefaultImg');
+        $this->defaultThumbImg = Storage::disk('public')->path(config('config.thumbDefaultImg'));
         $this->tnWidth = config('config.thumbWidth');
         $this->tnHeight = config('config.thumbHeight');
-        $this->thumbDirectory = config('config.thumbOutputDir').'/'.$this->tnWidth.'_'.$this->tnHeight;
+        $this->thumbDirectory = Storage::disk('public')->path(config('config.thumbOutputDir').'/'.$this->tnWidth.'_'.$this->tnHeight);
     }
 
     /**
