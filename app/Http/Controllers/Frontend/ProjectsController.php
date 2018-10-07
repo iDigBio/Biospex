@@ -237,7 +237,6 @@ class ProjectsController extends Controller
      */
     public function update(ProjectFormRequest $request, $projectId)
     {
-        dd($request->files);
         $group = $this->groupContract->find($request->get('group_id'));
 
         if (! $this->checkPermissions('updateProject', $group)) {
