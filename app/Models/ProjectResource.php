@@ -2,16 +2,14 @@
 
 namespace App\Models;
 
-use App\Presenters\ProjectResourcePresenter;
 use Illuminate\Database\Eloquent\Model;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
-use App\Models\Traits\Presentable;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class ProjectResource extends Model implements AttachableInterface
 {
-    use PaperclipTrait, LadaCacheTrait, Presentable;
+    use PaperclipTrait, LadaCacheTrait;
 
     /**
      * @inheritDoc
@@ -38,11 +36,6 @@ class ProjectResource extends Model implements AttachableInterface
         'description',
         'download'
     ];
-
-    /**
-     * @var string
-     */
-    protected $presenter = ProjectResourcePresenter::class;
 
     /**
      * Project constructor.

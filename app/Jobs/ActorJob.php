@@ -44,7 +44,7 @@ class ActorJob implements ShouldQueue
     {
         try
         {
-            $classPath = __NAMESPACE__ . '\\' . $this->actor->class . '\\' . $this->actor->class;
+            $classPath = 'App\Services\Actor\\' . $this->actor->class . '\\' . $this->actor->class;
             $class = app($classPath);
             $class->actor($this->actor);
             $this->delete();
