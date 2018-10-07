@@ -14,7 +14,6 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Storage;
 
 class DwcFileImportJob implements ShouldQueue
 {
@@ -62,12 +61,15 @@ class DwcFileImportJob implements ShouldQueue
 
         try
         {
-            Storage::makeDirectory($scratchFileDir);
-            $fileService->unzip(Storage::path($this->import->file), $scratchFileDir);
+            $fileService->makeDirectory($scratchFileDir);
+            $importFilePath = storage_path('app/' . $this->import->file);
+
+            $fileService->unzip($importFilePath, $scratchFileDir);
+
             $dwcProcess->process($this->import->project_id, $scratchFileDir);
 
-            $dupsCsv = config('config.reports_dir') . '/' . str_random() . 'dup.csv';
-            $rejCsv = config('config.reports_dir') . '/' . str_random() . 'rej.csv';
+            $dupsCsv = storage_path('app/reports/'. md5($this->import->id) . 'dup.csv');
+            $rejCsv = storage_path('app/reports/'. md5($this->import->id) . 'rej.csv');
 
             $duplicates = GeneralHelper::createCsv($dwcProcess->getDuplicates(), $dupsCsv);
             $rejects = GeneralHelper::createCsv($dwcProcess->getRejectedMedia(), $rejCsv);
@@ -79,8 +81,8 @@ class DwcFileImportJob implements ShouldQueue
                 OcrCreateJob::dispatch($project->id);
             }
 
-            Storage::deleteDirectory($scratchFileDir);
-            Storage::delete($this->import->file);
+            $fileService->filesystem->deleteDirectory($scratchFileDir);
+            $fileService->filesystem->delete($importFilePath);
             $this->import->delete();
             $this->delete();
         }
