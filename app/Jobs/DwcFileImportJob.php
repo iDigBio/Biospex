@@ -81,6 +81,7 @@ class DwcFileImportJob implements ShouldQueue
                 OcrCreateJob::dispatch($project->id);
             }
 
+            $fileService->filesystem->cleanDirectory($scratchFileDir);
             $fileService->filesystem->deleteDirectory($scratchFileDir);
             $fileService->filesystem->delete($importFilePath);
             $this->import->delete();
@@ -90,6 +91,7 @@ class DwcFileImportJob implements ShouldQueue
         {
             $this->import->error = 1;
             $this->import->save();
+            $fileService->filesystem->cleanDirectory($scratchFileDir);
             $fileService->filesystem->deleteDirectory($scratchFileDir);
 
             $message = trans('messages.import_process', [
