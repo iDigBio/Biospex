@@ -10,7 +10,7 @@
 </title>
 @include('common.style')
 <style>
-    .carousel-inner {
+    .inside-carousel {
         width: 500px;
         height: 500px;
         background-color: #ffffff;
@@ -22,16 +22,18 @@
         right: 0;
     }
     @media only screen and (max-width: 768px) {
-        .carousel-inner {
+        .inside-carousel {
             overflow: hidden;
             width: 400px;
             height: 400px;
         }
     }
 
+    /*
     .carousel-item {
         height: 100%;
     }
+    */
 
     #externalIndicators > li {
         width: 70px;

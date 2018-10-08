@@ -149,7 +149,7 @@
                         </ul>
                     </div>
                     <div id="processCarousel" class="carousel slide col-md-5">
-                        <div class="carousel-inner box-shadow">
+                        <div class="carousel-inner box-shadow inside-carousel">
                             <div class="carousel-item active"
                                  style="background-image: url(/images/slider/slider1.png);">
                                 <div class="circle-slider p-5">
@@ -184,6 +184,7 @@
             </div>
         </div>
     </section>
+
 @endsection
 @section('custom-script')
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>

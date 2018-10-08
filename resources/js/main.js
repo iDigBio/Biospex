@@ -261,13 +261,12 @@ $(function() {
         clearInterval(timeInterval);
     });
 
-    if ($('#externalIndicators').length){
-        alert('test');
-    }
-    $('li.list-inline-item').on('click', function () {
-        console.log('testing');
-        $(this).siblings('li.active').removeClass('active');
-        $(this).addClass('active');
+    $('#myCarousel').bind('slide.bs.carousel', function (e) {
+        console.log('slide event!');
+    });
+
+    $('#myCarousel').bind('slid', function (e) {
+        console.log("slid event!");
     });
 
 });
