@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Frontend;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Http\Controllers\Controller;
@@ -35,7 +35,7 @@ class AdvertisesController extends Controller
 
         if ( ! $this->checkPermissions('readProject', $project->group))
         {
-            return redirect()->route('admin.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         if (empty($project->advertise)) {
@@ -58,7 +58,7 @@ class AdvertisesController extends Controller
 
         if ( ! $this->checkPermissions('readProject', $project->group))
         {
-            return redirect()->route('admin.projects.index');
+            return redirect()->route('webauth.projects.index');
         }
 
         return $response->make(json_encode($project->advertise, JSON_UNESCAPED_SLASHES), '200', [

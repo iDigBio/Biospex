@@ -64,7 +64,7 @@ return [
     'not_found'                           => 'User not found',
     'ocr_complete_message'                => 'The OCR processing of your data is complete. If there were any errors in processing images, an attached file will be present.',
     'ocr_file_error'                      => 'The OCR json file returned and error from the OCR server.<br />Project: :title<br />ID:  :id<br />The Biospex Administration has been notified and will investigate the issue. Please do not try to resubmit or perform other functions on this project.<br />Message: :message',
-    'ocr_process_error'                   => 'An error occurred trying to start the OCR processing. Please notify the administration.',
+    'ocr_process_error'                   => 'An error occurred trying to start the OCR processing. This may be due to OCR being disabled temporarily. The administration has been notified.',
     'ocr_process_success'                 => 'OCR processing has been submitted. It may take some time before appearing in the Processes menu. You will be notified by email when the process is complete.',
     'ocr_queue_check'                     => 'ID: :id<br />Message: :message<br /><br />',
     'ocr_queue_check_title'               => 'There was an error while processing the following queued OCR.',

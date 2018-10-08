@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Frontend;
 
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
@@ -10,6 +10,7 @@ use App\Repositories\Interfaces\User;
 use File;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Repositories\Interfaces\Download;
+use Queue;
 
 class DownloadsController extends Controller
 {
@@ -107,7 +108,7 @@ class DownloadsController extends Controller
         if ( ! $download)
         {
             Flash::error(trans('messages.missing_download_file'));
-            return redirect()->route('admin.downloads.index', [$projectId, $expeditionId]);
+            return redirect()->route('webauth.downloads.index', [$projectId, $expeditionId]);
         }
 
         if ($download->type !== 'export' && ! $this->checkPermissions('isOwner', $download->expedition->project->group))
@@ -134,7 +135,7 @@ class DownloadsController extends Controller
         if ( ! file_exists($path))
         {
             Flash::error(trans('messages.missing_download_file'));
-            return redirect()->route('admin.downloads.index', [$projectId, $expeditionId]);
+            return redirect()->route('webauth.downloads.index', [$projectId, $expeditionId]);
         }
 
         $headers = [
@@ -176,7 +177,7 @@ class DownloadsController extends Controller
             Flash::error(trans('messages.download_regeneration_error', ['error' => $e->getMessage()]));
         }
 
-        return redirect()->route('admin.downloads.index', [$projectId, $expeditionId]);
+        return redirect()->route('webauth.downloads.index', [$projectId, $expeditionId]);
     }
 
     /**
@@ -193,13 +194,13 @@ class DownloadsController extends Controller
 
         if ( ! $this->checkPermissions('isOwner', $expedition->project->group))
         {
-            return redirect()->route('admin.projects.show', [$projectId]);
+            return redirect()->route('webauth.projects.show', [$projectId]);
         }
 
         if ( ! File::exists(config('config.classifications_summary') . '/' . $expeditionId . '.html'))
         {
             Flash::warning( trans('pages.file_does_not_exist'));
-            return redirect()->route('admin.projects.show', [$projectId]);
+            return redirect()->route('webauth.projects.show', [$projectId]);
         }
 
         return File::get(config('config.classifications_summary') . '/' . $expeditionId . '.html');

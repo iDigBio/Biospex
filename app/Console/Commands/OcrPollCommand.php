@@ -67,29 +67,23 @@ class OcrPollCommand extends Command
             return;
         }
 
-        $grouped = $records->groupBy('ocr_csv_id')->toArray();
-
         $count = 0;
-        foreach ($grouped as $group)
-        {
-            $project = $this->projectContract->findWith($group[0]['project_id'], ['group']);
-
-            $total = array_sum(array_column($group, 'total'));
-            $processed = array_sum(array_column($group, 'processed'));
-
+        $data['payload'] = $records->map(function($record) use (&$count){
             $batches = $count === 0 ? '' : trans_choice('html.ocr_queue', $count, ['batches_queued' => $count]);
 
-            $ocr = trans_choice('html.ocr_records', $processed, ['processed' => $processed, 'total' => $total]);
+            $countNumbers = ['processed' => $record->processed, 'total' => $record->total];
+            $ocr = trans_choice('html.ocr_records', $record->processed, $countNumbers);
 
-            $notice = trans('html.ocr_processing', ['title' => $project->title, 'ocr' => $ocr, 'batches' => $batches]);
-
-            $data[] = [
-                'groupId' => $project->group->id,
-                'notice'   => $notice,
-            ];
+            $title = $record->expedition !== null ? $record->expedition->title : $record->project->title;
+            $notice = trans('html.ocr_processing', ['title' => $title, 'ocr' => $ocr, 'batches' => $batches]);
 
             $count++;
-        }
+
+            return [
+                'groupId' => $record->project->group->id,
+                'notice'   => $notice,
+            ];
+        })->toArray();
 
         PollOcrEvent::dispatch($data);
     }

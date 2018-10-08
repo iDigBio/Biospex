@@ -34,11 +34,6 @@ class EventUserExportCsvJob implements ShouldQueue
     private $eventId;
 
     /**
-     * @var
-     */
-    private $rows;
-
-    /**
      * Create a new job instance.
      *
      * @param User $user
@@ -66,14 +61,17 @@ class EventUserExportCsvJob implements ShouldQueue
         try
         {
             $event = $eventContract->getEventShow($this->eventId);
-            $event->teams->each(function($team){
-                foreach ($team->users as $user)
-                {
-                    $this->rows[] = [$team->title, $user->nfn_user, $user->transcriptionCount];
-                }
-            });
+            $rows = $event->teams->flatMap(function ($team){
+                return $team->users->map(function ($user) use ($team){
+                    return [
+                        $team->title,
+                        $user->nfn_user,
+                        $user->transcriptions_count
+                    ];
+                });
+            })->toArray();
 
-            $file = empty($this->rows) ? null : $this->setCsv($csv);
+            $file = empty($rows) ? null : $this->setCsv($csv, $rows);
 
             $this->user->notify(new EventCsvExport(trans('messages.event_export_csv_complete'), $file));
         }
@@ -85,13 +83,17 @@ class EventUserExportCsvJob implements ShouldQueue
 
     /**
      * @param \App\Services\Csv\Csv $csv
+     * @param $rows
+     * @return string
      * @throws \League\Csv\CannotInsertRecord
      */
-    private function setCsv(Csv $csv)
+    private function setCsv(Csv $csv, $rows)
     {
         $file = config('config.reports_dir') . '/' . str_random() . '.csv';
         $csv->writerCreateFromPath($file);
         $csv->insertOne(['Team', 'User', 'Transcriptions']);
-        $csv->insertAll($this->rows);
+        $csv->insertAll($rows);
+
+        return $file;
     }
 }

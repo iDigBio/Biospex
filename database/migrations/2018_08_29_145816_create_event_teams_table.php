@@ -17,6 +17,7 @@ class CreateEventTeamsTable extends Migration
             Schema::create('event_teams', function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedInteger('event_id');
+                $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
                 $table->string('title');
                 $table->timestamps();
 

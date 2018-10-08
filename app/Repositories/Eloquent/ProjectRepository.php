@@ -87,13 +87,7 @@ class ProjectRepository extends EloquentRepository implements Project
                 'expeditions.actors',
                 'amChart',
                 'resources',
-                'events' => function ($query) {
-                    $query->withCount('transcriptions')->with([
-                            'teams' => function ($query) {
-                                $query->withCount('transcriptions');
-                            },
-                        ])->whereHas('teams');
-                },
+                'events'
             ])->where('slug', '=', $slug)->first();
 
         $this->resetModel();

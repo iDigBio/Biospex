@@ -1,9 +1,9 @@
 <?php
 
 return array (
-  'export_processing' => '<div class="processes"><span class="title">:title</span><br />:stage :processedRecords</div>',
-  'export_queued' => '<div class="processes"><span class="title">:title</span><br />:count export remains in queue before processing begins.</div>|
-                                        <div class="processes"><span class="title">:title</span><br />:count exports remain in queue before processing begins.</div>',
+  'export_processing' => '<div class="processes"><span class="title">:title</span><br>:stage :processedRecords</div>',
+  'export_queued' => '<div class="processes"><span class="title">:title</span><br>:count export remains in queue before processing begins.</div>|
+                                        <div class="processes"><span class="title">:title</span><br>:count exports remain in queue before processing begins.</div>',
   'footer-text' => 'BIOSPEX is funded by a grant from the National Science Foundation’s Advances in Biological 
     Informatics Program (Award Number 1458550). iDigBio is funded by a grant from the National Science Foundation\'s 
     Advancing Digitization of Biodiversity Collections Program (Cooperative Agreement EF-1115210). Any opinions, 
@@ -28,9 +28,9 @@ return array (
                         data goes back to the museum that curates the physical specimen.</p>
 
                     <p>Get started -> <a href="/login">Lead an Expedition</a></p>',
-  'ocr_processing' => '<div class="processes"><span class="title">:title</span>:ocr :batches</div>',
-  'ocr_queue' => '<br />:batches_queued process remains in queue before processing begins|<br />:batches_queued processes remain in queue before processing begins',
-  'ocr_records' => '<br />:processed record of :total completed.|<br />:processed records of :total completed.',
+  'ocr_processing' => '<div class="processes"><span class="title">:title</span><br>:ocr :batches',
+  'ocr_queue' => ':batches_queued process remains in queue before processing begins|:batches_queued processes remain in queue before processing begins',
+  'ocr_records' => ':processed record of :total completed.|:processed records of :total completed.',
   'processed_records' => '| - :processed of :total completed.',
   'processing_empty' => 'No processes running at this time.',
   'recordset_modal_message' => '<ol>

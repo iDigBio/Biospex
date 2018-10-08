@@ -2,15 +2,15 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\OcrTesseractJob;
+use App\Models\User;
 use App\Repositories\Interfaces\OcrQueue;
 use App\Notifications\JobError;
-use App\Services\Process\OcrProcess;
-use Artisan;
+use App\Services\Actor\Ocr\OcrCheck;
 use Illuminate\Console\Command;
 
 class OcrProcessCommand extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -31,26 +31,26 @@ class OcrProcessCommand extends Command
     private $ocrQueueContract;
 
     /**
-     * @var OcrProcess
+     * @var OcrCheck
      */
-    private $ocrProcess;
+    private $ocrCheck;
 
     /**
      * OcrProcessCommand constructor.
      *
      * OcrProcessCommand constructor.
+     *
      * @param OcrQueue $ocrQueueContract
-     * @param OcrProcess $ocrProcess
+     * @param OcrCheck $ocrCheck
      */
     public function __construct(
         OcrQueue $ocrQueueContract,
-        OcrProcess $ocrProcess
-    )
-    {
+        OcrCheck $ocrCheck
+    ) {
         parent::__construct();
 
         $this->ocrQueueContract = $ocrQueueContract;
-        $this->ocrProcess = $ocrProcess;
+        $this->ocrCheck = $ocrCheck;
     }
 
     /**
@@ -61,30 +61,35 @@ class OcrProcessCommand extends Command
     public function handle()
     {
         $record = $this->ocrQueueContract->getOcrQueueForOcrProcessCommand();
-        if ($record === null)
-        {
+
+        if ($record === null) {
             return;
         }
 
-        try
-        {
-            $this->ocrProcess->process($record);
-        }
-        catch (\Exception $e)
-        {
-            $record->error = 1;
-            $record->save();
+        try {
+            if (! $record->queued) {
+                event('ocr.queued', $record);
+                OcrTesseractJob::dispatch($record);
+
+                return;
+            }
+
+            $this->ocrCheck->check($record);
+
+            return;
+        } catch (\Exception $e) {
+            event('ocr.error', $record);
 
             $messages = [
                 $record->project->title,
-                'Error processing ocr record ' . $record->id,
-                'Message: ' . $e->getMessage(),
-                'Line: ' . $e->getLine()
+                'Error processing ocr record '.$record->id,
+                'File: ' . $e->getFile(),
+                'Message: '.$e->getMessage(),
+                'Line: '.$e->getLine(),
             ];
 
-            $record->project->group->owner->notify(new JobError(__FILE__, $messages));
+            $user = User::find(1);
+            $user->notify(new JobError(__FILE__, $messages));
         }
-
-        Artisan::call('ocr:poll');
     }
 }

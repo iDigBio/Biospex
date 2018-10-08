@@ -2,25 +2,7 @@
 
 namespace App\Services\Actor;
 
-use App\Models\Actor;
-use App\Models\ExportQueue;
-
-abstract class ActorBase implements ActorInterface
+abstract class ActorBase
 {
-    /**
-     * @inheritdoc
-     */
-    public function actor(Actor $actor)
-    {
-
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function queue(ExportQueue $queue)
-    {
-
-    }
 
 }

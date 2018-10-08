@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
-class ClearCacheCommand extends Command
+class CacheClearCommand extends Command
 {
     /**
      * The console command name.

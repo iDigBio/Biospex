@@ -32,6 +32,6 @@ class TeamsController extends Controller
     {
         $categories = $this->teamCategoryContract->getTeamIndexPage();
 
-        return view('front.team.index', compact('categories'));
+        return view('frontend.teams.index', compact('categories'));
     }
 }

@@ -73,12 +73,12 @@ class InvitesController extends Controller
 
         if ( ! $this->checkPermissions('isOwner', $group))
         {
-            return redirect()->route('admin.groups.show', [$groupId]);
+            return redirect()->route('webauth.groups.show', [$groupId]);
         }
 
         $this->inviteService->storeInvites($group->id, $request);
 
-        return redirect()->route('admin.invites.index', [$group->id]);
+        return redirect()->route('webauth.invites.index', [$group->id]);
     }
 
     /**
@@ -93,12 +93,12 @@ class InvitesController extends Controller
 
         if ( ! $this->checkPermissions('isOwner', $group))
         {
-            return redirect()->route('admin.groups.show', [$groupId]);
+            return redirect()->route('webauth.groups.show', [$groupId]);
         }
 
         $this->inviteService->resendInvite($group, $inviteId);
 
-        return redirect()->route('admin.invites.index', [$group->id]);
+        return redirect()->route('webauth.invites.index', [$group->id]);
     }
 
     /**
@@ -113,11 +113,11 @@ class InvitesController extends Controller
 
         if ( ! $this->checkPermissions('isOwner', $group))
         {
-            return redirect()->route('admin.groups.show', [$groupId]);
+            return redirect()->route('webauth.groups.show', [$groupId]);
         }
 
         $this->inviteService->deleteInvite($inviteId);
 
-        return redirect()->route('admin.invites.index', [$groupId]);
+        return redirect()->route('webauth.invites.index', [$groupId]);
     }
 }

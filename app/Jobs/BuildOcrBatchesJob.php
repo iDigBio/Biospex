@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Services\Actor\Ocr\OcrBase;
 use App\Services\MongoDbService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -9,7 +10,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Artisan;
-use App\Repositories\Interfaces\OcrCsv;
 use App\Repositories\Interfaces\OcrQueue;
 
 class BuildOcrBatchesJob extends Job implements ShouldQueue
@@ -55,15 +55,9 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
     /**
      * Handle Job.
      *
-     * @param OcrQueue $ocrQueueRepo
-     * @param OcrCsv $ocrCsvRepo
-     * @param MongoDbService $mongoDbService
+     * @param \App\Services\Actor\Ocr\OcrBase $ocr
      */
-    public function handle(
-        OcrQueue $ocrQueueRepo,
-        OcrCsv $ocrCsvRepo,
-        MongoDbService $mongoDbService
-    )
+    public function handle(OcrBase $ocr)
     {
         if (config('config.ocr_disable'))
         {
@@ -72,7 +66,8 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
 
         try
         {
-            $this->buildOcrSubjectsArray($mongoDbService);
+            /*
+            $this->buildOcrSubjectsArray();
 
             $data = $this->getChunkQueueData();
 
@@ -98,6 +93,7 @@ class BuildOcrBatchesJob extends Job implements ShouldQueue
                     'batch'      => $batch
                 ]);
             }
+            */
 
             Artisan::call('ocr:poll');
         }

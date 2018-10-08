@@ -62,12 +62,14 @@ class DwcFileImportJob implements ShouldQueue
         try
         {
             $fileService->makeDirectory($scratchFileDir);
-            $fileService->unzip(storage_path($this->import->file), $scratchFileDir);
+            $importFilePath = storage_path('app/' . $this->import->file);
+
+            $fileService->unzip($importFilePath, $scratchFileDir);
 
             $dwcProcess->process($this->import->project_id, $scratchFileDir);
 
-            $dupsCsv = config('config.reports_dir') . '/' . str_random() . 'dup.csv';
-            $rejCsv = config('config.reports_dir') . '/' . str_random() . 'rej.csv';
+            $dupsCsv = storage_path('app/reports/'. md5($this->import->id) . 'dup.csv');
+            $rejCsv = storage_path('app/reports/'. md5($this->import->id) . 'rej.csv');
 
             $duplicates = GeneralHelper::createCsv($dwcProcess->getDuplicates(), $dupsCsv);
             $rejects = GeneralHelper::createCsv($dwcProcess->getRejectedMedia(), $rejCsv);
@@ -76,11 +78,12 @@ class DwcFileImportJob implements ShouldQueue
 
             if ($project->workflow->actors->contains('title', 'OCR') && $dwcProcess->getSubjectCount() > 0)
             {
-                BuildOcrBatchesJob::dispatch($project->id);
+                OcrCreateJob::dispatch($project->id);
             }
 
+            $fileService->filesystem->cleanDirectory($scratchFileDir);
             $fileService->filesystem->deleteDirectory($scratchFileDir);
-            $fileService->filesystem->delete(storage_path($this->import->file));
+            $fileService->filesystem->delete($importFilePath);
             $this->import->delete();
             $this->delete();
         }
@@ -88,6 +91,7 @@ class DwcFileImportJob implements ShouldQueue
         {
             $this->import->error = 1;
             $this->import->save();
+            $fileService->filesystem->cleanDirectory($scratchFileDir);
             $fileService->filesystem->deleteDirectory($scratchFileDir);
 
             $message = trans('messages.import_process', [

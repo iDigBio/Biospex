@@ -77,12 +77,12 @@ class GroupsController extends Controller
 
             Flash::success(trans('messages.record_created'));
 
-            return redirect()->route('admin.groups.index');
+            return redirect()->route('webauth.groups.index');
         }
 
         Flash::warning(trans('messages.loginreq'));
 
-        return redirect()->route('admin.groups.create');
+        return redirect()->route('webauth.groups.create');
     }
 
     /**
@@ -119,7 +119,7 @@ class GroupsController extends Controller
         $group = $this->groupContract->findWith($groupId, ['owner', 'users.profile']);
 
         if (! $this->checkPermissions('isOwner', $group)) {
-            return redirect()->route('admin.groups.index');
+            return redirect()->route('webauth.groups.index');
         }
 
         $users = $group->users->mapWithKeys(function ($user) {
@@ -141,12 +141,12 @@ class GroupsController extends Controller
         $group = $this->groupContract->find($groupId);
 
         if ($this->checkPermissions('isOwner', $group)) {
-            return redirect()->route('admin.groups.index');
+            return redirect()->route('webauth.groups.index');
         }
 
         $this->groupContract->update($request->all(), $groupId) ? Flash::success(trans('messages.record_updated')) : Flash::error('messages.record_updated_error');
 
-        return redirect()->route('admin.groups.index');
+        return redirect()->route('webauth.groups.index');
     }
 
     /**
@@ -160,7 +160,7 @@ class GroupsController extends Controller
         $group = $this->groupContract->findWith($groupId, ['projects.nfnWorkflows', 'projects.workflowManagers']);
 
         if (! $this->checkPermissions('isOwner', $group)) {
-            return redirect()->route('admin.groups.index');
+            return redirect()->route('webauth.groups.index');
         }
 
         try {
@@ -168,7 +168,7 @@ class GroupsController extends Controller
                 if ($project->nfnWorkflows->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
                     Flash::error(trans('messages.expedition_process_exists'));
 
-                    return redirect()->route('admin.groups.index');
+                    return redirect()->route('webauth.groups.index');
                 }
             }
 
@@ -178,11 +178,11 @@ class GroupsController extends Controller
 
             Flash::success(trans('messages.record_deleted'));
 
-            return redirect()->route('admin.groups.index');
+            return redirect()->route('webauth.groups.index');
         } catch (\Exception $e) {
             Flash::error(trans('messages.record_delete_error'));
 
-            return redirect()->route('admin.groups.index');
+            return redirect()->route('webauth.groups.index');
         }
     }
 
@@ -198,13 +198,13 @@ class GroupsController extends Controller
         $group = $this->groupContract->find($groupId);
 
         if ( ! $this->checkPermissions('isOwner', $group)) {
-            return redirect()->route('admin.groups.index');
+            return redirect()->route('webauth.groups.index');
         }
 
         try {
             if ($group->user_id === $userId) {
                 Flash::error(trans('messages.group_user_deleted_owner'));
-                return redirect()->route('admin.groups.show', [$group->id]);
+                return redirect()->route('webauth.groups.show', [$group->id]);
             }
 
             $user = $this->userContract->find($userId);
@@ -212,10 +212,10 @@ class GroupsController extends Controller
 
             Flash::success(trans('messages.group_user_deleted'));
 
-            return redirect()->route('admin.groups.show', [$group->id]);
+            return redirect()->route('webauth.groups.show', [$group->id]);
         } catch (\Exception $e) {
             Flash::error(trans('messages.group_user_deleted_error'));
-            return redirect()->route('admin.groups.show', [$group->id]);
+            return redirect()->route('webauth.groups.show', [$group->id]);
         }
     }
 }

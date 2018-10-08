@@ -14,7 +14,7 @@ class ActorFactory
      */
     public static function create($actorPath, $actorClass)
     {
-        $classPath = __NAMESPACE__ . '\\' . $actorPath . '\\' . $actorClass;
+        $classPath = 'App\Services\Actor\\' . $actorPath . '\\' . $actorClass;
         return app($classPath);
     }
 }

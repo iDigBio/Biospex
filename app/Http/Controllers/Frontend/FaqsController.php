@@ -3,20 +3,43 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\Interfaces\Faq;
 use App\Repositories\Interfaces\FaqCategory;
 
 class FaqsController extends Controller
 {
+
+    /**
+     * @var Faq
+     */
+    public $faqContract;
+    
+    /**
+     * @var FaqCategory
+     */
+    public $faqCategoryContract;
+
+    /**
+     * FaqController constructor.
+     *
+     * @param Faq $faqContract
+     * @param FaqCategory $faqCategoryContract
+     */
+    public function __construct(Faq $faqContract, FaqCategory $faqCategoryContract)
+    {
+        $this->faqContract = $faqContract;
+        $this->faqCategoryContract = $faqCategoryContract;
+    }
+
     /**
      * Show categories.
-     *
-     * @param \App\Repositories\Interfaces\FaqCategory $faqCategoryContract
+     * 
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(FaqCategory $faqCategoryContract)
+    public function index()
     {
-        $categories = $faqCategoryContract->getCategoriesWithFaqOrdered();
+        $categories = $this->faqCategoryContract->getCategoriesWithFaqOrdered();
 
-        return view('front.faq.index', compact('categories'));
+        return view('frontend.faqs.index', compact('categories'));
     }
 }
