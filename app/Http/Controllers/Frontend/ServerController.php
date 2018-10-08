@@ -66,7 +66,7 @@ class ServerController extends Controller
 
         $info = preg_replace('%^.*<body>(.*)</body>.*$%ms', '$1', $phpinfo);
 
-        return view('frontend.info', compact('info'));
+        return view('front.info', compact('info'));
     }
 
     public function clear()
@@ -113,7 +113,7 @@ class ServerController extends Controller
 
         $elements = $dom->getElementsByTagName('li');
 
-        return view('frontend.ocr', compact('elements'));
+        return view('front.ocr', compact('elements'));
     }
 
     /**

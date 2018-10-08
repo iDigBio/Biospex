@@ -715,37 +715,61 @@ h1.project-wide {
 }
 
 
-
-/*
-circle div*/
-
-/*
-.circle-slider {
-    position: relative;
-    overflow: hidden;
+/* Home Page Carousel */
+/* Carousel */
+.inside-carousel {
     width: 500px;
     height: 500px;
-    padding: 35px;
-    padding-top: 130px;
-    background-color: #f8f9fa;
+    background-color: #ffffff;
     border: 2px solid #8cc640;
     background-size: cover;
     border-radius: 50%;
     margin: 0 auto;
     left: 0;
     right: 0;
-    display: block;
 }
 @media only screen and (max-width: 768px) {
-    .circle-slider {
-        position: relative;
+    .inside-carousel {
         overflow: hidden;
         width: 400px;
         height: 400px;
-        padding: 25px;
     }
 }
-*/
+
+.carousel-item {
+    height: 100%;
+}
+
+.smallertext{
+    padding-top: 5px;
+    font-size: 14px;
+    color: #9BA2AB;
+}
+
+#externalIndicators > li {
+    width: 70px;
+    height: 70px;
+    font-size: 30px;
+    text-align-all: center;
+    color: #9BA2AB;
+    border: 2px solid #8cc640;
+    border-radius: 50%;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .25);
+    padding-top: 8px;
+}
+
+#externalIndicators > li:hover {
+    background-color: #8cc640;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+#externalIndicators li.active {
+    background-color: #8cc640;
+    color: #ffffff;
+}
+
 .circle-slider h3 {
     color: #8cc640;
     font-size: 23px;
@@ -758,4 +782,48 @@ circle div*/
     text-align: center;
 }
 
+/* End Carousel */
+
+.jumbotron .container {
+    max-width: 70rem;
+}
+
+/** main nav buttons */
+li.nav-btn {
+    background-color: transparent;
+    border: 1px solid #dc3545;
+    color: white;
+    -webkit-transition: .25s ease-out;
+    -moz-transition: .25s ease-out;
+    -ms-transition: .25s ease-out;
+    -o-transition: .25s ease-out;
+    transition: .25s ease-out;
+    cursor: pointer;
+}
+
+li.nav-btn:hover {
+    background-color: #e83f29;
+    color: white;
+}
+
+li.nav-btn.show {
+    background-color: #bd2130;
+    border-color: #b21f2d;
+}
+
+@media only screen and (max-width:768px) {
+    li.nav-btn {
+        margin: 8px auto;
+        left: 0;
+        right: 0;
+        width: 200px;
+        display: block;
+    }
+
+    li.nav-btn:hover {
+        background-color: #e83f29; /*red -- link or call to action color */
+        border-color: #e83f29;
+        color: white;
+    }
+}
 

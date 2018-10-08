@@ -52,6 +52,6 @@ class AjaxController extends Controller
             return response()->json(['html' => 'Error retrieving the Event']);
         }
 
-        return view('frontend.events.scoreboard-content', ['event' => $event]);
+        return view('front.events.scoreboard-content', ['event' => $event]);
     }
 }

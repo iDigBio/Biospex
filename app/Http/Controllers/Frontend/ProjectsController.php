@@ -99,7 +99,7 @@ class ProjectsController extends Controller
             return redirect()->route('webauth.home.welcome');
         }
 
-        return view('frontend.projects.index', compact('groups'));
+        return view('front.project.index', compact('groups'));
     }
 
     /**
@@ -112,7 +112,7 @@ class ProjectsController extends Controller
         $groups = $this->groupContract->getUsersGroupsSelect(request()->user());
         $vars = $this->commonVariables->setCommonVariables(request()->user(), $groups);
         if ($vars) {
-            return view('frontend.projects.create', $vars);
+            return view('front.projects.create', $vars);
         }
 
         return redirect()->route('groups.create');
@@ -141,7 +141,7 @@ class ProjectsController extends Controller
             'stat',
         ]);
 
-        return view('frontend.projects.show', compact('user', 'project', 'expeditions'));
+        return view('front.projects.show', compact('user', 'project', 'expeditions'));
     }
 
     /**
@@ -197,7 +197,7 @@ class ProjectsController extends Controller
 
         $variables = array_merge($common, ['project' => $project, 'workflowCheck' => '']);
 
-        return view('frontend.projects.clone', $variables);
+        return view('front.projects.clone', $variables);
     }
 
     /**
@@ -225,7 +225,7 @@ class ProjectsController extends Controller
 
         $variables = array_merge($common, ['project' => $project, 'workflowEmpty' => $workflowEmpty]);
 
-        return view('frontend.projects.edit', $variables);
+        return view('front.projects.edit', $variables);
     }
 
     /**
@@ -277,7 +277,7 @@ class ProjectsController extends Controller
 
         $subjectAssignedCount = $this->subjectContract->getSubjectAssignedCount($projectId);
 
-        return view('frontend.projects.explore', compact('project', 'subjectAssignedCount'));
+        return view('front.projects.explore', compact('project', 'subjectAssignedCount'));
     }
 
     /**

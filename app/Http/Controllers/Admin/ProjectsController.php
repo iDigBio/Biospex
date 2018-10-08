@@ -13,7 +13,6 @@ use App\Repositories\Interfaces\User;
 use App\Http\Requests\ProjectFormRequest;
 use App\Services\File\FileService;
 use App\Services\Model\CommonVariables;
-use App\Services\Model\OcrQueueService;
 use App\Services\MongoDbService;
 use JavaScript;
 
@@ -66,7 +65,6 @@ class ProjectsController extends Controller
      * @param \App\Repositories\Interfaces\Project $projectContract
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      * @param \App\Repositories\Interfaces\Subject $subjectContract
-     * @param \App\Services\Model\OcrQueueService $ocrQueueService
      * @param \App\Services\File\FileService $fileService
      * @param \App\Services\MongoDbService $mongoDbService
      * @param \App\Services\Model\CommonVariables $commonVariables
@@ -76,7 +74,6 @@ class ProjectsController extends Controller
         Project $projectContract,
         Expedition $expeditionContract,
         Subject $subjectContract,
-        OcrQueueService $ocrQueueService,
         FileService $fileService,
         MongoDbService $mongoDbService,
         CommonVariables $commonVariables
@@ -86,7 +83,6 @@ class ProjectsController extends Controller
         $this->projectContract = $projectContract;
         $this->expeditionContract = $expeditionContract;
         $this->subjectContract = $subjectContract;
-        $this->ocrQueueService = $ocrQueueService;
         $this->fileService = $fileService;
         $this->mongoDbService = $mongoDbService;
     }

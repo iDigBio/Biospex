@@ -11,9 +11,9 @@ class UserPolicy
         return $user->isAdmin() ? true : null;
     }
 
-    public function admin()
+    public function isAdmin($user)
     {
-        return false;
+        return $user->isAdmin() ? true : null;
     }
 
     public function edit($user)

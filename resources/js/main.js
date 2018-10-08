@@ -261,13 +261,10 @@ $(function() {
         clearInterval(timeInterval);
     });
 
-    $('#myCarousel').bind('slide.bs.carousel', function (e) {
-        console.log('slide event!');
-    });
-
-    $('#myCarousel').bind('slid', function (e) {
-        console.log("slid event!");
-    });
+    $('#processCarousel').on('slide.bs.carousel', function (e) {
+        $('#carousel-li-'+e.from).removeClass('active');
+        $('#carousel-li-'+e.to).addClass('active');
+    })
 
 });
 

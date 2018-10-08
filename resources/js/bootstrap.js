@@ -32,7 +32,6 @@ try {
     require("amcharts3/amcharts/plugins/responsive/responsive");
 
     require("socket.io-client/dist/socket.io");
-    require("slick/index");
     require("./amchart");
     require("./main");
     require("./grid");

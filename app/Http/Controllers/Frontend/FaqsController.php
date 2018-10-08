@@ -40,6 +40,6 @@ class FaqsController extends Controller
     {
         $categories = $this->faqCategoryContract->getCategoriesWithFaqOrdered();
 
-        return view('frontend.faqs.index', compact('categories'));
+        return view('front.faqs.index', compact('categories'));
     }
 }

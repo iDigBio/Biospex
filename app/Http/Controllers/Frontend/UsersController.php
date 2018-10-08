@@ -67,7 +67,7 @@ class UsersController extends Controller
         $timezones = DateHelper::timeZoneSelect();
         $cancel = route('webauth.projects.index');
 
-        return view('frontend.users.edit', compact('user', 'timezones', 'cancel'));
+        return view('front.users.edit', compact('user', 'timezones', 'cancel'));
     }
 
     /**

@@ -17,18 +17,11 @@ class HomeController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Project $projectContract
-     * @param PanoptesTranscription $panoptesTranscriptionContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Project $projectContract, PanoptesTranscription $panoptesTranscriptionContract)
+    public function index()
     {
-        $carouselProjects = $projectContract->getRandomProjectsForCarousel(5);
-        $recentProjects = $projectContract->getRecentProjects(5);
-        $transcriptionCount = number_format($panoptesTranscriptionContract->getTotalTranscriptions());
-        $contributorCount = number_format($panoptesTranscriptionContract->getContributorCount());
-
-        return view('frontend.home', compact('carouselProjects', 'recentProjects', 'transcriptionCount', 'contributorCount'));
+        return view('front.home');
     }
 
     /**
@@ -38,7 +31,7 @@ class HomeController extends Controller
      */
     public function welcome()
     {
-        return view('frontend.welcome');
+        return view('front.welcome');
     }
 
     /**
@@ -53,7 +46,7 @@ class HomeController extends Controller
         $project = $projectContract->getProjectPageBySlug($slug);
         $events = $project->events->sortByDesc('start_date');
 
-        return view('frontend.project', compact('project', 'events'));
+        return view('front.project', compact('project', 'events'));
     }
 
     /**
@@ -67,7 +60,7 @@ class HomeController extends Controller
     {
         $recentProjects = $projectContract->getRecentProjects($count + 5);
 
-        return view('frontend.layouts.partials.home-project-list', compact('recentProjects'));
+        return view('front.layouts.partials.home-project-list', compact('recentProjects'));
     }
 
     /**
@@ -91,7 +84,7 @@ class HomeController extends Controller
      */
     public function getContact()
     {
-        return view('frontend.contact');
+        return view('front.contact');
     }
 
     /**
@@ -118,7 +111,7 @@ class HomeController extends Controller
      */
     public function vision()
     {
-        return view('frontend.vision');
+        return view('front.vision');
     }
 
     /**
@@ -135,6 +128,6 @@ class HomeController extends Controller
             return response()->json(['html' => 'Error retrieving the Event']);
         }
 
-        return view('frontend.events.scoreboard-content', ['event' => $event]);
+        return view('front.events.scoreboard-content', ['event' => $event]);
     }
 }

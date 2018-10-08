@@ -34,7 +34,6 @@
 @endsection
 
 @section('content')
-
     <section class="jumbotron text-center">
         <div class="container">
             <img src="/images/logo-tagline.png" align="Biospex Tag Line">
@@ -46,8 +45,6 @@
             resource management, public policy, or other activities.') }}</p>
         </div>
     </section>
-
-
     <!--
     Tutorial Section -->
     <section class="tutorial-2" id="learn-more">
@@ -136,55 +133,52 @@
         </div>
     </section>
 
-    <section class="mb-5">
+    <section>
         <div class="row">
             <div class="col d-flex justify-content-center">
-                    <div class="col-md-4 text-center" role="group" aria-label="External carousel buttons">
-                        <h2>The Process<br>
-                            <span class="smallertext">Specimen digitization is easy as 123</span></h2>
-                        <ul id="externalIndicators" class="list-inline">
-                            <li data-target="#processCarousel" data-slide-to="0" class="active list-inline-item">1</li>
-                            <li data-target="#processCarousel" data-slide-to="1" class="list-inline-item">2</li>
-                            <li data-target="#processCarousel" data-slide-to="2" class="list-inline-item">3</li>
-                        </ul>
-                    </div>
-                    <div id="processCarousel" class="carousel slide col-md-5">
-                        <div class="carousel-inner box-shadow inside-carousel">
-                            <div class="carousel-item active"
-                                 style="background-image: url(/images/slider/slider1.png);">
-                                <div class="circle-slider p-5">
-                                    <h3 class="text-center">PROJECT</h3>
-                                    <p>Create a Project for your digital images and use BIOSPEX to run optical character
-                                        recognition (OCR) on the images. Bundle the specimen images using the OCR text
-                                        string,
-                                        or similar traits like State, County, or collection date, into various
-                                        Expeditions
-                                        that will ignite public interest.</p>
-                                </div>
+                <div class="col-md-4 text-center" role="group" aria-label="External carousel buttons">
+                    <h2>The Process<br>
+                        <span class="smallertext">Specimen digitization is easy as 123</span></h2>
+                    <ul id="externalIndicators" class="list-inline">
+                        <li id="carousel-li-0" data-target="#processCarousel" data-slide-to="0" class="active list-inline-item">1</li>
+                        <li id="carousel-li-1" data-target="#processCarousel" data-slide-to="1" class="list-inline-item">2</li>
+                        <li id="carousel-li-2" data-target="#processCarousel" data-slide-to="2" class="list-inline-item">3</li>
+                    </ul>
+                </div>
+                <div id="processCarousel" class="carousel slide col-md-6">
+                    <div class="carousel-inner box-shadow inside-carousel">
+                        <div class="carousel-item active" style="background-image: url(/images/slider/slider1.png);">
+                            <div class="circle-slider p-5">
+                                <h3 class="text-center">PROJECT</h3>
+                                <p>Create a Project for your digital images and use BIOSPEX to run optical character
+                                    recognition (OCR) on the images. Bundle the specimen images using the OCR text
+                                    string,
+                                    or similar traits like State, County, or collection date, into various
+                                    Expeditions
+                                    that will ignite public interest.</p>
                             </div>
-                            <div class="carousel-item" style="background-image: url(/images/slider/slider2.png);">
-                                <div class="circle-slider p-5">
-                                    <h3 class="text-center">EXPEDITIONS</h3>
-                                    <p>The curator then uses BIOSPEX to deploy the expeditions a few at a time to an
-                                        existing
-                                        website with a large citizen science community for label transcription.</p>
-                                </div>
+                        </div>
+                        <div class="carousel-item" style="background-image: url(/images/slider/slider2.png);">
+                            <div class="circle-slider p-5">
+                                <h3 class="text-center">EXPEDITIONS</h3>
+                                <p>The curator then uses BIOSPEX to deploy the expeditions a few at a time to an
+                                    existing
+                                    website with a large citizen science community for label transcription.</p>
                             </div>
-                            <div class="carousel-item" style="background-image: url(/images/slider/slider3.png);">
-                                <div class="circle-slider p-5">
-                                    <h3 class="text-center">EXPORT</h3>
-                                    <p>The curator processes the resulting transcriptions in BIOSPEX later and exports
-                                        the data back to her local data management system.
-                                    </p>
-                                </div>
+                        </div>
+                        <div class="carousel-item" style="background-image: url(/images/slider/slider3.png);">
+                            <div class="circle-slider p-5">
+                                <h3 class="text-center">EXPORT</h3>
+                                <p>The curator processes the resulting transcriptions in BIOSPEX later and exports
+                                    the data back to her local data management system.
+                                </p>
                             </div>
                         </div>
                     </div>
-
+                </div>
             </div>
         </div>
     </section>
-
 @endsection
 @section('custom-script')
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
