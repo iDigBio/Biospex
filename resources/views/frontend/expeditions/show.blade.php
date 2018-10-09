@@ -59,8 +59,8 @@
                         <div class="col-md-2">
                             @if (null === $expedition->workflowManager || $expedition->workflowManager->stopped === 1)
                                 <button title="@lang('pages.processTitle')" class="btn btn-success btn-sm" type="button"
-                                        {{ $expedition->stat->subject_count === 0 ? 'disabled' : '' }}
-                                        onClick="location.href='{{ route('admin.expeditions.process', [$expedition->project->id, $expedition->id]) }}'">
+                                        {{ $expedition->stat->local_subject_count === 0 ? 'disabled' : '' }}
+                                        onClick="location.href='{{ route('webauth.expeditions.process', [$expedition->project->id, $expedition->id]) }}'">
                                     <span class="fa fa-play fa-lrg"></span> @lang('pages.process')</button>
                             @else
                                 <button class="btn btn-sm btn-danger" title="@lang('pages.stopTitle')"
@@ -84,7 +84,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <h4>{{ trans_choice('pages.subjects_assigned', 1) }}: {{ $expedition->stat->subject_count }}</h4>
+            <h4>{{ trans_choice('pages.subjects_assigned', 1) }}: {{ $expedition->stat->local_subject_count }}</h4>
             <div class="table-responsive" id="jqtable">
                 <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
                 <div id="pager"></div>
