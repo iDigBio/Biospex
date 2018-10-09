@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
+use App\Models\Traits\Presentable;
+use App\Presenters\TeamPresenter;
 
 class Team extends Model
 {
 
-    use LadaCacheTrait;
+    use LadaCacheTrait, Presentable;
 
     /**
      * @inheritDoc
@@ -27,11 +29,16 @@ class Team extends Model
     ];
 
     /**
+     * @var string
+     */
+    protected $presenter = TeamPresenter::class;
+
+    /**
      * TeamCategory relationship.
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function category()
+    public function teamCategory()
     {
         return $this->belongsTo(TeamCategory::class);
     }
