@@ -9,7 +9,7 @@ $.extend($.jgrid.cellattr, {
 });
 
 
-var Grid = {};
+let Grid = {};
 
 $(function () {
     if ($("#jqGridModal").length > 0) {
@@ -46,7 +46,7 @@ $(function () {
 function jqBuildGrid() {
 
         return function (result) {
-        var cm = result.colModel;
+        let cm = result.colModel;
         mapFormatter(cm);
         Grid.obj.jqGrid({
             jsonReader: {
@@ -93,7 +93,7 @@ function jqBuildGrid() {
             onSelectAll: function (rowIds, isSelected) {
                 if (switchCbColumn()) return;
 
-                var i, count, id;
+                let i, count, id;
                 for (i = 0, count = rowIds.length; i < count; i++) {
                     id = rowIds[i];
                     updateIdsOfSelectedRows(id, isSelected);
@@ -127,7 +127,7 @@ function jqBuildGrid() {
             {}, // add options
             {
                 onclickSubmit: function (jqXHR) {
-                    var $this = $(this), p = $this.jqGrid("getGridParam"), newPage = p.page;
+                    let $this = $(this), p = $this.jqGrid("getGridParam"), newPage = p.page;
 
                     if (p.lastpage > 1) {// on the multipage grid reload the grid
                         if (p.reccount === 1 && newPage === p.lastpage) {
@@ -271,8 +271,8 @@ function handleCellSelect(id, event) {
     }
 
     if (Grid.explore) {
-        var $grid = $('#' + Grid.id);
-        var rowData = $grid.jqGrid('getRowData', id);
+        let $grid = $('#' + Grid.id);
+        let rowData = $grid.jqGrid('getRowData', id);
         if (rowData['expedition_ids'] === 'Yes') {
             return false;
         }
@@ -286,17 +286,17 @@ function handleCellSelect(id, event) {
  * @param column
  */
 function mapFormatter(column) {
-    var functionsMapping = {
+    let functionsMapping = {
         "imagePreview": function (cellValue, opts, rowObjects) {
-            var url = encodeURIComponent(cellValue);
+            let url = encodeURIComponent(cellValue);
             return '<a href="' + cellValue + '" target="_new">View Image</a>&nbsp;&nbsp;'
                 + '<a href="/images/preview?url=' + url + '" class="thumb-view">View Thumb</a>&nbsp;&nbsp;'
                 + '<a href="' + cellValue + '" class="url-view">View Url</a>';
         }
     };
 
-    for (var i = 0; i < column.length; i++) {
-        var col = column[i];
+    for (let i = 0; i < column.length; i++) {
+        let col = column[i];
         if (col.hasOwnProperty("formatter") &&
             functionsMapping.hasOwnProperty(col.formatter)) {
             col.formatter = functionsMapping[col.formatter];
@@ -310,9 +310,9 @@ function mapFormatter(column) {
  * differently due to ids not being
  */
 function setMultipleSelect() {
-    var $grid = $('#' + Grid.id);
-    var ids = $grid.jqGrid('getDataIDs');
-    for (var i = 0; i < ids.length; i++) {
+    let $grid = $('#' + Grid.id);
+    let ids = $grid.jqGrid('getDataIDs');
+    for (let i = 0; i < ids.length; i++) {
 
         if (!Grid.loadSate && $.inArray(ids[i], Grid.subjectIdsObj.data('ids')) !== -1) {
             $grid.setSelection(ids[i]);
@@ -324,7 +324,7 @@ function setMultipleSelect() {
         }
 
         if (Grid.explore) {
-            var rowData = $grid.jqGrid('getRowData', ids[i]);
+            let rowData = $grid.jqGrid('getRowData', ids[i]);
             if (rowData['expedition_ids'] === 'Yes') {
                 $('#' + ids[i] + ' input[type=checkbox]').prop('disabled', true);
             }
@@ -340,7 +340,7 @@ function setMultipleSelect() {
  * @param isSelected
  */
 function updateIdsOfSelectedRows(id, isSelected) {
-    var index = $.inArray(id, Grid.subjectIdsObj.data('ids'));
+    let index = $.inArray(id, Grid.subjectIdsObj.data('ids'));
     if (!isSelected && index >= 0) {
         Grid.subjectIdsObj.data('ids').splice($.inArray(id, Grid.subjectIdsObj.data('ids')), 1);
     } else if (index < 0) {
