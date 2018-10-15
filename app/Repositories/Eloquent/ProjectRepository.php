@@ -29,8 +29,6 @@ class ProjectRepository extends EloquentRepository implements Project
         });
 
         $project->resources()->saveMany($resources->all());
-
-
     }
 
     /**
@@ -60,7 +58,6 @@ class ProjectRepository extends EloquentRepository implements Project
         }
 
         return $model->resources()->saveMany($resources->all());
-
     }
 
     /**
@@ -105,13 +102,16 @@ class ProjectRepository extends EloquentRepository implements Project
     public function getProjectPageBySlug($slug)
     {
         $results = $this->model->with([
-                'group.users.profile',
-                'expeditions.stat',
-                'expeditions.actors',
-                'amChart',
-                'resources',
-                'events'
-            ])->where('slug', '=', $slug)->first();
+            'group.users.profile',
+            'expeditions.stat',
+            'expeditions.actors',
+            'amChart',
+            'resources',
+        ])->with([
+            'events' => function ($q) {
+                $q->orderBy('start_date', 'desc');
+            },
+        ])->where('slug', '=', $slug)->first();
 
         $this->resetModel();
 
