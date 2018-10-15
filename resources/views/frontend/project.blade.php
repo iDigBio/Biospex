@@ -121,8 +121,10 @@
                 </dl>
 
                 <div id="event-boards">
-                    <h2>{{ trans('pages.events') }}</h2>
-                    @each('frontend.events.partials.projectevent-loop', $events, 'event')
+                    @if($project->events->isNotEmpty())
+                        <h2>{{ trans('pages.events') }}</h2>
+                        @each('frontend.events.partials.projectevent-loop', $project->events, 'event')
+                    @endif
                 </div>
 
             </div>
