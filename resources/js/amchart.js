@@ -7,15 +7,15 @@ $(function () {
     AmCharts.addInitHandler(function (chart) {
 
         AmCharts.resizeCategory = function (chart) {
-            var standardHeight = 400;
-            var calculatedHeight = 100 * collections.length;
-            var containerHeight = standardHeight > calculatedHeight ? standardHeight : calculatedHeight;
+            let standardHeight = 400;
+            let calculatedHeight = 100 * collections.length;
+            let containerHeight = standardHeight > calculatedHeight ? standardHeight : calculatedHeight;
 
             chart.div.style.height = containerHeight + 'px';
         };
 
         // check for dataLoader
-        var loader = chart.dataLoader;
+        let loader = chart.dataLoader;
         if (loader !== undefined && loader.url !== undefined) {
             if (loader.complete) {
                 loader._complete = loader.complete;
@@ -31,9 +31,9 @@ $(function () {
     }, ['serial']);
 
     if ($("#chartdiv").length > 0) {
-        var collections = [];
+        let collections = [];
 
-        var chart = AmCharts.makeChart("chartdiv", {
+        let chart = AmCharts.makeChart("chartdiv", {
             type: "serial",
             titles: [{
                 size: 15,
@@ -79,13 +79,13 @@ $(function () {
                 "format": "json",
                 "showErrors": true,
                 "postProcess": function (data, config, chart) {
-                    var graphs = []
+                    let graphs = []
                         , hidden_graphs = []
                         , chartData = []
                         , current_day;
                     //prepare the data for consumption by amcharts
-                    for (var i = 0; i < data.length; i++) {
-                        var item = data[i]
+                    for (let i = 0; i < data.length; i++) {
+                        let item = data[i]
                             , collection = item.collection
                             , count = item.count
                             , day = item.day
@@ -109,8 +109,8 @@ $(function () {
                     /////////////////////////////////////
                     //create a graph for each collection
                     /////////////////////////////////////
-                    for (var i = 0; i < collections.length; i++) {
-                        var col = collections[i];
+                    for (let i = 0; i < collections.length; i++) {
+                        let col = collections[i];
                         if (col != "") {
                             graphs.push({
                                 valueAxis: "a1",
@@ -142,8 +142,8 @@ $(function () {
                     // if any of the data is missing a collection, set
                     // that collections count to zero
                     //////////////////////////////////////////
-                    for (var i = 0; i < chartData.length; i++) {
-                        var data = chartData[i];
+                    for (let i = 0; i < chartData.length; i++) {
+                        let data = chartData[i];
                         collections.forEach(function (col) {
                             if (!data.hasOwnProperty(col)) {
                                 data[col] = 0
@@ -168,7 +168,7 @@ $(function () {
     }
 
     if ($("#chartTranscriptionsDiv").length > 0) {
-        var transcriptChart = AmCharts.makeChart("chartTranscriptionsDiv", {
+        let transcriptChart = AmCharts.makeChart("chartTranscriptionsDiv", {
             "type": "serial",
             "theme": "light",
             "marginRight": 70,

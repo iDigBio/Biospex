@@ -46,9 +46,8 @@ class HomeController extends Controller
     public function project($slug, Project $projectContract)
     {
         $project = $projectContract->getProjectPageBySlug($slug);
-        $events = $project->events->sortByDesc('start_date');
 
-        return view('front.project', compact('project', 'events'));
+        return view('front.project', compact('project'));
     }
 
     /**
@@ -75,6 +74,10 @@ class HomeController extends Controller
     public function loadAmChart(AmChart $amChartContract, $projectId)
     {
         $record = $amChartContract->findBy('project_id', $projectId);
+
+        if ($record === null) {
+            return '';
+        }
 
         return json_decode($record->data);
     }
