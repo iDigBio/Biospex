@@ -287,9 +287,9 @@ class ExpeditionsController extends Controller
         try {
             $expedition = $this->expeditionContract->update($request->all(), $expeditionId);
 
-            if (isset($attributes['workflow'])) {
+            if ($request->filled('workflow')) {
                 $values = [
-                    'project_id'    => $request->get('project_id'),
+                    'project_id'    => $request->input('project_id'),
                     'expedition_id' => $expedition->id,
                     'workflow'      => $request->get('workflow')
                 ];
