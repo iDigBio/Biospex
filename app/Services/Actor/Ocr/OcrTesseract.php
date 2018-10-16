@@ -69,6 +69,8 @@ class OcrTesseract extends OcrBase
             throw new \Exception(__('Error retrieving ocr record '.$mongoId));
         }
 
+        $this->updateHeader();
+
         $this->processImages();
 
         $this->deleteDir();
@@ -83,8 +85,8 @@ class OcrTesseract extends OcrBase
             if ($subject['status'] === 'pending') {
                 return true;
             }
-
-            $this->updateHeader();
+            $count = $this->file['header']['processed'] + 1;
+            $this->updateHeader($count);
 
             return false;
         })->each(function ($subject, $key) {
@@ -204,12 +206,18 @@ class OcrTesseract extends OcrBase
     public function updateFile($key, array $newValues)
     {
         $this->file['subjects'][$key] = array_merge($this->file['subjects'][$key], $newValues);
-        $this->updateHeader();
+        $count = $this->file['header']['processed'] + 1;
+        $this->updateHeader($count);
     }
 
-    public function updateHeader()
+    /**
+     * Update header.
+     *
+     * @param int $count
+     */
+    public function updateHeader($count = 0)
     {
-        $this->file['header']['processed'] = $this->file['header']['processed'] + 1;
+        $this->file['header']['processed'] = $count;
         $this->ocrFile->update($this->file, $this->file['_id']);
     }
 }
