@@ -84,7 +84,7 @@ class Project extends Model implements AttachableInterface
     public function __construct(array $attributes = [])
     {
         $this->hasAttachedFile('logo', ['variants' => ['standard' => '200x200', 'thumb' => '200x200']]);
-        //$this->hasAttachedFile('banner', ['variants' => ['thumb' => '200x50']]);
+        $this->hasAttachedFile('banner', ['variants' => ['thumb' => '200x50']]);
 
         parent::__construct($attributes);
     }
