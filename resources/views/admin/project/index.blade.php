@@ -9,8 +9,3 @@
 @section('content')
     This is my content
 @endsection
-
-@section('footer')
-    @include('common.footer')
-    @include('common.contributors')
-@endsection

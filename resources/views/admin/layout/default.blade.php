@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-@include('common.head')
+<head>
+    @include('common.head')
+    @yield('custom-style')
+</head>
 <body>
 <header>
     <nav class="header-admin navbar navbar-expand-md box-shadow">
@@ -9,8 +12,11 @@
         @include('common.nav')
     </nav>
 </header>
-@yield('content')
+<div class="container mb-4">
+    @yield('content')
+</div>
 @include('common.admin-footer')
 @include('common.script')
+@yield('custom-script')
 </body>
 </html>

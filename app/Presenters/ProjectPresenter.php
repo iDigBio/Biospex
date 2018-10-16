@@ -27,7 +27,7 @@ class ProjectPresenter extends Presenter
         $logo = $this->model->logo;
 
         return $this->variantExists($logo, 'thumb') ?
-            $logo->url('thumb') : Storage::url('logos/thumb/missing.png');
+            $logo->url('thumb') : Storage::url('logos/thumb/project.png');
     }
 
     /**

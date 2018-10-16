@@ -17,11 +17,13 @@ class HomeController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param \App\Repositories\Interfaces\Project $projectContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function index(Project $projectContract)
     {
-        return view('front.home');
+        $project = $projectContract->getProjectHomePage();
+        return view('front.home', compact('project'));
     }
 
     /**

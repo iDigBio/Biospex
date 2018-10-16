@@ -185,25 +185,17 @@ class ProjectRepository extends EloquentRepository implements Project
      * @return mixed
      * @throws \Exception
      */
-    public function getPublicIndex(array $attributes = [])
+    public function getProjectHomePage(array $attributes = [])
     {
-        /*
-        $results = $this->model->withCount(['expeditions' => function($query) {
-            $query->groupBy('project_id');
-        }])->whereHas('nfnWorkflows')
-            ->orderBy('created_at', 'desc')->find(13);
-        */
-
-        $results = $this->model->withCount('expeditions')->with(['expeditions.stat' => function($q){
-            $q->sum('transcriptions_completed');
+        $results = $this->model->withCount('expeditions')
+            ->with(['expeditions' => function($q){
+                $q->whereHas('nfnWorkflow');
+                $q->inRandomOrder()->first();
         }])
-            ->whereHas('nfnWorkflows')->orderBy('created_at', 'desc')->get();
-
+            ->inRandomOrder()->first();
 
         $this->resetModel();
 
         return $results;
-
-        //    ->whereHas('nfnWorkflows')->orderBy('created_at', 'desc')->limit($count)->get($attributes);
     }
 }

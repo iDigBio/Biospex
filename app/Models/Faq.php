@@ -28,7 +28,7 @@ class Faq extends Model
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function category()
+    public function faqCategory()
     {
         return $this->belongsTo(FaqCategory::class);
     }

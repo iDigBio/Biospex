@@ -57,20 +57,19 @@
 
                     <div class="card-project mb-4 px-4 box-shadow" data-aos="fade-down" data-aos-easing="ease-in"
                          data-aos-duration="2000" data-aos-once="true">
-                        <h2 class="text-center pt-4">Project Tile Project Name</h2>
+                        <h2 class="text-center pt-4">{{ $project->title }}</h2>
                         <hr>
                         <div class="row card-body">
                             <div class="col-7">
                                 <ul>
-                                    <li>FSU Herbautiom Collection</li>
-                                    <li>346 Expeditions</li>
-                                    <li>655 Transcriptions</li>
-                                    <li>400 Unique Transcriptions</li>
+                                    <li>{{ $project->description_short }}</li>
+                                    <li>{{ $project->expeditions_count }} {{ __('Expeditions') }}</li>
+                                    <li>{{ $project->transcriptions_count }} {{ __('Transcriptions') }}</li>
                                 </ul>
                             </div>
 
                             <div class="col-5">
-                                <img class="img-fluid" src="/images/we-dig-fl-plants.svg" alt="Card image cap">
+                                <img class="img-fluid" src="{{ $project->present()->logo_thumb_url }}" alt="Card image cap">
                             </div>
                         </div>
 

@@ -83,8 +83,8 @@ class Project extends Model implements AttachableInterface
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('logo', ['variants' => ['thumb' => '100x67', 'avatar' => '32x32']]);
-        $this->hasAttachedFile('banner', ['variants' => ['thumb' => '200x50', 'carousel' => '650x225']]);
+        $this->hasAttachedFile('logo', ['variants' => ['standard' => '200x200', 'thumb' => '200x200']]);
+        //$this->hasAttachedFile('banner', ['variants' => ['thumb' => '200x50']]);
 
         parent::__construct($attributes);
     }
@@ -418,6 +418,14 @@ class Project extends Model implements AttachableInterface
     public function subjectsCount()
     {
         return $this->subjects()->count();
+    }
+
+    /**
+     * @return int
+     */
+    public function getTranscriptionsCountAttribute()
+    {
+        return $this->panoptesTranscriptions()->count();
     }
 
 }
