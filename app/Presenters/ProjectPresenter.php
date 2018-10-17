@@ -23,11 +23,11 @@ class ProjectPresenter extends Presenter
      *
      * @return string
      */
-    public function logoThumbUrl() {
+    public function logoStandardUrl() {
         $logo = $this->model->logo;
 
-        return $this->variantExists($logo, 'thumb') ?
-            $logo->url('thumb') : Storage::url('logos/thumb/project.png');
+        return $this->variantExists($logo, 'standard') ?
+            $logo->url('standard') : Storage::url('logos/standard/project.png');
     }
 
     /**

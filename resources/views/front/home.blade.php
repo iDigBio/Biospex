@@ -69,7 +69,7 @@
                             </div>
 
                             <div class="col-5">
-                                <img class="img-fluid" src="{{ $project->present()->logo_thumb_url }}" alt="Card image cap">
+                                <img class="img-fluid" src="{{ $project->present()->logo_standard_url }}" alt="Card image cap">
                             </div>
                         </div>
 
