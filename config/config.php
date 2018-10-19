@@ -38,7 +38,7 @@ return [
     'classifications_transcript'  => storage_path('app/classifications/transcript'),
     'classifications_fusiontable' => storage_path('app/classifications/fusiontable'),
 
-    'python_path'      => env('LABEL_RECONCILIATIONS_PATH').'/venv/bin/python3',
+    'python_path'      => env('LABEL_RECONCILIATIONS_PATH').'/venv/bin/python',
     'reconcile_path'   => env('LABEL_RECONCILIATIONS_PATH').'/reconcile.py',
     'nfn_table_prefix' => env('NFN_TABLE_PREFIX', ''),
 
