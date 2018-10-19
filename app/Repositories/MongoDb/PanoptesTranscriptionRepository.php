@@ -112,7 +112,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getContributorCount()
     {
-        $results = Cache::tags('panoptesTranscriptions')->rememberForever(md5(__METHOD__), function () {
+        $results = $result = Cache::remember(md5(__METHOD__), 240, function () {
             return $this->model
                 ->where('user_name', 'not regexp', '/^not-logged-in.*/i')
                 ->groupBy('user_name')
@@ -134,7 +134,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getUserTranscriptionCount($projectId)
     {
-        $results = Cache::tags('panoptesTranscriptions')->rememberForever(md5(__METHOD__ . $projectId), function () use ($projectId) {
+        $results = $result = Cache::remember(md5(__METHOD__ . $projectId), 240, function () use ($projectId) {
             return $this->model->raw(function ($collection) use ($projectId) {
                 return $collection->aggregate(
                     [
@@ -158,7 +158,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
                                     '$addToSet' => '$subject_expeditionId'
                                 ],
                                 'last_date'          => [
-                                    '$first' => '$classification_finished_at'
+                                    '$max' => '$classification_finished_at'
                                 ]
                             ]
                         ],
