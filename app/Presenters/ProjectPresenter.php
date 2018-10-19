@@ -35,11 +35,11 @@ class ProjectPresenter extends Presenter
      *
      * @return string
      */
-    public function logoAvatarUrl() {
+    public function logoThumbUrl() {
         $logo = $this->model->logo;
 
-        return $this->variantExists($logo,'avatar') ?
-            $logo->url('avatar') : Storage::url('logos/avatar/missing.png');
+        return $this->variantExists($logo,'thumb') ?
+            $logo->url('thumb') : Storage::url('logos/thumb/project.png');
     }
 
     /**
@@ -76,5 +76,45 @@ class ProjectPresenter extends Presenter
 
         return $this->variantExists($banner, 'carousel') ?
             $banner->url('carousel') : Storage::url('banners/carousel/missing.png');
+    }
+
+    /**
+     * Return twitter with font awesome button
+     * @return string
+     */
+    public function organizationIcon()
+    {
+        return $this->model->organization_website === null ? ''
+            : '<a href="'. $this->model->organization_website .'"><i class="fas fa-building"></i> <span class="d-none text d-sm-inline"></span></a>';
+    }
+
+    /**
+     * Return twitter with font awesome button
+     * @return string
+     */
+    public function twitterIcon()
+    {
+        return $this->model->twitter === null ? ''
+            : '<a href="'. $this->model->twitter .'"><i class="fab fa-twitter"></i> <span class="d-none text d-sm-inline"></span></a>';
+    }
+
+    /**
+     * Return facebook with Icon awesome button
+     * @return string
+     */
+    public function facebookIcon()
+    {
+        return $this->model->facebook === null ? ''
+            : '<a href="'. $this->model->facebook .'"><i class="fab fa-facebook"></i> <span class="d-none text d-sm-inline"></span></a>';
+    }
+
+    /**
+     * Return facebook with Icon awesome button
+     * @return string
+     */
+    public function contactEmailIcon()
+    {
+        return $this->model->contact_email === null ? ''
+            : '<a href="mailto:'.$this->model->contact_email.'"><i class="far fa-envelope"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
 }

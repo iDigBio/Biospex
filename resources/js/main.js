@@ -262,8 +262,12 @@ $(function() {
     });
 
     $('#processCarousel').on('slide.bs.carousel', function (e) {
-        $('#carousel-li-'+e.from).removeClass('active');
-        $('#carousel-li-'+e.to).addClass('active');
+        $('.carousel-li-'+e.from).each(function(){
+            $(this).removeClass('active');
+        });
+        $('.carousel-li-'+e.to).each(function(){
+            $(this).addClass('active');
+        });
     })
 
 });

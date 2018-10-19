@@ -177,7 +177,7 @@ class ProjectsController extends Controller
 
         Flash::error(trans('messages.record_save_error'));
 
-        return redirect()->route('projects.create')->withInput();
+        return redirect()->route('admin.projects.create')->withInput();
     }
 
     /**

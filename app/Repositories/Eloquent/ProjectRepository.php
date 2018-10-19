@@ -188,10 +188,11 @@ class ProjectRepository extends EloquentRepository implements Project
      * @return mixed
      * @throws \Exception
      */
-    public function getProjectHomePage(array $attributes = [])
+    public function getProjectForHomePage(array $attributes = [])
     {
         $results = $this->model->withCount('expeditions')
             ->with(['expeditions' => function($q){
+                $q->with(['stat']);
                 $q->whereHas('nfnWorkflow');
                 $q->inRandomOrder()->first();
         }])

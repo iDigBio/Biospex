@@ -19,7 +19,7 @@
                 <button title="@lang('pages.editTitle')" class="btn btn-warning btn-sm" type="button"
                         onClick="location.href='{{ route('admin.projects.edit', [$project->id]) }}'"><span
                             class="fa fa-cog fa-lrg"></span> @lang('pages.edit')</button>
-                @can('isOwner', $project->group
+                @can('isOwner', $project->group)
                     <button class="btn btn-sm btn-danger" title="@lang('pages.deleteTitle')"
                             data-href="{{ route('admin.projects.delete', [$project->id]) }}"
                             data-method="delete"

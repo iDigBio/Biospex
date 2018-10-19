@@ -53,7 +53,7 @@
             <div class="row p-5">
 
                 <div class="col-md-6 mt-5 p-1 pb-md-3">
-                    <h2 class="home-header-cta">The Project</h2>
+                    <h2 class="home-header-cta">{{ __('The Project') }}The Project</h2>
 
                     <div class="card-project mb-4 px-4 box-shadow" data-aos="fade-down" data-aos-easing="ease-in"
                          data-aos-duration="2000" data-aos-once="true">
@@ -63,25 +63,26 @@
                             <div class="col-7">
                                 <ul>
                                     <li>{{ $project->description_short }}</li>
-                                    <li>{{ $project->expeditions_count }} {{ __('Expeditions') }}</li>
+                                    <li class="mt-3">{{ $project->expeditions_count }} {{ __('Expeditions') }}</li>
                                     <li>{{ $project->transcriptions_count }} {{ __('Transcriptions') }}</li>
                                 </ul>
                             </div>
 
                             <div class="col-5">
-                                <img class="img-fluid" src="{{ $project->present()->logo_standard_url }}" alt="Card image cap">
+                                <img class="img-fluid" src="{{ $project->present()->logo_thumb_url }}" alt="Card image cap">
                             </div>
                         </div>
 
                         <div class="card-footer">
                             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
-                                <a href="#"><i class="fas fa-binoculars"></i> <span
+                                <a href="{{ route('projects.get.slug', [$project->slug]) }}"><i class="fas fa-binoculars"></i> <span
                                             class="d-none text d-sm-inline"></span></a>
-                                <a href="#"><i class="far fa-calendar-times"></i> <span
+                                <a href="{{ route('events.get.project', [$project->id]) }}"><i class="far fa-calendar-times"></i> <span
                                             class="d-none text d-sm-inline"></span></a>
-                                <a href="#"><i class="fab fa-twitter"></i> <span class="d-none text d-sm-inline"></span></a>
-                                <a href="#"><i class="far fa-envelope"></i> <span
-                                            class="d-none text d-sm-inline"></span></a>
+                                {!! $project->present()->organization_icon !!}
+                                {!! $project->present()->twitter_icon !!}
+                                {!! $project->present()->facebook_icon !!}
+                                {!! $project->present()->contact_email_icon !!}
                             </div>
                         </div>
                     </div>
@@ -89,42 +90,32 @@
 
 
                 <div class="col-12 col-sm-12 col-md-6 col-lg-6 p-1 p-md-5 tutorial-right-section">
-                    <h2 class="home-header-cta flex-nowrap">An Expedition</h2>
-                    <div class="card mb-4 box-shadow" data-aos="fade-up" data-aos-duration="1500" data
+                    <h2 class="home-header-cta flex-nowrap">{{ __('An Expedition') }}</h2>
+                    <div class="card mb-4 box-shadow" data-aos="fade-up" data-aos-duration="1500"
                          data-aos-anchor-placement="bottom-bottom" data-aos-once="true">
                         <!-- overlay -->
                         <div id="overlay">
                             <div class="overlay-text">
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                                    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                                    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                                    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                                <p class="mt-5">{{ $project->expeditions->first()->description }}</p>
                             </div>
                         </div>
                         <!-- end overlay -->
 
                         <img class="card-img-top" src="/images/card-exp-image.jpg" alt="Card image cap">
-                        <a href="#" class="View-overlay"><h2 class="card-title">Expedition Title Name Here <i
+                        <a href="#" class="View-overlay"><h2 class="card-title">{{ $project->expeditions->first()->title }} <i
                                         class="fa fa-angle-right text-white align-middle"> </i></h2></a>
 
                         <div class="card-body text-center">
                             <div class="d-flex align-items-start justify-content-between mb-2">
                                 <p><a href="#" class="color-action"><i class="fas fa-project-diagram color-action"></i>
-                                        Project Name Here</a></p>
-                                <p>53% Complete</p>
+                                        {{ $project->title }}</a></p>
+                                <p>{{ $project->expeditions->first()->stat->percent_completed }}% {{ __('Complete') }}</p>
                             </div>
 
                             <div class="d-flex align-items-start justify-content-between">
-                                <p><a href="#"><i class="far fa-share-square"></i> Share</a></p>
-                                <p><a href="#"><i class="far fa-keyboard"></i> Participate</a></p>
+                                <p><a href="#"><i class="far fa-share-square"></i> {{ __('Share') }}</a></p>
+                                <p><a href="#"><i class="far fa-keyboard"></i> {{ __('Participate') }}</a></p>
                             </div>
-                            <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-outline-primary mt-3 text-center" data-toggle="modal"
-                                    data-target="#ModalCenter">
-                                Launch Scoreboard
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -139,38 +130,47 @@
                     <h2>The Process<br>
                         <span class="smallertext">Specimen digitization is easy as 123</span></h2>
                     <ul id="externalIndicators" class="list-inline">
-                        <li id="carousel-li-0" data-target="#processCarousel" data-slide-to="0" class="active list-inline-item">1</li>
-                        <li id="carousel-li-1" data-target="#processCarousel" data-slide-to="1" class="list-inline-item">2</li>
-                        <li id="carousel-li-2" data-target="#processCarousel" data-slide-to="2" class="list-inline-item">3</li>
+                        <li data-target="#processCarousel" data-slide-to="0" class="carousel-li-0 active list-inline-item">1</li>
+                        <li data-target="#processCarousel" data-slide-to="1" class="carousel-li-1 list-inline-item">2</li>
+                        <li data-target="#processCarousel" data-slide-to="2" class="carousel-li-2 list-inline-item">3</li>
                     </ul>
+
+                    <div class="carousel-item carousel-li-0 active">
+                    <h3 class="text-center" style="color: #8cc640">{{ __('STEP 1') }}</h3>
+                    <p class="text-justify smallertext">{{ __('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.') }}</p>
+                    </div>
+                    <div class="carousel-item carousel-li-1">
+                        <h3 class="text-center" style="color: #8cc640">{{ __('STEP 2') }}</h3>
+                    <p class="text-justify smallertext">{{ __('Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.') }}</p>
+                    </div>
+                    <div class="carousel-item carousel-li-2">
+                        <h3 class="text-center" style="color: #8cc640">{{ __('STEP 3') }}</h3>
+                    <p class="text-justify smallertext">{{ __('Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.') }}</p>
+                    </div>
                 </div>
                 <div id="processCarousel" class="carousel slide col-md-6">
                     <div class="carousel-inner box-shadow inside-carousel">
                         <div class="carousel-item active" style="background-image: url(/images/slider/slider1.png);">
                             <div class="circle-slider p-5">
-                                <h3 class="text-center">PROJECT</h3>
-                                <p>Create a Project for your digital images and use BIOSPEX to run optical character
+                                <h3 class="text-center">{{ __('PROJECT') }}</h3>
+                                <p>{{ __('Create a Project for your digital images and use BIOSPEX to run optical character
                                     recognition (OCR) on the images. Bundle the specimen images using the OCR text
-                                    string,
-                                    or similar traits like State, County, or collection date, into various
-                                    Expeditions
-                                    that will ignite public interest.</p>
+                                    string, or similar traits like State, County, or collection date, into various
+                                    Expeditions that will ignite public interest.') }}</p>
                             </div>
                         </div>
                         <div class="carousel-item" style="background-image: url(/images/slider/slider2.png);">
                             <div class="circle-slider p-5">
-                                <h3 class="text-center">EXPEDITIONS</h3>
-                                <p>The curator then uses BIOSPEX to deploy the expeditions a few at a time to an
-                                    existing
-                                    website with a large citizen science community for label transcription.</p>
+                                <h3 class="text-center">{{ __('EXPEDITIONS') }}</h3>
+                                <p>{{ __('The curator then uses BIOSPEX to deploy the expeditions a few at a time to an
+                                    existing website with a large citizen science community for label transcription.') }}</p>
                             </div>
                         </div>
                         <div class="carousel-item" style="background-image: url(/images/slider/slider3.png);">
                             <div class="circle-slider p-5">
-                                <h3 class="text-center">EXPORT</h3>
-                                <p>The curator processes the resulting transcriptions in BIOSPEX later and exports
-                                    the data back to her local data management system.
-                                </p>
+                                <h3 class="text-center">{{ __('EXPORT') }}</h3>
+                                <p>{{ __('The curator processes the resulting transcriptions in BIOSPEX later and exports
+                                    the data back to her local data management system.') }}</p>
                             </div>
                         </div>
                     </div>

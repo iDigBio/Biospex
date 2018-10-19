@@ -45,6 +45,6 @@ interface Project extends RepositoryInterface
      * @param array $attributes
      * @return mixed
      */
-    public function getProjectHomePage(array $attributes = []);
+    public function getProjectForHomePage(array $attributes = []);
 
 }

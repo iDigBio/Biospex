@@ -71,6 +71,14 @@ class EventsController extends Controller
     }
 
     /**
+     * @param $projectId
+     */
+    public function project($projectId)
+    {
+        return;
+    }
+
+    /**
      * Show event.
      *
      * @param $eventId
@@ -239,10 +247,8 @@ class EventsController extends Controller
     {
         $team = $this->eventTeamContract->getTeamByUuid($uuid);
 
-        $start_date = $team->event->start_date->setTimezone($team->event->timezone);
         $end_date = $team->event->end_date->setTimezone($team->event->timezone);
-        $now = Carbon::now($team->event->timezone);
-        $active = $now->between($start_date, $end_date);
+        $active = Carbon::now($team->event->timezone)->lessThan($end_date);
 
         if ($team === null) {
             Flash::error(trans('messages.event_join_team_error'));

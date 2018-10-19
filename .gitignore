@@ -2,7 +2,7 @@
 node_modules
 /storage/*.key
 /vendor
-/aaanotes
+/A-Notes
 storage/app/classifications/*
 storage/app/exports/*
 storage/app/imports/*
@@ -16,7 +16,6 @@ public/css/working.css
 tests/_output/
 backups
 
-biospex-notes
 biospex-heat-map.json
 laravel-echo-server.json
 panoptes-pusher.js
@@ -31,5 +30,4 @@ Thumbs.db
 _ide_helper.php
 .phpstorm.meta.php
 /config/ide-helper.php
-/config/debugbar.php
 yarn-error.log

@@ -22,7 +22,8 @@ class HomeController extends Controller
      */
     public function index(Project $projectContract)
     {
-        $project = $projectContract->getProjectHomePage();
+        $project = $projectContract->getProjectForHomePage();
+
         return view('front.home', compact('project'));
     }
 
