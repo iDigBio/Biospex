@@ -12,7 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Artisan;
 use App\Repositories\Interfaces\OcrQueue;
 
-class BuildOcrBatchesJob extends Job implements ShouldQueue
+class BuildOcrBatchesJob implements ShouldQueue
 {
 
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

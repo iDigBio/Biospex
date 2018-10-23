@@ -12,7 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Notifications\NfnExportError;
 
-class ExportQueueJob extends Job implements ShouldQueue
+class ExportQueueJob implements ShouldQueue
 {
 
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
