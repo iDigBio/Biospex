@@ -183,23 +183,4 @@ class ProjectRepository extends EloquentRepository implements Project
         return true;
     }
 
-    /**
-     * @param array $attributes
-     * @return mixed
-     * @throws \Exception
-     */
-    public function getProjectForHomePage(array $attributes = [])
-    {
-        $results = $this->model->withCount('expeditions')
-            ->with(['expeditions' => function($q){
-                $q->with(['stat']);
-                $q->whereHas('nfnWorkflow');
-                $q->inRandomOrder()->first();
-        }])
-            ->inRandomOrder()->first();
-
-        $this->resetModel();
-
-        return $results;
-    }
 }

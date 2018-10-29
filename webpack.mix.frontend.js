@@ -53,8 +53,7 @@ mix.webpackConfig({
         "amcharts3/amcharts/plugins/responsive/responsive",
 
         "socket.io-client/dist/socket.io"
-    ])
-    .copy( 'resources/img', 'public/images', false );
+    ]);
 
 /* Production settings */
 

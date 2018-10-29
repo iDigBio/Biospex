@@ -179,14 +179,13 @@ h2.modal-number>small {
 
 .header {
     position: relative;
-    background-image: url(../img/page-banners/banner-binoculars.jpg);
     background-repeat: no-repeat;
     background-size: cover;
     z-index: 20 !important;
 }
 
 .header.home {
-    background-image: url(../img/banner-home.jpg);
+    background-image: url(/storage/images/banner-home.jpg);
     height: 800px;
     min-height: 89%;
 }
@@ -437,7 +436,7 @@ cards */
     border-top-right-radius: 10px;
     left: 0;
     right: 0;
-    bottom: 188px;
+    bottom: 135px;
     background-color: rgba(0,0,0,0.85);
     z-index: 2;
     cursor: pointer;

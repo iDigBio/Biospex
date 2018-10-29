@@ -6,9 +6,9 @@
 @stop
 
 @section('header')
-    <header>
+    <header style="background-image: url(/storage/images/page-banners/banner-binoculars.jpg);">
         <nav class="header navbar navbar-expand-md box-shadow">
-            <a href="/"><img src="/images/biospex_logo.svg" alt="BIOSPEX" class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
+            <a href="/"><img src="/storage/images/biospex_logo.svg" alt="BIOSPEX" class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
             @include('common.nav')
         </nav>
     </header>
@@ -36,7 +36,7 @@
                         </div>
 
                         <div class="col-5">
-                            <img class="img-fluid" src="/images/biospex-logo-greyscale" alt="Card image cap">
+                            <img class="img-fluid" src="/storage/images/biospex-logo-greyscale" alt="Card image cap">
                         </div>
                     </div>
 

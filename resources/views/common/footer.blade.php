@@ -34,7 +34,7 @@ sub footer -->
             <div class="col-md-3 col-xl-3 mb-4">
 
                 <!-- Content -->
-                <h6><img src="/images/biospex_logo.svg" alt="BIOSPEX"></h6>
+                <h6><img src="/storage/images/biospex_logo.svg" alt="BIOSPEX"></h6>
                 <p class="small text-justify pt-2">{{ __('is funded by a grant from the National Science Foundation\'s Advances in Biological Informatics Program (Award Number 1458550). iDigBio is funded by a grant from the National Science Foundation\'s Advancing Digitization of Biodiversity Collections Program (Cooperative Agreement EF-1115210). Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.') }}</p>
             </div>
             <!-- Grid column -->

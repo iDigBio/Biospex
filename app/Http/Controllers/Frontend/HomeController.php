@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\ContactForm;
 use App\Repositories\Interfaces\AmChart;
 use App\Repositories\Interfaces\Event;
+use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Project;
 use App\Http\Requests\ContactFormRequest;
@@ -17,14 +18,14 @@ class HomeController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Project $projectContract)
+    public function index(Expedition $expeditionContract)
     {
-        $project = $projectContract->getProjectForHomePage();
+        $expedition = $expeditionContract->getHomePageProjectExpedition();
 
-        return view('front.home', compact('project'));
+        return view('front.home', compact('expedition'));
     }
 
     /**

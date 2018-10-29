@@ -7,7 +7,6 @@ use App\Repositories\Interfaces\Expedition;
 
 class ExpeditionRepository extends EloquentRepository implements Expedition
 {
-
     /**
      * Specify Model class name
      *
@@ -23,14 +22,15 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function getExpeditionsForNfnClassificationProcess(array $expeditionIds = [], array $attributes = ['*'])
     {
-        $model = $this->model->with(['nfnWorkflow', 'stat', 'nfnActor'])->has('nfnWorkflow')
-            ->whereHas('nfnActor', function ($query) {
-                $query->where('completed', 0);
-            });
+        $model = $this->model->with([
+            'nfnWorkflow',
+            'stat',
+            'nfnActor',
+        ])->has('nfnWorkflow')->whereHas('nfnActor', function ($query) {
+            $query->where('completed', 0);
+        });
 
-        $results = empty($expeditionIds) ?
-            $model->get($attributes) :
-            $model->whereIn('id', $expeditionIds)->get($attributes);
+        $results = empty($expeditionIds) ? $model->get($attributes) : $model->whereIn('id', $expeditionIds)->get($attributes);
 
         $this->resetModel();
 
@@ -54,10 +54,9 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function expeditionsByUserId($userId, array $relations = [])
     {
-        $results = $this->model->with($relations)
-            ->whereHas('project.group.users', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })->get();
+        $results = $this->model->with($relations)->whereHas('project.group.users', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->get();
 
         $this->resetModel();
 
@@ -73,7 +72,8 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
             'project.group',
             'actors.downloads' => function ($query) use ($expeditionId) {
                 $query->where('expedition_id', $expeditionId);
-            }])->find($expeditionId);
+            },
+        ])->find($expeditionId);
 
         $this->resetModel();
 
@@ -97,9 +97,7 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function getExpeditionStats(array $expeditionIds = [], array $columns = ['*'])
     {
-        $results = empty($expeditionIds) ?
-            $this->model->has('stat')->with('project')->get($columns) :
-            $this->model->has('stat')->with('project')->whereIn('id', $expeditionIds)->get();
+        $results = empty($expeditionIds) ? $this->model->has('stat')->with('project')->get($columns) : $this->model->has('stat')->with('project')->whereIn('id', $expeditionIds)->get();
 
         $this->resetModel();
 
@@ -126,6 +124,20 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     public function findExpeditionHavingWorkflowManager($expeditionId)
     {
         $results = $this->model->has('workflowManager')->find($expeditionId);
+
+        $this->resetModel();
+
+        return $results;
+    }
+
+    public function getHomePageProjectExpedition()
+    {
+        $results = $this->model->with(['project' => function ($q) {
+                $q->withCount('expeditions');
+            }])->whereHas('nfnWorkflow')->with('nfnWorkflow')
+            ->whereHas('stat')->with(['stat' => function($q){
+                $q->whereBetween('percent_completed', [0.00, 99.00]);
+            }])->inRandomOrder()->first();
 
         $this->resetModel();
 

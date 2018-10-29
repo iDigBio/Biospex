@@ -41,10 +41,4 @@ interface Project extends RepositoryInterface
      */
     public function getProjectForDelete($projectId);
 
-    /**
-     * @param array $attributes
-     * @return mixed
-     */
-    public function getProjectForHomePage(array $attributes = []);
-
 }

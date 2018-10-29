@@ -75,4 +75,9 @@ interface Expedition extends RepositoryInterface
      * @return mixed
      */
     public function findExpeditionHavingWorkflowManager($expeditionId);
+
+    /**
+     * @return mixed
+     */
+    public function getHomePageProjectExpedition();
 }
