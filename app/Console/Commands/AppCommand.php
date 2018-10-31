@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\Interfaces\Project;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -18,19 +17,12 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Repositories\Interfaces\Project
-     */
-    private $projectContract;
-
-    /**
      * Create a new job instance.
      */
     public function __construct(
-        Project $projectContract
     )
     {
         parent::__construct();
-        $this->projectContract = $projectContract;
     }
 
     /**
@@ -38,8 +30,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $project = $this->projectContract->getProjectForHomePage();
-        dd($project);
+
     }
 
 
