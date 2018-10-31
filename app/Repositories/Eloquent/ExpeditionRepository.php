@@ -134,8 +134,10 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     {
         $results = $this->model->with(['project' => function ($q) {
                 $q->withCount('expeditions');
-            }])->whereHas('nfnWorkflow')->with('nfnWorkflow')
-            ->whereHas('stat')->with(['stat' => function($q){
+            }])->has('nfnWorkflow')->with('nfnWorkflow')
+            ->whereHas('stat', function($q){
+                $q->whereBetween('percent_completed', [0.00, 99.00]);
+            })->with(['stat' => function($q){
                 $q->whereBetween('percent_completed', [0.00, 99.00]);
             }])->inRandomOrder()->first();
 
