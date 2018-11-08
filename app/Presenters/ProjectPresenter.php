@@ -15,7 +15,7 @@ class ProjectPresenter extends Presenter
         $logo = $this->model->logo;
 
         return $this->variantExists($logo) ?
-            $logo->url() : Storage::url('logos/original/missing.png');
+            $logo->url() : Storage::url('images/placeholders/missing.png');
     }
 
     /**
@@ -27,7 +27,7 @@ class ProjectPresenter extends Presenter
         $logo = $this->model->logo;
 
         return $this->variantExists($logo, 'standard') ?
-            $logo->url('standard') : Storage::url('logos/standard/project.png');
+            $logo->url('standard') : Storage::url('images/placeholders/project.png');
     }
 
     /**
@@ -39,7 +39,7 @@ class ProjectPresenter extends Presenter
         $logo = $this->model->logo;
 
         return $this->variantExists($logo,'thumb') ?
-            $logo->url('thumb') : Storage::url('logos/thumb/project.png');
+            $logo->url('thumb') : Storage::url('images/placeholders/project.png');
     }
 
     /**

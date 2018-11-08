@@ -19,6 +19,9 @@ return [
     'api_client_id'     => env('API_CLIENT_ID'),
     'api_client_secret' => env('API_CLIENT_SECRET'),
 
+    'admin_group'    => env('ADMIN_GROUP', 'Admin'),
+    'admin_group_id' => env('ADMIN_GROUP_ID', 1),
+
     'map_project_id'      => env('MAP_PROJECT_ID'),
     'map_private_key_id'  => env('MAP_PRIVATE_KEY_ID'),
     'map_private_key'     => env('MAP_PRIVATE_KEY'),

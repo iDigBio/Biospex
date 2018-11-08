@@ -66,6 +66,39 @@ class ProjectRepository extends EloquentRepository implements Project
     /**
      * @inheritdoc
      */
+    public function getPublicProjectIndex($sort = null)
+    {
+        $results = $this->model->withCount('expeditions')->with('group')->whereHas('nfnWorkflows')->get();
+
+        switch($sort) {
+            case 'name-asc':
+                $projects = $results->sortBy('title');
+                break;
+            case 'name-desc':
+                $projects = $results->sortByDesc('title');
+                break;
+            case 'group-asc':
+                $projects = $results->sortBy( function ($project) {
+                    return $project->group->title;
+                });
+                break;
+            case 'group-desc':
+                $projects = $results->sortByDesc( function ($project) {
+                    return $project->group->title;
+                });
+                break;
+            default:
+                $projects = $results;
+        }
+
+        $this->resetModel();
+
+        return $projects;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getProjectByIdWith($projectId, array $with = [])
     {
         $results = $this->model->with($with)->find($projectId);

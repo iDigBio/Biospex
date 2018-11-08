@@ -1,6 +1,6 @@
-$(function() {
+$(function () {
 
-    $(".hamburger").click(function(){
+    $(".hamburger").click(function () {
         $(this).toggleClass("is-active");
     });
 
@@ -229,13 +229,13 @@ $(function() {
             });
     }
 
-    $('#scoreboardModal').on('show.bs.modal', function(e) {
+    $('#scoreboardModal').on('show.bs.modal', function (e) {
         let $modal = $(this).find('.modal-body');
         let $button = $(e.relatedTarget); // Button that triggered the modal
         let channel = $button.data('channel');
         let eventId = $button.data('event');
 
-        $modal.load($button.data('href'), function(){
+        $modal.load($button.data('href'), function () {
             let $clock = $modal.find('#clockdiv');
             let deadline = $modal.find('#date').html(); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
             if (deadline === 'Completed') {
@@ -262,14 +262,18 @@ $(function() {
     });
 
     $('#processCarousel').on('slide.bs.carousel', function (e) {
-        $('.carousel-li-'+e.from).each(function(){
+        $('.carousel-li-' + e.from).each(function () {
             $(this).removeClass('active');
         });
-        $('.carousel-li-'+e.to).each(function(){
+        $('.carousel-li-' + e.to).each(function () {
             $(this).addClass('active');
         });
-    })
+    });
 
+    $('.sort-projects').on('click', function (e) {
+        $('#public-projects').html('<div class="loader"></div>');
+        sortProjects($(this));
+    });
 });
 
 // Loop data from polling
@@ -337,6 +341,7 @@ function getTimeRemaining(endTime) {
 }
 
 let timeInterval;
+
 function initializeClock($clock, endTime) {
 
     let daysSpan = $clock.find('.days');
@@ -358,4 +363,38 @@ function initializeClock($clock, endTime) {
 
     updateClock();
     timeInterval = setInterval(updateClock, 1000);
+}
+
+function sortProjects(element) {
+    let id = element.attr('id');
+    let icon = element.find('i');
+    let classVal = icon.attr('class');
+    console.log(id);
+    console.log(classVal);
+    switch (classVal) {
+        case 'fas fa-sort-down':
+            $.get('/projects/public', function (data) {
+                $('#public-projects').html(data);
+                $(icon).removeClass('fas fa-sort-down').addClass('fas fa-sort');
+            });
+            break;
+        case 'fas fa-sort-up':
+            $.get('/projects/public/'+id+'-desc', function (data) {
+                $('#public-projects').html(data);
+                $(icon).removeClass('fas fa-sort-up').addClass('fas fa-sort-down');
+            });
+            break;
+        default: // fas fa-sort: set to asc
+            $.get('/projects/public/'+id+'-asc', function (data) {
+                $('#public-projects').html(data);
+                $(icon).removeClass('fas fa-sort').addClass('fas fa-sort-up');
+            });
+            break;
+    }
+    if (id === 'name') {
+        $('#group').find('i').removeClass().addClass('fas fa-sort');
+    }
+    if (id === 'group') {
+        $('#name').find('i').removeClass().addClass('fas fa-sort');
+    }
 }

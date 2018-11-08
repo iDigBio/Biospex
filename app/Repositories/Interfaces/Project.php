@@ -6,6 +6,13 @@ use App\Repositories\RepositoryInterface;
 
 interface Project extends RepositoryInterface
 {
+    /**
+     * Get list of projects for public project page.
+     *
+     * @param null $sort
+     * @return mixed
+     */
+    public function getPublicProjectIndex($sort = null);
 
     /**
      * Get project by id with relationships.

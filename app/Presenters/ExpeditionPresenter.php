@@ -15,6 +15,6 @@ class ExpeditionPresenter extends Presenter
         $logo = $this->model->logo;
 
         return $this->variantExists($logo) ?
-            $logo->url() : Storage::disk('public')::url('logos/original/missing.png');
+            $logo->url() : Storage::url('images/placeholders/card-image-place-holder02.jpg');
     }
 }
