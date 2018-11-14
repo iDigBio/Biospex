@@ -112,7 +112,7 @@ class BiospexServiceProvider extends ServiceProvider
 
         /*
         view()->composer(
-            'frontend.layouts.navigation', 'App\Http\ViewComposers\AuthUserComposer'
+            'front.layouts.navigation', 'App\Http\ViewComposers\AuthUserComposer'
         );
         */
 

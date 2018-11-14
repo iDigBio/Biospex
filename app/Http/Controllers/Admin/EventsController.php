@@ -67,7 +67,7 @@ class EventsController extends Controller
     public function index()
     {
         $events = $this->eventContract->getUserEvents(Auth::id());
-        return view('frontend.events.index', compact('events'));
+        return view('front.events.index', compact('events'));
     }
 
     /**
@@ -85,7 +85,7 @@ class EventsController extends Controller
             return redirect()->route('admin.events.index');
         }
 
-        return view('frontend.events.show', compact('event'));
+        return view('front.events.show', compact('event'));
     }
 
     /**
@@ -98,7 +98,7 @@ class EventsController extends Controller
         $projects = $this->project->getProjectEventSelect();
         $timezones = DateHelper::timeZoneSelect();
 
-        return view('frontend.events.create', compact('projects', 'timezones'));
+        return view('front.events.create', compact('projects', 'timezones'));
     }
 
     /**
@@ -140,7 +140,7 @@ class EventsController extends Controller
         $projects = $this->project->getProjectEventSelect();
         $timezones = DateHelper::timeZoneSelect();
 
-        return view('frontend.events.edit', compact('event', 'projects', 'timezones'));
+        return view('front.events.edit', compact('event', 'projects', 'timezones'));
     }
 
     /**

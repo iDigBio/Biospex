@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Frontend;
+namespace App\Http\Controllers\Front;
 
 use App\Facades\DateHelper;
 use App\Facades\Flash;

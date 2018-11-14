@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -33,7 +33,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @each('frontend.layouts.partials.project-page-expeditions', $project->expeditions, 'expedition')
+                        @each('front.layouts.partials.project-page-expeditions', $project->expeditions, 'expedition')
                         </tbody>
                     </table>
                 </div>
@@ -123,7 +123,7 @@
                 <div id="event-boards">
                     @if($project->events->isNotEmpty())
                         <h2>{{ trans('pages.events') }}</h2>
-                        @each('frontend.events.partials.projectevent-loop', $project->events, 'event')
+                        @each('front.events.partials.projectevent-loop', $project->events, 'event')
                     @endif
                 </div>
 
@@ -136,10 +136,10 @@
         @endif
         <div class="row">
             @if ($project->fusion_table_id !== null)
-                @include('frontend.layouts.partials.projectmap')
+                @include('front.layouts.partials.projectmap')
             @endif
         </div>
         <!-- ./ content -->
     </div>
-    @include('frontend.events.scoreboard')
+    @include('front.events.scoreboard')
 @stop

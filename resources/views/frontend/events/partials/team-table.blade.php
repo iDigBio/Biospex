@@ -7,6 +7,6 @@
     </tr>
     </thead>
     <tbody>
-    @include('frontend.events.partials.team-loop')
+    @include('front.events.partials.team-loop')
     </tbody>
 </table>

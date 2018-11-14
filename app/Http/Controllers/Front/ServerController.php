@@ -1,6 +1,6 @@
 <?php 
 
-namespace App\Http\Controllers\Frontend;
+namespace App\Http\Controllers\Front;
 
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;

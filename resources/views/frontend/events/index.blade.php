@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -17,7 +17,7 @@
         </div>
     </div>
     <div class="row top25">
-        @each('frontend.events.partials.event-loop', $events, 'event')
+        @each('front.events.partials.event-loop', $events, 'event')
     </div>
-    @include('frontend.events.scoreboard')
+    @include('front.events.scoreboard')
 @stop

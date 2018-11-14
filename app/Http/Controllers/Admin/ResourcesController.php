@@ -33,7 +33,7 @@ class ResourcesController extends Controller
     {
         $resources = $this->resourceContract->getResourcesOrdered();
 
-        return view('frontend.resources.index', compact('resources'));
+        return view('front.resources.index', compact('resources'));
     }
 
     /**

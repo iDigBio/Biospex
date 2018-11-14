@@ -9,6 +9,6 @@ class ApiAuthController extends Controller
 
     public function index()
     {
-        return view('frontend.api.index');
+        return view('front.api.index');
     }
 }

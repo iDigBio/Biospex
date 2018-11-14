@@ -16,15 +16,15 @@
     <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav pull-left">
             @if(Auth::check())
-                @include('frontend.layouts.partials.authmenu')
+                @include('front.layouts.partials.authmenu')
             @endif
-            @include('frontend.layouts.partials.commonmenu')
+            @include('front.layouts.partials.commonmenu')
         </ul>
         <ul class="nav navbar-nav  pull-right">
             @if (Auth::check())
-                @include('frontend.layouts.partials.authuser')
+                @include('front.layouts.partials.authuser')
             @else
-                @include('frontend.layouts.partials.noauthmenu')
+                @include('front.layouts.partials.noauthmenu')
             @endif
         </ul>
     </div>

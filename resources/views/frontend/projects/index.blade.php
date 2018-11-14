@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -15,5 +15,5 @@
                     class="fa fa-plus fa-lg"></span> @lang('pages.create')</button>
     </h3>
 </div>
-@include('frontend.projects.partials.project-table')
+@include('front.projects.partials.project-table')
 @stop

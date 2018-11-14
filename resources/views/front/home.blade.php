@@ -53,7 +53,7 @@
             <div class="row p-5">
 
                 <div class="col-md-6 mt-5 p-1 pb-md-3">
-                    <h2 class="home-header-cta">{{ __('The Project') }}</h2>
+                    <h2 class="home-header-cta">{{ __('A Project') }}</h2>
 
                     <div class="card-project mb-4 px-4 box-shadow" data-aos="fade-down" data-aos-easing="ease-in"
                          data-aos-duration="2000" data-aos-once="true">

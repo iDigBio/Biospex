@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -19,7 +19,7 @@
     <div class="row">
         <div class="col-md-12">
             <h3>{{ trans('pages.active') }}</h3>
-            @include('frontend.groups.partials.group-table')
+            @include('front.groups.partials.group-table')
         </div>
     </div>
 @stop

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Frontend;
+namespace App\Http\Controllers\Front;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Http\Controllers\Controller;
@@ -42,7 +42,7 @@ class AdvertisesController extends Controller
             $project = $this->projectContract->update($project->toArray(), $project->id);
         }
 
-        return view('frontend.projects.advertise', compact('project'));
+        return view('front.projects.advertise', compact('project'));
     }
 
     /**

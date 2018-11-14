@@ -44,7 +44,7 @@ class GroupsController extends Controller
     {
         $user = $this->userContract->findWith(request()->user()->id, ['groups']);
 
-        return view('frontend.groups.index', compact('user'));
+        return view('front.groups.index', compact('user'));
     }
 
     /**
@@ -56,7 +56,7 @@ class GroupsController extends Controller
     {
         $user = Auth::user();
 
-        return view('frontend.groups.create', compact('user'));
+        return view('front.groups.create', compact('user'));
     }
 
     /**
@@ -105,7 +105,7 @@ class GroupsController extends Controller
             return redirect()->route('admin.groups.index');
         }
 
-        return view('frontend.groups.show', compact('group'));
+        return view('front.groups.show', compact('group'));
     }
 
     /**
@@ -126,7 +126,7 @@ class GroupsController extends Controller
             return [$user->id => $user->profile->full_name];
         });
 
-        return view('frontend.groups.edit', compact('group', 'users'));
+        return view('front.groups.edit', compact('group', 'users'));
     }
 
     /**

@@ -7,6 +7,6 @@
     </tr>
     </thead>
     <tbody>
-    @include('frontend.projects.partials.project-loop')
+    @include('front.projects.partials.project-loop')
     </tbody>
 </table>

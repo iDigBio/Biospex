@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -121,5 +121,5 @@
             </div>
         </div>
     </div>
-    @include('frontend.layouts.import-modal')
+    @include('front.layouts.import-modal')
 @stop

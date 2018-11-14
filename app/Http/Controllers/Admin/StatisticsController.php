@@ -53,6 +53,6 @@ class StatisticsController extends Controller
             'transcriptionChartData' => $transcriptions
         ]);
 
-        return view('frontend.statistics.index', compact('project', 'transcribers'));
+        return view('front.statistics.index', compact('project', 'transcribers'));
     }
 }

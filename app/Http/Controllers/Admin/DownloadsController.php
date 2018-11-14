@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Frontend;
+namespace App\Http\Controllers\Front;
 
 use App\Facades\Flash;
 use App\Http\Controllers\Controller;
@@ -89,7 +89,7 @@ class DownloadsController extends Controller
 
         $paths = $this->paths;
 
-        return view('frontend.downloads.index', compact('expedition', 'user', 'paths'));
+        return view('front.downloads.index', compact('expedition', 'user', 'paths'));
     }
 
     /**
@@ -126,7 +126,7 @@ class DownloadsController extends Controller
                 'Content-disposition' => 'attachment; filename="' . $download->file . '"'
             ];
 
-            $view = view('frontend.manifest', unserialize($download->data))->render();
+            $view = view('front.manifest', unserialize($download->data))->render();
 
             return $this->response->make(stripslashes($view), 200, $headers);
         }

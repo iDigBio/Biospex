@@ -99,7 +99,7 @@ class ExpeditionsController extends Controller
 
         $expeditions = $this->expeditionContract->expeditionsByUserId($user->id, $relations);
 
-        return view('frontend.expeditions.index', compact('expeditions', 'user'));
+        return view('front.expeditions.index', compact('expeditions', 'user'));
     }
 
     /**
@@ -128,7 +128,7 @@ class ExpeditionsController extends Controller
             'explore'      => false
         ]);
 
-        return view('frontend.expeditions.create', compact('project'));
+        return view('front.expeditions.create', compact('project'));
     }
 
     /**
@@ -205,7 +205,7 @@ class ExpeditionsController extends Controller
 
         $btnDisable = ($expedition->project->ocrQueue->isEmpty() || $expedition->stat->local_subject_count === 0);
 
-        return view('frontend.expeditions.show', compact('expedition', 'btnDisable'));
+        return view('front.expeditions.show', compact('expedition', 'btnDisable'));
     }
 
     /**
@@ -234,7 +234,7 @@ class ExpeditionsController extends Controller
             'explore'      => false
         ]);
 
-        return view('frontend.expeditions.clone', compact('expedition'));
+        return view('front.expeditions.clone', compact('expedition'));
     }
 
     /**
@@ -272,7 +272,7 @@ class ExpeditionsController extends Controller
             'explore'      => false
         ]);
 
-        return view('frontend.expeditions.edit', compact('expedition'));
+        return view('front.expeditions.edit', compact('expedition'));
     }
 
     /**

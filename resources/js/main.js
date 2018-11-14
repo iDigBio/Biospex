@@ -270,8 +270,8 @@ $(function () {
         });
     });
 
-    $('.sort-projects').on('click', function (e) {
-        $('#public-projects').html('<div class="loader"></div>');
+    $('.sort-projects').on('click', function () {
+        $('#public-projects').html('<div class="loader mx-auto"></div>');
         sortProjects($(this));
     });
 });
@@ -369,8 +369,7 @@ function sortProjects(element) {
     let id = element.attr('id');
     let icon = element.find('i');
     let classVal = icon.attr('class');
-    console.log(id);
-    console.log(classVal);
+
     switch (classVal) {
         case 'fas fa-sort-down':
             $.get('/projects/public', function (data) {

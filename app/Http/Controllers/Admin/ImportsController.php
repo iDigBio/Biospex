@@ -59,7 +59,7 @@ class ImportsController extends Controller
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
 
-        return view('frontend.projects.add', compact('project'));
+        return view('front.projects.add', compact('project'));
     }
 
     /**

@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -88,14 +88,14 @@
                     <div class="controls col-sm-10">
                         @if($errors->has('teams.*'))
                             @for($i = 0; $i < old('entries'); $i++)
-                                @include('frontend.events.partials.team-error')
+                                @include('front.events.partials.team-error')
                             @endfor
                         @elseif($event->teams->isNotEmpty())
                             @foreach($event->teams as $key => $team)
-                                @include('frontend.events.partials.team-edit')
+                                @include('front.events.partials.team-edit')
                             @endforeach
                         @else
-                            @include('frontend.events.partials.team-create')
+                            @include('front.events.partials.team-create')
                         @endif
                     </div>
                 </div>

@@ -57,7 +57,7 @@ class InvitesController extends Controller
             return redirect()->route('admin.groups.show', [$groupId]);
         }
 
-        return view('frontend.invites.index', compact('group'));
+        return view('front.invites.index', compact('group'));
     }
 
     /**

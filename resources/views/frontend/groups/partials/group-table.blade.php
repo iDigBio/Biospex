@@ -4,6 +4,6 @@
     <th class="nowrap sorter-false">@lang('pages.options')</th>
     </thead>
     <tbody>
-    @include('frontend.groups.partials.group-loop')
+    @include('front.groups.partials.group-loop')
     </tbody>
 </table>

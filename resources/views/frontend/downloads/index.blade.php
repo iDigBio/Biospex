@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -48,7 +48,7 @@
                             <tbody>
                             @foreach($actor->downloads as $download)
                                 @if ( ! empty($download))
-                                    @include('frontend.downloads.partials.tablerow')
+                                    @include('front.downloads.partials.tablerow')
                                 @endif
                             @endforeach
                             </tbody>

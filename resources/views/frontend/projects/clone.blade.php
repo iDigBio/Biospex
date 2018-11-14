@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -233,10 +233,10 @@
                     <div class="controls col-sm-10">
                         @if($errors->has('resources.*'))
                             @for($i = 0; $i <= old('entries'); $i++)
-                                @include('frontend.projects.partials.resource-error')
+                                @include('front.projects.partials.resource-error')
                             @endfor
                         @else
-                            @include('frontend.projects.partials.resource-create')
+                            @include('front.projects.partials.resource-create')
                         @endif
                     </div>
                 </div>

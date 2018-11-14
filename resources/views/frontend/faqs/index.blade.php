@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -25,7 +25,7 @@
             <!-- Tab panes -->
             <div class="tab-content">
                 @foreach($categories as $category)
-                    @include('frontend.faqs.partials.faq-tab-loop')
+                    @include('front.faqs.partials.faq-tab-loop')
                 @endforeach
 
             </div>

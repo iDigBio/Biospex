@@ -54,16 +54,16 @@ class RouteServiceProvider extends ServiceProvider
         Route::domain(config('config.app_domain'))
             ->namespace($this->namespace)->middleware('web')->group(function ($router) {
 
-                $router->namespace('Frontend')->group(function ($router) {
-                    $this->require_files('routes/frontend', $router);
+                $router->namespace('Front')->group(function ($router) {
+                    $this->require_files('routes/front', $router);
                 });
 
                 $router->prefix('admin')->middleware('auth')->namespace('Admin')->group(function ($router) {
                         $this->require_files('routes/admin', $router);
                     });
 
-                $router->namespace('Auth')->group(base_path('routes/frontend/appauth/auth.php'));
-                $router->namespace('ApiAuth')->prefix('api')->group(base_path('routes/frontend/apiauth/auth.php'));
+                $router->namespace('Auth')->group(base_path('routes/front/appauth/auth.php'));
+                $router->namespace('ApiAuth')->prefix('api')->group(base_path('routes/front/apiauth/auth.php'));
             });
     }
 

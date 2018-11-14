@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -46,7 +46,7 @@
     <div class="container-fluid" id="home-content">
         <div class="col-md-11 col-lg-offset-1">
             <!-- Notifications -->
-        @include('frontend.layouts.notices')
+        @include('front.layouts.notices')
         <!-- ./ notifications -->
 
             <!-- Content -->
@@ -117,7 +117,7 @@
                             <h3 class="panel-title">The Projects</h3>
                         </div>
                         <div class="panel-body recent-projects-pane">
-                            @include('frontend.layouts.partials.home-project-list')
+                            @include('front.layouts.partials.home-project-list')
                         </div>
                         <div class="panel-footer recent-projects-footer">
                             {!! link_to_route('home.project-list', 'Load more Projects', [], ['class' => 'home-project-list', 'data-count' => $recentProjects->count()]) !!}

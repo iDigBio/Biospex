@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 {{-- Web site Title --}}
 @section('title')
     @parent
@@ -7,6 +7,6 @@
 
 {{-- Content --}}
 @section('content')
-    @include('frontend.events.partials.event-info')
-    @include('frontend.events.partials.team-table')
+    @include('front.events.partials.event-info')
+    @include('front.events.partials.team-table')
 @stop

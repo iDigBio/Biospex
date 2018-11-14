@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -251,10 +251,10 @@
                                 <span class="has-error">{{ $errors->first('resources.*') }}</span>
                             @endif
                             @foreach($project->resources as $key => $resource)
-                                @include('frontend.projects.partials.resource-edit')
+                                @include('front.projects.partials.resource-edit')
                             @endforeach
                         @else
-                            @include('frontend.projects.partials.resource-create')
+                            @include('front.projects.partials.resource-create')
                         @endif
                     </div>
                 </div>

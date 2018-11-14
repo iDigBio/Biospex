@@ -11,6 +11,6 @@
     <td>{{ DateHelper::formatDate($download->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
     <td>{{ DateHelper::formatDate($download->updated_at, 'Y-m-d', $user->profile->timezone) }}</td>
     <td>
-       @include('frontend.downloads.partials.userbuttons')
+       @include('front.downloads.partials.userbuttons')
     </td>
 </tr>
