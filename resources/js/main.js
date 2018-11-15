@@ -270,9 +270,19 @@ $(function () {
         });
     });
 
-    $('.sort-projects').on('click', function () {
-        $('#public-projects').html('<div class="loader mx-auto"></div>');
-        sortProjects($(this));
+    $('.sortPage').on('click', function () {
+        sortPage($(this));
+    });
+
+    $('#completedExpeditions').on('click', function(e){
+        $('#completed').show();
+        $('#completed-expeditions').show();
+        let url = $(this).data('url');
+        let $target = $('#'+$(this).data('target'));
+        $target.html('<div class="loader mx-auto"></div>');
+        $.get(url, function (data) {
+            $target.html(data);
+        });
     });
 });
 
@@ -365,35 +375,44 @@ function initializeClock($clock, endTime) {
     timeInterval = setInterval(updateClock, 1000);
 }
 
-function sortProjects(element) {
+function sortPage(element) {
     let id = element.attr('id');
-    let icon = element.find('i');
-    let classVal = icon.attr('class');
+    let url = element.data('url');
+    let $target = $('#'+element.data('target'));
+    let $icon = element.find('i');
+    let classVal = $icon.attr('class');
+
+    $target.html('<div class="loader mx-auto"></div>');
 
     switch (classVal) {
         case 'fas fa-sort-down':
-            $.get('/projects/public', function (data) {
-                $('#public-projects').html(data);
-                $(icon).removeClass('fas fa-sort-down').addClass('fas fa-sort');
+            $.get(url, function (data) {
+                $target.html(data);
+                $icon.removeClass('fas fa-sort-down').addClass('fas fa-sort');
             });
             break;
         case 'fas fa-sort-up':
-            $.get('/projects/public/'+id+'-desc', function (data) {
-                $('#public-projects').html(data);
-                $(icon).removeClass('fas fa-sort-up').addClass('fas fa-sort-down');
+            $.get(url+'/'+id+'-desc', function (data) {
+                $target.html(data);
+                $icon.removeClass('fas fa-sort-up').addClass('fas fa-sort-down');
             });
             break;
-        default: // fas fa-sort: set to asc
-            $.get('/projects/public/'+id+'-asc', function (data) {
-                $('#public-projects').html(data);
-                $(icon).removeClass('fas fa-sort').addClass('fas fa-sort-up');
+        default:
+            $.get(url+'/'+id+'-asc', function (data) {
+                $target.html(data);
+                $icon.removeClass('fas fa-sort').addClass('fas fa-sort-up');
             });
             break;
     }
-    if (id === 'name') {
-        $('#group').find('i').removeClass().addClass('fas fa-sort');
-    }
-    if (id === 'group') {
-        $('#name').find('i').removeClass().addClass('fas fa-sort');
+
+    switch (id) {
+        case 'name':
+            $('#group').find('i').removeClass().addClass('fas fa-sort');
+            $('#project').find('i').removeClass().addClass('fas fa-sort');
+            break;
+        case 'group':
+        case 'project':
+            $('#name').find('i').removeClass().addClass('fas fa-sort');
+            break;
     }
 }

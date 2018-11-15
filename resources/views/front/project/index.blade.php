@@ -21,14 +21,15 @@
     <hr class="header mx-auto" style="width:300px;">
     <div class="row">
         <div class="col-md-6 mx-auto mb-4 text-center">
-            <!-- sort-up sort-down
-            $(this).find($(".fa")).removeClass('fa-chevron-down').addClass('fa-chevron-up');
-            -->
-            <span id="name" class="mr-2 sort-projects" style="color: #e83f29; cursor: pointer;"><i class="fas fa-sort"></i> NAME</span>
-            <span id="group" class="ml-2 sort-projects" style="color: #e83f29; cursor: pointer;"><i class="fas fa-sort"></i> GROUP</span>
+            <span id="name" data-url="{{ route('projects.get.sort') }}" data-target="public-expeditions"
+                  class="mr-2 sortPage" style="color: #e83f29; cursor: pointer;"><i
+                        class="fas fa-sort"></i> {{ __('NAME') }}</span>
+            <span id="group" data-url="{{ route('projects.get.sort') }}" data-target="public-expeditions"
+                  class="ml-2 sortPage" style="color: #e83f29; cursor: pointer;"><i
+                        class="fas fa-sort"></i> {{ __('GROUP') }}</span>
         </div>
     </div>
-    <div class="row" id="public-projects">
+    <div class="row" id="public-expeditions">
         @include('front.project.partials.project', ['projects' => $projects])
     </div>
 @endsection

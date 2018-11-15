@@ -1,0 +1,1 @@
+@each('front.expedition.partials.expedition-loop', $expeditions, 'expedition')

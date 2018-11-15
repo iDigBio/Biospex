@@ -96,7 +96,6 @@
                         <div class="card-img-overlay">
                             <h2 class="card-title">{{ $expedition->title }}</h2>
                             <p>{{ $expedition->description }}</p>
-
                         </div>
 
                         <div class="card-body text-center" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">

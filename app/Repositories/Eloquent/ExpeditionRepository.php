@@ -20,6 +20,103 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     /**
      * @inheritdoc
      */
+    public function getHomePageProjectExpedition()
+    {
+        $result = $this->model->with(['project' => function ($q) {
+            $q->withCount('expeditions');
+        }])->with('nfnWorkflow')->whereHas('stat', function($q){
+                $q->whereBetween('percent_completed', [0.00, 99.99]);
+            })->with(['stat' => function($q){
+                $q->whereBetween('percent_completed', [0.00, 99.99]);
+            }])
+            ->where('project_id', 13)->inRandomOrder()->first();
+
+        $this->resetModel();
+
+        return $result;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getExpeditionPublicPage($sort = null)
+    {
+        $results = $this->model->with('project')
+            ->has('nfnWorkflow')->with('nfnWorkflow')
+            ->whereHas('stat', function($q){
+                $q->whereBetween('percent_completed', [0.00, 99.99]);
+            })->with(['stat' => function($q){
+                $q->whereBetween('percent_completed', [0.00, 99.99]);
+            }])->get();
+
+        switch($sort) {
+            case 'name-asc':
+                $expeditions = $results->sortBy('title');
+                break;
+            case 'name-desc':
+                $expeditions = $results->sortByDesc('title');
+                break;
+            case 'project-asc':
+                $expeditions = $results->sortBy( function ($expedition) {
+                    return $expedition->project->title;
+                });
+                break;
+            case 'project-desc':
+                $expeditions = $results->sortByDesc( function ($expedition) {
+                    return $expedition->project->title;
+                });
+                break;
+            default:
+                $expeditions = $results;
+        }
+
+        $this->resetModel();
+
+        return $expeditions;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getExpeditionCompletedPublicPage($sort = null)
+    {
+        $results = $this->model->with('project')
+            ->has('nfnWorkflow')->with('nfnWorkflow')
+            ->whereHas('stat', function($q){
+                $q->where('percent_completed', 100.00);
+            })->with(['stat' => function($q){
+                $q->where('percent_completed', 100.00);
+            }])->get();
+
+        switch($sort) {
+            case 'name-asc':
+                $expeditions = $results->sortBy('title');
+                break;
+            case 'name-desc':
+                $expeditions = $results->sortByDesc('title');
+                break;
+            case 'project-asc':
+                $expeditions = $results->sortBy( function ($expedition) {
+                    return $expedition->project->title;
+                });
+                break;
+            case 'project-desc':
+                $expeditions = $results->sortByDesc( function ($expedition) {
+                    return $expedition->project->title;
+                });
+                break;
+            default:
+                $expeditions = $results;
+        }
+
+        $this->resetModel();
+
+        return $expeditions;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getExpeditionsForNfnClassificationProcess(array $expeditionIds = [], array $attributes = ['*'])
     {
         $model = $this->model->with([
@@ -130,19 +227,5 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
         return $results;
     }
 
-    public function getHomePageProjectExpedition()
-    {
-        $results = $this->model->with(['project' => function ($q) {
-                $q->withCount('expeditions');
-            }])->has('nfnWorkflow')->with('nfnWorkflow')
-            ->whereHas('stat', function($q){
-                $q->whereBetween('percent_completed', [0.00, 99.00]);
-            })->with(['stat' => function($q){
-                $q->whereBetween('percent_completed', [0.00, 99.00]);
-            }])->inRandomOrder()->first();
 
-        $this->resetModel();
-
-        return $results;
-    }
 }
