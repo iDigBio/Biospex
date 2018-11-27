@@ -25,7 +25,7 @@
             <a class="nav-link text-uppercase" href="{{ route('expeditions.get.index') }}">{{ __('expeditions') }}</a>
         </li>
         <li class="nav-item mr-2">
-            <a class="nav-link text-uppercase" href="{{ route('expeditions.get.index') }}">{{ __('events') }}</a>
+            <a class="nav-link text-uppercase" href="{{ route('events.get.index') }}">{{ __('events') }}</a>
         </li>
         <li class="nav-item mr-2">
             <a class="nav-link text-uppercase" href="{{ route('contact.get.index') }}">{{ __('contact') }}</a>

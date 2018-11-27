@@ -236,7 +236,7 @@ $(function () {
         let eventId = $button.data('event');
 
         $modal.load($button.data('href'), function () {
-            let $clock = $modal.find('#clockdiv');
+            let $clock = $modal.find('.clockdiv');
             let deadline = $modal.find('#date').html(); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
             if (deadline === 'Completed') {
                 $clock.html('<h2 class="color-action text-center">Completed</h2>');
@@ -249,7 +249,7 @@ $(function () {
                     $.each(e.data, function (id, val) {
                         if (Number(id) === Number(eventId)) {
                             $modal.html(val);
-                            $clock = $modal.find('#clockdiv');
+                            $clock = $modal.find('.clockdiv');
                             deadline = $modal.find('#date').html();
                             initializeClock($clock, deadline);
                         }
@@ -274,16 +274,27 @@ $(function () {
         sortPage($(this));
     });
 
-    $('#completedExpeditions').on('click', function(e){
-        $('#completed').show();
-        $('#completed-expeditions').show();
+    $('.completedButton').on('click', function (e) {
+        let $target = $('#' + $(this).data('target')); // target container
         let url = $(this).data('url');
-        let $target = $('#'+$(this).data('target'));
+
+        $('#completed').show();
+        $target.show();
         $target.html('<div class="loader mx-auto"></div>');
         $.get(url, function (data) {
             $target.html(data);
         });
     });
+
+    $('.clockdiv').each(function () {
+        let deadline = $(this).data('value'); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
+        console.log(deadline);
+        initializeClock($(this), deadline);
+    });
+});
+
+$(document).ajaxComplete(function () {
+    $('[data-toggle="tooltip"]').tooltip();
 });
 
 // Loop data from polling
@@ -376,43 +387,35 @@ function initializeClock($clock, endTime) {
 }
 
 function sortPage(element) {
-    let id = element.attr('id');
-    let url = element.data('url');
-    let $target = $('#'+element.data('target'));
-    let $icon = element.find('i');
-    let classVal = $icon.attr('class');
+    let name = element.data('name'); // sort by
+    let order = element.data('order'); // current sort parameter
+    let url = element.data('url'); // url for sort
+    let $target = $('#' + element.data('target')); // target container
 
     $target.html('<div class="loader mx-auto"></div>');
 
-    switch (classVal) {
-        case 'fas fa-sort-down':
-            $.get(url, function (data) {
-                $target.html(data);
-                $icon.removeClass('fas fa-sort-down').addClass('fas fa-sort');
-            });
+    $.get(url + '/' + name + '/' + order, function (data) {
+        $target.html(data);
+        setOrder(order, element);
+    });
+}
+
+function setOrder(order, element) {
+    let $icon = element.find('i');
+    element.siblings('span').data('order', 'asc').find('i').removeClass().addClass('fas fa-sort');
+
+    switch (order) {
+        case 'asc':
+            element.data('order', 'desc');
+            $icon.removeClass().addClass('fas fa-sort-up');
             break;
-        case 'fas fa-sort-up':
-            $.get(url+'/'+id+'-desc', function (data) {
-                $target.html(data);
-                $icon.removeClass('fas fa-sort-up').addClass('fas fa-sort-down');
-            });
+        case 'desc':
+            element.data('order', '');
+            $icon.removeClass().addClass('fas fa-sort-down');
             break;
         default:
-            $.get(url+'/'+id+'-asc', function (data) {
-                $target.html(data);
-                $icon.removeClass('fas fa-sort').addClass('fas fa-sort-up');
-            });
-            break;
-    }
-
-    switch (id) {
-        case 'name':
-            $('#group').find('i').removeClass().addClass('fas fa-sort');
-            $('#project').find('i').removeClass().addClass('fas fa-sort');
-            break;
-        case 'group':
-        case 'project':
-            $('#name').find('i').removeClass().addClass('fas fa-sort');
+            element.data('order', 'asc');
+            $icon.removeClass().addClass('fas fa-sort');
             break;
     }
 }

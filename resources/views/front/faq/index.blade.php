@@ -25,9 +25,9 @@
         </div>
     </div>
     <div class="text-center mb-4">
-    <h2 class="col-6 pt-4 mx-auto">
-        {{ __('Don\'t see your question listed above?') }}</h2>
-    <a href="{{ route('contact.get.index') }}" class="btn btn-primary mx-auto">{{ __('CONTACT US') }}</a>
+        <h2 class="col-6 pt-4 mx-auto">
+            {{ __('Don\'t see your question listed above?') }}</h2>
+        <a href="{{ route('contact.get.index') }}" class="btn btn-primary mx-auto">{{ __('CONTACT US') }}</a>
     </div>
 @endsection
 

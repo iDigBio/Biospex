@@ -9,9 +9,9 @@ class NfnWorkflowPresenter extends Presenter
      *
      * @return string
      */
-    public function nfnUrl() {
-        return $this->model->workflow === null ? '#'
-            : '<a href="https://www.zooniverse.org/projects/zooniverse/notes-from-nature/classify?reload=1&workflow='.$this->model->workflow.'" target="_blank">
-              <i class="far fa-keyboard"></i>'.__('Participate').'</a>';
+    public function nfnUrl()
+    {
+        return $this->model->workflow === null ? '#' :
+            '<a href="https://www.zooniverse.org/projects/zooniverse/notes-from-nature/classify?reload=1&workflow='.$this->model->workflow.'" data-toggle="tooltip" title="Participate" target="_blank"><i class="far fa-keyboard"></i></a>';
     }
 }

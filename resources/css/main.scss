@@ -102,7 +102,7 @@ h3 {
     margin-top: 1.5rem;
 }
 h2.modal-number {
-    font-size: 68px;
+    font-size: 68px !important;
     line-height: 32px;
 }
 h2.modal-number>small {
@@ -243,7 +243,7 @@ h2.modal-number>small {
 .modal-backdrop.show {
     opacity: .925;
 }
-#clockdiv{
+.clockdiv{
     color: #111;
     display: inline-block;
     font-weight: 100;
@@ -251,14 +251,14 @@ h2.modal-number>small {
     font-size: 30px;
 }
 
-#clockdiv > div{
+.clockdiv > div{
     padding: 10px;
     border-radius: 3px;
     background: #ececec;
     display: inline-block;
 }
 
-#clockdiv div > span{
+.clockdiv div > span{
     padding: 15px;
     border-radius: 3px;
     background: #ededed;

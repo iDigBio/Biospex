@@ -1,0 +1,1 @@
+@each('front.event.partials.event-loop', $events, 'event')

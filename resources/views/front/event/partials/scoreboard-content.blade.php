@@ -1,9 +1,9 @@
-<div class="text-center" style="background-color:#e83f29;padding-top:20px;">
+<div class="modal-body text-center" style="background-color:#e83f29;padding-top:35px;">
     <h3 class="text-white text modal-number">{{ $event->title }}</h3>
-    <h2 class="text-white text modal-number" style="padding-bottom: 10px;">
-        {{ $event->transcriptions_count }}<br>
-        <small style="color: #fff;">Transcriptions</small><br></h2>
+    <h2 class="text-white text modal-number">{{ $event->transcriptions_count }}<br>
+        <small>Transcriptions</small></h2>
 </div>
+
 <table class="table table-striped">
     <thead>
     <tr>
@@ -24,6 +24,7 @@
     @endforeach
     </tbody>
 </table>
+
 <!-- countdown clock -->
 <h2 class="text-center color-action pt-4">Time Remaining</h2>
 <div class="clockdiv">

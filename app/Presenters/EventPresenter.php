@@ -89,4 +89,20 @@ class EventPresenter extends Presenter
 
         return $end_date->gt($start_date) ? $end_date->toIso8601ZuluString() : $start_date->toIso8601ZuluString();
     }
+
+    public function shareTwitter()
+    {
+        /*
+        <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fbiospex.org%2Fevents%2F13&text=Event%20to%20show&hashtags=biospex%2Ceventname" target="_blank">
+        <i class="fab fa-twitter"></i> <span class="d-none text d-sm-inline"></span>
+        </a>
+         */
+    }
+
+    public function shareFacebook()
+    {
+        /*
+         http://www.facebook.com/share.php?u=[URL]&title=[TITLE]
+         */
+    }
 }

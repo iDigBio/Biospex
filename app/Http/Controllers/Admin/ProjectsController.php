@@ -96,14 +96,15 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        /*
         $user = \Auth::user();
-        $groups = $this->groupContract->getUserProjectListByGroup($user);
+        $user->load('groups');
 
-        if (! $groups->count()) {
-            return redirect()->route('admin.home.welcome');
+        //$groups = $this->groupContract->getUserProjectListByGroup($user);
+        return view('admin.welcome');
+
+        if (! $user->groups->count()) {
+            return view('admin.welcome');
         }
-        */
 
         return view('admin.project.index');
         //return view('admin.project.index', compact('groups'));

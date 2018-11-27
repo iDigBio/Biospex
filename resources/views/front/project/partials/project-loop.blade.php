@@ -18,12 +18,8 @@
 
         <div class="card-footer">
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
-                <a href="{{ route('projects.get.slug', [$project->slug]) }}"><i
-                            class="fas fa-binoculars"></i> <span
-                            class="d-none text d-sm-inline"></span></a>
-                <a href="{{ route('events.get.project', [$project->id]) }}"><i
-                            class="far fa-calendar-times"></i> <span
-                            class="d-none text d-sm-inline"></span></a>
+                {!! $project->present()->project_page_icon !!}
+                {!! $project->present()->project_events_icon !!}
                 {!! $project->present()->organization_icon !!}
                 {!! $project->present()->twitter_icon !!}
                 {!! $project->present()->facebook_icon !!}

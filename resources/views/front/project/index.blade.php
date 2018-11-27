@@ -21,11 +21,11 @@
     <hr class="header mx-auto" style="width:300px;">
     <div class="row">
         <div class="col-md-6 mx-auto mb-4 text-center">
-            <span id="name" data-url="{{ route('projects.get.sort') }}" data-target="public-expeditions"
-                  class="mr-2 sortPage" style="color: #e83f29; cursor: pointer;"><i
-                        class="fas fa-sort"></i> {{ __('NAME') }}</span>
-            <span id="group" data-url="{{ route('projects.get.sort') }}" data-target="public-expeditions"
-                  class="ml-2 sortPage" style="color: #e83f29; cursor: pointer;"><i
+            <span data-name="title" data-order="asc" data-url="{{ route('projects.get.sort') }}" data-target="public-expeditions"
+                  class="sortPage mr-2" style="color: #e83f29; cursor: pointer;"><i
+                        class="fas fa-sort"></i> {{ __('TITLE') }}</span>
+            <span data-name="group" data-order="asc" data-url="{{ route('projects.get.sort') }}" data-target="public-expeditions"
+                  class="sortPage ml-2" style="color: #e83f29; cursor: pointer;"><i
                         class="fas fa-sort"></i> {{ __('GROUP') }}</span>
         </div>
     </div>

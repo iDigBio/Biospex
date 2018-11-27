@@ -68,17 +68,15 @@
                                 </ul>
                             </div>
 
-                            <div class="col-5">
+                            <div class="col-5 text-center">
                                 <img class="img-fluid" src="{{ $expedition->project->present()->logo_thumb_url }}" alt="Card image cap">
                             </div>
                         </div>
 
                         <div class="card-footer">
                             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
-                                <a href="{{ route('projects.get.slug', [$expedition->project->slug]) }}"><i class="fas fa-binoculars"></i> <span
-                                            class="d-none text d-sm-inline"></span></a>
-                                <a href="{{ route('events.get.project', [$expedition->project->id]) }}"><i class="far fa-calendar-times"></i> <span
-                                            class="d-none text d-sm-inline"></span></a>
+                                {!! $expedition->project->present()->project_page_icon !!}
+                                {!! $expedition->project->present()->project_events_icon !!}
                                 {!! $expedition->project->present()->organization_icon !!}
                                 {!! $expedition->project->present()->twitter_icon !!}
                                 {!! $expedition->project->present()->facebook_icon !!}
@@ -99,15 +97,11 @@
                         </div>
 
                         <div class="card-body text-center" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
-                            <div class="d-flex align-items-start justify-content-between mb-2">
-                                <p><a href="{{ route('projects.get.slug', [$expedition->project->slug]) }}" class="color-action"><i class="fas fa-project-diagram color-action"></i>
-                                        {{ $expedition->project->title }}</a></p>
                                 <p>{{ $expedition->stat->percent_completed }}% {{ __('Complete') }}</p>
-                            </div>
-
-                            <div class="d-flex align-items-start justify-content-between">
-                                <p><a href="#"><i class="far fa-share-square"></i> {{ __('Share') }}</a></p>
-                                <p>{!! $expedition->nfnWorkflow->present()->nfn_url !!}</p>
+                            <hr>
+                            <div class="col-md-3 d-flex justify-content-between mt-4 mb-3 mx-auto">
+                                {!! $expedition->project->present()->project_page_icon !!}
+                                {!! $expedition->nfnWorkflow->present()->nfn_url !!}
                             </div>
                         </div>
                     </div>

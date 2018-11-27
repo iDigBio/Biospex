@@ -29,8 +29,6 @@ class ProjectRepository extends EloquentRepository implements Project
         });
 
         $project->resources()->saveMany($resources->all());
-
-
     }
 
     /**
@@ -60,30 +58,24 @@ class ProjectRepository extends EloquentRepository implements Project
         }
 
         return $model->resources()->saveMany($resources->all());
-
     }
 
     /**
      * @inheritdoc
      */
-    public function getPublicProjectIndex($sort = null)
+    public function getPublicProjectIndex($sort = null, $order = null)
     {
         $results = $this->model->withCount('expeditions')->with('group')->whereHas('nfnWorkflows')->get();
 
-        switch($sort) {
-            case 'name-asc':
-                $projects = $results->sortBy('title');
-                break;
-            case 'name-desc':
-                $projects = $results->sortByDesc('title');
-                break;
-            case 'group-asc':
-                $projects = $results->sortBy( function ($project) {
+        switch ($order) {
+            case 'asc':
+                $projects = $sort === 'title' ? $results->sortBy('title') : $results->sortBy(function ($project) {
                     return $project->group->title;
                 });
                 break;
-            case 'group-desc':
-                $projects = $results->sortByDesc( function ($project) {
+            case 'desc':
+                $projects = $sort === 'title' ? $results->sortByDesc('title') : $results->sortByDesc(function ($project
+                ) {
                     return $project->group->title;
                 });
                 break;
@@ -107,7 +99,6 @@ class ProjectRepository extends EloquentRepository implements Project
 
         return $results;
     }
-
 
     /**
      * @inheritdoc
@@ -136,7 +127,8 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectsHavingTranscriptionLocations(array $projectIds = [])
     {
-        $results = empty($projectIds) ? $this->model->has('transcriptionLocations')->get() : $this->model->has('transcriptionLocations')->whereIn('id', $projectIds)->get();
+        $results = empty($projectIds) ? $this->model->has('transcriptionLocations')->get()
+            : $this->model->has('transcriptionLocations')->whereIn('id', $projectIds)->get();
 
         $this->resetModel();
 
@@ -215,5 +207,4 @@ class ProjectRepository extends EloquentRepository implements Project
 
         return true;
     }
-
 }

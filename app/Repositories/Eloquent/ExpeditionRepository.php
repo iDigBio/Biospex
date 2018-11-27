@@ -22,14 +22,17 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function getHomePageProjectExpedition()
     {
-        $result = $this->model->with(['project' => function ($q) {
-            $q->withCount('expeditions');
-        }])->with('nfnWorkflow')->whereHas('stat', function($q){
+        $result = $this->model->with([
+            'project' => function ($q) {
+                $q->withCount('expeditions');
+            },
+        ])->with('nfnWorkflow')->whereHas('stat', function ($q) {
+            $q->whereBetween('percent_completed', [0.00, 99.99]);
+        })->with([
+            'stat' => function ($q) {
                 $q->whereBetween('percent_completed', [0.00, 99.99]);
-            })->with(['stat' => function($q){
-                $q->whereBetween('percent_completed', [0.00, 99.99]);
-            }])
-            ->where('project_id', 13)->inRandomOrder()->first();
+            },
+        ])->where('project_id', 13)->inRandomOrder()->first();
 
         $this->resetModel();
 
@@ -39,30 +42,28 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     /**
      * @inheritdoc
      */
-    public function getExpeditionPublicPage($sort = null)
+    public function getExpeditionPublicPage($sort = null, $order = null)
     {
         $results = $this->model->with('project')
-            ->has('nfnWorkflow')->with('nfnWorkflow')
-            ->whereHas('stat', function($q){
+            ->has('nfnWorkflow')
+            ->with('nfnWorkflow')->whereHas('stat', function ($q) {
                 $q->whereBetween('percent_completed', [0.00, 99.99]);
-            })->with(['stat' => function($q){
-                $q->whereBetween('percent_completed', [0.00, 99.99]);
-            }])->get();
+            })->with([
+                'stat' => function ($q) {
+                    $q->whereBetween('percent_completed', [0.00, 99.99]);
+                },
+            ])->get();
 
-        switch($sort) {
-            case 'name-asc':
-                $expeditions = $results->sortBy('title');
-                break;
-            case 'name-desc':
-                $expeditions = $results->sortByDesc('title');
-                break;
-            case 'project-asc':
-                $expeditions = $results->sortBy( function ($expedition) {
+        switch ($order) {
+            case 'asc':
+                $expeditions = $sort === 'title' ? $results->sortBy('title')
+                    : $results->sortBy(function ($expedition) {
                     return $expedition->project->title;
                 });
                 break;
-            case 'project-desc':
-                $expeditions = $results->sortByDesc( function ($expedition) {
+            case 'desc':
+                $expeditions = $sort === 'title' ? $results->sortByDesc('title')
+                    : $expeditions = $results->sortByDesc(function ($expedition) {
                     return $expedition->project->title;
                 });
                 break;
@@ -78,30 +79,29 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     /**
      * @inheritdoc
      */
-    public function getExpeditionCompletedPublicPage($sort = null)
+    public function getExpeditionCompletedPublicPage($sort = null, $order = null)
     {
         $results = $this->model->with('project')
-            ->has('nfnWorkflow')->with('nfnWorkflow')
-            ->whereHas('stat', function($q){
+            ->has('nfnWorkflow')
+            ->with('nfnWorkflow')
+            ->whereHas('stat', function ($q) {
                 $q->where('percent_completed', 100.00);
-            })->with(['stat' => function($q){
-                $q->where('percent_completed', 100.00);
-            }])->get();
+            })->with([
+                'stat' => function ($q) {
+                    $q->where('percent_completed', 100.00);
+                },
+            ])->get();
 
-        switch($sort) {
-            case 'name-asc':
-                $expeditions = $results->sortBy('title');
-                break;
-            case 'name-desc':
-                $expeditions = $results->sortByDesc('title');
-                break;
-            case 'project-asc':
-                $expeditions = $results->sortBy( function ($expedition) {
+        switch ($order) {
+            case 'asc':
+                $expeditions = $sort === 'title' ? $results->sortBy('title')
+                    : $results->sortBy(function ($expedition) {
                     return $expedition->project->title;
                 });
                 break;
-            case 'project-desc':
-                $expeditions = $results->sortByDesc( function ($expedition) {
+            case 'desc':
+                $expeditions = $sort === 'title' ? $results->sortByDesc('title')
+                    : $expeditions = $results->sortByDesc(function ($expedition) {
                     return $expedition->project->title;
                 });
                 break;
@@ -226,6 +226,4 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
 
         return $results;
     }
-
-
 }

@@ -88,11 +88,12 @@ class ProjectsController extends Controller
      *
      * @param \App\Repositories\Interfaces\Project $projectContract
      * @param null $sort
+     * @param null $order
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Project $projectContract, $sort = null)
+    public function index(Project $projectContract, $sort = null, $order = null)
     {
-        $projects = $projectContract->getPublicProjectIndex($sort);
+        $projects = $projectContract->getPublicProjectIndex($sort, $order);
 
         return request()->ajax() ?
             view('front.project.partials.project', compact('projects')) :

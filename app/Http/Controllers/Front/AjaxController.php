@@ -44,7 +44,7 @@ class AjaxController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \Throwable
      */
-    public function scoreboard($eventId, Event $eventContract)
+    public function scoreboard(Event $eventContract, $eventId)
     {
         $event = $eventContract->getEventScoreboard($eventId, ['id']);
 
@@ -52,6 +52,6 @@ class AjaxController extends Controller
             return response()->json(['html' => 'Error retrieving the Event']);
         }
 
-        return view('front.events.scoreboard-content', ['event' => $event]);
+        return view('front.event.partials.scoreboard-content', ['event' => $event]);
     }
 }

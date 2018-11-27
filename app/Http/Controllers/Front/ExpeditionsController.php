@@ -12,11 +12,12 @@ class ExpeditionsController extends Controller
      *
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      * @param null $sort
+     * @param null $order
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Expedition $expeditionContract, $sort = null)
+    public function index(Expedition $expeditionContract, $sort = null, $order = null)
     {
-        $expeditions = $expeditionContract->getExpeditionPublicPage($sort);
+        $expeditions = $expeditionContract->getExpeditionPublicPage($sort, $order);
 
         return request()->ajax() ?
             view('front.expedition.partials.expedition', compact('expeditions')) :
@@ -28,11 +29,12 @@ class ExpeditionsController extends Controller
      *
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      * @param null $sort
+     * @param null $order
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function completed(Expedition $expeditionContract, $sort = null)
+    public function completed(Expedition $expeditionContract, $sort = null, $order = null)
     {
-        $expeditions = $expeditionContract->getExpeditionCompletedPublicPage($sort);
+        $expeditions = $expeditionContract->getExpeditionCompletedPublicPage($sort, $order);
 
         return view('front.expedition.partials.expedition', compact('expeditions'));
     }

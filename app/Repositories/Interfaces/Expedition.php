@@ -16,16 +16,22 @@ interface Expedition extends RepositoryInterface
     public function getHomePageProjectExpedition();
 
     /**
+     * Get expeditions for public page.
+     *
      * @param null $sort
+     * @param null $order
      * @return mixed
      */
-    public function getExpeditionPublicPage($sort = null);
+    public function getExpeditionPublicPage($sort = null, $order = null);
 
     /**
+     * Get expeditions completed for public page.
+     *
      * @param null $sort
+     * @param null $order
      * @return mixed
      */
-    public function getExpeditionCompletedPublicPage($sort = null);
+    public function getExpeditionCompletedPublicPage($sort = null, $order = null);
 
     /**
      * Retrieve expeditions for Notes From Nature classification process.
