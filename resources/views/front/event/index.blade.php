@@ -29,7 +29,7 @@
                         class="fas fa-sort"></i> {{ __('PROJECT') }}</span>
         </div>
     </div>
-    <div class="row" id="public-expeditions">
+    <div class="row" id="public-events">
         @include('front.event.partials.event', ['events' => $events])
     </div>
     <hr class="header mx-auto m mt-5 mb-5" style="width:500px;">

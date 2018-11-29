@@ -24,7 +24,7 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function getEventPublicPage($sort = null, $order = null)
     {
-        $results = $this->model->get();
+        $results = $this->model->with('project')->get();
 
         $active = $results->filter(function ($event) {
             $start_date = $event->start_date->setTimezone($event->timezone);
@@ -55,7 +55,7 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function getEventCompletedPublicPage($sort = null, $order = null)
     {
-        $results = $this->model->get();
+        $results = $this->model->with('project')->get();
 
         $active = $results->reject(function ($event) {
             $start_date = $event->start_date->setTimezone($event->timezone);

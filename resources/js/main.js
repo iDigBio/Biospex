@@ -235,11 +235,13 @@ $(function () {
         let channel = $button.data('channel');
         let eventId = $button.data('event');
 
+        $modal.html('<div class="loader mx-auto"></div>');
+
         $modal.load($button.data('href'), function () {
             let $clock = $modal.find('.clockdiv');
             let deadline = $modal.find('#date').html(); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
             if (deadline === 'Completed') {
-                $clock.html('<h2 class="color-action text-center">Completed</h2>');
+                $clock.html('<h2 class="text-center">Completed</h2>');
                 return;
             }
             initializeClock($clock, deadline);
@@ -286,11 +288,7 @@ $(function () {
         });
     });
 
-    $('.clockdiv').each(function () {
-        let deadline = $(this).data('value'); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
-        console.log(deadline);
-        initializeClock($(this), deadline);
-    });
+    clockDiv();
 });
 
 $(document).ajaxComplete(function () {
@@ -335,7 +333,7 @@ function copyToClipboard(text, el) {
             let msg = successful ? 'Copied!' : 'Whoops, not copied!';
             el.attr('data-original-title', msg).tooltip('show');
         } catch (err) {
-            console.log('Oops, unable to copy');
+            alert('Oops, unable to copy');
         }
         document.body.removeChild(copyTextArea);
         el.attr('data-original-title', elOriginalText);
@@ -344,7 +342,6 @@ function copyToClipboard(text, el) {
         window.prompt('Copy to clipboard: Ctrl+C or Command+C, Enter', text);
     }
 }
-
 
 function getTimeRemaining(endTime) {
     let t = Date.parse(endTime) - Date.parse(new Date());
@@ -362,7 +359,12 @@ function getTimeRemaining(endTime) {
 }
 
 let timeInterval;
-
+function clockDiv() {
+    $('.clockdiv').each(function () {
+        let deadline = $(this).data('value'); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
+        initializeClock($(this), deadline);
+    });
+}
 function initializeClock($clock, endTime) {
 
     let daysSpan = $clock.find('.days');
@@ -397,6 +399,7 @@ function sortPage(element) {
     $.get(url + '/' + name + '/' + order, function (data) {
         $target.html(data);
         setOrder(order, element);
+        clockDiv();
     });
 }
 
@@ -419,3 +422,4 @@ function setOrder(order, element) {
             break;
     }
 }
+

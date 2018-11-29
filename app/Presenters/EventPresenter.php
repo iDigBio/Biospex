@@ -47,7 +47,6 @@ class EventPresenter extends Presenter
         return $this->model->end_date->setTimezone($this->model->timezone);
     }
 
-
     /**
      * Returns event date as string.
      *

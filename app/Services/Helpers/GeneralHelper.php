@@ -369,6 +369,26 @@ class GeneralHelper
     }
 
     /**
+     * Check event completed.
+     *
+     * @param $end_date
+     * @param $timezone
+     * @return bool
+     */
+    public function eventCompleted($end_date, $timezone)
+    {
+        $now = Carbon::now(new DateTimeZone($timezone));
+        $end = $end_date->setTimezone($timezone);
+
+        if ($now->timestamp > $end->timestamp)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Convert uuid value to bin for lookup.
      *
      * @param $value

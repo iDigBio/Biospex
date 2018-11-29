@@ -243,9 +243,28 @@ h2.modal-number>small {
 .modal-backdrop.show {
     opacity: .925;
 }
+
+.modal-body {
+    padding: 0;
+}
+
+.modal-footer {
+    display: initial;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: initial;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+.modal-title {
+    font-size: 35px;
+    color: #fff;
+}
+
 .clockdiv{
     color: #111;
-    display: inline-block;
     font-weight: 100;
     text-align: center;
     font-size: 30px;
@@ -270,16 +289,9 @@ h2.modal-number>small {
     font-size: 16px;
 }
 
-.modal-footer {
-    display: initial;
-    -ms-flex-align: center;
-    align-items: center;
-    -ms-flex-pack: center;
-    justify-content: initial;
-    padding-top: 20px;
-    border-top: 1px solid #e9ecef;
+.empty-icon .fa {
+    margin-right: 1.5em;
 }
-
 
 /*
 contributor logos*/
@@ -800,7 +812,7 @@ li.nav-btn.show {
 
 .loader {
     border: 16px solid #f3f3f3; /* Light grey */
-    border-top: 16px solid #3498db; /* Blue */
+    border-top: 16px solid #e83f29; /* Blue */
     border-radius: 50%;
     width: 120px;
     height: 120px;

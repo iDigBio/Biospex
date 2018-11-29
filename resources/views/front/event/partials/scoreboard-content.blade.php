@@ -1,7 +1,7 @@
-<div class="modal-body text-center" style="background-color:#e83f29;padding-top:35px;">
-    <h3 class="text-white text modal-number">{{ $event->title }}</h3>
-    <h2 class="text-white text modal-number">{{ $event->transcriptions_count }}<br>
-        <small>Transcriptions</small></h2>
+<div class="text-center" style="background-color:#e83f29;">
+    <span class="modal-title">{{ $event->title }}</span>
+    <h2 class="text-white text modal-number mt-3">{{ $event->transcriptions_count }}</h2>
+    <span class="modal-title">Transcriptions</span>
 </div>
 
 <table class="table table-striped">
@@ -26,23 +26,23 @@
 </table>
 
 <!-- countdown clock -->
-<h2 class="text-center color-action pt-4">Time Remaining</h2>
-<div class="clockdiv">
+<h2 class="text-center color-action pt-4">{{ __('Time Remaining') }}</h2>
+<div class="clockdiv mx-auto">
     <div>
         <span class="days"></span>
-        <div class="smalltext">Days</div>
+        <div class="smalltext">{{ __('Days') }}</div>
     </div>
     <div>
         <span class="hours"></span>
-        <div class="smalltext">Hours</div>
+        <div class="smalltext">{{ __('Hours') }}</div>
     </div>
     <div>
         <span class="minutes"></span>
-        <div class="smalltext">Minutes</div>
+        <div class="smalltext">{{ __('Minutes') }}</div>
     </div>
     <div>
         <span class="seconds"></span>
-        <div class="smalltext">Seconds</div>
+        <div class="smalltext">{{ __('Seconds') }}</div>
     </div>
 </div>
 <div id="date" style="display: none">{{ $event->present()->scoreboard_date }}</div>
