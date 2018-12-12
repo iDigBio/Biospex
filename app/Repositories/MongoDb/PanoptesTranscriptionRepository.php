@@ -25,17 +25,22 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     {
         $result = $this->model->raw(function ($collection) use ($projectId) {
             return $collection->aggregate([
+                ['$match' => ['subject_projectId' => (int) $projectId]],
+                ['$project' => ['user_name' => '$user_name']],
+                ['$group' => ['_id' => '$user_name', 'count' => ['$sum' => 1]]],
+                /*
                 [
                     '$match' => ['subject_projectId' => (int) $projectId],
                 ],
                 ['$group' => ['_id' => '$user_name', 'count' => ['$sum' => 1]]],
+                */
                 //['$count' => 'count'],
             ]);
-        })->first();
+        });
 
         $this->resetModel();
 
-        return $result === null ? 0 : $result->count;
+        return count($result); // === null ? 0 : $result->count;
     }
 
     /**
