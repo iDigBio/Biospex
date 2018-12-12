@@ -53,7 +53,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
 
         $this->resetModel();
 
-        return $count;
+        return 0;
     }
 
     /**
