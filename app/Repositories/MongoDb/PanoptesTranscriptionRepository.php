@@ -23,24 +23,25 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getProjectTranscriberCount($projectId)
     {
-        $result = $this->model->raw(function ($collection) use ($projectId) {
-            return $collection->aggregate([
-                ['$match' => ['subject_projectId' => (int) $projectId]],
-                ['$project' => ['user_name' => '$user_name']],
-                ['$group' => ['_id' => '$user_name', 'count' => ['$sum' => 1]]],
-                /*
-                [
-                    '$match' => ['subject_projectId' => (int) $projectId],
-                ],
-                ['$group' => ['_id' => '$user_name', 'count' => ['$sum' => 1]]],
-                */
-                //['$count' => 'count'],
-            ]);
-        });
+        $result = $this->model->where('subject_projectId', $projectId)->groupBy('user_name')->get()->count();
+        //$result = $this->model->raw(function ($collection) use ($projectId) {
+        //    return $collection->aggregate([
+        //        ['$match' => ['subject_projectId' => (int) $projectId]],
+        //        ['$project' => ['user_name' => '$user_name']],
+        //        ['$group' => ['_id' => '$user_name', 'count' => ['$sum' => 1]]],
+        //        /*
+        //        [
+        //            '$match' => ['subject_projectId' => (int) $projectId],
+        //        ],
+        //        ['$group' => ['_id' => '$user_name', 'count' => ['$sum' => 1]]],
+        //        */
+        //        //['$count' => 'count'],
+        //    ]);
+        //});
 
         $this->resetModel();
 
-        return count($result); // === null ? 0 : $result->count;
+        return $result; // === null ? 0 : $result->count;
     }
 
     /**
@@ -48,7 +49,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getProjectTranscriptionCount($projectId)
     {
-        $count = $this->model->where('subject_projectId', (int) $projectId)->count();
+        $count = $this->model->where('subject_projectId', (int) $projectId)->get()->count();
 
         $this->resetModel();
 
