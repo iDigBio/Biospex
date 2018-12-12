@@ -28,10 +28,8 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
                 [
                     '$match' => ['subject_projectId' => (int) $projectId],
                 ],
-                [
-                    '$group' => ['_id' => '$user_name'],
-                ],
-                ['$count' => 'count'],
+                ['$group' => ['_id' => '$user_name', 'count' => ['$sum' => 1]]],
+                //['$count' => 'count'],
             ]);
         })->first();
 
