@@ -49,7 +49,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getProjectTranscriptionCount($projectId)
     {
-        $count = $this->model->where('subject_projectId', (int) $projectId)->get()->count();
+        $count = $this->model->where('subject_projectId', $projectId)->get()->count();
 
         $this->resetModel();
 
@@ -61,7 +61,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getExpeditionTranscriptionCount($expeditionId)
     {
-        $count = $this->model->where('subject_expeditionId', (int) $expeditionId)->count();
+        $count = $this->model->where('subject_expeditionId', $expeditionId)->count();
 
         $this->resetModel();
 
