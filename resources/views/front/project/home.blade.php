@@ -154,7 +154,7 @@
         <div class="col-sm-8 offset-md-2">
             <h1 class="text-center project-headers" id="events">{{ __('Events') }}</h1>
             <div class="text-center mt-4">
-                <button id="expeditionViewToggle" class="btn btn-primary pl-4 pr-4"
+                <button id="eventViewToggle" class="btn btn-primary pl-4 pr-4"
                         data-toggle="collapse"
                         data-target="#activeEvents,#completedEvents"
                         data-value="true"
