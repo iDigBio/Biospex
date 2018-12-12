@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Facades\Flash;
+use App\Facades\FlashHelper;
 use App\Notifications\UserActivation;
 use App\Repositories\Interfaces\Group;
 use App\Repositories\Interfaces\Invite;
@@ -71,7 +71,7 @@ class RegisterService
             }
 
             $user->notify(new UserActivation(route('app.get.activate', [$user->id, $user->activation_code])));
-            Flash::success(trans('messages.new_account'));
+            FlashHelper::success(trans('messages.new_account'));
 
             return true;
         }
@@ -94,7 +94,7 @@ class RegisterService
 
         if ( ! empty($code) && ! $invite)
         {
-            Flash::warning( trans('messages.invite_not_found'));
+            FlashHelper::warning( trans('messages.invite_not_found'));
         }
 
         $code = isset($invite->code) ? $invite->code : null;

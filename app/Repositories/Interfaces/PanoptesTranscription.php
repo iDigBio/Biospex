@@ -8,6 +8,33 @@ interface PanoptesTranscription extends RepositoryInterface
 {
 
     /**
+     * Return unique transcriber count for project.
+     *
+     * @param $projectId
+     * @return mixed
+     */
+    public function getProjectTranscriberCount($projectId);
+
+    /**
+     * Return project transcription count.
+     *
+     * @param $projectId
+     * @return mixed
+     */
+    public function getProjectTranscriptionCount($projectId);
+
+    /**
+     * Return expedition transcription count.
+     *
+     * @param $expeditionId
+     * @return mixed
+     */
+    public function getExpeditionTranscriptionCount($expeditionId);
+
+
+    // Not used methods
+
+    /**
      * @return mixed
      */
     public function getTotalTranscriptions();

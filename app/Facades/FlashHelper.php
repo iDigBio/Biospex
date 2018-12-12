@@ -5,11 +5,11 @@ namespace App\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * Class Flash
+ * Class FlashHelper
  *
  * @package App\Facades
  */
-class Flash extends Facade
+class FlashHelper extends Facade
 {
 
     /**
@@ -19,6 +19,6 @@ class Flash extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return \App\Services\Helpers\Flash::class;
+        return \App\Services\Helpers\FlashHelper::class;
     }
 }

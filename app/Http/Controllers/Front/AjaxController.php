@@ -18,9 +18,11 @@ class AjaxController extends Controller
      */
     public function loadAmChart(AmChart $amChartContract, $projectId)
     {
+        /*
         if (! request()->ajax() || $projectId === null) {
-            return response()->json(['html' => '']);
+            return response()->json(['html' => 'hitting null']);
         }
+        */
 
         $record = $amChartContract->findBy('project_id', $projectId);
 

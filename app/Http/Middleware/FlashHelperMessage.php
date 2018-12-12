@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use JavaScript;
 
-class FlashMessage
+class FlashHelperMessage
 {
 
     /**

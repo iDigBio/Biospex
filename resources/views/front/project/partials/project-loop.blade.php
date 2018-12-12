@@ -7,7 +7,8 @@
                 <ul>
                     <li>{{ $project->description_short }}</li>
                     <li class="mt-3">{{ $project->expeditions_count }} {{ __('Expeditions') }}</li>
-                    <li>{{ $project->transcriptions_count }} {{ __('Transcriptions') }}</li>
+                    <li>{{ CountHelper::projectTranscriberCount($project->id) }} {{ __('Transcribers') }}</li>
+                    <li>{{ CountHelper::projectTranscriptionCount($project->id) }} {{ __('Transcriptions') }}</li>
                 </ul>
             </div>
 
@@ -23,6 +24,7 @@
                 {!! $project->present()->organization_icon !!}
                 {!! $project->present()->twitter_icon !!}
                 {!! $project->present()->facebook_icon !!}
+                {!! $project->present()->blog_icon !!}
                 {!! $project->present()->contact_email_icon !!}
             </div>
         </div>

@@ -2,7 +2,7 @@
 
 namespace App\Services\Helpers;
 
-class Flash
+class FlashHelper
 {
 
     /**

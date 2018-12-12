@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Facades\DateHelper;
-use App\Facades\Flash;
+use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PasswordFormRequest;
 use App\Repositories\Interfaces\User;
@@ -59,7 +59,7 @@ class UsersController extends Controller
 
         if ($user->cannot('update', $user))
         {
-            Flash::warning( trans('pages.insufficient_permissions'));
+            FlashHelper::warning( trans('pages.insufficient_permissions'));
 
             return redirect()->route('webauth.projects.index');
         }
@@ -82,7 +82,7 @@ class UsersController extends Controller
 
         if ($user->cannot('update', $user))
         {
-            Flash::warning( trans('pages.insufficient_permissions'));
+            FlashHelper::warning( trans('pages.insufficient_permissions'));
 
             return redirect()->route('admin.projects.index');
         }
@@ -94,11 +94,11 @@ class UsersController extends Controller
 
         if ($result)
         {
-            Flash::success(trans('messages.record_updated'));
+            FlashHelper::success(trans('messages.record_updated'));
         }
         else
         {
-            Flash::error(trans('messages.record_updated_error'));
+            FlashHelper::error(trans('messages.record_updated_error'));
         }
 
         return redirect()->route('webauth.users.edit', [$user->id]);
@@ -116,21 +116,21 @@ class UsersController extends Controller
 
         if ( ! policy($user)->pass($user))
         {
-            Flash::warning( trans('pages.insufficient_permissions'));
+            FlashHelper::warning( trans('pages.insufficient_permissions'));
 
             return redirect()->route('webauth.projects.index');
         }
 
         if ( ! Hash::check($request->input('oldPassword'), $user->password))
         {
-            Flash::error(trans('messages.old_password'));
+            FlashHelper::error(trans('messages.old_password'));
 
             return redirect()->route('webauth.users.edit', [$user->id]);
         }
 
         $this->resetPassword($user, $request->input('newPassword'));
 
-        Flash::success(trans('messages.password_chg'));
+        FlashHelper::success(trans('messages.password_chg'));
 
         return redirect()->route('webauth.users.edit', [$user->id]);
     }

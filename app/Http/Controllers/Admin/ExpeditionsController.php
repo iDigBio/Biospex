@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Facades\Flash;
+use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpeditionFormRequest;
 use App\Jobs\DeleteExpedition;
@@ -160,12 +160,12 @@ class ExpeditionsController extends Controller
 
         if ($expedition)
         {
-            Flash::success(trans('messages.record_created'));
+            FlashHelper::success(trans('messages.record_created'));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
         }
 
-        Flash::error(trans('messages.record_save_error'));
+        FlashHelper::error(trans('messages.record_save_error'));
         return redirect()->route('admin.projects.show', [$projectId]);
     }
 
@@ -324,13 +324,13 @@ class ExpeditionsController extends Controller
             }
 
             // Success!
-            Flash::success(trans('messages.record_updated'));
+            FlashHelper::success(trans('messages.record_updated'));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
         catch(\Exception $e)
         {
-            Flash::error(trans('messages.record_save_error'));
+            FlashHelper::error(trans('messages.record_save_error'));
 
             return redirect()->route('admin.expeditions.edit', [$projectId, $expeditionId]);
         }
@@ -373,12 +373,12 @@ class ExpeditionsController extends Controller
 
             Artisan::call('workflow:manage', ['expeditionId' => $expeditionId]);
 
-            Flash::success(trans('messages.expedition_process_success'));
+            FlashHelper::success(trans('messages.expedition_process_success'));
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
         catch (\Exception $e)
         {
-            Flash::error(trans('messages.expedition_process_error', ['error' => $e->getMessage()]));
+            FlashHelper::error(trans('messages.expedition_process_error', ['error' => $e->getMessage()]));
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
     }
@@ -401,8 +401,8 @@ class ExpeditionsController extends Controller
         }
 
         $this->ocrQueueService->processOcr($projectId, $expeditionId) ?
-            Flash::success(trans('messages.ocr_process_success')) :
-            Flash::warning(trans('messages.ocr_process_error'));
+            FlashHelper::success(trans('messages.ocr_process_success')) :
+            FlashHelper::warning(trans('messages.ocr_process_error'));
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
     }
@@ -427,13 +427,13 @@ class ExpeditionsController extends Controller
 
         if ($workflow === null)
         {
-            Flash::error(trans('messages.process_no_exists'));
+            FlashHelper::error(trans('messages.process_no_exists'));
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
 
         $workflow->stopped = 1;
         $this->workflowManagerContract->update(['stopped' => 1], $workflow->id);
-        Flash::success(trans('messages.process_stopped'));
+        FlashHelper::success(trans('messages.process_stopped'));
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
     }
 
@@ -459,20 +459,20 @@ class ExpeditionsController extends Controller
 
             if (isset($expedition->workflowManager) || isset($expedition->nfnWorkflow))
             {
-                Flash::error(trans('messages.expedition_process_exists'));
+                FlashHelper::error(trans('messages.expedition_process_exists'));
 
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
             DeleteExpedition::dispatch($expedition);
 
-            Flash::success(trans('messages.record_deleted'));
+            FlashHelper::success(trans('messages.record_deleted'));
 
             return redirect()->route('admin.projects.index');
         }
         catch (\Exception $e)
         {
-            Flash::error(trans('record.record_delete_error'));
+            FlashHelper::error(trans('record.record_delete_error'));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }

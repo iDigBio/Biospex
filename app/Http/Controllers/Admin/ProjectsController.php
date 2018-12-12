@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Facades\Flash;
+use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Jobs\DeleteProject;
 use App\Repositories\Interfaces\Expedition;
@@ -13,7 +13,6 @@ use App\Repositories\Interfaces\User;
 use App\Http\Requests\ProjectFormRequest;
 use App\Services\File\FileService;
 use App\Services\Model\CommonVariables;
-use App\Services\MongoDbService;
 use JavaScript;
 
 class ProjectsController extends Controller
@@ -54,11 +53,6 @@ class ProjectsController extends Controller
     private $fileService;
 
     /**
-     * @var \App\Services\MongoDbService
-     */
-    private $mongoDbService;
-
-    /**
      * ProjectsController constructor.
      *
      * @param \App\Repositories\Interfaces\Group $groupContract
@@ -66,7 +60,6 @@ class ProjectsController extends Controller
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      * @param \App\Repositories\Interfaces\Subject $subjectContract
      * @param \App\Services\File\FileService $fileService
-     * @param \App\Services\MongoDbService $mongoDbService
      * @param \App\Services\Model\CommonVariables $commonVariables
      */
     public function __construct(
@@ -75,7 +68,6 @@ class ProjectsController extends Controller
         Expedition $expeditionContract,
         Subject $subjectContract,
         FileService $fileService,
-        MongoDbService $mongoDbService,
         CommonVariables $commonVariables
     ) {
         $this->groupContract = $groupContract;
@@ -84,7 +76,6 @@ class ProjectsController extends Controller
         $this->expeditionContract = $expeditionContract;
         $this->subjectContract = $subjectContract;
         $this->fileService = $fileService;
-        $this->mongoDbService = $mongoDbService;
     }
 
     /**
@@ -171,12 +162,12 @@ class ProjectsController extends Controller
         if ($project) {
             $this->commonVariables->notifyActorContacts($project->id);
 
-            Flash::success(trans('message.record_created'));
+            FlashHelper::success(trans('message.record_created'));
 
             return redirect()->route('admin.projects.show', [$project->id]);
         }
 
-        Flash::error(trans('messages.record_save_error'));
+        FlashHelper::error(trans('messages.record_save_error'));
 
         return redirect()->route('admin.projects.create')->withInput();
     }
@@ -192,7 +183,7 @@ class ProjectsController extends Controller
         $project = $this->projectContract->findWith($projectId, ['group', 'expeditions.workflowManager']);
 
         if (! $project) {
-            Flash::error(trans('pages.project_repo_error'));
+            FlashHelper::error(trans('pages.project_repo_error'));
 
             return redirect()->route('admin.projects.show', [$projectId]);
         }
@@ -218,7 +209,7 @@ class ProjectsController extends Controller
     {
         $project = $this->projectContract->findWith($projectId, ['group', 'nfnWorkflows', 'resources']);
         if (! $project) {
-            Flash::error(trans('pages.project_repo_error'));
+            FlashHelper::error(trans('pages.project_repo_error'));
 
             return redirect()->route('admin.projects.index');
         }
@@ -253,7 +244,7 @@ class ProjectsController extends Controller
 
         $project = $this->projectContract->update($request->all(), $projectId);
 
-        $project ? Flash::success(trans('messages.record_updated')) : Flash::error(trans('messages.record_updated_error'));
+        $project ? FlashHelper::success(trans('messages.record_updated')) : FlashHelper::error(trans('messages.record_updated_error'));
 
         return redirect()->route('admin.projects.show', [$projectId]);
     }
@@ -304,18 +295,18 @@ class ProjectsController extends Controller
 
         try {
             if ($project->nfnWorkflows->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
-                Flash::error(trans('messages.expedition_process_exists'));
+                FlashHelper::error(trans('messages.expedition_process_exists'));
 
                 redirect()->route('admin.projects.index');
             }
 
             DeleteProject::dispatch($project);
 
-            Flash::success(trans('messages.record_deleted'));
+            FlashHelper::success(trans('messages.record_deleted'));
 
             return redirect()->route('admin.projects.index');
         } catch (\Exception $e) {
-            Flash::error(trans('messages.record_delete_error'));
+            FlashHelper::error(trans('messages.record_delete_error'));
 
             return redirect()->route('admin.projects.index');
         }
@@ -336,8 +327,8 @@ class ProjectsController extends Controller
         }
 
         $this->ocrQueueService->processOcr($projectId) ?
-            Flash::success(trans('messages.ocr_process_success')) :
-            Flash::warning(trans('messages.ocr_process_error'));
+            FlashHelper::success(trans('messages.ocr_process_success')) :
+            FlashHelper::warning(trans('messages.ocr_process_error'));
 
         return redirect()->route('admin.projects.show', [$projectId]);
     }

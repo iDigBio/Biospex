@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Models\Project as Model;
 use App\Models\ProjectResource;
 use App\Repositories\Interfaces\Project;
+use Illuminate\Support\Carbon;
 
 class ProjectRepository extends EloquentRepository implements Project
 {
@@ -65,7 +66,7 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getPublicProjectIndex($sort = null, $order = null)
     {
-        $results = $this->model->withCount('expeditions')->with('group')->whereHas('nfnWorkflows')->get();
+        $results = $this->model->withCount('expeditions')->withCount('events')->with('group')->whereHas('nfnWorkflows')->get();
 
         switch ($order) {
             case 'asc':
@@ -105,7 +106,7 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectPageBySlug($slug)
     {
-        $results = $this->model->with([
+        $results = $this->model->withCount('events')->with([
             'group.users.profile',
             'expeditions.stat',
             'expeditions.actors',

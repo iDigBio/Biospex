@@ -43,11 +43,10 @@
         </div>
         <div class="card-footer">
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
-                <a href="#"><i class="far fa-share-square"></i> <span class="d-none text d-sm-inline"></span></a>
-                <a href="#"><i class="fab fa-twitter"></i> <span class="d-none text d-sm-inline"></span></a>
-                <a href="#"><i class="far fa-envelope"></i> <span class="d-none text d-sm-inline"></span></a>
-                <a href="tel:+18506451500"><i class="fas fa-phone-square"></i> <span
-                            class="d-none text d-sm-inline"></span></a>
+                {!! $event->project->present()->project_page_icon !!}
+                {!! $event->present()->twitter_icon !!}
+                {!! $event->present()->facebook_icon !!}
+                {!! $event->present()->contact_email_icon !!}
             </div>
         </div>
     </div>

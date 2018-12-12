@@ -8,7 +8,6 @@ use Cache;
 
 class PanoptesTranscriptionRepository extends MongoDbRepository implements PanoptesTranscription
 {
-
     /**
      * Specify Model class name
      *
@@ -20,13 +19,65 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     }
 
     /**
+     * @inheritdoc
+     */
+    public function getProjectTranscriberCount($projectId)
+    {
+        $result = $this->model->raw(function ($collection) use ($projectId) {
+            return $collection->aggregate([
+                [
+                    '$match' => ['subject_projectId' => (int) $projectId],
+                ],
+                [
+                    '$group' => ['_id' => '$user_name'],
+                ],
+                ['$count' => 'count'],
+            ]);
+        })->first();
+
+        $this->resetModel();
+
+        return $result === null ? 0 : $result->count;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getProjectTranscriptionCount($projectId)
+    {
+        $count = $this->model->where('subject_projectId', (int) $projectId)->count();
+
+        $this->resetModel();
+
+        return $count;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getExpeditionTranscriptionCount($expeditionId)
+    {
+        $count = $this->model->where('subject_expeditionId', (int) $expeditionId)->count();
+
+        $this->resetModel();
+
+        return $count;
+    }
+
+
+    // Not used methods
+
+    /**
      * Return total count of transcriptions.
+     *
      * @return mixed
      * @throws \Exception
      */
     public function getTotalTranscriptions()
     {
-        $results = $this->model->count();
+        $results = $result = Cache::remember(md5(__METHOD__), 240, function () {
+            return $this->model->count();
+        });
 
         $this->resetModel();
 
@@ -35,6 +86,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
 
     /**
      * Retrieve transcription count using expedition id.
+     *
      * @param $expeditionId
      * @return mixed
      * @throws \Exception
@@ -51,6 +103,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
 
     /**
      * Retrieve earliest date a transcription was finished for project.
+     *
      * @param $projectId
      * @return mixed|null
      * @throws \Exception
@@ -66,6 +119,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
 
     /**
      * Retrieve amx date a transcription was finished for project.
+     *
      * @param $projectId
      * @return mixed|null
      * @throws \Exception
@@ -81,6 +135,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
 
     /**
      * Retrieve transcription count grouped by date.
+     *
      * @param $workflowId
      * @return mixed
      * @throws \Exception
@@ -88,17 +143,21 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     public function getTranscriptionCountPerDate($workflowId)
     {
         $results = $this->model->raw(function ($collection) use ($workflowId) {
-            return $collection->aggregate(
+            return $collection->aggregate([
+                ['$match' => ['workflow_id' => $workflowId]],
                 [
-                    ['$match' => ['workflow_id' => $workflowId]],
-                    ['$project' =>
-                         [
-                             'yearMonthDay' => ['$dateToString' => ['format' => '%Y-%m-%d', 'date' => '$classification_finished_at']],
-                         ]
+                    '$project' => [
+                        'yearMonthDay' => [
+                            '$dateToString' => [
+                                'format' => '%Y-%m-%d',
+                                'date'   => '$classification_finished_at',
+                            ],
+                        ],
                     ],
-                    ['$group' => ['_id' => '$yearMonthDay', 'count' => ['$sum' => 1]]],
-                    ['$sort' => ['_id' => 1]]
-                ]);
+                ],
+                ['$group' => ['_id' => '$yearMonthDay', 'count' => ['$sum' => 1]]],
+                ['$sort' => ['_id' => 1]],
+            ]);
         });
 
         $this->resetModel();
@@ -113,11 +172,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     public function getContributorCount()
     {
         $results = $result = Cache::remember(md5(__METHOD__), 240, function () {
-            return $this->model
-                ->where('user_name', 'not regexp', '/^not-logged-in.*/i')
-                ->groupBy('user_name')
-                ->get()
-                ->count();
+            return $this->model->where('user_name', 'not regexp', '/^not-logged-in.*/i')->groupBy('user_name')->get()->count();
         });
 
         $this->resetModel();
@@ -134,46 +189,45 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getUserTranscriptionCount($projectId)
     {
-        $results = $result = Cache::remember(md5(__METHOD__ . $projectId), 240, function () use ($projectId) {
+        $results = $result = Cache::remember(md5(__METHOD__.$projectId), 240, function () use ($projectId) {
             return $this->model->raw(function ($collection) use ($projectId) {
-                return $collection->aggregate(
+                return $collection->aggregate([
                     [
-                        [
-                            '$match' => [
-                                'subject_projectId' => (int) $projectId
-                            ]
+                        '$match' => [
+                            'subject_projectId' => (int) $projectId,
                         ],
-                        [
-                            '$sort' => [
-                                'classification_finished_at' => -1
-                            ]
+                    ],
+                    [
+                        '$sort' => [
+                            'classification_finished_at' => -1,
                         ],
-                        [
-                            '$group' => [
-                                '_id'                => '$user_name',
-                                'transcriptionCount' => [
-                                    '$sum' => 1
-                                ],
-                                'expedition'         => [
-                                    '$addToSet' => '$subject_expeditionId'
-                                ],
-                                'last_date'          => [
-                                    '$max' => '$classification_finished_at'
-                                ]
-                            ]
+                    ],
+                    [
+                        '$group' => [
+                            '_id'                => '$user_name',
+                            'transcriptionCount' => [
+                                '$sum' => 1,
+                            ],
+                            'expedition'         => [
+                                '$addToSet' => '$subject_expeditionId',
+                            ],
+                            'last_date'          => [
+                                '$max' => '$classification_finished_at',
+                            ],
                         ],
-                        [
-                            '$project' => [
-                                '_id'                => 0,
-                                'user_name'          => '$_id',
-                                'transcriptionCount' => 1,
-                                'expeditionCount'    => [
-                                    '$size' => '$expedition'
-                                ],
-                                'last_date'          => 1
-                            ]
-                        ]
-                    ]);
+                    ],
+                    [
+                        '$project' => [
+                            '_id'                => 0,
+                            'user_name'          => '$_id',
+                            'transcriptionCount' => 1,
+                            'expeditionCount'    => [
+                                '$size' => '$expedition',
+                            ],
+                            'last_date'          => 1,
+                        ],
+                    ],
+                ]);
             });
         });
 
@@ -181,6 +235,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
 
         return $results;
     }
+
 
     /**
      * @param $expeditionId
@@ -190,12 +245,13 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getTranscriptionForDashboardJob($expeditionId, $timestamp)
     {
-        $model = $this->model->with(['subject' => function ($query) {
-            $query->select('accessURI');
-        }])->where('subject_expeditionId', '=', $expeditionId);
+        $model = $this->model->with([
+            'subject' => function ($query) {
+                $query->select('accessURI');
+            },
+        ])->where('subject_expeditionId', '=', $expeditionId);
 
-        if ($timestamp !== null)
-        {
+        if ($timestamp !== null) {
             $model->where('classification_finished_at', '>=', $timestamp);
         }
 

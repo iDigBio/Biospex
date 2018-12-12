@@ -57,7 +57,7 @@ class EventRepository extends EloquentRepository implements Event
     {
         $results = $this->model->with('project')->get();
 
-        $active = $results->reject(function ($event) {
+        $completed = $results->reject(function ($event) {
             $start_date = $event->start_date->setTimezone($event->timezone);
             $end_date = $event->end_date->setTimezone($event->timezone);
             $now = Carbon::now($event->timezone);
@@ -67,13 +67,13 @@ class EventRepository extends EloquentRepository implements Event
 
         switch ($order) {
             case 'asc':
-                $events = $sort === 'title' ? $active->sortBy('title') : $active->sortBy('project_id');
+                $events = $sort === 'title' ? $completed->sortBy('title') : $completed->sortBy('project_id');
                 break;
             case 'desc':
-                $events = $sort === 'title' ? $active->sortByDesc('title') : $active->sortByDesc('project_id');
+                $events = $sort === 'title' ? $completed->sortByDesc('title') : $completed->sortByDesc('project_id');
                 break;
             default:
-                $events = $active;
+                $events = $completed;
         }
 
         $this->resetModel();

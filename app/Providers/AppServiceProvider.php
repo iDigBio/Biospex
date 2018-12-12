@@ -91,7 +91,7 @@ class AppServiceProvider extends ServiceProvider
         /*
          * Development Providers
          */
-        if ($this->app->environment('local'))
+        if ($this->app->environment('local') || $this->app->environment('theme'))
         {
             $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
             $this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);

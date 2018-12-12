@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Facades\DateHelper;
-use App\Facades\Flash;
+use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
 use App\Http\Requests\EventJoinRequest;
@@ -51,8 +51,7 @@ class EventsController extends Controller
         Event $eventContract,
         EventTeam $eventTeamContract,
         EventUser $eventUserContract
-    )
-    {
+    ) {
         $this->project = $project;
         $this->eventContract = $eventContract;
         $this->eventTeamContract = $eventTeamContract;
@@ -72,8 +71,8 @@ class EventsController extends Controller
         $events = $eventContract->getEventPublicPage($sort, $order);
 
         return request()->ajax() ?
-            view('front.event.partials.event', compact('events')) :
-            view('front.event.index', compact('events'));
+            view('front.event.partials.event', compact('events'))
+            : view('front.event.index', compact('events'));
     }
 
     /**
@@ -90,5 +89,4 @@ class EventsController extends Controller
 
         return view('front.event.partials.event', compact('events'));
     }
-
 }

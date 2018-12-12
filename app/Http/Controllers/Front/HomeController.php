@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Facades\Flash;
+use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Mail\ContactForm;
 use App\Repositories\Interfaces\AmChart;
@@ -106,7 +106,7 @@ class HomeController extends Controller
 
         Mail::to(config('mail.from.address'))->send(new ContactForm($contact));
 
-        Flash::success(trans('messages.contact_success'));
+        FlashHelper::success(trans('messages.contact_success'));
 
         return redirect()->route('home');
     }

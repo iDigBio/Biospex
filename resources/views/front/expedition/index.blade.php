@@ -29,8 +29,9 @@
                         class="fas fa-sort"></i> {{ __('PROJECT') }}</span>
         </div>
     </div>
-    <div class="row" id="public-expeditions">
+    <div class="row col-sm-12 mx-auto justify-content-center" id="public-expeditions">
         @include('front.expedition.partials.expedition', ['expeditions' => $expeditions])
+        </div>
     </div>
     <hr class="header mx-auto m mt-5 mb-5" style="width:500px;">
     <div class="text-center mb-5">
@@ -53,7 +54,7 @@
                 <i class="fas fa-sort"></i> {{ __('PROJECT') }}</span>
         </div>
     </div>
-    <div class="row" id="completed-expeditions" style="display: none"></div>
+    <div class="row col-sm-12 mx-auto justify-content-center" id="completed-expeditions" style="display: none"></div>
 @endsection
 
 @section('footer')

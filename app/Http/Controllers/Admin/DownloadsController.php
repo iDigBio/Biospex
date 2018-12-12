@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Facades\Flash;
+use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Jobs\ActorJob;
 use App\Repositories\Interfaces\Expedition;
@@ -107,7 +107,7 @@ class DownloadsController extends Controller
 
         if ( ! $download)
         {
-            Flash::error(trans('messages.missing_download_file'));
+            FlashHelper::error(trans('messages.missing_download_file'));
             return redirect()->route('webauth.downloads.index', [$projectId, $expeditionId]);
         }
 
@@ -134,7 +134,7 @@ class DownloadsController extends Controller
         $path = $this->paths[$download->type] . '/' . $download->file;
         if ( ! file_exists($path))
         {
-            Flash::error(trans('messages.missing_download_file'));
+            FlashHelper::error(trans('messages.missing_download_file'));
             return redirect()->route('webauth.downloads.index', [$projectId, $expeditionId]);
         }
 
@@ -170,11 +170,11 @@ class DownloadsController extends Controller
 
             ActorJob::dispatch(serialize($expedition->nfnActor));
 
-            Flash::success(trans('messages.download_regeneration_success'));
+            FlashHelper::success(trans('messages.download_regeneration_success'));
         }
         catch (\Exception $e)
         {
-            Flash::error(trans('messages.download_regeneration_error', ['error' => $e->getMessage()]));
+            FlashHelper::error(trans('messages.download_regeneration_error', ['error' => $e->getMessage()]));
         }
 
         return redirect()->route('webauth.downloads.index', [$projectId, $expeditionId]);
@@ -199,7 +199,7 @@ class DownloadsController extends Controller
 
         if ( ! File::exists(config('config.classifications_summary') . '/' . $expeditionId . '.html'))
         {
-            Flash::warning( trans('pages.file_does_not_exist'));
+            FlashHelper::warning( trans('pages.file_does_not_exist'));
             return redirect()->route('webauth.projects.show', [$projectId]);
         }
 

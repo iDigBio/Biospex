@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Facades\Flash;
+use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use DOMDocument;
 use GuzzleHttp\Pool;
@@ -79,7 +79,7 @@ class ServerController extends Controller
 
         // Need to curl to server and run php script to clear memcache
 
-        Flash::success("Cache has been flushed.");
+        FlashHelper::success("Cache has been flushed.");
 
         return redirect()->intended('/projects');
     }

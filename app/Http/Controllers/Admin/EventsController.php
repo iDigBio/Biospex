@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Facades\DateHelper;
-use App\Facades\Flash;
+use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
 use App\Http\Requests\EventJoinRequest;
@@ -112,12 +112,12 @@ class EventsController extends Controller
         $event = $this->eventContract->createEvent($request->all());
 
         if ($event) {
-            Flash::success(trans('messages.record_created'));
+            FlashHelper::success(trans('messages.record_created'));
 
             return redirect()->route('admin.events.show', [$event->id]);
         }
 
-        Flash::error(trans('messages.record_save_error'));
+        FlashHelper::error(trans('messages.record_save_error'));
 
         return redirect()->route('admin.events.index');
     }
@@ -162,12 +162,12 @@ class EventsController extends Controller
         $result = $this->eventContract->updateEvent($request->all(), $eventId);
 
         if ($result) {
-            Flash::success(trans('messages.record_updated'));
+            FlashHelper::success(trans('messages.record_updated'));
 
             return redirect()->route('admin.events.show', [$eventId]);
         }
 
-        Flash::error(trans('messages.record_updated_error'));
+        FlashHelper::error(trans('messages.record_updated_error'));
 
         return redirect()->route('admin.events.edit', [$eventId]);
     }
@@ -191,12 +191,12 @@ class EventsController extends Controller
 
         if ($result)
         {
-            Flash::success(trans('messages.record_deleted'));
+            FlashHelper::success(trans('messages.record_deleted'));
 
             return redirect()->route('admin.events.index');
         }
 
-        Flash::error(trans('messages.record_delete_error'));
+        FlashHelper::error(trans('messages.record_delete_error'));
 
         return redirect()->route('admin.events.edit', [$eventId]);
     }
@@ -210,7 +210,7 @@ class EventsController extends Controller
     public function exportTranscriptions($eventId)
     {
         EventTranscriptionExportCsvJob::dispatch(\Auth::user(), $eventId);
-        Flash::success(trans('messages.event_export_success'));
+        FlashHelper::success(trans('messages.event_export_success'));
 
         return redirect()->route('admin.events.show', [$eventId]);
     }
@@ -224,7 +224,7 @@ class EventsController extends Controller
     public function exportUsers($eventId)
     {
         EventUserExportCsvJob::dispatch(\Auth::user(), $eventId);
-        Flash::success(trans('messages.event_export_success'));
+        FlashHelper::success(trans('messages.event_export_success'));
 
         return redirect()->route('admin.events.show', [$eventId]);
     }
@@ -245,7 +245,7 @@ class EventsController extends Controller
         $active = $now->between($start_date, $end_date);
 
         if ($team === null) {
-            Flash::error(trans('messages.event_join_team_error'));
+            FlashHelper::error(trans('messages.event_join_team_error'));
         }
 
         return view('events.get.join', compact('team', 'active'));
@@ -265,11 +265,11 @@ class EventsController extends Controller
             $team = $this->eventTeamContract->find($request->get('team_id'));
             $team->users()->save($user);
 
-            Flash::success(trans('messages.event_join_team_success'));
+            FlashHelper::success(trans('messages.event_join_team_success'));
             return redirect()->route('web.events.join', [$request->get('uuid')]);
         }
 
-        Flash::error(trans('messages.event_join_team_error'));
+        FlashHelper::error(trans('messages.event_join_team_error'));
 
         return redirect()->route('web.events.join', [$request->get('uuid')]);
     }

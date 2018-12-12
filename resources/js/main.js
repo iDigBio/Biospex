@@ -45,7 +45,6 @@ $(function () {
         let first = $('div.target:first');
         let last = $('div.target:last');
 
-
         if (first.is(':hidden')) {
             first.show();
         } else {
@@ -209,6 +208,7 @@ $(function () {
         e.preventDefault();
     });
 
+    /*
     $('a.polling').on('click', function (event) {
         $('#ocrHtml').html('Retrieving data');
         $('#exportHtml').html('Retrieving data');
@@ -228,6 +228,7 @@ $(function () {
                 $('#exportHtml').html(exportHtml);
             });
     }
+    */
 
     $('#scoreboardModal').on('show.bs.modal', function (e) {
         let $modal = $(this).find('.modal-body');
@@ -289,6 +290,28 @@ $(function () {
     });
 
     clockDiv();
+
+    $('#expeditionViewToggle').on('click', function() {
+        let val = $(this).data('value');
+        if (val === true) {
+            $(this).html('View Active Expeditions');
+            $(this).data('value', false);
+        } else {
+            $(this).html('View Completed Expeditions');
+            $(this).data('value', true);
+        }
+    });
+
+    $('#eventViewToggle').on('click', function() {
+        let val = $(this).data('value');
+        if (val === true) {
+            $(this).html('View Active Events');
+            $(this).data('value', false);
+        } else {
+            $(this).html('View Completed Events');
+            $(this).data('value', true);
+        }
+    });
 });
 
 $(document).ajaxComplete(function () {

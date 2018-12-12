@@ -54,6 +54,7 @@ mix.webpackConfig({
 
         "socket.io-client/dist/socket.io"
     ]);
+mix.copy("node_modules/amcharts3/amcharts/images", "public/images/vendor/amchart");
 
 /* Production settings */
 

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Facades\Flash;
+use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DwcFileUpload;
 use App\Http\Requests\DwcUriUpload;
@@ -83,13 +83,13 @@ class ImportsController extends Controller
 
             DwcFileImportJob::dispatch($import);
 
-            Flash::success(trans('pages.upload_trans_success'));
+            FlashHelper::success(trans('pages.upload_trans_success'));
 
             return redirect()->route('webauth.projects.show', [$projectId]);
         }
         catch(\Exception $e)
         {
-            Flash::error('Error uploading the file.');
+            FlashHelper::error('Error uploading the file.');
 
             return redirect()->route('webauth.projects.show', [$projectId]);
         }
@@ -114,13 +114,13 @@ class ImportsController extends Controller
 
             RecordsetImportJob::dispatch($data);
 
-            Flash::success(trans('pages.upload_trans_success'));
+            FlashHelper::success(trans('pages.upload_trans_success'));
 
             return redirect()->route('webauth.projects.show', [$projectId]);
         }
         catch(\Exception $e)
         {
-            Flash::error('Error uploading the file.');
+            FlashHelper::error('Error uploading the file.');
 
             return redirect()->route('webauth.projects.show', [$projectId]);
         }
@@ -145,13 +145,13 @@ class ImportsController extends Controller
 
             DwcUriImportJob::dispatch($data);
 
-            Flash::success(trans('pages.upload_trans_success'));
+            FlashHelper::success(trans('pages.upload_trans_success'));
 
             return redirect()->route('webauth.projects.show', [$projectId]);
         }
         catch(\Exception $e)
         {
-            Flash::error('Error uploading the file.');
+            FlashHelper::error('Error uploading the file.');
 
             return redirect()->route('webauth.projects.show', [$projectId]);
         }

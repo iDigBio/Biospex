@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DateHelper;
 use App\Presenters\ProjectPresenter;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
 use Illuminate\Support\Facades\Config;
 use Czim\Paperclip\Contracts\AttachableInterface;
@@ -419,13 +420,4 @@ class Project extends Model implements AttachableInterface
     {
         return $this->subjects()->count();
     }
-
-    /**
-     * @return int
-     */
-    public function getTranscriptionsCountAttribute()
-    {
-        return $this->panoptesTranscriptions()->count();
-    }
-
 }

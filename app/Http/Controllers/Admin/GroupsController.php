@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Jobs\DeleteGroup;
 use Auth;
-use App\Facades\Flash;
+use App\Facades\FlashHelper;
 use App\Repositories\Interfaces\Group;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
@@ -75,12 +75,12 @@ class GroupsController extends Controller
 
             event('group.saved');
 
-            Flash::success(trans('messages.record_created'));
+            FlashHelper::success(trans('messages.record_created'));
 
             return redirect()->route('webauth.groups.index');
         }
 
-        Flash::warning(trans('messages.loginreq'));
+        FlashHelper::warning(trans('messages.loginreq'));
 
         return redirect()->route('webauth.groups.create');
     }
@@ -144,7 +144,7 @@ class GroupsController extends Controller
             return redirect()->route('webauth.groups.index');
         }
 
-        $this->groupContract->update($request->all(), $groupId) ? Flash::success(trans('messages.record_updated')) : Flash::error('messages.record_updated_error');
+        $this->groupContract->update($request->all(), $groupId) ? FlashHelper::success(trans('messages.record_updated')) : FlashHelper::error('messages.record_updated_error');
 
         return redirect()->route('webauth.groups.index');
     }
@@ -166,7 +166,7 @@ class GroupsController extends Controller
         try {
             foreach ($group->projects as $project) {
                 if ($project->nfnWorkflows->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
-                    Flash::error(trans('messages.expedition_process_exists'));
+                    FlashHelper::error(trans('messages.expedition_process_exists'));
 
                     return redirect()->route('webauth.groups.index');
                 }
@@ -176,11 +176,11 @@ class GroupsController extends Controller
 
             event('group.deleted', $group->id);
 
-            Flash::success(trans('messages.record_deleted'));
+            FlashHelper::success(trans('messages.record_deleted'));
 
             return redirect()->route('webauth.groups.index');
         } catch (\Exception $e) {
-            Flash::error(trans('messages.record_delete_error'));
+            FlashHelper::error(trans('messages.record_delete_error'));
 
             return redirect()->route('webauth.groups.index');
         }
@@ -203,18 +203,18 @@ class GroupsController extends Controller
 
         try {
             if ($group->user_id === $userId) {
-                Flash::error(trans('messages.group_user_deleted_owner'));
+                FlashHelper::error(trans('messages.group_user_deleted_owner'));
                 return redirect()->route('webauth.groups.show', [$group->id]);
             }
 
             $user = $this->userContract->find($userId);
             $user->detachGroup($group->id);
 
-            Flash::success(trans('messages.group_user_deleted'));
+            FlashHelper::success(trans('messages.group_user_deleted'));
 
             return redirect()->route('webauth.groups.show', [$group->id]);
         } catch (\Exception $e) {
-            Flash::error(trans('messages.group_user_deleted_error'));
+            FlashHelper::error(trans('messages.group_user_deleted_error'));
             return redirect()->route('webauth.groups.show', [$group->id]);
         }
     }

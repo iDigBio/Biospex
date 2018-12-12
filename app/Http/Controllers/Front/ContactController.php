@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Facades\Flash;
+use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Mail\ContactForm;
 use App\Http\Requests\ContactFormRequest;
@@ -32,7 +32,7 @@ class ContactController extends Controller
 
         Mail::to(config('mail.from.address'))->send(new ContactForm($contact));
 
-        Flash::success(__('Your message has been sent. Thank you.'));
+        FlashHelper::success(__('Your message has been sent. Thank you.'));
 
         return redirect()->route('home');
     }
