@@ -2,6 +2,7 @@
 
 namespace App\Repositories\MongoDb;
 
+use App\Facades\DateHelper;
 use App\Models\PanoptesTranscription as Model;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use Cache;
@@ -123,11 +124,17 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getMinFinishedAtDateByProjectId($projectId)
     {
-        $result = $this->model->where('subject_projectId', $projectId)->min('classification_finished_at');
+        $result = $this->model->raw(function ($collection) use ($projectId) {
+            return $collection->aggregate([
+                ['$match' => ['subject_projectId' => $projectId]],
+                ['$sort' => ['classification_finished_at' => 1]],
+                ['$limit' => 1]
+            ]);
+        })->first();
 
         $this->resetModel();
 
-        return null === $result ? null : $result->toDateTime()->format('Y-m-d');
+        return null === $result ? null : DateHelper::formatStringDate($result->classification_finished_at);
     }
 
     /**
@@ -139,11 +146,17 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getMaxFinishedAtDateByProjectId($projectId)
     {
-        $result = $this->model->where('subject_projectId', '=', $projectId)->max('classification_finished_at');
+        $result = $this->model->raw(function ($collection) use ($projectId) {
+            return $collection->aggregate([
+                ['$match' => ['subject_projectId' => $projectId]],
+                ['$sort' => ['classification_finished_at' => -1]],
+                ['$limit' => 1]
+            ]);
+        })->first();
 
         $this->resetModel();
 
-        return null === $result ? null : $result->toDateTime()->format('Y-m-d');
+        return null === $result ? null : DateHelper::formatStringDate($result->classification_finished_at);
     }
 
     /**
