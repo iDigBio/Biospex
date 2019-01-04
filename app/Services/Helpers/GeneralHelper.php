@@ -398,4 +398,24 @@ class GeneralHelper
     {
         return pack('H*', str_replace('-', '', $value));
     }
+
+    /**
+     * Calculate AmChart height based on expedition count.
+     *
+     * @param $count
+     * @return int|null
+     */
+    public function amChartHeight($count)
+    {
+        if ($count === 0) {
+            return null;
+        }
+
+        $default = 264;
+        for ($i = 1; $i <= $count; $i++) {
+            $default = $default + 36;
+        }
+
+        return $default;
+    }
 }

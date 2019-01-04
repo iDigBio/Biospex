@@ -95,7 +95,7 @@ class AmChartNew extends Command
     )
     {
         parent::__construct();
-        $this->projectId = 13;
+        $this->projectId = 51;
         $this->projectContract = $projectContract;
         $this->chart = $chart;
         $this->transcription = $transcription;

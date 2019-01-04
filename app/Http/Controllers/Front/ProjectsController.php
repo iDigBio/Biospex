@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\Project;
+use GeneralHelper;
 use Illuminate\Support\Carbon;
 
 class ProjectsController extends Controller
@@ -58,6 +59,8 @@ class ProjectsController extends Controller
             return $now->between($start_date, $end_date);
         });
 
-        return view('front.project.home', compact('project', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted'));
+        $amChartHeight = GeneralHelper::amChartHeight($project->expeditions->count());
+
+        return view('front.project.home', compact('project', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'amChartHeight'));
     }
 }

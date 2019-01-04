@@ -175,7 +175,7 @@
             <div class="col-sm-10 mx-auto mt-8">
                 <h1 class="text-center project-headers" id="expeditions">{{ __('Transcriptions') }}</h1>
                 <div class="card white box-shadow pt-2 pb-5">
-                    <div id="chartdiv" style="height: 1200px; color: #000000; font-size: 0.8em"></div>
+                    <div id="chartdiv" style=" width: 100%; height: {{ $amChartHeight }}px; color: #000000; font-size: 0.8em"></div>
                 </div>
             </div>
             <script src="//www.amcharts.com/lib/4/core.js"></script>
@@ -185,16 +185,18 @@
             </script>
         </div>
     @endif
+
     @if ($project->fusion_table_id !== null)
-    <div class="row">
-        <div class="col-sm-10 mx-auto mt-8">
-            <h1 class="text-center project-headers" id="expeditions">{{ __('Heat Map Transcribed Specimens') }}</h1>
-            <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
-                <iframe width="100%" height="800" scrolling="no" frameborder="no" src="https://fusiontables.google.com/embedviz?q=select+col2+from+{{ $project->fusion_table_id }}&amp;viz=MAP&amp;h=false&amp;lat=34.72404554786575&amp;lng=-93.08009375000002&amp;t=1&amp;z=3&amp;l=col2&amp;y={{ $project->fusion_style_id }}&amp;tmplt={{ $project->fusion_template_id }}&amp;hml=GEOCODE"></iframe>
+        <div class="row">
+            <div class="col-sm-10 mx-auto mt-8">
+                <h1 class="text-center project-headers" id="expeditions">{{ __('Heat Map Transcribed Specimens') }}</h1>
+                <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
+                    <iframe width="100%" height="800" scrolling="no" frameborder="no" src="https://fusiontables.google.com/embedviz?q=select+col2+from+{{ $project->fusion_table_id }}&amp;viz=MAP&amp;h=false&amp;lat=34.72404554786575&amp;lng=-93.08009375000002&amp;t=1&amp;z=3&amp;l=col2&amp;y={{ $project->fusion_style_id }}&amp;tmplt={{ $project->fusion_template_id }}&amp;hml=GEOCODE"></iframe>
+                </div>
             </div>
         </div>
-    </div>
     @endif
+
 @endsection
 
 @section('footer')

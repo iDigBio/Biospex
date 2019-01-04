@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Facades\FlashHelper;
+use App\Facades\GeneralHelper;
 use App\Http\Controllers\Controller;
 use App\Mail\ContactForm;
 use App\Repositories\Interfaces\AmChart;
@@ -37,20 +38,6 @@ class HomeController extends Controller
     public function welcome()
     {
         return view('front.welcome');
-    }
-
-    /**
-     * Show public project page.
-     *
-     * @param $slug
-     * @param Project $projectContract
-     * @return \Illuminate\View\View
-     */
-    public function project($slug, Project $projectContract)
-    {
-        $project = $projectContract->getProjectPageBySlug($slug);
-
-        return view('front.project', compact('project'));
     }
 
     /**
