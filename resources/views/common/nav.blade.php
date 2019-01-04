@@ -7,7 +7,7 @@
     </div>
 </div>
 
-<div class="collapse navbar-collapse">
+<div class="collapse navbar-collapse" id="navbarsExampleDefault">
     <ul class="navbar-nav ml-auto">
         <li class="nav-item mr-2 dropdown">
             <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true"
@@ -31,7 +31,7 @@
             <a class="nav-link text-uppercase" href="{{ route('contact.get.index') }}">{{ __('contact') }}</a>
         </li>
         @if(Auth::check())
-            <li class="nav-item nav-btn mr-2 dropdown">
+            <li class="nav-item nav-btn dropdown">
                 <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown02" data-toggle="dropdown" aria-haspopup="true"
                    aria-expanded="false">{{ __('admin') }}</a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown02">
@@ -52,8 +52,8 @@
                 </div>
             </li>
         @else
-            <li class="nav-item nav-btn mr-2">
-                <a class="nav-link text-uppercase" href="{{ route('app.get.login') }}">{{ __('login') }}</a>
+            <li class="nav-item nav-btn">
+                <a class="nav-link text-uppercase mx-auto" href="{{ route('app.get.login') }}">{{ __('login') }}</a>
             </li>
         @endif
     </ul>

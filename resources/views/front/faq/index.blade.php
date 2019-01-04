@@ -6,7 +6,7 @@
 @stop
 
 @section('header')
-    <header style="background-image: url(/storage/images/page-banners/banner-maps.jpg);">
+    <header id="header-img" style="background-image: url(/storage/images/page-banners/banner-maps.jpg);">
         <nav class="header navbar navbar-expand-md box-shadow">
             <a href="/"><img src="/storage/images/biospex_logo.svg" alt="BIOSPEX"
                              class="my-0 mr-md-auto top-logo font-weight-normal"/></a>

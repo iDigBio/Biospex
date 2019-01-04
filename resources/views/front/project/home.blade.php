@@ -20,7 +20,6 @@
     <div class="row">
         <div class="col-sm-10 mx-auto">
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
-
                 <h1 class="text-center project-wide text-uppercase">
                     <small style="font-size:16px;">{{ __('Featured BIOSPEX Project') }}</small>
                     <br>{{ $project->title }}</h1>
@@ -142,12 +141,12 @@
             </div>
             <hr class="header mx-auto">
         </div>
-    </div>
-    <div id="activeExpeditions" class="row col-sm-12 justify-content-center show">
-        @include('front.expedition.partials.expedition', ['expeditions' => $expeditions])
-    </div>
-    <div id="completedExpeditions" class="row col-sm-12 mx-auto justify-content-center collapse">
-        @include('front.expedition.partials.expedition', ['expeditions' => $expeditionsCompleted])
+        <div id="activeExpeditions" class="row col-sm-12 mx-auto justify-content-center show">
+            @include('front.expedition.partials.expedition', ['expeditions' => $expeditions])
+        </div>
+        <div id="completedExpeditions" class="row col-sm-12 mx-auto justify-content-center collapse">
+            @include('front.expedition.partials.expedition', ['expeditions' => $expeditionsCompleted])
+        </div>
     </div>
 
     <div class="row">
@@ -162,19 +161,39 @@
             </div>
             <hr class="header mx-auto">
         </div>
+        <div id="activeEvents" class="row col-sm-12 mx-auto justify-content-center show">
+            @include('front.event.partials.event', ['events' => $events])
+        </div>
+        <div id="completedEvents" class="row col-sm-12 mx-auto justify-content-center collapse">
+            @include('front.event.partials.event', ['events' => $eventsCompleted])
+        </div>
+        @include('front.event.partials.scoreboard')
     </div>
-    <div id="activeEvents" class="row col-sm-12 justify-content-center show">
-        @include('front.event.partials.event', ['events' => $events])
-    </div>
-    <div id="completedEvents" class="row col-sm-12 mx-auto justify-content-center collapse">
-        @include('front.event.partials.event', ['events' => $eventsCompleted])
-    </div>
-    @include('front.event.partials.scoreboard')
 
     @if ($project->amChart !== null)
         <div class="row">
-            <div id="chartdiv" class="amchart col-md-12" data-value="{{ $project->id }}" style="width: 100%; height: 600px"></div>
+            <div class="col-sm-10 mx-auto mt-8">
+                <h1 class="text-center project-headers" id="expeditions">{{ __('Transcriptions') }}</h1>
+                <div class="card white box-shadow pt-2 pb-5">
+                    <div id="chartdiv" style="height: 1200px; color: #000000; font-size: 0.8em"></div>
+                </div>
+            </div>
+            <script src="//www.amcharts.com/lib/4/core.js"></script>
+            <script src="//www.amcharts.com/lib/4/charts.js"></script>
+            <script>
+                var chart = am4core.createFromConfig({!! $project->amChart->data !!}, "chartdiv", am4charts.XYChart);
+            </script>
         </div>
+    @endif
+    @if ($project->fusion_table_id !== null)
+    <div class="row">
+        <div class="col-sm-10 mx-auto mt-8">
+            <h1 class="text-center project-headers" id="expeditions">{{ __('Heat Map Transcribed Specimens') }}</h1>
+            <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
+                <iframe width="100%" height="800" scrolling="no" frameborder="no" src="https://fusiontables.google.com/embedviz?q=select+col2+from+{{ $project->fusion_table_id }}&amp;viz=MAP&amp;h=false&amp;lat=34.72404554786575&amp;lng=-93.08009375000002&amp;t=1&amp;z=3&amp;l=col2&amp;y={{ $project->fusion_style_id }}&amp;tmplt={{ $project->fusion_template_id }}&amp;hml=GEOCODE"></iframe>
+            </div>
+        </div>
+    </div>
     @endif
 @endsection
 

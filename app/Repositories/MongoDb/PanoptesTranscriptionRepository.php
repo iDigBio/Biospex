@@ -23,25 +23,22 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getProjectTranscriberCount($projectId)
     {
-        //$result = $this->model->where('subject_projectId', $projectId)->groupBy('user_name')->get()->count();
-        //$result = $this->model->raw(function ($collection) use ($projectId) {
-        //    return $collection->aggregate([
-        //        ['$match' => ['subject_projectId' => (int) $projectId]],
-        //        ['$project' => ['user_name' => '$user_name']],
-        //        ['$group' => ['_id' => '$user_name', 'count' => ['$sum' => 1]]],
-        //        /*
-        //        [
-        //            '$match' => ['subject_projectId' => (int) $projectId],
-        //        ],
-        //        ['$group' => ['_id' => '$user_name', 'count' => ['$sum' => 1]]],
-        //        */
-        //        //['$count' => 'count'],
-        //    ]);
-        //});
+
+        $result = $this->model->raw(function ($collection) use ($projectId) {
+            return $collection->aggregate([
+                [
+                    '$match' => ['subject_projectId' => (int) $projectId],
+                ],
+                [
+                    '$group' => ['_id' => '$user_name'],
+                ],
+                ['$count' => 'count'],
+            ]);
+        })->first();
 
         $this->resetModel();
 
-        return 1585; // === null ? 0 : $result->count;
+        return $result === null ? 0 : $result->count;
     }
 
     /**
@@ -49,11 +46,16 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getProjectTranscriptionCount($projectId)
     {
-        //$count = $this->model->where('subject_projectId', $projectId)->get()->count();
+        $result = $this->model->raw(function ($collection) use ($projectId) {
+            return $collection->aggregate([
+                ['$match' => ['subject_projectId' => $projectId]],
+                ['$count' => 'count']
+            ]);
+        })->first();
 
         $this->resetModel();
 
-        return 6000;
+        return $result === null ? 0 : $result->count;
     }
 
     /**
@@ -61,11 +63,16 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getExpeditionTranscriptionCount($expeditionId)
     {
-        $count = $this->model->where('subject_expeditionId', $expeditionId)->count();
+        $result = $this->model->raw(function ($collection) use ($expeditionId) {
+            return $collection->aggregate([
+                ['$match' => ['subject_expeditionId' => $expeditionId]],
+                ['$count' => 'count']
+            ]);
+        })->first();
 
         $this->resetModel();
 
-        return $count;
+        return $result === null ? 0 : $result->count;
     }
 
 
@@ -239,7 +246,6 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
 
         return $results;
     }
-
 
     /**
      * @param $expeditionId

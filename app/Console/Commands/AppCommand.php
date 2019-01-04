@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Project;
-use App\Repositories\Interfaces\PanoptesTranscription;
+use DB;
 use Illuminate\Console\Command;
-use Illuminate\Database\DatabaseManager;
+use Illuminate\Support\Facades\Schema;
+use Storage;
 
 class AppCommand extends Command
 {
@@ -20,23 +20,11 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Console\Commands\DatabaseManager
-     */
-    private $databaseManager;
-
-    /**
-     * @var \App\Repositories\Interfaces\PanoptesTranscription
-     */
-    private $panoptesTranscription;
-
-    /**
      * Create a new job instance.
      */
-    public function __construct(DatabaseManager $databaseManager, PanoptesTranscription $panoptesTranscription)
+    public function __construct()
     {
         parent::__construct();
-        $this->databaseManager = $databaseManager;
-        $this->panoptesTranscription = $panoptesTranscription;
     }
 
     /**
@@ -44,23 +32,27 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        /*
-        $project = Project::find(13);
-        dd($project->transcriber_count);
-        exit;
-        */
+        $tables = array_map('reset', \DB::select('SHOW TABLES'));
+        foreach($tables as $table) {
+            echo 'Checking ' . $table . PHP_EOL;
+            $sql = null;
+            if (Schema::hasColumn($table, 'created_at')) {
+                $sql = 'CHANGE COLUMN `created_at` `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP';
+            }
 
-        $transcribers = $this->panoptesTranscription->getTranscriberCount(13);
-        dd($transcribers);
+            if (Schema::hasColumn($table, 'updated_at')) {
+                $sql .= $sql !== null ? ', ' : '';
+                $sql .= 'CHANGE COLUMN `updated_at` `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP';
+            }
 
-        $this->client = $this->databaseManager->connection('mongodb')->getMongoClient();
-        $collection = $this->client->biospex_theme->panoptes_transcriptions;
-        $query = ['subject_projectId' => 13];
-        $results = $collection->count($query);
-        dd($results);
-        foreach ($results as $result){
-            echo $result['_id'];
+            if ($sql !==null) {
+                DB::statement("ALTER TABLE `$table` " . $sql . ";");
+            }
         }
+        echo 'Done' . PHP_EOL;
+
+        //DB::statement("ALTER TABLE projects ADD uuid BINARY(16) NULL AFTER id");
+        //DB::statement("ALTER TABLE expeditions ADD uuid BINARY(16) NULL AFTER id");
     }
 
 

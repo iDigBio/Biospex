@@ -159,14 +159,15 @@ $(function () {
         }
     });
 
-
-    $('[data-toggle="tooltip"]').tooltip();
+    //$('[data-toggle="tooltip"]').tooltip();
+    /*
     $('.js-tooltip').tooltip();
     $('.js-copy').click(function () {
         let text = $(this).attr('data-copy');
         let el = $(this);
         copyToClipboard(text, el);
     });
+    */
 
     $.datetimepicker.setLocale('en');
     $('.datetimepicker').datetimepicker({
@@ -314,9 +315,11 @@ $(function () {
     });
 });
 
+/*
 $(document).ajaxComplete(function () {
     $('[data-toggle="tooltip"]').tooltip();
 });
+*/
 
 // Loop data from polling
 function polling_data(data) {
@@ -342,6 +345,7 @@ function renumber_prefix() {
     $('[name="entries"]').val(controls.children().length);
 }
 
+/*
 function copyToClipboard(text, el) {
     let copyTest = document.queryCommandSupported('copy');
     let elOriginalText = el.attr('data-original-title');
@@ -365,6 +369,7 @@ function copyToClipboard(text, el) {
         window.prompt('Copy to clipboard: Ctrl+C or Command+C, Enter', text);
     }
 }
+*/
 
 function getTimeRemaining(endTime) {
     let t = Date.parse(endTime) - Date.parse(new Date());

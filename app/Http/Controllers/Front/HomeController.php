@@ -11,6 +11,7 @@ use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Project;
 use App\Http\Requests\ContactFormRequest;
+use JavaScript;
 use Mail;
 
 class HomeController extends Controller
@@ -136,5 +137,11 @@ class HomeController extends Controller
         }
 
         return view('front.events.scoreboard-content', ['event' => $event]);
+    }
+
+    public function test()
+    {
+        $config = file_get_contents(public_path('chartConfig.json'));
+        return view('front.chart', compact('config'));
     }
 }

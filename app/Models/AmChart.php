@@ -26,4 +26,14 @@ class AmChart extends Model
     {
         return $this->belongsTo(Project::class);
     }
+
+    /**
+     * Mutator for data column.
+     *
+     * @param $value
+     */
+    public function setDataAttribute($value)
+    {
+        $this->attributes['data'] = json_encode($value);
+    }
 }

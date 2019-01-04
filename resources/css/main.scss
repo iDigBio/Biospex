@@ -189,6 +189,14 @@ h2.modal-number>small {
     min-height: 89%;
 }
 
+header#header-img {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 @media only screen and (max-width: 800px) {
     .header.home {
         background-position-x: 40%;
@@ -628,7 +636,7 @@ h1.project-wide {
 
 h1.project-headers {
     font-size: 2.875rem;
-    margin: 2rem 0 2rem 0;
+    margin: 6rem 0 2rem 0;
     line-height: 1.875rem;
     color: #888;
 }
