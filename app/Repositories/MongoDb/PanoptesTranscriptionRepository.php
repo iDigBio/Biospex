@@ -23,6 +23,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getProjectTranscriberCount($projectId)
     {
+        return 999;
 
         $result = $this->model->raw(function ($collection) use ($projectId) {
             return $collection->aggregate([
@@ -46,6 +47,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getProjectTranscriptionCount($projectId)
     {
+        return 999;
         $result = $this->model->raw(function ($collection) use ($projectId) {
             return $collection->aggregate([
                 ['$match' => ['subject_projectId' => $projectId]],
