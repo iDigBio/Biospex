@@ -208,4 +208,19 @@ class ProjectRepository extends EloquentRepository implements Project
 
         return true;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getProjectForAmChartJob($projectId)
+    {
+        $result = $this->model->with(['expeditions' => function($q) {
+            $q->with('stat')->has('stat');
+            $q->with('nfnWorkflow')->has('nfnWorkflow');
+        }])->find($projectId);
+
+        $this->resetModel();
+
+        return $result;
+    }
 }

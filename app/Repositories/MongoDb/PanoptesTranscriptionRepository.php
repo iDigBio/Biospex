@@ -126,7 +126,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     {
         $result = $this->model->raw(function ($collection) use ($projectId) {
             return $collection->aggregate([
-                ['$match' => ['subject_projectId' => $projectId]],
+                ['$match' => ['subject_projectId' => (int) $projectId]],
                 ['$sort' => ['classification_finished_at' => 1]],
                 ['$limit' => 1]
             ]);
@@ -148,7 +148,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     {
         $result = $this->model->raw(function ($collection) use ($projectId) {
             return $collection->aggregate([
-                ['$match' => ['subject_projectId' => $projectId]],
+                ['$match' => ['subject_projectId' => (int) $projectId]],
                 ['$sort' => ['classification_finished_at' => -1]],
                 ['$limit' => 1]
             ]);

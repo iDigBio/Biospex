@@ -93,7 +93,7 @@ class DwcUriImportJob implements ShouldQueue
         }
         catch (\Exception $e)
         {
-            $project = $projectContract->findWith($this->data['project_id'], ['group.owner']);
+            $project = $projectContract->findWith($this->data['id'], ['group.owner']);
 
             $message = trans('messages.import_process', [
                 'title'   => $project->title,

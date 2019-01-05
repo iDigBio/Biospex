@@ -109,7 +109,9 @@
                             <hr>
                             <div class="col-md-3 d-flex justify-content-between mt-4 mb-3 mx-auto">
                                 {!! $expedition->project->present()->project_page_icon !!}
+                                @isset($expedition->nfnWorkflow)
                                 {!! $expedition->nfnWorkflow->present()->nfn_url !!}
+                                @endisset
                             </div>
                         </div>
                     </div>

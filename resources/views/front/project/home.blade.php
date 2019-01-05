@@ -176,12 +176,71 @@
                 <h1 class="text-center project-headers" id="expeditions">{{ __('Transcriptions') }}</h1>
                 <div class="card white box-shadow pt-2 pb-5">
                     <div id="chartdiv" style=" width: 100%; height: {{ $amChartHeight }}px; color: #000000; font-size: 0.8em"></div>
+                    <div id="legenddiv" style="width: 100%; height: {{ $amLegendHeight }}px; color: #000000; font-size: 0.8em"></div>
                 </div>
             </div>
             <script src="//www.amcharts.com/lib/4/core.js"></script>
             <script src="//www.amcharts.com/lib/4/charts.js"></script>
             <script>
-                var chart = am4core.createFromConfig({!! $project->amChart->data !!}, "chartdiv", am4charts.XYChart);
+                var legendContainer = am4core.createFromConfig({
+                    "width": "100%",
+                    "height": "100%"
+                }, "legenddiv", am4core.Container);
+                var chart = am4core.createFromConfig(
+                    {
+                        "xAxes": [{
+                            "type": "DateAxis",
+                            "renderer": {
+                                "minGridDistance": 50
+                            },
+                            "startLocation": 0.5,
+                            "endLocation": 0.5,
+                            "baseInterval": {
+                                "timeUnit": "day",
+                                "count": 1
+                            },
+                            "tooltip": {
+                                "background": {
+                                    "fill": "#07BEB8",
+                                    "strokeWidth": 0,
+                                    "cornerRadius": 3,
+                                    "pointerLength": 0
+                                },
+                                "dy": 5
+                            }
+                        }],
+                        "yAxes": [{
+                            "type": "ValueAxis",
+                            "tooltip": {
+                                "disabled": true
+                            },
+                            "calculateTotals": true
+                        }],
+                        "cursor": {
+                            "type": "XYCursor",
+                            "lineX": {
+                                "stroke": "#8F3985",
+                                "strokeWidth": 4,
+                                "strokeOpacity": 0.2,
+                                "strokeDasharray": ""
+                            },
+                            "lineY": {
+                                "disabled": true
+                            }
+                        },
+                        "scrollbarX": {
+                            "type": "Scrollbar"
+                        },
+                        "legend": {
+                            "parent": legendContainer
+                        },
+                        "dateFormatter": {
+                            "inputDateFormat": "yyyy-MM-dd"
+                        },
+
+                        "series": {!! $project->amChart->series !!},
+                        "data": {!! $project->amChart->data !!}
+                    }, "chartdiv", am4charts.XYChart);
             </script>
         </div>
     @endif

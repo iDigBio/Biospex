@@ -60,7 +60,8 @@ class ProjectsController extends Controller
         });
 
         $amChartHeight = GeneralHelper::amChartHeight($project->expeditions->count());
+        $amLegendHeight = GeneralHelper::amLegendHeight($project->expeditions->count());
 
-        return view('front.project.home', compact('project', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'amChartHeight'));
+        return view('front.project.home', compact('project', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'amChartHeight', 'amLegendHeight'));
     }
 }

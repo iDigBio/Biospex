@@ -49,4 +49,10 @@ interface Project extends RepositoryInterface
      */
     public function getProjectForDelete($projectId);
 
+    /**
+     * @param $projectId
+     * @return mixed
+     */
+    public function getProjectForAmChartJob($projectId);
+
 }

@@ -23,7 +23,9 @@
 
             <div class="d-flex align-items-start justify-content-between">
                 <p><a href="#"><i class="far fa-share-square"></i> {{ __('Share') }}</a></p>
-                <p>{!! $expedition->nfnWorkflow->present()->nfn_url !!}</p>
+                @isset($expedition->nfnWorkflow)
+                    <p>{!! $expedition->nfnWorkflow->present()->nfn_url !!}</p>
+                @endisset
             </div>
         </div>
     </div>

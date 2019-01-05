@@ -43,8 +43,7 @@
     "type": "Scrollbar"
   },
   "legend": {
-    "position": "bottom",
-    "useDefaultMarker": true
+    "parent": legendContainer
   },
   "dateFormatter": {
     "inputDateFormat": "yyyy-MM-dd"

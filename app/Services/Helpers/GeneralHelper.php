@@ -413,7 +413,27 @@ class GeneralHelper
 
         $default = 264;
         for ($i = 1; $i <= $count; $i++) {
-            $default = $default + 36;
+            $default = $default + 20;
+        }
+
+        return $default;
+    }
+
+    /**
+     * Calculate AmChart height based on expedition count.
+     *
+     * @param $count
+     * @return int|null
+     */
+    public function amLegendHeight($count)
+    {
+        if ($count === 0) {
+            return null;
+        }
+
+        $default = 30;
+        for ($i = 1; $i <= $count; $i++) {
+            $default = $default + 35;
         }
 
         return $default;
