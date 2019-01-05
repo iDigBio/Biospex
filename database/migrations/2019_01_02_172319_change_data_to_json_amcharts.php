@@ -33,9 +33,15 @@ class ChangeDataToJsonAmcharts extends Migration
      */
     public function down()
     {
+        if (Schema::hasColumn('amcharts', 'series'))
+        {
+            Schema::table('amcharts', function (Blueprint $table) {
+                $table->dropColumn('series');
+            });
+        }
+
         Schema::table('amcharts', function (Blueprint $table) {
             $table->longText('data')->nullable()->change();
-            $table->dropColumn('series');
         });
     }
 }
