@@ -8,8 +8,6 @@ use App\Repositories\Interfaces\Project;
 use Carbon\CarbonPeriod;
 use File;
 use Illuminate\Console\Command;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Class AmChartNew
@@ -23,7 +21,7 @@ class AmChartNew extends Command
      *
      * @var string
      */
-    protected $signature = 'amchart:new';
+    protected $signature = 'amchart:new {projectId}';
 
     /**
      * The console command description.
@@ -31,6 +29,16 @@ class AmChartNew extends Command
      * @var string
      */
     protected $description = 'Command description';
+
+    /**
+     * @var \App\Repositories\Interfaces\Project
+     */
+    protected $projectContract;
+
+    /**
+     * @var \App\Repositories\Interfaces\AmChart
+     */
+    private $chartContract;
 
     /**
      * @var PanoptesTranscription
@@ -43,18 +51,6 @@ class AmChartNew extends Command
     protected $projectId;
 
     /**
-     * Array to hold all transcription results.
-     *
-     * @var array
-     */
-    protected $transcriptions = [];
-
-    /**
-     * @var
-     */
-    protected $defaultDates = [];
-
-    /**
      * @var
      */
     protected $earliest_date;
@@ -65,39 +61,33 @@ class AmChartNew extends Command
     protected $finished_date;
 
     /**
-     * @var \App\Repositories\Interfaces\Project
+     * @var mixed
      */
-    private $projectContract;
+    protected $amChartTemplate;
 
     /**
-     * @var \App\Repositories\Interfaces\AmChart
+     * @var mixed
      */
-    private $chart;
-
-    private $amChartTemplate;
-
-    private $amChartSeries;
-
-    private $total;
+    protected $amChartSeries;
 
     /**
      * AmChartNew constructor.
      *
      * @param \App\Repositories\Interfaces\Project $projectContract
-     * @param \App\Repositories\Interfaces\AmChart $chart
+     * @param \App\Repositories\Interfaces\AmChart $chartContract
      * @param \App\Repositories\Interfaces\PanoptesTranscription $transcription
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function __construct(
         Project $projectContract,
-        AmChart $chart,
+        AmChart $chartContract,
         PanoptesTranscription $transcription
     )
     {
         parent::__construct();
-        $this->projectId = 51;
+
         $this->projectContract = $projectContract;
-        $this->chart = $chart;
+        $this->chartContract = $chartContract;
         $this->transcription = $transcription;
         $this->amChartTemplate = json_decode(File::get(config('config.amchart_template')), true);
         $this->amChartSeries = json_decode(File::get(config('config.amchart_series')), true);
@@ -110,21 +100,35 @@ class AmChartNew extends Command
      */
     public function handle()
     {
-        $this->transcriptions = [];
+        $this->projectId = $this->argument('projectId');
+        if ($this->projectId === null) {
+            echo 'Project Id required' . PHP_EOL;
+            return;
+        }
 
         $relations = ['expeditions.stat', 'expeditions.nfnWorkflow'];
+
+        $time_start = microtime(true);
         $project = $this->projectContract->findWith($this->projectId, $relations);
+        echo 'Get project query time in seconds: ' . (microtime(true) - $time_start) . PHP_EOL;
+
+        $time_start = microtime(true);
         $this->earliest_date = $this->transcription->getMinFinishedAtDateByProjectId($project->id);
+        echo 'Get earliest date query time in seconds: ' . (microtime(true) - $time_start) . PHP_EOL;
+
+        $time_start = microtime(true);
         $this->finished_date = $this->transcription->getMaxFinishedAtDateByProjectId($project->id);
+        echo 'Get finished date query time in seconds: ' . (microtime(true) - $time_start) . PHP_EOL;
 
         if (null === $this->earliest_date || null === $this->finished_date)
         {
             return;
         }
 
+        $time_start = microtime(true);
         $this->setDateArray();
+        echo 'Set date array time in seconds: ' . (microtime(true) - $time_start) . PHP_EOL;
 
-        $this->total = 1;
         $project->expeditions->reject(function($expedition){
             return ! isset($expedition->stat->transcriptions_completed) ||
                 $expedition->stat->transcriptions_completed === 0 ||
@@ -134,10 +138,8 @@ class AmChartNew extends Command
         });
 
         $this->amChartTemplate['data'] = array_values($this->amChartTemplate['data']);
-        //Storage::put('test.json', json_encode($this->amChartTemplate));
-        //exit;
 
-        $this->chart->updateOrCreate(['project_id' => $this->projectId], ['data' => $this->amChartTemplate]);
+        $this->chartContract->updateOrCreate(['project_id' => $this->projectId], ['data' => $this->amChartTemplate]);
     }
 
     /**
@@ -159,17 +161,27 @@ class AmChartNew extends Command
      */
     public function processExpedition($expedition)
     {
+        $time_start = microtime(true);
         $transcriptCountByDate = $this->transcription
             ->getTranscriptionCountPerDate($expedition->nfnWorkflow->workflow)
             ->pluck('count', '_id');
+        echo 'Transcription count by date in seconds: ' . (microtime(true) - $time_start) . PHP_EOL;
 
+        $time_start = microtime(true);
         $dates = $this->setExpeditionDateArray($transcriptCountByDate);
+        echo 'setExpeditionDateArray in seconds: ' . (microtime(true) - $time_start) . PHP_EOL;
 
+        $time_start = microtime(true);
         $this->setExpeditionDateAggregate($dates);
+        echo 'setExpeditionDateAggregate in seconds: ' . (microtime(true) - $time_start) . PHP_EOL;
 
+        $time_start = microtime(true);
         $this->buildExpeditionData($expedition->id, $dates);
+        echo 'buildExpeditionData in seconds: ' . (microtime(true) - $time_start) . PHP_EOL;
 
+        $time_start = microtime(true);
         $this->buildExpeditionSeries($expedition);
+        echo 'buildExpeditionSeries in seconds: ' . (microtime(true) - $time_start) . PHP_EOL;
     }
 
     /**
@@ -224,77 +236,6 @@ class AmChartNew extends Command
         $this->amChartSeries['dataFields']['valueY'] = 'expedition'.$expedition->id;
         $this->amChartSeries['name'] = $expedition->title;
         $this->amChartTemplate['series'][] = $this->amChartSeries;
-    }
-
-
-    /**
-     * Build missing data for days in expedition.
-     *
-     * @param $daysArray
-     */
-    protected function buildMissingData(&$daysArray)
-    {
-        foreach ($daysArray as $day => $data)
-        {
-            if (! isset($data['count']))
-            {
-                $daysArray[$day]['count'] = 0;
-            }
-        }
-    }
-
-    /**
-     * Fix count on expeditions by using running total.
-     *
-     * @param $daysArray
-     */
-    public function aggregateResultCount(&$daysArray)
-    {
-        $total = 0;
-        foreach ($daysArray as $day => $array)
-        {
-            $total += $array['count'];
-            $daysArray[$day]['count'] = $total;
-        }
-    }
-
-    /**
-     * Add to transcriptions array using designated keys.
-     *
-     * @param $results
-     */
-    public function setTranscriptions($results)
-    {
-        foreach($this->transcriptions as $day => $valueArray) {
-            $this->transcriptions[$day] = array_merge($this->transcriptions[$day], $results[$day]);
-        }
-    }
-
-    /**
-     * Calculate the number of days.
-     *
-     * @param $startDate
-     * @param $finishedDate
-     * @return string
-     */
-    public function calculateDay($startDate, $finishedDate)
-    {
-        $startTime = Carbon::createFromFormat('Y-m-d', $startDate)->startOfDay();
-        $finishTime = Carbon::createFromFormat('Y-m-d', $finishedDate)->startOfDay();
-
-        return $finishTime->diff($startTime)->format('%a');
-    }
-
-    /**
-     * Sort by day and expedition.
-     *
-     * @param $a
-     * @param $b
-     * @return mixed
-     */
-    public function sort($a, $b)
-    {
-        return ($a['day'] - $b['day']) ?: $a['expedition'] - $b['expedition'];
     }
 }
 
