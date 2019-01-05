@@ -1,4 +1,4 @@
-<div class="text-center" style="background-color:#e83f29;padding-top:5px;">
+<div class="text-center mt-4" style="background-color:#e83f29;padding-top:5px;">
     <h3 class="text-white text modal-number">{{ $event->title }}</h3>
     <h2 class="text-white text modal-number" style="padding-bottom: 10px;">{{ $event->transcriptions_count }}</h2>
     <span style="font-size: 35px; color: #fff;">Transcriptions</span>
