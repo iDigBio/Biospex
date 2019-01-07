@@ -6,7 +6,7 @@
 @stop
 
 @section('custom-style')
-    <link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 @endsection
 
 {{-- Content --}}
@@ -183,7 +183,7 @@
     </section>
 @endsection
 @section('custom-script')
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({
             mirror: true

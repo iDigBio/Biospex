@@ -45,7 +45,6 @@ return [
     'reconcile_path'   => env('LABEL_RECONCILIATIONS_PATH').'/reconcile.py',
     'nfn_table_prefix' => env('NFN_TABLE_PREFIX', ''),
 
-    'amchart_template' => resource_path('json/amChartTemplate.json'),
     'amchart_series'   => resource_path('json/amChartSeries.json'),
 
     'ocr_post_url'   => env('OCR_POSTURL'),

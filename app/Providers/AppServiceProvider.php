@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Pagination\Paginator;
 use Schema;
 
 class AppServiceProvider extends ServiceProvider
@@ -91,7 +90,7 @@ class AppServiceProvider extends ServiceProvider
         /*
          * Development Providers
          */
-        if ($this->app->environment('local'))
+        if (\App::environment() !== 'prod')
         {
             $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
             $this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);
