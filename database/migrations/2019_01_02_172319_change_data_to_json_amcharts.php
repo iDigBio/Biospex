@@ -21,8 +21,8 @@ class ChangeDataToJsonAmcharts extends Migration
         }
 
         Schema::table('amcharts', function (Blueprint $table) {
-            $table->json('data')->nullable()->change();
-            $table->json('series')->nullable()->after('project_id');
+            //$table->json('data')->nullable()->change();
+            $table->longText('series')->nullable()->after('project_id');
         });
     }
 
