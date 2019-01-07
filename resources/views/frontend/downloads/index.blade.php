@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -18,7 +18,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     <button title="Back to Expedition Details" class="btn btn-info btn-xs" type="button"
-                            onClick="location.href='{{ route('webauth.expeditions.show', [$expedition->project->id, $expedition->id]) }}'">
+                            onClick="location.href='{{ route('admin.expeditions.show', [$expedition->project->id, $expedition->id]) }}'">
                         <span class="glyphicon glyphicon-eye-open"></span> Return
                     </button>
                 </div>
@@ -48,7 +48,7 @@
                             <tbody>
                             @foreach($actor->downloads as $download)
                                 @if ( ! empty($download))
-                                    @include('frontend.downloads.partials.tablerow')
+                                    @include('front.downloads.partials.tablerow')
                                 @endif
                             @endforeach
                             </tbody>

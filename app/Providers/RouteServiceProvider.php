@@ -52,20 +52,18 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapWebRoutes()
     {
         Route::domain(config('config.app_domain'))
-            ->namespace($this->namespace)
-            ->middleware('web')
-            ->group(function ($router) {
+            ->namespace($this->namespace)->middleware('web')->group(function ($router) {
 
-                $router->namespace('Frontend')->group(function ($router) {
-                    $this->require_files('routes/web', $router);
-
-                    $router->middleware('auth')->group(function ($router) {
-                        $this->require_files('routes/webauth', $router);
-                    });
+                $router->namespace('Front')->group(function ($router) {
+                    $this->require_files('routes/front', $router);
                 });
 
-                $router->namespace('Auth')->group(base_path('routes/web/appauth/auth.php'));
-                $router->namespace('ApiAuth')->prefix('api')->group(base_path('routes/web/apiauth/auth.php'));
+                $router->prefix('admin')->middleware('auth')->namespace('Admin')->group(function ($router) {
+                        $this->require_files('routes/admin', $router);
+                    });
+
+                $router->namespace('Auth')->group(base_path('routes/front/appauth/auth.php'));
+                $router->namespace('ApiAuth')->prefix('api')->group(base_path('routes/front/apiauth/auth.php'));
             });
     }
 
@@ -82,8 +80,8 @@ class RouteServiceProvider extends ServiceProvider
 
         $router->version('v0', function ($router) {
             $options = [
-                'namespace' => 'App\Http\Controllers\Api\V0',
-                'middleware' => ['api']
+                'namespace'  => 'App\Http\Controllers\Api\V0',
+                'middleware' => ['api'],
             ];
             $router->group($options, function ($router) {
                 $this->require_files('routes/api/v0', $router);
@@ -92,8 +90,8 @@ class RouteServiceProvider extends ServiceProvider
 
         $router->version('v1', function ($router) {
             $options = [
-                'namespace' => 'App\Http\Controllers\Api\V1',
-                'middleware' => ['api']
+                'namespace'  => 'App\Http\Controllers\Api\V1',
+                'middleware' => ['api'],
             ];
 
             $router->group($options, function ($router) {
@@ -128,12 +126,10 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function require_files($dir, $router)
     {
-        $dirPath = base_path() . '/' . $dir . '/';
-        foreach (new DirectoryIterator($dirPath) as $file)
-        {
-            if ( ! $file->isDot() && ! $file->isDir())
-            {
-                require $dirPath . $file->getFilename();
+        $dirPath = base_path().'/'.$dir.'/';
+        foreach (new DirectoryIterator($dirPath) as $file) {
+            if (! $file->isDot() && ! $file->isDir()) {
+                require $dirPath.$file->getFilename();
             }
         }
     }

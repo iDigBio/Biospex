@@ -1,7 +1,8 @@
-<div class="text-center" style="background-color:#e83f29;padding-top:5px;">
+<div class="text-center" style="background-color:#e83f29;padding-top:20px;">
     <h3 class="text-white text modal-number">{{ $event->title }}</h3>
-    <h2 class="text-white text modal-number" style="padding-bottom: 10px;">{{ $event->transcriptions_count }}</h2>
-    <span style="font-size: 35px; color: #fff;">Transcriptions</span>
+    <h2 class="text-white text modal-number" style="padding-bottom: 10px;">
+        {{ $event->transcriptions_count }}<br>
+        <small style="color: #fff;">Transcriptions</small><br></h2>
 </div>
 <table class="table table-striped">
     <thead>
@@ -25,7 +26,7 @@
 </table>
 <!-- countdown clock -->
 <h2 class="text-center color-action pt-4">Time Remaining</h2>
-<div id="clockdiv">
+<div class="clockdiv">
     <div>
         <span class="days"></span>
         <div class="smalltext">Days</div>
@@ -41,7 +42,6 @@
     <div>
         <span class="seconds"></span>
         <div class="smalltext">Seconds</div>
-    </div>
     </div>
 </div>
 <div id="date" style="display: none">{{ $event->present()->scoreboard_date }}</div>

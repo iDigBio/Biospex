@@ -1,4 +1,4 @@
-@extends('frontend.api.default')
+@extends('front.api.default')
 
 {{-- Web site Title --}}
 @section('title')

@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 {{-- Web site Title --}}
 @section('title')
     @parent
@@ -7,7 +7,7 @@
 
 {{-- Content --}}
 @section('content')
-    @include('frontend.statistics.partials.project-info')
+    @include('front.statistics.partials.project-info')
     <div class="row">
         <div class="col-md-6">
             <div class="panel panel-info">
@@ -25,7 +25,7 @@
                             <th>Last Date</th>
                         </tr>
                         </thead>
-                        @each('frontend.statistics.partials.transcriber', $transcribers, 'transcriber')
+                        @each('front.statistics.partials.transcriber', $transcribers, 'transcriber')
                     </table>
                 </div>
             </div>

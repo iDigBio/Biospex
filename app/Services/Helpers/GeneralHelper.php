@@ -369,6 +369,26 @@ class GeneralHelper
     }
 
     /**
+     * Check event completed.
+     *
+     * @param $end_date
+     * @param $timezone
+     * @return bool
+     */
+    public function eventCompleted($end_date, $timezone)
+    {
+        $now = Carbon::now(new DateTimeZone($timezone));
+        $end = $end_date->setTimezone($timezone);
+
+        if ($now->timestamp > $end->timestamp)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Convert uuid value to bin for lookup.
      *
      * @param $value
@@ -377,5 +397,45 @@ class GeneralHelper
     public function uuidToBin($value)
     {
         return pack('H*', str_replace('-', '', $value));
+    }
+
+    /**
+     * Calculate AmChart height based on expedition count.
+     *
+     * @param $count
+     * @return int|null
+     */
+    public function amChartHeight($count)
+    {
+        if ($count === 0) {
+            return null;
+        }
+
+        $default = 264;
+        for ($i = 1; $i <= $count; $i++) {
+            $default = $default + 20;
+        }
+
+        return $default;
+    }
+
+    /**
+     * Calculate AmChart height based on expedition count.
+     *
+     * @param $count
+     * @return int|null
+     */
+    public function amLegendHeight($count)
+    {
+        if ($count === 0) {
+            return null;
+        }
+
+        $default = 30;
+        for ($i = 1; $i <= $count; $i++) {
+            $default = $default + 35;
+        }
+
+        return $default;
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Database\DatabaseManager;
-use MongoClient;
+use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 
@@ -15,7 +15,7 @@ class MongoDbService
     private $databaseManager;
 
     /**
-     * @var MongoClient
+     * @var Client
      */
     public $client;
 
@@ -45,7 +45,7 @@ class MongoDbService
     /**
      * Get client.
      *
-     * @return \MongoClient
+     * @return Client
      */
     public function getClient()
     {

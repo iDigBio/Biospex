@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -22,19 +22,19 @@
                             @if ( ! $expedition->downloads->isEmpty())
                                 <button title="@lang('pages.downloadTitle')" class="btn btn-success btn-sm"
                                         type="button"
-                                        onClick="location.href='{{ route('webauth.downloads.index', [$expedition->project->id, $expedition->id]) }}'">
+                                        onClick="location.href='{{ route('admin.downloads.index', [$expedition->project->id, $expedition->id]) }}'">
                                     <span class="fa fa-download fa-lrg"></span> @lang('pages.download') </button>
                             @endif
                             <button title="@lang('pages.duplicateTitle')" class="btn btn-success btn-sm" type="button"
-                                    onClick="location.href='{{ route('webauth.expeditions.duplicate', [$expedition->project->id, $expedition->id]) }}'">
+                                    onClick="location.href='{{ route('admin.expeditions.duplicate', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-copy fa-lrg"></span> @lang('pages.duplicate')</button>
                             <button title="@lang('pages.editTitle')" class="btn btn-warning btn-sm"
-                                    onClick="location.href='{{ route('webauth.expeditions.edit', [$expedition->project->id, $expedition->id]) }}'">
+                                    onClick="location.href='{{ route('admin.expeditions.edit', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-cog fa-lrg"></span> @lang('pages.edit')</button>
 
                                 @can('isOwner', $expedition->project->group)
                             <button class="btn btn-sm btn-danger" title="@lang('pages.deleteTitle')"
-                                    data-href="{{ route('webauth.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"
+                                    data-href="{{ route('admin.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"
                                     data-method="delete"
                                     data-toggle="confirmation"
                                     data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
@@ -50,7 +50,7 @@
                         <div class="col-md-2">
                             <button title="@lang('pages.ocrTitle')" class="btn btn-success btn-sm" type="button"
                                     {{ $btnDisable ? '' : 'disabled' }}
-                                    onClick="location.href='{{ route('webauth.expeditions.ocr', [$expedition->project->id, $expedition->id]) }}'">
+                                    onClick="location.href='{{ route('admin.expeditions.ocr', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-repeat fa-lrg"></span>
                                 {{ $btnDisable ? trans('pages.ocr') : trans('pages.ocrDisabled') }}
                             </button>
@@ -64,7 +64,7 @@
                                     <span class="fa fa-play fa-lrg"></span> @lang('pages.process')</button>
                             @else
                                 <button class="btn btn-sm btn-danger" title="@lang('pages.stopTitle')"
-                                        data-href="{{ route('webauth.expeditions.stop', [$expedition->project->id, $expedition->id]) }}"
+                                        data-href="{{ route('admin.expeditions.stop', [$expedition->project->id, $expedition->id]) }}"
                                         data-method="delete"
                                         data-toggle="confirmation"
                                         data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"

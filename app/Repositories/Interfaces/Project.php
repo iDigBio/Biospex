@@ -6,6 +6,14 @@ use App\Repositories\RepositoryInterface;
 
 interface Project extends RepositoryInterface
 {
+    /**
+     * Get list of projects for public project page.
+     *
+     * @param null $sort
+     * @param null $order
+     * @return mixed
+     */
+    public function getPublicProjectIndex($sort = null, $order = null);
 
     /**
      * Get project by id with relationships.
@@ -15,24 +23,6 @@ interface Project extends RepositoryInterface
      * @return mixed
      */
     public function getProjectByIdWith($projectId, array $with = []);
-
-    /**
-     * Get random projects for carousel.
-     *
-     * @param int $count
-     * @param array $attributes
-     * @return mixed
-     */
-    public function getRandomProjectsForCarousel($count = 5, array $attributes = ['*']);
-
-    /**
-     * Get recent projects for The Projects widget.
-     *
-     * @param int $count
-     * @param array $attributes
-     * @return mixed
-     */
-    public function getRecentProjects($count = 5, array $attributes = ['*']);
 
     /**
      * Get the project public page.
@@ -58,5 +48,11 @@ interface Project extends RepositoryInterface
      * @return mixed
      */
     public function getProjectForDelete($projectId);
+
+    /**
+     * @param $projectId
+     * @return mixed
+     */
+    public function getProjectForAmChartJob($projectId);
 
 }

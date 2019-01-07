@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -16,15 +16,15 @@
         <div style="padding: 10px;">
             @can('isOwner', $group)
                 <button title="@lang('pages.editTitle')" class="btn btn-warning btn-sm"
-                        onClick="location.href='{{ route('webauth.groups.edit', array($group->id)) }}'"><span
+                        onClick="location.href='{{ route('admin.groups.edit', array($group->id)) }}'"><span
                             class="fa fa-cog fa-lrg"></span> @lang('pages.edit')</button>
                 <button title="@lang('pages.inviteTitle')" class="btn btn-default btn-reverse btn-sm" type="button"
-                        onClick="location.href='{{ route('webauth.invites.index', [$group->id]) }}'"><span
+                        onClick="location.href='{{ route('admin.invites.index', [$group->id]) }}'"><span
                             class="fa fa-users fa-lrg"></span> @lang('pages.invite')</button>
             @endcan
             @can('isOwner', $group)
                 <button class="btn btn-sm btn-danger" title="@lang('pages.deleteTitle')"
-                        data-href="{{ route('webauth.groups.delete', array($group->id)) }}"
+                        data-href="{{ route('admin.groups.delete', array($group->id)) }}"
                         data-method="delete"
                         data-toggle="confirmation"
                         data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
@@ -55,7 +55,7 @@
                         @foreach ($group->users as $user)
                             <li class="list-group-item">
                                 <button class="btn btn-xs btn-danger" title="@lang('pages.deleteTitle')"
-                                        data-href="{{ route('webauth.groups.deleteUser', [$group->id, $user->id]) }}"
+                                        data-href="{{ route('admin.groups.deleteUser', [$group->id, $user->id]) }}"
                                         data-method="delete"
                                         data-toggle="confirmation"
                                         data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
@@ -73,7 +73,7 @@
                 <td>
                     <ul class="list-group">
                         @foreach ($group->projects as $project)
-                            <li class="list-group-item">{!! link_to_route('webauth.projects.show', $project->title, $project->id) !!}</li>
+                            <li class="list-group-item">{!! link_to_route('admin.projects.show', $project->title, $project->id) !!}</li>
                         @endforeach
                     </ul>
                 </td>

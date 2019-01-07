@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -15,7 +15,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                'route' => ['webauth.expeditions.store', $project->id],
+                'route' => ['admin.expeditions.store', $project->id],
                 'method' => 'post',
                 'class' => 'form-horizontal gridForm',
                 'role' => 'form'

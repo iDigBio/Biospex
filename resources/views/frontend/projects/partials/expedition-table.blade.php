@@ -17,7 +17,7 @@
         <td colspan="8">@lang('pages.expeditions_none')</td>
     @else
         @foreach($expeditions as $expedition)
-            @include('frontend.projects.partials.expedition-loop')
+            @include('front.projects.partials.expedition-loop')
         @endforeach
     @endif
     </tbody>

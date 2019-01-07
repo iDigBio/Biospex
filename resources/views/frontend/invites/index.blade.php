@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -20,7 +20,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                    'route' => ['webauth.invites.store', $group->id],
+                    'route' => ['admin.invites.store', $group->id],
                     'method' => 'post',
                     'class' => 'form-horizontal',
                     'role' => 'form'
@@ -69,7 +69,7 @@
                                     <td>{{ $invite->email }} </td>
                                     <td class="nowrap">
                                         <button class="btn btn-small btn-primary"
-                                                data-href="{!! route('webauth.invites.resend', [$invite->group_id, $invite->id]) !!}"
+                                                data-href="{!! route('admin.invites.resend', [$invite->group_id, $invite->id]) !!}"
                                                 data-method="post"
                                                 data-toggle="confirmation"
                                                 data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
@@ -81,7 +81,7 @@
                                         </button>
 
                                         <button class="btn btn-small btn-danger"
-                                                data-href="{{ route('webauth.invites.delete', [$invite->group_id, $invite->id]) }}"
+                                                data-href="{{ route('admin.invites.delete', [$invite->group_id, $invite->id]) }}"
                                                 data-method="delete"
                                                 data-toggle="confirmation"
                                                 data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-lrg fa-share"

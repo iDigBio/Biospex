@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -17,7 +17,7 @@
                     </div>
                     <div class="panel-body">
                         {!! Form::open([
-                        'route' => ['webauth.groups.update', $group->id],
+                        'route' => ['admin.groups.update', $group->id],
                         'method' => 'put',
                         'class' => 'form-horizontal',
                         'role' => 'form'

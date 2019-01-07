@@ -103,16 +103,18 @@ class BiospexServiceProvider extends ServiceProvider
     public function setViewComposers()
     {
         view()->composer(
-            'frontend.layouts.notices', 'App\Http\ViewComposers\NoticesComposer'
+            'common.notices', 'App\Http\ViewComposers\NoticesComposer'
         );
 
         view()->composer(
-            'frontend.layouts.partials.process-modal', 'App\Http\ViewComposers\PollComposer'
+            'common.process-modal', 'App\Http\ViewComposers\PollComposer'
         );
 
+        /*
         view()->composer(
-            'frontend.layouts.navigation', 'App\Http\ViewComposers\AuthUserComposer'
+            'front.layouts.navigation', 'App\Http\ViewComposers\AuthUserComposer'
         );
+        */
 
     }
 
@@ -176,7 +178,7 @@ class BiospexServiceProvider extends ServiceProvider
     {
         $this->app->singleton('flash', function ()
         {
-            return new \App\Services\Helpers\Flash();
+            return new \App\Services\Helpers\FlashHelper();
         });
 
         $this->app->singleton('datehelper', function(){
@@ -185,6 +187,10 @@ class BiospexServiceProvider extends ServiceProvider
 
         $this->app->singleton('generalhelper', function(){
             return new \App\Services\Helpers\GeneralHelper();
+        });
+
+        $this->app->singleton('counthelper', function(){
+            return new \App\Services\Helpers\CountHelper();
         });
     }
 }

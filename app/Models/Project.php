@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DateHelper;
 use App\Presenters\ProjectPresenter;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
 use Illuminate\Support\Facades\Config;
 use Czim\Paperclip\Contracts\AttachableInterface;
@@ -83,8 +84,8 @@ class Project extends Model implements AttachableInterface
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('logo', ['variants' => ['thumb' => '100x67', 'avatar' => '32x32']]);
-        $this->hasAttachedFile('banner', ['variants' => ['thumb' => '200x50', 'carousel' => '650x225']]);
+        $this->hasAttachedFile('logo', ['variants' => ['standard' => '300x300', 'thumb' => '200x200']]);
+        $this->hasAttachedFile('banner', ['variants' => ['thumb' => '200x50']]);
 
         parent::__construct($attributes);
     }
@@ -419,5 +420,4 @@ class Project extends Model implements AttachableInterface
     {
         return $this->subjects()->count();
     }
-
 }

@@ -3,13 +3,17 @@
 namespace App\Models;
 
 use App\Models\Traits\UuidTrait;
+use App\Presenters\ExpeditionPresenter;
+use App\Models\Traits\Presentable;
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
+use Czim\Paperclip\Contracts\AttachableInterface;
+use Czim\Paperclip\Model\PaperclipTrait;
 
-class Expedition extends Model
+class Expedition extends Model implements AttachableInterface
 {
-    use UuidTrait, HybridRelations, LadaCacheTrait;
+    use UuidTrait, HybridRelations, LadaCacheTrait, Presentable, PaperclipTrait;
 
     /**
      * @inheritDoc
@@ -34,9 +38,26 @@ class Expedition extends Model
         'project_id',
         'title',
         'description',
-        'keywords'
+        'keywords',
+        'logo'
     ];
 
+    /**
+     * @var string
+     */
+    protected $presenter = ExpeditionPresenter::class;
+
+    /**
+     * Expedition constructor.
+     *
+     * @param array $attributes
+     */
+    public function __construct(array $attributes = [])
+    {
+        $this->hasAttachedFile('logo', ['resize' => ['dimensions' => '318x208']]);
+
+        parent::__construct($attributes);
+    }
 
     /**
      * Project relationship.

@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -34,11 +34,11 @@
                 <tbody>
                 @foreach ($expeditions as $expedition)
                     <tr>
-                        <td>{{ link_to_route('webauth.expeditions.show', $expedition->title, ['projects' => $expedition->project_id, 'expeditions' => $expedition->id]) }}</td>
+                        <td>{{ link_to_route('admin.expeditions.show', $expedition->title, ['projects' => $expedition->project_id, 'expeditions' => $expedition->id]) }}</td>
                         <td>{{ $expedition->description }}</td>
                         <td>{{ DateHelper::convertTimeZone($expedition->created_at, 'Y-m-d', $user->profile->timezone) }}</td>
-                        <td>{{ link_to_route('webauth.groups.show', $expedition->project->group->title, ['groups' => $expedition->project->group->id]) }}</td>
-                        <td>{{ link_to_route('webauth.projects.show', $expedition->project->title, ['projects' => $expedition->project->id]) }}</td>
+                        <td>{{ link_to_route('admin.groups.show', $expedition->project->group->title, ['groups' => $expedition->project->group->id]) }}</td>
+                        <td>{{ link_to_route('admin.projects.show', $expedition->project->title, ['projects' => $expedition->project->id]) }}</td>
                         <td>{{ $expedition->stat->local_subject_count }}</td>
                         <td>{{ $expedition->stat->subject_count }}</td>
                         @if(null !== $expedition->actors)
@@ -54,16 +54,16 @@
                         @endif
                         <td class="fit">
                             <button title="@lang('buttons.viewTitle')" class="btn btn-primary btn-xs" type="button"
-                                    onClick="location.href='{{ route('webauth.expeditions.show', [$expedition->project->id, $expedition->id]) }}'">
+                                    onClick="location.href='{{ route('admin.expeditions.show', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-eye fa-lrg"></span> <!-- @lang('buttons.view') --></button>
                             <button title="@lang('buttons.duplicateTitle')" class="btn btn-success btn-xs" type="button"
-                                    onClick="location.href='{{ route('webauth.expeditions.duplicate', [$expedition->project->id, $expedition->id]) }}'">
+                                    onClick="location.href='{{ route('admin.expeditions.duplicate', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-copy fa-lrg"></span> <!-- @lang('buttons.duplicate') --></button>
                             <button title="@lang('buttons.editTitle')" class="btn btn-warning btn-xs" type="button"
-                                    onClick="location.href='{{ route('webauth.expeditions.edit', [$expedition->project->id, $expedition->id]) }}'">
+                                    onClick="location.href='{{ route('admin.expeditions.edit', [$expedition->project->id, $expedition->id]) }}'">
                                 <span class="fa fa-cog fa-lrg"></span> <!-- @lang('buttons.edit') --></button>
                             <button class="btn btn-xs btn-danger" title="@lang('buttons.deleteTitle')"
-                                    data-href="{{ route('webauth.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"
+                                    data-href="{{ route('admin.expeditions.delete', [$expedition->project->id, $expedition->id]) }}"
                                     data-method="delete"
                                     data-toggle="confirmation"
                                     data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
@@ -77,7 +77,7 @@
                             @if (null !== $expedition->downloads)
                                 <button title="@lang('buttons.downloadTitle')" class="btn btn-success btn-xs"
                                         type="button"
-                                        onClick="location.href='{{ route('webauth.downloads.index', [$expedition->project->id, $expedition->id]) }}'">
+                                        onClick="location.href='{{ route('admin.downloads.index', [$expedition->project->id, $expedition->id]) }}'">
                                     <span class="fa fa-download fa-lrg"></span> <!-- @lang('buttons.download') -->
                                 </button>
                             @endif

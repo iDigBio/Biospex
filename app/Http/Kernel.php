@@ -2,9 +2,8 @@
 
 namespace App\Http;
 
-use App\Http\Middleware\Admin;
 use App\Http\Middleware\EncryptCookies;
-use App\Http\Middleware\FlashMessage;
+use App\Http\Middleware\FlashHelperMessage;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
@@ -55,7 +54,7 @@ class Kernel extends HttpKernel
             ShareErrorsFromSession::class,
             VerifyCsrfToken::class,
             SubstituteBindings::class,
-            FlashMessage::class
+            FlashHelperMessage::class
         ],
 
         'api' => [
@@ -79,6 +78,5 @@ class Kernel extends HttpKernel
         'guest'      => RedirectIfAuthenticated::class,
         'throttle'   => ThrottleRequests::class,
         'client'     => CheckClientCredentials::class,
-        'admin'      => Admin::class
     ];
 }

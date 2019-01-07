@@ -2,7 +2,7 @@
 <html lang="en">
 
 @section('htmlheader')
-    @include('frontend.layouts.partials.htmlheader')
+    @include('front.layouts.partials.htmlheader')
 @show
 
 <body>
@@ -29,10 +29,10 @@
     </div>
     @yield('content')
 </div>
-@include('frontend.layouts.footer')
+@include('front.layouts.footer')
 
 @section('scripts')
-    @include('frontend.layouts.partials.scripts')
+    @include('front.layouts.partials.scripts')
 @show
 </body>
 </html>

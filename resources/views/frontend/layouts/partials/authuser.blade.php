@@ -9,15 +9,15 @@
     </a>
     <ul class="dropdown-menu">
         <!-- Menu Body -->
-        <li>
-            <a href="/users/{{ $authUser->id }}/edit">Profile</a>
+        <li class="user-body">
+            <div class="pull-left">
+                <a href="/users/{{ $authUser->id }}/edit" class="btn btn-primary btn-flat">Profile</a>
+            </div>
+            <div class="pull-right">
+                <a href="{{ route('app.get.logout') }}"
+                   class="btn btn-danger btn-flat">{{ trans('pages.logout') }}</a>
+            </div>
         </li>
-        <li>
-            <a href="{{ route('app.get.logout') }}">{{ trans('pages.logout') }}</a>
-        </li>
-        @can('admin', Auth::user())
-            <li><a href="/nova">Admin</a></li>
-        @endcan
     </ul>
 </li>
 <!-- /.navbar-custom-menu -->

@@ -2,8 +2,6 @@
 
 namespace App\Policies;
 
-use Illuminate\Support\Facades\Cache;
-
 class EventPolicy
 {
 

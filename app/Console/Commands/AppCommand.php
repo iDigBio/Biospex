@@ -19,8 +19,7 @@ class AppCommand extends Command
     /**
      * Create a new job instance.
      */
-    public function __construct(
-    )
+    public function __construct()
     {
         parent::__construct();
     }
@@ -32,5 +31,6 @@ class AppCommand extends Command
     {
 
     }
+
 
 }

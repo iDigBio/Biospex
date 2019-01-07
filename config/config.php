@@ -19,6 +19,9 @@ return [
     'api_client_id'     => env('API_CLIENT_ID'),
     'api_client_secret' => env('API_CLIENT_SECRET'),
 
+    'admin_group'    => env('ADMIN_GROUP', 'Admin'),
+    'admin_group_id' => env('ADMIN_GROUP_ID', 1),
+
     'map_project_id'      => env('MAP_PROJECT_ID'),
     'map_private_key_id'  => env('MAP_PRIVATE_KEY_ID'),
     'map_private_key'     => env('MAP_PRIVATE_KEY'),
@@ -41,6 +44,8 @@ return [
     'python_path'      => env('LABEL_RECONCILIATIONS_PATH').'/venv/bin/python',
     'reconcile_path'   => env('LABEL_RECONCILIATIONS_PATH').'/reconcile.py',
     'nfn_table_prefix' => env('NFN_TABLE_PREFIX', ''),
+
+    'amchart_series'   => resource_path('json/amChartSeries.json'),
 
     'ocr_post_url'   => env('OCR_POSTURL'),
     'ocr_get_url'    => env('OCR_GETURL'),

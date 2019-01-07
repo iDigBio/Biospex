@@ -17,18 +17,18 @@
     @endif
     <td class="fit">
         <button title="@lang('pages.viewTitle')" class="btn btn-primary btn-xs" type="button"
-                onClick="location.href='{{ route('webauth.expeditions.show', [$project->id, $expedition->id]) }}'">
+                onClick="location.href='{{ route('admin.expeditions.show', [$project->id, $expedition->id]) }}'">
             <span class="fa fa-eye fa-lrg"></span> <!-- @lang('pages.view') --></button>
         <button title="@lang('pages.duplicateTitle')" class="btn btn-success btn-xs"
                 type="button"
-                onClick="location.href='{{ route('webauth.expeditions.duplicate', [$project->id, $expedition->id]) }}'">
+                onClick="location.href='{{ route('admin.expeditions.duplicate', [$project->id, $expedition->id]) }}'">
             <span class="fa fa-copy fa-lrg"></span> <!-- @lang('pages.duplicate') --></button>
         <button title="@lang('pages.editTitle')" class="btn btn-warning btn-xs" type="button"
-                onClick="location.href='{{ route('webauth.expeditions.edit', [$project->id, $expedition->id]) }}'">
+                onClick="location.href='{{ route('admin.expeditions.edit', [$project->id, $expedition->id]) }}'">
             <span class="fa fa-cog fa-lrg"></span> <!-- @lang('pages.edit') --></button>
         @can('isOwner', $project->group)
         <button class="btn btn-xs btn-danger" title="@lang('pages.deleteTitle')"
-                data-href="{{ route('webauth.expeditions.delete', [$project->id, $expedition->id]) }}"
+                data-href="{{ route('admin.expeditions.delete', [$project->id, $expedition->id]) }}"
                 data-method="delete"
                 data-toggle="confirmation"
                 data-btn-ok-label="Continue" data-btn-ok-icon="fa fa-share fa-lrg"
@@ -43,7 +43,7 @@
         @if ( ! $expedition->downloads->isEmpty())
             <button title="@lang('pages.downloadTitle')" class="btn btn-success btn-xs"
                     type="button"
-                    onClick="location.href='{{ route('webauth.downloads.index', [$project->id, $expedition->id]) }}'">
+                    onClick="location.href='{{ route('admin.downloads.index', [$project->id, $expedition->id]) }}'">
                 <span class="fa fa-download fa-lrg"></span> <!-- @lang('pages.download') -->
             </button>
         @endif

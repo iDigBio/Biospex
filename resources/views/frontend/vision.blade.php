@@ -14,13 +14,13 @@
     <link rel="stylesheet" href="/vision/css/normalize.css" type="text/css" media="screen">
     <link rel="stylesheet" href="/vision/css/grid.css" type="text/css" media="screen">
     <link rel="stylesheet" href="/vision/css/style.css" type="text/css" media="screen">
-    <link href="/css/frontend.css" rel="stylesheet">
+    <link href="/css/front.css" rel="stylesheet">
     <!-- <link rel="stylesheet" href="css/style.min.css" type="text/css" media="screen"> -->
     <!--[if IE]>
     <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 </head>
 <body>
-@include('frontend.layouts.navigation')
+@include('front.layouts.navigation')
 <div class="slide" id="slide1" data-slide="1" data-stellar-background-ratio="0.5">
     <div id="linearBg2"></div>
     <div class="container clearfix">
@@ -190,7 +190,7 @@
                     data to you and the curators of the relevant physical specimens, all within the engaging framework
                     of biodiversity specimen digitization expeditions.
                 </p>
-                @include('frontend.layouts.footer')
+                @include('front.layouts.footer')
             </div>
         </div>
     </div>

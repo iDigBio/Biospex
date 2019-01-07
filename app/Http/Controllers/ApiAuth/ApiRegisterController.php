@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\ApiAuth;
 
-use App\Facades\Flash;
+use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Notifications\UserActivation;
 use App\Repositories\Interfaces\ApiUser;
@@ -75,7 +75,7 @@ class ApiRegisterController extends Controller
         if ($user)
         {
             $user->notify(new UserActivation(route('api.get.activate', [$user->id, $user->activation_code])));
-            Flash::success(trans('messages.new_account'));
+            FlashHelper::success(trans('messages.new_account'));
 
             return redirect()->route('api.get.index');
         }
@@ -98,7 +98,7 @@ class ApiRegisterController extends Controller
         }
 
         $user->attemptActivation($code);
-        Flash::success(trans('messages.activated'));
+        FlashHelper::success(trans('messages.activated'));
 
         return redirect()->route('api.get.login');
     }
@@ -130,7 +130,7 @@ class ApiRegisterController extends Controller
 
         $user->getActivationCode();
         $user->notify(new UserActivation(route('api.get.activate', [$user->id, $user->activation_code])));
-        Flash::success(trans('messages.email_confirm'));
+        FlashHelper::success(trans('messages.email_confirm'));
 
         return redirect()->route('api.get.login');
     }
@@ -153,13 +153,13 @@ class ApiRegisterController extends Controller
     {
         if ( ! $user)
         {
-            Flash::error(trans('messages.not_found'));
+            FlashHelper::error(trans('messages.not_found'));
             return false;
         }
 
         if ($user->activated)
         {
-            Flash::info(trans('messages.already_activated'));
+            FlashHelper::info(trans('messages.already_activated'));
             return false;
         }
 

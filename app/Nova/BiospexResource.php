@@ -56,7 +56,7 @@ class BiospexResource extends Resource
                         'document_file_size' => $request->document->getSize(),
                         'document_content_type' => $request->document->getMimeType()
                     ];
-            })->prunable()->resolveUsing(function ($document) {
+                })->prunable()->resolveUsing(function ($document) {
                     return $document->originalFilename();
                 })
         ];

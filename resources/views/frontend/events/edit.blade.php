@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -15,7 +15,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                'route' => ['webauth.events.update', $event->id],
+                'route' => ['admin.events.update', $event->id],
                     'method' => 'put',
                     'files' => true,
                     'class' => 'form-horizontal',
@@ -69,12 +69,12 @@
                         <div class="input-group col-md-3">
                             {{ ($errors->has('start_date') ? $errors->first('start_date') : '') }}
                             {!! Form::label('start_date', trans('pages.start_date'), ['class' => 'control-label']) !!}
-                            {!! Form::text('start_date', $event->present()->start_date_calendar, ['class' => 'form-control datetimepicker', 'placeholder' => trans('pages.event_timezone')]) !!}
+                            {!! Form::text('start_date', $event->start_date->setTimezone($event->timezone)->format('Y-m-d H:i'), ['class' => 'form-control datetimepicker', 'placeholder' => trans('pages.event_timezone')]) !!}
                         </div>
                         <div class="input-group col-md-3">
                             {{ ($errors->has('end_date') ? $errors->first('end_date') : '') }}
                             {!! Form::label('end_date', trans('pages.end_date'), ['class' => 'control-label']) !!}
-                            {!! Form::text('end_date', $event->present()->end_date_calendar, ['class' => 'form-control datetimepicker', 'placeholder' => trans('pages.event_timezone')]) !!}
+                            {!! Form::text('end_date', $event->end_date->setTimezone($event->timezone)->format('Y-m-d H:i'), ['class' => 'form-control datetimepicker', 'placeholder' => trans('pages.event_timezone')]) !!}
                         </div>
                         <div class="input-group col-md-4">
                             {!! Form::label('timezone', trans('pages.timezone'), ['class' => 'control-label']) !!}
@@ -88,14 +88,14 @@
                     <div class="controls col-sm-10">
                         @if($errors->has('teams.*'))
                             @for($i = 0; $i < old('entries'); $i++)
-                                @include('frontend.events.partials.team-error')
+                                @include('front.events.partials.team-error')
                             @endfor
                         @elseif($event->teams->isNotEmpty())
                             @foreach($event->teams as $key => $team)
-                                @include('frontend.events.partials.team-edit')
+                                @include('front.events.partials.team-edit')
                             @endforeach
                         @else
-                            @include('frontend.events.partials.team-create')
+                            @include('front.events.partials.team-create')
                         @endif
                     </div>
                 </div>

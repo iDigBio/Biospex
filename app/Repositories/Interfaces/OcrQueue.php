@@ -6,6 +6,7 @@ use App\Repositories\RepositoryInterface;
 
 interface OcrQueue extends RepositoryInterface
 {
+
     /**
      * @return mixed
      */

@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Models\Project as Model;
 use App\Models\ProjectResource;
 use App\Repositories\Interfaces\Project;
+use Illuminate\Support\Carbon;
 
 class ProjectRepository extends EloquentRepository implements Project
 {
@@ -63,6 +64,34 @@ class ProjectRepository extends EloquentRepository implements Project
     /**
      * @inheritdoc
      */
+    public function getPublicProjectIndex($sort = null, $order = null)
+    {
+        $results = $this->model->withCount('expeditions')->withCount('events')->with('group')->whereHas('nfnWorkflows')->get();
+
+        switch ($order) {
+            case 'asc':
+                $projects = $sort === 'title' ? $results->sortBy('title') : $results->sortBy(function ($project) {
+                    return $project->group->title;
+                });
+                break;
+            case 'desc':
+                $projects = $sort === 'title' ? $results->sortByDesc('title') : $results->sortByDesc(function ($project
+                ) {
+                    return $project->group->title;
+                });
+                break;
+            default:
+                $projects = $results;
+        }
+
+        $this->resetModel();
+
+        return $projects;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getProjectByIdWith($projectId, array $with = [])
     {
         $results = $this->model->with($with)->find($projectId);
@@ -75,33 +104,9 @@ class ProjectRepository extends EloquentRepository implements Project
     /**
      * @inheritdoc
      */
-    public function getRandomProjectsForCarousel($count = 5, array $attributes = ['*'])
-    {
-        $results = $this->model->inRandomOrder()->whereNotNull('banner_file_name')->limit($count)->get($attributes);
-
-        $this->resetModel();
-
-        return $results;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getRecentProjects($count = 5, array $attributes = ['*'])
-    {
-        $results = $this->model->whereHas('nfnWorkflows')->orderBy('created_at', 'desc')->limit($count)->get($attributes);
-
-        $this->resetModel();
-
-        return $results;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getProjectPageBySlug($slug)
     {
-        $results = $this->model->with([
+        $results = $this->model->withCount('events')->with([
             'group.users.profile',
             'expeditions.stat',
             'expeditions.actors',
@@ -123,7 +128,8 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectsHavingTranscriptionLocations(array $projectIds = [])
     {
-        $results = empty($projectIds) ? $this->model->has('transcriptionLocations')->get() : $this->model->has('transcriptionLocations')->whereIn('id', $projectIds)->get();
+        $results = empty($projectIds) ? $this->model->has('transcriptionLocations')->get()
+            : $this->model->has('transcriptionLocations')->whereIn('id', $projectIds)->get();
 
         $this->resetModel();
 
@@ -201,5 +207,20 @@ class ProjectRepository extends EloquentRepository implements Project
         $record->save();
 
         return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getProjectForAmChartJob($projectId)
+    {
+        $result = $this->model->with(['expeditions' => function($q) {
+            $q->with('stat')->has('stat');
+            $q->with('nfnWorkflow')->has('nfnWorkflow');
+        }])->find($projectId);
+
+        $this->resetModel();
+
+        return $result;
     }
 }

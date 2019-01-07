@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -15,7 +15,7 @@
             </div>
             <div class="panel-body">
                 {!! Form::open([
-                'route' => ['webauth.events.store'],
+                'route' => ['admin.events.store'],
                 'method' => 'post',
                 'class' => 'form-horizontal',
                 'role' => 'form'
@@ -86,10 +86,10 @@
                     <div class="controls col-sm-10">
                         @if($errors->has('teams.*'))
                             @for($i = 0; $i < old('entries'); $i++)
-                                @include('frontend.events.partials.team-error')
+                                @include('front.events.partials.team-error')
                             @endfor
                         @else
-                            @include('frontend.events.partials.team-create')
+                            @include('front.events.partials.team-create')
                         @endif
                     </div>
                 </div>

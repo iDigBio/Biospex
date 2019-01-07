@@ -17,7 +17,7 @@ class AmChart extends Model
     /**
      * @inheritDoc
      */
-    protected $fillable = ['project_id', 'data'];
+    protected $fillable = ['project_id', 'series', 'data'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -25,5 +25,25 @@ class AmChart extends Model
     public function project()
     {
         return $this->belongsTo(Project::class);
+    }
+
+    /**
+     * Mutator for data column.
+     *
+     * @param $value
+     */
+    public function setDataAttribute($value)
+    {
+        $this->attributes['data'] = json_encode($value);
+    }
+
+    /**
+     * Mutator for data column.
+     *
+     * @param $value
+     */
+    public function setSeriesAttribute($value)
+    {
+        $this->attributes['series'] = json_encode($value);
     }
 }

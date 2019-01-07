@@ -1,4 +1,4 @@
-@extends('frontend.layouts.default')
+@extends('front.layouts.default')
 
 {{-- Web site Title --}}
 @section('title')
@@ -18,7 +18,7 @@
             <div class="col-xs-8">
                 <hr/>
                 @foreach($resources as $resource)
-                    @include('frontend.resources.partials.resources')
+                    @include('front.resources.partials.resources')
                 @endforeach
 
             </div>

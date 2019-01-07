@@ -182,7 +182,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\NovaServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\BiospexServiceProvider::class
+        App\Providers\BiospexServiceProvider::class,
     ],
 
     /*
@@ -238,9 +238,10 @@ return [
         'Html'         => Collective\Html\HtmlFacade::class,
         'Honeypot'     => Msurguy\Honeypot\HoneypotFacade::class,
 
-        'DateHelper' => \App\Facades\DateHelper::class,
-        'Flash'      => \App\Facades\Flash::class,
-        'GeneralHelper' => \App\Facades\GeneralHelper::class
+        'DateHelper'    => \App\Facades\DateHelper::class,
+        'Flash'         => \App\Facades\FlashHelper::class,
+        'GeneralHelper' => \App\Facades\GeneralHelper::class,
+        'CountHelper'   => \App\Facades\CountHelper::class,
     ],
 
 ];

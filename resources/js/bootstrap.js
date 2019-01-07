@@ -6,37 +6,35 @@
  */
 
 try {
-    window.$ = window.jQuery = require('jquery');
+    //window.$ = window.jQuery = require('jquery');
     //require('bootstrap');
-    require("bootstrap-sass/assets/javascripts/bootstrap");
     require("bootstrap-notify/bootstrap-notify");
+    //require("@fortawesome/fontawesome-free");
 
-    require("jquery-ui/ui/widgets/dialog");
-    require("jquery-ui/ui/widgets/draggable");
-    require("jquery-ui/ui/widgets/droppable");
-    require("jquery-ui/ui/widgets/resizable");
+    //require("jquery-ui/ui/widgets/dialog");
+    //require("jquery-ui/ui/widgets/draggable");
+    //require("jquery-ui/ui/widgets/droppable");
+    //require("jquery-ui/ui/widgets/resizable");
     require("jquery-validation/dist/jquery.validate");
     require("jquery-validation/dist/additional-methods");
     require("jquery-datetimepicker/build/jquery.datetimepicker.full");
-    require("free-jqgrid/dist/plugins/ui.multiselect");
-    require("free-jqgrid/js/jquery.jqgrid.min");
+    //require("free-jqgrid/dist/plugins/ui.multiselect");
+    //require("free-jqgrid/js/jquery.jqgrid.min");
 
-    require("codemirror/lib/codemirror");
-    require("summernote/dist/summernote");
+    //require("codemirror/lib/codemirror");
+    //require("summernote/dist/summernote");
 
     require("tablesorter/dist/js/jquery.tablesorter");
     require("tablesorter/dist/js/jquery.tablesorter.widgets.js");
-    require("amcharts3/amcharts/amcharts");
-    require("amcharts3/amcharts/serial");
-    require("amcharts3/amcharts/plugins/dataloader/dataloader");
-    require("amcharts3/amcharts/plugins/responsive/responsive");
+    //require("amcharts3/amcharts/amcharts");
+    //require("amcharts3/amcharts/serial");
+    //require("amcharts3/amcharts/plugins/dataloader/dataloader");
+    //require("amcharts3/amcharts/plugins/responsive/responsive");
 
-    require("socket.io-client/dist/socket.io");
-    require("./amchart");
-    require("./bootbox");
-    require("./flash");
-    require("./biospex");
-    require("./grid");
+    //require("socket.io-client/dist/socket.io");
+    //require("./amchart");
+    require("./main");
+    //require("./grid");
 
 } catch (e) {}
 
@@ -72,6 +70,6 @@ if (token) {
 import Echo from "laravel-echo"
 window.io = require("socket.io-client");
 window.Echo = new Echo({
-    broadcaster: "socket.io",
-    host: window.location.hostname + ":6001"
+    //broadcaster: "socket.io",
+    //host: window.location.hostname + ":6001"
 });
