@@ -19,6 +19,10 @@ class ProjectRepository extends EloquentRepository implements Project
         return Model::class;
     }
 
+    /**
+     * @param array $attributes
+     * @return \App\Repositories\Eloquent\EloquentRepository|\Illuminate\Database\Eloquent\Model|void
+     */
     public function create(array $attributes)
     {
         $project = $this->model->create($attributes);
@@ -67,6 +71,42 @@ class ProjectRepository extends EloquentRepository implements Project
     public function getPublicProjectIndex($sort = null, $order = null)
     {
         $results = $this->model->withCount('expeditions')->withCount('events')->with('group')->whereHas('nfnWorkflows')->get();
+
+        switch ($order) {
+            case 'asc':
+                $projects = $sort === 'title' ? $results->sortBy('title') : $results->sortBy(function ($project) {
+                    return $project->group->title;
+                });
+                break;
+            case 'desc':
+                $projects = $sort === 'title' ? $results->sortByDesc('title') : $results->sortByDesc(function ($project
+                ) {
+                    return $project->group->title;
+                });
+                break;
+            default:
+                $projects = $results;
+        }
+
+        $this->resetModel();
+
+        return $projects;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAdminProjectIndex($userId, $sort = null, $order = null)
+    {
+        $results = $this->model->with(['group' => function($q) use($userId) {
+            $q->whereHas('users', function($q) use($userId) {
+                $q->where('users.id', $userId);
+            });
+        }])->whereHas('group', function($q) use($userId){
+            $q->whereHas('users', function($q) use($userId) {
+                $q->where('users.id', $userId);
+            });
+        })->get();
 
         switch ($order) {
             case 'asc':

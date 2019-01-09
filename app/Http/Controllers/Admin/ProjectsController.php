@@ -79,26 +79,19 @@ class ProjectsController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     * Have to use json_encode + json_decode to fix the different array structure
-     * returned by Sentry group queries.
+     * Show projects list for admin page.
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
     {
         $user = \Auth::user();
-        $user->load('groups');
 
-        //$groups = $this->groupContract->getUserProjectListByGroup($user);
-        return view('admin.welcome');
+        $projects = $this->projectContract->getAdminProjectIndex($user->id);
 
-        if (! $user->groups->count()) {
-            return view('admin.welcome');
-        }
-
-        return view('admin.project.index');
-        //return view('admin.project.index', compact('groups'));
+        return $projects->isEmpty() ?
+            view('admin.welcome') :
+            view('admin.project.index', compact('projects'));
     }
 
     /**

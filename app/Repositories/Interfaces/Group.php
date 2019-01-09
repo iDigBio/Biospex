@@ -7,13 +7,7 @@ use App\Repositories\RepositoryInterface;
 interface Group extends RepositoryInterface
 {
 
-    /**
-     * Get project list by group using logged in user.
-     *
-     * @param $user
-     * @return mixed
-     */
-    public function getUserProjectListByGroup($user);
+
 
     /**
      * Get select list of groups for a user.

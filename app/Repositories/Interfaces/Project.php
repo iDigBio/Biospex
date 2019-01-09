@@ -16,6 +16,16 @@ interface Project extends RepositoryInterface
     public function getPublicProjectIndex($sort = null, $order = null);
 
     /**
+     * Get list of projects for admin project page.
+     *
+     * @param $userId
+     * @param null $sort
+     * @param null $order
+     * @return mixed
+     */
+    public function getAdminProjectIndex($userId, $sort = null, $order = null);
+
+    /**
      * Get project by id with relationships.
      *
      * @param $projectId

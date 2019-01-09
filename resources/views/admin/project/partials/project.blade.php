@@ -1,0 +1,1 @@
+@each('admin.project.partials.project-loop', $projects, 'project')
