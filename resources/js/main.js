@@ -1,5 +1,11 @@
 $(function () {
 
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
     $(".hamburger").click(function () {
         $(this).toggleClass("is-active");
     });
@@ -230,67 +236,16 @@ $(function () {
             });
     }
     */
-
-    $('#scoreboardModal').on('show.bs.modal', function (e) {
-        let $modal = $(this).find('.modal-body');
-        let $button = $(e.relatedTarget); // Button that triggered the modal
-        let channel = $button.data('channel');
-        let eventId = $button.data('event');
-
-        $modal.html('<div class="loader mx-auto"></div>');
-
-        $modal.load($button.data('href'), function () {
-            let $clock = $modal.find('.clockdiv');
-            let deadline = $modal.find('#date').html(); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
-            if (deadline === 'Completed') {
-                $clock.html('<h2 class="text-center">Completed</h2>');
-                return;
-            }
-            initializeClock($clock, deadline);
-
-            Echo.channel(channel)
-                .listen('ScoreboardEvent', (e) => {
-                    $.each(e.data, function (id, val) {
-                        if (Number(id) === Number(eventId)) {
-                            $modal.html(val);
-                            $clock = $modal.find('.clockdiv');
-                            deadline = $modal.find('#date').html();
-                            initializeClock($clock, deadline);
-                        }
-                    });
-                });
-        });
-    }).on('hidden.bs.modal', function () {
-        $(this).find('.modal-body').html('');
-        clearInterval(timeInterval);
-    });
-
-    $('#processCarousel').on('slide.bs.carousel', function (e) {
-        $('.carousel-li-' + e.from).each(function () {
-            $(this).removeClass('active');
-        });
-        $('.carousel-li-' + e.to).each(function () {
-            $(this).addClass('active');
-        });
+    $('#externalIndicators li').on('click', function () {
+        $(this).addClass('active').siblings().removeClass('active');
+        let num = $(this).data('slide-to');
+        $('.carousel-div').removeClass('active');
+        $('.div-'+num).addClass('active');
     });
 
     $('.sortPage').on('click', function () {
         sortPage($(this));
     });
-
-    $('.completedButton').on('click', function (e) {
-        let $target = $('#' + $(this).data('target')); // target container
-        let url = $(this).data('url');
-
-        $('#completed').show();
-        $target.show();
-        $target.html('<div class="loader mx-auto"></div>');
-        $.get(url, function (data) {
-            $target.html(data);
-        });
-    });
-
-    clockDiv();
 
     $('#expeditionViewToggle').on('click', function() {
         let val = $(this).data('value');
@@ -371,64 +326,22 @@ function copyToClipboard(text, el) {
 }
 */
 
-function getTimeRemaining(endTime) {
-    let t = Date.parse(endTime) - Date.parse(new Date());
-    let seconds = Math.floor((t / 1000) % 60);
-    let minutes = Math.floor((t / 1000 / 60) % 60);
-    let hours = Math.floor((t / (1000 * 60 * 60)) % 24);
-    let days = Math.floor(t / (1000 * 60 * 60 * 24));
-    return {
-        'total': t,
-        'days': days,
-        'hours': hours,
-        'minutes': minutes,
-        'seconds': seconds
-    };
-}
-
-let timeInterval;
-function clockDiv() {
-    $('.clockdiv').each(function () {
-        let deadline = $(this).data('value'); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
-        initializeClock($(this), deadline);
-    });
-}
-function initializeClock($clock, endTime) {
-
-    let daysSpan = $clock.find('.days');
-    let hoursSpan = $clock.find('.hours');
-    let minutesSpan = $clock.find('.minutes');
-    let secondsSpan = $clock.find('.seconds');
-
-    function updateClock() {
-        let t = getTimeRemaining(endTime);
-        daysSpan.html(t.days);
-        hoursSpan.html(('0' + t.hours).slice(-2));
-        minutesSpan.html(('0' + t.minutes).slice(-2));
-        secondsSpan.html(('0' + t.seconds).slice(-2));
-
-        if (t.total <= 0) {
-            clearInterval(timeInterval);
-        }
-    }
-
-    updateClock();
-    timeInterval = setInterval(updateClock, 1000);
-}
 
 function sortPage(element) {
-    let name = element.data('name'); // sort by
+    let name = element.data('name');
+    let sort = element.data('sort'); // sort by
     let order = element.data('order'); // current sort parameter
     let url = element.data('url'); // url for sort
     let $target = $('#' + element.data('target')); // target container
 
-    $target.html('<div class="loader mx-auto"></div>');
+    $target.html('<span class="loader"></span>');
 
-    $.get(url + '/' + name + '/' + order, function (data) {
-        $target.html(data);
-        setOrder(order, element);
-        clockDiv();
-    });
+    $.post(url, { name: name, sort: sort, order: order })
+        .done(function( data ) {
+            $target.html(data);
+            setOrder(order, element);
+            clockDiv();
+        });
 }
 
 function setOrder(order, element) {

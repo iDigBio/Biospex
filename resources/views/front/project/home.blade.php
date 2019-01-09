@@ -266,3 +266,6 @@
     @include('common.contributors')
 @endsection
 
+@section('custom-script')
+    @include('common.score-board-js')
+@endsection

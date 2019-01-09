@@ -243,16 +243,16 @@
         },
         {
             "name": "czim/laravel-paperclip",
-            "version": "2.6.0",
+            "version": "2.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/czim/laravel-paperclip.git",
-                "reference": "c97f14d04ba38017a59c7664757f880ba6613b04"
+                "reference": "c654a9c45f78b72786b0aeee97cfa11ab192f33f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/czim/laravel-paperclip/zipball/c97f14d04ba38017a59c7664757f880ba6613b04",
-                "reference": "c97f14d04ba38017a59c7664757f880ba6613b04",
+                "url": "https://api.github.com/repos/czim/laravel-paperclip/zipball/c654a9c45f78b72786b0aeee97cfa11ab192f33f",
+                "reference": "c654a9c45f78b72786b0aeee97cfa11ab192f33f",
                 "shasum": ""
             },
             "require": {
@@ -287,7 +287,7 @@
                 "laravel",
                 "upload"
             ],
-            "time": "2018-11-04T21:06:55+00:00"
+            "time": "2019-01-07T17:11:01+00:00"
         },
         {
             "name": "defuse/php-encryption",
@@ -1848,16 +1848,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.7.19",
+            "version": "v5.7.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "5c1d1ec7e8563ea31826fd5eb3f6791acf01160c"
+                "reference": "10cd20294b5668f90ba91996236834e71f7ff670"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/5c1d1ec7e8563ea31826fd5eb3f6791acf01160c",
-                "reference": "5c1d1ec7e8563ea31826fd5eb3f6791acf01160c",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/10cd20294b5668f90ba91996236834e71f7ff670",
+                "reference": "10cd20294b5668f90ba91996236834e71f7ff670",
                 "shasum": ""
             },
             "require": {
@@ -1931,7 +1931,7 @@
                 "moontoast/math": "^1.1",
                 "orchestra/testbench-core": "3.7.*",
                 "pda/pheanstalk": "^3.0",
-                "phpunit/phpunit": "^7.0",
+                "phpunit/phpunit": "^7.5",
                 "predis/predis": "^1.1.1",
                 "symfony/css-selector": "^4.1",
                 "symfony/dom-crawler": "^4.1",
@@ -1990,7 +1990,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2018-12-18T14:00:38+00:00"
+            "time": "2019-01-08T14:39:11+00:00"
         },
         {
             "name": "laravel/nexmo-notification-channel",
@@ -2051,17 +2051,17 @@
         },
         {
             "name": "laravel/nova",
-            "version": "v1.2.1",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:laravel/nova.git",
-                "reference": "ef8e0492b2bd51cf7c1fa742d97741615cbfafeb"
+                "reference": "efdc3a2455394121896f89f34dc4cc4a4eeee875"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://nova.laravel.com/dist/laravel/nova/laravel-nova-ef8e0492b2bd51cf7c1fa742d97741615cbfafeb-zip-187bd8.zip",
-                "reference": "ef8e0492b2bd51cf7c1fa742d97741615cbfafeb",
-                "shasum": "f4799e06d5078a860ab53e549905a8302f6c9ab5"
+                "url": "https://nova.laravel.com/dist/laravel/nova/laravel-nova-efdc3a2455394121896f89f34dc4cc4a4eeee875-zip-0420a5.zip",
+                "reference": "efdc3a2455394121896f89f34dc4cc4a4eeee875",
+                "shasum": "84033a6a333ded9df4201e8636de8d7cbde3b4ef"
             },
             "require": {
                 "cakephp/chronos": "~1.0",
@@ -2116,7 +2116,7 @@
                 "admin",
                 "laravel"
             ],
-            "time": "2018-12-12T15:47:14+00:00"
+            "time": "2019-01-07T21:04:38+00:00"
         },
         {
             "name": "laravel/passport",
@@ -2423,7 +2423,7 @@
                 {
                     "name": "Luís Otávio Cobucci Oblonczyk",
                     "email": "lcobucci@gmail.com",
-                    "role": "Developer"
+                    "role": "developer"
                 }
             ],
             "description": "A simple library to work with JSON Web Token and JSON Web Signature",

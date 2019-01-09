@@ -18,43 +18,63 @@
 {{-- Content --}}
 @section('content')
     <h2 class="text-center pt-4">{{ __('BIOSPEX Expeditions') }}</h2>
-    <hr class="header mx-auto" style="width:300px;">
+
     <div class="row">
-        <div class="col-md-6 mx-auto mb-4 text-center">
-            <span data-name="title" data-order="asc" data-url="{{ route('expeditions.public.get.sort') }}" data-target="public-expeditions"
-                  class="sortPage mr-2" style="color: #e83f29; cursor: pointer;"><i
-                        class="fas fa-sort"></i> {{ __('TITLE') }}</span>
-            <span data-name="project" data-order="asc" data-url="{{ route('expeditions.public.get.sort') }}" data-target="public-expeditions"
-                  class="sortPage ml-2" style="color: #e83f29; cursor: pointer;"><i
-                        class="fas fa-sort"></i> {{ __('PROJECT') }}</span>
+        <div class="col-sm-8 offset-md-2">
+            <div class="text-center mt-4">
+                <button id="expeditionViewToggle" class="btn btn-primary pl-4 pr-4"
+                        data-toggle="collapse"
+                        data-target="#activeExpeditions,#completedExpeditions"
+                        data-value="true"
+                >{{ __('View Completed Expeditions') }}</button>
+            </div>
+            <hr class="header mx-auto">
         </div>
     </div>
-    <div class="row col-sm-12 mx-auto justify-content-center" id="public-expeditions">
-        @include('front.expedition.partials.expedition', ['expeditions' => $expeditions])
-        </div>
-    </div>
-    <hr class="header mx-auto m mt-5 mb-5" style="width:500px;">
-    <div class="text-center mb-5">
-        <button class="completedButton btn btn-primary pl-4 pr-4"
-                data-url="{{ route('expeditions.completed.get.sort') }}"
-                data-target="completed-expeditions">{{ __('COMPLETED') }}</button>
-    </div>
-    <div id="completed" class="row" style="display: none">
-        <div class="col-md-6 mx-auto mb-4 text-center">
-            <span data-name="title"
+    <div class="row">
+        <div id="activeExpeditions" class="col-sm-12 show">
+            <div class="d-flex justify-content-center col-sm-12 mb-4">
+            <span data-name="active"
+                  data-sort="title"
                   data-order="asc"
-                  data-url="{{ route('expeditions.completed.get.sort') }}"
+                  data-url="{{ route('expeditions.post.sort') }}"
+                  data-target="active-expeditions"
+                  class="sortPage mr-2" style="color: #e83f29; cursor: pointer; display: inline-block"><i
+                        class="fas fa-sort"></i> {{ __('TITLE') }}</span>
+                <span data-name="active"
+                      data-sort="project"
+                      data-order="asc"
+                      data-url="{{ route('expeditions.post.sort') }}"
+                      data-target="active-expeditions"
+                      class="sortPage ml-2" style="color: #e83f29; cursor: pointer;display: inline-block"><i
+                            class="fas fa-sort"></i> {{ __('PROJECT') }}</span>
+            </div>
+            <div id="active-expeditions" class="row col-sm-12 mx-auto justify-content-center">
+                @include('front.expedition.partials.expedition', ['expeditions' => $expeditionsCompleted])
+            </div>
+        </div>
+        <div id="completedExpeditions" class="col-sm-12 collapse">
+            <div class="d-flex justify-content-center col-sm-12 mb-4">
+            <span data-name="completed"
+                  data-sort="title"
+                  data-order="asc"
+                  data-url="{{ route('expeditions.post.sort') }}"
                   data-target="completed-expeditions"
                   class="sortPage mr-2" style="color: #e83f29; cursor: pointer;">
                 <i class="fas fa-sort"></i> {{ __('TITLE') }}</span>
-            <span data-name="project"
-                  data-order="asc"
-                  data-url="{{ route('expeditions.completed.get.sort') }}"
-                  data-target="completed-expeditions" class="sortPage ml-2" style="color: #e83f29; cursor: pointer;">
+                <span data-name="completed"
+                      data-sort="project"
+                      data-order="asc"
+                      data-url="{{ route('expeditions.post.sort') }}"
+                      data-target="completed-expeditions" class="sortPage ml-2"
+                      style="color: #e83f29; cursor: pointer;">
                 <i class="fas fa-sort"></i> {{ __('PROJECT') }}</span>
+            </div>
+            <div id="completed-expeditions" class="row col-sm-12 mx-auto justify-content-center">
+                @include('front.expedition.partials.expedition', ['expeditions' => $expeditionsCompleted])
+            </div>
         </div>
     </div>
-    <div class="row col-sm-12 mx-auto justify-content-center" id="completed-expeditions" style="display: none"></div>
 @endsection
 
 @section('footer')

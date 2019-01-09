@@ -128,8 +128,7 @@
                     <h2>The Process<br>
                         <span class="smallertext">{{ __('Specimen digitization is easy as 123') }}</span></h2>
                     <ul id="externalIndicators" class="list-inline">
-                        <li data-target="#processCarousel" data-slide-to="0"
-                            class="carousel-li-0 active list-inline-item">1
+                        <li data-target="#processCarousel" data-slide-to="0" class="carousel-li-0 active list-inline-item">1
                         </li>
                         <li data-target="#processCarousel" data-slide-to="1" class="carousel-li-1 list-inline-item">2
                         </li>
@@ -137,23 +136,22 @@
                         </li>
                     </ul>
 
-                    <div class="carousel-item carousel-li-0 active">
+                    <div class="carousel-item carousel-div div-0 active">
                         <h3 class="text-center" style="color: #8cc640">{{ __('STEP 1') }}</h3>
                         <p class="text-justify smallertext">{{ __('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.') }}</p>
                     </div>
-                    <div class="carousel-item carousel-li-1">
+                    <div class="carousel-item carousel-div div-1">
                         <h3 class="text-center" style="color: #8cc640">{{ __('STEP 2') }}</h3>
                         <p class="text-justify smallertext">{{ __('Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.') }}</p>
                     </div>
-                    <div class="carousel-item carousel-li-2">
+                    <div class="carousel-item carousel-div div-2">
                         <h3 class="text-center" style="color: #8cc640">{{ __('STEP 3') }}</h3>
                         <p class="text-justify smallertext">{{ __('Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.') }}</p>
                     </div>
                 </div>
                 <div id="processCarousel" class="carousel slide col-md-6">
                     <div class="carousel-inner box-shadow inside-carousel">
-                        <div class="carousel-item active"
-                             style="background-image: url(/storage/images/slider/slider1.png);">
+                        <div class="carousel-item active" style="background-image: url(/storage/images/slider/slider1.png);">
                             <div class="circle-slider p-5">
                                 <h3 class="text-center">{{ __('PROJECT') }}</h3>
                                 <p>{{ __('Create a Project for your digital images and use BIOSPEX to run optical character

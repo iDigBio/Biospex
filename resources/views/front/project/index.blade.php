@@ -21,15 +21,15 @@
     <hr class="header mx-auto" style="width:300px;">
     <div class="row">
         <div class="col-md-6 mx-auto mb-4 text-center">
-            <span data-name="title" data-order="asc" data-url="{{ route('projects.get.sort') }}" data-target="public-expeditions"
+            <span data-sort="title" data-order="asc" data-url="{{ route('projects.post.sort') }}" data-target="public-expeditions"
                   class="sortPage mr-2" style="color: #e83f29; cursor: pointer;"><i
                         class="fas fa-sort"></i> {{ __('TITLE') }}</span>
-            <span data-name="group" data-order="asc" data-url="{{ route('projects.get.sort') }}" data-target="public-expeditions"
+            <span data-sort="group" data-order="asc" data-url="{{ route('projects.post.sort') }}" data-target="public-expeditions"
                   class="sortPage ml-2" style="color: #e83f29; cursor: pointer;"><i
                         class="fas fa-sort"></i> {{ __('GROUP') }}</span>
         </div>
     </div>
-    <div class="row" id="public-expeditions">
+    <div class="row col-sm-12 mx-auto justify-content-center" id="public-expeditions">
         @include('front.project.partials.project', ['projects' => $projects])
     </div>
 @endsection

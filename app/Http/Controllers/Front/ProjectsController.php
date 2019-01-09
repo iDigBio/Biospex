@@ -13,17 +13,32 @@ class ProjectsController extends Controller
      * Public Projects page.
      *
      * @param \App\Repositories\Interfaces\Project $projectContract
-     * @param null $sort
-     * @param null $order
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Project $projectContract, $sort = null, $order = null)
+    public function index(Project $projectContract)
     {
+        $projects = $projectContract->getPublicProjectIndex();
+
+        return view('front.project.index', compact('projects'));
+    }
+
+    /**
+     * Public Projects page sort and order.
+     *
+     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function sort(Project $projectContract)
+    {
+        if ( ! request()->ajax()) {
+            return null;
+        }
+
+        $sort = request()->get('sort');
+        $order = request()->get('order');
         $projects = $projectContract->getPublicProjectIndex($sort, $order);
 
-        return request()->ajax() ?
-            view('front.project.partials.project', compact('projects')) :
-            view('front.project.index', compact('projects'));
+        return view('front.project.partials.project', compact('projects'));
     }
 
     /**
