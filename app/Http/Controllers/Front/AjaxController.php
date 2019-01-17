@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\AmChart;
 use App\Repositories\Interfaces\Event;
+use App\Repositories\Interfaces\Expedition;
+use App\Repositories\Interfaces\Project;
 use Artisan;
 
 class AjaxController extends Controller

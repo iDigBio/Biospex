@@ -13,7 +13,6 @@ use App\Repositories\Interfaces\NfnWorkflow;
 use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\Subject;
 use App\Repositories\Interfaces\WorkflowManager;
-use App\Services\Model\OcrQueueService;
 use Artisan;
 use Illuminate\Support\Facades\Auth;
 use JavaScript;
@@ -65,7 +64,6 @@ class ExpeditionsController extends Controller
      * @param \App\Repositories\Interfaces\Subject $subjectContract
      * @param \App\Repositories\Interfaces\ExpeditionStat $expeditionStatContract
      * @param \App\Repositories\Interfaces\WorkflowManager $workflowManagerContract
-     * @param \App\Services\Model\OcrQueueService $ocrQueueService
      */
     public function __construct(
         Expedition $expeditionContract,
@@ -73,8 +71,7 @@ class ExpeditionsController extends Controller
         NfnWorkflow $nfnWorkflowContract,
         Subject $subjectContract,
         ExpeditionStat $expeditionStatContract,
-        WorkflowManager $workflowManagerContract,
-        OcrQueueService $ocrQueueService
+        WorkflowManager $workflowManagerContract
     )
     {
         $this->expeditionContract = $expeditionContract;
@@ -83,7 +80,6 @@ class ExpeditionsController extends Controller
         $this->subjectContract = $subjectContract;
         $this->expeditionStatContract = $expeditionStatContract;
         $this->workflowManagerContract = $workflowManagerContract;
-        $this->ocrQueueService = $ocrQueueService;
     }
 
     /**
@@ -94,12 +90,43 @@ class ExpeditionsController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $user->load('profile');
-        $relations = ['stat', 'downloads', 'actors', 'project.group'];
 
-        $expeditions = $this->expeditionContract->expeditionsByUserId($user->id, $relations);
+        $results = $this->expeditionContract->getExpeditionAdminIndex($user->id);
 
-        return view('front.expeditions.index', compact('expeditions', 'user'));
+        list($expeditions, $expeditionsCompleted) = $results->partition(function($expedition) {
+            return $expedition->stat->percent_completed < '100.00';
+        });
+
+        return view('admin.expedition.index', compact('expeditions', 'expeditionsCompleted'));
+    }
+
+    /**
+     * Sort expedition admin page.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|null
+     */
+    public function sort()
+    {
+        if ( ! request()->ajax()) {
+            return null;
+        }
+
+        $user = Auth::user();
+
+        $type = request()->get('type');
+        $sort = request()->get('sort');
+        $order = request()->get('order');
+        $projectId = request()->get('id');
+
+        list($active, $completed) = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)
+            ->partition(function($expedition) {
+                return $expedition->stat->percent_completed < '100.00';
+            });
+
+        $expeditions = $type === 'active' ? $active : $completed;
+
+        return view('admin.expedition.partials.expedition', compact('expeditions'));
+
     }
 
     /**
@@ -214,7 +241,7 @@ class ExpeditionsController extends Controller
      * @param $expeditionId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function duplicate($projectId, $expeditionId)
+    public function clone($projectId, $expeditionId)
     {
         $expedition = $this->expeditionContract->findWith($expeditionId, ['project.group']);
 

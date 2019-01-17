@@ -50,7 +50,7 @@ class NfnClassificationsReconciliation extends Command
     private function readDirectory()
     {
         $expeditionIds = [];
-        $files = File::allFiles(config('config.classifications_download'));
+        $files = File::files(config('config.classifications_download'));
         foreach ($files as $file)
         {
             $expeditionIds[] = basename($file, '.csv');

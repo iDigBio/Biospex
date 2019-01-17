@@ -1,5 +1,5 @@
 <div class="col-md-4 mb-4">
-    <div class="card-project mb-4 px-4 box-shadow h-100">
+    <div class="card-project px-4 box-shadow h-100">
         <h3 class="text-center pt-4">{{ $project->title }}</h3>
         <hr>
         <div class="row card-body">
@@ -18,14 +18,18 @@
         </div>
 
         <div class="card-footer">
-            <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
+            <div class="d-flex align-items-start justify-content-between mt-4">
                 {!! $project->present()->project_page_icon !!}
-                {!! $project->present()->project_events_icon !!}
-                {!! $project->present()->organization_icon !!}
-                {!! $project->present()->twitter_icon !!}
-                {!! $project->present()->facebook_icon !!}
-                {!! $project->present()->blog_icon !!}
-                {!! $project->present()->contact_email_icon !!}
+                {!! $project->present()->project_show_icon !!}
+                {!! $project->present()->project_import_icon !!}
+                {!! $project->present()->project_explore_icon !!}
+                {!! $project->present()->project_advertise_icon !!}
+                {!! $project->present()->project_statistics_icon !!}
+                {!! $project->present()->project_edit_icon !!}
+                {!! $project->present()->project_clone_icon !!}
+                @can('isOwner', $project->group)
+                    {!! $project->present()->project_delete_icon !!}
+                @endcan
             </div>
         </div>
     </div>

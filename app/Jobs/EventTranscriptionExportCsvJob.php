@@ -91,7 +91,7 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
         $first = $transcriptions->first()->toArray();
         $header = array_keys($first);
 
-        $file = config('config.reports_dir') . '/' . str_random() . '.csv';
+        $file = \Storage::path(config('config.reports_dir') . '/' . str_random() . '.csv');
         $csv->writerCreateFromPath($file);
         $csv->insertOne($header);
         $csv->insertAll($transcriptions->toArray());

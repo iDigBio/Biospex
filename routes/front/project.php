@@ -1,5 +1,5 @@
 <?php
 // Begin Public Project
-$router->get('projects')->uses('ProjectsController@index')->name('projects.get.index');
-$router->post('projects/sort')->uses('ProjectsController@sort')->name('projects.post.sort');
-$router->get('projects/{slug}')->uses('ProjectsController@project')->name('projects.get.slug');
+$router->get('projects')->uses('ProjectsController@index')->name('front.projects.index');
+$router->post('projects/sort')->uses('ProjectsController@sort')->name('front.projects.sort');
+$router->get('projects/{slug}')->uses('ProjectsController@project')->name('front.projects.slug');

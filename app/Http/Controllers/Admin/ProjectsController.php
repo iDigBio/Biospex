@@ -95,6 +95,25 @@ class ProjectsController extends Controller
     }
 
     /**
+     * Admin Projects page sort and order.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|null
+     */
+    public function sort()
+    {
+        if ( ! request()->ajax()) {
+            return null;
+        }
+
+        $user = \Auth::user();
+        $sort = request()->get('sort');
+        $order = request()->get('order');
+        $projects = $this->projectContract->getAdminProjectIndex($user->id, $sort, $order);
+
+        return view('admin.project.partials.project', compact('projects'));
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\View\View
@@ -119,7 +138,7 @@ class ProjectsController extends Controller
      */
     public function show(User $userContract, $projectId)
     {
-        $project = $this->projectContract->findWith($projectId, ['group', 'ocrQueue']);
+        $project = $this->projectContract->getProjectShow($projectId);
 
         if (! $this->checkPermissions('readProject', $project->group)) {
             return redirect()->route('admin.projects.index');
@@ -127,13 +146,11 @@ class ProjectsController extends Controller
 
         $user = $userContract->findWith(request()->user()->id, ['profile']);
 
-        $expeditions = $this->expeditionContract->findExpeditionsByProjectIdWith($projectId, [
-            'downloads',
-            'actors',
-            'stat',
-        ]);
+        list($expeditionsCompleted, $expeditions) = $project->expeditions->partition(function ($expedition) {
+            return $expedition->stat->percent_completed === "100.00";
+        });
 
-        return view('front.projects.show', compact('user', 'project', 'expeditions'));
+        return view('admin.project.show', compact('user', 'project', 'expeditions', 'expeditionsCompleted'));
     }
 
     /**
@@ -171,7 +188,7 @@ class ProjectsController extends Controller
      * @param $projectId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function duplicate($projectId)
+    public function clone($projectId)
     {
         $project = $this->projectContract->findWith($projectId, ['group', 'expeditions.workflowManager']);
 
@@ -280,6 +297,9 @@ class ProjectsController extends Controller
      */
     public function delete($projectId)
     {
+
+        return redirect()->back();
+        dd($projectId);
         $project = $this->projectContract->getProjectForDelete($projectId);
 
         if (! $this->checkPermissions('isOwner', $project->group)) {

@@ -1,0 +1,1 @@
+@each('front.resource.partials.resource-loop', $resources, 'resource')

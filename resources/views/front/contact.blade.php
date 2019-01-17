@@ -22,7 +22,7 @@
     <div class="col-12 col-md-10 offset-md-1">
         <div class="card white box-shadow py-5 my-5 p-sm-5">
             <div class="col-6 mx-auto">
-                <form action="{{ route('contact.post.create') }}" method="post" role="form" class="form-horizontal">
+                <form action="{{ route('front.contact.create') }}" method="post" role="form" class="form-horizontal">
                     {!! csrf_field() !!}
                     <div class="form-group">
                         <label for="name">{{ __('Name') }} <span class="color-action">*</span></label>

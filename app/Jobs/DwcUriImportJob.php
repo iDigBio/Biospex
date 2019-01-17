@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Storage;
 
 class DwcUriImportJob implements ShouldQueue
 {
@@ -65,7 +66,7 @@ class DwcUriImportJob implements ShouldQueue
         try
         {
             $fileName = basename($this->data['url']);
-            $filePath = config('config.import_dir') . '/' . $fileName;
+            $filePath = Storage::path(config('config.import_dir') . '/' . $fileName);
 
             $file = file_get_contents(GeneralHelper::urlEncode($this->data['url']));
             if ($file === false)
@@ -78,7 +79,7 @@ class DwcUriImportJob implements ShouldQueue
                 throw new \Exception(trans('messages.zip_type'));
             }
 
-            if (file_put_contents($filePath, $file) === false)
+            if (Storage::put($filePath, $file) === false)
             {
                 throw new \Exception(trans('messages.save_file', [':file' => $filePath]));
             }
@@ -86,7 +87,7 @@ class DwcUriImportJob implements ShouldQueue
             $import = $importContract->create([
                 'user_id'    => $this->data['user_id'],
                 'project_id' => $this->data['id'],
-                'file'       => $fileName
+                'file'       => $filePath
             ]);
 
             DwcFileImportJob::dispatch($import);

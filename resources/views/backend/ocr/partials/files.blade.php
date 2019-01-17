@@ -17,7 +17,7 @@
                         <col class="col-md-1">
                     </colgroup>
                     <th>
-                        {!! Form::checkbox('selectall', null, null, ['id'=>'ocrCheckAll']) !!}
+                        {!! Form::checkbox('select-all', null, null, ['id'=>'ocrCheckAll']) !!}
                         {!! Form::label('Select All', 'Select All') !!}
                     </th>
                     <th>OCR File</th>

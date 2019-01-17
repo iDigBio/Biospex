@@ -20,16 +20,9 @@
     <h2 class="text-center pt-4">{{ __('BIOSPEX Projects') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="row">
-        <div class="col-md-6 mx-auto mb-4 text-center">
-            <span data-sort="title" data-order="asc" data-url="{{ route('projects.post.sort') }}" data-target="public-expeditions"
-                  class="sortPage mr-2" style="color: #e83f29; cursor: pointer;"><i
-                        class="fas fa-sort"></i> {{ __('TITLE') }}</span>
-            <span data-sort="group" data-order="asc" data-url="{{ route('projects.post.sort') }}" data-target="public-expeditions"
-                  class="sortPage ml-2" style="color: #e83f29; cursor: pointer;"><i
-                        class="fas fa-sort"></i> {{ __('GROUP') }}</span>
-        </div>
+        @include('common.project-sort', ['route' => route('front.projects.sort')])
     </div>
-    <div class="row col-sm-12 mx-auto justify-content-center" id="public-expeditions">
+    <div id="projects" class="row col-sm-12 mx-auto justify-content-center">
         @include('front.project.partials.project', ['projects' => $projects])
     </div>
 @endsection

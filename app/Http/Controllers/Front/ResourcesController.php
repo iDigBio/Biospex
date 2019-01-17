@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Front;
 
 use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
@@ -10,47 +10,34 @@ use Storage;
 class ResourcesController extends Controller
 {
     /**
-     * @var Resource
-     */
-    private $resourceContract;
-
-    /**
-     * ResourcesController constructor.
+     * Show resources.
      *
-     * @param Resource $resourceContract
-     */
-    public function __construct(Resource $resourceContract)
-    {
-        $this->resourceContract = $resourceContract;
-    }
-
-    /**
-     * Show categories.
-     *
+     * @param \App\Repositories\Interfaces\Resource $resourceContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function index(Resource $resourceContract)
     {
-        $resources = $this->resourceContract->getResourcesOrdered();
+        $resources = $resourceContract->getResourcesOrdered();
 
-        return view('front.resources.index', compact('resources'));
+        return view('front.resource.index', compact('resources'));
     }
 
     /**
      * Download resource file.
      *
+     * @param \App\Repositories\Interfaces\Resource $resourceContract
      * @param $resourceId
      * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
      */
-    public function download($resourceId)
+    public function download(Resource $resourceContract, $resourceId)
     {
-        $download = $this->resourceContract->find($resourceId);
+        $download = $resourceContract->find($resourceId);
         $document = $download->document;
 
         if (! $document->exists() || ! file_exists(public_path('storage' . $document->path()))) {
             FlashHelper::error('File cannot be found.');
 
-            return redirect()->route('web.resources.index');
+            return redirect()->route('front.resource.index');
         }
 
         return Storage::download('public/' . $document->path());

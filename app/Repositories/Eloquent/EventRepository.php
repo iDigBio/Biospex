@@ -22,63 +22,24 @@ class EventRepository extends EloquentRepository implements Event
     /**
      * @inheritdoc
      */
-    public function getEventPublicPage($sort = null, $order = null)
+    public function getEventPublicIndex($sort = null, $order = null)
     {
         $results = $this->model->with('project')->get();
 
-        $active = $results->filter(function ($event) {
-            $start_date = $event->start_date->setTimezone($event->timezone);
-            $end_date = $event->end_date->setTimezone($event->timezone);
-            $now = Carbon::now($event->timezone);
-
-            return $now->between($start_date, $end_date);
-        });
-
-        switch ($order) {
-            case 'asc':
-                $events = $sort === 'title' ? $active->sortBy('title') : $active->sortBy('project_id');
-                break;
-            case 'desc':
-                $events = $sort === 'title' ? $active->sortByDesc('title') : $active->sortByDesc('project_id');
-                break;
-            default:
-                $events = $active;
-        }
-
         $this->resetModel();
 
-        return $events;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getEventCompletedPublicPage($sort = null, $order = null)
-    {
-        $results = $this->model->with('project')->get();
-
-        $completed = $results->reject(function ($event) {
-            $start_date = $event->start_date->setTimezone($event->timezone);
-            $end_date = $event->end_date->setTimezone($event->timezone);
-            $now = Carbon::now($event->timezone);
-
-            return $now->between($start_date, $end_date);
-        });
-
-        switch ($order) {
-            case 'asc':
-                $events = $sort === 'title' ? $completed->sortBy('title') : $completed->sortBy('project_id');
-                break;
-            case 'desc':
-                $events = $sort === 'title' ? $completed->sortByDesc('title') : $completed->sortByDesc('project_id');
-                break;
+        switch ($sort) {
+            case 'title':
+                return $order === 'asc' ? $results->sortBy('title') : $results->sortByDesc('title');
+            case 'project':
+                return $order === 'asc' ?
+                    $results->sortBy(function ($event) { return $event->project->title; }) :
+                    $results->sortByDesc(function ($event) { return $event->project->title; });
+            case 'date':
+                return $order === 'asc' ? $results->sortBy('created_at') : $results->sortByDesc('created_at');
             default:
-                $events = $completed;
+                return $results;
         }
-
-        $this->resetModel();
-
-        return $events;
     }
 
     /**

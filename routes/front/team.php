@@ -1,4 +1,4 @@
 <?php
 
 // Begin Team
-$router->get('team')->uses('TeamsController@index')->name('teams.get.index');
+$router->get('team')->uses('TeamsController@index')->name('front.teams.index');

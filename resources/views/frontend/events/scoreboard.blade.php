@@ -1,5 +1,5 @@
 <!-- Modal -->
-<div class="modal fade bd-example-modal-lg" id="scoreboardModal" tabindex="-1" role="dialog"
+<div class="modal fade bd-example-modal-lg" id="scoreboard-modal" tabindex="-1" role="dialog"
      aria-labelledby="ModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">

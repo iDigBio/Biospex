@@ -5,17 +5,27 @@
  */
 
 try {
-    require("bootstrap-notify/bootstrap-notify");
+
+    window.$ = window.jQuery = require('jquery');
+
+    require('bootstrap');
 
     require("jquery-validation/dist/jquery.validate");
     require("jquery-validation/dist/additional-methods");
+
+    require("bootstrap-notify/bootstrap-notify");
+
+    require("jquery-ui/ui/widgets/dialog");
+    require("jquery-ui/ui/widgets/draggable");
+    require("jquery-ui/ui/widgets/droppable");
+    require("jquery-ui/ui/widgets/resizable");
     require("jquery-datetimepicker/build/jquery.datetimepicker.full");
 
-    require("tablesorter/dist/js/jquery.tablesorter");
-    require("tablesorter/dist/js/jquery.tablesorter.widgets.js");
+    require("codemirror/lib/codemirror");
+    require("summernote/dist/summernote");
 
-    //require("socket.io-client/dist/socket.io");
-
+    window.bootbox = require("./bootbox");
+    require("./jquery-download");
     require("./main");
 
 } catch (e) {}

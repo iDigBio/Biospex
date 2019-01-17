@@ -11,14 +11,15 @@ class ExpeditionsController extends Controller
      * Displays Expeditions on public page.
      *
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
-     * @param null $sort
-     * @param null $order
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Expedition $expeditionContract, $sort = null, $order = null)
+    public function index(Expedition $expeditionContract)
     {
-        $expeditions = $expeditionContract->getExpeditionPublicPage();
-        $expeditionsCompleted = $expeditionContract->getExpeditionCompletedPublicPage();
+        $results = $expeditionContract->getExpeditionPublicIndex();
+
+        list($expeditions, $expeditionsCompleted) = $results->partition(function($expedition) {
+            return $expedition->stat->percent_completed < '100.00';
+        });
 
         return view('front.expedition.index', compact('expeditions', 'expeditionsCompleted'));
     }
@@ -35,13 +36,16 @@ class ExpeditionsController extends Controller
             return null;
         }
 
-        $name = request()->get('name');
+        $type = request()->get('type');
         $sort = request()->get('sort');
         $order = request()->get('order');
 
-        $expeditions = $name === 'active' ?
-            $expeditions = $expeditionContract->getExpeditionPublicPage($sort, $order) :
-            $expeditions = $expeditionContract->getExpeditionCompletedPublicPage($sort, $order);
+        list($active, $completed) = $expeditionContract->getExpeditionPublicIndex($sort, $order)
+            ->partition(function($expedition) {
+                return $expedition->stat->percent_completed < '100.00';
+        });
+
+        $expeditions = $type === 'active' ? $active : $completed;
 
         return view('front.expedition.partials.expedition', compact('expeditions'));
     }

@@ -1,7 +1,41 @@
+@extends('admin.layout.default')
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/free-jqgrid@4.15.5/css/ui.jqgrid.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote-bs4.css">
+{{-- Web site Title --}}
+@section('title')
+    {{ __('Expeditions') }}
+@stop
 
-
-<script src="https://cdn.jsdelivr.net/npm/free-jqgrid@4.15.5/js/jquery.jqgrid.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote-bs4.min.js"></script>
+{{-- Content --}}
+@section('content')
+    <h2 class="text-center pt-4">{{ __('BIOSPEX Expeditions') }}</h2>
+    <div class="row">
+        <div class="col-sm-8 offset-md-2">
+            <div class="text-center mt-4">
+                <button class="toggle-view-btn  btn btn-primary pl-4 pr-4"
+                        data-toggle="collapse"
+                        data-target="#active-expeditions-main,#completed-expeditions-main"
+                        data-value="{{ __('View Active Expeditions') }}"
+                >{{ __('View Completed Expeditions') }}</button>
+            </div>
+            <hr class="header mx-auto">
+        </div>
+    </div>
+    <div class="row">
+        <div id="active-expeditions-main" class="col-sm-12 collapse show">
+            @include('common.expedition-sort', ['type' => 'active', 'route' => route('admin.expeditions.sort')])
+            <div id="active-expeditions" class="row col-sm-12 mx-auto justify-content-center">
+                @include('admin.expedition.partials.expedition', ['expeditions' => $expeditions])
+            </div>
+        </div>
+        <div id="completed-expeditions-main" class="col-sm-12 collapse">
+            @include('common.expedition-sort', ['type' => 'completed', 'route' => route('admin.expeditions.sort')])
+            <div id="completed-expeditions" class="row col-sm-12 mx-auto justify-content-center">
+                @include('admin.expedition.partials.expedition', ['expeditions' => $expeditionsCompleted])
+            </div>
+        </div>
+    </div>
+@endsection
+@section('footer')
+    @include('common.footer')
+    @include('common.contributors')
+@endsection

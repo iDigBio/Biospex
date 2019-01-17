@@ -26,7 +26,7 @@ abstract class Controller extends BaseController
         }
         catch (\Exception $e)
         {
-            FlashHelper::warning(trans('pages.insufficient_permissions'));
+            FlashHelper::warning(__('You do not have sufficient permissions.'));
 
             return false;
         }

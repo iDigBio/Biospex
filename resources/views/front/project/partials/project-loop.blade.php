@@ -1,5 +1,5 @@
 <div class="col-md-4 mb-4">
-    <div class="card-project mb-4 px-4 box-shadow h-100">
+    <div class="card-project px-4 box-shadow h-100">
         <h2 class="text-center pt-4">{{ $project->title }}</h2>
         <hr>
         <div class="row card-body">

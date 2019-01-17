@@ -98,7 +98,7 @@ class OcrCheck
     {
         $csv = null;
         if (! empty($record->csv)) {
-            $csv = config('config.reports_dir').'/'.str_random().'.csv';
+            $csv = \Storage::path(config('config.reports_dir').'/'.str_random().'.csv');
             $this->csvService->writerCreateFromPath($csv);
             $headers = array_keys($record->csv[0]);
             $this->csvService->insertOne($headers);

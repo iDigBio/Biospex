@@ -52,22 +52,11 @@ class ProjectsController extends Controller
     {
         $project = $projectContract->getProjectPageBySlug($slug);
 
-        $expeditions = $project->expeditions->filter(function($expedition){
+        list($expeditions, $expeditionsCompleted) = $project->expeditions->partition(function($expedition){
             return $expedition->stat->percent_completed < '100.00';
         });
 
-        $expeditionsCompleted = $project->expeditions->filter(function($expedition){
-            return $expedition->stat->percent_completed === '100.00';
-        });
-
-        $events = $project->events->filter(function ($event) {
-            $start_date = $event->start_date->setTimezone($event->timezone);
-            $end_date = $event->end_date->setTimezone($event->timezone);
-            $now = Carbon::now($event->timezone);
-            return $now->between($start_date, $end_date);
-        });
-
-        $eventsCompleted = $project->events->reject(function ($event) {
+        list($events, $eventsCompleted) = $project->events->partition(function ($event) {
             $start_date = $event->start_date->setTimezone($event->timezone);
             $end_date = $event->end_date->setTimezone($event->timezone);
             $now = Carbon::now($event->timezone);

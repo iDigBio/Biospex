@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Presentable;
+use App\Presenters\ResourcePresenter;
 use Illuminate\Database\Eloquent\Model;
 use Spiritix\LadaCache\Database\LadaCacheTrait;
 use Czim\Paperclip\Contracts\AttachableInterface;
@@ -9,7 +11,7 @@ use Czim\Paperclip\Model\PaperclipTrait;
 
 class Resource extends Model implements AttachableInterface
 {
-    use LadaCacheTrait, PaperclipTrait;
+    use LadaCacheTrait, PaperclipTrait, Presentable;
 
     /**
      * @inheritDoc
@@ -25,6 +27,11 @@ class Resource extends Model implements AttachableInterface
         'document',
         'order'
     ];
+
+    /**
+     * @var string
+     */
+    protected $presenter = ResourcePresenter::class;
 
     /**
      * Resource constructor.

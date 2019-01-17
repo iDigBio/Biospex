@@ -60,10 +60,10 @@ class NfnClassificationsTranscriptJob implements ShouldQueue
 
         try
         {
-            $filePath = config('config.classifications_transcript');
+            $filePath = \Storage::path(config('config.classifications_transcript'));
 
             $this->expeditionIds->filter(function($expeditionId) use ($filePath) {
-                return file_exists($filePath . '/' . $expeditionId . '.csv');
+                return \Storage::exists($filePath . '/' . $expeditionId . '.csv');
             })->each(function($expeditionId) use ($transcriptionProcess, $filePath) {
                 $transcriptionProcess->process($filePath . '/' . $expeditionId . '.csv');
             });

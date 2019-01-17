@@ -1,5 +1,5 @@
 <div class="col-md-4 mb-4">
-    <div class="card-project px-4 mb-4 box-shadow h-100">
+    <div class="card-project px-4 box-shadow h-100">
         <div class="card-body text-center">
             <h2 class="card-text">{{ __('Time Remaining') }}</h2>
             <!-- countdown clock -->
@@ -35,7 +35,7 @@
         <div class="text-center">
             <button class="btn btn-primary mb-4" data-toggle="modal"
                     data-remote="false"
-                    data-target="#scoreboardModal"
+                    data-target="#scoreboard-modal"
                     data-channel="{{ config('config.poll_scoreboard_channel') .'.'. $event->project_id }}"
                     data-event="{{ $event->id }}"
                     data-href="{{ route('ajax.get.scoreboard', [$event->id]) }}">{{ __('SCOREBOARD') }}

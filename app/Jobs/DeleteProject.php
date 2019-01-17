@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class DeleteProject implements ShouldQueue
 {
@@ -45,7 +45,7 @@ class DeleteProject implements ShouldQueue
 
         $project->expeditions->each(function ($expedition) use ($mongoDbService) {
             $expedition->downloads->each(function ($download){
-                File::delete(config('config.export_dir').'/'.$download->file);
+                Storage::delete(config('config.export_dir').'/'.$download->file);
             });
 
             $mongoDbService->setCollection('pusher_transcriptions');

@@ -6,7 +6,7 @@
 @stop
 
 @section('header')
-    <header id="header-img" style="background-image: url(/storage/images/page-banners/banner-binoculars.jpg);">
+    <header id="header-img" style="background-image: url(/storage/images/page-banners/banner-image-group.jpg);">
         <nav class="header navbar navbar-expand-md box-shadow">
             <a href="/"><img src="/storage/images/biospex_logo.svg" alt="BIOSPEX"
                              class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
@@ -22,10 +22,10 @@
     <div class="row">
         <div class="col-sm-8 offset-md-2">
             <div class="text-center mt-4">
-                <button id="eventViewToggle" class="btn btn-primary pl-4 pr-4"
+                <button class="toggle-view-btn btn btn-primary pl-4 pr-4"
                         data-toggle="collapse"
-                        data-target="#activeEvents,#completedEvents"
-                        data-value="true"
+                        data-target="#active-events-main,#completed-events-main"
+                        data-value="{{ __('View Active Events') }}"
                 >{{ __('View Completed Events') }}</button>
             </div>
             <hr class="header mx-auto">
@@ -33,44 +33,14 @@
     </div>
 
     <div class="row">
-        <div id="activeEvents" class="col-sm-12 show">
-            <div class="d-flex justify-content-center col-sm-12 mb-4">
-            <span data-name="active"
-                  data-sort="title"
-                  data-order="asc"
-                  data-url="{{ route('events.post.sort') }}"
-                  data-target="active-events"
-                  class="sortPage mr-2" style="color: #e83f29; cursor: pointer;">
-            <i class="fas fa-sort"></i> {{ __('TITLE') }}</span>
-                <span data-name="active"
-                      data-sort="project"
-                      data-order="asc"
-                      data-url="{{ route('events.post.sort') }}"
-                      data-target="active-events"
-                      class="sortPage ml-2" style="color: #e83f29; cursor: pointer;">
-            <i class="fas fa-sort"></i> {{ __('PROJECT') }}</span>
-            </div>
+        <div id="active-events-main" class="col-sm-12 show">
+            @include('common.event-sort', ['type' => 'active', 'route' => route('front.events.sort')])
             <div id="active-events" class="row col-sm-12 mx-auto justify-content-center">
                 @include('front.event.partials.event', ['events' => $events])
             </div>
         </div>
-        <div id="completedEvents" class="col-sm-12 collapse">
-            <div class="d-flex justify-content-center col-sm-12 mb-4">
-            <span data-name="completed"
-                  data-sort="title"
-                  data-order="asc"
-                  data-url="{{ route('events.post.sort') }}"
-                  data-target="completed-events"
-                  class="sortPage mr-2" style="color: #e83f29; cursor: pointer;">
-            <i class="fas fa-sort"></i> {{ __('TITLE') }}</span>
-                <span data-name="completed"
-                      data-sort="project"
-                      data-order="asc"
-                      data-url="{{ route('events.post.sort') }}"
-                      data-target="completed-events"
-                      class="sortPage ml-2" style="color: #e83f29; cursor: pointer;">
-            <i class="fas fa-sort"></i> {{ __('PROJECT') }}</span>
-            </div>
+        <div id="completed-events-main" class="col-sm-12 collapse">
+            @include('common.event-sort', ['type' => 'completed', 'route' => route('front.events.sort')])
             <div id="completed-events" class="row col-sm-12 mx-auto justify-content-center">
                 @include('front.event.partials.event', ['events' => $eventsCompleted])
             </div>
@@ -84,6 +54,3 @@
     @include('common.contributors')
 @endsection
 
-@section('custom-script')
-    @include('common.score-board-js')
-@endsection

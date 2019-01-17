@@ -55,7 +55,7 @@ class ImportsController extends Controller
      * @param $projectId
      * @return \Illuminate\View\View
      */
-    public function import($projectId)
+    public function index($projectId)
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
 
@@ -69,14 +69,14 @@ class ImportsController extends Controller
      * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function uploadDwcFile(DwcFileUpload $request, $projectId)
+    public function dwcFile(DwcFileUpload $request, $projectId)
     {
         try {
 
             $path = $request->file('dwc')->store('imports/subjects');
 
             $import = $this->importContract->create([
-                'user_id'    => $request->input('user_id'),
+                'user_id'    => \Auth::user()->id,
                 'project_id' => $projectId,
                 'file'       => $path
             ]);
@@ -102,7 +102,7 @@ class ImportsController extends Controller
      * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function uploadRecordSet(RecordsetUpload $request, $projectId)
+    public function recordSet(RecordsetUpload $request, $projectId)
     {
         try
         {
@@ -133,7 +133,7 @@ class ImportsController extends Controller
      * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function uploadDwcUri(DwcUriUpload $request, $projectId)
+    public function dwcUri(DwcUriUpload $request, $projectId)
     {
         try
         {

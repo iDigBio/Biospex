@@ -59,7 +59,7 @@ class NfnClassificationsUpdate extends Command
     private function readDirectory()
     {
         $expeditionIds = [];
-        $files = File::allFiles(config('config.classifications_transcript'));
+        $files = File::files(config('config.classifications_transcript'));
         foreach ($files as $file)
         {
             $expeditionIds[] = basename($file, '.csv');

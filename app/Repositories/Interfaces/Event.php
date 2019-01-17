@@ -13,16 +13,7 @@ interface Event extends RepositoryInterface
      * @param null $order
      * @return mixed
      */
-    public function getEventPublicPage($sort = null, $order = null);
-
-    /**
-     * Get Events completed public page.
-     *
-     * @param null $sort
-     * @param null $order
-     * @return mixed
-     */
-    public function getEventCompletedPublicPage($sort = null, $order = null);
+    public function getEventPublicIndex($sort = null, $order = null);
 
     /**
      * @param array $attributes

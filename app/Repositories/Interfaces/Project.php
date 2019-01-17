@@ -26,13 +26,12 @@ interface Project extends RepositoryInterface
     public function getAdminProjectIndex($userId, $sort = null, $order = null);
 
     /**
-     * Get project by id with relationships.
+     * Get project show page by id with relationships.
      *
      * @param $projectId
-     * @param array $with
      * @return mixed
      */
-    public function getProjectByIdWith($projectId, array $with = []);
+    public function getProjectShow($projectId);
 
     /**
      * Get the project public page.

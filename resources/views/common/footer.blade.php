@@ -46,29 +46,32 @@ sub footer -->
                 <h6 class="text-uppercase font-weight-bold">{{ __('About') }}</h6>
                 <hr class="white mb-2 mt-2 d-inline-block mx-auto" style="width:60px;">
                 <p>
-                    <a href="{{ route('teams.get.index') }}">{{ _('Team') }}</a>
+                    <a href="{{ route('front.teams.index') }}">{{ _('Team') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('faqs.get.index') }}">{{ _('FAQ') }}</a>
+                    <a href="{{ route('front.faqs.index') }}">{{ _('FAQ') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('contact.get.index') }}">{{ _('Contact') }}</a>
+                    <a href="{{ route('front.resources.index') }}">{{ _('Resources') }}</a>
+                </p>
+                <p>
+                    <a href="{{ route('front.contact.index') }}">{{ _('Contact') }}</a>
                 </p>
 
             </div>
             <!-- Grid column -->
             <!-- Grid column -->
             <div class="col-md-2  mx-auto mb-4">
-                <h6 class="text-uppercase font-weight-bold">{{ __('Resources') }}</h6>
+                <h6 class="text-uppercase font-weight-bold">{{ __('Content') }}</h6>
                 <hr class="white mb-2 mt-2 d-inline-block mx-auto" style="width:60px;">
                 <p>
-                    <a href="{{ route('projects.get.index') }}">{{ __('Projects') }}</a>
+                    <a href="{{ route('front.projects.index') }}">{{ __('Projects') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('expeditions.get.index') }}">{{ __('Expeditions') }}</a>
+                    <a href="{{ route('front.expeditions.index') }}">{{ __('Expeditions') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('events.get.index') }}">{{ __('Events') }}</a>
+                    <a href="{{ route('front.events.index') }}">{{ __('Events') }}</a>
                 </p>
                 <p>
                     <a href="{{ config('config.api_url') }}">{{ __('Biospex API') }}</a>

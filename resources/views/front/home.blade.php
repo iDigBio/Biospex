@@ -75,8 +75,8 @@
                             </div>
                         </div>
 
-                        <div class="card-footer">
-                            <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
+                        <div class="card-footer pb-4">
+                            <div class="d-flex align-items-start justify-content-between mt-4">
                                 {!! $expedition->project->present()->project_page_icon !!}
                                 {!! $expedition->project->present()->project_events_icon !!}
                                 {!! $expedition->project->present()->organization_icon !!}
@@ -127,7 +127,7 @@
                 <div class="col-md-4 text-center" role="group" aria-label="External carousel buttons">
                     <h2>The Process<br>
                         <span class="smallertext">{{ __('Specimen digitization is easy as 123') }}</span></h2>
-                    <ul id="externalIndicators" class="list-inline">
+                    <ul id="external-carousel-btns" class="list-inline">
                         <li data-target="#processCarousel" data-slide-to="0" class="carousel-li-0 active list-inline-item">1
                         </li>
                         <li data-target="#processCarousel" data-slide-to="1" class="carousel-li-1 list-inline-item">2

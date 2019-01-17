@@ -1,7 +1,7 @@
 <div class="text-center" style="background-color:#e83f29;">
-    <span class="modal-title">{{ $event->title }}</span>
+    <span class="scoreboard-title">{{ $event->title }}</span>
     <h2 class="text-white text modal-number mt-3">{{ $event->transcriptions_count }}</h2>
-    <span class="modal-title">Transcriptions</span>
+    <span class="scoreboard-title">Transcriptions</span>
 </div>
 
 <table class="table table-striped">

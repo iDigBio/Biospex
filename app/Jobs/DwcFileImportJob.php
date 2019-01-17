@@ -14,6 +14,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Storage;
 
 class DwcFileImportJob implements ShouldQueue
 {
@@ -55,21 +56,21 @@ class DwcFileImportJob implements ShouldQueue
         FileService $fileService
     )
     {
-        $scratchFileDir = config('config.scratch_dir') . '/' . md5($this->import->file);
+        $scratchFileDir = Storage::path(config('config.scratch_dir') . '/' . md5($this->import->file));
 
         $project = $projectContract->findWith($this->import->project_id, ['group.owner', 'workflow.actors']);
 
         try
         {
             $fileService->makeDirectory($scratchFileDir);
-            $importFilePath = storage_path('app/' . $this->import->file);
+            $importFilePath = Storage::path($this->import->file);
 
             $fileService->unzip($importFilePath, $scratchFileDir);
 
             $dwcProcess->process($this->import->project_id, $scratchFileDir);
 
-            $dupsCsv = storage_path('app/reports/'. md5($this->import->id) . 'dup.csv');
-            $rejCsv = storage_path('app/reports/'. md5($this->import->id) . 'rej.csv');
+            $dupsCsv = Storage::path('reports/'. md5($this->import->id) . 'dup.csv');
+            $rejCsv = Storage::path('reports/'. md5($this->import->id) . 'rej.csv');
 
             $duplicates = GeneralHelper::createCsv($dwcProcess->getDuplicates(), $dupsCsv);
             $rejects = GeneralHelper::createCsv($dwcProcess->getRejectedMedia(), $rejCsv);

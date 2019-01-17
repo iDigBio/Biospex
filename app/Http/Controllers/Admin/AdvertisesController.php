@@ -52,7 +52,7 @@ class AdvertisesController extends Controller
      * @param $projectId
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
-    public function show(ResponseFactory $response, $projectId)
+    public function download(ResponseFactory $response, $projectId)
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
 

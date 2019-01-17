@@ -13,22 +13,23 @@
             <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true"
                aria-expanded="false">{{ __('about') }}</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
-                <a class="dropdown-item text-uppercase" href="{{ route('teams.get.index') }}">{{ _('team') }}</a>
-                <a class="dropdown-item text-uppercase" href="{{ route('faqs.get.index') }}">{{ _('faq') }}</a>
+                <a class="dropdown-item text-uppercase" href="{{ route('front.teams.index') }}">{{ _('team') }}</a>
+                <a class="dropdown-item text-uppercase" href="{{ route('front.faqs.index') }}">{{ _('faq') }}</a>
+                <a class="dropdown-item text-uppercase" href="{{ route('front.resources.index') }}">{{ _('resources') }}</a>
             </div>
         </li>
         <li class="nav-item active">
-            <a class="nav-link mr-2 text-uppercase" href="{{ route('projects.get.index') }}">{{ __('projects') }} <span
+            <a class="nav-link mr-2 text-uppercase" href="{{ route('front.projects.index') }}">{{ __('projects') }} <span
                         class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item mr-2">
-            <a class="nav-link text-uppercase" href="{{ route('expeditions.get.index') }}">{{ __('expeditions') }}</a>
+            <a class="nav-link text-uppercase" href="{{ route('front.expeditions.index') }}">{{ __('expeditions') }}</a>
         </li>
         <li class="nav-item mr-2">
-            <a class="nav-link text-uppercase" href="{{ route('events.get.index') }}">{{ __('events') }}</a>
+            <a class="nav-link text-uppercase" href="{{ route('front.events.index') }}">{{ __('events') }}</a>
         </li>
         <li class="nav-item mr-2">
-            <a class="nav-link text-uppercase" href="{{ route('contact.get.index') }}">{{ __('contact') }}</a>
+            <a class="nav-link text-uppercase" href="{{ route('front.contact.index') }}">{{ __('contact') }}</a>
         </li>
         @if(Auth::check())
             <li class="nav-item nav-btn dropdown">

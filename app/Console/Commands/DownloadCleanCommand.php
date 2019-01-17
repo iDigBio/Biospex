@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use App\Repositories\Interfaces\Download;
+use Illuminate\Support\Facades\Storage;
 
 class DownloadCleanCommand extends Command
 {
@@ -56,7 +57,7 @@ class DownloadCleanCommand extends Command
         $this->filesystem = $filesystem;
         $this->downloadContract = $downloadContract;
 
-        $this->nfnExportDir = config('config.export_dir');
+        $this->nfnExportDir = Storage::path(config('config.export_dir'));
     }
 
     /**

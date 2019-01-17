@@ -19,6 +19,103 @@ class ProjectRepository extends EloquentRepository implements Project
         return Model::class;
     }
 
+
+    /**
+     * @inheritdoc
+     */
+    public function getPublicProjectIndex($sort = null, $order = null)
+    {
+        $results = $this->model->withCount('expeditions')->withCount('events')->with('group')->whereHas('nfnWorkflows')->get();
+
+        $this->resetModel();
+
+        switch($sort) {
+            case 'title':
+                return $order === 'asc' ? $results->sortBy('title') : $results->sortByDesc('title');
+            case 'group':
+                return $order === 'asc' ?
+                    $results->sortBy(function ($project) { return $project->group->title; }) :
+                    $results->sortByDesc(function ($project) { return $project->group->title; });
+            case 'date':
+                return $order === 'asc' ? $results->sortBy('created_at') : $results->sortByDesc('created_at');
+            default:
+                return $results;
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAdminProjectIndex($userId, $sort = null, $order = null)
+    {
+        $results = $this->model->withCount('expeditions')->with(['group' => function($q) use($userId) {
+            $q->whereHas('users', function($q) use($userId) {
+                $q->where('users.id', $userId);
+            });
+        }])->whereHas('group', function($q) use($userId){
+            $q->whereHas('users', function($q) use($userId) {
+                $q->where('users.id', $userId);
+            });
+        })->get();
+
+        $this->resetModel();
+
+        switch($sort) {
+            case 'title':
+                return $order === 'asc' ? $results->sortBy('title') : $results->sortByDesc('title');
+            case 'group':
+                return $order === 'asc' ?
+                    $results->sortBy(function ($project) { return $project->group->title; }) :
+                    $results->sortByDesc(function ($project) { return $project->group->title; });
+            case 'date':
+                return $order === 'asc' ? $results->sortBy('created_at') : $results->sortByDesc('created_at');
+            default:
+                return $results;
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getProjectPageBySlug($slug)
+    {
+        $results = $this->model->withCount('events')->with([
+            'group.users.profile',
+            'expeditions.stat',
+            'expeditions.actors',
+            'amChart',
+            'resources',
+        ])->with([
+            'events' => function ($q) {
+                $q->orderBy('start_date', 'desc');
+            },
+        ])->where('slug', '=', $slug)->first();
+
+        $this->resetModel();
+
+        return $results;
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function getProjectShow($projectId)
+    {
+        $results = $this->model->withCount('expeditions')
+            ->with([
+                'group',
+                'ocrQueue',
+                'expeditions.stat',
+                'expeditions.downloads',
+                'expeditions.actors'
+            ])->find($projectId);
+
+        $this->resetModel();
+
+        return $results;
+    }
+
     /**
      * @param array $attributes
      * @return \App\Repositories\Eloquent\EloquentRepository|\Illuminate\Database\Eloquent\Model|void
@@ -63,104 +160,6 @@ class ProjectRepository extends EloquentRepository implements Project
         }
 
         return $model->resources()->saveMany($resources->all());
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getPublicProjectIndex($sort = null, $order = null)
-    {
-        $results = $this->model->withCount('expeditions')->withCount('events')->with('group')->whereHas('nfnWorkflows')->get();
-
-        switch ($order) {
-            case 'asc':
-                $projects = $sort === 'title' ? $results->sortBy('title') : $results->sortBy(function ($project) {
-                    return $project->group->title;
-                });
-                break;
-            case 'desc':
-                $projects = $sort === 'title' ? $results->sortByDesc('title') : $results->sortByDesc(function ($project
-                ) {
-                    return $project->group->title;
-                });
-                break;
-            default:
-                $projects = $results;
-        }
-
-        $this->resetModel();
-
-        return $projects;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getAdminProjectIndex($userId, $sort = null, $order = null)
-    {
-        $results = $this->model->with(['group' => function($q) use($userId) {
-            $q->whereHas('users', function($q) use($userId) {
-                $q->where('users.id', $userId);
-            });
-        }])->whereHas('group', function($q) use($userId){
-            $q->whereHas('users', function($q) use($userId) {
-                $q->where('users.id', $userId);
-            });
-        })->get();
-
-        switch ($order) {
-            case 'asc':
-                $projects = $sort === 'title' ? $results->sortBy('title') : $results->sortBy(function ($project) {
-                    return $project->group->title;
-                });
-                break;
-            case 'desc':
-                $projects = $sort === 'title' ? $results->sortByDesc('title') : $results->sortByDesc(function ($project
-                ) {
-                    return $project->group->title;
-                });
-                break;
-            default:
-                $projects = $results;
-        }
-
-        $this->resetModel();
-
-        return $projects;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getProjectByIdWith($projectId, array $with = [])
-    {
-        $results = $this->model->with($with)->find($projectId);
-
-        $this->resetModel();
-
-        return $results;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getProjectPageBySlug($slug)
-    {
-        $results = $this->model->withCount('events')->with([
-            'group.users.profile',
-            'expeditions.stat',
-            'expeditions.actors',
-            'amChart',
-            'resources',
-        ])->with([
-            'events' => function ($q) {
-                $q->orderBy('start_date', 'desc');
-            },
-        ])->where('slug', '=', $slug)->first();
-
-        $this->resetModel();
-
-        return $results;
     }
 
     /**

@@ -27,12 +27,12 @@
                 <div class="col-12">
 
                     <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
-                        {!! $project->present()->project_expeditions !!}
-                        {!! $project->present()->project_events_icon_lg !!}
-                        {!! $project->present()->twitter_icon_lg !!}
-                        {!! $project->present()->facebook_icon_lg !!}
-                        {!! $project->present()->blog_icon_lg !!}
-                        {!! $project->present()->contact_email_icon_lg !!}
+                        {!! $project->present()->project_expeditions_icon_lrg !!}
+                        {!! $project->present()->project_events_icon_lrg !!}
+                        {!! $project->present()->twitter_icon_lrg !!}
+                        {!! $project->present()->facebook_icon_lrg !!}
+                        {!! $project->present()->blog_icon_lrg !!}
+                        {!! $project->present()->contact_email_icon_lrg !!}
                     </div>
                 </div>
 
@@ -109,13 +109,7 @@
                     @if($project->resources->isNotEmpty())
                         <h3>{{ __('Resources') }}</h3>
                         @foreach($project->resources as $resource)
-                            @if($resource->type === 'File Download')
-                                <p><a href="{{ $resource->download->url() }}" target="_blank" data-toggle="tooltip"
-                                      title="{{ $resource->description }}">{{ $resource->name }}</a></p>
-                            @else
-                                <p><a href="{{ $resource->name }}" target="_blank" data-toggle="tooltip"
-                                      title="{{ $resource->description }}">{{ $resource->name }}</a></p>
-                            @endif
+                            <p>{!! $resource->present()->resource !!}</p>
                         @endforeach
                     @endif
 
@@ -128,10 +122,10 @@
         <div class="col-sm-8 offset-md-2">
             <h1 class="text-center project-headers" id="expeditions">{{ __('Expeditions') }}</h1>
             <div class="text-center mt-4">
-                <button id="expeditionViewToggle" class="btn btn-primary pl-4 pr-4"
+                <button class="toggle-view-btn btn btn-primary pl-4 pr-4"
                         data-toggle="collapse"
-                        data-target="#activeExpeditions,#completedExpeditions"
-                        data-value="true"
+                        data-target="#active-expeditions-main,#completed-expeditions-main"
+                        data-value="{{ __('View Active Expeditions') }}"
                 >{{ __('View Completed Expeditions') }}</button>
             </div>
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
@@ -141,11 +135,17 @@
             </div>
             <hr class="header mx-auto">
         </div>
-        <div id="activeExpeditions" class="row col-sm-12 mx-auto justify-content-center show">
-            @include('front.expedition.partials.expedition', ['expeditions' => $expeditions])
+        <div id="active-expeditions-main" class="col-sm-12 show">
+            @include('common.expedition-sort', ['type' => 'active', 'route' => route('front.expeditions.sort')])
+            <div id="active-expeditions" class="row col-sm-12 mx-auto justify-content-center">
+                @include('front.expedition.partials.expedition', ['expeditions' => $expeditions])
+            </div>
         </div>
-        <div id="completedExpeditions" class="row col-sm-12 mx-auto justify-content-center collapse">
-            @include('front.expedition.partials.expedition', ['expeditions' => $expeditionsCompleted])
+        <div id="completed-expeditions-main" class="col-sm-12 collapse">
+            @include('common.expedition-sort', ['type' => 'completed', 'route' => route('front.expeditions.sort')])
+            <div id="completed-expeditions" class="row col-sm-12 mx-auto justify-content-center">
+                @include('front.expedition.partials.expedition', ['expeditions' => $expeditionsCompleted])
+            </div>
         </div>
     </div>
 
@@ -153,19 +153,25 @@
         <div class="col-sm-8 offset-md-2">
             <h1 class="text-center project-headers" id="events">{{ __('Events') }}</h1>
             <div class="text-center mt-4">
-                <button id="eventViewToggle" class="btn btn-primary pl-4 pr-4"
+                <button class="toggle-view-btn btn btn-primary pl-4 pr-4"
                         data-toggle="collapse"
-                        data-target="#activeEvents,#completedEvents"
-                        data-value="true"
+                        data-target="#active-events-main,#completed-events-main"
+                        data-value="{{ __('View Active Events') }}"
                 >{{ __('View Completed Events') }}</button>
             </div>
             <hr class="header mx-auto">
         </div>
-        <div id="activeEvents" class="row col-sm-12 mx-auto justify-content-center show">
-            @include('front.event.partials.event', ['events' => $events])
+        <div id="active-events-main" class="col-sm-12 show">
+            @include('common.event-sort', ['type' => 'active', 'route' => route('front.events.sort')])
+            <div id="active-events" class="row col-sm-12 mx-auto justify-content-center">
+                @include('front.event.partials.event', ['events' => $events])
+            </div>
         </div>
-        <div id="completedEvents" class="row col-sm-12 mx-auto justify-content-center collapse">
-            @include('front.event.partials.event', ['events' => $eventsCompleted])
+        <div id="completed-events-main" class="col-sm-12 collapse">
+            @include('common.event-sort', ['type' => 'completed', 'route' => route('front.events.sort')])
+            <div id="completed-events" class="row col-sm-12 mx-auto justify-content-center">
+                @include('front.event.partials.event', ['events' => $eventsCompleted])
+            </div>
         </div>
         @include('front.event.partials.scoreboard')
     </div>
@@ -266,6 +272,3 @@
     @include('common.contributors')
 @endsection
 
-@section('custom-script')
-    @include('common.score-board-js')
-@endsection

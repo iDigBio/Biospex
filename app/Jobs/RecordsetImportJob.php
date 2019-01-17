@@ -139,8 +139,11 @@ class RecordsetImportJob implements ShouldQueue
     public function download()
     {
         $fileName = $this->data['id'] . '.zip';
-        $filePath = config('config.import_dir') . '/' . $fileName;
-        if ( ! file_put_contents($filePath, file_get_contents($this->response->download_url)))
+        $filePath = \Storage::path(config('config.import_dir') . '/' . $fileName);
+
+        $file = file_get_contents($this->response->download_url);
+
+        if (\Storage::put($filePath, $file) === false)
         {
             throw new \Exception(trans('messages.zip_download'));
         }
@@ -148,7 +151,7 @@ class RecordsetImportJob implements ShouldQueue
         $import = $this->importContract->create([
             'user_id'    => $this->data['user_id'],
             'project_id' => $this->data['project_id'],
-            'file'       => $fileName
+            'file'       => $filePath
         ]);
 
         return $import;

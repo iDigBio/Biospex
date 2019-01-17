@@ -43,76 +43,59 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     /**
      * @inheritdoc
      */
-    public function getExpeditionPublicPage($sort = null, $order = null)
+    public function getExpeditionPublicIndex($sort = null, $order = null)
     {
         $results = $this->model->with('project')
             ->has('nfnWorkflow')
-            ->with('nfnWorkflow')->whereHas('stat', function ($q) {
-                $q->whereBetween('percent_completed', [0.00, 99.99]);
-            })->with([
-                'stat' => function ($q) {
-                    $q->whereBetween('percent_completed', [0.00, 99.99]);
-                },
-            ])->get();
-
-        switch ($order) {
-            case 'asc':
-                $expeditions = $sort === 'title' ? $results->sortBy('title')
-                    : $results->sortBy(function ($expedition) {
-                    return $expedition->project->title;
-                });
-                break;
-            case 'desc':
-                $expeditions = $sort === 'title' ? $results->sortByDesc('title')
-                    : $expeditions = $results->sortByDesc(function ($expedition) {
-                    return $expedition->project->title;
-                });
-                break;
-            default:
-                $expeditions = $results;
-        }
+            ->with('stat')
+            ->get();
 
         $this->resetModel();
 
-        return $expeditions;
+        switch ($sort) {
+            case 'title':
+                return $order === 'asc' ? $results->sortBy('title') : $results->sortByDesc('title');
+            case 'project':
+                return $order === 'asc' ?
+                    $results->sortBy(function ($expedition) { return $expedition->project->title; }) :
+                    $results->sortByDesc(function ($expedition) { return $expedition->project->title; });
+            case 'date':
+                return $order === 'asc' ? $results->sortBy('created_at') : $results->sortByDesc('created_at');
+            default:
+                return $results;
+        }
     }
 
     /**
      * @inheritdoc
      */
-    public function getExpeditionCompletedPublicPage($sort = null, $order = null)
+    public function getExpeditionAdminIndex($userId = null, $sort = null, $order = null, $projectId = null)
     {
-        $results = $this->model->with('project')
-            ->has('nfnWorkflow')
-            ->with('nfnWorkflow')
-            ->whereHas('stat', function ($q) {
-                $q->where('percent_completed', 100.00);
-            })->with([
-                'stat' => function ($q) {
-                    $q->where('percent_completed', 100.00);
-                },
-            ])->get();
+        $query = $this->model->with([
+            'project.group',
+            'stat',
+            'downloads',
+            'actors'
+        ])->whereHas('project.group.users', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        });
 
-        switch ($order) {
-            case 'asc':
-                $expeditions = $sort === 'title' ? $results->sortBy('title')
-                    : $results->sortBy(function ($expedition) {
-                    return $expedition->project->title;
-                });
-                break;
-            case 'desc':
-                $expeditions = $sort === 'title' ? $results->sortByDesc('title')
-                    : $expeditions = $results->sortByDesc(function ($expedition) {
-                    return $expedition->project->title;
-                });
-                break;
-            default:
-                $expeditions = $results;
-        }
+        $results = $projectId === null ? $query->get() : $query->where('project_id', $projectId)->get();
 
         $this->resetModel();
 
-        return $expeditions;
+        switch ($sort) {
+            case 'title':
+                return $order === 'asc' ? $results->sortBy('title') : $results->sortByDesc('title');
+            case 'project':
+                return $order === 'asc' ?
+                    $results->sortBy(function ($expedition) { return $expedition->project->title; }) :
+                    $results->sortByDesc(function ($expedition) { return $expedition->project->title; });
+            case 'date':
+                return $order === 'asc' ? $results->sortBy('created_at') : $results->sortByDesc('created_at');
+            default:
+                return $results;
+        }
     }
 
     /**
@@ -152,6 +135,7 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function expeditionsByUserId($userId, array $relations = [])
     {
+        $relations = ['stat', 'downloads', 'actors', 'project.group'];
         $results = $this->model->with($relations)->whereHas('project.group.users', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         })->get();

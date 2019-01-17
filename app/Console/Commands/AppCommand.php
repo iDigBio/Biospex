@@ -29,7 +29,10 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        //$files = \Storage::allFiles(config('config.classifications_download'));
+        $files = \File::files(storage_path('app/' . config('config.classifications_download')));
 
+        dd($files);
     }
 
 

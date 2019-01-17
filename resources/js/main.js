@@ -1,9 +1,20 @@
-$(function () {
-
+$(document).ready(function () {
+    // Add token to any ajax requests.
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
+    });
+
+    // Set prevent default for links
+    $('.prevent-default').click(function (e) {
+        e.preventDefault();
+    });
+
+    // Tooltips
+    $('[data-hover="tooltip"]').tooltip();
+    $(document).ajaxComplete(function () {
+        $('[data-hover="tooltip"]').tooltip();
     });
 
     $(".hamburger").click(function () {
@@ -30,9 +41,10 @@ $(function () {
     }
 
     // get current URL path and assign 'active' class
-    let href = window.location.href;
-    $('.nav > li > a[href="' + href + '"]').parent().addClass('active');
+    //let href = window.location.href;
+    //$('.nav > li > a[href="' + href + '"]').parent().addClass('active');
 
+    /*
     let tableSort = $('.table-sort');
     tableSort.tablesorter({
         // this will apply the bootstrap theme if 'uitheme' widget is included
@@ -46,6 +58,7 @@ $(function () {
         $('.ajax-rows').remove();
         $('.toggle').removeClass('fa-folder-open').addClass('fa-folder');
     });
+    */
 
     $('#add_target').on('click', function () {
         let first = $('div.target:first');
@@ -63,7 +76,7 @@ $(function () {
                 })
                 .end());
         }
-        $('#targetCount').val($('div.target:visible').length);
+        $('#target-count').val($('div.target:visible').length);
     });
 
     $('#remove_target').click(function () {
@@ -73,7 +86,7 @@ $(function () {
         } else {
             $('div.target:last').remove();
         }
-        $('#targetCount').val($('div.target:visible').length);
+        $('#target-count').val($('div.target:visible').length);
     });
 
     $('#form-data').validate({
@@ -107,8 +120,8 @@ $(function () {
         }
     });
 
-    let userGroup = $('#userGroup');
-    let groupInput = $('#groupInput');
+    let userGroup = $('#user-group');
+    let groupInput = $('#group-input');
     userGroup.change(function () {
         this.value === 'new' ? groupInput.show() : groupInput.hide();
     });
@@ -116,7 +129,7 @@ $(function () {
         userGroup.val() === 'new' ? groupInput.show() : groupInput.hide();
     }
 
-    $('#selectall').click(function () {  //on click
+    $('#select-all').click(function () {  //on click
         let checkboxAll = $('.checkbox-all');
         if (this.checked) { // check select status
             checkboxAll.each(function () { //loop through each checkbox
@@ -130,13 +143,13 @@ $(function () {
     });
 
     let homeProjectList = $('a.home-project-list');
-    homeProjectList.click(function (event) {
+    homeProjectList.click(function (e) {
         let count = $(this).data('count');
         $.get($(this).attr('href') + '/' + count, function (data) {
             $('.recent-projects-pane').html(data);
             homeProjectList.data('count', count + 5);
         });
-        event.preventDefault();
+        e.preventDefault();
     });
 
     let textarea = $('.textarea');
@@ -165,7 +178,7 @@ $(function () {
         }
     });
 
-    //$('[data-toggle="tooltip"]').tooltip();
+
     /*
     $('.js-tooltip').tooltip();
     $('.js-copy').click(function () {
@@ -211,10 +224,6 @@ $(function () {
         return false;
     });
 
-    $('.preventDefault').click(function (e) {
-        e.preventDefault();
-    });
-
     /*
     $('a.polling').on('click', function (event) {
         $('#ocrHtml').html('Retrieving data');
@@ -236,38 +245,118 @@ $(function () {
             });
     }
     */
-    $('#externalIndicators li').on('click', function () {
+    $('#external-carousel-btns li').on('click', function () {
         $(this).addClass('active').siblings().removeClass('active');
         let num = $(this).data('slide-to');
         $('.carousel-div').removeClass('active');
-        $('.div-'+num).addClass('active');
+        $('.div-' + num).addClass('active');
     });
 
-    $('.sortPage').on('click', function () {
+    $('.sort-page').on('click', function () {
         sortPage($(this));
     });
 
-    $('#expeditionViewToggle').on('click', function() {
-        let val = $(this).data('value');
-        if (val === true) {
-            $(this).html('View Active Expeditions');
-            $(this).data('value', false);
-        } else {
-            $(this).html('View Completed Expeditions');
-            $(this).data('value', true);
-        }
+    $('.toggle-view-btn').on('click', function () {
+        let html = $(this).html();
+        let value = $(this).data('value');
+        $(this).html(value);
+        $(this).data('value', html);
     });
 
-    $('#eventViewToggle').on('click', function() {
-        let val = $(this).data('value');
-        if (val === true) {
-            $(this).html('View Active Events');
-            $(this).data('value', false);
-        } else {
-            $(this).html('View Completed Events');
-            $(this).data('value', true);
-        }
+    $('[data-confirm=confirmation]').on('click', function (e) {
+        let url = $(this).is("[data-href]") ? $(this).data("href") : $(this).attr('href');
+        let method = $(this).data('method');
+        bootbox.confirm({
+            title: "Delete record?",
+            message: "Do you wish to delete permanently? This cannot be undone.",
+            buttons: {
+                cancel: {
+                    label: '<i class="fas fa-times-circle"></i> Cancel',
+                    className: 'btn btn-primary'
+                },
+                confirm: {
+                    label: '<i class="fas fa-check-circle"></i> Confirm',
+                    className: 'btn btn-primary'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    $(this).append(function () {
+                        let methodForm = "\n";
+                        methodForm += "<form action='" + url + "' method='POST' style='display:none'>\n";
+                        methodForm += "<input type='hidden' name='_method' value='" + method + "'>\n";
+                        methodForm += "<input type='hidden' name='_token' value='" + $('meta[name=csrf-token]').attr('content') + "'>\n";
+                        methodForm += "</form>\n";
+                        return methodForm;
+                    }).find('form').submit();
+                }
+            }
+        });
     });
+
+    $('#scoreboard-modal').on('show.bs.modal', function (e) {
+        let $modal = $(this).find('.modal-body');
+        let $button = $(e.relatedTarget); // Button that triggered the modal
+        let channel = $button.data('channel');
+        let eventId = $button.data('event');
+
+        $modal.html('<div class="loader mx-auto"></div>');
+
+        $modal.load($button.data('href'), function () {
+            let $clock = $modal.find('.clockdiv');
+            let deadline = $modal.find('#date').html(); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
+            if (deadline === 'Completed') {
+                $clock.html('<h2 class="text-center">Completed</h2>');
+                return;
+            }
+            initializeClock($clock, deadline);
+
+            Echo.channel(channel)
+                .listen('ScoreboardEvent', (e) => {
+                    $.each(e.data, function (id, val) {
+                        if (Number(id) === Number(eventId)) {
+                            $modal.html(val);
+                            $clock = $modal.find('.clockdiv');
+                            deadline = $modal.find('#date').html();
+                            initializeClock($clock, deadline);
+                        }
+                    });
+                });
+        });
+    }).on('hidden.bs.modal', function () {
+        $(this).find('.modal-body').html('');
+        clearInterval(timeInterval);
+    });
+
+    clockDiv();
+
+    $('#expedition-download-modal').on('show.bs.modal', function (e) {
+        let $button = $(e.relatedTarget);
+        let $modal = $(this).find('.modal-body');
+        $modal.html('<div class="loader mx-auto"></div>');
+        $modal.load($button.data("remote"));
+
+    }).on('hidden.bs.modal', function () {
+        $(this).find('.modal-body').html('');
+    });
+
+    $(document).on("click", "a.ajax-download", function () {
+        let $preparingFile = $("#preparing-file");
+
+        $preparingFile.show();
+
+        $.fileDownload($(this).attr('href'), {
+            successCallback: function (url) {
+                $preparingFile.hide();
+            },
+            failCallback: function (responseHtml, url) {
+                $preparingFile.hide();
+                $("#error-file").show();
+            }
+        });
+        return false; //this is critical to stop the click event which will trigger a normal file download!
+    });
+
 });
 
 /*
@@ -326,20 +415,20 @@ function copyToClipboard(text, el) {
 }
 */
 
-
+/**
+ * data attributes: project-id, type (active, completed), sort, order, url, target
+ * @param element
+ */
 function sortPage(element) {
-    let name = element.data('name');
-    let sort = element.data('sort'); // sort by
-    let order = element.data('order'); // current sort parameter
-    let url = element.data('url'); // url for sort
-    let $target = $('#' + element.data('target')); // target container
+    let data = element.data();
+    let $target = $('#' + data.target); // target container
 
     $target.html('<span class="loader"></span>');
 
-    $.post(url, { name: name, sort: sort, order: order })
-        .done(function( data ) {
-            $target.html(data);
-            setOrder(order, element);
+    $.post(data.url, data)
+        .done(function (response) {
+            $target.html(response);
+            setOrder(data.order, element);
             clockDiv();
         });
 }
@@ -362,5 +451,52 @@ function setOrder(order, element) {
             $icon.removeClass().addClass('fas fa-sort');
             break;
     }
+}
+
+let timeInterval;
+
+function getTimeRemaining(endTime) {
+    let t = Date.parse(endTime) - Date.parse(new Date());
+    let seconds = Math.floor((t / 1000) % 60);
+    let minutes = Math.floor((t / 1000 / 60) % 60);
+    let hours = Math.floor((t / (1000 * 60 * 60)) % 24);
+    let days = Math.floor(t / (1000 * 60 * 60 * 24));
+    return {
+        'total': t,
+        'days': days,
+        'hours': hours,
+        'minutes': minutes,
+        'seconds': seconds
+    };
+}
+
+function clockDiv() {
+    $('.clockdiv').each(function () {
+        let deadline = $(this).data('value'); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
+        initializeClock($(this), deadline);
+    });
+}
+
+function initializeClock($clock, endTime) {
+
+    let daysSpan = $clock.find('.days');
+    let hoursSpan = $clock.find('.hours');
+    let minutesSpan = $clock.find('.minutes');
+    let secondsSpan = $clock.find('.seconds');
+
+    function updateClock() {
+        let t = getTimeRemaining(endTime);
+        daysSpan.html(t.days);
+        hoursSpan.html(('0' + t.hours).slice(-2));
+        minutesSpan.html(('0' + t.minutes).slice(-2));
+        secondsSpan.html(('0' + t.seconds).slice(-2));
+
+        if (t.total <= 0) {
+            clearInterval(timeInterval);
+        }
+    }
+
+    updateClock();
+    timeInterval = setInterval(updateClock, 1000);
 }
 
