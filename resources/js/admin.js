@@ -151,8 +151,8 @@ $(function() {
         let url = $(this).is("[data-href]") ? $(this).data("href") : $(this).attr('href');
         let method = $(this).data('method');
         bootbox.confirm({
-            title: "Delete record?",
-            message: "Do you wish to delete permanently? This cannot be undone.",
+            title: $(this).data('title'),
+            message: $(this).data('content'),
             buttons: {
                 cancel: {
                     label: '<i class="fas fa-times-circle"></i> Cancel',
@@ -167,7 +167,7 @@ $(function() {
                 if (result) {
                     $(this).append(function () {
                         let methodForm = "\n";
-                        methodForm += "<form action='" + url + "' method='POST' style='display:none'>\n";
+                        methodForm += "<form action='" + url + "' method='"+$(this).data('method')+"' style='display:none'>\n";
                         methodForm += "<input type='hidden' name='_method' value='" + method + "'>\n";
                         methodForm += "<input type='hidden' name='_token' value='" + $('meta[name=csrf-token]').attr('content') + "'>\n";
                         methodForm += "</form>\n";

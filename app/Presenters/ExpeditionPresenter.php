@@ -93,7 +93,7 @@ class ExpeditionPresenter extends Presenter
             data-btn-ok-class="btn-success"
             data-btn-cancel-label="Stop" data-btn-cancel-icon="fas fa-ban fa-2x"
             data-btn-cancel-class="btn-danger"
-            data-title="Continue action?" data-content="This will permanently delete the record">
+            data-title="'.__('Delete Expedition').'?" data-content="This will permanently delete the record">
             <i class="fas fa-trash-alt"></i></a>';
     }
 
@@ -101,12 +101,12 @@ class ExpeditionPresenter extends Presenter
     {
         dd($this->model);
         $route = route('admin.downloads.download', [
-            $this->model->project->id,
-            $this->model->id,
-            $this->model->download->id]
-        );
+                $this->model->project->id,
+                $this->model->id,
+                $this->model->download->id,
+            ]);
 
-        return '<a href="'.$route.'" class="ajax-download" data-hover="tooltip" title="'. __('Download') . ' ' . $this->model->type . '">';
+        return '<a href="'.$route.'" class="ajax-download" data-hover="tooltip" title="'.__('Download').' '.$this->model->type.'">';
     }
 
     /**
@@ -118,8 +118,18 @@ class ExpeditionPresenter extends Presenter
     {
         return '<a href="'.route('admin.expeditions.ocr', [
                 $this->model->project_id,
-                $this->model->id
-            ]).'" data-hover="tooltip" title="'. __('Redo OCR For ALL Expedition Subjects') .'"><i class="fas fa-redo-alt"></i></a>';
+                $this->model->id,
+            ]).'" class="prevent-default"
+            title="'.__('Reprocess Subject OCR').'" 
+            data-hover="tooltip"        
+            data-method="get"
+            data-confirm="confirmation"
+            data-btn-ok-label="Continue" data-btn-ok-icon="fas fa-share fa-2x"
+            data-btn-ok-class="btn-success"
+            data-btn-cancel-label="Stop" data-btn-cancel-icon="fas fa-ban fa-2x"
+            data-btn-cancel-class="btn-danger"
+            data-title="'.__('Reprocess Subject OCR').'?" data-content="'.__('This action will reprocess all ocr for the Expedition.').'">
+            <i class="fas fa-redo-alt"></i></a>';
     }
 
     /**
@@ -131,7 +141,17 @@ class ExpeditionPresenter extends Presenter
     {
         return '<a href="'.route('admin.expeditions.ocr', [
                 $this->model->project_id,
-                $this->model->id
-            ]).'" data-hover="tooltip" title="'. __('Redo OCR For ALL Expedition Subjects') .'"><i class="fas fa-redo-alt fa-2x"></i></a>';
+                $this->model->id,
+            ]).'" class="prevent-default"
+            title="'.__('Reprocess Subject OCR').'" 
+            data-hover="tooltip"        
+            data-method="get"
+            data-confirm="confirmation"
+            data-btn-ok-label="Continue" data-btn-ok-icon="fas fa-share fa-2x"
+            data-btn-ok-class="btn-success"
+            data-btn-cancel-label="Stop" data-btn-cancel-icon="fas fa-ban fa-2x"
+            data-btn-cancel-class="btn-danger"
+            data-title="'.__('Reprocess Subject OCR').'?" data-content="'.__('This action will reprocess all ocr for the Expedition.').'">
+            <i class="fas fa-redo-alt fa-2x"></i></a>';
     }
 }
