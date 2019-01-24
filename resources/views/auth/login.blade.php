@@ -22,24 +22,25 @@
     <div class="col-12 col-md-10 offset-md-1">
         <div class="card white box-shadow py-5 my-5 p-sm-5">
             <div class="col-6 mx-auto">
-                <form action="{{ route('app.post.login') }}" method="post" role="form" class="form-horizontal">
+                <form action="{{ route('app.post.login') }}" method="post" role="form">
                     {!! csrf_field() !!}
                     <div class="form-group {{ ($errors->has('email')) ? 'has-error' : '' }}">
-                        <label for="email">{{ __('Email') }} <span class="color-action">*</span></label>
-                        <input type="text" name="email" id="email" class="form-control" value="{{ old('email') }}"
+                        <label for="email" class="col-form-label required">{{ __('Email') }}:</label>
+                        <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}"
                                required>
                         {{ $errors->first('email') }}
                     </div>
                     <div class="form-group {{ ($errors->has('password')) ? 'has-error' : '' }}">
-                        <label for="password">{{ __('Password') }} <span class="color-action">*</span></label>
+                        <label for="password" class="col-form-label required">{{ __('Password') }}:</label>
                         <input type="password" name="password" id="password" class="form-control" required>
                         {{ ($errors->has('password') ?  $errors->first('password') : '') }}
                     </div>
-                    <div class="checkbox">
-                        <label><input type="checkbox" value=""> {{ __('Remember Me') }}</label>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="remember" name="remember">
+                        <label class="custom-control-label" for="remember">{{ __('Remember Me') }}</label>
                     </div>
-                    {!! Honeypot::generate('formuser', 'formtime') !!}
-                    <div class="text-center">
+                    <div class="form-group text-center">
+                        {!! Honeypot::generate('formuser', 'formtime') !!}
                         <button type="submit" class="btn btn-primary pl-4 pr-4">{{ __('SUBMIT') }}</button>
                     </div>
                 </form>
@@ -51,9 +52,4 @@
             </div>
         </div>
     </div>
-@endsection
-
-@section('footer')
-    @include('common.footer')
-    @include('common.contributors')
 @endsection

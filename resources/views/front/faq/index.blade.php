@@ -30,8 +30,3 @@
         <a href="{{ route('front.contact.index') }}" class="btn btn-primary mx-auto">{{ __('CONTACT US') }}</a>
     </div>
 @endsection
-
-@section('footer')
-    @include('common.footer')
-    @include('common.contributors')
-@endsection

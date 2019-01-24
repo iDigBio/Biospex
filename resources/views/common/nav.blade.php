@@ -47,7 +47,7 @@
                     <a href="{{ route('app.get.logout') }}" class="dropdown-item text-uppercase"
                        type="button">{{ _('logout') }}</a>
                     @can('isAdmin', Auth::user())
-                        <a href="/nova" class="dropdown-item text-uppercase"
+                        <a href="/admin/nova" class="dropdown-item text-uppercase"
                            type="button">{{ _('nova') }}</a>
                     @endcan
                 </div>

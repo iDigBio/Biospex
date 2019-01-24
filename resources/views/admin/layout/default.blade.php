@@ -1,7 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    @include('common.head')
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="{{ _('FSU Department of Biological Science') }}">
+    <meta name="csrf-param" content="_token">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="google-site-verification" content="DRVQlYZQo5OkUlUhNG8Re-CgYEB7ELA0I_3qJJlzb0U"/>
+    <title>
+        {{ _('BIOSPEX') }} | @yield('title')
+    </title>
+    <link rel="shortcut icon" href="{{ asset('/storage/images/favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('/storage/images/favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:700|Work+Sans">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link href="{{ mix('/css/admin.css', '/admin') }}" rel="stylesheet" type="text/css" />
     @yield('custom-style')
 </head>
 <body>
@@ -15,8 +29,18 @@
 <div class="container mb-4">
     @yield('content')
 </div>
-@include('common.admin-footer')
-@include('common.script')
+<!-- Footer -->
+<footer class="page-footer font-small blue-grey lighten-5">
+    <!-- Copyright -->
+    <div class="footer-copyright text-center text-black-50 py-3">{{ __('© 2019 Copyright') }}
+        <a class="dark-grey-text" href="#"> {{ __('FSU Deptartment of Biological Science') }}</a>
+    </div>
+    <!-- Copyright -->
+</footer>
+@include('common.php-vars-javascript')
+<script src="{{ mix('/js/manifest.js', 'admin') }}"></script>
+<script src="{{ mix('/js/vendor.js', 'admin') }}"></script>
+<script src="{{ mix('/js/admin.js', 'admin') }}"></script>
 @yield('custom-script')
 </body>
 </html>

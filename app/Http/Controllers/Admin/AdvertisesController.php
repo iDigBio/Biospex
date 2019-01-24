@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Front;
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Http\Controllers\Controller;
@@ -10,51 +10,16 @@ class AdvertisesController extends Controller
 {
 
     /**
-     * @var Project
-     */
-    public $projectContract;
-
-    /**
-     * Advertise constructor.
-     * @param Project $projectContract
-     */
-    public function __construct(Project $projectContract)
-    {
-        $this->projectContract = $projectContract;
-    }
-
-    /**
      * Show advertise page.
      *
-     * @param $projectId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
-     */
-    public function index($projectId)
-    {
-        $project = $this->projectContract->findWith($projectId, ['group']);
-
-        if ( ! $this->checkPermissions('readProject', $project->group))
-        {
-            return redirect()->route('webauth.projects.index');
-        }
-
-        if (empty($project->advertise)) {
-            $project = $this->projectContract->update($project->toArray(), $project->id);
-        }
-
-        return view('front.projects.advertise', compact('project'));
-    }
-
-    /**
-     * Advertise download.
-     *
-     * @param ResponseFactory $response
+     * @param \Illuminate\Contracts\Routing\ResponseFactory $response
+     * @param \App\Repositories\Interfaces\Project $projectContract
      * @param $projectId
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
-    public function download(ResponseFactory $response, $projectId)
+    public function index(ResponseFactory $response, Project $projectContract, $projectId)
     {
-        $project = $this->projectContract->findWith($projectId, ['group']);
+        $project = $projectContract->findWith($projectId, ['group']);
 
         if ( ! $this->checkPermissions('readProject', $project->group))
         {
@@ -66,5 +31,4 @@ class AdvertisesController extends Controller
             'Content-Disposition' => 'attachment; filename="' . $project->uuid . '.json"'
         ]);
     }
-
 }

@@ -45,8 +45,3 @@
         </div>
     </div>
 @endsection
-
-@section('footer')
-    @include('common.footer')
-    @include('common.contributors')
-@endsection

@@ -1,6 +1,10 @@
 {
-    "/js/front.js": "/js/front.js?id=0211f8ba19b250382336",
-    "/css/front.css": "/css/front.css?id=a3cdba3cd13cfd53f1b3",
-    "/js/vendor.js": "/js/vendor.js?id=dde27362377594051118",
-    "/js/manifest.js": "/js/manifest.js?id=40dcfff9d09d402daf38"
+    "/pdfmake.js": "/pdfmake.js?id=d0a6da29476e4de28e6b",
+    "/xlsx.js": "/xlsx.js?id=3ecd1464d580f9448648",
+    "/canvg.js": "/canvg.js?id=c23a6632fb849a7f8646",
+    "/responsivedefaults.js": "/responsivedefaults.js?id=148b598b5e58b9e9caea",
+    "/js/vendor.js": "/js/vendor.js?id=4f638f5285b686425bd7",
+    "/js/front.js": "/js/front.js?id=2078f75e8ec484896c38",
+    "/css/front.css": "/css/front.css?id=4a95931d51a7aa695b7e",
+    "/js/manifest.js": "/js/manifest.js?id=d200d5dda0ae7fcfb0d0"
 }

@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Jobs\DeleteProject;
+use App\Jobs\OcrCreateJob;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\Group;
+use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\Subject;
 use App\Repositories\Interfaces\User;
@@ -33,49 +35,20 @@ class ProjectsController extends Controller
     private $commonVariables;
 
     /**
-     * @var \App\Repositories\Interfaces\Expedition
-     */
-    private $expeditionContract;
-
-    /**
-     * @var \App\Repositories\Interfaces\Subject
-     */
-    private $subjectContract;
-
-    /**
-     * @var \App\Services\Model\OcrQueueService
-     */
-    private $ocrQueueService;
-
-    /**
-     * @var \App\Services\File\FileService
-     */
-    private $fileService;
-
-    /**
      * ProjectsController constructor.
      *
      * @param \App\Repositories\Interfaces\Group $groupContract
      * @param \App\Repositories\Interfaces\Project $projectContract
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
-     * @param \App\Repositories\Interfaces\Subject $subjectContract
-     * @param \App\Services\File\FileService $fileService
      * @param \App\Services\Model\CommonVariables $commonVariables
      */
     public function __construct(
         Group $groupContract,
         Project $projectContract,
-        Expedition $expeditionContract,
-        Subject $subjectContract,
-        FileService $fileService,
         CommonVariables $commonVariables
     ) {
         $this->groupContract = $groupContract;
         $this->commonVariables = $commonVariables;
         $this->projectContract = $projectContract;
-        $this->expeditionContract = $expeditionContract;
-        $this->subjectContract = $subjectContract;
-        $this->fileService = $fileService;
     }
 
     /**
@@ -89,9 +62,7 @@ class ProjectsController extends Controller
 
         $projects = $this->projectContract->getAdminProjectIndex($user->id);
 
-        return $projects->isEmpty() ?
-            view('admin.welcome') :
-            view('admin.project.index', compact('projects'));
+        return $projects->isEmpty() ? view('admin.welcome') : view('admin.project.index', compact('projects'));
     }
 
     /**
@@ -101,7 +72,7 @@ class ProjectsController extends Controller
      */
     public function sort()
     {
-        if ( ! request()->ajax()) {
+        if (! request()->ajax()) {
             return null;
         }
 
@@ -234,7 +205,7 @@ class ProjectsController extends Controller
 
         $variables = array_merge($common, ['project' => $project, 'workflowEmpty' => $workflowEmpty]);
 
-        return view('front.projects.edit', $variables);
+        return view('admin.project.edit', $variables);
     }
 
     /**
@@ -262,10 +233,11 @@ class ProjectsController extends Controller
     /**
      * Display project explore page.
      *
+     * @param \App\Repositories\Interfaces\Subject $subjectContract
      * @param $projectId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function explore($projectId)
+    public function explore(Subject $subjectContract, $projectId)
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
 
@@ -274,19 +246,20 @@ class ProjectsController extends Controller
         }
 
         JavaScript::put([
-            'projectId'    => $projectId,
+            'projectId' => $projectId,
             'expeditionId' => 0,
-            'subjectIds'   => [],
-            'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('admin.grids.explore', [$projectId]),
-            'exportUrl'    => route('admin.grids.project.export', [$projectId]),
+            'subjectIds' => [],
+            'maxSubjects' => config('config.expedition_size'),
+            'gridUrl' => route('admin.grids.explore', [$projectId]),
+            'exportUrl' => route('admin.grids.export', [$projectId]),
+            'editUrl' => route('admin.grids.delete', [$projectId]),
             'showCheckbox' => true,
-            'explore'      => true,
+            'explore' => true,
         ]);
 
-        $subjectAssignedCount = $this->subjectContract->getSubjectAssignedCount($projectId);
+        $subjectAssignedCount = $subjectContract->getSubjectAssignedCount($projectId);
 
-        return view('front.projects.explore', compact('project', 'subjectAssignedCount'));
+        return view('admin.project.explore', compact('project', 'subjectAssignedCount'));
     }
 
     /**
@@ -297,9 +270,6 @@ class ProjectsController extends Controller
      */
     public function delete($projectId)
     {
-
-        return redirect()->back();
-        dd($projectId);
         $project = $this->projectContract->getProjectForDelete($projectId);
 
         if (! $this->checkPermissions('isOwner', $project->group)) {
@@ -339,10 +309,38 @@ class ProjectsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $this->ocrQueueService->processOcr($projectId) ?
-            FlashHelper::success(trans('messages.ocr_process_success')) :
-            FlashHelper::warning(trans('messages.ocr_process_error'));
+        OcrCreateJob::dispatch($projectId);
+
+        FlashHelper::success(__('OCR processing has been submitted. It may take some time before appearing in the Processes menu. You will be notified by email when the process is complete.'));
 
         return redirect()->route('admin.projects.show', [$projectId]);
+    }
+
+    /**
+     * Project Stats.
+     *
+     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Repositories\Interfaces\PanoptesTranscription $transcriptionContract
+     * @param $projectId
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function statistics(Project $projectContract, PanoptesTranscription $transcriptionContract, $projectId)
+    {
+        $project = $projectContract->findWith($projectId, ['group']);
+
+        $transcribers = collect($transcriptionContract->getUserTranscriptionCount($projectId))->sortByDesc('transcriptionCount');
+
+        $transcriptions = \Cache::remember(md5(__METHOD__.$projectId), 240, function () use (
+            $transcribers,
+            $projectId
+        ) {
+            $plucked = collect(array_count_values($transcribers->pluck('transcriptionCount')->sort()->toArray()));
+
+            return $plucked->flatMap(function ($users, $count) {
+                return [['transcriptions' => $count, 'transcribers' => $users]];
+            })->toJson();
+        });
+
+        return view('admin.project.statistics', compact('project', 'transcribers', 'transcriptions'));
     }
 }

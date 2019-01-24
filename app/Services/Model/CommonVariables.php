@@ -38,6 +38,7 @@ class CommonVariables
         $workflows = $this->workflowContract->getWorkflowSelect();
         $statusSelect = config('config.status_select');
         $selectGroups = ['' => '--Select--'] + $groups;
+
         $resourcesSelect = GeneralHelper::getEnumValues('project_resources', 'type', true);
 
         return compact('workflows', 'statusSelect', 'selectGroups', 'resourcesSelect');

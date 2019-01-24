@@ -6,6 +6,7 @@ use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpeditionFormRequest;
 use App\Jobs\DeleteExpedition;
+use App\Jobs\OcrCreateJob;
 use App\Jobs\UpdateNfnWorkflowJob;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\ExpeditionStat;
@@ -19,7 +20,6 @@ use JavaScript;
 
 class ExpeditionsController extends Controller
 {
-
     /**
      * @var \App\Repositories\Interfaces\Expedition
      */
@@ -72,8 +72,7 @@ class ExpeditionsController extends Controller
         Subject $subjectContract,
         ExpeditionStat $expeditionStatContract,
         WorkflowManager $workflowManagerContract
-    )
-    {
+    ) {
         $this->expeditionContract = $expeditionContract;
         $this->projectContract = $projectContract;
         $this->nfnWorkflowContract = $nfnWorkflowContract;
@@ -93,7 +92,7 @@ class ExpeditionsController extends Controller
 
         $results = $this->expeditionContract->getExpeditionAdminIndex($user->id);
 
-        list($expeditions, $expeditionsCompleted) = $results->partition(function($expedition) {
+        list($expeditions, $expeditionsCompleted) = $results->partition(function ($expedition) {
             return $expedition->stat->percent_completed < '100.00';
         });
 
@@ -107,7 +106,7 @@ class ExpeditionsController extends Controller
      */
     public function sort()
     {
-        if ( ! request()->ajax()) {
+        if (! request()->ajax()) {
             return null;
         }
 
@@ -118,15 +117,15 @@ class ExpeditionsController extends Controller
         $order = request()->get('order');
         $projectId = request()->get('id');
 
-        list($active, $completed) = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)
-            ->partition(function($expedition) {
-                return $expedition->stat->percent_completed < '100.00';
-            });
+        list($active, $completed) = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)->partition(function (
+            $expedition
+        ) {
+            return $expedition->stat->percent_completed < '100.00';
+        });
 
         $expeditions = $type === 'active' ? $active : $completed;
 
         return view('admin.expedition.partials.expedition', compact('expeditions'));
-
     }
 
     /**
@@ -139,8 +138,7 @@ class ExpeditionsController extends Controller
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
 
-        if ( ! $this->checkPermissions('createProject', $project->group))
-        {
+        if (! $this->checkPermissions('createProject', $project->group)) {
             return redirect()->route('admin.projects.index');
         }
 
@@ -149,10 +147,11 @@ class ExpeditionsController extends Controller
             'expeditionId' => 0,
             'subjectIds'   => [],
             'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('admin.grids.create', [$project->id]),
+            'gridUrl'      => route('admin.grids.create', [$project->id]),
             'exportUrl'    => '',
+            'editUrl'      => route('admin.grids.delete', [$projectId]),
             'showCheckbox' => true,
-            'explore'      => false
+            'explore'      => false,
         ]);
 
         return view('front.expeditions.create', compact('project'));
@@ -169,8 +168,7 @@ class ExpeditionsController extends Controller
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
 
-        if ( ! $this->checkPermissions('createProject', $project->group))
-        {
+        if (! $this->checkPermissions('createProject', $project->group)) {
             return redirect()->route('admin.projects.index');
         }
 
@@ -180,24 +178,25 @@ class ExpeditionsController extends Controller
         $expedition->subjects()->sync($subjects);
 
         $values = [
-            'local_subject_count' => $count
+            'local_subject_count' => $count,
         ];
 
         $expedition->stat()->updateOrCreate(['expedition_id' => $expedition->id], $values);
 
-        if ($expedition)
-        {
+        if ($expedition) {
             FlashHelper::success(trans('messages.record_created'));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
         }
 
         FlashHelper::error(trans('messages.record_save_error'));
+
         return redirect()->route('admin.projects.show', [$projectId]);
     }
 
     /**
      * Display the specified resource
+     *
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -209,13 +208,12 @@ class ExpeditionsController extends Controller
             'project.ocrQueue',
             'downloads',
             'workflowManager',
-            'stat'
+            'stat',
         ];
 
         $expedition = $this->expeditionContract->findWith($expeditionId, $relations);
 
-        if ( ! $this->checkPermissions('readProject', $expedition->project->group))
-        {
+        if (! $this->checkPermissions('readProject', $expedition->project->group)) {
             return redirect()->route('admin.projects.index');
         }
 
@@ -224,10 +222,11 @@ class ExpeditionsController extends Controller
             'expeditionId' => $expedition->id,
             'subjectIds'   => [],
             'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('admin.grids.show', [$expedition->project->id, $expedition->id]),
+            'gridUrl'      => route('admin.grids.show', [$expedition->project->id, $expedition->id]),
             'exportUrl'    => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
+            'editUrl'      => route('admin.grids.delete', [$projectId]),
             'showCheckbox' => false,
-            'explore'      => false
+            'explore'      => false,
         ]);
 
         $btnDisable = ($expedition->project->ocrQueue->isEmpty() || $expedition->stat->local_subject_count === 0);
@@ -237,6 +236,7 @@ class ExpeditionsController extends Controller
 
     /**
      * Clone an existing expedition
+     *
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
@@ -245,8 +245,7 @@ class ExpeditionsController extends Controller
     {
         $expedition = $this->expeditionContract->findWith($expeditionId, ['project.group']);
 
-        if ( ! $this->checkPermissions('create', $expedition->project->group))
-        {
+        if (! $this->checkPermissions('create', $expedition->project->group)) {
             return redirect()->route('admin.projects.index');
         }
 
@@ -255,10 +254,11 @@ class ExpeditionsController extends Controller
             'expeditionId' => 0,
             'subjectIds'   => [],
             'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('admin.grids.create', [$expedition->project->id]),
+            'gridUrl'      => route('admin.grids.create', [$expedition->project->id]),
             'exportUrl'    => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
+            'editUrl'      => route('admin.grids.delete', [$projectId]),
             'showCheckbox' => true,
-            'explore'      => false
+            'explore'      => false,
         ]);
 
         return view('front.expeditions.clone', compact('expedition'));
@@ -266,6 +266,7 @@ class ExpeditionsController extends Controller
 
     /**
      * Show the form for editing the specified resource
+     *
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
@@ -276,13 +277,12 @@ class ExpeditionsController extends Controller
             'project.group',
             'workflowManager',
             'subjects',
-            'nfnWorkflow'
+            'nfnWorkflow',
         ];
 
         $expedition = $this->expeditionContract->findWith($expeditionId, $relations);
 
-        if ( ! $this->checkPermissions('updateProject', $expedition->project->group))
-        {
+        if (! $this->checkPermissions('updateProject', $expedition->project->group)) {
             return redirect()->route('admin.projects.index');
         }
 
@@ -293,10 +293,10 @@ class ExpeditionsController extends Controller
             'expeditionId' => $expedition->id,
             'subjectIds'   => $subjectIds,
             'maxSubjects'  => config('config.expedition_size'),
-            'url'          => route('admin.grids.edit', [$expedition->project->id, $expedition->id]),
+            'gridUrl'      => route('admin.grids.edit', [$expedition->project->id, $expedition->id]),
             'exportUrl'    => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'showCheckbox' => $expedition->workflowManager === null,
-            'explore'      => false
+            'explore'      => false,
         ]);
 
         return view('front.expeditions.edit', compact('expedition'));
@@ -314,8 +314,7 @@ class ExpeditionsController extends Controller
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
 
-        if ( ! $this->checkPermissions('updateProject', $project->group))
-        {
+        if (! $this->checkPermissions('updateProject', $project->group)) {
             return redirect()->route('admin.projects.index');
         }
 
@@ -326,7 +325,7 @@ class ExpeditionsController extends Controller
                 $values = [
                     'project_id'    => $request->get('project_id'),
                     'expedition_id' => $expedition->id,
-                    'workflow'      => $request->get('workflow')
+                    'workflow'      => $request->get('workflow'),
                 ];
 
                 $nfnWorkflow = $this->nfnWorkflowContract->updateOrCreate(['expedition_id' => $expedition->id], $values);
@@ -344,7 +343,7 @@ class ExpeditionsController extends Controller
                 $expedition->subjects()->attach($subjectIds);
 
                 $values = [
-                    'local_subject_count' => $count
+                    'local_subject_count' => $count,
                 ];
 
                 $this->expeditionStatContract->updateOrCreate(['expedition_id' => $expedition->id], $values);
@@ -354,9 +353,7 @@ class ExpeditionsController extends Controller
             FlashHelper::success(trans('messages.record_updated'));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-        }
-        catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             FlashHelper::error(trans('messages.record_save_error'));
 
             return redirect()->route('admin.expeditions.edit', [$projectId, $expeditionId]);
@@ -365,6 +362,7 @@ class ExpeditionsController extends Controller
 
     /**
      * Start processing expedition actors
+     *
      * @param $projectId
      * @param $expeditionId
      * @return \Illuminate\Http\RedirectResponse
@@ -373,22 +371,20 @@ class ExpeditionsController extends Controller
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
 
-        if ( ! $this->checkPermissions('updateProject', $project->group))
-        {
+        if (! $this->checkPermissions('updateProject', $project->group)) {
             return redirect()->route('admin.projects.index');
         }
 
-        try
-        {
-            $expedition = $this->expeditionContract->findWith($expeditionId, ['project.workflow.actors', 'workflowManager']);
+        try {
+            $expedition = $this->expeditionContract->findWith($expeditionId, [
+                'project.workflow.actors',
+                'workflowManager',
+            ]);
 
-            if (null !== $expedition->workflowManager)
-            {
+            if (null !== $expedition->workflowManager) {
                 $expedition->workflowManager->stopped = 0;
                 $expedition->workflowManager->save();
-            }
-            else
-            {
+            } else {
                 $expedition->project->workflow->actors->reject(function ($actor) {
                     return $actor->private;
                 })->each(function ($actor) use ($expedition) {
@@ -401,11 +397,11 @@ class ExpeditionsController extends Controller
             Artisan::call('workflow:manage', ['expeditionId' => $expeditionId]);
 
             FlashHelper::success(trans('messages.expedition_process_success'));
+
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             FlashHelper::error(trans('messages.expedition_process_error', ['error' => $e->getMessage()]));
+
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
     }
@@ -422,14 +418,13 @@ class ExpeditionsController extends Controller
 
         $project = $this->projectContract->findWith($projectId, ['group']);
 
-        if ( ! $this->checkPermissions('updateProject', $project->group))
-        {
+        if (! $this->checkPermissions('updateProject', $project->group)) {
             return redirect()->route('admin.projects.index');
         }
 
-        $this->ocrQueueService->processOcr($projectId, $expeditionId) ?
-            FlashHelper::success(trans('messages.ocr_process_success')) :
-            FlashHelper::warning(trans('messages.ocr_process_error'));
+        OcrCreateJob::dispatch($projectId, $expeditionId);
+
+        FlashHelper::success(__('OCR processing has been submitted. It may take some time before appearing in the Processes menu. You will be notified by email when the process is complete.'));
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
     }
@@ -445,22 +440,22 @@ class ExpeditionsController extends Controller
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
 
-        if ( ! $this->checkPermissions('updateProject', $project->group))
-        {
+        if (! $this->checkPermissions('updateProject', $project->group)) {
             return redirect()->route('admin.projects.index');
         }
 
         $workflow = $this->workflowManagerContract->findBy('expedition_id', $expeditionId);
 
-        if ($workflow === null)
-        {
+        if ($workflow === null) {
             FlashHelper::error(trans('messages.process_no_exists'));
+
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
 
         $workflow->stopped = 1;
         $this->workflowManagerContract->update(['stopped' => 1], $workflow->id);
         FlashHelper::success(trans('messages.process_stopped'));
+
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
     }
 
@@ -475,17 +470,18 @@ class ExpeditionsController extends Controller
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
 
-        if ( ! $this->checkPermissions('isOwner', $project->group))
-        {
+        if (! $this->checkPermissions('isOwner', $project->group)) {
             return redirect()->route('admin.projects.index');
         }
 
-        try
-        {
-            $expedition = $this->expeditionContract->findWith($expeditionId, ['nfnWorkflow', 'downloads', 'workflowManager']);
+        try {
+            $expedition = $this->expeditionContract->findWith($expeditionId, [
+                'nfnWorkflow',
+                'downloads',
+                'workflowManager',
+            ]);
 
-            if (isset($expedition->workflowManager) || isset($expedition->nfnWorkflow))
-            {
+            if (isset($expedition->workflowManager) || isset($expedition->nfnWorkflow)) {
                 FlashHelper::error(trans('messages.expedition_process_exists'));
 
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
@@ -496,9 +492,7 @@ class ExpeditionsController extends Controller
             FlashHelper::success(trans('messages.record_deleted'));
 
             return redirect()->route('admin.projects.index');
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             FlashHelper::error(trans('record.record_delete_error'));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);

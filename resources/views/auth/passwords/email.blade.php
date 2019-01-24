@@ -22,16 +22,16 @@
     <div class="col-12 col-md-10 offset-md-1">
         <div class="card white box-shadow py-5 my-5 p-sm-5">
             <div class="col-6 mx-auto">
-                <form action="{{ route('app.password.email') }}" method="post" role="form" class="form-horizontal">
+                <form action="{{ route('app.password.email') }}" method="post" role="form">
                     {!! csrf_field() !!}
                     <div class="form-group {{ ($errors->has('email')) ? 'has-error' : '' }}">
-                        <label for="email">{{ __('Email') }} <span class="color-action">*</span></label>
-                        <input type="text" name="email" id="email" class="form-control" value="{{ old('email') }}"
+                        <label for="email" class="col-form-label required">{{ __('Email') }}:</label>
+                        <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}"
                                required>
                         {{ $errors->first('email') }}
                     </div>
-                    {!! Honeypot::generate('formuser', 'formtime') !!}
-                    <div class="text-center">
+                    <div class="form group text-center">
+                        {!! Honeypot::generate('formuser', 'formtime') !!}
                         <button type="submit" class="btn btn-primary pl-4 pr-4">{{ __('SUBMIT') }}</button>
                     </div>
                 </form>
@@ -41,9 +41,4 @@
             </div>
         </div>
     </div>
-@endsection
-
-@section('footer')
-    @include('common.footer')
-    @include('common.contributors')
 @endsection

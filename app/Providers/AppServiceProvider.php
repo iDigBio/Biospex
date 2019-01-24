@@ -22,37 +22,6 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
 
         $this->setupBlade();
-
-        if ($this->app->environment() === 'local' && env('DB_LOG'))
-        {
-            DB::connection('mongodb')->enableQueryLog();
-            DB::connection('mongodb')->listen(function ($sql) {
-                // $sql is an object with the properties:
-                //  sql: The query
-                //  bindings: the sql query variables
-                //  time: The execution time for the query
-                //  connectionName: The name of the connection
-                foreach ($sql->bindings as $i => $binding)
-                {
-                    if ($binding instanceof \DateTime)
-                    {
-                        $sql->bindings[$i] = $binding->format('\'Y-m-d H:i:s\'');
-                    }
-                    else
-                    {
-                        if (is_string($binding))
-                        {
-                            $sql->bindings[$i] = "'$binding'";
-                        }
-                    }
-                }
-
-                $query = str_replace(array('%', '?'), array('%%', '%s'), $sql->sql);
-
-                $query = vsprintf($query, $sql->bindings);
-                Log::info($query);
-            });
-        }
     }
 
     /**
@@ -87,13 +56,5 @@ class AppServiceProvider extends ServiceProvider
             'App\Services\Registrar'
         );
 
-        /*
-         * Development Providers
-         */
-        if (\App::environment() !== 'prod')
-        {
-            //$this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
-            //$this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);
-        }
     }
 }

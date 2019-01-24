@@ -52,12 +52,12 @@ class AmChartJob implements ShouldQueue
     /**
      * @var mixed
      */
-    protected $amChartSeries;
+    protected $projectChartSeries;
 
     /**
      * @var mixed
      */
-    protected $amChartSeriesFile;
+    protected $projectChartSeriesFile;
 
     /**
      * AmChartJob constructor.
@@ -100,7 +100,7 @@ class AmChartJob implements ShouldQueue
 
         $this->amChartData = array_values($this->amChartData);
 
-        $data = ['series' => $this->amChartSeries, 'data' => $this->amChartData];
+        $data = ['series' => $this->projectChartSeries, 'data' => $this->amChartData];
         $amChartContract->updateOrCreate(['project_id' => $project->id], $data);
 
         $this->delete();
@@ -111,8 +111,8 @@ class AmChartJob implements ShouldQueue
      */
     protected function resetTemplates() {
         $this->amChartData = [];
-        $this->amChartSeries = [];
-        $this->amChartSeriesFile = json_decode(File::get(config('config.amchart_series')), true);
+        $this->projectChartSeries = [];
+        $this->projectChartSeriesFile = json_decode(File::get(config('config.amchart_series')), true);
     }
 
     /**
@@ -201,8 +201,8 @@ class AmChartJob implements ShouldQueue
      */
     public function buildExpeditionSeries($expedition)
     {
-        $this->amChartSeriesFile['dataFields']['valueY'] = 'expedition'.$expedition->id;
-        $this->amChartSeriesFile['name'] = $expedition->title;
-        $this->amChartSeries[] = $this->amChartSeriesFile;
+        $this->projectChartSeriesFile['dataFields']['valueY'] = 'expedition'.$expedition->id;
+        $this->projectChartSeriesFile['name'] = $expedition->title;
+        $this->projectChartSeries[] = $this->projectChartSeriesFile;
     }
 }

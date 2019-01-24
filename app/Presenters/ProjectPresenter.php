@@ -289,15 +289,26 @@ class ProjectPresenter extends Presenter
     }
 
     /**
+     * Return view project icon.
+     *
+     * @return string
+     */
+    public function projectShowIconLrg()
+    {
+        return '<a href="'.route('admin.projects.show', [
+                $this->model->id,
+            ]).'" data-hover="tooltip" title="View Project"><i class="fas fa-eye fa-2x"></i></a>';
+    }
+
+    /**
      * Return return advertise project icon.
      *
      * @return string
      */
     public function projectAdvertiseIcon()
     {
-        return '<a href="'.route('admin.advertises.index', [
-            $this->model->id
-            ]).'" data-hover="tooltip" title="Project Advertisement"><i class="fas fa-ad"></i></a>';
+        return '<a href="'.route('admin.advertises.index', [$this->model->id]).'" 
+                    data-hover="tooltip" title="Download Advertisment Manifest"><i class="fas fa-ad"></i></a>';
     }
 
     /**
@@ -307,9 +318,8 @@ class ProjectPresenter extends Presenter
      */
     public function projectAdvertiseIconLrg()
     {
-        return '<a href="'.route('admin.advertises.index', [
-            $this->model->id
-            ]).'" data-hover="tooltip" title="Project Advertisement"><i class="fas fa-ad fa-2x"></i></a>';
+        return '<a href="'.route('admin.advertises.index', [$this->model->id]).'" 
+                    data-hover="tooltip" title="Download Advertisment Manifest"><i class="fas fa-ad fa-2x"></i></a>';
     }
 
     /**
@@ -319,7 +329,7 @@ class ProjectPresenter extends Presenter
      */
     public function projectStatisticsIcon()
     {
-        return '<a href="'.route('admin.statistics.index', [
+        return '<a href="'.route('admin.projects.statistics', [
             $this->model->id
             ]).'" data-hover="tooltip" title="Project Statistics"><i class="fas fa-chart-bar"></i></a>';
     }
@@ -331,7 +341,7 @@ class ProjectPresenter extends Presenter
      */
     public function projectStatisticsIconLrg()
     {
-        return '<a href="'.route('admin.statistics.index', [
+        return '<a href="'.route('admin.projects.statistics', [
             $this->model->id
             ]).'" data-hover="tooltip" title="Project Statistics"><i class="fas fa-chart-bar fa-2x"></i></a>';
     }
@@ -431,8 +441,9 @@ class ProjectPresenter extends Presenter
      */
     public function projectImportIcon()
     {
-        return '<a href="'.route('admin.imports.index', [$this->model->id]).'" 
-                    data-toggle="modal" data-remote="false" data-target="#import-modal" 
+        return '<a href="#" class="preventDefault" 
+                    data-remote="'.route('admin.imports.index', [$this->model->id]).'" 
+                    data-toggle="modal" data-target="#import-modal" 
                     data-hover="tooltip" title="Import Project Subjects"><i class="fas fa-file-import"></i></a>';
     }
 
@@ -443,8 +454,9 @@ class ProjectPresenter extends Presenter
      */
     public function projectImportIconLrg()
     {
-        return '<a href="'.route('admin.imports.index', [$this->model->id]).'" 
-                    data-toggle="modal" data-remote="false" data-target="#import-modal" 
+        return '<a href="#" class="preventDefault"
+                    data-remote="'.route('admin.imports.index', [$this->model->id]).'" 
+                    data-toggle="modal" data-target="#import-modal" 
                     data-hover="tooltip" title="Import Project Subjects"><i class="fas fa-file-import fa-2x"></i></a>';
     }
 }

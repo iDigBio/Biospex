@@ -26,8 +26,3 @@
         @include('front.project.partials.project', ['projects' => $projects])
     </div>
 @endsection
-
-@section('footer')
-    @include('common.footer')
-    @include('common.contributors')
-@endsection

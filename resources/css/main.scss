@@ -481,6 +481,10 @@ cards */
     border-radius: 10px;
 }
 
+.card-transcribe {
+    background-color: white;
+}
+
 .card-project {
     position: relative;
     background-color: white;
@@ -875,4 +879,14 @@ li.nav-btn.show {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+#transcribers-tbl_info, #transcribers-tbl_paginate {
+    font-size: .8rem;
+}
+
+label.required:after {
+    font-size: .7rem;
+    color: #e83f29;
+    content: ' required';
 }

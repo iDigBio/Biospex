@@ -46,11 +46,6 @@
             </div>
         </div>
     </div>
-    @include('front.event.partials.scoreboard')
-@endsection
-
-@section('footer')
-    @include('common.footer')
-    @include('common.contributors')
+    @include('common.scoreboard')
 @endsection
 

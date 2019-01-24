@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\Project;
 use GeneralHelper;
 use Illuminate\Support\Carbon;
+use JavaScript;
 
 class ProjectsController extends Controller
 {

@@ -21,29 +21,28 @@
     <hr class="header mx-auto" style="width:300px;">
     <div class="col-12 col-md-10 offset-md-1">
         <div class="card white box-shadow py-5 my-5 p-sm-5">
-            <div class="col-6 mx-auto">
-                <form action="{{ route('front.contact.create') }}" method="post" role="form" class="form-horizontal">
+            <div class="col-8 mx-auto">
+                <form action="{{ route('front.contact.create') }}" method="post" role="form">
                     {!! csrf_field() !!}
-                    <div class="form-group">
-                        <label for="name">{{ __('Name') }} <span class="color-action">*</span></label>
-                        <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}"
-                               required>
-                        {{ $errors->first('name') }}
+                    <div class="form-group {{ ($errors->has('name')) ? 'has-error' : '' }}">
+                        <label for="name" class="col-form-label required">{{ __('Name:') }}</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required>
+                            {{ $errors->first('name') }}
                     </div>
-                    <div class="form-group">
-                        <label for="email" class="mb-0">{{ __('Email') }} <span class="color-action">*</span></label>
-                        <input type="text" name="email" id="email" class="form-control" value="{{ old('email') }}"
-                               required>
+
+                    <div class="form-group {{ ($errors->has('email')) ? 'has-error' : '' }}">
+                        <label for="email" class="col-form-label required">{{ __('Email:') }}</label>
+                        <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required>
                         {{ $errors->first('email') }}
                     </div>
-                    <div class="form-group">
-                        <label for="message" class="mb-0">{{ __('Message') }} <span
-                                    class="color-action">*</span></label>
+
+                    <div class="form-group {{ ($errors->has('message')) ? 'has-error' : '' }}">
+                        <label for="message" class="col-form-label required">{{ __('Message:') }}</label>
                         <textarea rows="6" name="message" id="message" class="form-control"
                                   required>{{ old('message') }}</textarea>
                         {{ $errors->first('message') }}
                     </div>
-                    <div class="text-center">
+                    <div class="form-group text-center">
                         <button type="submit" class="btn btn-primary pl-4 pr-4">{{ __('SUBMIT') }}</button>
                         {!! Honeypot::generate('formuser', 'formtime') !!}
                     </div>
@@ -51,9 +50,4 @@
             </div>
         </div>
     </div>
-@endsection
-
-@section('footer')
-    @include('common.footer')
-    @include('common.contributors')
 @endsection

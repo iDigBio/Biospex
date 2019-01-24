@@ -61,7 +61,7 @@
 
                 <h4>{{ trans_choice('pages.subjects_assigned', 1) }} <span
                             id="max">{{ trans('pages.subjects_assigned_max', ['count' => Config::get('config.expedition_size')]) }}</span>:
-                    <span id="subjectCountHtml"></span></h4>
+                    <span id="subject-count-html"></span></h4>
                 <div class="table-responsive" id="jqtable">
                     <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
                     <div id="pager"></div>

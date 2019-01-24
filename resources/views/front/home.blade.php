@@ -30,7 +30,7 @@
             </div>
         </div>
     </header>
-    @include('common.contributors')
+    @include('front.layout.contributors')
 @endsection
 
 @section('content')

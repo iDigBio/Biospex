@@ -56,6 +56,8 @@ class Kernel extends ConsoleKernel
                     Artisan::call('lada-cache:flush');
                 });
         }
+
+        $schedule->command('telescope:prune --hours=48')->daily();
     }
 
     /**

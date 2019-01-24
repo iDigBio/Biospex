@@ -19,5 +19,6 @@
     <div id="projects" class="row col-sm-12 mx-auto justify-content-center">
         @include('admin.project.partials.project', ['projects' => $projects])
     </div>
+    @include('admin.partials.import-modal')
 @endsection
 

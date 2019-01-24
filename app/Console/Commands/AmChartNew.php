@@ -4,8 +4,6 @@ namespace App\Console\Commands;
 
 use App\Jobs\AmChartJob;
 use App\Repositories\Interfaces\AmChart;
-use App\Repositories\Interfaces\PanoptesTranscription;
-use App\Repositories\Interfaces\Project;
 use Illuminate\Console\Command;
 
 /**
@@ -30,63 +28,22 @@ class AmChartNew extends Command
     protected $description = 'Command description';
 
     /**
-     * @var \App\Repositories\Interfaces\Project
-     */
-    protected $projectContract;
-
-    /**
      * @var \App\Repositories\Interfaces\AmChart
      */
     private $chartContract;
 
     /**
-     * @var PanoptesTranscription
-     */
-    protected $transcription;
-
-    /**
-     * @var
-     */
-    protected $earliest_date;
-
-    /**
-     * @var
-     */
-    protected $finished_date;
-
-    /**
-     * @var mixed
-     */
-    protected $amChartData;
-
-    /**
-     * @var mixed
-     */
-    protected $amChartSeries;
-
-    /**
-     * @var mixed
-     */
-    protected $amChartSeriesFile;
-
-    /**
      * AmChartNew constructor.
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
      * @param \App\Repositories\Interfaces\AmChart $chartContract
-     * @param \App\Repositories\Interfaces\PanoptesTranscription $transcription
      */
     public function __construct(
-        Project $projectContract,
-        AmChart $chartContract,
-        PanoptesTranscription $transcription
+        AmChart $chartContract
     )
     {
         parent::__construct();
 
-        $this->projectContract = $projectContract;
         $this->chartContract = $chartContract;
-        $this->transcription = $transcription;
     }
 
     /**

@@ -4,78 +4,42 @@ namespace App\Http\Controllers\Admin;
 
 use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DwcFileUpload;
-use App\Http\Requests\DwcUriUpload;
-use App\Http\Requests\RecordsetUpload;
 use App\Repositories\Interfaces\Import;
 use App\Jobs\DwcFileImportJob;
 use App\Jobs\DwcUriImportJob;
 use App\Jobs\RecordsetImportJob;
-use App\Services\File\FileService;
 use App\Repositories\Interfaces\Project;
 
 class ImportsController extends Controller
 {
-
-    /**
-     * @var FileService
-     */
-    private $fileService;
-
-    /**
-     * @var Project
-     */
-    private $projectContract;
-
-    /**
-     * @var Import
-     */
-    private $importContract;
-
-    /**
-     * ImportsController constructor.
-     * @param FileService $fileService
-     * @param Project $projectContract
-     * @param Import $importContract
-     */
-    public function __construct(
-        FileService $fileService,
-        Project $projectContract,
-        Import $importContract
-    )
-    {
-        $this->fileService = $fileService;
-        $this->projectContract = $projectContract;
-        $this->importContract = $importContract;
-    }
-
     /**
      * Add data to project
      *
+     * @param \App\Repositories\Interfaces\Project $projectContract
      * @param $projectId
      * @return \Illuminate\View\View
      */
-    public function index($projectId)
+    public function index(Project $projectContract, $projectId)
     {
-        $project = $this->projectContract->findWith($projectId, ['group']);
+        $project = $projectContract->find($projectId);
 
-        return view('front.projects.add', compact('project'));
+        return view('admin.partials.import-modal-body', compact('project'));
     }
 
     /**
      * Upload DWC file.
      *
-     * @param DwcFileUpload $request
-     * @param $projectId
+     * @param \App\Repositories\Interfaces\Import $importContract
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function dwcFile(DwcFileUpload $request, $projectId)
+    public function dwcFile(Import $importContract)
     {
         try {
 
-            $path = $request->file('dwc')->store('imports/subjects');
+            $projectId = request()->input('project_id');
+            $path = request()->file('dwc')->store('imports/subjects');
 
-            $import = $this->importContract->create([
+            $import = $importContract->create([
                 'user_id'    => \Auth::user()->id,
                 'project_id' => $projectId,
                 'file'       => $path
@@ -83,77 +47,77 @@ class ImportsController extends Controller
 
             DwcFileImportJob::dispatch($import);
 
-            FlashHelper::success(trans('pages.upload_trans_success'));
+            FlashHelper::success(__('Upload was successful. You will receive an email when your import data have been processed.'));
 
-            return redirect()->route('webauth.projects.show', [$projectId]);
+            return redirect()->back();
         }
         catch(\Exception $e)
         {
-            FlashHelper::error('Error uploading the file.');
+            FlashHelper::error(__('Error uploading file.'));
 
-            return redirect()->route('webauth.projects.show', [$projectId]);
+            return redirect()->back();
         }
     }
 
     /**
      * Upload record set.
      *
-     * @param RecordsetUpload $request
-     * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function recordSet(RecordsetUpload $request, $projectId)
+    public function recordSet()
     {
         try
         {
+            $projectId = request()->input('project_id');
+
             $data = [
-                'id'         => $request->input('recordset'),
-                'user_id'    => request()->input('user_id'),
+                'id'         => request()->input('recordset'),
+                'user_id'    => \Auth::user()->id,
                 'project_id' => $projectId
             ];
 
             RecordsetImportJob::dispatch($data);
 
-            FlashHelper::success(trans('pages.upload_trans_success'));
+            FlashHelper::success(__('Upload was successful. You will receive an email when your import data have been processed.'));
 
-            return redirect()->route('webauth.projects.show', [$projectId]);
+            return redirect()->back();
         }
         catch(\Exception $e)
         {
-            FlashHelper::error('Error uploading the file.');
+            FlashHelper::error(__('Error uploading file.'));
 
-            return redirect()->route('webauth.projects.show', [$projectId]);
+            return redirect()->back();
         }
     }
 
     /**
      * Upload Dwc uri.
      *
-     * @param DwcUriUpload $request
-     * @param $projectId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function dwcUri(DwcUriUpload $request, $projectId)
+    public function dwcUri()
     {
         try
         {
+            $projectId = request()->input('project_id');
+
             $data = [
                 'id'      => $projectId,
-                'user_id' => $request->input('user_id'),
-                'url'     => $request->input('data-url')
+                'user_id' => \Auth::user()->id,
+                'url'     => request()->input('dwc-url')
             ];
 
             DwcUriImportJob::dispatch($data);
 
-            FlashHelper::success(trans('pages.upload_trans_success'));
+            FlashHelper::success(__('Upload was successful. You will receive an email when your import data have been processed.'));
 
-            return redirect()->route('webauth.projects.show', [$projectId]);
+            return redirect()->back();
         }
         catch(\Exception $e)
         {
-            FlashHelper::error('Error uploading the file.');
+            FlashHelper::error(__('Error uploading file.'));
 
-            return redirect()->route('webauth.projects.show', [$projectId]);
+            return redirect()->back();
         }
     }
 }

@@ -24,6 +24,5 @@
 @endsection
 
 @section('footer')
-    @include('common.footer')
-    @include('common.contributors')
+    @include('front.layout.contributors')
 @endsection

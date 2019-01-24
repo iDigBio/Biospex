@@ -1,6 +1,7 @@
 $.jgrid.defaults.width = 780;
 $.jgrid.defaults.responsive = true;
 $.jgrid.defaults.guiStyle = 'bootstrap';
+$.jgrid.defaults.iconSet = "fontAwesomeSVG";
 $.jgrid.cellattr = $.jgrid.cellattr || {};
 $.extend($.jgrid.cellattr, {
     addDataAttr: function (rowId, cellVal, rawObject, cm, rdata) {
@@ -12,31 +13,32 @@ $.extend($.jgrid.cellattr, {
 let Grid = {};
 
 $(function () {
-    if ($("#jqGridModal").length > 0) {
+    if ($("#jqgrid-modal").length > 0) {
         'use strict';
         Grid.loadSate = false;
         Grid.id = $(".jgrid").prop('id');
         Grid.obj = $("#" + Grid.id);
         Grid.projectId = Laravel.projectId;
         Grid.expeditionId = Laravel.expeditionId;
-        Grid.url = Laravel.url;
+        Grid.gridUrl = Laravel.gridUrl;
         Grid.exportUrl = Laravel.exportUrl;
+        Grid.editUrl = Laravel.editUrl;
         Grid.maxSubjects = Laravel.maxSubjects;
-        Grid.subjectCountHtmlObj = $('#subjectCountHtml');
-        Grid.subjectIdsObj = $('#subjectIds');
+        Grid.subjectCountHtmlObj = $('#subject-count-html');
+        Grid.subjectIdsObj = $('#subject-ids');
         Grid.showCheckbox = Laravel.showCheckbox;
         Grid.explore = Laravel.explore;
         Grid.subjectIdsObj.data('ids', Laravel.subjectIds);
 
         $.ajax({
             type: "GET",
-            url: "/projects/" + Grid.projectId + "/grids/load",
+            url: '/admin/grids/'+Grid.projectId+'/load',
             dataType: "json",
             success: jqBuildGrid()
         });
 
         $('.gridForm').submit(function () {
-            $('#subjectIds').val(Grid.subjectIdsObj.data('ids').toString());
+            $('#subject-ids').val(Grid.subjectIdsObj.data('ids').toString());
 
             return true;
         });
@@ -58,7 +60,7 @@ function jqBuildGrid() {
                 cell: "",
                 id: "_id"
             },
-            url: Grid.url,
+            url: Grid.gridUrl,
             mtype: "GET",
             datatype: "json",
             page: 1,
@@ -80,7 +82,7 @@ function jqBuildGrid() {
             height: '100%',
             pager: "#pager",
             toppager: true,
-            editurl: '/projects/' + Grid.projectId + '/grids/explore',
+            editurl: Grid.editUrl,
             beforeSelectRow: function (id, event) {
                 return handleCellSelect(id, event);
             },
@@ -101,8 +103,6 @@ function jqBuildGrid() {
                 Grid.subjectCountHtmlObj.html(Grid.subjectIdsObj.data('ids').length);
             },
             loadComplete: function () {
-                setPreviewLinks();
-
                 if (switchCbColumn() || Grid.loadSate) {
                     Grid.subjectCountHtmlObj.html(Grid.subjectIdsObj.data('ids').length);
                     return;
@@ -160,7 +160,7 @@ function jqBuildGrid() {
             } // search options - define multiple search
         ).navButtonAdd('#pager', {
             caption: '',
-            buttonicon: "glyphicon glyphicon-list",
+            buttonicon: "fas fa-columns",
             title: "Choose columns",
             onClickButton: function () {
                 Grid.obj.jqGrid('columnChooser', {
@@ -178,7 +178,7 @@ function jqBuildGrid() {
             }
         }).navButtonAdd('#pager', {
             caption: '',
-            buttonicon: "glyphicon glyphicon-remove",
+            buttonicon: "fas fa-eraser",
             title: "Clear saved grid's settings",
             onClickButton: function () {
                 localStorage.clear();
@@ -186,7 +186,7 @@ function jqBuildGrid() {
             }
         }).navButtonAdd('#pager', {
             caption: '',
-            buttonicon: "glyphicon glyphicon-file",
+            buttonicon: "fas fa-file-export",
             title: "Export to CSV",
             onClickButton: function (event) {
                 $.get(Grid.exportUrl, function( data ) {
@@ -196,7 +196,7 @@ function jqBuildGrid() {
             }
         }).navButtonAdd('#' + Grid.id + '_toppager_left', {
             caption: '',
-            buttonicon: "glyphicon glyphicon-list",
+            buttonicon: "fas fa-columns",
             title: "Choose columns",
             onClickButton: function () {
                 Grid.obj.jqGrid('columnChooser', {
@@ -214,11 +214,21 @@ function jqBuildGrid() {
             }
         }).navButtonAdd('#' + Grid.id + '_toppager_left', {
             caption: '',
-            buttonicon: "glyphicon glyphicon-remove",
+            buttonicon: "fas fa-eraser",
             title: "Clear saved grid's settings",
             onClickButton: function () {
                 localStorage.clear();
                 window.location.reload();
+            }
+        }).navButtonAdd('#' + Grid.id + '_toppager_left', {
+            caption: '',
+            buttonicon: "fas fa-file-export",
+            title: "Export to CSV",
+            onClickButton: function (event) {
+                $.get(Grid.exportUrl, function( data ) {
+                    alert( "The export will be emailed when compiled.");
+                });
+                return false;
             }
         });
 
@@ -290,8 +300,8 @@ function mapFormatter(column) {
         "imagePreview": function (cellValue, opts, rowObjects) {
             let url = encodeURIComponent(cellValue);
             return '<a href="' + cellValue + '" target="_new">View Image</a>&nbsp;&nbsp;'
-                + '<a href="/images/preview?url=' + url + '" class="thumb-view">View Thumb</a>&nbsp;&nbsp;'
-                + '<a href="' + cellValue + '" class="url-view">View Url</a>';
+                + '<a href="#" class="thumb-view" data-remote="/images/preview?url=' + url + '" data-toggle="modal" data-target="#jqgrid-modal" data-hover="tooltip" title="Preview Thumbnail">View Thumb</a>&nbsp;&nbsp;'
+                + '<a href="#" class="url-view" data-remote="' + cellValue + '" data-toggle="modal" data-target="#jqgrid-modal" data-hover="tooltip" title="Preview URL">View URL</a>'
         }
     };
 
@@ -350,29 +360,4 @@ function updateIdsOfSelectedRows(id, isSelected) {
     if (Grid.subjectIdsObj.data('ids').length > Grid.maxSubjects) {
         $('#max').addClass('red');
     }
-}
-
-/**
- * Set preview links
- * Must re-declare grid object id for loadState
- */
-function setPreviewLinks() {
-    $('#' + Grid.id).on("click", 'a.thumb-view', function (event) {
-        event.preventDefault();
-        $.ajax({
-            url: $(event.target).attr('href'),
-            beforeSend: function (xhr) {
-                $('.loading').show();
-            }
-        })
-            .done(function (data) {
-                $('#model-body').html(data);
-                $('.loading').hide();
-                $('#jqGridModal').modal('show');
-            });
-    }).on("click", 'a.url-view', function (event) {
-        event.preventDefault();
-        $('#model-body').html($(event.target).attr('href'));
-        $('#jqGridModal').modal('show');
-    });
 }
