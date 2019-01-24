@@ -25,6 +25,7 @@
                 {!! $project->present()->project_explore_icon !!}
                 {!! $project->present()->project_advertise_icon !!}
                 {!! $project->present()->project_statistics_icon !!}
+                {!! $project->present()->project_ocr_icon !!}
                 {!! $project->present()->project_edit_icon !!}
                 {!! $project->present()->project_clone_icon !!}
                 @can('isOwner', $project->group)

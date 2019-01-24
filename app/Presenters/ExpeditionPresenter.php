@@ -108,4 +108,30 @@ class ExpeditionPresenter extends Presenter
 
         return '<a href="'.$route.'" class="ajax-download" data-hover="tooltip" title="'. __('Download') . ' ' . $this->model->type . '">';
     }
+
+    /**
+     * Return return expedition ocr icon.
+     *
+     * @return string
+     */
+    public function expeditionOcrIcon()
+    {
+        return '<a href="'.route('admin.expeditions.ocr', [
+                $this->model->project_id,
+                $this->model->id
+            ]).'" data-hover="tooltip" title="'. __('Redo OCR For ALL Expedition Subjects') .'"><i class="fas fa-redo-alt"></i></a>';
+    }
+
+    /**
+     * Return return expedition ocr lrg icon.
+     *
+     * @return string
+     */
+    public function expeditionOcrIconLrg()
+    {
+        return '<a href="'.route('admin.expeditions.ocr', [
+                $this->model->project_id,
+                $this->model->id
+            ]).'" data-hover="tooltip" title="'. __('Redo OCR For ALL Expedition Subjects') .'"><i class="fas fa-redo-alt fa-2x"></i></a>';
+    }
 }

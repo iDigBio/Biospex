@@ -459,4 +459,28 @@ class ProjectPresenter extends Presenter
                     data-toggle="modal" data-target="#import-modal" 
                     data-hover="tooltip" title="Import Project Subjects"><i class="fas fa-file-import fa-2x"></i></a>';
     }
+
+    /**
+     * Return return clone project icon.
+     *
+     * @return string
+     */
+    public function projectOcrIcon()
+    {
+        return '<a href="'.route('admin.projects.ocr', [
+                $this->model->id
+            ]).'" data-hover="tooltip" title="'. __('Redo OCR For ALL Project Subjects') .'"><i class="fas fa-redo-alt"></i></a>';
+    }
+
+    /**
+     * Return return clone project icon.
+     *
+     * @return string
+     */
+    public function projectOcrIconLrg()
+    {
+        return '<a href="'.route('admin.projects.ocr', [
+                $this->model->id
+            ]).'" data-hover="tooltip" title="'. __('Redo OCR For ALL Project Subjects') .'"><i class="fas fa-redo-alt fa-2x"></i></a>';
+    }
 }

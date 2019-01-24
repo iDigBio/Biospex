@@ -16,6 +16,7 @@
             <div class="d-flex justify-content-between mt-4 mx-auto">
                 {!! $expedition->present()->expedition_show_icon !!}
                 {!! $expedition->present()->expedition_download_icon !!}
+                {!! $expedition->present()->expedition_ocr_icon !!}
                 {!! $expedition->present()->expedition_edit_icon !!}
                 {!! $expedition->present()->expedition_clone_icon !!}
                 @can('isOwner', $expedition->project->group)
