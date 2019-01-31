@@ -16,4 +16,4 @@ $router->delete('projects/{projects}/expeditions/{expeditions}')->uses('Expediti
 $router->get('projects/{projects}/expeditions/{expeditions}/clone')->uses('ExpeditionsController@clone')->name('admin.expeditions.clone');
 $router->get('projects/{projects}/expeditions/{expeditions}/process')->uses('ExpeditionsController@process')->name('admin.expeditions.process');
 $router->delete('projects/{projects}/expeditions/{expeditions}/stop')->uses('ExpeditionsController@stop')->name('admin.expeditions.stop');
-$router->get('projects/{projects}/expeditions/{expeditions}/ocr')->uses('ExpeditionsController@ocr')->name('admin.expeditions.ocr');
+$router->post('projects/{projects}/expeditions/{expeditions}/ocr')->uses('ExpeditionsController@ocr')->name('admin.expeditions.ocr');

@@ -28,7 +28,7 @@ class FlashHelper
      */
     public function success($message)
     {
-        $this->create($message, 'success', 'ok');
+        $this->create($message, 'success', 'check-circle');
     }
 
     /**
@@ -38,7 +38,7 @@ class FlashHelper
      */
     public function info($message)
     {
-        $this->create($message, 'info', 'info-sign');
+        $this->create($message, 'info', 'info-circle');
     }
 
     /**
@@ -48,7 +48,7 @@ class FlashHelper
      */
     public function warning($message)
     {
-        $this->create($message, 'warning', 'warning-sign');
+        $this->create($message, 'warning', 'exclamation-circle');
     }
 
     /**
@@ -58,6 +58,6 @@ class FlashHelper
      */
     public function error($message)
     {
-        $this->create($message, 'danger', 'fire');
+        $this->create($message, 'danger', 'times-circle');
     }
 }

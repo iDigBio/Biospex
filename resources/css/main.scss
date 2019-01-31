@@ -14,13 +14,15 @@ a {
     transform: .25s ease-out;
 }
 
-a:hover {
-    text-decoration: none;
-}
-
-.color-action, a, .card h1.project-wide a.color-action {
+.color-action, a {
     color: #e83f29;
 }
+
+a:hover {
+    text-decoration: none;
+    color: #383333;
+}
+
 
 a>i {
     -webkit-transition: all .25s ease-in-out;
@@ -30,14 +32,7 @@ a>i {
     transition: all .25s ease-in-out;
 }
 
-a>i:hover {
-    color: #e83f29 !important;
-}
-
-a.button-icon .fas {
-    color: #ffffff !important;
-}
-a.button-icon:hover .fas {
+a:hover i {
     color: #e83f29 !important;
 }
 
@@ -55,7 +50,6 @@ button {
     border-radius: .2rem;
 }
 
-
 .box-shadow { box-shadow: 0 0 25px rgba(0, 0, 0, .25); }
 
 
@@ -63,7 +57,7 @@ button {
     border-radius: 0;
 }
 
-svg, p, .text, i, h1, h2, h3, h4, h5 {
+svg, p, .text, i, h1, h2, h3, h4, h5, .col-form-label {
     color: #383333;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -78,7 +72,7 @@ h5  {
     font-family: 'Work Sans', sans-serif;
 }
 
-p, .text {
+p, .text, .col-form-label {
     font-family: 'Work Sans', sans-serif;
     font-size: 1.125rem;
 }
@@ -127,17 +121,22 @@ h2.modal-number>small {
     transition: .25s ease-out;
 }
 
-.btn.btn-primary i.fas {
+.btn.btn-primary i {
     color: #ffffff;
 }
 
-.btn.btn-primary:hover i.fas {
+.btn.btn-primary:hover i {
     color: #e83f29;
 }
 
 .btn.btn-primary:hover {
     background-color: transparent;
     color: #e83f29;
+    border-color: #e83f29;
+}
+
+.btn-primary.focus {
+    box-shadow: 0 0 0 0.1rem rgba(255, 184, 184, 0.25);
 }
 
 .btn.btn-danger {
@@ -385,46 +384,26 @@ contributor logos*/
     background-image: none;
     border-color: #e83f29;
 }
-.btn-primary {
-    background-color: #e83f29;
-    border-color: #e83f29;
-    padding: 7px 35px;
-}
 
-.btn-primary:hover {
-    color: #e83f29;
-    background-color: transparent;
-    border-color: #e83f29;
-}
-.btn-primary.focus, .btn-primary:focus {
-    box-shadow: 0 0 0 0.1rem rgba(255, 184, 184, 0.25);
-}
 
 /*
-jumbotron*/
+home page*/
 
-.jumbotron {
+.home-heading {
     padding-top: 3rem;
     padding-bottom: 3rem;
     margin-bottom: 0;
     background-color: #fff;
 }
 
-.jumbotron p:last-child {
+.home-heading p:last-child {
     margin-bottom: 0;
 }
 
-.jumbotron-heading {
-    font-weight: 300;
+.home-heading .container {
+    max-width: 70rem;
 }
 
-.jumbotron .container {
-    max-width: 40rem;
-}
-
-
-/*
-home page*/
 .home-arrow {
     top: 5px;
     position: absolute;
@@ -461,12 +440,38 @@ h2.home-header-cta {
     }
 }
 
-/*
-cards */
+/* jumbotron */
 
-.card h2 {
-    cursor: pointer;
+.jumbotron {
+    position: relative;
+    border: 0;
+    border-radius: 10px;
+    background-color: white;
 }
+
+/* cards */
+
+.card {
+    position: relative;
+    //background-color: black;
+    border: 0;
+    border-radius: 10px;
+    min-width: 333px;
+}
+
+.card.black {
+    background-color: black;
+}
+
+.card-footer {
+    padding: 0;
+    background-color: transparent;
+}
+
+.card-body {
+    background-color: white;
+}
+
 .card .fa-times-circle {
     position: absolute;
     right: 15px;
@@ -474,31 +479,7 @@ cards */
     cursor: pointer;
 }
 
-.card {
-    position: relative;
-    background-color: black;
-    border: 0;
-    border-radius: 10px;
-}
-
-.card-transcribe {
-    background-color: white;
-}
-
-.card-project {
-    position: relative;
-    background-color: white;
-    border: 0;
-    border-radius: 10px;
-}
-.card-project .card-footer {
-    background-color: transparent;
-}
-
-.card-footer {
-    padding: 0;
-}
-.card-project ul {
+.card ul {
     margin: 0;
     padding: 0;
     display: block;
@@ -515,17 +496,10 @@ cards */
     padding-start: 0px;
 }
 
-.card-project ul li {
+.card ul li {
     list-style: none;
     font-size: 0.8125rem;
     text-rendering: optimizeLegibility;
-}
-
-.card.white {
-    background-color: white;
-}
-.card-body {
-    background-color: white;
 }
 
 .card-img-top {
@@ -547,26 +521,6 @@ cards */
     font-size: .8rem;
 }
 
-.card a {
-    color: #444;
-    -webkit-transition:  .15s ease-out;
-    -moz-transition:  .15s ease-out;
-    -ms-transition:  .15s ease-out;
-    -o-transition:  .15s ease-out;
-    transition:  .15s ease-out;
-}
-.card a:hover, .card a:hover>i  {
-    color: #e83f29;
-}
-
-.card a.link {
-    color: #e83f29;
-}
-
-.card a.link:hover {
-    color: #444;
-}
-
 .card .btn-outline-primary {
     border-color: #e83f29;
     color: #e83f29;
@@ -576,14 +530,11 @@ cards */
     color: white;
 }
 
-.card-deck .card {
-    max-width: calc(25% - 30px);
-}
-
-.faq.card {
+.card.faq {
     background-color: #eeeff9;
 }
-.faq.btn-link, .faq.btn-link:hover {
+
+.faq.btn {
     font-weight: bold;
     color: #7287a5;
     background-color: transparent;
@@ -592,11 +543,11 @@ cards */
     word-wrap: break-word;
 }
 
-.import.card {
-    background-color: #ffffff;
+.faq.btn:hover {
+    color: #e83f29;
 }
 
-.import.btn-link, .import.btn-link:hover {
+.import.btn {
     font-weight: bold;
     color: #e83f29;
     background-color: transparent;
@@ -604,9 +555,8 @@ cards */
     white-space:normal !important;
     word-wrap: break-word;
 }
-
-.label-info {
-    border: .5rem;
+.import.btn:hover{
+    color: #383333;
 }
 
 /*footer*/
@@ -716,9 +666,8 @@ h1.project-wide {
     color: #888;
 }
 
-h1.project-headers {
+.content-header {
     font-size: 2.875rem;
-    margin: 6rem 0 2rem 0;
     line-height: 1.875rem;
     color: #888;
 }
@@ -824,9 +773,6 @@ h1.project-headers {
 
 /* End Carousel */
 
-.jumbotron .container {
-    max-width: 70rem;
-}
 
 /** main nav buttons */
 li.nav-btn {
@@ -885,8 +831,32 @@ li.nav-btn.show {
     font-size: .8rem;
 }
 
-label.required:after {
+
+.col-form-label.required:after {
+    font-family: 'Work Sans', sans-serif;
     font-size: .7rem;
     color: #e83f29;
     content: ' required';
 }
+
+.project-banner {
+    position: relative;
+}
+
+.project-banner {
+    cursor: pointer;
+    width: 100%;
+    vertical-align: top;
+}
+
+.project-banner:after {
+    content: '\A';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.6);
+    opacity: 0.9;
+}
+

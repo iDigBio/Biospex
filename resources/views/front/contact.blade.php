@@ -20,7 +20,7 @@
     <h2 class="text-center pt-4">{{ __('Contact BIOSPEX') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="col-12 col-md-10 offset-md-1">
-        <div class="card white box-shadow py-5 my-5 p-sm-5">
+        <div class="jumbotron box-shadow py-5 my-5 p-sm-5">
             <div class="col-8 mx-auto">
                 <form action="{{ route('front.contact.create') }}" method="post" role="form">
                     {!! csrf_field() !!}
@@ -42,9 +42,9 @@
                                   required>{{ old('message') }}</textarea>
                         {{ $errors->first('message') }}
                     </div>
+                    @include('common.recaptcha')
                     <div class="form-group text-center">
-                        <button type="submit" class="btn btn-primary pl-4 pr-4">{{ __('SUBMIT') }}</button>
-                        {!! Honeypot::generate('formuser', 'formtime') !!}
+                        <button type="submit" class="btn btn-primary">{{ __('SUBMIT') }}</button>
                     </div>
                 </form>
             </div>

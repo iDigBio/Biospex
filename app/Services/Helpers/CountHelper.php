@@ -65,7 +65,10 @@ class CountHelper
         return $count;
     }
 
-    //
+    /**
+     * @param $projectId
+     * @return mixed
+     */
     public function projectSubjectCount($projectId)
     {
         $result = Cache::remember('project_subject_count_' . $projectId, 60, function () {
@@ -75,6 +78,10 @@ class CountHelper
         return $result;
     }
 
+    /**
+     * @param $expeditionId
+     * @return mixed
+     */
     public function expeditionSubjectCount($expeditionId)
     {
         $result = Cache::remember('expedition_subject_count_' . $expeditionId, 60, function () {

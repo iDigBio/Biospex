@@ -10,7 +10,7 @@
     "admindev": "npm run admindevelopment",
     "admindevelopment": "cross-env process.env.section=admin NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "adminwatch": "cross-env process.env.section=admin NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "adminprod": "npm run adminproduction",
+    "admin": "npm run adminproduction",
     "adminproduction": "cross-env process.env.section=admin NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
   },
   "devDependencies": {

@@ -112,7 +112,7 @@ class AmChartJob implements ShouldQueue
     protected function resetTemplates() {
         $this->amChartData = [];
         $this->projectChartSeries = [];
-        $this->projectChartSeriesFile = json_decode(File::get(config('config.amchart_series')), true);
+        $this->projectChartSeriesFile = json_decode(File::get(config('config.project_chart_series')), true);
     }
 
     /**

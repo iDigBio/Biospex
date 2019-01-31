@@ -19,7 +19,7 @@ class ExpeditionPresenter extends Presenter
     }
 
     /**
-     * Return view expedition icon.
+     * Return view icon.
      *
      * @return string
      */
@@ -28,11 +28,11 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.show', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="View Expedition"><i class="fas fa-eye"></i></a>';
+            ]).'" data-hover="tooltip" title="'.__('View Expedition').'"><i class="fas fa-eye"></i></a>';
     }
 
     /**
-     * Return return clone expedition icon.
+     * Return return download icon.
      *
      * @return string
      */
@@ -44,12 +44,12 @@ class ExpeditionPresenter extends Presenter
         ]);
 
         return '<a href="#" class="preventDefault" data-toggle="modal" data-remote="'.$route.'" 
-                    data-target="#expedition-download-modal" data-hover="tooltip" title="Download Expedition Files">
+                    data-target="#expedition-download-modal" data-hover="tooltip" title="'.__('Download Expedition Files').'">
                     <i class="fas fa-file-download"></i></a>';
     }
 
     /**
-     * Return return edit expedition icon.
+     * Return return edit icon.
      *
      * @return string
      */
@@ -58,11 +58,11 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.edit', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="Edit Expedition"><i class="fas fa-edit"></i></a>';
+            ]).'" data-hover="tooltip" title="'.__('Edit Expedition').'"><i class="fas fa-edit"></i></a>';
     }
 
     /**
-     * Return return clone expedition icon.
+     * Return return clone icon.
      *
      * @return string
      */
@@ -71,11 +71,11 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.clone', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="Clone Expedition"><i class="fas fa-clone"></i></a>';
+            ]).'" data-hover="tooltip" title="'.__('Clone Expedition').'"><i class="fas fa-clone"></i></a>';
     }
 
     /**
-     * Return return delete project icon.
+     * Return return delete icon.
      *
      * @return string
      */
@@ -93,24 +93,12 @@ class ExpeditionPresenter extends Presenter
             data-btn-ok-class="btn-success"
             data-btn-cancel-label="Stop" data-btn-cancel-icon="fas fa-ban fa-2x"
             data-btn-cancel-class="btn-danger"
-            data-title="'.__('Delete Expedition').'?" data-content="This will permanently delete the record">
+            data-title="'.__('Delete Expedition').'?" data-content="'.__('This will permanently delete the record').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 
-    public function downloadIcon()
-    {
-        dd($this->model);
-        $route = route('admin.downloads.download', [
-                $this->model->project->id,
-                $this->model->id,
-                $this->model->download->id,
-            ]);
-
-        return '<a href="'.$route.'" class="ajax-download" data-hover="tooltip" title="'.__('Download').' '.$this->model->type.'">';
-    }
-
     /**
-     * Return return expedition ocr icon.
+     * Return return ocr icon.
      *
      * @return string
      */
@@ -122,7 +110,7 @@ class ExpeditionPresenter extends Presenter
             ]).'" class="prevent-default"
             title="'.__('Reprocess Subject OCR').'" 
             data-hover="tooltip"        
-            data-method="get"
+            data-method="post"
             data-confirm="confirmation"
             data-btn-ok-label="Continue" data-btn-ok-icon="fas fa-share fa-2x"
             data-btn-ok-class="btn-success"
@@ -133,7 +121,7 @@ class ExpeditionPresenter extends Presenter
     }
 
     /**
-     * Return return expedition ocr lrg icon.
+     * Return return ocr lrg icon.
      *
      * @return string
      */
@@ -145,7 +133,7 @@ class ExpeditionPresenter extends Presenter
             ]).'" class="prevent-default"
             title="'.__('Reprocess Subject OCR').'" 
             data-hover="tooltip"        
-            data-method="get"
+            data-method="post"
             data-confirm="confirmation"
             data-btn-ok-label="Continue" data-btn-ok-icon="fas fa-share fa-2x"
             data-btn-ok-class="btn-success"

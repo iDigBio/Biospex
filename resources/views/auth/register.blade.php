@@ -57,8 +57,8 @@
                         <input type="text" name="invite" id="invite" class="form-control">
                         {{ ($errors->has('invite') ?  $errors->first('invite') : '') }}
                     </div>
+                    @include('common.recaptcha')
                     <div class="form-group text-center">
-                        {!! Honeypot::generate('formuser', 'formtime') !!}
                         {!! Form::hidden('apiuser', 0) !!}
                         <button type="submit" class="btn btn-primary pl-4 pr-4">{{ __('SUBMIT') }}</button>
                     </div>

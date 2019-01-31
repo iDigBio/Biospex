@@ -4,8 +4,67 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a4f266ed9274019bd91b882dee755f01",
+    "content-hash": "6703c54adcde8cfc643778d2932fc36a",
     "packages": [
+        {
+            "name": "anhskohbo/no-captcha",
+            "version": "3.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/anhskohbo/no-captcha.git",
+                "reference": "164715a2de0fded5979e7a9b7721785d72a4a7d3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/anhskohbo/no-captcha/zipball/164715a2de0fded5979e7a9b7721785d72a4a7d3",
+                "reference": "164715a2de0fded5979e7a9b7721785d72a4a7d3",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.2",
+                "illuminate/support": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*",
+                "php": ">=5.5.5"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.8"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Anhskohbo\\NoCaptcha\\NoCaptchaServiceProvider"
+                    ],
+                    "aliases": {
+                        "NoCaptcha": "Anhskohbo\\NoCaptcha\\Facades\\NoCaptcha"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Anhskohbo\\NoCaptcha\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "anhskohbo",
+                    "email": "anhskohbo@gmail.com"
+                }
+            ],
+            "description": "No CAPTCHA reCAPTCHA For Laravel.",
+            "keywords": [
+                "captcha",
+                "laravel",
+                "laravel4",
+                "laravel5",
+                "no-captcha",
+                "recaptcha"
+            ],
+            "time": "2018-08-27T02:16:31+00:00"
+        },
         {
             "name": "cakephp/chronos",
             "version": "1.2.3",
@@ -1309,16 +1368,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.80",
+            "version": "v0.82",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
-                "reference": "cb86c0001e6b757753b6a2efed837e4b899bddb3"
+                "reference": "f335aee468065d61c747ac1371347c1693f31e4d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/cb86c0001e6b757753b6a2efed837e4b899bddb3",
-                "reference": "cb86c0001e6b757753b6a2efed837e4b899bddb3",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/f335aee468065d61c747ac1371347c1693f31e4d",
+                "reference": "f335aee468065d61c747ac1371347c1693f31e4d",
                 "shasum": ""
             },
             "require": {
@@ -1342,7 +1401,7 @@
             "keywords": [
                 "google"
             ],
-            "time": "2019-01-07T00:22:56+00:00"
+            "time": "2019-01-25T22:35:06+00:00"
         },
         {
             "name": "google/auth",
@@ -1848,16 +1907,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.7.22",
+            "version": "v5.7.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "64a7749bd9e8df68addce1d01a54bcf606141f29"
+                "reference": "2ede55db4b8201ed0450fa7e7a4d7220aa29bc34"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/64a7749bd9e8df68addce1d01a54bcf606141f29",
-                "reference": "64a7749bd9e8df68addce1d01a54bcf606141f29",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/2ede55db4b8201ed0450fa7e7a4d7220aa29bc34",
+                "reference": "2ede55db4b8201ed0450fa7e7a4d7220aa29bc34",
                 "shasum": ""
             },
             "require": {
@@ -1990,7 +2049,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2019-01-22T15:08:35+00:00"
+            "time": "2019-01-29T22:13:46+00:00"
         },
         {
             "name": "laravel/nexmo-notification-channel",
@@ -2244,6 +2303,69 @@
                 "slack"
             ],
             "time": "2018-12-12T13:12:06+00:00"
+        },
+        {
+            "name": "laravel/telescope",
+            "version": "v1.0.11",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/telescope.git",
+                "reference": "c3dea9bbfd84b27b264e2aec0c7fec4077e471db"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/telescope/zipball/c3dea9bbfd84b27b264e2aec0c7fec4077e471db",
+                "reference": "c3dea9bbfd84b27b264e2aec0c7fec4077e471db",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "laravel/framework": "~5.7.7",
+                "moontoast/math": "^1.1",
+                "php": "^7.1.3",
+                "symfony/var-dumper": "^4.1"
+            },
+            "require-dev": {
+                "nunomaduro/larastan": "^0.3.7",
+                "orchestra/testbench": "~3.7"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Telescope\\TelescopeServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Telescope\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                },
+                {
+                    "name": "Mohamed Said",
+                    "email": "mohamed@laravel.com"
+                }
+            ],
+            "description": "An elegant debug assistant for the Laravel framework.",
+            "keywords": [
+                "debugging",
+                "laravel",
+                "monitoring"
+            ],
+            "time": "2019-01-17T15:16:02+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -3799,16 +3921,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "2.0.13",
+            "version": "2.0.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "42603ce3f42a27f7e14e54feab95db7b680ad473"
+                "reference": "8ebfcadbf30524aeb75b2c446bc2519d5b321478"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/42603ce3f42a27f7e14e54feab95db7b680ad473",
-                "reference": "42603ce3f42a27f7e14e54feab95db7b680ad473",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/8ebfcadbf30524aeb75b2c446bc2519d5b321478",
+                "reference": "8ebfcadbf30524aeb75b2c446bc2519d5b321478",
                 "shasum": ""
             },
             "require": {
@@ -3887,7 +4009,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2018-12-16T17:45:25+00:00"
+            "time": "2019-01-27T19:37:29+00:00"
         },
         {
             "name": "predis/predis",
@@ -5712,20 +5834,21 @@
         },
         {
             "name": "vlucas/phpdotenv",
-            "version": "v2.5.2",
+            "version": "v2.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vlucas/phpdotenv.git",
-                "reference": "cfd5dc225767ca154853752abc93aeec040fcf36"
+                "reference": "2a7dcf7e3e02dc5e701004e51a6f304b713107d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/cfd5dc225767ca154853752abc93aeec040fcf36",
-                "reference": "cfd5dc225767ca154853752abc93aeec040fcf36",
+                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/2a7dcf7e3e02dc5e701004e51a6f304b713107d5",
+                "reference": "2a7dcf7e3e02dc5e701004e51a6f304b713107d5",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.9"
+                "php": ">=5.3.9",
+                "symfony/polyfill-ctype": "^1.9"
             },
             "require-dev": {
                 "phpunit/phpunit": "^4.8.35 || ^5.0"
@@ -5733,7 +5856,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.5-dev"
+                    "dev-master": "2.6-dev"
                 }
             },
             "autoload": {
@@ -5758,7 +5881,7 @@
                 "env",
                 "environment"
             ],
-            "time": "2018-10-30T17:29:25+00:00"
+            "time": "2019-01-29T11:11:52+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -6063,16 +6186,16 @@
         },
         {
             "name": "composer/ca-bundle",
-            "version": "1.1.3",
+            "version": "1.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/ca-bundle.git",
-                "reference": "8afa52cd417f4ec417b4bfe86b68106538a87660"
+                "reference": "558f321c52faeb4828c03e7dc0cfe39a09e09a2d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/8afa52cd417f4ec417b4bfe86b68106538a87660",
-                "reference": "8afa52cd417f4ec417b4bfe86b68106538a87660",
+                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/558f321c52faeb4828c03e7dc0cfe39a09e09a2d",
+                "reference": "558f321c52faeb4828c03e7dc0cfe39a09e09a2d",
                 "shasum": ""
             },
             "require": {
@@ -6115,20 +6238,20 @@
                 "ssl",
                 "tls"
             ],
-            "time": "2018-10-18T06:09:13+00:00"
+            "time": "2019-01-28T09:30:10+00:00"
         },
         {
             "name": "composer/composer",
-            "version": "1.8.0",
+            "version": "1.8.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "d8aef3af866b28786ce9b8647e52c42496436669"
+                "reference": "a6a3b44581398b7135c7baa0557b7c5b10808b47"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/d8aef3af866b28786ce9b8647e52c42496436669",
-                "reference": "d8aef3af866b28786ce9b8647e52c42496436669",
+                "url": "https://api.github.com/repos/composer/composer/zipball/a6a3b44581398b7135c7baa0557b7c5b10808b47",
+                "reference": "a6a3b44581398b7135c7baa0557b7c5b10808b47",
                 "shasum": ""
             },
             "require": {
@@ -6195,7 +6318,7 @@
                 "dependency",
                 "package"
             ],
-            "time": "2018-12-03T09:31:16+00:00"
+            "time": "2019-01-30T07:31:34+00:00"
         },
         {
             "name": "composer/semver",
@@ -6322,16 +6445,16 @@
         },
         {
             "name": "composer/xdebug-handler",
-            "version": "1.3.1",
+            "version": "1.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/xdebug-handler.git",
-                "reference": "dc523135366eb68f22268d069ea7749486458562"
+                "reference": "d17708133b6c276d6e42ef887a877866b909d892"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/xdebug-handler/zipball/dc523135366eb68f22268d069ea7749486458562",
-                "reference": "dc523135366eb68f22268d069ea7749486458562",
+                "url": "https://api.github.com/repos/composer/xdebug-handler/zipball/d17708133b6c276d6e42ef887a877866b909d892",
+                "reference": "d17708133b6c276d6e42ef887a877866b909d892",
                 "shasum": ""
             },
             "require": {
@@ -6362,7 +6485,7 @@
                 "Xdebug",
                 "performance"
             ],
-            "time": "2018-11-29T10:59:02+00:00"
+            "time": "2019-01-28T20:25:53+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -7424,16 +7547,16 @@
         },
         {
             "name": "sebastian/environment",
-            "version": "4.0.1",
+            "version": "4.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/environment.git",
-                "reference": "febd209a219cea7b56ad799b30ebbea34b71eb8f"
+                "reference": "4a43e9af57b4afa663077b9bc85255dbc6e8a2bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/febd209a219cea7b56ad799b30ebbea34b71eb8f",
-                "reference": "febd209a219cea7b56ad799b30ebbea34b71eb8f",
+                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/4a43e9af57b4afa663077b9bc85255dbc6e8a2bd",
+                "reference": "4a43e9af57b4afa663077b9bc85255dbc6e8a2bd",
                 "shasum": ""
             },
             "require": {
@@ -7470,7 +7593,7 @@
                 "environment",
                 "hhvm"
             ],
-            "time": "2018-11-25T09:31:21+00:00"
+            "time": "2019-01-28T15:26:03+00:00"
         },
         {
             "name": "sebastian/exporter",

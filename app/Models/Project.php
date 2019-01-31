@@ -63,7 +63,7 @@ class Project extends Model implements AttachableInterface
         'language_skills',
         'workflow_id',
         'logo',
-        'banner',
+        'banner_file',
         'target_fields',
         'status',
         'advertise',
@@ -84,8 +84,7 @@ class Project extends Model implements AttachableInterface
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('logo', ['variants' => ['standard' => '300x300', 'thumb' => '200x200']]);
-        $this->hasAttachedFile('banner', ['variants' => ['thumb' => '200x50']]);
+        $this->hasAttachedFile('logo');
 
         parent::__construct($attributes);
     }

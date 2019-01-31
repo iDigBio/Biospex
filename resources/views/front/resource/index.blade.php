@@ -18,8 +18,8 @@
 @section('content')
     <h2 class="text-center pt-4">{{ __('BIOSPEX Resources') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
-    <div class="row col-sm-12 mx-auto justify-content-center" id="public-expeditions">
-        @include('front.resource.partials.resource', ['resources' => $resources])
+    <div class="row col-sm-12 mx-auto justify-content-center">
+        @include('front.resource.partials.resource')
     </div>
 @endsection
 

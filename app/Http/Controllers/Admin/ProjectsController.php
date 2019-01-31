@@ -6,48 +6,37 @@ use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Jobs\DeleteProject;
 use App\Jobs\OcrCreateJob;
-use App\Repositories\Interfaces\Expedition;
-use App\Repositories\Interfaces\Group;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\Subject;
 use App\Repositories\Interfaces\User;
 use App\Http\Requests\ProjectFormRequest;
-use App\Services\File\FileService;
-use App\Services\Model\CommonVariables;
+use App\Services\Model\ProjectService;
 use JavaScript;
 
 class ProjectsController extends Controller
 {
-    /**
-     * @var \App\Repositories\Interfaces\Group
-     */
-    private $groupContract;
-
     /**
      * @var \App\Repositories\Interfaces\Project
      */
     private $projectContract;
 
     /**
-     * @var \App\Services\Model\CommonVariables
+     * @var \App\Services\Model\ProjectService
      */
-    private $commonVariables;
+    private $projectService;
 
     /**
      * ProjectsController constructor.
      *
-     * @param \App\Repositories\Interfaces\Group $groupContract
      * @param \App\Repositories\Interfaces\Project $projectContract
-     * @param \App\Services\Model\CommonVariables $commonVariables
+     * @param \App\Services\Model\ProjectService $projectService
      */
     public function __construct(
-        Group $groupContract,
         Project $projectContract,
-        CommonVariables $commonVariables
+        ProjectService $projectService
     ) {
-        $this->groupContract = $groupContract;
-        $this->commonVariables = $commonVariables;
+        $this->projectService = $projectService;
         $this->projectContract = $projectContract;
     }
 
@@ -66,38 +55,21 @@ class ProjectsController extends Controller
     }
 
     /**
-     * Admin Projects page sort and order.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|null
-     */
-    public function sort()
-    {
-        if (! request()->ajax()) {
-            return null;
-        }
-
-        $user = \Auth::user();
-        $sort = request()->get('sort');
-        $order = request()->get('order');
-        $projects = $this->projectContract->getAdminProjectIndex($user->id, $sort, $order);
-
-        return view('admin.project.partials.project', compact('projects'));
-    }
-
-    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\View\View
      */
     public function create()
     {
-        $groups = $this->groupContract->getUsersGroupsSelect(request()->user());
-        $vars = $this->commonVariables->setCommonVariables(request()->user(), $groups);
-        if ($vars) {
-            return view('front.projects.create', $vars);
-        }
+        $groupOptions = $this->projectService->userGroupSelectOptions(request()->user());
+        $workflowOptions = $this->projectService->workflowSelectOptions();
+        $statusOptions = $this->projectService->statusSelectOptions();
+        $resourceOptions = $this->projectService->resourceSelectOptions();
+        $resourceCount = old('entries', 1);
 
-        return redirect()->route('groups.create');
+        $vars = compact('groupOptions', 'workflowOptions', 'statusOptions', 'resourceOptions', 'resourceCount');
+
+        return view('admin.project.create', $vars);
     }
 
     /**
@@ -132,16 +104,17 @@ class ProjectsController extends Controller
      */
     public function store(ProjectFormRequest $request)
     {
-        $group = $this->groupContract->find($request->get('group_id'));
+        $group = $this->projectService->findGroup($request->get('group_id'));
 
         if (! $this->checkPermissions('createProject', $group)) {
             return redirect()->route('admin.projects.index');
         }
 
-        $project = $this->projectContract->create($request->all());
+        $model = $this->projectContract->create($request->all());
 
-        if ($project) {
-            $this->commonVariables->notifyActorContacts($project->id);
+        if ($model) {
+            $project = $this->projectContract->findWith($model->id, ['workflow.actors.contacts']);
+            $this->projectService->notifyActorContacts($project);
 
             FlashHelper::success(trans('message.record_created'));
 
@@ -169,43 +142,47 @@ class ProjectsController extends Controller
             return redirect()->route('admin.projects.show', [$projectId]);
         }
 
-        $groups = $this->groupContract->getUsersGroupsSelect(request()->user());
-        $common = $this->commonVariables->setCommonVariables(request()->user(), $groups);
-        if (! $common) {
-            return redirect()->route('admin.projects.show', [$projectId]);
-        }
+        $groupOptions = $this->projectService->userGroupSelectOptions(request()->user());
+        $workflowOptions = $this->projectService->workflowSelectOptions();
+        $statusOptions = $this->projectService->statusSelectOptions();
+        $resourceOptions = $this->projectService->resourceSelectOptions();
+        $resourceCount = old('entries', 1);
 
-        $variables = array_merge($common, ['project' => $project, 'workflowCheck' => '']);
+        $vars = compact('project', 'groupOptions', 'workflowOptions', 'statusOptions', 'resourceOptions', 'resourceCount');
 
-        return view('front.projects.clone', $variables);
+        return view('admin.project.clone', $vars);
     }
 
     /**
      * Show the form for editing the specified resource.
+     *
+     * $model->relation()->exists(); // bool: true if there is at least one row
+     * $model->relation()->count(); // int: number of related rows
      *
      * @param $projectId
      * @return \Illuminate\View\View
      */
     public function edit($projectId)
     {
-        $project = $this->projectContract->findWith($projectId, ['group', 'nfnWorkflows', 'resources']);
+        $project = $this->projectContract->findWith($projectId, ['group', 'resources']);
         if (! $project) {
             FlashHelper::error(trans('pages.project_repo_error'));
 
             return redirect()->route('admin.projects.index');
         }
 
-        $workflowEmpty = ! isset($project->nfnWorkflows) || $project->nfnWorkflows->isEmpty();
+        $disableWorkflow = $project->nfnWorkflows()->exists() ? 'disabled' : '';
 
-        $groups = $this->groupContract->getUsersGroupsSelect(request()->user());
-        $common = $this->commonVariables->setCommonVariables(request()->user(), $groups);
-        if (! $common) {
-            return redirect()->route('admin.projects.index');
-        }
+        $groupOptions = $this->projectService->userGroupSelectOptions(request()->user());
+        $workflowOptions = $this->projectService->workflowSelectOptions();
+        $statusOptions = $this->projectService->statusSelectOptions();
+        $resourceOptions = $this->projectService->resourceSelectOptions();
+        $resourceCount = old('entries', $project->resources->count());
+        $resources = $project->resources;
 
-        $variables = array_merge($common, ['project' => $project, 'workflowEmpty' => $workflowEmpty]);
+        $vars = compact('project', 'resources', 'disableWorkflow', 'groupOptions', 'workflowOptions', 'statusOptions', 'resourceOptions', 'resourceCount');
 
-        return view('admin.project.edit', $variables);
+        return view('admin.project.edit', $vars);
     }
 
     /**
@@ -217,7 +194,7 @@ class ProjectsController extends Controller
      */
     public function update(ProjectFormRequest $request, $projectId)
     {
-        $group = $this->groupContract->find($request->get('group_id'));
+        $group = $this->projectService->findGroup($request->get('group_id'));
 
         if (! $this->checkPermissions('updateProject', $group)) {
             return redirect()->route('admin.projects.index');
@@ -227,8 +204,28 @@ class ProjectsController extends Controller
 
         $project ? FlashHelper::success(trans('messages.record_updated')) : FlashHelper::error(trans('messages.record_updated_error'));
 
-        return redirect()->route('admin.projects.show', [$projectId]);
+        return redirect()->back();
     }
+
+    /**
+     * Admin Projects page sort and order.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|null
+     */
+    public function sort()
+    {
+        if (! request()->ajax()) {
+            return null;
+        }
+
+        $user = \Auth::user();
+        $sort = request()->get('sort');
+        $order = request()->get('order');
+        $projects = $this->projectContract->getAdminProjectIndex($user->id, $sort, $order);
+
+        return view('admin.project.partials.project', compact('projects'));
+    }
+
 
     /**
      * Display project explore page.
@@ -246,15 +243,15 @@ class ProjectsController extends Controller
         }
 
         JavaScript::put([
-            'projectId' => $projectId,
+            'projectId'    => $projectId,
             'expeditionId' => 0,
-            'subjectIds' => [],
-            'maxSubjects' => config('config.expedition_size'),
-            'gridUrl' => route('admin.grids.explore', [$projectId]),
-            'exportUrl' => route('admin.grids.export', [$projectId]),
-            'editUrl' => route('admin.grids.delete', [$projectId]),
+            'subjectIds'   => [],
+            'maxSubjects'  => config('config.expedition_size'),
+            'gridUrl'      => route('admin.grids.explore', [$projectId]),
+            'exportUrl'    => route('admin.grids.export', [$projectId]),
+            'editUrl'      => route('admin.grids.delete', [$projectId]),
             'showCheckbox' => true,
-            'explore' => true,
+            'explore'      => true,
         ]);
 
         $subjectAssignedCount = $subjectContract->getSubjectAssignedCount($projectId);

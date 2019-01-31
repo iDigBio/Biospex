@@ -104,7 +104,11 @@ class EventPresenter extends Presenter
         $hashtag = $this->model->hashtag;
         $url = config('app.url') . '/events/' . $id . '&text=' . $title . '&hashtags=' . $hashtag;
 
-        return '<a href="https://twitter.com/intent/tweet?url='.$url.'" target="_blank" data-toggle="tooltip" title="Share on Twitter"><i class="fab fa-twitter"></i> <span class="d-none text d-sm-inline"></span></a>';
+        return '<a href="https://twitter.com/intent/tweet?url='.$url.'" 
+            target="_blank" 
+            data-toggle="tooltip" 
+            title="'.__('Share on Twitter').'">
+            <i class="fab fa-twitter"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
 
     /**
@@ -119,7 +123,11 @@ class EventPresenter extends Presenter
         $url = urlencode(config('app.url') . '/events/' . $this->model->id);
         $title = urlencode($this->model->title);
 
-        return '<a href="http://www.facebook.com/share.php?u='.$url.'&title='.$title.'" target="_blank" data-toggle="tooltip" title="Share on Facebook"><i class="fab fa-facebook"></i> <span class="d-none text d-sm-inline"></span></a>';
+        return '<a href="http://www.facebook.com/share.php?u='.$url.'&title='.$title.'" 
+            target="_blank" 
+            data-toggle="tooltip" 
+            title="'.__('Share on Facebook').'">
+            <i class="fab fa-facebook"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
 
     /**
@@ -129,6 +137,10 @@ class EventPresenter extends Presenter
      */
     public function contactEmailIcon()
     {
-        return $this->model->contact_email === null ? '' : '<a href="mailto:'.$this->model->contact_email.'" data-toggle="tooltip" title="Contact"><i class="far fa-envelope"></i> <span class="d-none text d-sm-inline"></span></a>';
+        return $this->model->contact_email === null ? '' :
+            '<a href="mailto:'.$this->model->contact_email.'" 
+            data-toggle="tooltip" 
+            title="'.__('Contact').'">
+            <i class="far fa-envelope"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
 }

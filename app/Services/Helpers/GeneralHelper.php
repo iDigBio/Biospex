@@ -438,4 +438,23 @@ class GeneralHelper
 
         return $default;
     }
+
+    /**
+     * Return banner file name if exists.
+     *
+     * @param null $name
+     * @return mixed
+     */
+    public function projectBannerFileName($name = null) {
+        return $name ?? 'banner-trees.jpg';
+    }
+
+    /**
+     * @param null $name
+     * @return mixed
+     */
+    public function projectBannerFileUrl($name = null) {
+        return $name === null ? \Storage::url('images/habitat-banners/banner-trees.jpg') :
+            \Storage::url('images/habitat-banners/'.$name);
+    }
 }

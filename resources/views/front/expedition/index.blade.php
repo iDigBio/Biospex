@@ -21,7 +21,7 @@
     <div class="row">
         <div class="col-sm-8 offset-md-2">
             <div class="text-center mt-4">
-                <button class="toggle-view-btn  btn btn-primary pl-4 pr-4"
+                <button class="toggle-view-btn btn btn-primary"
                         data-toggle="collapse"
                         data-target="#active-expeditions-main,#completed-expeditions-main"
                         data-value="{{ __('View Active Expeditions') }}"

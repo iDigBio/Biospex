@@ -115,12 +115,11 @@ $(function() {
         newEntry.find('.fileName').html('');
         controls.find('.entry:last .btn-add')
             .removeClass('btn-add').addClass('btn-remove')
-            .removeClass('btn-success').addClass('btn-danger')
-            .html('<span class="fa fa-minus fa-lrg"></span>');
+            .html('<span class="fas fa-minus"></span>');
         renumber_prefix()
     }).on('click', '.btn-remove', function (e) {
         $(this).parents('.entry:first').remove();
-        renumber_prefix()
+        renumber_prefix();
         e.preventDefault();
         return false;
     });
@@ -167,7 +166,7 @@ $(function() {
                 if (result) {
                     $(this).append(function () {
                         let methodForm = "\n";
-                        methodForm += "<form action='" + url + "' method='"+$(this).data('method')+"' style='display:none'>\n";
+                        methodForm += "<form action='" + url + "' method='POST' style='display:none'>\n";
                         methodForm += "<input type='hidden' name='_method' value='" + method + "'>\n";
                         methodForm += "<input type='hidden' name='_token' value='" + $('meta[name=csrf-token]').attr('content') + "'>\n";
                         methodForm += "</form>\n";
@@ -196,6 +195,13 @@ $(function() {
 
     }).on('hidden.bs.modal', function () {
         $(this).find('.modal-body').html('');
+    });
+
+    $('.project-banner').on('click', function (e) {
+        let img = $(this).data('name');
+        $('#banner').val(img);
+        $('#banner-img').attr('src','/storage/images/habitat-banners/'+img);
+        $("#project-banner-modal .close").click();
     });
 
     $('#jqgrid-modal').on('show.bs.modal', function (e) {
@@ -233,6 +239,7 @@ $(function() {
         });
         return false; //this is critical to stop the click event which will trigger a normal file download!
     });
+
 });
 
 // Loop data from polling
@@ -252,8 +259,10 @@ function polling_data(data) {
 function renumber_prefix() {
     let controls = $('.controls');
     controls.children('.entry').each(function (index) {
+        $(this).find('legend').html('Resource ' + (index+1));
         $(this).find(':input').each(function () {
-            this.name = this.name.replace(/\[[0-9]+\]/g, '[' + index + ']');
+            $(this).attr('id', $(this).attr('id').replace(/\[[0-9]+\]/g, '[' + index + ']'));
+            $(this).attr('name', $(this).attr('name').replace(/\[[0-9]+\]/g, '[' + index + ']'));
         });
     });
     $('[name="entries"]').val(controls.children().length);

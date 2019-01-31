@@ -40,8 +40,8 @@
                         <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
                         {{ ($errors->has('password_confirmation') ?  $errors->first('password_confirmation') : '') }}
                     </div>
+                    @include('common.recaptcha')
                     <div class="form-group text-center">
-                        {!! Honeypot::generate('resetemail', 'testtime') !!}
                         <button type="submit" class="btn btn-primary pl-4 pr-4">{{ __('SUBMIT') }}</button>
                     </div>
                 </form>

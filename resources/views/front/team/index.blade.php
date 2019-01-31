@@ -19,9 +19,9 @@
 @section('content')
     <h2 class="text-center pt-4">{{ __('BIOSPEX Team') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
-        <div class="col-10 mx-auto">
-            @foreach($categories as $category)
-                @include('front.team.partials.categories')
-            @endforeach
+    @foreach($categories as $category)
+        <div class="row col-sm-10 mx-auto mt-4 justify-content-center">
+            @include('front.team.partials.categories')
         </div>
+    @endforeach
 @endsection

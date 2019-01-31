@@ -1,6 +1,5 @@
-<h3 class="ml-3 pt-4 text-center">{{ $category->name }}</h3>
-<div class="card-deck">
-    @foreach($category->teams as $team)
-        @include('front.team.partials.teams')
-    @endforeach
-</div>
+<div class="col-sm-12 my-4"><h1 class="ml-3 content-header text-center">{{ $category->name }}</h1></div>
+@foreach($category->teams as $team)
+    @include('front.team.partials.teams')
+@endforeach
+

@@ -223,7 +223,7 @@
                             {!! Form::file('logo') !!} {{ trans('pages.logo_max') }}
                         </div>
                         <div class="col-sm-5">
-                            <img src="{{ isset($editProject) ? $editProject->present()->logo_thumb_url : null }}"/>
+                            <img src="{{ isset($editProject) ? $editProject->present()->logo_url : null }}"/>
                         </div>
                         {{ ($errors->has('logo') ? $errors->first('logo') : '') }}
                     </div>

@@ -30,8 +30,8 @@
                                required>
                         {{ $errors->first('email') }}
                     </div>
+                    @include('common.recaptcha')
                     <div class="form group text-center">
-                        {!! Honeypot::generate('formuser', 'formtime') !!}
                         <button type="submit" class="btn btn-primary pl-4 pr-4">{{ __('SUBMIT') }}</button>
                     </div>
                 </form>

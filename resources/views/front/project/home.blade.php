@@ -19,13 +19,11 @@
 @section('content')
     <div class="row">
         <div class="col-sm-10 mx-auto">
-            <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
+            <div class="jumbotron box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <h1 class="text-center project-wide text-uppercase">
                     <small style="font-size:16px;">{{ __('Featured BIOSPEX Project') }}</small>
                     <br>{{ $project->title }}</h1>
-
                 <div class="col-12">
-
                     <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
                         {!! $project->present()->project_expeditions_icon_lrg !!}
                         {!! $project->present()->project_events_icon_lrg !!}
@@ -39,8 +37,8 @@
                 <hr class="pt-0 pb-4">
 
                 <div class="col-12 col-md-10 offset-md-1">
-                    <img src="{{ $project->present()->logo_url }}" class="float-md-right"
-                         alt="Project biospex_logo img-fluid" style="width: 300px;">
+                    <img src="{{ $project->present()->logo_url }}" class="float-md-right img-fluid"
+                         alt="Project biospex_logo">
                     @if($project->contact !== null)
                         <h3>{{ __('Contact') }}</h3>
                         <p>
@@ -118,11 +116,11 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row my-5">
         <div class="col-sm-8 offset-md-2">
-            <h1 class="text-center project-headers" id="expeditions">{{ __('Expeditions') }}</h1>
+            <h1 class="text-center content-header" id="expeditions">{{ __('Expeditions') }}</h1>
             <div class="text-center mt-4">
-                <button class="toggle-view-btn btn btn-primary pl-4 pr-4"
+                <button class="toggle-view-btn btn btn-primary"
                         data-toggle="collapse"
                         data-target="#active-expeditions-main,#completed-expeditions-main"
                         data-value="{{ __('View Active Expeditions') }}"
@@ -149,11 +147,11 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row my-5">
         <div class="col-sm-8 offset-md-2">
-            <h1 class="text-center project-headers" id="events">{{ __('Events') }}</h1>
+            <h1 class="text-center content-header" id="events">{{ __('Events') }}</h1>
             <div class="text-center mt-4">
-                <button class="toggle-view-btn btn btn-primary pl-4 pr-4"
+                <button class="toggle-view-btn btn btn-primary"
                         data-toggle="collapse"
                         data-target="#active-events-main,#completed-events-main"
                         data-value="{{ __('View Active Events') }}"
@@ -176,29 +174,25 @@
         @include('common.scoreboard')
     </div>
 
-    @if ($project->amChart !== null)
-        <div class="row">
+    @if ($project->amChart !== null && $project->amChart->series !== null && $project->amChart->data !== null)
+        <div class="row my-5">
             <div class="col-sm-10 mx-auto mt-8">
-                <h1 class="text-center project-headers" id="expeditions">{{ __('Transcriptions') }}</h1>
-                <div class="card white box-shadow pt-2 pb-5">
+                <h1 class="text-center content-header" id="expeditions">{{ __('Transcriptions') }}</h1>
+                <div class="jumbotron box-shadow pt-2 pb-5">
                     <div id="chartdiv"
                          style=" width: 100%; height: {{ $amChartHeight }}px; color: #000000; font-size: 0.8em"></div>
                     <div id="legenddiv"
                          style="width: 100%; height: {{ $amLegendHeight }}px; color: #000000; font-size: 0.8em"></div>
-                    <!--
-                    <script src="//www.amcharts.com/lib/4/core.js"></script>
-                    <script src="//www.amcharts.com/lib/4/charts.js"></script>
-                    -->
                 </div>
             </div>
         </div>
     @endif
 
     @if ($project->fusion_table_id !== null)
-        <div class="row">
+        <div class="row my-5">
             <div class="col-sm-10 mx-auto mt-8">
-                <h1 class="text-center project-headers" id="expeditions">{{ __('Heat Map Transcribed Specimens') }}</h1>
-                <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
+                <h1 class="text-center content-header" id="expeditions">{{ __('Heat Map Transcribed Specimens') }}</h1>
+                <div class="jumbotron box-shadow pt-2 pb-5 my-5 p-sm-5">
                     <iframe width="100%" height="800" scrolling="no" frameborder="no"
                             src="https://fusiontables.google.com/embedviz?q=select+col2+from+{{ $project->fusion_table_id }}&amp;viz=MAP&amp;h=false&amp;lat=34.72404554786575&amp;lng=-93.08009375000002&amp;t=1&amp;z=3&amp;l=col2&amp;y={{ $project->fusion_style_id }}&amp;tmplt={{ $project->fusion_template_id }}&amp;hml=GEOCODE"></iframe>
                 </div>
@@ -208,6 +202,7 @@
 
 @endsection
 @section('custom-script')
+    @if ($project->amChart !== null && $project->amChart->series !== null && $project->amChart->data !== null)
     <script>
         var legendContainer = am4core.createFromConfig({
             "width": "100%",
@@ -269,5 +264,6 @@
                 "data": {!! $project->amChart->data !!},
             }, "chartdiv", am4charts.XYChart);
     </script>
+    @endif
 @endsection
 

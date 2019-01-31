@@ -12,17 +12,20 @@
         <div class="col-sm-10 mx-auto">
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
-                    <form method="put" action="{{ route('admin.projects.update', $project->id) }}" role="form"
+                    @if ($errors->any())
+                        {{ implode('', $errors->all('<div>:message</div>')) }}
+                    @endif
+                    <form method="post" action="{{ route('admin.projects.update', $project->id) }}" role="form"
                           enctype="multipart/form-data">
                         {!! method_field('put') !!}
                         {!! csrf_field() !!}
                         <div class="form-row">
-                            <div class="form-group col-sm-6">
+                            <div class="form-group col-sm-6 {{ ($errors->has('group_id')) ? 'has-error' : '' }}">
                                 <label for="group_id"
-                                       class="col-form-label required {{ ($errors->has('group_id')) ? 'has-error' : '' }}">{{ __('Group') }}
+                                       class="col-form-label required">{{ __('Group') }}
                                     :</label>
                                 <select name="group_id" id="group_id" class="form-control custom-select" required>
-                                    @foreach($selectGroups as $key => $name)
+                                    @foreach($groupOptions as $key => $name)
                                         {{ $key }}
                                         <option {{ $key === $project->group_id ? ' selected=selected' : '' }} value="{{ $key }}">{{ $name }}</option>
                                     @endforeach
@@ -33,7 +36,7 @@
                             <div class="form-group col-sm-6 {{ ($errors->has('status')) ? 'has-error' : '' }}">
                                 <label for="status" class="col-form-label required">{{ __('Status') }}:</label>
                                 <select name="status" id="status" class="form-control custom-select" required>
-                                    @foreach($statusSelect as $key => $name)
+                                    @foreach($statusOptions as $key => $name)
                                         <option value="{{ $key }}"{{ $key === $project->status ? ' selected=selected' : '' }}>{{ $name }}</option>
                                     @endforeach
                                 </select>
@@ -186,86 +189,73 @@
                             {{ ($errors->has('language_skills') ? $errors->first('language_skills') : '') }}
                         </div>
 
-                        <div class="form-group {{ ($errors->has('workflow_id')) ? 'has-error' : '' }}">
-                            <label for="workflow_id" class="col-form-label required">{{ __('Workflows') }}:</label>
-                            <select name="group_id" id="group_id"
-                                    class="form-control custom-select" {{ $workflowEmpty ? '' : 'disabled' }}
+                        <div class="form-group">
+                            <label for="workflow_id" class="col-form-label col-12 required">{{ __('Workflows') }}
+                                :</label>
+                            <select name="workflow_id" id="workflow_id"
+                                    class="form-control custom-select col-sm-5 {{ ($errors->has('workflow_id')) ? 'is-invalid' : '' }}"
+                                    {{ $disableWorkflow }}
                                     required>
-                                @foreach($workflows as $key => $name)
+                                @foreach($workflowOptions as $key => $name)
                                     <option value="{{ $key }}"{{ $key === $project->workflow_id ? ' selected=selected' : '' }}>{{ $name }}</option>
                                 @endforeach
                             </select>
-                            {{ ($errors->has('workflow_id') ? $errors->first('workflow_id') : '') }}
-                            @if( ! $workflowEmpty)
+                            @if( ! empty($disableWorkflow))
                                 <input type="hidden" name="workflow_id" value="{{ $project->workflow_id }}">
                             @endif
+                            {!! ($errors->has('workflow_id') ? '<span class="invalid-feedback">'.$errors->first('workflow_id').'</span>' : '') !!}
                         </div>
 
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6 mt-4 {{ ($errors->has('logo')) ? 'has-error' : '' }}">
                                 <div class="custom-file">
                                     <label for="logo" class="custom-file-label">{{ __('Logo: Max 300wx300h') }}:</label>
-                                    <input type="file" class="form-control custom-file-input" name="logo" id="logo">
+                                    <input type="file" class="form-control custom-file-input" name="logo" id="logo"
+                                           accept="image/svg+xml, image/png, image/jpg">
                                     {{ ($errors->has('logo') ? $errors->first('logo') : '') }}
                                 </div>
                             </div>
                             <div class="form-group col-sm-6">
-                                <img style="display: inline" src="{{ $project->present()->logo_thumb_url }}"/>
+                                <img class="img-fluid" style="display: inline; width: 100px; height: 100px;" src="{{ $project->present()->logo_url }}"/>
                             </div>
                         </div>
 
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6">
-                            <label for="banner" class="col-form-label">{{ __('Banner') }}:</label>
-                            <input type="text" class="form-control" id="banner" name="banner"
-                                   value="{{ $project->banner_file_name }}" readonly>
+                                <label for="banner" class="col-form-label">{{ __('Banner') }}:</label>
+                                <input type="text" class="form-control" id="banner" name="banner"
+                                       value="{{ $project->present()->banner_file_name ?? 'banner-trees.jpg' }}"
+                                       readonly>
                             </div>
-                            <div class="form-group col-sm-4">
-                                <a href="#" data-toggle="modal" data-target="#banner-modal"
+                            <div class="form-group col-sm-4 pt-3">
+                                <a href="#" data-toggle="modal" data-target="#project-banner-modal"
                                    data-hover="tooltip" title="{{ __('Click to change banner') }}">
                                     Click to change banner
-                                <img src="{{ $project->present()->banner_thumb_url }}"/>
+                                    <img class="img-fluid" id="banner-img"
+                                         src="{{ $project->present()->banner_file_url }}"/>
                                 </a>
                             </div>
                         </div>
 
-                    <!--
-                        <div class="form-row custom-file">
-                        <div class="form-group">
-                            <label for="banner" class="col-sm-4 col-form-label custom-file-label">{{ __('Banner') }}:</label>
-                            <input type="file" class="form-control custom-file-input" name="banner" id="banner">
-                            {{ ($errors->has('banner') ? $errors->first('banner') : '') }}
-                    {{ __('Min. 1200 x 250') }}
-                            <img src="{{ $project->present()->banner_thumb_url }}"/>
-                        </div>
-                        </div>
-                        -->
-
                         <div class="form-group">
                             <label for="resources" class="col-form-label">{{ __('Resources') }}:</label>
-                            <div class="controls col-sm-10">
-                                @if($project->resources->isNotEmpty())
-                                    @if($errors->has('resources.*'))
-                                        <span class="has-error">{{ $errors->first('resources.*') }}</span>
-                                    @endif
-                                    @foreach($project->resources as $key => $resource)
-                                        @include('admin.project.partials.resource-edit')
-                                    @endforeach
-                                @else
-                                    @include('admin.project.partials.resource-create')
+                            <div class="controls col-sm-12">
+                                @if($errors->has('resources.*'))
+                                    <span class="has-error">{{ $errors->first('resources.*') }}</span>
                                 @endif
+                                @include('admin.project.partials.resources')
                             </div>
                         </div>
 
                         <div class="form-group text-center">
-                            <input type="hidden" name="entries" value="1">
+                            <input type="hidden" name="entries" value="{{ old('entries', $resourceCount) }}">
                             <input type="hidden" name="id" value="{{ $project->id }}">
-                            <button type="submit" class="btn btn-primary pl-4 pr-4">{{ __('SUBMIT') }}</button>
+                            <button type="submit" class="btn btn-primary">{{ __('SUBMIT') }}</button>
                         </div>
+                    </form>
                 </div>
-                </form>
             </div>
         </div>
     </div>
-    </div>
+    @include('admin.partials.project-banner-modal')
 @endsection

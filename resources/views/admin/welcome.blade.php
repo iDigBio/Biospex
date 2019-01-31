@@ -14,7 +14,7 @@
     </div>
     <div class="row">
         <div class="col-md-4 mt-5 p-1 mx-auto">
-            <div class="card-project mb-4 px-4 box-shadow h-100">
+            <div class="card white mb-4 px-4 box-shadow h-100">
                 <h2 class="text-center pt-4">{{ __('Projects') }}</h2>
                 <div class="row card-body">
                     <div class="text-justify">
@@ -32,7 +32,7 @@
         </div>
 
         <div class="col-md-4 mt-5 p-1 mx-auto">
-            <div class="card-project mb-4 px-4 box-shadow h-100">
+            <div class="card white mb-4 px-4 box-shadow h-100">
                 <h2 class="text-center pt-4">{{ __('Events') }}</h2>
                 <div class="row card-body">
                     <div class="text-justify">

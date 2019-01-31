@@ -39,8 +39,8 @@
                         <input type="checkbox" class="custom-control-input" id="remember" name="remember">
                         <label class="custom-control-label" for="remember">{{ __('Remember Me') }}</label>
                     </div>
+                    @include('common.recaptcha')
                     <div class="form-group text-center">
-                        {!! Honeypot::generate('formuser', 'formtime') !!}
                         <button type="submit" class="btn btn-primary pl-4 pr-4">{{ __('SUBMIT') }}</button>
                     </div>
                 </form>

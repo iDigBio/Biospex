@@ -1,8 +1,8 @@
 <div id="import-accordion">
-    <div class="import card">
+    <div class="card">
         <div class="card-header" id="dwc-file-import">
             <h5 class="mb-0">
-                <button class="import btn btn-link" data-toggle="collapse" data-target="#dwc-upload"
+                <button class="import btn" data-toggle="collapse" data-target="#dwc-upload"
                         aria-expanded="true" aria-controls="dwc-upload">
                     {{ __('Import Darwin Core File') }}
                 </button>
@@ -43,7 +43,7 @@
     <div class="import card">
         <div class="card-header" id="record-set-import">
             <h5 class="mb-0">
-                <button class="import btn btn-link collapsed" data-toggle="collapse"
+                <button class="import btn collapsed" data-toggle="collapse"
                         data-target="#recordset" aria-expanded="false" aria-controls="recordset">
                     {{ __('Import Using Record Set Id') }}
                 </button>
@@ -94,7 +94,7 @@
     <div class="import card">
         <div class="card-header" id="dwc-url-import">
             <h5 class="mb-0">
-                <button class="import btn btn-link collapsed" data-toggle="collapse"
+                <button class="import btn collapsed" data-toggle="collapse"
                         data-target="#dwc-uri" aria-expanded="false"
                         aria-controls="dwc-uri">
                     {{ __('Import Darwin Core Url') }}

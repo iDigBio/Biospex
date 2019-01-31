@@ -13,7 +13,7 @@
     @include('admin.project.partials.project-panel')
     <div class="row">
         <div class="col-md-6 mb-4">
-            <div class="card-transcribe px-4 box-shadow h-100">
+            <div class="card white px-4 box-shadow h-100">
                 <h3 class="text-center pt-4">{{ __('Transcriber Summary') }}</h3>
                 <div class="color-action text-center">{{ __('Use shift + click to multi-sort') }}</div>
                 <hr>
@@ -35,7 +35,7 @@
             </div>
         </div>
         <div class="col-md-6 mb-4">
-            <div class="card-transcribe px-4 box-shadow h-100">
+            <div class="card white px-4 box-shadow h-100">
                 <h3 class="text-center pt-4">{{ __('Transcriptions') }}</h3>
                 <hr>
                 <div class="row card-body">

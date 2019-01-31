@@ -1,10 +1,10 @@
 <div class="col-md-4 mb-4">
-    <div class="card-project px-4 box-shadow h-100">
+    <div class="card px-4 box-shadow h-100">
         <h2 class="text-center pt-4">{{ $project->title }}</h2>
         <hr>
         <div class="row card-body">
             <div class="col-7">
-                <ul>
+                <ul class="text">
                     <li>{{ $project->description_short }}</li>
                     <li class="mt-3">{{ $project->expeditions_count }} {{ __('Expeditions') }}</li>
                     <li>{{ CountHelper::projectTranscriberCount($project->id) }} {{ __('Transcribers') }}</li>
@@ -13,7 +13,7 @@
             </div>
 
             <div class="col-5">
-                <img class="img-fluid" src="{{ $project->present()->logo_thumb_url }}" alt="Card image cap">
+                <img class="img-fluid" src="{{ $project->present()->logo_url }}" alt="Card image cap">
             </div>
         </div>
 

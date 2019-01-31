@@ -1,4 +1,5 @@
 [program:QUEUE_CHART_TUBE]
+process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_CHART_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/chart.log
@@ -8,8 +9,10 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
+numprocs=8
 
 [program:QUEUE_CLASSIFICATION_TUBE]
+process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_CLASSIFICATION_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/classification.log
@@ -19,8 +22,10 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
+numprocs=8
 
 [program:QUEUE_DEFAULT_TUBE]
+process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_DEFAULT_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/default.log
@@ -30,8 +35,10 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
+numprocs=8
 
 [program:QUEUE_EVENT_TUBE]
+process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_EVENT_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/event.log
@@ -41,8 +48,10 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
+numprocs=8
 
 [program:QUEUE_EXPORT_TUBE]
+process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_EXPORT_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/export.log
@@ -52,8 +61,10 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
+numprocs=8
 
 [program:QUEUE_FUSION_TUBE]
+process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_FUSION_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/fusion.log
@@ -63,8 +74,10 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
+numprocs=8
 
 [program:QUEUE_IMPORT_TUBE]
+process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_IMPORT_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/import.log
@@ -74,8 +87,10 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
+numprocs=8
 
 [program:QUEUE_OCR_TUBE]
+process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_OCR_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/ocr.log
@@ -85,8 +100,10 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
+numprocs=8
 
 [program:QUEUE_PUSHER_TUBE]
+process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_PUSHER_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/pusher.log
@@ -96,8 +113,10 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
+numprocs=8
 
 [program:QUEUE_STAT_TUBE]
+process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_STAT_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/stat.log
@@ -107,8 +126,10 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
+numprocs=8
 
 [program:QUEUE_WORKFLOW_TUBE]
+process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH
 command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_WORKFLOW_TUBE --tries=3
 stdout_logfile=/var/log/supervisor/APP_ENV/workflow.log
@@ -118,4 +139,4 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
-
+numprocs=8

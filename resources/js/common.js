@@ -24,7 +24,7 @@ $(function() {
 
     if (Laravel.flashMessage.length) {
         $.notify({
-            icon: 'glyphicon glyphicon-' + Laravel.flashIcon,
+            icon: 'fas fa-' + Laravel.flashIcon+' fa-2x',
             message: Laravel.flashMessage
         }, {
             type: Laravel.flashType,

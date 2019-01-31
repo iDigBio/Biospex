@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-sm-10 mx-auto">
-        <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
+        <div class="jumbotron box-shadow pt-2 pb-5 my-5 p-sm-5">
             <h1 class="text-center project-wide text-uppercase">{{ $project->title }}</h1>
             <div class="col-12">
                 <div class="d-flex justify-content-between mt-4 mb-3">

@@ -34,7 +34,7 @@
 @endsection
 
 @section('content')
-    <section class="jumbotron text-center">
+    <section class="home-heading text-center">
         <div class="container">
             <img src="/storage/images/logo-tagline.png" align="Biospex Tag Line">
             <p class="text-justify mt-4">{{ __('BIOSPEX is a base camp for launching, advertising and managing targeted efforts to digitize
@@ -55,13 +55,13 @@
                 <div class="col-sm-6 mt-5 p-1 pb-md-3">
                     <h2 class="home-header-cta">{{ __('A Project') }}</h2>
 
-                    <div class="card-project mb-4 px-4 box-shadow" data-aos="fade-down" data-aos-easing="ease-in"
+                    <div class="card mb-4 px-4 box-shadow" data-aos="fade-down" data-aos-easing="ease-in"
                          data-aos-duration="2000" data-aos-once="true">
                         <h2 class="text-center pt-4">{{ $expedition->project->title }}</h2>
                         <hr>
                         <div class="row card-body">
                             <div class="col-7">
-                                <ul>
+                                <ul class="text">
                                     <li>{{ $expedition->project->description_short }}</li>
                                     <li class="mt-3">{{ $expedition->project->expeditions_count }} {{ __('Expeditions') }}</li>
                                     <li>{{ CountHelper::projectTranscriberCount($expedition->project->id) }} {{ __('Transcribers') }}</li>
@@ -70,20 +70,20 @@
                             </div>
 
                             <div class="col-5 text-center">
-                                <img class="img-fluid" src="{{ $expedition->project->present()->logo_thumb_url }}"
+                                <img class="img-fluid" src="{{ $expedition->project->present()->logo_url }}"
                                      alt="Card image cap">
                             </div>
                         </div>
 
                         <div class="card-footer pb-4">
                             <div class="d-flex align-items-start justify-content-between mt-4">
-                                {!! $expedition->project->present()->project_page_icon !!}
-                                {!! $expedition->project->present()->project_events_icon !!}
-                                {!! $expedition->project->present()->organization_icon !!}
-                                {!! $expedition->project->present()->twitter_icon !!}
-                                {!! $expedition->project->present()->facebook_icon !!}
-                                {!! $expedition->project->present()->blog_icon !!}
-                                {!! $expedition->project->present()->contact_email_icon !!}
+                                {!! $expedition->project->present()->project_page_icon_lrg !!}
+                                {!! $expedition->project->present()->project_events_icon_lrg !!}
+                                {!! $expedition->project->present()->organization_icon_lrg !!}
+                                {!! $expedition->project->present()->twitter_icon_lrg !!}
+                                {!! $expedition->project->present()->facebook_icon_lrg !!}
+                                {!! $expedition->project->present()->blog_icon_lrg !!}
+                                {!! $expedition->project->present()->contact_email_icon_lrg !!}
                             </div>
                         </div>
                     </div>
@@ -91,7 +91,7 @@
 
                 <div class="col-sm-6 p-1 p-md-5 tutorial-right-section">
                     <h2 class="home-header-cta flex-nowrap">An Expedition</h2>
-                    <div class="card mb-4 box-shadow" data-aos="fade-up" data-aos-duration="1500"
+                    <div class="card black mb-4 box-shadow" data-aos="fade-up" data-aos-duration="1500"
                          data-aos-anchor-placement="bottom-bottom" data-aos-once="true">
                         <img class="card-img-top" src="{{ $expedition->present()->logo_url }}" alt="Card image cap"
                              style="border-radius: 10px;">
@@ -101,16 +101,16 @@
                             <p>{{ $expedition->description }}</p>
                         </div>
 
-                        <div class="card-body" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+                        <div class="card-body white" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
                             <div class="d-flex justify-content-between">
-                                <div class="p-2">{{ $expedition->stat->transcriptions_completed }} {{ __('Transcriptions') }}</div>
-                                <div class="p-2">{{ $expedition->stat->percent_completed }}% {{ __('Complete') }}</div>
+                                <div class="p-2"><p>{{ $expedition->stat->transcriptions_completed }} {{ __('Transcriptions') }}</p></div>
+                                <div class="p-2"><p>{{ $expedition->stat->percent_completed }}% {{ __('Complete') }}</p></div>
                             </div>
                             <hr>
                             <div class="col-md-3 d-flex justify-content-between mt-4 mb-3 mx-auto">
-                                {!! $expedition->project->present()->project_page_icon !!}
+                                {!! $expedition->project->present()->project_page_icon_lrg !!}
                                 @isset($expedition->nfnWorkflow)
-                                {!! $expedition->nfnWorkflow->present()->nfn_url !!}
+                                {!! $expedition->nfnWorkflow->present()->nfn_url_lrg !!}
                                 @endisset
                             </div>
                         </div>

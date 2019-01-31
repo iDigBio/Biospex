@@ -1,7 +1,7 @@
 <div class="col-md-3 col-sm-6 col-xs-12">
     <div class="panel panel-default event-card">
         <div class="panel-thumbnail">
-            <img src="{{ $event->project->present()->logo_thumb_url }}" alt="{{ $event->project->title }}"
+            <img src="{{ $event->project->present()->logo_url }}" alt="{{ $event->project->title }}"
                  class="image img-responsive">
         </div>
         <a href="{{ route('admin.events.show', [$event->id]) }}">

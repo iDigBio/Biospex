@@ -41,7 +41,7 @@ sub footer -->
                 <!--Linkedin -->
                 <a class="figure-img"><i class="fab fa-facebook fa-4x"></i></a>
                 <!--Instagram-->
-                <a class="figure-img"><i class="fas fa-envelope fa-4x"></i></a>
+                <a class="figure-img"><i class="fab fa-envelope fa-4x"></i></a>
             </div>
             <!-- Grid column -->
         </div>

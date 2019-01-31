@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Project;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -29,10 +30,11 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        //$files = \Storage::allFiles(config('config.classifications_download'));
-        $files = \File::files(storage_path('app/' . config('config.classifications_download')));
+        $project = Project::with(['group', 'resources'])->find(5);
 
-        dd($files);
+        $disableWorkflow = $project->nfnWorkflows()->exists() ? true : '';
+
+        dd($disableWorkflow);
     }
 
 

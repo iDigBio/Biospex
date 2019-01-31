@@ -13,6 +13,6 @@ $router->get('projects/{projects}/statistics')->uses('ProjectsController@statist
 
 $router->post('projects/sort')->uses('ProjectsController@sort')->name('admin.projects.sort');
 
-$router->get('projects/{projects}/ocr')->uses('ProjectsController@ocr')->name('admin.projects.ocr');
+$router->post('projects/{projects}/ocr')->uses('ProjectsController@ocr')->name('admin.projects.ocr');
 
 $router->delete('projects/{projects}')->uses('ProjectsController@delete')->name('admin.projects.delete');
