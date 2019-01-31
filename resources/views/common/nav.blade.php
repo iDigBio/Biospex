@@ -49,6 +49,8 @@
                     @can('isAdmin', Auth::user())
                         <a href="/admin/nova" class="dropdown-item text-uppercase"
                            type="button">{{ _('nova') }}</a>
+                        <a href="/admin/telescope" class="dropdown-item text-uppercase"
+                           type="button">{{ _('telescope') }}</a>
                     @endcan
                 </div>
             </li>
