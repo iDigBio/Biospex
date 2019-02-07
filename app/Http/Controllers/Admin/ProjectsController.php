@@ -246,6 +246,7 @@ class ProjectsController extends Controller
             'expeditionId' => 0,
             'subjectIds'   => [],
             'maxSubjects'  => config('config.expedition_size'),
+            'loadUrl' => route('admin.grids.load', [$projectId]),
             'gridUrl'      => route('admin.grids.explore', [$projectId]),
             'exportUrl'    => route('admin.grids.export', [$projectId]),
             'editUrl'      => route('admin.grids.delete', [$projectId]),
