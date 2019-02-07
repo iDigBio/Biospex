@@ -63,7 +63,7 @@ class EventTranscriptionService
      */
     public function getNfnSubject($subjectId)
     {
-        $result = Cache::remember('subject-'.$subjectId, 60, function () use ($subjectId) {
+        $result = Cache::remember(__METHOD__.$subjectId, 60, function () use ($subjectId) {
             $this->nfnApi->setProvider();
             $this->nfnApi->checkAccessToken('nfnToken');
             $uri = $this->nfnApi->getSubjectUri($subjectId);
@@ -84,7 +84,7 @@ class EventTranscriptionService
      */
     public function getNfnUser($userId)
     {
-        $result = Cache::remember('user-'.$userId, 60, function () use ($userId) {
+        $result = Cache::remember(__METHOD__.$userId, 60, function () use ($userId) {
             $this->nfnApi->setProvider();
             $this->nfnApi->checkAccessToken('nfnToken');
             $uri = $this->nfnApi->getUserUri($userId);

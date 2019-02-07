@@ -51,11 +51,6 @@ class ExpeditionsController extends Controller
     private $workflowManagerContract;
 
     /**
-     * @var \App\Services\Model\OcrQueueService
-     */
-    private $ocrQueueService;
-
-    /**
      * ExpeditionsController constructor.
      *
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
@@ -154,7 +149,7 @@ class ExpeditionsController extends Controller
             'explore'      => false,
         ]);
 
-        return view('front.expeditions.create', compact('project'));
+        return view('admin.expedition.create', compact('project'));
     }
 
     /**
@@ -231,7 +226,7 @@ class ExpeditionsController extends Controller
 
         $btnDisable = ($expedition->project->ocrQueue->isEmpty() || $expedition->stat->local_subject_count === 0);
 
-        return view('front.expeditions.show', compact('expedition', 'btnDisable'));
+        return view('admin.expedition.show', compact('expedition', 'btnDisable'));
     }
 
     /**
@@ -261,7 +256,7 @@ class ExpeditionsController extends Controller
             'explore'      => false,
         ]);
 
-        return view('front.expeditions.clone', compact('expedition'));
+        return view('admin.expedition.clone', compact('expedition'));
     }
 
     /**
@@ -299,7 +294,7 @@ class ExpeditionsController extends Controller
             'explore'      => false,
         ]);
 
-        return view('front.expeditions.edit', compact('expedition'));
+        return view('admin.expedition.edit', compact('expedition'));
     }
 
     /**
@@ -388,7 +383,7 @@ class ExpeditionsController extends Controller
                 $expedition->project->workflow->actors->reject(function ($actor) {
                     return $actor->private;
                 })->each(function ($actor) use ($expedition) {
-                    $expedition->actors()->syncWithoutDetaching([$actor->id => ['order' => $actor->pivot->order]]);
+                    $expedition->actors()->sync([$actor->id => ['order' => $actor->pivot->order]], false);
                 });
 
                 $this->workflowManagerContract->create(['expedition_id' => $expeditionId]);

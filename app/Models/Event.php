@@ -4,12 +4,10 @@ namespace App\Models;
 
 use App\Models\Traits\Presentable;
 use App\Presenters\EventPresenter;
-use Illuminate\Database\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class Event extends Model
+class Event extends BaseEloquentModel
 {
-    use LadaCacheTrait, Presentable;
+    use Presentable;
 
     /**
      * @inheritDoc

@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class Invite extends Model
+class Invite extends BaseEloquentModel
 {
-    use Notifiable, LadaCacheTrait;
+    use Notifiable;
 
     /**
      * @inheritDoc

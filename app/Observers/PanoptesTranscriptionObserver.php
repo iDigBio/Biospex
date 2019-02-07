@@ -8,22 +8,32 @@ use Cache;
 class PanoptesTranscriptionObserver
 {
     /**
-     * Expedition created.
+     * Model created.
      *
-     * @param Model $model
+     * @param \App\Models\PanoptesTranscription $model
      */
     public function created(Model $model)
     {
-        Cache::tags(['panoptesTranscriptions'])->flush();
+        Cache::tags(['panoptes' . $model->subject_projectId])->flush();
     }
 
     /**
-     * Expedition updated.
+     * Model updated.
      *
-     * @param Model $model
+     * @param \App\Models\PanoptesTranscription $model
      */
-    public function entityUpdated(Model $model)
+    public function updated(Model $model)
     {
-        Cache::tags(['panoptesTranscriptions'])->flush();
+        Cache::tags(['panoptes' . $model->subject_projectId])->flush();
+    }
+
+    /**
+     * Model deleted.
+     *
+     * @param \App\Models\PanoptesTranscription $model
+     */
+    public function deleted(Model $model)
+    {
+        Cache::tags(['panoptes' . $model->subject_projectId])->flush();
     }
 }

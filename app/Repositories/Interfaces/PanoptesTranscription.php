@@ -35,11 +35,6 @@ interface PanoptesTranscription extends RepositoryInterface
     // Not used methods
 
     /**
-     * @return mixed
-     */
-    public function getTotalTranscriptions();
-
-    /**
      * @param $expeditionId
      * @return mixed
      */
@@ -62,11 +57,6 @@ interface PanoptesTranscription extends RepositoryInterface
      * @return mixed
      */
     public function getTranscriptionCountPerDate($workflowId);
-
-    /**
-     * @return mixed
-     */
-    public function getContributorCount();
 
     /**
      * @param $projectId

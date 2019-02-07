@@ -2,12 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
-
-class Property extends Model
+class Property extends BaseEloquentModel
 {
-    use LadaCacheTrait;
 
     /**
      * @inheritDoc

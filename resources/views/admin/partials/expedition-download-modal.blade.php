@@ -1,5 +1,5 @@
 <!-- Modal -->
-<div class="modal fade" id="expedition-download-modal" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle"
+<div class="modal fade" id="expedition-download-modal" tabindex="-2" role="dialog" aria-labelledby="ModalCenterTitle"
      aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">

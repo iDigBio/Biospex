@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Observers\PanoptesTranscriptionObserver;
+use App\Observers\SubjectObserver;
 use Illuminate\Support\ServiceProvider;
 
 use App\Repositories\Interfaces\ActorContact;
@@ -109,13 +110,6 @@ class BiospexServiceProvider extends ServiceProvider
         view()->composer(
             'common.process-modal', 'App\Http\ViewComposers\PollComposer'
         );
-
-        /*
-        view()->composer(
-            'front.layouts.navigation', 'App\Http\ViewComposers\AuthUserComposer'
-        );
-        */
-
     }
 
     /**
@@ -124,6 +118,7 @@ class BiospexServiceProvider extends ServiceProvider
     public function setObservers()
     {
         \App\Models\PanoptesTranscription::observe(PanoptesTranscriptionObserver::class);
+        \App\Models\Subject::observe(SubjectObserver::class);
     }
 
     /**

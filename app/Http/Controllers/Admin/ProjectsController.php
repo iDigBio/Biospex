@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Jobs\DeleteProject;
 use App\Jobs\OcrCreateJob;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\Subject;
-use App\Repositories\Interfaces\User;
 use App\Http\Requests\ProjectFormRequest;
 use App\Services\Model\ProjectService;
+use App\Facades\FlashHelper;
+use CountHelper;
 use JavaScript;
 
 class ProjectsController extends Controller
@@ -75,11 +75,10 @@ class ProjectsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param User $userContract
      * @param $projectId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function show(User $userContract, $projectId)
+    public function show($projectId)
     {
         $project = $this->projectContract->getProjectShow($projectId);
 
@@ -87,13 +86,11 @@ class ProjectsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $user = $userContract->findWith(request()->user()->id, ['profile']);
-
         list($expeditionsCompleted, $expeditions) = $project->expeditions->partition(function ($expedition) {
             return $expedition->stat->percent_completed === "100.00";
         });
 
-        return view('admin.project.show', compact('user', 'project', 'expeditions', 'expeditionsCompleted'));
+        return view('admin.project.show', compact('project', 'expeditions', 'expeditionsCompleted'));
     }
 
     /**
@@ -116,12 +113,12 @@ class ProjectsController extends Controller
             $project = $this->projectContract->findWith($model->id, ['workflow.actors.contacts']);
             $this->projectService->notifyActorContacts($project);
 
-            FlashHelper::success(trans('message.record_created'));
+            FlashHelper::success(__('Record was created successfully.'));
 
             return redirect()->route('admin.projects.show', [$project->id]);
         }
 
-        FlashHelper::error(trans('messages.record_save_error'));
+        FlashHelper::error(__('An error occurred when saving record.'));
 
         return redirect()->route('admin.projects.create')->withInput();
     }
@@ -137,7 +134,7 @@ class ProjectsController extends Controller
         $project = $this->projectContract->findWith($projectId, ['group', 'expeditions.workflowManager']);
 
         if (! $project) {
-            FlashHelper::error(trans('pages.project_repo_error'));
+            FlashHelper::error(__('Error retrieving record from database.'));
 
             return redirect()->route('admin.projects.show', [$projectId]);
         }
@@ -166,7 +163,7 @@ class ProjectsController extends Controller
     {
         $project = $this->projectContract->findWith($projectId, ['group', 'resources']);
         if (! $project) {
-            FlashHelper::error(trans('pages.project_repo_error'));
+            FlashHelper::error(__('Error retrieving record from database.'));
 
             return redirect()->route('admin.projects.index');
         }
@@ -202,7 +199,9 @@ class ProjectsController extends Controller
 
         $project = $this->projectContract->update($request->all(), $projectId);
 
-        $project ? FlashHelper::success(trans('messages.record_updated')) : FlashHelper::error(trans('messages.record_updated_error'));
+        $project ?
+            FlashHelper::success(__('Record was updated successfully.')) :
+            FlashHelper::error(__('Error while updating record.'));
 
         return redirect()->back();
     }
@@ -254,7 +253,7 @@ class ProjectsController extends Controller
             'explore'      => true,
         ]);
 
-        $subjectAssignedCount = $subjectContract->getSubjectAssignedCount($projectId);
+        $subjectAssignedCount = CountHelper::getProjectSubjectAssignedCount($projectId);
 
         return view('admin.project.explore', compact('project', 'subjectAssignedCount'));
     }
@@ -275,18 +274,18 @@ class ProjectsController extends Controller
 
         try {
             if ($project->nfnWorkflows->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
-                FlashHelper::error(trans('messages.expedition_process_exists'));
+                FlashHelper::error(__('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
 
                 redirect()->route('admin.projects.index');
             }
 
             DeleteProject::dispatch($project);
 
-            FlashHelper::success(trans('messages.record_deleted'));
+            FlashHelper::success(__('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
 
             return redirect()->route('admin.projects.index');
         } catch (\Exception $e) {
-            FlashHelper::error(trans('messages.record_delete_error'));
+            FlashHelper::error(__('An error occurred when deleting record.'));
 
             return redirect()->route('admin.projects.index');
         }
@@ -327,7 +326,7 @@ class ProjectsController extends Controller
 
         $transcribers = collect($transcriptionContract->getUserTranscriptionCount($projectId))->sortByDesc('transcriptionCount');
 
-        $transcriptions = \Cache::remember(md5(__METHOD__.$projectId), 240, function () use (
+        $transcriptions = \Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 240, function () use (
             $transcribers,
             $projectId
         ) {

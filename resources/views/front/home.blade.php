@@ -107,7 +107,7 @@
                                 <div class="p-2"><p>{{ $expedition->stat->percent_completed }}% {{ __('Complete') }}</p></div>
                             </div>
                             <hr>
-                            <div class="col-md-3 d-flex justify-content-between mt-4 mb-3 mx-auto">
+                            <div class="d-flex align-items-start justify-content-between mt-4 mx-auto">
                                 {!! $expedition->project->present()->project_page_icon_lrg !!}
                                 @isset($expedition->nfnWorkflow)
                                 {!! $expedition->nfnWorkflow->present()->nfn_url_lrg !!}

@@ -31,7 +31,7 @@ class ProjectFormRequest extends Request
             'description_short'       => 'required|between:6,140',
             'description_long'        => 'required',
             'keywords'                => 'required',
-            'workflow_id'             => 'required|email',
+            'workflow_id'             => 'required',
             'organization_website'    => 'nullable|url',
             'blog_url'                => 'nullable|url',
             'facebook'                => 'nullable|url',
@@ -67,9 +67,9 @@ class ProjectFormRequest extends Request
     public function messages()
     {
         return [
-            'resources.*.name.required_with'        => 'Type selected',
-            'resources.*.description.required_with' => 'Type selected',
-            'resources.*.download.required_if'      => 'Type selected',
+            'resources.*.name.required_with'        => 'Required when Type selected',
+            'resources.*.description.required_with' => 'Required when Type selected',
+            'resources.*.download.required_if'      => 'Required when Type selected',
             'resources.*.download.mimes'            => 'Accepted files: txt,doc,csv,pdf',
         ];
     }

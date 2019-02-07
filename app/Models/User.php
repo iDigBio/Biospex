@@ -8,11 +8,10 @@ use App\Presenters\UserPresenter;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Traits\Presentable;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class User extends Authenticatable
 {
-    use HasGroup, UuidTrait, Notifiable, LadaCacheTrait, Presentable;
+    use HasGroup, UuidTrait, Notifiable, Presentable;
 
     /**
      * @inheritDoc

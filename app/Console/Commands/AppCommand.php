@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Project;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -30,12 +29,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $project = Project::with(['group', 'resources'])->find(5);
 
-        $disableWorkflow = $project->nfnWorkflows()->exists() ? true : '';
-
-        dd($disableWorkflow);
     }
-
-
 }

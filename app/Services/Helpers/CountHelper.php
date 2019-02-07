@@ -3,6 +3,7 @@
 namespace App\Services\Helpers;
 
 use App\Repositories\Interfaces\PanoptesTranscription;
+use App\Repositories\Interfaces\Subject;
 use Illuminate\Support\Facades\Cache;
 
 class CountHelper
@@ -13,11 +14,17 @@ class CountHelper
     private $panoptesTranscription;
 
     /**
+     * @var \App\Repositories\Interfaces\Subject
+     */
+    private $subject;
+
+    /**
      * CountHelper constructor.
      */
     public function __construct()
     {
         $this->panoptesTranscription = app(PanoptesTranscription::class);
+        $this->subject = app(Subject::class);
     }
 
     /**
@@ -28,9 +35,11 @@ class CountHelper
      */
     public function projectTranscriptionCount($projectId)
     {
-        $count = Cache::remember(md5(__METHOD__ . $projectId), 60, function () use ($projectId) {
-            return $this->panoptesTranscription->getProjectTranscriptionCount($projectId);
-        });
+        $count = Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 720, function () use (
+                $projectId
+            ) {
+                return $this->panoptesTranscription->getProjectTranscriptionCount($projectId);
+            });
 
         return $count;
     }
@@ -43,12 +52,44 @@ class CountHelper
      */
     public function projectTranscriberCount($projectId)
     {
-        $count = Cache::remember(md5(__METHOD__ . $projectId), 60, function () use ($projectId) {
+        $count = Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 720, function () use ($projectId) {
             return $this->panoptesTranscription->getProjectTranscriberCount($projectId);
         });
 
         return $count;
     }
+
+    /**
+     * Return user transcription count for stats.
+     *
+     * @param $projectId
+     * @return mixed
+     */
+    public function getUserTranscriptionCount($projectId)
+    {
+        $count = Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 720, function () use ($projectId) {
+            return $this->panoptesTranscription->getUserTranscriptionCount($projectId);
+        });
+
+        return $count;
+    }
+
+    /**
+     * Get assigned subject count for project.
+     *
+     * @param $projectId
+     * @return mixed
+     */
+    public function getProjectSubjectAssignedCount($projectId)
+    {
+        $count = Cache::tags('subjects'.$projectId)->remember(md5(__METHOD__.$projectId), 720, function () use ($projectId) {
+            return $this->subject->getSubjectAssignedCount($projectId);
+        });
+
+        return $count;
+    }
+
+    ///////////////
 
     /**
      * Return project transcription count.
@@ -58,24 +99,11 @@ class CountHelper
      */
     public function expeditionTranscriptionCount($expeditionId)
     {
-        $count = Cache::remember(md5(__METHOD__ . $expeditionId), 60, function () use ($expeditionId) {
+        $count = Cache::tags('panoptes')->remember(md5(__METHOD__.$expeditionId), 720, function () use ($expeditionId) {
             return $this->panoptesTranscription->getExpeditionTranscriptionCount($expeditionId);
         });
 
         return $count;
-    }
-
-    /**
-     * @param $projectId
-     * @return mixed
-     */
-    public function projectSubjectCount($projectId)
-    {
-        $result = Cache::remember('project_subject_count_' . $projectId, 60, function () {
-            return;
-        });
-
-        return $result;
     }
 
     /**
@@ -84,7 +112,7 @@ class CountHelper
      */
     public function expeditionSubjectCount($expeditionId)
     {
-        $result = Cache::remember('expedition_subject_count_' . $expeditionId, 60, function () {
+        $result = Cache::tags('subjects')->remember('expedition_subject_count_'.$expeditionId, 60, function () {
             return;
         });
 

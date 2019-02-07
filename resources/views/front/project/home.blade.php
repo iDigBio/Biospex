@@ -6,7 +6,7 @@
 @stop
 
 @section('header')
-    <header style="background-image: url({{ $project->present()->banner_url }});">
+    <header style="background-image: url({{ $project->present()->banner_file_url }});">
         <nav class="header navbar navbar-expand-md box-shadow">
             <a href="/"><img src="/storage/images/biospex_logo.svg" alt="BIOSPEX"
                              class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
@@ -37,8 +37,10 @@
                 <hr class="pt-0 pb-4">
 
                 <div class="col-12 col-md-10 offset-md-1">
-                    <img src="{{ $project->present()->logo_url }}" class="float-md-right img-fluid"
+                    <div class="col-5 float-right">
+                    <img src="{{ $project->present()->logo_url }}" class="img-fluid"
                          alt="Project biospex_logo">
+                    </div>
                     @if($project->contact !== null)
                         <h3>{{ __('Contact') }}</h3>
                         <p>
@@ -127,9 +129,9 @@
                 >{{ __('View Completed Expeditions') }}</button>
             </div>
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
-                <span>{{ $project->expeditions->count() }} Expeditions</span>
-                <span>{{ $project->transcriptions_count }} Transcriptions</span>
-                <span>{{ $project->unique_transcribers_count }} Transcribers</span>
+                <span class="text">{{ $project->expeditions->count() }} Expeditions</span>
+                <span class="text">{{ $transcriptionsCount }} Transcriptions</span>
+                <span class="text">{{ $transcribersCount }} Transcribers</span>
             </div>
             <hr class="header mx-auto">
         </div>

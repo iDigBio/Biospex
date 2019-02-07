@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\Project;
+use CountHelper;
 use GeneralHelper;
 use Illuminate\Support\Carbon;
-use JavaScript;
 
 class ProjectsController extends Controller
 {
@@ -64,9 +64,22 @@ class ProjectsController extends Controller
             return $now->between($start_date, $end_date);
         });
 
+        $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
+        $transcribersCount = CountHelper::projectTranscriberCount($project->id);
+
         $amChartHeight = GeneralHelper::amChartHeight($project->expeditions->count());
         $amLegendHeight = GeneralHelper::amLegendHeight($project->expeditions->count());
 
-        return view('front.project.home', compact('project', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'amChartHeight', 'amLegendHeight'));
+        return view('front.project.home', compact(
+            'project',
+            'expeditions',
+            'expeditionsCompleted',
+            'events',
+            'eventsCompleted',
+            'transcriptionsCount',
+            'transcribersCount',
+            'amChartHeight',
+            'amLegendHeight'
+        ));
     }
 }

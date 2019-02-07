@@ -2,15 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 use App\Models\Traits\Presentable;
 use App\Presenters\TeamPresenter;
 
-class Team extends Model
+class Team extends BaseEloquentModel
 {
 
-    use LadaCacheTrait, Presentable;
+    use Presentable;
 
     /**
      * @inheritDoc

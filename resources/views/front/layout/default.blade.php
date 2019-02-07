@@ -52,10 +52,10 @@ sub footer -->
 <!-- Footer -->
 <footer class="page-footer font-small blue-grey lighten-5">
     <!-- Footer Links -->
-    <div class="container text-center text-md-left mt-5">
+    <div class="container text-center text-md-left">
 
         <!-- Grid row -->
-        <div class="row mt-3 dark-grey-text">
+        <div class="row mt-3 dark-grey-text align-items-center h-100">
 
             <!-- Grid column -->
             <div class="col-md-3 col-xl-3 mb-4">

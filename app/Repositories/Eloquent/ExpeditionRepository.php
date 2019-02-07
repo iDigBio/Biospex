@@ -75,7 +75,8 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
             'project.group',
             'stat',
             'downloads',
-            'actors'
+            'actors',
+            'workflowManager'
         ])->whereHas('project.group.users', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         });

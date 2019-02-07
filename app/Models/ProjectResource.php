@@ -4,14 +4,12 @@ namespace App\Models;
 
 use App\Models\Traits\Presentable;
 use App\Presenters\ProjectResourcePresenter;
-use Illuminate\Database\Eloquent\Model;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class ProjectResource extends Model implements AttachableInterface
+class ProjectResource extends BaseEloquentModel implements AttachableInterface
 {
-    use PaperclipTrait, LadaCacheTrait, Presentable;
+    use PaperclipTrait, Presentable;
 
     /**
      * @inheritDoc

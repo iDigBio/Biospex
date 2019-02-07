@@ -498,7 +498,7 @@ h2.home-header-cta {
 
 .card ul li {
     list-style: none;
-    font-size: 0.8125rem;
+    font-size: 1rem;
     text-rendering: optimizeLegibility;
 }
 
@@ -561,8 +561,8 @@ h2.home-header-cta {
 
 /*footer*/
 footer {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
     background: rgb(64,98,136);
     background: -moz-linear-gradient(left, rgba(64,98,136,1) 0%, rgba(33,48,76,1) 99%);
     background: -webkit-linear-gradient(left, rgba(64,98,136,1) 0%,rgba(33,48,76,1) 99%);
@@ -668,7 +668,6 @@ h1.project-wide {
 
 .content-header {
     font-size: 2.875rem;
-    line-height: 1.875rem;
     color: #888;
 }
 

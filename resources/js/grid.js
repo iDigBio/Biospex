@@ -3,11 +3,13 @@ $.jgrid.defaults.responsive = true;
 $.jgrid.defaults.guiStyle = 'bootstrap';
 $.jgrid.defaults.iconSet = "fontAwesomeSVG";
 $.jgrid.cellattr = $.jgrid.cellattr || {};
+/*
 $.extend($.jgrid.cellattr, {
     addDataAttr: function (rowId, cellVal, rawObject, cm, rdata) {
         return 'data-toggle="modal" data-target="#jqGridModal"';
     }
 });
+*/
 
 
 let Grid = {};
@@ -300,7 +302,7 @@ function mapFormatter(column) {
         "imagePreview": function (cellValue, opts, rowObjects) {
             let url = encodeURIComponent(cellValue);
             return '<a href="' + cellValue + '" target="_new">View Image</a>&nbsp;&nbsp;'
-                + '<a href="#" class="thumb-view" data-remote="/images/preview?url=' + url + '" data-toggle="modal" data-target="#jqgrid-modal" data-hover="tooltip" title="Preview Thumbnail">View Thumb</a>&nbsp;&nbsp;'
+                + '<a href="#" class="thumb-view" data-remote="/admin/images/preview?url=' + url + '" data-toggle="modal" data-target="#jqgrid-modal" data-hover="tooltip" title="Preview Thumbnail">View Thumb</a>&nbsp;&nbsp;'
                 + '<a href="#" class="url-view" data-remote="' + cellValue + '" data-toggle="modal" data-target="#jqgrid-modal" data-hover="tooltip" title="Preview URL">View URL</a>'
         }
     };

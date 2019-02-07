@@ -16,7 +16,7 @@
             <div class="modal-body">
                 <div class="m-4">
                     <div class="project-banner" data-name="banner-desert.jpg" data-hover="tooltip"
-                         title="{{ __('Click to select grass banner.') }}">
+                         title="{{ __('Click to select desert banner.') }}">
                         <img class="img-fluid" alt="{{ __('Desert Banner') }}"
                              src="{{ Storage::disk('public')->url('images/habitat-banners/banner-desert.jpg') }}">
                     </div>
@@ -25,7 +25,7 @@
                 <div class="m-4">
                     <div class="project-banner" data-name="banner-grass.jpg" data-hover="tooltip"
                          title="{{ __('Click to select grass banner.') }}">
-                        <img class="img-fluid" alt="{{ __('Desert Banner') }}"
+                        <img class="img-fluid" alt="{{ __('Grass Banner') }}"
                              src="{{ Storage::disk('public')->url('images/habitat-banners/banner-grass.jpg') }}">
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                 <div class="m-4">
                     <div class="project-banner" data-name="banner-meadow.jpg" data-hover="tooltip"
                          title="{{ __('Click to select meadow banner.') }}">
-                        <img class="img-fluid" alt="{{ __('Desert Banner') }}"
+                        <img class="img-fluid" alt="{{ __('Meadow Banner') }}"
                              src="{{ Storage::disk('public')->url('images/habitat-banners/banner-meadow.jpg') }}">
                     </div>
                 </div>
@@ -41,7 +41,7 @@
                 <div class="m-4">
                     <div class="project-banner" data-name="banner-mtn-flowers.jpg" data-hover="tooltip"
                          title="{{ __('Click to select mountain flowers banner.') }}">
-                        <img class="img-fluid" alt="{{ __('Desert Banner') }}"
+                        <img class="img-fluid" alt="{{ __('Mountain Flower Banner') }}"
                              src="{{ Storage::disk('public')->url('images/habitat-banners/banner-mtn-flowers.jpg') }}">
                     </div>
                 </div>
@@ -49,7 +49,7 @@
                 <div class="m-4">
                     <div class="project-banner" data-name="banner-swamp.jpg" data-hover="tooltip"
                          title="{{ __('Click to select swamp banner.') }}">
-                        <img class="img-fluid" alt="{{ __('Desert Banner') }}"
+                        <img class="img-fluid" alt="{{ __('Swamp Banner') }}"
                              src="{{ Storage::disk('public')->url('images/habitat-banners/banner-swamp.jpg') }}">
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                 <div class="m-4">
                     <div class="project-banner" data-name="banner-trees.jpg" data-hover="tooltip"
                          title="{{ __('Click to select trees banner.') }}">
-                        <img class="img-fluid" alt="{{ __('Desert Banner') }}"
+                        <img class="img-fluid" alt="{{ __('Trees Banner') }}"
                              src="{{ Storage::disk('public')->url('images/habitat-banners/banner-trees.jpg') }}">
                     </div>
                 </div>

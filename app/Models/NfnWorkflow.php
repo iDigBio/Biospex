@@ -3,14 +3,12 @@
 namespace App\Models;
 
 use App\Models\Traits\Presentable;
-use Illuminate\Database\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 use App\Presenters\NfnWorkflowPresenter;
 
-class NfnWorkflow extends Model
+class NfnWorkflow extends BaseEloquentModel
 {
 
-    use LadaCacheTrait, Presentable;
+    use Presentable;
 
     /**
      * @inheritDoc

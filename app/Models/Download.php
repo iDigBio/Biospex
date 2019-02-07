@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\UuidTrait;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class Download extends Model
+class Download extends BaseEloquentModel
 {
-    use UuidTrait, LadaCacheTrait;
+    use UuidTrait;
 
     /**
      * @inheritDoc

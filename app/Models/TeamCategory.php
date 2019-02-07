@@ -2,13 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
-
-class TeamCategory extends Model
+class TeamCategory extends BaseEloquentModel
 {
-
-    use LadaCacheTrait;
 
     /**
      * @inheritDoc

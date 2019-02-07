@@ -2,36 +2,15 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model;
 use MongoDB\BSON\ObjectID;
 use MongoDB\BSON\UTCDateTime;
 
-class PusherTranscription extends Model
+class PusherTranscription extends BaseMongoModel
 {
-    /**
-     * @inheritDoc
-     */
-    protected $connection = 'mongodb';
-
     /**
      * Set Collection
      */
     protected $collection = 'pusher_transcriptions';
-
-    /**
-     * @inheritDoc
-     */
-    protected $primaryKey = '_id';
-
-    /**
-     * @inheritDoc
-     */
-    public $incrementing = false;
-
-    /**
-     * @inheritDoc
-     */
-    protected $guarded = ['_id'];
 
     /**
      * @inheritDoc

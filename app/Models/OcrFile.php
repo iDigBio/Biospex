@@ -2,29 +2,12 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model;
-
-class OcrFile extends Model
+class OcrFile extends BaseMongoModel
 {
-    /**
-     * @inheritDoc
-     */
-    protected $connection = 'mongodb';
-
     /**
      * Set Collection
      */
     protected $collection = 'ocr_files';
-
-    /**
-     * @inheritDoc
-     */
-    protected $primaryKey = '_id';
-
-    /**
-     * @inheritDoc
-     */
-    protected $guarded = ['_id'];
 
     /**
      * OrderBy
@@ -32,10 +15,4 @@ class OcrFile extends Model
      * @var array
      */
     protected $orderBy = [[]];
-
-
-    protected static function boot()
-    {
-        parent::boot();
-    }
 }

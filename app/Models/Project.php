@@ -4,8 +4,6 @@ namespace App\Models;
 
 use App\Facades\DateHelper;
 use App\Presenters\ProjectPresenter;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
 use Illuminate\Support\Facades\Config;
 use Czim\Paperclip\Contracts\AttachableInterface;
@@ -13,11 +11,10 @@ use Czim\Paperclip\Model\PaperclipTrait;
 use Cviebrock\EloquentSluggable\Sluggable;
 use App\Models\Traits\UuidTrait;
 use App\Models\Traits\Presentable;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class Project extends Model implements AttachableInterface
+class Project extends BaseEloquentModel implements AttachableInterface
 {
-    use PaperclipTrait, Sluggable, UuidTrait, HybridRelations, LadaCacheTrait, Presentable;
+    use PaperclipTrait, Sluggable, UuidTrait, HybridRelations, Presentable;
 
     /**
      * @inheritDoc

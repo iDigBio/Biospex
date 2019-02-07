@@ -68,7 +68,7 @@ class ProjectPresenter extends Presenter
         $route = route("front.projects.slug", [$this->model->slug]);
 
         return $this->model->slug == null ? '' :
-            '<a href="'.$route.'" data-hover="tooltip" title="'.__('Project Page').'">
+            '<a href="'.$route.'" data-hover="tooltip" title="'.__('Project Public Page').'">
                 <i class="fas fa-project-diagram"></i></a>';
     }
 
@@ -82,7 +82,21 @@ class ProjectPresenter extends Presenter
         $route = route("front.projects.slug", [$this->model->slug]);
 
         return $this->model->slug == null ? '' :
-            '<a href="'.$route.'" target="_blank" data-hover="tooltip" title="'.__('Project Page').'">
+            '<a href="'.$route.'" target="_blank" data-hover="tooltip" title="'.__('Project Public Page').'">
+                <i class="fas fa-project-diagram fa-2x"></i></a>';
+    }
+
+    /**
+     * Return project home button
+     *
+     * @return string
+     */
+    public function projectAdminIconLrg()
+    {
+        $route = route("admin.projects.show", [$this->model->id]);
+
+        return $this->model->id == null ? '' :
+            '<a href="'.$route.'" data-hover="tooltip" title="'.__('Show Project Admin Page').'">
                 <i class="fas fa-project-diagram fa-2x"></i></a>';
     }
 
@@ -408,10 +422,10 @@ class ProjectPresenter extends Presenter
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-btn-ok-label="Continue" data-btn-ok-icon="fas fa-share fa-2x"
-            data-btn-ok-class="btn-success"
-            data-btn-cancel-label="Stop" data-btn-cancel-icon="fas fa-ban fa-2x"
-            data-btn-cancel-class="btn-danger"
+            data-btn-ok-label="Confirm" data-btn-ok-icon="fas fa-share fa-2x"
+            data-btn-ok-class="btn btn-primary"
+            data-btn-cancel-label="Cancel" data-btn-cancel-icon="fas fa-ban fa-2x"
+            data-btn-cancel-class="btn btn-primary"
             data-title="'.__('Delete Project').'?" data-content="'.__('This will permanently delete the Project and all records.').'">
             <i class="fas fa-trash-alt"></i></a>';
     }

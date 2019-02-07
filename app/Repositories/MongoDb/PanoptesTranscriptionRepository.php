@@ -24,8 +24,6 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getProjectTranscriberCount($projectId)
     {
-        return 999;
-
         $result = $this->model->raw(function ($collection) use ($projectId) {
             return $collection->aggregate([
                 [
@@ -48,11 +46,10 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getProjectTranscriptionCount($projectId)
     {
-        return 999;
         $result = $this->model->raw(function ($collection) use ($projectId) {
             return $collection->aggregate([
                 ['$match' => ['subject_projectId' => $projectId]],
-                ['$count' => 'count']
+                ['$count' => 'count'],
             ]);
         })->first();
 
@@ -60,6 +57,8 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
 
         return $result === null ? 0 : $result->count;
     }
+
+    // Not used methods
 
     /**
      * @inheritdoc
@@ -69,7 +68,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
         $result = $this->model->raw(function ($collection) use ($expeditionId) {
             return $collection->aggregate([
                 ['$match' => ['subject_expeditionId' => $expeditionId]],
-                ['$count' => 'count']
+                ['$count' => 'count'],
             ]);
         })->first();
 
@@ -78,25 +77,6 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
         return $result === null ? 0 : $result->count;
     }
 
-
-    // Not used methods
-
-    /**
-     * Return total count of transcriptions.
-     *
-     * @return mixed
-     * @throws \Exception
-     */
-    public function getTotalTranscriptions()
-    {
-        $results = $result = Cache::remember(md5(__METHOD__), 240, function () {
-            return $this->model->count();
-        });
-
-        $this->resetModel();
-
-        return $results;
-    }
 
     /**
      * Retrieve transcription count using expedition id.
@@ -128,7 +108,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
             return $collection->aggregate([
                 ['$match' => ['subject_projectId' => (int) $projectId]],
                 ['$sort' => ['classification_finished_at' => 1]],
-                ['$limit' => 1]
+                ['$limit' => 1],
             ]);
         })->first();
 
@@ -150,7 +130,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
             return $collection->aggregate([
                 ['$match' => ['subject_projectId' => (int) $projectId]],
                 ['$sort' => ['classification_finished_at' => -1]],
-                ['$limit' => 1]
+                ['$limit' => 1],
             ]);
         })->first();
 
@@ -191,20 +171,6 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
         return $results;
     }
 
-    /**
-     * @return mixed
-     * @throws \Exception
-     */
-    public function getContributorCount()
-    {
-        $results = $result = Cache::remember(md5(__METHOD__), 240, function () {
-            return $this->model->where('user_name', 'not regexp', '/^not-logged-in.*/i')->groupBy('user_name')->get()->count();
-        });
-
-        $this->resetModel();
-
-        return $results;
-    }
 
     /**
      * Get transcription counts per user.
@@ -215,46 +181,44 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getUserTranscriptionCount($projectId)
     {
-        $results = $result = Cache::remember(md5(__METHOD__.$projectId), 240, function () use ($projectId) {
-            return $this->model->raw(function ($collection) use ($projectId) {
-                return $collection->aggregate([
-                    [
-                        '$match' => [
-                            'subject_projectId' => (int) $projectId,
+        $results = $this->model->raw(function ($collection) use ($projectId) {
+            return $collection->aggregate([
+                [
+                    '$match' => [
+                        'subject_projectId' => (int) $projectId,
+                    ],
+                ],
+                [
+                    '$sort' => [
+                        'classification_finished_at' => -1,
+                    ],
+                ],
+                [
+                    '$group' => [
+                        '_id'                => '$user_name',
+                        'transcriptionCount' => [
+                            '$sum' => 1,
+                        ],
+                        'expedition'         => [
+                            '$addToSet' => '$subject_expeditionId',
+                        ],
+                        'last_date'          => [
+                            '$max' => '$classification_finished_at',
                         ],
                     ],
-                    [
-                        '$sort' => [
-                            'classification_finished_at' => -1,
+                ],
+                [
+                    '$project' => [
+                        '_id'                => 0,
+                        'user_name'          => '$_id',
+                        'transcriptionCount' => 1,
+                        'expeditionCount'    => [
+                            '$size' => '$expedition',
                         ],
+                        'last_date'          => 1,
                     ],
-                    [
-                        '$group' => [
-                            '_id'                => '$user_name',
-                            'transcriptionCount' => [
-                                '$sum' => 1,
-                            ],
-                            'expedition'         => [
-                                '$addToSet' => '$subject_expeditionId',
-                            ],
-                            'last_date'          => [
-                                '$max' => '$classification_finished_at',
-                            ],
-                        ],
-                    ],
-                    [
-                        '$project' => [
-                            '_id'                => 0,
-                            'user_name'          => '$_id',
-                            'transcriptionCount' => 1,
-                            'expeditionCount'    => [
-                                '$size' => '$expedition',
-                            ],
-                            'last_date'          => 1,
-                        ],
-                    ],
-                ]);
-            });
+                ],
+            ]);
         });
 
         $this->resetModel();

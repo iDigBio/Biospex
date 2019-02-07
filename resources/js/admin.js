@@ -113,9 +113,9 @@ $(function() {
             $(this).val('');
         });
         newEntry.find('.fileName').html('');
-        controls.find('.entry:last .btn-add')
+        controls.find('.entry:last span.btn-add')
             .removeClass('btn-add').addClass('btn-remove')
-            .html('<span class="fas fa-minus"></span>');
+            .html('<i class="fas fa-minus"></i>');
         renumber_prefix()
     }).on('click', '.btn-remove', function (e) {
         $(this).parents('.entry:first').remove();
