@@ -45,20 +45,6 @@ class ProjectPresenter extends Presenter
     }
 
     /**
-     * Build link to banner thumb.
-     *
-     * @return string
-     */
-    public function bannerThumbUrl()
-    {
-        $banner = $this->model->banner;
-
-        return $this->variantExists($banner, 'thumb') ?
-            $banner->url('thumb') :
-            Storage::url('banners/thumb/missing.png');
-    }
-
-    /**
      * Return project home button
      *
      * @return string
@@ -273,18 +259,6 @@ class ProjectPresenter extends Presenter
      *
      * @return string
      */
-    public function projectExploreIcon()
-    {
-        return '<a href="'.route('admin.projects.explore', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('Explore Project Subjects').'"><i class="fas fa-table"></i></a>';
-    }
-
-    /**
-     * Return return explore project subjects icon.
-     *
-     * @return string
-     */
     public function projectExploreIconLrg()
     {
         return '<a href="'.route('admin.projects.explore', [
@@ -321,33 +295,10 @@ class ProjectPresenter extends Presenter
      *
      * @return string
      */
-    public function projectAdvertiseIcon()
-    {
-        return '<a href="'.route('admin.advertises.index', [$this->model->id]).'" 
-                    data-hover="tooltip" title="'.__('Download Advertisement Manifest').'"><i class="fas fa-ad"></i></a>';
-    }
-
-    /**
-     * Return return advertise project icon.
-     *
-     * @return string
-     */
     public function projectAdvertiseIconLrg()
     {
         return '<a href="'.route('admin.advertises.index', [$this->model->id]).'" 
                     data-hover="tooltip" title="'.__('Download Advertisement Manifest').'"><i class="fas fa-ad fa-2x"></i></a>';
-    }
-
-    /**
-     * Return return statistics project icon.
-     *
-     * @return string
-     */
-    public function projectStatisticsIcon()
-    {
-        return '<a href="'.route('admin.projects.statistics', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('Project Statistics').'"><i class="fas fa-chart-bar"></i></a>';
     }
 
     /**
@@ -422,10 +373,6 @@ class ProjectPresenter extends Presenter
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-btn-ok-label="Confirm" data-btn-ok-icon="fas fa-share fa-2x"
-            data-btn-ok-class="btn btn-primary"
-            data-btn-cancel-label="Cancel" data-btn-cancel-icon="fas fa-ban fa-2x"
-            data-btn-cancel-class="btn btn-primary"
             data-title="'.__('Delete Project').'?" data-content="'.__('This will permanently delete the Project and all records.').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
@@ -442,10 +389,6 @@ class ProjectPresenter extends Presenter
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-btn-ok-label="Continue" data-btn-ok-icon="fas fa-share fa-2x"
-            data-btn-ok-class="btn-success"
-            data-btn-cancel-label="Stop" data-btn-cancel-icon="fas fa-ban fa-2x"
-            data-btn-cancel-class="btn-danger"
             data-title="'.__('Delete Project').'?" data-content="'.__('This will permanently delete the Project and all records.').'">
             <i class="fas fa-trash-alt fa-2x"></i></a>';
     }
@@ -464,41 +407,6 @@ class ProjectPresenter extends Presenter
     }
 
     /**
-     * Return return clone project icon.
-     *
-     * @return string
-     */
-    public function projectImportIconLrg()
-    {
-        return '<a href="#" class="preventDefault"
-                    data-remote="'.route('admin.imports.index', [$this->model->id]).'" 
-                    data-toggle="modal" data-target="#import-modal" 
-                    data-hover="tooltip" title="'.__('Import Project Subjects').'"><i class="fas fa-file-import fa-2x"></i></a>';
-    }
-
-    /**
-     * Return return ocr icon.
-     *
-     * @return string
-     */
-    public function projectOcrIcon()
-    {
-        return '<a href="'.route('admin.projects.ocr', [
-                $this->model->id,
-            ]).'" class="prevent-default"
-            title="'.__('Reprocess Subject OCR').'" 
-            data-hover="tooltip"        
-            data-method="post"
-            data-confirm="confirmation"
-            data-btn-ok-label="Continue" data-btn-ok-icon="fas fa-share fa-2x"
-            data-btn-ok-class="btn-success"
-            data-btn-cancel-label="Stop" data-btn-cancel-icon="fas fa-ban fa-2x"
-            data-btn-cancel-class="btn-danger"
-            data-title="'.__('Reprocess Subject OCR').'?" data-content="'.__('This action will reprocess all ocr for entire Project.').'">
-            <i class="fas fa-redo-alt"></i></a>';
-    }
-
-    /**
      * Return return ocr lrg icon.
      *
      * @return string
@@ -512,10 +420,6 @@ class ProjectPresenter extends Presenter
             data-hover="tooltip"        
             data-method="post"
             data-confirm="confirmation"
-            data-btn-ok-label="Continue" data-btn-ok-icon="fas fa-share fa-2x"
-            data-btn-ok-class="btn-success"
-            data-btn-cancel-label="Stop" data-btn-cancel-icon="fas fa-ban fa-2x"
-            data-btn-cancel-class="btn-danger"
             data-title="'.__('Reprocess Subject OCR').'?" data-content="'.__('This action will reprocess all ocr for entire Project.').'">
             <i class="fas fa-redo-alt fa-2x"></i></a>';
     }

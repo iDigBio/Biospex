@@ -21,16 +21,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     /**
      * @inheritDoc
      */
-    protected $connection = 'mysql';
-
-    /**
-     * @inheritDoc
-     */
-    protected $primaryKey = 'id';
-
-    /**
-     * @inheritDoc
-     */
     protected $fillable = [
         'uuid',
         'project_id',

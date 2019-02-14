@@ -73,7 +73,7 @@ class NfnClassificationsCsvDownloadJob implements ShouldQueue
                     yield $index => function ($poolOpts) use ($api, $source, $index)
                     {
                         $reqOpts = [
-                            'sink' => \Storage::path(config('config.classifications_download') . '/' . $index . '.csv')
+                            'sink' => \Storage::path(config('config.nfn_downloads_classification') . '/' . $index . '.csv')
                         ];
                         if (is_array($poolOpts) && count($poolOpts) > 0)
                         {

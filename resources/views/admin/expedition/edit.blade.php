@@ -29,7 +29,7 @@
 {{-- Content --}}
 @section('content')
     @include('admin.expedition.partials.expedition-panel')
-    <form method="post"
+    <form id="gridForm" method="post"
           action="{{ route('admin.expeditions.update', [$expedition->project->id, $expedition->id]) }}"
           role="form" enctype="multipart/form-data">
         {!! method_field('put') !!}
@@ -102,10 +102,6 @@
             </div>
 
             <div class="form-group col-md-12 text-center">
-                <input type="hidden" name="project_id" id="project_id"
-                       value="{{ old('project_id', $expedition->project->id) }}">
-                <input type="hidden" name="id" id="id"
-                       value="{{ old('id', $expedition->id) }}">
                 <button type="submit" class="btn btn-primary mr-4">{{ __('SUBMIT') }}</button>
                 <a href="{{ URL::previous() }}" class="btn btn-primary mr-4">{{ __('CANCEL') }}</a>
             </div>

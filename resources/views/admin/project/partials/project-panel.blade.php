@@ -10,7 +10,9 @@
                     {!! $project->present()->project_explore_icon_lrg !!}
                     {!! $project->present()->project_advertise_icon_lrg !!}
                     {!! $project->present()->project_statistics_icon_lrg !!}
-                    {!! $project->present()->project_ocr_icon_lrg !!}
+                    @if($project->ocrQueue->isEmpty())
+                        {!! $project->present()->project_ocr_icon_lrg !!}
+                    @endif
                     {!! $project->present()->project_edit_icon_lrg !!}
                     {!! $project->present()->project_clone_icon_lrg !!}
                     @can('isOwner', $project->group)

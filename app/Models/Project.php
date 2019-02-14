@@ -24,16 +24,6 @@ class Project extends BaseEloquentModel implements AttachableInterface
     /**
      * @inheritDoc
      */
-    protected $connection = 'mysql';
-
-    /**
-     * @inheritDoc
-     */
-    protected $primaryKey = 'id';
-
-    /**
-     * @inheritDoc
-     */
     protected $fillable = [
         'uuid',
         'group_id',

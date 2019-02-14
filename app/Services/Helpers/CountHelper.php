@@ -89,33 +89,4 @@ class CountHelper
         return $count;
     }
 
-    ///////////////
-
-    /**
-     * Return project transcription count.
-     *
-     * @param $expeditionId
-     * @return mixed
-     */
-    public function expeditionTranscriptionCount($expeditionId)
-    {
-        $count = Cache::tags('panoptes')->remember(md5(__METHOD__.$expeditionId), 720, function () use ($expeditionId) {
-            return $this->panoptesTranscription->getExpeditionTranscriptionCount($expeditionId);
-        });
-
-        return $count;
-    }
-
-    /**
-     * @param $expeditionId
-     * @return mixed
-     */
-    public function expeditionSubjectCount($expeditionId)
-    {
-        $result = Cache::tags('subjects')->remember('expedition_subject_count_'.$expeditionId, 60, function () {
-            return;
-        });
-
-        return $result;
-    }
 }

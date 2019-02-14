@@ -113,10 +113,10 @@ class ExpeditionsController extends Controller
         $projectId = request()->get('id');
 
         list($active, $completed) = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)->partition(function (
-            $expedition
-        ) {
-            return $expedition->stat->percent_completed < '100.00';
-        });
+                $expedition
+            ) {
+                return $expedition->stat->percent_completed < '100.00';
+            });
 
         $expeditions = $type === 'active' ? $active : $completed;
 
@@ -142,7 +142,7 @@ class ExpeditionsController extends Controller
             'expeditionId' => 0,
             'subjectIds'   => [],
             'maxSubjects'  => config('config.expedition_size'),
-            'loadUrl' => route('admin.grids.load', [$projectId]),
+            'loadUrl'      => route('admin.grids.load', [$projectId]),
             'gridUrl'      => route('admin.grids.create', [$project->id]),
             'exportUrl'    => '',
             'editUrl'      => route('admin.grids.delete', [$projectId]),
@@ -169,7 +169,7 @@ class ExpeditionsController extends Controller
         }
 
         $expedition = $this->expeditionContract->create($request->all());
-        $subjects = $request->get('subjectIds') === null ? [] : explode(',', $request->get('subjectIds'));
+        $subjects = $request->get('subject-ids') === null ? [] : explode(',', $request->get('subject-ids'));
         $count = count($subjects);
         $expedition->subjects()->sync($subjects);
 
@@ -187,7 +187,7 @@ class ExpeditionsController extends Controller
 
         FlashHelper::error(trans('messages.record_save_error'));
 
-        return redirect()->route('admin.projects.show', [$projectId]);
+        return redirect()->route('admin.projects.show', [$project->id]);
     }
 
     /**
@@ -218,7 +218,7 @@ class ExpeditionsController extends Controller
             'expeditionId' => $expedition->id,
             'subjectIds'   => [],
             'maxSubjects'  => config('config.expedition_size'),
-            'loadUrl' => route('admin.grids.load', [$projectId]),
+            'loadUrl'      => route('admin.grids.load', [$projectId]),
             'gridUrl'      => route('admin.grids.show', [$expedition->project->id, $expedition->id]),
             'exportUrl'    => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'editUrl'      => route('admin.grids.delete', [$projectId]),
@@ -251,7 +251,7 @@ class ExpeditionsController extends Controller
             'expeditionId' => 0,
             'subjectIds'   => [],
             'maxSubjects'  => config('config.expedition_size'),
-            'loadUrl' => route('admin.grids.load', [$projectId]),
+            'loadUrl'      => route('admin.grids.load', [$projectId]),
             'gridUrl'      => route('admin.grids.create', [$expedition->project->id]),
             'exportUrl'    => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'editUrl'      => route('admin.grids.delete', [$projectId]),
@@ -273,7 +273,10 @@ class ExpeditionsController extends Controller
     {
         $relations = [
             'project.group',
+            'project.ocrQueue',
+            'downloads',
             'workflowManager',
+            'stat',
             'subjects',
             'nfnWorkflow',
         ];
@@ -291,7 +294,7 @@ class ExpeditionsController extends Controller
             'expeditionId' => $expedition->id,
             'subjectIds'   => $subjectIds,
             'maxSubjects'  => config('config.expedition_size'),
-            'loadUrl' => route('admin.grids.load', [$projectId]),
+            'loadUrl'      => route('admin.grids.load', [$projectId]),
             'gridUrl'      => route('admin.grids.edit', [$expedition->project->id, $expedition->id]),
             'exportUrl'    => route('admin.grids.expedition.export', [$expedition->project->id, $expedition->id]),
             'showCheckbox' => $expedition->workflowManager === null,
@@ -320,9 +323,9 @@ class ExpeditionsController extends Controller
         try {
             $expedition = $this->expeditionContract->update($request->all(), $expeditionId);
 
-            if (isset($attributes['workflow'])) {
+            if ($request->filled('workflow')) {
                 $values = [
-                    'project_id'    => $request->get('project_id'),
+                    'project_id'    => $project->id,
                     'expedition_id' => $expedition->id,
                     'workflow'      => $request->get('workflow'),
                 ];
@@ -336,7 +339,7 @@ class ExpeditionsController extends Controller
             $workflowManager = $this->workflowManagerContract->findBy('expedition_id', $expedition->id);
             if ($workflowManager === null) {
                 $expedition->load('subjects');
-                $subjectIds = $request->get('subjectIds') === null ? [] : explode(',', $request->get('subjectIds'));
+                $subjectIds = $request->get('subject-ids') === null ? [] : explode(',', $request->get('subject-ids'));
                 $count = count($subjectIds);
                 $this->subjectContract->detachSubjects($expedition->subjects, $expedition->id);
                 $expedition->subjects()->attach($subjectIds);
@@ -351,11 +354,11 @@ class ExpeditionsController extends Controller
             // Success!
             FlashHelper::success(trans('messages.record_updated'));
 
-            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+            return redirect()->route('admin.expeditions.show', [$project->id, $expedition->id]);
         } catch (\Exception $e) {
             FlashHelper::error(trans('messages.record_save_error'));
 
-            return redirect()->route('admin.expeditions.edit', [$projectId, $expeditionId]);
+            return redirect()->route('admin.expeditions.edit', [$project->id, $expedition->id]);
         }
     }
 

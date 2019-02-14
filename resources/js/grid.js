@@ -40,7 +40,7 @@ $(function () {
             success: jqBuildGrid()
         });
 
-        $('.gridForm').submit(function () {
+        $('#gridForm').submit(function () {
             $('#subject-ids').val(Grid.subjectIdsObj.data('ids').toString());
 
             return true;

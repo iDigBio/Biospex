@@ -5,6 +5,7 @@ namespace App\Services\Helpers;
 use Carbon\Carbon;
 use DateTimeZone;
 use Schema;
+use Storage;
 
 /**
  * Class GeneralHelper
@@ -26,8 +27,9 @@ class GeneralHelper
         $type = \DB::select(\DB::raw("SHOW COLUMNS FROM $table WHERE Field = '{$column}'"))[0]->Type;
         preg_match('/^enum\((.*)\)$/', $type, $matches);
         $results = collect(explode(',', $matches[1]));
-        $enum = $results->mapWithKeys(function ($result){
-            $value = trim($result,"'");
+        $enum = $results->mapWithKeys(function ($result) {
+            $value = trim($result, "'");
+
             return [$value => $value];
         });
 
@@ -45,10 +47,7 @@ class GeneralHelper
         $parts = parse_url($url);
         $path_parts = array_map('rawurldecode', explode('/', $parts['path']));
 
-        return
-            $parts['scheme'] . '://' .
-            $parts['host'] .
-            implode('/', array_map('rawurlencode', $path_parts));
+        return $parts['scheme'].'://'.$parts['host'].implode('/', array_map('rawurlencode', $path_parts));
     }
 
     /**
@@ -72,7 +71,7 @@ class GeneralHelper
      */
     public function transcriptionsTotal($count)
     {
-        return (int)$count * (int)config('config.nfnTranscriptionsComplete');
+        return (int) $count * (int) config('config.nfnTranscriptionsComplete');
     }
 
     /**
@@ -121,57 +120,57 @@ class GeneralHelper
     public function getState($input)
     {
         $states = [
-            'Alabama' => 'AL',
-            'Alaska' => 'AK',
-            'Arizona' => 'AZ',
-            'Arkansas' => 'AR',
-            'California' => 'CA',
-            'Colorado' => 'CO',
-            'Connecticut' => 'CT',
-            'Delaware' => 'DE',
+            'Alabama'              => 'AL',
+            'Alaska'               => 'AK',
+            'Arizona'              => 'AZ',
+            'Arkansas'             => 'AR',
+            'California'           => 'CA',
+            'Colorado'             => 'CO',
+            'Connecticut'          => 'CT',
+            'Delaware'             => 'DE',
             'District Of Columbia' => 'DC',
-            'Florida' => 'FL',
-            'Georgia' => 'GA',
-            'Hawaii' => 'HI',
-            'Idaho' => 'ID',
-            'Illinois' => 'IL',
-            'Indiana' => 'IN',
-            'Iowa' => 'IA',
-            'Kansas' => 'KS',
-            'Kentucky' => 'KY',
-            'Louisiana' => 'LA',
-            'Maine' => 'ME',
-            'Maryland' => 'MD',
-            'Massachusetts' => 'MA',
-            'Michigan' => 'MI',
-            'Minnesota' => 'MN',
-            'Mississippi' => 'MS',
-            'Missouri' => 'MO',
-            'Montana' => 'MT',
-            'Nebraska' => 'NE',
-            'Nevada' => 'NV',
-            'New Hampshire' => 'NH',
-            'New Jersey' => 'NJ',
-            'New Mexico' => 'NM',
-            'New York' => 'NY',
-            'North Carolina' => 'NC',
-            'North Dakota' => 'ND',
-            'Ohio' => 'OH',
-            'Oklahoma' => 'OK',
-            'Oregon' => 'OR',
-            'Pennsylvania' => 'PA',
-            'Rhode Island' => 'RI',
-            'South Carolina' => 'SC',
-            'South Dakota' => 'SD',
-            'Tennessee' => 'TN',
-            'Texas' => 'TX',
-            'Utah' => 'UT',
-            'Vermont' => 'VT',
-            'Virginia' => 'VA',
-            'Washington' => 'WA',
-            'West Virginia' => 'WV',
-            'Wisconsin' => 'WI',
-            'Wyoming' => 'WY'
+            'Florida'              => 'FL',
+            'Georgia'              => 'GA',
+            'Hawaii'               => 'HI',
+            'Idaho'                => 'ID',
+            'Illinois'             => 'IL',
+            'Indiana'              => 'IN',
+            'Iowa'                 => 'IA',
+            'Kansas'               => 'KS',
+            'Kentucky'             => 'KY',
+            'Louisiana'            => 'LA',
+            'Maine'                => 'ME',
+            'Maryland'             => 'MD',
+            'Massachusetts'        => 'MA',
+            'Michigan'             => 'MI',
+            'Minnesota'            => 'MN',
+            'Mississippi'          => 'MS',
+            'Missouri'             => 'MO',
+            'Montana'              => 'MT',
+            'Nebraska'             => 'NE',
+            'Nevada'               => 'NV',
+            'New Hampshire'        => 'NH',
+            'New Jersey'           => 'NJ',
+            'New Mexico'           => 'NM',
+            'New York'             => 'NY',
+            'North Carolina'       => 'NC',
+            'North Dakota'         => 'ND',
+            'Ohio'                 => 'OH',
+            'Oklahoma'             => 'OK',
+            'Oregon'               => 'OR',
+            'Pennsylvania'         => 'PA',
+            'Rhode Island'         => 'RI',
+            'South Carolina'       => 'SC',
+            'South Dakota'         => 'SD',
+            'Tennessee'            => 'TN',
+            'Texas'                => 'TX',
+            'Utah'                 => 'UT',
+            'Vermont'              => 'VT',
+            'Virginia'             => 'VA',
+            'Washington'           => 'WA',
+            'West Virginia'        => 'WV',
+            'Wisconsin'            => 'WI',
+            'Wyoming'              => 'WY',
         ];
 
         foreach ($states as $name => $abbr) {
@@ -210,11 +209,9 @@ class GeneralHelper
             return null;
         }
 
-        $fd = $storage === null ?
-            fopen('php://temp/maxmemory:1048576', 'w') :
-            fopen($storage, 'w');
+        $fd = $storage === null ? fopen('php://temp/maxmemory:1048576', 'w') : fopen($storage, 'w');
 
-        if ($fd === FALSE) {
+        if ($fd === false) {
             throw new \Exception('Failed to open temporary file while creating csv file');
         }
 
@@ -247,6 +244,7 @@ class GeneralHelper
      *
      * Regex from Martin Dürst
      * @source http://www.w3.org/International/questions/qa-forms-utf-8.en.php
+     *
      * @param string $str String to check
      * @return boolean
      */
@@ -261,9 +259,7 @@ class GeneralHelper
        |  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3
        | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
        |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
-      )*$/x",
-            $str
-        );
+      )*$/x", $str);
     }
 
     /**
@@ -282,18 +278,15 @@ class GeneralHelper
             return $str;
         }
 
-        if (strtoupper($inputEnc) === 'ISO-8859-1')
-        {
+        if (strtoupper($inputEnc) === 'ISO-8859-1') {
             return utf8_encode($str);
         }
 
-        if (function_exists('mb_convert_encoding'))
-        {
+        if (function_exists('mb_convert_encoding')) {
             return mb_convert_encoding($str, 'UTF-8', $inputEnc);
         }
 
-        if (function_exists('iconv'))
-        {
+        if (function_exists('iconv')) {
             return iconv($inputEnc, 'UTF-8', $str);
         }
 
@@ -355,17 +348,15 @@ class GeneralHelper
         $begin = $start_date->setTimezone($timezone);
         $end = $end_date->setTimezone($timezone);
 
-        if ($now->timestamp > $end->timestamp)
-        {
+        if ($now->timestamp > $end->timestamp) {
             return 'Completed';
         }
 
-        if ($now->timestamp < $begin->timestamp)
-        {
-            return trans('pages.event_starting') . $now->diffForHumans($begin, true);
+        if ($now->timestamp < $begin->timestamp) {
+            return trans('pages.event_starting').$now->diffForHumans($begin, true);
         }
 
-        return trans('pages.event_ending') . $end->diffForHumans($now, true);
+        return trans('pages.event_ending').$end->diffForHumans($now, true);
     }
 
     /**
@@ -380,8 +371,7 @@ class GeneralHelper
         $now = Carbon::now(new DateTimeZone($timezone));
         $end = $end_date->setTimezone($timezone);
 
-        if ($now->timestamp > $end->timestamp)
-        {
+        if ($now->timestamp > $end->timestamp) {
             return true;
         }
 
@@ -445,7 +435,8 @@ class GeneralHelper
      * @param null $name
      * @return mixed
      */
-    public function projectBannerFileName($name = null) {
+    public function projectBannerFileName($name = null)
+    {
         return $name ?? 'banner-trees.jpg';
     }
 
@@ -453,8 +444,36 @@ class GeneralHelper
      * @param null $name
      * @return mixed
      */
-    public function projectBannerFileUrl($name = null) {
-        return $name === null ? \Storage::url('images/habitat-banners/banner-trees.jpg') :
-            \Storage::url('images/habitat-banners/'.$name);
+    public function projectBannerFileUrl($name = null)
+    {
+        return $name === null ? \Storage::url('images/habitat-banners/banner-trees.jpg') : \Storage::url('images/habitat-banners/'.$name);
+    }
+
+    /**
+     * Check if download file exists.
+     *
+     * @param $type
+     * @param $file
+     * @return bool
+     */
+    public function downloadFileExists($type, $file)
+    {
+        return $type === 'export' ?
+            Storage::exists(config('config.export_dir').'/'.$file) :
+            Storage::exists(config('config.nfn_downloads_dir').'/'.$type.'/'.$file);
+    }
+
+    /**
+     * Get file size of download file.
+     *
+     * @param $type
+     * @param $file
+     * @return int
+     */
+    public function downloadFileSize($type, $file)
+    {
+        return $type === 'export' ?
+            Storage::size(config('config.export_dir').'/'.$file) :
+            Storage::size(config('config.nfn_downloads_dir').'/'.$type.'/'.$file);
     }
 }

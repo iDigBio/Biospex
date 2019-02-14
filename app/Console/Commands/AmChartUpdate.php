@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\AmChartJob;
+use App\Repositories\Interfaces\AmChart;
 use Illuminate\Console\Command;
 
 class AmChartUpdate extends Command
@@ -12,32 +13,44 @@ class AmChartUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'amchart:update {projectIds}';
+    protected $signature = 'amchart:update {projectIds?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Build the AmChart data for project pages. Argument is comma separated project projectIds.';
+    protected $description = 'Update AmChart data for projects.';
 
     /**
-     * Create a new command instance.
+     * @var \App\Repositories\Interfaces\AmChart
      */
-    public function __construct()
+    private $chartContract;
+
+    /**
+     * AmChartNew constructor.
+     *
+     * @param \App\Repositories\Interfaces\AmChart $chartContract
+     */
+    public function __construct(
+        AmChart $chartContract
+    )
     {
         parent::__construct();
+
+        $this->chartContract = $chartContract;
     }
 
     /**
      * Execute the console command.
-     *
      */
     public function handle()
     {
-        $projectIds = explode(',', $this->argument('projectIds'));
+        $projectIds = $this->argument('projectIds') === null ?
+            $this->chartContract->all(['project_id'])->pluck('project_id') :
+            collect(explode(',', $this->argument('projectIds')));
 
-        collect($projectIds)->each(function ($projectId){
+        $projectIds->each(function($projectId) {
             AmChartJob::dispatch($projectId);
         });
     }

@@ -16,8 +16,8 @@
 {{-- Content --}}
 @section('content')
     @include('admin.project.partials.project-panel', ['project' => $project])
-    <form method="post"
-          action="{{ route('admin.expeditions.create', [$project->id]) }}"
+    <form id="gridForm" method="post"
+          action="{{ route('admin.expeditions.store', [$project->id]) }}"
           role="form" enctype="multipart/form-data">
         {!! csrf_field() !!}
         <div class="row">
@@ -82,8 +82,6 @@
             </div>
 
             <div class="form-group col-md-12 text-center">
-                <input type="hidden" name="project_id" id="project_id"
-                       value="{{ old('project_id') }}">
                 <button type="submit" class="btn btn-primary mr-4">{{ __('SUBMIT') }}</button>
                 <a href="{{ URL::previous() }}" class="btn btn-primary mr-4">{{ __('CANCEL') }}</a>
             </div>

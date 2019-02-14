@@ -9,4 +9,14 @@ use App\Models\Traits\PivotEventTrait;
 class BaseEloquentModel extends Model
 {
     use LadaCacheTrait, PivotEventTrait;
+
+    /**
+     * @inheritDoc
+     */
+    protected $connection = 'mysql';
+
+    /**
+     * @inheritDoc
+     */
+    protected $primaryKey = 'id';
 }

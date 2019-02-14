@@ -60,7 +60,7 @@ class NfnClassificationsTranscriptJob implements ShouldQueue
 
         try
         {
-            $filePath = \Storage::path(config('config.classifications_transcript'));
+            $filePath = \Storage::path(config('config.nfn_downloads_transcript'));
 
             $this->expeditionIds->filter(function($expeditionId) use ($filePath) {
                 return \Storage::exists($filePath . '/' . $expeditionId . '.csv');

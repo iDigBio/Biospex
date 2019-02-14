@@ -65,17 +65,17 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
         {
             $expedition = $expeditionContract->findWith($expeditionId, ['nfnWorkflow']);
 
-            $file = Storage::path(config('config.classifications_download') . '/' . $expedition->id . '.csv');
+            $file = Storage::path(config('config.nfn_downloads_classification') . '/' . $expedition->id . '.csv');
 
             if ( ! Storage::exists($file) || $expedition->nfnWorkflow === null)
             {
                 continue;
             }
             
-            $csvPath = Storage::path(config('config.classifications_download') . '/' . $expedition->id . '.csv');
-            $recPath = Storage::path(config('config.classifications_reconcile') . '/' . $expedition->id . '.csv');
-            $tranPath = Storage::path(config('config.classifications_transcript') . '/' . $expedition->id . '.csv');
-            $sumPath = Storage::path(config('config.classifications_summary') . '/' . $expedition->id . '.html');
+            $csvPath = Storage::path(config('config.nfn_downloads_classification') . '/' . $expedition->id . '.csv');
+            $recPath = Storage::path(config('config.nfn_downloads_reconcile') . '/' . $expedition->id . '.csv');
+            $tranPath = Storage::path(config('config.nfn_downloads_transcript') . '/' . $expedition->id . '.csv');
+            $sumPath = Storage::path(config('config.nfn_downloads_summary') . '/' . $expedition->id . '.html');
 
             $pythonPath = config('config.reconcile_path') . "/venv/bin/python";
             $reconcilePath = config('config.reconcile_path') . "/reconcile.py";
@@ -86,7 +86,7 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
 
             if (File::exists($csvPath))
             {
-                $this->updateOrCreateDownloads($expedition->id, 'classifications');
+                $this->updateOrCreateDownloads($expedition->id, 'downloads');
             }
 
             if (File::exists($tranPath))

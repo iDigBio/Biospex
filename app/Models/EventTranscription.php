@@ -9,11 +9,6 @@ class EventTranscription extends BaseEloquentModel
     use HybridRelations;
 
     /**
-     * @var string
-     */
-    protected $connection = 'mysql';
-
-    /**
      * @inheritDoc
      */
     protected $table = 'event_transcriptions';

@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Presenters\OcrQueuePresenter;
+
 class OcrQueue extends BaseEloquentModel
 {
+
     /**
      * @inheritDoc
      */

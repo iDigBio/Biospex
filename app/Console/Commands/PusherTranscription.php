@@ -48,7 +48,7 @@ class PusherTranscription extends Command
     private function readDirectory()
     {
         $expeditionIds = [];
-        $files = File::files(config('config.classifications_transcript'));
+        $files = File::files(config('config.nfn_downloads_transcript'));
         foreach ($files as $file)
         {
             $expeditionIds[] = basename($file, '.csv');

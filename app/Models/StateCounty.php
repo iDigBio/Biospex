@@ -12,16 +12,6 @@ class State extends BaseEloquentModel
     /**
      * @inheritDoc
      */
-    protected $connection = 'mysql';
-
-    /**
-     * @inheritDoc
-     */
-    protected $primaryKey = 'id';
-
-    /**
-     * @inheritDoc
-     */
     protected $fillable = [
         'county_name',
         'state_county',

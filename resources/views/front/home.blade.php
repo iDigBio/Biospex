@@ -59,19 +59,21 @@
                          data-aos-duration="2000" data-aos-once="true">
                         <h2 class="text-center pt-4">{{ $expedition->project->title }}</h2>
                         <hr>
-                        <div class="row card-body">
-                            <div class="col-7">
+                        <div class="row card-body pb-2">
+                            <div class="col-12">
+                                <div class="col-4 float-right">
+                                    <img class="img-fluid" src="{{ $expedition->project->present()->logo_url }}"
+                                         alt="Card image cap">
+                                </div>
+                                <p>{{ $expedition->project->description_short }}</p>
+                            </div>
+
+                            <div class="col-12">
                                 <ul class="text">
-                                    <li>{{ $expedition->project->description_short }}</li>
                                     <li class="mt-3">{{ $expedition->project->expeditions_count }} {{ __('Expeditions') }}</li>
                                     <li>{{ CountHelper::projectTranscriberCount($expedition->project->id) }} {{ __('Transcribers') }}</li>
                                     <li>{{ CountHelper::projectTranscriptionCount($expedition->project->id) }} {{ __('Transcriptions') }}</li>
                                 </ul>
-                            </div>
-
-                            <div class="col-5 text-center">
-                                <img class="img-fluid" src="{{ $expedition->project->present()->logo_url }}"
-                                     alt="Card image cap">
                             </div>
                         </div>
 
@@ -93,24 +95,30 @@
                     <h2 class="home-header-cta flex-nowrap">An Expedition</h2>
                     <div class="card black mb-4 box-shadow" data-aos="fade-up" data-aos-duration="1500"
                          data-aos-anchor-placement="bottom-bottom" data-aos-once="true">
-                        <img class="card-img-top" src="{{ $expedition->present()->logo_url }}" alt="Card image cap"
-                             style="border-radius: 10px;">
-
-                        <div class="card-img-overlay">
-                            <h3 class="card-title text-center">{{ $expedition->title }}</h3>
-                            <p>{{ $expedition->description }}</p>
+                        <div class="card-top m-0 p-0">
+                            <img class="card-img-top" src="{{ $expedition->present()->logo_url }}" alt="Card image cap">
+                            <div class="card-img-overlay">
+                                <h2 class="card-title text-center pt-4">{{ $expedition->title }}</h2>
+                                <i class="card-info fas fa-info-circle fa-2x float-right"
+                                   style="top: 20rem; left: 31.25rem;"></i>
+                                <p style="width: 500px;">{{ $expedition->description }}</p>
+                            </div>
                         </div>
 
-                        <div class="card-body white" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+                        <div class="card-body white"
+                             style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
                             <div class="d-flex justify-content-between">
-                                <div class="p-2"><p>{{ $expedition->stat->transcriptions_completed }} {{ __('Transcriptions') }}</p></div>
-                                <div class="p-2"><p>{{ $expedition->stat->percent_completed }}% {{ __('Complete') }}</p></div>
+                                <div class="p-2">
+                                    <p>{{ $expedition->stat->transcriptions_completed }} {{ __('Transcriptions') }}</p>
+                                </div>
+                                <div class="p-2"><p>{{ $expedition->stat->percent_completed }}% {{ __('Complete') }}</p>
+                                </div>
                             </div>
                             <hr>
                             <div class="d-flex align-items-start justify-content-between mt-4 mx-auto">
                                 {!! $expedition->project->present()->project_page_icon_lrg !!}
                                 @isset($expedition->nfnWorkflow)
-                                {!! $expedition->nfnWorkflow->present()->nfn_url_lrg !!}
+                                    {!! $expedition->nfnWorkflow->present()->nfn_url_lrg !!}
                                 @endisset
                             </div>
                         </div>
@@ -128,7 +136,8 @@
                     <h2>The Process<br>
                         <span class="smallertext">{{ __('Specimen digitization is easy as 123') }}</span></h2>
                     <ul id="external-carousel-btns" class="list-inline">
-                        <li data-target="#processCarousel" data-slide-to="0" class="carousel-li-0 active list-inline-item">1
+                        <li data-target="#processCarousel" data-slide-to="0"
+                            class="carousel-li-0 active list-inline-item">1
                         </li>
                         <li data-target="#processCarousel" data-slide-to="1" class="carousel-li-1 list-inline-item">2
                         </li>
@@ -151,7 +160,8 @@
                 </div>
                 <div id="processCarousel" class="carousel slide col-md-6">
                     <div class="carousel-inner box-shadow inside-carousel">
-                        <div class="carousel-item active" style="background-image: url(/storage/images/slider/slider1.png);">
+                        <div class="carousel-item active"
+                             style="background-image: url(/storage/images/slider/slider1.png);">
                             <div class="circle-slider p-5">
                                 <h3 class="text-center">{{ __('PROJECT') }}</h3>
                                 <p>{{ __('Create a Project for your digital images and use BIOSPEX to run optical character

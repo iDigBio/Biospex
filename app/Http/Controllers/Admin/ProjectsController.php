@@ -199,9 +199,7 @@ class ProjectsController extends Controller
 
         $project = $this->projectContract->update($request->all(), $projectId);
 
-        $project ?
-            FlashHelper::success(__('Record was updated successfully.')) :
-            FlashHelper::error(__('Error while updating record.'));
+        $project ? FlashHelper::success(__('Record was updated successfully.')) : FlashHelper::error(__('Error while updating record.'));
 
         return redirect()->back();
     }
@@ -225,7 +223,6 @@ class ProjectsController extends Controller
         return view('admin.project.partials.project', compact('projects'));
     }
 
-
     /**
      * Display project explore page.
      *
@@ -246,7 +243,7 @@ class ProjectsController extends Controller
             'expeditionId' => 0,
             'subjectIds'   => [],
             'maxSubjects'  => config('config.expedition_size'),
-            'loadUrl' => route('admin.grids.load', [$projectId]),
+            'loadUrl'      => route('admin.grids.load', [$projectId]),
             'gridUrl'      => route('admin.grids.explore', [$projectId]),
             'exportUrl'    => route('admin.grids.export', [$projectId]),
             'editUrl'      => route('admin.grids.delete', [$projectId]),
@@ -317,23 +314,22 @@ class ProjectsController extends Controller
      * Project Stats.
      *
      * @param \App\Repositories\Interfaces\Project $projectContract
-     * @param \App\Repositories\Interfaces\PanoptesTranscription $transcriptionContract
      * @param $projectId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function statistics(Project $projectContract, PanoptesTranscription $transcriptionContract, $projectId)
+    public function statistics(Project $projectContract, $projectId)
     {
         $project = $projectContract->findWith($projectId, ['group']);
 
-        $transcribers = collect($transcriptionContract->getUserTranscriptionCount($projectId))->sortByDesc('transcriptionCount');
+        $transcribers = CountHelper::getUserTranscriptionCount($projectId)->sortByDesc('transcriptionCount');
 
-        $transcriptions = \Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 240, function () use (
-            $transcribers,
-            $projectId
+        $transcriptions = \Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 720, function () use
+        (
+            $transcribers
         ) {
-            $plucked = collect(array_count_values($transcribers->pluck('transcriptionCount')->sort()->toArray()));
-
-            return $plucked->flatMap(function ($users, $count) {
+            return $transcribers->isEmpty() ? null : $transcribers->pluck('transcriptionCount')->pipe(function ($transcribers) {
+                return collect(array_count_values($transcribers->sort()->toArray()));
+            })->flatMap(function ($users, $count) {
                 return [['transcriptions' => $count, 'transcribers' => $users]];
             })->toJson();
         });

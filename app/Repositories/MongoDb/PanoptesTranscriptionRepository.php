@@ -58,43 +58,6 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
         return $result === null ? 0 : $result->count;
     }
 
-    // Not used methods
-
-    /**
-     * @inheritdoc
-     */
-    public function getExpeditionTranscriptionCount($expeditionId)
-    {
-        $result = $this->model->raw(function ($collection) use ($expeditionId) {
-            return $collection->aggregate([
-                ['$match' => ['subject_expeditionId' => $expeditionId]],
-                ['$count' => 'count'],
-            ]);
-        })->first();
-
-        $this->resetModel();
-
-        return $result === null ? 0 : $result->count;
-    }
-
-
-    /**
-     * Retrieve transcription count using expedition id.
-     *
-     * @param $expeditionId
-     * @return mixed
-     * @throws \Exception
-     */
-    public function getTranscriptionCountByExpeditionId($expeditionId)
-    {
-        //return $this->findWhere(['subject_expeditionId', '=', $expeditionId], $attributes)->count();
-        $results = $this->model->where('subject_expeditionId', $expeditionId)->count();
-
-        $this->resetModel();
-
-        return $results;
-    }
-
     /**
      * Retrieve earliest date a transcription was finished for project.
      *
@@ -171,7 +134,6 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
         return $results;
     }
 
-
     /**
      * Get transcription counts per user.
      *
@@ -215,7 +177,7 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
                         'expeditionCount'    => [
                             '$size' => '$expedition',
                         ],
-                        'last_date'          => 1,
+                        'last_date'          => 1
                     ],
                 ],
             ]);
@@ -225,6 +187,8 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
 
         return $results;
     }
+
+    // not used?
 
     /**
      * @param $expeditionId

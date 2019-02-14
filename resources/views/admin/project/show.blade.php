@@ -38,6 +38,5 @@
             </div>
         </div>
     </div>
-    @include('admin.partials.expedition-download-modal')
 @endsection
 

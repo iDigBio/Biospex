@@ -13,7 +13,7 @@
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
                     <h2 class="text-center content-header mb-4">{{ __('Clone Project') }}</h2>
-                    <form method="put" action="{{ route('admin.projects.update', $project->id) }}" role="form"
+                    <form method="post" action="{{ route('admin.projects.store', $project->id) }}" role="form"
                           enctype="multipart/form-data">
                         {!! method_field('put') !!}
                         {!! csrf_field() !!}

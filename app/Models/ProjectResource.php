@@ -19,16 +19,6 @@ class ProjectResource extends BaseEloquentModel implements AttachableInterface
     /**
      * @inheritDoc
      */
-    protected $connection = 'mysql';
-
-    /**
-     * @inheritDoc
-     */
-    protected $primaryKey = 'id';
-
-    /**
-     * @inheritDoc
-     */
     protected $fillable = [
         'project_id',
         'type',

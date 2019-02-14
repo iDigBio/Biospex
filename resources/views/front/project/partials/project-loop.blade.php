@@ -2,18 +2,18 @@
     <div class="card px-4 box-shadow h-100">
         <h2 class="text-center pt-4">{{ $project->title }}</h2>
         <hr>
-        <div class="row card-body">
+        <div class="row card-body pb-2">
+            <div class="col-12">
+                <div class="col-4 float-right">
+                    <img class="img-fluid" src="{{ $project->present()->logo_url }}" alt="Card image cap">
+                </div>
+                <p class="smalltext">{{ $project->description_short }}</p>
+            </div>
             <div class="col-12">
                 <ul class="text">
-                    <li>
-                        <div class="col-5 float-right">
-                        <img class="img-fluid" src="{{ $project->present()->logo_url }}" alt="Card image cap">
-                        </div>
-                        {{ $project->description_short }}
-                    </li>
-                    <li class="mt-3">{{ $project->expeditions_count }} {{ __('Expeditions') }}</li>
-                    <li>{{ CountHelper::projectTranscriberCount($project->id) }} {{ __('Transcribers') }}</li>
-                    <li>{{ CountHelper::projectTranscriptionCount($project->id) }} {{ __('Transcriptions') }}</li>
+                    <li class="smalltext">{{ $project->expeditions_count }} {{ __('Expeditions') }}</li>
+                    <li class="smalltext">{{ CountHelper::projectTranscriberCount($project->id) }} {{ __('Transcribers') }}</li>
+                    <li class="smalltext">{{ CountHelper::projectTranscriptionCount($project->id) }} {{ __('Transcriptions') }}</li>
                 </ul>
             </div>
 

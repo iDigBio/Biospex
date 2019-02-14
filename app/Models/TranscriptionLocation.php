@@ -13,16 +13,6 @@ class TranscriptionLocation extends BaseEloquentModel
     /**
      * @inheritDoc
      */
-    protected $connection = 'mysql';
-
-    /**
-     * @inheritDoc
-     */
-    protected $primaryKey = 'id';
-
-    /**
-     * @inheritDoc
-     */
     protected $fillable = [
         'classification_id',
         'project_id',

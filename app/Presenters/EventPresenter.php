@@ -106,7 +106,7 @@ class EventPresenter extends Presenter
 
         return '<a href="https://twitter.com/intent/tweet?url='.$url.'" 
             target="_blank" 
-            data-toggle="tooltip" 
+            data-hover="tooltip" 
             title="'.__('Share on Twitter').'">
             <i class="fab fa-twitter"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
@@ -125,7 +125,7 @@ class EventPresenter extends Presenter
 
         return '<a href="http://www.facebook.com/share.php?u='.$url.'&title='.$title.'" 
             target="_blank" 
-            data-toggle="tooltip" 
+            data-hover="tooltip" 
             title="'.__('Share on Facebook').'">
             <i class="fab fa-facebook"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
@@ -139,7 +139,7 @@ class EventPresenter extends Presenter
     {
         return $this->model->contact_email === null ? '' :
             '<a href="mailto:'.$this->model->contact_email.'" 
-            data-toggle="tooltip" 
+            data-hover="tooltip" 
             title="'.__('Contact').'">
             <i class="far fa-envelope"></i> <span class="d-none text d-sm-inline"></span></a>';
     }

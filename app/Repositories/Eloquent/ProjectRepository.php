@@ -106,9 +106,7 @@ class ProjectRepository extends EloquentRepository implements Project
             ->with([
                 'group',
                 'ocrQueue',
-                'expeditions.stat',
-                'expeditions.downloads',
-                'expeditions.actors'
+                'expeditions.stat'
             ])->find($projectId);
 
         $this->resetModel();

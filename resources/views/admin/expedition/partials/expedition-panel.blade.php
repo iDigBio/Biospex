@@ -6,8 +6,12 @@
                 <div class="d-flex justify-content-between mt-4 mb-3">
                     {!! $expedition->project->present()->project_admin_icon_lrg !!}
                     {!! $expedition->present()->expedition_show_icon_lrg !!}
-                    {!! $expedition->present()->expedition_download_icon_lrg !!}
-                    {!! $expedition->present()->expedition_ocr_icon_lrg !!}
+                    @if($expedition->downloads->isNotEmpty())
+                        {!! $expedition->present()->expedition_download_icon_lrg !!}
+                    @endif
+                    @if($expedition->project->ocrQueue->isEmpty())
+                        {!! $expedition->present()->expedition_ocr_icon_lrg !!}
+                    @endif
                     @if ($expedition->workflowManager === null || $expedition->workflowManager->stopped === 1)
                         {!!
                         $expedition->stat->local_subject_count === 0 ? '' :
@@ -31,4 +35,5 @@
             </div>
         </div>
     </div>
+    @include('admin.partials.expedition-download-modal')
 </div>

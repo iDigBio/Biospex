@@ -105,21 +105,6 @@ sub footer -->
                 </p>
             </div>
             <!-- Grid column -->
-            <!-- Grid column -->
-            <div class="col-md-2 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
-
-                <!-- Links -->
-                <h6 class="text-uppercase font-weight-bold">{{ __('Contact') }}</h6>
-                <hr class="white mb-2 mt-2 d-inline-block mx-auto" style="width:60px;">
-
-                <p>{{ __('Tallahassee, FL 32301, USA') }}</p>
-                <p>info@fsu.com</p>
-                <p>+ 01 850 567 88</p>
-                <p>+ 01 850 567 89</p>
-
-            </div>
-            <!-- Grid column -->
-
         </div>
         <!-- Grid row -->
 

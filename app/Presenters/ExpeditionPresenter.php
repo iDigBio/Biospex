@@ -15,7 +15,8 @@ class ExpeditionPresenter extends Presenter
     {
         $logo = $this->model->logo;
 
-        return $this->variantExists($logo) ? $logo->url() : Storage::url('images/placeholders/card-image-place-holder02.jpg');
+        return $this->variantExists($logo) ?
+            $logo->url() : Storage::url('images/placeholders/card-image-place-holder02.jpg');
     }
 
     /**
@@ -42,23 +43,6 @@ class ExpeditionPresenter extends Presenter
                 $this->model->project_id,
                 $this->model->id,
             ]).'" data-hover="tooltip" title="'.__('View Expedition').'"><i class="fas fa-eye fa-2x"></i></a>';
-    }
-
-    /**
-     * Return return download icon.
-     *
-     * @return string
-     */
-    public function expeditionDownloadIcon()
-    {
-        $route = route('admin.downloads.index', [
-            $this->model->project_id,
-            $this->model->id,
-        ]);
-
-        return '<a href="#" class="preventDefault" data-toggle="modal" data-remote="'.$route.'" 
-                    data-target="#expedition-download-modal" data-hover="tooltip" title="'.__('Download Expedition Files').'">
-                    <i class="fas fa-file-download"></i></a>';
     }
 
     /**
@@ -170,26 +154,6 @@ class ExpeditionPresenter extends Presenter
     }
 
     /**
-     * Return return ocr icon.
-     *
-     * @return string
-     */
-    public function expeditionOcrIcon()
-    {
-        return '<a href="'.route('admin.expeditions.ocr', [
-                $this->model->project_id,
-                $this->model->id,
-            ]).'" class="prevent-default"
-            title="'.__('Reprocess Subject OCR').'" 
-            data-hover="tooltip"        
-            data-method="post"
-            data-confirm="confirmation"
-            data-title="'.__('Reprocess Subject OCR').'?" 
-            data-content="'.__('This action will reprocess all ocr for the Expedition.').'">
-            <i class="fas fa-redo-alt"></i></a>';
-    }
-
-    /**
      * Return return ocr lrg icon.
      *
      * @return string
@@ -210,26 +174,6 @@ class ExpeditionPresenter extends Presenter
     }
 
     /**
-     * Return icon for expedition process.
-     *
-     * @return string
-     */
-    public function expeditionProcessStart()
-    {
-        return '<a href="'.route('admin.expeditions.process', [
-                $this->model->project_id,
-                $this->model->id,
-            ]).'" class="prevent-default"
-            title="'.__('Start Expedition Processing').'" 
-            data-hover="tooltip"        
-            data-method="post"
-            data-confirm="confirmation"
-            data-title="'.__('Expedition Process').'?" 
-            data-content="'.__('This will begin processing the Expedition. After starting, Subjects cannot be added or removed. Do you wish to Continue?').'">
-            <i class="fas fa-play-circle"></i></a>';
-    }
-
-    /**
      * Return lrg icon for expedition process.
      *
      * @return string
@@ -247,26 +191,6 @@ class ExpeditionPresenter extends Presenter
             data-title="'.__('Expedition Process').'?" 
             data-content="'.__('This will begin processing the Expedition. After starting, Subjects cannot be added or removed. Do you wish to Continue?').'">
             <i class="fas fa-play-circle fa-2x"></i></a>';
-    }
-
-    /**
-     * Return icon for expedition process stop
-     *
-     * @return string
-     */
-    public function expeditionProcessStop()
-    {
-        return '<a href="'.route('admin.expeditions.stop', [
-                $this->model->project_id,
-                $this->model->id,
-            ]).'" class="prevent-default"
-            title="'.__('Stop Expedition Processing').'" 
-            data-hover="tooltip"        
-            data-method="delete"
-            data-confirm="confirmation"
-            data-title="'.__('Expedition Process').'" 
-            data-content="'.__('This will stop the Expedition Process. However, Subjects cannot be added since process was already started. Do you wish to Continue?').'">
-            <i class="fas fa-stop-circle"></i></a>';
     }
 
     /**
