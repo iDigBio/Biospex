@@ -101,7 +101,7 @@
                                 <h2 class="card-title text-center pt-4">{{ $expedition->title }}</h2>
                                 <i class="card-info fas fa-info-circle fa-2x float-right"
                                    style="top: 20rem; left: 31.25rem;"></i>
-                                <p style="width: 500px;">{{ $expedition->description }}</p>
+                                <p>{{ $expedition->description }}</p>
                             </div>
                         </div>
 

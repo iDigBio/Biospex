@@ -16,6 +16,16 @@ interface Event extends RepositoryInterface
     public function getEventPublicIndex($sort = null, $order = null);
 
     /**
+     * Get events for admin section by user id.
+     *
+     * @param $userId
+     * @param null $sort
+     * @param null $order
+     * @return mixed
+     */
+    public function getEventAdminIndex($userId, $sort = null, $order = null);
+
+    /**
      * @param array $attributes
      * @return mixed
      */

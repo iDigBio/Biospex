@@ -143,4 +143,108 @@ class EventPresenter extends Presenter
             title="'.__('Contact').'">
             <i class="far fa-envelope"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
+
+    /**
+     * Return show icon.
+     *
+     * @return string
+     */
+    public function eventShowIcon()
+    {
+        return '<a href="'.route('admin.events.show', [
+                $this->model->id,
+            ]).'" data-hover="tooltip" title="'.__('View Event').'"><i class="fas fa-eye"></i></a>';
+    }
+
+    /**
+     * Return return edit icon.
+     *
+     * @return string
+     */
+    public function eventEditIcon()
+    {
+        return '<a href="'.route('admin.events.edit', [
+                $this->model->id,
+            ]).'" data-hover="tooltip" title="'.__('Edit Event').'"><i class="fas fa-edit"></i></a>';
+    }
+
+    /**
+     * Return return edit icon.
+     *
+     * @return string
+     */
+    public function eventEditIconLrg()
+    {
+        return '<a href="'.route('admin.events.edit', [
+                $this->model->id,
+            ]).'" data-hover="tooltip" title="'.__('Edit Event').'"><i class="fas fa-edit fa-2x"></i></a>';
+    }
+
+    /**
+     * Return return delete icon.
+     *
+     * @return string
+     */
+    public function eventDeleteIcon()
+    {
+        return '<a href="'.route('admin.events.delete', [
+                $this->model->id,
+            ]).'" class="prevent-default"
+            title="'.__('Delete Event').'" 
+            data-hover="tooltip"        
+            data-method="delete"
+            data-confirm="confirmation"
+            data-title="'.__('Delete Event').'?" data-content="'.__('This will permanently delete the record').'">
+            <i class="fas fa-trash-alt"></i></a>';
+    }
+
+    /**
+     * Return return delete icon.
+     *
+     * @return string
+     */
+    public function eventDeleteIconLrg()
+    {
+        return '<a href="'.route('admin.events.delete', [
+                $this->model->id,
+            ]).'" class="prevent-default"
+            title="'.__('Delete Event').'" 
+            data-hover="tooltip"        
+            data-method="delete"
+            data-confirm="confirmation"
+            data-title="'.__('Delete Event').'?" data-content="'.__('This will permanently delete the record').'">
+            <i class="fas fa-trash-alt fa-2x"></i></a>';
+    }
+
+    /**
+     * Return return download icon lrg.
+     *
+     * @return string
+     */
+    public function eventDownloadUsersIconLrg()
+    {
+        $route = route('admin.events.exportUsers', [
+            $this->model->id,
+        ]);
+
+        return '<a href="#" class="preventDefault" data-toggle="modal" data-remote="'.$route.'" 
+                    data-target="#expedition-download-modal" data-hover="tooltip" title="'.__('Download Users File').'">
+                    <i class="fas fa-file-download fa-2x"></i></a>';
+    }
+
+    /**
+     * Return return download icon lrg.
+     *
+     * @return string
+     */
+    public function eventDownloadTranscriptsIconLrg()
+    {
+        $route = route('admin.events.exportTranscriptions', [
+            $this->model->id,
+        ]);
+
+        return '<a href="#" class="preventDefault" data-toggle="modal" data-remote="'.$route.'" 
+                    data-target="#expedition-download-modal" data-hover="tooltip" title="'.__('Download Transcripts File').'">
+                    <i class="fas fa-file-download fa-2x"></i></a>';
+    }
 }

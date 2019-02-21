@@ -12,7 +12,7 @@
         <div class="col-sm-10 mx-auto">
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
-                    <h2 class="text-center content-header mb-4">{{ __('Edit Project') }}</h2>
+                    <h2 class="text-center content-header mb-4">{{ __('EDIT PROJECT') }}</h2>
                     <form method="post" action="{{ route('admin.projects.update', $project->id) }}" role="form"
                           enctype="multipart/form-data">
                         {!! method_field('put') !!}

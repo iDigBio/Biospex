@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EventJoinRequest;
 use App\Repositories\Interfaces\Event;
+use App\Repositories\Interfaces\EventTeam;
+use App\Repositories\Interfaces\EventUser;
 use Illuminate\Support\Carbon;
 
 class EventsController extends Controller
 {
-
     /**
      * Displays Events on public page.
      *
@@ -38,15 +41,11 @@ class EventsController extends Controller
      */
     public function sort(Event $eventContract)
     {
-        if ( ! request()->ajax()) {
+        if (! request()->ajax()) {
             return null;
         }
 
-        $type = request()->get('type');
-        $sort = request()->get('sort');
-        $order = request()->get('order');
-
-        $results = $eventContract->getEventPublicIndex($sort, $order);
+        $results = $eventContract->getEventPublicIndex(request()->get('sort'), request()->get('order'));
 
         list($active, $completed) = $results->partition(function ($event) {
             $start_date = $event->start_date->setTimezone($event->timezone);
@@ -56,8 +55,62 @@ class EventsController extends Controller
             return $now->between($start_date, $end_date);
         });
 
-        $events = $type === 'active' ? $active : $completed;
+        $events = request()->get('type') === 'active' ? $active : $completed;
 
         return view('front.event.partials.event', compact('events'));
+    }
+
+    /**
+     * Group join page for events.
+     *
+     * @param \App\Repositories\Interfaces\EventTeam $eventTeamContract
+     * @param $uuid
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function signup(EventTeam $eventTeamContract, $uuid)
+    {
+        $team = $eventTeamContract->getTeamByUuid($uuid);
+
+        $start_date = $team->event->start_date->setTimezone($team->event->timezone);
+        $end_date = $team->event->end_date->setTimezone($team->event->timezone);
+        $now = Carbon::now($team->event->timezone);
+        $active = $now->between($start_date, $end_date);
+
+        if ($team === null) {
+            FlashHelper::error(trans('messages.event_join_team_error'));
+        }
+
+        return view('front.event.join', compact('team', 'active'));
+    }
+
+    /**
+     * Store user for event group.
+     *
+     * @param \App\Repositories\Interfaces\EventUser $eventUserContract
+     * @param \App\Repositories\Interfaces\EventTeam $eventTeamContract
+     * @param \App\Http\Requests\EventJoinRequest $request
+     * @param $uuid
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function join(
+        EventUser $eventUserContract,
+        EventTeam $eventTeamContract,
+        EventJoinRequest $request,
+        $uuid
+    ) {
+        $user = $eventUserContract->updateOrCreate(['nfn_user' => $request->get('nfn_user')], ['nfn_user' => $request->get('nfn_user')]);
+
+        if ($user !== null) {
+            $team = $eventTeamContract->find($request->get('team_id'));
+            $team->users()->save($user);
+
+            FlashHelper::success(trans('messages.event_join_team_success'));
+
+            return redirect()->route('front.events.join', [$uuid]);
+        }
+
+        FlashHelper::error(trans('messages.event_join_team_error'));
+
+        return redirect()->route('front.events.join', [$request->get('uuid')]);
     }
 }

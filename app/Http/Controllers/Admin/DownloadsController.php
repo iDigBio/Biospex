@@ -8,6 +8,7 @@ use App\Jobs\ActorJob;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\User;
 use App\Repositories\Interfaces\Download;
+use GeneralHelper;
 use Illuminate\Support\Facades\Storage;
 
 class DownloadsController extends Controller
@@ -43,49 +44,54 @@ class DownloadsController extends Controller
      */
     public function download(Download $downloadContract, $projectId, $expeditionId, $downloadId)
     {
-        $download = $downloadContract->findWith($downloadId, ['expedition.project.group']);
+        try {
 
-        if ( ! $download)
-        {
-            FlashHelper::error(trans('messages.missing_download_file'));
-            return redirect()->back();
-        }
+            $download = $downloadContract->findWith($downloadId, ['expedition.project.group']);
 
-        if ($download->type !== 'export' && ! $this->checkPermissions('isOwner', $download->expedition->project->group))
-        {
-            return redirect()->back();
-        }
+            if (! $download) {
+                FlashHelper::error(trans('messages.missing_download_file'));
 
-        $download->count = $download->count + 1;
-        $downloadContract->update($download->toArray(), $download->id);
+                return redirect()->back();
+            }
 
-        if ( ! empty($download->data))
-        {
+            if ($download->type !== 'export' && ! $this->checkPermissions('isOwner', $download->expedition->project->group)) {
+                return redirect()->back();
+            }
+
+            $download->count = $download->count + 1;
+            $downloadContract->update($download->toArray(), $download->id);
+
+            if (! empty($download->data)) {
+                $headers = [
+                    'Content-type'        => 'application/json; charset=utf-8',
+                    'Content-disposition' => 'attachment; filename="'.$download->file.'"',
+                ];
+
+                $view = view('frontend.manifest', unserialize($download->data))->render();
+
+                return response()->make(stripslashes($view), 200, $headers);
+            }
+
+            if (! GeneralHelper::downloadFileExists($download->type, $download->file)) {
+                FlashHelper::error(trans('messages.missing_download_file'));
+
+                return redirect()->route('webauth.downloads.index', [$projectId, $expeditionId]);
+            }
+
             $headers = [
-                'Content-type'        => 'application/json; charset=utf-8',
-                'Content-disposition' => 'attachment; filename="' . $download->file . '"'
+                'Content-Type'        => 'application/x-compressed',
+                'Content-disposition' => 'attachment; filename="'.$download->type.'-'.$download->file.'"',
             ];
 
-            $view = view('frontend.manifest', unserialize($download->data))->render();
+            $file = Storage::path(config('config.nfn_downloads_dir').'/'.$download->type.'/'.$download->file);
 
-            return response()->make(stripslashes($view), 200, $headers);
+            return response()->download($file, $download->type.'-'.$download->file, $headers);
+        } catch (\Exception $e) {
+            FlashHelper::error(__($e->getMessage()));
+
+            return redirect()->back();
         }
-
-        $path = $this->paths[$download->type] . '/' . $download->file;
-        if ( ! file_exists($path))
-        {
-            FlashHelper::error(trans('messages.missing_download_file'));
-            return redirect()->route('webauth.downloads.index', [$projectId, $expeditionId]);
-        }
-
-        $headers = [
-            'Content-Type'        => 'application/x-compressed',
-            'Content-disposition' => 'attachment; filename="' . $download->type . '-' . $download->file . '"'
-        ];
-
-        return response()->download($path, $download->type . '-' . $download->file, $headers);
     }
-
 
     /**
      * Regenerate export download.
@@ -132,15 +138,13 @@ class DownloadsController extends Controller
         $expedition = $expeditionContract->findwith($expeditionId, ['project.group']);
 
         if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
-            return __('You do not have sufficient permissions.');
-            //return redirect()->route('webauth.projects.show', [$projectId]);
+            return redirect()->route('webauth.projects.show', [$projectId]);
         }
 
         if (! Storage::exists(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html')) {
-            //FlashHelper::warning(trans('pages.file_does_not_exist'));
-            //return redirect()->route('webauth.projects.show', [$projectId]);
+            FlashHelper::warning(trans('pages.file_does_not_exist'));
 
-            return __('File does not exist');
+            return redirect()->back();
         }
 
         return Storage::get(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html');

@@ -17,7 +17,7 @@
 
 @section('content')
     <h2 class="text-center col-6 mx-auto pt-4">
-        {{ __('Find your BIOSPEX answers for your frequently asked questions answered here.') }}</h2>
+        {{ __('BIOSPEX FAQS') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="col-12 col-md-10 offset-md-1">
         <div class="jumbotron box-shadow py-5 my-5 p-sm-5">

@@ -2,6 +2,7 @@
 
 // Begin EventsController
 $router->get('events')->uses('EventsController@index')->name('admin.events.index');
+$router->post('events/sort/')->uses('EventsController@sort')->name('admin.events.sort');
 $router->get('events/create')->uses('EventsController@create')->name('admin.events.create');
 $router->post('events/create')->uses('EventsController@store')->name('admin.events.store');
 $router->get('events/{events}')->uses('EventsController@show')->name('admin.events.show');

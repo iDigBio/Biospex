@@ -24,7 +24,7 @@
             <div class="col-sm-10 mx-auto">
                 <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                     <div class="col-12">
-                        <h2 class="text-center content-header mb-4">{{ __('Create Expedition') }}</h2>
+                        <h2 class="text-center content-header mb-4">{{ __('CREATE EXPEDITION') }}</h2>
                         <div class="form-group">
                             <label for="title" class="col-form-label required">{{ __('Title') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('title')) ? 'is-invalid' : '' }}"

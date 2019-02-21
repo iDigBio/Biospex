@@ -47,7 +47,7 @@
                                                title="{{ __('Get') }} {{ $download->type }}">
                                                 <i class="fas fa-file-download fa-2x"></i></a>
                                             @if ($download->type === 'summary')
-                                                <a href="{{ route('admin.downloads.summary', [$expedition->project->id, $expedition->id, $download->id]) }}"
+                                                <a href="{{ route('admin.downloads.summary', [$expedition->project->id, $expedition->id]) }}"
                                                    data-hover="tooltip" target="_blank"
                                                    title="{{ __('View') }} {{ $download->type }}">
                                                     <i class="fas fa-eye fa-2x"></i></a>

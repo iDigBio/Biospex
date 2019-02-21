@@ -16,9 +16,9 @@
 @endsection
 
 @section('content')
-    <h2 class="text-center pt-4">{{ __('BIOSPEX Resources') }}</h2>
+    <h2 class="text-center pt-4">{{ __('BIOSPEX RESOURCES') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
-    <div class="row col-sm-12 mx-auto justify-content-center">
+    <div class="row col-sm-12 mx-auto mt-4 justify-content-center">
         @include('front.resource.partials.resource')
     </div>
 @endsection

@@ -120,13 +120,13 @@
 
     <div class="row my-5">
         <div class="col-sm-8 offset-md-2">
-            <h1 class="text-center content-header" id="expeditions">{{ __('Expeditions') }}</h1>
+            <h1 class="text-center content-header" id="expeditions">{{ __('EXPEDITIONS') }}</h1>
             <div class="text-center mt-4">
                 <button class="toggle-view-btn btn btn-primary"
                         data-toggle="collapse"
                         data-target="#active-expeditions-main,#completed-expeditions-main"
-                        data-value="{{ __('View Active Expeditions') }}"
-                >{{ __('View Completed Expeditions') }}</button>
+                        data-value="{{ __('VIEW ACTIVE EXPEDITIONS') }}"
+                >{{ __('VIEW COMPLETED EXPEDITIONS') }}</button>
             </div>
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
                 <span class="text">{{ $project->expeditions->count() }} Expeditions</span>
@@ -151,13 +151,13 @@
 
     <div class="row my-5">
         <div class="col-sm-8 offset-md-2">
-            <h1 class="text-center content-header" id="events">{{ __('Events') }}</h1>
+            <h1 class="text-center content-header" id="events">{{ __('EVENTS') }}</h1>
             <div class="text-center mt-4">
                 <button class="toggle-view-btn btn btn-primary"
                         data-toggle="collapse"
                         data-target="#active-events-main,#completed-events-main"
-                        data-value="{{ __('View Active Events') }}"
-                >{{ __('View Completed Events') }}</button>
+                        data-value="{{ __('VIEW ACTIVE EVENTS') }}"
+                >{{ __('VIEW COMPLETED EVENTS') }}</button>
             </div>
             <hr class="header mx-auto">
         </div>
@@ -179,7 +179,7 @@
     @if ($project->amChart !== null && $project->amChart->series !== null && $project->amChart->data !== null)
         <div class="row my-5">
             <div class="col-sm-10 mx-auto mt-8">
-                <h1 class="text-center content-header" id="expeditions">{{ __('Transcriptions') }}</h1>
+                <h1 class="text-center content-header" id="expeditions">{{ __('TRANSCRIPTIONS') }}</h1>
                 <div class="jumbotron box-shadow pt-2 pb-5">
                     <div id="chartdiv"
                          style=" width: 100%; height: {{ $amChartHeight }}px; color: #000000; font-size: 0.8em"></div>
@@ -193,7 +193,7 @@
     @if ($project->fusion_table_id !== null)
         <div class="row my-5">
             <div class="col-sm-10 mx-auto mt-8">
-                <h1 class="text-center content-header" id="expeditions">{{ __('Heat Map Transcribed Specimens') }}</h1>
+                <h1 class="text-center content-header" id="expeditions">{{ __('HEAT MAP TRANSCRIBED SPECIMENS') }}</h1>
                 <div class="jumbotron box-shadow pt-2 pb-5 my-5 p-sm-5">
                     <iframe width="100%" height="800" scrolling="no" frameborder="no"
                             src="https://fusiontables.google.com/embedviz?q=select+col2+from+{{ $project->fusion_table_id }}&amp;viz=MAP&amp;h=false&amp;lat=34.72404554786575&amp;lng=-93.08009375000002&amp;t=1&amp;z=3&amp;l=col2&amp;y={{ $project->fusion_style_id }}&amp;tmplt={{ $project->fusion_template_id }}&amp;hml=GEOCODE"></iframe>

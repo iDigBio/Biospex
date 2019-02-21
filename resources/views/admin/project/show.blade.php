@@ -10,20 +10,20 @@
     @include('admin.project.partials.project-panel')
     <div class="row">
         <div class="col-sm-8 offset-md-2">
-            <h1 class="text-center content-header" id="expeditions">{{ __('Expeditions') }}</h1>
+            <h1 class="text-center content-header" id="expeditions">{{ __('EXPEDITIONS') }}</h1>
+            <hr class="header mx-auto" style="width:300px;">
             <div class="text-center mt-4">
                 <button class="toggle-view-btn btn btn-primary pl-4 pr-4"
                         data-toggle="collapse"
                         data-target="#active-expeditions-main,#completed-expeditions-main"
                         data-value="{{ __('View Active Expeditions') }}"
-                >{{ __('View Completed Expeditions') }}</button>
+                >{{ __('VIEW COMPLETED EXPEDITIONS') }}</button>
             </div>
             <div class="d-flex justify-content-between mt-4 mb-3">
                 <span>{{ $project->expeditions->count() }} Expeditions</span>
                 <span>{{ $project->transcriptions_count }} Transcriptions</span>
                 <span>{{ $project->unique_transcribers_count }} Transcribers</span>
             </div>
-            <hr class="header mx-auto">
         </div>
         <div id="active-expeditions-main" class="col-sm-12 show">
             @include('common.expedition-sort', ['type' => 'active', 'route' => route('admin.expeditions.sort'), 'id' => $project->id])

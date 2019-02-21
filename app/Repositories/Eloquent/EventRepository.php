@@ -45,6 +45,29 @@ class EventRepository extends EloquentRepository implements Event
     /**
      * @inheritdoc
      */
+    public function getEventAdminIndex($userId, $sort = null, $order = null)
+    {
+        $results = $this->model->with('project')->where('owner_id', $userId)->get();
+
+        $this->resetModel();
+
+        switch ($sort) {
+            case 'title':
+                return $order === 'asc' ? $results->sortBy('title') : $results->sortByDesc('title');
+            case 'project':
+                return $order === 'asc' ?
+                    $results->sortBy(function ($event) { return $event->project->title; }) :
+                    $results->sortByDesc(function ($event) { return $event->project->title; });
+            case 'date':
+                return $order === 'asc' ? $results->sortBy('created_at') : $results->sortByDesc('created_at');
+            default:
+                return $results;
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function createEvent(array $attributes)
     {
         $attributes['start_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['start_date'].':00', $attributes['timezone']);
