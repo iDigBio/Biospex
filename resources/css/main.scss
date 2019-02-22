@@ -913,3 +913,7 @@ li.nav-btn.show {
 .tooltip-inner .tooltip-custom {
     padding: 10px;
 }
+
+[type=button], [type=reset], [type=submit], button {
+    -webkit-appearance: none;
+}
