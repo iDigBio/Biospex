@@ -108,7 +108,7 @@ class BiospexServiceProvider extends ServiceProvider
         );
 
         view()->composer(
-            'common.process-modal', 'App\Http\ViewComposers\PollComposer'
+            'admin.partials.process-modal', 'App\Http\ViewComposers\PollComposer'
         );
     }
 

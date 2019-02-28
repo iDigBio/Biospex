@@ -6,12 +6,9 @@ use App\Facades\DateHelper;
 use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
-use App\Http\Requests\EventJoinRequest;
 use App\Jobs\EventTranscriptionExportCsvJob;
 use App\Jobs\EventUserExportCsvJob;
-use App\Repositories\Interfaces\EventTeam;
 use App\Repositories\Interfaces\Event;
-use App\Repositories\Interfaces\EventUser;
 use App\Repositories\Interfaces\Project;
 use Auth;
 use Illuminate\Support\Carbon;
@@ -19,55 +16,30 @@ use Illuminate\Support\Carbon;
 class EventsController extends Controller
 {
     /**
-     * @var \App\Repositories\Interfaces\Project
-     */
-    private $project;
-
-    /**
      * @var \App\Repositories\Interfaces\Event
      */
     private $eventContract;
 
     /**
-     * @var \App\Models\EventTeam
-     */
-    private $eventTeamContract;
-
-    /**
-     * @var \App\Repositories\Interfaces\EventUser
-     */
-    private $eventUserContract;
-
-    /**
      * EventsController constructor.
      *
-     * @param \App\Repositories\Interfaces\Project $project
      * @param \App\Repositories\Interfaces\Event $eventContract
-     * @param \App\Models\EventTeam $eventTeamContract
-     * @param \App\Repositories\Interfaces\EventUser $eventUserContract
      */
     public function __construct(
-        Project $project,
-        Event $eventContract,
-        EventTeam $eventTeamContract,
-        EventUser $eventUserContract
+        Event $eventContract
     )
     {
-        $this->project = $project;
         $this->eventContract = $eventContract;
-        $this->eventTeamContract = $eventTeamContract;
-        $this->eventUserContract = $eventUserContract;
     }
 
     /**
      * Displays Events on public page.
      *
-     * @param \App\Repositories\Interfaces\Event $eventContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Event $eventContract)
+    public function index()
     {
-        $results = $eventContract->getEventAdminIndex(Auth::id());
+        $results = $this->eventContract->getEventAdminIndex(Auth::id());
 
         list($events, $eventsCompleted) = $results->partition(function ($event) {
             $start_date = $event->start_date->setTimezone($event->timezone);
@@ -83,16 +55,15 @@ class EventsController extends Controller
     /**
      * Displays Completed Events on public page.
      *
-     * @param \App\Repositories\Interfaces\Event $eventContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function sort(Event $eventContract)
+    public function sort()
     {
         if ( ! request()->ajax()) {
             return null;
         }
 
-        $results = $eventContract->getEventPublicIndex(request()->get('sort'), request()->get('order'));
+        $results = $this->eventContract->getEventPublicIndex(request()->get('sort'), request()->get('order'));
 
         list($active, $completed) = $results->partition(function ($event) {
             $start_date = $event->start_date->setTimezone($event->timezone);
@@ -110,13 +81,12 @@ class EventsController extends Controller
     /**
      * Show event.
      *
-     * @param \App\Repositories\Interfaces\Event $eventContract
      * @param $eventId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(Event $eventContract, $eventId)
+    public function show($eventId)
     {
-        $event = $eventContract->getEventShow($eventId);
+        $event = $this->eventContract->getEventShow($eventId);
 
         if ( ! $this->checkPermissions('read', $event))
         {
@@ -129,14 +99,17 @@ class EventsController extends Controller
     /**
      * Create event.
      *
+     * @param \App\Repositories\Interfaces\Project $projectContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Exception
      */
-    public function create()
+    public function create(Project $projectContract)
     {
-        $projects = $this->project->getProjectEventSelect();
+        $projects = $projectContract->getProjectEventSelect();
         $timezones = DateHelper::timeZoneSelect();
+        $teamsCount = old('entries', 1);
 
-        return view('front.events.create', compact('projects', 'timezones'));
+        return view('admin.event.create', compact('projects', 'timezones', 'teamsCount'));
     }
 
     /**
@@ -163,22 +136,25 @@ class EventsController extends Controller
     /**
      * Edit event.
      *
+     * @param \App\Repositories\Interfaces\Project $projectContract
      * @param $eventId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @throws \Exception
      */
-    public function edit($eventId)
+    public function edit(Project $projectContract, $eventId)
     {
         $event = $this->eventContract->findWith($eventId, ['teams']);
 
         if ( ! $this->checkPermissions('update', $event))
         {
-            return redirect()->route('admin.events.index');
+            return redirect()->back();
         }
 
-        $projects = $this->project->getProjectEventSelect();
+        $projects = $projectContract->getProjectEventSelect();
         $timezones = DateHelper::timeZoneSelect();
+        $teamsCount = old('entries', $event->teams->count() ?: 1);
 
-        return view('front.events.edit', compact('event', 'projects', 'timezones'));
+        return view('admin.event.edit', compact('event', 'projects', 'timezones', 'teamsCount'));
     }
 
     /**
@@ -243,27 +219,33 @@ class EventsController extends Controller
      * Export transcription csv from event.
      *
      * @param $eventId
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\JsonResponse
      */
     public function exportTranscriptions($eventId)
     {
-        EventTranscriptionExportCsvJob::dispatch(\Auth::user(), $eventId);
-        FlashHelper::success(trans('messages.event_export_success'));
+        if ( ! request()->ajax()) {
+            return response()->json(false);
+        }
 
-        return redirect()->route('admin.events.show', [$eventId]);
+        EventTranscriptionExportCsvJob::dispatch(\Auth::user(), $eventId);
+
+        return response()->json(true);
     }
 
     /**
      * Export users csv from event.
      *
      * @param $eventId
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\JsonResponse
      */
     public function exportUsers($eventId)
     {
-        EventUserExportCsvJob::dispatch(\Auth::user(), $eventId);
-        FlashHelper::success(trans('messages.event_export_success'));
+        if ( ! request()->ajax()) {
+            return response()->json(false);
+        }
 
-        return redirect()->route('admin.events.show', [$eventId]);
+        EventUserExportCsvJob::dispatch(\Auth::user(), $eventId);
+
+        return response()->json(true);
     }
 }

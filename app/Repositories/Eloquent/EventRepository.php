@@ -108,6 +108,12 @@ class EventRepository extends EloquentRepository implements Event
         return $event;
     }
 
+    /**
+     * Handle team create, update, delete.
+     *
+     * @param $team
+     * @param $event
+     */
     public function handleTeam($team, $event)
     {
         $record = EventTeam::where('id', $team['id'])->where('event_id', $event->id)->first();
@@ -174,23 +180,6 @@ class EventRepository extends EloquentRepository implements Event
         $this->resetModel();
 
         return $results;
-    }
-
-    /**
-     * Return transcriptions ids for event.
-     *
-     * @param $eventId
-     * @return mixed
-     * @throws \Exception
-     */
-    public function getEventClassificationIds($eventId)
-    {
-        $event = $this->model->with(['transcriptions'])->find($eventId);
-        $ids = $event->transcriptions->pluck('classification_id');
-
-        $this->resetModel();
-
-        return $ids;
     }
 
     /**

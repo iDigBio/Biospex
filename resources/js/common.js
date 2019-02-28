@@ -23,22 +23,7 @@ $(function() {
 
 
     if (Laravel.flashMessage.length) {
-        $.notify({
-            icon: 'fas fa-' + Laravel.flashIcon+' fa-2x',
-            message: Laravel.flashMessage
-        }, {
-            type: Laravel.flashType,
-            placement: {
-                from: "top",
-                align: "center"
-            },
-            offset: 50,
-            spacing: 10,
-            animate: {
-                enter: 'animated fadeInDown',
-                exit: 'animated fadeOutUp'
-            }
-        });
+        notify(Laravel.flashIcon, Laravel.flashMessage, Laravel.flashType);
     }
 
 
@@ -85,6 +70,20 @@ $(function() {
     }).on('hidden.bs.modal', function () {
         $(this).find('.modal-body').html('');
         clearInterval(timeInterval);
+    });
+
+    // Used in Admin but placed in common.js because it calls notify function.
+    $('.event-export').on('click', function(){
+        let url = $(this).data('href');
+        let successMsg = $(this).data('success');
+        let errorMsg = $(this).data('error');
+        notify('info-circle', 'Request is being sent.', 'info');
+        $.get(url, function(data) {
+            let icon = data === true ? 'check-circle' : 'times-circle';
+            let msg = data === true ? successMsg : errorMsg;
+            let type = data === true ? 'success' : 'danger';
+            notify(icon, msg, type);
+        });
     });
 
     clockDiv();
@@ -173,5 +172,24 @@ function initializeClock($clock, endTime) {
 
     updateClock();
     timeInterval = setInterval(updateClock, 1000);
+}
+
+function notify(icon, msg, type) {;
+    $.notify({
+        icon: 'fas fa-' + icon +' fa-2x',
+        message: msg
+    }, {
+        type: type,
+        placement: {
+            from: "top",
+            align: "center"
+        },
+        offset: 50,
+        spacing: 10,
+        animate: {
+            enter: 'animated fadeInDown',
+            exit: 'animated fadeOutUp'
+        }
+    });
 }
 

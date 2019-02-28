@@ -1,0 +1,120 @@
+@extends('admin.layout.default')
+
+{{-- Web site Title --}}
+@section('title')
+    {{ __('Edit Account') }}
+@stop
+
+{{-- Content --}}
+@section('content')
+    <div class="row">
+        <div class="col-sm-10 mx-auto">
+            <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
+                <div class="col-12">
+                    <h2 class="text-center content-header mb-4">{{ __('EDIT ACCOUNT') }}</h2>
+                    <form id="gridForm" method="post"
+                          action="{{ route('admin.users.update', [$user->id]) }}"
+                          role="form" enctype="multipart/form-data">
+                        {!! method_field('put') !!}
+                        {!! csrf_field() !!}
+                        <div class="form-group">
+                            <label for="first_name" class="col-form-label required">{{ __('First Name') }}:</label>
+                            <input type="text" class="form-control {{ ($errors->has('first_name')) ? 'is-invalid' : '' }}"
+                                   id="first_name" name="first_name"
+                                   value="{{ old('first_name', $user->profile->first_name) }}" required>
+                            <span class="invalid-feedback">{{ $errors->first('first_name') }}</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="last_name" class="col-form-label required">{{ __('Last Name') }}:</label>
+                            <input type="text" class="form-control {{ ($errors->has('last_name')) ? 'is-invalid' : '' }}"
+                                   id="last_name" name="last_name"
+                                   value="{{ old('last_name', $user->profile->last_name) }}" required>
+                            <span class="invalid-feedback">{{ $errors->first('last_name') }}</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="col-form-label required">{{ __('Last Name') }}:</label>
+                            <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"
+                                   id="email" name="email"
+                                   value="{{ old('email', $user->email) }}" required>
+                            <span class="invalid-feedback">{{ $errors->first('email') }}</span>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-12 p-0">
+                                <label for="timezone" class="col-form-label required">{{ __('Timezone') }}:</label>
+                            </div>
+                            <div class="col-6 p-0">
+                                <select name="timezone" id="timezone"
+                                        class="form-control custom-select {{ ($errors->has('timezone')) ? 'is-invalid' : '' }}"
+                                        required>
+                                    @foreach($timezones as $key => $value)
+                                        <option {{ $key === old('timezone', $user->profile->timezone) ?
+                                        ' selected=selected' : '' }} value="{{ $key }}">{{ $value }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row mt-4">
+                            <div class="form-group col-sm-6 mt-4">
+                                <div class="custom-file">
+                                    <label for="avatar" class="custom-file-label">{{ __('Avatar') }}:</label>
+                                    <input type="file"
+                                           class="form-control custom-file-input {{ ($errors->has('avatar')) ? 'is-invalid' : '' }}"
+                                           name="avatar" id="avatar"
+                                           accept="image/png, image/jpg">
+                                    <span class="invalid-feedback">{{ $errors->first('avatar') }}</span>
+                                </div>
+                            </div>
+                            <input type="hidden" name="current_avatar" value="{{ $user->profile->avatar_file_name }}">
+                            <div class="form-group col-sm-6">
+                                <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
+                                     src="{{ $user->profile->present()->avatar_medium }}"/>
+                            </div>
+                        </div>
+                        <div class="form-group text-center">
+                            <input type="hidden" id="id" value="{{ $user->id }}">
+                            <button type="submit" class="btn btn-primary mr-4">{{ __('SUBMIT') }}</button>
+                            <a href="{{ URL::previous() }}" class="btn btn-primary mr-4">{{ __('CANCEL') }}</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-10 mx-auto">
+            <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
+                <div class="col-12">
+                    <h2 class="text-center content-header mb-4">{{ __('CHANGE PASSWORD') }}</h2>
+                    <form id="gridForm" method="post"
+                          action="{{ route('admin.users.password', [$user->id]) }}" role="form">
+                        {!! method_field('put') !!}
+                        {!! csrf_field() !!}
+                        <input type="hidden" id="id" name="id" value="{{ $user->id }}">
+                        <div class="form-group">
+                            <label for="oldPassword" class="col-form-label required">{{ __('Old Password') }}:</label>
+                            <input type="password" class="form-control {{ ($errors->has('oldPassword')) ? 'is-invalid' : '' }}"
+                                   id="oldPassword" name="oldPassword"
+                                   required>
+                            <span class="invalid-feedback">{{ $errors->first('oldPassword') }}</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword" class="col-form-label required">{{ __('New Password') }}:</label>
+                            <input type="password" class="form-control {{ ($errors->has('newPassword')) ? 'is-invalid' : '' }}"
+                                   id="newPassword" name="newPassword"
+                                   required>
+                            <span class="invalid-feedback">{{ $errors->first('newPassword') }}</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword_confirmation" class="col-form-label required">{{ __('New Password Confirm') }}:</label>
+                            <input type="password" class="form-control {{ ($errors->has('newPassword_confirmation')) ? 'is-invalid' : '' }}"
+                                   id="newPassword_confirmation" name="newPassword_confirmation"
+                                   required>
+                            <span class="invalid-feedback">{{ $errors->first('newPassword_confirmation') }}</span>
+                        </div>
+                        @include('common.cancel-submit-buttons')
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+@stop

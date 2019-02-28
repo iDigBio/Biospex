@@ -12,8 +12,8 @@
                     <select name="resources[{{ $i }}][type]"
                             id="resources[{{ $i }}][type]"
                             class="form-control custom-select {{ ($errors->has("resources.$i.type")) ? 'is-invalid' : '' }}">
-                        @foreach($resourceOptions as $index => $name)
-                            <option value="{{ $index }}"{{ $index === old("resources.$i.type", $resources[$i]->type ?? '') ? ' selected=selected' : '' }}>{{ $name }}</option>
+                        @foreach($resourceOptions as $name)
+                            <option value="{{ $name }}"{{ $name === old("resources.$i.type", $resources[$i]->type ?? '') ? ' selected=selected' : '' }}>{{ $name }}</option>
                         @endforeach
                     </select>
                     <span class="invalid-feedback">{{ $errors->first("resources.$i.type") }}</span>

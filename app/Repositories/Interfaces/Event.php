@@ -51,12 +51,6 @@ interface Event extends RepositoryInterface
     public function getEventShow($eventId);
 
     /**
-     * @param $eventId
-     * @return mixed
-     */
-    public function getEventClassificationIds($eventId);
-
-    /**
      * @param $projectId
      * @param $user
      * @return mixed

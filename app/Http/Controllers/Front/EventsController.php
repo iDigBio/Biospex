@@ -80,7 +80,7 @@ class EventsController extends Controller
             FlashHelper::error(trans('messages.event_join_team_error'));
         }
 
-        return view('front.event.join', compact('team', 'active'));
+        return view('front.event.signup', compact('team', 'active'));
     }
 
     /**
@@ -98,6 +98,7 @@ class EventsController extends Controller
         EventJoinRequest $request,
         $uuid
     ) {
+
         $user = $eventUserContract->updateOrCreate(['nfn_user' => $request->get('nfn_user')], ['nfn_user' => $request->get('nfn_user')]);
 
         if ($user !== null) {
@@ -106,11 +107,11 @@ class EventsController extends Controller
 
             FlashHelper::success(trans('messages.event_join_team_success'));
 
-            return redirect()->route('front.events.join', [$uuid]);
+            return redirect()->route('front.events.signup', [$uuid]);
         }
 
         FlashHelper::error(trans('messages.event_join_team_error'));
 
-        return redirect()->route('front.events.join', [$request->get('uuid')]);
+        return redirect()->route('front.events.signup', [$uuid]);
     }
 }

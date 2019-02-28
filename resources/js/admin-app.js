@@ -30,7 +30,6 @@ try {
     window.bootbox = require("./bootbox");
     window.am4core = require('@amcharts/amcharts4/core');
     window.am4charts = require('@amcharts/amcharts4/charts');
-    require("./jquery-download");
     require("./grid");
     require("./common");
     require("./admin");

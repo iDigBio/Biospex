@@ -35,6 +35,7 @@ class UpdateQueries extends Command
     public function handle()
     {
         DB::statement("ALTER TABLE `downloads` CHANGE `type` `type` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;");
+        DB::statement("ALTER TABLE `project_resources` CHANGE `type` `type` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;");
 
         $downloads = Download::get();
         $downloads->each(function ($download) {

@@ -19,20 +19,13 @@ class GroupsController extends Controller
     private $groupContract;
 
     /**
-     * @var \App\Repositories\Interfaces\User
-     */
-    private $userContract;
-
-    /**
      * GroupsController constructor.
      *
      * @param \App\Repositories\Interfaces\Group $groupContract
-     * @param \App\Repositories\Interfaces\User $userContract
      */
-    public function __construct(Group $groupContract, User $userContract)
+    public function __construct(Group $groupContract)
     {
         $this->groupContract = $groupContract;
-        $this->userContract = $userContract;
     }
 
     /**
@@ -42,9 +35,9 @@ class GroupsController extends Controller
      */
     public function index()
     {
-        $user = $this->userContract->findWith(request()->user()->id, ['groups']);
+        $groups = $this->groupContract->getGroupsByUserId(Auth::id());
 
-        return view('front.groups.index', compact('user'));
+        return view('admin.group.index', compact('groups'));
     }
 
     /**
@@ -54,9 +47,7 @@ class GroupsController extends Controller
      */
     public function create()
     {
-        $user = Auth::user();
-
-        return view('front.groups.create', compact('user'));
+        return view('admin.group.create');
     }
 
     /**
@@ -77,35 +68,30 @@ class GroupsController extends Controller
 
             FlashHelper::success(trans('messages.record_created'));
 
-            return redirect()->route('webauth.groups.index');
+            return redirect()->route('admin.groups.index');
         }
 
         FlashHelper::warning(trans('messages.loginreq'));
 
-        return redirect()->route('webauth.groups.create');
+        return redirect()->back();
     }
 
     /**
-     * Show group page.
+     * how group page.
      *
      * @param $groupId
-     * @return \Illuminate\View\View
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @throws \Exception
      */
     public function show($groupId)
     {
-        $with = [
-            'projects',
-            'owner.profile',
-            'users.profile',
-        ];
-
-        $group = $this->groupContract->findWith($groupId, $with);
+        $group = $this->groupContract->getGroupShow($groupId);
 
         if (! $this->checkPermissions('read', $group)) {
-            return redirect()->route('admin.groups.index');
+            return redirect()->back();
         }
 
-        return view('front.groups.show', compact('group'));
+        return view('admin.group.show', compact('group'));
     }
 
     /**
@@ -119,14 +105,14 @@ class GroupsController extends Controller
         $group = $this->groupContract->findWith($groupId, ['owner', 'users.profile']);
 
         if (! $this->checkPermissions('isOwner', $group)) {
-            return redirect()->route('webauth.groups.index');
+            return redirect()->back();
         }
 
         $users = $group->users->mapWithKeys(function ($user) {
             return [$user->id => $user->profile->full_name];
         });
 
-        return view('front.groups.edit', compact('group', 'users'));
+        return view('admin.group.edit', compact('group', 'users'));
     }
 
     /**
@@ -141,12 +127,12 @@ class GroupsController extends Controller
         $group = $this->groupContract->find($groupId);
 
         if ($this->checkPermissions('isOwner', $group)) {
-            return redirect()->route('webauth.groups.index');
+            return redirect()->back();
         }
 
         $this->groupContract->update($request->all(), $groupId) ? FlashHelper::success(trans('messages.record_updated')) : FlashHelper::error('messages.record_updated_error');
 
-        return redirect()->route('webauth.groups.index');
+        return redirect()->route('admin.group.index');
     }
 
     /**
@@ -160,7 +146,7 @@ class GroupsController extends Controller
         $group = $this->groupContract->findWith($groupId, ['projects.nfnWorkflows', 'projects.workflowManagers']);
 
         if (! $this->checkPermissions('isOwner', $group)) {
-            return redirect()->route('webauth.groups.index');
+            return redirect()->back();
         }
 
         try {
@@ -168,7 +154,7 @@ class GroupsController extends Controller
                 if ($project->nfnWorkflows->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
                     FlashHelper::error(trans('messages.expedition_process_exists'));
 
-                    return redirect()->route('webauth.groups.index');
+                    return redirect()->route('admin.group.index');
                 }
             }
 
@@ -178,44 +164,45 @@ class GroupsController extends Controller
 
             FlashHelper::success(trans('messages.record_deleted'));
 
-            return redirect()->route('webauth.groups.index');
+            return redirect()->route('admin.group.index');
         } catch (\Exception $e) {
             FlashHelper::error(trans('messages.record_delete_error'));
 
-            return redirect()->route('webauth.groups.index');
+            return redirect()->route('admin.group.index');
         }
     }
 
     /**
      * Delete user from group.
      *
+     * @param \App\Repositories\Interfaces\User $userContract
      * @param $groupId
      * @param $userId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function deleteUser($groupId, $userId)
+    public function deleteUser(User $userContract, $groupId, $userId)
     {
         $group = $this->groupContract->find($groupId);
 
         if ( ! $this->checkPermissions('isOwner', $group)) {
-            return redirect()->route('webauth.groups.index');
+            return redirect()->route('admin.groups.index');
         }
 
         try {
-            if ($group->user_id === $userId) {
+            if ($group->user_id === (int) $userId) {
                 FlashHelper::error(trans('messages.group_user_deleted_owner'));
-                return redirect()->route('webauth.groups.show', [$group->id]);
+                return redirect()->route('admin.groups.show', [$groupId]);
             }
 
-            $user = $this->userContract->find($userId);
+            $user = $userContract->find($userId);
             $user->detachGroup($group->id);
 
             FlashHelper::success(trans('messages.group_user_deleted'));
 
-            return redirect()->route('webauth.groups.show', [$group->id]);
+            return redirect()->route('admin.groups.show', [$groupId]);
         } catch (\Exception $e) {
             FlashHelper::error(trans('messages.group_user_deleted_error'));
-            return redirect()->route('webauth.groups.show', [$group->id]);
+            return redirect()->route('admin.groups.show', [$groupId]);
         }
     }
 }

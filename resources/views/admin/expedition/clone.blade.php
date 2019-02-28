@@ -87,11 +87,7 @@
                     <a href="#" id="loadstate" class="ml-2">{{ __('Load Grid State') }}</a>
                 </div>
             </div>
-
-            <div class="form-group col-md-12 text-center">
-                <button type="submit" class="btn btn-primary mr-4">{{ __('SUBMIT') }}</button>
-                <a href="{{ URL::previous() }}" class="btn btn-primary mr-4">{{ __('CANCEL') }}</a>
-            </div>
+            @include('common.cancel-submit-buttons')
         </div>
     </form>
     @include('admin.partials.jqgrid-modal')

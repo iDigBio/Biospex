@@ -46,7 +46,9 @@
                 {!! $event->project->present()->project_page_icon !!}
                 {!! $event->present()->event_show_icon !!}
                 {!! $event->present()->event_edit_icon !!}
-                {!! $event->present()->event_delete_icon !!}
+                @can('isOwner', $event)
+                    {!! $event->present()->event_delete_icon !!}
+                @endcan
             </div>
         </div>
     </div>

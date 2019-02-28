@@ -79,16 +79,6 @@ class ProjectService
     }
 
     /**
-     * Return resource select options.
-     *
-     * @return array
-     */
-    public function resourceSelectOptions()
-    {
-        return GeneralHelper::getEnumValues('project_resources', 'type', true);
-    }
-
-    /**
      * Send notifications for new projects and actors.
      *
      * @param $project

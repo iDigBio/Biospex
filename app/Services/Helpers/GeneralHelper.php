@@ -15,28 +15,6 @@ use Storage;
 class GeneralHelper
 {
     /**
-     * Get enum values from database for select boxes.
-     *
-     * @param $table
-     * @param $column
-     * @param bool $includeDefault
-     * @return array
-     */
-    public function getEnumValues($table, $column, $includeDefault = false)
-    {
-        $type = \DB::select(\DB::raw("SHOW COLUMNS FROM $table WHERE Field = '{$column}'"))[0]->Type;
-        preg_match('/^enum\((.*)\)$/', $type, $matches);
-        $results = collect(explode(',', $matches[1]));
-        $enum = $results->mapWithKeys(function ($result) {
-            $value = trim($result, "'");
-
-            return [$value => $value];
-        });
-
-        return $includeDefault ? array_merge(['' => 'Select'], $enum->toArray(), ['delete' => '** Delete **']) : $enum->toArray();
-    }
-
-    /**
      * Encode a full url.
      *
      * @param $url

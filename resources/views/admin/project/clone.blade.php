@@ -17,6 +17,8 @@
                           enctype="multipart/form-data">
                         {!! method_field('put') !!}
                         {!! csrf_field() !!}
+                        <input type="hidden" name="entries" value="{{ old('entries', $resourceCount) }}">
+                        <input type="hidden" name="id" value="">
                         <div class="form-row">
                             <div class="form-group col-sm-6">
                                 <label for="group_id"
@@ -276,13 +278,7 @@
                                 @include('admin.project.partials.resources')
                             </div>
                         </div>
-
-                        <div class="form-group text-center">
-                            <input type="hidden" name="entries" value="{{ old('entries', $resourceCount) }}">
-                            <input type="hidden" name="id" value="">
-                            <button type="submit" class="btn btn-primary mr-4">{{ __('SUBMIT') }}</button>
-                            <a href="{{ URL::previous() }}" class="btn btn-primary ml-4">{{ __('CANCEL') }}</a>
-                        </div>
+                        @include('common.cancel-submit-buttons')
                     </form>
                 </div>
             </div>

@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
+use App\Presenters\GroupPresenter;
 
 class Group extends BaseEloquentModel
 {
-    use UuidTrait;
+    use UuidTrait, Presentable;
 
     /**
      * @inheritDoc
@@ -21,6 +23,11 @@ class Group extends BaseEloquentModel
         'user_id',
         'title'
     ];
+
+    /**
+     * @var string
+     */
+    protected $presenter = GroupPresenter::class;
 
     /**
      * Boot functions.
@@ -49,7 +56,7 @@ class Group extends BaseEloquentModel
      */
     public function users()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)->withPivot('group_id');
     }
 
     /**
@@ -60,6 +67,15 @@ class Group extends BaseEloquentModel
     public function projects()
     {
         return $this->hasMany(Project::class)->orderBy('title');
+    }
+
+    /**
+     * Expeditions relationship
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function expeditions()
+    {
+        return $this->hasManyThrough(Expedition::class, Project::class);
     }
 
     /**

@@ -44,6 +44,12 @@
                        type="button">{{ _('expeditions') }}</a>
                     <a href="{{ route('admin.events.index') }}" class="dropdown-item text-uppercase"
                        type="button">{{ _('events') }}</a>
+                    <a href="#" class="preventDefault dropdown-item text-uppercase"
+                       type="button"
+                       data-toggle="modal"
+                       data-target="#process-modal">{{ __('Processes') }}</a>
+                    <a href="{{ route('admin.users.edit', [Auth::id()]) }}" class="dropdown-item text-uppercase"
+                       type="button">{{ _('account') }}</a>
                     <a href="{{ route('app.get.logout') }}" class="dropdown-item text-uppercase"
                        type="button">{{ _('logout') }}</a>
                     @can('isAdmin', Auth::user())

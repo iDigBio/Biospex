@@ -227,9 +227,11 @@ class EventPresenter extends Presenter
             $this->model->id,
         ]);
 
-        return '<a href="#" class="preventDefault" data-toggle="modal" data-remote="'.$route.'" 
-                    data-target="#expedition-download-modal" data-hover="tooltip" title="'.__('Download Users File').'">
-                    <i class="fas fa-file-download fa-2x"></i></a>';
+        return '<a href="#" class="preventDefault event-export"
+        data-href="'.$route.'"
+        data-success="An email with attached export will be sent."
+        data-error="There was an error while exporting. Please inform the Administration"
+        data-hover="tooltip" title="'.__('Download Users File').'"><i class="fas fa-users fa-2x"></i></a>';
     }
 
     /**
@@ -243,8 +245,11 @@ class EventPresenter extends Presenter
             $this->model->id,
         ]);
 
-        return '<a href="#" class="preventDefault" data-toggle="modal" data-remote="'.$route.'" 
-                    data-target="#expedition-download-modal" data-hover="tooltip" title="'.__('Download Transcripts File').'">
-                    <i class="fas fa-file-download fa-2x"></i></a>';
+        return '<a href="#" class="preventDefault event-export"
+        data-href="'.$route.'"
+        data-success="An email with attached export will be sent."
+        data-error="There was an error while exporting. Please inform the Administration"
+        data-hover="tooltip" title="'.__('Download Transcripts File').'">
+        <i class="fas fa-file-download fa-2x"></i></a>';
     }
 }

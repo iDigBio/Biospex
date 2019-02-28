@@ -64,7 +64,7 @@ class ProjectsController extends Controller
         $groupOptions = $this->projectService->userGroupSelectOptions(request()->user());
         $workflowOptions = $this->projectService->workflowSelectOptions();
         $statusOptions = $this->projectService->statusSelectOptions();
-        $resourceOptions = $this->projectService->resourceSelectOptions();
+        $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', 1);
 
         $vars = compact('groupOptions', 'workflowOptions', 'statusOptions', 'resourceOptions', 'resourceCount');
@@ -142,7 +142,7 @@ class ProjectsController extends Controller
         $groupOptions = $this->projectService->userGroupSelectOptions(request()->user());
         $workflowOptions = $this->projectService->workflowSelectOptions();
         $statusOptions = $this->projectService->statusSelectOptions();
-        $resourceOptions = $this->projectService->resourceSelectOptions();
+        $resourceOptions = config('config.project_resources');
         $resourceCount = old('entries', 1);
 
         $vars = compact('project', 'groupOptions', 'workflowOptions', 'statusOptions', 'resourceOptions', 'resourceCount');
@@ -173,8 +173,8 @@ class ProjectsController extends Controller
         $groupOptions = $this->projectService->userGroupSelectOptions(request()->user());
         $workflowOptions = $this->projectService->workflowSelectOptions();
         $statusOptions = $this->projectService->statusSelectOptions();
-        $resourceOptions = $this->projectService->resourceSelectOptions();
-        $resourceCount = old('entries', $project->resources->count());
+        $resourceOptions = config('config.project_resources');
+        $resourceCount = old('entries', $project->resources->count() ?: 1);
         $resources = $project->resources;
 
         $vars = compact('project', 'resources', 'disableWorkflow', 'groupOptions', 'workflowOptions', 'statusOptions', 'resourceOptions', 'resourceCount');

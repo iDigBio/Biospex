@@ -1,108 +1,122 @@
-@extends('front.layouts.default')
+@extends('admin.layout.default')
 
 {{-- Web site Title --}}
 @section('title')
-    @parent
-    @lang('pages.create') @lang('pages.events')
+    {{ __('Create Event') }}
 @stop
 
 {{-- Content --}}
 @section('content')
-    <div class="col-md-10 col-md-offset-1  top20">
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <h3 class="panel-title">@lang('pages.create') @lang('pages.event')</h3>
-            </div>
-            <div class="panel-body">
-                {!! Form::open([
-                'route' => ['admin.events.store'],
-                'method' => 'post',
-                'class' => 'form-horizontal',
-                'role' => 'form'
-                ]) !!}
-
-                <div class="form-group required {{ ($errors->has('project_id')) ? 'has-error' : '' }}">
-                    {!! Form::label('project_id', trans('pages.project'), ['class' => 'col-sm-2 control-label']) !!}
-                    <div class="col-sm-3">
-                        {{ ($errors->has('project_id') ? $errors->first('project_id') : '') }}
-                        {!! Form::select('project_id', $projects, null, ['class' => 'form-control']) !!}
-                    </div>
-                </div>
-
-                <div class="form-group required {{ ($errors->has('title')) ? 'has-error' : '' }}">
-                    {!! Form::label('title', trans('pages.title'), ['class' => 'col-sm-2 control-label']) !!}
-                    <div class="col-sm-10">
-                        {{ ($errors->has('title') ? $errors->first('title') : '') }}
-                        {!! Form::text('title', null, ['class' => 'form-control', 'placeholder' => trans('pages.title')]) !!}
-                    </div>
-                </div>
-
-                <div class="form-group required {{ ($errors->has('description')) ? 'has-error' : '' }}">
-                    {!! Form::label('description_short', trans('pages.description'), ['class' => 'col-sm-2 control-label']) !!}
-                    <div class="col-sm-10">
-                        {{ ($errors->has('description') ? $errors->first('description') : '') }}
-                        {!! Form::text('description', null, ['class' => 'form-control', 'placeholder' => trans('pages.description_short_max')]) !!}
-                    </div>
-                </div>
-
-                <div class="form-group required {{ ($errors->has('contact')) ? 'has-error' : '' }}">
-                    {!! Form::label('contact', trans('pages.contact'), ['class' => 'col-sm-2 control-label']) !!}
-                    <div class="col-sm-10">
-                        {{ ($errors->has('contact') ? $errors->first('contact') : '') }}
-                        {!! Form::text('contact', null, ['class' => 'form-control', 'placeholder' => trans('pages.contact')]) !!}
-                    </div>
-                </div>
-
-                <div class="form-group required {{ ($errors->has('contact_email')) ? 'has-error' : '' }}">
-                    {!! Form::label('contact_email', trans('pages.contact') . ' ' . trans('pages.email'), ['class' => 'col-sm-2 control-label']) !!}
-                    <div class="col-sm-10">
-                        {{ ($errors->has('contact_email') ? $errors->first('contact_email') : '') }}
-                        {!! Form::text('contact_email', null, ['class' => 'form-control', 'placeholder' => trans('pages.contact') . ' ' . trans('pages.email')]) !!}
-                    </div>
-                </div>
-
-                <div class="form-group required {{ ($errors->has('start_date')) ? 'has-error' : '' }}">
-                    {!! Form::label('date', trans('pages.date'), ['class' => 'col-sm-2 control-label']) !!}
-                    <div class="form-inline col-md-10">
-                        <div class="input-group col-md-3">
-                            {{ ($errors->has('start_date') ? $errors->first('start_date') : '') }}
-                            {!! Form::label('start_date', trans('pages.start_date'), ['class' => 'control-label']) !!}
-                            {!! Form::text('start_date', null, ['class' => 'form-control datetimepicker']) !!}
+    <div class="row">
+        <div class="col-sm-10 mx-auto">
+            <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
+                <div class="col-12">
+                    <h2 class="text-center content-header mb-4">{{ __('CREATE EVENT') }}</h2>
+                    <form id="gridForm" method="post"
+                          action="{{ route('admin.events.store') }}"
+                          role="form" enctype="multipart/form-data">
+                        {!! csrf_field() !!}
+                        <input type="hidden" name="entries" value="{{ old('entries', 1) }}">
+                        <input type="hidden" name="owner_id" value="{{ Auth::id() }}">
+                        <div class="form-group">
+                            <div class="col-12 p-0">
+                                <label for="project_id" class="col-form-label required">{{ __('Project') }}:</label>
+                            </div>
+                            <div class="col-6 p-0">
+                                <select name="project_id" id="project_id"
+                                        class="form-control custom-select {{ ($errors->has('project_id')) ? 'is-invalid' : '' }}"
+                                        required>
+                                    @foreach($projects as $key => $title)
+                                        <option {{ $key === old('project_id') ?
+                                        ' selected=selected' : '' }} value="{{ $key }}">{{ $title }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
-                        <div class="input-group col-md-3">
-                            {{ ($errors->has('end_date') ? $errors->first('end_date') : '') }}
-                            {!! Form::label('end_date', trans('pages.end_date'), ['class' => 'control-label']) !!}
-                            {!! Form::text('end_date', null, ['class' => 'form-control datetimepicker']) !!}
+                        <div class="form-group">
+                            <label for="title" class="col-form-label required">{{ __('Title') }}:</label>
+                            <input type="text" class="form-control {{ ($errors->has('title')) ? 'is-invalid' : '' }}"
+                                   id="title" name="title"
+                                   value="{{ old('title') }}" required>
+                            <span class="invalid-feedback">{{ $errors->first('title') }}</span>
                         </div>
-                        <div class="input-group col-md-4">
-                            {!! Form::label('timezone', trans('pages.timezone'), ['class' => 'control-label']) !!}
-                            {!! Form::select('timezone', $timezones, 'America/New_York', ['class' => 'form-control']) !!}
+                        <div class="form-group">
+                            <label for="description" class="col-form-label required">{{ __('Description') }}:</label>
+                            <input type="text"
+                                   class="form-control {{ ($errors->has('description')) ? 'is-invalid' : '' }}"
+                                   id="description" name="description"
+                                   value="{{ old('description') }}"
+                                   placeholder="Between 6 and 140 characters" required>
+                            <span class="invalid-feedback">{{ $errors->first('description') }}</span>
                         </div>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <label for="contact" class="col-form-label required">{{ __('Contact') }}:</label>
+                            <input type="text" class="form-control {{ ($errors->has('contact')) ? 'is-invalid' : '' }}"
+                                   id="contact" name="contact"
+                                   value="{{ old('contact') }}" required>
+                            <span class="invalid-feedback">{{ $errors->first('contact') }}</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact_email" class="col-form-label required">{{ __('Contact Email') }}
+                                :</label>
+                            <input type="email"
+                                   class="form-control {{ ($errors->has('contact_email')) ? 'is-invalid' : '' }}"
+                                   id="contact_email" name="contact_email"
+                                   value="{{ old('contact_email') }}" required>
+                            <span class="invalid-feedback">{{ $errors->first('contact_email') }}</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="hashtag" class="col-form-label">{{ __('Hash Tags') }}:</label>
+                            <input type="text" class="form-control {{ ($errors->has('hashtag')) ? 'is-invalid' : '' }}"
+                                   id="hashtag" name="hashtag" placeholder="{{ __('Separated by commas') }}"
+                                   value="{{ old('hashtag') }}">
+                            <span class="invalid-feedback">{{ $errors->first('hashtag') }}</span>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-sm-4 form-group">
+                                <label for="start_date"
+                                       class="col-form-label required">{{ __('Start Date') }}
+                                    :</label>
+                                <input type="text"
+                                       class="form-control datetimepicker {{ ($errors->has('start_date')) ? 'is-invalid' : '' }}"
+                                       id="start_date" name="start_date"
+                                       value="{{ old('start_date') }}"
+                                       required>
+                                <span class="invalid-feedback">{{ $errors->first('start_date') }}</span>
+                            </div>
+                            <div class="col-sm-4 form-group">
+                                <label for="end_date"
+                                       class="col-form-label required">{{ __('End Date') }}:</label>
+                                <input type="text"
+                                       class="form-control datetimepicker {{ ($errors->has('end_date')) ? 'is-invalid' : '' }}"
+                                       id="end_date" name="end_date"
+                                       value="{{ old('end_date') }}"
+                                       required>
+                                <span class="invalid-feedback">{{ $errors->first('end_date') }}</span>
+                            </div>
+                            <div class="col-sm-4 form-group">
+                                <label for="timezone"
+                                       class="col-form-label required">{{ __('Timezone') }}:</label>
+                                <select name="timezone" id="timezone"
+                                        class="form-control custom-select {{ ($errors->has('timezone')) ? 'is-invalid' : '' }}"
+                                        required>
+                                    @foreach($timezones as $key => $value)
+                                        <option {{ $key === old('timezone', 'America/New_York') ?
+                                        ' selected=selected' : '' }} value="{{ $key }}">{{ $value }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    {!! Form::label('', trans('pages.event_teams'), ['class' => 'col-sm-2 control-label']) !!}
-                    <div class="controls col-sm-10">
-                        @if($errors->has('teams.*'))
-                            @for($i = 0; $i < old('entries'); $i++)
-                                @include('front.events.partials.team-error')
-                            @endfor
-                        @else
-                            @include('front.events.partials.team-create')
-                        @endif
-                    </div>
+                        <div class="form-group">
+                            <label for="teams" class="col-form-label">{{ __('Teams') }}:</label>
+                            <div class="controls col-sm-12">
+                                @include('admin.event.partials.teams', ['teams' => null, 'teamsCount' => $teamsCount])
+                            </div>
+                        </div>
+                        @include('common.cancel-submit-buttons')
+                    </form>
                 </div>
-
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        {!! Form::hidden('owner_id', Auth::id()) !!}
-                        {!! Form::hidden('entries', 1) !!}
-                        {!! Form::submit(trans('pages.create'), ['class' => 'btn btn-primary']) !!}
-                        {!! link_to(URL::previous(), trans('pages.cancel'), ['class' => 'btn btn-large btn-primary btn-danger']) !!}
-                    </div>
-                </div>
-                {!! Form::close() !!}
             </div>
         </div>
     </div>

@@ -7,7 +7,6 @@ use App\Repositories\Interfaces\Group;
 
 class GroupRepository extends EloquentRepository implements Group
 {
-
     /**
      * Specify Model class name
      *
@@ -27,9 +26,7 @@ class GroupRepository extends EloquentRepository implements Group
     {
         $results = $this->model->whereHas('users', function ($query) use ($user) {
             $query->where('user_id', $user->id);
-        })
-            ->pluck('title', 'id')
-            ->toArray();
+        })->pluck('title', 'id')->toArray();
 
         $this->resetModel();
 
@@ -41,15 +38,42 @@ class GroupRepository extends EloquentRepository implements Group
      */
     public function getUserGroupIds($userId)
     {
-        $groupIds = $this->model
-            ->whereHas('users', function ($query) use ($userId) {
+        $groupIds = $this->model->whereHas('users', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })->get()->map(function ($item) {
-            return $item['id'];
-        });
+                return $item['id'];
+            });
 
         $this->resetModel();
 
         return $groupIds;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getGroupsByUserId($userId)
+    {
+        $results = $this->model->withCount('projects', 'expeditions', 'users')->get();
+
+        $this->resetModel();
+
+        return $results;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getGroupShow($groupId)
+    {
+        $results = $this->model->with([
+            'projects',
+            'owner.profile',
+            'users.profile',
+        ])->withCount('expeditions')->find($groupId);
+
+        $this->resetModel();
+
+        return $results;
     }
 }

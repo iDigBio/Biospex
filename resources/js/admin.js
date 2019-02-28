@@ -80,14 +80,9 @@ $(function() {
         });
     }
 
-    /*
-    $('.js-tooltip').tooltip();
-    $('.js-copy').click(function () {
-        let text = $(this).attr('data-copy');
-        let el = $(this);
-        copyToClipboard(text, el);
+    $('[data-name="js-copy"]').on('click', function () {
+        copyToClipboard($(this));
     });
-    */
 
     $.datetimepicker.setLocale('en');
     $('.datetimepicker').datetimepicker({
@@ -130,18 +125,31 @@ $(function() {
         $('#exportHtml').html('Retrieving data');
         $.get('/poll');
     });
+    */
 
-    if ($('#processModal').length) {
-        Echo.channel(Laravel.ocrChannel)
+    Echo.channel(Laravel.ocrChannel)
             .listen('PollOcrEvent', (e) => {
                 let ocrHtml = polling_data(e.data);
-                $('#ocrHtml').html(ocrHtml);
+                $('#ocr-html').html(ocrHtml);
             });
 
         Echo.channel(Laravel.exportChannel)
             .listen('PollExportEvent', (e) => {
                 let exportHtml = polling_data(e.data);
-                $('#exportHtml').html(exportHtml);
+                $('#export-html').html(exportHtml);
+            });
+    /*
+    if ($('#process-modal').length) {
+        Echo.channel(Laravel.ocrChannel)
+            .listen('PollOcrEvent', (e) => {
+                let ocrHtml = polling_data(e.data);
+                $('#ocr-html').html(ocrHtml);
+            });
+
+        Echo.channel(Laravel.exportChannel)
+            .listen('PollExportEvent', (e) => {
+                let exportHtml = polling_data(e.data);
+                $('#export-html').html(exportHtml);
             });
     }
     */
@@ -223,23 +231,6 @@ $(function() {
         $(this).prev('.custom-file-label').addClass("selected").html(fileName);
     });
 
-    $(document).on("click", "a.ajax-download", function () {
-        let $preparingFile = $("#preparing-file");
-
-        $preparingFile.show();
-
-        $.fileDownload($(this).attr('href'), {
-            successCallback: function (url) {
-                $preparingFile.hide();
-            },
-            failCallback: function (responseHtml, url) {
-                $preparingFile.hide();
-                $("#error-file").show();
-            }
-        });
-        return false; //this is critical to stop the click event which will trigger a normal file download!
-    });
-
 });
 
 // Loop data from polling
@@ -268,14 +259,14 @@ function renumber_prefix() {
     $('[name="entries"]').val(controls.children().length);
 }
 
-/*
-function copyToClipboard(text, el) {
+function copyToClipboard(el) {
     let copyTest = document.queryCommandSupported('copy');
-    let elOriginalText = el.attr('data-original-title');
+    let copyText = el.attr('data-value');
+    let titleText = el.attr('data-original-title');
 
     if (copyTest === true) {
         let copyTextArea = document.createElement('textarea');
-        copyTextArea.value = text;
+        copyTextArea.value = copyText;
         document.body.appendChild(copyTextArea);
         copyTextArea.select();
         try {
@@ -286,10 +277,9 @@ function copyToClipboard(text, el) {
             alert('Oops, unable to copy');
         }
         document.body.removeChild(copyTextArea);
-        el.attr('data-original-title', elOriginalText);
+        el.attr('data-original-title', titleText);
     } else {
         // Fallback if browser doesn't support .execCommand('copy')
         window.prompt('Copy to clipboard: Ctrl+C or Command+C, Enter', text);
     }
 }
-*/

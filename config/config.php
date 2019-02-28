@@ -61,6 +61,10 @@ return [
     'cache_enabled'       => env('CACHE_ENABLED', true),
     'cache_minutes'       => env('CACHE_MINUTES', 60),
 
+    'project_resources' => [
+        'Website URL','Video URL','File Download'
+    ],
+
     /**
      * iDigBio api query url
      */

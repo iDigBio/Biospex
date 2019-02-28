@@ -43,9 +43,7 @@
                         {{ $errors->first('message') }}
                     </div>
                     @include('common.recaptcha')
-                    <div class="form-group text-center">
-                        <button type="submit" class="btn btn-primary">{{ __('SUBMIT') }}</button>
-                    </div>
+                    @include('common.cancel-submit-buttons')
                 </form>
             </div>
         </div>

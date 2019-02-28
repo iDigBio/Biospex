@@ -18,4 +18,15 @@ class EventTranscriptionRepository extends EloquentRepository implements EventTr
         return Model::class;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getEventClassificationIds($eventId)
+    {
+        $ids = $this->model->where('event_id', $eventId)->pluck('classification_id');
+
+        $this->resetModel();
+
+        return $ids;
+    }
 }

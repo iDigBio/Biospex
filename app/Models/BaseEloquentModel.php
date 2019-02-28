@@ -8,7 +8,8 @@ use App\Models\Traits\PivotEventTrait;
 
 class BaseEloquentModel extends Model
 {
-    use LadaCacheTrait, PivotEventTrait;
+    use LadaCacheTrait;
+    use PivotEventTrait;
 
     /**
      * @inheritDoc

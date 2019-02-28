@@ -27,7 +27,9 @@
     </nav>
 </header>
 <div class="container mb-4">
+    @include('common.notices')
     @yield('content')
+    @include('admin.partials.process-modal')
 </div>
 <!-- Footer -->
 <footer class="page-footer font-small blue-grey lighten-5">

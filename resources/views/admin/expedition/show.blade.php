@@ -17,12 +17,6 @@
 @section('content')
     @include('admin.expedition.partials.expedition-panel')
     <div class="row">
-        <div class="col-sm-8 offset-md-2">
-
-        </div>
-    </div>
-
-    <div class="row">
         <h3 class="mx-auto">{{ __('Subjects currently assigned to Expedition') }}:
             {{ $expedition->stat->local_subject_count }}
         </h3>
