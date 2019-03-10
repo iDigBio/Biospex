@@ -70,16 +70,6 @@ class ActorServiceConfig
     /**
      * @var string
      */
-    public $archiveTar;
-
-    /**
-     * @var string
-     */
-    public $archiveTarPath;
-
-    /**
-     * @var string
-     */
     public $archiveTarGz;
 
     /**
@@ -111,10 +101,7 @@ class ActorServiceConfig
         $this->setWorkingDirectory();
         $this->setTmpDirectory();
         $this->setNfnExportDirectory();
-        $this->setArchiveTar();
         $this->setArchiveTarGz();
-        $this->setArchivePhar();
-        $this->setArchiveExportPath();
     }
 
     /**
@@ -200,36 +187,12 @@ class ActorServiceConfig
     }
 
     /**
-     * Set tar archive and path.
-     */
-    public function setArchiveTar()
-    {
-        $this->archiveTar = $this->folderName . '.tar';
-        $this->archiveTarPath = $this->scratchDirectory . '/' . $this->archiveTar;
-    }
-
-    /**
      * Set gz archive and path.
      */
     public function setArchiveTarGz()
     {
         $this->archiveTarGz = $this->folderName . '.tar.gz';
         $this->archiveTarGzPath = $this->scratchDirectory . '/' . $this->archiveTarGz;
-    }
-
-    /**
-     * Create new Phar archive.
-     */
-    public function setArchivePhar()
-    {
-        $this->archivePhar = new PharData($this->archiveTarPath);
-    }
-
-    /**
-     * Set archive destination path.
-     */
-    public function setArchiveExportPath()
-    {
         $this->archiveExportPath = $this->nfnExportDirectory . '/' . $this->archiveTarGz;
     }
 

@@ -60,7 +60,6 @@ class NfnPanoptesExport
         'deleteOriginalImages',
         'buildCsv',
         'tarImages',
-        'compressImages',
         'emailReport',
     ];
 
@@ -224,52 +223,35 @@ class NfnPanoptesExport
 
     /**
      * Create tar file.
-     */
-    public function tarImages()
-    {
-        $this->actorImageService->archivePhar->buildFromDirectory($this->actorImageService->tmpDirectory);
-
-        $this->actorImageService->fireActorQueuedEvent();
-
-        $this->advanceQueue();
-
-        return;
-    }
-
-    /**
-     * Compress and move.
      *
      * @throws \Exception
      */
-    public function compressImages()
+    public function tarImages()
     {
-        if ( ! $this->fileService->filesystem->exists($this->actorImageService->archiveTarGzPath))
-        {
-            $this->actorImageService->archivePhar->compress(\Phar::GZ); // copies to /path/to/my.tar.gz
+        exec("tar -czf {$this->actorImageService->archiveTarGzPath} {$this->actorImageService->tmpDirectory}", $out, $ok);
+
+        if ( ! $ok) {
+            $values = [
+                'expedition_id' => $this->actorImageService->expedition->id,
+                'actor_id'      => $this->actorImageService->actor->id,
+                'file'          => $this->actorImageService->archiveTarGz,
+                'type'          => 'export'
+            ];
+            $attributes = [
+                'expedition_id' => $this->actorImageService->expedition->id,
+                'actor_id'      => $this->actorImageService->actor->id,
+                'file'          => $this->actorImageService->archiveTarGz,
+                'type'          => 'export'
+            ];
+
+            $this->actorRepositoryService->updateOrCreateDownload($attributes, $values);
+
+            $this->advanceQueue();
+
+            return;
         }
 
-        if ( ! $this->fileService->filesystem->move($this->actorImageService->archiveTarGzPath, $this->actorImageService->archiveExportPath))
-        {
-            throw new \Exception('Could not move compressed file to export directory ' . $this->actorImageService->expedition->id . ' export');
-        }
-
-        $values = [
-            'expedition_id' => $this->actorImageService->expedition->id,
-            'actor_id'      => $this->actorImageService->actor->id,
-            'file'          => $this->actorImageService->archiveTarGz,
-            'type'          => 'export'
-        ];
-        $attributes = [
-            'expedition_id' => $this->actorImageService->expedition->id,
-            'actor_id'      => $this->actorImageService->actor->id,
-            'file'          => $this->actorImageService->archiveTarGz,
-            'type'          => 'export'
-        ];
-
-        $this->actorRepositoryService->updateOrCreateDownload($attributes, $values);
-        $this->advanceQueue();
-
-        return;
+        throw new \Exception('Could not create compressed export file for Expedition: ' . $this->actorImageService->expedition->id);
     }
 
     /**
@@ -280,7 +262,6 @@ class NfnPanoptesExport
     public function emailReport()
     {
         $this->fileService->filesystem->deleteDirectory($this->actorImageService->workingDirectory);
-        $this->fileService->filesystem->delete($this->actorImageService->archiveTarPath);
 
         $this->notify();
 
