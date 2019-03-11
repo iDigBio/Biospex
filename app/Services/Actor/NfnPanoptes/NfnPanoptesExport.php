@@ -261,6 +261,7 @@ class NfnPanoptesExport
      */
     public function emailReport()
     {
+        $this->fileService->filesystem->deleteDirectory($this->actorImageService->tmpDirectory);
         $this->fileService->filesystem->deleteDirectory($this->actorImageService->workingDirectory);
 
         $this->notify();
