@@ -228,7 +228,7 @@ class NfnPanoptesExport
      */
     public function tarImages()
     {
-        exec("sudo tar -czf {$this->actorImageService->archiveExportPath} {$this->actorImageService->tmpDirectory}", $out, $ok);
+        exec("sudo tar -czf {$this->actorImageService->archiveExportPath} -C {$this->actorImageService->tmpDirectory} .", $out, $ok);
 
         if ( ! $ok) {
             $values = [

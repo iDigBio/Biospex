@@ -61,7 +61,7 @@ class ImportComplete extends Notification implements ShouldQueue
         $mailMessage = new MailMessage;
         $mailMessage->markdown('mail.importcomplete', ['project' => $this->project]);
 
-        if ($this->duplicates !== null)
+        if (file_exists($this->duplicates))
         {
             $mailMessage->attach($this->duplicates, [
                 'as' => 'duplicates.csv',
@@ -69,7 +69,7 @@ class ImportComplete extends Notification implements ShouldQueue
             ]);
         }
 
-        if ($this->rejects !== null)
+        if (file_exists($this->rejects))
         {
             $mailMessage->attach('/path/to/file', [
                 'as' => 'rejects.csv',

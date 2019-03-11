@@ -73,11 +73,6 @@ class ActorServiceConfig
     public $archiveTarGz;
 
     /**
-     * @var PharData
-     */
-    public $archivePhar;
-
-    /**
      * @var string
      */
     public $archiveExportPath;
