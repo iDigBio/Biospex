@@ -73,11 +73,6 @@ class ActorServiceConfig
     public $archiveTarGz;
 
     /**
-     * @var string
-     */
-    public $archiveTarGzPath;
-
-    /**
      * @var PharData
      */
     public $archivePhar;
@@ -192,7 +187,6 @@ class ActorServiceConfig
     public function setArchiveTarGz()
     {
         $this->archiveTarGz = $this->folderName . '.tar.gz';
-        $this->archiveTarGzPath = $this->scratchDirectory . '/' . $this->archiveTarGz;
         $this->archiveExportPath = $this->nfnExportDirectory . '/' . $this->archiveTarGz;
     }
 
