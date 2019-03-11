@@ -33,7 +33,7 @@ class ImportComplete extends Notification implements ShouldQueue
      * @param $duplicates
      * @param $rejects
      */
-    public function __construct($project, $duplicates = null, $rejects = null)
+    public function __construct($project, $duplicates, $rejects)
     {
         $this->project = $project;
         $this->duplicates = $duplicates;
@@ -71,7 +71,7 @@ class ImportComplete extends Notification implements ShouldQueue
 
         if (file_exists($this->rejects))
         {
-            $mailMessage->attach('/path/to/file', [
+            $mailMessage->attach($this->rejects, [
                 'as' => 'rejects.csv',
                 'mime' => 'text/csv',
             ]);
