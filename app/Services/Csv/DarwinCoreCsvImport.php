@@ -92,11 +92,6 @@ class DarwinCoreCsvImport
     /**
      * @var
      */
-    public $identifierColumn;
-
-    /**
-     * @var
-     */
     public $header;
 
     /**
@@ -388,7 +383,9 @@ class DarwinCoreCsvImport
      */
     public function setUniqueId($row, $metaFields)
     {
-        return trim($this->identifierColumn) ? $this->getIdentifierValue($row[$this->identifierColumn]) : $this->getIdentifierColumn($row, $metaFields);
+        $identifierValue = $this->getIdentifierValue($row, $metaFields);
+
+        return $identifierValue === false ? false : $this->checkIdentifierUuid($identifierValue);
     }
 
     /**
@@ -396,20 +393,32 @@ class DarwinCoreCsvImport
      *
      * @param $row
      * @param $metaFields
-     * @return mixed|null
+     * @return bool
      */
-    public function getIdentifierColumn($row, $metaFields)
+    public function getIdentifierValue($row, $metaFields)
     {
-        $this->identifierColumn = collect($metaFields)->intersect($this->identifiers)->filter(function (
-                $identifier,
-                $key
-            ) use ($row) {
-                return strpos($row[$this->header[$key]], 'http') === false;
-            })->map(function ($identifier, $key) {
-                return $this->header[$key];
-            })->first();
+        $identifierColumnValues = collect($metaFields)
+            ->intersect($this->identifiers)
+            ->filter(function ($identifier, $key) use ($row) {
+                if (isset($row[$this->header[$key]])
+                    && ! empty($row[$this->header[$key]])
+                    && (strpos($row[$this->header[$key]], 'http') === false)) {
+                    return true;
+                }
 
-        return trim($this->identifierColumn) ? $this->getIdentifierValue($row[$this->identifierColumn]) : null;
+                return false;
+            })->map(function($identifier, $key) use ($row) {
+                return $row[$this->header[$key]];
+            });
+
+        if ($identifierColumnValues->isEmpty()) {
+            $rejected = ['Reason' => __('All identifier columns empty or identifier is URL.')] + $row;
+            $this->reject($rejected);
+
+            return false;
+        }
+
+        return $identifierColumnValues->first();
     }
 
     /**
@@ -418,7 +427,7 @@ class DarwinCoreCsvImport
      * @param $value
      * @return mixed
      */
-    public function getIdentifierValue($value)
+    public function checkIdentifierUuid($value)
     {
         $pattern = '/\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/i';
 
@@ -436,7 +445,7 @@ class DarwinCoreCsvImport
         $occurrenceId = $this->mediaIsCore ? null : $row[$this->header[0]];
         $row['id'] = $this->mediaIsCore ? $row[$this->header[0]] : $this->setUniqueId($row, $metaFields);
 
-        if ($this->reject($row)) {
+        if ($this->checkColumns($row)) {
             return;
         }
 
@@ -450,6 +459,31 @@ class DarwinCoreCsvImport
         }
 
         $this->saveSubject($subject);
+    }
+
+    /**
+     * Check if id and accessURI exists.
+     *
+     * @param $row
+     * @return bool
+     */
+    private function checkColumns($row)
+    {
+        if (! trim($row['id'])) {
+            $rejected = ['Reason' => __('Missing required ID value.')] + $row;
+            $this->reject($rejected);
+
+            return true;
+        }
+
+        if (empty($row['accessURI'])) {
+            $rejected = ['Reason' => __('Missing accessURI.')] + $row;
+            $this->reject($rejected);
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -481,7 +515,6 @@ class DarwinCoreCsvImport
 
         $criteria = ['project_id' => (int) $this->projectId, 'occurrence.id' => $row[$this->header[0]]];
         $attributes = ['$set' => ['occurrence' => $row]];
-
         $this->mongoDbService->updateMany($attributes, $criteria);
     }
 
@@ -493,13 +526,9 @@ class DarwinCoreCsvImport
      */
     public function reject($row)
     {
-        if (! trim($row['id'])) {
-            $this->rejectedMultimedia[] = $row;
+        $this->rejectedMultimedia[] = $row;
 
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /**
