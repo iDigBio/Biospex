@@ -1,6 +1,7 @@
 {
-    "/js/frontend.js": "/js/frontend.js?id=057d0731ca8f389d0f02",
-    "/css/frontend.css": "/css/frontend.css?id=286c103f58fcdda88447",
-    "/js/vendor.js": "/js/vendor.js?id=4f9060bf23e730c48313",
-    "/js/manifest.js": "/js/manifest.js?id=40dcfff9d09d402daf38"
+    "/pdfmake.js": "/pdfmake.js?id=d41d8cd98f00b204e980",
+    "/xlsx.js": "/xlsx.js?id=d41d8cd98f00b204e980",
+    "/canvg.js": "/canvg.js?id=d41d8cd98f00b204e980",
+    "/js/app.js": "/js/app.js?id=b36075de49139ff19790",
+    "/css/app.css": "/css/app.css?id=e2039fed187a486d524a"
 }

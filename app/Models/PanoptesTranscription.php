@@ -33,6 +33,16 @@ class PanoptesTranscription extends Model
     protected $guarded = ['_id'];
 
     /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'subject_projectId' => 'int',
+        'subject_expeditionId' => 'int'
+    ];
+
+    /**
      * OrderBy
      *
      * @var array

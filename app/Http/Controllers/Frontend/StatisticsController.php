@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Facades\CountHelper;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Project;
@@ -40,19 +41,20 @@ class StatisticsController extends Controller
     public function index($projectId)
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
-        $transcribers = collect($this->panoptesTranscriptionContract
-            ->getUserTranscriptionCount($projectId))->sortByDesc('transcriptionCount');
 
-        $plucked = collect(array_count_values($transcribers->pluck('transcriptionCount')->sort()->toArray()));
+        $transcribers = CountHelper::getUserTranscriptionCount($projectId)->sortByDesc('transcriptionCount');
 
-        $transcriptions = $plucked->flatMap(function($users, $count){
-            return [['count' => $count, 'users' => $users]];
-        })->toJson();
+        $transcriptions = \Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function () use
+        (
+            $transcribers
+        ) {
+            return $transcribers->isEmpty() ? null : $transcribers->pluck('transcriptionCount')->pipe(function ($transcribers) {
+                return collect(array_count_values($transcribers->sort()->toArray()));
+            })->flatMap(function ($users, $count) {
+                return [['transcriptions' => $count, 'transcribers' => $users]];
+            })->toJson();
+        });
 
-        JavaScript::put([
-            'transcriptionChartData' => $transcriptions
-        ]);
-
-        return view('frontend.statistics.index', compact('project', 'transcribers'));
+        return view('frontend.statistics.index', compact('project', 'transcribers', 'transcriptions'));
     }
 }

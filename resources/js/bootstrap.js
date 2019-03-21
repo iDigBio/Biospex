@@ -4,9 +4,9 @@
  * for JavaScript based Bootstrap features such as modals and tabs. This
  * code may be modified to fit the specific needs of your application.
  */
-
 try {
-    window.$ = window.jQuery = require('jquery');
+    //"$", "window.jQuery", "jQuery", "window.$", "jquery", "window.jquery"
+    //window.$ = window.jQuery = window.jquery = jQuery = jquery = require('jquery');
     //require('bootstrap');
     require("bootstrap-sass/assets/javascripts/bootstrap");
     require("bootstrap-notify/bootstrap-notify");
@@ -26,17 +26,12 @@ try {
 
     require("tablesorter/dist/js/jquery.tablesorter");
     require("tablesorter/dist/js/jquery.tablesorter.widgets.js");
-    require("amcharts3/amcharts/amcharts");
-    require("amcharts3/amcharts/serial");
-    require("amcharts3/amcharts/plugins/dataloader/dataloader");
-    require("amcharts3/amcharts/plugins/responsive/responsive");
 
-    require("socket.io-client/dist/socket.io");
-    require("./amchart");
-    require("./bootbox");
-    require("./flash");
-    require("./biospex");
+    window.am4core = require('@amcharts/amcharts4/core');
+    window.am4charts = require('@amcharts/amcharts4/charts');
+    window.bootbox = require('bootbox');
     require("./grid");
+    require("./biospex");
 
 } catch (e) {}
 
@@ -73,5 +68,6 @@ import Echo from "laravel-echo"
 window.io = require("socket.io-client");
 window.Echo = new Echo({
     broadcaster: "socket.io",
-    host: window.location.hostname + ":6001"
+    host: window.location.hostname,
+    path: '/ws/socket.io',
 });

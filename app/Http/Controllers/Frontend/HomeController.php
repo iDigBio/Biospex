@@ -10,6 +10,7 @@ use App\Repositories\Interfaces\Event;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Project;
 use App\Http\Requests\ContactFormRequest;
+use GeneralHelper;
 use Mail;
 
 class HomeController extends Controller
@@ -52,7 +53,10 @@ class HomeController extends Controller
     {
         $project = $projectContract->getProjectPageBySlug($slug);
 
-        return view('frontend.project', compact('project'));
+        $amChartHeight = GeneralHelper::amChartHeight($project->expeditions->count());
+        $amLegendHeight = GeneralHelper::amLegendHeight($project->expeditions->count());
+
+        return view('frontend.project', compact('project', 'amChartHeight', 'amLegendHeight'));
     }
 
     /**
@@ -84,7 +88,11 @@ class HomeController extends Controller
             return '';
         }
 
-        return json_decode($record->data);
+        dd($record->data);
+
+        return response()->json(json_decode($record->data));
+
+        //return json_decode($record->data);
     }
 
     /**

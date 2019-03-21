@@ -4,6 +4,8 @@ $(function () {
      * before it is drawn
      *
      **/
+    let collections = [];
+
     AmCharts.addInitHandler(function (chart) {
 
         AmCharts.resizeCategory = function (chart) {
@@ -30,8 +32,9 @@ $(function () {
         }
     }, ['serial']);
 
+
     if ($("#chartdiv").length > 0) {
-        let collections = [];
+        //let collections = [];
 
         let chart = AmCharts.makeChart("chartdiv", {
             type: "serial",
@@ -90,9 +93,9 @@ $(function () {
                             , count = item.count
                             , day = item.day
                             , obj;
-                        if (collection != "" && typeof(collection) != 'undefined') {
-                            if (collections.indexOf(collection) === -1 && collection != "") collections.push(collection);
-                            if (current_day != day && typeof(day) != "undefined") {
+                        if (collection !== "" && typeof(collection) !== 'undefined') {
+                            if (collections.indexOf(collection) === -1 && collection !== "") collections.push(collection);
+                            if (current_day !== day && typeof(day) != "undefined") {
                                 if (obj) chartData.push(obj);
                                 obj = {};
                                 current_day = day;
@@ -101,7 +104,7 @@ $(function () {
                             if (typeof(count) != 'undefined') {
                                 obj[collection] = count;
                             }
-                            if (i + 1 == data.length) {
+                            if (i + 1 === data.length) {
                                 chartData.push(obj)
                             } //make sure we push last item if it's there
                         }
@@ -109,9 +112,10 @@ $(function () {
                     /////////////////////////////////////
                     //create a graph for each collection
                     /////////////////////////////////////
+                    console.dir(collections);
                     for (let i = 0; i < collections.length; i++) {
                         let col = collections[i];
-                        if (col != "") {
+                        if (col !== "") {
                             graphs.push({
                                 valueAxis: "a1",
                                 type: "line",
@@ -120,7 +124,7 @@ $(function () {
                                 valueField: col,
                                 fillAlphas: 0.6,
                                 balloonText: "[[title]] - [[value]] out of [[total]] total"
-                            })
+                            });
                             hidden_graphs.push({
                                 valueAxis: "a2",
                                 type: "line",

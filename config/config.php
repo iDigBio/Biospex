@@ -42,6 +42,8 @@ return [
     'reconcile_path'   => env('LABEL_RECONCILIATIONS_PATH').'/reconcile.py',
     'nfn_table_prefix' => env('NFN_TABLE_PREFIX', ''),
 
+    'project_chart_series' => resource_path('json/projectChartSeries.json'),
+
     'ocr_post_url'   => env('OCR_POSTURL'),
     'ocr_get_url'    => env('OCR_GETURL'),
     'ocr_delete_url' => env('OCR_DELETEURL'),

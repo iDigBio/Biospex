@@ -59,4 +59,12 @@ interface Project extends RepositoryInterface
      */
     public function getProjectForDelete($projectId);
 
+    /**
+     * Get data for amchart job.
+     *
+     * @param $projectId
+     * @return mixed
+     */
+    public function getProjectForAmChartJob($projectId);
+
 }

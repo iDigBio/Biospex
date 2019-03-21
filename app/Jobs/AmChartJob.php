@@ -2,20 +2,19 @@
 
 namespace App\Jobs;
 
-use Illuminate\Support\Collection;
-use Carbon\Carbon;
-use App\Repositories\Interfaces\PanoptesTranscription;
-use App\Repositories\Interfaces\Project;
-use App\Repositories\Interfaces\AmChart;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use App\Repositories\Interfaces\PanoptesTranscription;
+use App\Repositories\Interfaces\Project;
+use App\Repositories\Interfaces\AmChart;
+use Carbon\CarbonPeriod;
+use File;
 
 class AmChartJob implements ShouldQueue
 {
-
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
@@ -28,24 +27,12 @@ class AmChartJob implements ShouldQueue
     /**
      * @var PanoptesTranscription
      */
-    protected $transcription;
-
-    /**
-     * @var int
-     */
-    protected $projectId;
-
-    /**
-     * Array to hold all transcription results.
-     *
-     * @var array
-     */
-    protected $transcriptions;
+    protected $transcriptionContract;
 
     /**
      * @var
      */
-    protected $defaultDays;
+    protected $projectId;
 
     /**
      * @var
@@ -55,10 +42,26 @@ class AmChartJob implements ShouldQueue
     /**
      * @var
      */
-    protected $latest_date;
+    protected $finished_date;
+
+    /**
+     * @var mixed
+     */
+    protected $amChartData;
+
+    /**
+     * @var mixed
+     */
+    protected $projectChartSeries;
+
+    /**
+     * @var mixed
+     */
+    protected $projectChartSeriesFile;
 
     /**
      * AmChartJob constructor.
+     *
      * @param int $projectId
      */
     public function __construct($projectId)
@@ -69,84 +72,58 @@ class AmChartJob implements ShouldQueue
 
     /**
      * @param Project $projectContract
-     * @param AmChart $chart
-     * @param PanoptesTranscription $transcription
+     * @param AmChart $amChartContract
+     * @param PanoptesTranscription $transcriptionContract
      */
     public function handle(
         Project $projectContract,
-        AmChart $chart,
-        PanoptesTranscription $transcription
-    )
-    {
-        $this->transcriptions = [];
-        $this->transcription = $transcription;
+        AmChart $amChartContract,
+        PanoptesTranscription $transcriptionContract
+    ) {
 
-        $relations = ['expeditions.stat', 'expeditions.nfnWorkflow'];
-        $project = $projectContract->findWith($this->projectId, $relations);
-        $earliest_date = $this->transcription->getMinFinishedAtDateByProjectId($project->id);
-        $finished_date = $this->transcription->getMaxFinishedAtDateByProjectId($project->id);
+        $this->earliest_date = $transcriptionContract->getMinFinishedAtDateByProjectId($this->projectId);
+        $this->finished_date = $transcriptionContract->getMaxFinishedAtDateByProjectId($this->projectId);
 
-        if (null === $earliest_date || null === $finished_date)
-        {
-            $this->delete();
-
+        if (null === $this->earliest_date || null === $this->finished_date) {
             return;
         }
 
-        $this->setDaysAndDates($earliest_date, $finished_date);
+        $this->resetTemplates();
 
-        $this->processProjectExpeditions($project->expeditions);
+        $project = $projectContract->getProjectForAmChartJob($this->projectId);
 
-        uasort($this->transcriptions, [$this, 'sort']);
+        $this->setDateArray();
 
-        $content = array_values($this->transcriptions);
+        $project->expeditions->each(function ($expedition) use ($transcriptionContract) {
+            $this->processExpedition($expedition, $transcriptionContract);
+        });
 
-        $chart->updateOrCreate(['project_id' => $this->projectId], ['data' => json_encode($content)]);
+        $this->amChartData = array_values($this->amChartData);
+
+        $data = ['series' => $this->projectChartSeries, 'data' => $this->amChartData];
+        $amChartContract->updateOrCreate(['project_id' => $project->id], $data);
 
         $this->delete();
     }
 
     /**
-     * Set the days array using earliest and latest finished_at date.
-     *
-     * @param $earliest_date
-     * @param $latest_date
+     * Reset the templates for each project.
      */
-    protected function setDaysAndDates($earliest_date, $latest_date)
-    {
-        $this->earliest_date = $earliest_date;
-        $this->latest_date = $latest_date;
-
-        $total = $this->calculateDay($earliest_date, $latest_date);
-
-        $i = 0;
-        while ($i <= $total) {
-            $this->defaultDays[$i] = '';
-            $i++;
-        }
+    protected function resetTemplates() {
+        $this->amChartData = [];
+        $this->projectChartSeries = [];
+        $this->projectChartSeriesFile = json_decode(File::get(config('config.project_chart_series')), true);
     }
 
     /**
-     * Process a project's expeditions.
-     *
-     * @param array $expeditions
+     * Set the date array using earliest and latest finished_at date.
      */
-    protected function processProjectExpeditions($expeditions)
+    protected function setDateArray()
     {
-        foreach ($expeditions as $expedition)
-        {
-            if ( ! isset($expedition->stat->transcriptions_completed)
-                || $expedition->stat->transcriptions_completed === 0
-                || null !== $expedition->deleted_at)
-            {
-                continue;
-            }
+        $period = CarbonPeriod::create($this->earliest_date, 'P1D', $this->finished_date);
 
-            $resultSet = $this->processExpedition($expedition);
-
-            $this->aggregateResultCount($resultSet);
-
-            $this->setTranscriptions($resultSet);
+        foreach ($period as $date) {
+            $this->amChartData[$date->format('Y-m-d')] = ['date' => $date->format('Y-m-d')];
         }
     }
 
@@ -154,134 +131,78 @@ class AmChartJob implements ShouldQueue
      * Process each expedition's transcriptions.
      *
      * @param $expedition
-     * @return mixed
+     * @param $transcriptionContract PanoptesTranscription
      */
-    public function processExpedition($expedition)
+    public function processExpedition($expedition, $transcriptionContract)
     {
-        $transcriptCountByDate = $this->transcription
-            ->getTranscriptionCountPerDate($expedition->nfnWorkflow->workflow);
 
-        $daysArray = $this->processTranscriptionDateCounts($expedition, $transcriptCountByDate);
+        $transcriptCountByDate = $transcriptionContract
+            ->getTranscriptionCountPerDate($expedition->nfnWorkflow->workflow)
+            ->pluck('count', '_id');
 
-        return $this->buildMissingData($expedition, $daysArray);
+
+        $dates = $this->setExpeditionDateArray($transcriptCountByDate);
+
+        $this->setExpeditionDateAggregate($dates);
+
+
+        $this->buildExpeditionData($expedition->id, $dates);
+
+        $this->buildExpeditionSeries($expedition);
+
     }
 
     /**
-     * Process transcript data.
+     * Set date span and count for Expedition.
      *
-     * @param $expedition
-     * @param Collection $transcriptCountByDate
+     * @param $transcriptCountByDate
      * @return array
      */
-    protected function processTranscriptionDateCounts($expedition, $transcriptCountByDate)
+    public function setExpeditionDateArray($transcriptCountByDate)
     {
-        $daysArray = $this->defaultDays;
+        $dates = collect(array_flip(array_keys($this->amChartData)))->map(function($val, $date) use($transcriptCountByDate) {
+            return isset($transcriptCountByDate[$date]) ? $transcriptCountByDate[$date] : 0;
+        })->toArray();
 
-        foreach ($transcriptCountByDate as $date)
-        {
-            $day = $this->calculateDay($this->earliest_date, $date['_id']);
-            $daysArray[$day] = $this->buildResultSet($expedition->id, $expedition->title, $day, $date['count']);
-        }
-
-        return $daysArray;
+        return $dates;
     }
 
     /**
-     * Build missing data for days in expedition.
+     * Aggregate the count totals across dates.
      *
-     * @param $expedition
-     * @param array $daysArray
-     * @return mixed
+     * @param $dates
      */
-    protected function buildMissingData($expedition, $daysArray)
-    {
-        foreach ($daysArray as $day => &$data)
-        {
-            if ($data === '')
-            {
-                $data = $this->buildResultSet($expedition->id, $expedition->title, $day);
-            }
-        }
-
-        unset($data);
-
-        return $daysArray;
-    }
-
-    /**
-     * Fix count on expeditions by using running total.
-     *
-     * @param $resultSet
-     */
-    public function aggregateResultCount(&$resultSet)
+    public function setExpeditionDateAggregate(&$dates)
     {
         $total = 0;
-        foreach ($resultSet as $key => $value)
-        {
-            $total += $resultSet[$key]['count'];
-            $resultSet[$key]['count'] = $total;
-        }
-    }
-
-    public function imitateMerge(&$array1, &$array2) {
-        foreach($array2 as $i) {
-            $array1[] = $i;
+        foreach ($dates as $date => $count) {
+            $total = $total === 0 ? $count : $total + $count;
+            $dates[$date] = $total;
         }
     }
 
     /**
-     * Add to transcriptions array using designated keys.
+     * Build data array and include missing dates for expedition.
      *
-     * @param $results
+     * @param $id
+     * @param array $dates
      */
-    public function setTranscriptions($results)
+    public function buildExpeditionData($id, $dates)
     {
-        $this->transcriptions = array_merge($this->transcriptions, $results);
+        foreach($this->amChartData as $date => $array) {
+            $this->amChartData[$date] = array_merge($array, ['expedition'.$id => $dates[$date]]);
+        }
     }
 
     /**
-     * Build result set into proper format for am chart.
+     * Build expedition series and add to chart series.
      *
-     * @param $expeditionId
-     * @param $title
-     * @param $day
-     * @param int $total
-     * @return array
+     * @param $expedition
      */
-    protected function buildResultSet($expeditionId, $title, $day, $total = 0)
+    public function buildExpeditionSeries($expedition)
     {
-        return [
-            'expedition' => (int) $expeditionId,
-            'collection' => $title,
-            'count'      => $total,
-            'day'        => (int) $day
-        ];
-    }
-
-    /**
-     * Calculate the number of days.
-     *
-     * @param $startDate
-     * @param $finishedDate
-     * @return string
-     */
-    public function calculateDay($startDate, $finishedDate)
-    {
-        $startTime = Carbon::createFromFormat('Y-m-d', $startDate)->startOfDay();
-        $finishTime = Carbon::createFromFormat('Y-m-d', $finishedDate)->startOfDay();
-
-        return $finishTime->diff($startTime)->format('%a');
-    }
-
-    /**
-     * Sort by day and expedition.
-     *
-     * @param $a
-     * @param $b
-     * @return mixed
-     */
-    public function sort($a, $b)
-    {
-        return ($a['day'] - $b['day']) ?: $a['expedition'] - $b['expedition'];
+        $this->projectChartSeriesFile['dataFields']['valueY'] = 'expedition'.$expedition->id;
+        $this->projectChartSeriesFile['name'] = $expedition->title;
+        $this->projectChartSeries[] = $this->projectChartSeriesFile;
     }
 }
