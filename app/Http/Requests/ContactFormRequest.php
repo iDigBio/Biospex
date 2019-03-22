@@ -23,7 +23,8 @@ class ContactFormRequest extends Request
             'first_name'   => 'required|alpha',
             'last_name'    => 'required|alpha',
             'email'        => 'required|min:4|max:32|email',
-            'message'      => 'required'
+            'message'      => 'required',
+            'g-recaptcha-response' => 'required|captcha'
         ];
     }
 }

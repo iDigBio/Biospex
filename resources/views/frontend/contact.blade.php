@@ -58,6 +58,7 @@
                             {{ $errors->first('email') }}
                         </div>
                     </div>
+                    @include('frontend.layouts.partials.recaptcha')
                     <div class="col-xs-12">
                         <div class="form-group">
                             <div class="col-xs-6 col-sm-6 col-md-6">
