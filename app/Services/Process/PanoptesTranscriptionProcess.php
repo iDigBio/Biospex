@@ -6,8 +6,8 @@ use App\Facades\GeneralHelper;
 use App\Repositories\Interfaces\Subject;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\TranscriptionLocation;
-use Illuminate\Validation\Factory as Validation;
 use App\Services\Csv\Csv;
+use Illuminate\Support\Facades\Validator;
 
 class PanoptesTranscriptionProcess
 {
@@ -30,11 +30,6 @@ class PanoptesTranscriptionProcess
      * @var array
      */
     protected $csvError = [];
-
-    /**
-     * @var Validation
-     */
-    protected $factory;
 
     /**
      * @var
@@ -63,19 +58,16 @@ class PanoptesTranscriptionProcess
      * @param Subject $subjectContract
      * @param PanoptesTranscription $panoptesTranscriptionContract
      * @param TranscriptionLocation $transcriptionLocationContract
-     * @param Validation $factory
      * @param Csv $csv
      */
     public function __construct(
         Subject $subjectContract,
         PanoptesTranscription $panoptesTranscriptionContract,
         TranscriptionLocation $transcriptionLocationContract,
-        Validation $factory,
         Csv $csv
     ) {
         $this->subjectContract = $subjectContract;
         $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
-        $this->factory = $factory;
         $this->csv = $csv;
         $this->dwcLocalityFields = $fields = config('config.dwcLocalityFields');
         $this->transcriptionLocationContract = $transcriptionLocationContract;
@@ -259,10 +251,9 @@ class PanoptesTranscriptionProcess
      */
     public function validateTranscription($row)
     {
-
-        $rules = ['classification_id' => 'unique_with:panoptes_transcriptions,classification_id'];
+        $rules = ['classification_id' => 'unique:mongodb.panoptes_transcriptions,classification_id'];
         $values = ['classification_id' => $row['classification_id']];
-        $validator = $this->factory->make($values, $rules);
+        $validator = Validator::make($values, $rules);
         $validator->getPresenceVerifier()->setConnection('mongodb');
 
         // returns true if failed.
