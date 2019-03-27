@@ -43,17 +43,6 @@ class LoginController extends Controller
     }
 
     /**
-     * Override credentials to check active status.
-     *
-     * @param Request $request
-     * @return array
-     */
-    protected function credentials(Request $request)
-    {
-        return array_merge($request->only($this->username(), 'password'), ['activated' => 1]);
-    }
-
-    /**
      * Override AuthenticatesUsers
      * Validate the user login request.
      *

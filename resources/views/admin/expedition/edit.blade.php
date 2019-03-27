@@ -63,6 +63,23 @@
                                    value="{{ old('keywords', $expedition->keywords) }}" required>
                             <span class="invalid-feedback">{{ $errors->first('keywords') }}</span>
                         </div>
+                        <div class="form-row mt-4">
+                            <div class="form-group col-sm-6 mt-4">
+                                <div class="custom-file">
+                                    <label for="logo" class="custom-file-label">{{ __('Logo') }}:</label>
+                                    <input type="file"
+                                           class="form-control custom-file-input {{ ($errors->has('logo')) ? 'is-invalid' : '' }}"
+                                           name="logo" id="logo"
+                                           accept="image/png, image/jpg">
+                                    <span class="invalid-feedback">{{ $errors->first('logo') }}</span>
+                                </div>
+                            </div>
+                            <input type="hidden" name="current_logo" value="{{ $expedition->logo_file_name }}">
+                            <div class="form-group col-sm-6">
+                                <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
+                                     src="{{ $expedition->present()->logo_url }}"/>
+                            </div>
+                        </div>
 
                         @if(in_array($expedition->project->workflow_id, Config::get('config.nfnWorkflows'), false))
                             <div class="form-group">

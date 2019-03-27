@@ -72,10 +72,10 @@ class DwcFileImportJob implements ShouldQueue
             $dupsCsv = Storage::path('reports/'. md5($this->import->id) . 'dup.csv');
             $rejCsv = Storage::path('reports/'. md5($this->import->id) . 'rej.csv');
 
-            $duplicates = GeneralHelper::createCsv($dwcProcess->getDuplicates(), $dupsCsv);
-            $rejects = GeneralHelper::createCsv($dwcProcess->getRejectedMedia(), $rejCsv);
+            GeneralHelper::createCsv($dwcProcess->getDuplicates(), $dupsCsv);
+            GeneralHelper::createCsv($dwcProcess->getRejectedMedia(), $rejCsv);
 
-            $project->group->owner->notify(new ImportComplete($project->title, $duplicates, $rejects));
+            $project->group->owner->notify(new ImportComplete($project->title, $dupsCsv, $rejCsv));
 
             if ($project->workflow->actors->contains('title', 'OCR') && $dwcProcess->getSubjectCount() > 0)
             {

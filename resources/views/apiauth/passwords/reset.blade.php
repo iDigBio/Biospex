@@ -1,62 +1,59 @@
-@extends('front.api.default')
+@extends('front.layout.default')
 
 {{-- Web site Title --}}
 @section('title')
     @parent
-    @lang('pages.password_reset')
+    {{ __('Reset API Password') }}
 @stop
 
+{{-- Content --}}
+@section('header')
+    <header style="background-image: url(/storage/images/page-banners/banner-field.jpg);">
+        <nav class="header-admin navbar navbar-expand-md box-shadow">
+            <a href="/"><img src="/storage/images/biospex_logo.svg" alt="BIOSPEX"
+                             class="my-0 mr-md-auto top-logo-admin font-weight-normal"/></a>
+            @include('common.nav')
+        </nav>
+    </header>
+@endsection
+
 @section('content')
-    <div class="row top30">
-        <div class="col-md-6 col-md-offset-3">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{{ trans('pages.password_reset') }}</h3>
-                </div>
-                <div class="panel-body">
-                    {!! Form::open([
-                    'route' => 'api.password.post',
-                    'method' => 'post',
-                    'class' => 'form-horizontal',
-                    'role' => 'form'
-                    ]) !!}
-                    {!! Form::hidden('token', $token) !!}
-                    <div class="col-md-12">
-                        <div class="form-group {{ ($errors->has('email')) ? 'has-error' : '' }}">
-                            <div class="input-group">
-                                <span class="input-group-addon"><i class="fa fa-envelope fa-lg"></i></span>
-                                {!! Form::email('email', '', ['id' => 'email', 'class' => 'form-control', 'placeholder' => 'Email address']) !!}
-                            </div>
-                            {{ ($errors->has('email') ?  $errors->first('email') : '') }}
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <div class="input-group {{ ($errors->has('password')) ? 'has-error' : '' }}">
-                                <span class="input-group-addon"><i class="fa fa-lock fa-lg"></i></span>
-                                {!! Form::password('password', ['id' => 'password', 'class' => 'form-control', 'placeholder' => trans('pages.password')]) !!}
-                            </div>
-                            {{ $errors->first('password') }}
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <div class="input-group {{ ($errors->has('password_confirmation')) ? 'has-error' : '' }}">
-                                <span class="input-group-addon"><i class="fa fa-lock fa-lg"></i></span>
-                                {!! Form::password('password_confirmation', ['class' => 'form-control', 'id' =>'password_confirmation', 'placeholder' => trans('pages.password_confirmation')]) !!}
-                            </div>
-                            {{ $errors->first('password_confirmation') }}
-                        </div>
+    <h2 class="text-center pt-4">{{ __('Reset Biospex API Password') }}</h2>
+    <hr class="header mx-auto" style="width:300px;">
+    <div class="col-12 col-md-10 offset-md-1">
+        <div class="card white box-shadow py-5 my-5 p-sm-5">
+            <div class="col-6 mx-auto">
+                <form action="{{ route('api.password.request') }}" method="post" role="form" class="form-horizontal">
+                    {!! csrf_field() !!}
+                    <input type="hidden" name="token" value="{{ $token }}">
+                    <div class="form-group">
+                        <label for="email" class="col-form-label required">{{ __('Email') }}:</label>
+                        <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"
+                               id="email" name="email"
+                               value="{{ old('email') }}" required>
+                        <span class="invalid-feedback">{{ $errors->first('email') }}</span>
                     </div>
                     <div class="form-group">
-                        <div class="col-md-6 col-md-offset-3">
-                            {!! Form::submit(trans('pages.password_reset'), array('class' => 'btn btn-primary btn-block')) !!}
-                        </div>
+                        <label for="password" class="col-form-label required">{{ __('Password') }}:</label>
+                        <input type="password" class="form-control {{ ($errors->has('password')) ? 'is-invalid' : '' }}"
+                               id="password" name="password"
+                               value="{{ old('password') }}" required>
+                        <span class="invalid-feedback">{{ $errors->first('password') }}</span>
                     </div>
-                    {!! Form::close() !!}
-                    <div class="col-md-6 col-md-offset-3 top15 text-center">
-                        {!! link_to_route('api.get.login', trans('pages.back_to_login')) !!}
+                    <div class="form-group">
+                        <label for="password_confirmation" class="col-form-label required">{{ __('Password Confirmation') }}:</label>
+                        <input type="password" class="form-control {{ ($errors->has('password_confirmation')) ? 'is-invalid' : '' }}"
+                               id="password_confirmation" name="password_confirmation"
+                               value="" required>
+                        <span class="invalid-feedback">{{ $errors->first('password_confirmation') }}</span>
                     </div>
+                    @include('common.recaptcha')
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-primary pl-4 pr-4">{{ __('SUBMIT') }}</button>
+                    </div>
+                </form>
+                <div class="mt-4 text-center">
+                    <a href="{{ route('api.get.login') }}">{{ __('Back to Login') }}</a>
                 </div>
             </div>
         </div>

@@ -110,7 +110,7 @@ return [
     */
 
     'markdown' => [
-        'theme' => 'biospex',
+        'theme' => 'default',
 
         'paths' => [
             resource_path('views/vendor/mail'),

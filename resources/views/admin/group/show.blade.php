@@ -66,6 +66,7 @@
             </div>
         </div>
     </div>
+    @include('admin.partials.invite-modal')
 @endsection
 @section('custom-script')
     <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>

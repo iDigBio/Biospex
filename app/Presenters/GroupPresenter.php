@@ -86,9 +86,12 @@ class GroupPresenter extends Presenter
      */
     public function groupInviteIcon()
     {
-        return '<a href="'.route('admin.invites.index', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('Invite Users').'"><i class="fas fa-user-plus"></i></a>';
+        $route = route('admin.invites.index', [$this->model->id]);
+
+        return '<a href="#" class="preventDefault" data-toggle="modal" data-remote="'.$route.'" 
+                    data-target="#invite-modal" 
+                    data-hover="tooltip" title="'.__('Invite Users to Group').'">
+                    <i class="fas fa-user-plus"></i></a>';
     }
 
     /**
@@ -98,8 +101,11 @@ class GroupPresenter extends Presenter
      */
     public function groupInviteIconLrg()
     {
-        return '<a href="'.route('admin.invites.index', [
-                $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('Invite Users').'"><i class="fas fa-user-plus fa-2x"></i></a>';
+        $route = route('admin.invites.index', [$this->model->id]);
+
+        return '<a href="#" class="preventDefault" data-toggle="modal" data-remote="'.$route.'" 
+                    data-target="#invite-modal" 
+                    data-hover="tooltip" title="'.__('Invite Users to Group').'">
+                    <i class="fas fa-user-plus fa-2x"></i></a>';
     }
 }

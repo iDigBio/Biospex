@@ -20,6 +20,16 @@ class ExpeditionPresenter extends Presenter
     }
 
     /**
+     * Build link to logo thumb.
+     *
+     * @return string
+     */
+    public function logoFileName()
+    {
+        return isset($this->model->logo_file_name) ? $this->model->logo_file_name : 'card-image-place-holder02.jpg';
+    }
+
+    /**
      * Return show icon.
      *
      * @return string

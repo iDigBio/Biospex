@@ -50,14 +50,12 @@ class InvitesController extends Controller
      */
     public function index($groupId)
     {
-        $group = $this->groupContract->find($groupId);
+        $group = $this->groupContract->findWith($groupId, ['invites']);
 
-        if ( ! $this->checkPermissions('isOwner', $group))
-        {
-            return redirect()->route('admin.groups.show', [$groupId]);
-        }
+        $error = ! $this->checkPermissions('isOwner', $group) ? true : false;
+        $inviteCount = $group->invites->count();
 
-        return view('front.invites.index', compact('group'));
+        return view('admin.partials.invite-modal-body', compact('group', 'inviteCount', 'error'));
     }
 
     /**
@@ -69,16 +67,12 @@ class InvitesController extends Controller
      */
     public function store(InviteFormRequest $request, $groupId)
     {
-        $group = $this->groupContract->find($groupId);
-
-        if ( ! $this->checkPermissions('isOwner', $group))
-        {
-            return redirect()->route('webauth.groups.show', [$groupId]);
-        }
+        $group = $this->groupContract->findWith($groupId, ['invites']);
 
         $this->inviteService->storeInvites($group->id, $request);
 
-        return redirect()->route('webauth.invites.index', [$group->id]);
+        return redirect()->back();
+        //return redirect()->route('admin.groups.show', [$group->id]);
     }
 
     /**
@@ -99,25 +93,5 @@ class InvitesController extends Controller
         $this->inviteService->resendInvite($group, $inviteId);
 
         return redirect()->route('webauth.invites.index', [$group->id]);
-    }
-
-    /**
-     * Delete invite
-     * @param $groupId
-     * @param $inviteId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function delete($groupId, $inviteId)
-    {
-        $group = $this->groupContract->find($groupId);
-
-        if ( ! $this->checkPermissions('isOwner', $group))
-        {
-            return redirect()->route('webauth.groups.show', [$groupId]);
-        }
-
-        $this->inviteService->deleteInvite($inviteId);
-
-        return redirect()->route('webauth.invites.index', [$groupId]);
     }
 }

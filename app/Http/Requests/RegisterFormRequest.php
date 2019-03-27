@@ -21,7 +21,7 @@ class RegisterFormRequest extends Request
      */
     public function rules()
     {
-        $table = $this->apiuser ? 'api_users' : 'users';
+        $table = (bool) $this->apiuser ? 'api_users' : 'users';
 
         return [
             'first_name'            => 'required',

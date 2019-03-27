@@ -167,10 +167,8 @@ return [
         /*
          * Package Service Providers...
          */
-        Collective\Html\HtmlServiceProvider::class,
         Felixkiss\UniqueWithValidator\ServiceProvider::class,
         Jenssegers\Mongodb\MongodbServiceProvider::class,
-        Msurguy\Honeypot\HoneypotServiceProvider::class,
         Spiritix\LadaCache\LadaCacheServiceProvider::class,
 
         /*
@@ -234,11 +232,6 @@ return [
         'View'         => Illuminate\Support\Facades\View::class,
 
         #### Packages
-        'Form'         => Collective\Html\FormFacade::class,
-        'Input'        => Illuminate\Support\Facades\Input::class,
-        'Html'         => Collective\Html\HtmlFacade::class,
-        'Honeypot'     => Msurguy\Honeypot\HoneypotFacade::class,
-
         'DateHelper'    => \App\Facades\DateHelper::class,
         'Flash'         => \App\Facades\FlashHelper::class,
         'GeneralHelper' => \App\Facades\GeneralHelper::class,

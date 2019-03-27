@@ -11,8 +11,7 @@
     <title>
         {{ _('BIOSPEX') }} | @yield('title')
     </title>
-    <link rel="shortcut icon" href="{{ asset('/storage/images/favicon.ico') }}" type="image/x-icon">
-    <link rel="icon" href="{{ asset('/storage/images/favicon.ico') }}" type="image/x-icon">
+    @include('common.favicon')
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:700|Work+Sans">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
           integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
@@ -24,6 +23,9 @@
 @yield('header')
 <div class="container mb-4">
     @yield('content')
+    @if(Auth::check())
+        @include('common.process-modal')
+    @endif
 </div>
 <!--
 sub footer -->
@@ -34,14 +36,14 @@ sub footer -->
             <!-- Grid column -->
             <div class="col-md-10 col-md-offset-1 text-center d-inline d-sm-flex align-items-start justify-content-between">
                 <h3>{{ _('Get Connected') }}</h3>
-                <!-- Facebook -->
-                <a class="figure-img"><i class="fab fa-twitter fa-4x"></i></a>
                 <!-- Twitter -->
+                <a class="figure-img"><i class="fab fa-twitter fa-4x"></i></a>
+                <!-- Instagram -->
                 <a class="figure-img"><i class="fab fa-instagram fa-4x"></i></a>
-                <!--Linkedin -->
+                <!--Facebook -->
                 <a class="figure-img"><i class="fab fa-facebook fa-4x"></i></a>
-                <!--Instagram-->
-                <a class="figure-img"><i class="fab fa-envelope fa-4x"></i></a>
+                <!--LinkedIn-->
+                <a class="figure-img"><i class="fab fa-linkedin fa-4x"></i></a>
             </div>
             <!-- Grid column -->
         </div>
@@ -101,7 +103,7 @@ sub footer -->
                     <a href="{{ route('front.events.index') }}">{{ __('Events') }}</a>
                 </p>
                 <p>
-                    <a href="{{ config('config.api_url') }}">{{ __('Biospex API') }}</a>
+                    <a href="{{ route('api.get.index') }}">{{ __('Biospex API') }}</a>
                 </p>
             </div>
             <!-- Grid column -->

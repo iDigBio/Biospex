@@ -119,41 +119,6 @@ $(function() {
         return false;
     });
 
-    /*
-    $('a.polling').on('click', function (event) {
-        $('#ocrHtml').html('Retrieving data');
-        $('#exportHtml').html('Retrieving data');
-        $.get('/poll');
-    });
-    */
-
-    Echo.channel(Laravel.ocrChannel)
-            .listen('PollOcrEvent', (e) => {
-                let ocrHtml = polling_data(e.data);
-                $('#ocr-html').html(ocrHtml);
-            });
-
-        Echo.channel(Laravel.exportChannel)
-            .listen('PollExportEvent', (e) => {
-                let exportHtml = polling_data(e.data);
-                $('#export-html').html(exportHtml);
-            });
-    /*
-    if ($('#process-modal').length) {
-        Echo.channel(Laravel.ocrChannel)
-            .listen('PollOcrEvent', (e) => {
-                let ocrHtml = polling_data(e.data);
-                $('#ocr-html').html(ocrHtml);
-            });
-
-        Echo.channel(Laravel.exportChannel)
-            .listen('PollExportEvent', (e) => {
-                let exportHtml = polling_data(e.data);
-                $('#export-html').html(exportHtml);
-            });
-    }
-    */
-
     $('[data-confirm=confirmation]').on('click', function (e) {
         let url = $(this).is("[data-href]") ? $(this).data("href") : $(this).attr('href');
         let method = $(this).data('method');
@@ -196,6 +161,16 @@ $(function() {
     });
 
     $('#import-modal').on('show.bs.modal', function (e) {
+        let $button = $(e.relatedTarget);
+        let $modal = $(this).find('.modal-body');
+        $modal.html('<div class="loader mx-auto"></div>');
+        $modal.load($button.data("remote"));
+
+    }).on('hidden.bs.modal', function () {
+        $(this).find('.modal-body').html('');
+    });
+
+    $('#invite-modal').on('show.bs.modal', function (e) {
         let $button = $(e.relatedTarget);
         let $modal = $(this).find('.modal-body');
         $modal.html('<div class="loader mx-auto"></div>');

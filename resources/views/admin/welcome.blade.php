@@ -54,7 +54,7 @@
         <div class="text-center mb-4 mt-5 mx-auto">
             <h2 class="col-6 pt-4 mx-auto">{{ __('Have questions?') }}</h2>
             <p>Please read the FAQ section and if you still have questions, contact us.</p>
-            <a href="{{ route('contact.get.index') }}" class="btn btn-primary mx-auto">{{ __('CONTACT US') }}</a>
+            <a href="{{ route('front.contact.index') }}" class="btn btn-primary mx-auto">{{ __('CONTACT US') }}</a>
         </div>
     </div>
 @endsection

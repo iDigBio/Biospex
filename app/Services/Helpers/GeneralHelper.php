@@ -424,7 +424,19 @@ class GeneralHelper
      */
     public function projectBannerFileUrl($name = null)
     {
-        return $name === null ? \Storage::url('images/habitat-banners/banner-trees.jpg') : \Storage::url('images/habitat-banners/'.$name);
+        return $name === null ?
+            \Storage::url('images/habitat-banners/banner-trees.jpg') :
+            \Storage::url('images/habitat-banners/'.$name);
+    }
+
+    /**
+     * Return default logo for expeditions.
+     *
+     * @return mixed
+     */
+    public function expeditionDefaultLogo()
+    {
+        return \Storage::url('images/placeholders/card-image-place-holder02.jpg');
     }
 
     /**

@@ -260,7 +260,7 @@ class PanoptesTranscriptionProcess
     public function validateTranscription($row)
     {
 
-        $rules = ['classification_id' => 'unique_with:panoptes_transcriptions,classification_id'];
+        $rules = ['classification_id' => 'unique:mongodb.panoptes_transcriptions,classification_id'];
         $values = ['classification_id' => $row['classification_id']];
         $validator = $this->factory->make($values, $rules);
         $validator->getPresenceVerifier()->setConnection('mongodb');

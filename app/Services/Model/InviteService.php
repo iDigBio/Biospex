@@ -6,8 +6,9 @@ use App\Notifications\GroupInvite;
 use App\Repositories\Interfaces\Group;
 use App\Repositories\Interfaces\Invite;
 use App\Repositories\Interfaces\User;
-use App\Facades\Flash;
+use App\Facades\FlashHelper;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 
 class InviteService
 {
@@ -55,11 +56,10 @@ class InviteService
     {
         try {
             $group = $this->groupContract->find($groupId);
-            $existing = $this->getExistingInvites($group->id);
 
             $requestInvites = collect($request->get('invites'))->reject(function($invite){
                 return empty($invite['email']);
-            })->pluck('email')->diff($existing->pluck('email'));
+            })->pluck('email')->diff($group->invites->pluck('email'));
 
             $newInvites = $requestInvites->reject(function ($invite) use($group) {
                 return $this->checkExistingUser($invite, $group);
@@ -68,77 +68,18 @@ class InviteService
             });
 
             Notification::send($newInvites, new GroupInvite($group));
+            Notification::send($group->invites, new GroupInvite($group));
 
-            Flash::success(trans('messages.send_invite_success', ['group' => $group->title]));
-
-            return true;
-        }
-        catch (\Exception $e)
-        {
-            Flash::error(trans('messages.send_invite_error', ['group' => $group->title]));
-
-            return false;
-        }
-    }
-
-    /**
-     * Resend an invite.
-     *
-     * @param $group
-     * @param $inviteId
-     * @return bool
-     */
-    public function resendInvite($group, $inviteId)
-    {
-        try {
-            $invite = $this->inviteContract->find($inviteId);
-
-            $invite->notify(new GroupInvite($group));
-
-            Flash::success(trans('messages.send_invite_success', ['group' => $group->title]));
+            FlashHelper::success(trans('messages.send_invite_success', ['group' => $group->title]));
 
             return true;
         }
         catch (\Exception $e)
         {
-            Flash::error( trans('messages.send_invite_error', ['group' => $group->title]));
+            FlashHelper::error(trans('messages.send_invite_error', ['group' => $group->title]));
 
             return false;
         }
-    }
-
-    /**
-     * Delete invite.
-     *
-     * @param $inviteId
-     * @return bool
-     */
-    public function deleteInvite($inviteId)
-    {
-        try{
-            $this->inviteContract->delete($inviteId);
-
-            Flash::success(trans('messages.record_deleted'));
-
-            return true;
-        }
-        catch(\Exception $e)
-        {
-            Flash::error(trans('messages.record_delete_error'));
-
-            return false;
-        }
-    }
-
-    /**
-     * Get any existing invites for the group.
-     *
-     * @param $groupId
-     * @return static
-     */
-    private function getExistingInvites($groupId)
-    {
-        return $this->inviteContract->getExistingInvitesByGroupId($groupId);
     }
 
     /**
@@ -176,11 +117,10 @@ class InviteService
      */
     private function createNewInvite($email, $group)
     {
-        $code = str_random(10);
         $inviteData = [
             'group_id' => $group->id,
             'email'    => trim($email),
-            'code'     => $code
+            'code'     => Str::random(10)
         ];
 
         return $this->inviteContract->create($inviteData);

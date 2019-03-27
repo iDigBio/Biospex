@@ -1,5 +1,5 @@
 <!-- Modal -->
-<div class="modal left fade" id="process-modal" tabindex="-1" role="dialog" aria-labelledby="process-modal-label"
+<div class="modal fade" id="process-modal" tabindex="-1" role="dialog" aria-labelledby="process-modal-label"
      aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
@@ -12,8 +12,8 @@
                     </button>
                 </div>
             </div>
-
             <div class="modal-body">
+                <p class="text-center color-action small">{{ __('Updated every 5 minutes') }}</p>
                 <div class="m-4">
                     <h4>{{ __('Ocr Processes') }}</h4>
                     <div id="ocr-html">{{ __('No processes running at this time.') }}</div>

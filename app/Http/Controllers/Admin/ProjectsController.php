@@ -323,7 +323,7 @@ class ProjectsController extends Controller
 
         $transcribers = CountHelper::getUserTranscriptionCount($projectId)->sortByDesc('transcriptionCount');
 
-        $transcriptions = \Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 720, function () use
+        $transcriptions = \Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function () use
         (
             $transcribers
         ) {

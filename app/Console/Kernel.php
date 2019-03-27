@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel
             ->timezone('America/New_York')
             ->dailyAt('06:30');
 
-        if ($this->app->environment() === 'prod') {
+        if ($this->app->environment('prod')) {
             // Create Notes From Nature csv files
             $schedule->command('nfn:csvcreate')
                 ->timezone('America/New_York')

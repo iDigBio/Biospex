@@ -58,13 +58,25 @@ class RouteServiceProvider extends ServiceProvider
                     $this->require_files('routes/front', $router);
                 });
 
-                $router->prefix('admin')->middleware('auth')->namespace('Admin')->group(function ($router) {
-                        $this->require_files('routes/admin', $router);
-                    });
+                $router->namespace('Auth')->group(function($router){
+                    $this->require_files('routes/front/appauth', $router);
+                    //base_path('routes/front/appauth/auth.php');
+                });
 
-                $router->namespace('Auth')->group(base_path('routes/front/appauth/auth.php'));
-                $router->namespace('ApiAuth')->prefix('api')->group(base_path('routes/front/apiauth/auth.php'));
+                $router->namespace('Admin')->prefix('admin')->middleware(['auth', 'verified'])->group(function ($router) {
+                    $this->require_files('routes/admin', $router);
+                });
+
+                $router->prefix('api')->group(function ($router){
+                    $router->namespace('ApiAuth')->group(function ($router) {
+                        $this->require_files('routes/front/apiauth', $router);
+                    });
+                    $router->namespace('Front')->middleware(['auth:apiuser', 'verified:api.verification.notice'])->group(function ($router) {
+                        $router->get('dashboard')->uses('ApiController@dashboard')->name('api.get.dashboard');
+                    });
+                });
             });
+
     }
 
     /**

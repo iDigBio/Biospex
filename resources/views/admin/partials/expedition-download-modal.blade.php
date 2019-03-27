@@ -13,11 +13,11 @@
                 </div>
             </div>
             <div class="text-center color-action" id="preparing-file" title="Preparing download" style="display: none;">
-                We are preparing your download, please wait...
+                {{ __('We are preparing your download, please wait...') }}
                 <div class="ui-progressbar-value ui-corner-left ui-corner-right" style="width: 100%; height:22px; margin-top: 20px;"></div>
             </div>
             <div class="text-center color-action" id="error-file" title="Error" style="display: none;">
-                There was a problem generating your file, please try again.
+                {{ __('There was a problem generating your file, please try again.') }}
             </div>
 
             <div class="modal-body"></div>

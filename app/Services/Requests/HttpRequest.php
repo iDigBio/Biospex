@@ -65,7 +65,7 @@ class HttpRequest
     protected function setAccessToken($token)
     {
         $accessToken = $this->provider->getAccessToken('client_credentials');
-        Cache::put($token, $accessToken, 120);
+        Cache::put($token, $accessToken, 720);
     }
 
     /**

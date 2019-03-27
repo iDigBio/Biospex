@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\RegistersUsers;
+use App\Repositories\Interfaces\Group;
+use App\Repositories\Interfaces\Invite;
 use App\Http\Requests\RegisterFormRequest;
-use App\Http\Requests\ResendActivationFormRequest;
-use App\Services\RegisterService;
+use App\Repositories\Interfaces\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Foundation\Auth\RegistersUsers;
+use Hash;
 
 class RegisterController extends Controller
 {
@@ -28,7 +32,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/projects';
+    protected $redirectTo = '/email/verify';
 
     /**
      * @var string
@@ -36,75 +40,77 @@ class RegisterController extends Controller
     public $loginView = 'auth.login';
 
     /**
-     * Create a new controller instance.
+     * @var \App\Repositories\Interfaces\Invite
      */
-    public function __construct()
+    private $inviteContract;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @param \App\Repositories\Interfaces\Invite $inviteContract
+     */
+    public function __construct(Invite $inviteContract)
     {
         $this->middleware('guest');
+        $this->inviteContract = $inviteContract;
     }
 
     /**
      * Show registration form. Overrides trait so Invite code can be checked.
      *
-     * @param RegisterService $registerService
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function showRegistrationForm(RegisterService $registerService)
+    public function showRegistrationForm()
     {
         if ( ! config('config.registration')) {
             return redirect()->route('home')->with('error', trans('messages.inactive_reg'));
         }
 
-        $formVars = $registerService->registrationFormInvite();
+        $code = request('code');
 
-        return view('auth.register', $formVars);
+        $invite = $this->inviteContract->findBy('code', $code);
+
+        if ( ! empty($code) && ! $invite)
+        {
+            FlashHelper::warning( trans('messages.invite_not_found'));
+        }
+
+        $code = $invite->code ?? null;
+        $email = $invite->email ?? null;
+
+        return view('auth.register', compact('code', 'email'));
     }
 
     /**
      * Register the user. Overrides trait so invite is checked.
      *
-     * @param RegisterFormRequest $request
-     * @param RegisterService $service
-     * @return \Illuminate\Http\RedirectResponse
+     * @param \App\Http\Requests\RegisterFormRequest $request
+     * @param \App\Repositories\Interfaces\User $userContract
+     * @param \App\Repositories\Interfaces\Group $groupContract
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function register(RegisterFormRequest $request, RegisterService $service)
+    public function register(RegisterFormRequest $request, User $userContract, Group $groupContract)
     {
-        $registered = $service->registerUser($request);
+        $input = $request->only('email', 'password', 'first_name', 'last_name', 'invite');
+        $input['password'] = Hash::make($input['password']);
+        $user = $userContract->create($input);
 
-        return $registered ? redirect()->route('home') : redirect()->back()->withInput();
-    }
+        if ( ! empty($input['invite']))
+        {
+            $result = $this->inviteContract->findBy('code', $input['invite']);
+            if ($result->email === $user->email)
+            {
+                $group = $groupContract->find($result->group_id);
+                $user->assignGroup($group);
+                $this->inviteContract->delete($result->id);
+            }
+        }
 
-    /**
-     * Attempt to activate the user.
-     *
-     * @param RegisterService $registerService
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function getActivate(RegisterService $registerService)
-    {
-        $route = $registerService->activateUser();
+        event(new Registered($user));
 
-        return redirect()->route($route);
-    }
+        $this->guard()->login($user);
 
-    /**
-     * Show resend activation form.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function showResendActivationForm()
-    {
-        return view('auth.resend');
-    }
-
-    /**
-     * @param ResendActivationFormRequest $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postResendActivation(ResendActivationFormRequest $request, RegisterService $registerService)
-    {
-        $route = $registerService->resendActivation($request);
-
-        return redirect()->route($route);
+        return $this->registered($request, $user)
+            ?: redirect($this->redirectPath());
     }
 }

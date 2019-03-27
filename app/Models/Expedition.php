@@ -41,30 +41,6 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     public static function boot()
     {
         parent::boot();
-
-        static::pivotAttaching(function ($model, $relationName, $pivotIds, $pivotIdsAttributes) {
-            \Log::info('Expedition pivotAttaching' . $relationName . ' : ' . $pivotIds);
-        });
-
-        static::pivotAttached(function ($model, $relationName, $pivotIds, $pivotIdsAttributes) {
-            \Log::info('Expedition pivotAttached' . $relationName . ' : ' . $pivotIds);
-        });
-
-        static::pivotDetaching(function ($model, $relationName, $pivotIds) {
-            \Log::info('Expedition pivotDetaching' . $relationName . ' : ' . $pivotIds);
-        });
-
-        static::pivotDetached(function ($model, $relationName, $pivotIds) {
-            \Log::info('Expedition pivotDetached' . $relationName . ' : ' . $pivotIds);
-        });
-
-        static::pivotUpdating(function ($model, $relationName, $pivotIds, $pivotIdsAttributes) {
-            \Log::info('Expedition pivotUpdating' . $relationName . ' : ' . $pivotIds);
-        });
-
-        static::pivotUpdated(function ($model, $relationName, $pivotIds, $pivotIdsAttributes) {
-            \Log::info('Expedition pivotUpdated' . $relationName . ' : ' . $pivotIds);
-        });
     }
 
     /**

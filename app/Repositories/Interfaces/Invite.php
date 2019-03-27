@@ -8,6 +8,8 @@ interface Invite extends RepositoryInterface
 {
 
     /**
+     * Return existing invites for group.
+     *
      * @param $groupId
      * @return mixed
      */

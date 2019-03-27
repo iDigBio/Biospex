@@ -86,10 +86,7 @@ class BiospexServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        require app_path('Macros/macros.php');
-
         $this->setViewComposers();
-        $this->setObservers();
     }
     
     public function register()
@@ -110,15 +107,6 @@ class BiospexServiceProvider extends ServiceProvider
         view()->composer(
             'admin.partials.process-modal', 'App\Http\ViewComposers\PollComposer'
         );
-    }
-
-    /**
-     * Set observers
-     */
-    public function setObservers()
-    {
-        \App\Models\PanoptesTranscription::observe(PanoptesTranscriptionObserver::class);
-        \App\Models\Subject::observe(SubjectObserver::class);
     }
 
     /**

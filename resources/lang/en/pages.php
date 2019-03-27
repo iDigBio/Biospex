@@ -14,9 +14,8 @@ return [
     'advertiseTitle'                => 'Advertise this project in external websites',
     'advertise_fields'              => 'Fields Included',
     'advertise_title'               => 'PPSR Advertising',
-    'already_have_account'          => 'Already have an account? Login here',
+
     'avatar'                        => 'Avatar',
-    'back_to_login'                 => 'Back to Login',
     'banner'                        => 'Banner',
     'banner_min'                    => 'Min. 1200 x 250',
     'biospex_team'                  => 'BIOSPEX Team',
@@ -125,7 +124,7 @@ return [
     'password'                      => 'Password',
     'password_change'               => 'Change Password',
     'password_confirmation'         => 'Confirm Password',
-    'password_forgot'               => 'Forgot Password',
+
     'password_new'                  => 'New Password',
     'password_new_confirm'          => 'Confirm New Password',
     'password_old'                  => 'Old Password',

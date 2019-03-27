@@ -35,10 +35,6 @@ class AppServiceProvider extends ServiceProvider
         $blade->extend(function ($value) {
             return preg_replace('/(\s*)@(break|continue)(\s*)/', '$1<?php $2; ?>$3', $value);
         });
-
-        Blade::if ('apiuser', function () {
-            return Auth::guard('apiuser')->check();
-        });
     }
 
     /**
@@ -52,10 +48,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(
-            'Illuminate\Contracts\Auth\Registrar',
-            'App\Services\Registrar'
-        );
 
     }
 }

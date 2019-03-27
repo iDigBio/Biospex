@@ -12,7 +12,6 @@ use Illuminate\Validation\Factory as Validation;
 
 class DarwinCoreCsvImport
 {
-
     /**
      * @var Property
      */
@@ -93,12 +92,8 @@ class DarwinCoreCsvImport
     /**
      * @var
      */
-    public $identifierColumn;
-
-    /**
-     * @var
-     */
     public $header;
+
     /**
      * @var MongoDbService
      */
@@ -121,8 +116,7 @@ class DarwinCoreCsvImport
         Validation $factory,
         Csv $csv,
         MongoDbService $mongoDbService
-    )
-    {
+    ) {
         $this->identifiers = config('config.dwcRequiredFields.extension.identifier');
         $this->propertyContract = $propertyContract;
         $this->subjectContract = $subjectContract;
@@ -167,8 +161,7 @@ class DarwinCoreCsvImport
         $this->header = $this->processCsvHeader($this->csv->getHeader(), $type);
 
         $rows = $this->csv->getRecords($this->header);
-        foreach ($rows as $offset => $row)
-        {
+        foreach ($rows as $offset => $row) {
             $this->processRow($row, $type, $loadMedia);
         }
 
@@ -194,9 +187,7 @@ class DarwinCoreCsvImport
             $value = Encoding::toUTF8($value);
         });
 
-        $loadMedia ?
-            $this->prepareSubject($row, $this->metaFields[$type])
-            : $this->saveOccurrence($row);
+        $loadMedia ? $this->prepareSubject($row, $this->metaFields[$type]) : $this->saveOccurrence($row);
     }
 
     /**
@@ -224,14 +215,12 @@ class DarwinCoreCsvImport
      */
     public function testHeaderRowCount($row)
     {
-        if (count($this->header) !== count($row))
-        {
+        if (count($this->header) !== count($row)) {
             throw new \Exception(trans('messages.csv_row_count', [
                 'headers' => count($this->header),
-                'rows'    => count($row)
+                'rows'    => count($row),
             ]));
         }
-
     }
 
     /**
@@ -257,8 +246,7 @@ class DarwinCoreCsvImport
     public function buildHeaderUsingShortNames($row, $type)
     {
         $header = [];
-        foreach ($this->metaFields[$type] as $key => $qualified)
-        {
+        foreach ($this->metaFields[$type] as $key => $qualified) {
             $header = $this->createShortNameForHeader($row, $key, $qualified, $header);
         }
 
@@ -277,8 +265,7 @@ class DarwinCoreCsvImport
      */
     public function createShortNameForHeader($row, $key, $qualified, $header)
     {
-        if ( ! isset($row[$key]))
-        {
+        if (! isset($row[$key])) {
             throw new \Exception(trans('messages.csv_build_header', ['key' => $key, 'qualified' => $qualified]));
         }
 
@@ -297,8 +284,7 @@ class DarwinCoreCsvImport
      */
     public function checkProperty($qualified, $ns_short)
     {
-        if ($qualified === 'id' || $qualified === 'coreid')
-        {
+        if ($qualified === 'id' || $qualified === 'coreid') {
             return $qualified;
         }
 
@@ -341,17 +327,12 @@ class DarwinCoreCsvImport
 
         $checkShort = $this->propertyContract->findBy('short', $short);
 
-        if ($checkQualified !== null)
-        {
+        if ($checkQualified !== null) {
             $short = $checkQualified->short;
-        }
-        elseif ($checkQualified === null && $checkShort !== null)
-        {
+        } elseif ($checkQualified === null && $checkShort !== null) {
             $short .= md5(str_random(4));
             $this->saveProperty($qualified, $short, $namespace);
-        }
-        elseif ($checkQualified === null && $checkShort === null)
-        {
+        } elseif ($checkQualified === null && $checkShort === null) {
             $this->saveProperty($qualified, $short, $namespace);
         }
 
@@ -384,13 +365,11 @@ class DarwinCoreCsvImport
     public function checkForIdentifierColumn($type)
     {
         // Dealing with occurrence so return.
-        if ( ! $this->mediaIsCore && $type === 'core')
-        {
+        if (! $this->mediaIsCore && $type === 'core') {
             return;
         }
 
-        if (collect($this->metaFields[$type])->intersect($this->identifiers)->isEmpty())
-        {
+        if (collect($this->metaFields[$type])->intersect($this->identifiers)->isEmpty()) {
             throw new \Exception(trans('messages.missing_identifier', ['identifiers' => implode(',', $this->identifiers)]));
         }
     }
@@ -404,9 +383,9 @@ class DarwinCoreCsvImport
      */
     public function setUniqueId($row, $metaFields)
     {
-        return trim($this->identifierColumn) ?
-            $this->getIdentifierValue($row[$this->identifierColumn])
-            : $this->getIdentifierColumn($row, $metaFields);
+        $identifierValue = $this->getIdentifierValue($row, $metaFields);
+
+        return $identifierValue === false ? false : $this->checkIdentifierUuid($identifierValue);
     }
 
     /**
@@ -414,19 +393,32 @@ class DarwinCoreCsvImport
      *
      * @param $row
      * @param $metaFields
-     * @return mixed|null
+     * @return bool
      */
-    public function getIdentifierColumn($row, $metaFields)
+    public function getIdentifierValue($row, $metaFields)
     {
-        $this->identifierColumn = collect($metaFields)->intersect($this->identifiers)
+        $identifierColumnValues = collect($metaFields)
+            ->intersect($this->identifiers)
             ->filter(function ($identifier, $key) use ($row) {
-                return strpos($row[$this->header[$key]], 'http') === false;
-            })
-            ->map(function ($identifier, $key) {
-                return $this->header[$key];
-            })->first();
+                if (isset($row[$this->header[$key]])
+                    && ! empty($row[$this->header[$key]])
+                    && (strpos($row[$this->header[$key]], 'http') === false)) {
+                    return true;
+                }
 
-        return trim($this->identifierColumn) ? $this->getIdentifierValue($row[$this->identifierColumn]) : null;
+                return false;
+            })->map(function($identifier, $key) use ($row) {
+                return $row[$this->header[$key]];
+            });
+
+        if ($identifierColumnValues->isEmpty()) {
+            $rejected = ['Reason' => __('All identifier columns empty or identifier is URL.')] + $row;
+            $this->reject($rejected);
+
+            return false;
+        }
+
+        return $identifierColumnValues->first();
     }
 
     /**
@@ -435,9 +427,10 @@ class DarwinCoreCsvImport
      * @param $value
      * @return mixed
      */
-    public function getIdentifierValue($value)
+    public function checkIdentifierUuid($value)
     {
         $pattern = '/\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/i';
+
         return preg_match($pattern, $value, $matches) ? $matches[0] : $value;
     }
 
@@ -452,8 +445,7 @@ class DarwinCoreCsvImport
         $occurrenceId = $this->mediaIsCore ? null : $row[$this->header[0]];
         $row['id'] = $this->mediaIsCore ? $row[$this->header[0]] : $this->setUniqueId($row, $metaFields);
 
-        if ($this->reject($row))
-        {
+        if ($this->checkColumns($row)) {
             return;
         }
 
@@ -462,12 +454,36 @@ class DarwinCoreCsvImport
         $occurrence = is_null($occurrenceId) ? [] : ['occurrence' => ['id' => (string) $occurrenceId]];
         $subject = $fields + $row + $occurrence;
 
-        if ($this->validateDoc($subject))
-        {
+        if ($this->validateDoc($subject)) {
             return;
         }
 
         $this->saveSubject($subject);
+    }
+
+    /**
+     * Check if id and accessURI exists.
+     *
+     * @param $row
+     * @return bool
+     */
+    private function checkColumns($row)
+    {
+        if (! trim($row['id'])) {
+            $rejected = ['Reason' => __('Missing required ID value.')] + $row;
+            $this->reject($rejected);
+
+            return true;
+        }
+
+        if (empty($row['accessURI'])) {
+            $rejected = ['Reason' => __('Missing accessURI.')] + $row;
+            $this->reject($rejected);
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -477,6 +493,11 @@ class DarwinCoreCsvImport
      */
     public function saveSubject($subject)
     {
+        // Was causing subject not to be inserted in mongodb due to text index on ocr.
+        if (isset($subject['language'])) {
+            unset($subject['language']);
+        };
+
         $this->subjectContract->create($subject);
         $this->subjectCount++;
     }
@@ -493,8 +514,7 @@ class DarwinCoreCsvImport
         $row['created_at'] = DateHelper::newMongoDbDate();
 
         $criteria = ['project_id' => (int) $this->projectId, 'occurrence.id' => $row[$this->header[0]]];
-        $attributes = [ '$set' => ['occurrence' => $row]];
-
+        $attributes = ['$set' => ['occurrence' => $row]];
         $this->mongoDbService->updateMany($attributes, $criteria);
     }
 
@@ -506,14 +526,9 @@ class DarwinCoreCsvImport
      */
     public function reject($row)
     {
-        if ( ! trim($row['id']))
-        {
-            $this->rejectedMultimedia[] = $row;
+        $this->rejectedMultimedia[] = $row;
 
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /**
@@ -533,8 +548,7 @@ class DarwinCoreCsvImport
 
         $fail = $validator->fails();
 
-        if ($fail)
-        {
+        if ($fail) {
             $this->unsetSubjectVariables($subject);
             $this->duplicateArray[] = $subject;
         }
@@ -585,23 +599,18 @@ class DarwinCoreCsvImport
 
         $result = $this->headerContract->findBy('project_id', $this->projectId);
 
-        if (empty($result))
-        {
+        if (empty($result)) {
             $insert = [
                 'project_id' => $this->projectId,
                 'header'     => [$type => $header],
             ];
             $this->headerContract->create($insert);
-        }
-        else
-        {
+        } else {
             $existingHeader = $result->header;
-            $existingHeader[$type] = isset($existingHeader[$type]) ?
-                $this->combineHeader($existingHeader[$type], $header) : array_unique($header);
+            $existingHeader[$type] = isset($existingHeader[$type]) ? $this->combineHeader($existingHeader[$type], $header) : array_unique($header);
             $result->header = $existingHeader;
             $this->headerContract->update($result->toArray(), $result->id);
         }
-
     }
 
     /**

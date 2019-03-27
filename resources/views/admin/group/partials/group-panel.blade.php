@@ -11,6 +11,7 @@
                         {!! $group->present()->group_delete_icon_lrg !!}
                     @endcan
                 </div>
+                <hr class="header mx-auto" style="width:300px;">
                 <div class="d-flex justify-content-between mt-4">
                     <span class="text">{{ $group->users->count() }} {{ __('Members') }} </span>
                     <span class="text">{{ $group->projects->count() }} {{ __('Projects') }} </span>

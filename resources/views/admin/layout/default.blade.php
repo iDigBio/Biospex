@@ -11,11 +11,11 @@
     <title>
         {{ _('BIOSPEX') }} | @yield('title')
     </title>
-    <link rel="shortcut icon" href="{{ asset('/storage/images/favicon.ico') }}" type="image/x-icon">
-    <link rel="icon" href="{{ asset('/storage/images/favicon.ico') }}" type="image/x-icon">
+    @include('common.favicon')
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:700|Work+Sans">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
-    <link href="{{ mix('/css/admin.css', '/admin') }}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+          integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link href="{{ mix('/css/admin.css', '/admin') }}" rel="stylesheet" type="text/css"/>
     @yield('custom-style')
 </head>
 <body>
@@ -29,7 +29,7 @@
 <div class="container mb-4">
     @include('common.notices')
     @yield('content')
-    @include('admin.partials.process-modal')
+    @include('common.process-modal')
 </div>
 <!-- Footer -->
 <footer class="page-footer font-small blue-grey lighten-5">

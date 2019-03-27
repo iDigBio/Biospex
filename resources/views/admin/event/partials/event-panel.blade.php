@@ -6,7 +6,7 @@
             <div class="col-md-12 d-flex">
                 <div class="col-md-6">
                     <p>{{ __('Project') }}
-                        : {!! link_to_route('front.projects.slug', $event->project->title, [$event->project->slug]) !!}</p>
+                        : <a href="{{ route('front.projects.slug', ['slug' => $event->project->slug]) }}">{{ $event->project->title }}</a></p>
                     {{ __('Start Date') }}
                     : {{ $event->present()->start_date_to_string }} {{ str_replace('_', ' ', $event->timezone) }}
                     <br>

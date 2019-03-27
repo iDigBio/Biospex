@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Send Password Instructions') }}
+    {{ __('Resend Password') }}
 @stop
 
 {{-- Content --}}
@@ -17,18 +17,19 @@
 @endsection
 
 @section('content')
-    <h2 class="text-center pt-4">{{ __('Send Password Instructions') }}</h2>
+    <h2 class="text-center pt-4">{{ __('Send Biospex Password Instructions') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="col-12 col-md-10 offset-md-1">
         <div class="card white box-shadow py-5 my-5 p-sm-5">
             <div class="col-6 mx-auto">
                 <form action="{{ route('app.password.email') }}" method="post" role="form">
                     {!! csrf_field() !!}
-                    <div class="form-group {{ ($errors->has('email')) ? 'has-error' : '' }}">
+                    <div class="form-group">
                         <label for="email" class="col-form-label required">{{ __('Email') }}:</label>
-                        <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}"
-                               required>
-                        {{ $errors->first('email') }}
+                        <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"
+                               id="email" name="email"
+                               value="{{ old('email') }}" required>
+                        <span class="invalid-feedback">{{ $errors->first('email') }}</span>
                     </div>
                     @include('common.recaptcha')
                     <div class="form group text-center">
@@ -36,7 +37,7 @@
                     </div>
                 </form>
                 <div class="mt-4 text-center">
-                    {!! link_to_route('app.get.login', __('Back to Login')) !!}
+                    <a href="{{ route('app.get.login') }}">{{ __('Back to Login') }}</a>
                 </div>
             </div>
         </div>

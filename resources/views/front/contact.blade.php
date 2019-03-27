@@ -24,23 +24,25 @@
             <div class="col-8 mx-auto">
                 <form action="{{ route('front.contact.create') }}" method="post" role="form">
                     {!! csrf_field() !!}
-                    <div class="form-group {{ ($errors->has('name')) ? 'has-error' : '' }}">
-                        <label for="name" class="col-form-label required">{{ __('Name:') }}</label>
-                            <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required>
-                            {{ $errors->first('name') }}
+                    <div class="form-group">
+                        <label for="name" class="col-form-label required">{{ __('Name') }}:</label>
+                        <input type="text" class="form-control {{ ($errors->has('name')) ? 'is-invalid' : '' }}"
+                               id="name" name="name"
+                               value="{{ old('name') }}" required>
+                        <span class="invalid-feedback">{{ $errors->first('name') }}</span>
                     </div>
-
-                    <div class="form-group {{ ($errors->has('email')) ? 'has-error' : '' }}">
-                        <label for="email" class="col-form-label required">{{ __('Email:') }}</label>
-                        <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required>
-                        {{ $errors->first('email') }}
+                    <div class="form-group">
+                        <label for="email" class="col-form-label required">{{ __('Email') }}:</label>
+                        <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"
+                               id="email" name="email"
+                               value="{{ old('email') }}" required>
+                        <span class="invalid-feedback">{{ $errors->first('email') }}</span>
                     </div>
-
-                    <div class="form-group {{ ($errors->has('message')) ? 'has-error' : '' }}">
-                        <label for="message" class="col-form-label required">{{ __('Message:') }}</label>
-                        <textarea rows="6" name="message" id="message" class="form-control"
-                                  required>{{ old('message') }}</textarea>
-                        {{ $errors->first('message') }}
+                    <div class="form-group">
+                        <label for="message" class="col-form-label required">{{ __('Message') }}:</label>
+                        <textarea rows="6" class="form-control {{ ($errors->has('message')) ? 'is-invalid' : '' }}"
+                                  id="message" name="message" required>{{ old('message') }}</textarea>
+                        <span class="invalid-feedback">{{ $errors->first('message') }}</span>
                     </div>
                     @include('common.recaptcha')
                     @include('common.cancel-submit-buttons')

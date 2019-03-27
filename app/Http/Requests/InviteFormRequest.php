@@ -31,7 +31,7 @@ class InviteFormRequest extends Request
     public function messages()
     {
         return [
-            'invites.*.email.email' => 'Please enter valid email addresses'
+            'invites.*.email' => 'Please enter valid email addresses'
         ];
     }
 

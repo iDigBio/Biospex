@@ -26,6 +26,7 @@
                         {!! $expedition->present()->expedition_delete_icon_lrg !!}
                     @endcan
                 </div>
+                <hr class="header mx-auto" style="width:300px;">
                 <div class="d-flex justify-content-between mt-4">
                     <span class="text">{{ __('Biospex Subjects') }} {{ $expedition->stat->local_subject_count }}</span>
                     <span class="text">{{ __('NFN Subjects') }} {{ $expedition->stat->subject_count }}</span>

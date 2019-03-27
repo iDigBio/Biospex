@@ -35,7 +35,7 @@ class CountHelper
      */
     public function projectTranscriptionCount($projectId)
     {
-        $count = Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 720, function () use (
+        $count = Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function () use (
                 $projectId
             ) {
                 return $this->panoptesTranscription->getProjectTranscriptionCount($projectId);
@@ -52,7 +52,7 @@ class CountHelper
      */
     public function projectTranscriberCount($projectId)
     {
-        $count = Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 720, function () use ($projectId) {
+        $count = Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function () use ($projectId) {
             return $this->panoptesTranscription->getProjectTranscriberCount($projectId);
         });
 
@@ -67,7 +67,7 @@ class CountHelper
      */
     public function getUserTranscriptionCount($projectId)
     {
-        $count = Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 720, function () use ($projectId) {
+        $count = Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function () use ($projectId) {
             return $this->panoptesTranscription->getUserTranscriptionCount($projectId);
         });
 
@@ -82,7 +82,7 @@ class CountHelper
      */
     public function getProjectSubjectAssignedCount($projectId)
     {
-        $count = Cache::tags('subjects'.$projectId)->remember(md5(__METHOD__.$projectId), 720, function () use ($projectId) {
+        $count = Cache::tags('subjects'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function () use ($projectId) {
             return $this->subject->getSubjectAssignedCount($projectId);
         });
 

@@ -24,11 +24,6 @@
                                    value="{{ old('title', $group->title) }}" required>
                             <span class="invalid-feedback">{{ $errors->first('title') }}</span>
                         </div>
-                        <div class="form-group col-md-12 text-center">
-                            <input type="hidden" value="{{ Auth::id() }}" name="owner" id="owner">
-                            <button type="submit" class="btn btn-primary mr-4">{{ __('SUBMIT') }}</button>
-                            <a href="{{ URL::previous() }}" class="btn btn-primary mr-4">{{ __('CANCEL') }}</a>
-                        </div>
                     </div>
                     <div class="form-group col-sm-6">
                         <label for="owner" class="col-form-label required">{{ __('Owner') }}:</label>
