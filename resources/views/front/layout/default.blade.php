@@ -12,7 +12,7 @@
         {{ _('BIOSPEX') }} | @yield('title')
     </title>
     @include('common.favicon')
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:700|Work+Sans">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,700|Work+Sans:400,700" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
           integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <link href="{{ mix('/css/front.css') }}" rel="stylesheet" type="text/css"/>
@@ -63,7 +63,7 @@ sub footer -->
             <div class="col-md-3 col-xl-3 mb-4">
 
                 <!-- Content -->
-                <h6><img src="/storage/images/biospex_logo.svg" alt="BIOSPEX"></h6>
+                <img src="/storage/images/biospex_logo.svg" alt="BIOSPEX">
                 <p class="small text-justify pt-2">{{ __('is funded by a grant from the National Science Foundation\'s Advances in Biological Informatics Program (Award Number 1458550). iDigBio is funded by a grant from the National Science Foundation\'s Advancing Digitization of Biodiversity Collections Program (Cooperative Agreement EF-1115210). Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.') }}</p>
             </div>
             <!-- Grid column -->
