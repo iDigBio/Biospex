@@ -540,7 +540,7 @@ class DarwinCoreCsvImport
      */
     public function validateDoc($subject)
     {
-        $rules = ['project_id' => 'unique_with:subjects,id'];
+        $rules = ['project_id' => 'unique_with:mongodb.subjects,id'];
         $values = ['project_id' => $subject['project_id'], 'id' => $subject['id']];
 
         $validator = $this->factory->make($values, $rules);
