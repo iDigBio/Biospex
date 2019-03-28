@@ -1,6 +1,5 @@
 html, body {
     height: 100%;
-    -webkit-font-smoothing: antialiased;
 }
 
 .container {
@@ -58,7 +57,7 @@ button {
     border-radius: 0;
 }
 
-svg, p, .text, i, h1, h2, h3, h4, h5, .col-form-label {
+svg, p, .text, i, h1, h2, h3, h4, h5, button, .col-form-label {
     color: #383333;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
