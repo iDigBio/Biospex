@@ -34,7 +34,6 @@
                     <div class="text-center mt-4">
                         <button type="submit"
                                 class="btn btn-primary pl-4 pr-4">{{ __('UPLOAD') }}</button>
-                        {!! Honeypot::generate('formuser', 'formtime') !!}
                     </div>
                 </form>
             </div>
@@ -85,7 +84,6 @@
                     <div class="text-center mt-4">
                         <button type="submit"
                                 class="btn btn-primary pl-4 pr-4">{{ __('UPLOAD') }}</button>
-                        {!! Honeypot::generate('formuser', 'formtime') !!}
                     </div>
                 </form>
             </div>
@@ -126,7 +124,6 @@
                     <div class="text-center mt-4">
                         <button type="submit"
                                 class="btn btn-primary pl-4 pr-4">{{ __('UPLOAD') }}</button>
-                        {!! Honeypot::generate('formuser', 'formtime') !!}
                     </div>
                 </form>
             </div>
