@@ -4,6 +4,7 @@ namespace App\Services\Actor\Ocr;
 
 use App\Repositories\Interfaces\OcrFile;
 use App\Services\Requests\HttpRequest;
+use GuzzleHttp\Exception\GuzzleException;
 use Storage;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use File;
@@ -139,7 +140,7 @@ class OcrTesseract extends OcrBase
             $this->httpRequest->getHttpClient()->request('GET', $uri, ['sink' => $imagePath]);
 
             return true;
-        } catch (\GuzzleHttp\Exception\GuzzleException $e) {
+        } catch (GuzzleException $e) {
 
             $newValues = [
                 'messages' => $e->getMessage(),
