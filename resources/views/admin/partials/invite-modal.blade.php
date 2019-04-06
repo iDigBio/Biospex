@@ -5,7 +5,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="empty-icon"><i class="fa fa-fw"></i></div>
-                <div><h2 class="color-action">{{ __('Group Invite') }}</h2></div>
+                <h2 class="color-action">{{ __('Group Invite') }}</h2>
                 <div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true"><i class="far fa-times-circle"></i></span>
@@ -15,11 +15,7 @@
 
             <div class="modal-body"></div>
 
-            <div class="modal-footer text-center">
-                <button type="button" class="btn btn-outline-primary color-action align-self-center"
-                        data-dismiss="modal">{{ __('EXIT') }}
-                </button>
-            </div>
+            <div class="modal-footer"></div>
         </div>
     </div>
 </div>

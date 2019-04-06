@@ -8,7 +8,7 @@
 {{-- Content --}}
 @section('content')
     <div class="row">
-        <div class="col-sm-10 mx-auto">
+        <div class="col-sm-8 mx-auto">
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
                     <h2 class="text-center content-header mb-4">{{ __('EDIT ACCOUNT') }}</h2>
@@ -70,18 +70,14 @@
                                      src="{{ $user->profile->present()->avatar_medium }}"/>
                             </div>
                         </div>
-                        <div class="form-group text-center">
-                            <input type="hidden" id="id" value="{{ $user->id }}">
-                            <button type="submit" class="btn btn-primary mr-4">{{ __('SUBMIT') }}</button>
-                            <a href="{{ URL::previous() }}" class="btn btn-primary mr-4">{{ __('CANCEL') }}</a>
-                        </div>
+                        @include('common.cancel-submit-buttons')
                     </form>
                 </div>
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-10 mx-auto">
+        <div class="col-sm-8 mx-auto">
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
                     <h2 class="text-center content-header mb-4">{{ __('CHANGE PASSWORD') }}</h2>

@@ -108,7 +108,7 @@
                 <span id="subject-count-html"></span></h3>
 
             <div class="col-md-12 d-flex">
-                <div class="table-responsive" id="jqtable">
+                <div class="table-responsive mb-4" id="jqtable">
                     <table class="table table-bordered jgrid" id="jqGridExpedition"></table>
                     <div id="pager"></div>
                     <br/>

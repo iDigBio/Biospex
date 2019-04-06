@@ -53,7 +53,7 @@ class InvitesController extends Controller
         $group = $this->groupContract->findWith($groupId, ['invites']);
 
         $error = ! $this->checkPermissions('isOwner', $group) ? true : false;
-        $inviteCount = $group->invites->count();
+        $inviteCount = old('entries', $group->invites->count() ?: 1);
 
         return view('admin.partials.invite-modal-body', compact('group', 'inviteCount', 'error'));
     }
@@ -72,7 +72,6 @@ class InvitesController extends Controller
         $this->inviteService->storeInvites($group->id, $request);
 
         return redirect()->back();
-        //return redirect()->route('admin.groups.show', [$group->id]);
     }
 
     /**

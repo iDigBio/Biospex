@@ -8,7 +8,7 @@
 {{-- Content --}}
 @section('content')
     <div class="row">
-        <div class="col-sm-10 mx-auto">
+        <div class="col-sm-8 mx-auto">
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <form id="gridForm" method="post"
                       action="{{ route('admin.groups.update', [$group->id]) }}"

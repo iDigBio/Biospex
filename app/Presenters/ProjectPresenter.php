@@ -398,12 +398,13 @@ class ProjectPresenter extends Presenter
      *
      * @return string
      */
-    public function projectImportIcon()
+    public function projectImportIconLrg()
     {
         return '<a href="#" class="preventDefault" 
                     data-remote="'.route('admin.imports.index', [$this->model->id]).'" 
                     data-toggle="modal" data-target="#import-modal" 
-                    data-hover="tooltip" title="'.__('Import Project Subjects').'"><i class="fas fa-file-import"></i></a>';
+                    data-hover="tooltip" title="'.__('Import Project Subjects').'">
+                    <i class="fas fa-file-import fa-2x"></i></a>';
     }
 
     /**
