@@ -29,16 +29,11 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $exportDir = \Storage::path('exports');
+
         $tmpDir = \Storage::path('scratch/2-test');
 
-        //find . -name '*.txt' -print >/tmp/test.manifest
-        //tar -cvzf textfiles.tar.gz --files-from /tmp/test.manifest
-        //find . -name '*.txt' | xargs rm -v
 
-        exec("cd $tmpDir && find -name '*.*' -print >../export.manifest");
-        exec("cd $tmpDir && sudo tar -czfv ../export.tar.gz --files-from ../export.manifest", $out, $ok);
-        //exec("cd $exportDir && sudo tar -czf export.tar.gz --files-from $tmpDir/export.manifest", $out, $ok);
-
+        exec("cd $tmpDir && find -name '*.*' -print >./export.manifest");
+        exec("cd $tmpDir && sudo tar -czf ../export.tar.gz --files-from ./export.manifest");
     }
 }
