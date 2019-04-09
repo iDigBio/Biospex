@@ -2,18 +2,11 @@
 
 namespace App\Services\Actor\Ocr;
 
-use App\Repositories\Interfaces\OcrFile;
 use App\Services\MongoDbService;
-use Illuminate\Support\Facades\Artisan;
 use App\Repositories\Interfaces\OcrQueue;
 
 class OcrCreate extends OcrBase
 {
-    /**
-     * @var \App\Repositories\Interfaces\OcrFile
-     */
-    private $ocrFile;
-
     /**
      * @var \App\Repositories\Interfaces\OcrQueue
      */
@@ -25,23 +18,25 @@ class OcrCreate extends OcrBase
     private $mongoDbService;
 
     /**
-     * @var
+     * @var array
      */
-    private $ocrData;
+    private $ocrData = [];
+
+    /**
+     * @var \App\Models\OcrQueue
+     */
+    private $queue;
 
     /**
      * BuildOcrBatchesJob constructor.
      *
-     * @param \App\Repositories\Interfaces\OcrFile $ocrFile
      * @param \App\Repositories\Interfaces\OcrQueue $ocrQueue
      * @param \App\Services\MongoDbService $mongoDbService
      */
     public function __construct(
-        OcrFile $ocrFile,
         OcrQueue $ocrQueue,
         MongoDbService $mongoDbService
     ) {
-        $this->ocrFile = $ocrFile;
         $this->ocrQueue = $ocrQueue;
         $this->mongoDbService = $mongoDbService;
     }
@@ -52,32 +47,27 @@ class OcrCreate extends OcrBase
      * @param $projectId
      * @param null $expeditionId
      * @return bool
+     * @throws \Exception
      */
     public function create($projectId, $expeditionId = null)
     {
+        $this->queue = $this->ocrQueue->create(['project_id' => $projectId, 'expedition_id' => $expeditionId]);
+
         $this->buildOcrSubjectsArray($projectId, $expeditionId);
-        $total = count($this->ocrData['subjects']);
+
+        $total = count($this->ocrData[]);
 
         if ($total === 0) {
+            $this->queue->delete();
             return false;
         }
 
-        $this->ocrData['project_id'] = $projectId;
-        $this->ocrData['expedition_id'] = $expeditionId;
-        $this->ocrData['header'] = [
-            'processed' => 0,
-            'status'    => 'pending',
-            'total'     => $total,
-        ];
+        $this->mongoDbService->setCollection('ocr_files');
+        $this->mongoDbService->insertMany($this->ocrData);
 
-        $ocrFile = $this->ocrFile->create($this->ocrData);
+        $this->ocrQueue->update(['total' => $total], $this->queue->id);
 
-        return $this->ocrQueue->create([
-            'project_id'    => $projectId,
-            'expedition_id' => $expeditionId,
-            'mongo_id'      => $ocrFile->_id,
-            'total'         => $total,
-        ]);
+        return true;
     }
 
     /**
@@ -97,23 +87,15 @@ class OcrCreate extends OcrBase
         $results = $this->mongoDbService->find($query);
 
         foreach ($results as $doc) {
-            $this->buildOcrQueueData($doc);
+            $this->ocrData[] = [
+                'queue_id' => $this->queue->id,
+                'subject_id' => (string) $doc['_id'],
+                'crop'     => config('config.ocr_crop'),
+                'messages' => '',
+                'ocr'      => '',
+                'status'   => 'pending',
+                'url'      => $doc['accessURI']
+            ];
         }
-    }
-
-    /**
-     * Build the ocr and send to the queue.
-     *
-     * @param $doc
-     */
-    protected function buildOcrQueueData($doc)
-    {
-        $this->ocrData['subjects'][(string) $doc['_id']] = [
-            'crop'     => config('config.ocr_crop'),
-            'messages' => '',
-            'ocr'      => '',
-            'status'   => 'pending',
-            'url'      => $doc['accessURI'],
-        ];
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\Interfaces\OcrQueue;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -17,11 +19,17 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \App\Repositories\Interfaces\OcrQueue
+     */
+    private $ocrQueue;
+
+    /**
      * Create a new job instance.
      */
-    public function __construct()
+    public function __construct(OcrQueue $ocrQueue)
     {
         parent::__construct();
+        $this->ocrQueue = $ocrQueue;
     }
 
     /**
@@ -29,11 +37,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
-        $tmpDir = \Storage::path('scratch/2-test');
-
-
-        exec("cd $tmpDir && find -name '*.*' -print >./export.manifest");
-        exec("cd $tmpDir && sudo tar -czf ../export.tar.gz --files-from ./export.manifest");
+        $queue = $this->ocrQueue->getOcrQueueForOcrProcessCommand();
+        dd($queue->updated_at->addMinutes(15)->lt(Carbon::now()));
     }
 }

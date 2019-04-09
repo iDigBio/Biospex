@@ -4,9 +4,11 @@ namespace App\Console\Commands;
 
 use App\Jobs\OcrTesseractJob;
 use App\Models\User;
+use App\Repositories\Interfaces\OcrFile;
 use App\Repositories\Interfaces\OcrQueue;
 use App\Notifications\JobError;
 use App\Services\Actor\Ocr\OcrCheck;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class OcrProcessCommand extends Command
@@ -36,20 +38,28 @@ class OcrProcessCommand extends Command
     private $ocrCheck;
 
     /**
+     * @var \App\Repositories\Interfaces\OcrFile
+     */
+    private $ocrFileContract;
+
+    /**
      * OcrProcessCommand constructor.
      *
      * OcrProcessCommand constructor.
      *
      * @param OcrQueue $ocrQueueContract
+     * @param \App\Repositories\Interfaces\OcrFile $ocrFileContract
      * @param OcrCheck $ocrCheck
      */
     public function __construct(
         OcrQueue $ocrQueueContract,
+        OcrFile $ocrFileContract,
         OcrCheck $ocrCheck
     ) {
         parent::__construct();
 
         $this->ocrQueueContract = $ocrQueueContract;
+        $this->ocrFileContract = $ocrFileContract;
         $this->ocrCheck = $ocrCheck;
     }
 
@@ -67,9 +77,14 @@ class OcrProcessCommand extends Command
         }
 
         try {
-            if (! $record->queued) {
-                event('ocr.queued', $record);
-                OcrTesseractJob::dispatch($record);
+            if (! $record->status && $this->lastUpdate($record)) {
+                $files = $this->ocrFileContract->getAllOcrQueueFiles($record->id);
+                $files->each(function($file){
+                    OcrTesseractJob::dispatch($file);
+                });
+
+                //event('ocr.queued', $record);
+                //OcrTesseractJob::dispatch($record);
 
                 return;
             }
@@ -91,5 +106,16 @@ class OcrProcessCommand extends Command
             $user = User::find(1);
             $user->notify(new JobError(__FILE__, $messages));
         }
+    }
+
+    /**
+     * Check last updated.
+     *
+     * @param $record
+     * @return mixed
+     */
+    private function lastUpdate($record)
+    {
+        return $record->updated_at->addMinutes(15)->lt(Carbon::now());
     }
 }

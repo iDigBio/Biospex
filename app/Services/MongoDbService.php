@@ -146,6 +146,16 @@ class MongoDbService
     }
 
     /**
+     * Insert many documents.
+     *
+     * @param array $data
+     */
+    public function insertMany(array $data = [])
+    {
+        $this->clientCollection->insertMany($data);
+    }
+
+    /**
      * Update single record.
      *
      * @param array $attributes

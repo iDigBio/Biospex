@@ -17,4 +17,16 @@ class OcrFileRepository extends MongoDbRepository implements OcrFile
     {
         return Model::class;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAllOcrQueueFiles($queueId)
+    {
+        $results = $this->model->where('queue_id', '=', $queueId)->where('status', '=', 'pending')->get();
+
+        $this->resetModel();
+
+        return $results;
+    }
 }
