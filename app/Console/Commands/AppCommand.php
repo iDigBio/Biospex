@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
+
+use App\Repositories\Interfaces\OcrFile;
 use App\Repositories\Interfaces\OcrQueue;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -24,12 +25,21 @@ class AppCommand extends Command
     private $ocrQueue;
 
     /**
-     * Create a new job instance.
+     * @var \App\Repositories\Interfaces\OcrFile
      */
-    public function __construct(OcrQueue $ocrQueue)
+    private $ocrFile;
+
+    /**
+     * AppCommand constructor.
+     *
+     * @param \App\Repositories\Interfaces\OcrQueue $ocrQueue
+     * @param \App\Repositories\Interfaces\OcrFile $ocrFile
+     */
+    public function __construct(OcrQueue $ocrQueue, OcrFile $ocrFile)
     {
         parent::__construct();
         $this->ocrQueue = $ocrQueue;
+        $this->ocrFile = $ocrFile;
     }
 
     /**
@@ -38,6 +48,9 @@ class AppCommand extends Command
     public function handle()
     {
         $queue = $this->ocrQueue->getOcrQueueForOcrProcessCommand();
-        dd($queue->updated_at->addMinutes(15)->lt(Carbon::now()));
+        $files = $this->ocrFile->getAllOcrQueueFiles($queue->id);
+        $files->each(function($file){
+            dd($file->queue_id);
+        });
     }
 }

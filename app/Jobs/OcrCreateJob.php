@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Notifications\JobError;
 use App\Services\Actor\Ocr\OcrCreate;
+use Artisan;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -67,6 +68,7 @@ class OcrCreateJob implements ShouldQueue
             }
 
             event('ocr.poll');
+            Artisan::call('ocrprocess:records');
 
         } catch (Exception $e) {
             $user = User::find(1);

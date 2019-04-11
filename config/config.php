@@ -14,6 +14,9 @@ return [
     'echo_ssl_crt'    => env('ECHO_SSL_CRT'),
     'echo_ssl_key'    => env('ECHO_SSL_KEY'),
 
+    'admin_group'    => env('ADMIN_GROUP'),
+    'admin_group_id' => env('ADMIN_GROUP_ID'),
+
     'api_url'           => env('API_URL'),
     'api_version'       => env('API_VERSION'),
     'api_client_id'     => env('API_CLIENT_ID'),

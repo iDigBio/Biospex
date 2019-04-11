@@ -2,10 +2,12 @@
 
 namespace App\Jobs;
 
-use App\Models\OcrQueue;
+use App\Models\OcrFile;
 use App\Models\User;
 use App\Notifications\JobError;
+use App\Repositories\Interfaces\OcrQueue;
 use App\Services\Actor\Ocr\OcrTesseract;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -22,18 +24,23 @@ class OcrTesseractJob implements ShouldQueue
     public $timeout = 36000;
 
     /**
+     * @var \App\Models\OcrFile
+     */
+    private $file;
+
+    /**
      * @var \App\Models\OcrQueue
      */
-    private $record;
+    private $queue;
 
     /**
      * ocrTesseractJob constructor.
      *
-     * @param \App\Models\OcrQueue $record
+     * @param \App\Models\OcrFile $file
      */
-    public function __construct(OcrQueue $record)
+    public function __construct(OcrFile $file)
     {
-        $this->record = $record;
+        $this->file = $file;
         $this->onQueue(config('config.ocr_tube'));
     }
 
@@ -41,32 +48,15 @@ class OcrTesseractJob implements ShouldQueue
      * Execute the job.
      *
      * @param \App\Services\Actor\Ocr\OcrTesseract $ocrTesseract
+     * @param \App\Repositories\Interfaces\OcrQueue $ocrQueue
      * @return void
      */
-    public function handle(OcrTesseract $ocrTesseract)
+    public function handle(OcrTesseract $ocrTesseract, OcrQueue $ocrQueue)
     {
-        if (config('config.ocr_disable')) {
-            $this->delete();
+        $queue = $ocrQueue->find($this->file->queue_id);
 
-            return;
-        }
-
-        try {
-            $ocrTesseract->process($this->record->mongo_id);
-        }
-        catch(\Exception $e) {
-            event('ocr.error', $this->record);
-
-            $user = User::find(1);
-            $messages = [
-                'Record Id: ' . $this->record->id,
-                'Message:' . $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage()
-            ];
-            $user->notify(new JobError(__FILE__, $messages));
-        }
+        $ocrTesseract->process($this->file, $queue);
 
         $this->delete();
-
-        return;
     }
 }

@@ -15,7 +15,7 @@
         <li>
             <a href="{{ route('app.get.logout') }}">{{ trans('pages.logout') }}</a>
         </li>
-        @can('admin', Auth::user())
+        @can('isAdmin', Auth::user())
             <li><a href="/nova">Admin</a></li>
         @endcan
     </ul>

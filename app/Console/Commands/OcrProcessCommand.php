@@ -8,7 +8,6 @@ use App\Repositories\Interfaces\OcrFile;
 use App\Repositories\Interfaces\OcrQueue;
 use App\Notifications\JobError;
 use App\Services\Actor\Ocr\OcrCheck;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class OcrProcessCommand extends Command
@@ -77,7 +76,7 @@ class OcrProcessCommand extends Command
         }
 
         try {
-            if (! $record->status && $this->lastUpdate($record)) {
+            if (! $record->status) {
                 $files = $this->ocrFileContract->getAllOcrQueueFiles($record->id);
                 $files->each(function($file){
                     OcrTesseractJob::dispatch($file);
@@ -89,7 +88,7 @@ class OcrProcessCommand extends Command
                 return;
             }
 
-            $this->ocrCheck->check($record);
+            //$this->ocrCheck->check($record);
 
             return;
         } catch (\Exception $e) {
@@ -106,16 +105,5 @@ class OcrProcessCommand extends Command
             $user = User::find(1);
             $user->notify(new JobError(__FILE__, $messages));
         }
-    }
-
-    /**
-     * Check last updated.
-     *
-     * @param $record
-     * @return mixed
-     */
-    private function lastUpdate($record)
-    {
-        return $record->updated_at->addMinutes(15)->lt(Carbon::now());
     }
 }

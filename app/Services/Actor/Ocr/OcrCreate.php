@@ -23,11 +23,6 @@ class OcrCreate extends OcrBase
     private $ocrData = [];
 
     /**
-     * @var \App\Models\OcrQueue
-     */
-    private $queue;
-
-    /**
      * BuildOcrBatchesJob constructor.
      *
      * @param \App\Repositories\Interfaces\OcrQueue $ocrQueue
@@ -51,21 +46,23 @@ class OcrCreate extends OcrBase
      */
     public function create($projectId, $expeditionId = null)
     {
-        $this->queue = $this->ocrQueue->create(['project_id' => $projectId, 'expedition_id' => $expeditionId]);
+        $queue = $this->ocrQueue->firstOrCreate(['project_id' => $projectId, 'expedition_id' => $expeditionId]);
 
-        $this->buildOcrSubjectsArray($projectId, $expeditionId);
+        $this->mongoDbService->setCollection('ocr_files');
+        $this->mongoDbService->deleteMany(['project_id' => (int) $projectId,'ocr' => '']);
 
-        $total = count($this->ocrData[]);
+        $this->buildOcrSubjectsArray($queue->id, $projectId, $expeditionId);
+
+        $total = count($this->ocrData);
 
         if ($total === 0) {
-            $this->queue->delete();
+            $queue->delete();
             return false;
         }
 
         $this->mongoDbService->setCollection('ocr_files');
         $this->mongoDbService->insertMany($this->ocrData);
-
-        $this->ocrQueue->update(['total' => $total], $this->queue->id);
+        $this->ocrQueue->update(['total' => $total], $queue->id);
 
         return true;
     }
@@ -73,22 +70,23 @@ class OcrCreate extends OcrBase
     /**
      * Build the ocr subject array.
      *
+     * @param $queueId
      * @param $projectId
      * @param null $expeditionId
      */
-    protected function buildOcrSubjectsArray($projectId, $expeditionId = null)
+    protected function buildOcrSubjectsArray($queueId, $projectId, $expeditionId = null)
     {
-        $this->mongoDbService->setCollection('subjects');
         $query = null === $expeditionId ? [
             'project_id' => (int) $projectId,
             'ocr'        => '',
         ] : ['project_id' => (int) $projectId, 'expedition_ids' => (int) $expeditionId, 'ocr' => ''];
 
+        $this->mongoDbService->setCollection('subjects');
         $results = $this->mongoDbService->find($query);
 
         foreach ($results as $doc) {
             $this->ocrData[] = [
-                'queue_id' => $this->queue->id,
+                'queue_id' => $queueId,
                 'subject_id' => (string) $doc['_id'],
                 'crop'     => config('config.ocr_crop'),
                 'messages' => '',

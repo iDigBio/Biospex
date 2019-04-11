@@ -7,6 +7,6 @@
     </tr>
     </thead>
     <tbody>
-    @include('frontend.projects.partials.project-loop')
+    @each('frontend.projects.partials.project-loop', $groups, 'group')
     </tbody>
 </table>
