@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-
-use App\Repositories\Interfaces\OcrFile;
-use App\Repositories\Interfaces\OcrQueue;
+use App\Models\OcrQueue;
+use File;
 use Illuminate\Console\Command;
+use Storage;
 
 class AppCommand extends Command
 {
@@ -31,15 +31,10 @@ class AppCommand extends Command
 
     /**
      * AppCommand constructor.
-     *
-     * @param \App\Repositories\Interfaces\OcrQueue $ocrQueue
-     * @param \App\Repositories\Interfaces\OcrFile $ocrFile
      */
-    public function __construct(OcrQueue $ocrQueue, OcrFile $ocrFile)
+    public function __construct()
     {
-        parent::__construct();
-        $this->ocrQueue = $ocrQueue;
-        $this->ocrFile = $ocrFile;
+        parent::__construct();;
     }
 
     /**
@@ -47,10 +42,42 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $queue = $this->ocrQueue->getOcrQueueForOcrProcessCommand();
-        $files = $this->ocrFile->getAllOcrQueueFiles($queue->id);
-        $files->each(function($file){
-            dd($file->queue_id);
-        });
+        $queue = OcrQueue::get()->first();
+        $folderPath = $this->createDir($queue);
+        dd($folderPath);
+
+    }
+
+    /**
+     * Create directory for queue.
+     *
+     * @param $queue
+     * @return string
+     */
+    private function createDir($queue)
+    {
+        $folderPath = 'ocr/' . md5($queue->id);
+
+        if (! Storage::exists($folderPath)) {
+            echo "Making Directory" . PHP_EOL;
+            try {
+                Storage::makeDirectory($folderPath);
+            }
+            catch(\Exception $exception) {
+                dd($exception);
+            }
+        }
+
+        return $folderPath;
+    }
+
+    /**
+     * Delete directory for queue.
+     *
+     * @param $folderPath
+     */
+    private function deleteDir($folderPath)
+    {
+        Storage::deleteDirectory($folderPath);
     }
 }

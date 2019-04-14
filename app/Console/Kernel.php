@@ -36,7 +36,7 @@ class Kernel extends ConsoleKernel
             ->dailyAt('06:30');
 
         // Check ocr processing records and call ocr polling
-        $schedule->command('ocrprocess:records')->everyFiveMinutes();
+        //$schedule->command('ocrprocess:records')->everyFiveMinutes();
 
         // Trigger export polling
         $schedule->command('export:poll')->everyFiveMinutes();

@@ -145,6 +145,7 @@ class AppFileDeployment extends Command
             'MAP_CLIENT_ID',
             'MAP_CLIENT_CERT_URL',
 
+            'NUM_PROCS',
             'QUEUE_CHART_TUBE',
             'QUEUE_CLASSIFICATION_TUBE',
             'QUEUE_DEFAULT_TUBE',

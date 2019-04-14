@@ -39,6 +39,7 @@ class OcrQueueRepository extends EloquentRepository implements OcrQueue
     public function getOcrQueueForOcrProcessCommand()
     {
         $result = $this->model->with('project.group.owner')
+            ->where('error', 0)
             ->orderBy('id', 'asc')
             ->first();
 

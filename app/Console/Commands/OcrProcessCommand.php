@@ -7,8 +7,12 @@ use App\Models\User;
 use App\Repositories\Interfaces\OcrFile;
 use App\Repositories\Interfaces\OcrQueue;
 use App\Notifications\JobError;
-use App\Services\Actor\Ocr\OcrCheck;
+use App\Services\Actor\Ocr\OcrComplete;
+use Artisan;
+use Exception;
+use File;
 use Illuminate\Console\Command;
+use Storage;
 
 class OcrProcessCommand extends Command
 {
@@ -32,9 +36,9 @@ class OcrProcessCommand extends Command
     private $ocrQueueContract;
 
     /**
-     * @var OcrCheck
+     * @var OcrComplete
      */
-    private $ocrCheck;
+    private $ocrComplete;
 
     /**
      * @var \App\Repositories\Interfaces\OcrFile
@@ -48,18 +52,18 @@ class OcrProcessCommand extends Command
      *
      * @param OcrQueue $ocrQueueContract
      * @param \App\Repositories\Interfaces\OcrFile $ocrFileContract
-     * @param OcrCheck $ocrCheck
+     * @param OcrComplete $ocrComplete
      */
     public function __construct(
         OcrQueue $ocrQueueContract,
         OcrFile $ocrFileContract,
-        OcrCheck $ocrCheck
+        OcrComplete $ocrComplete
     ) {
         parent::__construct();
 
         $this->ocrQueueContract = $ocrQueueContract;
         $this->ocrFileContract = $ocrFileContract;
-        $this->ocrCheck = $ocrCheck;
+        $this->ocrComplete = $ocrComplete;
     }
 
     /**
@@ -69,35 +73,39 @@ class OcrProcessCommand extends Command
      */
     public function handle()
     {
-        $record = $this->ocrQueueContract->getOcrQueueForOcrProcessCommand();
+        $queue = $this->ocrQueueContract->getOcrQueueForOcrProcessCommand();
 
-        if ($record === null) {
+        if ($queue === null) {
             return;
         }
 
         try {
-            if (! $record->status) {
-                $files = $this->ocrFileContract->getAllOcrQueueFiles($record->id);
-                $files->each(function($file){
-                    OcrTesseractJob::dispatch($file);
-                });
 
-                //event('ocr.queued', $record);
-                //OcrTesseractJob::dispatch($record);
+            $folderPath = $this->createDir($queue);
+            $files = $this->ocrFileContract->getAllOcrQueueFiles($queue->id);
+
+            if ($queue->status === 1) {
+                $this->ocrComplete->process($queue, $files);
+                $this->deleteDir($folderPath);
+                Artisan::call('ocrprocess:records');
 
                 return;
             }
 
-            //$this->ocrCheck->check($record);
+            $files->reject(function ($file) {
+                return $file->status === 'completed';
+            })->each(function ($file) use ($folderPath) {
+                OcrTesseractJob::dispatch($file, $folderPath);
+            });
 
             return;
-        } catch (\Exception $e) {
-            event('ocr.error', $record);
+        } catch (Exception $e) {
+            event('ocr.error', $queue);
 
             $messages = [
-                $record->project->title,
-                'Error processing ocr record '.$record->id,
-                'File: ' . $e->getFile(),
+                $queue->project->title,
+                'Error processing ocr record '.$queue->id,
+                'File: '.$e->getFile(),
                 'Message: '.$e->getMessage(),
                 'Line: '.$e->getLine(),
             ];
@@ -105,5 +113,32 @@ class OcrProcessCommand extends Command
             $user = User::find(1);
             $user->notify(new JobError(__FILE__, $messages));
         }
+    }
+
+    /**
+     * Create directory for queue.
+     *
+     * @param $queue
+     * @return string
+     */
+    private function createDir($queue)
+    {
+        $folderPath = 'ocr/' . md5($queue->id);
+
+        if (! File::exists($folderPath)) {
+            Storage::makeDirectory($folderPath);
+        }
+
+        return $folderPath;
+    }
+
+    /**
+     * Delete directory for queue.
+     *
+     * @param $folderPath
+     */
+    private function deleteDir($folderPath)
+    {
+        Storage::deleteDirectory($folderPath);
     }
 }

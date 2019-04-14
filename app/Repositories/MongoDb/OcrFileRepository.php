@@ -23,7 +23,7 @@ class OcrFileRepository extends MongoDbRepository implements OcrFile
      */
     public function getAllOcrQueueFiles($queueId)
     {
-        $results = $this->model->where('queue_id', '=', $queueId)->where('status', '=', 'pending')->get();
+        $results = $this->model->where('queue_id', '=', $queueId)->get();
 
         $this->resetModel();
 

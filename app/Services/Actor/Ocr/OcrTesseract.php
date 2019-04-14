@@ -2,11 +2,11 @@
 
 namespace App\Services\Actor\Ocr;
 
-
 use App\Models\OcrFile;
 use App\Repositories\Interfaces\OcrQueue;
 use App\Repositories\Interfaces\Subject;
 use App\Services\Requests\HttpRequest;
+use Artisan;
 use GuzzleHttp\Exception\GuzzleException;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use Storage;
@@ -14,6 +14,16 @@ use Exception;
 
 class OcrTesseract extends OcrBase
 {
+    /**
+     * @var \App\Repositories\Interfaces\OcrQueue
+     */
+    private $ocrQueue;
+
+    /**
+     * @var \App\Repositories\Interfaces\Subject
+     */
+    private $subject;
+
     /**
      * @var \thiagoalessio\TesseractOCR\TesseractOCR
      */
@@ -27,32 +37,12 @@ class OcrTesseract extends OcrBase
     /**
      * @var
      */
-    public $folderPath;
-
-    /**
-     * @var
-     */
-    public $file;
-
-    /**
-     * @var
-     */
     private $imgUrl;
 
     /**
      * @var
      */
     private $imgPath;
-
-    /**
-     * @var \App\Repositories\Interfaces\OcrQueue
-     */
-    private $ocrQueue;
-
-    /**
-     * @var \App\Repositories\Interfaces\Subject
-     */
-    private $subject;
 
     /**
      * OcrTesseract constructor.
@@ -78,15 +68,15 @@ class OcrTesseract extends OcrBase
      * Process ocr file.
      *
      * @param \App\Models\OcrFile $file
-     * @return bool
+     * @param $folderPath
      */
-    public function process(OcrFile $file)
+    public function process(OcrFile $file, $folderPath)
     {
-        $this->createPaths($file);
+        $this->createImagePath($file, $folderPath);
 
         if ( ! $this->getImage($file)) {
             $this->updateQueue($file);
-            return false;
+            return;
         }
 
         $this->tesseractImage($file);
@@ -95,9 +85,7 @@ class OcrTesseract extends OcrBase
 
         $this->updateQueue($file);
 
-        $this->deleteDir();
-
-        return true;
+        return;
     }
 
     /**
@@ -114,7 +102,7 @@ class OcrTesseract extends OcrBase
             }
 
             $this->httpRequest->setHttpProvider();
-            $this->httpRequest->getHttpClient()->request('GET', $this->imgUrl, ['sink' => $this->imgPath]);
+            $this->httpRequest->getHttpClient()->request('GET', $this->imgUrl, ['sink' => Storage::path($this->imgPath)]);
 
             return true;
         } catch (GuzzleException $e) {
@@ -135,7 +123,7 @@ class OcrTesseract extends OcrBase
     private function tesseractImage(OcrFile $file)
     {
         try {
-            $result = $this->tesseract->image($this->imgPath)->threadLimit(1)->run();
+            $result = $this->tesseract->image(Storage::path($this->imgPath))->threadLimit(1)->run();
             $file->ocr = preg_replace('/\s+/', ' ', trim($result));
             $file->status = 'completed';
             $file->save();
@@ -151,27 +139,14 @@ class OcrTesseract extends OcrBase
      * Create paths.
      *
      * @param \App\Models\OcrFile $file
+     * @param $folderPath
      */
-    private function createPaths(OcrFile $file)
+    private function createImagePath(OcrFile $file, $folderPath)
     {
-        $this->folderPath = Storage::path('ocr/').md5($file->queue_id);
         $this->imgUrl = str_replace(' ', '%20', $file->url);
-        $this->imgPath = $this->folderPath.'/'.$file->subject_id.'.jpg';
-
-        if (Storage::exists($this->folderPath)) {
-            return;
-        }
-
-        Storage::makeDirectory($this->folderPath);
+        $this->imgPath = $folderPath.'/'.$file->subject_id.'.jpg';
     }
 
-    /**
-     * Delete record directory.
-     */
-    private function deleteDir()
-    {
-        Storage::deleteDirectory($this->folderPath);
-    }
 
     /**
      * Update queue processed.
@@ -181,6 +156,14 @@ class OcrTesseract extends OcrBase
     private function updateQueue(OcrFile $file) {
         $queue = $this->ocrQueue->find($file->queue_id);
         $queue->processed = $queue->processed + 1;
+        if ($queue->processed === $queue->total) {
+            $queue->status = 1;
+            $queue->save();
+            Artisan::call('ocrprocess:records');
+
+            return;
+        }
+
         $queue->save();
     }
 }
