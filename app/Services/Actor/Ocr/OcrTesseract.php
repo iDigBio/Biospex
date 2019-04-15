@@ -2,18 +2,27 @@
 
 namespace App\Services\Actor\Ocr;
 
-use App\Repositories\Interfaces\OcrFile;
+use App\Models\OcrFile;
+use App\Repositories\Interfaces\OcrQueue;
+use App\Repositories\Interfaces\Subject;
 use App\Services\Requests\HttpRequest;
-use Storage;
+use Artisan;
+use GuzzleHttp\Exception\GuzzleException;
 use thiagoalessio\TesseractOCR\TesseractOCR;
-use File;
+use Storage;
+use Exception;
 
 class OcrTesseract extends OcrBase
 {
     /**
-     * @var \App\Repositories\Interfaces\OcrFile
+     * @var \App\Repositories\Interfaces\OcrQueue
      */
-    public $ocrFile;
+    private $ocrQueue;
+
+    /**
+     * @var \App\Repositories\Interfaces\Subject
+     */
+    private $subject;
 
     /**
      * @var \thiagoalessio\TesseractOCR\TesseractOCR
@@ -28,126 +37,79 @@ class OcrTesseract extends OcrBase
     /**
      * @var
      */
-    public $folderPath;
+    private $imgUrl;
 
     /**
      * @var
      */
-    public $file;
+    private $imgPath;
 
     /**
      * OcrTesseract constructor.
      *
-     * @param \App\Repositories\Interfaces\OcrFile $ocrFile
+     * @param \App\Repositories\Interfaces\OcrQueue $ocrQueue
      * @param \thiagoalessio\TesseractOCR\TesseractOCR $tesseract
      * @param \App\Services\Requests\HttpRequest $httpRequest
+     * @param \App\Repositories\Interfaces\Subject $subject
      */
     public function __construct(
-        OcrFile $ocrFile,
+        OcrQueue $ocrQueue,
         TesseractOCR $tesseract,
-        HttpRequest $httpRequest
+        HttpRequest $httpRequest,
+        Subject $subject
     ) {
-
-        $this->ocrFile = $ocrFile;
         $this->tesseract = $tesseract;
         $this->httpRequest = $httpRequest;
-    }
-
-    /**
-     * Process the ocr queue record.
-     *
-     * @param $mongoId
-     * @throws \Exception
-     */
-    public function process($mongoId)
-    {
-        $this->createDir($mongoId);
-
-        $this->file = $this->ocrFile->find($mongoId)->toArray();
-
-        if ($this->file === null) {
-            throw new \Exception(__('Error retrieving ocr record '.$mongoId));
-        }
-
-        $this->updateHeader();
-
-        $this->processImages();
-
-        $this->deleteDir();
+        $this->ocrQueue = $ocrQueue;
+        $this->subject = $subject;
     }
 
     /**
      * Process ocr file.
-     */
-    public function processImages()
-    {
-        collect($this->file['subjects'])->filter(function ($subject, $key) {
-            if ($subject['status'] === 'pending') {
-                return true;
-            }
-            $count = $this->file['header']['processed'] + 1;
-            $this->updateHeader($count);
-
-            return false;
-        })->each(function ($subject, $key) {
-
-            list($uri, $imagePath) = $this->setUriImagePath($key, $subject['url']);
-
-            if (! $this->getImage($key, $uri, $imagePath)) {
-                return;
-            }
-
-            $this->tesseractImage($key, $imagePath);
-            File::delete($imagePath);
-        });
-
-        $this->file['header']['status'] = 'completed';
-        $this->ocrFile->update($this->file, $this->file['_id']);
-    }
-
-    /**
-     * Set uri and image path.
      *
-     * @param $key
-     * @param $url
-     * @return array
+     * @param \App\Models\OcrFile $file
+     * @param $folderPath
      */
-    public function setUriImagePath($key, $url)
+    public function process(OcrFile $file, $folderPath)
     {
-        $uri = str_replace(' ', '%20', $url);
-        $imagePath = $this->folderPath.'/'.$key.'.jpg';
+        $this->createImagePath($file, $folderPath);
 
-        return [$uri, $imagePath];
+        if ( ! $this->getImage($file)) {
+            $this->updateQueue($file);
+            return;
+        }
+
+        $this->tesseractImage($file);
+
+        Storage::delete($this->imgPath);
+
+        $this->updateQueue($file);
+
+        return;
     }
 
     /**
      * Get image.
      *
-     * @param $key
-     * @param $uri
-     * @param $imagePath
+     * @param \App\Models\OcrFile $file
      * @return bool
      */
-    public function getImage($key, $uri, $imagePath)
+    private function getImage(OcrFile $file)
     {
         try {
-            if (File::exists($imagePath)) {
+            if (Storage::exists($this->imgPath)) {
                 return true;
             }
 
             $this->httpRequest->setHttpProvider();
-            $this->httpRequest->getHttpClient()->request('GET', $uri, ['sink' => $imagePath]);
+            $this->httpRequest->getHttpClient()->request('GET', $this->imgUrl, ['sink' => Storage::path($this->imgPath)]);
 
             return true;
-        } catch (\GuzzleHttp\Exception\GuzzleException $e) {
-
-            $newValues = [
-                'messages' => $e->getMessage(),
-                'ocr'      => 'error',
-                'status'   => 'completed',
-            ];
-
-            $this->updateFile($key, $newValues);
+        } catch (GuzzleException $e) {
+            $file->messages = $e->getMessage();
+            $file->ocr = 'error';
+            $file->status = 'completed';
+            $file->save();
 
             return false;
         }
@@ -156,68 +118,52 @@ class OcrTesseract extends OcrBase
     /**
      * Read image.
      *
-     * @param $key
-     * @param $imagePath
+     * @param \App\Models\OcrFile $file
      */
-    public function tesseractImage($key, $imagePath)
+    private function tesseractImage(OcrFile $file)
     {
         try {
-            $result = $this->tesseract->image($imagePath)->threadLimit(1)->run();
-            $newValues = [
-                'ocr'    => preg_replace('/\s+/', ' ', trim($result)),
-                'status' => 'completed',
-            ];
-            $this->updateFile($key, $newValues);
-        } catch (\Exception $e) {
-            $newValues = [
-                'messages' => 'Error occurred performing ocr on the image.',
-                'ocr'      => 'error',
-                'status'   => 'completed',
-            ];
-            $this->updateFile($key, $newValues);
+            $result = $this->tesseract->image(Storage::path($this->imgPath))->threadLimit(1)->run();
+            $file->ocr = preg_replace('/\s+/', ' ', trim($result));
+            $file->status = 'completed';
+            $file->save();
+        } catch (Exception $e) {
+            $file->messages = 'Error occurred performing ocr on the image.';
+            $file->ocr = 'error';
+            $file->status = 'completed';
+            $file->save();
         }
     }
 
     /**
-     * Create record directory.
+     * Create paths.
      *
-     * @param $mongoId
+     * @param \App\Models\OcrFile $file
+     * @param $folderPath
      */
-    public function createDir($mongoId)
+    private function createImagePath(OcrFile $file, $folderPath)
     {
-        $this->folderPath = Storage::path('ocr/').$mongoId;
-        File::makeDirectory($this->folderPath, 0775, true, true);
+        $this->imgUrl = str_replace(' ', '%20', $file->url);
+        $this->imgPath = $folderPath.'/'.$file->subject_id.'.jpg';
     }
 
-    /**
-     * Delete record directory.
-     */
-    public function deleteDir()
-    {
-        File::deleteDirectory($this->folderPath);
-    }
 
     /**
-     * Update ocr file.
+     * Update queue processed.
      *
-     * @param $key
-     * @param array $newValues
+     * @param \App\Models\OcrFile $file
      */
-    public function updateFile($key, array $newValues)
-    {
-        $this->file['subjects'][$key] = array_merge($this->file['subjects'][$key], $newValues);
-        $count = $this->file['header']['processed'] + 1;
-        $this->updateHeader($count);
-    }
+    private function updateQueue(OcrFile $file) {
+        $queue = $this->ocrQueue->find($file->queue_id);
+        $queue->processed = $queue->processed + 1;
+        if ($queue->processed === $queue->total) {
+            $queue->status = 1;
+            $queue->save();
+            Artisan::call('ocrprocess:records');
 
-    /**
-     * Update header.
-     *
-     * @param int $count
-     */
-    public function updateHeader($count = 0)
-    {
-        $this->file['header']['processed'] = $count;
-        $this->ocrFile->update($this->file, $this->file['_id']);
+            return;
+        }
+
+        $queue->save();
     }
 }

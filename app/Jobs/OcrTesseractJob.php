@@ -2,9 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\OcrQueue;
-use App\Models\User;
-use App\Notifications\JobError;
+use App\Models\OcrFile;
 use App\Services\Actor\Ocr\OcrTesseract;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -22,18 +20,25 @@ class OcrTesseractJob implements ShouldQueue
     public $timeout = 36000;
 
     /**
-     * @var \App\Models\OcrQueue
+     * @var \App\Models\OcrFile
      */
-    private $record;
+    private $file;
+
+    /**
+     * @var
+     */
+    private $folderPath;
 
     /**
      * ocrTesseractJob constructor.
      *
-     * @param \App\Models\OcrQueue $record
+     * @param \App\Models\OcrFile $file
+     * @param $folderPath
      */
-    public function __construct(OcrQueue $record)
+    public function __construct(OcrFile $file, $folderPath)
     {
-        $this->record = $record;
+        $this->file = $file;
+        $this->folderPath = $folderPath;
         $this->onQueue(config('config.ocr_tube'));
     }
 
@@ -45,28 +50,10 @@ class OcrTesseractJob implements ShouldQueue
      */
     public function handle(OcrTesseract $ocrTesseract)
     {
-        if (config('config.ocr_disable')) {
-            $this->delete();
+        $ocrTesseract->process($this->file, $this->folderPath);
 
-            return;
-        }
-
-        try {
-            $ocrTesseract->process($this->record->mongo_id);
-        }
-        catch(\Exception $e) {
-            event('ocr.error', $this->record);
-
-            $user = User::find(1);
-            $messages = [
-                'Record Id: ' . $this->record->id,
-                'Message:' . $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage()
-            ];
-            $user->notify(new JobError(__FILE__, $messages));
-        }
+        event('ocr.poll');
 
         $this->delete();
-
-        return;
     }
 }

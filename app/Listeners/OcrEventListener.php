@@ -36,11 +36,6 @@ class OcrEventListener
         );
 
         $events->listen(
-            'ocr.queued',
-            'App\Listeners\OcrEventListener@queued'
-        );
-
-        $events->listen(
             'ocr.error',
             'App\Listeners\OcrEventListener@error'
         );
@@ -52,18 +47,6 @@ class OcrEventListener
     public function poll()
     {
         Artisan::call('ocr:poll');
-    }
-
-    /**
-     * Record queued.
-     *
-     * @param \App\Models\OcrQueue $record
-     */
-    public function queued(\App\Models\OcrQueue $record)
-    {
-        $record->processed = 0;
-        $record->queued = 1;
-        $record->save();
     }
 
     /**

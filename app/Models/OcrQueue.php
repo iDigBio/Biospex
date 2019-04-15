@@ -18,11 +18,9 @@ class OcrQueue extends BaseEloquentModel
     protected $fillable = [
         'project_id',
         'expedition_id',
-        'mongo_id',
         'total',
         'processed',
         'status',
-        'queued',
         'error',
         'csv'
     ];

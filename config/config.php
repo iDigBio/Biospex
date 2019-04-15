@@ -101,6 +101,7 @@ return [
     ],
 
     /* Beanstalk Tubes */
+    'num_procs'             => env('NUM_PROCS'),
     'chart_tube'            => env('QUEUE_CHART_TUBE'),
     'classification_tube'   => env('QUEUE_CLASSIFICATION_TUBE'),
     'default_tube'          => env('QUEUE_DEFAULT_TUBE'),

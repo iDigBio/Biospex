@@ -43,11 +43,6 @@ class AppFileDeployment extends Command
     private $apps;
 
     /**
-     * @var array
-     */
-    private $locales;
-
-    /**
      * Create a new command instance.
      *
      * @return void
@@ -60,7 +55,6 @@ class AppFileDeployment extends Command
         $this->appPath = base_path();
         $this->supPath = Storage::path('supervisord');
         $this->setAppsConfigs();
-        $this->locales = ['dev', 'theme'];
     }
 
     /**
@@ -71,7 +65,7 @@ class AppFileDeployment extends Command
         // copy needed files to locations
         $appFiles = \File::files($this->resPath.'/apps');
         $appTargets = collect($appFiles)->reject(function ($file) {
-            return \File::name($file) === 'laravel-echo-server.json' && \App::environment(['dev', 'theme']);
+            return \File::name($file) === 'laravel-echo-server.json' && \App::environment() === 'dev';
         })->map(function ($file) {
             $target = $this->appPath.'/'.\File::name($file);
             \File::copy($file, $target);
@@ -81,7 +75,7 @@ class AppFileDeployment extends Command
 
         $supFiles = \File::files($this->resPath.'/supervisord');
         $subTargets = collect($supFiles)->reject(function ($file) {
-            return \File::name($file) === 'echoserver.conf' && \App::environment(['dev', 'theme']);
+            return \File::name($file) === 'echoserver.conf' && \App::environment() === 'dev';
         })->map(function ($file) {
             $target = $this->supPath.'/'.\File::name($file);
             \File::copy($file, $target);
@@ -151,6 +145,7 @@ class AppFileDeployment extends Command
             'MAP_CLIENT_ID',
             'MAP_CLIENT_CERT_URL',
 
+            'NUM_PROCS',
             'QUEUE_CHART_TUBE',
             'QUEUE_CLASSIFICATION_TUBE',
             'QUEUE_DEFAULT_TUBE',
