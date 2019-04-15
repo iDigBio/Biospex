@@ -5,6 +5,7 @@ namespace App\Services\Actor\Ocr;
 use App\Models\OcrFile;
 use App\Repositories\Interfaces\OcrQueue;
 use App\Repositories\Interfaces\Subject;
+use App\Services\MongoDbService;
 use App\Services\Requests\HttpRequest;
 use Artisan;
 use GuzzleHttp\Exception\GuzzleException;
@@ -45,23 +46,31 @@ class OcrTesseract extends OcrBase
     private $imgPath;
 
     /**
+     * @var \App\Services\MongoDbService
+     */
+    private $mongoDbService;
+
+    /**
      * OcrTesseract constructor.
      *
      * @param \App\Repositories\Interfaces\OcrQueue $ocrQueue
      * @param \thiagoalessio\TesseractOCR\TesseractOCR $tesseract
      * @param \App\Services\Requests\HttpRequest $httpRequest
      * @param \App\Repositories\Interfaces\Subject $subject
+     * @param \App\Services\MongoDbService $mongoDbService
      */
     public function __construct(
         OcrQueue $ocrQueue,
         TesseractOCR $tesseract,
         HttpRequest $httpRequest,
-        Subject $subject
+        Subject $subject,
+        MongoDbService $mongoDbService
     ) {
         $this->tesseract = $tesseract;
         $this->httpRequest = $httpRequest;
         $this->ocrQueue = $ocrQueue;
         $this->subject = $subject;
+        $this->mongoDbService = $mongoDbService;
     }
 
     /**
@@ -106,10 +115,12 @@ class OcrTesseract extends OcrBase
 
             return true;
         } catch (GuzzleException $e) {
-            $file->messages = $e->getMessage();
-            $file->ocr = 'error';
-            $file->status = 'completed';
-            $file->save();
+            $attributes = [
+                'messages' => $e->getMessage(),
+                'ocr' => 'error',
+                'status' => 'completed'
+            ];
+            $this->updateFile($attributes, $file->_id);
 
             return false;
         }
@@ -124,14 +135,21 @@ class OcrTesseract extends OcrBase
     {
         try {
             $result = $this->tesseract->image(Storage::path($this->imgPath))->threadLimit(1)->run();
-            $file->ocr = preg_replace('/\s+/', ' ', trim($result));
-            $file->status = 'completed';
-            $file->save();
+
+            $attributes = [
+                'ocr' => preg_replace('/\s+/', ' ', trim($result)),
+                'status' => 'completed'
+            ];
+            $this->updateFile($attributes, $file->_id);
+
         } catch (Exception $e) {
-            $file->messages = 'Error occurred performing ocr on the image.';
-            $file->ocr = 'error';
-            $file->status = 'completed';
-            $file->save();
+
+            $attributes = [
+                'messages' => 'Error occurred performing ocr on the image.',
+                'ocr' => 'error',
+                'status' => 'completed'
+            ];
+            $this->updateFile($attributes, $file->_id);
         }
     }
 
@@ -147,6 +165,16 @@ class OcrTesseract extends OcrBase
         $this->imgPath = $folderPath.'/'.$file->subject_id.'.jpg';
     }
 
+    /**
+     * Update using service to try and prevent errors when using laravel-mongo.
+     *
+     * @param $attributes
+     * @param $id
+     */
+    private function updateFile($attributes, $id) {
+        $this->mongoDbService->setCollection('ocr_files');
+        $this->mongoDbService->updateOneById($attributes, $id);
+    }
 
     /**
      * Update queue processed.
