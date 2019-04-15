@@ -64,6 +64,9 @@ class OcrCreate extends OcrBase
         $this->mongoDbService->insertMany($this->ocrData);
         $this->ocrQueue->update(['total' => $total], $queue->id);
 
+        $queue->total = $total;
+        $queue->save();
+
         return true;
     }
 
