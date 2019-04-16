@@ -2,8 +2,9 @@
 
 namespace App\Services\Actor\Ocr;
 
-use App\Services\MongoDbService;
+use App\Repositories\Interfaces\OcrFile;
 use App\Repositories\Interfaces\OcrQueue;
+use App\Services\MongoDbService;
 
 class OcrCreate extends OcrBase
 {
@@ -13,6 +14,11 @@ class OcrCreate extends OcrBase
     private $ocrQueue;
 
     /**
+     * @var \App\Repositories\Interfaces\OcrFile
+     */
+    private $ocrFile;
+
+    /**
      * @var \App\Services\MongoDbService
      */
     private $mongoDbService;
@@ -20,24 +26,28 @@ class OcrCreate extends OcrBase
     /**
      * @var array
      */
-    private $ocrData = [];
+    private $fileData = [];
 
     /**
      * BuildOcrBatchesJob constructor.
      *
      * @param \App\Repositories\Interfaces\OcrQueue $ocrQueue
+     * @param \App\Repositories\Interfaces\OcrFile $ocrFile
      * @param \App\Services\MongoDbService $mongoDbService
      */
     public function __construct(
         OcrQueue $ocrQueue,
+        OcrFile $ocrFile,
         MongoDbService $mongoDbService
     ) {
         $this->ocrQueue = $ocrQueue;
+        $this->ocrFile = $ocrFile;
         $this->mongoDbService = $mongoDbService;
     }
 
     /**
      * Process Project/Expedition for OCR file creation.
+     * MyModel::truncate();
      *
      * @param $projectId
      * @param null $expeditionId
@@ -47,22 +57,19 @@ class OcrCreate extends OcrBase
     public function create($projectId, $expeditionId = null)
     {
         $queue = $this->ocrQueue->firstOrCreate(['project_id' => $projectId, 'expedition_id' => $expeditionId]);
-
-        $this->mongoDbService->setCollection('ocr_files');
-        $this->mongoDbService->deleteMany(['project_id' => (int) $projectId,'ocr' => '']);
+        $queue->ocrFiles()->delete();
 
         $this->buildOcrSubjectsArray($queue->id, $projectId, $expeditionId);
 
-        $total = count($this->ocrData);
+        $total = count($this->fileData);
 
         if ($total === 0) {
             $queue->delete();
+
             return false;
         }
 
-        $this->mongoDbService->setCollection('ocr_files');
-        $this->mongoDbService->insertMany($this->ocrData);
-        $this->ocrQueue->update(['total' => $total], $queue->id);
+        $queue->ocrFiles->createMany($this->fileData);
 
         $queue->total = $total;
         $queue->save();
@@ -88,14 +95,10 @@ class OcrCreate extends OcrBase
         $results = $this->mongoDbService->find($query);
 
         foreach ($results as $doc) {
-            $this->ocrData[] = [
-                'queue_id' => $queueId,
+            $this->fileData[] = [
+                'queue_id'   => $queueId,
                 'subject_id' => (string) $doc['_id'],
-                'crop'     => config('config.ocr_crop'),
-                'messages' => '',
-                'ocr'      => '',
-                'status'   => 'pending',
-                'url'      => $doc['accessURI']
+                'url'        => $doc['accessURI'],
             ];
         }
     }

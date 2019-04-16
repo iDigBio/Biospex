@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Repositories\MongoDb;
+namespace App\Repositories\Eloquent;
 
 use App\Models\OcrFile as Model;
 use App\Repositories\Interfaces\OcrFile;
 
-class OcrFileRepository extends MongoDbRepository implements OcrFile
+class OcrFileRepository extends EloquentRepository implements OcrFile
 {
 
     /**

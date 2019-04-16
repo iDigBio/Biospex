@@ -2,40 +2,45 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
 class OcrFile extends Model
 {
-    /**
-     * @inheritDoc
-     */
-    protected $connection = 'mongodb';
-
-    /**
-     * Set Collection
-     */
-    protected $collection = 'ocr_files';
+    use LadaCacheTrait;
 
     /**
      * @inheritDoc
      */
-    protected $primaryKey = '_id';
+    protected $table = 'ocr_files';
 
     /**
-     * @inheritDoc
-     */
-    protected $guarded = ['_id'];
-
-    /**
-     * OrderBy
-     *
      * @var array
      */
-    protected $orderBy = [[]];
+    protected $dates = [
+        'created_at',
+        'updated_at'
+    ];
 
+    /**
+     * @inheritDoc
+     */
+    protected $fillable = [
+        'queue_id',
+        'subject_id',
+        'messages',
+        'ocr',
+        'status',
+        'url'
+    ];
 
-    protected static function boot()
+    /**
+     * OCrQueue relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function ocrQueue()
     {
-        parent::boot();
+        return $this->belongsTo(OcrQueue::class);
     }
 }

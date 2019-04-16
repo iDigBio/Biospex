@@ -93,7 +93,7 @@ class OcrProcessCommand extends Command
             }
 
             $files->reject(function ($file) {
-                return $file->status === 'completed' && !empty($file->ocr);
+                return $file->status === 1 && !empty($file->ocr);
             })->each(function ($file) use ($folderPath) {
                 OcrTesseractJob::dispatch($file, $folderPath);
             });
