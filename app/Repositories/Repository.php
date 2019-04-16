@@ -132,20 +132,6 @@ abstract class Repository
     }
 
     /**
-     * @param array $data
-     * @return $this|\Illuminate\Database\Eloquent\Model
-     * @throws \Exception
-     */
-    public function createMany(array $data)
-    {
-        $results = $this->model->createMany($data);
-
-        $this->resetModel();
-
-        return $results;
-    }
-
-    /**
      * @param array $attributes
      * @param array $data
      * @return mixed

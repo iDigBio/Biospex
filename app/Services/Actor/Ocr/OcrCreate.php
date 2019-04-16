@@ -69,7 +69,7 @@ class OcrCreate extends OcrBase
             return false;
         }
 
-        $queue->ocrFiles->createMany($this->fileData);
+        $queue->ocrFiles()->createMany($this->fileData);
 
         $queue->total = $total;
         $queue->save();
