@@ -53,7 +53,7 @@ class OcrQueue extends Model
      */
     public function ocrFiles()
     {
-        return $this->hasMany(OcrFile::class);
+        return $this->hasMany(OcrFile::class, 'queue_id');
     }
 
     /**
