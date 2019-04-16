@@ -41,6 +41,6 @@ class OcrFile extends Model
      */
     public function ocrQueue()
     {
-        return $this->belongsTo(OcrQueue::class);
+        return $this->belongsTo(OcrQueue::class, 'queue_id');
     }
 }
