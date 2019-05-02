@@ -16,7 +16,7 @@
                 <p class="text-center color-action small">{{ __('pages.process_warning') }}</p>
                 <div class="m-4">
                     <h4>{{ __('Ocr Processes') }}</h4>
-                    <div id="ocr-html">{{ __('pages.processes_none.') }}</div>
+                    <div id="ocr-html">{{ __('pages.processes_none') }}</div>
                 </div>
                 <div class="m-4">
                     <div><h4>{{ __('pages.export') }} {{ __('pages.processes') }}</h4></div>

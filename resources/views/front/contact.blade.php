@@ -17,7 +17,7 @@
 @endsection
 
 @section('content')
-    <h2 class="text-center pt-4 text-uppercase">{{ __('pages.biospex') }}{{ __('pages.contact') }}</h2>
+    <h2 class="text-center pt-4 text-uppercase">{{ __('pages.biospex') }} {{ __('pages.contact') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="col-12 col-md-10 offset-md-1">
         <div class="jumbotron box-shadow py-5 my-5 p-sm-5">

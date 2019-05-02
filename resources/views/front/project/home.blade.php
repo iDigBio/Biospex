@@ -122,7 +122,7 @@
         <div class="col-sm-8 offset-md-2">
             <h1 class="text-center content-header text-uppercase" id="expeditions">{{ __('pages.expeditions') }}</h1>
             <div class="text-center mt-4">
-                <button class="toggle-view-btn btn btn-primary"
+                <button class="toggle-view-btn btn btn-primary text-uppercase"
                         data-toggle="collapse"
                         data-target="#active-expeditions-main,#completed-expeditions-main"
                         data-value="{{ __('pages.view') }} {{ __('pages.active') }} {{ __('pages.expeditions') }}"
@@ -151,9 +151,9 @@
 
     <div class="row my-5">
         <div class="col-sm-8 offset-md-2">
-            <h1 class="text-center content-header text-uppercase" id="events">{{ __('pages.events') }}</h1>
+            <h1 class="text-center content-header" id="events">{{ __('pages.events') }}</h1>
             <div class="text-center mt-4">
-                <button class="toggle-view-btn btn btn-primary"
+                <button class="toggle-view-btn btn btn-primary text-uppercase"
                         data-toggle="collapse"
                         data-target="#active-events-main,#completed-events-main"
                         data-value="{{ __('pages.view') }} {{ __('pages.active') }} {{ __('pages.events') }}"

@@ -182,7 +182,7 @@ return [
     'reset'                      => 'Reset',
     'resources'                  => 'Resources',
     'resources_none'             => 'No Resources exist.',
-    'scoreboard'                 => 'scoreboard',
+    'scoreboard'                 => 'Scoreboard',
     'seconds'                    => 'Seconds',
     'separated_by_commas'        => 'Separated by commas',
     'start_date'                 => 'Start Date',

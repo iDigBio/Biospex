@@ -35,7 +35,7 @@ sub footer -->
         <div class="row py-3 align-items-center">
             <!-- Grid column -->
             <div class="col-md-10 col-md-offset-1 text-center d-inline d-sm-flex align-items-start justify-content-between">
-                <h3>{{ _('pages.footer_get_connected') }}</h3>
+                <h3>{{ __('pages.footer_get_connected') }}</h3>
                 <!-- Twitter -->
                 <a class="figure-img"><i class="fab fa-twitter fa-4x"></i></a>
                 <!-- Instagram -->
@@ -75,16 +75,16 @@ sub footer -->
                 <h6 class="text-uppercase font-weight-bold">{{ __('pages.about') }}</h6>
                 <hr class="white mb-2 mt-2 d-inline-block mx-auto" style="width:60px;">
                 <p>
-                    <a href="{{ route('front.teams.index') }}">{{ _('pages.team') }}</a>
+                    <a href="{{ route('front.teams.index') }}">{{ __('pages.team') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('front.faqs.index') }}">{{ _('pages.faq') }}</a>
+                    <a href="{{ route('front.faqs.index') }}">{{ __('pages.faq') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('front.resources.index') }}">{{ _('pages.resources') }}</a>
+                    <a href="{{ route('front.resources.index') }}">{{ __('pages.resources') }}</a>
                 </p>
                 <p>
-                    <a href="{{ route('front.contact.index') }}">{{ _('pages.contact') }}</a>
+                    <a href="{{ route('front.contact.index') }}">{{ __('pages.contact') }}</a>
                 </p>
 
             </div>

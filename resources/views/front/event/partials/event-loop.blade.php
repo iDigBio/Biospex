@@ -33,7 +33,7 @@
             <h4>{{ $event->project->title }}</h4>
         </div>
         <div class="text-center">
-            <button class="btn btn-primary mb-4" data-toggle="modal"
+            <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
                     data-remote="false"
                     data-target="#scoreboard-modal"
                     data-channel="{{ config('config.poll_scoreboard_channel') .'.'. $event->project_id }}"

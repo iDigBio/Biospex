@@ -67,7 +67,7 @@
                                         </span>
                     </div>
                     <div class="form-group">
-                        <label for="recordset" class="mb-0">{{ __('page.import_recordset') }} <span
+                        <label for="recordset" class="mb-0">{{ __('pages.import_recordset') }} <span
                                     class="color-action">*</span></label>
                         <input type="text" name="recordset" id="dwc-recordset" class="form-control" title="Must be valid UUID"
                                pattern="([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}){1}" required>

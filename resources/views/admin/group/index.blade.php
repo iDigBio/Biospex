@@ -11,7 +11,7 @@
     <hr class="header mx-auto" style="width:300px;">
     <div class="col-sm-3 mx-auto text-center my-4">
         <a href="{{ route('admin.groups.create') }}" type="submit"
-           class="btn btn-primary"><i class="fas fa-plus-circle"></i> {{ __('pages.new') }} {{ __('pages.group') }}</a>
+           class="btn btn-primary text-uppercase"><i class="fas fa-plus-circle"></i> {{ __('pages.new') }} {{ __('pages.group') }}</a>
     </div>
     <div class="row">
         <div id="active-expeditions" class="row col-sm-12 mx-auto justify-content-center">

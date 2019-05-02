@@ -27,10 +27,10 @@
             @endfor
             </div>
             <div class="form-group col-md-8 d-flex align-items-start justify-content-between mx-auto">
-                <button type="button" class="btn btn-primary mr-4"
+                <button type="button" class="btn btn-primary mr-4 text-uppercase"
                         data-dismiss="modal">{{ __('pages.cancel') }}
                 </button>
-                <button type="submit" class="btn btn-primary">{{ __('pages.submit') }}</button>
+                <button type="submit" class="btn btn-primary text-uppercase">{{ __('pages.submit') }}</button>
             </div>
         </form>
     </div>

@@ -13,9 +13,9 @@
             <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true"
                aria-expanded="false">{{ __('pages.about') }}</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
-                <a class="dropdown-item text-uppercase" href="{{ route('front.teams.index') }}">{{ _('pages.team') }}</a>
-                <a class="dropdown-item text-uppercase" href="{{ route('front.faqs.index') }}">{{ _('pages.faq') }}</a>
-                <a class="dropdown-item text-uppercase" href="{{ route('front.resources.index') }}">{{ _('pages.resources') }}</a>
+                <a class="dropdown-item text-uppercase" href="{{ route('front.teams.index') }}">{{ __('pages.team') }}</a>
+                <a class="dropdown-item text-uppercase" href="{{ route('front.faqs.index') }}">{{ __('pages.faq') }}</a>
+                <a class="dropdown-item text-uppercase" href="{{ route('front.resources.index') }}">{{ __('pages.resources') }}</a>
             </div>
         </li>
         <li class="nav-item active">
@@ -37,27 +37,27 @@
                    aria-expanded="false">{{ __('pages.admin') }}</a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown02">
                     <a href="{{ route('admin.groups.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ _('pages.groups') }}</a>
+                       type="button">{{ __('pages.groups') }}</a>
                     <a href="{{ route('admin.projects.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ _('pages.projects') }}</a>
+                       type="button">{{ __('pages.projects') }}</a>
                     <a href="{{ route('admin.expeditions.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ _('pages.expeditions') }}</a>
+                       type="button">{{ __('pages.expeditions') }}</a>
                     <a href="{{ route('admin.events.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ _('pages.events') }}</a>
+                       type="button">{{ __('pages.events') }}</a>
                     <a href="#" class="preventDefault dropdown-item text-uppercase"
                        type="button"
                        data-toggle="modal"
                        data-target="#process-modal">{{ __('pages.processes') }}</a>
                     @can('isAdmin', Auth::user())
                         <a href="/admin/nova" class="dropdown-item text-uppercase"
-                           type="button">{{ _('pages.nova') }}</a>
+                           type="button">{{ __('pages.nova') }}</a>
                         <a href="/admin/telescope" class="dropdown-item text-uppercase"
-                           type="button">{{ _('pages.telescope') }}</a>
+                           type="button">{{ __('pages.telescope') }}</a>
                     @endcan
                     <a href="{{ route('admin.users.edit', [Auth::id()]) }}" class="dropdown-item text-uppercase"
-                       type="button">{{ _('pages.account') }}</a>
+                       type="button">{{ __('pages.account') }}</a>
                     <a href="{{ route('app.get.logout') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ _('pages.logout') }}</a>
+                       type="button">{{ __('pages.logout') }}</a>
                 </div>
             </li>
         @else
