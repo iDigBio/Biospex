@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Reset Password') }}
+    {{ __('pages.reset') }} {{ __('pages.password') }}
 @stop
 
 {{-- Content --}}
@@ -17,7 +17,7 @@
 @endsection
 
 @section('content')
-    <h2 class="text-center pt-4">{{ __('Reset Biospex Password') }}</h2>
+    <h2 class="text-center pt-4">{{ __('pages.reset') }} {{ __('pages.password') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="col-12 col-md-10 offset-md-1">
         <div class="card white box-shadow py-5 my-5 p-sm-5">
@@ -25,34 +25,30 @@
                 <form action="{{ route('app.password.request') }}" method="post" role="form" class="form-horizontal">
                     {!! csrf_field() !!}
                     <div class="form-group">
-                        <label for="email" class="col-form-label required">{{ __('Email') }}:</label>
+                        <label for="email" class="col-form-label required">{{ __('pages.email') }}:</label>
                         <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"
                                id="email" name="email"
                                value="{{ old('email') }}" required>
                         <span class="invalid-feedback">{{ $errors->first('email') }}</span>
                     </div>
                     <div class="form-group">
-                        <label for="password" class="col-form-label required">{{ __('Password') }}:</label>
+                        <label for="password" class="col-form-label required">{{ __('pages.password') }}:</label>
                         <input type="password" class="form-control {{ ($errors->has('password')) ? 'is-invalid' : '' }}"
                                id="password" name="password"
                                value="{{ old('password') }}" required>
                         <span class="invalid-feedback">{{ $errors->first('password') }}</span>
                     </div>
                     <div class="form-group">
-                        <label for="password_confirmation" class="col-form-label required">{{ __('Password Confirmation') }}:</label>
+                        <label for="password_confirmation" class="col-form-label required">{{ __('pages.password_confirmation') }}:</label>
                         <input type="password" class="form-control {{ ($errors->has('password_confirmation')) ? 'is-invalid' : '' }}"
                                id="password_confirmation" name="password_confirmation"
                                value="" required>
                         <span class="invalid-feedback">{{ $errors->first('password_confirmation') }}</span>
                     </div>
                     @include('common.recaptcha')
-                    <div class="form-group text-center">
-                        <button type="submit" class="btn btn-primary pl-4 pr-4">{{ __('SUBMIT') }}</button>
-                    </div>
+                    @include('common.submit-button')
                 </form>
-                <div class="mt-4 text-center">
-                    <a href="{{ route('app.get.login') }}">{{ __('Back to Login') }}</a>
-                </div>
+                @include('common.back-login', ['route' => route('app.get.login')])
             </div>
         </div>
     </div>

@@ -107,7 +107,7 @@ class EventPresenter extends Presenter
         return '<a href="https://twitter.com/intent/tweet?url='.$url.'" 
             target="_blank" 
             data-hover="tooltip" 
-            title="'.__('Share on Twitter').'">
+            title="'.__('pages.twitter_share').'">
             <i class="fab fa-twitter"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
 
@@ -126,7 +126,7 @@ class EventPresenter extends Presenter
         return '<a href="http://www.facebook.com/share.php?u='.$url.'&title='.$title.'" 
             target="_blank" 
             data-hover="tooltip" 
-            title="'.__('Share on Facebook').'">
+            title="'.__('pages.facebook_share').'">
             <i class="fab fa-facebook"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
 
@@ -140,7 +140,7 @@ class EventPresenter extends Presenter
         return $this->model->contact_email === null ? '' :
             '<a href="mailto:'.$this->model->contact_email.'" 
             data-hover="tooltip" 
-            title="'.__('Contact').'">
+            title="'.__('pages.contact').'">
             <i class="far fa-envelope"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
 
@@ -153,7 +153,8 @@ class EventPresenter extends Presenter
     {
         return '<a href="'.route('admin.events.show', [
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('View Event').'"><i class="fas fa-eye"></i></a>';
+            ]).'" data-hover="tooltip" title="'.__('pages.view').' ' . __('pages.event').'">
+                <i class="fas fa-eye"></i></a>';
     }
 
     /**
@@ -165,7 +166,8 @@ class EventPresenter extends Presenter
     {
         return '<a href="'.route('admin.events.edit', [
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('Edit Event').'"><i class="fas fa-edit"></i></a>';
+            ]).'" data-hover="tooltip" title="'.__('pages.edit').' ' .__('pages.event').'">
+                <i class="fas fa-edit"></i></a>';
     }
 
     /**
@@ -177,7 +179,7 @@ class EventPresenter extends Presenter
     {
         return '<a href="'.route('admin.events.edit', [
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('Edit Event').'"><i class="fas fa-edit fa-2x"></i></a>';
+            ]).'" data-hover="tooltip" title="'.__('pages.edit').' '.__('pages.event').'"><i class="fas fa-edit fa-2x"></i></a>';
     }
 
     /**
@@ -190,11 +192,11 @@ class EventPresenter extends Presenter
         return '<a href="'.route('admin.events.delete', [
                 $this->model->id,
             ]).'" class="prevent-default"
-            title="'.__('Delete Event').'" 
+            title="'.__('pages.delete').' ' .__('pages.event').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('Delete Event').'?" data-content="'.__('This will permanently delete the record').'">
+            data-title="'.__('pages.delete').' ' .__('pages.event').'?" data-content="'.__('messages.record_delete').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 
@@ -208,11 +210,11 @@ class EventPresenter extends Presenter
         return '<a href="'.route('admin.events.delete', [
                 $this->model->id,
             ]).'" class="prevent-default"
-            title="'.__('Delete Event').'" 
+            title="'.__('pages.delete').' ' .__('pages.event').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('Delete Event').'?" data-content="'.__('This will permanently delete the record').'">
+            data-title="'.__('pages.delete').' ' .__('pages.event').'?" data-content="'.__('messages.record_delete').'">
             <i class="fas fa-trash-alt fa-2x"></i></a>';
     }
 
@@ -231,7 +233,7 @@ class EventPresenter extends Presenter
         data-href="'.$route.'"
         data-success="An email with attached export will be sent."
         data-error="There was an error while exporting. Please inform the Administration"
-        data-hover="tooltip" title="'.__('Download Users File').'"><i class="fas fa-users fa-2x"></i></a>';
+        data-hover="tooltip" title="'.__('pages.event_download_users').'"><i class="fas fa-users fa-2x"></i></a>';
     }
 
     /**
@@ -249,7 +251,7 @@ class EventPresenter extends Presenter
         data-href="'.$route.'"
         data-success="An email with attached export will be sent."
         data-error="There was an error while exporting. Please inform the Administration"
-        data-hover="tooltip" title="'.__('Download Transcripts File').'">
+        data-hover="tooltip" title="'.__('pages.event_download_transcripts').'">
         <i class="fas fa-file-download fa-2x"></i></a>';
     }
 }

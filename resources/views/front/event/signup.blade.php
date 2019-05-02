@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Event Team Sign Up') }}
+    {{ __('pages.event') }} {{ __('pages.team') }} {{ __('pages.registration') }}
 @stop
 
 @section('header')
@@ -17,7 +17,9 @@
 
 {{-- Content --}}
 @section('content')
-    <h2 class="text-center pt-4">{{ __('BIOSPEX EVENT TEAM SIGN UP') }}</h2>
+    <h2 class="text-center pt-4 text-uppercase">
+        {{ __('pages.biospex') }} {{ __('pages.event') }} {{ __('pages.team') }} {{ __('pages.registration') }}
+    </h2>
     <hr class="header mx-auto" style="width:300px;">
 
     <div class="col-12 col-md-10 offset-md-1">
@@ -25,12 +27,12 @@
             <div class="col-8 mx-auto">
                 <div class="row">
                     <div class="col-md-10 col-md-offset-2">
-                        <h4>{{ __('Event') }}: <small>{{ $team->event->title }}</small></h4>
+                        <h4>{{ __('pages.event') }}: <small>{{ $team->event->title }}</small></h4>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-10 col-md-offset-2">
-                        <h4>{{ __('Team') }}: <small>{{ $team->title }}</small></h4>
+                        <h4>{{ __('pages.team') }}: <small>{{ $team->title }}</small></h4>
                     </div>
                 </div>
                 <div class="row">
@@ -42,23 +44,21 @@
                 </div>
                 <form action="{{ route('front.events.join', [$team->uuid]) }}" method="post" role="form">
                     {!! csrf_field() !!}
+                    <input type="hidden" name="team_id" value="{{ $team->id }}">
                     <div class="form-group {{ ($errors->has('nfn_user')) ? 'has-error' : '' }}">
-                        <label for="name" class="col-form-label required">{{ __('Notes From Nature User Name') }}:</label>
+                        <label for="name" class="col-form-label required">{{ __('pages.nfn_user') }}:</label>
                         @if($active)
                             <input type="text" class="form-control {{ ($errors->has('nfn_user')) ? 'is-invalid' : '' }}"
                                    id="nfn_user" name="nfn_user" value="{{ old('nfn_user') }}" required>
                         @else
                             <input type="text" class="form-control {{ ($errors->has('nfn_user')) ? 'is-invalid' : '' }}"
-                                   id="nfn_user" name="nfn_user" value="" placeholder="{{ __('Event Closed') }}"
+                                   id="nfn_user" name="nfn_user" value="" placeholder="{{ __('pages.event_closed') }}"
                                    disabled="disabled">
                         @endif
                         <span class="invalid-feedback">{{ $errors->first('nfn_user') }}</span>
                     </div>
                     @include('common.recaptcha')
-                    <div class="form-group text-center">
-                        <input type="hidden" name="team_id" value="{{ $team->id }}">
-                        <button type="submit" class="btn btn-primary">{{ __('SUBMIT') }}</button>
-                    </div>
+                    @include('common.submit-button')
                 </form>
             </div>
         </div>

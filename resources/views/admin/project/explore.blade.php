@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Explore Subjects') }}
+    {{ __('pages.explore') }} {{ __('pages.subjects') }}
 @stop
 
 @section('custom-style')
@@ -17,7 +17,7 @@
 @section('content')
     @include('admin.project.partials.project-panel')
     <div class="row">
-        <h3 class="mx-auto">{{ __('Subjects currently assigned to Expeditions') }}: <span
+        <h3 class="mx-auto">{{ __('pages.subjects_assigned') }}: <span
                     id="subjectCount">{{ $subjectAssignedCount }}</span></h3>
         <div class="col-md-12 d-flex">
             <div class="table-responsive mb-4" id="jqtable">
@@ -25,8 +25,8 @@
                 <div id="pager"></div>
                 <br/>
                 <input type="hidden" name="subject-ids" id="subject-ids">
-                <a href="#" id="savestate" class="mr-2">{{ __('Save Grid State') }}</a>
-                <a href="#" id="loadstate" class="ml-2">{{ __('Load Grid State') }}</a>
+                <a href="#" id="savestate" class="mr-2">{{ __('pages.grid_save_state') }}</a>
+                <a href="#" id="loadstate" class="ml-2">{{ __('pages.grid_load_state') }}</a>
             </div>
         </div>
     </div>

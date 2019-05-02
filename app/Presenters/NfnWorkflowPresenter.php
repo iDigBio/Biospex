@@ -13,7 +13,7 @@ class NfnWorkflowPresenter extends Presenter
     {
         return $this->model->workflow === null ? '#' :
             '<a href="https://www.zooniverse.org/projects/zooniverse/notes-from-nature/classify?reload=1&workflow='.$this->model->workflow.'" 
-                data-hover="tooltip" title="'.__('Participate').'" target="_blank"><i class="fas fa-keyboard"></i></a>';
+                data-hover="tooltip" title="'.__('pages.participate').'" target="_blank"><i class="fas fa-keyboard"></i></a>';
     }
 
     /**
@@ -25,6 +25,6 @@ class NfnWorkflowPresenter extends Presenter
     {
         return $this->model->workflow === null ? '#' :
             '<a href="https://www.zooniverse.org/projects/zooniverse/notes-from-nature/classify?reload=1&workflow='.$this->model->workflow.'" 
-                data-hover="tooltip" title="'.__('Participate').'" target="_blank"><i class="fas fa-keyboard fa-2x"></i></a>';
+                data-hover="tooltip" title="'.__('pages.participate').'" target="_blank"><i class="fas fa-keyboard fa-2x"></i></a>';
     }
 }

@@ -28,10 +28,10 @@
                 </div>
                 <hr class="header mx-auto" style="width:300px;">
                 <div class="d-flex justify-content-between mt-4">
-                    <span class="text">{{ __('Biospex Subjects') }} {{ $expedition->stat->local_subject_count }}</span>
-                    <span class="text">{{ __('NFN Subjects') }} {{ $expedition->stat->subject_count }}</span>
-                    <span class="text">{{ __('Transcription Goal') }} {{ $expedition->stat->transcriptions_total }}</span>
-                    <span class="text">{{ __('Transcriptions Completed') }} {{ $expedition->stat->percent_completed }}%</span>
+                    <span class="text">{{ __('pages.biospex') }} {{ __('pages.subjects') }} {{ $expedition->stat->local_subject_count }}</span>
+                    <span class="text">{{ __('pages.nfn') }} {{ __('pages.subjects') }} {{ $expedition->stat->subject_count }}</span>
+                    <span class="text">{{ __('pages.transcription') }} {{ __('pages.goal') }} {{ $expedition->stat->transcriptions_total }}</span>
+                    <span class="text">{{ __('pages.transcriptions') }} {{ __('pages.completed') }} {{ $expedition->stat->percent_completed }}%</span>
                 </div>
             </div>
         </div>

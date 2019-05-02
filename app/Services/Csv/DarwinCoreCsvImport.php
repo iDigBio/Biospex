@@ -412,7 +412,7 @@ class DarwinCoreCsvImport
             });
 
         if ($identifierColumnValues->isEmpty()) {
-            $rejected = ['Reason' => __('All identifier columns empty or identifier is URL.')] + $row;
+            $rejected = ['Reason' => __('messages.dwc_import_columns')] + $row;
             $this->reject($rejected);
 
             return false;
@@ -470,14 +470,14 @@ class DarwinCoreCsvImport
     private function checkColumns($row)
     {
         if (! trim($row['id'])) {
-            $rejected = ['Reason' => __('Missing required ID value.')] + $row;
+            $rejected = ['Reason' => __('messages.dwc_missing_id')] + $row;
             $this->reject($rejected);
 
             return true;
         }
 
         if (empty($row['accessURI'])) {
-            $rejected = ['Reason' => __('Missing accessURI.')] + $row;
+            $rejected = ['Reason' => __('messages.dwc_missing_uri')] + $row;
             $this->reject($rejected);
 
             return true;

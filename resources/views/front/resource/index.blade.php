@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Resources') }}
+    {{ __('pages.resources') }}
 @stop
 
 @section('header')
@@ -16,7 +16,7 @@
 @endsection
 
 @section('content')
-    <h2 class="text-center pt-4">{{ __('BIOSPEX RESOURCES') }}</h2>
+    <h2 class="text-center pt-4 text-uppercase">{{ __('pages.biospex') }} {{ __('pages.resources') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="row col-sm-12 mx-auto mt-4 justify-content-center">
         @include('front.resource.partials.resource')

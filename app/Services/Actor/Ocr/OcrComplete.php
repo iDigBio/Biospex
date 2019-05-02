@@ -7,7 +7,6 @@ use App\Repositories\Interfaces\OcrFile;
 use App\Repositories\Interfaces\Subject;
 use App\Notifications\OcrProcessComplete;
 use App\Services\Csv\Csv;
-use App\Services\MongoDbService;
 
 class OcrComplete
 {
@@ -27,28 +26,20 @@ class OcrComplete
     private $ocrFile;
 
     /**
-     * @var \App\Services\MongoDbService
-     */
-    private $mongoDbService;
-
-    /**
      * OcrComplete constructor.
      *
      * @param \App\Repositories\Interfaces\OcrFile $ocrFile
      * @param \App\Repositories\Interfaces\Subject $subjectContract
      * @param \App\Services\Csv\Csv $csvService
-     * @param \App\Services\MongoDbService $mongoDbService
      */
     public function __construct(
         OcrFile $ocrFile,
         Subject $subjectContract,
-        Csv $csvService,
-        MongoDbService $mongoDbService
+        Csv $csvService
     ) {
         $this->ocrFile = $ocrFile;
         $this->subjectContract = $subjectContract;
         $this->csvService = $csvService;
-        $this->mongoDbService = $mongoDbService;
     }
 
     /**
@@ -63,9 +54,7 @@ class OcrComplete
         $csv = $this->updateSubjects($files);
         $this->setOcrCsv($queue, $csv);
         $this->sendNotify($queue);
-
-        $this->mongoDbService->setCollection('ocr_files');
-        $this->mongoDbService->deleteMany(['queue_id' => $queue->id]);
+        $queue->ocrFiles()->delete();
         $queue->delete();
 
         event('ocr.poll');

@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Expeditions') }}
+    {{ __('pages.expeditions') }}
 @stop
 
 @section('header')
@@ -17,15 +17,15 @@
 
 {{-- Content --}}
 @section('content')
-    <h2 class="text-center pt-4">{{ __('BIOSPEX Expeditions') }}</h2>
+    <h2 class="text-center pt-4 text-uppercase">{{ __('pages.biospex') }} {{ __('pages.expeditions') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="row">
         <div class="text-center my-4 mx-auto">
             <button class="toggle-view-btn btn btn-primary"
                     data-toggle="collapse"
                     data-target="#active-expeditions-main,#completed-expeditions-main"
-                    data-value="{{ __('View Active Expeditions') }}"
-            >{{ __('View Completed Expeditions') }}</button>
+                    data-value="{{ __('pages.view') }} {{ __('pages.active') }} {{ __('pages.expeditions') }}"
+            >{{ __('pages.view') }} {{ __('pages.completed') }} {{ __('pages.expeditions') }}</button>
         </div>
     </div>
     <div class="row">

@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Create New Project') }}
+    {{ __('pages.create') }} {{ __('pages.project') }}
 @stop
 
 {{-- Content --}}
@@ -12,7 +12,7 @@
         <div class="col-sm-10 mx-auto">
             <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                 <div class="col-12">
-                    <h2 class="text-center content-header mb-4">{{ __('CREATE PROJECT') }}</h2>
+                    <h2 class="text-center content-header mb-4 text-uppercase">{{ __('pages.create') }} {{ __('pages.project') }}</h2>
                     <form method="post" action="{{ route('admin.projects.store') }}" role="form"
                           enctype="multipart/form-data">
                         {!! csrf_field() !!}
@@ -21,7 +21,7 @@
                         <div class="form-row">
                             <div class="form-group col-sm-6">
                                 <label for="group_id"
-                                       class="col-form-label required">{{ __('Group') }}
+                                       class="col-form-label required">{{ __('pages.group') }}
                                     :</label>
                                 <select name="group_id" id="group_id"
                                         class="form-control custom-select {{ ($errors->has('group_id')) ? 'is-invalid' : '' }}"
@@ -36,7 +36,7 @@
                             </div>
 
                             <div class="form-group col-sm-6">
-                                <label for="status" class="col-form-label required">{{ __('Status') }}:</label>
+                                <label for="status" class="col-form-label required">{{ __('pages.status') }}:</label>
                                 <select name="status" id="status"
                                         class="form-control custom-select {{ ($errors->has('status')) ? 'is-invalid' : '' }}"
                                         required>
@@ -50,7 +50,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="title" class="col-form-label required">{{ __('Title') }}:</label>
+                            <label for="title" class="col-form-label required">{{ __('pages.title') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('title')) ? 'is-invalid' : '' }}"
                                    id="title" name="title"
                                    value="{{ old('title') }}" required>
@@ -58,7 +58,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="contact" class="col-form-label required">{{ __('Contact') }}:</label>
+                            <label for="contact" class="col-form-label required">{{ __('pages.contact') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('contact')) ? 'is-invalid' : '' }}"
                                    id="contact" name="contact"
                                    value="{{ old('contact') }}" required>
@@ -66,7 +66,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="contact_email" class="col-form-label required">{{ __('Contact Email') }}
+                            <label for="contact_email" class="col-form-label required">{{ __('pages.contact') }} {{ __('pages.email') }}
                                 :</label>
                             <input type="email"
                                    class="form-control {{ ($errors->has('contact_email')) ? 'is-invalid' : '' }}"
@@ -78,7 +78,7 @@
                         <div class="form-group">
                             <label for="contact_title"
                                    class="col-form-label {{ ($errors->has('contact_title')) ? 'is-invalid' : '' }} required">
-                                {{ __('Contact Title') }}
+                                {{ __('pages.contact') }} {{ __('pages.title') }}
                                 :</label>
                             <input type="text" class="form-control" id="contact_title" name="contact_title"
                                    value="{{ old('contact_title') }}" required>
@@ -86,7 +86,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="organization" class="col-form-label">{{ __('Organization') }}:</label>
+                            <label for="organization" class="col-form-label">{{ __('pages.organization') }}:</label>
                             <input type="text"
                                    class="form-control {{ ($errors->has('organization')) ? 'is-invalid' : '' }}"
                                    id="organization" name="organization"
@@ -97,7 +97,7 @@
                         <div class="form-group">
                             <label for="organization_website"
                                    class="col-form-label pl-0 {{ ($errors->has('organization_website')) ? 'is-invalid' : '' }}">
-                                {{ __('Organization Website') }}
+                                {{ __('pages.organization_website') }}
                                 :</label>
                             <input type="url" class="form-control" id="organization_website" name="organization_website"
                                    value="{{ old('organization_website') }}">
@@ -105,7 +105,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="project_partners" class="col-form-label">{{ __('Project Partners') }}:</label>
+                            <label for="project_partners" class="col-form-label">{{ __('pages.project_partners') }}:</label>
                             <textarea id="project_partners" name="project_partners"
                                       class="form-control {{ ($errors->has('project_partners')) ? 'is-invalid' : '' }}">
                                 {{ old('project_partners') }}</textarea>
@@ -113,7 +113,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="funding_source" class="col-form-label">{{ __('Funding Source') }}:</label>
+                            <label for="funding_source" class="col-form-label">{{ __('pages.funding_source') }}:</label>
                             <textarea id="funding_source" name="funding_source"
                                       class="form-control {{ ($errors->has('funding_source')) ? 'is-invalid' : '' }}">
                                 {{ old('funding_source') }}</textarea>
@@ -121,7 +121,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="description_short" class="col-form-label required">{{ __('Short Description') }}
+                            <label for="description_short" class="col-form-label required">{{ __('pages.description_short') }}
                                 :</label>
                             <input type="text"
                                    class="form-control {{ ($errors->has('description_short')) ? 'is-invalid' : '' }}"
@@ -131,7 +131,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="description_long" class="col-form-label required">{{ __('Long Description') }}
+                            <label for="description_long" class="col-form-label required">{{ __('pages.description_long') }}
                                 :</label>
                             <textarea id="description_long" name="description_long"
                                       class="form-control textarea {{ ($errors->has('description_long')) ? 'is-invalid' : '' }}"
@@ -140,7 +140,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="incentives" class="col-form-label">{{ __('Incentives') }}:</label>
+                            <label for="incentives" class="col-form-label">{{ __('pages.incentives') }}:</label>
                             <textarea id="incentives" name="incentives"
                                       class="form-control {{ ($errors->has('incentives')) ? 'is-invalid' : '' }}">
                                 {{ old('incentives') }}</textarea>
@@ -148,7 +148,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="geographic_scope" class="col-form-label">{{ __('Geographic Scope') }}:</label>
+                            <label for="geographic_scope" class="col-form-label">{{ __('pages.geographic_scope') }}:</label>
                             <input type="text"
                                    class="form-control {{ ($errors->has('geographic_scope')) ? 'is-invalid' : '' }}"
                                    id="geographic_scope" name="geographic_scope"
@@ -157,7 +157,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="taxonomic_scope" class="col-form-label">{{ __('Taxonomic Scope') }}:</label>
+                            <label for="taxonomic_scope" class="col-form-label">{{ __('pages.taxonomic_scope') }}:</label>
                             <input type="text"
                                    class="form-control {{ ($errors->has('taxonomic_scope')) ? 'is-invalid' : '' }}"
                                    id="taxonomic_scope" name="taxonomic_scope"
@@ -166,7 +166,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="temporal_scope" class="col-form-label">{{ __('Temporal Scope') }}:</label>
+                            <label for="temporal_scope" class="col-form-label">{{ __('pages.temporal_scope') }}:</label>
                             <input type="text"
                                    class="form-control {{ ($errors->has('temporal_scope')) ? 'is-invalid' : '' }}"
                                    id="temporal_scope" name="temporal_scope"
@@ -175,7 +175,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="keywords" class="col-form-label required">{{ __('Keywords') }}:</label>
+                            <label for="keywords" class="col-form-label required">{{ __('pages.keywords') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('keywords')) ? 'is-invalid' : '' }}"
                                    id="keywords" name="keywords"
                                    value="{{ old('keywords') }}" required>
@@ -183,31 +183,31 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="blog_url" class="col-form-label">{{ __('Blog URL') }}:</label>
+                            <label for="blog_url" class="col-form-label">{{ __('pages.blog_url') }}:</label>
                             <input type="url" class="form-control {{ ($errors->has('blog_url')) ? 'is-invalid' : '' }}"
-                                   id="blog_url" name="blog_url"
+                                   id="blog_url" name="blog_url" placeholder="{{ __('pages.blog_url_format') }}"
                                    value="{{ old('blog_url') }}">
                             <span class="invalid-feedback">{{ $errors->first('blog_url') }}</span>
                         </div>
 
                         <div class="form-group">
-                            <label for="facebook" class="col-form-label">{{ __('Facebook URL') }}:</label>
+                            <label for="facebook" class="col-form-label">{{ __('pages.facebook') }}:</label>
                             <input type="url" class="form-control {{ ($errors->has('facebook')) ? 'is-invalid' : '' }}"
-                                   id="facebook" name="facebook"
+                                   id="facebook" name="facebook" placeholder="{{ __('pages.facebook_format') }}"
                                    value="{{ old('facebook') }}">
                             <span class="invalid-feedback">{{ $errors->first('facebook') }}</span>
                         </div>
 
                         <div class="form-group">
-                            <label for="twitter" class="col-form-label">{{ __('Twitter URL') }}:</label>
+                            <label for="twitter" class="col-form-label">{{ __('pages.twitter') }}:</label>
                             <input type="url" class="form-control {{ ($errors->has('twitter')) ? 'is-invalid' : '' }}"
-                                   id="twitter" name="twitter"
+                                   id="twitter" name="twitter" placeholder="{{ __('pages.twitter_format') }}"
                                    value="{{ old('twitter') }}">
                             <span class="invalid-feedback">{{ $errors->first('twitter') }}</span>
                         </div>
 
                         <div class="form-group">
-                            <label for="activities" class="col-form-label">{{ __('Activities') }}:</label>
+                            <label for="activities" class="col-form-label">{{ __('pages.activities') }}:</label>
                             <input type="text" class="form-control"
                                    {{ ($errors->has('activities')) ? 'is-invalid' : '' }}
                                    id="activities" name="activities"
@@ -216,7 +216,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="language_skills" class="col-form-label">{{ __('Language Skills') }}:</label>
+                            <label for="language_skills" class="col-form-label">{{ __('pages.language_skills') }}:</label>
                             <input type="text"
                                    class="form-control {{ ($errors->has('language_skills')) ? 'is-invalid' : '' }}"
                                    id="language_skills" name="language_skills"
@@ -225,7 +225,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="workflow_id" class="col-form-label col-12 required">{{ __('Workflows') }}
+                            <label for="workflow_id" class="col-form-label col-12 required">{{ __('pages.workflows') }}
                                 :</label>
                             <select name="workflow_id" id="workflow_id"
                                     class="form-control custom-select col-sm-5 {{ ($errors->has('workflow_id')) ? 'is-invalid' : '' }}"
@@ -240,7 +240,7 @@
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6 mt-4">
                                 <div class="custom-file">
-                                    <label for="logo" class="custom-file-label">{{ __('Logo: Max 300wx300h') }}:</label>
+                                    <label for="logo" class="custom-file-label">{{ __('pages.logo_max') }}:</label>
                                     <input type="file"
                                            class="form-control custom-file-input {{ ($errors->has('logo')) ? 'is-invalid' : '' }}"
                                            name="logo" id="logo"
@@ -252,15 +252,15 @@
 
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6">
-                                <label for="banner" class="col-form-label">{{ __('Banner') }}:</label>
+                                <label for="banner" class="col-form-label">{{ __('pages.banner') }}:</label>
                                 <input type="text" class="form-control" id="banner" name="banner"
                                        value="{{ old('banner', GeneralHelper::projectBannerFileName()) }}"
                                        readonly>
                             </div>
                             <div class="form-group col-sm-4 pt-3">
                                 <a href="#" data-toggle="modal" data-target="#project-banner-modal"
-                                   data-hover="tooltip" title="{{ __('Click to change banner') }}">
-                                    Click to change banner
+                                   data-hover="tooltip" title="{{ __('pages.banner_click') }}">
+                                    {{ __('pages.banner_click') }}
                                     <img class="img-fluid" id="banner-img"
                                          src="{{ old('banner', GeneralHelper::projectBannerFileUrl()) }}"/>
                                 </a>
@@ -268,7 +268,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="resources" class="col-form-label">{{ __('Resources') }}:</label>
+                            <label for="resources" class="col-form-label">{{ __('pages.resources') }}:</label>
                             <div class="controls col-sm-12">
                                 @include('admin.project.partials.resources')
                             </div>

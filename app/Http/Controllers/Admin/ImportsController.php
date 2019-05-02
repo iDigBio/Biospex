@@ -47,13 +47,13 @@ class ImportsController extends Controller
 
             DwcFileImportJob::dispatch($import);
 
-            FlashHelper::success(__('Upload was successful. You will receive an email when your import data have been processed.'));
+            FlashHelper::success(__('messages.upload_import_success'));
 
             return redirect()->back();
         }
         catch(\Exception $e)
         {
-            FlashHelper::error(__('Error uploading file.'));
+            FlashHelper::error(__('messages.upload_import_error'));
 
             return redirect()->back();
         }
@@ -78,13 +78,13 @@ class ImportsController extends Controller
 
             RecordsetImportJob::dispatch($data);
 
-            FlashHelper::success(__('Upload was successful. You will receive an email when your import data have been processed.'));
+            FlashHelper::success(__('messages.upload_import_success'));
 
             return redirect()->back();
         }
         catch(\Exception $e)
         {
-            FlashHelper::error(__('Error uploading file.'));
+            FlashHelper::error(__('messages.upload_import_error'));
 
             return redirect()->back();
         }
@@ -109,13 +109,13 @@ class ImportsController extends Controller
 
             DwcUriImportJob::dispatch($data);
 
-            FlashHelper::success(__('Upload was successful. You will receive an email when your import data have been processed.'));
+            FlashHelper::success(__('messages.upload_import_success'));
 
             return redirect()->back();
         }
         catch(\Exception $e)
         {
-            FlashHelper::error(__('Error uploading file.'));
+            FlashHelper::error(__('messages.upload_import_error'));
 
             return redirect()->back();
         }

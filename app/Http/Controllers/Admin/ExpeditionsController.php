@@ -426,7 +426,7 @@ class ExpeditionsController extends Controller
 
         OcrCreateJob::dispatch($projectId, $expeditionId);
 
-        FlashHelper::success(__('OCR processing has been submitted. It may take some time before appearing in the Processes menu. You will be notified by email when the process is complete.'));
+        FlashHelper::success(__('messages.ocr_process_success'));
 
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
     }

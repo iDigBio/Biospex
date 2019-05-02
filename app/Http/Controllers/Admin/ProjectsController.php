@@ -113,12 +113,12 @@ class ProjectsController extends Controller
             $project = $this->projectContract->findWith($model->id, ['workflow.actors.contacts']);
             $this->projectService->notifyActorContacts($project);
 
-            FlashHelper::success(__('Record was created successfully.'));
+            FlashHelper::success(__('messages.record_created'));
 
             return redirect()->route('admin.projects.show', [$project->id]);
         }
 
-        FlashHelper::error(__('An error occurred when saving record.'));
+        FlashHelper::error(__('messages.record_save_error'));
 
         return redirect()->route('admin.projects.create')->withInput();
     }
@@ -134,7 +134,7 @@ class ProjectsController extends Controller
         $project = $this->projectContract->findWith($projectId, ['group', 'expeditions.workflowManager']);
 
         if (! $project) {
-            FlashHelper::error(__('Error retrieving record from database.'));
+            FlashHelper::error(__('messages.record_get_error'));
 
             return redirect()->route('admin.projects.show', [$projectId]);
         }
@@ -163,7 +163,7 @@ class ProjectsController extends Controller
     {
         $project = $this->projectContract->findWith($projectId, ['group', 'resources']);
         if (! $project) {
-            FlashHelper::error(__('Error retrieving record from database.'));
+            FlashHelper::error(__('messages.record_get_error'));
 
             return redirect()->route('admin.projects.index');
         }
@@ -199,7 +199,7 @@ class ProjectsController extends Controller
 
         $project = $this->projectContract->update($request->all(), $projectId);
 
-        $project ? FlashHelper::success(__('Record was updated successfully.')) : FlashHelper::error(__('Error while updating record.'));
+        $project ? FlashHelper::success(__('messages.record_updated')) : FlashHelper::error(__('messages.record_updated_error'));
 
         return redirect()->back();
     }
@@ -279,11 +279,11 @@ class ProjectsController extends Controller
 
             DeleteProject::dispatch($project);
 
-            FlashHelper::success(__('Record has been scheduled for deletion and changes will take effect in a few minutes.'));
+            FlashHelper::success(__('messages.record_deleted'));
 
             return redirect()->route('admin.projects.index');
         } catch (\Exception $e) {
-            FlashHelper::error(__('An error occurred when deleting record.'));
+            FlashHelper::error(__('messages.record_delete_error'));
 
             return redirect()->route('admin.projects.index');
         }
@@ -305,7 +305,7 @@ class ProjectsController extends Controller
 
         OcrCreateJob::dispatch($projectId);
 
-        FlashHelper::success(__('OCR processing has been submitted. It may take some time before appearing in the Processes menu. You will be notified by email when the process is complete.'));
+        FlashHelper::success(__('messages.ocr_process_success'));
 
         return redirect()->route('admin.projects.show', [$projectId]);
     }

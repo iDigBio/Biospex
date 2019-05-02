@@ -3,7 +3,9 @@
 namespace App\Jobs;
 
 use App\Models\OcrFile;
+use App\Models\OcrQueue;
 use App\Services\Actor\Ocr\OcrTesseract;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -20,6 +22,11 @@ class OcrTesseractJob implements ShouldQueue
     public $timeout = 36000;
 
     /**
+     * @var \App\Models\OcrQueue
+     */
+    private $ocrQueue;
+
+    /**
      * @var \App\Models\OcrFile
      */
     private $file;
@@ -32,11 +39,13 @@ class OcrTesseractJob implements ShouldQueue
     /**
      * ocrTesseractJob constructor.
      *
+     * @param \App\Models\OcrQueue $ocrQueue
      * @param \App\Models\OcrFile $file
      * @param $folderPath
      */
-    public function __construct(OcrFile $file, $folderPath)
+    public function __construct(OcrQueue $ocrQueue, OcrFile $file, $folderPath)
     {
+        $this->ocrQueue = $ocrQueue;
         $this->file = $file;
         $this->folderPath = $folderPath;
         $this->onQueue(config('config.ocr_tube'));
@@ -56,4 +65,17 @@ class OcrTesseractJob implements ShouldQueue
 
         $this->delete();
     }
+
+    /**
+     * The job failed to process.
+     *
+     * @param  Exception  $exception
+     * @return void
+     */
+    public function failed(Exception $exception)
+    {
+        $this->queue->error = 1;
+        $this->queue->save();
+    }
+
 }

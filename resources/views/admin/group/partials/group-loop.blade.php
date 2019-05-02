@@ -5,9 +5,9 @@
         <div class="row card-body">
             <div class="col-sm-6">
                 <ul class="text">
-                    <li class="smalltext">{{ $group->users_count }} {{ __('Members') }}</li>
-                    <li class="smalltext">{{ $group->projects_count }} {{ __('Projects') }}</li>
-                    <li class="smalltext">{{ $group->expeditions_count }} {{ __('Expeditions') }}</li>
+                    <li class="smalltext">{{ $group->users_count }} {{ __('pages.members') }}</li>
+                    <li class="smalltext">{{ $group->projects_count }} {{ __('pages.projects') }}</li>
+                    <li class="smalltext">{{ $group->expeditions_count }} {{ __('pages.expeditions') }}</li>
                 </ul>
             </div>
             <div class="col-sm-6">

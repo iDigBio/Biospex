@@ -26,23 +26,23 @@
 </table>
 
 <!-- countdown clock -->
-<h2 class="text-center color-action pt-4">{{ __('Time Remaining') }}</h2>
+<h2 class="text-center color-action pt-4">{{ __('pages.time_remaining') }}</h2>
 <div class="clockdiv mx-auto">
     <div>
         <span class="days"></span>
-        <div class="smalltext">{{ __('Days') }}</div>
+        <div class="smalltext">{{ __('pages.days') }}</div>
     </div>
     <div>
         <span class="hours"></span>
-        <div class="smalltext">{{ __('Hours') }}</div>
+        <div class="smalltext">{{ __('pages.hours') }}</div>
     </div>
     <div>
         <span class="minutes"></span>
-        <div class="smalltext">{{ __('Minutes') }}</div>
+        <div class="smalltext">{{ __('pages.minutes') }}</div>
     </div>
     <div>
         <span class="seconds"></span>
-        <div class="smalltext">{{ __('Seconds') }}</div>
+        <div class="smalltext">{{ __('pages.seconds') }}</div>
     </div>
 </div>
 <div id="date" style="display: none">{{ $event->present()->scoreboard_date }}</div>

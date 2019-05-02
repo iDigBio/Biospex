@@ -2,22 +2,22 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Events') }}
+    {{ __('pages.events') }}
 @stop
 
 {{-- Content --}}
 @section('content')
-    <h2 class="text-center pt-4">{{ __('BIOSPEX EVENTS') }}</h2>
+    <h2 class="text-center text-uppercase pt-4">{{ __('pages.biospex') }} {{ __('pages.events') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="row">
         <div class="col-sm-8 offset-md-2 text-center">
-                <button class="toggle-view-btn btn btn-primary my-4 mr-2"
+                <button class="toggle-view-btn btn btn-primary my-4 mr-2 text-uppercase"
                         data-toggle="collapse"
                         data-target="#active-events-main,#completed-events-main"
-                        data-value="{{ __('VIEW ACTIVE EVENTS') }}"
-                >{{ __('VIEW COMPLETED EVENTS') }}</button>
+                        data-value="{{ __('pages.view') }} {{ __('pages.active') }} {{ __('pages.events') }}"
+                >{{ __('pages.view') }} {{ __('pages.completed') }} {{ __('pages.events') }}</button>
                 <a href="{{ route('admin.events.create') }}" type="submit"
-                   class="btn btn-primary my-4 ml-2"><i class="fas fa-plus-circle"></i> {{ __('NEW EVENT') }}</a>
+                   class="btn btn-primary my-4 ml-2 text-uppercase"><i class="fas fa-plus-circle"></i> {{ __('pages.new') }} {{ __('pages.event') }}</a>
         </div>
     </div>
 

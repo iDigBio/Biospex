@@ -4,7 +4,7 @@
             <h5 class="mb-0">
                 <button class="import btn" data-toggle="collapse" data-target="#dwc-upload"
                         aria-expanded="true" aria-controls="dwc-upload">
-                    {{ __('Import Darwin Core File') }}
+                    {{ __('pages.import_darwin_file') }}
                 </button>
             </h5>
         </div>
@@ -20,20 +20,20 @@
                         <a href="#" class="btn btn-outline-primary collapsed preventDefault"
                            data-toggle="collapse" data-target="#dwc-file-instruction"
                            aria-expanded="true"
-                           aria-controls="dwc-file-instruction">{{ __('Instructions') }}</a>
+                           aria-controls="dwc-file-instruction">{{ __('pages.instructions') }}</a>
                         <span id="dwc-file-instruction" class="collapse">
-                                            {{ __('Only zipped Darwin Core files are accepted.') }}
-                                            <a href="{{ Storage::url('public/darwin-core-example.zip') }}" class="link">{{ __('Download Example DWC File.') }}</a>
+                                            {{ __('pages.import_file_type') }}
+                                            <a href="{{ Storage::url('public/darwin-core-example.zip') }}" class="link">{{ __('pages.import_file_tag') }}</a>
                                         </span>
                     </div>
                     <div class="custom-file">
                         <label class="custom-file-label"
-                               for="customFile">{{ __('Choose file...') }}</label>
+                               for="customFile">{{ __('pages.choose_file') }}</label>
                         <input type="file" class="custom-file-input" id="dwc-file" accept=".zip" required>
                     </div>
                     <div class="text-center mt-4">
                         <button type="submit"
-                                class="btn btn-primary pl-4 pr-4">{{ __('UPLOAD') }}</button>
+                                class="btn btn-primary pl-4 pr-4 text-uppercase">{{ __('pages.import') }}</button>
                     </div>
                 </form>
             </div>
@@ -44,7 +44,7 @@
             <h5 class="mb-0">
                 <button class="import btn collapsed" data-toggle="collapse"
                         data-target="#recordset" aria-expanded="false" aria-controls="recordset">
-                    {{ __('Import Using Record Set Id') }}
+                    {{ __('pages.import_recordset') }}
                 </button>
             </h5>
         </div>
@@ -59,31 +59,22 @@
                         <a href="#" class="btn btn-outline-primary collapsed preventDefault"
                            data-toggle="collapse" data-target="#recordset-instruction"
                            aria-expanded="true"
-                           aria-controls="recordset-instruction">{{ __('Instructions') }}</a>
+                           aria-controls="recordset-instruction">{{ __('pages.instructions') }}</a>
                         <span id="recordset-instruction" class="collapse">
                                             <ol class="mt-2">
-                                                <li>{{ __('Go to') }} <a href="https://www.idigbio.org/portal/publishers"
-                                                                         target="_blank" class="link">{{ __('iDigBio.org Publishers Page') }}</a></li>
-                                                <li>{{ __('Find the Publisher you want and select. (e.g. https://herbarium.bio.fsu.edu:8443/)') }}</li>
-                                                <li>{{ __('Click the Collection you are interested in. (e.g. Robert K. Godfrey Herbarium at Florida State University)') }}</li>
-                                                <li>{{ __('iDiogBio does not actually show the recordset id in the page, so it must be retrieved via the URL.') }}
-                                                    <ol>
-                                                        <li>{{ __('Url: https://www.idigbio.org/portal/recordsets/b2b294ed-1742-4479-b0c8-a8891fccd7eb') }}</li>
-                                                        <li>{{ __('Record Id: b2b294ed-1742-4479-b0c8-a8891fccd7eb') }}</li>
-                                                    </ol>
-                                                </li>
+                                                {{ __('html.import_recordset_desc') }}
                                             </ol>
                                         </span>
                     </div>
                     <div class="form-group">
-                        <label for="recordset" class="mb-0">{{ __('Record Set Id') }} <span
+                        <label for="recordset" class="mb-0">{{ __('page.import_recordset') }} <span
                                     class="color-action">*</span></label>
                         <input type="text" name="recordset" id="dwc-recordset" class="form-control" title="Must be valid UUID"
                                pattern="([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}){1}" required>
                     </div>
                     <div class="text-center mt-4">
                         <button type="submit"
-                                class="btn btn-primary pl-4 pr-4">{{ __('UPLOAD') }}</button>
+                                class="btn btn-primary pl-4 pr-4 text-uppercase">{{ __('pages.import') }}</button>
                     </div>
                 </form>
             </div>
@@ -95,7 +86,7 @@
                 <button class="import btn collapsed" data-toggle="collapse"
                         data-target="#dwc-uri" aria-expanded="false"
                         aria-controls="dwc-uri">
-                    {{ __('Import Darwin Core Url') }}
+                    {{ __('pages.import_darwin_url') }}
                 </button>
             </h5>
         </div>
@@ -110,10 +101,10 @@
                         <a href="#" class="btn btn-outline-primary collapsed preventDefault"
                            data-toggle="collapse" data-target="#dwc-uri-instruction"
                            aria-expanded="true"
-                           aria-controls="dwc-uri-instruction">{{ __('Instructions') }}</a>
+                           aria-controls="dwc-uri-instruction">{{ __('pages.instructions') }}</a>
                         <span id="dwc-uri-instruction" class="collapse">
-                                            {{ __('Copy and paste a url link to the zip file. Only zipped Darwin Core files are accepted.') }}
-                                            <a href="{{ Storage::url('public/darwin-core-example.zip') }}" class="link">{{ __('Download Example DWC File.') }}</a>
+                                            {{ __('pages.import_darwin_url_tag') }}
+                                            <a href="{{ Storage::url('public/darwin-core-example.zip') }}" class="link">{{ __('pages.import_file_tag') }}</a>
                                         </span>
                     </div>
                     <div class="form-group">
@@ -123,7 +114,7 @@
                     </div>
                     <div class="text-center mt-4">
                         <button type="submit"
-                                class="btn btn-primary pl-4 pr-4">{{ __('UPLOAD') }}</button>
+                                class="btn btn-primary pl-4 pr-4 text-uppercase">{{ __('pages.import') }}</button>
                     </div>
                 </form>
             </div>

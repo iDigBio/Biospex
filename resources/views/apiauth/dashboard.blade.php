@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('API') }}
+    {{ __('pages.api') }}
 @stop
 
 {{-- Content --}}
@@ -20,7 +20,7 @@
     <div class="row">
         <div class="col-md-8 my-4 mx-auto">
             <div class="card white px-4 box-shadow h-100">
-                <h3 class="text-center pt-4">{{ __('BIOSPEX API') }}</h3>
+                <h3 class="text-center pt-4 text-uppercase">{{ __('pages.biospex') }} {{ __('pages.api') }}</h3>
                 <hr class="header mx-auto" style="width:300px;">
                 <div class="d-flex align-items-start justify-content-between my-4 mx-auto">
                     <a class="btn btn-primary mr-4" href="https://biospex.docs.apiary.io/#">API Docs</a>

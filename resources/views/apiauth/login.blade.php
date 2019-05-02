@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('API Login') }}
+    {{ __('pages.api') }} {{ __('pages.login') }}
 @stop
 
 {{-- Content --}}
@@ -17,7 +17,7 @@
 @endsection
 
 @section('content')
-    <h2 class="text-center pt-4">{{ __('BIOSPEX API LOGIN') }}</h2>
+    <h2 class="text-center pt-4 text-uppercase">{{ __('pages.biospex') }} {{ __('pages.api') }} {{ __('pages.login') }}</h2>
     <hr class="header mx-auto" style="width:300px;">
     <div class="col-12 col-md-10 offset-md-1">
         <div class="card white box-shadow py-5 my-5 p-sm-5">
@@ -25,14 +25,14 @@
                 <form action="{{ route('api.post.login') }}" method="post" role="form">
                     {!! csrf_field() !!}
                     <div class="form-group">
-                        <label for="email" class="col-form-label required">{{ __('Email') }}:</label>
+                        <label for="email" class="col-form-label required">{{ __('pages.email') }}:</label>
                         <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"
                                id="email" name="email"
                                value="{{ old('email') }}" required>
                         <span class="invalid-feedback">{{ $errors->first('email') }}</span>
                     </div>
                     <div class="form-group">
-                        <label for="password" class="col-form-label required">{{ __('Password') }}:</label>
+                        <label for="password" class="col-form-label required">{{ __('pages.password') }}:</label>
                         <input type="password" class="form-control {{ ($errors->has('password')) ? 'is-invalid' : '' }}"
                                id="password" name="password"
                                value="{{ old('password') }}" required>
@@ -40,16 +40,14 @@
                     </div>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="remember" name="remember">
-                        <label class="custom-control-label" for="remember">{{ __('Remember Me') }}</label>
+                        <label class="custom-control-label" for="remember">{{ __('pages.remember_me') }}</label>
                     </div>
                     @include('common.recaptcha')
-                    <div class="form-group text-center">
-                        <button type="submit" class="btn btn-primary pl-4 pr-4">{{ __('SUBMIT') }}</button>
-                    </div>
+                    @include('common.submit-button')
                 </form>
                 <div class="mt-4 text-center">
-                    <a href="{{ route('api.password.request') }}">{{ __('Forgot Password') }}</a> ||
-                    <a href="{{ route('api.get.register') }}">{{ __('Register') }}</a>
+                    <a href="{{ route('api.password.request') }}">{{ __('pages.forgot_your_pass') }}</a> ||
+                    <a href="{{ route('api.get.register') }}">{{ __('pages.register') }}</a>
                 </div>
             </div>
         </div>

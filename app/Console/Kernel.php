@@ -24,8 +24,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // Check ocr processing records and call ocr polling
-        //$schedule->command('ocrprocess:records')->everyFiveMinutes();
+        // Failed jobs report used to check ocr
+        $schedule->command('report:failed')
+            ->timezone('America/New_York')
+            ->dailyAt('05:30');
 
         // Trigger export polling
         $schedule->command('export:poll')->everyFiveMinutes();

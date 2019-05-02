@@ -1,10 +1,10 @@
 <div class="col-md-4 mb-4">
     <div class="card px-4 box-shadow h-100">
         <div class="card-body text-center">
-            <h2 class="card-text">{{ __('Time Remaining') }}</h2>
+            <h2 class="card-text">{{ __('pages.time_remaining') }}</h2>
             <!-- countdown clock -->
             @if(GeneralHelper::eventCompleted($event->end_date, $event->timezone))
-                <h3>{{ __('Completed') }}</h3>
+                <h3>{{ __('pages.completed') }}</h3>
             @else
 
                 <div class="clockdiv" data-value="{{ $event->present()->scoreboard_date }}">
@@ -33,12 +33,12 @@
             <h4>{{ $event->project->title }}</h4>
         </div>
         <div class="text-center">
-            <button class="btn btn-primary mb-4" data-toggle="modal"
+            <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
                     data-remote="false"
                     data-target="#scoreboard-modal"
                     data-channel="{{ config('config.poll_scoreboard_channel') .'.'. $event->project_id }}"
                     data-event="{{ $event->id }}"
-                    data-href="{{ route('ajax.get.scoreboard', [$event->id]) }}">{{ __('SCOREBOARD') }}
+                    data-href="{{ route('ajax.get.scoreboard', [$event->id]) }}">{{ __('pages.scoreboard') }}
             </button>
         </div>
         <div class="card-footer">

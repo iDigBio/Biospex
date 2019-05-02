@@ -17,7 +17,7 @@
 @section('content')
     @include('admin.expedition.partials.expedition-panel')
     <div class="row">
-        <h3 class="mx-auto">{{ __('Subjects currently assigned to Expedition') }}:
+        <h3 class="mx-auto">{{ __('pages.subjects_assigned') }}:
             {{ $expedition->stat->local_subject_count }}
         </h3>
 
@@ -27,8 +27,8 @@
                 <div id="pager"></div>
                 <br/>
                 <input type="hidden" name="subject-ids" id="subject-ids">
-                <a href="#" id="savestate" class="mr-2">{{ __('Save Grid State') }}</a>
-                <a href="#" id="loadstate" class="ml-2">{{ __('Load Grid State') }}</a>
+                <a href="#" id="savestate" class="mr-2">{{ __('pages.grid_save_state') }}</a>
+                <a href="#" id="loadstate" class="ml-2">{{ __('pages.grid_load_state') }}</a>
             </div>
         </div>
     </div>

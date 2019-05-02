@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Clone') }} {{ $expedition->title }}
+    {{ __('pages.clone') }} {{ $expedition->title }}
 @stop
 
 @section('custom-style')
@@ -25,9 +25,9 @@
             <div class="col-sm-10 mx-auto">
                 <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
                     <div class="col-12">
-                        <h2 class="text-center content-header mb-4">{{ __('CLONE EXPEDITION') }}</h2>
+                        <h2 class="text-center content-header mb-4 text-uppercase">{{ __('pages.clone') }} {{ __('pages.expedition') }}</h2>
                         <div class="form-group">
-                            <label for="title" class="col-form-label required">{{ __('Title') }}:</label>
+                            <label for="title" class="col-form-label required">{{ __('pages.title') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('title')) ? 'is-invalid' : '' }}"
                                    id="title" name="title"
                                    value="{{ old('title', $expedition->title) }}" required>
@@ -35,7 +35,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="description" class="col-form-label required">{{ __('Description') }}:</label>
+                            <label for="description" class="col-form-label required">{{ __('pages.description') }}:</label>
                             <input type="text"
                                    class="form-control {{ ($errors->has('description')) ? 'is-invalid' : '' }}"
                                    id="description" name="description"
@@ -44,19 +44,19 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="keywords" class="col-form-label required">{{ __('Keywords') }}:</label>
+                            <label for="keywords" class="col-form-label required">{{ __('pages.keywords') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('keywords')) ? 'is-invalid' : '' }}"
-                                   id="keywords" name="keywords" placeholder="{{ __('Separated by commas') }}"
+                                   id="keywords" name="keywords" placeholder="{{ __('pages.separated_by_commas') }}"
                                    value="{{ old('keywords', $expedition->keywords) }}" required>
                             <span class="invalid-feedback">{{ $errors->first('keywords') }}</span>
                         </div>
 
                         @if(in_array($expedition->project->workflow_id, Config::get('config.nfnWorkflows'), false))
                             <div class="form-group">
-                                <label for="workflow" class="col-form-label">{{ __('NfN Workflow Id') }}:</label>
+                                <label for="workflow" class="col-form-label">{{ __('pages.nfn_workflow_id') }}:</label>
                                 <input type="text" name="workflow" id="workflow"
                                        class="form-control {{ ($errors->has('workflow')) ? 'has-error' : '' }}"
-                                       placeholder="{{ __('Enter Workflow Id after Expedition submitted to Notes From Nature') }}"
+                                       placeholder="{{ __('pages.nfn_workflow_id_placeholder') }}"
                                        value="{{ old('workflow') }}">
                                 <span class="invalid-feedback">{{ $errors->first('workflow') }}</span>
                             </div>
@@ -71,9 +71,9 @@
         </div>
 
         <div class="row">
-            <h3 class="mx-auto">{{ __('Subjects currently assigned to Expedition') }}
+            <h3 class="mx-auto">{{ __('pages.subjects_assigned') }}
                 <span id="max">
-                                {{ __('(:count max. per Expedition)', ['count' => Config::get('config.expedition_size')]) }}
+                                {{ __('pages.subjects_assigned_max)', ['count' => Config::get('config.expedition_size')]) }}
                             </span>:
                 <span id="subject-count-html">0</span></h3>
 
@@ -83,8 +83,8 @@
                     <div id="pager"></div>
                     <br/>
                     <input type="hidden" name="subject-ids" id="subject-ids" value="{{ old('subject-ids') }}">
-                    <a href="#" id="savestate" class="mr-2">{{ __('Save Grid State') }}</a>
-                    <a href="#" id="loadstate" class="ml-2">{{ __('Load Grid State') }}</a>
+                    <a href="#" id="savestate" class="mr-2">{{ __('pages.grid_save_state') }}</a>
+                    <a href="#" id="loadstate" class="ml-2">{{ __('pages.grid_load_state') }}</a>
                 </div>
             </div>
             @include('common.cancel-submit-buttons')

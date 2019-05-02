@@ -16,7 +16,8 @@ class GroupPresenter extends Presenter
     {
         return '<a href="'.route('admin.groups.show', [
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('View Group').'"><i class="fas fa-eye"></i></a>';
+            ]).'" data-hover="tooltip" title="'.__('pages.view').' '.__('pages.group').'">
+            <i class="fas fa-eye"></i></a>';
     }
 
     /**
@@ -28,7 +29,8 @@ class GroupPresenter extends Presenter
     {
         return '<a href="'.route('admin.groups.edit', [
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('Edit Group').'"><i class="fas fa-edit"></i></a>';
+            ]).'" data-hover="tooltip" title="'.__('pages.edit').' '.__('pages.group').'">
+            <i class="fas fa-edit"></i></a>';
     }
 
     /**
@@ -40,7 +42,8 @@ class GroupPresenter extends Presenter
     {
         return '<a href="'.route('admin.groups.edit', [
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('Edit Group').'"><i class="fas fa-edit fa-2x"></i></a>';
+            ]).'" data-hover="tooltip" title="'.__('pages.edit').' '.__('pages.group').'">
+            <i class="fas fa-edit fa-2x"></i></a>';
     }
 
     /**
@@ -53,11 +56,11 @@ class GroupPresenter extends Presenter
         return '<a href="'.route('admin.groups.delete', [
                 $this->model->id,
             ]).'" class="prevent-default"
-            title="'.__('Delete Group').'" 
+            title="'.__('pages.delete').' '.__('pages.group').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('Delete Group').'?" data-content="'.__('This will permanently delete the Group and all its Projects').'">
+            data-title="'.__('pages.delete').' '.__('pages.group').'?" data-content="'.__('messages.record_delete').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 
@@ -71,11 +74,11 @@ class GroupPresenter extends Presenter
         return '<a href="'.route('admin.groups.delete', [
                 $this->model->id,
             ]).'" class="prevent-default"
-            title="'.__('Delete Group').'" 
+            title="'.__('pages.delete').' '.__('pages.group').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('Delete Group').'?" data-content="'.__('This will permanently delete the Group and all its Projects').'">
+            data-title="'.__('pages.delete').' '.__('pages.group').'?" data-content="'.__('messages.record_delete').'">
             <i class="fas fa-trash-alt fa-2x"></i></a>';
     }
 
@@ -90,7 +93,7 @@ class GroupPresenter extends Presenter
 
         return '<a href="#" class="preventDefault" data-toggle="modal" data-remote="'.$route.'" 
                     data-target="#invite-modal" 
-                    data-hover="tooltip" title="'.__('Invite Users to Group').'">
+                    data-hover="tooltip" title="'.__('pages.invite_group').'">
                     <i class="fas fa-user-plus"></i></a>';
     }
 
@@ -105,7 +108,7 @@ class GroupPresenter extends Presenter
 
         return '<a href="#" class="preventDefault" data-toggle="modal" data-remote="'.$route.'" 
                     data-target="#invite-modal" 
-                    data-hover="tooltip" title="'.__('Invite Users to Group').'">
+                    data-hover="tooltip" title="'.__('pages.invite_group').'">
                     <i class="fas fa-user-plus fa-2x"></i></a>';
     }
 }

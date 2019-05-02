@@ -7,31 +7,23 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class NfnExportComplete extends Notification implements ShouldQueue
+class FailedJobReport extends Notification implements ShouldQueue
 {
-
     use Queueable;
 
     /**
-     * @var array
+     * @var string
      */
     private $message;
 
     /**
-     * @var null
-     */
-    private $csv;
-
-    /**
      * Create a new notification instance.
      *
-     * @param array $message
-     * @param null $csv
+     * @param string $message
      */
-    public function __construct($message, $csv = null)
+    public function __construct($message)
     {
         $this->message = $message;
-        $this->csv = $csv;
         $this->onQueue(config('config.default_tube'));
     }
 
@@ -52,21 +44,8 @@ class NfnExportComplete extends Notification implements ShouldQueue
      */
     public function toMail()
     {
-        $mailMessage = new MailMessage;
-
-        $mailMessage->subject(__('pages.notice_subject_export_complete'));
-
-        if ($this->csv !== null)
-        {
-            $mailMessage->attach($this->csv, [
-                'as' => 'missingImages.csv',
-                'mime' => 'text/csv',
-            ]);
-        }
-
-        $message = implode('<br />', $this->message);
-
-        return $mailMessage->markdown('mail.nfnexportcomplete', ['message' => $message]);
+        return (new MailMessage)
+            ->markdown('mail.failedjob', ['message' => $this->message]);
     }
 
     /**

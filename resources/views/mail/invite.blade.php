@@ -1,5 +1,5 @@
 @component('mail::message')
-# @lang('messages.welcome')
+# @lang('pages.welcome')
 
 @lang('messages.group_invite_message', ['title' => $title])
 

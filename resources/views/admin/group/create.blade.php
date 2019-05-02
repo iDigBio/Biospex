@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ __('Create Group') }}
+    {{ __('pages.create') }} {{ __('pages.group') }}
 @stop
 
 {{-- Content --}}
@@ -16,9 +16,9 @@
                     {!! csrf_field() !!}
                     <input type="hidden" value="{{ Auth::id() }}" name="owner" id="owner">
                     <div class="col-12">
-                        <h2 class="text-center content-header mb-4">{{ __('CREATE GROUP') }}</h2>
+                        <h2 class="text-center content-header mb-4 text-uppercase">{{ __('pages.create') }} {{ __('pages.group') }}</h2>
                         <div class="form-group">
-                            <label for="title" class="col-form-label required">{{ __('Title') }}:</label>
+                            <label for="title" class="col-form-label required">{{ __('pages.title') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('title')) ? 'is-invalid' : '' }}"
                                    id="title" name="title"
                                    value="{{ old('title') }}" required>

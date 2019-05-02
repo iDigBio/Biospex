@@ -1,6 +1,6 @@
 @if($error)
     <div class="col-md-12 text-center">
-        <h3>{{ __('You do not have sufficient permissions.') }}</h3>
+        <h3>{{ __('pages.insufficient_permissions') }}</h3>
     </div>
 @else
     @foreach ($expedition->actors as $actor)
@@ -9,7 +9,7 @@
                 <a class="float-right mr-4"
                    href="{{ route('admin.downloads.regenerate', [$expedition->project->id, $expedition->id]) }}"
                    data-hover="tooltip"
-                   title="{{ __('Regenerate Export File Download') }}">
+                   title="{{ __('pages.regenerate_export') }}">
                     <i class="fas fa-redo-alt"></i></a>
             </h3>
             <div class="table-responsive">
@@ -44,19 +44,19 @@
                                         @can('isOwner', $expedition->project->group)
                                             <a href="{{ route('admin.downloads.download', [$expedition->project->id, $expedition->id, $download->id]) }}"
                                                data-hover="tooltip"
-                                               title="{{ __('Get') }} {{ $download->type }}">
+                                               title="{{ __('pages.download') }} {{ $download->type }}">
                                                 <i class="fas fa-file-download fa-2x"></i></a>
                                             @if ($download->type === 'summary')
                                                 <a href="{{ route('admin.downloads.summary', [$expedition->project->id, $expedition->id]) }}"
                                                    data-hover="tooltip" target="_blank"
-                                                   title="{{ __('View') }} {{ $download->type }}">
+                                                   title="{{ __('pages.view') }} {{ $download->type }}">
                                                     <i class="fas fa-eye fa-2x"></i></a>
                                             @endif
                                         @endcan
                                     @else
                                         <a href="{{ route('admin.downloads.download', [$expedition->project->id, $expedition->id, $download->id]) }}"
                                            data-hover="tooltip"
-                                           title="{{ __('Get') }} {{ $download->type }}">
+                                           title="{{ __('pages.download') }} {{ $download->type }}">
                                     @endif
                                 </td>
                             </tr>

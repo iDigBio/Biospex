@@ -31,11 +31,11 @@ class UserPresenter extends Presenter
                 $this->model->pivot->group_id,
                 $this->model->id,
             ]).'" class="prevent-default"
-            title="'.__('Delete Group Member').'" 
+            title="'.__('pages.delete').' '.__('pages.member').'" 
             data-hover="tooltip"        
             data-method="delete"
             data-confirm="confirmation"
-            data-title="'.__('Delete Group Member').'?" data-content="'.__('This will permanently delete the member').'">
+            data-title="'.__('pages.delete').' '.__('pages.member').'?" data-content="'.__('messages.group_delete_user_msg').'">
             <i class="fas fa-trash-alt"></i></a>';
     }
 }

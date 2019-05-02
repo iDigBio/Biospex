@@ -1,10 +1,10 @@
 @if($error)
     <div class="col-md-8 mx-auto">
-        <h3 class="text-center">{{ __('You do not have sufficient permissions.') }}</h3>
+        <h3 class="text-center">{{ __('pages.insufficient_permissions') }}</h3>
     </div>
 @else
     <div class="col-sm-8 mx-auto">
-        <h3 class="text-center">{{ __('Invite users to :group group.', ['group' => $group->title]) }}</h3>
+        <h3 class="text-center">{{ __('pages.invite_group', ['group' => $group->title]) }}</h3>
         <form action="{{ route('admin.invites.store', [$group->id]) }}" method="post" role="form">
             {!! csrf_field() !!}
             <input type="hidden" name="entries" value="{{ old('entries', $inviteCount) }}">
@@ -20,7 +20,7 @@
                                class="form-control {{ ($errors->has("invites.$i.email")) ? 'is-invalid' : '' }}"
                                id="invites[][email]" name="invites[][email]"
                                value="{{ old("invites.$i.email", $group->invites[$i]->email ?? '') }}"
-                               placeholder="{{ __('Email') }}" required>
+                               placeholder="{{ __('pages.email') }}" required>
                         <span class="invalid-feedback">{{ $errors->first("invites.$i.email") }}</span>
                     </div>
                 </div>
@@ -28,9 +28,9 @@
             </div>
             <div class="form-group col-md-8 d-flex align-items-start justify-content-between mx-auto">
                 <button type="button" class="btn btn-primary mr-4"
-                        data-dismiss="modal">{{ __('CANCEL') }}
+                        data-dismiss="modal">{{ __('pages.cancel') }}
                 </button>
-                <button type="submit" class="btn btn-primary">{{ __('SUBMIT') }}</button>
+                <button type="submit" class="btn btn-primary">{{ __('pages.submit') }}</button>
             </div>
         </form>
     </div>

@@ -11,8 +11,8 @@
 
         <div class="card-body white text-center">
             <div class="d-flex justify-content-between">
-                <p><small>{{ $expedition->stat->transcriptions_completed }} {{ __('Transcriptions') }}</small></p>
-                <p><small>{{ $expedition->stat->percent_completed }}% {{ __('Complete') }}</small></p>
+                <p><small>{{ $expedition->stat->transcriptions_completed }} {{ __('pages.transcriptions') }}</small></p>
+                <p><small>{{ $expedition->stat->percent_completed }}% {{ __('pages.completed') }}</small></p>
             </div>
             <hr>
             <div class="d-flex align-items-start justify-content-between mt-4 mx-auto">

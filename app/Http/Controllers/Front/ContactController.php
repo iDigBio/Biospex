@@ -36,7 +36,7 @@ class ContactController extends Controller
 
         Mail::to(config('mail.from.address'))->send(new ContactForm($contact));
 
-        FlashHelper::success(__('Your message has been sent. Thank you.'));
+        FlashHelper::success(__('messages.contact_success'));
 
         return redirect()->route('home');
     }
