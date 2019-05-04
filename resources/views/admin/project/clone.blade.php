@@ -15,7 +15,6 @@
                     <h2 class="text-center content-header mb-4 text-uppercase">{{ __('pages.clone') }} {{ __('pages.project') }}</h2>
                     <form method="post" action="{{ route('admin.projects.store', $project->id) }}" role="form"
                           enctype="multipart/form-data">
-                        {!! method_field('put') !!}
                         {!! csrf_field() !!}
                         <input type="hidden" name="entries" value="{{ old('entries', $resourceCount) }}">
                         <input type="hidden" name="id" value="">

@@ -19,8 +19,8 @@
     <form id="gridForm" method="post"
           action="{{ route('admin.expeditions.store', [$expedition->project->id, $expedition->id]) }}"
           role="form" enctype="multipart/form-data">
-        {!! method_field('put') !!}
         {!! csrf_field() !!}
+        <input type="hidden" name="project_id" value="{{ $expedition->project->id }}">
         <div class="row">
             <div class="col-sm-10 mx-auto">
                 <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
@@ -51,6 +51,23 @@
                             <span class="invalid-feedback">{{ $errors->first('keywords') }}</span>
                         </div>
 
+                        <div class="form-row mt-4">
+                            <div class="form-group col-sm-6 mt-4">
+                                <div class="custom-file">
+                                    <label for="logo" class="custom-file-label">{{ __('pages.logo') }}:</label>
+                                    <input type="file"
+                                           class="form-control custom-file-input {{ ($errors->has('logo')) ? 'is-invalid' : '' }}"
+                                           name="logo" id="logo"
+                                           accept="image/svg+xml, image/png, image/jpg">
+                                    <span class="invalid-feedback">{{ $errors->first('logo') }}</span>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
+                                     src="{{ GeneralHelper::expeditionDefaultLogo() }}"/>
+                            </div>
+                        </div>
+
                         @if(in_array($expedition->project->workflow_id, Config::get('config.nfnWorkflows'), false))
                             <div class="form-group">
                                 <label for="workflow" class="col-form-label">{{ __('pages.nfn_workflow_id') }}:</label>
@@ -73,7 +90,7 @@
         <div class="row">
             <h3 class="mx-auto">{{ __('pages.subjects_assigned') }}
                 <span id="max">
-                                {{ __('pages.subjects_assigned_max)', ['count' => Config::get('config.expedition_size')]) }}
+                                {{ __('pages.subjects_assigned_max', ['count' => Config::get('config.expedition_size')]) }}
                             </span>:
                 <span id="subject-count-html">0</span></h3>
 

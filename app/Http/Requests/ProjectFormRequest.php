@@ -38,7 +38,6 @@ class ProjectFormRequest extends Request
             'twitter'                 => 'nullable|url',
             'logo'                    => [
                 'image',
-                'dimensions:max_width=300,max_height=300',
                 new FileUploadNameValidation(),
             ],
             'resources.*.type'        => [new ResourceDownloadValidation()],

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\FileUploadNameValidation;
 use Config;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,6 +24,10 @@ class ExpeditionFormRequest extends Request
             'title' => 'required|between:6,140|unique:expeditions,title,' . $this->route('expeditions'),
             'description' => 'required|between:6,140',
             'keywords' => 'required',
+            'logo'                    => [
+                'image',
+                new FileUploadNameValidation(),
+            ],
             'subjectCount' => 'integer|max:' . Config::get('config.expedition_size'),
             'workflow' => 'integer|nullable|required_with:current_workflow:same:current_workflow'
         ];

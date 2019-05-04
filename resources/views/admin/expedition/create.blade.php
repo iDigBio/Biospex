@@ -20,6 +20,7 @@
           action="{{ route('admin.expeditions.store', [$project->id]) }}"
           role="form" enctype="multipart/form-data">
         {!! csrf_field() !!}
+        <input type="hidden" name="project_id" value="{{ $project->id }}">
         <div class="row">
             <div class="col-sm-10 mx-auto">
                 <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">
@@ -57,12 +58,12 @@
                                     <input type="file"
                                            class="form-control custom-file-input {{ ($errors->has('logo')) ? 'is-invalid' : '' }}"
                                            name="logo" id="logo"
-                                           accept="image/png, image/jpg">
+                                           accept="image/png,image/jpg">
                                     <span class="invalid-feedback">{{ $errors->first('logo') }}</span>
                                 </div>
                             </div>
                             <div class="form-group col-sm-6">
-                                <img class="img-fluid" style="display: inline; width: 100px; height: 100px;" src=""/>
+                                <img class="img-fluid" style="display: inline; width: 100px; height: 100px;" src="{{ GeneralHelper::expeditionDefaultLogo() }}"/>
                             </div>
                         </div>
 
