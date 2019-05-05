@@ -2,9 +2,12 @@
 
 namespace App\Jobs;
 
+use App\Models\User;
+use App\Notifications\JobError;
 use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\TranscriptionLocation;
 use App\Services\Google\FusionTableService;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -84,8 +87,17 @@ class NfnClassificationsFusionTableJob implements ShouldQueue
                 $this->createProjectFusionTable() :
                 $this->updateProjectFusionTable();
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
+            $messages = [
+                'Error processing fusion table for Project '.$this->project->id,
+                'File: '.$e->getFile(),
+                'Message: '.$e->getMessage(),
+                'Line: '.$e->getLine(),
+            ];
+
+            $user = User::find(1);
+            $user->notify(new JobError(__FILE__, $messages));
             $this->delete();
         }
     }
