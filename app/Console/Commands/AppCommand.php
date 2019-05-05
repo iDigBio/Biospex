@@ -73,7 +73,10 @@ class AppCommand extends Command
         }
         catch (Exception $e)
         {
-            dump($e->getMessage());
+            echo $e->getFile() . PHP_EOL;
+            echo $e->getLine() . PHP_EOL;
+            echo $e->getMessage() . PHP_EOL;
+            echo $e->getTraceAsString() . PHP_EOL;
         }
 
     }
