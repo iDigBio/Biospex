@@ -42,17 +42,6 @@ class TranscriptionLocationRepository extends EloquentRepository implements Tran
             ->where('project_id', $projectId)
             ->groupBy('state_county')
             ->get();
-        /*
-        $results = $this->model
-            ->with(['stateCounty' => function ($query)
-            {
-                $query->select('state_county','geometry');
-            }])
-            ->where('project_id', $projectId)
-            ->where('state_county', DB::raw('COUNT(state_county) as count'))
-            ->groupBy('state_county')
-            ->get();
-        */
 
         $this->resetModel();
 
