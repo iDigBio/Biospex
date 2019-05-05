@@ -22,6 +22,10 @@ class ProjectRepository extends EloquentRepository implements Project
     {
         $project = $this->model->create($attributes);
 
+        if ( ! isset($attributes['resources'])) {
+            return true;
+        }
+
         $resources = collect($attributes['resources'])->reject(function ($resource) {
             return $this->filterOrDeleteResources($resource);
         })->map(function ($resource) {
@@ -44,6 +48,10 @@ class ProjectRepository extends EloquentRepository implements Project
 
         $attributes['slug'] = null;
         $model->fill($attributes)->save();
+
+        if ( ! isset($attributes['resources'])) {
+            return true;
+        }
 
         $resources = collect($attributes['resources'])->reject(function ($resource) {
             return $this->filterOrDeleteResources($resource);
