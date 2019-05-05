@@ -23,11 +23,7 @@ class TranscriptionLocationRepository extends EloquentRepository implements Tran
      */
     public function getStateGroupByCountByProjectId($projectId)
     {
-        $results = $this->model
-            ->where('project_id', $projectId)
-            ->where('state_county', DB::raw('COUNT(*) as count'))
-            ->groupBy('state_county')
-            ->get();
+        $results = $this->model->where('project_id', $projectId)->where('state_county', DB::raw('COUNT(*) as count'))->groupBy('state_county')->get();
 
         $this->resetModel();
 
@@ -41,6 +37,12 @@ class TranscriptionLocationRepository extends EloquentRepository implements Tran
      */
     public function getTranscriptionFusionTableData($projectId)
     {
+        $results = $this->model->selectRaw('state_county, count(*) as count')
+            ->with('stateCounty')
+            ->where('project_id', $projectId)
+            ->groupBy('state_county')
+            ->get();
+        /*
         $results = $this->model
             ->with(['stateCounty' => function ($query)
             {
@@ -50,6 +52,7 @@ class TranscriptionLocationRepository extends EloquentRepository implements Tran
             ->where('state_county', DB::raw('COUNT(state_county) as count'))
             ->groupBy('state_county')
             ->get();
+        */
 
         $this->resetModel();
 
