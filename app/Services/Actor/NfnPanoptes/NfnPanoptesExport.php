@@ -376,7 +376,7 @@ class NfnPanoptesExport
      */
     private function createCsv($csvExport)
     {
-        if (0 === count($csvExport[0]))
+        if (0 === count($csvExport))
         {
             return false;
         }
