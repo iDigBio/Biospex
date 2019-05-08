@@ -376,7 +376,7 @@ class NfnPanoptesExport
      */
     private function createCsv($csvExport)
     {
-        if (0 === count($csvExport))
+        if (0 === count($csvExport[0]))
         {
             return false;
         }
@@ -384,7 +384,7 @@ class NfnPanoptesExport
         $this->csvFileName = $this->actorImageService->expedition->uuid . '.csv';
         $this->csvFilePath = $this->actorImageService->tmpDirectory . '/' . $this->csvFileName;
         $this->csvService->writerCreateFromPath($this->csvFilePath);
-        $this->csvService->insertOne(array_keys($csvExport[0]));
+        $this->csvService->insertOne(array_keys(reset($csvExport)));
         $this->csvService->insertAll($csvExport);
 
         return true;
