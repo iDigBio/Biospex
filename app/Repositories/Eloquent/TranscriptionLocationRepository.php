@@ -41,13 +41,9 @@ class TranscriptionLocationRepository extends EloquentRepository implements Tran
      */
     public function getTranscriptionFusionTableData($projectId)
     {
-        $results = $this->model
-            ->with(['stateCounty' => function ($query)
-            {
-                $query->select('state_county','geometry');
-            }])
+        $results = $this->model->selectRaw('state_county, count(*) as count')
+            ->with('stateCounty')
             ->where('project_id', $projectId)
-            ->where('state_county', DB::raw('COUNT(state_county) as count'))
             ->groupBy('state_county')
             ->get();
 

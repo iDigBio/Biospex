@@ -116,11 +116,15 @@ class ProjectRepository extends EloquentRepository implements Project
 
     /**
      * @param array $attributes
-     * @return \App\Repositories\Eloquent\EloquentRepository|\Illuminate\Database\Eloquent\Model|void
+     * @return \App\Repositories\Eloquent\EloquentRepository|bool|\Illuminate\Database\Eloquent\Model
      */
     public function create(array $attributes)
     {
         $project = $this->model->create($attributes);
+
+        if ( ! isset($attributes['resources'])) {
+            return true;
+        }
 
         $resources = collect($attributes['resources'])->reject(function ($resource) {
             return $this->filterOrDeleteResources($resource);
@@ -133,7 +137,7 @@ class ProjectRepository extends EloquentRepository implements Project
 
     /**
      * Override project update.
-     *
+     * TODO move resource code
      * @param array $attributes
      * @param $resourceId
      * @return bool
@@ -144,6 +148,10 @@ class ProjectRepository extends EloquentRepository implements Project
 
         $attributes['slug'] = null;
         $model->fill($attributes)->save();
+
+        if ( ! isset($attributes['resources'])) {
+            return true;
+        }
 
         $resources = collect($attributes['resources'])->reject(function ($resource) {
             return $this->filterOrDeleteResources($resource);
