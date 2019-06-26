@@ -1,10 +1,12 @@
 {
-    "/pdfmake.js": "/pdfmake.js?id=d0a6da29476e4de28e6b",
-    "/xlsx.js": "/xlsx.js?id=3ecd1464d580f9448648",
-    "/canvg.js": "/canvg.js?id=c23a6632fb849a7f8646",
-    "/responsivedefaults.js": "/responsivedefaults.js?id=148b598b5e58b9e9caea",
-    "/js/vendor.js": "/js/vendor.js?id=4f638f5285b686425bd7",
-    "/js/front.js": "/js/front.js?id=a9dba847bc279e6c2e2e",
-    "/css/front.css": "/css/front.css?id=a9ba8866e0ed54c8621f",
-    "/js/manifest.js": "/js/manifest.js?id=d200d5dda0ae7fcfb0d0"
+    "/js/front.js": "/js/front.js?id=f6e82688afbf964c1848",
+    "/css/front.css": "/css/front.css?id=de4946b03c99c7831434",
+    "/js/vendor.js": "/js/vendor.js?id=8f6af7eb58c00f5f0891",
+    "/js/manifest.js": "/js/manifest.js?id=40dcfff9d09d402daf38",
+    "/js/amChartMap.js": "/js/amChartMap.js?id=dcd4104ddabc214ae973",
+    "/js/amChartMap.min.js": "/js/amChartMap.min.js?id=dcd4104ddabc214ae973",
+    "/js/amChartTranscript.js": "/js/amChartTranscript.js?id=c8630bd63d116acedace",
+    "/js/amChartTranscript.min.js": "/js/amChartTranscript.min.js?id=c8630bd63d116acedace",
+    "/js/amChartStat.js": "/js/amChartStat.js?id=039c2c68f68e30fa07dd",
+    "/js/amChartStat.min.js": "/js/amChartStat.min.js?id=039c2c68f68e30fa07dd"
 }

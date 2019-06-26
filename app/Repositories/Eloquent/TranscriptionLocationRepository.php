@@ -4,7 +4,6 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\TranscriptionLocation as Model;
 use App\Repositories\Interfaces\TranscriptionLocation;
-use Illuminate\Support\Facades\DB;
 
 class TranscriptionLocationRepository extends EloquentRepository implements TranscriptionLocation
 {
@@ -19,32 +18,18 @@ class TranscriptionLocationRepository extends EloquentRepository implements Tran
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function getStateGroupByCountByProjectId($projectId)
+    public function getCountyData($projectId, $stateId)
     {
-        $results = $this->model
+        $results = $this->model->with(['stateCounty' => function($q) use ($stateId) {
+            $q->select('id', 'state_county','geo_id_2')->where('state_num', $stateId);
+        }])->whereHas('stateCounty', function($query) use ($stateId) {
+           $query->where('state_num', $stateId);
+        })
+            ->selectRaw('count(*) as count, state_county_id')
+            ->groupBy('state_county_id')
             ->where('project_id', $projectId)
-            ->where('state_county', DB::raw('COUNT(*) as count'))
-            ->groupBy('state_county')
-            ->get();
-
-        $this->resetModel();
-
-        return $results;
-    }
-
-    /**
-     * @param $projectId
-     * @return \Illuminate\Database\Eloquent\Collection|mixed|static[]
-     * @throws \Exception
-     */
-    public function getTranscriptionFusionTableData($projectId)
-    {
-        $results = $this->model->selectRaw('state_county, count(*) as count')
-            ->with('stateCounty')
-            ->where('project_id', $projectId)
-            ->groupBy('state_county')
             ->get();
 
         $this->resetModel();

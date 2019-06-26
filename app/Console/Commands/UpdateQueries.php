@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\TranscriptLocationUpdate;
 use App\Models\Download;
+use App\Models\Project;
 use DB;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -34,6 +36,15 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
+        $this->updateDownloads();
+        $this->updateTranscriptLocations();
+    }
+
+    /**
+     *
+     */
+    public function updateDownloads()
+    {
         DB::statement("ALTER TABLE `downloads` CHANGE `type` `type` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;");
         DB::statement("ALTER TABLE `project_resources` CHANGE `type` `type` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;");
 
@@ -56,6 +67,24 @@ class UpdateQueries extends Command
                     break;
             }
             $download->save();
+        });
+    }
+
+    /**
+     * "13,15,16,17,18,26,31,33,34,36,38,44,45,47,49,51,53,55,58,59,61,62,63,65,66,75,77,78,82"
+     */
+    public function updateTranscriptLocations()
+    {
+        $project = Project::with([
+            'expeditions' => function ($q) {
+                $q->whereHas('nfnWorkflow');
+            },
+        ])->get();
+
+        $project->each(function($project){
+            $project->expeditions->each(function($expedition){
+                TranscriptLocationUpdate::dispatch($expedition);
+            });
         });
     }
 }

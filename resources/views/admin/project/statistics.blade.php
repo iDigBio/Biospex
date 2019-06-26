@@ -45,7 +45,7 @@
                 <hr>
                 @if(isset($transcriptions))
                     <div class="row card-body">
-                        <div id="chartdiv" style="width: 100%; height: 600px; color: #000000; font-size: 0.8em"></div>
+                        <div id="statDiv" style="width: 100%; height: 600px; color: #000000; font-size: 0.8em"></div>
                     </div>
                 @else
                     <p class="text-center">{{ __('pages.transcriptions_none') }}</p>
@@ -63,73 +63,8 @@
         </script>
     @endif
     @if(isset($transcriptions))
-        <script>
-            var chart = am4core.createFromConfig(
-                {
-                    "xAxes": [{
-                        "type": "CategoryAxis",
-                        "title": {
-                            "text": "Transcriptions"
-                        },
-                        "dataFields": {
-                            "category": "transcriptions"
-                        },
-                        "tooltip": {
-                            "background": {
-                                "fill": "#07BEB8",
-                                "strokeWidth": 0,
-                                "cornerRadius": 3,
-                                "pointerLength": 0
-                            },
-                            "dy": 5
-                        }
-                    }],
-                    "yAxes": [{
-                        "type": "ValueAxis",
-                        "title": {
-                            "text": "Number of Transcribers"
-                        },
-                        "tooltip": {
-                            "disabled": true
-                        },
-                        "calculateTotals": true
-                    }],
-                    "cursor": {
-                        "type": "XYCursor",
-                        "lineX": {
-                            "stroke": "#8F3985",
-                            "strokeWidth": 4,
-                            "strokeOpacity": 0.2,
-                            "strokeDasharray": ""
-                        },
-                        "lineY": {
-                            "disabled": true
-                        }
-                    },
-                    "scrollbarX": {
-                        "type": "Scrollbar"
-                    },
-                    "series": [{
-                        "type": "ColumnSeries",
-                        "dataFields": {
-                            "valueY": "transcribers",
-                            "categoryX": "transcriptions"
-                        },
-                        "tooltipHTML": "<span style='color:#000000;'>{valueY.value} Transcribers: {categoryX} Transcriptions</span>",
-                        "tooltip": {
-                            "background": {
-                                "fill": "#FFF",
-                                "strokeWidth": 1
-                            },
-                            "getStrokeFromObject": true,
-                            "getFillFromObject": false
-                        },
-                        "fillOpacity": 0.8,
-                        "strokeWidth": 0,
-                        "stacked": true
-                    }],
-                    "data": {!! $transcriptions !!}
-                }, "chartdiv", am4charts.XYChart);
-        </script>
+        <script src="//www.amcharts.com/lib/4/core.js"></script>
+        <script src="//www.amcharts.com/lib/4/charts.js"></script>
+        <script src="{{ asset('js/amChartStat.min.js')}}"></script>
     @endif
 @endsection

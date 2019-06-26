@@ -3,16 +3,12 @@
 namespace App\Http\Controllers\Front;
 
 use App\Facades\FlashHelper;
-use App\Facades\GeneralHelper;
 use App\Http\Controllers\Controller;
 use App\Mail\ContactForm;
 use App\Repositories\Interfaces\AmChart;
 use App\Repositories\Interfaces\Event;
 use App\Repositories\Interfaces\Expedition;
-use App\Repositories\Interfaces\PanoptesTranscription;
-use App\Repositories\Interfaces\Project;
 use App\Http\Requests\ContactFormRequest;
-use JavaScript;
 use Mail;
 
 class HomeController extends Controller
@@ -38,20 +34,6 @@ class HomeController extends Controller
     public function welcome()
     {
         return view('front.welcome');
-    }
-
-    /**
-     * Return project list for home page.
-     *
-     * @param Project $projectContract
-     * @param $count
-     * @return mixed
-     */
-    public function projects(Project $projectContract, $count = 5)
-    {
-        $recentProjects = $projectContract->getRecentProjects($count + 5);
-
-        return view('front.layouts.partials.home-project-list', compact('recentProjects'));
     }
 
     /**
@@ -124,11 +106,5 @@ class HomeController extends Controller
         }
 
         return view('front.events.scoreboard-content', ['event' => $event]);
-    }
-
-    public function test()
-    {
-        $config = file_get_contents(public_path('chartConfig.json'));
-        return view('front.chart', compact('config'));
     }
 }

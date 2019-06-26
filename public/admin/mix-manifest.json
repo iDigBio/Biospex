@@ -1,10 +1,6 @@
 {
-    "/pdfmake.js": "/pdfmake.js?id=d0a6da29476e4de28e6b",
-    "/xlsx.js": "/xlsx.js?id=3ecd1464d580f9448648",
-    "/canvg.js": "/canvg.js?id=c23a6632fb849a7f8646",
-    "/responsivedefaults.js": "/responsivedefaults.js?id=148b598b5e58b9e9caea",
-    "/js/vendor.js": "/js/vendor.js?id=58456de24f28d9351940",
-    "/js/admin.js": "/js/admin.js?id=94d55b75b5faa0bf04f4",
+    "/js/admin.js": "/js/admin.js?id=8b088f48591100ff81e9",
     "/css/admin.css": "/css/admin.css?id=93c92f1b40f15e01c833",
-    "/js/manifest.js": "/js/manifest.js?id=d200d5dda0ae7fcfb0d0"
+    "/js/vendor.js": "/js/vendor.js?id=315a70ebf2f9fd4ec95a",
+    "/js/manifest.js": "/js/manifest.js?id=40dcfff9d09d402daf38"
 }

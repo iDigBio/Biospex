@@ -181,22 +181,21 @@
             <div class="col-sm-10 mx-auto mt-8">
                 <h1 class="text-center content-header text-uppercase" id="expeditions">{{ __('pages.transcriptions') }}</h1>
                 <div class="jumbotron box-shadow pt-2 pb-5">
-                    <div id="chartdiv"
+                    <div id="transcriptDiv"
                          style=" width: 100%; height: {{ $amChartHeight }}px; color: #000000; font-size: 0.8em"></div>
-                    <div id="legenddiv"
+                    <div id="transcriptLegendDiv"
                          style="width: 100%; height: {{ $amLegendHeight }}px; color: #000000; font-size: 0.8em"></div>
                 </div>
             </div>
         </div>
-    @endif
 
-    @if ($project->fusion_table_id !== null)
         <div class="row my-5">
             <div class="col-sm-10 mx-auto mt-8">
                 <h1 class="text-center content-header text-uppercase" id="expeditions">{{ __('pages.project_map_title') }}</h1>
-                <div class="jumbotron box-shadow pt-2 pb-5 my-5 p-sm-5">
-                    <iframe width="100%" height="800" scrolling="no" frameborder="no"
-                            src="https://fusiontables.google.com/embedviz?q=select+col2+from+{{ $project->fusion_table_id }}&amp;viz=MAP&amp;h=false&amp;lat=34.72404554786575&amp;lng=-93.08009375000002&amp;t=1&amp;z=3&amp;l=col2&amp;y={{ $project->fusion_style_id }}&amp;tmplt={{ $project->fusion_template_id }}&amp;hml=GEOCODE"></iframe>
+                <div class="jumbotron box-shadow pt-2 pb-5">
+                    <div id="mapDiv" class="d-flex" style="width:100%; height: 500px"></div>
+                    <div id="mapLegendDiv" style="width:100%; height: 100px"></div>
+                    <div class="hide" id="projectUrl" data-href="{{ route('front.projects.state', [$project->id]) }}"></div>
                 </div>
             </div>
         </div>
@@ -204,68 +203,15 @@
 
 @endsection
 @section('custom-script')
-    @if ($project->amChart !== null && $project->amChart->series !== null && $project->amChart->data !== null)
-    <script>
-        var legendContainer = am4core.createFromConfig({
-            "width": "100%",
-            "height": "100%"
-        }, "legenddiv", am4core.Container);
-        var chart = am4core.createFromConfig(
-            {
-                "xAxes": [{
-                    "type": "DateAxis",
-                    "renderer": {
-                        "minGridDistance": 50
-                    },
-                    "startLocation": 0.5,
-                    "endLocation": 0.5,
-                    "baseInterval": {
-                        "timeUnit": "day",
-                        "count": 1
-                    },
-                    "tooltip": {
-                        "background": {
-                            "fill": "#07BEB8",
-                            "strokeWidth": 0,
-                            "cornerRadius": 3,
-                            "pointerLength": 0
-                        },
-                        "dy": 5
-                    }
-                }],
-                "yAxes": [{
-                    "type": "ValueAxis",
-                    "tooltip": {
-                        "disabled": true
-                    },
-                    "calculateTotals": true
-                }],
-                "cursor": {
-                    "type": "XYCursor",
-                    "lineX": {
-                        "stroke": "#8F3985",
-                        "strokeWidth": 4,
-                        "strokeOpacity": 0.2,
-                        "strokeDasharray": ""
-                    },
-                    "lineY": {
-                        "disabled": true
-                    }
-                },
-                "scrollbarX": {
-                    "type": "Scrollbar"
-                },
-                "legend": {
-                    "parent": legendContainer
-                },
-                "dateFormatter": {
-                    "inputDateFormat": "yyyy-MM-dd"
-                },
+    <script src="//www.amcharts.com/lib/4/core.js"></script>
+    <script src="//www.amcharts.com/lib/4/charts.js"></script>
+    <script src="//www.amcharts.com/lib/4/maps.js"></script>
+    <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
+    <script src="https://www.amcharts.com/lib/4/geodata/usaLow.js"></script>
 
-                "series": {!! $project->amChart->series !!},
-                "data": {!! $project->amChart->data !!},
-            }, "chartdiv", am4charts.XYChart);
-    </script>
+    @if ($project->amChart !== null && $project->amChart->series !== null && $project->amChart->data !== null)
+        <script src="{{ asset('js/amChartTranscript.min.js')}}"></script>
+        <script src="{{ asset('js/amChartMap.min.js')}}"></script>
     @endif
 @endsection
 

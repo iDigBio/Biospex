@@ -17,9 +17,7 @@ class TranscriptionLocation extends BaseEloquentModel
         'classification_id',
         'project_id',
         'expedition_id',
-        'state_province',
-        'county',
-        'state_county'
+        'state_county_id'
     ];
 
 
@@ -54,6 +52,6 @@ class TranscriptionLocation extends BaseEloquentModel
      */
     public function stateCounty()
     {
-        return $this->belongsTo(State::class, 'state_county', 'state_county');
+        return $this->belongsTo(StateCounty::class);
     }
 }

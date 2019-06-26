@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Facades\GeneralHelper;
-use App\Models\Project;
+use App\Models\Expedition;
 use App\Repositories\Interfaces\StateCounty;
 use App\Repositories\Interfaces\Subject;
 use App\Repositories\Interfaces\TranscriptionLocation;
@@ -13,7 +13,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Log;
+
+ini_set('memory_limit', '1024M');
 
 class TranscriptLocationUpdate implements ShouldQueue
 {
@@ -30,7 +31,7 @@ class TranscriptLocationUpdate implements ShouldQueue
     /**
      * @var array
      */
-    private $projectId;
+    private $expedition;
 
     /**
      * @var \App\Repositories\Interfaces\StateCounty|\Illuminate\Foundation\Application
@@ -63,14 +64,14 @@ class TranscriptLocationUpdate implements ShouldQueue
     private $dwcOccurrenceFields;
 
     /**
-     * NfnClassificationsTranscriptJob constructor.
+     * TranscriptLocationUpdate constructor.
      *
-     * @param array $projectId
+     * @param \App\Models\Expedition $expedition
      */
-    public function __construct($projectId)
+    public function __construct(Expedition $expedition)
     {
         $this->onQueue(config('config.classification_tube'));
-        $this->projectId = $projectId;
+        $this->expedition = $expedition;
     }
 
     /**
@@ -85,31 +86,19 @@ class TranscriptLocationUpdate implements ShouldQueue
         $this->dwcTranscriptFields = $fields = config('config.dwcTranscriptFields');
         $this->dwcOccurrenceFields = $fields = config('config.dwcOccurrenceFields');
 
-        $project = Project::with([
-            'expeditions' => function ($q) {
-                $q->whereHas('nfnWorkflow');
-            },
-        ])->find($this->projectId);
-
-        $project->expeditions->each(function ($expedition) use ($project) {
-            Log::info('***BEGIN**** ' . $expedition->id);
-            $transcriptions = $this->getTranscriptions($expedition);
-            $this->processTranscriptions($transcriptions);
-            Log::info('***END**** ' . $expedition->id);
-        });
-        //Log::info('Finished');
+        $transcriptions = $this->getTranscriptions($this->expedition);
+        $this->processTranscriptions($transcriptions);
     }
 
     /**
      * Get Transcriptions using expedition id
      *
-     * @param $expedition
      * @return mixed
      */
-    private function getTranscriptions($expedition)
+    private function getTranscriptions()
     {
         $this->service->setCollection('panoptes_transcriptions');
-        $transcriptions = $this->service->find(['subject_expeditionId' => $expedition->id]);
+        $transcriptions = $this->service->find(['subject_expeditionId' => $this->expedition->id]);
 
         return $transcriptions;
     }
@@ -128,12 +117,6 @@ class TranscriptLocationUpdate implements ShouldQueue
                 continue;
             }
 
-            //Log::info('Subject ' . $subject->_id);
-
-            //Log::info('Transcription ' . $transcription['_id']);
-            //Log::info('Classification ' . $transcription['classification_id']);
-            //Log::info('Expedition ' . $transcription['subject_expeditionId']);
-
             $this->setDwcLocalityFields($transcription, $subject, $data);
 
             if (array_key_exists('state_province', $data) && strtolower($data['state_province']) === 'district of columbia') {
@@ -141,23 +124,16 @@ class TranscriptLocationUpdate implements ShouldQueue
             }
 
             if (! $this->checkRequiredStateCounty($data)) {
-                //Log::info('Empty StateCounty ' . $transcription['_id'] . ' ' . $transcription['classification_id']);
                 continue;
             }
 
-            //Log::info('Before Prep ' . print_r($data, true));
             $this->prepCounty($data);
-            //Log::info('After Prep' . print_r($data, true));
-
-            //Log::info('Prepped StateCounty ' . $data['county']);
             $stateAbbr = GeneralHelper::getState($data['state_province']);
-            //Log::info('Prepped StateCounty ' . $data['state_province']);
             $stateResult = $this->stateCounty->findByCountyState($data['county'], $stateAbbr);
 
             if ($stateResult === null) {
                 continue;
             }
-            //Log::info('StateResult ' . $stateResult->id);
 
             $values['classification_id'] = $transcription['classification_id'];
             $values['project_id'] = $subject->project_id;
@@ -166,7 +142,6 @@ class TranscriptLocationUpdate implements ShouldQueue
             $attributes = ['classification_id' => $transcription['classification_id']];
 
             $this->transcriptionLocation->updateOrCreate($attributes, $values);
-            //Log::info('Updated  ' . $data['county']);
 
         }
     }
@@ -184,14 +159,6 @@ class TranscriptLocationUpdate implements ShouldQueue
 
     /**
      * Check locality fields from transcription.
-     *
-     * 'dwcLocalityFields'     => [
-     * 'StateProvince'  => 'stateProvince',
-     * 'State_Province' => 'stateProvince',
-     * 'State'          => 'stateProvince',
-     * 'County'         => 'county',
-     * 'subject_county' => 'county'
-     * ],
      *
      * @param $transcription
      * @param $subject
@@ -219,7 +186,6 @@ class TranscriptLocationUpdate implements ShouldQueue
             if (isset($transcription[$transcriptField]) && ! empty($transcription[$transcriptField])) {
                 $data[$mapField] = $transcription[$transcriptField];
 
-                //Log::info('Found Transcript ' . $mapField . ' ' . $data[$mapField]);
                 continue;
             }
         }
@@ -241,7 +207,6 @@ class TranscriptLocationUpdate implements ShouldQueue
             if (isset($subject->occurrence->{$occurrenceField}) && ! empty($subject->occurrence->{$occurrenceField})) {
                 $data[$mapField] = $subject->occurrence->{$occurrenceField};
 
-                //Log::info('Found Occurrence ' . $mapField . ' ' . $data[$mapField]);
                 continue;
             }
         }

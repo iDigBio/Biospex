@@ -3,9 +3,11 @@
 namespace App\Services\Process;
 
 use App\Facades\GeneralHelper;
+use App\Repositories\Interfaces\StateCounty;
 use App\Repositories\Interfaces\Subject;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\TranscriptionLocation;
+use Exception;
 use Illuminate\Validation\Factory as Validation;
 use App\Services\Csv\Csv;
 
@@ -42,20 +44,29 @@ class PanoptesTranscriptionProcess
     protected $expeditionId;
 
     /**
-     * @var array
-     */
-    protected $dwcLocalityFields;
-
-    /**
      * @var TranscriptionLocation
      */
     private $transcriptionLocationContract;
+
+    /**
+     * @var \App\Repositories\Interfaces\StateCounty
+     */
+    private $stateCountyContract;
 
     /**
      * @var \App\Services\Csv\Csv
      */
     private $csv;
 
+    /**
+     * @var \Illuminate\Config\Repository
+     */
+    private $dwcTranscriptFields;
+
+    /**
+     * @var \Illuminate\Config\Repository
+     */
+    private $dwcOccurrenceFields;
 
     /**
      * PanoptesTranscriptionProcess constructor.
@@ -63,6 +74,7 @@ class PanoptesTranscriptionProcess
      * @param Subject $subjectContract
      * @param PanoptesTranscription $panoptesTranscriptionContract
      * @param TranscriptionLocation $transcriptionLocationContract
+     * @param \App\Repositories\Interfaces\StateCounty $stateCountyContract
      * @param Validation $factory
      * @param Csv $csv
      */
@@ -70,15 +82,18 @@ class PanoptesTranscriptionProcess
         Subject $subjectContract,
         PanoptesTranscription $panoptesTranscriptionContract,
         TranscriptionLocation $transcriptionLocationContract,
+        StateCounty $stateCountyContract,
         Validation $factory,
         Csv $csv
     ) {
         $this->subjectContract = $subjectContract;
         $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
         $this->factory = $factory;
-        $this->csv = $csv;
-        $this->dwcLocalityFields = $fields = config('config.dwcLocalityFields');
         $this->transcriptionLocationContract = $transcriptionLocationContract;
+        $this->stateCountyContract = $stateCountyContract;
+        $this->csv = $csv;
+        $this->dwcTranscriptFields = $fields = config('config.dwcTranscriptFields');
+        $this->dwcOccurrenceFields = $fields = config('config.dwcOccurrenceFields');
     }
 
     /**
@@ -100,7 +115,7 @@ class PanoptesTranscriptionProcess
             foreach ($rows as $offset => $row) {
                 $this->processRow($header, $row);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             $this->csvError[] = $file . ': ' . $e->getMessage();
 
@@ -133,7 +148,7 @@ class PanoptesTranscriptionProcess
     {
         if (count($header) !== count($row))
         {
-            throw new \Exception(trans('messages.csv_row_count', [
+            throw new Exception(trans('messages.csv_row_count', [
                 'headers' => count($header),
                 'rows'    => count($row)
             ]));
@@ -162,58 +177,128 @@ class PanoptesTranscriptionProcess
     }
 
     /**
-     * @param $row
+     * @param $transcription
      * @param $subject
      *
      * Transcripts: StateProvince, County
      * Subject: stateProvince, county
      */
-    private function buildTranscriptionLocation($row, $subject)
+    private function buildTranscriptionLocation($transcription, $subject)
     {
-        $data = $this->setDwcLocalityFields($row, $subject);
-
-        $data['classification_id'] = $row['classification_id'];
-        $data['project_id'] = $subject->project_id;
-        $data['expedition_id'] = $row['subject_expeditionId'];
+        $data = [];
+        $this->setDwcLocalityFields($transcription, $subject, $data);
 
         if (array_key_exists('state_province', $data) && strtolower($data['state_province']) === 'district of columbia') {
             $data['county'] = $data['state_province'];
         }
 
-        $data['state_county'] = empty($data['state_province']) || empty($data['county']) ? null : GeneralHelper::getState($data['state_province']).'-'.trim(str_ireplace('county', '', $data['county']));
-
-        if (null === $data['state_county']) {
+        if (! $this->checkRequiredStateCounty($data)) {
             return;
         }
 
-        $attributes = ['classification_id' => $row['classification_id']];
-        $this->transcriptionLocationContract->updateOrCreate($attributes, $data);
+        $this->prepCounty($data);
+        $stateAbbr = GeneralHelper::getState($data['state_province']);
+        $stateResult = $this->stateCountyContract->findByCountyState($data['county'], $stateAbbr);
+
+        if ($stateResult === null) {
+            return;
+        }
+
+        $values['classification_id'] = $transcription['classification_id'];
+        $values['project_id'] = $subject->project_id;
+        $values['expedition_id'] = $transcription['subject_expeditionId'];
+        $values['state_county_id'] = $stateResult->id;
+        $attributes = ['classification_id' => $transcription['classification_id']];
+
+        $this->transcriptionLocationContract->updateOrCreate($attributes, $values);
     }
 
     /**
-     * Set the dwc locality fields.
+     * Check locality fields from transcription.
      *
-     * @param $row
+     * @param $transcription
      * @param $subject
+     * @param $data
      * @return array
      */
-    private function setDwcLocalityFields($row, $subject): array
+    private function setDwcLocalityFields($transcription, $subject, &$data): array
     {
-        $data = [];
+        $this->setDwcLocalityFromTranscript($transcription, $data);
+        $this->setDwcLocalityFromOccurrence($subject, $data);
 
-        foreach ($this->dwcLocalityFields as $transcriptField => $subjectField) {
-            if (isset($row[$transcriptField]) && ! empty($row[$transcriptField])) {
-                $data[GeneralHelper::decamelize($transcriptField)] = $row[$transcriptField];
+        return $data;
+
+    }
+
+    /**
+     * Set the dwc locality fields using transcript.
+     *
+     * @param $transcription
+     * @param $data
+     */
+    private function setDwcLocalityFromTranscript($transcription, &$data)
+    {
+        foreach ($this->dwcTranscriptFields as $transcriptField => $mapField) {
+            if (isset($transcription[$transcriptField]) && ! empty($transcription[$transcriptField])) {
+                $data[$mapField] = $transcription[$transcriptField];
 
                 continue;
             }
+        }
+    }
 
-            if (isset($subject->occurrence->{$subjectField}) && ! empty($subject->occurrence->{$subjectField})) {
-                $data[GeneralHelper::decamelize($subjectField)] = $subject->occurrence->{$subjectField};
-            }
+    /**
+     * Set the dwc locality fields using occurrence.
+     *
+     * @param $subject
+     * @param $data
+     */
+    private function setDwcLocalityFromOccurrence($subject, &$data)
+    {
+        if (count($data) == 2) {
+            return;
         }
 
-        return $data;
+        foreach ($this->dwcOccurrenceFields as $occurrenceField => $mapField) {
+            if (isset($subject->occurrence->{$occurrenceField}) && ! empty($subject->occurrence->{$occurrenceField})) {
+                $data[$mapField] = $subject->occurrence->{$occurrenceField};
+
+                continue;
+            }
+        }
+    }
+
+    /**
+     * Check if state and county exist.
+     *
+     * @param $data
+     * @return bool
+     */
+    private function checkRequiredStateCounty($data)
+    {
+        if (! isset($data['state_province']) || ! isset($data['county'])) {
+            return false;
+        }
+
+        if (empty($data['state_province']) || empty($data['county'])) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Prep County for searching database.
+     *
+     * @param $data
+     */
+    private function prepCounty(&$data)
+    {
+        $county = trim(preg_replace("/[^ \w-]/", "", $data['county']));
+        $search = ['Saint', 'Sainte', 'Miami Dade', 'De Soto', 'De Kalb', 'county', 'City', 'Not Shown'];
+        $replace = ['St.', 'Ste.', 'Miami-Dade', 'DeSoto', 'DeKalb', '', '', ''];
+        $county = trim(str_ireplace($search, $replace, $county));
+        $data['county'] = $county;
     }
 
     /**

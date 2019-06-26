@@ -17,11 +17,7 @@ mix.webpackConfig({
             "jquery-ui/sortable": "jquery-ui/ui/widgets/sortable"
         }
     }
-}).autoload({
-    //jquery: ["$", "window.jQuery", "jQuery", "window.$", "jquery", "window.jquery"],
-    //'resources/js/bootbox.js': ['bootbox', 'window.bootbox']
-})
-    .setResourceRoot('../')
+}).setResourceRoot('../')
     .setPublicPath(path.normalize("public/admin"))
     .js("resources/js/admin-app.js", "js/admin.js")
     .sass("resources/sass/admin.scss", "css/admin.css")
@@ -33,18 +29,12 @@ mix.webpackConfig({
         "jquery-ui/ui/widgets/draggable",
         "jquery-ui/ui/widgets/droppable",
         "jquery-ui/ui/widgets/resizable",
-        //"jquery-validation/dist/jquery.validate",
-        //"jquery-validation/dist/additional-methods",
         "jquery-datetimepicker/build/jquery.datetimepicker.full",
         "free-jqgrid/dist/plugins/ui.multiselect",
         "free-jqgrid/js/jquery.jqgrid.min",
 
         "codemirror/lib/codemirror",
         "summernote/dist/summernote",
-
-        '@amcharts/amcharts4/core',
-        '@amcharts/amcharts4/charts',
-
         "socket.io-client/dist/socket.io",
     ]);
 

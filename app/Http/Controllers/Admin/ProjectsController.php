@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Jobs\DeleteProject;
 use App\Jobs\OcrCreateJob;
-use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Project;
-use App\Repositories\Interfaces\Subject;
 use App\Http\Requests\ProjectFormRequest;
 use App\Services\Model\ProjectService;
 use App\Facades\FlashHelper;
+use Auth;
+use Cache;
 use CountHelper;
+use Exception;
 use JavaScript;
 
 class ProjectsController extends Controller
@@ -47,7 +48,7 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        $user = \Auth::user();
+        $user = Auth::user();
 
         $projects = $this->projectContract->getAdminProjectIndex($user->id);
 
@@ -215,7 +216,7 @@ class ProjectsController extends Controller
             return null;
         }
 
-        $user = \Auth::user();
+        $user = Auth::user();
         $sort = request()->get('sort');
         $order = request()->get('order');
         $projects = $this->projectContract->getAdminProjectIndex($user->id, $sort, $order);
@@ -226,11 +227,10 @@ class ProjectsController extends Controller
     /**
      * Display project explore page.
      *
-     * @param \App\Repositories\Interfaces\Subject $subjectContract
      * @param $projectId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function explore(Subject $subjectContract, $projectId)
+    public function explore($projectId)
     {
         $project = $this->projectContract->findWith($projectId, ['group']);
 
@@ -282,7 +282,7 @@ class ProjectsController extends Controller
             FlashHelper::success(__('messages.record_deleted'));
 
             return redirect()->route('admin.projects.index');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             FlashHelper::error(__('messages.record_delete_error'));
 
             return redirect()->route('admin.projects.index');
@@ -323,7 +323,7 @@ class ProjectsController extends Controller
 
         $transcribers = CountHelper::getUserTranscriptionCount($projectId)->sortByDesc('transcriptionCount');
 
-        $transcriptions = \Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function () use
+        $transcriptions = Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function () use
         (
             $transcribers
         ) {
@@ -333,6 +333,8 @@ class ProjectsController extends Controller
                 return [['transcriptions' => $count, 'transcribers' => $users]];
             })->toJson();
         });
+
+        JavaScript::put(['transcriptions' => $transcriptions]);
 
         return view('admin.project.statistics', compact('project', 'transcribers', 'transcriptions'));
     }

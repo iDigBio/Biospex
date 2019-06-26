@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Jobs\AmChartJob;
 use App\Jobs\ExpeditionStatJob;
-use App\Jobs\NfnClassificationsFusionTableJob;
 use App\Repositories\Interfaces\Expedition;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
@@ -61,7 +60,6 @@ class ExpeditionStatUpdate extends Command
 
         $projectIds->unique()->values()->each(function ($projectId){
             AmChartJob::dispatch($projectId);
-            NfnClassificationsFusionTableJob::dispatch($projectId);
         });
     }
 }

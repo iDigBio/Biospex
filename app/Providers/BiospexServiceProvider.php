@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
-use App\Observers\PanoptesTranscriptionObserver;
-use App\Observers\SubjectObserver;
+use App\Services\Helpers\CountHelper;
+use App\Services\Helpers\DateHelper;
+use App\Services\Helpers\FlashHelper;
+use App\Services\Helpers\GeneralHelper;
 use Illuminate\Support\ServiceProvider;
 
 use App\Repositories\Interfaces\ActorContact;
@@ -34,7 +36,7 @@ use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\ProjectResource;
 use App\Repositories\Interfaces\Property;
 use App\Repositories\Interfaces\Resource;
-use App\Repositories\Interfaces\State;
+use App\Repositories\Interfaces\StateCounty;
 use App\Repositories\Interfaces\Subject;
 use App\Repositories\Interfaces\TeamCategory;
 use App\Repositories\Interfaces\Team;
@@ -142,7 +144,7 @@ class BiospexServiceProvider extends ServiceProvider
         $this->app->bind(Project::class, ProjectRepository::class);
         $this->app->bind(Property::class, PropertyRepository::class);
         $this->app->bind(Resource::class, ResourceRepository::class);
-        $this->app->bind(State::class, StateCountyRepository::class);
+        $this->app->bind(StateCounty::class, StateCountyRepository::class);
         $this->app->bind(Subject::class, SubjectRepository::class);
         $this->app->bind(TeamCategory::class, TeamCategoryRepository::class);
         $this->app->bind(Team::class, TeamRepository::class);
@@ -161,19 +163,19 @@ class BiospexServiceProvider extends ServiceProvider
     {
         $this->app->singleton('flash', function ()
         {
-            return new \App\Services\Helpers\FlashHelper();
+            return new FlashHelper();
         });
 
         $this->app->singleton('datehelper', function(){
-            return new \App\Services\Helpers\DateHelper();
+            return new DateHelper();
         });
 
         $this->app->singleton('generalhelper', function(){
-            return new \App\Services\Helpers\GeneralHelper();
+            return new GeneralHelper();
         });
 
         $this->app->singleton('counthelper', function(){
-            return new \App\Services\Helpers\CountHelper();
+            return new CountHelper();
         });
     }
 }

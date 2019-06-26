@@ -5,11 +5,13 @@ namespace App\Jobs;
 use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
 use App\Services\Process\PanoptesTranscriptionProcess;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Storage;
 
 class NfnClassificationsTranscriptJob implements ShouldQueue
 {
@@ -60,10 +62,10 @@ class NfnClassificationsTranscriptJob implements ShouldQueue
 
         try
         {
-            $filePath = \Storage::path(config('config.nfn_downloads_transcript'));
+            $filePath = Storage::path(config('config.nfn_downloads_transcript'));
 
             $this->expeditionIds->filter(function($expeditionId) use ($filePath) {
-                return \Storage::exists($filePath . '/' . $expeditionId . '.csv');
+                return Storage::exists($filePath . '/' . $expeditionId . '.csv');
             })->each(function($expeditionId) use ($transcriptionProcess, $filePath) {
                 $transcriptionProcess->process($filePath . '/' . $expeditionId . '.csv');
             });
@@ -76,7 +78,7 @@ class NfnClassificationsTranscriptJob implements ShouldQueue
 
             NfnClassificationPusherTranscriptionsJob::dispatch($this->expeditionIds);
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             return;
         }

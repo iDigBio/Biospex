@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class State extends BaseEloquentModel
+class StateCounty extends BaseEloquentModel
 {
     /**
      * @inheritDoc
@@ -33,6 +33,6 @@ class State extends BaseEloquentModel
      */
     public function transcriptionLocations()
     {
-        return $this->hasMany(TranscriptionLocation::class, 'state_county', 'state_county');
+        return $this->hasMany(TranscriptionLocation::class);
     }
 }

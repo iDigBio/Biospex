@@ -9,7 +9,7 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
-numprocs=8
+numprocs=NUM_PROCS
 
 [program:QUEUE_CLASSIFICATION_TUBE]
 process_name=%(program_name)s_%(process_num)02d
@@ -22,7 +22,7 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
-numprocs=8
+numprocs=NUM_PROCS
 
 [program:QUEUE_DEFAULT_TUBE]
 process_name=%(program_name)s_%(process_num)02d
@@ -35,7 +35,7 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
-numprocs=8
+numprocs=NUM_PROCS
 
 [program:QUEUE_EVENT_TUBE]
 process_name=%(program_name)s_%(process_num)02d
@@ -48,7 +48,7 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
-numprocs=8
+numprocs=NUM_PROCS
 
 [program:QUEUE_EXPORT_TUBE]
 process_name=%(program_name)s_%(process_num)02d
@@ -61,7 +61,7 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
-numprocs=8
+numprocs=NUM_PROCS
 
 [program:QUEUE_FUSION_TUBE]
 process_name=%(program_name)s_%(process_num)02d
@@ -74,7 +74,7 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
-numprocs=8
+numprocs=NUM_PROCS
 
 [program:QUEUE_IMPORT_TUBE]
 process_name=%(program_name)s_%(process_num)02d
@@ -87,7 +87,7 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
-numprocs=8
+numprocs=NUM_PROCS
 
 [program:QUEUE_OCR_TUBE]
 process_name=%(program_name)s_%(process_num)02d
@@ -100,7 +100,7 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
-numprocs=8
+numprocs=NUM_PROCS
 
 [program:QUEUE_PUSHER_TUBE]
 process_name=%(program_name)s_%(process_num)02d
@@ -113,7 +113,7 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
-numprocs=8
+numprocs=NUM_PROCS
 
 [program:QUEUE_STAT_TUBE]
 process_name=%(program_name)s_%(process_num)02d
@@ -126,7 +126,7 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
-numprocs=8
+numprocs=NUM_PROCS
 
 [program:QUEUE_WORKFLOW_TUBE]
 process_name=%(program_name)s_%(process_num)02d
@@ -139,4 +139,4 @@ logfile_backups=5
 autostart=true
 autorestart=true
 user=SERVER_USER
-numprocs=8
+numprocs=NUM_PROCS

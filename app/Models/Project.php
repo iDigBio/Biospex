@@ -53,10 +53,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
         'banner_file',
         'target_fields',
         'status',
-        'advertise',
-        'fusion_table_id',
-        'fusion_style_id',
-        'fusion_template_id',
+        'advertise'
     ];
 
     /**
@@ -277,7 +274,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
      *
      * @return string
      */
-    public function setTagUriAttribute($input)
+    public function setTagUriAttribute()
     {
         return 'tag:'.$_ENV['site.domain'].','.date('Y-m-d').':'.$this->attributes['slug'];
     }

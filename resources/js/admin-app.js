@@ -10,9 +10,6 @@ try {
 
     require('bootstrap');
 
-    //require("jquery-validation/dist/jquery.validate");
-    //require("jquery-validation/dist/additional-methods");
-
     require("bootstrap-notify/bootstrap-notify");
 
     require("jquery-ui/ui/widgets/dialog");
@@ -24,12 +21,9 @@ try {
     require("free-jqgrid/dist/plugins/ui.multiselect");
     require("free-jqgrid/js/jquery.jqgrid.min");
 
-    //require("codemirror/lib/codemirror");
     require("summernote/dist/summernote-bs4.min");
 
     window.bootbox = require("./bootbox");
-    window.am4core = require('@amcharts/amcharts4/core');
-    window.am4charts = require('@amcharts/amcharts4/charts');
     require("./grid");
     require("./common");
     require("./admin");

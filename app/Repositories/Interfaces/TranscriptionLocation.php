@@ -8,14 +8,11 @@ interface TranscriptionLocation extends RepositoryInterface
 {
 
     /**
+     * GEt county data for mapping transcriptions.
+     *
      * @param $projectId
+     * @param $stateId
      * @return mixed
      */
-    public function getStateGroupByCountByProjectId($projectId);
-
-    /**
-     * @param $projectId
-     * @return mixed
-     */
-    public function getTranscriptionFusionTableData($projectId);
+    public function getCountyData($projectId, $stateId);
 }

@@ -9,10 +9,11 @@
     ],
     "database": "redis",
     "databaseConfig": {
-        "redis": {},
-        "sqlite": {
-            "databasePath": "/database/laravel-echo-server.sqlite"
-        }
+        "redis": {
+            "port": "6379",
+            "host": "localhost"
+        },
+        "sqlite": {}
     },
     "devMode": false,
     "host": null,

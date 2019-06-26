@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Facades\GeneralHelper;
 use App\Repositories\Interfaces\Expedition;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -54,7 +53,6 @@ class NfnClassificationsUpdateJob implements ShouldQueue
         }
 
         AmChartJob::dispatch($expedition->project_id);
-        NfnClassificationsFusionTableJob::dispatch($expedition->project_id);
 
         $this->delete();
     }

@@ -93,10 +93,18 @@ return [
         ],
     ],
 
-    'dwcLocalityFields'     => [
-        'StateProvince'  => 'stateProvince',
-        'State_Province' => 'stateProvince',
-        'State'          => 'stateProvince',
+    'dwcTranscriptFields' => [
+        'StateProvince'  => 'state_province',
+        'State_Province' => 'state_province',
+        'State'          => 'state_province',
+        'County'         => 'county',
+        'subject_county' => 'county',
+    ],
+
+    'dwcOccurrenceFields'   => [
+        'stateProvince'  => 'state_province',
+        'State_Province' => 'state_province',
+        'State'          => 'state_province',
         'County'         => 'county',
     ],
 
