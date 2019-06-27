@@ -41,7 +41,14 @@ function buildCountryMap() {
         let statevar = 'am4geodata_region_usa_'+stateabbr.toLowerCase()+'Low';
         map.dispose();
         heatLegend.dispose();
-        buildCountyMap(stateabbr,statenum, statevar);
+        $('#mapDiv').html('<div class="loader mx-auto align-self-center"></div>');
+        $.getScript( '//www.amcharts.com/lib/4/geodata/region/usa/' + stateabbr.toLowerCase() + 'Low.js' )
+            .done(function( script, textStatus ) {
+                buildCountyMap(stateabbr,statenum, statevar);
+            })
+            .fail(function( jqxhr, settings, exception ) {
+                $('#mapDiv').html( "Error getting State map and counties." );
+            });
     });
 
 
@@ -57,8 +64,6 @@ function buildCountryMap() {
 }
 
 function buildCountyMap(stateabbr,statenum, statevar) {
-    $.getScript('//www.amcharts.com/lib/4/geodata/region/usa/' + stateabbr.toLowerCase() + 'Low.js');
-    $('#mapDiv').html('<div class="loader mx-auto align-self-center"></div>');
 
     let request = $.get($('#projectUrl').data('href') + '/' + statenum);
 
