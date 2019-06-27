@@ -65,19 +65,19 @@ function buildCountyMap(stateabbr,statenum, statevar) {
     request.done(function(data) {
         am4core.useTheme(am4themes_animated);
 
-        let map = am4core.create("mapDiv", am4maps.MapChart);
-        map.hiddenState.properties.opacity = 0; // this creates initial fade-in
+        let stateMap = am4core.create("mapDiv", am4maps.MapChart);
+        stateMap.hiddenState.properties.opacity = 0; // this creates initial fade-in
 
-        map.geodata = window[statevar];
-        map.projection = new am4maps.projections.Miller();
+        stateMap.geodata = window[statevar];
+        stateMap.projection = new am4maps.projections.Miller();
 
-        map.events.on('hit', event => {
-            map.dispose();
+        stateMap.events.on('hit', event => {
+            stateMap.dispose();
             heatLegend.dispose();
             buildCountryMap();
         });
 
-        let polygonSeries = map.series.push(new am4maps.MapPolygonSeries());
+        let polygonSeries = stateMap.series.push(new am4maps.MapPolygonSeries());
         let polygonTemplate = polygonSeries.mapPolygons.template;
         polygonTemplate.tooltipText = "{name}: {value.value.formatNumber('#')}";
         polygonSeries.heatRules.push({
@@ -109,15 +109,15 @@ function buildCountyMap(stateabbr,statenum, statevar) {
             heatLegend.valueAxis.hideTooltip();
         });
 
-        map.zoomControl = new am4maps.ZoomControl();
-        map.zoomControl.valign = "top";
+        stateMap.zoomControl = new am4maps.ZoomControl();
+        stateMap.zoomControl.valign = "top";
 
         polygonSeries.data = JSON.parse(data.counties);
     });
 
     request.fail(function(jqXHR, textStatus, errorThrown) {
         alert(errorThrown);
-        map.dispose();
+        stateMap.dispose();
         heatLegend.dispose();
         buildCountryMap();
     });
