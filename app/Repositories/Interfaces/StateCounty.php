@@ -27,4 +27,12 @@ interface StateCounty extends RepositoryInterface
      * @return mixed
      */
     public function getStateTranscriptCount($projectId);
+
+    /**
+     * Return county transcription count.
+     * @param $projectId
+     * @param $stateId
+     * @return mixed
+     */
+    public function getCountyTranscriptionCount($projectId, $stateId);
 }

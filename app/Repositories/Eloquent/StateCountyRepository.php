@@ -54,4 +54,18 @@ class StateCountyRepository extends EloquentRepository implements StateCounty
 
         return $results;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCountyTranscriptionCount($projectId, $stateId)
+    {
+        $results = $this->model->withCount(['transcriptionLocations' => function($q) use($projectId) {
+            $q->where('project_id', $projectId);
+        }])->where('state_num', $stateId)->get();
+
+        $this->resetModel();
+
+        return $results;
+    }
 }

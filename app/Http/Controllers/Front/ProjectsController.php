@@ -104,24 +104,25 @@ class ProjectsController extends Controller
      *
      * @param $projectId
      * @param $stateId
-     * @param \App\Repositories\Interfaces\TranscriptionLocation $transcriptionLocation
+     * @param \App\Repositories\Interfaces\StateCounty $stateCounty
      * @return array
      */
-    public function state($projectId, $stateId, TranscriptionLocation $transcriptionLocation)
+    public function state($projectId, $stateId, StateCounty $stateCounty)
     {
         if (! request()->ajax()) {
             return response()->json(['html' => 'Error retrieving the counties.']);
         }
 
-        $counties = $transcriptionLocation->getCountyData($projectId, $stateId)->map(function ($item) {
-            return ['id'    => str_pad($item->stateCounty->geo_id_2, 5, '0', STR_PAD_LEFT),
-                    'value' => $item->count,
-                    'name'  => $item->stateCounty->state_county,
-            ];
-        });
+        $counties = $stateCounty->getCountyTranscriptionCount($projectId, $stateId)->map(function ($item) {
+                return [
+                    'id'    => str_pad($item->geo_id_2, 5, '0', STR_PAD_LEFT),
+                    'value' => $item->transcription_locations_count,
+                    'name'  => $item->state_county,
+                ];
+            });
 
         $dataArray = [
-            'max'  => abs(round(($counties->max('value') + 500), -3)),
+            'max'      => abs(round(($counties->max('value') + 500), -3)),
             'counties' => $counties->toJson(),
         ];
 
