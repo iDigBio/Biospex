@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\StateCounty;
-use App\Repositories\Interfaces\TranscriptionLocation;
 use CountHelper;
 use GeneralHelper;
 use Illuminate\Support\Carbon;
