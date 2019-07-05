@@ -21,7 +21,7 @@ return [
     'banner_swamp'         => 'Swamp Banner',
     'banner_trees'         => 'Trees Banner',
     'biospex'              => 'Biospex',
-    'biospex_tag'          => 'Provision, advertise and lead expeditions.',
+    'biospex_tag'          => 'Provision, advertise, and lead expeditions.',
     'biospex_title'        => 'Lead Public Digitization Expeditions',
     'blog'                 => 'Blog',
     'blog_url'             => 'Project Blog',
