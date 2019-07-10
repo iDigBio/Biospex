@@ -43,26 +43,31 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     /**
      * @inheritdoc
      */
-    public function getExpeditionPublicIndex($sort = null, $order = null)
+    public function getExpeditionPublicIndex($sort = null, $order = null, $projectId = null)
     {
-        $results = $this->model->with('project')
+        $query = $this->model->with('project')
             ->has('nfnWorkflow')
-            ->with('stat')
-            ->get();
+            ->with('stat');
+
+        $results = $projectId === null ? $query->get() : $query->where('project_id', $projectId)->get();
 
         $this->resetModel();
 
+        if ($order === null) {
+            return $results;
+        }
+
         switch ($sort) {
             case 'title':
-                return $order === 'asc' ? $results->sortBy('title') : $results->sortByDesc('title');
+                return $order === 'desc' ? $results->sortByDesc('title') :
+                    $results->sortBy('title');
             case 'project':
-                return $order === 'asc' ?
-                    $results->sortBy(function ($expedition) { return $expedition->project->title; }) :
-                    $results->sortByDesc(function ($expedition) { return $expedition->project->title; });
+                return $order === 'desc' ?
+                    $results->sortByDesc(function ($expedition) { return $expedition->project->title; }) :
+                    $results->sortBy(function ($expedition) { return $expedition->project->title; });
             case 'date':
-                return $order === 'asc' ? $results->sortBy('created_at') : $results->sortByDesc('created_at');
-            default:
-                return $results;
+                return $order === 'desc' ? $results->sortByDesc('created_at') :
+                    $results->sortBy('created_at');
         }
     }
 
@@ -82,17 +87,21 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
 
         $this->resetModel();
 
+        if ($order === null) {
+            return $results;
+        }
+
         switch ($sort) {
             case 'title':
-                return $order === 'asc' ? $results->sortBy('title') : $results->sortByDesc('title');
+                return $order === 'desc' ? $results->sortByDesc('title') :
+                    $results->sortBy('title');
             case 'project':
-                return $order === 'asc' ?
-                    $results->sortBy(function ($expedition) { return $expedition->project->title; }) :
-                    $results->sortByDesc(function ($expedition) { return $expedition->project->title; });
+                return $order === 'desc' ?
+                    $results->sortByDesc(function ($expedition) { return $expedition->project->title; }) :
+                    $results->sortBy(function ($expedition) { return $expedition->project->title; });
             case 'date':
-                return $order === 'asc' ? $results->sortBy('created_at') : $results->sortByDesc('created_at');
-            default:
-                return $results;
+                return $order === 'desc' ? $results->sortByDesc('created_at') :
+                    $results->sortBy('created_at');
         }
     }
 
