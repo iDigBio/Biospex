@@ -29,17 +29,21 @@ class ProjectRepository extends EloquentRepository implements Project
 
         $this->resetModel();
 
+        if ($order === null) {
+            return $results->sortBy('created_at');
+        }
+
         switch($sort) {
             case 'title':
-                return $order === 'asc' ? $results->sortBy('title') : $results->sortByDesc('title');
+                return $order === 'desc' ? $results->sortByDesc('title') : $results->sortBy('title');
             case 'group':
-                return $order === 'asc' ?
-                    $results->sortBy(function ($project) { return $project->group->title; }) :
-                    $results->sortByDesc(function ($project) { return $project->group->title; });
+                return $order === 'desc' ?
+                    $results->sortByDesc(function ($project) { return $project->group->title; }) :
+                    $results->sortBy(function ($project) { return $project->group->title; });
             case 'date':
-                return $order === 'asc' ? $results->sortBy('created_at') : $results->sortByDesc('created_at');
-            default:
-                return $results;
+                return $order === 'desc' ?
+                    $results->sortByDesc('created_at') :
+                    $results->sortBy('created_at');
         }
     }
 
