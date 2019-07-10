@@ -197,7 +197,7 @@ h2.modal-number>small {
 }
 
 .header.home {
-    background-image: url(/storage/images/banner-home.jpg);
+    background-image: url(/storage/images/page/banner-home.jpg);
     height: 800px;
     min-height: 89%;
 }
@@ -415,6 +415,9 @@ home page*/
 h2.home-header-cta {
     font-size: 3.5rem;
     opacity: .35;
+}
+.tutorial {
+    margin-top: 2em;
 }
 .tutorial-right-section {
     margin-top:140px;
@@ -756,7 +759,7 @@ h1.project-wide {
     width: 500px;
     height: 500px;
     background-color: #ffffff;
-    border: 2px solid #8cc640;
+    border: 2px solid #e83f29;
     background-size: cover;
     border-radius: 50%;
     margin: 0 auto;
@@ -787,7 +790,7 @@ h1.project-wide {
     font-size: 1.875rem;
     text-align-all: center;
     color: #9BA2AB;
-    border: 2px solid #8cc640;
+    border: 2px solid #e83f29;
     border-radius: 50%;
     background-color: #ffffff;
     box-shadow: 0 0 10px rgba(0, 0, 0, .25);
@@ -795,18 +798,18 @@ h1.project-wide {
 }
 
 #external-carousel-btns > li:hover {
-    background-color: #8cc640;
+    background-color: #e83f29;
     color: #ffffff;
     cursor: pointer;
 }
 
 #external-carousel-btns li.active {
-    background-color: #8cc640;
+    background-color: #e83f29;
     color: #ffffff;
 }
 
 .circle-slider h3 {
-    color: #8cc640;
+    color: #e83f29;
     font-size: 1.4375rem;
     text-transform: uppercase;
 }

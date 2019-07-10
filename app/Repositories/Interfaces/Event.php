@@ -11,9 +11,10 @@ interface Event extends RepositoryInterface
      *
      * @param null $sort
      * @param null $order
+     * @param null $projectId
      * @return mixed
      */
-    public function getEventPublicIndex($sort = null, $order = null);
+    public function getEventPublicIndex($sort = null, $order = null, $projectId = null);
 
     /**
      * Get events for admin section by user id.

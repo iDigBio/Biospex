@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'biospex_home' => 'BIOSPEX is a base camp for launching, advertising and managing targeted efforts to digitize
+    'biospex_home' => 'BIOSPEX is a base camp for launching, advertising, and managing targeted efforts to digitize
             the world\'s 3 billion biodiversity research specimens in ways that involve the public. It enables you
-            to package projects in one or a series of digitized expeditions, launch the expeditions at crowdsourcing
-            tools, widely recruit others to participate, and layer resrouces on the experience to advance science
-            literacy.In the end, you can download the new data for specimen curation, research, conservation, natural
+            to package projects in one or a series of digitization expeditions, launch the expeditions at crowdsourcing
+            tools, widely recruit others to participate, and layer resources on the experience to advance science
+            literacy. In the end, you can download the new data for specimen curation, research, conservation, natural
                                                                    resource management, public policy, or other activities.',
     'export_processing'       => '<div class="processes"><span class="title">:title</span><br>:stage :processedRecords</div>',
     'export_queued'           => '<div class="processes"><span class="title">:title</span><br>:count export remains in queue before processing begins.</div>|

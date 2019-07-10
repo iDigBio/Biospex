@@ -39,8 +39,9 @@ class ExpeditionsController extends Controller
         $type = request()->get('type');
         $sort = request()->get('sort');
         $order = request()->get('order');
+        $projectId = request()->get('id');
 
-        list($active, $completed) = $expeditionContract->getExpeditionPublicIndex($sort, $order)
+        list($active, $completed) = $expeditionContract->getExpeditionPublicIndex($sort, $order, $projectId)
             ->partition(function($expedition) {
                 return $expedition->stat->percent_completed < '100.00';
         });

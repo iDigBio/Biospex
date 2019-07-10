@@ -20,9 +20,10 @@ interface Expedition extends RepositoryInterface
      *
      * @param null $sort
      * @param null $order
+     * @param null $projectId
      * @return mixed
      */
-    public function getExpeditionPublicIndex($sort = null, $order = null);
+    public function getExpeditionPublicIndex($sort = null, $order = null, $projectId = null);
 
     /**
      * Get expeditions for admin page.

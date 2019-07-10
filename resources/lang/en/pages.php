@@ -28,18 +28,14 @@ return [
     'blog_url_format'      => 'http://blog.com',
     'cancel'               => 'Cancel',
     'carousel_specimen'    => 'Specimen digitization is easy as 123',
-    'carousel_step'        => 'Step',
-    'carousel_step_1_txt'  => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     'carousel_step_1_msg'  => 'Create a Project for your digital images and use BIOSPEX to run optical character
                                     recognition (OCR) on the images. Bundle the specimen images using the OCR text
                                     string, or similar traits like State, County, or collection date, into various
                                     Expeditions that will ignite public interest.',
 
-    'carousel_step_2_txt' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     'carousel_step_2_msg' => 'The curator then uses BIOSPEX to deploy the expeditions a few at a time to an
                                     existing website with a large citizen science community for label transcription.',
 
-    'carousel_step_3_txt'            => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     'carousel_step_3_msg'            => 'The curator processes the resulting transcriptions in BIOSPEX later and exports
                                     the data back to her local data management system',
     'choose_file'                    => 'Choose file...',

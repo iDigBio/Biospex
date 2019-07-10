@@ -8,7 +8,7 @@
 @section('header')
     <header id="header-img" style="background-image: url(/storage/images/page-banners/banner-image-girl.jpg);">
         <nav class="header navbar navbar-expand-md box-shadow">
-            <a href="/"><img src="/storage/images/biospex_logo.svg" alt="BIOSPEX"
+            <a href="/"><img src="/storage/images/page/biospex_logo.svg" alt="BIOSPEX"
                              class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
             @include('common.nav')
         </nav>

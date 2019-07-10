@@ -36,7 +36,7 @@ let transcripts = am4core.createFromConfig(
             "lineX": {
                 "stroke": "#8F3985",
                 "strokeWidth": 4,
-                "strokeOpacity": 0.2,
+                "strokeOpacity": 1,
                 "strokeDasharray": ""
             },
             "lineY": {
@@ -52,7 +52,7 @@ let transcripts = am4core.createFromConfig(
         "dateFormatter": {
             "inputDateFormat": "yyyy-MM-dd"
         },
-
         "series": JSON.parse(Laravel.series),
         "data": JSON.parse(Laravel.data),
+        "preloader": { "disabled" : true },
     }, "transcriptDiv", am4charts.XYChart);

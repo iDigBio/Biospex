@@ -13,7 +13,7 @@
 @section('header')
     <header class="header home">
         <nav class="navbar navbar-expand-md">
-            <a href="/"><img src="/storage/images/biospex_logo.svg" alt="BIOSPEX"
+            <a href="/"><img src="/storage/images/page/biospex_logo.svg" alt="BIOSPEX"
                              class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
             @include('common.nav')
         </nav>
@@ -34,17 +34,60 @@
 @endsection
 
 @section('content')
-    <section class="home-heading text-center">
+    <section class="home-heading text-center" id="learn-more">
         <div class="container">
-            <img src="/storage/images/logo-tagline.png" align="Biospex Tag Line">
+            <img src="/storage/images/page/logo-tagline-action.png" align="Biospex Tag Line">
             <p class="text-justify mt-4">{{ __('html.biospex_home') }}</p>
         </div>
     </section>
-    <!--
-    Tutorial Section -->
-    <section class="tutorial-2" id="learn-more">
+    <!-- Carousel Section -->
+    <section>
+        <div class="row">
+            <div class="col d-flex justify-content-center">
+                <div class="col-md-4 text-center" role="group" aria-label="External carousel buttons">
+                    <h2>The Process<br>
+                        <span class="smallertext">{{ __('pages.carousel_specimen') }}</span></h2>
+                    <ul id="external-carousel-btns" class="list-inline">
+                        <li data-target="#processCarousel" data-slide-to="0"
+                            class="carousel-li-0 active list-inline-item">1
+                        </li>
+                        <li data-target="#processCarousel" data-slide-to="1" class="carousel-li-1 list-inline-item">2
+                        </li>
+                        <li data-target="#processCarousel" data-slide-to="2" class="carousel-li-2 list-inline-item">3
+                        </li>
+                    </ul>
+                </div>
+                <div id="processCarousel" class="carousel slide col-md-6">
+                    <div class="carousel-inner box-shadow inside-carousel">
+                        <div class="carousel-item active"
+                             style="background-image: url(/storage/images/slider/slider1.png);">
+                            <div class="circle-slider p-5">
+                                <h3 class="text-center text-uppercase">{{ __('pages.project') }}</h3>
+                                <p>{{ __('pages.carousel_step_1_msg') }}</p>
+                            </div>
+                        </div>
+                        <div class="carousel-item" style="background-image: url(/storage/images/slider/slider2.png);">
+                            <div class="circle-slider p-5">
+                                <h3 class="text-center text-uppercase">{{ __('pages.expeditions') }}</h3>
+                                <p>{{ __('pages.carousel_step_2_msg') }}</p>
+                            </div>
+                        </div>
+                        <div class="carousel-item" style="background-image: url(/storage/images/slider/slider3.png);">
+                            <div class="circle-slider p-5">
+                                <h3 class="text-center text-uppercase">{{ __('pages.export') }}</h3>
+                                <p>{{ __('pages.carousel_step_3_msg') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tutorial Section -->
+    <section class="tutorial">
         <div class="container" style="position:relative;">
-            <img src="/storage/images/arrow-curved.svg" alt="-->" class="home-arrow d-none d-sm-none d-md-block">
+            <img src="/storage/images/page/arrow-curved.svg" alt="-->" class="home-arrow d-none d-sm-none d-md-block">
             <div class="row p-5">
 
                 <div class="col-sm-6 mt-5 p-1 pb-md-3">
@@ -120,62 +163,6 @@
                     </div>
                 </div>
 
-            </div>
-        </div>
-    </section>
-
-    <section>
-        <div class="row">
-            <div class="col d-flex justify-content-center">
-                <div class="col-md-4 text-center" role="group" aria-label="External carousel buttons">
-                    <h2>The Process<br>
-                        <span class="smallertext">{{ __('pages.carousel_specimen') }}</span></h2>
-                    <ul id="external-carousel-btns" class="list-inline">
-                        <li data-target="#processCarousel" data-slide-to="0"
-                            class="carousel-li-0 active list-inline-item">1
-                        </li>
-                        <li data-target="#processCarousel" data-slide-to="1" class="carousel-li-1 list-inline-item">2
-                        </li>
-                        <li data-target="#processCarousel" data-slide-to="2" class="carousel-li-2 list-inline-item">3
-                        </li>
-                    </ul>
-
-                    <div class="carousel-item carousel-div div-0 active">
-                        <h3 class="text-center" style="color: #8cc640">{{ __('pages.carousel_step') }} 1</h3>
-                        <p class="text-justify smallertext">{{ __('pages.carousel_step_1_txt') }}</p>
-                    </div>
-                    <div class="carousel-item carousel-div div-1">
-                        <h3 class="text-center" style="color: #8cc640">{{ __('pages.carousel_step') }} 2</h3>
-                        <p class="text-justify smallertext">{{ __('pages.carousel_step_2_txt') }}</p>
-                    </div>
-                    <div class="carousel-item carousel-div div-2">
-                        <h3 class="text-center" style="color: #8cc640">{{ __('pages.carousel_step') }} 3</h3>
-                        <p class="text-justify smallertext">{{ __('pages.carousel_step_3_txt') }}</p>
-                    </div>
-                </div>
-                <div id="processCarousel" class="carousel slide col-md-6">
-                    <div class="carousel-inner box-shadow inside-carousel">
-                        <div class="carousel-item active"
-                             style="background-image: url(/storage/images/slider/slider1.png);">
-                            <div class="circle-slider p-5">
-                                <h3 class="text-center text-uppercase">{{ __('pages.project') }}</h3>
-                                <p>{{ __('pages.carousel_step_1_msg') }}</p>
-                            </div>
-                        </div>
-                        <div class="carousel-item" style="background-image: url(/storage/images/slider/slider2.png);">
-                            <div class="circle-slider p-5">
-                                <h3 class="text-center text-uppercase">{{ __('pages.expeditions') }}</h3>
-                                <p>{{ __('pages.carousel_step_2_msg') }}</p>
-                            </div>
-                        </div>
-                        <div class="carousel-item" style="background-image: url(/storage/images/slider/slider3.png);">
-                            <div class="circle-slider p-5">
-                                <h3 class="text-center text-uppercase">{{ __('pages.export') }}</h3>
-                                <p>{{ __('pages.carousel_step_3_msg') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </section>

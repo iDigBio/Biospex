@@ -37,13 +37,13 @@ sub footer -->
             <div class="col-md-10 col-md-offset-1 text-center d-inline d-sm-flex align-items-start justify-content-between">
                 <h3>{{ __('pages.footer_get_connected') }}</h3>
                 <!-- Twitter -->
-                <a class="figure-img"><i class="fab fa-twitter fa-4x"></i></a>
+                <a href="https://twitter.com/BIOSPEX" target="_blank" class="figure-img"><i class="fab fa-twitter fa-4x"></i></a>
                 <!-- Instagram -->
-                <a class="figure-img"><i class="fab fa-instagram fa-4x"></i></a>
+                <a class="figure-img"></a>
                 <!--Facebook -->
-                <a class="figure-img"><i class="fab fa-facebook fa-4x"></i></a>
+                <a class="figure-img"></a>
                 <!--LinkedIn-->
-                <a class="figure-img"><i class="fab fa-linkedin fa-4x"></i></a>
+                <a class="figure-img"></a>
             </div>
             <!-- Grid column -->
         </div>
@@ -63,7 +63,7 @@ sub footer -->
             <div class="col-md-3 col-xl-3 mb-4">
 
                 <!-- Content -->
-                <img src="/storage/images/biospex_logo.svg" alt="BIOSPEX">
+                <img src="/storage/images/page/biospex_logo.svg" alt="BIOSPEX">
                 <p class="small text-justify pt-2">{{ __('pages.footer_disclaimer') }}</p>
             </div>
             <!-- Grid column -->
