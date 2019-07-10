@@ -19,7 +19,6 @@ class ProjectRepository extends EloquentRepository implements Project
         return Model::class;
     }
 
-
     /**
      * @inheritdoc
      */
@@ -33,17 +32,17 @@ class ProjectRepository extends EloquentRepository implements Project
             return $results->sortBy('created_at');
         }
 
-        switch($sort) {
+        switch ($sort) {
             case 'title':
                 return $order === 'desc' ? $results->sortByDesc('title') : $results->sortBy('title');
             case 'group':
-                return $order === 'desc' ?
-                    $results->sortByDesc(function ($project) { return $project->group->title; }) :
-                    $results->sortBy(function ($project) { return $project->group->title; });
+                return $order === 'desc' ? $results->sortByDesc(function ($project) {
+                    return $project->group->title;
+                }) : $results->sortBy(function ($project) {
+                    return $project->group->title;
+                });
             case 'date':
-                return $order === 'desc' ?
-                    $results->sortByDesc('created_at') :
-                    $results->sortBy('created_at');
+                return $order === 'desc' ? $results->sortByDesc('created_at') : $results->sortBy('created_at');
         }
     }
 
@@ -52,29 +51,35 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getAdminProjectIndex($userId, $sort = null, $order = null)
     {
-        $results = $this->model->withCount('expeditions')->with(['group' => function($q) use($userId) {
-            $q->whereHas('users', function($q) use($userId) {
-                $q->where('users.id', $userId);
-            });
-        }])->whereHas('group', function($q) use($userId){
-            $q->whereHas('users', function($q) use($userId) {
+        $results = $this->model->withCount('expeditions')->with([
+            'group' => function ($q) use ($userId) {
+                $q->whereHas('users', function ($q) use ($userId) {
+                    $q->where('users.id', $userId);
+                });
+            },
+        ])->whereHas('group', function ($q) use ($userId) {
+            $q->whereHas('users', function ($q) use ($userId) {
                 $q->where('users.id', $userId);
             });
         })->get();
 
         $this->resetModel();
 
-        switch($sort) {
+        if ($order === null) {
+            return $results->sortBy('created_at');
+        }
+
+        switch ($sort) {
             case 'title':
-                return $order === 'asc' ? $results->sortBy('title') : $results->sortByDesc('title');
+                return $order === 'desc' ? $results->sortByDesc('title') : $results->sortBy('title');
             case 'group':
-                return $order === 'asc' ?
-                    $results->sortBy(function ($project) { return $project->group->title; }) :
-                    $results->sortByDesc(function ($project) { return $project->group->title; });
+                return $order === 'desc' ? $results->sortByDesc(function ($project) {
+                    return $project->group->title;
+                }) : $results->sortBy(function ($project) {
+                    return $project->group->title;
+                });
             case 'date':
-                return $order === 'asc' ? $results->sortBy('created_at') : $results->sortByDesc('created_at');
-            default:
-                return $results;
+                return $order === 'desc' ? $results->sortByDesc('created_at') : $results->sortBy('created_at');
         }
     }
 
@@ -100,17 +105,15 @@ class ProjectRepository extends EloquentRepository implements Project
         return $results;
     }
 
-
     /**
      * @inheritdoc
      */
     public function getProjectShow($projectId)
     {
-        $results = $this->model->withCount('expeditions')
-            ->with([
+        $results = $this->model->withCount('expeditions')->with([
                 'group',
                 'ocrQueue',
-                'expeditions.stat'
+                'expeditions.stat',
             ])->find($projectId);
 
         $this->resetModel();
@@ -126,7 +129,7 @@ class ProjectRepository extends EloquentRepository implements Project
     {
         $project = $this->model->create($attributes);
 
-        if ( ! isset($attributes['resources'])) {
+        if (! isset($attributes['resources'])) {
             return true;
         }
 
@@ -142,6 +145,7 @@ class ProjectRepository extends EloquentRepository implements Project
     /**
      * Override project update.
      * TODO move resource code
+     *
      * @param array $attributes
      * @param $resourceId
      * @return bool
@@ -153,7 +157,7 @@ class ProjectRepository extends EloquentRepository implements Project
         $attributes['slug'] = null;
         $model->fill($attributes)->save();
 
-        if ( ! isset($attributes['resources'])) {
+        if (! isset($attributes['resources'])) {
             return true;
         }
 
@@ -177,8 +181,7 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectsHavingTranscriptionLocations(array $projectIds = [])
     {
-        $results = empty($projectIds) ? $this->model->has('transcriptionLocations')->get()
-            : $this->model->has('transcriptionLocations')->whereIn('id', $projectIds)->get();
+        $results = empty($projectIds) ? $this->model->has('transcriptionLocations')->get() : $this->model->has('transcriptionLocations')->whereIn('id', $projectIds)->get();
 
         $this->resetModel();
 
@@ -263,10 +266,12 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectForAmChartJob($projectId)
     {
-        $result = $this->model->with(['expeditions' => function($q) {
-            $q->with('stat')->has('stat');
-            $q->with('nfnWorkflow')->has('nfnWorkflow');
-        }])->find($projectId);
+        $result = $this->model->with([
+            'expeditions' => function ($q) {
+                $q->with('stat')->has('stat');
+                $q->with('nfnWorkflow')->has('nfnWorkflow');
+            },
+        ])->find($projectId);
 
         $this->resetModel();
 
