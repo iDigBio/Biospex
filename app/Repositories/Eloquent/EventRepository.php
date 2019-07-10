@@ -22,23 +22,28 @@ class EventRepository extends EloquentRepository implements Event
     /**
      * @inheritdoc
      */
-    public function getEventPublicIndex($sort = null, $order = null)
+    public function getEventPublicIndex($sort = null, $order = null, $projectId = null)
     {
-        $results = $this->model->with('project')->get();
+        $results = $projectId === null ? $this->model->with('project')->get() :
+            $this->model->with('project')->where('project_id', $projectId)->get();
 
         $this->resetModel();
 
+        if($order === null) {
+            return $results;
+        }
+
         switch ($sort) {
             case 'title':
-                return $order === 'asc' ? $results->sortBy('title') : $results->sortByDesc('title');
+                return $order === 'desc' ? $results->sortByDesc('title') :
+                    $results->sortBy('title');
             case 'project':
-                return $order === 'asc' ?
-                    $results->sortBy(function ($event) { return $event->project->title; }) :
-                    $results->sortByDesc(function ($event) { return $event->project->title; });
+                return $order === 'desc' ?
+                    $results->sortByDesc(function ($event) { return $event->project->title; }) :
+                    $results->sortBy(function ($event) { return $event->project->title; });
             case 'date':
-                return $order === 'asc' ? $results->sortBy('created_at') : $results->sortByDesc('created_at');
-            default:
-                return $results;
+                return $order === 'desc' ? $results->sortByDesc('start_date') :
+                    $results->sortBy('start_date');
         }
     }
 
@@ -51,17 +56,21 @@ class EventRepository extends EloquentRepository implements Event
 
         $this->resetModel();
 
+        if($order === null) {
+            return $results;
+        }
+
         switch ($sort) {
             case 'title':
-                return $order === 'asc' ? $results->sortBy('title') : $results->sortByDesc('title');
+                return $order === 'desc' ? $results->sortByDesc('title') :
+                    $results->sortBy('title');
             case 'project':
-                return $order === 'asc' ?
-                    $results->sortBy(function ($event) { return $event->project->title; }) :
-                    $results->sortByDesc(function ($event) { return $event->project->title; });
+                return $order === 'desc' ?
+                    $results->sortByDesc(function ($event) { return $event->project->title; }) :
+                    $results->sortBy(function ($event) { return $event->project->title; });
             case 'date':
-                return $order === 'asc' ? $results->sortBy('created_at') : $results->sortByDesc('created_at');
-            default:
-                return $results;
+                return $order === 'desc' ? $results->sortByDesc('start_date') :
+                    $results->sortBy('start_date');
         }
     }
 
