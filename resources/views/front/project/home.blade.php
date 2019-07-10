@@ -8,7 +8,7 @@
 @section('header')
     <header style="background-image: url({{ $project->present()->banner_file_url }});">
         <nav class="header navbar navbar-expand-md box-shadow">
-            <a href="/"><img src="/storage/images/biospex_logo.svg" alt="BIOSPEX"
+            <a href="/"><img src="/storage/images/page/biospex_logo.svg" alt="BIOSPEX"
                              class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
             @include('common.nav')
         </nav>
@@ -136,13 +136,13 @@
             <hr class="header mx-auto">
         </div>
         <div id="active-expeditions-main" class="col-sm-12 show">
-            @include('common.expedition-sort', ['type' => 'active', 'route' => route('front.expeditions.sort')])
+            @include('common.expedition-sort', ['type' => 'active', 'route' => route('front.expeditions.sort'), 'id' => $project->id])
             <div id="active-expeditions" class="row col-sm-12 mx-auto justify-content-center">
                 @include('front.expedition.partials.expedition', ['expeditions' => $expeditions])
             </div>
         </div>
         <div id="completed-expeditions-main" class="col-sm-12 collapse">
-            @include('common.expedition-sort', ['type' => 'completed', 'route' => route('front.expeditions.sort')])
+            @include('common.expedition-sort', ['type' => 'completed', 'route' => route('front.expeditions.sort'), 'id' => $project->id])
             <div id="completed-expeditions" class="row col-sm-12 mx-auto justify-content-center">
                 @include('front.expedition.partials.expedition', ['expeditions' => $expeditionsCompleted])
             </div>
@@ -162,13 +162,13 @@
             <hr class="header mx-auto">
         </div>
         <div id="active-events-main" class="col-sm-12 show">
-            @include('common.event-sort', ['type' => 'active', 'route' => route('front.events.sort')])
+            @include('common.event-sort', ['type' => 'active', 'route' => route('front.events.sort'), 'id' => $project->id])
             <div id="active-events" class="row col-sm-12 mx-auto justify-content-center">
                 @include('front.event.partials.event', ['events' => $events])
             </div>
         </div>
         <div id="completed-events-main" class="col-sm-12 collapse">
-            @include('common.event-sort', ['type' => 'completed', 'route' => route('front.events.sort')])
+            @include('common.event-sort', ['type' => 'completed', 'route' => route('front.events.sort'), 'id' => $project->id])
             <div id="completed-events" class="row col-sm-12 mx-auto justify-content-center">
                 @include('front.event.partials.event', ['events' => $eventsCompleted])
             </div>
@@ -206,7 +206,6 @@
     <script src="//www.amcharts.com/lib/4/core.js"></script>
     <script src="//www.amcharts.com/lib/4/charts.js"></script>
     <script src="//www.amcharts.com/lib/4/maps.js"></script>
-    <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
     <script src="https://www.amcharts.com/lib/4/geodata/usaLow.js"></script>
 
     @if ($project->amChart !== null && $project->amChart->series !== null && $project->amChart->data !== null)
