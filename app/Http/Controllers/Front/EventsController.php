@@ -45,7 +45,11 @@ class EventsController extends Controller
             return null;
         }
 
-        $results = $eventContract->getEventPublicIndex(request()->get('sort'), request()->get('order'));
+        $sort = request()->get('sort');
+        $order = request()->get('order');
+        $projectId = request()->get('id');
+
+        $results = $eventContract->getEventPublicIndex($sort, $order, $projectId);
 
         list($active, $completed) = $results->partition(function ($event) {
             $start_date = $event->start_date->setTimezone($event->timezone);
