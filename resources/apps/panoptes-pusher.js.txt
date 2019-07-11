@@ -36,10 +36,11 @@ axios.post('/oauth/token', params, {
         }
     });
     channel.bind('classification', function (data) {
-        if (data['project_id'] !== "1558")
-        {
-            return;
+        /*
+        if (data['project_id'] !== "1558") {
+        return;
         }
+        */
 
         instance.post('/panoptes-pusher', JSON.stringify(data))
             .catch(err => console.log(`error: ${err.stack}`));
