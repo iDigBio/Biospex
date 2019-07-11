@@ -5,7 +5,7 @@
           data-target="{{ $type }}-expeditions" class="sort-page mr-2 text-uppercase"
           style="color: #e83f29; cursor: pointer; display: inline-block">
         <i class="fas fa-sort"></i> {{ __('pages.title') }}</span>
-    @if( Route::currentRouteName() !== 'admin.projects.show')
+    @if( Route::currentRouteName() !== 'admin.projects.show' || Route::currentRouteName() !== 'front.projects.slug')
     <span data-type="{{ $type }}" data-sort="project" data-order="asc"
           data-id="{{ isset($id) ? $id : null }}"
           data-url="{{ $route }}"
