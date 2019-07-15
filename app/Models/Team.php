@@ -22,7 +22,8 @@ class Team extends BaseEloquentModel
         'team_category_id',
         'first_name',
         'last_name',
-        'email',
+        'title',
+        'department',
         'institution'
     ];
 

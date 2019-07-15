@@ -37,6 +37,16 @@ class BiospexResource extends Resource
         'order',
     ];
 
+    public static function label()
+    {
+        return 'Resources';
+    }
+
+    public static function singularLabel()
+    {
+        return 'Resource';
+    }
+
     /**
      * Get the fields displayed by the resource.
      *
