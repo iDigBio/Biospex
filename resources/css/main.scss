@@ -412,13 +412,13 @@ home page*/
     transform: translate(135%, 13%);
     opacity: .35;
 }
+
 h2.home-header-cta {
     font-size: 3.5rem;
-    opacity: .35;
+    //opacity: .35;
+    color: #e83f29;
 }
-.tutorial {
-    margin-top: 2em;
-}
+
 .tutorial-right-section {
     margin-top:140px;
 }
@@ -429,7 +429,8 @@ h2.home-header-cta {
     }
     h2.home-header-cta {
         font-size: 2.625rem;
-        opacity: .35;
+        //opacity: .35;
+        color: #e83f29;
     }
 
 }

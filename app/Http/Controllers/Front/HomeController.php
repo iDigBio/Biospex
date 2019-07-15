@@ -9,6 +9,7 @@ use App\Repositories\Interfaces\AmChart;
 use App\Repositories\Interfaces\Event;
 use App\Repositories\Interfaces\Expedition;
 use App\Http\Requests\ContactFormRequest;
+use App\Repositories\Interfaces\PanoptesTranscription;
 use Mail;
 
 class HomeController extends Controller
@@ -17,13 +18,16 @@ class HomeController extends Controller
      * Display a listing of the resource.
      *
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
+     * @param \App\Repositories\Interfaces\PanoptesTranscription $panoptesTranscription
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Expedition $expeditionContract)
+    public function index(Expedition $expeditionContract, PanoptesTranscription $panoptesTranscription)
     {
         $expedition = $expeditionContract->getHomePageProjectExpedition();
+        $contributorCount = $panoptesTranscription->getContributorCount();
+        $transcriptionCount = $panoptesTranscription->getTotalTranscriptions();
 
-        return view('front.home', compact('expedition'));
+        return view('front.home', compact('expedition', 'contributorCount', 'transcriptionCount'));
     }
 
     /**

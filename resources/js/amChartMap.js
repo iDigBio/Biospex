@@ -1,7 +1,7 @@
 buildCountryMap();
 
 function buildCountryMap() {
-    //am4core.useTheme(am4themes_animated);
+    am4core.useTheme(am4themes_animated);
 
     let map = am4core.create("mapDiv", am4maps.MapChart);
     map.hiddenState.properties.opacity = 0; // this creates initial fade-in

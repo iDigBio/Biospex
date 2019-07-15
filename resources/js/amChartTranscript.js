@@ -55,4 +55,9 @@ let transcripts = am4core.createFromConfig(
         "series": JSON.parse(Laravel.series),
         "data": JSON.parse(Laravel.data),
         "preloader": { "disabled" : true },
+        "events": {
+            "ready": function (ev) {
+                $("#script-modal").modal("hide");
+            }
+        }
     }, "transcriptDiv", am4charts.XYChart);

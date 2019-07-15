@@ -93,7 +93,7 @@
                 <div class="col-sm-6 mt-5 p-1 pb-md-3">
                     <h2 class="home-header-cta">{{ __('pages.a_project') }}</h2>
 
-                    <div class="card mb-4 px-4 box-shadow" data-aos="fade-down" data-aos-easing="ease-in"
+                    <div class="card mb-5 px-4 box-shadow" data-aos="fade-down" data-aos-easing="ease-in"
                          data-aos-duration="2000" data-aos-once="true">
                         <h2 class="text-center pt-4">{{ $expedition->project->title }}</h2>
                         <hr>
@@ -124,6 +124,22 @@
                                 {!! $expedition->project->present()->facebook_icon_lrg !!}
                                 {!! $expedition->project->present()->blog_icon_lrg !!}
                                 {!! $expedition->project->present()->contact_email_icon_lrg !!}
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 class="home-header-cta">{{ __('pages.the_progress') }}</h2>
+
+                    <div class="card mb-4 px-4 box-shadow" data-aos="fade-right" data-aos-easing="ease-in"
+                         data-aos-duration="2000" data-aos-once="true">
+                        <h2 class="text-center pt-4">{{ __('pages.biospex_stats') }}</h2>
+                        <hr>
+                        <div class="row card-body pb-5">
+                            <div class="col-12">
+                                <ul class="text">
+                                    <li class="mt-3">{{ $transcriptionCount }} {{ __('pages.launched_transcription_count') }}</li>
+                                    <li>{{ $contributorCount }} {{ __('pages.launched_contributor_count') }}</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -162,7 +178,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>

@@ -6,6 +6,19 @@ use App\Repositories\RepositoryInterface;
 
 interface PanoptesTranscription extends RepositoryInterface
 {
+    /**
+     * Get total transcriptions.
+     *
+     * @return mixed
+     */
+    public function getTotalTranscriptions();
+
+    /**
+     * Get total contributor count.
+     *
+     * @return mixed
+     */
+    public function getContributorCount();
 
     /**
      * Return unique transcriber count for project.

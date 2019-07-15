@@ -20,6 +20,36 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
     }
 
     /**
+     * @inheritDoc
+     */
+    public function getTotalTranscriptions()
+    {
+        $results = $this->model->count();
+
+        $this->resetModel();
+
+        return $results;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getContributorCount()
+    {
+        $results = $result = Cache::remember(md5(__METHOD__), 240, function () {
+            return $this->model
+                ->where('user_name', 'not regexp', '/^not-logged-in.*/i')
+                ->groupBy('user_name')
+                ->get()
+                ->count();
+        });
+
+        $this->resetModel();
+
+        return $results;
+    }
+
+    /**
      * @inheritdoc
      */
     public function getProjectTranscriberCount($projectId)

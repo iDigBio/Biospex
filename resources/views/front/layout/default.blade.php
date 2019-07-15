@@ -36,14 +36,15 @@ sub footer -->
             <!-- Grid column -->
             <div class="col-md-10 col-md-offset-1 text-center d-inline d-sm-flex align-items-start justify-content-between">
                 <h3>{{ __('pages.footer_get_connected') }}</h3>
-                <!-- Twitter -->
-                <a href="https://twitter.com/BIOSPEX" target="_blank" class="figure-img"><i class="fab fa-twitter fa-4x"></i></a>
                 <!-- Instagram -->
                 <a class="figure-img"></a>
+                <!-- Twitter -->
+                <a href="https://twitter.com/BIOSPEX" target="_blank" class="figure-img"><i class="fab fa-twitter fa-4x"></i></a>
                 <!--Facebook -->
                 <a class="figure-img"></a>
                 <!--LinkedIn-->
                 <a class="figure-img"></a>
+                </div>
             </div>
             <!-- Grid column -->
         </div>
