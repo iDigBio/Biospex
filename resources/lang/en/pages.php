@@ -1,44 +1,49 @@
 <?php
 
 return [
-    'a_project'            => 'A Project',
-    'about'                => 'About',
-    'account'              => 'Account',
-    'active'               => 'Active',
-    'activities'           => 'Activities',
-    'admin'                => 'Admin',
-    'already_have_account' => 'Already have an account? Login',
-    'api'                  => 'Api',
-    'api_docs'             => 'API Docs',
-    'avatar'               => 'Avatar',
-    'back_to_login'        => 'Back to Login',
-    'banner'               => 'Banner',
-    'banner_click'         => 'Click to select banner.',
-    'banner_desert'        => 'Desert Banner',
-    'banner_grass'         => 'Grass Banner',
-    'banner_meadow'        => 'Meadow Banner',
-    'banner_mountain'      => 'Mountain Flower Banner',
-    'banner_swamp'         => 'Swamp Banner',
-    'banner_trees'         => 'Trees Banner',
-    'biospex'              => 'Biospex',
-    'biospex_stats' => 'BIOSPEX Stats',
-    'biospex_tag'          => 'Provision, advertise, and lead expeditions.',
-    'biospex_title'        => 'Lead Public Digitization Expeditions',
-    'blog'                 => 'Blog',
-    'blog_url'             => 'Project Blog',
-    'blog_url_format'      => 'http://blog.com',
-    'cancel'               => 'Cancel',
-    'carousel_specimen'    => 'Specimen digitization is easy as 123',
-    'carousel_step_1_msg'  => 'Create a Project for your digital images and use BIOSPEX to run optical character
-                                    recognition (OCR) on the images. Bundle the specimen images using the OCR text
-                                    string, or similar traits like State, County, or collection date, into various
-                                    Expeditions that will ignite public interest.',
-
-    'carousel_step_2_msg' => 'The curator then uses BIOSPEX to deploy the expeditions a few at a time to an
-                                    existing website with a large citizen science community for label transcription.',
-
-    'carousel_step_3_msg'            => 'The curator processes the resulting transcriptions in BIOSPEX later and exports
-                                    the data back to her local data management system',
+    'a_project'                      => 'A Project',
+    'about'                          => 'About',
+    'account'                        => 'Account',
+    'active'                         => 'Active',
+    'activities'                     => 'Activities',
+    'admin'                          => 'Admin',
+    'already_have_account'           => 'Already have an account? Login',
+    'api'                            => 'Api',
+    'api_docs'                       => 'API Docs',
+    'avatar'                         => 'Avatar',
+    'back_to_login'                  => 'Back to Login',
+    'banner'                         => 'Banner',
+    'banner_click'                   => 'Click to select banner.',
+    'banner_desert'                  => 'Desert Banner',
+    'banner_grass'                   => 'Grass Banner',
+    'banner_meadow'                  => 'Meadow Banner',
+    'banner_mountain'                => 'Mountain Flower Banner',
+    'banner_swamp'                   => 'Swamp Banner',
+    'banner_trees'                   => 'Trees Banner',
+    'biospex'                        => 'Biospex',
+    'biospex_stats'                  => 'BIOSPEX Stats',
+    'biospex_tag'                    => 'Provision, advertise, and lead expeditions.',
+    'biospex_title'                  => 'Lead Public Digitization Expeditions',
+    'blog'                           => 'Blog',
+    'blog_url'                       => 'Project Blog',
+    'blog_url_format'                => 'http://blog.com',
+    'cancel'                         => 'Cancel',
+    'carousel_specimen'              => 'Specimen digitization is easy as 123',
+    'carousel_step_1_msg'            => 'Establish a project to create data about biodiversity research specimens that have been 
+                                digitally imaged and for which you have a compelling use.  As you circumscribe the project, 
+                                look for ways to align its goals with the interests of existing organizations (e.g., 
+                                enthusiast groups or educators).  A public page is minted for each project, at which 
+                                visualizations and useful resources for participants (e.g., lesson plans) can be shared.',
+    'carousel_step_2_msg'            => 'If you have many specimens from which you need data, circumscribe subsets using what you 
+                                already know about the specimens or using the output from the BIOSPEX optical character 
+                                recognition service, which reads text in images.  These subsets—the “expeditions”—can be 
+                                launched one or more at a time at a crowdsourcing platform.  Perhaps you have a planned 
+                                public event at which you would like to complete an expedition.  Use the BIOSPEX event 
+                                scoreboard to follow progress of your event’s teams.',
+    'carousel_step_3_msg'            => 'Use the BIOSPEX admin tools, including leaderboards and summary statistics, to 
+                                rally participants and follow progress as expeditions proceed.  Upon expedition completion, 
+                                download data for use and export back to the collections that curate the physical specimens 
+                                so that everyone can benefit from your project’s work.  ',
     'choose_file'                    => 'Choose file...',
     'clone'                          => 'Clone',
     'close'                          => 'Close',

@@ -128,7 +128,7 @@
                         </div>
                     </div>
 
-                    <h2 class="home-header-cta">{{ __('pages.the_progress') }}</h2>
+                    <h2>{{ __('pages.the_progress') }}</h2>
 
                     <div class="card mb-4 px-4 box-shadow" data-aos="fade-right" data-aos-easing="ease-in"
                          data-aos-duration="2000" data-aos-once="true">
