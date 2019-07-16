@@ -22,13 +22,6 @@ return [
     'admin_group'    => env('ADMIN_GROUP', 'Admin'),
     'admin_group_id' => env('ADMIN_GROUP_ID', 1),
 
-    'map_project_id'      => env('MAP_PROJECT_ID'),
-    'map_private_key_id'  => env('MAP_PRIVATE_KEY_ID'),
-    'map_private_key'     => env('MAP_PRIVATE_KEY'),
-    'map_client_email'    => env('MAP_CLIENT_EMAIL'),
-    'map_client_id'       => env('MAP_CLIENT_ID'),
-    'map_client_cert_url' => env('MAP_CLIENT_CERT_URL'),
-
     'scratch_dir'                  => 'scratch',
     'scratch_dir_tmp'              => 'scratch/tmp',
     'export_dir'                   => 'exports',
@@ -42,17 +35,10 @@ return [
 
     'python_path'      => env('LABEL_RECONCILIATIONS_PATH').'/venv/bin/python',
     'reconcile_path'   => env('LABEL_RECONCILIATIONS_PATH').'/reconcile.py',
-    'nfn_table_prefix' => env('NFN_TABLE_PREFIX', ''),
 
     'project_chart_series' => resource_path('json/projectChartSeries.json'),
 
-    'ocr_post_url'   => env('OCR_POSTURL'),
-    'ocr_get_url'    => env('OCR_GETURL'),
-    'ocr_delete_url' => env('OCR_DELETEURL'),
-    'ocr_crop'       => env('OCR_CROP'),
     'ocr_disable'    => env('OCR_DISABLE', false),
-    'ocr_chunk'      => env('OCR_CHUNK'),
-    'ocr_api_key'    => env('OCR_API_KEY'),
 
     'poll_ocr_channel'        => env('POLL_OCR_CHANNEL'),
     'poll_export_channel'     => env('POLL_EXPORT_CHANNEL'),

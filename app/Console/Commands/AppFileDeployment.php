@@ -138,13 +138,6 @@ class AppFileDeployment extends Command
             'API_CLIENT_ID',
             'API_CLIENT_SECRET',
 
-            'MAP_PROJECT_ID',
-            'MAP_PRIVATE_KEY_ID',
-            'MAP_PRIVATE_KEY',
-            'MAP_CLIENT_EMAIL',
-            'MAP_CLIENT_ID',
-            'MAP_CLIENT_CERT_URL',
-
             'NUM_PROCS',
             'QUEUE_CHART_TUBE',
             'QUEUE_CLASSIFICATION_TUBE',

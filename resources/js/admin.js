@@ -1,9 +1,5 @@
 $(function() {
 
-    // get current URL path and assign 'active' class
-    //let href = window.location.href;
-    //$('.nav > li > a[href="' + href + '"]').parent().addClass('active');
-
     $('#add_target').on('click', function () {
         let first = $('div.target:first');
         let last = $('div.target:last');

@@ -10,10 +10,6 @@ try {
 
     require('bootstrap');
     require("bootstrap-notify/bootstrap-notify");
-    //window.am4core = require('@amcharts/amcharts4/core');
-    //window.am4charts = require('@amcharts/amcharts4/charts');
-    //window.am4maps = require('@amcharts/amcharts4/maps');
-    //window.am4themes_animated = require('@amcharts/amcharts4/themes/animated');
     require("./common");
     require("./front");
 

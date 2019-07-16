@@ -29,7 +29,7 @@ class OcrCreate extends OcrBase
     private $fileData = [];
 
     /**
-     * BuildOcrBatchesJob constructor.
+     * OcrCreate constructor.
      *
      * @param \App\Repositories\Interfaces\OcrQueue $ocrQueue
      * @param \App\Repositories\Interfaces\OcrFile $ocrFile

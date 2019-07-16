@@ -37,8 +37,11 @@ class PanoptesPusherController extends ApiController
         $results = $nfnWorkflow->findBy('project', $data->project_id);
 
         if ($results === null){
+            \Log::info('return ' . $data->project_id);
             return;
         }
+
+        \Log::info('process ' . $data->project_id);
 
         PusherTranscriptionsJob::dispatch($request->getContent());
 
