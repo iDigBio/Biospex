@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\Interfaces\NfnWorkflow;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -28,6 +29,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        
+
     }
 }
