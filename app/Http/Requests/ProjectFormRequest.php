@@ -36,14 +36,8 @@ class ProjectFormRequest extends Request
             'blog_url'                => 'nullable|url',
             'facebook'                => 'nullable|url',
             'twitter'                 => 'nullable|url',
-            'banner'                  => [
-                'image',
-                'dimensions:min_width=1200,min_height=250',
-                new FileUploadNameValidation(),
-            ],
             'logo'                    => [
                 'image',
-                'dimensions:max_width=300,max_height=200',
                 new FileUploadNameValidation(),
             ],
             'resources.*.type'        => [new ResourceDownloadValidation()],
@@ -72,9 +66,9 @@ class ProjectFormRequest extends Request
     public function messages()
     {
         return [
-            'resources.*.name.required_with'        => 'Type selected',
-            'resources.*.description.required_with' => 'Type selected',
-            'resources.*.download.required_if'      => 'Type selected',
+            'resources.*.name.required_with'        => 'Required when Type selected',
+            'resources.*.description.required_with' => 'Required when Type selected',
+            'resources.*.download.required_if'      => 'Required when Type selected',
             'resources.*.download.mimes'            => 'Accepted files: txt,doc,csv,pdf',
         ];
     }

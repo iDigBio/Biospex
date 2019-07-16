@@ -21,7 +21,7 @@ class RegisterFormRequest extends Request
      */
     public function rules()
     {
-        $table = $this->apiuser ? 'api_users' : 'users';
+        $table = (bool) $this->apiuser ? 'api_users' : 'users';
 
         return [
             'first_name'            => 'required',
@@ -29,8 +29,7 @@ class RegisterFormRequest extends Request
             'email'                 => 'required|min:4|max:32|email|unique:'.$table,
             'password'              => 'required|min:6|confirmed',
             'password_confirmation' => 'required',
-            'registeruser'          => 'honeypot',
-            'registertime'          => 'required_with:registeruser|honeytime:5',
+            'g-recaptcha-response'  => 'required|captcha',
         ];
     }
 }

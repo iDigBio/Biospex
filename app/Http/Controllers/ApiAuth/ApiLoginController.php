@@ -28,14 +28,22 @@ class ApiLoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = 'api';
+    protected $redirectTo = '/api/dashboard';
 
     /**
      * Create a new controller instance.
      */
     public function __construct()
     {
-        $this->middleware('auth:apiuser')->only('logout');
+        $this->middleware('guest:apiuser')->except('logout');
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function guard()
+    {
+        return Auth::guard('apiuser');
     }
 
     /**
@@ -48,24 +56,6 @@ class ApiLoginController extends Controller
         return view('apiauth.login');
     }
 
-    /**
-     * Override credentials to check active status.
-     *
-     * @param Request $request
-     * @return array
-     */
-    protected function credentials(Request $request)
-    {
-        return array_merge($request->only($this->username(), 'password'), ['activated' => 1]);
-    }
-
-    /**
-     * @return mixed
-     */
-    protected function guard()
-    {
-        return Auth::guard('apiuser');
-    }
 
     /**
      * Log the user out of the application.

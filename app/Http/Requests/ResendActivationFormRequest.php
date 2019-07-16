@@ -22,7 +22,8 @@ class ResendActivationFormRequest extends Request
     public function rules()
     {
         return [
-            'email' => 'required|min:4|max:32|email',
+            'email'                => 'required|min:4|max:32|email',
+            'g-recaptcha-response' => 'required|captcha',
         ];
     }
 }

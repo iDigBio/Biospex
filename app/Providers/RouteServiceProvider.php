@@ -52,21 +52,31 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapWebRoutes()
     {
         Route::domain(config('config.app_domain'))
-            ->namespace($this->namespace)
-            ->middleware('web')
-            ->group(function ($router) {
+            ->namespace($this->namespace)->middleware('web')->group(function ($router) {
 
-                $router->namespace('Frontend')->group(function ($router) {
-                    $this->require_files('routes/web', $router);
-
-                    $router->middleware('auth')->group(function ($router) {
-                        $this->require_files('routes/webauth', $router);
-                    });
+                $router->namespace('Front')->group(function ($router) {
+                    $this->require_files('routes/front', $router);
                 });
 
-                $router->namespace('Auth')->group(base_path('routes/web/appauth/auth.php'));
-                $router->namespace('ApiAuth')->prefix('api')->group(base_path('routes/web/apiauth/auth.php'));
+                $router->namespace('Auth')->group(function($router){
+                    $this->require_files('routes/front/appauth', $router);
+                    //base_path('routes/front/appauth/auth.php');
+                });
+
+                $router->namespace('Admin')->prefix('admin')->middleware(['auth', 'verified'])->group(function ($router) {
+                    $this->require_files('routes/admin', $router);
+                });
+
+                $router->prefix('api')->group(function ($router){
+                    $router->namespace('ApiAuth')->group(function ($router) {
+                        $this->require_files('routes/front/apiauth', $router);
+                    });
+                    $router->namespace('Front')->middleware(['auth:apiuser', 'verified:api.verification.notice'])->group(function ($router) {
+                        $router->get('dashboard')->uses('ApiController@dashboard')->name('api.get.dashboard');
+                    });
+                });
             });
+
     }
 
     /**
@@ -82,8 +92,8 @@ class RouteServiceProvider extends ServiceProvider
 
         $router->version('v0', function ($router) {
             $options = [
-                'namespace' => 'App\Http\Controllers\Api\V0',
-                'middleware' => ['api']
+                'namespace'  => 'App\Http\Controllers\Api\V0',
+                'middleware' => ['api'],
             ];
             $router->group($options, function ($router) {
                 $this->require_files('routes/api/v0', $router);
@@ -92,8 +102,8 @@ class RouteServiceProvider extends ServiceProvider
 
         $router->version('v1', function ($router) {
             $options = [
-                'namespace' => 'App\Http\Controllers\Api\V1',
-                'middleware' => ['api']
+                'namespace'  => 'App\Http\Controllers\Api\V1',
+                'middleware' => ['api'],
             ];
 
             $router->group($options, function ($router) {
@@ -128,12 +138,10 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function require_files($dir, $router)
     {
-        $dirPath = base_path() . '/' . $dir . '/';
-        foreach (new DirectoryIterator($dirPath) as $file)
-        {
-            if ( ! $file->isDot() && ! $file->isDir())
-            {
-                require $dirPath . $file->getFilename();
+        $dirPath = base_path().'/'.$dir.'/';
+        foreach (new DirectoryIterator($dirPath) as $file) {
+            if (! $file->isDot() && ! $file->isDir()) {
+                require $dirPath.$file->getFilename();
             }
         }
     }

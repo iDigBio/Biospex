@@ -3,15 +3,13 @@
 namespace App\Models;
 
 use App\Presenters\ProfilePresenter;
-use Illuminate\Database\Eloquent\Model;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 use App\Models\Traits\Presentable;
 
-class Profile extends Model implements AttachableInterface
+class Profile extends BaseEloquentModel implements AttachableInterface
 {
-    use PaperclipTrait, LadaCacheTrait, Presentable;
+    use PaperclipTrait, Presentable;
 
     /**
      * @inheritDoc

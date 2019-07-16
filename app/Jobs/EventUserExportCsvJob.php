@@ -89,7 +89,7 @@ class EventUserExportCsvJob implements ShouldQueue
      */
     private function setCsv(Csv $csv, $rows)
     {
-        $file = config('config.reports_dir') . '/' . str_random() . '.csv';
+        $file = \Storage::path(config('config.reports_dir') . '/' . str_random() . '.csv');
         $csv->writerCreateFromPath($file);
         $csv->insertOne(['Team', 'User', 'Transcriptions']);
         $csv->insertAll($rows);

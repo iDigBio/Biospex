@@ -2,9 +2,6 @@
 
 namespace App\Models\Traits;
 
-use App\Models\Group;
-use App\Models\Permission;
-
 trait HasGroup
 {
     /**

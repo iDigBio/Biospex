@@ -2,12 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
-
-class FaqCategory extends Model
+class FaqCategory extends BaseEloquentModel
 {
-    use LadaCacheTrait;
 
     /**
      * @inheritDoc

@@ -27,7 +27,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/projects';
+    protected $redirectTo = '/admin/projects';
 
     /**
      * Create a new controller instance.
@@ -43,13 +43,20 @@ class LoginController extends Controller
     }
 
     /**
-     * Override credentials to check active status.
+     * Override AuthenticatesUsers
+     * Validate the user login request.
      *
-     * @param Request $request
-     * @return array
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     *
+     * @throws \Illuminate\Validation\ValidationException
      */
-    protected function credentials(Request $request)
+    protected function validateLogin(Request $request)
     {
-        return array_merge($request->only($this->username(), 'password'), ['activated' => 1]);
+        $request->validate([
+            $this->username() => 'required|string',
+            'password' => 'required|string',
+            'g-recaptcha-response' => 'required|captcha'
+        ]);
     }
 }

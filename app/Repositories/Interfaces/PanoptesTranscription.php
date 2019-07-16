@@ -6,17 +6,37 @@ use App\Repositories\RepositoryInterface;
 
 interface PanoptesTranscription extends RepositoryInterface
 {
-
     /**
+     * Get total transcriptions.
+     *
      * @return mixed
      */
     public function getTotalTranscriptions();
 
     /**
-     * @param $expeditionId
+     * Get total contributor count.
+     *
      * @return mixed
      */
-    public function getTranscriptionCountByExpeditionId($expeditionId);
+    public function getContributorCount();
+
+    /**
+     * Return unique transcriber count for project.
+     *
+     * @param $projectId
+     * @return mixed
+     */
+    public function getProjectTranscriberCount($projectId);
+
+    /**
+     * Return project transcription count.
+     *
+     * @param $projectId
+     * @return mixed
+     */
+    public function getProjectTranscriptionCount($projectId);
+
+    // Not used methods
 
     /**
      * @param $projectId
@@ -35,11 +55,6 @@ interface PanoptesTranscription extends RepositoryInterface
      * @return mixed
      */
     public function getTranscriptionCountPerDate($workflowId);
-
-    /**
-     * @return mixed
-     */
-    public function getContributorCount();
 
     /**
      * @param $projectId

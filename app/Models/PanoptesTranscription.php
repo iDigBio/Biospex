@@ -2,45 +2,15 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model;
 use MongoDB\BSON\UTCDateTime;
 
-class PanoptesTranscription extends Model
+class PanoptesTranscription extends BaseMongoModel
 {
-    /**
-     * @inheritDoc
-     */
-    protected $connection = 'mongodb';
 
     /**
      * Set Collection
      */
     protected $collection = 'panoptes_transcriptions';
-
-    /**
-     * @inheritDoc
-     */
-    protected $primaryKey = '_id';
-
-    /**
-     * @inheritDoc
-     */
-    public $incrementing = false;
-
-    /**
-     * @inheritDoc
-     */
-    protected $guarded = ['_id'];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'subject_projectId' => 'int',
-        'subject_expeditionId' => 'int'
-    ];
 
     /**
      * OrderBy

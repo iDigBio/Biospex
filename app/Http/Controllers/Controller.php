@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Facades\Flash;
+use App\Facades\FlashHelper;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -26,7 +26,7 @@ abstract class Controller extends BaseController
         }
         catch (\Exception $e)
         {
-            Flash::warning(trans('pages.insufficient_permissions'));
+            FlashHelper::warning(__('messages.insufficient_permissions'));
 
             return false;
         }

@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Storage;
 
 class NfnClassificationsReconciliationJob implements ShouldQueue
 {
@@ -64,20 +65,20 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
         {
             $expedition = $expeditionContract->findWith($expeditionId, ['nfnWorkflow']);
 
-            $file = config('config.classifications_download') . '/' . $expedition->id . '.csv';
+            $file = Storage::path(config('config.nfn_downloads_classification') . '/' . $expedition->id . '.csv');
 
-            if ( ! File::exists($file) || $expedition->nfnWorkflow === null)
+            if ( ! Storage::exists($file) || $expedition->nfnWorkflow === null)
             {
                 continue;
             }
             
-            $csvPath = config('config.classifications_download') . '/' . $expedition->id . '.csv';
-            $recPath = config('config.classifications_reconcile') . '/' . $expedition->id . '.csv';
-            $tranPath = config('config.classifications_transcript') . '/' . $expedition->id . '.csv';
-            $sumPath = config('config.classifications_summary') . '/' . $expedition->id . '.html';
+            $csvPath = Storage::path(config('config.nfn_downloads_classification') . '/' . $expedition->id . '.csv');
+            $recPath = Storage::path(config('config.nfn_downloads_reconcile') . '/' . $expedition->id . '.csv');
+            $tranPath = Storage::path(config('config.nfn_downloads_transcript') . '/' . $expedition->id . '.csv');
+            $sumPath = Storage::path(config('config.nfn_downloads_summary') . '/' . $expedition->id . '.html');
 
-            $pythonPath = config('config.python_path');
-            $reconcilePath = config('config.reconcile_path');
+            $pythonPath = config('config.reconcile_path') . "/venv/bin/python";
+            $reconcilePath = config('config.reconcile_path') . "/reconcile.py";
             $logPath = storage_path('logs/reconcile.log');
             $command = "$pythonPath $reconcilePath -w {$expedition->nfnWorkflow->workflow} -r $recPath -u $tranPath -s $sumPath $csvPath &> $logPath";
             exec($command);
@@ -85,7 +86,7 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
 
             if (File::exists($csvPath))
             {
-                $this->updateOrCreateDownloads($expedition->id, 'classifications');
+                $this->updateOrCreateDownloads($expedition->id, 'downloads');
             }
 
             if (File::exists($tranPath))

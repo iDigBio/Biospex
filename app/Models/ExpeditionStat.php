@@ -2,12 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
-
-class ExpeditionStat extends Model
+class ExpeditionStat extends BaseEloquentModel
 {
-    use LadaCacheTrait;
 
     /**
      * @inheritDoc

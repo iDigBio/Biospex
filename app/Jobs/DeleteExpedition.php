@@ -6,12 +6,12 @@ use App\Models\Expedition;
 use App\Repositories\Interfaces\Expedition as ExpeditionContact;
 use App\Repositories\Interfaces\Subject;
 use App\Services\MongoDbService;
-use File;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Storage;
 
 class DeleteExpedition implements ShouldQueue
 {
@@ -49,7 +49,7 @@ class DeleteExpedition implements ShouldQueue
         $expedition = $expeditionContract->findWith($this->expedition->id, ['downloads']);
 
         $expedition->downloads->each(function ($download){
-            File::delete(config('config.export_dir').'/'.$download->file);
+            Storage::delete(config('config.export_dir').'/'.$download->file);
         });
 
         $mongoDbService->setCollection('pusher_transcriptions');

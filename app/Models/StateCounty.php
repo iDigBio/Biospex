@@ -2,27 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
-
-class State extends Model
+class StateCounty extends BaseEloquentModel
 {
-    use LadaCacheTrait;
-
     /**
      * @inheritDoc
      */
     protected $table = 'state_counties';
-
-    /**
-     * @inheritDoc
-     */
-    protected $connection = 'mysql';
-
-    /**
-     * @inheritDoc
-     */
-    protected $primaryKey = 'id';
 
     /**
      * @inheritDoc
@@ -48,6 +33,6 @@ class State extends Model
      */
     public function transcriptionLocations()
     {
-        return $this->hasMany(TranscriptionLocation::class, 'state_county', 'state_county');
+        return $this->hasMany(TranscriptionLocation::class);
     }
 }

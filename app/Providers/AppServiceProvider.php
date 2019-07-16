@@ -4,10 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Pagination\Paginator;
 use Schema;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,41 +18,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Paginator::useBootstrapThree();
         Schema::defaultStringLength(191);
 
+        Redis::enableEvents();
+
         $this->setupBlade();
-
-        if ($this->app->environment() === 'local' && env('DB_LOG'))
-        {
-            DB::connection('mongodb')->enableQueryLog();
-            DB::connection('mongodb')->listen(function ($sql) {
-                // $sql is an object with the properties:
-                //  sql: The query
-                //  bindings: the sql query variables
-                //  time: The execution time for the query
-                //  connectionName: The name of the connection
-                foreach ($sql->bindings as $i => $binding)
-                {
-                    if ($binding instanceof \DateTime)
-                    {
-                        $sql->bindings[$i] = $binding->format('\'Y-m-d H:i:s\'');
-                    }
-                    else
-                    {
-                        if (is_string($binding))
-                        {
-                            $sql->bindings[$i] = "'$binding'";
-                        }
-                    }
-                }
-
-                $query = str_replace(array('%', '?'), array('%%', '%s'), $sql->sql);
-
-                $query = vsprintf($query, $sql->bindings);
-                Log::info($query);
-            });
-        }
     }
 
     /**
@@ -66,10 +34,6 @@ class AppServiceProvider extends ServiceProvider
 
         $blade->extend(function ($value) {
             return preg_replace('/(\s*)@(break|continue)(\s*)/', '$1<?php $2; ?>$3', $value);
-        });
-
-        Blade::if ('apiuser', function () {
-            return Auth::guard('apiuser')->check();
         });
     }
 
@@ -84,18 +48,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(
-            'Illuminate\Contracts\Auth\Registrar',
-            'App\Services\Registrar'
-        );
 
-        /*
-         * Development Providers
-         */
-        if ($this->app->environment('local'))
-        {
-            $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
-            $this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);
-        }
     }
 }

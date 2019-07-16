@@ -18,7 +18,7 @@ return [
     |
     */
 
-    'name' => 'Biospex Admin',
+    'name' => 'Bisopex Admin',
 
     /*
     |--------------------------------------------------------------------------
@@ -44,7 +44,7 @@ return [
     |
     */
 
-    'path' => '/nova',
+    'path' => '/admin/nova',
 
     /*
     |--------------------------------------------------------------------------
@@ -57,7 +57,7 @@ return [
     |
     */
 
-    'guard' => env('NOVA_GUARD', null),
+    'guard' => env('NOVA_GUARD', 'web'),
 
     /*
     |--------------------------------------------------------------------------
@@ -77,5 +77,18 @@ return [
         BootTools::class,
         Authorize::class,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Nova Pagination Type
+    |--------------------------------------------------------------------------
+    |
+    | This option defines the pagination visual style used by Resources. You
+    | may choose between two types: "simple" and "links". Feel free to set
+    | this option to the visual style you like for your application.
+    |
+    */
+
+    'pagination' => 'simple',
 
 ];

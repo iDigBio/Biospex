@@ -1,49 +1,24 @@
 $(function () {
-    /**
-     * Use addInitHandler to do operations on the chart object
-     * before it is drawn
-     *
-     **/
-    let collections = [];
 
-    AmCharts.addInitHandler(function (chart) {
-
-        AmCharts.resizeCategory = function (chart) {
-            let standardHeight = 400;
-            let calculatedHeight = 100 * collections.length;
-            let containerHeight = standardHeight > calculatedHeight ? standardHeight : calculatedHeight;
-
-            chart.div.style.height = containerHeight + 'px';
-        };
-
-        // check for dataLoader
-        let loader = chart.dataLoader;
-        if (loader !== undefined && loader.url !== undefined) {
-            if (loader.complete) {
-                loader._complete = loader.complete;
-            }
-            loader.complete = function (chart) {
-                // call original complete
-                if (loader._complete) loader._complete.call(this, chart);
-
-                // now let's do our thing
-                AmCharts.resizeCategory(chart);
-            };
-        }
-    }, ['serial']);
-
+    let op = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function() {
+        let resp = op.apply(this, arguments);
+        this.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        this.setRequestHeader('X-CSRF-Token', $('meta[name=csrf-token]').attr('content'));
+        return resp;
+    };
 
     if ($("#chartdiv").length > 0) {
-        //let collections = [];
-
+        let collections = [];
         let chart = AmCharts.makeChart("chartdiv", {
             type: "serial",
             titles: [{
-                size: 15,
+                color: "#888",
+                size: 30,
                 text: "Cumulative Transcription Activity through Time"
             }],
             path: "/",
-            pathToImages: "../images/",
+            pathToImages: "/images/vendor/amchart/",
             fontSize: 12,
             marginTop: 10,
             categoryField: 'day',
@@ -78,7 +53,7 @@ $(function () {
                 includeHidden: true
             }],
             "dataLoader": {
-                "url": "/project/" + $("#projectId").data('value') + "/chart",
+                "url": "/ajax/chart/" + $("#chartdiv").data('value'),
                 "format": "json",
                 "showErrors": true,
                 "postProcess": function (data, config, chart) {
@@ -93,9 +68,9 @@ $(function () {
                             , count = item.count
                             , day = item.day
                             , obj;
-                        if (collection !== "" && typeof(collection) !== 'undefined') {
-                            if (collections.indexOf(collection) === -1 && collection !== "") collections.push(collection);
-                            if (current_day !== day && typeof(day) != "undefined") {
+                        if (collection != "" && typeof(collection) != 'undefined') {
+                            if (collections.indexOf(collection) === -1 && collection != "") collections.push(collection);
+                            if (current_day != day && typeof(day) != "undefined") {
                                 if (obj) chartData.push(obj);
                                 obj = {};
                                 current_day = day;
@@ -104,7 +79,7 @@ $(function () {
                             if (typeof(count) != 'undefined') {
                                 obj[collection] = count;
                             }
-                            if (i + 1 === data.length) {
+                            if (i + 1 == data.length) {
                                 chartData.push(obj)
                             } //make sure we push last item if it's there
                         }
@@ -112,10 +87,9 @@ $(function () {
                     /////////////////////////////////////
                     //create a graph for each collection
                     /////////////////////////////////////
-                    console.dir(collections);
                     for (let i = 0; i < collections.length; i++) {
                         let col = collections[i];
-                        if (col !== "") {
+                        if (col != "") {
                             graphs.push({
                                 valueAxis: "a1",
                                 type: "line",
@@ -152,7 +126,7 @@ $(function () {
                             if (!data.hasOwnProperty(col)) {
                                 data[col] = 0
                             }
-                        })
+                        });
                     }
 
                     return chartData;
@@ -169,6 +143,39 @@ $(function () {
                 periodValueText: "Total: [[value.high]]"
             }
         });
+
+        /**
+         * Use addInitHandler to do operations on the chart object
+         * before it is drawn
+         *
+         **/
+
+        AmCharts.addInitHandler(function (chart) {
+            console.log('init handler' + collections.length);
+            AmCharts.resizeCategory = function (chart) {
+                let standardHeight = 400;
+                let calculatedHeight = 100 * collections.length;
+                let containerHeight = standardHeight > calculatedHeight ? standardHeight : calculatedHeight;
+
+                chart.div.style.height = containerHeight + 'px';
+            };
+
+            // check for dataLoader
+            let loader = chart.dataLoader;
+            if (loader !== undefined && loader.url !== undefined) {
+                if (loader.complete) {
+                    loader._complete = loader.complete;
+                }
+                loader.complete = function (chart) {
+                    // call original complete
+                    if (loader._complete) loader._complete.call(this, chart);
+
+                    // now let's do our thing
+                    AmCharts.resizeCategory(chart);
+                };
+            }
+        }, ['serial']);
+
     }
 
     if ($("#chartTranscriptionsDiv").length > 0) {

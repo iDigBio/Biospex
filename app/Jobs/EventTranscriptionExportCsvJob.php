@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\EventCsvExport;
-use App\Repositories\Interfaces\Event;
+use App\Repositories\Interfaces\EventTranscription;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Services\Csv\Csv;
 use Illuminate\Bus\Queueable;
@@ -50,25 +50,27 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Repositories\Interfaces\Event $event
-     * @param \App\Repositories\Interfaces\PanoptesTranscription $panoptesTranscription
+     * @param \App\Repositories\Interfaces\EventTranscription $eventTranscriptionContract
+     * @param \App\Repositories\Interfaces\PanoptesTranscription $panoptesTranscriptionContract
      * @param Csv $csv
      * @return void
      */
     public function handle(
-        Event $event,
-        PanoptesTranscription $panoptesTranscription,
+        EventTranscription $eventTranscriptionContract,
+        PanoptesTranscription $panoptesTranscriptionContract,
         Csv $csv
     )
     {
         try
         {
-            $classificationIds = $event->getEventClassificationIds($this->eventId);
+            $ids = $eventTranscriptionContract->getEventClassificationIds(3);
 
-            $transcriptions = $classificationIds->map(function($id) use($panoptesTranscription) {
-                $transcript = $panoptesTranscription->findBy('classification_id', $id);
+            $transcriptions = $ids->map(function($id) use($panoptesTranscriptionContract) {
+                $transcript = $panoptesTranscriptionContract->findBy('classification_id', $id);
                 unset($transcript['_id']);
                 return $transcript;
+            })->reject(function($transcription){
+                return $transcription === null;
             });
 
             $file = $transcriptions->isEmpty() ? null : $this->setCsv($transcriptions, $csv);
@@ -91,7 +93,7 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
         $first = $transcriptions->first()->toArray();
         $header = array_keys($first);
 
-        $file = config('config.reports_dir') . '/' . str_random() . '.csv';
+        $file = \Storage::path(config('config.reports_dir') . '/' . str_random() . '.csv');
         $csv->writerCreateFromPath($file);
         $csv->insertOne($header);
         $csv->insertAll($transcriptions->toArray());

@@ -22,6 +22,61 @@ class EventRepository extends EloquentRepository implements Event
     /**
      * @inheritdoc
      */
+    public function getEventPublicIndex($sort = null, $order = null, $projectId = null)
+    {
+        $results = $projectId === null ? $this->model->with('project')->get() :
+            $this->model->with('project')->where('project_id', $projectId)->get();
+
+        $this->resetModel();
+
+        if($order === null) {
+            return $results;
+        }
+
+        switch ($sort) {
+            case 'title':
+                return $order === 'desc' ? $results->sortByDesc('title') :
+                    $results->sortBy('title');
+            case 'project':
+                return $order === 'desc' ?
+                    $results->sortByDesc(function ($event) { return $event->project->title; }) :
+                    $results->sortBy(function ($event) { return $event->project->title; });
+            case 'date':
+                return $order === 'desc' ? $results->sortByDesc('start_date') :
+                    $results->sortBy('start_date');
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getEventAdminIndex($userId, $sort = null, $order = null)
+    {
+        $results = $this->model->with('project')->where('owner_id', $userId)->get();
+
+        $this->resetModel();
+
+        if($order === null) {
+            return $results;
+        }
+
+        switch ($sort) {
+            case 'title':
+                return $order === 'desc' ? $results->sortByDesc('title') :
+                    $results->sortBy('title');
+            case 'project':
+                return $order === 'desc' ?
+                    $results->sortByDesc(function ($event) { return $event->project->title; }) :
+                    $results->sortBy(function ($event) { return $event->project->title; });
+            case 'date':
+                return $order === 'desc' ? $results->sortByDesc('start_date') :
+                    $results->sortBy('start_date');
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function createEvent(array $attributes)
     {
         $attributes['start_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $attributes['start_date'].':00', $attributes['timezone']);
@@ -56,13 +111,19 @@ class EventRepository extends EloquentRepository implements Event
         $event = $this->update($attributes, $resourceId);
 
         collect($attributes['teams'])->each(function ($team) use ($event) {
-            $this->handleGroup($team, $event);
+            $this->handleTeam($team, $event);
         });
 
         return $event;
     }
 
-    public function handleGroup($team, $event)
+    /**
+     * Handle team create, update, delete.
+     *
+     * @param $team
+     * @param $event
+     */
+    public function handleTeam($team, $event)
     {
         $record = EventTeam::where('id', $team['id'])->where('event_id', $event->id)->first();
         if ($record && $team['title'] !== null) {
@@ -128,23 +189,6 @@ class EventRepository extends EloquentRepository implements Event
         $this->resetModel();
 
         return $results;
-    }
-
-    /**
-     * Return transcriptions ids for event.
-     *
-     * @param $eventId
-     * @return mixed
-     * @throws \Exception
-     */
-    public function getEventClassificationIds($eventId)
-    {
-        $event = $this->model->with(['transcriptions'])->find($eventId);
-        $ids = $event->transcriptions->pluck('classification_id');
-
-        $this->resetModel();
-
-        return $ids;
     }
 
     /**

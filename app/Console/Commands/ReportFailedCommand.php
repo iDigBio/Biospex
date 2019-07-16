@@ -38,7 +38,7 @@ class ReportFailedCommand extends Command
         }
 
         $user = User::find(1);
-        $message = __('There are :count failed jobs in the Jobs table.', ['count' => $count]);
+        $message = __('messages.failed_jobs', ['count' => $count]);
         $user->notify(new FailedJobReport($message));
     }
 }

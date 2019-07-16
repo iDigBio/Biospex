@@ -1,0 +1,24 @@
+// Bootstrap css
+@import "~bootstrap/scss/bootstrap";
+
+//@import "~slick-carousel/slick/slick";
+// Hamburgers menu
+@import "~hamburgers/_sass/hamburgers/hamburgers";
+
+// Summernote WYSIWG
+@import "~summernote/dist/summernote-bs4.css";
+
+// free-jqGrid
+@import "~free-jqgrid/dist/plugins/css/ui.multiselect.css";
+
+// free-jqGrid
+@import "~free-jqgrid/dist/css/ui.jqgrid.css";
+
+// jQuery-ui
+@import "~jquery-ui/themes/base/all.css";
+
+// Datetimepicker
+@import "~jquery-datetimepicker/build/jquery.datetimepicker.min.css";
+
+// biospex main
+@import "../css/main.scss";

@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
+use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
+use App\Presenters\EventTeamPresenter;
 
-class EventTeam extends Model
+class EventTeam extends BaseEloquentModel
 {
-    use LadaCacheTrait, UuidTrait;
+    use UuidTrait, Presentable;
 
     /**
      * @inheritDoc
@@ -22,6 +22,11 @@ class EventTeam extends Model
         'title',
         'users'
     ];
+
+    /**
+     * @var string
+     */
+    protected $presenter = EventTeamPresenter::class;
 
     /**
      * Event relationship.

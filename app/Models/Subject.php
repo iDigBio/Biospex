@@ -2,30 +2,8 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model;
-
-class Subject extends Model
+class Subject extends BaseMongoModel
 {
-    /**
-     * @inheritDoc
-     */
-    protected $connection = 'mongodb';
-
-    /**
-     * @inheritDoc
-     */
-    protected $primaryKey = '_id';
-
-    /**
-     * @inheritDoc
-     */
-    public $incrementing = false;
-
-    /**
-     * @inheritDoc
-     */
-    protected $guarded = ['_id'];
-
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

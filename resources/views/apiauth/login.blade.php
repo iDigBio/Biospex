@@ -1,56 +1,55 @@
-@extends('frontend.api.default')
+@extends('front.layout.default')
 
 {{-- Web site Title --}}
 @section('title')
-@lang('pages.login')
+    {{ __('pages.api') }} {{ __('pages.login') }}
 @stop
 
 {{-- Content --}}
+@section('header')
+    <header style="background-image: url(/storage/images/page-banners/banner-field.jpg);">
+        <nav class="header-admin navbar navbar-expand-md box-shadow">
+            <a href="/"><img src="/storage/images/page/biospex_logo.svg" alt="BIOSPEX"
+                             class="my-0 mr-md-auto top-logo-admin font-weight-normal"/></a>
+            @include('common.nav')
+        </nav>
+    </header>
+@endsection
+
 @section('content')
-<div class="row top30">
-    <div class="col-md-4 col-md-offset-4">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">{!! trans('pages.signin') !!}</h3>
-            </div>
-            <div class="panel-body">
-                {!! Form::open([
-                'route' => 'api.post.login',
-                'method' => 'post',
-                'class' => 'form-horizontal',
-                'role' => 'form'
-                ]) !!}
-                <div class="col-md-12">
-                    <div class="form-group {{ ($errors->has('email')) ? 'has-error' : '' }}">
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-envelope fa-lg"></i></span>
-                            {!! Form::email('email', '', ['id' => 'email', 'class' => 'form-control', 'placeholder' => 'Email address', 'required', 'autocomplete' => 'off']) !!}
-                        </div>
-                        {{ ($errors->has('email') ?  $errors->first('email') : '') }}
-                    </div>
-                </div>
-                <div class="col-md-12">
+    <h2 class="text-center pt-4 text-uppercase">{{ __('pages.biospex') }} {{ __('pages.api') }} {{ __('pages.login') }}</h2>
+    <hr class="header mx-auto" style="width:300px;">
+    <div class="col-12 col-md-10 offset-md-1">
+        <div class="card white box-shadow py-5 my-5 p-sm-5">
+            <div class="col-6 mx-auto">
+                <form action="{{ route('api.post.login') }}" method="post" role="form">
+                    {!! csrf_field() !!}
                     <div class="form-group">
-                        <div class="input-group {{ ($errors->has('password')) ? 'has-error' : '' }}">
-                            <span class="input-group-addon"><i class="fa fa-lock fa-lg"></i></span>
-                            {!! Form::password('password', ['id' => 'password', 'class' => 'form-control', 'placeholder' => 'Password', 'required', 'autocomplete' => 'off']) !!}
-                        </div>
-                        {{ ($errors->has('password') ?  $errors->first('password') : '') }}
+                        <label for="email" class="col-form-label required">{{ __('pages.email') }}:</label>
+                        <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"
+                               id="email" name="email"
+                               value="{{ old('email') }}" required>
+                        <span class="invalid-feedback">{{ $errors->first('email') }}</span>
                     </div>
+                    <div class="form-group">
+                        <label for="password" class="col-form-label required">{{ __('pages.password') }}:</label>
+                        <input type="password" class="form-control {{ ($errors->has('password')) ? 'is-invalid' : '' }}"
+                               id="password" name="password"
+                               value="{{ old('password') }}" required>
+                        <span class="invalid-feedback">{{ $errors->first('password') }}</span>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="remember" name="remember">
+                        <label class="custom-control-label" for="remember">{{ __('pages.remember_me') }}</label>
+                    </div>
+                    @include('common.recaptcha')
+                    @include('common.submit-button')
+                </form>
+                <div class="mt-4 text-center">
+                    <a href="{{ route('api.password.request') }}">{{ __('pages.forgot_your_pass') }}</a> ||
+                    <a href="{{ route('api.get.register') }}">{{ __('pages.register') }}</a>
                 </div>
-                {!!Form::label('remember', trans('pages.rememberme')) !!}
-                {!! Form::checkbox('remember') !!}
-                <input type="submit" value="Login" class="btn btn-primary btn-block">
-                {!! Form::close() !!}
-                <div class="row">
-                    <div class="col-md-12 top15 text-center">
-                        {!! link_to_route('api.password.request', trans('pages.password_forgot')) !!} ||
-                        {!! link_to_route('api.get.resend', trans('pages.resend_activation')) !!} ||
-                        {!! link_to_route('api.get.register', trans('pages.register')) !!}
-                   </div>
-               </div>
             </div>
         </div>
     </div>
-</div>
 @stop

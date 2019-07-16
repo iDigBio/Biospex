@@ -14,46 +14,31 @@ return [
     'echo_ssl_crt'    => env('ECHO_SSL_CRT'),
     'echo_ssl_key'    => env('ECHO_SSL_KEY'),
 
-    'admin_group'    => env('ADMIN_GROUP'),
-    'admin_group_id' => env('ADMIN_GROUP_ID'),
-
     'api_url'           => env('API_URL'),
     'api_version'       => env('API_VERSION'),
     'api_client_id'     => env('API_CLIENT_ID'),
     'api_client_secret' => env('API_CLIENT_SECRET'),
 
-    'map_project_id'      => env('MAP_PROJECT_ID'),
-    'map_private_key_id'  => env('MAP_PRIVATE_KEY_ID'),
-    'map_private_key'     => env('MAP_PRIVATE_KEY'),
-    'map_client_email'    => env('MAP_CLIENT_EMAIL'),
-    'map_client_id'       => env('MAP_CLIENT_ID'),
-    'map_client_cert_url' => env('MAP_CLIENT_CERT_URL'),
+    'admin_group'    => env('ADMIN_GROUP', 'Admin'),
+    'admin_group_id' => env('ADMIN_GROUP_ID', 1),
 
-    'scratch_dir'                 => storage_path('app/scratch'),
-    'scratch_dir_tmp'             => storage_path('app/scratch/tmp'),
-    'export_dir'                  => storage_path('app/exports'),
-    'reports_dir'                 => storage_path('app/reports'),
-    'import_dir'                  => storage_path('app/subjects'),
-    'classifications_dir'         => storage_path('app/classifications'),
-    'classifications_download'    => storage_path('app/classifications/download'),
-    'classifications_reconcile'   => storage_path('app/classifications/reconcile'),
-    'classifications_summary'     => storage_path('app/classifications/summary'),
-    'classifications_transcript'  => storage_path('app/classifications/transcript'),
-    'classifications_fusiontable' => storage_path('app/classifications/fusiontable'),
+    'scratch_dir'                  => 'scratch',
+    'scratch_dir_tmp'              => 'scratch/tmp',
+    'export_dir'                   => 'exports',
+    'reports_dir'                  => 'reports',
+    'import_dir'                   => 'subjects',
+    'nfn_downloads_dir'            => 'nfndownloads',
+    'nfn_downloads_classification' => 'nfndownloads/classification',
+    'nfn_downloads_reconcile'      => 'nfndownloads/reconcile',
+    'nfn_downloads_summary'        => 'nfndownloads/summary',
+    'nfn_downloads_transcript'     => 'nfndownloads/transcript',
 
     'python_path'      => env('LABEL_RECONCILIATIONS_PATH').'/venv/bin/python',
     'reconcile_path'   => env('LABEL_RECONCILIATIONS_PATH').'/reconcile.py',
-    'nfn_table_prefix' => env('NFN_TABLE_PREFIX', ''),
 
     'project_chart_series' => resource_path('json/projectChartSeries.json'),
 
-    'ocr_post_url'   => env('OCR_POSTURL'),
-    'ocr_get_url'    => env('OCR_GETURL'),
-    'ocr_delete_url' => env('OCR_DELETEURL'),
-    'ocr_crop'       => env('OCR_CROP'),
     'ocr_disable'    => env('OCR_DISABLE', false),
-    'ocr_chunk'      => env('OCR_CHUNK'),
-    'ocr_api_key'    => env('OCR_API_KEY'),
 
     'poll_ocr_channel'        => env('POLL_OCR_CHANNEL'),
     'poll_export_channel'     => env('POLL_EXPORT_CHANNEL'),
@@ -61,6 +46,10 @@ return [
 
     'cache_enabled'       => env('CACHE_ENABLED', true),
     'cache_minutes'       => env('CACHE_MINUTES', 60),
+
+    'project_resources' => [
+        'Website URL','Video URL','File Download'
+    ],
 
     /**
      * iDigBio api query url
@@ -90,10 +79,18 @@ return [
         ],
     ],
 
-    'dwcLocalityFields'     => [
-        'StateProvince'  => 'stateProvince',
-        'State_Province' => 'stateProvince',
-        'State'          => 'stateProvince',
+    'dwcTranscriptFields' => [
+        'StateProvince'  => 'state_province',
+        'State_Province' => 'state_province',
+        'State'          => 'state_province',
+        'County'         => 'county',
+        'subject_county' => 'county',
+    ],
+
+    'dwcOccurrenceFields'   => [
+        'stateProvince'  => 'state_province',
+        'State_Province' => 'state_province',
+        'State'          => 'state_province',
         'County'         => 'county',
     ],
 

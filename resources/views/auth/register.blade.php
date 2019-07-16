@@ -1,95 +1,79 @@
-@extends('frontend.layouts.default')
+@extends('front.layout.default')
 
 {{-- Web site Title --}}
 @section('title')
-    @parent
-    @lang('pages.register')
+    {{ __('pages.register') }}
 @stop
 
 {{-- Content --}}
+@section('header')
+    <header style="background-image: url(/storage/images/page-banners/banner-field.jpg);">
+        <nav class="header navbar navbar-expand-md box-shadow">
+            <a href="/"><img src="/storage/images/page/biospex_logo.svg" alt="BIOSPEX"
+                             class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
+            @include('common.nav')
+        </nav>
+    </header>
+@endsection
+
 @section('content')
-    <div class="row centered-form top30">
-        <!--   <div class="col-xs-12 col-sm-8 col-md-8 col-sm-offset-4 col-md-offset-4"> -->
-        <div class="col-xs-12 col-sm-6 col-sm-offset-3">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{{ trans('pages.register_account') }}</h3>
-                </div>
-                <div class="panel-body">
-                    {!! Form::open([
-                    'route' => 'app.post.register',
-                    'method' => 'post',
-                    'class' => 'form-horizontal',
-                    'role' => 'form'
-                    ]) !!}
+    <h2 class="text-center pt-4">{{ __('pages.register') }} {{ __('pages.account') }}</h2>
+    <hr class="header mx-auto" style="width:300px;">
+    <div class="col-12 col-md-10 offset-md-1">
+        <div class="card white box-shadow py-5 my-5 p-sm-5">
+            <div class="col-6 mx-auto">
+                <form action="{{ route('app.post.register') }}" method="post" role="form" class="form-horizontal">
                     {!! csrf_field() !!}
-                    <div class="col-xs-6 col-sm-6 col-md-6">
-                        <div class="form-group">
-                            <div class="input-group {{ ($errors->has('first_name')) ? 'has-error' : '' }}">
-                                <span class="input-group-addon"><i class="fa fa-user fa-lg"></i></span>
-                                {!! Form::text('first_name', '', ['id' => 'first_name', 'class' => 'form-control', 'placeholder' => trans('pages.first_name'),]) !!}
-                            </div>
-                            {{ $errors->first('first_name') }}
-                        </div>
+                    <input type="hidden" name="apiuser" value="false">
+                    <div class="form-group">
+                        <label for="first_name" class="col-form-label required">{{ __('pages.first_name') }}:</label>
+                        <input type="text" class="form-control {{ ($errors->has('first_name')) ? 'is-invalid' : '' }}"
+                               id="first_name" name="first_name"
+                               value="{{ old('first_name') }}" required>
+                        <span class="invalid-feedback">{{ $errors->first('first_name') }}</span>
                     </div>
-                    <div class="col-xs-6 col-sm-6 col-md-6">
-                        <div class="form-group">
-                            <div class="input-group {{ ($errors->has('last_name')) ? 'has-error' : '' }}">
-                                <span class="input-group-addon"><i class="fa fa-user fa-lg"></i></span>
-                                {!! Form::text('last_name', '', ['id' => 'last_name', 'class' => 'form-control', 'placeholder' => trans('pages.last_name')]) !!}
-                            </div>
-                            {{ $errors->first('last_name') }}
-                        </div>
+                    <div class="form-group">
+                        <label for="last_name" class="col-form-label required">{{ __('pages.last_name') }}:</label>
+                        <input type="text" class="form-control {{ ($errors->has('last_name')) ? 'is-invalid' : '' }}"
+                               id="last_name" name="last_name"
+                               value="{{ old('last_name') }}" required>
+                        <span class="invalid-feedback">{{ $errors->first('last_name') }}</span>
                     </div>
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group">
-                            <div class="input-group {{ ($errors->has('email')) ? 'has-error' : '' }}">
-                                <span class="input-group-addon"><i class="fa fa-envelope fa-lg"></i></span>
-                                {!! Form::email('email', $email, ['id' => 'email', 'class' => 'form-control', 'placeholder' => trans('pages.email')]) !!}
-                            </div>
-                            {{ $errors->first('email') }}
-                        </div>
+                    <div class="form-group">
+                        <label for="email" class="col-form-label required">{{ __('pages.email') }}:</label>
+                        <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"
+                               id="email" name="email"
+                               value="{{ old('email') }}" required>
+                        <span class="invalid-feedback">{{ $errors->first('email') }}</span>
                     </div>
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group">
-                            <div class="input-group {{ ($errors->has('password')) ? 'has-error' : '' }}">
-                                <span class="input-group-addon"><i class="fa fa-lock fa-lg"></i></span>
-                                {!! Form::password('password', ['id' => 'password', 'class' => 'form-control', 'placeholder' => trans('pages.password')]) !!}
-                            </div>
-                            {{ $errors->first('password') }}
-                        </div>
+                    <div class="form-group">
+                        <label for="password" class="col-form-label required">{{ __('pages.password') }}:</label>
+                        <input type="password" class="form-control {{ ($errors->has('password')) ? 'is-invalid' : '' }}"
+                               id="password" name="password"
+                               value="{{ old('password') }}" required>
+                        <span class="invalid-feedback">{{ $errors->first('password') }}</span>
                     </div>
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group">
-                            <div class="input-group {{ ($errors->has('password_confirmation')) ? 'has-error' : '' }}">
-                                <span class="input-group-addon"><i class="fa fa-lock fa-lg"></i></span>
-                                {!! Form::password('password_confirmation', ['class' => 'form-control', 'id' =>'password_confirmation', 'placeholder' => trans('pages.password_confirmation')]) !!}
-                            </div>
-                            {{ $errors->first('password_confirmation') }}
-                        </div>
+                    <div class="form-group">
+                        <label for="password_confirmation" class="col-form-label required">{{ __('pages.password_confirmation') }}:</label>
+                        <input type="password" class="form-control {{ ($errors->has('password_confirmation')) ? 'is-invalid' : '' }}"
+                               id="password_confirmation" name="password_confirmation"
+                               value="{{ old('password_confirmation') }}" required>
+                        <span class="invalid-feedback">{{ $errors->first('password_confirmation') }}</span>
                     </div>
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group">
-                            <div class="input-group {{ ($errors->has('invite')) ? 'has-error' : '' }}">
-                                <span class="input-group-addon"><i class="fa fa-users fa-lg"></i></span>
-                                {!! Form::text('invite', $code, array('class' => 'form-control', 'placeholder' => trans('pages.invite_code'))) !!}
-                            </div>
-                            {{ ($errors->has('invite') ?  $errors->first('invite') : '') }}
-                        </div>
+                    <div class="form-group">
+                        <label for="invite" class="col-form-label">{{ __('pages.invite_code') }}:</label>
+                        <input type="text" class="form-control {{ ($errors->has('invite')) ? 'is-invalid' : '' }}"
+                               id="invite" name="invite"
+                               value="{{ old("invite", $code ?? '') }}">
+                        <span class="invalid-feedback">{{ $errors->first('invite') }}</span>
                     </div>
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group">
-                            {!! Honeypot::generate('registeruser', 'registertime') !!}
-                            {!! Form::submit(trans('pages.register'), array('class' => 'btn btn-primary btn-block')) !!}
-                            {!! Form::hidden('apiuser', 0) !!}
-                            {!! Form::close() !!}
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-12 col-md-12 top15 text-center">
-                        {!! link_to_route('app.get.login', trans('pages.already_have_account')) !!}
-                    </div>
+                    @include('common.recaptcha')
+                    @include('common.submit-button')
+                </form>
+                <div class="mt-4 text-center">
+                    <a href="{{ route('app.get.login') }}">{{ __('pages.already_have_account') }}</a>
                 </div>
             </div>
         </div>
     </div>
-@stop
+@endsection

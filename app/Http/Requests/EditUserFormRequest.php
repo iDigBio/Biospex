@@ -28,7 +28,7 @@ class EditUserFormRequest extends Request
             'first_name'            => 'required',
             'last_name'             => 'required',
             'email'                 => 'required|min:4|max:32|email|unique:users,email,' . $this->route('users'),
-            'avatar' => ['required', 'image', new FileUploadNameValidation()]
+            'avatar' => ['required_without:current_avatar', 'image', new FileUploadNameValidation()]
         ];
     }
 }

@@ -29,6 +29,9 @@ class Kernel extends ConsoleKernel
             ->timezone('America/New_York')
             ->dailyAt('05:30');
 
+        // Trigger export polling
+        $schedule->command('export:poll')->everyFiveMinutes();
+
         // Clean imports directory
         $schedule->command('download:clean')
             ->timezone('America/New_York')
@@ -39,10 +42,7 @@ class Kernel extends ConsoleKernel
             ->timezone('America/New_York')
             ->dailyAt('06:30');
 
-        // Trigger export polling
-        $schedule->command('export:poll')->everyFiveMinutes();
-
-        if ($this->app->environment() === 'prod') {
+        if ($this->app->environment('prod')) {
             // Create Notes From Nature csv files
             $schedule->command('nfn:csvcreate')
                 ->timezone('America/New_York')
@@ -57,6 +57,8 @@ class Kernel extends ConsoleKernel
                     Artisan::call('lada-cache:flush');
                 });
         }
+
+        $schedule->command('telescope:prune --hours=48')->daily();
     }
 
     /**

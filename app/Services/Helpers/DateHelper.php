@@ -54,6 +54,19 @@ class DateHelper
     }
 
     /**
+     * Format date string.
+     *
+     * @param $string
+     * @param string $format
+     * @return string
+     * @throws \Exception
+     */
+    public function formatStringDate($string, $format = 'Y-m-d') {
+        $date = new \DateTime($string);
+        return $date->format($format);
+    }
+
+    /**
      * Format date using timezone and format.
      *
      * @param $date
@@ -72,11 +85,11 @@ class DateHelper
 
     /**
      * Convert timezone.
-     *
      * @param $data
      * @param null $format
      * @param null $tz
      * @return string
+     * @throws \Exception
      */
     public function convertTimeZone($data, $format = null, $tz = null)
     {
@@ -87,8 +100,8 @@ class DateHelper
 
     /**
      * Return timezone array for select box.
-     *
      * @return array
+     * @throws \Exception
      */
     public function timeZoneSelect()
     {

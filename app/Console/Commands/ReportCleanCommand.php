@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
 
 class ReportCleanCommand extends Command
 {
@@ -37,6 +38,6 @@ class ReportCleanCommand extends Command
      */
     public function handle()
     {
-        \File::cleanDirectory(config('config.reports_dir'));
+        \File::cleanDirectory(Storage::path(config('config.reports_dir')));
     }
 }

@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
+use App\Models\Traits\Presentable;
+use App\Presenters\NfnWorkflowPresenter;
 
-class NfnWorkflow extends Model
+class NfnWorkflow extends BaseEloquentModel
 {
 
-    use LadaCacheTrait;
+    use Presentable;
 
     /**
      * @inheritDoc
@@ -25,6 +25,11 @@ class NfnWorkflow extends Model
         'workflow',
         'subject_sets'
     ];
+
+    /**
+     * @var string
+     */
+    protected $presenter = NfnWorkflowPresenter::class;
 
 
     /**

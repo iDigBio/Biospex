@@ -66,7 +66,7 @@ class ExportPollCommand extends Command
     {
         $records = $this->exportQueueContract->getAllExportQueueOrderByIdAsc();
 
-        $data = ['message' => trans('html.processing_empty'), 'payload' => []];
+        $data = ['message' => trans('pages.processes_none'), 'payload' => []];
 
         if ($records->isEmpty())
         {

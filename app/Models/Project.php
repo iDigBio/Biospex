@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Facades\DateHelper;
 use App\Presenters\ProjectPresenter;
-use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
 use Illuminate\Support\Facades\Config;
 use Czim\Paperclip\Contracts\AttachableInterface;
@@ -12,26 +11,15 @@ use Czim\Paperclip\Model\PaperclipTrait;
 use Cviebrock\EloquentSluggable\Sluggable;
 use App\Models\Traits\UuidTrait;
 use App\Models\Traits\Presentable;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class Project extends Model implements AttachableInterface
+class Project extends BaseEloquentModel implements AttachableInterface
 {
-    use PaperclipTrait, Sluggable, UuidTrait, HybridRelations, LadaCacheTrait, Presentable;
+    use PaperclipTrait, Sluggable, UuidTrait, HybridRelations, Presentable;
 
     /**
      * @inheritDoc
      */
     protected $table = 'projects';
-
-    /**
-     * @inheritDoc
-     */
-    protected $connection = 'mysql';
-
-    /**
-     * @inheritDoc
-     */
-    protected $primaryKey = 'id';
 
     /**
      * @inheritDoc
@@ -62,13 +50,10 @@ class Project extends Model implements AttachableInterface
         'language_skills',
         'workflow_id',
         'logo',
-        'banner',
+        'banner_file',
         'target_fields',
         'status',
-        'advertise',
-        'fusion_table_id',
-        'fusion_style_id',
-        'fusion_template_id',
+        'advertise'
     ];
 
     /**
@@ -83,8 +68,7 @@ class Project extends Model implements AttachableInterface
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('logo', ['variants' => ['thumb' => '100x67', 'avatar' => '32x32']]);
-        $this->hasAttachedFile('banner', ['variants' => ['thumb' => '200x50', 'carousel' => '650x225']]);
+        $this->hasAttachedFile('logo');
 
         parent::__construct($attributes);
     }
@@ -290,7 +274,7 @@ class Project extends Model implements AttachableInterface
      *
      * @return string
      */
-    public function setTagUriAttribute($input)
+    public function setTagUriAttribute()
     {
         return 'tag:'.$_ENV['site.domain'].','.date('Y-m-d').':'.$this->attributes['slug'];
     }
@@ -419,5 +403,4 @@ class Project extends Model implements AttachableInterface
     {
         return $this->subjects()->count();
     }
-
 }

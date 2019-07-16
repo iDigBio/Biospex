@@ -2,13 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
-
-class TranscriptionLocation extends Model
+class TranscriptionLocation extends BaseEloquentModel
 {
-
-    use LadaCacheTrait;
 
     /**
      * @inheritDoc
@@ -18,23 +13,11 @@ class TranscriptionLocation extends Model
     /**
      * @inheritDoc
      */
-    protected $connection = 'mysql';
-
-    /**
-     * @inheritDoc
-     */
-    protected $primaryKey = 'id';
-
-    /**
-     * @inheritDoc
-     */
     protected $fillable = [
         'classification_id',
         'project_id',
         'expedition_id',
-        'state_province',
-        'county',
-        'state_county'
+        'state_county_id'
     ];
 
 
@@ -69,6 +52,6 @@ class TranscriptionLocation extends Model
      */
     public function stateCounty()
     {
-        return $this->belongsTo(State::class, 'state_county', 'state_county');
+        return $this->belongsTo(StateCounty::class);
     }
 }

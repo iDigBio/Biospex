@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Facades\DateHelper;
 use App\Models\Traits\UuidTrait;
 use App\Services\Model\PusherTranscriptionService;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -72,7 +73,7 @@ class NfnClassificationPusherTranscriptionsJob implements ShouldQueue
                 });
             });
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             $this->delete();
         }

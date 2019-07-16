@@ -167,10 +167,8 @@ return [
         /*
          * Package Service Providers...
          */
-        Collective\Html\HtmlServiceProvider::class,
         Felixkiss\UniqueWithValidator\ServiceProvider::class,
         Jenssegers\Mongodb\MongodbServiceProvider::class,
-        Msurguy\Honeypot\HoneypotServiceProvider::class,
         Spiritix\LadaCache\LadaCacheServiceProvider::class,
 
         /*
@@ -180,9 +178,10 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
+        App\Providers\TelescopeServiceProvider::class,
         App\Providers\NovaServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\BiospexServiceProvider::class
+        App\Providers\BiospexServiceProvider::class,
     ],
 
     /*
@@ -233,14 +232,10 @@ return [
         'View'         => Illuminate\Support\Facades\View::class,
 
         #### Packages
-        'Form'         => Collective\Html\FormFacade::class,
-        'Input'        => Illuminate\Support\Facades\Input::class,
-        'Html'         => Collective\Html\HtmlFacade::class,
-        'Honeypot'     => Msurguy\Honeypot\HoneypotFacade::class,
-
-        'DateHelper' => \App\Facades\DateHelper::class,
-        'Flash'      => \App\Facades\Flash::class,
-        'GeneralHelper' => \App\Facades\GeneralHelper::class
+        'DateHelper'    => \App\Facades\DateHelper::class,
+        'Flash'         => \App\Facades\FlashHelper::class,
+        'GeneralHelper' => \App\Facades\GeneralHelper::class,
+        'CountHelper'   => \App\Facades\CountHelper::class,
     ],
 
 ];

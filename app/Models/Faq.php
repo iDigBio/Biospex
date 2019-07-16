@@ -2,13 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
-
-class Faq extends Model
+class Faq extends BaseEloquentModel
 {
-    use LadaCacheTrait;
-
     /**
      * @ineritDoc
      */
@@ -28,7 +23,7 @@ class Faq extends Model
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function category()
+    public function faqCategory()
     {
         return $this->belongsTo(FaqCategory::class);
     }

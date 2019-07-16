@@ -7,6 +7,26 @@ use App\Repositories\RepositoryInterface;
 interface Event extends RepositoryInterface
 {
     /**
+     * Get Events public page.
+     *
+     * @param null $sort
+     * @param null $order
+     * @param null $projectId
+     * @return mixed
+     */
+    public function getEventPublicIndex($sort = null, $order = null, $projectId = null);
+
+    /**
+     * Get events for admin section by user id.
+     *
+     * @param $userId
+     * @param null $sort
+     * @param null $order
+     * @return mixed
+     */
+    public function getEventAdminIndex($userId, $sort = null, $order = null);
+
+    /**
      * @param array $attributes
      * @return mixed
      */
@@ -30,12 +50,6 @@ interface Event extends RepositoryInterface
      * @return mixed
      */
     public function getEventShow($eventId);
-
-    /**
-     * @param $eventId
-     * @return mixed
-     */
-    public function getEventClassificationIds($eventId);
 
     /**
      * @param $projectId

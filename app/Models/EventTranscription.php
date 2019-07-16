@@ -2,18 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Mongodb\Eloquent\HybridRelations;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class EventTranscription extends Model
+class EventTranscription extends BaseEloquentModel
 {
-    use HybridRelations, LadaCacheTrait;
-
-    /**
-     * @var string
-     */
-    protected $connection = 'mysql';
+    use HybridRelations;
 
     /**
      * @inheritDoc

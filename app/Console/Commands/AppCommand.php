@@ -2,12 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\Interfaces\Project;
-use App\Repositories\Interfaces\TranscriptionLocation;
-use App\Services\Google\FusionTableService;
-use Exception;
+use App\Repositories\Interfaces\NfnWorkflow;
 use Illuminate\Console\Command;
-use Illuminate\Support\Collection;
 
 class AppCommand extends Command
 {
@@ -21,12 +17,10 @@ class AppCommand extends Command
      */
     protected $description = 'Used to test code';
 
-
     /**
      * AppCommand constructor.
      */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use Illuminate\Http\Request;
 
 class ForgotPasswordController extends Controller
 {
@@ -31,12 +32,16 @@ class ForgotPasswordController extends Controller
     }
 
     /**
-     * Display the form to request a password reset link.
+     * Validate the email for the given request.
      *
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request $request
+     * @return void
      */
-    public function showLinkRequestForm()
+    protected function validateEmail(Request $request)
     {
-        return view('auth.passwords.email');
+        $request->validate([
+            'email'                => 'required|email',
+            'g-recaptcha-response' => 'required|captcha',
+        ]);
     }
 }

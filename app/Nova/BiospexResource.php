@@ -37,6 +37,16 @@ class BiospexResource extends Resource
         'order',
     ];
 
+    public static function label()
+    {
+        return 'Resources';
+    }
+
+    public static function singularLabel()
+    {
+        return 'Resource';
+    }
+
     /**
      * Get the fields displayed by the resource.
      *
@@ -56,7 +66,7 @@ class BiospexResource extends Resource
                         'document_file_size' => $request->document->getSize(),
                         'document_content_type' => $request->document->getMimeType()
                     ];
-            })->prunable()->resolveUsing(function ($document) {
+                })->prunable()->resolveUsing(function ($document) {
                     return $document->originalFilename();
                 })
         ];

@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\Presentable;
 use App\Models\Traits\UuidTrait;
-use Spiritix\LadaCache\Database\LadaCacheTrait;
+use App\Presenters\GroupPresenter;
 
-class Group extends Model
+class Group extends BaseEloquentModel
 {
-    use UuidTrait, LadaCacheTrait;
+    use UuidTrait, Presentable;
 
     /**
      * @inheritDoc
@@ -23,6 +23,11 @@ class Group extends Model
         'user_id',
         'title'
     ];
+
+    /**
+     * @var string
+     */
+    protected $presenter = GroupPresenter::class;
 
     /**
      * Boot functions.
@@ -51,7 +56,7 @@ class Group extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)->withPivot('group_id');
     }
 
     /**
@@ -62,6 +67,15 @@ class Group extends Model
     public function projects()
     {
         return $this->hasMany(Project::class)->orderBy('title');
+    }
+
+    /**
+     * Expeditions relationship
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function expeditions()
+    {
+        return $this->hasManyThrough(Expedition::class, Project::class);
     }
 
     /**

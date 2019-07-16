@@ -8,6 +8,33 @@ use App\Repositories\RepositoryInterface;
 
 interface Expedition extends RepositoryInterface
 {
+    /**
+     * Get Expedition for home page.
+     *
+     * @return mixed
+     */
+    public function getHomePageProjectExpedition();
+
+    /**
+     * Get expeditions for public page.
+     *
+     * @param null $sort
+     * @param null $order
+     * @param null $projectId
+     * @return mixed
+     */
+    public function getExpeditionPublicIndex($sort = null, $order = null, $projectId = null);
+
+    /**
+     * Get expeditions for admin page.
+     *
+     * @param null $userId
+     * @param null $sort
+     * @param null $order
+     * * @param null $projectId
+     * @return mixed
+     */
+    public function getExpeditionAdminIndex($userId = null, $sort = null, $order = null, $projectId = null);
 
     /**
      * Retrieve expeditions for Notes From Nature classification process.
@@ -75,4 +102,5 @@ interface Expedition extends RepositoryInterface
      * @return mixed
      */
     public function findExpeditionHavingWorkflowManager($expeditionId);
+
 }

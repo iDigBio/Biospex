@@ -7,7 +7,6 @@ use App\Repositories\Interfaces\Expedition;
 
 class ExpeditionRepository extends EloquentRepository implements Expedition
 {
-
     /**
      * Specify Model class name
      *
@@ -21,16 +20,105 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     /**
      * @inheritdoc
      */
+    public function getHomePageProjectExpedition()
+    {
+        $result = $this->model->with([
+            'project' => function ($q) {
+                $q->withCount('expeditions');
+                $q->withCount('events');
+            },
+        ])->with('nfnWorkflow')->whereHas('stat', function ($q) {
+            $q->whereBetween('percent_completed', [0.00, 99.99]);
+        })->with([
+            'stat' => function ($q) {
+                $q->whereBetween('percent_completed', [0.00, 99.99]);
+            },
+        ])->where('project_id', 13)->inRandomOrder()->first();
+
+        $this->resetModel();
+
+        return $result;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getExpeditionPublicIndex($sort = null, $order = null, $projectId = null)
+    {
+        $query = $this->model->with('project')
+            ->has('nfnWorkflow')
+            ->with('stat');
+
+        $results = $projectId === null ? $query->get() : $query->where('project_id', $projectId)->get();
+
+        $this->resetModel();
+
+        if ($order === null) {
+            return $results;
+        }
+
+        switch ($sort) {
+            case 'title':
+                return $order === 'desc' ? $results->sortByDesc('title') :
+                    $results->sortBy('title');
+            case 'project':
+                return $order === 'desc' ?
+                    $results->sortByDesc(function ($expedition) { return $expedition->project->title; }) :
+                    $results->sortBy(function ($expedition) { return $expedition->project->title; });
+            case 'date':
+                return $order === 'desc' ? $results->sortByDesc('created_at') :
+                    $results->sortBy('created_at');
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getExpeditionAdminIndex($userId = null, $sort = null, $order = null, $projectId = null)
+    {
+        $query = $this->model->with([
+            'project.group',
+            'stat'
+        ])->whereHas('project.group.users', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        });
+
+        $results = $projectId === null ? $query->get() : $query->where('project_id', $projectId)->get();
+
+        $this->resetModel();
+
+        if ($order === null) {
+            return $results;
+        }
+
+        switch ($sort) {
+            case 'title':
+                return $order === 'desc' ? $results->sortByDesc('title') :
+                    $results->sortBy('title');
+            case 'project':
+                return $order === 'desc' ?
+                    $results->sortByDesc(function ($expedition) { return $expedition->project->title; }) :
+                    $results->sortBy(function ($expedition) { return $expedition->project->title; });
+            case 'date':
+                return $order === 'desc' ? $results->sortByDesc('created_at') :
+                    $results->sortBy('created_at');
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getExpeditionsForNfnClassificationProcess(array $expeditionIds = [], array $attributes = ['*'])
     {
-        $model = $this->model->with(['nfnWorkflow', 'stat', 'nfnActor'])->has('nfnWorkflow')
-            ->whereHas('nfnActor', function ($query) {
-                $query->where('completed', 0);
-            });
+        $model = $this->model->with([
+            'nfnWorkflow',
+            'stat',
+            'nfnActor',
+        ])->has('nfnWorkflow')->whereHas('nfnActor', function ($query) {
+            $query->where('completed', 0);
+        });
 
-        $results = empty($expeditionIds) ?
-            $model->get($attributes) :
-            $model->whereIn('id', $expeditionIds)->get($attributes);
+        $results = empty($expeditionIds) ? $model->get($attributes) : $model->whereIn('id', $expeditionIds)->get($attributes);
 
         $this->resetModel();
 
@@ -54,10 +142,10 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function expeditionsByUserId($userId, array $relations = [])
     {
-        $results = $this->model->with($relations)
-            ->whereHas('project.group.users', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })->get();
+        $relations = ['stat', 'downloads', 'actors', 'project.group'];
+        $results = $this->model->with($relations)->whereHas('project.group.users', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->get();
 
         $this->resetModel();
 
@@ -73,7 +161,8 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
             'project.group',
             'actors.downloads' => function ($query) use ($expeditionId) {
                 $query->where('expedition_id', $expeditionId);
-            }])->find($expeditionId);
+            },
+        ])->find($expeditionId);
 
         $this->resetModel();
 
@@ -97,9 +186,7 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
      */
     public function getExpeditionStats(array $expeditionIds = [], array $columns = ['*'])
     {
-        $results = empty($expeditionIds) ?
-            $this->model->has('stat')->with('project')->get($columns) :
-            $this->model->has('stat')->with('project')->whereIn('id', $expeditionIds)->get();
+        $results = empty($expeditionIds) ? $this->model->has('stat')->with('project')->get($columns) : $this->model->has('stat')->with('project')->whereIn('id', $expeditionIds)->get();
 
         $this->resetModel();
 

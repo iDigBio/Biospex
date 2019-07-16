@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\ApiAuth;
 
-use App\Facades\Flash;
+use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Notifications\UserActivation;
 use App\Repositories\Interfaces\ApiUser;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use App\Http\Requests\RegisterFormRequest;
 use App\Http\Requests\ResendActivationFormRequest;
@@ -33,7 +34,7 @@ class ApiRegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = 'api';
+    protected $redirectTo = '/api/email/verify';
 
     /**
      * @var ApiUser
@@ -46,6 +47,7 @@ class ApiRegisterController extends Controller
      */
     public function __construct(ApiUser $apiUser)
     {
+        $this->middleware('guest:apiuser');
         $this->apiUser = $apiUser;
     }
 
@@ -67,72 +69,17 @@ class ApiRegisterController extends Controller
      */
     public function register(RegisterFormRequest $request)
     {
-        $input = $request->only('email', 'password', 'first_name', 'last_name', 'invite');
+        $input = $request->only('first_name', 'last_name', 'email', 'password');
         $input['password'] = Hash::make($input['password']);
         $input['name'] = $input['first_name'] . ' ' . $input['last_name'];
         $user = $this->apiUser->create($input);
 
-        if ($user)
-        {
-            $user->notify(new UserActivation(route('api.get.activate', [$user->id, $user->activation_code])));
-            Flash::success(trans('messages.new_account'));
+        event(new Registered($user));
 
-            return redirect()->route('api.get.index');
-        }
+        $this->guard()->login($user);
 
-        return redirect()->back()->withInput();
-    }
-
-    /**
-     * Attempt to activate the user.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function getActivate($userId, $code)
-    {
-        $user = $this->apiUser->find($userId);
-
-        if ( ! $this->checkUserActivation($user))
-        {
-            return redirect()->route('api.get.index');
-        }
-
-        $user->attemptActivation($code);
-        Flash::success(trans('messages.activated'));
-
-        return redirect()->route('api.get.login');
-    }
-
-    /**
-     * Show resend activation form.
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function showResendActivationForm()
-    {
-        return view('apiauth.resend');
-    }
-
-    /**
-     * Resend welcome email with activation code.
-     *
-     * @param ResendActivationFormRequest $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postResendActivation(ResendActivationFormRequest $request)
-    {
-        $user = $this->apiUser->findBy('email', $request->only('email'));
-
-        if ( ! $this->checkUserActivation($user))
-        {
-            return redirect()->route('api.get.index');
-        }
-
-        $user->getActivationCode();
-        $user->notify(new UserActivation(route('api.get.activate', [$user->id, $user->activation_code])));
-        Flash::success(trans('messages.email_confirm'));
-
-        return redirect()->route('api.get.login');
+        return $this->registered($request, $user)
+            ?: redirect($this->redirectPath());
     }
 
     /**
@@ -141,28 +88,5 @@ class ApiRegisterController extends Controller
     protected function guard()
     {
         return Auth::guard('apiuser');
-    }
-
-    /**
-     * Check user exists or activated.
-     *
-     * @param $user
-     * @return bool
-     */
-    protected function checkUserActivation($user)
-    {
-        if ( ! $user)
-        {
-            Flash::error(trans('messages.not_found'));
-            return false;
-        }
-
-        if ($user->activated)
-        {
-            Flash::info(trans('messages.already_activated'));
-            return false;
-        }
-
-        return true;
     }
 }
