@@ -11,7 +11,6 @@ $.extend($.jgrid.cellattr, {
 });
 */
 
-
 let Grid = {};
 
 $(function () {

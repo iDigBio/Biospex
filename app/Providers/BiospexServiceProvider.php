@@ -67,7 +67,7 @@ use App\Repositories\Eloquent\InviteRepository;
 use App\Repositories\Eloquent\MetaRepository;
 use App\Repositories\Eloquent\NfnWorkflowRepository;
 use App\Repositories\Eloquent\NoticeRepository;
-use App\Repositories\MongoDb\OcrFileRepository;
+use App\Repositories\Eloquent\OcrFileRepository;
 use App\Repositories\Eloquent\OcrQueueRepository;
 use App\Repositories\MongoDb\PanoptesTranscriptionRepository;
 use App\Repositories\Eloquent\ProjectRepository;

@@ -46,6 +46,15 @@ class OcrQueue extends BaseEloquentModel
     }
 
     /**
+     * OcrFile Relation
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function ocrFiles()
+    {
+        return $this->hasMany(OcrFile::class, 'queue_id');
+    }
+
+    /**
      * Get csv attribute.
      *
      * @param $value
