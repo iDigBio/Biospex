@@ -18,6 +18,7 @@
         <li><a href="{{ route('admin.expeditions.index') }}" class="block no-underline text-90 hover:bg-30 p-3">{{ __('pages.expeditions') }}</a></li>
         <li><a href="{{ route('admin.events.index') }}" class="block no-underline text-90 hover:bg-30 p-3">{{ __('pages.events') }}</a></li>
         <li><a href="/admin/nova" class="block no-underline text-90 hover:bg-30 p-3">{{ __('pages.nova') }}</a></li>
+        <li><a href="/admin/telescope" class="block no-underline text-90 hover:bg-30 p-3">{{ __('pages.telescope') }}</a></li>
         <li><a href="{{ route('nova.logout') }}" class="block no-underline text-90 hover:bg-30 p-3">{{ __('pages.logout') }}</a>
         </li>
     </ul>
