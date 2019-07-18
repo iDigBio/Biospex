@@ -9,7 +9,6 @@ use App\Repositories\Interfaces\Group;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupFormRequest;
 use App\Repositories\Interfaces\User;
-use Illuminate\Foundation\Bus\Dispatchable;
 
 class GroupsController extends Controller
 {
@@ -132,7 +131,7 @@ class GroupsController extends Controller
 
         $this->groupContract->update($request->all(), $groupId) ? FlashHelper::success(trans('messages.record_updated')) : FlashHelper::error('messages.record_updated_error');
 
-        return redirect()->route('admin.group.index');
+        return redirect()->route('admin.groups.index');
     }
 
     /**
@@ -154,7 +153,7 @@ class GroupsController extends Controller
                 if ($project->nfnWorkflows->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
                     FlashHelper::error(trans('messages.expedition_process_exists'));
 
-                    return redirect()->route('admin.group.index');
+                    return redirect()->route('admin.groups.index');
                 }
             }
 
@@ -164,11 +163,11 @@ class GroupsController extends Controller
 
             FlashHelper::success(trans('messages.record_deleted'));
 
-            return redirect()->route('admin.group.index');
+            return redirect()->route('admin.groups.index');
         } catch (\Exception $e) {
             FlashHelper::error(trans('messages.record_delete_error'));
 
-            return redirect()->route('admin.group.index');
+            return redirect()->route('admin.groups.index');
         }
     }
 
