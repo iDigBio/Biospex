@@ -56,7 +56,8 @@ let transcripts = am4core.createFromConfig(
         "data": JSON.parse(Laravel.data),
         "preloader": { "disabled" : true },
         "events": {
-            "ready": function (ev) {
+            "ready": function (e) {
+                console.log('hide');
                 $("#script-modal").modal("hide");
             }
         }
