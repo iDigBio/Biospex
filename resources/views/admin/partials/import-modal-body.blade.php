@@ -29,7 +29,7 @@
                     <div class="custom-file">
                         <label class="custom-file-label"
                                for="customFile">{{ __('pages.choose_file') }}</label>
-                        <input type="file" class="custom-file-input" id="dwc-file" accept=".zip" required>
+                        <input type="file" name="dwc-file" class="custom-file-input" id="dwc-file" accept=".zip" required>
                     </div>
                     <div class="text-center mt-4">
                         <button type="submit"

@@ -35,9 +35,8 @@ class ImportsController extends Controller
     public function dwcFile(Import $importContract)
     {
         try {
-
             $projectId = request()->input('project_id');
-            $path = request()->file('dwc')->store('imports/subjects');
+            $path = request()->file('dwc-file')->store('imports/subjects');
 
             $import = $importContract->create([
                 'user_id'    => \Auth::user()->id,
