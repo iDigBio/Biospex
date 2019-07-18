@@ -83,7 +83,11 @@ class DownloadsController extends Controller
                 'Content-disposition' => 'attachment; filename="'.$download->type.'-'.$download->file.'"',
             ];
 
-            $file = Storage::path(config('config.nfn_downloads_dir').'/'.$download->type.'/'.$download->file);
+            $path = $download->type === 'export' ?
+                config('config.export_dir') :
+                config('config.nfn_downloads_dir').'/'.$download->type;
+
+            $file = Storage::path($path.'/'.$download->file);
 
             return response()->download($file, $download->type.'-'.$download->file, $headers);
         } catch (\Exception $e) {

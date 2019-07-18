@@ -57,6 +57,7 @@
                                         <a href="{{ route('admin.downloads.download', [$expedition->project->id, $expedition->id, $download->id]) }}"
                                            data-hover="tooltip"
                                            title="{{ __('pages.download') }} {{ $download->type }}">
+                                            <i class="fas fa-file-download fa-2x"></i></a>
                                     @endif
                                 </td>
                             </tr>
