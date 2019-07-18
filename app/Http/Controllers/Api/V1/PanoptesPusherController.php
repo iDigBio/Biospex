@@ -34,7 +34,13 @@ class PanoptesPusherController extends ApiController
         }
 
         $data = json_decode($request->getContent());
-        $results = $nfnWorkflow->findBy('project', $data->project_id);
+
+        if ( ! isset($data->workflow_id))
+        {
+            return;
+        }
+
+        $results = $nfnWorkflow->findBy('workflow', $data->workflow_id);
 
         if ($results === null){
             return;

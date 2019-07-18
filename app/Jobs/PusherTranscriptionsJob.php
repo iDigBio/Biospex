@@ -45,12 +45,6 @@ class PusherTranscriptionsJob implements ShouldQueue
      */
     public function handle(PusherTranscriptionService $service)
     {
-        if ( ! isset($this->data->workflow_id))
-        {
-            $this->delete();
-            return;
-        }
-
         $service->processDataFromPusher($this->data);
 
         $this->delete();
