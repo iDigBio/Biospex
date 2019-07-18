@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Models\Project as Model;
 use App\Models\ProjectResource;
 use App\Repositories\Interfaces\Project;
+use function foo\func;
 use Illuminate\Support\Carbon;
 
 class ProjectRepository extends EloquentRepository implements Project
@@ -113,7 +114,9 @@ class ProjectRepository extends EloquentRepository implements Project
         $results = $this->model->withCount('expeditions')->with([
                 'group',
                 'ocrQueue',
-                'expeditions.stat',
+                'expeditions' => function($q) {
+                    $q->with(['stat', 'nfnActor']);
+                },
             ])->find($projectId);
 
         $this->resetModel();

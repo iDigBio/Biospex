@@ -88,6 +88,7 @@ class ProjectsController extends Controller
         }
 
         list($expeditionsCompleted, $expeditions) = $project->expeditions->partition(function ($expedition) {
+            dd($expedition->nfnActor->pivot->completed);
             return $expedition->stat->percent_completed === "100.00";
         });
 
