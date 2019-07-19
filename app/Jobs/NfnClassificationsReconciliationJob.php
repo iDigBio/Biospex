@@ -71,7 +71,7 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
             $tranPath = Storage::path(config('config.nfn_downloads_transcript') . '/' . $expedition->id . '.csv');
             $sumPath = Storage::path(config('config.nfn_downloads_summary') . '/' . $expedition->id . '.html');
 
-            if ( ! Storage::exists($csvPath) || $expedition->nfnWorkflow === null)
+            if ( ! File::exists($csvPath) || $expedition->nfnWorkflow === null)
             {
                 continue;
             }
