@@ -8,7 +8,6 @@ use App\Models\ExportQueue;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
-use PharData;
 
 class ActorServiceConfig
 {

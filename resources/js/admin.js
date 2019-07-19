@@ -204,20 +204,6 @@ $(function() {
 
 });
 
-// Loop data from polling
-function polling_data(data) {
-    let groupIds = $.parseJSON(Laravel.groupIds);
-    let groupData = '';
-    $.each(data['payload'], function (index) {
-        if ($.inArray(data['payload'][index].groupId, groupIds) === -1) {
-            return true;
-        }
-        groupData += data['payload'][index].notice;
-    });
-
-    return !groupData ? data['message'] : groupData;
-}
-
 function renumber_prefix() {
     let controls = $('.controls');
     controls.children('.entry').each(function (index) {
