@@ -54,6 +54,7 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
 
         if (empty($this->expeditionIds))
         {
+            \Log::info('id empty');
             $this->delete();
 
             return;
@@ -63,24 +64,35 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
 
         foreach ($this->expeditionIds as $expeditionId)
         {
+            \Log::info('process ' . $expeditionId);
             $expedition = $expeditionContract->findWith($expeditionId, ['nfnWorkflow']);
 
             $file = Storage::path(config('config.nfn_downloads_classification') . '/' . $expedition->id . '.csv');
 
+            \Log::info('file: ' . $file);
+
             if ( ! Storage::exists($file) || $expedition->nfnWorkflow === null)
             {
+                \Log::info('file does not exist or nfnworkflow null');
                 continue;
             }
             
             $csvPath = Storage::path(config('config.nfn_downloads_classification') . '/' . $expedition->id . '.csv');
+            \Log::info($csvPath);
             $recPath = Storage::path(config('config.nfn_downloads_reconcile') . '/' . $expedition->id . '.csv');
+            \Log::info($recPath);
             $tranPath = Storage::path(config('config.nfn_downloads_transcript') . '/' . $expedition->id . '.csv');
+            \Log::info($tranPath);
             $sumPath = Storage::path(config('config.nfn_downloads_summary') . '/' . $expedition->id . '.html');
+            \Log::info($sumPath);
 
             $pythonPath = config('config.reconcile_path') . "/venv/bin/python";
+            \Log::info($pythonPath);
             $reconcilePath = config('config.reconcile_path') . "/reconcile.py";
+            \Log::info($reconcilePath);
             $logPath = storage_path('logs/reconcile.log');
             $command = "$pythonPath $reconcilePath -w {$expedition->nfnWorkflow->workflow} -r $recPath -u $tranPath -s $sumPath $csvPath &> $logPath";
+            \Log::info($command);
             exec($command);
             $expeditionIds[] = $expedition->id;
 
@@ -105,6 +117,7 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
             }
 
         }
+        \Log::info('push to transcript job');
 
         NfnClassificationsTranscriptJob::dispatch($expeditionIds);
     }
