@@ -24,7 +24,7 @@
         <div class="card white box-shadow py-5 my-5 p-sm-5">
             <div class="col-6 mx-auto">
                 <form action="{{ route('api.password.request') }}" method="post" role="form" class="form-horizontal">
-                    {!! csrf_field() !!}
+                    @csrf
                     <input type="hidden" name="token" value="{{ $token }}">
                     <div class="form-group">
                         <label for="email" class="col-form-label required">{{ __('pages.email') }}:</label>

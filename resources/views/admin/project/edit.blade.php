@@ -16,7 +16,7 @@
                     <form method="post" action="{{ route('admin.projects.update', $project->id) }}" role="form"
                           enctype="multipart/form-data">
                         {!! method_field('put') !!}
-                        {!! csrf_field() !!}
+                        @csrf
                         <input type="hidden" name="entries" value="{{ old('entries', $resourceCount) }}">
                         <input type="hidden" name="id" value="{{ $project->id }}">
                         <div class="form-row">

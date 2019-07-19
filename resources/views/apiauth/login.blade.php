@@ -23,7 +23,7 @@
         <div class="card white box-shadow py-5 my-5 p-sm-5">
             <div class="col-6 mx-auto">
                 <form action="{{ route('api.post.login') }}" method="post" role="form">
-                    {!! csrf_field() !!}
+                    @csrf
                     <div class="form-group">
                         <label for="email" class="col-form-label required">{{ __('pages.email') }}:</label>
                         <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"

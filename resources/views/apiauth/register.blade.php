@@ -23,7 +23,7 @@
         <div class="card white box-shadow py-5 my-5 p-sm-5">
             <div class="col-6 mx-auto">
                 <form action="{{ route('api.post.register') }}" method="post" role="form" class="form-horizontal">
-                    {!! csrf_field() !!}
+                    @csrf
                     <input type="hidden" name="apiuser" value="true">
                     <div class="form-group">
                         <label for="first_name" class="col-form-label required">{{ __('pages.first_name') }}:</label>

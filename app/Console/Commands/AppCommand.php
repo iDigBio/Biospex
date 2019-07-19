@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Repositories\Interfaces\NfnWorkflow;
 use Illuminate\Console\Command;
+use Storage;
 
 class AppCommand extends Command
 {
@@ -29,6 +30,11 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        $transcriptDir = config('config.nfn_downloads_transcript');
 
+        echo Storage::exists($transcriptDir . '/69.csv') . PHP_EOL;
+        $csvFile = Storage::path($transcriptDir . '/69.csv');
+        echo Storage::exists($csvFile);
+        echo $csvFile . PHP_EOL;
     }
 }

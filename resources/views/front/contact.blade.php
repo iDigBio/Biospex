@@ -23,7 +23,7 @@
         <div class="jumbotron box-shadow py-5 my-5 p-sm-5">
             <div class="col-8 mx-auto">
                 <form action="{{ route('front.contact.create') }}" method="post" role="form">
-                    {!! csrf_field() !!}
+                    @csrf
                     <div class="form-group">
                         <label for="name" class="col-form-label required">{{ __('pages.name') }}:</label>
                         <input type="text" class="form-control {{ ($errors->has('name')) ? 'is-invalid' : '' }}"

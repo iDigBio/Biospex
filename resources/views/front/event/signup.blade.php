@@ -43,7 +43,7 @@
                     @endif
                 </div>
                 <form action="{{ route('front.events.join', [$team->uuid]) }}" method="post" role="form">
-                    {!! csrf_field() !!}
+                    @csrf
                     <input type="hidden" name="team_id" value="{{ $team->id }}">
                     <div class="form-group {{ ($errors->has('nfn_user')) ? 'has-error' : '' }}">
                         <label for="name" class="col-form-label required">{{ __('pages.nfn_user') }}:</label>

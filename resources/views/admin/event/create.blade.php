@@ -15,7 +15,7 @@
                     <form id="gridForm" method="post"
                           action="{{ route('admin.events.store') }}"
                           role="form" enctype="multipart/form-data">
-                        {!! csrf_field() !!}
+                        @csrf
                         <input type="hidden" name="entries" value="{{ old('entries', 1) }}">
                         <input type="hidden" name="owner_id" value="{{ Auth::id() }}">
                         <div class="form-group">

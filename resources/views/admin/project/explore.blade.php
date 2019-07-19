@@ -10,6 +10,9 @@
         .ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-view {
             font-size: 1rem;
         }
+        #searchmodfbox_jqGridExplore{
+            top:auto;
+        }
     </style>
 @endsection
 

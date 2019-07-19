@@ -10,6 +10,9 @@
         .ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-view {
             font-size: 1rem;
         }
+        #searchmodfbox_jqGridExpedition {
+            top:auto;
+        }
     </style>
 @endsection
 
@@ -19,7 +22,7 @@
     <form id="gridForm" method="post"
           action="{{ route('admin.expeditions.store', [$expedition->project->id, $expedition->id]) }}"
           role="form" enctype="multipart/form-data">
-        {!! csrf_field() !!}
+        @csrf
         <input type="hidden" name="project_id" value="{{ $expedition->project->id }}">
         <div class="row">
             <div class="col-sm-10 mx-auto">

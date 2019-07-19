@@ -114,8 +114,9 @@ function jqBuildGrid() {
 
                 Grid.subjectCountHtmlObj.html(Grid.subjectIdsObj.data('ids').length);
             }
+            //navGrid(element, {parameters}, prmEdit, prmAdd, prmDel, prmSearch, prmView);
         }).navGrid("#pager", {
-                search: true, // show search button on the toolbar
+                search: true,
                 add: false,
                 edit: false,
                 del: true,
@@ -124,9 +125,9 @@ function jqBuildGrid() {
                 closeAfterSearch: true,
                 overlay: true,
                 cloneToTop: true
-            },
-            {}, // edit options
-            {}, // add options
+            }, // {parameters}
+            {}, // prmEdit
+            {}, // prmAdd
             {
                 onclickSubmit: function (jqXHR) {
                     let $this = $(this), p = $this.jqGrid("getGridParam"), newPage = p.page;
@@ -154,12 +155,14 @@ function jqBuildGrid() {
                     _token: $('meta[name=csrf-token]').attr('content')
                 }
 
-            }, // delete options
+            }, // prmDel
             {
-                width: 600,
+                top: 'auto',
+                width: 700,
                 multipleSearch: true,
-                recreateFilter: true
-            } // search options - define multiple search
+                recreateFilter: true,
+            }, // prmSearch
+            {} // prmView
         ).navButtonAdd('#pager', {
             caption: '',
             buttonicon: "fas fa-columns",

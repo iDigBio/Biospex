@@ -192,7 +192,7 @@ class ActorServiceConfig
      */
     public function isFile($file)
     {
-        return Storage::exists($file);
+        return \File::exists($file);
     }
 
     /**

@@ -14,7 +14,7 @@
             <div class="card-body">
                 <form action="{{ route('admin.imports.dwcfile') }}"
                       method="post" role="form" class="form-horizontal" id="form-dwc-file" enctype="multipart/form-data">
-                    {!! csrf_field() !!}
+                    @csrf
                     <input type="hidden" name="project_id" value="{{ $project->id }}">
                     <div class="mt-2 mb-4">
                         <a href="#" class="btn btn-outline-primary collapsed preventDefault"
@@ -53,7 +53,7 @@
             <div class="card-body">
                 <form action="{{ route('admin.imports.recordset') }}"
                       method="post" role="form" class="form-horizontal" id="form-dwc-recordset" enctype="multipart/form-data">
-                    {!! csrf_field() !!}
+                    @csrf
                     <input type="hidden" name="project_id" value="{{ $project->id }}">
                     <div class="mt-2 mb-4">
                         <a href="#" class="btn btn-outline-primary collapsed preventDefault"
@@ -95,7 +95,7 @@
             <div class="card-body">
                 <form action="{{ route('admin.imports.dwcuri') }}"
                       method="post" role="form" class="form-horizontal" id="form-dwc-url" enctype="multipart/form-data">
-                    {!! csrf_field() !!}
+                    @csrf
                     <input type="hidden" name="project_id" value="{{ $project->id }}">
                     <div class="mt-2 mb-4">
                         <a href="#" class="btn btn-outline-primary collapsed preventDefault"
