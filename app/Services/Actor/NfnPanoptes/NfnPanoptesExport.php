@@ -262,8 +262,8 @@ class NfnPanoptesExport
      */
     public function emailReport()
     {
+        $this->fileService->filesystem->deleteDirectory($this->actorImageService->tmpDirectory);
         $this->fileService->filesystem->deleteDirectory($this->actorImageService->workingDirectory);
-        $this->fileService->filesystem->delete($this->actorImageService->archiveTarPath);
 
         $this->notify();
 
@@ -384,7 +384,7 @@ class NfnPanoptesExport
         $this->csvFileName = $this->actorImageService->expedition->uuid . '.csv';
         $this->csvFilePath = $this->actorImageService->tmpDirectory . '/' . $this->csvFileName;
         $this->csvService->writerCreateFromPath($this->csvFilePath);
-        $this->csvService->insertOne(array_keys($csvExport[0]));
+        $this->csvService->insertOne(array_keys(reset($csvExport)));
         $this->csvService->insertAll($csvExport);
 
         return true;

@@ -56,7 +56,7 @@ class OcrEventListener
      */
     public function error(\App\Models\OcrQueue $record)
     {
-        $record->queued = 0;
+        $record->status = 0;
         $record->error = 1;
         $record->save();
     }

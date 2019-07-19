@@ -88,22 +88,42 @@ $(function () {
 
     clockDiv();
 
+    /*
+    $('#polling').on('click', function (event) {
+        $('#ocr-html').html('Retrieving data');
+        $('#export-html').html('Retrieving data');
+        $.get('/poll');
+    });
+     */
+
     if ($('#process-modal').length) {
         Echo.channel(Laravel.ocrChannel)
             .listen('PollOcrEvent', (e) => {
-                console.log('Reaching Ocr Event');
                 let ocrHtml = polling_data(e.data);
                 $('#ocr-html').html(ocrHtml);
             });
 
         Echo.channel(Laravel.exportChannel)
             .listen('PollExportEvent', (e) => {
-                console.log('Reaching Poll Export');
                 let exportHtml = polling_data(e.data);
                 $('#export-html').html(exportHtml);
             });
     }
 });
+
+// Loop data from polling
+function polling_data(data) {
+    let groupIds = $.parseJSON(Laravel.groupIds);
+    let groupData = '';
+    $.each(data['payload'], function (index) {
+        if ($.inArray(data['payload'][index].groupId, groupIds) === -1) {
+            return true;
+        }
+        groupData += data['payload'][index].notice;
+    });
+
+    return !groupData ? data['message'] : groupData;
+}
 
 /**
  * data attributes: project-id, type (active, completed), sort, order, url, target

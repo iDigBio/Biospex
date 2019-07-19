@@ -12,7 +12,7 @@ class ClearOcrResults extends Command
      *
      * @var string
      */
-    protected $signature = 'clear:ocr {projectId} {expeditionId?}';
+    protected $signature = 'ocr:clear {projectId} {expeditionId?}';
 
     /**
      * The console command description.

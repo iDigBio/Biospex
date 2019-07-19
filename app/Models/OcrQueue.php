@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
-use App\Presenters\OcrQueuePresenter;
+use Illuminate\Database\Eloquent\Model;
+use Spiritix\LadaCache\Database\LadaCacheTrait;
 
-class OcrQueue extends BaseEloquentModel
+class OcrQueue extends Model
 {
+    use LadaCacheTrait;
 
     /**
      * @inheritDoc
