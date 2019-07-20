@@ -18,7 +18,7 @@
                     <div class="project-banner" data-name="banner-desert.jpg" data-hover="tooltip"
                          title="{{ __('pages.banner_click') }}">
                         <img class="img-fluid" alt="{{ __('pages.banner_desert') }}"
-                             src="{{ Storage::disk('public')->url('images/habitat-banners/banner-desert.jpg') }}">
+                             src="{{ '/images/habitat-banners/banner-desert.jpg' }}">
                     </div>
                 </div>
 
@@ -26,7 +26,7 @@
                     <div class="project-banner" data-name="banner-grass.jpg" data-hover="tooltip"
                          title="{{ __('pages.banner_click') }}">
                         <img class="img-fluid" alt="{{ __('pages.banner_grass') }}"
-                             src="{{ Storage::disk('public')->url('images/habitat-banners/banner-grass.jpg') }}">
+                             src="{{ '/images/habitat-banners/banner-grass.jpg' }}">
                     </div>
                 </div>
 
@@ -34,7 +34,7 @@
                     <div class="project-banner" data-name="banner-meadow.jpg" data-hover="tooltip"
                          title="{{ __('pages.banner_click') }}">
                         <img class="img-fluid" alt="{{ __('pages.banner_meadow') }}"
-                             src="{{ Storage::disk('public')->url('images/habitat-banners/banner-meadow.jpg') }}">
+                             src="{{ '/images/habitat-banners/banner-meadow.jpg' }}">
                     </div>
                 </div>
 
@@ -42,7 +42,7 @@
                     <div class="project-banner" data-name="banner-mtn-flowers.jpg" data-hover="tooltip"
                          title="{{ __('pages.banner_click') }}">
                         <img class="img-fluid" alt="{{ __('pages.banner_mountain') }}"
-                             src="{{ Storage::disk('public')->url('images/habitat-banners/banner-mtn-flowers.jpg') }}">
+                             src="{{ '/images/habitat-banners/banner-mtn-flowers.jpg' }}">
                     </div>
                 </div>
 
@@ -50,7 +50,7 @@
                     <div class="project-banner" data-name="banner-swamp.jpg" data-hover="tooltip"
                          title="{{ __('pages.banner_click') }}">
                         <img class="img-fluid" alt="{{ __('pages.banner_swamp') }}"
-                             src="{{ Storage::disk('public')->url('images/habitat-banners/banner-swamp.jpg') }}">
+                             src="{{ '/images/habitat-banners/banner-swamp.jpg' }}">
                     </div>
                 </div>
 
@@ -58,7 +58,7 @@
                     <div class="project-banner" data-name="banner-trees.jpg" data-hover="tooltip"
                          title="{{ __('pages.banner_click') }}">
                         <img class="img-fluid" alt="{{ __('pages.banner_trees') }}"
-                             src="{{ Storage::disk('public')->url('images/habitat-banners/banner-trees.jpg') }}">
+                             src="{{ '/images/habitat-banners/banner-trees.jpg' }}">
                     </div>
                 </div>
             </div>

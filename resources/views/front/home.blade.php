@@ -13,7 +13,7 @@
 @section('header')
     <header class="header home">
         <nav class="navbar navbar-expand-md">
-            <a href="/"><img src="/storage/images/page/biospex_logo.svg" alt="BIOSPEX"
+            <a href="/"><img src="/images/page/biospex_logo.svg" alt="BIOSPEX"
                              class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
             @include('common.nav')
         </nav>
@@ -36,7 +36,7 @@
 @section('content')
     <section class="home-heading text-center" id="learn-more">
         <div class="container">
-            <img src="/storage/images/page/logo-tagline-action.png" align="Biospex Tag Line">
+            <img src="/images/page/logo-tagline-action.png" align="Biospex Tag Line">
             <p class="text-justify mt-4">{{ __('html.biospex_home') }}</p>
         </div>
     </section>
@@ -60,19 +60,19 @@
                 <div id="processCarousel" class="carousel slide col-md-6">
                     <div class="carousel-inner box-shadow inside-carousel">
                         <div class="carousel-item active"
-                             style="background-image: url(/storage/images/slider/slider1.png);">
+                             style="background-image: url(/images/slider/slider1.png);">
                             <div class="circle-slider p-5">
                                 <h3 class="text-center text-uppercase">{{ __('pages.project') }}</h3>
                                 <p>{{ __('pages.carousel_step_1_msg') }}</p>
                             </div>
                         </div>
-                        <div class="carousel-item" style="background-image: url(/storage/images/slider/slider2.png);">
+                        <div class="carousel-item" style="background-image: url(/images/slider/slider2.png);">
                             <div class="circle-slider p-5">
                                 <h3 class="text-center text-uppercase">{{ __('pages.expeditions') }}</h3>
                                 <p>{{ __('pages.carousel_step_2_msg') }}</p>
                             </div>
                         </div>
-                        <div class="carousel-item" style="background-image: url(/storage/images/slider/slider3.png);">
+                        <div class="carousel-item" style="background-image: url(/images/slider/slider3.png);">
                             <div class="circle-slider p-5">
                                 <h3 class="text-center text-uppercase">{{ __('pages.export') }}</h3>
                                 <p>{{ __('pages.carousel_step_3_msg') }}</p>
@@ -87,7 +87,7 @@
     <!-- Tutorial Section -->
     <section class="tutorial">
         <div class="container" style="position:relative;">
-            <img src="/storage/images/page/arrow-curved.svg" alt="-->" class="home-arrow d-none d-sm-none d-md-block">
+            <img src="/images/page/arrow-curved.svg" alt="-->" class="home-arrow d-none d-sm-none d-md-block">
             <div class="row p-5">
 
                 <div class="col-sm-6 mt-5 p-1 pb-md-3">

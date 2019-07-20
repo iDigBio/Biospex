@@ -27,13 +27,7 @@ mix.js("resources/js/front-app.js", "js/front.js")
     .copy('resources/js/amChartStat.js', 'public/js/amChartStat.js')
     .babel('public/js/amChartStat.js', 'public/js/amChartStat.js')
     .minify('public/js/amChartStat.js')
-    .copy('resources/images/contributors', 'public/storage/images/contributors')
-    .copy('resources/images/habitat-banners', 'public/storage/images/habitat-banners')
-    .copy('resources/images/page', 'public/storage/images/page')
-    .copy('resources/images/page-banners', 'public/storage/images/page-banners')
-    .copy('resources/images/placeholders', 'public/storage/images/placeholders')
-    .copy('resources/images/slider', 'public/storage/images/slider')
-    .copy('resources/images/icons', 'public/storage/images/icons');
+    .copy('resources/images', 'public/images');
 /* Production settings */
 
 if (mix.inProduction()) {

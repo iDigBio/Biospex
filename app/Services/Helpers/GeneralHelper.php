@@ -425,8 +425,8 @@ class GeneralHelper
     public function projectBannerFileUrl($name = null)
     {
         return $name === null ?
-            Storage::url('images/habitat-banners/banner-trees.jpg') :
-            Storage::url('images/habitat-banners/'.$name);
+            '/images/habitat-banners/banner-trees.jpg' :
+            '/images/habitat-banners/'.$name;
     }
 
     /**
@@ -436,7 +436,7 @@ class GeneralHelper
      */
     public function projectDefaultLogo()
     {
-        return Storage::url('images/placeholders/project.png');
+        return '/images/placeholders/project.png';
     }
 
     /**
@@ -446,7 +446,7 @@ class GeneralHelper
      */
     public function expeditionDefaultLogo()
     {
-        return Storage::url('images/placeholders/card-image-place-holder02.jpg');
+        return '/images/placeholders/card-image-place-holder02.jpg';
     }
 
     /**

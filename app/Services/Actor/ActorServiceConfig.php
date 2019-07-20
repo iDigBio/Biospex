@@ -7,7 +7,7 @@ use App\Models\Expedition;
 use App\Models\ExportQueue;
 use App\Models\User;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class ActorServiceConfig
 {
@@ -146,7 +146,7 @@ class ActorServiceConfig
      */
     public function setScratchDirectory()
     {
-        $this->scratchDirectory = Storage::path(config('config.scratch_dir'));
+        $this->scratchDirectory = \Storage::path(config('config.scratch_dir'));
     }
 
     /**
@@ -155,7 +155,7 @@ class ActorServiceConfig
     public function setWorkingDirectory()
     {
         $this->workingDirectory = $this->scratchDirectory . '/' . $this->folderName;
-        Storage::makeDirectory($this->workingDirectory);
+        File::makeDirectory($this->workingDirectory, 0777, true, true);
     }
 
     /**
@@ -164,7 +164,7 @@ class ActorServiceConfig
     public function setTmpDirectory()
     {
         $this->tmpDirectory = $this->workingDirectory . '/tmp';
-        Storage::makeDirectory($this->tmpDirectory);
+        File::makeDirectory($this->tmpDirectory, 0777, true, true);
     }
 
     /**
@@ -172,7 +172,7 @@ class ActorServiceConfig
      */
     public function setNfnExportDirectory()
     {
-        $this->nfnExportDirectory = Storage::path(config('config.export_dir'));
+        $this->nfnExportDirectory = \Storage::path(config('config.export_dir'));
     }
 
     /**
@@ -192,18 +192,7 @@ class ActorServiceConfig
      */
     public function isFile($file)
     {
-        return Storage::exists($file);
-    }
-
-    /**
-     * Delete tmp directory
-     */
-    public function deleteScratchTmpDir()
-    {
-        if (! Storage::exists(config('config.scratch_dir_tmp')))
-        {
-            Storage::deleteDirectory(config('config.scratch_dir_tmp'));
-        }
+        return File::isFile($file);
     }
 
     /**

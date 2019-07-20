@@ -7,9 +7,9 @@
 
 {{-- Content --}}
 @section('header')
-    <header style="background-image: url(/storage/images/page-banners/banner-field.jpg);">
+    <header style="background-image: url(/images/page-banners/banner-field.jpg);">
         <nav class="header navbar navbar-expand-md box-shadow">
-            <a href="/"><img src="/storage/images/page/biospex_logo.svg" alt="BIOSPEX"
+            <a href="/"><img src="/images/page/biospex_logo.svg" alt="BIOSPEX"
                              class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
             @include('common.nav')
         </nav>
@@ -23,20 +23,28 @@
         <div class="card white box-shadow py-5 my-5 p-sm-5">
             <div class="col-6 mx-auto">
                 <form action="{{ route('app.post.login') }}" method="post" role="form">
-                    {!! csrf_field() !!}
+                    @csrf
                     <div class="form-group">
                         <label for="email" class="col-form-label required">{{ __('pages.email') }}:</label>
-                        <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"
+                        <input type="email" class="form-control @error('email') is-invalid @enderror"
                                id="email" name="email"
                                value="{{ old('email') }}" required>
-                        <span class="invalid-feedback">{{ $errors->first('email') }}</span>
+                        @error('email')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label for="password" class="col-form-label required">{{ __('pages.password') }}:</label>
-                        <input type="password" class="form-control {{ ($errors->has('password')) ? 'is-invalid' : '' }}"
+                        <input type="password" class="form-control @error('password') is-invalid @enderror"
                                id="password" name="password"
                                value="{{ old('password') }}" required>
-                        <span class="invalid-feedback">{{ $errors->first('password') }}</span>
+                        @error('password')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="remember" name="remember">

@@ -18,7 +18,7 @@
                           action="{{ route('admin.events.update', [$event->id]) }}"
                           role="form" enctype="multipart/form-data">
                         {!! method_field('put') !!}
-                        {!! csrf_field() !!}
+                        @csrf
                         <input type="hidden" name="entries" value="{{ old('entries', $teamsCount) }}">
                         <input type="hidden" name="owner_id" value="{{ Auth::id() }}">
                         <div class="form-group">

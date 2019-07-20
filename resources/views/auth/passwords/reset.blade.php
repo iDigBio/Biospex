@@ -7,9 +7,9 @@
 
 {{-- Content --}}
 @section('header')
-    <header style="background-image: url(/storage/images/page-banners/banner-field.jpg);">
+    <header style="background-image: url(/images/page-banners/banner-field.jpg);">
         <nav class="header navbar navbar-expand-md box-shadow">
-            <a href="/"><img src="/storage/images/page/biospex_logo.svg" alt="BIOSPEX"
+            <a href="/"><img src="/images/page/biospex_logo.svg" alt="BIOSPEX"
                              class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
             @include('common.nav')
         </nav>
@@ -23,27 +23,40 @@
         <div class="card white box-shadow py-5 my-5 p-sm-5">
             <div class="col-6 mx-auto">
                 <form action="{{ route('app.password.request') }}" method="post" role="form" class="form-horizontal">
-                    {!! csrf_field() !!}
+                    @csrf
+                    <input type="hidden" name="token" value="{{ $token }}">
                     <div class="form-group">
                         <label for="email" class="col-form-label required">{{ __('pages.email') }}:</label>
-                        <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"
+                        <input type="email" class="form-control @error('email') is-invalid @enderror"
                                id="email" name="email"
-                               value="{{ old('email') }}" required>
-                        <span class="invalid-feedback">{{ $errors->first('email') }}</span>
+                               value="{{ $email ?? old('email') }}" required>
+                        @error('email')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label for="password" class="col-form-label required">{{ __('pages.password') }}:</label>
-                        <input type="password" class="form-control {{ ($errors->has('password')) ? 'is-invalid' : '' }}"
+                        <input type="password" class="form-control @error('password') is-invalid @enderror"
                                id="password" name="password"
                                value="{{ old('password') }}" required>
-                        <span class="invalid-feedback">{{ $errors->first('password') }}</span>
+                        @error('password')
+                        <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label for="password_confirmation" class="col-form-label required">{{ __('pages.password_confirmation') }}:</label>
-                        <input type="password" class="form-control {{ ($errors->has('password_confirmation')) ? 'is-invalid' : '' }}"
+                        <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror"
                                id="password_confirmation" name="password_confirmation"
                                value="" required>
-                        <span class="invalid-feedback">{{ $errors->first('password_confirmation') }}</span>
+                        @error('password_confirmation')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
                     @include('common.recaptcha')
                     @include('common.submit-button')

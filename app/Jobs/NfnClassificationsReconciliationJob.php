@@ -65,20 +65,18 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
         {
             $expedition = $expeditionContract->findWith($expeditionId, ['nfnWorkflow']);
 
-            $file = Storage::path(config('config.nfn_downloads_classification') . '/' . $expedition->id . '.csv');
-
-            if ( ! Storage::exists($file) || $expedition->nfnWorkflow === null)
-            {
-                continue;
-            }
-            
             $csvPath = Storage::path(config('config.nfn_downloads_classification') . '/' . $expedition->id . '.csv');
             $recPath = Storage::path(config('config.nfn_downloads_reconcile') . '/' . $expedition->id . '.csv');
             $tranPath = Storage::path(config('config.nfn_downloads_transcript') . '/' . $expedition->id . '.csv');
             $sumPath = Storage::path(config('config.nfn_downloads_summary') . '/' . $expedition->id . '.html');
 
-            $pythonPath = config('config.reconcile_path') . "/venv/bin/python";
-            $reconcilePath = config('config.reconcile_path') . "/reconcile.py";
+            if ( ! File::exists($csvPath) || $expedition->nfnWorkflow === null)
+            {
+                continue;
+            }
+
+            $pythonPath = config('config.python_path');
+            $reconcilePath = config('config.reconcile_path');
             $logPath = storage_path('logs/reconcile.log');
             $command = "$pythonPath $reconcilePath -w {$expedition->nfnWorkflow->workflow} -r $recPath -u $tranPath -s $sumPath $csvPath &> $logPath";
             exec($command);
@@ -86,17 +84,17 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
 
             if (File::exists($csvPath))
             {
-                $this->updateOrCreateDownloads($expedition->id, 'downloads');
+                $this->updateOrCreateDownloads($expedition->id, 'classification');
             }
 
             if (File::exists($tranPath))
             {
-                $this->updateOrCreateDownloads($expedition->id, 'transcriptions');
+                $this->updateOrCreateDownloads($expedition->id, 'transcript');
             }
 
             if (File::exists($recPath))
             {
-                $this->updateOrCreateDownloads($expedition->id, 'reconciled');
+                $this->updateOrCreateDownloads($expedition->id, 'reconcile');
             }
 
             if (File::exists($sumPath))

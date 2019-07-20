@@ -14,7 +14,7 @@
             <div class="card-body">
                 <form action="{{ route('admin.imports.dwcfile') }}"
                       method="post" role="form" class="form-horizontal" id="form-dwc-file" enctype="multipart/form-data">
-                    {!! csrf_field() !!}
+                    @csrf
                     <input type="hidden" name="project_id" value="{{ $project->id }}">
                     <div class="mt-2 mb-4">
                         <a href="#" class="btn btn-outline-primary collapsed preventDefault"
@@ -23,7 +23,7 @@
                            aria-controls="dwc-file-instruction">{{ __('pages.instructions') }}</a>
                         <span id="dwc-file-instruction" class="collapse">
                                             {{ __('pages.import_file_type') }}
-                                            <a href="{{ Storage::url('public/darwin-core-example.zip') }}" class="link">{{ __('pages.import_file_tag') }}</a>
+                                            <a href="{{ '/darwin-core-example.zip' }}" class="link">{{ __('pages.import_file_tag') }}</a>
                                         </span>
                     </div>
                     <div class="custom-file">
@@ -53,7 +53,7 @@
             <div class="card-body">
                 <form action="{{ route('admin.imports.recordset') }}"
                       method="post" role="form" class="form-horizontal" id="form-dwc-recordset" enctype="multipart/form-data">
-                    {!! csrf_field() !!}
+                    @csrf
                     <input type="hidden" name="project_id" value="{{ $project->id }}">
                     <div class="mt-2 mb-4">
                         <a href="#" class="btn btn-outline-primary collapsed preventDefault"
@@ -95,7 +95,7 @@
             <div class="card-body">
                 <form action="{{ route('admin.imports.dwcuri') }}"
                       method="post" role="form" class="form-horizontal" id="form-dwc-url" enctype="multipart/form-data">
-                    {!! csrf_field() !!}
+                    @csrf
                     <input type="hidden" name="project_id" value="{{ $project->id }}">
                     <div class="mt-2 mb-4">
                         <a href="#" class="btn btn-outline-primary collapsed preventDefault"
@@ -104,7 +104,7 @@
                            aria-controls="dwc-uri-instruction">{{ __('pages.instructions') }}</a>
                         <span id="dwc-uri-instruction" class="collapse">
                                             {{ __('pages.import_darwin_url_tag') }}
-                                            <a href="{{ Storage::url('public/darwin-core-example.zip') }}" class="link">{{ __('pages.import_file_tag') }}</a>
+                                            <a href="{{ '/darwin-core-example.zip' }}" class="link">{{ __('pages.import_file_tag') }}</a>
                                         </span>
                     </div>
                     <div class="form-group">

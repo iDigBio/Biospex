@@ -7,9 +7,9 @@
 
 
 @section('header')
-    <header id="header-img" style="background-image: url(/storage/images/page-banners/banner-contact-smile.jpg);">
+    <header id="header-img" style="background-image: url(/images/page-banners/banner-contact-smile.jpg);">
         <nav class="header navbar navbar-expand-md box-shadow">
-            <a href="/"><img src="/storage/images/page/biospex_logo.svg" alt="BIOSPEX"
+            <a href="/"><img src="/images/page/biospex_logo.svg" alt="BIOSPEX"
                              class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
             @include('common.nav')
         </nav>
@@ -23,7 +23,7 @@
         <div class="jumbotron box-shadow py-5 my-5 p-sm-5">
             <div class="col-8 mx-auto">
                 <form action="{{ route('front.contact.create') }}" method="post" role="form">
-                    {!! csrf_field() !!}
+                    @csrf
                     <div class="form-group">
                         <label for="name" class="col-form-label required">{{ __('pages.name') }}:</label>
                         <input type="text" class="form-control {{ ($errors->has('name')) ? 'is-invalid' : '' }}"

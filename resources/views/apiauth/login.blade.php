@@ -7,9 +7,9 @@
 
 {{-- Content --}}
 @section('header')
-    <header style="background-image: url(/storage/images/page-banners/banner-field.jpg);">
+    <header style="background-image: url(/images/page-banners/banner-field.jpg);">
         <nav class="header-admin navbar navbar-expand-md box-shadow">
-            <a href="/"><img src="/storage/images/page/biospex_logo.svg" alt="BIOSPEX"
+            <a href="/"><img src="/images/page/biospex_logo.svg" alt="BIOSPEX"
                              class="my-0 mr-md-auto top-logo-admin font-weight-normal"/></a>
             @include('common.nav')
         </nav>
@@ -23,7 +23,7 @@
         <div class="card white box-shadow py-5 my-5 p-sm-5">
             <div class="col-6 mx-auto">
                 <form action="{{ route('api.post.login') }}" method="post" role="form">
-                    {!! csrf_field() !!}
+                    @csrf
                     <div class="form-group">
                         <label for="email" class="col-form-label required">{{ __('pages.email') }}:</label>
                         <input type="email" class="form-control {{ ($errors->has('email')) ? 'is-invalid' : '' }}"

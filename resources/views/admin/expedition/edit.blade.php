@@ -10,6 +10,9 @@
         .ui-jqgrid.ui-jqgrid-bootstrap > .ui-jqgrid-view {
             font-size: 1rem;
         }
+        #searchmodfbox_jqGridExpedition {
+            top:auto;
+        }
     </style>
 @endsection
 
@@ -20,7 +23,7 @@
           action="{{ route('admin.expeditions.update', [$expedition->project->id, $expedition->id]) }}"
           role="form" enctype="multipart/form-data">
         {!! method_field('put') !!}
-        {!! csrf_field() !!}
+        @csrf
         <div class="row">
             <div class="col-sm-10 mx-auto">
                 <div class="card white box-shadow pt-2 pb-5 my-5 p-sm-5">

@@ -5,5 +5,5 @@ $router->post('projects/sort')->uses('ProjectsController@sort')->name('front.pro
 $router->get('projects/{slug}')->uses('ProjectsController@project')->name('front.projects.slug');
 
 
-// Pproject Map
+// Project Map
 $router->get('projects/{project}/{state?}')->uses('ProjectsController@state')->name('front.projects.state');

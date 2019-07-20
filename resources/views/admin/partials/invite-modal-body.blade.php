@@ -6,7 +6,7 @@
     <div class="col-sm-8 mx-auto">
         <h3 class="text-center">{{ __('pages.invite_group', ['group' => $group->title]) }}</h3>
         <form action="{{ route('admin.invites.store', [$group->id]) }}" method="post" role="form">
-            {!! csrf_field() !!}
+            @csrf
             <input type="hidden" name="entries" value="{{ old('entries', $inviteCount) }}">
             <div class="controls">
             @for($i=0; $i < $inviteCount; $i++)

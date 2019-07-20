@@ -64,7 +64,7 @@ sub footer -->
             <div class="col-md-3 col-xl-3 mb-4">
 
                 <!-- Content -->
-                <img src="/storage/images/page/biospex_logo.svg" alt="BIOSPEX">
+                <img src="/images/page/biospex_logo.svg" alt="BIOSPEX">
                 <p class="small text-justify pt-2">{{ __('pages.footer_disclaimer') }}</p>
             </div>
             <!-- Grid column -->

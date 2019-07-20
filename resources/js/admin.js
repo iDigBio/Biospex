@@ -178,8 +178,9 @@ $(function() {
 
     $('.project-banner').on('click', function (e) {
         let img = $(this).data('name');
-        $('#banner').val(img);
-        $('#banner-img').attr('src','/storage/images/habitat-banners/'+img);
+        $('#banner_file').val(img);
+        $('#banner_file').attr('value', img);
+        $('#banner-img').attr('src','/images/habitat-banners/'+img);
         $("#project-banner-modal .close").click();
     });
 

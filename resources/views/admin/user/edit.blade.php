@@ -16,7 +16,7 @@
                           action="{{ route('admin.users.update', [$user->id]) }}"
                           role="form" enctype="multipart/form-data">
                         {!! method_field('put') !!}
-                        {!! csrf_field() !!}
+                        @csrf
                         <div class="form-group">
                             <label for="first_name" class="col-form-label required">{{ __('pages.first_name') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('first_name')) ? 'is-invalid' : '' }}"
@@ -84,7 +84,7 @@
                     <form id="gridForm" method="post"
                           action="{{ route('admin.users.password', [$user->id]) }}" role="form">
                         {!! method_field('put') !!}
-                        {!! csrf_field() !!}
+                        @csrf
                         <input type="hidden" id="id" name="id" value="{{ $user->id }}">
                         <div class="form-group">
                             <label for="oldPassword" class="col-form-label required">{{ __('pages.password_old') }}:</label>

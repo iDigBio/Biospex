@@ -13,7 +13,7 @@
                 <form id="gridForm" method="post"
                       action="{{ route('admin.groups.store') }}"
                       role="form" enctype="multipart/form-data">
-                    {!! csrf_field() !!}
+                    @csrf
                     <input type="hidden" value="{{ Auth::id() }}" name="owner" id="owner">
                     <div class="col-12">
                         <h2 class="text-center content-header mb-4 text-uppercase">{{ __('pages.create') }} {{ __('pages.group') }}</h2>

@@ -28,11 +28,6 @@ class ActorImageService extends ActorServiceConfig
     /**
      * @var
      */
-    public $nfnLrgWidth;
-
-    /**
-     * @var
-     */
     private $missingImages = [];
 
     /**
@@ -49,7 +44,6 @@ class ActorImageService extends ActorServiceConfig
     {
         $this->imagickService = $imagickService;
         $this->httpRequest = $httpRequest;
-        $this->nfnLrgWidth = config('config.nfnLrgWidth');
     }
 
     /**

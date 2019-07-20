@@ -6,9 +6,9 @@
 @stop
 
 @section('header')
-    <header id="header-img" style="background-image: url(/storage/images/page-banners/banner-image-group.jpg);">
+    <header id="header-img" style="background-image: url(/images/page-banners/banner-image-group.jpg);">
         <nav class="header navbar navbar-expand-md box-shadow">
-            <a href="/"><img src="/storage/images/page/biospex_logo.svg" alt="BIOSPEX"
+            <a href="/"><img src="/images/page/biospex_logo.svg" alt="BIOSPEX"
                              class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
             @include('common.nav')
         </nav>
@@ -43,7 +43,7 @@
                     @endif
                 </div>
                 <form action="{{ route('front.events.join', [$team->uuid]) }}" method="post" role="form">
-                    {!! csrf_field() !!}
+                    @csrf
                     <input type="hidden" name="team_id" value="{{ $team->id }}">
                     <div class="form-group {{ ($errors->has('nfn_user')) ? 'has-error' : '' }}">
                         <label for="name" class="col-form-label required">{{ __('pages.nfn_user') }}:</label>

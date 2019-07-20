@@ -15,7 +15,7 @@
                     <h2 class="text-center content-header mb-4 text-uppercase">{{ __('pages.create') }} {{ __('pages.project') }}</h2>
                     <form method="post" action="{{ route('admin.projects.store') }}" role="form"
                           enctype="multipart/form-data">
-                        {!! csrf_field() !!}
+                        @csrf
                         <input type="hidden" name="entries" value="{{ old('entries', $resourceCount) }}">
                         <input type="hidden" name="id" value="">
                         <div class="form-row">
@@ -255,9 +255,9 @@
 
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6">
-                                <label for="banner" class="col-form-label">{{ __('pages.banner') }}:</label>
-                                <input type="text" class="form-control" id="banner" name="banner"
-                                       value="{{ old('banner', GeneralHelper::projectBannerFileName()) }}"
+                                <label for="banner_file" class="col-form-label">{{ __('pages.banner_file') }}:</label>
+                                <input type="text" class="form-control" id="banner_file" name="banner_file"
+                                       value="{{ old('banner_file', GeneralHelper::projectBannerFileName()) }}"
                                        readonly>
                             </div>
                             <div class="form-group col-sm-4 pt-3">
@@ -265,7 +265,7 @@
                                    data-hover="tooltip" title="{{ __('pages.banner_click') }}">
                                     {{ __('pages.banner_click') }}
                                     <img class="img-fluid" id="banner-img"
-                                         src="{{ old('banner', GeneralHelper::projectBannerFileUrl()) }}"/>
+                                         src="{{ old('banner_file', GeneralHelper::projectBannerFileUrl()) }}"/>
                                 </a>
                             </div>
                         </div>
