@@ -15,9 +15,7 @@ class ProjectPresenter extends Presenter
     {
         $logo = $this->model->logo;
 
-        return $this->variantExists($logo) ?
-            $logo->url() :
-            Storage::url('images/placeholders/project.png');
+        return $this->variantExists($logo) ? $logo->url() : '/images/placeholders/project.png';
     }
 
     /**
@@ -39,9 +37,7 @@ class ProjectPresenter extends Presenter
     {
         $banner = $this->model->banner_file;
 
-        return $banner === null ?
-            Storage::url('images/habitat-banners/banner-trees.jpg') :
-            Storage::url('images/habitat-banners/'.$banner);
+        return $banner === null ? '/images/habitat-banners/banner-trees.jpg' : '/images/habitat-banners/'.$banner;
     }
 
     /**

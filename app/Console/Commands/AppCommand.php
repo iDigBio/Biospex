@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\Interfaces\NfnWorkflow;
 use Illuminate\Console\Command;
-use Storage;
+use Illuminate\Filesystem\Filesystem;
 
 class AppCommand extends Command
 {
@@ -19,10 +18,16 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \Illuminate\Filesystem\Filesystem
+     */
+    private $filesystem;
+
+    /**
      * AppCommand constructor.
      */
-    public function __construct() {
+    public function __construct(Filesystem $filesystem) {
         parent::__construct();
+        $this->filesystem = $filesystem;
     }
 
     /**
@@ -30,11 +35,13 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $transcriptDir = config('config.nfn_downloads_transcript');
+        $workingDirectory = config('config.nfn_downloads_classification');
+        $workingDirectoryPath = \Storage::path($workingDirectory);
 
-        echo Storage::exists($transcriptDir . '/69.csv') . PHP_EOL;
-        $csvFile = Storage::path($transcriptDir . '/69.csv');
-        echo Storage::exists($csvFile);
-        echo $csvFile . PHP_EOL;
+        $files = collect($this->filesystem->files($workingDirectoryPath));
+        $files->each(function ($file) {
+            $fileName = $this->filesystem->name($file);
+            echo $fileName . PHP_EOL;
+        });
     }
 }

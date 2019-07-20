@@ -396,7 +396,7 @@ class ExpeditionsController extends Controller
                 $this->workflowManagerContract->create(['expedition_id' => $expeditionId]);
             }
 
-            Artisan::call('workflow:manage --expeditionId='.$expeditionId);
+            Artisan::call('workflow:manage', ['expeditionId' => $expeditionId]);
 
             FlashHelper::success(trans('messages.expedition_process_success'));
 

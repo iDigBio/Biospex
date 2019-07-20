@@ -23,7 +23,6 @@ return [
     'admin_group_id' => env('ADMIN_GROUP_ID', 1),
 
     'scratch_dir'                  => 'scratch',
-    'scratch_dir_tmp'              => 'scratch/tmp',
     'export_dir'                   => 'exports',
     'reports_dir'                  => 'reports',
     'import_dir'                   => 'subjects',
@@ -114,8 +113,6 @@ return [
     'thumbOutputDir'        => 'thumbs',
     'thumbWidth'            => 300,
     'thumbHeight'           => 300,
-    'nfnLrgWidth'           => env('NFN_LRG_WIDTH', 1500),
-    'nfnSmWidth'            => env('NFN_SM_WIDTH', 500),
     'logo'                  => '300x200',
     'banner'                => '1200x250',
 

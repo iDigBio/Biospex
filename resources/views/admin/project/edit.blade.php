@@ -260,8 +260,8 @@
 
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6">
-                                <label for="banner" class="col-form-label">{{ __('pages.banner') }}:</label>
-                                <input type="text" class="form-control" id="banner" name="banner"
+                                <label for="banner_file" class="col-form-label">{{ __('pages.banner_file') }}:</label>
+                                <input type="text" class="form-control" id="banner_file" name="banner_file"
                                        value="{{ $project->present()->banner_file_name ?? 'banner-trees.jpg' }}"
                                        readonly>
                             </div>

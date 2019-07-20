@@ -7,9 +7,9 @@
 
 {{-- Content --}}
 @section('header')
-    <header style="background-image: url(/storage/images/page-banners/banner-field.jpg);">
+    <header style="background-image: url(/images/page-banners/banner-field.jpg);">
         <nav class="header navbar navbar-expand-md box-shadow">
-            <a href="/"><img src="/storage/images/page/biospex_logo.svg" alt="BIOSPEX"
+            <a href="/"><img src="/images/page/biospex_logo.svg" alt="BIOSPEX"
                              class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
             @include('common.nav')
         </nav>

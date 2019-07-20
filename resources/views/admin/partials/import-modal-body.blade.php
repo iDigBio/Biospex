@@ -23,7 +23,7 @@
                            aria-controls="dwc-file-instruction">{{ __('pages.instructions') }}</a>
                         <span id="dwc-file-instruction" class="collapse">
                                             {{ __('pages.import_file_type') }}
-                                            <a href="{{ Storage::url('public/darwin-core-example.zip') }}" class="link">{{ __('pages.import_file_tag') }}</a>
+                                            <a href="{{ '/darwin-core-example.zip' }}" class="link">{{ __('pages.import_file_tag') }}</a>
                                         </span>
                     </div>
                     <div class="custom-file">
@@ -104,7 +104,7 @@
                            aria-controls="dwc-uri-instruction">{{ __('pages.instructions') }}</a>
                         <span id="dwc-uri-instruction" class="collapse">
                                             {{ __('pages.import_darwin_url_tag') }}
-                                            <a href="{{ Storage::url('public/darwin-core-example.zip') }}" class="link">{{ __('pages.import_file_tag') }}</a>
+                                            <a href="{{ '/darwin-core-example.zip' }}" class="link">{{ __('pages.import_file_tag') }}</a>
                                         </span>
                     </div>
                     <div class="form-group">

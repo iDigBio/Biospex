@@ -54,7 +54,6 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
 
         if (empty($this->expeditionIds))
         {
-            \Log::info('id empty');
             $this->delete();
 
             return;
@@ -76,8 +75,8 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
                 continue;
             }
 
-            $pythonPath = config('config.reconcile_path') . "/venv/bin/python";
-            $reconcilePath = config('config.reconcile_path') . "/reconcile.py";
+            $pythonPath = config('config.python_path');
+            $reconcilePath = config('config.reconcile_path');
             $logPath = storage_path('logs/reconcile.log');
             $command = "$pythonPath $reconcilePath -w {$expedition->nfnWorkflow->workflow} -r $recPath -u $tranPath -s $sumPath $csvPath &> $logPath";
             exec($command);
@@ -85,17 +84,17 @@ class NfnClassificationsReconciliationJob implements ShouldQueue
 
             if (File::exists($csvPath))
             {
-                $this->updateOrCreateDownloads($expedition->id, 'downloads');
+                $this->updateOrCreateDownloads($expedition->id, 'classification');
             }
 
             if (File::exists($tranPath))
             {
-                $this->updateOrCreateDownloads($expedition->id, 'transcriptions');
+                $this->updateOrCreateDownloads($expedition->id, 'transcript');
             }
 
             if (File::exists($recPath))
             {
-                $this->updateOrCreateDownloads($expedition->id, 'reconciled');
+                $this->updateOrCreateDownloads($expedition->id, 'reconcile');
             }
 
             if (File::exists($sumPath))
