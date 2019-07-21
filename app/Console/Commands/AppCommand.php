@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Filesystem\Filesystem;
 
 class AppCommand extends Command
 {
@@ -18,16 +17,10 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \Illuminate\Filesystem\Filesystem
-     */
-    private $filesystem;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct(Filesystem $filesystem) {
+    public function __construct() {
         parent::__construct();
-        $this->filesystem = $filesystem;
     }
 
     /**
@@ -35,13 +28,5 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $workingDirectory = config('config.nfn_downloads_classification');
-        $workingDirectoryPath = \Storage::path($workingDirectory);
-
-        $files = collect($this->filesystem->files($workingDirectoryPath));
-        $files->each(function ($file) {
-            $fileName = $this->filesystem->name($file);
-            echo $fileName . PHP_EOL;
-        });
     }
 }

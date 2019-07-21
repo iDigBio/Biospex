@@ -89,9 +89,9 @@ class NfnPanoptesClassifications
 
             $record->stat->save();
 
-            NfnClassificationsUpdateJob::dispatch($record->id);
-
             $this->actorServiceConfig->fireActorUnQueuedEvent();
+
+            NfnClassificationsUpdateJob::dispatch($record->id);
 
             return;
         }
@@ -132,7 +132,6 @@ class NfnPanoptesClassifications
     {
         if ($workflow['finished_at'] !== null)
         {
-            $record->percentage = 100;
             $this->actorServiceConfig->fireActorCompletedEvent();
             $this->notify($record);
         }

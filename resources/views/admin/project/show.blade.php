@@ -20,9 +20,9 @@
                 >{{ __('pages.view') }} {{ __('pages.completed') }} {{ __('pages.expeditions') }}</button>
             </div>
             <div class="d-flex justify-content-between mt-4 mb-3">
-                <span>{{ $project->expeditions->count() }} Expeditions</span>
-                <span>{{ $project->transcriptions_count }} Transcriptions</span>
-                <span>{{ $project->unique_transcribers_count }} Transcribers</span>
+                <span>{{ $project->expeditions_count }} Expeditions</span>
+                <span>{{ $transcriptionsCount }} Transcriptions</span>
+                <span>{{ $transcribersCount }} Transcribers</span>
             </div>
         </div>
         <div id="active-expeditions-main" class="col-sm-12 show">

@@ -47,7 +47,7 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     {
         $query = $this->model->with('project')
             ->has('nfnWorkflow')
-            ->with('stat');
+            ->with('nfnWorkflow', 'stat', 'nfnActor');
 
         $results = $projectId === null ? $query->get() : $query->where('project_id', $projectId)->get();
 
@@ -78,7 +78,9 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     {
         $query = $this->model->with([
             'project.group',
-            'stat'
+            'stat',
+            'nfnActor',
+            'nfnWorkflow'
         ])->whereHas('project.group.users', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         });

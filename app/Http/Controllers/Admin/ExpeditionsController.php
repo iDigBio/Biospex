@@ -88,7 +88,7 @@ class ExpeditionsController extends Controller
         $results = $this->expeditionContract->getExpeditionAdminIndex($user->id);
 
         list($expeditions, $expeditionsCompleted) = $results->partition(function ($expedition) {
-            return $expedition->stat->percent_completed < '100.00';
+            return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
         });
 
         return view('admin.expedition.index', compact('expeditions', 'expeditionsCompleted'));
@@ -112,10 +112,9 @@ class ExpeditionsController extends Controller
         $order = request()->get('order');
         $projectId = request()->get('id');
 
-        list($active, $completed) = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)->partition(function (
-                $expedition
-            ) {
-                return $expedition->stat->percent_completed < '100.00';
+        list($active, $completed) = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)
+            ->partition(function ($expedition) {
+                return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
             });
 
         $expeditions = $type === 'active' ? $active : $completed;

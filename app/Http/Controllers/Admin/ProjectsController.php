@@ -87,12 +87,22 @@ class ProjectsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        list($expeditionsCompleted, $expeditions) = $project->expeditions->partition(function ($expedition) {
-            dd($expedition->nfnActor->pivot->completed);
-            return $expedition->stat->percent_completed === "100.00";
+        list($expeditions, $expeditionsCompleted) = $project->expeditions->partition(function ($expedition) {
+            return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
         });
 
-        return view('admin.project.show', compact('project', 'expeditions', 'expeditionsCompleted'));
+        $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
+        $transcribersCount = CountHelper::projectTranscriberCount($project->id);
+
+        $viewParams = [
+            'project'              => $project,
+            'expeditions'          => $expeditions,
+            'expeditionsCompleted' => $expeditionsCompleted,
+            'transcriptionsCount'  => $transcriptionsCount,
+            'transcribersCount'    => $transcribersCount,
+        ];
+
+        return view('admin.project.show', $viewParams);
     }
 
     /**
@@ -324,11 +334,13 @@ class ProjectsController extends Controller
 
         $transcribers = CountHelper::getUserTranscriptionCount($projectId)->sortByDesc('transcriptionCount');
 
-        $transcriptions = Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function () use
-        (
+        $transcriptions = Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function (
+        ) use (
             $transcribers
         ) {
-            return $transcribers->isEmpty() ? null : $transcribers->pluck('transcriptionCount')->pipe(function ($transcribers) {
+            return $transcribers->isEmpty() ? null : $transcribers->pluck('transcriptionCount')->pipe(function (
+                $transcribers
+            ) {
                 return collect(array_count_values($transcribers->sort()->toArray()));
             })->flatMap(function ($users, $count) {
                 return [['transcriptions' => $count, 'transcribers' => $users]];

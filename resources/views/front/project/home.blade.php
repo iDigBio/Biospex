@@ -129,7 +129,7 @@
                 >{{ __('pages.view') }} {{ __('pages.completed') }} {{ __('pages.expeditions') }}</button>
             </div>
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
-                <span class="text">{{ $project->expeditions->count() }} Expeditions</span>
+                <span class="text">{{ $project->expeditions_count }} Expeditions</span>
                 <span class="text">{{ $transcriptionsCount }} Transcriptions</span>
                 <span class="text">{{ $transcribersCount }} Transcribers</span>
             </div>

@@ -89,17 +89,16 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectPageBySlug($slug)
     {
-        $results = $this->model->withCount('events')->with([
+        $results = $this->model->withCount('events')->withCount('expeditions')->with([
             'group.users.profile',
-            'expeditions.stat',
-            'expeditions.actors',
             'amChart',
             'resources',
-        ])->with([
+            'expeditions' => function($query){
+                $query->has('nfnWorkflow')->with('nfnWorkflow', 'stat', 'nfnActor');
+            },
             'events' => function ($q) {
                 $q->orderBy('start_date', 'desc');
-            },
-        ])->where('slug', '=', $slug)->first();
+            }])->where('slug', '=', $slug)->first();
 
         $this->resetModel();
 

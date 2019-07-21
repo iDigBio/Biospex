@@ -22,7 +22,7 @@
             <div class="d-flex align-items-start justify-content-between mt-4 mx-auto">
                 {!! $expedition->project->present()->project_page_icon !!}
                 @isset($expedition->nfnWorkflow)
-                    @if ($expedition->stat->percent_completed < '100.00')
+                    @if ($expedition->nfnActor->pivot->completed === 0)
                         {!! $expedition->nfnWorkflow->present()->nfn_url !!}
                     @endif
                 @endisset

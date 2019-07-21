@@ -57,7 +57,7 @@ class ProjectsController extends Controller
         $project = $projectContract->getProjectPageBySlug($slug);
 
         list($expeditions, $expeditionsCompleted) = $project->expeditions->partition(function ($expedition) {
-            return $expedition->stat->percent_completed < '100.00';
+            return $expedition->nfnActor->pivot->completed === 0;
         });
 
         list($events, $eventsCompleted) = $project->events->partition(function ($event) {
