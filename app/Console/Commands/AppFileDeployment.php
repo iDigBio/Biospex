@@ -65,7 +65,7 @@ class AppFileDeployment extends Command
         // copy needed files to locations
         $appFiles = \File::files($this->resPath.'/apps');
         $appTargets = collect($appFiles)->reject(function ($file) {
-            return \File::name($file) === 'laravel-echo-server.json' && \App::environment() === 'dev';
+            return \App::environment() === 'dev';
         })->map(function ($file) {
             $target = $this->appPath.'/'.\File::name($file);
             \File::copy($file, $target);
@@ -75,7 +75,7 @@ class AppFileDeployment extends Command
 
         $supFiles = \File::files($this->resPath.'/supervisord');
         $subTargets = collect($supFiles)->reject(function ($file) {
-            return \File::name($file) === 'echoserver.conf' && \App::environment() === 'dev';
+            return (\File::name($file) === 'echoserver.conf' || \File::name($file) === 'echoserver.conf') && \App::environment() === 'dev';
         })->map(function ($file) {
             $target = $this->supPath.'/'.\File::name($file);
             \File::copy($file, $target);
@@ -143,7 +143,6 @@ class AppFileDeployment extends Command
             'QUEUE_CLASSIFICATION_TUBE',
             'QUEUE_DEFAULT_TUBE',
             'QUEUE_EVENT_TUBE',
-            'QUEUE_FUSION_TUBE',
             'QUEUE_IMPORT_TUBE',
             'QUEUE_EXPORT_TUBE',
             'QUEUE_STAT_TUBE',

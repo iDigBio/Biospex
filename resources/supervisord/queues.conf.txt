@@ -63,19 +63,6 @@ autorestart=true
 user=SERVER_USER
 numprocs=NUM_PROCS
 
-[program:QUEUE_FUSION_TUBE]
-process_name=%(program_name)s_%(process_num)02d
-directory=CURRENT_PATH
-command=php artisan queue:work beanstalkd --daemon --queue=QUEUE_FUSION_TUBE --tries=3
-stdout_logfile=/var/log/supervisor/APP_ENV/fusion.log
-redirect_stderr=true
-logfile_maxbytes=50MB
-logfile_backups=5
-autostart=true
-autorestart=true
-user=SERVER_USER
-numprocs=NUM_PROCS
-
 [program:QUEUE_IMPORT_TUBE]
 process_name=%(program_name)s_%(process_num)02d
 directory=CURRENT_PATH

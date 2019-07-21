@@ -99,7 +99,6 @@ return [
     'classification_tube'   => env('QUEUE_CLASSIFICATION_TUBE'),
     'default_tube'          => env('QUEUE_DEFAULT_TUBE'),
     'event_tube'            => env('QUEUE_EVENT_TUBE'),
-    'fusion_tube'           => env('QUEUE_FUSION_TUBE'),
     'import_tube'           => env('QUEUE_IMPORT_TUBE'),
     'export_tube'           => env('QUEUE_EXPORT_TUBE'),
     'stat_tube'             => env('QUEUE_STAT_TUBE'),
