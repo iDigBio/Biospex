@@ -21,12 +21,14 @@ class MongoDbService
 
     /**
      * Collection being accessed.
+     *
      * @var Collection
      */
     public $clientCollection;
 
     /**
      * MongoDbService constructor.
+     *
      * @param DatabaseManager $databaseManager
      */
     public function __construct(DatabaseManager $databaseManager)
@@ -49,8 +51,7 @@ class MongoDbService
      */
     public function getClient()
     {
-        if (empty($this->client))
-        {
+        if (empty($this->client)) {
             $this->setClient();
         }
 
@@ -107,11 +108,12 @@ class MongoDbService
      * Find all matching query.
      *
      * @param array $query
+     * @param array $options
      * @return mixed
      */
-    public function find(array $query = [])
+    public function find(array $query = [], array $options = [])
     {
-        return $this->clientCollection->find($query);
+        return $this->clientCollection->find($query, $options);
     }
 
     /**
@@ -185,4 +187,19 @@ class MongoDbService
         $this->clientCollection->deleteMany($criteria);
     }
 
+    /**
+     * Return only id from results.
+     *
+     * @param $cursor
+     * @return array
+     */
+    public function pluckId($cursor)
+    {
+        $ids = [];
+        foreach ($cursor as $doc) {
+            $ids[] = (string) $doc->_id;
+        }
+
+        return $ids;
+    }
 }
