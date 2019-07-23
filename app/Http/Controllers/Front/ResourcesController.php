@@ -37,7 +37,7 @@ class ResourcesController extends Controller
         if (! $document->exists() || ! file_exists(public_path('storage' . $document->path()))) {
             FlashHelper::error('File cannot be found.');
 
-            return redirect()->route('front.resource.index');
+            return redirect()->route('front.resources.index');
         }
 
         return Storage::download('public/' . $document->path());
