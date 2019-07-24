@@ -50,7 +50,21 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('logo', ['resize' => ['dimensions' => '318x208']]);
+        $this->hasAttachedFile('logo', [
+            'variants' => [
+                'medium' => [
+                    'resize'      => ['dimensions' => '318x208'],
+                ]
+            ],
+            // This URL is given for attachments with no stored file, for 'original',
+            // and any variants that have no specific variant fallback URL set.
+            'url'  => config('config.missing_logo'),
+            'urls' => [
+                // This fallback URL is only given for the 'thumb' variant.
+                'medium' => config('config.missing_logo'),
+            ],
+        ]);
+        //$this->hasAttachedFile('logo', ['resize' => ['dimensions' => '318x208']]);
 
         parent::__construct($attributes);
     }

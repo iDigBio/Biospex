@@ -2,8 +2,6 @@
 
 namespace App\Presenters;
 
-use Storage;
-
 class ExpeditionPresenter extends Presenter
 {
     /**
@@ -15,8 +13,8 @@ class ExpeditionPresenter extends Presenter
     {
         $logo = $this->model->logo;
 
-        return $this->variantExists($logo) ?
-            $logo->url() : '/images/placeholders/card-image-place-holder02.jpg';
+        return $this->variantExists($logo, 'medium') ?
+            $logo->url('medium') : '/images/placeholders/card-image-place-holder02.jpg';
     }
 
     /**

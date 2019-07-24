@@ -32,6 +32,8 @@ return [
     'nfn_downloads_summary'        => 'nfndownloads/summary',
     'nfn_downloads_transcript'     => 'nfndownloads/transcript',
 
+    'missing_logo' => env('APP_URL') . '/images/placeholders/card-image-place-holder02.jpg',
+
     'python_path'      => env('LABEL_RECONCILIATIONS_PATH').'/venv/bin/python',
     'reconcile_path'   => env('LABEL_RECONCILIATIONS_PATH').'/reconcile.py',
 

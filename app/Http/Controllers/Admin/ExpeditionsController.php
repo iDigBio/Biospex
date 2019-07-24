@@ -357,7 +357,7 @@ class ExpeditionsController extends Controller
         } catch (\Exception $e) {
             FlashHelper::error(trans('messages.record_save_error'));
 
-            return redirect()->route('admin.expeditions.edit', [$project->id, $expedition->id]);
+            return redirect()->route('admin.expeditions.edit', [$projectId, $expeditionId]);
         }
     }
 
