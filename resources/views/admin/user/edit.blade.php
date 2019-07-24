@@ -67,7 +67,7 @@
                             <input type="hidden" name="current_avatar" value="{{ $user->profile->avatar_file_name }}">
                             <div class="form-group col-sm-6">
                                 <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
-                                     src="{{ $user->profile->present()->avatar_medium }}"/>
+                                     src="{{ $user->profile->avatar->url('medium') }}"/>
                             </div>
                         </div>
                         @include('common.cancel-submit-buttons')

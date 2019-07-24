@@ -254,7 +254,7 @@
                             </div>
                             <div class="form-group col-sm-6">
                                 <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
-                                     src="{{ $project->present()->logo_url }}"/>
+                                     src="{{ $project->logo->url() }}"/>
                             </div>
                         </div>
 

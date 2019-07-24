@@ -4,28 +4,6 @@ namespace App\Presenters;
 
 class ExpeditionPresenter extends Presenter
 {
-    /**
-     * Build link to logo thumb.
-     *
-     * @return string
-     */
-    public function logoUrl()
-    {
-        $logo = $this->model->logo;
-
-        return $this->variantExists($logo, 'medium') ?
-            $logo->url('medium') : '/images/placeholders/card-image-place-holder02.jpg';
-    }
-
-    /**
-     * Build link to logo thumb.
-     *
-     * @return string
-     */
-    public function logoFileName()
-    {
-        return isset($this->model->logo_file_name) ? $this->model->logo_file_name : 'card-image-place-holder02.jpg';
-    }
 
     /**
      * Return show icon.

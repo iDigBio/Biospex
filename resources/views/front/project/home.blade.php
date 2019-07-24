@@ -38,8 +38,8 @@
 
                 <div class="col-12 col-md-10 offset-md-1">
                     <div class="col-5 float-right">
-                    <img src="{{ $project->present()->logo_url }}" class="img-fluid"
-                         alt="Project biospex_logo">
+                    <img src="{{ $project->logo->url() }}" class="img-fluid"
+                         alt="{{ $project->title }} logo">
                     </div>
                     @if($project->contact !== null)
                         <h3>{{ __('pages.contact') }}</h3>

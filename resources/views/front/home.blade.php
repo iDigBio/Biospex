@@ -150,7 +150,7 @@
                     <div class="card black mb-4 box-shadow" data-aos="fade-up" data-aos-duration="1500"
                          data-aos-anchor-placement="bottom-bottom" data-aos-once="true">
                         <div class="card-top m-0 p-0">
-                            <img class="card-img-top" src="{{ $expedition->present()->logo_url }}" alt="Card image cap">
+                            <img class="card-img-top" src="{{ $expedition->logo->url('medium') }}" alt="Card image cap">
                             <div class="card-img-overlay">
                                 <h2 class="card-title text-center pt-4">{{ $expedition->title }}</h2>
                                 <i class="card-info fas fa-info-circle fa-2x float-right"

@@ -68,7 +68,9 @@ class Project extends BaseEloquentModel implements AttachableInterface
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('logo');
+        $this->hasAttachedFile('logo', [
+            'url'  => config('config.missing_project_logo')
+        ]);
 
         parent::__construct($attributes);
     }

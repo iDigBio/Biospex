@@ -2,22 +2,8 @@
 
 namespace App\Presenters;
 
-use Storage;
-
 class ProjectPresenter extends Presenter
 {
-    /**
-     * Build link to logo thumb.
-     *
-     * @return string
-     */
-    public function logoUrl()
-    {
-        $logo = $this->model->logo;
-
-        return $this->variantExists($logo) ? $logo->url() : '/images/placeholders/project.png';
-    }
-
     /**
      * Build link to banner.
      *

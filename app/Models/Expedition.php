@@ -56,12 +56,10 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
                     'resize'      => ['dimensions' => '318x208'],
                 ]
             ],
-            // This URL is given for attachments with no stored file, for 'original',
-            // and any variants that have no specific variant fallback URL set.
-            'url'  => config('config.missing_logo'),
+            'url'  => config('config.missing_expedition_logo'),
             'urls' => [
                 // This fallback URL is only given for the 'thumb' variant.
-                'medium' => config('config.missing_logo'),
+                'medium' => config('config.missing_expedition_logo'),
             ],
         ]);
         //$this->hasAttachedFile('logo', ['resize' => ['dimensions' => '318x208']]);

@@ -5,7 +5,7 @@
         <div class="row card-body pb-2">
             <div class="col-12">
                 <div class="col-4 float-right">
-                    <img class="img-fluid" src="{{ $project->present()->logo_url }}" alt="Card image cap">
+                    <img class="img-fluid" src="{{ $project->logo->url() }}" alt="Card image cap">
                 </div>
                 <p class="smalltext">{{ $project->description_short }}</p>
             </div>

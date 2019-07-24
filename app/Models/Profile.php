@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Presenters\ProfilePresenter;
 use Czim\Paperclip\Contracts\AttachableInterface;
 use Czim\Paperclip\Model\PaperclipTrait;
 use App\Models\Traits\Presentable;
@@ -32,18 +31,22 @@ class Profile extends BaseEloquentModel implements AttachableInterface
     ];
 
     /**
-     * @var string
-     */
-    protected $presenter = ProfilePresenter::class;
-
-    /**
      * Profile constructor.
      *
      * @param array $attributes
      */
     public function __construct(array $attributes = [])
     {
-        $this->hasAttachedFile('avatar', ['variants' => ['medium' => '160x160', 'small' => '25x25']]);
+        $this->hasAttachedFile('avatar', [
+            'variants' => [
+                'medium' => '160x160', 'small' => '25x25'
+            ],
+            'url'  => config('config.missing_avatar_medium'),
+            'urls' => [
+                'small' => config('config.missing_avatar_small'),
+                'medium' => config('config.missing_avatar_medium'),
+            ],
+        ]);
 
         parent::__construct($attributes);
     }

@@ -67,7 +67,7 @@
                             <input type="hidden" name="current_logo" value="{{ $expedition->logo_file_name }}">
                             <div class="form-group col-sm-6">
                                 <img class="img-fluid" style="display: inline; width: 100px; height: 100px;"
-                                     src="{{ $expedition->present()->logo_url }}"/>
+                                     src="{{ $expedition->logo->url('medium') }}"/>
                             </div>
                         </div>
 
