@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Services\MongoDbService;
+use Artisan;
 use Illuminate\Console\Command;
 
 class ClearOcrResults extends Command
@@ -55,5 +56,7 @@ class ClearOcrResults extends Command
         $attributes = [ '$set' => ['ocr' => '']];
 
         $this->mongoDbService->updateMany($attributes, $criteria);
+
+        Artisan::call('lada-cache:flush');
     }
 }

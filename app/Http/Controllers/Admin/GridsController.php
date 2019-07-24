@@ -6,9 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Jobs\GridExportCsvJob;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\Subject;
-use App\Services\Model\SubjectService;
-use App\Services\MongoDbService;
-use Illuminate\Http\Request;
 use App\Services\Grid\JqGridJsonEncoder;
 use App\Services\Csv\Csv;
 
@@ -41,24 +38,9 @@ class GridsController extends Controller
     public $route;
 
     /**
-     * @var Request
-     */
-    public $request;
-
-    /**
      * @var Csv
      */
     public $csv;
-
-    /**
-     * @var MongoDbService
-     */
-    private $mongoDbService;
-
-    /**
-     * @var \App\Repositories\Interfaces\Subject
-     */
-    private $subjectContract;
 
     /**
      * @var \App\Repositories\Interfaces\Expedition
@@ -69,29 +51,20 @@ class GridsController extends Controller
      * GridsController constructor.
      *
      * @param JqGridJsonEncoder $grid
-     * @param Request $request
      * @param Csv $csv
-     * @param MongoDbService $mongoDbService
-     * @param \App\Repositories\Interfaces\Subject $subjectContract
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      */
     public function __construct(
         JqGridJsonEncoder $grid,
-        Request $request,
         Csv $csv,
-        MongoDbService $mongoDbService,
-        Subject $subjectContract,
         Expedition $expeditionContract
     )
     {
         $this->grid = $grid;
-        $this->request = $request;
         $this->csv = $csv;
 
-        $this->projectId = (int) $this->request->route('projects');
-        $this->expeditionId = (int) $this->request->route('expeditions');
-        $this->mongoDbService = $mongoDbService;
-        $this->subjectContract = $subjectContract;
+        $this->projectId = (int) request()->route('projects');
+        $this->expeditionId = (int) request()->route('expeditions');
         $this->expeditionContract = $expeditionContract;
     }
 
@@ -100,7 +73,7 @@ class GridsController extends Controller
      */
     public function load()
     {
-        return $this->grid->loadGridModel($this->projectId, $this->request->route()->getName());
+        return $this->grid->loadGridModel($this->projectId, request()->route()->getName());
     }
 
     /**
@@ -112,7 +85,7 @@ class GridsController extends Controller
     {
         try
         {
-            return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
+            return $this->grid->encodeGridRequestedData(request()->all(), request()->route()->getName(), $this->projectId, $this->expeditionId);
         }
         catch (\Exception $e)
         {
@@ -129,7 +102,7 @@ class GridsController extends Controller
     {
         try
         {
-            return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
+            return $this->grid->encodeGridRequestedData(request()->all(), request()->route()->getName(), $this->projectId, $this->expeditionId);
         }
         catch (\Exception $e)
         {
@@ -146,7 +119,7 @@ class GridsController extends Controller
     {
         try
         {
-            return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
+            return $this->grid->encodeGridRequestedData(request()->all(), request()->route()->getName(), $this->projectId, $this->expeditionId);
         }
         catch (\Exception $e)
         {
@@ -163,7 +136,7 @@ class GridsController extends Controller
     {
         try
         {
-            return $this->grid->encodeGridRequestedData($this->request->all(), $this->request->route()->getName(), $this->projectId, $this->expeditionId);
+            return $this->grid->encodeGridRequestedData(request()->all(), request()->route()->getName(), $this->projectId, $this->expeditionId);
         }
         catch (\Exception $e)
         {
@@ -184,27 +157,27 @@ class GridsController extends Controller
         return;
     }
 
-
     /**
      * Delete subject if not part of expedition process.
      *
+     * @param \App\Repositories\Interfaces\Subject $subjectContract
      * @return \Illuminate\Http\JsonResponse
      */
-    public function delete()
+    public function delete(Subject $subjectContract)
     {
-        if ( ! $this->request->ajax())
+        if ( ! request()->ajax())
         {
             return response()->json(['error' => 'Delete must be performed via ajax.'], 404);
         }
 
-        if ( ! $this->request->get('oper'))
+        if ( ! request()->get('oper'))
         {
             return response()->json(['error' => 'Only delete operation allowed.'], 404);
         }
 
-        $subjectIds = explode(',', $this->request->get('id'));
+        $subjectIds = explode(',', request()->get('id'));
 
-        $subjects = $this->subjectContract->getWhereIn('_id', $subjectIds);
+        $subjects = $subjectContract->getWhereIn('_id', $subjectIds);
 
         $subjects->reject(function ($subject) {
             foreach ($subject->expedition_ids as $expeditionId)
@@ -215,8 +188,8 @@ class GridsController extends Controller
             }
 
             return false;
-        })->each(function ($subject) {
-            $this->subjectContract->delete($subject->_id);
+        })->each(function ($subject) use($subjectContract) {
+            $subjectContract->delete($subject->_id);
         });
 
         return response()->json(['success']);

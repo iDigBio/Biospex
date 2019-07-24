@@ -8,6 +8,7 @@ use App\Repositories\Interfaces\Property;
 use App\Repositories\Interfaces\Subject;
 use App\Services\MongoDbService;
 use ForceUTF8\Encoding;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Factory as Validation;
 
 class DarwinCoreCsvImport
@@ -330,7 +331,7 @@ class DarwinCoreCsvImport
         if ($checkQualified !== null) {
             $short = $checkQualified->short;
         } elseif ($checkQualified === null && $checkShort !== null) {
-            $short .= md5(str_random(4));
+            $short .= md5(Str::random(4));
             $this->saveProperty($qualified, $short, $namespace);
         } elseif ($checkQualified === null && $checkShort === null) {
             $this->saveProperty($qualified, $short, $namespace);

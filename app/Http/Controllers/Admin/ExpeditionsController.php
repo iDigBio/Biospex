@@ -14,7 +14,6 @@ use App\Repositories\Interfaces\NfnWorkflow;
 use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\Subject;
 use App\Repositories\Interfaces\WorkflowManager;
-use App\Services\MongoDbService;
 use Artisan;
 use Illuminate\Support\Facades\Auth;
 use JavaScript;
@@ -267,10 +266,9 @@ class ExpeditionsController extends Controller
      *
      * @param $projectId
      * @param $expeditionId
-     * @param \App\Services\MongoDbService $mongoDbService
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function edit($projectId, $expeditionId, MongoDbService $mongoDbService)
+    public function edit($projectId, $expeditionId)
     {
         $relations = [
             'project.group',
@@ -278,6 +276,7 @@ class ExpeditionsController extends Controller
             'downloads',
             'workflowManager',
             'stat',
+            'subjects',
             'nfnWorkflow',
         ];
 
@@ -287,9 +286,7 @@ class ExpeditionsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $mongoDbService->setCollection('subjects');
-        $cursor = $mongoDbService->find(['expedition_ids' => $expedition->id]);
-        $subjectIds = $mongoDbService->pluckId($cursor);
+        $subjectIds = $expedition->subjects->pluck('_id');
 
         JavaScript::put([
             'projectId'    => $expedition->project->id,

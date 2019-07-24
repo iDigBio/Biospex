@@ -28,7 +28,7 @@ class EventServiceProvider extends ServiceProvider
         \App\Listeners\GroupEventListener::class,
         \App\Listeners\ActorPivotUpdateEventListener::class,
         \App\Listeners\ExportQueueEventListener::class,
-        \App\Listeners\OcrEventListener::class
+        \App\Listeners\OcrEventListener::class,
     ];
 
     /**
