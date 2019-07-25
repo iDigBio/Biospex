@@ -112,8 +112,9 @@ class ExpeditionsController extends Controller
         $order = request()->get('order');
         $projectId = request()->get('id');
 
-        list($active, $completed) = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)
-            ->partition(function ($expedition) {
+        list($active, $completed) = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)->partition(function (
+                $expedition
+            ) {
                 return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
             });
 
@@ -323,13 +324,19 @@ class ExpeditionsController extends Controller
             $expedition = $this->expeditionContract->update($request->all(), $expeditionId);
 
             if ($request->filled('workflow')) {
+                $attributes = $attributes = [
+                    'project_id'    => $project->id,
+                    'expedition_id' => $expedition->id,
+                    'workflow'      => $request->get('workflow'),
+                ];
+
                 $values = [
                     'project_id'    => $project->id,
                     'expedition_id' => $expedition->id,
                     'workflow'      => $request->get('workflow'),
                 ];
 
-                $nfnWorkflow = $this->nfnWorkflowContract->updateOrCreate(['expedition_id' => $expedition->id], $values);
+                $nfnWorkflow = $this->nfnWorkflowContract->updateOrCreate($attributes, $values);
 
                 UpdateNfnWorkflowJob::dispatch($nfnWorkflow);
             }

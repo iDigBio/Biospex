@@ -23,7 +23,8 @@ class NfnWorkflow extends BaseEloquentModel
         'expedition_id',
         'project',
         'workflow',
-        'subject_sets'
+        'subject_sets',
+        'slug'
     ];
 
     /**

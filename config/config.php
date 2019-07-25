@@ -32,27 +32,29 @@ return [
     'nfn_downloads_summary'        => 'nfndownloads/summary',
     'nfn_downloads_transcript'     => 'nfndownloads/transcript',
 
-    'missing_project_logo' => env('APP_URL') . '/images/placeholders/project.png',
-    'missing_expedition_logo' => env('APP_URL') . '/images/placeholders/card-image-place-holder02.jpg',
-    'missing_avatar_small' => env('APP_URL') . '/images/avatars/small/missing.png',
-    'missing_avatar_medium' => env('APP_URL') . '/images/avatars/medium/missing.png',
+    'missing_project_logo'    => env('APP_URL').'/images/placeholders/project.png',
+    'missing_expedition_logo' => env('APP_URL').'/images/placeholders/card-image-place-holder02.jpg',
+    'missing_avatar_small'    => env('APP_URL').'/images/avatars/small/missing.png',
+    'missing_avatar_medium'   => env('APP_URL').'/images/avatars/medium/missing.png',
 
-    'python_path'      => env('LABEL_RECONCILIATIONS_PATH').'/venv/bin/python',
-    'reconcile_path'   => env('LABEL_RECONCILIATIONS_PATH').'/reconcile.py',
+    'python_path'    => env('LABEL_RECONCILIATIONS_PATH').'/venv/bin/python',
+    'reconcile_path' => env('LABEL_RECONCILIATIONS_PATH').'/reconcile.py',
 
     'project_chart_series' => resource_path('json/projectChartSeries.json'),
 
-    'ocr_disable'    => env('OCR_DISABLE', false),
+    'ocr_disable' => env('OCR_DISABLE', false),
 
     'poll_ocr_channel'        => env('POLL_OCR_CHANNEL'),
     'poll_export_channel'     => env('POLL_EXPORT_CHANNEL'),
     'poll_scoreboard_channel' => env('POLL_SCOREBOARD_CHANNEL'),
 
-    'cache_enabled'       => env('CACHE_ENABLED', true),
-    'cache_minutes'       => env('CACHE_MINUTES', 60),
+    'cache_enabled' => env('CACHE_ENABLED', true),
+    'cache_minutes' => env('CACHE_MINUTES', 60),
 
-    'project_resources' => [
-        'Website URL','Video URL','File Download'
+    'project_resources'   => [
+        'Website URL',
+        'Video URL',
+        'File Download',
     ],
 
     /**
@@ -154,6 +156,7 @@ return [
     'nfnNotify'                 => [1 => 'NewNfnLegacyProject', 2 => 'NewNfnPanoptesProject'],
     'nfnSkipCsv'                => env('NFN_SKIP_CSV'), // Skip csv creation for expedition ids
     'nfnTranscriptionsComplete' => env('NFN_TRANSCRIPTIONS_COMPLETE', 3),
+    'nfn_participate_url'       => env('NFN_PARTICIPATE_URL'),
 
     'nfnCsvMap' => [
         'subjectId'        => '_id',

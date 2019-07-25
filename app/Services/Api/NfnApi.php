@@ -91,7 +91,6 @@ class NfnApi extends HttpRequest
      *
      * @param $projectId
      * @return string
-     * @throws GuzzleException
      */
     public function getProjectUri($projectId)
     {
