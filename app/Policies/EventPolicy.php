@@ -25,7 +25,7 @@ class EventPolicy
      */
     public function isOwner($user, $event)
     {
-        return $user->id === $event->ower_id;
+        return $user->id === $event->owner_id;
     }
 
     /**
