@@ -64,6 +64,13 @@ class EventsController extends Controller
         return view('front.event.partials.event', compact('events'));
     }
 
+    public function read(Event $contract, $eventId)
+    {
+        $event = $contract->findWith($eventId, ['project']);
+
+        return view('front.event.show', compact('event'));
+    }
+
     /**
      * Group join page for events.
      *
