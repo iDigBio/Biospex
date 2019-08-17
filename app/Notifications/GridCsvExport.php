@@ -17,20 +17,13 @@ class GridCsvExport extends Notification implements ShouldQueue
     public $message;
 
     /**
-     * @var null
-     */
-    public $csv;
-
-    /**
-     * Create a new notification instance.
+     * GridCsvExport constructor.
      *
      * @param $message
-     * @param null $csv
      */
-    public function __construct($message, $csv = null)
+    public function __construct($message)
     {
         $this->message = $message;
-        $this->csv = $csv;
         $this->onQueue(config('config.default_tube'));
     }
 
@@ -49,17 +42,7 @@ class GridCsvExport extends Notification implements ShouldQueue
      */
     public function toMail()
     {
-        $mailMessage = new MailMessage;
-        $mailMessage->markdown('mail.gridcsvexport', ['message' => $this->message]);
-
-        if ($this->csv !== null)
-        {
-            $mailMessage->attach($this->csv, [
-                'mime' => 'text/csv',
-            ]);
-        }
-
-        return $mailMessage;
+        return (new MailMessage)->markdown('mail.gridcsvexport', ['message' => $this->message]);
     }
 
     /**

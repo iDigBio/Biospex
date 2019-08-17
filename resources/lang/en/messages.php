@@ -32,7 +32,7 @@ return [
     'extension_node_missing'              => 'Extension node missing from xml meta file',
     'failed_jobs'                         => 'There are :count failed jobs in the Jobs table.',
     'grid_export_csv'                     => 'Grid Export CSV',
-    'grid_export_csv_complete'            => 'Your export is attached.',
+    'grid_export_csv_complete'            => 'Your grid export is completed. Click the link provided to download:<br>:link',
     'grid_export_csv_error'               => 'There was an error while exporting. Please forward this message to the Administration<br><br>Error: :error',
     'group_delete_user_msg'               => 'This will permanently delete the member',
     'group_invite_message'                => 'You have been invited to join the BIOSPEX :title group. Click the button to register using this email address with the provided group code.',

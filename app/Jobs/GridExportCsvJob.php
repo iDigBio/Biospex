@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Illuminate\Support\Str;
 use App\Facades\DateHelper;
 use App\Facades\GeneralHelper;
 use App\Models\User;
@@ -13,6 +14,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Storage;
 
 class GridExportCsvJob implements ShouldQueue
 {
@@ -88,7 +90,8 @@ class GridExportCsvJob implements ShouldQueue
             unset($first['_id'], $first['occurrence']);
             $header = array_keys($first);
 
-            $file = \Storage::path(config('config.reports_dir') . '/' . str_random() . '.csv');
+            $fileName = Str::random() . '.csv';
+            $file = Storage::path(config('config.reports_dir') . '/' . $fileName);
             $csv->writerCreateFromPath($file);
             $csv->insertOne($header);
 
@@ -104,11 +107,13 @@ class GridExportCsvJob implements ShouldQueue
 
             $csv->insertAll($records->toArray());
 
-            $this->user->notify(new GridCsvExport(trans('messages.grid_export_csv_complete'), $file));
+            $message = __('messages.grid_export_csv_complete', ['link' => route('admin.downloads.report', $fileName)]);
+
+            $this->user->notify(new GridCsvExport($message));
         }
         catch (\Exception $e)
         {
-            $this->user->notify(new GridCsvExport(trans('messages.grid_export_csv_error', ['error' => $e->getMessage()])));
+            $this->user->notify(new GridCsvExport(__('messages.grid_export_csv_error', ['error' => $e->getMessage()])));
         }
     }
 }

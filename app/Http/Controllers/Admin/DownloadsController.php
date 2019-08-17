@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Facades\FlashHelper;
+use Flash;
 use App\Http\Controllers\Controller;
 use App\Jobs\ActorJob;
 use App\Repositories\Interfaces\Expedition;
@@ -49,7 +49,7 @@ class DownloadsController extends Controller
             $download = $downloadContract->findWith($downloadId, ['expedition.project.group']);
 
             if (! $download) {
-                FlashHelper::error(trans('messages.missing_download_file'));
+                Flash::error(trans('messages.missing_download_file'));
 
                 return redirect()->back();
             }
@@ -73,7 +73,7 @@ class DownloadsController extends Controller
             }
 
             if (! GeneralHelper::downloadFileExists($download->type, $download->file)) {
-                FlashHelper::error(trans('messages.missing_download_file'));
+                Flash::error(trans('messages.missing_download_file'));
 
                 return redirect()->route('webauth.downloads.index', [$projectId, $expeditionId]);
             }
@@ -91,7 +91,7 @@ class DownloadsController extends Controller
 
             return response()->download($file, $download->type.'-'.$download->file, $headers);
         } catch (\Exception $e) {
-            FlashHelper::error(__($e->getMessage()));
+            Flash::error(__($e->getMessage()));
 
             return redirect()->back();
         }
@@ -120,9 +120,9 @@ class DownloadsController extends Controller
 
             ActorJob::dispatch(serialize($expedition->nfnActor));
 
-            FlashHelper::success(trans('messages.download_regeneration_success'));
+            Flash::success(trans('messages.download_regeneration_success'));
         } catch (\Exception $e) {
-            FlashHelper::error(trans('messages.download_regeneration_error', ['error' => $e->getMessage()]));
+            Flash::error(trans('messages.download_regeneration_error', ['error' => $e->getMessage()]));
         }
 
         return redirect()->route('webauth.downloads.index', [$projectId, $expeditionId]);
@@ -146,11 +146,33 @@ class DownloadsController extends Controller
         }
 
         if (! Storage::exists(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html')) {
-            FlashHelper::warning(trans('pages.file_does_not_exist'));
+            Flash::warning(trans('pages.file_does_not_exist'));
 
             return redirect()->back();
         }
 
         return Storage::get(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html');
+    }
+
+    /**
+     * Download report.
+     *
+     * @param string $fileName
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function report(string $fileName)
+    {
+        try {
+            $file = Storage::path(config('config.reports_dir') . '/' . $fileName);
+
+            return response()->download($file, $fileName, [
+                'Content-Type'  => Storage::mimeType($file),
+                'Content-disposition' => 'attachment; filename="'.$fileName.'"',
+            ]);
+        } catch (\Exception $e) {
+            Flash::error($e->getMessage());
+
+            return redirect()->route('admin.projects.index');
+        }
     }
 }
