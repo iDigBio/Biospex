@@ -1,18 +1,20 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Http\Controllers\ApiAuth;
 
-use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
-use App\Notifications\UserActivation;
 use App\Repositories\Interfaces\ApiUser;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use App\Http\Requests\RegisterFormRequest;
-use App\Http\Requests\ResendActivationFormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Class ApiRegisterController
+ *
+ * @package App\Http\Controllers\ApiAuth
+ */
 class ApiRegisterController extends Controller
 {
 
