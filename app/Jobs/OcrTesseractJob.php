@@ -74,8 +74,8 @@ class OcrTesseractJob implements ShouldQueue
      */
     public function failed(Exception $exception)
     {
-        $this->queue->error = 1;
-        $this->queue->save();
+        $this->ocrQueue->error = 1;
+        $this->ocrQueue->save();
     }
 
 }
