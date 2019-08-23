@@ -6,7 +6,9 @@
             <div class="col-md-12 d-flex">
                 <div class="col-md-6">
                     <p>{{ __('pages.project') }}
-                        : <a href="{{ route('front.projects.slug', ['slug' => $event->project->slug]) }}">{{ $event->project->title }}</a></p>
+                        :
+                        <a href="{{ route('front.projects.slug', ['slug' => $event->project->slug]) }}">{{ $event->project->title }}</a>
+                    </p>
                     {{ __('pages.start_date') }}
                     : {{ $event->present()->start_date_to_string }} {{ str_replace('_', ' ', $event->timezone) }}
                     <br>
@@ -23,6 +25,9 @@
             </div>
             <div class="col-md-12 d-flex justify-content-between mt-4 mb-3">
                 {!! $event->project->present()->project_page_icon_lrg !!}
+                @if( ! GeneralHelper::eventCompleted($event->end_date, $event->timezone))
+                    {!! $event->project->lastWorkflow->present()->nfn_project_icon_lrg !!}
+                @endif
                 {!! $event->present()->event_download_users_icon_lrg !!}
                 {!! $event->present()->event_download_transcripts_icon_lrg !!}
                 {!! $event->present()->event_edit_icon_lrg !!}

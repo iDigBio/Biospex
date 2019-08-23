@@ -64,9 +64,16 @@ class EventsController extends Controller
         return view('front.event.partials.event', compact('events'));
     }
 
+    /**
+     * Display the show page for an event.
+     *
+     * @param \App\Repositories\Interfaces\Event $contract
+     * @param $eventId
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function read(Event $contract, $eventId)
     {
-        $event = $contract->findWith($eventId, ['project']);
+        $event = $contract->findWith($eventId, ['project.lastWorkflow']);
 
         return view('front.event.show', compact('event'));
     }
@@ -113,12 +120,12 @@ class EventsController extends Controller
         $user = $eventUserContract->updateOrCreate(['nfn_user' => $request->get('nfn_user')], ['nfn_user' => $request->get('nfn_user')]);
 
         if ($user !== null) {
-            $team = $eventTeamContract->find($request->get('team_id'));
-            $team->users()->save($user);
+            $team = $eventTeamContract->findWith($request->get('team_id'), ['event']);
+            $team->users()->syncWithoutDetaching([$user->id]);
 
             FlashHelper::success(trans('messages.event_join_team_success'));
 
-            return redirect()->route('front.events.signup', [$uuid]);
+            return redirect()->route('front.events.read', [$team->event->id]);
         }
 
         FlashHelper::error(trans('messages.event_join_team_error'));

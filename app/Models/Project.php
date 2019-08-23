@@ -208,6 +208,16 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
+     * NfnWorkflow relationship returning last in database.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function lastWorkflow()
+    {
+        return $this->hasOne(NfnWorkflow::class)->latest();
+    }
+
+    /**
      * Events relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

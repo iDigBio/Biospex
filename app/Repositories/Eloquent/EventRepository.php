@@ -24,8 +24,8 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function getEventPublicIndex($sort = null, $order = null, $projectId = null)
     {
-        $results = $projectId === null ? $this->model->with('project')->get() :
-            $this->model->with('project')->where('project_id', $projectId)->get();
+        $results = $projectId === null ? $this->model->with('project.lastWorkflow')->get() :
+            $this->model->with('project.lastWorkflow')->where('project_id', $projectId)->get();
 
         $this->resetModel();
 
@@ -52,7 +52,7 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function getEventAdminIndex($userId, $sort = null, $order = null)
     {
-        $results = $this->model->with('project')->where('owner_id', $userId)->get();
+        $results = $this->model->with('project.lastWorkflow')->where('owner_id', $userId)->get();
 
         $this->resetModel();
 
@@ -176,7 +176,7 @@ class EventRepository extends EloquentRepository implements Event
     public function getEventShow($eventId)
     {
         $results = $this->model->withCount('transcriptions')->with([
-            'project',
+            'project.lastWorkflow',
             'teams.users' => function ($q) use ($eventId) {
                 $q->withcount([
                     'transcriptions' => function ($q) use ($eventId) {

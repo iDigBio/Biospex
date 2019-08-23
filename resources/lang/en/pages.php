@@ -76,6 +76,7 @@ return [
     'event_download_users'           => 'Download Users File',
     'event_download_transcripts'     => 'Download Transcripts File',
     'event_ending'                   => 'Ending in ',
+    'event_participate'              => 'Click here to participate',
     'event_starting'                 => 'Starting in ',
     'exit'                           => 'Exit',
     'expedition'                     => 'Expedition',

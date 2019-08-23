@@ -157,6 +157,7 @@ return [
     'nfnSkipCsv'                => env('NFN_SKIP_CSV'), // Skip csv creation for expedition ids
     'nfnTranscriptionsComplete' => env('NFN_TRANSCRIPTIONS_COMPLETE', 3),
     'nfn_participate_url'       => env('NFN_PARTICIPATE_URL'),
+    'nfn_project_url'           => env('NFN_PROJECT_URL'),
 
     'nfnCsvMap' => [
         'subjectId'        => '_id',

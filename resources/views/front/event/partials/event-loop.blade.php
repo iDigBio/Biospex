@@ -26,11 +26,13 @@
                     </div>
                 </div>
             @endif
-            <h5 class="text-center color-action pt-4">{{ $event->title }}<br>
+            <h4 class="text-center pt-4">{{ $event->title }}</h4>
+            <h5 class="text-center color-action">
                 {{ $event->present()->start_date_to_string }} {{ __('pages.to') }}
                 {{ $event->present()->end_date_to_string }} {{ str_replace('_', ' ', $event->timezone) }}<br>
+                {{ __('by') }}<br>
+                {{ $event->project->title }}
             </h5>
-            <h4>{{ $event->project->title }}</h4>
         </div>
         <div class="text-center">
             <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
@@ -44,6 +46,9 @@
         <div class="card-footer">
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
                 {!! $event->project->present()->project_page_icon !!}
+                @if(! GeneralHelper::eventCompleted($event->end_date, $event->timezone))
+                {!! $event->project->lastWorkflow->present()->nfn_project_icon !!}
+                @endif
                 {!! $event->present()->twitter_icon !!}
                 {!! $event->present()->facebook_icon !!}
                 {!! $event->present()->contact_email_icon !!}
