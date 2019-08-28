@@ -109,6 +109,18 @@ class ProjectRepository extends EloquentRepository implements Project
     /**
      * @inheritdoc
      */
+    public function getProjectChartPageById($projectId)
+    {
+        $results = $this->model->withCount('expeditions')->with(['amChart'])->find($projectId);
+
+        $this->resetModel();
+
+        return $results;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getProjectShow($projectId)
     {
         $results = $this->model->withCount('expeditions')->with([

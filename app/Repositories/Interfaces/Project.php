@@ -42,6 +42,14 @@ interface Project extends RepositoryInterface
     public function getProjectPageBySlug($slug);
 
     /**
+     * Get project chart page for image capture.
+     *
+     * @param $projectId
+     * @return mixed
+     */
+    public function getProjectChartPageById($projectId);
+
+    /**
      * @param array $projectIds
      * @return mixed
      */

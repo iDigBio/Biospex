@@ -98,6 +98,20 @@ class ProjectsController extends Controller
         return view('front.project.home', compact('project', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'transcriptionsCount', 'transcribersCount', 'amChartHeight', 'amLegendHeight'));
     }
 
+    public function chartImage(Project $projectContract, $projectId)
+    {
+        $project = $projectContract->getProjectChartPageById($projectId);
+        $amChartHeight = GeneralHelper::amChartHeight($project->expeditions_count);
+        $amLegendHeight = GeneralHelper::amLegendHeight($project->expeditions_count);
+
+        JavaScript::put([
+            'series' => $project->amChart === null ?: $project->amChart->series,
+            'data'   => $project->amChart === null ?: $project->amChart->data,
+        ]);
+
+        return view('front.project.chart', compact('project', 'amChartHeight', 'amLegendHeight'));
+    }
+
     /**
      * State counties for project map.
      *

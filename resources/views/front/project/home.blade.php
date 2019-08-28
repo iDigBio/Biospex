@@ -211,10 +211,14 @@
     <script src="https://www.amcharts.com/lib/4/geodata/usaLow.js"></script>
 
     @if ($project->amChart !== null && $project->amChart->series !== null && $project->amChart->data !== null)
+        <script src="{{ asset('js/amChartTranscript.min.js')}}"></script>
+        <script src="{{ asset('js/amChartMap.min.js')}}"></script>
+        <!--
         <script> $("#script-modal").modal("show"); console.log('show');</script>
         <script src="{{ asset('js/amChartTranscript.min.js')}}"></script>
         <script src="{{ asset('js/amChartMap.min.js')}}"></script>
         <script> $("#script-modal").modal("hide"); console.log('hide');</script>
+        -->
     @endif
 @endsection
 
