@@ -46,7 +46,7 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     public function getExpeditionPublicIndex($sort = null, $order = null, $projectId = null)
     {
         $query = $this->model->with('project')
-            ->has('nfnWorkflow')
+            ->has('nfnWorkflow')->has('nfnActor')
             ->with('nfnWorkflow', 'stat', 'nfnActor');
 
         $results = $projectId === null ? $query->get() : $query->where('project_id', $projectId)->get();
