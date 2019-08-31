@@ -5,8 +5,6 @@ namespace App\Repositories\Eloquent;
 use App\Models\Project as Model;
 use App\Models\ProjectResource;
 use App\Repositories\Interfaces\Project;
-use function foo\func;
-use Illuminate\Support\Carbon;
 
 class ProjectRepository extends EloquentRepository implements Project
 {
@@ -25,7 +23,8 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getPublicProjectIndex($sort = null, $order = null)
     {
-        $results = $this->model->withCount('expeditions')->withCount('events')->with('group')->whereHas('nfnWorkflows')->get();
+        $results = $this->model->withCount('expeditions')
+            ->withCount('events')->with('group')->has('nfnWorkflows')->get();
 
         $this->resetModel();
 
@@ -95,7 +94,7 @@ class ProjectRepository extends EloquentRepository implements Project
             'resources',
             'lastWorkflow',
             'expeditions' => function($query){
-                $query->has('nfnWorkflow')->with('nfnWorkflow', 'stat', 'nfnActor');
+                $query->has('nfnWorkflow')->has('nfnActor')->with('nfnWorkflow', 'stat', 'nfnActor');
             },
             'events' => function ($q) {
                 $q->orderBy('start_date', 'desc');
@@ -196,7 +195,7 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectEventSelect()
     {
-        $results = $this->model->whereHas('nfnWorkflows')->orderBy('title')->get(['id', 'title'])->pluck('title', 'id');
+        $results = $this->model->has('nfnWorkflows')->orderBy('title')->get(['id', 'title'])->pluck('title', 'id');
 
         $this->resetModel();
 
