@@ -399,6 +399,8 @@ class GeneralHelper
             return null;
         }
 
+        return $count * 43;
+
         $default = 30;
         for ($i = 1; $i <= $count; $i++) {
             $default = $default + 35;
