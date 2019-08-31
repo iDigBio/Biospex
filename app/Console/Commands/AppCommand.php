@@ -28,6 +28,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        \Storage::makeDirectory('test', 0644);
+
     }
 }
