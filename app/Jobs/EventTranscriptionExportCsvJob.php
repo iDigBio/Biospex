@@ -63,7 +63,7 @@ class EventTranscriptionExportCsvJob implements ShouldQueue
     {
         try
         {
-            $ids = $eventTranscriptionContract->getEventClassificationIds(3);
+            $ids = $eventTranscriptionContract->getEventClassificationIds($this->eventId);
 
             $transcriptions = $ids->map(function($id) use($panoptesTranscriptionContract) {
                 $transcript = $panoptesTranscriptionContract->findBy('classification_id', $id);
