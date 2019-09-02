@@ -80,9 +80,11 @@ class OcrProcessCommand extends Command
         }
 
         try {
-
             $folderPath = $this->createDir($queue);
             $files = $this->ocrFileContract->getAllOcrQueueFiles($queue->id);
+
+            $queue->total = $files->count();
+            $queue->processed = 0;
 
             if ($queue->status === 1) {
                 $this->ocrComplete->process($queue, $files);
@@ -92,8 +94,15 @@ class OcrProcessCommand extends Command
                 return;
             }
 
-            $files->reject(function ($file) {
-                return $file->status === 1 && !empty($file->ocr);
+            $files->reject(function ($file) use ($queue) {
+                if ($file->status === 1 && ! empty($file->ocr)) {
+                    $queue->processed = $queue->processed + 1;
+                    $queue->save();
+
+                    return true;
+                }
+
+                return false;
             })->each(function ($file) use ($queue, $folderPath) {
                 OcrTesseractJob::dispatch($queue, $file, $folderPath);
             });
@@ -123,7 +132,7 @@ class OcrProcessCommand extends Command
      */
     private function createDir($queue)
     {
-        $folderPath = 'ocr/' . md5($queue->id);
+        $folderPath = 'ocr/'.md5($queue->id);
 
         if (! File::exists($folderPath)) {
             Storage::makeDirectory($folderPath);
