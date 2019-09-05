@@ -98,6 +98,13 @@ class ProjectsController extends Controller
         return view('front.project.home', compact('project', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'transcriptionsCount', 'transcribersCount', 'amChartHeight', 'amLegendHeight'));
     }
 
+    /**
+     * Create chart image for project home page.
+     *
+     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param $projectId
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function chartImage(Project $projectContract, $projectId)
     {
         $project = $projectContract->getProjectChartPageById($projectId);
