@@ -49,8 +49,14 @@ let transcripts = am4core.createFromConfig(
             "exportable": false
         },
         "legend": {
-            "parent": legendContainer,
-            "contentAlign": "left"
+            "labels": {
+                "maxWidth": 450,
+                "truncate": true
+            },
+            "itemContainers": {
+                "tooltipText": "{name}"
+            },
+            "parent": legendContainer
         },
         "dateFormatter": {
             "inputDateFormat": "yyyy-MM-dd"
