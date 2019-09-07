@@ -29,6 +29,7 @@
                 </div>
             </div>
         </div>
+        @include('common.script-modal')
     @endif
 @endsection
 @section('custom-script')
@@ -37,7 +38,9 @@
     <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
 
     @if ($project->amChart !== null && $project->amChart->series !== null && $project->amChart->data !== null)
+        <script> $("#script-modal").modal("show");</script>
         <script src="{{ asset('js/amChartTranscript.min.js')}}"></script>
+        <script> $("#script-modal").modal("hide");</script>
     @endif
 @endsection
 

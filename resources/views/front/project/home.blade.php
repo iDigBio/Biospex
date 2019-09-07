@@ -190,17 +190,6 @@
                     {!! $project->present()->project_chart !!}
                 </div>
             </div>
-        <!--
-            <div class="col-sm-10 mx-auto mt-8">
-                <h1 class="text-center content-header text-uppercase" id="expeditions">{{ __('pages.transcriptions') }}</h1>
-                <div class="jumbotron box-shadow pt-2 pb-5">
-                    <div id="transcriptDiv"
-                         style=" width: 100%; height: {{ $amChartHeight }}px; color: #000000; font-size: 0.8em"></div>
-                    <div id="transcriptLegendDiv"
-                         style="width: 100%; height: {{ $amLegendHeight }}px; color: #000000; font-size: 0.8em"></div>
-                </div>
-            </div>
-            -->
         </div>
 
         <div class="row my-5">
@@ -220,13 +209,6 @@
 
 @endsection
 @section('custom-script')
-    <!--
-    <script src="//www.amcharts.com/lib/4/core.js"></script>
-    <script src="//www.amcharts.com/lib/4/charts.js"></script>
-    <script src="//www.amcharts.com/lib/4/maps.js"></script>
-    <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
-    <script src="https://www.amcharts.com/lib/4/geodata/usaLow.js"></script>
-    -->
     <script src="//www.amcharts.com/lib/4/core.js"></script>
     <script src="//www.amcharts.com/lib/4/maps.js"></script>
     <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
@@ -234,12 +216,6 @@
 
     @if ($project->amChart !== null && $project->amChart->series !== null && $project->amChart->data !== null)
         <script src="{{ asset('js/amChartMap.min.js')}}"></script>
-        <!--
-        <script> $("#script-modal").modal("show"); console.log('show');</script>
-        <script src="{{ asset('js/amChartTranscript.min.js')}}"></script>
-        <script src="{{ asset('js/amChartMap.min.js')}}"></script>
-        <script> $("#script-modal").modal("hide"); console.log('hide');</script>
-        -->
     @endif
 @endsection
 

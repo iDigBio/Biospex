@@ -421,6 +421,6 @@ class ProjectPresenter extends Presenter
             return '<img src="'. $url . '" class="img-fluid" alt="' . $alt . '">';
         }
 
-        return __('pages.project_chart_missing');
+        return __('html.project_chart_missing');
     }
 }

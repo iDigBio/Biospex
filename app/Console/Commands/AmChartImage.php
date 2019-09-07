@@ -39,9 +39,7 @@ class AmChartImage extends Command
     }
 
     /**
-     * Execute the console command.
-     *
-     * @return mixed
+     * Execute command.
      */
     public function handle()
     {
