@@ -28,7 +28,7 @@
                                         class="form-control custom-select {{ ($errors->has('group_id')) ? 'is-invalid' : '' }}"
                                         required>
                                     @foreach($groupOptions as $key => $name)
-                                        <option {{ $key === old('group_id', $project->group_id) ?
+                                        <option {{ $key == old('group_id', $project->group_id) ?
                                         ' selected=selected' : '' }} value="{{ $key }}">{{ $name }}</option>
                                     @endforeach
                                 </select>
@@ -41,7 +41,7 @@
                                         class="form-control custom-select {{ ($errors->has('status')) ? 'is-invalid' : '' }}"
                                         required>
                                     @foreach($statusOptions as $key => $name)
-                                        <option value="{{ $key }}"{{ $key === old('status', $project->status) ?
+                                        <option value="{{ $key }}" {{ $key == old('status', $project->status) ?
                                         ' selected=selected' : '' }}>{{ $name }}</option>
                                     @endforeach
                                 </select>
@@ -232,7 +232,7 @@
                                     {{ $disableWorkflow }}
                                     required>
                                 @foreach($workflowOptions as $key => $name)
-                                    <option value="{{ $key }}"{{ $key === old('workflow_id', $project->workflow_id) ? ' selected=selected' : '' }}>{{ $name }}</option>
+                                    <option value="{{ $key }}" {{ $key == old('workflow_id', $project->workflow_id) ? ' selected=selected' : '' }}>{{ $name }}</option>
                                 @endforeach
                             </select>
                             @if( ! empty($disableWorkflow))

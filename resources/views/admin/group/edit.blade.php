@@ -31,7 +31,7 @@
                                 class="form-control custom-select {{ ($errors->has('owner')) ? 'is-invalid' : '' }}"
                                 required>
                             @foreach($users as $key => $name)
-                                <option value="{{ $key }}" {{ $key === old('owner', Auth::id()) ?
+                                <option value="{{ $key }}" {{ $key == old('owner', Auth::id()) ?
                                         ' selected=selected' : '' }}>{{ $name }}</option>
                             @endforeach
                         </select>

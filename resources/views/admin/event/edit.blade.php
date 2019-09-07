@@ -30,7 +30,7 @@
                                         class="form-control custom-select {{ ($errors->has('project_id')) ? 'is-invalid' : '' }}"
                                         required>
                                     @foreach($projects as $key => $title)
-                                        <option {{ $key === old('project_id', $event->project_id) ?
+                                        <option {{ $key == old('project_id', $event->project_id) ?
                                         ' selected=selected' : '' }} value="{{ $key }}">{{ $title }}</option>
                                     @endforeach
                                 </select>
@@ -103,7 +103,7 @@
                                     class="form-control custom-select {{ ($errors->has('timezone')) ? 'is-invalid' : '' }}"
                                     required>
                                 @foreach($timezones as $key => $value)
-                                    <option {{ $key === old('timezone', $event->timezone) ?
+                                    <option {{ $key == old('timezone', $event->timezone) ?
                                         ' selected=selected' : '' }} value="{{ $key }}">{{ $value }}</option>
                                 @endforeach
                             </select>
