@@ -47,7 +47,7 @@
                                         class="form-control custom-select {{ ($errors->has('timezone')) ? 'is-invalid' : '' }}"
                                         required>
                                     @foreach($timezones as $key => $value)
-                                        <option {{ $key === old('timezone', $user->profile->timezone) ?
+                                        <option {{ $key == old('timezone', $user->profile->timezone) ?
                                         ' selected=selected' : '' }} value="{{ $key }}">{{ $value }}</option>
                                     @endforeach
                                 </select>
