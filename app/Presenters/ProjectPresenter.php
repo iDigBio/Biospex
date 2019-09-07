@@ -406,4 +406,21 @@ class ProjectPresenter extends Presenter
             data-title="'.__('pages.ocr_reprocess').'?" data-content="'.__('messages.ocr_reprocess_message', ['record' => __('pages.project')]).'">
             <i class="fas fa-redo-alt fa-2x"></i></a>';
     }
+
+    /**
+     * Display project transcription chart if available.
+     *
+     * @return array|string|null
+     */
+    public function projectChart()
+    {
+        $path = config('config.charts_dir') . '/' . $this->model->id . '.png';
+        if (\Storage::exists($path)) {
+            $url = \Storage::url("charts/{$this->model->id}.png");
+            $alt = $this->model->title . ' Transcription Chart';
+            return '<img src="'. $url . '" class="img-fluid" alt="' . $alt . '">';
+        }
+
+        return __('pages.project_chart_missing');
+    }
 }

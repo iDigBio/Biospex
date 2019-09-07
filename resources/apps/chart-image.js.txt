@@ -1,0 +1,90 @@
+const selenium = require('selenium-webdriver');
+const command = require('selenium-webdriver/lib/command');
+const chrome = require('selenium-webdriver/chrome');
+let projectId = process.argv[2];
+
+// '--disable-dev-shm-usage'
+// tmpfs                                       2019764         8   2019756   1% /dev/shm
+const chromeOptions = new chrome.Options()
+    .addArguments('--no-sandbox', '--headless', '--start-maximized', '--ignore-certificate-errors',
+        '--disable-session-crashed-bubble', '--disable-hang-monitor', '--disable-gpu', '--enable-automation',
+        '--disable-infobars', '--disable-notifications', "--verbose", "--log-path=./storage/logs/reconcile.log")
+    .setUserPreferences({
+        'profile.default_content_settings.popups': 0, // disable download file dialog
+        'download.default_directory': '/tmp/downloads', // default file download location
+        "download.prompt_for_download": false,
+        'download.directory_upgrade': true,
+        'safebrowsing.enabled': false,
+        'plugins.always_open_pdf_externally': true,
+        'plugins.plugins_disabled': ["Chrome PDF Viewer"]
+    })
+    .windowSize({width: 1600, height: 1200});
+
+const driver = new selenium.Builder()
+    .withCapabilities({
+        browserName: 'chrome',
+        javascriptEnabled: true,
+        acceptSslCerts: true,
+        path: '/usr/bin/chromedriver'
+    })
+    .setChromeOptions(chromeOptions)
+    .build();
+
+driver.manage().window().maximize();
+driver.manage().setTimeouts({script: 60000, pageLoad: 60000, implicit: 90000});
+
+driver.getSession()
+    .then(session => {
+        const cmd = new command.Command("SEND_COMMAND")
+            .setParameter("cmd", "Page.setDownloadBehavior")
+            .setParameter("params", {'behavior': 'allow', 'downloadPath': './storage/app/public/charts/' + projectId});
+        driver.getExecutor().defineCommand("SEND_COMMAND", "POST", `/session/${session.getId()}/chromium/send_command`);
+        return driver.execute(cmd);
+    });
+
+(async () => {
+    let url = 'APP_URL/projects/' + projectId + '/chart-image/';
+    try {
+        await driver.get(url);
+        await driver.executeAsyncScript(() => {
+
+            let callback = arguments[arguments.length - 1],
+                exportChart = () => {
+                    transcripts.exporting.events.on('exportfinished', () => {
+                        setTimeout(callback, 5000);
+                    });
+
+                    // Start the export
+                    transcripts.exporting.extraSprites.push({
+                        "sprite": legendContainer,
+                        "position": "bottom",
+                        "marginTop": 20
+                    });
+
+                    transcripts.exporting.export('png');
+                },
+                startExportWhenReady = () => {
+
+                    if (transcripts.isReady()) {
+                        exportChart();
+                    } else {
+                        transcripts.events.on('ready', exportChart);
+                    }
+                };
+
+            if (document.readyState === 'complete') {
+                startExportWhenReady();
+            } else {
+                document.addEventListener('DOMContentLoaded', startExportWhenReady);
+            }
+        })
+            .then(() => {
+                console.log(true);
+                driver.quit();
+            });
+    }catch (e) {
+        console.log(e);
+    } finally {
+        await driver.quit();
+    }
+})();

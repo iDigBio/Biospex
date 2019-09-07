@@ -16,7 +16,7 @@ public/css/working.css
 tests/_output/
 backups
 
-biospex-heat-map.json
+chart-image.js
 laravel-echo-server.json
 panoptes-pusher.js
 .env.behat

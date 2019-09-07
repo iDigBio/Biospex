@@ -172,6 +172,7 @@ return [
     'projects'                       => 'Projects',
     'projects_none'                  => 'No Projects Exist',
     'project_advertise'              => 'Download Advertisement Manifest',
+    'project_chart_missing'          => "<h3>Project chart is not available at this time. Please use link above to view active chart.</h3>",
     'project_explore_subjects'       => 'Explore Project Subjects',
     'project_import'                 => 'Import Project Subjects',
     'project_map_title'              => 'Heat Map Transcribed Specimens',

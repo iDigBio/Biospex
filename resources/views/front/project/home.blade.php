@@ -38,8 +38,8 @@
 
                 <div class="col-12 col-md-10 offset-md-1">
                     <div class="col-5 float-right">
-                    <img src="{{ $project->logo->url() }}" class="img-fluid"
-                         alt="{{ $project->title }} logo">
+                        <img src="{{ $project->logo->url() }}" class="img-fluid"
+                             alt="{{ $project->title }} logo">
                     </div>
                     @if($project->contact !== null)
                         <h3>{{ __('pages.contact') }}</h3>
@@ -179,6 +179,19 @@
     @if ($project->amChart !== null && $project->amChart->series !== null && $project->amChart->data !== null)
         <div class="row my-5">
             <div class="col-sm-10 mx-auto mt-8">
+                <h1 class="text-center content-header text-uppercase"
+                    id="expeditions">{{ __('pages.transcriptions') }}</h1>
+                <div class="d-flex justify-content-center col-sm-12 mb-4">
+                    <a href="{{ route('front.projects.image', $project->id) }}" target="_blank"
+                       class="btn btn-primary mr-4 text-uppercase">{{ __('View Active Chart') }}</a>
+                </div>
+                <hr class="header mx-auto">
+                <div class="jumbotron box-shadow pt-2 pb-5 text-center">
+                    {!! $project->present()->project_chart !!}
+                </div>
+            </div>
+        <!--
+            <div class="col-sm-10 mx-auto mt-8">
                 <h1 class="text-center content-header text-uppercase" id="expeditions">{{ __('pages.transcriptions') }}</h1>
                 <div class="jumbotron box-shadow pt-2 pb-5">
                     <div id="transcriptDiv"
@@ -187,15 +200,18 @@
                          style="width: 100%; height: {{ $amLegendHeight }}px; color: #000000; font-size: 0.8em"></div>
                 </div>
             </div>
+            -->
         </div>
 
         <div class="row my-5">
             <div class="col-sm-10 mx-auto mt-8">
-                <h1 class="text-center content-header text-uppercase" id="expeditions">{{ __('pages.project_map_title') }}</h1>
+                <h1 class="text-center content-header text-uppercase"
+                    id="expeditions">{{ __('pages.project_map_title') }}</h1>
                 <div class="jumbotron box-shadow pt-2 pb-5">
                     <div id="mapDiv" class="d-flex" style="width:100%; height: 500px"></div>
                     <div id="mapLegendDiv" style="width:100%; height: 100px"></div>
-                    <div class="hide" id="projectUrl" data-href="{{ route('front.projects.state', [$project->id]) }}"></div>
+                    <div class="hide" id="projectUrl"
+                         data-href="{{ route('front.projects.state', [$project->id]) }}"></div>
                 </div>
             </div>
         </div>
@@ -204,14 +220,19 @@
 
 @endsection
 @section('custom-script')
+    <!--
     <script src="//www.amcharts.com/lib/4/core.js"></script>
     <script src="//www.amcharts.com/lib/4/charts.js"></script>
     <script src="//www.amcharts.com/lib/4/maps.js"></script>
     <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
     <script src="https://www.amcharts.com/lib/4/geodata/usaLow.js"></script>
+    -->
+    <script src="//www.amcharts.com/lib/4/core.js"></script>
+    <script src="//www.amcharts.com/lib/4/maps.js"></script>
+    <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
+    <script src="https://www.amcharts.com/lib/4/geodata/usaLow.js"></script>
 
     @if ($project->amChart !== null && $project->amChart->series !== null && $project->amChart->data !== null)
-        <script src="{{ asset('js/amChartTranscript.min.js')}}"></script>
         <script src="{{ asset('js/amChartMap.min.js')}}"></script>
         <!--
         <script> $("#script-modal").modal("show"); console.log('show');</script>
