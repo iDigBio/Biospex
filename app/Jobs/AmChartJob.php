@@ -96,9 +96,9 @@ class AmChartJob implements ShouldQueue
         $this->amChartData = array_values($this->amChartData);
 
         $data = ['series' => $this->projectChartSeries, 'data' => $this->amChartData];
-        $amChartContract->updateOrCreate(['project_id' => $project->id], $data);
+        $amChart = $amChartContract->updateOrCreate(['project_id' => $project->id], $data);
 
-        AmChartImageJob::dispatch($project);
+        AmChartImageJob::dispatch($amChart);
 
         $this->delete();
     }

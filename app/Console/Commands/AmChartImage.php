@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\AmChartImageJob;
-use App\Repositories\Interfaces\Project;
+use App\Repositories\Interfaces\AmChart;
 use Illuminate\Console\Command;
 
 class AmChartImage extends Command
@@ -13,7 +13,7 @@ class AmChartImage extends Command
      *
      * @var string
      */
-    protected $signature = 'amchart:image {projectId}';
+    protected $signature = 'amchart:image {projectIds?}';
 
     /**
      * The console command description.
@@ -23,19 +23,19 @@ class AmChartImage extends Command
     protected $description = 'Command description';
 
     /**
-     * @var \App\Repositories\Interfaces\Project
+     * @var \App\Repositories\Interfaces\AmChart
      */
-    private $projectContract;
+    private $amChartContract;
 
     /**
      * Create a new command instance.
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Repositories\Interfaces\AmChart $amChartContract
      */
-    public function __construct(Project $projectContract)
+    public function __construct(AmChart $amChartContract)
     {
         parent::__construct();
-        $this->projectContract = $projectContract;
+        $this->amChartContract = $amChartContract;
     }
 
     /**
@@ -43,9 +43,12 @@ class AmChartImage extends Command
      */
     public function handle()
     {
-        $projectId = $this->argument('projectId');
-        $project = $this->projectContract->find($projectId);
+        $amCharts = $this->argument('projectIds') === null ?
+            $this->amChartContract->all() :
+            $this->amChartContract->whereIn('project_id', explode(',', $this->argument('projectIds')), ['project_id']);
 
-        AmChartImageJob::dispatch($project);
+        $amCharts->each(function($amChart) {
+            AmChartImageJob::dispatch($amChart);
+        });
     }
 }

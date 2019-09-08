@@ -71,6 +71,6 @@ class NfnWorkflowUpdate extends Command
     {
         return null === $this->expeditionIds ?
             $nfnWorkflow->all() :
-            $nfnWorkflow->getWhereIn('expedition_id', $this->expeditionIds);
+            $nfnWorkflow->whereIn('expedition_id', $this->expeditionIds);
     }
 }

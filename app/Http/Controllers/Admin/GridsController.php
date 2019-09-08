@@ -177,7 +177,7 @@ class GridsController extends Controller
 
         $subjectIds = explode(',', request()->get('id'));
 
-        $subjects = $subjectContract->getWhereIn('_id', $subjectIds);
+        $subjects = $subjectContract->whereIn('_id', $subjectIds);
 
         $subjects->reject(function ($subject) {
             foreach ($subject->expedition_ids as $expeditionId)

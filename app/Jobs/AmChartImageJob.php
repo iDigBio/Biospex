@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\Project;
+use App\Models\AmChart;
 use App\Notifications\JobError;
 use App\Repositories\Interfaces\User;
 use Illuminate\Bus\Queueable;
@@ -17,19 +17,20 @@ class AmChartImageJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var \App\Models\Project
+     * @var \App\Models\AmChart
      */
-    private $project;
+    private $amChart;
 
     /**
      * Create a new job instance.
      *
-     * @param \App\Models\Project $project
+     * @param \App\Models\AmChart $amChart
      */
-    public function __construct(Project $project)
+    public function __construct(AmChart $amChart)
     {
-        $this->project = $project;
+        $this->amChart = $amChart;
         $this->onQueue(config('config.chart_tube'));
+        $this->amChart = $amChart;
     }
 
     /**
@@ -41,22 +42,22 @@ class AmChartImageJob implements ShouldQueue
     {
         try {
             $dir = config('config.charts_dir');
-            $projectFolderPath = $dir.'/'.$this->project->id;
-            $projectFilePath = $dir.'/'.$this->project->id.'.png';
-            $amChartFilePath = $dir.'/'.$this->project->id.'/amCharts.png';
+            $projectFolderPath = $dir.'/'.$this->amChart->project_id;
+            $projectFilePath = $dir.'/'.$this->amChart->project_id.'.png';
+            $amChartFilePath = $dir.'/'.$this->amChart->project_id.'/amCharts.png';
 
             if (! Storage::exists($projectFilePath)) {
                 Storage::makeDirectory($projectFolderPath);
             }
 
-            exec("node chart-image.js {$this->project->id}", $output);
+            exec("node chart-image.js {$this->amChart->project_id}", $output);
 
             if ($output[0] == "true") {
                 if (Storage::exists($projectFilePath)) {
                     Storage::delete($projectFilePath);
                 }
                 Storage::move($amChartFilePath, $projectFilePath);
-                Storage::deleteDirectory($dir.'/'.$this->project->id);
+                Storage::deleteDirectory($dir.'/'.$this->amChart->project_id);
 
                 $this->delete();
 
@@ -67,7 +68,7 @@ class AmChartImageJob implements ShouldQueue
 
         } catch (\Exception $e) {
             $user = $userContract->find(1);
-            $user->notify(new JobError(__FILE__, ['Project Id: ' . $this->project->id, $e->getMessage()]));
+            $user->notify(new JobError(__FILE__, ['Project Id: ' . $this->amChart->project_id, $e->getMessage()]));
         }
     }
 }
