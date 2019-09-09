@@ -25,11 +25,6 @@ class AmChartJob implements ShouldQueue
     public $timeout = 3600;
 
     /**
-     * @var PanoptesTranscription
-     */
-    protected $transcriptionContract;
-
-    /**
      * @var
      */
     protected $projectId;
@@ -101,7 +96,9 @@ class AmChartJob implements ShouldQueue
         $this->amChartData = array_values($this->amChartData);
 
         $data = ['series' => $this->projectChartSeries, 'data' => $this->amChartData];
-        $amChartContract->updateOrCreate(['project_id' => $project->id], $data);
+        $amChart = $amChartContract->updateOrCreate(['project_id' => $project->id], $data);
+
+        AmChartImageJob::dispatch($amChart);
 
         $this->delete();
     }

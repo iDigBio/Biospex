@@ -22,6 +22,7 @@ return [
     'admin_group'    => env('ADMIN_GROUP', 'Admin'),
     'admin_group_id' => env('ADMIN_GROUP_ID', 1),
 
+    'charts_dir'                   => 'public/charts',
     'scratch_dir'                  => 'scratch',
     'export_dir'                   => 'exports',
     'reports_dir'                  => 'reports',

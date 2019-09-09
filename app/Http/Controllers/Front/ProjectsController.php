@@ -71,9 +71,6 @@ class ProjectsController extends Controller
         $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
         $transcribersCount = CountHelper::projectTranscriberCount($project->id);
 
-        $amChartHeight = GeneralHelper::amChartHeight($project->expeditions->count());
-        $amLegendHeight = GeneralHelper::amLegendHeight($project->expeditions->count());
-
         $results = $stateCountyContract->getStateTranscriptCount($project->id);
         $states = $results->groupBy('state_num')->reject(function ($row, $key) {
             return empty($key);
@@ -90,12 +87,31 @@ class ProjectsController extends Controller
 
         JavaScript::put([
             'max'    => $max,
-            'states' => $states->toJson(),
+            'states' => $states->toJson()
+        ]);
+
+        return view('front.project.home', compact('project', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'transcriptionsCount', 'transcribersCount'));
+    }
+
+    /**
+     * Create chart image for project home page.
+     *
+     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param $projectId
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function chartImage(Project $projectContract, $projectId)
+    {
+        $project = $projectContract->getProjectChartPageById($projectId);
+        $amChartHeight = GeneralHelper::amChartHeight($project->expeditions_count);
+        $amLegendHeight = GeneralHelper::amLegendHeight($project->expeditions_count);
+
+        JavaScript::put([
             'series' => $project->amChart === null ?: $project->amChart->series,
             'data'   => $project->amChart === null ?: $project->amChart->data,
         ]);
 
-        return view('front.project.home', compact('project', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'transcriptionsCount', 'transcribersCount', 'amChartHeight', 'amLegendHeight'));
+        return view('front.project.chart', compact('project', 'amChartHeight', 'amLegendHeight'));
     }
 
     /**

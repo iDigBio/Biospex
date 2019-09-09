@@ -399,12 +399,7 @@ class GeneralHelper
             return null;
         }
 
-        $default = 30;
-        for ($i = 1; $i <= $count; $i++) {
-            $default = $default + 35;
-        }
-
-        return $default;
+        return $count * 25;
     }
 
     /**

@@ -13,7 +13,7 @@ interface RepositoryInterface
 
     public function findWith($resourceId, array $with = []);
 
-    public function getWhereIn($field, array $values, array $columns = ['*']);
+    public function whereIn($field, array $values, array $columns = ['*']);
 
     public function create(array $data);
 

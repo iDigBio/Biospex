@@ -17,6 +17,7 @@ let transcripts = am4core.createFromConfig(
                 "count": 1
             },
             "tooltip": {
+                "exportable": false,
                 "background": {
                     "fill": "#07BEB8",
                     "strokeWidth": 0
@@ -44,9 +45,17 @@ let transcripts = am4core.createFromConfig(
             }
         },
         "scrollbarX": {
-            "type": "Scrollbar"
+            "type": "Scrollbar",
+            "exportable": false
         },
         "legend": {
+            "labels": {
+                "maxWidth": 450,
+                "truncate": true
+            },
+            "itemContainers": {
+                "tooltipText": "{name}"
+            },
             "parent": legendContainer
         },
         "dateFormatter": {

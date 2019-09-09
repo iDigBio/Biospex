@@ -108,7 +108,7 @@ abstract class Repository
      * @return mixed
      * @throws \Exception
      */
-    public function getWhereIn($field, array $values, array $columns = ['*'])
+    public function whereIn($field, array $values, array $columns = ['*'])
     {
         $results = $this->model->whereIn($field, $values)->get($columns);
 

@@ -20,7 +20,8 @@ class AppCommand extends Command
     /**
      * AppCommand constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
     }
 
@@ -47,4 +48,5 @@ class AppCommand extends Command
         });
         */
     }
+
 }
