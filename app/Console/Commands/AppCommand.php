@@ -30,13 +30,15 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $expedition = 151;
-        $workflow = 7955;
+        $expedition = 215;
+        $workflow = 11705;
 
         $path = \Storage::path(config('config.nfn_downloads_dir') . '/' . $expedition . '.csv');
-        $client_id = "PANOPTES_CLIENT_ID=".config('config.nfnApi.clientId');
-        $client_secret = "PANOPTES_CLIENT_SECRET=".config('config.nfnApi.clientSecret');
-        shell_exec("$client_id $client_secret sudo panoptes workflow download-classifications $workflow $path");
+        //putenv("PANOPTES_CLIENT_ID=".config('config.nfnApi.clientId'));
+        //putenv("PANOPTES_CLIENT_SECRET=".config('config.nfnApi.clientSecret'));
+        //shell_exec("sudo panoptes workflow download-classifications $workflow $path");
+        exec("./panoptes.sh $workflow $path", $output);
+        dd($output);
 
         /*
         $expeditions = collect([
