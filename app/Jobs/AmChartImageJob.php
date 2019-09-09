@@ -28,7 +28,6 @@ class AmChartImageJob implements ShouldQueue
      */
     public function __construct(AmChart $amChart)
     {
-        $this->amChart = $amChart;
         $this->onQueue(config('config.chart_tube'));
         $this->amChart = $amChart;
     }
