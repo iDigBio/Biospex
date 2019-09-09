@@ -45,7 +45,7 @@ class AmChartImage extends Command
     {
         $amCharts = $this->argument('projectIds') === null ?
             $this->amChartContract->all() :
-            $this->amChartContract->whereIn('project_id', explode(',', $this->argument('projectIds')), ['project_id']);
+            $this->amChartContract->whereIn('project_id', explode(',', $this->argument('projectIds')), ['id']);
 
         $amCharts->each(function($amChart) {
             AmChartImageJob::dispatch($amChart);

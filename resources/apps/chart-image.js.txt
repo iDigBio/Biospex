@@ -3,8 +3,6 @@ const command = require('selenium-webdriver/lib/command');
 const chrome = require('selenium-webdriver/chrome');
 let projectId = process.argv[2];
 
-// '--disable-dev-shm-usage'
-// tmpfs                                       2019764         8   2019756   1% /dev/shm
 const chromeOptions = new chrome.Options()
     .addArguments('--no-sandbox', '--headless', '--start-maximized', '--ignore-certificate-errors',
         '--disable-session-crashed-bubble', '--disable-hang-monitor', '--disable-gpu', '--enable-automation',
@@ -46,6 +44,12 @@ driver.getSession()
     let url = 'APP_URL/projects/' + projectId + '/chart-image/';
     try {
         await driver.get(url);
+    } catch (e) {
+        console.log(e);
+        await driver.quit();
+    }
+
+    try {
         await driver.executeAsyncScript(() => {
 
             let callback = arguments[arguments.length - 1],
@@ -77,14 +81,12 @@ driver.getSession()
             } else {
                 document.addEventListener('DOMContentLoaded', startExportWhenReady);
             }
-        })
-            .then(() => {
-                console.log(true);
-                driver.quit();
-            });
+        }).then(() => {
+          console.log(true);
+          driver.quit();
+        });
     }catch (e) {
         console.log(e);
-    } finally {
         await driver.quit();
     }
 })();
