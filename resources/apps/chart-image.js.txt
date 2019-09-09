@@ -44,6 +44,12 @@ driver.getSession()
     let url = 'APP_URL/projects/' + projectId + '/chart-image/';
     try {
         await driver.get(url);
+    } catch (e) {
+        console.log(e);
+        await driver.quit();
+    }
+
+    try {
         await driver.executeAsyncScript(() => {
 
             let callback = arguments[arguments.length - 1],
@@ -75,14 +81,12 @@ driver.getSession()
             } else {
                 document.addEventListener('DOMContentLoaded', startExportWhenReady);
             }
-        })
-            .then(() => {
-                console.log(true);
-                driver.quit();
-            });
+        }).then(() => {
+          console.log(true);
+          driver.quit();
+        });
     }catch (e) {
         console.log(e);
-    } finally {
         await driver.quit();
     }
 })();
