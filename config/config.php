@@ -186,6 +186,7 @@ return [
         'apiUri'       => env('NFN_API_URI'),
         'tokenUri'     => env('NFN_API_TOKEN_URI'),
         'redirectUri'  => env('NFN_REDIRECT_URI'),
+        'scopes' => env('NFN_API_SCOPES')
     ],
 
     'nfnSearch' => [
