@@ -25,23 +25,26 @@ class NfnApi extends HttpRequest
 
     /**
      * Set provider for Notes From Nature
+     *
      * @param bool $auth
      */
     public function setProvider($auth = true)
     {
-        $config = ! $auth ? [] :
-            [
-                'clientId'       => config('config.nfnApi.clientId'),
-                'clientSecret'   => config('config.nfnApi.clientSecret'),
-                'redirectUri'    => config('config.nfnApi.redirectUri'),
-                'urlAccessToken' => config('config.nfnApi.tokenUri'),
-            ];
+        $config = ! $auth ? [] : [
+            'clientId'       => config('config.nfnApi.clientId'),
+            'clientSecret'   => config('config.nfnApi.clientSecret'),
+            'redirectUri'    => config('config.nfnApi.redirectUri'),
+            'urlAccessToken' => config('config.nfnApi.tokenUri'),
+            'scope'          => config('config.nfnApi.scopes'),
+
+        ];
 
         $this->setHttpProvider($config);
     }
 
     /**
      * Get generic provider
+     *
      * @return GenericProvider
      */
     public function getProvider()
@@ -59,15 +62,12 @@ class NfnApi extends HttpRequest
      */
     public function buildAuthorizedRequest($method, $uri, array $extra = [])
     {
-        $options = array_merge(
-            [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Accept'       => 'application/vnd.api+json; version=1'
-                ]
+        $options = array_merge([
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Accept'       => 'application/vnd.api+json; version=1',
             ],
-            $extra
-        );
+        ], $extra);
 
         return $this->buildAuthenticatedRequest($method, $uri, $options);
     }
@@ -94,7 +94,7 @@ class NfnApi extends HttpRequest
      */
     public function getProjectUri($projectId)
     {
-        return config('config.nfnApi.apiUri') . '/projects/' . $projectId;
+        return config('config.nfnApi.apiUri').'/projects/'.$projectId;
     }
 
     /**
@@ -105,7 +105,7 @@ class NfnApi extends HttpRequest
      */
     public function getWorkflowUri($workflowId)
     {
-        return config('config.nfnApi.apiUri') . '/workflows/' . $workflowId;
+        return config('config.nfnApi.apiUri').'/workflows/'.$workflowId;
     }
 
     /**
@@ -116,7 +116,7 @@ class NfnApi extends HttpRequest
      */
     public function getSubjectUri($subjectId)
     {
-        return config('config.nfnApi.apiUri') . '/subjects/' . $subjectId;
+        return config('config.nfnApi.apiUri').'/subjects/'.$subjectId;
     }
 
     /**
@@ -127,7 +127,7 @@ class NfnApi extends HttpRequest
      */
     public function getUserUri($userId)
     {
-        return config('config.nfnApi.apiUri') . '/users/' . $userId;
+        return config('config.nfnApi.apiUri').'/users/'.$userId;
     }
 
     /**
@@ -138,7 +138,7 @@ class NfnApi extends HttpRequest
      */
     public function buildClassificationCsvUri($workflowId)
     {
-        return config('config.nfnApi.apiUri') . '/workflows/' . $workflowId . '/classifications_export';
+        return config('config.nfnApi.apiUri').'/workflows/'.$workflowId.'/classifications_export';
     }
 
     /**
@@ -149,10 +149,6 @@ class NfnApi extends HttpRequest
      */
     public function checkForRequiredVariables($expedition)
     {
-        return null === $expedition
-            || ! isset($expedition->nfnWorkflow)
-            || null === $expedition->nfnWorkflow->workflow
-            || null === $expedition->nfnWorkflow->project
-            || in_array($expedition->id, $this->nfnSkipCsv, false);
+        return null === $expedition || ! isset($expedition->nfnWorkflow) || null === $expedition->nfnWorkflow->workflow || null === $expedition->nfnWorkflow->project || in_array($expedition->id, $this->nfnSkipCsv, false);
     }
 }
