@@ -54,7 +54,7 @@
                             <p><a href="{{ $project->organization_webiste }}"
                                   target="_blank">{{ $project->organization }}</a></p>
                         @else
-                            <p>{{ $project->project_partners }}</p>
+                            <p>{{ $project->organization }}</p>
                         @endif
                     @endif
 

@@ -45,7 +45,7 @@ class AmChartImageJob implements ShouldQueue
             $projectFilePath = $dir.'/'.$this->amChart->project_id.'.png';
             $amChartFilePath = $dir.'/'.$this->amChart->project_id.'/amCharts.png';
 
-            if (! Storage::exists($projectFilePath)) {
+            if (! Storage::exists($projectFolderPath)) {
                 Storage::makeDirectory($projectFolderPath);
             }
 
@@ -56,7 +56,7 @@ class AmChartImageJob implements ShouldQueue
                     Storage::delete($projectFilePath);
                 }
                 Storage::move($amChartFilePath, $projectFilePath);
-                Storage::deleteDirectory($dir.'/'.$this->amChart->project_id);
+                Storage::deleteDirectory($projectFolderPath);
 
                 $this->delete();
 
