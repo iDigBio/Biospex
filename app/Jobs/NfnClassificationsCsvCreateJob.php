@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
-use App\Services\Api\NfnApi;
+use App\Services\Api\NfnApiService;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Bus\Queueable;
@@ -53,44 +53,21 @@ class NfnClassificationsCsvCreateJob implements ShouldQueue
      * Handle the job.
      *
      * @param Expedition $expeditionContract
-     * @param NfnApi $api
+     * @param \App\Services\Api\NfnApiService $nfnApiService
      * @param User $userContract
      */
     public function handle(
         Expedition $expeditionContract,
-        NfnApi $api,
+        NfnApiService $nfnApiService,
         User $userContract
     )
     {
         try
         {
-            /**
-             * @param array $expeditions
-             * @return \Generator
-             */
-            $requests = function ($expeditions) use ($api)
-            {
-                foreach ($expeditions as $expedition)
-                {
-                    if ($api->checkForRequiredVariables($expedition))
-                    {
-                        continue;
-                    }
-
-                    $uri = $api->buildClassificationCsvUri($expedition->nfnWorkflow->workflow);
-                    $request = $api->buildAuthorizedRequest('POST', $uri, ['body' => '{"media":{"content_type":"text/csv"}}']);
-
-                    yield $expedition->id => $request;
-                }
-            };
-
             $expeditions = $expeditionContract->getExpeditionsForNfnClassificationProcess($this->expeditionIds);
 
-            $api->setProvider();
-            $api->checkAccessToken('nfnToken');
-
             $expeditionIds = [];
-            $responses = $api->poolBatchRequest($requests($expeditions));
+            $responses = $nfnApiService->nfnClassificationCreate($expeditions);
             foreach ($responses as $index => $response)
             {
                 if ($response instanceof ServerException || $response instanceof ClientException)

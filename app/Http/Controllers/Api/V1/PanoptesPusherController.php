@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Jobs\PusherTranscriptionsJob;
+use App\Jobs\PusherEventTranscriptionJob;
+use App\Jobs\PusherWeDigBioDashboardJob;
 use App\Repositories\Interfaces\NfnWorkflow;
 use Illuminate\Http\Request;
 
@@ -46,7 +47,8 @@ class PanoptesPusherController extends ApiController
             return;
         }
 
-        PusherTranscriptionsJob::dispatch($request->getContent());
+        PusherEventTranscriptionJob::dispatch($request->getContent());
+        PusherWeDigBioDashboardJob::dispatch($request->getContent());
 
         return;
     }

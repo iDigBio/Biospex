@@ -2,17 +2,15 @@
 
 namespace App\Jobs;
 
-use App\Services\Model\PusherTranscriptionService;
+use App\Services\Process\PusherEventService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-
-class PusherTranscriptionsJob implements ShouldQueue
+class PusherEventTranscriptionJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -33,22 +31,23 @@ class PusherTranscriptionsJob implements ShouldQueue
      */
     public function __construct($data)
     {
-        $this->data = json_decode($data);
+        $this->data = json_decode($data);;
         $this->onQueue(config('config.pusher_tube'));
     }
 
     /**
      * Execute the job.
      *
-     * @param \App\Services\Model\PusherTranscriptionService $service
-     * @throws \Exception
+     * @param \App\Services\Process\PusherEventService $service
+     * @return void
      */
-    public function handle(PusherTranscriptionService $service)
+    public function handle(PusherEventService $service)
     {
-        $service->processDataFromPusher($this->data);
+        $service->process($this->data);
 
         $this->delete();
 
         return;
+
     }
 }

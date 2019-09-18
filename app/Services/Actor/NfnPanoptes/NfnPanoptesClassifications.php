@@ -7,8 +7,8 @@ use App\Repositories\Interfaces\Expedition;
 use App\Notifications\NfnTranscriptionsComplete;
 use App\Notifications\NfnTranscriptionsError;
 use App\Services\Actor\ActorServiceConfig;
-use App\Services\Api\NfnApi;
 use App\Facades\GeneralHelper;
+use App\Services\Api\NfnApiService;
 
 class NfnPanoptesClassifications
 {
@@ -24,26 +24,26 @@ class NfnPanoptesClassifications
     public $actorServiceConfig;
 
     /**
-     * @var \App\Services\Api\NfnApi
+     * @var \App\Services\Api\NfnApiService
      */
-    private $api;
+    private $nfnApiService;
 
     /**
      * NfnPanoptesClassifications constructor.
      *
      * @param Expedition $expeditionContract
      * @param ActorServiceConfig $actorServiceConfig
-     * @param \App\Services\Api\NfnApi $api
+     * @param \App\Services\Api\NfnApiService $nfnApiService
      */
     public function __construct(
         Expedition $expeditionContract,
         ActorServiceConfig $actorServiceConfig,
-        NfnApi $api
+        NfnApiService $nfnApiService
     )
     {
         $this->expeditionContract = $expeditionContract;
         $this->actorServiceConfig = $actorServiceConfig;
-        $this->api = $api;
+        $this->nfnApiService = $nfnApiService;
     }
 
     /**
@@ -68,13 +68,7 @@ class NfnPanoptesClassifications
 
         try
         {
-            $this->api->setProvider();
-            $this->api->checkAccessToken('nfnToken');
-            $uri = $this->api->getWorkflowUri($record->nfnWorkflow->workflow);
-            $request = $this->api->buildAuthorizedRequest('GET', $uri);
-            $result = $this->api->sendAuthorizedRequest($request);
-
-            $workflow = $result['workflows'][0];
+            $workflow = $this->nfnApiService->getNfnWorkflow($record->nfnWorkflow->panoptes_workflow_id);
             $count = $workflow['subjects_count'];
             $transcriptionCompleted = $workflow['classifications_count'];
             $transcriptionTotal = GeneralHelper::transcriptionsTotal($workflow['subjects_count']);
@@ -143,7 +137,7 @@ class NfnPanoptesClassifications
      */
     protected function workflowIdDoesNotExist($record)
     {
-        if ($record->nfnWorkflow === null || empty($record->nfnWorkflow->workflow))
+        if ($record->nfnWorkflow === null || empty($record->nfnWorkflow->panoptes_workflow_id))
         {
             /*
             $this->actorServiceConfig->fireActorUnQueuedEvent();

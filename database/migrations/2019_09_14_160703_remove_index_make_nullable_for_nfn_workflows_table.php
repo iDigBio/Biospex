@@ -20,6 +20,9 @@ class RemoveIndexMakeNullableForNfnWorkflowsTable extends Migration
             $table->unsignedInteger('project_id')->nullable()->change();
             $table->unsignedInteger('expedition_id')->nullable()->change();
             $table->foreign('expedition_id')->references('id')->on('expeditions')->onUpdate('RESTRICT')->onDelete('CASCADE');
+
+            $table->renameColumn('project', 'panoptes_project_id');
+            $table->renameColumn('workflow', 'panoptes_workflow_id');
         });
         Schema::enableForeignKeyConstraints();
     }

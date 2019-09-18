@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
-use App\Services\Api\NfnApi;
+use App\Services\Api\NfnApiService;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Bus\Queueable;
@@ -48,12 +48,12 @@ class NfnClassificationsCsvDownloadJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param NfnApi $api
+     * @param \App\Services\Api\NfnApiService $nfnApiService
      * @param User $userContract
      * @return void
      */
     public function handle(
-        NfnApi $api,
+        NfnApiService $nfnApiService,
         User $userContract
     )
     {
@@ -64,28 +64,7 @@ class NfnClassificationsCsvDownloadJob implements ShouldQueue
 
         try
         {
-            $api->setProvider(false);
-
-            $requests = function () use ($api)
-            {
-                foreach ($this->sources as $index => $source)
-                {
-                    yield $index => function ($poolOpts) use ($api, $source, $index)
-                    {
-                        $reqOpts = [
-                            'sink' => \Storage::path(config('config.nfn_downloads_classification') . '/' . $index . '.csv')
-                        ];
-                        if (is_array($poolOpts) && count($poolOpts) > 0)
-                        {
-                            $reqOpts = array_merge($poolOpts, $reqOpts); // req > pool
-                        }
-
-                        return $api->getHttpClient()->getAsync($source, $reqOpts);
-                    };
-                }
-            };
-
-            $responses = $api->poolBatchRequest($requests());
+            $responses = $nfnApiService->nfnClassificationsDownload($this->sources);
             $expeditionIds = [];
             foreach ($responses as $index => $response)
             {

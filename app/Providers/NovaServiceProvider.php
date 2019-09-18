@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Observers\NovaNfnWorkflowObserver;
+use App\Models\NfnWorkflow;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Cards\Help;
 use Illuminate\Support\Facades\Gate;
@@ -17,6 +19,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     public function boot()
     {
         parent::boot();
+        Nova::serving(function () {
+            NfnWorkflow::observe(NovaNfnWorkflowObserver::class);
+        });
     }
 
     /**
@@ -65,7 +70,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     public function tools()
     {
-        return [];
+        return [
+            new \Cloudstudio\ResourceGenerator\ResourceGenerator(),
+        ];
     }
 
     /**

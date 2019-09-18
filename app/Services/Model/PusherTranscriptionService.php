@@ -2,7 +2,6 @@
 
 namespace App\Services\Model;
 
-use App\Facades\DateHelper;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\PusherTranscription;
@@ -27,28 +26,20 @@ class PusherTranscriptionService
     private $panoptesTranscriptionContract;
 
     /**
-     * @var \App\Services\Model\EventTranscriptionService
-     */
-    private $eventTranscriptionService;
-
-    /**
      * ExpeditionService constructor.
      *
      * @param PusherTranscription $pusherTranscriptionContract
      * @param Expedition $expeditionContract
      * @param PanoptesTranscription $panoptesTranscriptionContract
-     * @param \App\Services\Model\EventTranscriptionService $eventTranscriptionService
      */
     public function __construct(
         PusherTranscription $pusherTranscriptionContract,
         Expedition $expeditionContract,
-        PanoptesTranscription $panoptesTranscriptionContract,
-        EventTranscriptionService $eventTranscriptionService
+        PanoptesTranscription $panoptesTranscriptionContract
     ) {
         $this->pusherTranscriptionContract = $pusherTranscriptionContract;
         $this->expeditionContract = $expeditionContract;
         $this->panoptesTranscriptionContract = $panoptesTranscriptionContract;
-        $this->eventTranscriptionService = $eventTranscriptionService;
     }
 
     /**
@@ -82,122 +73,6 @@ class PusherTranscriptionService
     public function showApiDashboard($guid)
     {
         return $this->pusherTranscriptionContract->where('guid', $guid)->first();
-    }
-
-    /**
-     * Process classification data from Pusher.
-     *
-     * @param $data
-     * @throws \Exception
-     */
-    public function processDataFromPusher($data)
-    {
-        $subject = $this->eventTranscriptionService->getNfnSubject($data->subject_ids[0]);
-
-        $expedition = $this->getExpeditionBySubject($subject);
-
-        if ($expedition === null) {
-            return;
-        }
-
-        $data->user_name = $data->user_id !== null ?
-            $this->eventTranscriptionService->getNfnUser($data->user_id) : null;
-
-        $this->createDashboardFromPusher($data, $subject, $expedition);
-
-        if ($data->user_name === null) {
-            return;
-        }
-
-        $this->eventTranscriptionService->updateOrCreateEventTranscription($data, $expedition->project_id);
-    }
-
-    /**
-     * Get expedition.
-     *
-     * @param $subject
-     * @return mixed|null
-     */
-    public function getExpeditionBySubject($subject)
-    {
-        if (empty($subject['metadata']['#expeditionId'])) {
-            return null;
-        }
-
-        return $this->getExpedition($subject['metadata']['#expeditionId']);
-    }
-
-    /**
-     * Build item for dashboard.
-     *
-     * @param $data
-     * @param $subject
-     * @param $expedition
-     *
-     * This is built during the posted data from Pusher
-     * $this->buildItem($data, $workflow, $subject, $expedition);
-     *
-     * @throws \Exception
-     *
-     */
-    private function createDashboardFromPusher($data, $subject, $expedition)
-    {
-        $thumbnailUri = $this->setPusherThumbnailUri($data);
-
-        $item = [
-            'transcription_id'     => '',
-            'classification_id'    => $data->classification_id,
-            'expedition_uuid'      => $expedition->uuid,
-            'project'              => $expedition->title,
-            'description'          => $expedition->description,
-            'guid'                 => Uuid::uuid4()->toString(),
-            'timestamp'            => DateHelper::newMongoDbDate(),
-            'subject'              => [
-                'link'         => isset($subject['metadata']['references']) ? $subject['metadata']['references'] : '',
-                'thumbnailUri' => $thumbnailUri,
-            ],
-            'contributor'          => [
-                'decimalLatitude'  => $data->geo->latitude,
-                'decimalLongitude' => $data->geo->longitude,
-                'ipAddress'        => '',
-                'transcriber'      => $data->user_name,
-                'physicalLocation' => [
-                    'country'      => $data->geo->country_name,
-                    'province'     => '',
-                    'county'       => '',
-                    'municipality' => $data->geo->city_name,
-                    'locality'     => '',
-                ],
-            ],
-            'transcriptionContent' => [
-                'lat'          => '',
-                'long'         => '',
-                'country'      => isset($subject['metadata']['country']) ? $subject['metadata']['country'] : '',
-                'province'     => isset($subject['metadata']['stateProvince']) ? $subject['metadata']['stateProvince'] : '',
-                'county'       => isset($subject['metadata']['county']) ? $subject['metadata']['county'] : '',
-                'municipality' => '',
-                'locality'     => '',
-                'date'         => '', // which date to use? transcription date is messy
-                'collector'    => '',
-                'taxon'        => isset($subject['metadata']['scientificName']) ? $subject['metadata']['scientificName'] : '',
-            ],
-            'discretionaryState'   => 'Transcribed',
-        ];
-
-        $this->pusherTranscriptionContract->create($item);
-    }
-
-    /**
-     * Determine image url.
-     *
-     * @param $data
-     * @return mixed
-     */
-    public function setPusherThumbnailUri($data)
-    {
-        $imageUrl = (array) $data->subject_urls[0];
-
-        return $imageUrl['image/jpeg'];
     }
 
     /**

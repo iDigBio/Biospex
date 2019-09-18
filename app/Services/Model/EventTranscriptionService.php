@@ -6,19 +6,12 @@ use App\Jobs\ScoreboardJob;
 use App\Repositories\Interfaces\Event;
 use App\Repositories\Interfaces\EventTranscription;
 use App\Repositories\Interfaces\EventUser;
-use App\Services\Api\NfnApi;
-use Cache;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use Validator;
 
 class EventTranscriptionService
 {
-    /**
-     * @var \App\Services\Api\NfnApi
-     */
-    private $nfnApi;
-
     /**
      * @var \App\Repositories\Interfaces\Event
      */
@@ -37,64 +30,19 @@ class EventTranscriptionService
     /**
      * EventTranscriptionService constructor.
      *
-     * @param \App\Services\Api\NfnApi $nfnApi
      * @param \App\Repositories\Interfaces\Event $eventContract
      * @param \App\Repositories\Interfaces\EventTranscription $eventTranscriptionContract
      * @param \App\Repositories\Interfaces\EventUser $eventUserContract
      */
     public function __construct(
-        NfnApi $nfnApi,
         Event $eventContract,
         EventTranscription $eventTranscriptionContract,
         EventUser $eventUserContract
     )
     {
-        $this->nfnApi = $nfnApi;
         $this->eventContract = $eventContract;
         $this->eventTranscriptionContract = $eventTranscriptionContract;
         $this->eventUserContract = $eventUserContract;
-    }
-
-    /**
-     * Get nfn subject.
-     *
-     * @param $subjectId
-     * @return null
-     */
-    public function getNfnSubject($subjectId)
-    {
-        $result = Cache::remember(__METHOD__.$subjectId, 120, function () use ($subjectId) {
-            $this->nfnApi->setProvider();
-            $this->nfnApi->checkAccessToken('nfnToken');
-            $uri = $this->nfnApi->getSubjectUri($subjectId);
-            $request = $this->nfnApi->buildAuthorizedRequest('GET', $uri);
-            $results = $this->nfnApi->sendAuthorizedRequest($request);
-
-            return isset($results['subjects'][0]) ? $results['subjects'][0] : null;
-        });
-
-        return $result;
-    }
-
-    /**
-     * Get nfn user.
-     *
-     * @param $userId
-     * @return mixed
-     */
-    public function getNfnUser($userId)
-    {
-        $result = Cache::remember(__METHOD__.$userId, 120, function () use ($userId) {
-            $this->nfnApi->setProvider();
-            $this->nfnApi->checkAccessToken('nfnToken');
-            $uri = $this->nfnApi->getUserUri($userId);
-            $request = $this->nfnApi->buildAuthorizedRequest('GET', $uri);
-            $results = $this->nfnApi->sendAuthorizedRequest($request);
-
-            return isset($results['users'][0]) ? $results['users'][0] : null;
-        });
-
-        return $result['login'];
     }
 
     /**
@@ -102,10 +50,11 @@ class EventTranscriptionService
      *
      * @param $data
      * @param $projectId
+     * @param $user
      */
-    public function updateOrCreateEventTranscription($data, $projectId)
+    public function updateOrCreateEventTranscription($data, $projectId, $user)
     {
-        $user = $this->eventUserContract->getEventUserByName($data->user_name);
+        $user = $this->eventUserContract->getEventUserByName($user['login']);
 
         if ($user === null) {
             return;
@@ -120,14 +69,14 @@ class EventTranscriptionService
             return Carbon::now($event->timezone)->between($start_date, $end_date) ? true : false;
         })->each(function ($event) use ($data, $user) {
             $event->teams->each(function ($team) use ($event, $data, $user) {
-                $classificationId = $data->classification_id;
-                $eventId = $event->id;
-                $teamId = $team->id;
-                $userId = $user->id;
+                $values = [
+                    'classification_id' => $data->classification_id,
+                    'event_id'          => $event->id,
+                    'team_id'           => $team->id,
+                    'user_id'           => $user->id,
+                ];
 
-                $values = $this->createValues($classificationId, $eventId, $teamId, $userId);
-
-                if ($this->validateClassification($values, $classificationId, $eventId, $teamId, $userId)) {
+                if ($this->validateClassification($values)) {
                     return;
                 }
 
@@ -141,49 +90,19 @@ class EventTranscriptionService
     }
 
     /**
-     * Create values to store in database.
-     *
-     * @param $classificationId
-     * @param $eventId
-     * @param $teamId
-     * @param $userId
-     * @return array
-     */
-    private function createValues($classificationId, $eventId, $teamId, $userId) {
-
-        $values = [
-            'classification_id' => $classificationId,
-            'event_id'          => $eventId,
-            'team_id'           => $teamId,
-            'user_id'           => $userId,
-        ];
-
-        return $values;
-    }
-
-    /**
      * Validate classification.
      *
      * @param $values
-     * @param $classificationId
-     * @param $eventId
-     * @param $teamId
-     * @param $userId
      * @return bool
      */
-    private function validateClassification($values, $classificationId, $eventId, $teamId, $userId)
+    private function validateClassification($values)
     {
         $validator = Validator::make($values, [
-            'classification_id' => Rule::unique('event_transcriptions')->where(function ($query) use (
-                $classificationId,
-                $eventId,
-                $teamId,
-                $userId
-            ) {
-                return $query->where('classification_id', $classificationId)
-                    ->where('event_id', $eventId)
-                    ->where('team_id', $teamId)
-                    ->where('user_id', $userId);
+            'classification_id' => Rule::unique('event_transcriptions')->where(function ($query) use ($values) {
+                return $query->where('classification_id', $values['classification_id'])
+                    ->where('event_id', $values['event_id'])
+                    ->where('team_id', $values['team_id'])
+                    ->where('user_id', $values['user_id']);
             })
         ]);
 

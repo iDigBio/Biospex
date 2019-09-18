@@ -20,6 +20,8 @@ class Profile extends BaseEloquentModel implements AttachableInterface
      */
     protected $dates = ['created_at', 'updated_at'];
 
+    protected $casts = ['avatar_updated_at' => 'datetime'];
+
     /**
      * @inheritDoc
      */

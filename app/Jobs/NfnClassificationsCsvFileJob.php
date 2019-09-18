@@ -4,8 +4,8 @@ namespace App\Jobs;
 
 use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
-use App\Services\Api\NfnApi;
 use App\Repositories\Interfaces\Expedition;
+use App\Services\Api\NfnApiService;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Bus\Queueable;
@@ -65,38 +65,19 @@ class NfnClassificationsCsvFileJob implements ShouldQueue
      * Handle the job.
      *
      * @param Expedition $expeditionContract
-     * @param NfnApi $api
+     * @param \App\Services\Api\NfnApiService $nfnApiService
+     * @param \App\Repositories\Interfaces\User $userContract
      */
     public function handle(
         Expedition $expeditionContract,
-        NfnApi $api,
+        NfnApiService $nfnApiService,
         User $userContract
     )
     {
         try
         {
-            $requests = function ($expeditions) use ($api)
-            {
-                foreach ($expeditions as $expedition)
-                {
-                    if ($api->checkForRequiredVariables($expedition))
-                    {
-                        continue;
-                    }
-
-                    $uri = $api->buildClassificationCsvUri($expedition->nfnWorkflow->workflow);
-                    $request = $api->buildAuthorizedRequest('GET', $uri);
-
-                    yield $expedition->id => $request;
-                }
-            };
-
             $expeditions = $expeditionContract->getExpeditionsForNfnClassificationProcess($this->expeditionIds);
-
-            $api->setProvider();
-            $api->checkAccessToken('nfnToken');
-
-            $responses = $api->poolBatchRequest($requests($expeditions));
+            $responses = $nfnApiService->nfnClassificationsFile($expeditions);
             foreach ($responses as $index => $response)
             {
                 if ($response instanceof ServerException || $response instanceof ClientException)

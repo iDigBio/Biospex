@@ -327,13 +327,13 @@ class ExpeditionsController extends Controller
                 $attributes = $attributes = [
                     'project_id'    => $project->id,
                     'expedition_id' => $expedition->id,
-                    'workflow'      => $request->get('workflow'),
+                    'panoptes_workflow_id'      => $request->get('workflow'),
                 ];
 
                 $values = [
                     'project_id'    => $project->id,
                     'expedition_id' => $expedition->id,
-                    'workflow'      => $request->get('workflow'),
+                    'panoptes_workflow_id'      => $request->get('workflow'),
                 ];
 
                 $nfnWorkflow = $this->nfnWorkflowContract->updateOrCreate($attributes, $values);

@@ -67,8 +67,8 @@ class NfnClassificationsUpdateJob implements ShouldQueue
     {
         return null === $expedition
             || ! isset($expedition->nfnWorkflow)
-            || null === $expedition->nfnWorkflow->workflow
-            || null === $expedition->nfnWorkflow->project
+            || null === $expedition->nfnWorkflow->panoptes_workflow_id
+            || null === $expedition->nfnWorkflow->panoptes_project_id
             || null === $expedition->nfnActor;
     }
 }

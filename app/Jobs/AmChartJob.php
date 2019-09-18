@@ -134,7 +134,7 @@ class AmChartJob implements ShouldQueue
     {
 
         $transcriptCountByDate = $transcriptionContract
-            ->getTranscriptionCountPerDate($expedition->nfnWorkflow->workflow)
+            ->getTranscriptionCountPerDate($expedition->nfnWorkflow->panoptes_workflow_id)
             ->pluck('count', '_id');
 
 

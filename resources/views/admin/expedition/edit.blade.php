@@ -77,12 +77,12 @@
                                 <input type="text" name="workflow" id="workflow"
                                        class="form-control {{ ($errors->has('workflow')) ? 'has-error' : '' }}"
                                        placeholder="{{ __('pages.nfn_workflow_id_placeholder') }}"
-                                       value="{{ old('workflow', $expedition->nfnWorkflow->workflow ?? '') }}">
+                                       value="{{ old('workflow', $expedition->nfnWorkflow->panoptes_workflow_id ?? '') }}">
                                 <span class="invalid-feedback">{{ $errors->first('workflow') }}</span>
                             </div>
-                            @if(isset($expedition->nfnWorkflow->workflow))
+                            @if(isset($expedition->nfnWorkflow->panoptes_workflow_id))
                                 <input type="hidden" name="current_workflow"
-                                       value="{{ old('workflow', $expedition->nfnWorkflow->workflow ?? '') }}">
+                                       value="{{ old('workflow', $expedition->nfnWorkflow->panoptes_workflow_id ?? '') }}">
                             @endif
                         @endif
                     </div>

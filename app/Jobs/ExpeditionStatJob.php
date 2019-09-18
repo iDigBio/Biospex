@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Facades\GeneralHelper;
 use App\Repositories\Interfaces\Expedition;
-use App\Services\Api\NfnApi;
+use App\Services\Api\NfnApiService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -43,21 +43,15 @@ class ExpeditionStatJob implements ShouldQueue
      * Execute job.
      *
      * @param \App\Repositories\Interfaces\Expedition $expedition
-     * @param \App\Services\Api\NfnApi $api
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @param \App\Services\Api\NfnApiService $nfnApiService
      */
-    public function handle(Expedition $expedition, NfnApi $api)
+    public function handle(Expedition $expedition, NfnApiService $nfnApiService)
     {
         $record = $expedition->findWith($this->expeditionId, ['stat', 'nfnActor']);
         $count = $expedition->getExpeditionSubjectCounts($this->expeditionId);
 
-        $api->setProvider();
-        $api->checkAccessToken('nfnToken');
-        $uri = $api->getWorkflowUri($record->nfnWorkflow->workflow);
-        $request = $api->buildAuthorizedRequest('GET', $uri);
-        $result = $api->sendAuthorizedRequest($request);
+        $workflow = $nfnApiService->getNfnWorkflow($record->nfnWorkflow->panoptes_workflow_id);
 
-        $workflow = $result['workflows'][0];
         $subject_count = $workflow['subjects_count'];
         $transcriptionCompleted = $workflow['classifications_count'];
         $transcriptionTotal = GeneralHelper::transcriptionsTotal($workflow['subjects_count']);

@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Models\NfnWorkflow;
-use App\Services\Api\NfnApi;
-use Cache;
+use App\Models\NfnWorkflow as Model;
+use App\Repositories\Interfaces\NfnWorkflow;
+use App\Services\Api\NfnApiService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -16,76 +16,46 @@ class UpdateNfnWorkflowJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var NfnWorkflow
+     * @var \App\Models\NfnWorkflow
      */
-    private $nfnWorkflow;
+    private $model;
 
     /**
      * UpdateNfnWorkflowJob constructor.
      *
-     * @param NfnWorkflow $nfnWorkflow
+     * @param \App\Models\NfnWorkflow $model
      */
-    public function __construct(NfnWorkflow $nfnWorkflow)
+    public function __construct(Model $model)
     {
-        $this->nfnWorkflow = $nfnWorkflow;
         $this->onQueue(config('config.classification_tube'));
+        $this->model = $model;
     }
 
     /**
      * Execute job.
      *
-     * @param NfnApi $nfnApi
-     *
-     * TODO Once Expeditions with old workflows completed, change to only get Project via API
-     *      But make sure a project will only have one workflow id.
+     * @param \App\Services\Api\NfnApiService $nfnApiService
+     * @param \App\Repositories\Interfaces\NfnWorkflow $nfnWorkflow
      */
-    public function handle(NfnApi $nfnApi)
+    public function handle(NfnApiService $nfnApiService, NfnWorkflow $nfnWorkflow)
     {
-        /*
-        if (null !== $this->nfnWorkflow->project)
-        {
-            return;
-        }
-        */
-
         try {
+            $workflow = $nfnApiService->getNfnWorkflow($this->model->panoptes_workflow_id);
 
-            $nfnApi->setProvider();
-            $nfnApi->checkAccessToken('nfnToken');
-
-            $uri = $nfnApi->getWorkflowUri($this->nfnWorkflow->workflow);
-            $request = $nfnApi->buildAuthorizedRequest('GET', $uri);
-            $workflowResult = $result = Cache::remember(md5($uri), 240, function () use ($nfnApi, $request){
-                return $nfnApi->sendAuthorizedRequest($request);
-            });
-
-            $workflow = $workflowResult['workflows'][0];
-            $project = $workflow['links']['project'];
+            $projectId = $workflow['links']['project'];
             $subject_sets = isset($workflow['links']['subject_sets']) ? $workflow['links']['subject_sets'] : '';
 
-            $uri = $nfnApi->getProjectUri($project);
-            $request = $nfnApi->buildAuthorizedRequest('GET', $uri);
-            $projectResult = $result = Cache::remember(md5($uri), 240, function () use ($nfnApi, $request){
-                return $nfnApi->sendAuthorizedRequest($request);
-            });
-
-            $attributes = [
-                'project_id' => $this->nfnWorkflow->project_id,
-                'expedition_id' => $this->nfnWorkflow->expedition_id,
-                'workflow' => $this->nfnWorkflow->workflow
-            ];
+            $project = $nfnApiService->getNfnProject($projectId);
 
             $values = [
-                'project' => $project,
+                'panoptes_project_id'      => $projectId,
                 'subject_sets' => $subject_sets,
-                'slug' => $projectResult['projects'][0]['slug']
+                'slug'         => $project['slug'],
             ];
 
-            NfnWorkflow::updateOrCreate($attributes, $values);
+            $nfnWorkflow->update($values, $this->model->id);
 
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $this->delete();
         }
 

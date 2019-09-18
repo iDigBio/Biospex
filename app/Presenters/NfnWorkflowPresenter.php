@@ -13,7 +13,7 @@ class NfnWorkflowPresenter extends Presenter
     {
         $url = $this->classifyReplace();
 
-        return $this->model->workflow === null ? '#' :
+        return $this->model->panoptes_workflow_id === null ? '#' :
             '<a href="'.$url.'" data-hover="tooltip" title="'.__('pages.participate').'" target="_blank">
                 <i class="fas fa-keyboard"></i></a>';
     }
@@ -27,7 +27,7 @@ class NfnWorkflowPresenter extends Presenter
     {
         $url = $this->projectReplace();
 
-        return $this->model->workflow === null ? '#' :
+        return $this->model->panoptes_workflow_id === null ? '#' :
             '<a href="'.$url.'" data-hover="tooltip" title="'.__('pages.participate').'" target="_blank">
                 <i class="fas fa-keyboard"></i></a>';
     }
@@ -41,7 +41,7 @@ class NfnWorkflowPresenter extends Presenter
     {
         $url = $this->projectReplace();
 
-        return $this->model->workflow === null ? '#' :
+        return $this->model->panoptes_workflow_id === null ? '#' :
             '<a href="'.$url.'" data-hover="tooltip" title="'.__('pages.participate').'" target="_blank">
                 <i class="fas fa-keyboard fa-2x"></i></a>';
     }
@@ -55,7 +55,7 @@ class NfnWorkflowPresenter extends Presenter
     {
         $url = $this->projectReplace();
 
-        return $this->model->workflow === null ? '#' :
+        return $this->model->panoptes_workflow_id === null ? '#' :
             '<a href="'.$url.'" title="'.__('pages.participate').'" target="_blank">'.__('pages.event_participate').'</a>';
     }
 
@@ -68,7 +68,7 @@ class NfnWorkflowPresenter extends Presenter
     {
         $url = $this->classifyReplace();
 
-        return $this->model->workflow === null ? '#' :
+        return $this->model->panoptes_workflow_id === null ? '#' :
             '<a href="'.$url.'" data-hover="tooltip" title="'.__('pages.participate').'" target="_blank">
                 <i class="fas fa-keyboard fa-2x"></i></a>';
     }
@@ -81,7 +81,7 @@ class NfnWorkflowPresenter extends Presenter
     private function classifyReplace()
     {
         $urlString = str_replace('PROJECT_SLUG', $this->model->slug, config('config.nfn_participate_url'));
-        $url = str_replace('WORKFLOW_ID', $this->model->workflow, $urlString);
+        $url = str_replace('WORKFLOW_ID', $this->model->panoptes_workflow_id, $urlString);
 
         return $url;
     }

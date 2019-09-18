@@ -21,8 +21,8 @@ class NfnWorkflow extends BaseEloquentModel
     protected $fillable = [
         'project_id',
         'expedition_id',
-        'project',
-        'workflow',
+        'panoptes_project_id',
+        'panoptes_workflow_id',
         'subject_sets',
         'slug'
     ];
@@ -57,22 +57,20 @@ class NfnWorkflow extends BaseEloquentModel
      * Set the nfn_project to null if empty.
      *
      * @param  string $value
-     * @return string
      */
     public function setProjectAttribute($value)
     {
-        $this->attributes['project'] = empty($value) ? null : $value;
+        $this->attributes['panoptes_project_id'] = empty($value) ? null : $value;
     }
 
     /**
      * Set the workflow to null if empty.
      *
      * @param  string $value
-     * @return string
      */
     public function setWorkflowAttribute($value)
     {
-        $this->attributes['workflow'] = empty($value) ? null : $value;
+        $this->attributes['panoptes_workflow_id'] = empty($value) ? null : $value;
     }
 
     /**

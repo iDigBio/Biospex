@@ -20,7 +20,7 @@ class NfnWorkflowUpdate extends Command
      *
      * @var string
      */
-    protected $description = 'Update Expedtion NfN Workflows. Accepts comma separated ids or empty.';
+    protected $description = 'Update expedition panoptes workflows. Accepts comma separated ids or empty.';
 
     /**
      * @var
@@ -58,7 +58,8 @@ class NfnWorkflowUpdate extends Command
      */
     private function setIds()
     {
-        $this->expeditionIds = null ===  $this->argument('expeditionIds') ? null : explode(',', $this->argument('expeditionIds'));
+        $this->expeditionIds = null ===  $this->argument('expeditionIds') ? null :
+            explode(',', $this->argument('expeditionIds'));
     }
 
     /**
