@@ -54,7 +54,7 @@
                             <p><a href="{{ $project->organization_webiste }}"
                                   target="_blank">{{ $project->organization }}</a></p>
                         @else
-                            <p>{{ $project->project_partners }}</p>
+                            <p>{{ $project->organization }}</p>
                         @endif
                     @endif
 
@@ -73,7 +73,7 @@
                         @if($project->description_short !== null)
                             <p><strong>{{ $project->description_short  }}</strong></p>
                         @endif
-                        <p>{{ $project->description_long }}</p>
+                        <p>{!! $project->description_long !!}</p>
                     @endif
 
                     @if($project->incentives !== null)

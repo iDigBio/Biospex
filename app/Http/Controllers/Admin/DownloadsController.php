@@ -75,7 +75,7 @@ class DownloadsController extends Controller
             if (! GeneralHelper::downloadFileExists($download->type, $download->file)) {
                 Flash::error(trans('messages.missing_download_file'));
 
-                return redirect()->route('webauth.downloads.index', [$projectId, $expeditionId]);
+                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
             $headers = [
@@ -125,7 +125,7 @@ class DownloadsController extends Controller
             Flash::error(trans('messages.download_regeneration_error', ['error' => $e->getMessage()]));
         }
 
-        return redirect()->route('webauth.downloads.index', [$projectId, $expeditionId]);
+        return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
     }
 
     /**
