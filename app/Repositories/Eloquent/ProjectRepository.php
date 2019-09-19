@@ -92,7 +92,7 @@ class ProjectRepository extends EloquentRepository implements Project
             'group.users.profile',
             'amChart',
             'resources',
-            'lastWorkflow',
+            'lastPanoptesProject',
             'expeditions' => function($query){
                 $query->has('panoptesProject')->has('nfnActor')->with('panoptesProject', 'stat', 'nfnActor');
             },

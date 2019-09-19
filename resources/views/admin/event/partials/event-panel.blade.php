@@ -26,7 +26,7 @@
             <div class="col-md-12 d-flex justify-content-between mt-4 mb-3">
                 {!! $event->project->present()->project_page_icon_lrg !!}
                 @if( ! GeneralHelper::eventCompleted($event->end_date, $event->timezone))
-                    {!! $event->project->lastWorkflow->present()->nfn_project_icon_lrg !!}
+                    {!! $event->project->lastPanoptesProject->present()->project_icon_lrg !!}
                 @endif
                 {!! $event->present()->event_download_users_icon_lrg !!}
                 {!! $event->present()->event_download_transcripts_icon_lrg !!}

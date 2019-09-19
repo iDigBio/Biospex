@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\PanoptesProject;
-use App\Services\Api\NfnApiService;
+use App\Services\Api\PanoptesApiService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -33,17 +33,17 @@ class PanoptesProjectUpdateJob implements ShouldQueue
     /**
      * Execute job.
      *
-     * @param \App\Services\Api\NfnApiService $nfnApiService
+     * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      */
-    public function handle(NfnApiService $nfnApiService)
+    public function handle(PanoptesApiService $panoptesApiService)
     {
         try {
-            $workflow = $nfnApiService->getPanoptesWorkflow($this->panoptesProject->panoptes_workflow_id);
+            $workflow = $panoptesApiService->getPanoptesWorkflow($this->panoptesProject->panoptes_workflow_id);
 
             $panoptes_project_id = $workflow['links']['project'];
             $subject_sets = isset($workflow['links']['subject_sets']) ? $workflow['links']['subject_sets'] : '';
 
-            $project = $nfnApiService->getPanoptesProject($panoptes_project_id);
+            $project = $panoptesApiService->getPanoptesProject($panoptes_project_id);
 
             $values = [
                 'panoptes_project_id'      => $panoptes_project_id,

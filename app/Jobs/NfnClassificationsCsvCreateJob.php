@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
-use App\Services\Api\NfnApiService;
+use App\Services\Api\PanoptesApiService;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Bus\Queueable;
@@ -53,12 +53,12 @@ class NfnClassificationsCsvCreateJob implements ShouldQueue
      * Handle the job.
      *
      * @param Expedition $expeditionContract
-     * @param \App\Services\Api\NfnApiService $nfnApiService
+     * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      * @param User $userContract
      */
     public function handle(
         Expedition $expeditionContract,
-        NfnApiService $nfnApiService,
+        PanoptesApiService $panoptesApiService,
         User $userContract
     )
     {
@@ -67,7 +67,7 @@ class NfnClassificationsCsvCreateJob implements ShouldQueue
             $expeditions = $expeditionContract->getExpeditionsForNfnClassificationProcess($this->expeditionIds);
 
             $expeditionIds = [];
-            $responses = $nfnApiService->nfnClassificationCreate($expeditions);
+            $responses = $panoptesApiService->panoptesClassificationCreate($expeditions);
             foreach ($responses as $index => $response)
             {
                 if ($response instanceof ServerException || $response instanceof ClientException)

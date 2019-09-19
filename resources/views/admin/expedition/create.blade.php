@@ -71,12 +71,12 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="workflow" class="col-form-label">{{ __('pages.nfn_workflow_id') }}:</label>
-                            <input type="text" name="workflow" id="workflow"
-                                   class="form-control {{ ($errors->has('workflow')) ? 'has-error' : '' }}"
+                            <label for="panoptes_workflow_id" class="col-form-label">{{ __('pages.nfn_workflow_id') }}:</label>
+                            <input type="text" name="panoptes_workflow_id" id="panoptes_workflow_id"
+                                   class="form-control {{ ($errors->has('panoptes_workflow_id')) ? 'has-error' : '' }}"
                                    placeholder="{{ __('pages.nfn_workflow_id_placeholder') }}"
-                                   value="{{ old('workflow') }}">
-                            <span class="invalid-feedback">{{ $errors->first('workflow') }}</span>
+                                   value="{{ old('panoptes_workflow_id') }}">
+                            <span class="invalid-feedback">{{ $errors->first('panoptes_workflow_id') }}</span>
                         </div>
                     </div>
                 </div>

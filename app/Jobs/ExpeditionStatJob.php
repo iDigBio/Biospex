@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Facades\GeneralHelper;
 use App\Repositories\Interfaces\Expedition;
-use App\Services\Api\NfnApiService;
+use App\Services\Api\PanoptesApiService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -43,14 +43,14 @@ class ExpeditionStatJob implements ShouldQueue
      * Execute job.
      *
      * @param \App\Repositories\Interfaces\Expedition $expedition
-     * @param \App\Services\Api\NfnApiService $nfnApiService
+     * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      */
-    public function handle(Expedition $expedition, NfnApiService $nfnApiService)
+    public function handle(Expedition $expedition, PanoptesApiService $panoptesApiService)
     {
         $record = $expedition->findWith($this->expeditionId, ['stat', 'nfnActor']);
         $count = $expedition->getExpeditionSubjectCounts($this->expeditionId);
 
-        $workflow = $nfnApiService->getPanoptesWorkflow($record->panoptesProject->panoptes_workflow_id);
+        $workflow = $panoptesApiService->getPanoptesWorkflow($record->panoptesProject->panoptes_workflow_id);
 
         $subject_count = $workflow['subjects_count'];
         $transcriptionCompleted = $workflow['classifications_count'];

@@ -3,7 +3,7 @@
 namespace App\Services\Process;
 
 use App\Repositories\Interfaces\Expedition;
-use App\Services\Api\NfnApiService;
+use App\Services\Api\PanoptesApiService;
 use App\Services\Model\EventTranscriptionService;
 
 class PusherEventService
@@ -19,7 +19,7 @@ class PusherEventService
     private $expeditionContract;
 
     /**
-     * @var \App\Services\Api\NfnApiService
+     * @var \App\Services\Api\PanoptesApiService
      */
     private $apiService;
 
@@ -28,12 +28,12 @@ class PusherEventService
      *
      * @param \App\Services\Model\EventTranscriptionService $eventTranscriptionService
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
-     * @param \App\Services\Api\NfnApiService $apiService
+     * @param \App\Services\Api\PanoptesApiService $apiService
      */
     public function __construct(
         EventTranscriptionService $eventTranscriptionService,
         Expedition $expeditionContract,
-        NfnApiService $apiService)
+        PanoptesApiService $apiService)
     {
 
         $this->eventTranscriptionService = $eventTranscriptionService;
@@ -48,7 +48,7 @@ class PusherEventService
      */
     public function process($data)
     {
-        $subject = $this->apiService->getNfnSubject($data->subject_ids[0]);
+        $subject = $this->apiService->getPanoptesSubject($data->subject_ids[0]);
 
         $expedition = $this->getExpeditionBySubject($subject);
 
@@ -56,7 +56,7 @@ class PusherEventService
             return;
         }
 
-        $user = $data->user_id !== null ? $this->apiService->getNfnUser($data->user_id) : null;
+        $user = $data->user_id !== null ? $this->apiService->getPanoptesUser($data->user_id) : null;
 
         if ($user === null) {
             return;

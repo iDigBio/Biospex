@@ -3,16 +3,16 @@
 namespace App\Services\Process;
 
 use App\Repositories\Interfaces\PusherTranscription;
-use App\Services\Api\NfnApiService;
+use App\Services\Api\PanoptesApiService;
 use DateHelper;
 use Ramsey\Uuid\Uuid;
 
 class PusherWeDigBioDashboardService
 {
     /**
-     * @var \App\Services\Api\NfnApiService
+     * @var \App\Services\Api\PanoptesApiService
      */
-    private $nfnApiService;
+    private $apiService;
 
     /**
      * @var \App\Repositories\Interfaces\PusherTranscription
@@ -22,12 +22,12 @@ class PusherWeDigBioDashboardService
     /**
      * PusherWeDigBioDashboardService constructor.
      *
-     * @param \App\Services\Api\NfnApiService $nfnApiService
+     * @param \App\Services\Api\PanoptesApiService $apiService
      * @param \App\Repositories\Interfaces\PusherTranscription $pusherTranscriptionContract
      */
-    public function __construct(NfnApiService $nfnApiService, PusherTranscription $pusherTranscriptionContract)
+    public function __construct(PanoptesApiService $apiService, PusherTranscription $pusherTranscriptionContract)
     {
-        $this->nfnApiService = $nfnApiService;
+        $this->apiService = $apiService;
         $this->pusherTranscriptionContract = $pusherTranscriptionContract;
     }
 
@@ -39,9 +39,9 @@ class PusherWeDigBioDashboardService
      */
     public function process($data)
     {
-        $workflow = $this->nfnApiService->getPanoptesWorkflow($data->workflow_id);
-        $subject = $this->nfnApiService->getPanoptesSubject($data->subject_ids[0]);
-        $user = $data->user_id !== null ? $this->nfnApiService->getPanoptesUser($data->user_id) : null;
+        $workflow = $this->apiService->getPanoptesWorkflow($data->workflow_id);
+        $subject = $this->apiService->getPanoptesSubject($data->subject_ids[0]);
+        $user = $data->user_id !== null ? $this->apiService->getPanoptesUser($data->user_id) : null;
 
         if ($workflow === null || $subject === null) {
             return;

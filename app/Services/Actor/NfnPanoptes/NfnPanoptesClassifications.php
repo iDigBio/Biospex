@@ -8,7 +8,7 @@ use App\Notifications\NfnTranscriptionsComplete;
 use App\Notifications\NfnTranscriptionsError;
 use App\Services\Actor\ActorServiceConfig;
 use App\Facades\GeneralHelper;
-use App\Services\Api\NfnApiService;
+use App\Services\Api\PanoptesApiService;
 
 class NfnPanoptesClassifications
 {
@@ -24,26 +24,26 @@ class NfnPanoptesClassifications
     public $actorServiceConfig;
 
     /**
-     * @var \App\Services\Api\NfnApiService
+     * @var \App\Services\Api\PanoptesApiService
      */
-    private $nfnApiService;
+    private $panoptesApiService;
 
     /**
      * NfnPanoptesClassifications constructor.
      *
      * @param Expedition $expeditionContract
      * @param ActorServiceConfig $actorServiceConfig
-     * @param \App\Services\Api\NfnApiService $nfnApiService
+     * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      */
     public function __construct(
         Expedition $expeditionContract,
         ActorServiceConfig $actorServiceConfig,
-        NfnApiService $nfnApiService
+        PanoptesApiService $panoptesApiService
     )
     {
         $this->expeditionContract = $expeditionContract;
         $this->actorServiceConfig = $actorServiceConfig;
-        $this->nfnApiService = $nfnApiService;
+        $this->panoptesApiService = $panoptesApiService;
     }
 
     /**
@@ -68,7 +68,7 @@ class NfnPanoptesClassifications
 
         try
         {
-            $workflow = $this->nfnApiService->getPanoptesWorkflow($record->panoptesProject->panoptes_workflow_id);
+            $workflow = $this->panoptesApiService->getPanoptesWorkflow($record->panoptesProject->panoptes_workflow_id);
             $count = $workflow['subjects_count'];
             $transcriptionCompleted = $workflow['classifications_count'];
             $transcriptionTotal = GeneralHelper::transcriptionsTotal($workflow['subjects_count']);

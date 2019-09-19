@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
-use App\Services\Api\NfnApiService;
+use App\Services\Api\PanoptesApiService;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Bus\Queueable;
@@ -48,12 +48,12 @@ class NfnClassificationsCsvDownloadJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Api\NfnApiService $nfnApiService
+     * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      * @param User $userContract
      * @return void
      */
     public function handle(
-        NfnApiService $nfnApiService,
+        PanoptesApiService $panoptesApiService,
         User $userContract
     )
     {
@@ -64,7 +64,7 @@ class NfnClassificationsCsvDownloadJob implements ShouldQueue
 
         try
         {
-            $responses = $nfnApiService->nfnClassificationsDownload($this->sources);
+            $responses = $panoptesApiService->panoptesClassificationsDownload($this->sources);
             $expeditionIds = [];
             foreach ($responses as $index => $response)
             {

@@ -24,7 +24,7 @@
     </div>
     @if( ! GeneralHelper::eventCompleted($event->end_date, $event->timezone))
     <div class="row">
-        <p class="text-center col-6 mx-auto mt-4">{!! $event->project->lastWorkflow->present()->nfn_project_link !!}</p>
+        <p class="text-center col-6 mx-auto mt-4">{!! $event->project->lastPanoptesProject->present()->project_link !!}</p>
     </div>
     <div class="row">
         <p class="text-justify col-6 mx-auto mt-4">{!! __('html.event_join_show') !!}</p>

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "639dc4019cf498c61a039d3739b1ee9f",
+    "content-hash": "96982d7ed8123ac82697f81e64e80e48",
     "packages": [
         {
             "name": "anhskohbo/no-captcha",
@@ -122,67 +122,6 @@
                 "time"
             ],
             "time": "2019-06-17T15:19:18+00:00"
-        },
-        {
-            "name": "cloudstudio/resource-generator",
-            "version": "1.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/cloudstudio/resource-generator.git",
-                "reference": "1c753d5cfc947c72c635f640b41230e775259ae7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/cloudstudio/resource-generator/zipball/1c753d5cfc947c72c635f640b41230e775259ae7",
-                "reference": "1c753d5cfc947c72c635f640b41230e775259ae7",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/dbal": "^2.8",
-                "laravel/nova": "*",
-                "php": ">=7.1.0"
-            },
-            "require-dev": {
-                "orchestra/testbench": "^3.6",
-                "phpunit/phpunit": "7.1"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Cloudstudio\\ResourceGenerator\\ResourceGeneratorServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Cloudstudio\\ResourceGenerator\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Eric Lagarda",
-                    "role": "Developer",
-                    "email": "eric@infinety.es"
-                },
-                {
-                    "name": "Toni Soriano",
-                    "role": "Developer",
-                    "email": "hello@cloudstudio.es"
-                }
-            ],
-            "description": "Resource Generator for Laravel Nova",
-            "keywords": [
-                "generator",
-                "laravel",
-                "nova",
-                "resource"
-            ],
-            "time": "2019-03-20T15:17:36+00:00"
         },
         {
             "name": "cocur/slugify",
@@ -1994,17 +1933,17 @@
         },
         {
             "name": "laravel/nova",
-            "version": "v2.3.0",
+            "version": "v2.3.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:laravel/nova.git",
-                "reference": "54ca98c880e740520bb66340d24f94dd5d64bb0d"
+                "reference": "5a52550f8062557f4cbdd1d5f16caf583af2a2c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://nova.laravel.com/dist/laravel/nova/laravel-nova-54ca98c880e740520bb66340d24f94dd5d64bb0d-zip-c89159.zip",
-                "reference": "54ca98c880e740520bb66340d24f94dd5d64bb0d",
-                "shasum": "b63fd7fb1e81c021417af0a9009bbbbbfc4b1663"
+                "url": "https://nova.laravel.com/dist/laravel/nova/laravel-nova-5a52550f8062557f4cbdd1d5f16caf583af2a2c8-zip-1b0bea.zip",
+                "reference": "5a52550f8062557f4cbdd1d5f16caf583af2a2c8",
+                "shasum": "967264b26ebd83dff90450fefc7b618ef33e6652"
             },
             "require": {
                 "cakephp/chronos": "^1.0",
@@ -2060,7 +1999,7 @@
                 "admin",
                 "laravel"
             ],
-            "time": "2019-09-10T16:40:45+00:00"
+            "time": "2019-09-17T16:03:48+00:00"
         },
         {
             "name": "laravel/passport",
@@ -3468,16 +3407,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "2.0.22",
+            "version": "2.0.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "cbddb5244edff6d2599977f1a1e4c8657f292e7c"
+                "reference": "c78eb5058d5bb1a183133c36d4ba5b6675dfa099"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/cbddb5244edff6d2599977f1a1e4c8657f292e7c",
-                "reference": "cbddb5244edff6d2599977f1a1e4c8657f292e7c",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/c78eb5058d5bb1a183133c36d4ba5b6675dfa099",
+                "reference": "c78eb5058d5bb1a183133c36d4ba5b6675dfa099",
                 "shasum": ""
             },
             "require": {
@@ -3556,7 +3495,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2019-09-15T22:48:44+00:00"
+            "time": "2019-09-17T03:41:22+00:00"
         },
         {
             "name": "predis/predis",
@@ -6118,6 +6057,67 @@
             "time": "2019-08-11T13:17:40+00:00"
         },
         {
+            "name": "cloudstudio/resource-generator",
+            "version": "1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cloudstudio/resource-generator.git",
+                "reference": "6f7786e0badb4c11eb4557ba454bdce6f9e6fcb0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cloudstudio/resource-generator/zipball/6f7786e0badb4c11eb4557ba454bdce6f9e6fcb0",
+                "reference": "6f7786e0badb4c11eb4557ba454bdce6f9e6fcb0",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/dbal": "^2.8",
+                "laravel/nova": "*",
+                "php": ">=7.1.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^3.6",
+                "phpunit/phpunit": "7.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Cloudstudio\\ResourceGenerator\\ResourceGeneratorServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Cloudstudio\\ResourceGenerator\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Toni Soriano",
+                    "email": "hello@cloudstudio.es",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Eric Lagarda",
+                    "email": "eric@infinety.es",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Resource Generator for Laravel Nova",
+            "keywords": [
+                "generator",
+                "laravel",
+                "nova",
+                "resource"
+            ],
+            "time": "2019-09-17T09:53:36+00:00"
+        },
+        {
             "name": "composer/ca-bundle",
             "version": "1.2.4",
             "source": {
@@ -7041,16 +7041,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "7.0.7",
+            "version": "7.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "7743bbcfff2a907e9ee4a25be13d0f8ec5e73800"
+                "reference": "aa0d179a13284c7420fc281fc32750e6cc7c9e2f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/7743bbcfff2a907e9ee4a25be13d0f8ec5e73800",
-                "reference": "7743bbcfff2a907e9ee4a25be13d0f8ec5e73800",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/aa0d179a13284c7420fc281fc32750e6cc7c9e2f",
+                "reference": "aa0d179a13284c7420fc281fc32750e6cc7c9e2f",
                 "shasum": ""
             },
             "require": {
@@ -7059,7 +7059,7 @@
                 "php": "^7.2",
                 "phpunit/php-file-iterator": "^2.0.2",
                 "phpunit/php-text-template": "^1.2.1",
-                "phpunit/php-token-stream": "^3.1.0",
+                "phpunit/php-token-stream": "^3.1.1",
                 "sebastian/code-unit-reverse-lookup": "^1.0.1",
                 "sebastian/environment": "^4.2.2",
                 "sebastian/version": "^2.0.1",
@@ -7089,8 +7089,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "role": "lead",
-                    "email": "sebastian@phpunit.de"
+                    "email": "sebastian@phpunit.de",
+                    "role": "lead"
                 }
             ],
             "description": "Library that provides collection, processing, and rendering functionality for PHP code coverage information.",
@@ -7100,7 +7100,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-07-25T05:31:54+00:00"
+            "time": "2019-09-17T06:24:36+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -7244,16 +7244,16 @@
         },
         {
             "name": "phpunit/php-token-stream",
-            "version": "3.1.0",
+            "version": "3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-token-stream.git",
-                "reference": "e899757bb3df5ff6e95089132f32cd59aac2220a"
+                "reference": "995192df77f63a59e47f025390d2d1fdf8f425ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/e899757bb3df5ff6e95089132f32cd59aac2220a",
-                "reference": "e899757bb3df5ff6e95089132f32cd59aac2220a",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/995192df77f63a59e47f025390d2d1fdf8f425ff",
+                "reference": "995192df77f63a59e47f025390d2d1fdf8f425ff",
                 "shasum": ""
             },
             "require": {
@@ -7289,7 +7289,7 @@
             "keywords": [
                 "tokenizer"
             ],
-            "time": "2019-07-25T05:29:42+00:00"
+            "time": "2019-09-17T06:23:10+00:00"
         },
         {
             "name": "phpunit/phpunit",

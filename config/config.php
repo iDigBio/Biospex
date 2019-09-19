@@ -180,13 +180,13 @@ return [
         '#expeditionTitle' => '',
     ],
 
-    'nfnApi' => [
-        'clientId'     => env('NFN_API_CLIENT_ID'),
-        'clientSecret' => env('NFN_API_CLIENT_SECRET'),
-        'apiUri'       => env('NFN_API_URI'),
-        'tokenUri'     => env('NFN_API_TOKEN_URI'),
-        'redirectUri'  => env('NFN_REDIRECT_URI'),
-        'scopes' => env('NFN_API_SCOPES')
+    'panoptes' => [
+        'clientId'     => env('PANOPTES_CLIENT_ID'),
+        'clientSecret' => env('PANOPTES_CLIENT_SECRET'),
+        'apiUri'       => env('PANOPTES_URI'),
+        'tokenUri'     => env('PANOPTES_TOKEN_URI'),
+        'redirectUri'  => env('PANOPTES_REDIRECT_URI'),
+        'scopes' => env('PANOPTES_SCOPES')
     ],
 
     'nfnSearch' => [

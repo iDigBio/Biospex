@@ -208,6 +208,16 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
+     * PanoptesProject relationship returning last in database.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function lastPanoptesProject()
+    {
+        return $this->hasOne(PanoptesProject::class)->latest();
+    }
+
+    /**
      * Events relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

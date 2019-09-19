@@ -73,7 +73,7 @@ class EventsController extends Controller
      */
     public function read(Event $contract, $eventId)
     {
-        $event = $contract->findWith($eventId, ['project.lastWorkflow']);
+        $event = $contract->findWith($eventId, ['project.lastPanoptesProject']);
 
         return view('front.event.show', compact('event'));
     }

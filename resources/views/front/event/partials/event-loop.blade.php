@@ -47,7 +47,7 @@
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
                 {!! $event->project->present()->project_page_icon !!}
                 @if(! GeneralHelper::eventCompleted($event->end_date, $event->timezone))
-                {!! $event->project->lastWorkflow->present()->nfn_project_icon !!}
+                {!! $event->project->lastPanoptesProject->present()->project_icon !!}
                 @endif
                 {!! $event->present()->twitter_icon !!}
                 {!! $event->present()->facebook_icon !!}

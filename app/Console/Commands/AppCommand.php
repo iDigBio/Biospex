@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Api\NfnApiService;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -18,19 +17,11 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Services\Api\NfnApiService
-     */
-    private $service;
-
-    /**
      * AppCommand constructor.
-     *
-     * @param \App\Services\Api\NfnApiService $service
      */
-    public function __construct(NfnApiService $service)
+    public function __construct()
     {
         parent::__construct();
-        $this->service = $service;
     }
 
     /**
@@ -38,8 +29,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $project = $this->service->getNfnProject(9275);
-        dd($project['slug']);
     }
 
 }

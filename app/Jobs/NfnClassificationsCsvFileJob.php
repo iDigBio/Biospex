@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Repositories\Interfaces\User;
 use App\Notifications\JobError;
 use App\Repositories\Interfaces\Expedition;
-use App\Services\Api\NfnApiService;
+use App\Services\Api\PanoptesApiService;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Bus\Queueable;
@@ -65,19 +65,19 @@ class NfnClassificationsCsvFileJob implements ShouldQueue
      * Handle the job.
      *
      * @param Expedition $expeditionContract
-     * @param \App\Services\Api\NfnApiService $nfnApiService
+     * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      * @param \App\Repositories\Interfaces\User $userContract
      */
     public function handle(
         Expedition $expeditionContract,
-        NfnApiService $nfnApiService,
+        PanoptesApiService $panoptesApiService,
         User $userContract
     )
     {
         try
         {
             $expeditions = $expeditionContract->getExpeditionsForNfnClassificationProcess($this->expeditionIds);
-            $responses = $nfnApiService->nfnClassificationsFile($expeditions);
+            $responses = $panoptesApiService->panoptesClassificationsFile($expeditions);
             foreach ($responses as $index => $response)
             {
                 if ($response instanceof ServerException || $response instanceof ClientException)

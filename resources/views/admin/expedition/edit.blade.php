@@ -74,7 +74,7 @@
                         @if(in_array($expedition->project->workflow_id, Config::get('config.nfnWorkflows'), false))
                             <div class="form-group">
                                 <label for="panoptes_workflow_id" class="col-form-label">{{ __('pages.nfn_workflow_id') }}:</label>
-                                <input type="text" name="workflow" id="workflow"
+                                <input type="text" name="panoptes_workflow_id" id="panoptes_workflow_id"
                                        class="form-control {{ ($errors->has('panoptes_workflow_id')) ? 'has-error' : '' }}"
                                        placeholder="{{ __('pages.nfn_workflow_id_placeholder') }}"
                                        value="{{ old('panoptes_workflow_id', $expedition->panoptesProject->panoptes_workflow_id ?? '') }}">
