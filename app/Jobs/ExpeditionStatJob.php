@@ -50,7 +50,7 @@ class ExpeditionStatJob implements ShouldQueue
         $record = $expedition->findWith($this->expeditionId, ['stat', 'nfnActor']);
         $count = $expedition->getExpeditionSubjectCounts($this->expeditionId);
 
-        $workflow = $nfnApiService->getNfnWorkflow($record->nfnWorkflow->panoptes_workflow_id);
+        $workflow = $nfnApiService->getPanoptesWorkflow($record->panoptesProject->panoptes_workflow_id);
 
         $subject_count = $workflow['subjects_count'];
         $transcriptionCompleted = $workflow['classifications_count'];

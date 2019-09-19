@@ -180,7 +180,7 @@ class ProjectsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $disableWorkflow = $project->nfnWorkflows()->exists() ? 'disabled' : '';
+        $disableWorkflow = $project->panoptesProjects()->exists() ? 'disabled' : '';
 
         $groupOptions = $this->projectService->userGroupSelectOptions(request()->user());
         $workflowOptions = $this->projectService->workflowSelectOptions();
@@ -282,7 +282,7 @@ class ProjectsController extends Controller
         }
 
         try {
-            if ($project->nfnWorkflows->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
+            if ($project->panoptesProjects->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
                 FlashHelper::error(__('An Expedition workflow or process exists and cannot be deleted. Even if the process has been stopped locally, other services may need to refer to the existing Expedition.'));
 
                 redirect()->route('admin.projects.index');

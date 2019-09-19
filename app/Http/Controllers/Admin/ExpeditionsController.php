@@ -7,10 +7,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpeditionFormRequest;
 use App\Jobs\DeleteExpedition;
 use App\Jobs\OcrCreateJob;
-use App\Jobs\UpdateNfnWorkflowJob;
+use App\Jobs\PanoptesProjectUpdateJob;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\ExpeditionStat;
-use App\Repositories\Interfaces\NfnWorkflow;
+use App\Repositories\Interfaces\PanoptesProject;
 use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\Subject;
 use App\Repositories\Interfaces\WorkflowManager;
@@ -31,9 +31,9 @@ class ExpeditionsController extends Controller
     private $projectContract;
 
     /**
-     * @var \App\Repositories\Interfaces\NfnWorkflow
+     * @var \App\Repositories\Interfaces\PanoptesProject
      */
-    private $nfnWorkflowContract;
+    private $panoptesProjectContract;
 
     /**
      * @var \App\Repositories\Interfaces\Subject
@@ -55,7 +55,7 @@ class ExpeditionsController extends Controller
      *
      * @param \App\Repositories\Interfaces\Expedition $expeditionContract
      * @param \App\Repositories\Interfaces\Project $projectContract
-     * @param \App\Repositories\Interfaces\NfnWorkflow $nfnWorkflowContract
+     * @param \App\Repositories\Interfaces\PanoptesProject $panoptesProjectContract
      * @param \App\Repositories\Interfaces\Subject $subjectContract
      * @param \App\Repositories\Interfaces\ExpeditionStat $expeditionStatContract
      * @param \App\Repositories\Interfaces\WorkflowManager $workflowManagerContract
@@ -63,14 +63,14 @@ class ExpeditionsController extends Controller
     public function __construct(
         Expedition $expeditionContract,
         Project $projectContract,
-        NfnWorkflow $nfnWorkflowContract,
+        PanoptesProject $panoptesProjectContract,
         Subject $subjectContract,
         ExpeditionStat $expeditionStatContract,
         WorkflowManager $workflowManagerContract
     ) {
         $this->expeditionContract = $expeditionContract;
         $this->projectContract = $projectContract;
-        $this->nfnWorkflowContract = $nfnWorkflowContract;
+        $this->panoptesProjectContract = $panoptesProjectContract;
         $this->subjectContract = $subjectContract;
         $this->expeditionStatContract = $expeditionStatContract;
         $this->workflowManagerContract = $workflowManagerContract;
@@ -113,10 +113,10 @@ class ExpeditionsController extends Controller
         $projectId = request()->get('id');
 
         list($active, $completed) = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)->partition(function (
-                $expedition
-            ) {
-                return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
-            });
+            $expedition
+        ) {
+            return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
+        });
 
         $expeditions = $type === 'active' ? $active : $completed;
 
@@ -278,7 +278,7 @@ class ExpeditionsController extends Controller
             'workflowManager',
             'stat',
             'subjects',
-            'nfnWorkflow',
+            'panoptesProject',
         ];
 
         $expedition = $this->expeditionContract->findWith($expeditionId, $relations);
@@ -323,22 +323,22 @@ class ExpeditionsController extends Controller
         try {
             $expedition = $this->expeditionContract->update($request->all(), $expeditionId);
 
-            if ($request->filled('workflow')) {
+            if ($request->filled('panoptes_workflow_id')) {
                 $attributes = $attributes = [
-                    'project_id'    => $project->id,
-                    'expedition_id' => $expedition->id,
-                    'panoptes_workflow_id'      => $request->get('workflow'),
+                    'project_id'           => $project->id,
+                    'expedition_id'        => $expedition->id,
+                    'panoptes_workflow_id' => $request->get('panoptes_workflow_id'),
                 ];
 
                 $values = [
-                    'project_id'    => $project->id,
-                    'expedition_id' => $expedition->id,
-                    'panoptes_workflow_id'      => $request->get('workflow'),
+                    'project_id'           => $project->id,
+                    'expedition_id'        => $expedition->id,
+                    'panoptes_workflow_id' => $request->get('panoptes_workflow_id'),
                 ];
 
-                $nfnWorkflow = $this->nfnWorkflowContract->updateOrCreate($attributes, $values);
+                $panoptesProject = $this->panoptesProjectContract->updateOrCreate($attributes, $values);
 
-                UpdateNfnWorkflowJob::dispatch($nfnWorkflow);
+                PanoptesProjectUpdateJob::dispatch($panoptesProject);
             }
 
             // If process already in place, do not update subjects.
@@ -484,12 +484,12 @@ class ExpeditionsController extends Controller
 
         try {
             $expedition = $this->expeditionContract->findWith($expeditionId, [
-                'nfnWorkflow',
+                'panoptesProject',
                 'downloads',
                 'workflowManager',
             ]);
 
-            if (isset($expedition->workflowManager) || isset($expedition->nfnWorkflow)) {
+            if (isset($expedition->workflowManager) || isset($expedition->panoptesProject)) {
                 FlashHelper::error(trans('messages.expedition_process_exists'));
 
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);

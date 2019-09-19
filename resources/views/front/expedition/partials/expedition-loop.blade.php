@@ -21,9 +21,9 @@
             <hr>
             <div class="d-flex align-items-start justify-content-between mt-4 mx-auto">
                 {!! $expedition->project->present()->project_page_icon !!}
-                @isset($expedition->nfnWorkflow)
+                @isset($expedition->panoptesProject)
                     @if ($expedition->nfnActor->pivot->completed === 0)
-                        {!! $expedition->nfnWorkflow->present()->nfn_url !!}
+                        {!! $expedition->panoptesProject->present()->url !!}
                     @endif
                 @endisset
             </div>

@@ -171,8 +171,8 @@
                             <hr>
                             <div class="d-flex align-items-start justify-content-between mt-4 mx-auto">
                                 {!! $expedition->project->present()->project_page_icon_lrg !!}
-                                @isset($expedition->nfnWorkflow)
-                                    {!! $expedition->nfnWorkflow->present()->nfn_url_lrg !!}
+                                @isset($expedition->panoptesProject)
+                                    {!! $expedition->panoptesProject->present()->url_lrg !!}
                                 @endisset
                             </div>
                         </div>

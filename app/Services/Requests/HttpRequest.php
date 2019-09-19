@@ -58,9 +58,10 @@ class HttpRequest
     }
 
     /**
-     * Set access token.
+     * Set access token
      *
      * @param $token
+     * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
     protected function setAccessToken($token)
     {
@@ -70,8 +71,8 @@ class HttpRequest
 
     /**
      * Check access token
-     *
      * @param $token
+     * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
     public function checkAccessToken($token)
     {

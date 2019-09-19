@@ -90,12 +90,12 @@ interface Expedition extends RepositoryInterface
     public function getExpeditionStats(array $expeditionIds = [], array $columns = ['*']);
 
     /**
-     * Get expeditions having nfnworkflows.
+     * Get expeditions having panoptes project.
      *
      * @param int $expeditionId
      * @return mixed
      */
-    public function getExpeditionsHavingNfnWorkflows($expeditionId);
+    public function getExpeditionsHavingPanoptesProjects($expeditionId);
 
     /**
      * @param $expeditionId

@@ -2,8 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\NfnWorkflow as Model;
-use App\Repositories\Interfaces\NfnWorkflow;
+use App\Models\PanoptesProject;
 use App\Services\Api\NfnApiService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -11,49 +10,49 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class UpdateNfnWorkflowJob implements ShouldQueue
+class PanoptesProjectUpdateJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var \App\Models\NfnWorkflow
+     * @var \App\Models\PanoptesProject
      */
-    private $model;
+    private $panoptesProject;
 
     /**
-     * UpdateNfnWorkflowJob constructor.
+     * PanoptesProjectUpdateJob constructor.
      *
-     * @param \App\Models\NfnWorkflow $model
+     * @param \App\Models\PanoptesProject $panoptesProject
      */
-    public function __construct(Model $model)
+    public function __construct(PanoptesProject $panoptesProject)
     {
         $this->onQueue(config('config.classification_tube'));
-        $this->model = $model;
+        $this->panoptesProject = $panoptesProject;
     }
 
     /**
      * Execute job.
      *
      * @param \App\Services\Api\NfnApiService $nfnApiService
-     * @param \App\Repositories\Interfaces\NfnWorkflow $nfnWorkflow
      */
-    public function handle(NfnApiService $nfnApiService, NfnWorkflow $nfnWorkflow)
+    public function handle(NfnApiService $nfnApiService)
     {
         try {
-            $workflow = $nfnApiService->getNfnWorkflow($this->model->panoptes_workflow_id);
+            $workflow = $nfnApiService->getPanoptesWorkflow($this->panoptesProject->panoptes_workflow_id);
 
-            $projectId = $workflow['links']['project'];
+            $panoptes_project_id = $workflow['links']['project'];
             $subject_sets = isset($workflow['links']['subject_sets']) ? $workflow['links']['subject_sets'] : '';
 
-            $project = $nfnApiService->getNfnProject($projectId);
+            $project = $nfnApiService->getPanoptesProject($panoptes_project_id);
 
             $values = [
-                'panoptes_project_id'      => $projectId,
+                'panoptes_project_id'      => $panoptes_project_id,
                 'subject_sets' => $subject_sets,
                 'slug'         => $project['slug'],
             ];
 
-            $nfnWorkflow->update($values, $this->model->id);
+            $this->panoptesProject->fill($values);
+            $this->panoptesProject->save();
 
         } catch (\Exception $e) {
             $this->delete();

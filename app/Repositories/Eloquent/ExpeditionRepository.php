@@ -27,7 +27,7 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
                 $q->withCount('expeditions');
                 $q->withCount('events');
             },
-        ])->with('nfnWorkflow')->whereHas('stat', function ($q) {
+        ])->with('panoptesProject')->whereHas('stat', function ($q) {
             $q->whereBetween('percent_completed', [0.00, 99.99]);
         })->with([
             'stat' => function ($q) {
@@ -46,8 +46,8 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     public function getExpeditionPublicIndex($sort = null, $order = null, $projectId = null)
     {
         $query = $this->model->with('project')
-            ->has('nfnWorkflow')->has('nfnActor')
-            ->with('nfnWorkflow', 'stat', 'nfnActor');
+            ->has('panoptesProject')->has('nfnActor')
+            ->with('panoptesProject', 'stat', 'nfnActor');
 
         $results = $projectId === null ? $query->get() : $query->where('project_id', $projectId)->get();
 
@@ -80,7 +80,7 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
             'project.group',
             'stat',
             'nfnActor',
-            'nfnWorkflow'
+            'panoptesProject'
         ])->whereHas('project.group.users', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         });
@@ -113,10 +113,10 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     public function getExpeditionsForNfnClassificationProcess(array $expeditionIds = [], array $attributes = ['*'])
     {
         $model = $this->model->with([
-            'nfnWorkflow',
+            'panoptesProject',
             'stat',
             'nfnActor',
-        ])->has('nfnWorkflow')->whereHas('nfnActor', function ($query) {
+        ])->has('panoptesProject')->whereHas('nfnActor', function ($query) {
             $query->where('completed', 0);
         });
 
@@ -198,11 +198,11 @@ class ExpeditionRepository extends EloquentRepository implements Expedition
     /**
      * @inheritdoc
      */
-    public function getExpeditionsHavingNfnWorkflows($expeditionId)
+    public function getExpeditionsHavingPanoptesProjects($expeditionId)
     {
-        $withRelations = ['nfnWorkflow', 'nfnActor', 'stat'];
+        $withRelations = ['panoptesProject', 'nfnActor', 'stat'];
 
-        $results = $this->model->has('nfnWorkflow')->with($withRelations)->find($expeditionId);
+        $results = $this->model->has('panoptesProject')->with($withRelations)->find($expeditionId);
 
         $this->resetModel();
 

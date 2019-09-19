@@ -150,9 +150,9 @@ class NfnApi extends HttpRequest
     public function checkForRequiredVariables($expedition)
     {
         return null === $expedition ||
-            ! isset($expedition->nfnWorkflow) ||
-            null === $expedition->nfnWorkflow->panoptes_workflow_id ||
-            null === $expedition->nfnWorkflow->panoptes_project_id ||
+            ! isset($expedition->panoptesProject) ||
+            null === $expedition->panoptesProject->panoptes_workflow_id ||
+            null === $expedition->panoptesProject->panoptes_project_id ||
             in_array($expedition->id, $this->nfnSkipCsv, false);
     }
 }

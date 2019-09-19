@@ -2,10 +2,10 @@
 
 namespace App\Observers;
 
-use App\Jobs\UpdateNfnWorkflowJob;
-use App\Models\NfnWorkflow as Model;
+use App\Jobs\PanoptesProjectUpdateJob;
+use App\Models\PanoptesProject as Model;
 
-class NovaNfnWorkflowObserver
+class NovaPanoptesProjectObserver
 {
     /**
      * Entity Updated.
@@ -14,7 +14,7 @@ class NovaNfnWorkflowObserver
      */
     public function created(Model $model)
     {
-        //UpdateNfnWorkflowJob::dispatch($model);
+        PanoptesProjectUpdateJob::dispatch($model);
     }
 
     /**
@@ -24,6 +24,6 @@ class NovaNfnWorkflowObserver
      */
     public function updated(Model $model)
     {
-        //UpdateNfnWorkflowJob::dispatch($model);
+        PanoptesProjectUpdateJob::dispatch($model);
     }
 }

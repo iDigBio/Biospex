@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Observers\NovaNfnWorkflowObserver;
-use App\Models\NfnWorkflow;
+use App\Observers\NovaPanoptesProjectObserver;
+use App\Models\PanoptesProject;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Cards\Help;
 use Illuminate\Support\Facades\Gate;
@@ -20,7 +20,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     {
         parent::boot();
         Nova::serving(function () {
-            NfnWorkflow::observe(NovaNfnWorkflowObserver::class);
+            PanoptesProject::observe(NovaPanoptesProjectObserver::class);
         });
     }
 

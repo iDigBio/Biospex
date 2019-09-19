@@ -2,10 +2,10 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\Models\NfnWorkflow as Model;
-use App\Repositories\Interfaces\NfnWorkflow;
+use App\Models\PanoptesProject as Model;
+use App\Repositories\Interfaces\PanoptesProject;
 
-class NfnWorkflowRepository extends EloquentRepository implements NfnWorkflow
+class PanoptesProjectRepository extends EloquentRepository implements PanoptesProject
 {
 
     /**

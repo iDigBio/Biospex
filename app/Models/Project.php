@@ -198,23 +198,13 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * NfnWorkflow relationship.
+     * PanoptesProject relationship.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function nfnWorkflows()
+    public function panoptesProjects()
     {
-        return $this->hasMany(NfnWorkflow::class);
-    }
-
-    /**
-     * NfnWorkflow relationship returning last in database.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function lastWorkflow()
-    {
-        return $this->hasOne(NfnWorkflow::class)->latest();
+        return $this->hasMany(PanoptesProject::class);
     }
 
     /**

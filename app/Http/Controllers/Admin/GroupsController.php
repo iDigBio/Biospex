@@ -142,7 +142,7 @@ class GroupsController extends Controller
      */
     public function delete($groupId)
     {
-        $group = $this->groupContract->findWith($groupId, ['projects.nfnWorkflows', 'projects.workflowManagers']);
+        $group = $this->groupContract->findWith($groupId, ['projects.panoptesProject', 'projects.workflowManagers']);
 
         if (! $this->checkPermissions('isOwner', $group)) {
             return redirect()->back();
@@ -150,7 +150,7 @@ class GroupsController extends Controller
 
         try {
             foreach ($group->projects as $project) {
-                if ($project->nfnWorkflows->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
+                if ($project->panoptesProjects->isNotEmpty() || $project->workflowManagers->isNotEmpty()) {
                     FlashHelper::error(trans('messages.expedition_process_exists'));
 
                     return redirect()->route('admin.groups.index');

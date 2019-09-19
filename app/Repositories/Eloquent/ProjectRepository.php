@@ -24,7 +24,7 @@ class ProjectRepository extends EloquentRepository implements Project
     public function getPublicProjectIndex($sort = null, $order = null)
     {
         $results = $this->model->withCount('expeditions')
-            ->withCount('events')->with('group')->has('nfnWorkflows')->get();
+            ->withCount('events')->with('group')->has('panoptesProjects')->get();
 
         $this->resetModel();
 
@@ -94,7 +94,7 @@ class ProjectRepository extends EloquentRepository implements Project
             'resources',
             'lastWorkflow',
             'expeditions' => function($query){
-                $query->has('nfnWorkflow')->has('nfnActor')->with('nfnWorkflow', 'stat', 'nfnActor');
+                $query->has('panoptesProject')->has('nfnActor')->with('panoptesProject', 'stat', 'nfnActor');
             },
             'events' => function ($q) {
                 $q->orderBy('start_date', 'desc');
@@ -207,7 +207,7 @@ class ProjectRepository extends EloquentRepository implements Project
      */
     public function getProjectEventSelect()
     {
-        $results = $this->model->has('nfnWorkflows')->orderBy('title')->get(['id', 'title'])->pluck('title', 'id');
+        $results = $this->model->has('panoptesProjects')->orderBy('title')->get(['id', 'title'])->pluck('title', 'id');
 
         $this->resetModel();
 
@@ -223,7 +223,7 @@ class ProjectRepository extends EloquentRepository implements Project
     {
         $result = $this->model->with([
             'group',
-            'nfnWorkflows',
+            'panoptesProjects',
             'workflowManagers',
             'expeditions.downloads',
         ])->find($projectId);
@@ -283,7 +283,7 @@ class ProjectRepository extends EloquentRepository implements Project
         $result = $this->model->with([
             'expeditions' => function ($q) {
                 $q->with('stat')->has('stat');
-                $q->with('nfnWorkflow')->has('nfnWorkflow');
+                $q->with('panoptesProject')->has('panoptesProject');
             },
         ])->find($projectId);
 

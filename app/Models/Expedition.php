@@ -197,11 +197,13 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
+     * PanoptesProject
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function nfnWorkflow()
+    public function panoptesProject()
     {
-        return $this->hasOne(NfnWorkflow::class);
+        return $this->hasOne(PanoptesProject::class);
     }
 
     /**

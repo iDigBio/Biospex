@@ -43,7 +43,7 @@ class NfnClassificationsUpdateJob implements ShouldQueue
      */
     public function handle(Expedition $expeditionContract)
     {
-        $expedition = $expeditionContract->getExpeditionsHavingNfnWorkflows($this->expeditionId);
+        $expedition = $expeditionContract->getExpeditionsHavingPanoptesProjects($this->expeditionId);
 
         if ($this->checkIfExpeditionShouldProcess($expedition))
         {
@@ -66,9 +66,9 @@ class NfnClassificationsUpdateJob implements ShouldQueue
     public function checkIfExpeditionShouldProcess($expedition)
     {
         return null === $expedition
-            || ! isset($expedition->nfnWorkflow)
-            || null === $expedition->nfnWorkflow->panoptes_workflow_id
-            || null === $expedition->nfnWorkflow->panoptes_project_id
+            || ! isset($expedition->panoptesProject)
+            || null === $expedition->panoptesProject->panoptes_workflow_id
+            || null === $expedition->panoptesProject->panoptes_project_id
             || null === $expedition->nfnActor;
     }
 }

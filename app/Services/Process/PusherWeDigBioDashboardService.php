@@ -39,9 +39,9 @@ class PusherWeDigBioDashboardService
      */
     public function process($data)
     {
-        $workflow = $this->nfnApiService->getNfnWorkflow($data->workflow_id);
-        $subject = $this->nfnApiService->getNfnSubject($data->subject_ids[0]);
-        $user = $data->user_id !== null ? $this->nfnApiService->getNfnUser($data->user_id) : null;
+        $workflow = $this->nfnApiService->getPanoptesWorkflow($data->workflow_id);
+        $subject = $this->nfnApiService->getPanoptesSubject($data->subject_ids[0]);
+        $user = $data->user_id !== null ? $this->nfnApiService->getPanoptesUser($data->user_id) : null;
 
         if ($workflow === null || $subject === null) {
             return;

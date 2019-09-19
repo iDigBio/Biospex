@@ -57,7 +57,7 @@ class NfnPanoptesClassifications
         $this->actorServiceConfig->setActor($actor);
 
         $record = $this->expeditionContract
-            ->findWith($actor->pivot->expedition_id, ['project.group.owner', 'stat', 'nfnWorkflow']);
+            ->findWith($actor->pivot->expedition_id, ['project.group.owner', 'stat', 'panoptesProject']);
 
         if ($this->workflowIdDoesNotExist($record))
         {
@@ -68,7 +68,7 @@ class NfnPanoptesClassifications
 
         try
         {
-            $workflow = $this->nfnApiService->getNfnWorkflow($record->nfnWorkflow->panoptes_workflow_id);
+            $workflow = $this->nfnApiService->getPanoptesWorkflow($record->panoptesProject->panoptes_workflow_id);
             $count = $workflow['subjects_count'];
             $transcriptionCompleted = $workflow['classifications_count'];
             $transcriptionTotal = GeneralHelper::transcriptionsTotal($workflow['subjects_count']);
@@ -137,13 +137,8 @@ class NfnPanoptesClassifications
      */
     protected function workflowIdDoesNotExist($record)
     {
-        if ($record->nfnWorkflow === null || empty($record->nfnWorkflow->panoptes_workflow_id))
+        if ($record->panoptesProject === null || empty($record->panoptesProject->panoptes_workflow_id))
         {
-            /*
-            $this->actorServiceConfig->fireActorUnQueuedEvent();
-            $message = trans('errors.missing_nfnworkflow', ['title'   => $record->title]);
-            $record->project->group->owner->notify(new NfnTranscriptionsComplete($message));
-            */
             return true;
         }
 

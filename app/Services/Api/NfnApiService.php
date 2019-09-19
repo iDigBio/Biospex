@@ -7,16 +7,16 @@ use Cache;
 class NfnApiService extends NfnApi
 {
     /**
-     * Get nfn project.
+     * Get panoptes project.
      *
      * @param $projectId
      * @return array
      */
-    public function getNfnProject($projectId)
+    public function getPanoptesProject($projectId)
     {
         $project = Cache::remember(__METHOD__.$projectId, 120, function () use ($projectId) {
             $this->setProvider();
-            $this->checkAccessToken('nfnToken');
+            $this->checkAccessToken('panoptes_token');
             $uri = $this->getProjectUri($projectId);
             $request = $this->buildAuthorizedRequest('GET', $uri);
             $result = $this->sendAuthorizedRequest($request);
@@ -28,16 +28,16 @@ class NfnApiService extends NfnApi
     }
 
     /**
-     * Get nfn workflow.
+     * Get panoptes workflow.
      *
      * @param $workflowId
      * @return mixed
      */
-    public function getNfnWorkflow($workflowId)
+    public function getPanoptesWorkflow($workflowId)
     {
         $workflow = Cache::remember(__METHOD__.$workflowId, 120, function () use ($workflowId) {
             $this->setProvider();
-            $this->checkAccessToken('nfnToken');
+            $this->checkAccessToken('panoptes_token');
             $uri = $this->getWorkflowUri($workflowId);
             $request = $this->buildAuthorizedRequest('GET', $uri);
             $result = $this->sendAuthorizedRequest($request);
@@ -49,16 +49,16 @@ class NfnApiService extends NfnApi
     }
 
     /**
-     * Get nfn subject.
+     * Get panoptes subject.
      *
      * @param $subjectId
      * @return null
      */
-    public function getNfnSubject($subjectId)
+    public function getPanoptesSubject($subjectId)
     {
         $result = Cache::remember(__METHOD__.$subjectId, 120, function () use ($subjectId) {
             $this->setProvider();
-            $this->checkAccessToken('nfnToken');
+            $this->checkAccessToken('panoptes_token');
             $uri = $this->getSubjectUri($subjectId);
             $request = $this->buildAuthorizedRequest('GET', $uri);
             $results = $this->sendAuthorizedRequest($request);
@@ -70,16 +70,16 @@ class NfnApiService extends NfnApi
     }
 
     /**
-     * Get nfn user.
+     * Get panoptes user.
      *
      * @param $userId
      * @return mixed
      */
-    public function getNfnUser($userId)
+    public function getPanoptesUser($userId)
     {
         $user = Cache::remember(__METHOD__.$userId, 120, function () use ($userId) {
             $this->setProvider();
-            $this->checkAccessToken('nfnToken');
+            $this->checkAccessToken('panoptes_token');
             $uri = $this->getUserUri($userId);
             $request = $this->buildAuthorizedRequest('GET', $uri);
             $results = $this->sendAuthorizedRequest($request);
@@ -91,12 +91,13 @@ class NfnApiService extends NfnApi
     }
 
     /**
-     * Send requests to build nfn classifications download.
+     * Send requests to build panoptes classifications download.
      *
      * @param $expeditions
      * @return array
+     * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
-    public function nfnClassificationCreate($expeditions)
+    public function panoptesClassificationCreate($expeditions)
     {
         /**
          * @param array $expeditions
@@ -111,7 +112,7 @@ class NfnApiService extends NfnApi
                     continue;
                 }
 
-                $uri = $this->buildClassificationCsvUri($expedition->nfnWorkflow->panoptes_workflow_id);
+                $uri = $this->buildClassificationCsvUri($expedition->panoptesProject->panoptes_workflow_id);
                 $request = $this->buildAuthorizedRequest('POST', $uri, ['body' => '{"media":{"content_type":"text/csv"}}']);
 
                 yield $expedition->id => $request;
@@ -119,19 +120,19 @@ class NfnApiService extends NfnApi
         };
 
         $this->setProvider();
-        $this->checkAccessToken('nfnToken');
+        $this->checkAccessToken('panoptes_token');
         $responses = $this->poolBatchRequest($requests($expeditions));
 
         return $responses;
     }
 
     /**
-     * Download csv nfn classifications.
+     * Download csv panoptes classifications.
      *
      * @param $sources
      * @return array
      */
-    public function nfnClassificationsDownload($sources)
+    public function panoptesClassificationsDownload($sources)
     {
         $requests = function () use ($sources)
         {
@@ -159,12 +160,13 @@ class NfnApiService extends NfnApi
     }
 
     /**
-     * Check nfn classifications file to see if ready for download.
+     * Check panoptes classifications file to see if ready for download.
      *
      * @param $expeditions
      * @return array
+     * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
-    public function nfnClassificationsFile($expeditions)
+    public function panoptesClassificationsFile($expeditions)
     {
         $requests = function ($expeditions)
         {
@@ -175,7 +177,7 @@ class NfnApiService extends NfnApi
                     continue;
                 }
 
-                $uri = $this->buildClassificationCsvUri($expedition->nfnWorkflow->panoptes_workflow_id);
+                $uri = $this->buildClassificationCsvUri($expedition->panoptesProject->panoptes_workflow_id);
                 $request = $this->buildAuthorizedRequest('GET', $uri);
 
                 yield $expedition->id => $request;
@@ -183,7 +185,7 @@ class NfnApiService extends NfnApi
         };
 
         $this->setProvider();
-        $this->checkAccessToken('nfnToken');
+        $this->checkAccessToken('panoptes_token');
         $responses = $this->poolBatchRequest($requests($expeditions));
 
         return $responses;

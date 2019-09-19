@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\NfnWorkflow;
+use App\Models\PanoptesProject;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -32,6 +34,23 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
+        $this->updatePanoptes();
+    }
 
+    private function updatePanoptes()
+    {
+        $workflows = NfnWorkflow::all();
+        $workflows->each(function ($workflow) {
+            $values = [
+                'project_id'           => $workflow->project_id,
+                'expedition_id'        => $workflow->expedition_id,
+                'panoptes_project_id'  => $workflow->project,
+                'panoptes_workflow_id' => $workflow->workflow,
+                'subject_sets'         => $workflow->subject_sets,
+                'slug'                 => $workflow->slug,
+            ];
+
+            PanoptesProject::create($values);
+        });
     }
 }
