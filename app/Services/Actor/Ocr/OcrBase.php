@@ -2,13 +2,34 @@
 
 namespace App\Services\Actor\Ocr;
 
+use Storage;
+
 class OcrBase
 {
-    /*
-    write file to folder
-    read file and fetch urls for images
-    retrieve images and save using ID
-    tesseract images and update file
-    once completed, mark as completed
+    /**
+     * @var
      */
+    protected $folderPath;
+
+    /**
+     * Create directory for queue.
+     *
+     * @param $queueId
+     */
+    protected function setDir($queueId)
+    {
+        $this->folderPath = 'ocr/'.md5($queueId);
+
+        if (! Storage::exists($this->folderPath)) {
+            Storage::makeDirectory($this->folderPath);
+        }
+    }
+
+    /**
+     * Delete directory for queue.
+     */
+    protected function deleteDir()
+    {
+        Storage::deleteDirectory($this->folderPath);
+    }
 }

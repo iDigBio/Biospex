@@ -2,17 +2,14 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\OcrTesseractJob;
 use App\Models\User;
-use App\Repositories\Interfaces\OcrFile;
 use App\Repositories\Interfaces\OcrQueue;
 use App\Notifications\JobError;
 use App\Services\Actor\Ocr\OcrComplete;
+use App\Services\Actor\Ocr\OcrProcess;
 use Artisan;
 use Exception;
-use File;
 use Illuminate\Console\Command;
-use Storage;
 
 class OcrProcessCommand extends Command
 {
@@ -41,9 +38,9 @@ class OcrProcessCommand extends Command
     private $ocrComplete;
 
     /**
-     * @var \App\Repositories\Interfaces\OcrFile
+     * @var \App\Services\Actor\Ocr\OcrProcess
      */
-    private $ocrFileContract;
+    private $ocrProcess;
 
     /**
      * OcrProcessCommand constructor.
@@ -51,19 +48,19 @@ class OcrProcessCommand extends Command
      * OcrProcessCommand constructor.
      *
      * @param OcrQueue $ocrQueueContract
-     * @param \App\Repositories\Interfaces\OcrFile $ocrFileContract
      * @param OcrComplete $ocrComplete
+     * @param \App\Services\Actor\Ocr\OcrProcess $ocrProcess
      */
     public function __construct(
         OcrQueue $ocrQueueContract,
-        OcrFile $ocrFileContract,
-        OcrComplete $ocrComplete
+        OcrComplete $ocrComplete,
+        OcrProcess $ocrProcess
     ) {
         parent::__construct();
 
         $this->ocrQueueContract = $ocrQueueContract;
-        $this->ocrFileContract = $ocrFileContract;
         $this->ocrComplete = $ocrComplete;
+        $this->ocrProcess = $ocrProcess;
     }
 
     /**
@@ -80,32 +77,14 @@ class OcrProcessCommand extends Command
         }
 
         try {
-            $folderPath = $this->createDir($queue);
-            $files = $this->ocrFileContract->getAllOcrQueueFiles($queue->id);
-
-            $queue->total = $files->count();
-            $queue->processed = 0;
-
             if ($queue->status === 1) {
-                $this->ocrComplete->process($queue, $files);
-                $this->deleteDir($folderPath);
+                $this->ocrComplete->process($queue);
                 Artisan::call('ocrprocess:records');
 
                 return;
             }
 
-            $files->reject(function ($file) use ($queue) {
-                if ($file->status === 1 && ! empty($file->ocr)) {
-                    $queue->processed = $queue->processed + 1;
-                    $queue->save();
-
-                    return true;
-                }
-
-                return false;
-            })->each(function ($file) use ($queue, $folderPath) {
-                OcrTesseractJob::dispatch($queue, $file, $folderPath);
-            });
+            $this->ocrProcess->process($queue);
 
             return;
         } catch (Exception $e) {
@@ -124,30 +103,4 @@ class OcrProcessCommand extends Command
         }
     }
 
-    /**
-     * Create directory for queue.
-     *
-     * @param $queue
-     * @return string
-     */
-    private function createDir($queue)
-    {
-        $folderPath = 'ocr/'.md5($queue->id);
-
-        if (! File::exists($folderPath)) {
-            Storage::makeDirectory($folderPath);
-        }
-
-        return $folderPath;
-    }
-
-    /**
-     * Delete directory for queue.
-     *
-     * @param $folderPath
-     */
-    private function deleteDir($folderPath)
-    {
-        Storage::deleteDirectory($folderPath);
-    }
 }

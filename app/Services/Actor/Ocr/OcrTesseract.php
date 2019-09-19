@@ -68,11 +68,17 @@ class OcrTesseract extends OcrBase
      * Process ocr file.
      *
      * @param \App\Models\OcrFile $file
-     * @param $folderPath
      */
-    public function process(OcrFile $file, $folderPath)
+    public function process(OcrFile $file)
     {
-        $this->createImagePath($file, $folderPath);
+        if ($file->status === 1 && ! empty($file->ocr)) {
+            $this->updateQueue($file);
+
+            return;
+        }
+
+        $this->setDir($file->queue_id);
+        $this->createImagePath($file);
 
         if ( ! $this->getImage($file)) {
             $this->updateQueue($file);
@@ -140,12 +146,11 @@ class OcrTesseract extends OcrBase
      * Create paths.
      *
      * @param \App\Models\OcrFile $file
-     * @param $folderPath
      */
-    private function createImagePath(OcrFile $file, $folderPath)
+    private function createImagePath(OcrFile $file)
     {
         $this->imgUrl = str_replace(' ', '%20', $file->url);
-        $this->imgPath = $folderPath.'/'.$file->subject_id.'.jpg';
+        $this->imgPath = $this->folderPath.'/'.$file->subject_id.'.jpg';
     }
 
     /**

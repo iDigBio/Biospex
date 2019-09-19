@@ -32,22 +32,15 @@ class OcrTesseractJob implements ShouldQueue
     private $file;
 
     /**
-     * @var
-     */
-    private $folderPath;
-
-    /**
-     * ocrTesseractJob constructor.
+     * OcrTesseractJob constructor.
      *
      * @param \App\Models\OcrQueue $ocrQueue
      * @param \App\Models\OcrFile $file
-     * @param $folderPath
      */
-    public function __construct(OcrQueue $ocrQueue, OcrFile $file, $folderPath)
+    public function __construct(OcrQueue $ocrQueue, OcrFile $file)
     {
         $this->ocrQueue = $ocrQueue;
         $this->file = $file;
-        $this->folderPath = $folderPath;
         $this->onQueue(config('config.ocr_tube'));
     }
 
@@ -59,10 +52,8 @@ class OcrTesseractJob implements ShouldQueue
      */
     public function handle(OcrTesseract $ocrTesseract)
     {
-        $ocrTesseract->process($this->file, $this->folderPath);
-
+        $ocrTesseract->process($this->file);
         event('ocr.poll');
-
         $this->delete();
     }
 

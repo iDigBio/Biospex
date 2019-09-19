@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace App\Services\Actor\Ocr;
 
@@ -7,37 +7,39 @@ use App\Repositories\Interfaces\OcrFile;
 use App\Repositories\Interfaces\Subject;
 use App\Notifications\OcrProcessComplete;
 use App\Services\Csv\Csv;
+use Illuminate\Support\Str;
 
-class OcrComplete
+class OcrComplete extends OcrBase
 {
     /**
-     * @var Subject
+     * @var \App\Repositories\Interfaces\OcrFile
+     */
+    private $ocrFileContract;
+
+    /**
+     * @var \App\Repositories\Interfaces\Subject
      */
     private $subjectContract;
 
     /**
-     * @var Csv
+     * @var \App\Services\Csv\Csv
      */
     private $csvService;
 
     /**
-     * @var \App\Repositories\Interfaces\OcrFile
-     */
-    private $ocrFile;
-
-    /**
      * OcrComplete constructor.
      *
-     * @param \App\Repositories\Interfaces\OcrFile $ocrFile
+     * @param \App\Repositories\Interfaces\OcrFile $ocrFileContract
      * @param \App\Repositories\Interfaces\Subject $subjectContract
      * @param \App\Services\Csv\Csv $csvService
      */
     public function __construct(
-        OcrFile $ocrFile,
+        OcrFile $ocrFileContract,
         Subject $subjectContract,
         Csv $csvService
     ) {
-        $this->ocrFile = $ocrFile;
+
+        $this->ocrFileContract = $ocrFileContract;
         $this->subjectContract = $subjectContract;
         $this->csvService = $csvService;
     }
@@ -46,16 +48,18 @@ class OcrComplete
      * Process the record and send requests to ocr servers.
      *
      * @param \App\Models\OcrQueue $queue
-     * @param \Illuminate\Database\Eloquent\Collection $files
      * @throws \League\Csv\CannotInsertRecord
      */
-    public function process(OcrQueue $queue, $files)
+    public function process(OcrQueue $queue)
     {
+        $files = $this->ocrFileContract->getAllOcrQueueFiles($queue->id);
+
+        $this->setDir($queue->id);
         $csv = $this->updateSubjects($files);
         $this->setOcrCsv($queue, $csv);
         $this->sendNotify($queue);
         $queue->ocrFiles()->delete();
-        $queue->delete();
+        $this->deleteDir();
 
         event('ocr.poll');
     }
@@ -115,7 +119,7 @@ class OcrComplete
     {
         $csv = null;
         if (! empty($queue->csv)) {
-            $csv = config('config.reports_dir').'/'.str_random().'.csv';
+            $csv = config('config.reports_dir').'/'.Str::random().'.csv';
             $this->csvService->writerCreateFromPath($csv);
             $headers = array_keys($queue->csv[0]);
             $this->csvService->insertOne($headers);
