@@ -18,7 +18,7 @@ return [
     'dwc_missing_id'                      => 'Missing required ID value.',
     'dwc_missing_uri'                     => 'Missing accessURI.',
     'event_export_csv'                    => 'Event Export CSV',
-    'event_export_csv_complete'           => 'Your export is attached. If an attachment is not included, it is due to no records being located for the action. If you believe this is an error, please contact the Administration.',
+    'event_export_csv_complete'           => 'Your export is attached. If an attachment is not included, it is due to no records being located for the action. Some records require overnight processing before they are available.<br>If you believe this is an error, please contact the Administration.',
     'event_export_csv_error'              => 'There was an error while exporting. Please forward this message to the Administration<br><br>Error: :error',
     'event_join_team_success'             => 'Thank you for your registration.',
     'event_join_team_error'               => 'The event team could not be found. Please check you are using the correct link or contact event coordinator.',
