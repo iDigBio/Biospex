@@ -8,6 +8,7 @@ use App\Http\Requests\EventJoinRequest;
 use App\Repositories\Interfaces\Event;
 use App\Repositories\Interfaces\EventTeam;
 use App\Repositories\Interfaces\EventUser;
+use GeneralHelper;
 use Illuminate\Support\Carbon;
 
 class EventsController extends Controller
@@ -23,11 +24,7 @@ class EventsController extends Controller
         $results = $eventContract->getEventPublicIndex();
 
         list($events, $eventsCompleted) = $results->partition(function ($event) {
-            $start_date = $event->start_date->setTimezone($event->timezone);
-            $end_date = $event->end_date->setTimezone($event->timezone);
-            $now = Carbon::now($event->timezone);
-
-            return $now->between($start_date, $end_date);
+            return GeneralHelper::eventCompleted($event);
         });
 
         return view('front.event.index', compact('events', 'eventsCompleted'));
@@ -52,11 +49,7 @@ class EventsController extends Controller
         $results = $eventContract->getEventPublicIndex($sort, $order, $projectId);
 
         list($active, $completed) = $results->partition(function ($event) {
-            $start_date = $event->start_date->setTimezone($event->timezone);
-            $end_date = $event->end_date->setTimezone($event->timezone);
-            $now = Carbon::now($event->timezone);
-
-            return $now->between($start_date, $end_date);
+            return GeneralHelper::eventCompleted($event);
         });
 
         $events = request()->get('type') === 'active' ? $active : $completed;

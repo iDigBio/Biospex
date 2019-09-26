@@ -338,22 +338,18 @@ class GeneralHelper
     }
 
     /**
-     * Check event completed.
+     * Check event in progress.
      *
-     * @param $end_date
-     * @param $timezone
+     * @param $event
      * @return bool
      */
-    public function eventCompleted($end_date, $timezone)
+    public function eventCompleted($event)
     {
-        $now = Carbon::now(new DateTimeZone($timezone));
-        $end = $end_date->setTimezone($timezone);
+        $start_date = $event->start_date->setTimezone($event->timezone);
+        $end_date = $event->end_date->setTimezone($event->timezone);
+        $now = Carbon::now($event->timezone);
 
-        if ($now->timestamp > $end->timestamp) {
-            return true;
-        }
-
-        return false;
+        return $now->between($start_date, $end_date);
     }
 
     /**

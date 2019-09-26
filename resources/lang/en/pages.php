@@ -71,7 +71,7 @@ return [
     'end_date'                       => 'End Date',
     'event'                          => 'Event',
     'events'                         => 'Events',
-    'events_none'                    => 'No current Events exist.',
+    'events_none'                    => 'No Events exist.',
     'event_closed'                   => 'Event Closed',
     'event_download_users'           => 'Download Users File',
     'event_download_transcripts'     => 'Download Transcripts File',
@@ -239,7 +239,7 @@ return [
     'warning'             => 'Warning',
     'welcome'             => 'Welcome',
     'welcome_msg'         => 'This is the starting point where Biospex Projects and Events can be created.',
-    'welcome_project_txt' => 'Projects begin with the initiation of a new Group. Groups manage Projects which launch Expeditions. You can manage a Project yourself or invite collaborators to the group. You can have as many groups as are necessary to manage.',
-    'welcome_event_txt'   => 'Events are based on Projects. They contain single or multiple Teams consisting of users. Create a single group for a class event or create multiple Teams for competitions. After creating your Event and Teams, you will be given invite links where users can sign up for a particular Team using their Notes From Nature user ID.',
+    'welcome_project_txt' => 'Projects begin with the initiation of a new Group. Groups manage Projects which launch Expeditions. You can manage a Project by yourself or invite collaborators to the Group. A Group can manage multiple Projects, and you can belong to multiple Groups.',
+    'welcome_event_txt'   => 'Events focus on creating data for a particular Project. Event participants are organized into one or more Teams. If the focus is collaboration, create one Team. If it is competitive, then multiple Teams. You will share a Team-specific sign-up link with team members, at which they will provide just their Zooniverse userid. This enables BIOSPEX to keep score during activity at Notes from Nature.',
     'workflows'           => 'Workflows',
 ];

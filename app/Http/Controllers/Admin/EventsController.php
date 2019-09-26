@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Facades\DateHelper;
 use App\Facades\FlashHelper;
+use App\Facades\GeneralHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventFormRequest;
 use App\Jobs\EventTranscriptionExportCsvJob;
@@ -11,7 +12,6 @@ use App\Jobs\EventUserExportCsvJob;
 use App\Repositories\Interfaces\Event;
 use App\Repositories\Interfaces\Project;
 use Auth;
-use Illuminate\Support\Carbon;
 
 class EventsController extends Controller
 {
@@ -42,11 +42,7 @@ class EventsController extends Controller
         $results = $this->eventContract->getEventAdminIndex(Auth::id());
 
         list($events, $eventsCompleted) = $results->partition(function ($event) {
-            $start_date = $event->start_date->setTimezone($event->timezone);
-            $end_date = $event->end_date->setTimezone($event->timezone);
-            $now = Carbon::now($event->timezone);
-
-            return $now->between($start_date, $end_date);
+            return GeneralHelper::eventCompleted($event);
         });
 
         return view('admin.event.index', compact('events', 'eventsCompleted'));
@@ -66,11 +62,7 @@ class EventsController extends Controller
         $results = $this->eventContract->getEventPublicIndex(request()->get('sort'), request()->get('order'));
 
         list($active, $completed) = $results->partition(function ($event) {
-            $start_date = $event->start_date->setTimezone($event->timezone);
-            $end_date = $event->end_date->setTimezone($event->timezone);
-            $now = Carbon::now($event->timezone);
-
-            return $now->between($start_date, $end_date);
+            return GeneralHelper::eventCompleted($event);
         });
 
         $events = request()->get('type') === 'active' ? $active : $completed;

@@ -61,11 +61,7 @@ class ProjectsController extends Controller
         });
 
         list($events, $eventsCompleted) = $project->events->partition(function ($event) {
-            $start_date = $event->start_date->setTimezone($event->timezone);
-            $end_date = $event->end_date->setTimezone($event->timezone);
-            $now = Carbon::now($event->timezone);
-
-            return $now->between($start_date, $end_date);
+            return GeneralHelper::eventCompleted($event);
         });
 
         $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);

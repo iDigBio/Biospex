@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Project;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command

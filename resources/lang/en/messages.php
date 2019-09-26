@@ -17,6 +17,7 @@ return [
     'dwc_import_columns'                  => 'All identifier columns empty or identifier is URL.',
     'dwc_missing_id'                      => 'Missing required ID value.',
     'dwc_missing_uri'                     => 'Missing accessURI.',
+    'event_no_edit'                       => 'Event in progress. Edit permissions disabled.',
     'event_export_csv'                    => 'Event Export CSV',
     'event_export_csv_complete'           => 'Your export is attached. If an attachment is not included, it is due to no records being located for the action. Some records require overnight processing before they are available.<br>If you believe this is an error, please contact the Administration.',
     'event_export_csv_error'              => 'There was an error while exporting. Please forward this message to the Administration<br><br>Error: :error',

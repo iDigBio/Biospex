@@ -3,7 +3,7 @@
         <div class="card-body text-center">
             <h2 class="card-text">{{ __('pages.time_remaining') }}</h2>
             <!-- countdown clock -->
-            @if(GeneralHelper::eventCompleted($event->end_date, $event->timezone))
+            @if(GeneralHelper::eventCompleted($event))
                 <h3>{{ __('pages.completed') }}</h3>
             @else
 
@@ -46,7 +46,7 @@
         <div class="card-footer">
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
                 {!! $event->project->present()->project_page_icon !!}
-                @if(! GeneralHelper::eventCompleted($event->end_date, $event->timezone))
+                @if(! GeneralHelper::eventCompleted($event))
                 {!! $event->project->lastPanoptesProject->present()->project_icon !!}
                 @endif
                 {!! $event->present()->twitter_icon !!}

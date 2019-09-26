@@ -22,7 +22,7 @@
     <div class="d-flex align-items-center justify-content-center ">
         @include('front.event.partials.event-loop')
     </div>
-    @if( ! GeneralHelper::eventCompleted($event->end_date, $event->timezone))
+    @if( ! GeneralHelper::eventCompleted($event))
     <div class="row">
         <p class="text-center col-6 mx-auto mt-4">{!! $event->project->lastPanoptesProject->present()->project_link !!}</p>
     </div>

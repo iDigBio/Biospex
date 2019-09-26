@@ -14,7 +14,7 @@ function buildCountryMap() {
     polygonSeries.heatRules.push({
         property: "fill",
         target: polygonSeries.mapPolygons.template,
-        min: am4core.color("#00abff"),
+        min: am4core.color("#a7abab"),
         max: am4core.color("#aa0002"),
         minValue: 0,
         maxValue: Laravel.max
@@ -88,7 +88,8 @@ function buildCountyMap(stateabbr,statenum, statevar) {
         polygonSeries.heatRules.push({
             property: "fill",
             target: polygonSeries.mapPolygons.template,
-            min: am4core.color("#00abff"),
+            //min: am4core.color("#00abff"),
+            min: am4core.color("#a7abab"),
             max: am4core.color("#aa0002"),
             minValue: 0,
             maxValue: data.max
