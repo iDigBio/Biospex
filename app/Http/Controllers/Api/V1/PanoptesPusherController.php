@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class PanoptesPusherController extends ApiController
 {
-
     /**
      * Display a listing of the resource.
      *
@@ -30,20 +29,19 @@ class PanoptesPusherController extends ApiController
      */
     public function create(Request $request, PanoptesProject $panoptesProject)
     {
-        if ( ! $request->isJson()) {
+        if (! $request->isJson()) {
             return;
         }
 
         $data = json_decode($request->getContent());
 
-        if ( ! isset($data->workflow_id))
-        {
+        if (! isset($data->workflow_id)) {
             return;
         }
 
         $results = $panoptesProject->findBy('panoptes_workflow_id', $data->workflow_id);
 
-        if ($results === null){
+        if ($results === null) {
             return;
         }
 
