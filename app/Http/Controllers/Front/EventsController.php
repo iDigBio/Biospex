@@ -24,7 +24,7 @@ class EventsController extends Controller
         $results = $eventContract->getEventPublicIndex();
 
         list($events, $eventsCompleted) = $results->partition(function ($event) {
-            return GeneralHelper::eventActive($event);
+            return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
         });
 
         return view('front.event.index', compact('events', 'eventsCompleted'));
@@ -49,7 +49,7 @@ class EventsController extends Controller
         $results = $eventContract->getEventPublicIndex($sort, $order, $projectId);
 
         list($active, $completed) = $results->partition(function ($event) {
-            return GeneralHelper::eventActive($event);
+            return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
         });
 
         $events = request()->get('type') === 'active' ? $active : $completed;
@@ -82,10 +82,7 @@ class EventsController extends Controller
     {
         $team = $eventTeamContract->getTeamByUuid($uuid);
 
-        $start_date = $team->event->start_date->setTimezone($team->event->timezone);
-        $end_date = $team->event->end_date->setTimezone($team->event->timezone);
-        $now = Carbon::now($team->event->timezone);
-        $active = $now->between($start_date, $end_date);
+        $active = GeneralHelper::eventBefore($team->event) || GeneralHelper::eventActive($team->event);
 
         if ($team === null) {
             FlashHelper::error(trans('messages.event_join_team_error'));

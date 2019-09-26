@@ -49,8 +49,7 @@ $(function () {
         $modal.load($button.data('href'), function () {
             let $clock = $modal.find('.clockdiv');
             let deadline = $modal.find('#date').html(); // Sun Sep 30 2018 14:26:26 GMT-0400 (Eastern Daylight Time)
-            if (deadline === 'Completed') {
-                $clock.html('<h2 class="text-center">Completed</h2>');
+            if (deadline === null) {
                 return;
             }
             initializeClock($clock, deadline);
@@ -87,14 +86,6 @@ $(function () {
     });
 
     clockDiv();
-
-    /*
-    $('#polling').on('click', function (event) {
-        $('#ocr-html').html('Retrieving data');
-        $('#export-html').html('Retrieving data');
-        $.get('/poll');
-    });
-     */
 
     if ($('#process-modal').length) {
         Echo.channel(Laravel.ocrChannel)

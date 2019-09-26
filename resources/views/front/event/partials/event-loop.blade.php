@@ -1,12 +1,12 @@
 <div class="col-md-4 mb-4">
     <div class="card px-4 box-shadow h-100">
         <div class="card-body text-center">
-            <h2 class="card-text">{{ __('pages.time_remaining') }}</h2>
-            <!-- countdown clock -->
-            @if( ! GeneralHelper::eventActive($event))
-                <h3>{{ __('pages.completed') }}</h3>
+            @if(GeneralHelper::eventBefore($event))
+                <h3 class="card-text">{{ __('pages.starting') }} {{ $event->present()->start_date_to_string }}</h3>
+            @elseif( ! GeneralHelper::eventActive($event))
+                <h3 class="card-text">{{ __('pages.completed') }}</h3>
             @else
-
+                <h2 class="card-text">{{ __('pages.time_remaining') }}</h2>
                 <div class="clockdiv" data-value="{{ $event->present()->scoreboard_date }}">
                     <div>
                         <span class="days"></span>
@@ -34,6 +34,7 @@
                 {{ $event->project->title }}
             </h5>
         </div>
+        @if( ! GeneralHelper::eventBefore($event))
         <div class="text-center">
             <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
                     data-remote="false"
@@ -43,11 +44,12 @@
                     data-href="{{ route('ajax.get.scoreboard', [$event->id]) }}">{{ __('pages.scoreboard') }}
             </button>
         </div>
+        @endif
         <div class="card-footer">
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
                 {!! $event->project->present()->project_page_icon !!}
                 {!! $event->present()->event_show_icon !!}
-                @if( ! GeneralHelper::eventActive($event))
+                @if(GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event))
                     {!! $event->project->lastPanoptesProject->present()->project_icon !!}
                 @endif
                 {!! $event->present()->twitter_icon !!}

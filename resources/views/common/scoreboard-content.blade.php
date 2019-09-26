@@ -26,6 +26,7 @@
 </table>
 
 <!-- countdown clock -->
+@if(GeneralHelper::eventActive($event))
 <h2 class="text-center color-action pt-4">{{ __('pages.time_remaining') }}</h2>
 <div class="clockdiv mx-auto">
     <div>
@@ -46,3 +47,6 @@
     </div>
 </div>
 <div id="date" style="display: none">{{ $event->present()->scoreboard_date }}</div>
+@else
+    <h2 class="text-center pt-4">{{ __('pages.completed') }}</h2>
+@endif

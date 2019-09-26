@@ -61,7 +61,7 @@ class ProjectsController extends Controller
         });
 
         list($events, $eventsCompleted) = $project->events->partition(function ($event) {
-            return GeneralHelper::eventActive($event);
+            return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
         });
 
         $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);

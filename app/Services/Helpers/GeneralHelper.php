@@ -288,53 +288,17 @@ class GeneralHelper
     }
 
     /**
-     * Display date as percentage from start to finish.
+     * Check event is before start date.
      *
-     * @param $start_date
-     * @param $end_date
-     * @param $timezone
-     * @return float|string
+     * @param $event
+     * @return bool
      */
-    public function eventStartEndAsPercentage($start_date, $end_date, $timezone)
+    public function eventBefore($event)
     {
-        $now = Carbon::now(new DateTimeZone($timezone));
-        $begin = $start_date->setTimezone($timezone);
-        $end = $end_date->setTimezone($timezone);
+        $start_date = $event->start_date->setTimezone($event->timezone);
+        $now = Carbon::now($event->timezone);
 
-        if ($now->timestamp < $begin->timestamp) {
-            return '0';
-        }
-
-        if ($now->timestamp > $end->timestamp) {
-            return '100';
-        }
-
-        return round(($now->timestamp - $begin->timestamp) / ($end->timestamp - $begin->timestamp) * 100);
-    }
-
-    /**
-     * Event time left in human form.
-     *
-     * @param $start_date
-     * @param $end_date
-     * @param $timezone
-     * @return string
-     */
-    public function eventHoursLeft($start_date, $end_date, $timezone)
-    {
-        $now = Carbon::now(new DateTimeZone($timezone));
-        $begin = $start_date->setTimezone($timezone);
-        $end = $end_date->setTimezone($timezone);
-
-        if ($now->timestamp > $end->timestamp) {
-            return 'Completed';
-        }
-
-        if ($now->timestamp < $begin->timestamp) {
-            return trans('pages.event_starting').$now->diffForHumans($begin, true);
-        }
-
-        return trans('pages.event_ending').$end->diffForHumans($now, true);
+        return $now->isBefore($start_date);
     }
 
     /**
