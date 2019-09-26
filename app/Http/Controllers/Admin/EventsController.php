@@ -42,7 +42,7 @@ class EventsController extends Controller
         $results = $this->eventContract->getEventAdminIndex(Auth::id());
 
         list($events, $eventsCompleted) = $results->partition(function ($event) {
-            return GeneralHelper::eventCompleted($event);
+            return GeneralHelper::eventActive($event);
         });
 
         return view('admin.event.index', compact('events', 'eventsCompleted'));
@@ -62,7 +62,7 @@ class EventsController extends Controller
         $results = $this->eventContract->getEventPublicIndex(request()->get('sort'), request()->get('order'));
 
         list($active, $completed) = $results->partition(function ($event) {
-            return GeneralHelper::eventCompleted($event);
+            return GeneralHelper::eventActive($event);
         });
 
         $events = request()->get('type') === 'active' ? $active : $completed;

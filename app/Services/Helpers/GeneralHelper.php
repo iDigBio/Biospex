@@ -343,7 +343,7 @@ class GeneralHelper
      * @param $event
      * @return bool
      */
-    public function eventCompleted($event)
+    public function eventActive($event)
     {
         $start_date = $event->start_date->setTimezone($event->timezone);
         $end_date = $event->end_date->setTimezone($event->timezone);

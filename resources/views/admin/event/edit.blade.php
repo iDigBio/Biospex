@@ -20,7 +20,7 @@
                         {!! method_field('put') !!}
                         @csrf
                         <input type="hidden" name="entries" value="{{ old('entries', $teamsCount) }}">
-                        <input type="hidden" name="owner_id" value="{{ old('owner_id', $event->onwer_id)  }}">
+                        <input type="hidden" name="owner_id" value="{{ old('owner_id', $event->owner_id)  }}">
                         <div class="form-group">
                             <div class="col-12 p-0">
                                 <label for="project_id" class="col-form-label required">{{ __('pages.project') }}:</label>

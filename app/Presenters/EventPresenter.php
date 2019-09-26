@@ -151,6 +151,19 @@ class EventPresenter extends Presenter
      */
     public function eventShowIcon()
     {
+        return '<a href="'.route('front.events.read', [
+                $this->model->id,
+            ]).'" data-hover="tooltip" title="'.__('pages.view').' ' . __('pages.event').'">
+                <i class="fas fa-eye"></i></a>';
+    }
+
+    /**
+     * Return show icon for admin.
+     *
+     * @return string
+     */
+    public function eventAdminShowIcon()
+    {
         return '<a href="'.route('admin.events.show', [
                 $this->model->id,
             ]).'" data-hover="tooltip" title="'.__('pages.view').' ' . __('pages.event').'">
