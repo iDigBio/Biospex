@@ -203,6 +203,19 @@ $(function() {
         $(this).prev('.custom-file-label').addClass("selected").html(fileName);
     });
 
+    setInterval(function() {
+        let $footer = $('#footer');
+        let docHeight = $(window).height();
+        let footerHeight = $footer.height();
+        let footerTop = $footer.position().top + footerHeight;
+        let marginTop = (docHeight - footerTop + 10);
+
+        if (footerTop < docHeight)
+            $footer.css('margin-top', marginTop + 'px'); // padding of 30 on footer
+        else
+            $footer.css('margin-top', '0px');
+    }, 250);
+
 });
 
 function renumber_prefix() {
