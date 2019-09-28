@@ -24,7 +24,8 @@ class PanoptesProject extends BaseEloquentModel
         'panoptes_project_id',
         'panoptes_workflow_id',
         'subject_sets',
-        'slug'
+        'slug',
+        'title'
     ];
 
     /**

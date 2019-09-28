@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Observers\NovaPanoptesProjectObserver;
-use App\Models\PanoptesProject;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Cards\Help;
 use Illuminate\Support\Facades\Gate;
@@ -19,9 +17,6 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     public function boot()
     {
         parent::boot();
-        Nova::serving(function () {
-            PanoptesProject::observe(NovaPanoptesProjectObserver::class);
-        });
     }
 
     /**

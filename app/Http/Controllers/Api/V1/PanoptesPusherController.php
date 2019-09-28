@@ -29,24 +29,27 @@ class PanoptesPusherController extends ApiController
      */
     public function create(Request $request, PanoptesProject $panoptesProject)
     {
-        if (! $request->isJson()) {
+        if ( ! $request->isJson()) {
             return;
         }
 
         $data = json_decode($request->getContent());
 
-        if (! isset($data->workflow_id)) {
+        if ( ! isset($data->workflow_id))
+        {
             return;
         }
 
-        $results = $panoptesProject->findBy('panoptes_workflow_id', $data->workflow_id);
+        $result = $panoptesProject->findByProjectIdAndWorkflowId($data->project_id, $data->workflow_id);
 
-        if ($results === null) {
+        if ($result === null){
             return;
         }
 
-        PusherEventTranscriptionJob::dispatch($request->getContent());
-        PusherWeDigBioDashboardJob::dispatch($request->getContent());
+        $data->title = $result->title;
+
+        PusherEventTranscriptionJob::dispatch($data);
+        PusherWeDigBioDashboardJob::dispatch($data);
 
         return;
     }

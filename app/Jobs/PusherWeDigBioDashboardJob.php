@@ -25,13 +25,18 @@ class PusherWeDigBioDashboardJob implements ShouldQueue
     private $data;
 
     /**
+     * @var \App\Models\PanoptesProject
+     */
+    private $panoptesProject;
+
+    /**
      * Create a new job instance.
      *
      * @param $data
      */
     public function __construct($data)
     {
-        $this->data = json_decode($data);;
+        $this->data = $data;
         $this->onQueue(config('config.pusher_tube'));
     }
 

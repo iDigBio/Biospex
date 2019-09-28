@@ -39,15 +39,14 @@ class PusherWeDigBioDashboardService
      */
     public function process($data)
     {
-        $workflow = $this->apiService->getPanoptesWorkflow($data->workflow_id);
         $subject = $this->apiService->getPanoptesSubject($data->subject_ids[0]);
         $user = $data->user_id !== null ? $this->apiService->getPanoptesUser($data->user_id) : null;
 
-        if ($workflow === null || $subject === null) {
+        if ($subject === null) {
             return;
         }
 
-        $this->createDashboardFromPusher($data, $workflow, $subject, $user);
+        $this->createDashboardFromPusher($data, $subject, $user);
     }
 
     /**
@@ -56,18 +55,17 @@ class PusherWeDigBioDashboardService
      * $this->buildItem($data, $workflow, $subject, $expedition);
      *
      * @param $data
-     * @param $workflow
      * @param $subject
      * @param $user
      * @throws \Exception
      */
-    private function createDashboardFromPusher($data, $workflow, $subject, $user)
+    private function createDashboardFromPusher($data, $subject, $user)
     {
         $thumbnailUri = $this->setPusherThumbnailUri($data);
 
         $item = [
             'classification_id'    => $data->classification_id,
-            'project'              => $workflow['display_name'],
+            'project'              => $data->title,
             'description'          => 'Classification Id ' . $data->classification_id,
             'guid'                 => Uuid::uuid4()->toString(),
             'timestamp'            => DateHelper::newMongoDbDate(),

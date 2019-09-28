@@ -41,14 +41,16 @@ class PanoptesPusherController extends ApiController
             return;
         }
 
-        $results = $panoptesProject->findBy('panoptes_workflow_id', $data->workflow_id);
+        $result = $panoptesProject->findByProjectIdAndWorkflowId($data->project_id, $data->workflow_id);
 
-        if ($results === null){
+        if ($result === null){
             return;
         }
 
-        PusherEventTranscriptionJob::dispatch($request->getContent());
-        PusherWeDigBioDashboardJob::dispatch($request->getContent());
+        $data->title = $result->title;
+
+        PusherEventTranscriptionJob::dispatch($data);
+        PusherWeDigBioDashboardJob::dispatch($data);
 
         return;
     }
