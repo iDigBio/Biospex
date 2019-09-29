@@ -34,9 +34,10 @@ class PusherWeDigBioDashboardJob implements ShouldQueue
      *
      * @param $data
      */
-    public function __construct($data)
+    public function __construct($data, $panoptesProject)
     {
         $this->data = $data;
+        $this->panoptesProject = $panoptesProject;
         $this->onQueue(config('config.pusher_tube'));
     }
 
@@ -48,7 +49,7 @@ class PusherWeDigBioDashboardJob implements ShouldQueue
      */
     public function handle(PusherWeDigBioDashboardService $service)
     {
-        $service->process($this->data);
+        $service->process($this->data, $this->panoptesProject);
 
         $this->delete();
 

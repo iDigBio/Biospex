@@ -35,9 +35,10 @@ class PusherWeDigBioDashboardService
      * Process pusher data for dashboard.
      *
      * @param $data
+     * @param $panoptesProject
      * @throws \Exception
      */
-    public function process($data)
+    public function process($data, $panoptesProject)
     {
         $subject = $this->apiService->getPanoptesSubject($data->subject_ids[0]);
         $user = $data->user_id !== null ? $this->apiService->getPanoptesUser($data->user_id) : null;
@@ -46,7 +47,7 @@ class PusherWeDigBioDashboardService
             return;
         }
 
-        $this->createDashboardFromPusher($data, $subject, $user);
+        $this->createDashboardFromPusher($data, $subject, $user, $panoptesProject);
     }
 
     /**
@@ -57,15 +58,16 @@ class PusherWeDigBioDashboardService
      * @param $data
      * @param $subject
      * @param $user
+     * @param $panoptesProject
      * @throws \Exception
      */
-    private function createDashboardFromPusher($data, $subject, $user)
+    private function createDashboardFromPusher($data, $subject, $user, $panoptesProject)
     {
         $thumbnailUri = $this->setPusherThumbnailUri($data);
 
         $item = [
             'classification_id'    => $data->classification_id,
-            'project'              => $data->title,
+            'project'              => $panoptesProject->title,
             'description'          => 'Classification Id ' . $data->classification_id,
             'guid'                 => Uuid::uuid4()->toString(),
             'timestamp'            => DateHelper::newMongoDbDate(),
