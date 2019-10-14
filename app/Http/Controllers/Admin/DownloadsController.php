@@ -163,12 +163,17 @@ class DownloadsController extends Controller
     public function report(string $fileName)
     {
         try {
-            $file = Storage::path(config('config.reports_dir') . '/' . $fileName);
-
-            return response()->download($file, $fileName, [
-                'Content-Type'  => Storage::mimeType($file),
+            $headers = [
+                'Content-Type'        => 'text/csv',
                 'Content-disposition' => 'attachment; filename="'.$fileName.'"',
-            ]);
+            ];
+
+            $path = config('config.reports_dir');
+
+            $file = Storage::path($path.'/'.$fileName);
+
+            return response()->download($file, $fileName, $headers);
+
         } catch (\Exception $e) {
             Flash::error($e->getMessage());
 
