@@ -47,10 +47,8 @@ class PanoptesPusherController extends ApiController
             return;
         }
 
-        $data->title = $result->title;
-
         PusherEventTranscriptionJob::dispatch($data);
-        PusherWeDigBioDashboardJob::dispatch($data);
+        PusherWeDigBioDashboardJob::dispatch($data, $result);
 
         return;
     }
