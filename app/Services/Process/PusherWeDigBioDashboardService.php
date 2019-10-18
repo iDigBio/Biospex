@@ -65,12 +65,16 @@ class PusherWeDigBioDashboardService
     {
         $thumbnailUri = $this->setPusherThumbnailUri($data);
 
-        $item = [
+        $value = [
+            'classification_id'    => $data->classification_id,
+        ];
+
+        $attributes = [
             'classification_id'    => $data->classification_id,
             'project'              => $panoptesProject->title,
             'description'          => 'Classification Id ' . $data->classification_id,
             'guid'                 => Uuid::uuid4()->toString(),
-            'timestamp'            => DateHelper::newMongoDbDate(),
+            'timestamp'            => new \DateTime($data->created_at),
             'subject'              => [
                 'link'         => isset($subject['metadata']['references']) ? $subject['metadata']['references'] : '',
                 'thumbnailUri' => $thumbnailUri,
@@ -103,7 +107,7 @@ class PusherWeDigBioDashboardService
             'discretionaryState'   => 'Transcribed',
         ];
 
-        $this->pusherTranscriptionContract->create($item);
+        $this->pusherTranscriptionContract->firstOrCreate($value, $attributes);
     }
 
     /**
