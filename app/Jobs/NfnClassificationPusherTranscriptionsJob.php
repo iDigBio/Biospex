@@ -62,7 +62,7 @@ class NfnClassificationPusherTranscriptionsJob implements ShouldQueue
             collect($this->expeditionIds)->each(function($expeditionId) use ($pusherTranscriptionService){
                 $expedition = $pusherTranscriptionService->getExpedition($expeditionId);
 
-                $timestamp = DateHelper::mongoDbNowSubDateInterval('P2D');
+                $timestamp = DateHelper::mongoDbNowSubDateInterval('P3D');
 
                 $transcriptions = $pusherTranscriptionService->getTranscriptions($expedition->id, $timestamp);
 
