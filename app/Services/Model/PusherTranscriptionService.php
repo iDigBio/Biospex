@@ -3,6 +3,7 @@
 namespace App\Services\Model;
 
 use App\Repositories\Interfaces\Expedition;
+use App\Repositories\Interfaces\PanoptesProject;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\PusherTranscription;
 use Illuminate\Http\Request;
@@ -24,6 +25,11 @@ class PusherTranscriptionService
      * @var PanoptesTranscription
      */
     private $panoptesTranscriptionContract;
+
+    /**
+     * @var \App\Repositories\Interfaces\PanoptesProject
+     */
+    private $panoptesProjectContract;
 
     /**
      * ExpeditionService constructor.
@@ -83,7 +89,7 @@ class PusherTranscriptionService
      */
     public function getExpedition($expeditionId)
     {
-        return $this->expeditionContract->find($expeditionId);
+        return $this->expeditionContract->findWith($expeditionId, ['panoptesProject']);
     }
 
     /**
@@ -152,7 +158,7 @@ class PusherTranscriptionService
             'transcription_id'     => $transcription->id,
             'classification_id'    => $transcription->classification_id,
             'expedition_uuid'      => $expedition->uuid,
-            'project'              => $transcription->workflow_name,
+            'project'              => $expedition->panoptesProject->title,
             'description'          => $expedition->description,
             'guid'                 => Uuid::uuid4()->toString(),
             'timestamp'            => $transcription->classification_finished_at,
