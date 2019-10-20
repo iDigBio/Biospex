@@ -74,7 +74,7 @@ class PusherWeDigBioDashboardService
             'project'              => $panoptesProject->title,
             'description'          => 'Classification Id ' . $data->classification_id,
             'guid'                 => Uuid::uuid4()->toString(),
-            'timestamp'            => new \DateTime($data->created_at),
+            'timestamp'            => DateHelper::newMongoDbDate(),
             'subject'              => [
                 'link'         => isset($subject['metadata']['references']) ? $subject['metadata']['references'] : '',
                 'thumbnailUri' => $thumbnailUri,
