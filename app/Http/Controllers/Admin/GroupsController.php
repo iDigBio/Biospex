@@ -53,15 +53,18 @@ class GroupsController extends Controller
      * Store a newly created group.
      *
      * @param GroupFormRequest $request
+     * @param \App\Repositories\Interfaces\User $userContract
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(GroupFormRequest $request)
+    public function store(GroupFormRequest $request, User $userContract)
     {
         $user = Auth::user();
         $group = $this->groupContract->create(['user_id' => $user->id, 'title' => $request->get('title')]);
 
         if ($group) {
             $user->assignGroup($group);
+            $admin = $userContract->find(1);
+            $admin->assignGroup($group);
 
             event('group.saved');
 

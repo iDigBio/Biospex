@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Project;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -18,6 +17,16 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \App\Repositories\Interfaces\Group
+     */
+    private $groupContract;
+
+    /**
+     * @var \App\Repositories\Interfaces\User
+     */
+    private $userContract;
+
+    /**
      * AppCommand constructor.
      */
     public function __construct()
@@ -30,7 +39,6 @@ class AppCommand extends Command
      */
     public function handle()
     {
-
     }
 
 }
