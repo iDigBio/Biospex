@@ -87,7 +87,6 @@ class GridExportCsvJob implements ShouldQueue
 
             $docs = collect($cursor);
             $first = $docs->first();
-            //unset($first['_id'], $first['occurrence']);
             $header = array_keys($first);
 
             $fileName = Str::random() . '.csv';
@@ -96,7 +95,6 @@ class GridExportCsvJob implements ShouldQueue
             $csv->insertOne($header);
 
             $records = $docs->map(function($doc) use ($csv){
-                //unset($doc['_id'], $doc['occurrence']);
                 $doc['expedition_ids'] = trim(implode(', ', $doc['expedition_ids']), ',');
                 $doc['updated_at'] = DateHelper::formatMongoDbDate($doc['updated_at'], 'Y-m-d H:i:s');
                 $doc['created_at'] = DateHelper::formatMongoDbDate($doc['created_at'], 'Y-m-d H:i:s');
