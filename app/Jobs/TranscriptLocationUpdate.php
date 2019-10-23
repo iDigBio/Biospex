@@ -148,12 +148,16 @@ class TranscriptLocationUpdate implements ShouldQueue
 
     /**
      * Get subject from db to set projectId
+     * Added fix for misnamed subject Id from Notes From Nature.
      *
      * @param $transcription
      * @return mixed
      */
     private function getSubject($transcription)
     {
+        $value = isset($transcription['subject_Subject_ID']) ?
+            $transcription['subject_Subject_ID'] : $transcription['subject_subjectId'];
+
         return $this->subjectContract->find(trim($transcription['subject_subjectId']));
     }
 

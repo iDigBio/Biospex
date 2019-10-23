@@ -303,13 +303,16 @@ class PanoptesTranscriptionProcess
 
     /**
      * Get subject from db to set projectId
+     * Added fix for misnamed subject Id from Notes From Nature.
      *
      * @param $row
      * @return mixed
      */
     public function getSubject($row)
     {
-        return $this->subjectContract->find(trim($row['subject_subjectId']));
+        $value = isset($row['subject_Subject_ID']) ? $row['subject_Subject_ID'] : $row['subject_subjectId'];
+
+        return $this->subjectContract->find(trim($value));
     }
 
     /**
