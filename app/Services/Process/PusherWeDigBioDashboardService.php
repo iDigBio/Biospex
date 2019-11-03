@@ -4,7 +4,7 @@ namespace App\Services\Process;
 
 use App\Repositories\Interfaces\PusherTranscription;
 use App\Services\Api\PanoptesApiService;
-use DateHelper;
+use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 
 class PusherWeDigBioDashboardService
@@ -74,7 +74,7 @@ class PusherWeDigBioDashboardService
             'project'              => $panoptesProject->title,
             'description'          => 'Classification Id ' . $data->classification_id,
             'guid'                 => Uuid::uuid4()->toString(),
-            'timestamp'            => DateHelper::newMongoDbDate(),
+            'timestamp'            => Carbon::now(),
             'subject'              => [
                 'link'         => isset($subject['metadata']['references']) ? $subject['metadata']['references'] : '',
                 'thumbnailUri' => $thumbnailUri,
