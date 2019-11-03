@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Facades\DateHelper;
 use App\Models\Traits\UuidTrait;
 use App\Services\Model\PusherTranscriptionService;
 use Exception;
@@ -11,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Carbon;
 
 class NfnClassificationPusherTranscriptionsJob implements ShouldQueue
 {
@@ -62,7 +62,7 @@ class NfnClassificationPusherTranscriptionsJob implements ShouldQueue
             collect($this->expeditionIds)->each(function($expeditionId) use ($pusherTranscriptionService){
                 $expedition = $pusherTranscriptionService->getExpedition($expeditionId);
 
-                $timestamp = DateHelper::mongoDbNowSubDateInterval('P3D');
+                $timestamp = Carbon::now()->subDays(3);
 
                 $transcriptions = $pusherTranscriptionService->getTranscriptions($expedition->id, $timestamp);
 
