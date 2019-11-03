@@ -19,7 +19,7 @@ class PusherTranscriptionResource extends Resource
             'project'              => $this->project,
             'description'          => $this->description,
             'guid'                 => $this->guid,
-            'timestamp'            => $this->timestamp,
+            'timestamp'            => \DateHelper::formatMongoDbDate($this->timestamp, 'Y-m-d\TH:i:s\Z'),
             'subject'              => $this->subject,
             'contributor'          => $this->contributor,
             'transcriptionContent' => $this->transcriptionContent,
