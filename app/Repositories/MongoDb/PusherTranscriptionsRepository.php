@@ -2,7 +2,6 @@
 
 namespace App\Repositories\MongoDb;
 
-use App\Facades\DateHelper;
 use App\Models\PusherTranscription as Model;
 use App\Repositories\Interfaces\PusherTranscription;
 use Carbon\Carbon;
