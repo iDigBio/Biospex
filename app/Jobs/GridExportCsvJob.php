@@ -96,8 +96,8 @@ class GridExportCsvJob implements ShouldQueue
 
             $records = $docs->map(function($doc) use ($csv){
                 $doc['expedition_ids'] = trim(implode(', ', $doc['expedition_ids']), ',');
-                $doc['updated_at'] = DateHelper::formatMongoDbDate($doc['updated_at'], 'Y-m-d H:i:s');
-                $doc['created_at'] = DateHelper::formatMongoDbDate($doc['created_at'], 'Y-m-d H:i:s');
+                $doc['updated_at'] = $doc['updated_at']->toDateTime()->format('Y-m-d H:i:s');
+                $doc['created_at'] = $doc['created_at']->toDateTime()->format('Y-m-d H:i:s');
                 $doc['ocr'] = GeneralHelper::forceUtf8($doc['ocr']);
                 $doc['occurrence'] = json_encode($doc['occurrence']);
 
