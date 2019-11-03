@@ -2,11 +2,11 @@
 
 namespace App\Services\Csv;
 
-use App\Facades\DateHelper;
 use App\Repositories\Interfaces\Header;
 use App\Repositories\Interfaces\Property;
 use App\Repositories\Interfaces\Subject;
 use App\Services\MongoDbService;
+use Carbon\Carbon;
 use ForceUTF8\Encoding;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Factory as Validation;
@@ -511,8 +511,8 @@ class DarwinCoreCsvImport
     public function saveOccurrence($row)
     {
         $row['_id'] = new \MongoDB\BSON\ObjectId();
-        $row['updated_at'] = DateHelper::newMongoDbDate();
-        $row['created_at'] = DateHelper::newMongoDbDate();
+        $row['updated_at'] = Carbon::now();
+        $row['created_at'] = Carbon::now();
 
         $criteria = ['project_id' => (int) $this->projectId, 'occurrence.id' => $row[$this->header[0]]];
         $attributes = ['$set' => ['occurrence' => $row]];
