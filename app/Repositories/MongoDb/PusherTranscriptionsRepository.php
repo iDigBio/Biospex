@@ -5,6 +5,7 @@ namespace App\Repositories\MongoDb;
 use App\Facades\DateHelper;
 use App\Models\PusherTranscription as Model;
 use App\Repositories\Interfaces\PusherTranscription;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PusherTranscriptionsRepository extends MongoDbRepository implements PusherTranscription
@@ -59,19 +60,22 @@ class PusherTranscriptionsRepository extends MongoDbRepository implements Pusher
         $request->has('project_uuid') ? $query->where('projectUuid', $request->input('project_uuid')) : false;
         $request->has('expedition_uuid') ? $query->where('expeditionUuid', $request->input('expedition_uuid')) : false;
 
-        if ($request->has('date_start') && $request->has('date_end'))
+        $date_start = is_numeric($request->input('date_start')) ? (int) $request->input('date_start') : $request->input('date_start');
+        $date_end = is_numeric($request->input('date_end')) ? (int) $request->input('date_end') : $request->input('date_end');
+
+        if ($date_start !== null && $date_end !== null)
         {
             $timestamps = [
-                DateHelper::toMongoDbTimestamp($request->input('date_start')),
-                DateHelper::toMongoDbTimestamp($request->input('date_end'))
+                Carbon::parse($date_start),
+                Carbon::parse($date_end)
             ];
             $query->whereBetween('timestamp', $timestamps);
 
             return;
         }
 
-        $request->has('date_start') ? $query->where('timestamp', '>=', DateHelper::toMongoDbTimestamp($request->input('date_start'))) : false;
-        $request->has('date_end') ? $query->where('timestamp', '<=', DateHelper::toMongoDbTimestamp($request->input('date_end'))) : false;
+        $date_start !== null ? $query->where('timestamp', '>=', $date_start) : null;
+        $date_end !== null ? $query->where('timestamp', '<=', $date_end) : null;
 
         return;
     }
