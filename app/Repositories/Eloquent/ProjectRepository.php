@@ -284,6 +284,7 @@ class ProjectRepository extends EloquentRepository implements Project
     public function getProjectForAmChartJob($projectId)
     {
         $result = $this->model->with([
+            'amChart',
             'expeditions' => function ($q) {
                 $q->with('stat')->has('stat');
                 $q->with('panoptesProject')->has('panoptesProject');

@@ -51,16 +51,20 @@ interface PanoptesTranscription extends RepositoryInterface
     public function getMaxFinishedAtDateByProjectId($projectId);
 
     /**
+     * Get transcription count per dates for workflow.
+     *
      * @param $workflowId
+     * @param $begin
+     * @param $end
      * @return mixed
      */
-    public function getTranscriptionCountPerDate($workflowId);
+    public function getTranscriptionCountPerDate($workflowId, $begin, $end);
 
     /**
      * @param $projectId
      * @return mixed
      */
-    public function getUserTranscriptionCount($projectId);
+    public function getTranscribersTranscriptionCount($projectId);
 
     /**
      * @param $expeditionId

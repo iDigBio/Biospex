@@ -332,20 +332,8 @@ class ProjectsController extends Controller
     {
         $project = $projectContract->findWith($projectId, ['group']);
 
-        $transcribers = CountHelper::getUserTranscriptionCount($projectId)->sortByDesc('transcriptionCount');
-
-        $transcriptions = Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function (
-        ) use (
-            $transcribers
-        ) {
-            return $transcribers->isEmpty() ? null : $transcribers->pluck('transcriptionCount')->pipe(function (
-                $transcribers
-            ) {
-                return collect(array_count_values($transcribers->sort()->toArray()));
-            })->flatMap(function ($users, $count) {
-                return [['transcriptions' => $count, 'transcribers' => $users]];
-            })->toJson();
-        });
+        $transcribers = CountHelper::getTranscribersTranscriptionCount($projectId)->sortByDesc('transcriptionCount');
+        $transcriptions = CountHelper::getTranscriptionsPerTranscribers($projectId, $transcribers);
 
         JavaScript::put(['transcriptions' => $transcriptions]);
 

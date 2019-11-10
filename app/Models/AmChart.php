@@ -33,6 +33,17 @@ class AmChart extends BaseEloquentModel
     }
 
     /**
+     * Accessor for data column.
+     *
+     * @param $value
+     * @return false|string
+     */
+    public function getDataAttribute($value)
+    {
+        return json_decode($value);
+    }
+
+    /**
      * Mutator for data column.
      *
      * @param $value
@@ -40,5 +51,16 @@ class AmChart extends BaseEloquentModel
     public function setSeriesAttribute($value)
     {
         $this->attributes['series'] = json_encode($value);
+    }
+
+    /**
+     * Accessor for data column.
+     *
+     * @param $value
+     * @return false|string
+     */
+    public function getSeriesAttribute($value)
+    {
+        return json_decode($value);
     }
 }

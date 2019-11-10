@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use Cache;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Artisan;
@@ -54,6 +55,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('workflow:manage')
                 ->timezone('America/New_York')
                 ->dailyAt('04:00')->before(function () {
+                    Cache::flush();
                     Artisan::call('lada-cache:flush');
                 });
         }

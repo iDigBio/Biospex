@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\Interfaces\Project;
+use App\Services\Process\TranscriptionChartService;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -17,28 +19,35 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Repositories\Interfaces\Group
+     * @var \App\Services\Process\TranscriptionChartService
      */
-    private $groupContract;
+    private $service;
 
     /**
-     * @var \App\Repositories\Interfaces\User
+     * @var \App\Repositories\Interfaces\Project
      */
-    private $userContract;
+    private $projectContract;
 
     /**
      * AppCommand constructor.
      */
-    public function __construct()
+    public function __construct(
+        Project $projectContract,
+        TranscriptionChartService $service
+    )
     {
         parent::__construct();
+        $this->service = $service;
+        $this->projectContract = $projectContract;
     }
 
     /**
-     * Execute the job.
+     * Execute the job.  project 16 workflow ids 2343, 2504, 5090, 6556
      */
     public function handle()
     {
+        $project = $this->projectContract->getProjectForAmChartJob(13);
+        $this->service->process($project);
     }
 
 }

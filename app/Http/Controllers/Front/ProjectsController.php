@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\StateCounty;
 use CountHelper;
@@ -90,21 +91,48 @@ class ProjectsController extends Controller
     }
 
     /**
+     * Show public project page.
+     *
+     * @param Project $projectContract
+     * @param \App\Repositories\Interfaces\PanoptesTranscription $transcriptionContract
+     * @param $projectId
+     * @return \Illuminate\View\View
+     */
+    public function test(Project $projectContract, PanoptesTranscription $transcriptionContract, $projectId)
+    {
+        $project = $projectContract->find($projectId);
+        $earliest_date = $transcriptionContract->getMinFinishedAtDateByProjectId($projectId);
+        $latest_date = $transcriptionContract->getMaxFinishedAtDateByProjectId($projectId);
+        $years = range(Carbon::parse($earliest_date)->year, Carbon::parse($latest_date)->year);
+        rsort($years);
+
+        JavaScript::put([
+            'years' => $years,
+            'project' => $project->id
+        ]);
+
+        return view('front.project.test', compact('project', 'years'));
+    }
+
+    /**
      * Create chart image for project home page.
      *
      * @param \App\Repositories\Interfaces\Project $projectContract
      * @param $projectId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function chartImage(Project $projectContract, $projectId)
     {
         $project = $projectContract->getProjectChartPageById($projectId);
         $amChartHeight = GeneralHelper::amChartHeight($project->expeditions_count);
         $amLegendHeight = GeneralHelper::amLegendHeight($project->expeditions_count);
+        $series = \Storage::get('series.json');
+        $data = \Storage::get('data.json');
 
         JavaScript::put([
-            'series' => $project->amChart === null ?: $project->amChart->series,
-            'data'   => $project->amChart === null ?: $project->amChart->data,
+            'series' => $project->amChart === null ?: $series,
+            'data'   => $project->amChart === null ?: $data,
         ]);
 
         return view('front.project.chart', compact('project', 'amChartHeight', 'amLegendHeight'));

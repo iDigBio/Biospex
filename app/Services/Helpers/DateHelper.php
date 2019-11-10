@@ -2,49 +2,17 @@
 
 namespace App\Services\Helpers;
 
-use Carbon\Carbon;
-use DateInterval;
+use Illuminate\Support\Carbon;
 use DateTime;
 use DateTimeZone;
 use MongoDB\BSON\UTCDateTime;
 
 class DateHelper
 {
-
     /**
-     * Create new UTCDate.
+     * Format date from mongo db.
      *
-     * @return UTCDateTime
-     */
-    public function newMongoDbDate()
-    {
-        return new UTCDateTime(time() * 1000);
-    }
-
-    /**
-     * @param $value
-     * @return int|UTCDateTime|string
-     */
-    public function toMongoDbTimestamp($value)
-    {
-        return (is_numeric($value) && (int)$value == $value) ?
-            new UTCDateTime($value * 1000) : $value;
-    }
-
-    /**
-     * @param $interval
-     * @return UTCDateTime
-     */
-    public function mongoDbNowSubDateInterval($interval)
-    {
-        $date = new \DateTime();
-        $timestamp = $date->sub(new DateInterval($interval));
-
-        return new UTCDateTime($timestamp);
-    }
-
-    /**
-     * @param UTCDateTime $date
+     * @param $date
      * @param string $format
      * @return mixed
      */
@@ -54,16 +22,14 @@ class DateHelper
     }
 
     /**
-     * Format date string.
+     * When doing raw queries for MongoDb, convert Carbon date to UTC.
      *
-     * @param $string
-     * @param string $format
-     * @return string
-     * @throws \Exception
+     * @param $date
+     * @return \MongoDB\BSON\UTCDateTime
      */
-    public function formatStringDate($string, $format = 'Y-m-d') {
-        $date = new \DateTime($string);
-        return $date->format($format);
+    public function formatDateToUtcTimestamp($date)
+    {
+        return new UTCDateTime($date);
     }
 
     /**
@@ -81,21 +47,6 @@ class DateHelper
         }
 
         return $date->copy()->tz($tz)->format($format);
-    }
-
-    /**
-     * Convert timezone.
-     * @param $data
-     * @param null $format
-     * @param null $tz
-     * @return string
-     * @throws \Exception
-     */
-    public function convertTimeZone($data, $format = null, $tz = null)
-    {
-        $userTime = new DateTime($data, new DateTimeZone('UTC'));
-        $userTime->setTimezone(new DateTimeZone($tz));
-        return $userTime->format($format);
     }
 
     /**
@@ -124,5 +75,21 @@ class DateHelper
         }
 
         return $timezone_list;
+    }
+
+    /**
+     * Get years between two string dates, sort desc.
+     *
+     * @see \App\Services\Process\TranscriptionChartService
+     * @param $begin
+     * @param $end
+     * @return \Illuminate\Support\Collection
+     */
+    public function getRangeInYearsDesc($begin, $end)
+    {
+        $years = range(Carbon::parse($begin)->year, Carbon::parse($end)->year);
+        sort($years);
+
+        return collect($years);
     }
 }

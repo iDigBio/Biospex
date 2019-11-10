@@ -35,11 +35,7 @@ class CountHelper
      */
     public function projectTranscriptionCount($projectId)
     {
-        $count = Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function () use (
-                $projectId
-            ) {
-                return $this->panoptesTranscription->getProjectTranscriptionCount($projectId);
-            });
+        $count = $this->panoptesTranscription->getProjectTranscriptionCount($projectId);
 
         return $count;
     }
@@ -52,9 +48,7 @@ class CountHelper
      */
     public function projectTranscriberCount($projectId)
     {
-        $count = Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function () use ($projectId) {
-            return $this->panoptesTranscription->getProjectTranscriberCount($projectId);
-        });
+        $count = $this->panoptesTranscription->getProjectTranscriberCount($projectId);
 
         return $count;
     }
@@ -65,13 +59,31 @@ class CountHelper
      * @param $projectId
      * @return mixed
      */
-    public function getUserTranscriptionCount($projectId)
+    public function getTranscribersTranscriptionCount($projectId)
     {
-        $count = Cache::tags('panoptes'.$projectId)->remember(md5(__METHOD__.$projectId), 43200, function () use ($projectId) {
-            return $this->panoptesTranscription->getUserTranscriptionCount($projectId);
-        });
+        $transcribers = $this->panoptesTranscription->getTranscribersTranscriptionCount($projectId);
 
-        return $count;
+        return $transcribers;
+    }
+
+    /**
+     * Return transcriptions per transcribers
+     *
+     * @param $projectId
+     * @param $transcribers
+     * @return mixed
+     * @static
+     */
+    public function getTranscriptionsPerTranscribers($projectId, $transcribers)
+    {
+        return Cache::rememberForever(md5(__METHOD__.$projectId), function () use ($transcribers) {
+            return $transcribers->isEmpty() ? null :
+                $transcribers->pluck('transcriptionCount')->pipe(function ($transcribers) {
+                    return collect(array_count_values($transcribers->sort()->toArray()));
+                })->flatMap(function ($users, $count) {
+                    return [['transcriptions' => $count, 'transcribers' => $users]];
+                })->toJson();
+        });
     }
 
     /**

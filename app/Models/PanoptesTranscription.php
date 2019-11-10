@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
 use MongoDB\BSON\UTCDateTime;
 
 class PanoptesTranscription extends BaseMongoModel
@@ -86,19 +87,9 @@ class PanoptesTranscription extends BaseMongoModel
      */
     public function setClassificationFinishedAtAttribute($value)
     {
-        $this->attributes['classification_finished_at'] = new UTCDateTime(strtotime($value) * 1000);
+        $this->attributes['classification_finished_at'] = Carbon::parse($value);
     }
 
-    /**
-     * Return finished_at in usable format
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function getClassificationFinishedAtAttribute($value)
-    {
-        return $this->asDateTime($value)->format('Y-m-d H:i:s');
-    }
 
     /**
      * Mutate started_at for MongoDb
@@ -107,17 +98,6 @@ class PanoptesTranscription extends BaseMongoModel
      */
     public function setClassificationStartedAtAttribute($value)
     {
-        $this->attributes['classification_started_at'] = new UTCDateTime(strtotime($value) * 1000);
-    }
-
-    /**
-     * Return started_at date in usable format
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function getClassificationStartedAtAttribute($value)
-    {
-        return $this->asDateTime($value)->format('Y-m-d H:i:s');
+        $this->attributes['classification_started_at'] = Carbon::parse($value);
     }
 }

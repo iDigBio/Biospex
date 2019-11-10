@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use MongoDB\BSON\ObjectID;
-use MongoDB\BSON\UTCDateTime;
 
 class PusherTranscription extends BaseMongoModel
 {
@@ -15,7 +14,7 @@ class PusherTranscription extends BaseMongoModel
     /**
      * @inheritDoc
      */
-    protected $dates = ['created_at', 'updated_at'];
+    protected $dates = ['created_at', 'updated_at', 'timestamp'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -64,30 +63,5 @@ class PusherTranscription extends BaseMongoModel
     public function getTranscriptIdAttribute($value)
     {
         return $this->getIdAttribute($value);
-    }
-
-    /**
-     * Mutate finished_at date for MongoDb
-     *
-     * @param  string  $value
-     */
-    public function setTimestampAttribute($value)
-    {
-        if ($value instanceof UTCDatetime) {
-            $this->attributes['timestamp'] = $value;
-        }
-
-        $this->attributes['timestamp'] = new UTCDatetime($this->asTimeStamp($value) * 1000);
-    }
-
-    /**
-     * Return finished_at in usable format
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function getTimestampAttribute($value)
-    {
-        return $value->toDateTime()->format('Y-m-d\TH:i:s\Z');
     }
 }

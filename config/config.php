@@ -42,6 +42,7 @@ return [
     'reconcile_path' => env('LABEL_RECONCILIATIONS_PATH').'/reconcile.py',
 
     'project_chart_series' => resource_path('json/projectChartSeries.json'),
+    'project_chart_config' => resource_path('json/projectChartConfig.json'),
 
     'ocr_disable' => env('OCR_DISABLE', false),
 

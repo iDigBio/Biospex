@@ -110,7 +110,7 @@ class PusherTranscriptionService
      * @param $transcription
      * @return int
      */
-    public function checkClassification($transcription)
+    public function checkPusherTranscription($transcription)
     {
         $exists = $this->pusherTranscriptionContract->findBy('transcription_id', $transcription->_id);
 
