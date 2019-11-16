@@ -14,14 +14,28 @@ use JavaScript;
 class ProjectsController extends Controller
 {
     /**
-     * Public Projects page.
+     * @var \App\Repositories\Interfaces\Project
+     */
+    private $projectContract;
+
+    /**
+     * ProjectsController constructor.
      *
      * @param \App\Repositories\Interfaces\Project $projectContract
+     */
+    public function __construct(Project $projectContract)
+    {
+
+        $this->projectContract = $projectContract;
+    }
+    /**
+     * Public Projects page.
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Project $projectContract)
+    public function index()
     {
-        $projects = $projectContract->getPublicProjectIndex();
+        $projects = $this->projectContract->getPublicProjectIndex();
 
         return view('front.project.index', compact('projects'));
     }
@@ -29,10 +43,9 @@ class ProjectsController extends Controller
     /**
      * Public Projects page sort and order.
      *
-     * @param \App\Repositories\Interfaces\Project $projectContract
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function sort(Project $projectContract)
+    public function sort()
     {
         if (! request()->ajax()) {
             return null;
@@ -40,7 +53,7 @@ class ProjectsController extends Controller
 
         $sort = request()->get('sort');
         $order = request()->get('order');
-        $projects = $projectContract->getPublicProjectIndex($sort, $order);
+        $projects = $this->projectContract->getPublicProjectIndex($sort, $order);
 
         return view('front.project.partials.project', compact('projects'));
     }
@@ -48,14 +61,18 @@ class ProjectsController extends Controller
     /**
      * Show public project page.
      *
-     * @param Project $projectContract
+     * @param \App\Repositories\Interfaces\PanoptesTranscription $transcriptionContract
      * @param \App\Repositories\Interfaces\StateCounty $stateCountyContract
      * @param $slug
      * @return \Illuminate\View\View
      */
-    public function project(Project $projectContract, StateCounty $stateCountyContract, $slug)
+    public function project(
+        PanoptesTranscription $transcriptionContract,
+        StateCounty $stateCountyContract,
+        $slug
+    )
     {
-        $project = $projectContract->getProjectPageBySlug($slug);
+        $project = $this->projectContract->getProjectPageBySlug($slug);
 
         list($expeditions, $expeditionsCompleted) = $project->expeditions->partition(function ($expedition) {
             return $expedition->nfnActor->pivot->completed === 0;
@@ -68,74 +85,22 @@ class ProjectsController extends Controller
         $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
         $transcribersCount = CountHelper::projectTranscriberCount($project->id);
 
-        $results = $stateCountyContract->getStateTranscriptCount($project->id);
-        $states = $results->groupBy('state_num')->reject(function ($row, $key) {
-            return empty($key);
-        })->map(function ($row) {
-            $stateAbbr = $row->first()->state_abbr_cap;
-            $stateNum = $row->first()->state_num;
-            $id = 'US-'.$stateAbbr;
-            $count = (int) $row->sum('transcription_locations_count');
+        $earliest_date = $transcriptionContract->getMinFinishedAtDateByProjectId($project->id);
+        $latest_date = $transcriptionContract->getMaxFinishedAtDateByProjectId($project->id);
+        $years = range(Carbon::parse($earliest_date)->year, Carbon::parse($latest_date)->year);
+        rsort($years);
 
-            return ['id' => $id, 'value' => $count ?: 0, 'name' => $stateAbbr, 'statenum' => $stateNum];
-        })->values(); //->toJson();
-
+        $states = $stateCountyContract->getStateTranscriptCount($project->id);
         $max = abs(round(($states->max('value') + 500), -3));
 
         JavaScript::put([
             'max'    => $max,
-            'states' => $states->toJson()
-        ]);
-
-        return view('front.project.home', compact('project', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'transcriptionsCount', 'transcribersCount'));
-    }
-
-    /**
-     * Show public project page.
-     *
-     * @param Project $projectContract
-     * @param \App\Repositories\Interfaces\PanoptesTranscription $transcriptionContract
-     * @param $projectId
-     * @return \Illuminate\View\View
-     */
-    public function test(Project $projectContract, PanoptesTranscription $transcriptionContract, $projectId)
-    {
-        $project = $projectContract->find($projectId);
-        $earliest_date = $transcriptionContract->getMinFinishedAtDateByProjectId($projectId);
-        $latest_date = $transcriptionContract->getMaxFinishedAtDateByProjectId($projectId);
-        $years = range(Carbon::parse($earliest_date)->year, Carbon::parse($latest_date)->year);
-        rsort($years);
-
-        JavaScript::put([
+            'states' => $states->toJson(),
             'years' => $years,
             'project' => $project->id
         ]);
 
-        return view('front.project.test', compact('project', 'years'));
-    }
-
-    /**
-     * Create chart image for project home page.
-     *
-     * @param \App\Repositories\Interfaces\Project $projectContract
-     * @param $projectId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
-    public function chartImage(Project $projectContract, $projectId)
-    {
-        $project = $projectContract->getProjectChartPageById($projectId);
-        $amChartHeight = GeneralHelper::amChartHeight($project->expeditions_count);
-        $amLegendHeight = GeneralHelper::amLegendHeight($project->expeditions_count);
-        $series = \Storage::get('series.json');
-        $data = \Storage::get('data.json');
-
-        JavaScript::put([
-            'series' => $project->amChart === null ?: $series,
-            'data'   => $project->amChart === null ?: $data,
-        ]);
-
-        return view('front.project.chart', compact('project', 'amChartHeight', 'amLegendHeight'));
+        return view('front.project.home', compact('project', 'years', 'expeditions', 'expeditionsCompleted', 'events', 'eventsCompleted', 'transcriptionsCount', 'transcribersCount'));
     }
 
     /**
