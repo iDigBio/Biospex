@@ -407,20 +407,4 @@ class ProjectPresenter extends Presenter
             <i class="fas fa-redo-alt fa-2x"></i></a>';
     }
 
-    /**
-     * Display project transcription chart if available.
-     *
-     * @return array|string|null
-     */
-    public function projectChart()
-    {
-        $path = config('config.charts_dir') . '/' . $this->model->id . '.png';
-        if (\Storage::exists($path)) {
-            $url = \Storage::url("charts/{$this->model->id}.png");
-            $alt = $this->model->title . ' Transcription Chart';
-            return '<img src="'. $url . '" class="img-fluid" alt="' . $alt . '">';
-        }
-
-        return __('html.project_chart_missing');
-    }
 }
