@@ -3,7 +3,6 @@
 namespace App\Services\Process;
 
 use App\Models\Expedition;
-use App\Repositories\Interfaces\AmChart;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Project;
 use Carbon\CarbonPeriod;
@@ -12,12 +11,6 @@ use Illuminate\Support\Collection;
 
 /**
  * Class TranscriptionChartService
- * For each expedition, need to find counts per day for span of the year.
- * These will be added to [year] series and [year] data.
- * $year = Carbon::now()->year;
- * $beginYear = Carbon::parse($year . '-01-01');
- * $endYear = Carbon::parse($year . '-12-31');
- * Carbon::parse('first day of January next year')->subSecond();
  *
  * @package App\Services\Process
  */
@@ -27,11 +20,6 @@ class TranscriptionChartService
      * @var \App\Repositories\Interfaces\Project
      */
     private $projectContract;
-
-    /**
-     * @var \App\Repositories\Interfaces\AmChart
-     */
-    private $amChartContract;
 
     /**
      * @var \App\Repositories\Interfaces\PanoptesTranscription
@@ -72,17 +60,14 @@ class TranscriptionChartService
      * TranscriptionChartService constructor.
      *
      * @param \App\Repositories\Interfaces\Project $projectContract
-     * @param \App\Repositories\Interfaces\AmChart $amChartContract
      * @param \App\Repositories\Interfaces\PanoptesTranscription $transcriptionContract
      */
     public function __construct(
         Project $projectContract,
-        AmChart $amChartContract,
         PanoptesTranscription $transcriptionContract
     ) {
 
         $this->projectContract = $projectContract;
-        $this->amChartContract = $amChartContract;
         $this->transcriptionContract = $transcriptionContract;
     }
 
@@ -90,80 +75,60 @@ class TranscriptionChartService
      * Process project for amchart.
      *
      * @param \App\Models\Project $project
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function process(\App\Models\Project $project)
     {
         $this->resetTemplates();
 
-        $year = Carbon::now()->year;
-
-        $this->buildCompleteChartData($project);
-
-        $this->amChartData->transform(function($value, $key) {
-            return array_values($value->toArray());
-        });
-
-        $data = ['series' => $this->projectChartSeries, 'data' => $this->amChartData];
-        $this->amChartContract->updateOrCreate(['project_id' => $project->id], $data);
-
-        //$this->writeToFile('amchartData.json', json_encode($this->amChartData));
-        //exit;
-
-
-        return;
-
-        //$this->resetTemplates();
-        /*
-        $this->setDateArray();
-
-        $project->expeditions->each(function ($expedition) use ($transcriptionContract) {
-            $this->processExpedition($expedition, $transcriptionContract);
-        });
-
-        $this->amChartData = array_values($this->amChartData);
-
-        $data = ['series' => $this->projectChartSeries, 'data' => $this->amChartData];
-        $amChart = $amChartContract->updateOrCreate(['project_id' => $project->id], $data);
-
-        AmChartImageJob::dispatch($amChart);
-        */
-    }
-
-    /**
-     * Reset the templates for each project.
-     *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
-    protected function resetTemplates()
-    {
-        $this->amChartData = collect();
-        $this->projectChartSeries = [];
-        $this->projectChartSeriesFile = json_decode(\File::get(config('config.project_chart_series')), true);
-    }
-
-    /**
-     * Build complete series and data for chart for all years.
-     *
-     * @param $project
-     */
-    protected function buildCompleteChartData($project)
-    {
         $years = $this->setYearsArray($project->id);
         if ($years === null) {
             return;
         }
 
-        $years->each(function ($year) use ($project) {
+        $years->reject(function ($year) use ($project) {
+            return isset($project->amChart['series'][$year]) && $year !== Carbon::now()->year;
+        })->each(function ($year) use ($project) {
             $this->setBeginEndOfYear($year);
             $this->setAmChartData($year);
             $this->setYearDaysArray($year);
+            $this->buildCompleteChartData($project, $year);
+        });
 
-            $project->expeditions->each(function ($expedition) use ($year) {
-                $completeDates = $this->processExpedition($expedition, $year);
+        $this->amChartData->transform(function ($value, $key) {
+            return array_values($value->toArray());
+        });
 
-                $this->amChartData[$year] = $this->amChartData[$year]->mergeRecursive($completeDates);
-            });
+        $project->amChart->data = array_replace($project->amChart->data, $this->amChartData->toArray());
+        $project->amChart->series = array_replace($project->amChart->series, $this->projectChartSeries);
+
+        $project->amChart->save();
+
+        return;
+    }
+
+    /**
+     * Reset the templates for each project.
+     */
+    protected function resetTemplates()
+    {
+        $this->amChartData = collect();
+        $this->projectChartSeries = [];
+        $file = config('config.project_chart_series');
+        $this->projectChartSeriesFile = json_decode(\File::get($file), true);
+    }
+
+    /**
+     * Build complete series and data for chart for year.
+     *
+     * @param $project
+     * @param $year
+     */
+    protected function buildCompleteChartData($project, $year)
+    {
+        $project->expeditions->each(function ($expedition) use ($year) {
+            $completeDates = $this->processExpedition($expedition, $year);
+
+            $this->amChartData[$year] = $this->amChartData[$year]->mergeRecursive($completeDates);
         });
     }
 
@@ -187,14 +152,14 @@ class TranscriptionChartService
     }
 
     /**
-     * Return first day and last day of given year.
+     * Return first day and last day of given year, or if current year, get today.
      *
      * @param int $year
      */
     protected function setBeginEndOfYear(int $year)
     {
         $this->begin = Carbon::parse('first day of January '.$year);
-        $this->end = Carbon::parse('last day of December '.$year)->addDay()->subSecond();
+        $this->end = $year === Carbon::now()->year ? Carbon::parse('today')->addDay()->subSecond() : Carbon::parse('last day of December '.$year)->addDay()->subSecond();
     }
 
     /**
@@ -320,5 +285,4 @@ class TranscriptionChartService
         $this->projectChartSeriesFile['name'] = $expedition->title;
         $this->projectChartSeries[$year][] = $this->projectChartSeriesFile;
     }
-
 }
