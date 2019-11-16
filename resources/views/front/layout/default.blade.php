@@ -39,16 +39,15 @@ sub footer -->
                 <!-- Instagram -->
                 <a class="figure-img"></a>
                 <!-- Twitter -->
-                <a href="https://twitter.com/BIOSPEX" target="_blank" class="figure-img"><i class="fab fa-twitter fa-4x"></i></a>
+                <a href="https://twitter.com/BIOSPEX" target="_blank" class="figure-img"><i
+                            class="fab fa-twitter fa-4x"></i></a>
                 <!--Facebook -->
                 <a class="figure-img"></a>
                 <!--LinkedIn-->
                 <a class="figure-img"></a>
-                </div>
             </div>
-            <!-- Grid column -->
         </div>
-        <!-- Grid row-->
+    <!-- Grid row-->
     </div>
 </aside>
 
