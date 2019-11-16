@@ -90,7 +90,6 @@ class ProjectRepository extends EloquentRepository implements Project
     {
         $results = $this->model->withCount('events')->withCount('expeditions')->with([
             'group.users.profile',
-            'amChart',
             'resources',
             'lastPanoptesProject',
             'expeditions' => function($query){
@@ -99,18 +98,6 @@ class ProjectRepository extends EloquentRepository implements Project
             'events' => function ($q) {
                 $q->orderBy('start_date', 'desc');
             }])->where('slug', '=', $slug)->first();
-
-        $this->resetModel();
-
-        return $results;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getProjectChartPageById($projectId)
-    {
-        $results = $this->model->withCount('expeditions')->with(['amChart'])->find($projectId);
 
         $this->resetModel();
 
