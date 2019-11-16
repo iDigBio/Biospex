@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Project;
 use App\Repositories\Interfaces\StateCounty;
+use App\Services\Process\TranscriptionChartService;
 use CountHelper;
 use GeneralHelper;
 use Illuminate\Support\Carbon;
@@ -61,13 +62,13 @@ class ProjectsController extends Controller
     /**
      * Show public project page.
      *
-     * @param \App\Repositories\Interfaces\PanoptesTranscription $transcriptionContract
+     * @param \App\Services\Process\TranscriptionChartService $chartService
      * @param \App\Repositories\Interfaces\StateCounty $stateCountyContract
      * @param $slug
      * @return \Illuminate\View\View
      */
     public function project(
-        PanoptesTranscription $transcriptionContract,
+        TranscriptionChartService $chartService,
         StateCounty $stateCountyContract,
         $slug
     )
@@ -85,10 +86,7 @@ class ProjectsController extends Controller
         $transcriptionsCount = CountHelper::projectTranscriptionCount($project->id);
         $transcribersCount = CountHelper::projectTranscriberCount($project->id);
 
-        $earliest_date = $transcriptionContract->getMinFinishedAtDateByProjectId($project->id);
-        $latest_date = $transcriptionContract->getMaxFinishedAtDateByProjectId($project->id);
-        $years = range(Carbon::parse($earliest_date)->year, Carbon::parse($latest_date)->year);
-        rsort($years);
+        $years = $chartService->setYearsArray($project->id);
 
         $states = $stateCountyContract->getStateTranscriptCount($project->id);
         $max = abs(round(($states->max('value') + 500), -3));
@@ -96,7 +94,7 @@ class ProjectsController extends Controller
         JavaScript::put([
             'max'    => $max,
             'states' => $states->toJson(),
-            'years' => $years,
+            'years' => $years->toArray(),
             'project' => $project->id
         ]);
 
