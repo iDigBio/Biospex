@@ -2,6 +2,7 @@
 
 namespace App\Services\Process;
 
+use App\Models\AmChart;
 use App\Models\Expedition;
 use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Project;
@@ -78,6 +79,8 @@ class TranscriptionChartService
      */
     public function process(\App\Models\Project $project)
     {
+        $this->checkNewChart($project);
+
         $this->resetTemplates();
 
         $years = $this->setYearsArray($project->id);
@@ -104,6 +107,20 @@ class TranscriptionChartService
         $project->amChart->save();
 
         return;
+    }
+
+    /**
+     * Check if this is a new chart. Create and load if new.
+     *
+     * @param \App\Models\Project $project
+     */
+    protected function checkNewChart(\App\Models\Project &$project)
+    {
+        if ($project->amChart === null) {
+            $amChart = new AmChart();
+            $project->amChart()->save($amChart);
+            $project->load('amChart');
+        }
     }
 
     /**
@@ -139,7 +156,7 @@ class TranscriptionChartService
      * @param int $projectId
      * @return \Illuminate\Support\Collection|null
      */
-    protected function setYearsArray(int $projectId)
+    public function setYearsArray(int $projectId)
     {
         $earliest_date = $this->transcriptionContract->getMinFinishedAtDateByProjectId($projectId);
         $latest_date = $this->transcriptionContract->getMaxFinishedAtDateByProjectId($projectId);
@@ -148,7 +165,10 @@ class TranscriptionChartService
             return null;
         }
 
-        return \DateHelper::getRangeInYearsDesc($earliest_date, $latest_date);
+        $years = range(Carbon::parse($earliest_date)->year, Carbon::parse($latest_date)->year);
+        rsort($years);
+
+        return collect($years);
     }
 
     /**
