@@ -1,73 +1,50 @@
-let legendContainer = am4core.createFromConfig({
-    "width": "100%",
-    "height": "100%"
-}, "transcriptLegendDiv", am4core.Container);
+let transcripts;
+$(function () {
+    let years = Laravel.years;
+    if (years.length > 0) {
+        let el = $('#year' + years[0]);
+        let url = el.data('href');
+        el.removeClass('btn-primary').addClass('btn-transcription-year');
+        loadChart(url);
+    }
 
-let transcripts = am4core.createFromConfig(
-    {
-        "xAxes": [{
-            "type": "DateAxis",
-            "renderer": {
-                "minGridDistance": 50
-            },
-            "startLocation": 0.5,
-            "endLocation": 0.5,
-            "baseInterval": {
-                "timeUnit": "day",
-                "count": 1
-            },
-            "tooltip": {
-                "exportable": false,
-                "background": {
-                    "fill": "#07BEB8",
-                    "strokeWidth": 0
-                },
-                "dy": 5
-            }
-        }],
-        "yAxes": [{
-            "type": "ValueAxis",
-            "tooltip": {
-                "disabled": true
-            },
-            "calculateTotals": true
-        }],
-        "cursor": {
-            "type": "XYCursor",
-            "lineX": {
-                "stroke": "#8F3985",
-                "strokeWidth": 4,
-                "strokeOpacity": 1,
-                "strokeDasharray": ""
-            },
-            "lineY": {
-                "disabled": true
-            }
-        },
-        "scrollbarX": {
-            "type": "Scrollbar",
-            "exportable": false
-        },
-        "legend": {
-            "labels": {
-                "maxWidth": 450,
-                "truncate": true
-            },
-            "itemContainers": {
-                "tooltipText": "{name}"
-            },
-            "parent": legendContainer
-        },
-        "dateFormatter": {
-            "inputDateFormat": "yyyy-MM-dd"
-        },
-        "series": JSON.parse(Laravel.series),
-        "data": JSON.parse(Laravel.data),
-        "preloader": { "disabled" : true },
-        "events": {
-            "ready": function (e) {
-                console.log('hide');
-                $("#script-modal").modal("hide");
-            }
-        }
-    }, "transcriptDiv", am4charts.XYChart);
+    $('.btn-transcription').on('click', function () {
+        $("#script-modal").modal("show");
+        transcripts.dispose();
+        $(this).removeClass('btn-primary').addClass('btn-transcription-year');
+        $(this).siblings().removeClass('btn-transcription-year').addClass('btn-primary');
+        let url = $(this).data('href');
+        loadChart(url);
+    });
+});
+
+function loadChart(url) {
+    let ds = new am4core.DataSource();
+    ds.url = url;
+    ds.disableCache = true;
+    ds.events.on("done", function (ev) {
+        buildChart(ev.target.data);
+    });
+    ds.load();
+}
+
+function buildChart(data) {
+    transcripts = am4core.createFromConfig(data, "transcripts", am4charts.XYChart);
+    transcripts.preloader.hiddenState.transitionDuration = 0;
+    let cellSize = 1.5;
+    transcripts.events.on("datavalidated", function (ev) {
+        // Get objects of interest
+        let chart = ev.target;
+        let categoryAxis = chart.yAxes.getIndex(0);
+
+        // Calculate how we need to adjust chart height
+        let adjustHeight = chart.data.length * cellSize - categoryAxis.pixelHeight;
+
+        // get current chart height
+        let targetHeight = chart.pixelHeight + adjustHeight;
+
+        // Set it on chart's container
+        chart.svgContainer.htmlElement.style.height = targetHeight + "px";
+        $("#script-modal").modal("hide");
+    });
+}
