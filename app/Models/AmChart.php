@@ -40,7 +40,7 @@ class AmChart extends BaseEloquentModel
      */
     public function getDataAttribute($value)
     {
-        return json_decode($value);
+        return json_decode($value, true);
     }
 
     /**
@@ -61,6 +61,6 @@ class AmChart extends BaseEloquentModel
      */
     public function getSeriesAttribute($value)
     {
-        return json_decode($value);
+        return json_decode($value, true);
     }
 }
