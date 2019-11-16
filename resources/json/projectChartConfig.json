@@ -54,6 +54,9 @@
   "dateFormatter": {
     "inputDateFormat": "yyyy-MM-dd"
   },
+  "preloader": {
+    "disabled": true
+  },
   "series": "",
   "data": ""
 }

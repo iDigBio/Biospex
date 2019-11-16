@@ -30,7 +30,6 @@ function loadChart(url) {
 
 function buildChart(data) {
     transcripts = am4core.createFromConfig(data, "transcripts", am4charts.XYChart);
-    transcripts.preloader.hiddenState.transitionDuration = 0;
     let cellSize = 1.5;
     transcripts.events.on("datavalidated", function (ev) {
         // Get objects of interest
@@ -45,6 +44,10 @@ function buildChart(data) {
 
         // Set it on chart's container
         chart.svgContainer.htmlElement.style.height = targetHeight + "px";
+        console.log('validated');
+    });
+    transcripts.events.on('ready', function(){
+        console.log('ready');
         $("#script-modal").modal("hide");
     });
 }
