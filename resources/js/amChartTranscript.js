@@ -44,10 +44,8 @@ function buildChart(data) {
 
         // Set it on chart's container
         chart.svgContainer.htmlElement.style.height = targetHeight + "px";
-        console.log('validated');
     });
     transcripts.events.on('ready', function(){
-        console.log('ready');
         $("#script-modal").modal("hide");
     });
 }
