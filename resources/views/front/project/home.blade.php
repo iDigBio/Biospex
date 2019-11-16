@@ -176,18 +176,22 @@
         @include('common.scoreboard')
     </div>
 
-    @if ($project->amChart !== null && $project->amChart->series !== null && $project->amChart->data !== null)
+    @if ($years !== null)
         <div class="row my-5">
             <div class="col-sm-10 mx-auto mt-8">
                 <h1 class="text-center content-header text-uppercase"
                     id="expeditions">{{ __('pages.transcriptions') }}</h1>
-                <div class="d-flex justify-content-center col-sm-12 mb-4">
-                    <a href="{{ route('front.projects.image', $project->id) }}" target="_blank"
-                       class="btn btn-primary mr-4 text-uppercase">{{ __('View Active Chart') }}</a>
+                <div class="text-center mt-4 mb-4">
+                    @foreach($years as $year)
+                        <button class="btn btn-primary btn-transcription" id="year{{ $year }}"
+                                data-href="{{ route('front.projects.transcriptions', [$project->id, $year]) }}">{{ $year }}
+                        </button>
+                    @endforeach
                 </div>
                 <hr class="header mx-auto">
-                <div class="jumbotron box-shadow pt-2 pb-5 text-center">
-                    {!! $project->present()->project_chart !!}
+                <div class="jumbotron box-shadow pt-2 pb-5">
+                    <div id="transcripts"
+                         style="color: #000000; font-size: 0.8em"></div>
                 </div>
             </div>
         </div>
@@ -209,12 +213,13 @@
 
 @endsection
 @section('custom-script')
-    <script src="//www.amcharts.com/lib/4/core.js"></script>
-    <script src="//www.amcharts.com/lib/4/maps.js"></script>
-    <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
-    <script src="https://www.amcharts.com/lib/4/geodata/usaLow.js"></script>
-
-    @if ($project->amChart !== null && $project->amChart->series !== null && $project->amChart->data !== null)
+    @if ($years !== null)
+        <script src="//www.amcharts.com/lib/4/core.js"></script>
+        <script src="//www.amcharts.com/lib/4/charts.js"></script>
+        <script src="//www.amcharts.com/lib/4/maps.js"></script>
+        <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
+        <script src="https://www.amcharts.com/lib/4/geodata/usaLow.js"></script>
+        <script src="{{ asset('js/amChartTranscript.min.js')}}"></script>
         <script src="{{ asset('js/amChartMap.min.js')}}"></script>
     @endif
 @endsection
