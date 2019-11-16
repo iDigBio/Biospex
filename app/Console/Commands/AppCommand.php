@@ -2,8 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\Interfaces\Project;
-use App\Services\Process\TranscriptionChartService;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -19,26 +17,12 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Services\Process\TranscriptionChartService
-     */
-    private $service;
-
-    /**
-     * @var \App\Repositories\Interfaces\Project
-     */
-    private $projectContract;
-
-    /**
      * AppCommand constructor.
      */
     public function __construct(
-        Project $projectContract,
-        TranscriptionChartService $service
     )
     {
         parent::__construct();
-        $this->service = $service;
-        $this->projectContract = $projectContract;
     }
 
     /**
@@ -46,8 +30,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $project = $this->projectContract->getProjectForAmChartJob(13);
-        $this->service->process($project);
+
     }
 
 }
