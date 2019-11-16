@@ -2,20 +2,18 @@
 
 namespace App\Jobs;
 
+use App\Models\User;
+use App\Notifications\JobError;
+use App\Services\Process\TranscriptionChartService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Repositories\Interfaces\PanoptesTranscription;
 use App\Repositories\Interfaces\Project;
-use App\Repositories\Interfaces\AmChart;
-use Carbon\CarbonPeriod;
-use File;
 
 class AmChartJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -30,31 +28,6 @@ class AmChartJob implements ShouldQueue
     protected $projectId;
 
     /**
-     * @var
-     */
-    protected $earliest_date;
-
-    /**
-     * @var
-     */
-    protected $finished_date;
-
-    /**
-     * @var mixed
-     */
-    protected $amChartData;
-
-    /**
-     * @var mixed
-     */
-    protected $projectChartSeries;
-
-    /**
-     * @var mixed
-     */
-    protected $projectChartSeriesFile;
-
-    /**
      * AmChartJob constructor.
      *
      * @param int $projectId
@@ -66,140 +39,30 @@ class AmChartJob implements ShouldQueue
     }
 
     /**
-     * @param Project $projectContract
-     * @param AmChart $amChartContract
-     * @param PanoptesTranscription $transcriptionContract
+     * Handle job.
+     *
+     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Services\Process\TranscriptionChartService $service
      */
-    public function handle(
-        Project $projectContract,
-        AmChart $amChartContract,
-        PanoptesTranscription $transcriptionContract
-    ) {
+    public function handle(Project $projectContract, TranscriptionChartService $service)
+    {
+        try {
+            $project = $projectContract->getProjectForAmChartJob($this->projectId);
 
-        $this->earliest_date = $transcriptionContract->getMinFinishedAtDateByProjectId($this->projectId);
-        $this->finished_date = $transcriptionContract->getMaxFinishedAtDateByProjectId($this->projectId);
+            $service->process($project);
 
-        if (null === $this->earliest_date || null === $this->finished_date) {
-            return;
+            $this->delete();
         }
+        catch (\Exception $e)
+        {
+            $user = User::find(1);
 
-        $this->resetTemplates();
+            $messages = [
+                'Project Id: '.$this->projectId,
+                'Message:' . $e->getFile() . ': ' . $e->getLine() . ' - ' . $e->getMessage()
+            ];
 
-        $project = $projectContract->getProjectForAmChartJob($this->projectId);
-
-        $this->setDateArray();
-
-        $project->expeditions->each(function ($expedition) use ($transcriptionContract) {
-            $this->processExpedition($expedition, $transcriptionContract);
-        });
-
-        $this->amChartData = array_values($this->amChartData);
-
-        $data = ['series' => $this->projectChartSeries, 'data' => $this->amChartData];
-        $amChart = $amChartContract->updateOrCreate(['project_id' => $project->id], $data);
-
-        AmChartImageJob::dispatch($amChart);
-
-        $this->delete();
-    }
-
-    /**
-     * Reset the templates for each project.
-     */
-    protected function resetTemplates() {
-        $this->amChartData = [];
-        $this->projectChartSeries = [];
-        $this->projectChartSeriesFile = json_decode(File::get(config('config.project_chart_series')), true);
-    }
-
-    /**
-     * Set the date array using earliest and latest finished_at date.
-     */
-    protected function setDateArray()
-    {
-        $period = CarbonPeriod::create($this->earliest_date, 'P1D', $this->finished_date);
-
-        foreach ($period as $date) {
-            $this->amChartData[$date->format('Y-m-d')] = ['date' => $date->format('Y-m-d')];
+            $user->notify(new JobError(__FILE__, $messages));
         }
-    }
-
-    /**
-     * Process each expedition's transcriptions.
-     *
-     * @param $expedition
-     * @param $transcriptionContract PanoptesTranscription
-     */
-    public function processExpedition($expedition, $transcriptionContract)
-    {
-
-        $transcriptCountByDate = $transcriptionContract
-            ->getTranscriptionCountPerDate($expedition->panoptesProject->panoptes_workflow_id)
-            ->pluck('count', '_id');
-
-
-        $dates = $this->setExpeditionDateArray($transcriptCountByDate);
-
-        $this->setExpeditionDateAggregate($dates);
-
-
-        $this->buildExpeditionData($expedition->id, $dates);
-
-        $this->buildExpeditionSeries($expedition);
-
-    }
-
-    /**
-     * Set date span and count for Expedition.
-     *
-     * @param $transcriptCountByDate
-     * @return array
-     */
-    public function setExpeditionDateArray($transcriptCountByDate)
-    {
-        $dates = collect(array_flip(array_keys($this->amChartData)))->map(function($val, $date) use($transcriptCountByDate) {
-            return isset($transcriptCountByDate[$date]) ? $transcriptCountByDate[$date] : 0;
-        })->toArray();
-
-        return $dates;
-    }
-
-    /**
-     * Aggregate the count totals across dates.
-     *
-     * @param $dates
-     */
-    public function setExpeditionDateAggregate(&$dates)
-    {
-        $total = 0;
-        foreach ($dates as $date => $count) {
-            $total = $total === 0 ? $count : $total + $count;
-            $dates[$date] = $total;
-        }
-    }
-
-    /**
-     * Build data array and include missing dates for expedition.
-     *
-     * @param $id
-     * @param array $dates
-     */
-    public function buildExpeditionData($id, $dates)
-    {
-        foreach($this->amChartData as $date => $array) {
-            $this->amChartData[$date] = array_merge($array, ['expedition'.$id => $dates[$date]]);
-        }
-    }
-
-    /**
-     * Build expedition series and add to chart series.
-     *
-     * @param $expedition
-     */
-    public function buildExpeditionSeries($expedition)
-    {
-        $this->projectChartSeriesFile['dataFields']['valueY'] = 'expedition'.$expedition->id;
-        $this->projectChartSeriesFile['name'] = $expedition->title;
-        $this->projectChartSeries[] = $this->projectChartSeriesFile;
     }
 }
