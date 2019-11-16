@@ -52,7 +52,19 @@ class StateCountyRepository extends EloquentRepository implements StateCounty
 
         $this->resetModel();
 
-        return $results;
+
+        $states = $results->groupBy('state_num')->reject(function ($row, $key) {
+            return empty($key);
+        })->map(function ($row) {
+            $stateAbbr = $row->first()->state_abbr_cap;
+            $stateNum = $row->first()->state_num;
+            $id = 'US-'.$stateAbbr;
+            $count = (int) $row->sum('transcription_locations_count');
+
+            return ['id' => $id, 'value' => $count ?: 0, 'name' => $stateAbbr, 'statenum' => $stateNum];
+        })->values();
+
+        return $states;
     }
 
     /**
