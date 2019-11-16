@@ -77,19 +77,4 @@ class DateHelper
         return $timezone_list;
     }
 
-    /**
-     * Get years between two string dates, sort desc.
-     *
-     * @see \App\Services\Process\TranscriptionChartService
-     * @param $begin
-     * @param $end
-     * @return \Illuminate\Support\Collection
-     */
-    public function getRangeInYearsDesc($begin, $end)
-    {
-        $years = range(Carbon::parse($begin)->year, Carbon::parse($end)->year);
-        sort($years);
-
-        return collect($years);
-    }
 }
