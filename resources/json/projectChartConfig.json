@@ -44,7 +44,7 @@
   },
   "legend": {
     "labels": {
-      "maxWidth": 450,
+      "maxWidth": 400,
       "truncate": true
     },
     "itemContainers": {
