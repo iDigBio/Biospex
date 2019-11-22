@@ -59,6 +59,7 @@ class OcrComplete extends OcrBase
         $this->setOcrCsv($queue, $csv);
         $this->sendNotify($queue);
         $queue->ocrFiles()->delete();
+        $queue->delete();
         $this->deleteDir();
 
         event('ocr.poll');
