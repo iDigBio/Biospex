@@ -87,7 +87,7 @@ class PanoptesTranscription extends BaseMongoModel
      */
     public function setClassificationFinishedAtAttribute($value)
     {
-        $this->attributes['classification_finished_at'] = Carbon::parse($value);
+        $this->attributes['classification_finished_at'] = new UTCDateTime(Carbon::parse($value)->timestamp * 1000);
     }
 
 
@@ -98,6 +98,6 @@ class PanoptesTranscription extends BaseMongoModel
      */
     public function setClassificationStartedAtAttribute($value)
     {
-        $this->attributes['classification_started_at'] = Carbon::parse($value);
+        $this->attributes['classification_started_at'] = new UTCDateTime(Carbon::parse($value)->timestamp * 1000);
     }
 }

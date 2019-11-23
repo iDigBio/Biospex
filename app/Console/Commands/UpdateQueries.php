@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Repositories\Interfaces\AmChart;
-use App\Repositories\Interfaces\Project;
-use App\Services\Process\TranscriptionChartService;
+use App\Repositories\Interfaces\PanoptesTranscription;
+use App\Services\MongoDbService;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -23,33 +22,26 @@ class UpdateQueries extends Command
     protected $description = 'Used for custom queries when updating database';
 
     /**
-     * @var \App\Repositories\Interfaces\Project
-     */
-    private $projectContract;
-
-    /**
-     * @var \App\Services\Process\TranscriptionChartService
+     * @var \App\Services\MongoDbService
      */
     private $service;
 
     /**
-     * @var \App\Repositories\Interfaces\AmChart
+     * @var \App\Repositories\Interfaces\PanoptesTranscription
      */
-    private $amChartContract;
+    private $transcription;
 
     /**
      * UpdateQueries constructor.
      *
-     * @param \App\Repositories\Interfaces\AmChart $amChartContract
-     * @param \App\Repositories\Interfaces\Project $projectContract
-     * @param \App\Services\Process\TranscriptionChartService $service
+     * @param \App\Services\MongoDbService $service
+     * @param \App\Repositories\Interfaces\PanoptesTranscription $transcription
      */
-    public function __construct(AmChart $amChartContract, Project $projectContract, TranscriptionChartService $service)
+    public function __construct(MongoDbService $service, PanoptesTranscription $transcription)
     {
         parent::__construct();
-        $this->projectContract = $projectContract;
         $this->service = $service;
-        $this->amChartContract = $amChartContract;
+        $this->transcription = $transcription;
     }
 
     /**
@@ -57,15 +49,30 @@ class UpdateQueries extends Command
      */
     public function handle()
     {
-        $projectIds = $this->amChartContract->all(['project_id'])->pluck('project_id');
-        $projectIds->each(function($id) {
-            $project = $this->projectContract->getProjectForAmChartJob($id);
-            $project->amChart->series = [];
-            $project->amChart->data = [];
-            $project->amChart->save();
-            $this->service->process($project);
-            echo 'processed project ' . $id . PHP_EOL;
-        });
+        $this->service->setCollection('panoptes_transcriptions');
+
+        $query = ['classification_finished_at.timezone' => 'UTC'];
+
+        $cursor = $this->service->find($query);
+
+        $cursor->setTypeMap([
+            'array'    => 'array',
+            'document' => 'array',
+            'root'     => 'array'
+        ]);
+
+        $i = 0;
+        foreach ($cursor as $doc) {
+            $attributes = [
+                'classification_started_at' => $doc['classification_started_at']['date'],
+                'classification_finished_at' => $doc['classification_finished_at']['date'],
+            ];
+
+            $this->transcription->update($attributes, $doc['_id']);
+            $i++;
+            echo $i . PHP_EOL;
+        }
+
     }
 
 }
