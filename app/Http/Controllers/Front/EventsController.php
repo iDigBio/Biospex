@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Facades\DateHelper;
 use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventJoinRequest;
@@ -9,7 +10,7 @@ use App\Repositories\Interfaces\Event;
 use App\Repositories\Interfaces\EventTeam;
 use App\Repositories\Interfaces\EventUser;
 use GeneralHelper;
-use Illuminate\Support\Carbon;
+use JavaScript;
 
 class EventsController extends Controller
 {
@@ -23,7 +24,7 @@ class EventsController extends Controller
     {
         $results = $eventContract->getEventPublicIndex();
 
-        list($events, $eventsCompleted) = $results->partition(function ($event) {
+        [$events, $eventsCompleted] = $results->partition(function ($event) {
             return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
         });
 
@@ -48,7 +49,7 @@ class EventsController extends Controller
 
         $results = $eventContract->getEventPublicIndex($sort, $order, $projectId);
 
-        list($active, $completed) = $results->partition(function ($event) {
+        [$active, $completed] = $results->partition(function ($event) {
             return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);
         });
 
@@ -66,9 +67,14 @@ class EventsController extends Controller
      */
     public function read(Event $contract, $eventId)
     {
-        $event = $contract->findWith($eventId, ['project.lastPanoptesProject']);
+        $event = $contract->findWith($eventId, ['project.lastPanoptesProject', 'teams']);
+        $chart = DateHelper::eventDateCheck($event->start_date, $event->end_date);
+        JavaScript::put([
+            'teams' => $event->teams->pluck('title'),
+            'timezone' => str_replace('_', ' ', $event->timezone) . ' Timezone'
+        ]);
 
-        return view('front.event.show', compact('event'));
+        return view('front.event.show', compact('event', 'chart'));
     }
 
     /**
