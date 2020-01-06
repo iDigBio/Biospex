@@ -21,8 +21,8 @@ class EventsSeeder extends Seeder
         DB::statement('TRUNCATE TABLE `event_users`');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         */
-        $start_date = Carbon::parse('2020-01-06 15:20:00');
-        $end_date = Carbon::parse('2020-01-06 20:00:00');
+        $start_date = Carbon::parse('2020-01-06 16:30:00');
+        $end_date = Carbon::parse('2020-01-06 22:00:00');
         $data = ['start_date' => $start_date, 'end_date' => $end_date];
         $intervals = $this->setInterval($start_date->copy(), $end_date->copy());
 
