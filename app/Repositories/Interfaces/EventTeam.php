@@ -3,6 +3,7 @@
 namespace App\Repositories\Interfaces;
 
 use App\Repositories\RepositoryInterface;
+use Illuminate\Support\Collection;
 
 interface EventTeam extends RepositoryInterface
 {
@@ -11,4 +12,10 @@ interface EventTeam extends RepositoryInterface
      * @return mixed
      */
     public function getTeamByUuid($uuid);
+
+    /**
+     * @param string $eventId
+     * @return \Illuminate\Support\Collection
+     */
+    public function getTeamsByEventId(string $eventId): Collection;
 }
