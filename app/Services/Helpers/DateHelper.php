@@ -51,6 +51,7 @@ class DateHelper
 
     /**
      * Return timezone array for select box.
+     *
      * @return array
      * @throws \Exception
      */
@@ -77,4 +78,19 @@ class DateHelper
         return $timezone_list;
     }
 
+    /**
+     * Check event date to see if it's started.
+     *
+     * @param $startDate
+     * @param $endDate
+     * @return bool
+     */
+    public function eventDateCheck($startDate, $endDate)
+    {
+        $now = \Carbon\Carbon::now(new \DateTimeZone('UTC'));
+        $start_date = $startDate->setTimezone('UTC');
+        $end_date = $endDate->setTimeZone('UTC');
+
+        return $now->between($start_date, $end_date);
+    }
 }
