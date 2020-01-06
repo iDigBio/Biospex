@@ -5,7 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Models\Event as Model;
 use App\Models\EventTeam;
 use App\Repositories\Interfaces\Event;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 
 class EventRepository extends EloquentRepository implements Event
 {
