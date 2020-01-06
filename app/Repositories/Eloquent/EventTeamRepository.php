@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Facades\GeneralHelper;
 use App\Models\EventTeam as Model;
 use App\Repositories\Interfaces\EventTeam;
+use Illuminate\Support\Collection;
 
 class EventTeamRepository extends EloquentRepository implements EventTeam
 {
@@ -27,6 +28,18 @@ class EventTeamRepository extends EloquentRepository implements EventTeam
     public function getTeamByUuid($uuid)
     {
         $results = $this->model->with(['event'])->where('uuid', GeneralHelper::uuidToBin($uuid))->first();
+
+        $this->resetModel();
+
+        return $results;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getTeamsByEventId(string $eventId): Collection
+    {
+        $results = $this->model->where('event_id', $eventId)->get();
 
         $this->resetModel();
 
