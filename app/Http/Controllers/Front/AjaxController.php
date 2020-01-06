@@ -5,17 +5,9 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\AmChart;
 use App\Repositories\Interfaces\Event;
-use App\Repositories\Interfaces\EventTranscription;
-use App\Repositories\Interfaces\Expedition;
-use App\Repositories\Interfaces\Project;
-use App\Services\Model\AjaxService;
 use App\Services\Model\EventStepChartService;
 use Artisan;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
-use Illuminate\View\View;
-use phpDocumentor\Reflection\DocBlock\Description;
 
 class AjaxController extends Controller
 {
