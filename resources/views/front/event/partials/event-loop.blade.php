@@ -47,7 +47,7 @@
                     data-remote="false"
                     data-target="#step-chart-modal"
                     data-event="{{ $event->id }}"
-                    data-href="{{ route('ajax.get.step', [$event->id]) }}">{{ __('CHART') }}
+                    data-href="{{ route('ajax.get.step', [$event->id]) }}">{{ __('pages.event_chart_button') }}
             </button>
         </div>
         @endif

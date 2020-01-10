@@ -72,6 +72,8 @@ return [
     'event'                          => 'Event',
     'events'                         => 'Events',
     'events_none'                    => 'No Events exist.',
+    'event_chart_title'              => 'Event Activity Chart',
+    'event_chart_button'             => 'Activity Chart',
     'event_closed'                   => 'Event Closed',
     'event_download_users'           => 'Download Users File',
     'event_download_transcripts'     => 'Download Transcripts File',

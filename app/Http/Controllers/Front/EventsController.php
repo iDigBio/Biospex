@@ -69,6 +69,10 @@ class EventsController extends Controller
     {
         $event = $contract->findWith($eventId, ['project.lastPanoptesProject', 'teams']);
 
+        if ($event === null) {
+            FlashHelper::error(trans('messages.event_join_team_error'));
+        }
+
         JavaScript::put([
             'teams' => $event->teams->pluck('title'),
             'timezone' => str_replace('_', ' ', $event->timezone) . ' Timezone'
@@ -91,7 +95,9 @@ class EventsController extends Controller
         $active = GeneralHelper::eventBefore($team->event) || GeneralHelper::eventActive($team->event);
 
         if ($team === null) {
-            FlashHelper::error(trans('messages.event_join_team_error'));
+            FlashHelper::error(trans('messages.record_get_error'));
+
+             redirect()->route('front.events.index');
         }
 
         return view('front.event.signup', compact('team', 'active'));
