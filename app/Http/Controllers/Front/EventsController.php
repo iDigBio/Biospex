@@ -63,14 +63,16 @@ class EventsController extends Controller
      *
      * @param \App\Repositories\Interfaces\Event $contract
      * @param $eventId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function read(Event $contract, $eventId)
     {
         $event = $contract->findWith($eventId, ['project.lastPanoptesProject', 'teams']);
 
         if ($event === null) {
-            FlashHelper::error(trans('messages.event_join_team_error'));
+            FlashHelper::error(trans('messages.record_get_error'));
+
+            return redirect()->route('front.events.index');
         }
 
         JavaScript::put([
@@ -95,9 +97,7 @@ class EventsController extends Controller
         $active = GeneralHelper::eventBefore($team->event) || GeneralHelper::eventActive($team->event);
 
         if ($team === null) {
-            FlashHelper::error(trans('messages.record_get_error'));
-
-             redirect()->route('front.events.index');
+            FlashHelper::error(trans('messages.event_join_team_error'));
         }
 
         return view('front.event.signup', compact('team', 'active'));
