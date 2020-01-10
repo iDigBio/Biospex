@@ -317,6 +317,20 @@ class GeneralHelper
     }
 
     /**
+     * Check if event is over.
+     *
+     * @param $event
+     * @return bool
+     */
+    public function eventAfter($event)
+    {
+        $end_date = $event->end_date->setTimezone($event->timezone);
+        $now = Carbon::now($event->timezone);
+
+        return $now->gt($end_date);
+    }
+
+    /**
      * Convert uuid value to bin for lookup.
      *
      * @param $value

@@ -2,6 +2,7 @@
 
 namespace App\Services\Model;
 
+use App\Facades\GeneralHelper;
 use App\Repositories\Interfaces\Event;
 use App\Repositories\Interfaces\EventTeam;
 use App\Repositories\Interfaces\EventTranscription;
@@ -59,15 +60,13 @@ class EventStepChartService
         $loadTime = $this->getLoadTime($event, $timestamp);
 
         $startLoad = $loadTime->copy()->format('Y-m-d H:i:s');
-        $endLoad = $timestamp === null ?
-            Carbon::now()->floorMinutes(5)->format('Y-m-d H:i:s') :
-            $loadTime->addMinutes(5)->format('Y-m-d H:i:s');
+        $endLoad = $this->getEndLoad($event, $loadTime, $timestamp);
 
         $intervals = $this->setTimeIntervals($event, $startLoad, $endLoad, $timestamp);
 
         $transcriptions = $this->eventTranscriptionContract->getEventStepChartTranscriptions($eventId, $startLoad, $endLoad);
 
-        return $transcriptions === null ? $this->processEmptyResult($event, $intervals) : $this->processTranscriptionResult($event, $transcriptions, $intervals);
+        return $transcriptions->isEmpty() ? $this->processEmptyResult($event, $intervals) : $this->processTranscriptionResult($event, $transcriptions, $intervals);
     }
 
     /**
@@ -79,6 +78,10 @@ class EventStepChartService
      */
     public function processEmptyResult(\App\Models\Event $event, Collection $intervals): array
     {
+        if (GeneralHelper::eventAfter($event)) {
+            return [];
+        }
+
         $teams = $event->teams->pluck('title');
 
         $data = [];
@@ -195,6 +198,25 @@ class EventStepChartService
         return $timestamp === null ?
             Carbon::parse($event->start_date) :
             Carbon::createFromTimestampMs($timestamp)->floorMinutes(5);
+    }
+
+    /**
+     * Get end load time. If event is over, it will display all points from beginning to end.
+     *
+     * @param \App\Models\Event $event
+     * @param \Carbon\Carbon $loadTime
+     * @param string|null $timestamp
+     * @return string
+     */
+    protected function getEndLoad(\App\Models\Event $event, \Carbon\Carbon $loadTime, string $timestamp = null): string
+    {
+        if (GeneralHelper::eventAfter($event)) {
+            return Carbon::parse($event->end_date)->format('Y-m-d H:i:s');
+        }
+
+        return $timestamp === null ?
+            Carbon::now()->floorMinutes(5)->format('Y-m-d H:i:s') :
+            $loadTime->addMinutes(5)->format('Y-m-d H:i:s');
     }
 
     /**

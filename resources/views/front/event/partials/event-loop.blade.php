@@ -3,7 +3,7 @@
         <div class="card-body text-center">
             @if(GeneralHelper::eventBefore($event))
                 <h3 class="card-text">{{ __('pages.starting') }} {{ $event->present()->start_date_to_string }}</h3>
-            @elseif( ! GeneralHelper::eventActive($event))
+            @elseif(GeneralHelper::eventAfter($event))
                 <h3 class="card-text">{{ __('pages.completed') }}</h3>
             @else
                 <h2 class="card-text">{{ __('pages.time_remaining') }}</h2>
@@ -42,6 +42,12 @@
                     data-channel="{{ config('config.poll_scoreboard_channel') .'.'. $event->project_id }}"
                     data-event="{{ $event->id }}"
                     data-href="{{ route('ajax.get.scoreboard', [$event->id]) }}">{{ __('pages.scoreboard') }}
+            </button>
+            <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
+                    data-remote="false"
+                    data-target="#step-chart-modal"
+                    data-event="{{ $event->id }}"
+                    data-href="{{ route('ajax.get.step', [$event->id]) }}">{{ __('CHART') }}
             </button>
         </div>
         @endif

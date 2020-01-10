@@ -68,13 +68,13 @@ class EventsController extends Controller
     public function read(Event $contract, $eventId)
     {
         $event = $contract->findWith($eventId, ['project.lastPanoptesProject', 'teams']);
-        $chart = DateHelper::eventDateCheck($event->start_date, $event->end_date);
+
         JavaScript::put([
             'teams' => $event->teams->pluck('title'),
             'timezone' => str_replace('_', ' ', $event->timezone) . ' Timezone'
         ]);
 
-        return view('front.event.show', compact('event', 'chart'));
+        return view('front.event.show', compact('event'));
     }
 
     /**
