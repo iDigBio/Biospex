@@ -200,4 +200,30 @@ class ExpeditionPresenter extends Presenter
             data-content="'.__('messages.expedition_process_stop_message').'">
             <i class="fas fa-stop-circle fa-2x"></i></a>';
     }
+
+    /**
+     * Return icon and path for reprocessing export file.
+     *
+     * @return string
+     */
+    public function expeditionRegenerateExport()
+    {
+        return '<a class="float-right mr-4"
+                   href="'.route('admin.downloads.regenerate', [$this->model->project->id, $this->model->id]).'"
+                   data-hover="tooltip"
+                   title="'.__('pages.regenerate_export').'">
+                    <i class="fas fa-file-export"></i></a>';
+    }
+
+    /**
+     * Return large icon and path for reprocessing export file.
+     * @return string
+     */
+    public function expeditionRegenerateExportLrg()
+    {
+        return '<a href="'.route('admin.downloads.regenerate', [$this->model->project->id, $this->model->id]).'"
+                   data-hover="tooltip"
+                   title="'.__('pages.generate_export').'">
+                    <i class="fas fa-file-export fa-2x"></i></a>';
+    }
 }
