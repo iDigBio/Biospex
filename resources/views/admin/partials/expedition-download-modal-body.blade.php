@@ -5,13 +5,7 @@
 @else
     @foreach ($expedition->actors as $actor)
         <div class="col-md-12">
-            <h3>{{ $actor->title }}
-                <a class="float-right mr-4"
-                   href="{{ route('admin.downloads.regenerate', [$expedition->project->id, $expedition->id]) }}"
-                   data-hover="tooltip"
-                   title="{{ __('pages.regenerate_export') }}">
-                    <i class="fas fa-redo-alt"></i></a>
-            </h3>
+            <h3>{{ $actor->title }} {!! $expedition->present()->expedition_regenerate_export !!}</h3>
             <div class="table-responsive">
                 <table class="table table-sm table-hover">
                     <thead>
