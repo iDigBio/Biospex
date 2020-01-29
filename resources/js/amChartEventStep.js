@@ -96,7 +96,7 @@ am4core.ready(function () {
         });
 
         chart.legend = new am4charts.Legend();
-        chart.legend.labels.template.text = "[bold]{name}:[/] {valueY.close}";
+        chart.legend.labels.template.text = "[bold]{name}";
         chart.legend.useDefaultMarker = true;
         let marker = chart.legend.markers.template.children.getIndex(0);
         marker.cornerRadius(12, 12, 12, 12);
