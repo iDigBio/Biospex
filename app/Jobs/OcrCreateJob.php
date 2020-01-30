@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Services\Actor\Ocr\OcrCreate;
+use App\Services\Actor\OcrCreate;
 use Artisan;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -48,7 +48,7 @@ class OcrCreateJob implements ShouldQueue
     /**
      * Handle Job.
      *
-     * @param \App\Services\Actor\Ocr\OcrCreate $ocrCreate
+     * @param \App\Services\Actor\OcrCreate $ocrCreate
      */
     public function handle(OcrCreate $ocrCreate)
     {

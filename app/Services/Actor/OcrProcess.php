@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Actor\Ocr;
+namespace App\Services\Actor;
 
 use App\Jobs\OcrTesseractJob;
 use App\Models\OcrQueue as Model;

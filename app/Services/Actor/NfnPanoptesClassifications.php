@@ -1,27 +1,22 @@
 <?php
 
-namespace App\Services\Actor\NfnPanoptes;
+namespace App\Services\Actor;
 
+use App\Facades\ActorEventHelper;
 use App\Jobs\NfnClassificationsUpdateJob;
 use App\Repositories\Interfaces\Expedition;
 use App\Notifications\NfnTranscriptionsComplete;
 use App\Notifications\NfnTranscriptionsError;
-use App\Services\Actor\ActorServiceConfig;
 use App\Facades\GeneralHelper;
 use App\Services\Api\PanoptesApiService;
 
-class NfnPanoptesClassifications
+class NfnPanoptesClassifications extends NfnPanoptesBase
 {
 
     /**
      * @var Expedition
      */
     public $expeditionContract;
-
-    /**
-     * @var ActorServiceConfig
-     */
-    public $actorServiceConfig;
 
     /**
      * @var \App\Services\Api\PanoptesApiService
@@ -32,17 +27,14 @@ class NfnPanoptesClassifications
      * NfnPanoptesClassifications constructor.
      *
      * @param Expedition $expeditionContract
-     * @param ActorServiceConfig $actorServiceConfig
      * @param \App\Services\Api\PanoptesApiService $panoptesApiService
      */
     public function __construct(
         Expedition $expeditionContract,
-        ActorServiceConfig $actorServiceConfig,
         PanoptesApiService $panoptesApiService
     )
     {
         $this->expeditionContract = $expeditionContract;
-        $this->actorServiceConfig = $actorServiceConfig;
         $this->panoptesApiService = $panoptesApiService;
     }
 
@@ -50,18 +42,15 @@ class NfnPanoptesClassifications
      * Process current state.
      *
      * @param $actor
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function processActor($actor)
     {
-        $this->actorServiceConfig->setActor($actor);
-
         $record = $this->expeditionContract
             ->findWith($actor->pivot->expedition_id, ['project.group.owner', 'stat', 'panoptesProject']);
 
         if ($this->workflowIdDoesNotExist($record))
         {
-            $this->actorServiceConfig->fireActorUnQueuedEvent();
+            ActorEventHelper::fireActorUnQueuedEvent($actor);
 
             return;
         }
@@ -79,11 +68,11 @@ class NfnPanoptesClassifications
             $record->stat->transcriptions_completed = $transcriptionCompleted;
             $record->stat->percent_completed = $percentCompleted;
 
-            $this->checkFinishedAt($record, $workflow);
+            $this->checkFinishedAt($record, $workflow, $actor);
 
             $record->stat->save();
 
-            $this->actorServiceConfig->fireActorUnQueuedEvent();
+            ActorEventHelper::fireActorUnQueuedEvent($actor);
 
             NfnClassificationsUpdateJob::dispatch($record->id);
 
@@ -91,7 +80,7 @@ class NfnPanoptesClassifications
         }
         catch (\Exception $e)
         {
-            $this->actorServiceConfig->fireActorErrorEvent();
+            ActorEventHelper::fireActorErrorEvent($actor);
 
             $message = trans('messages.nfn_classifications_error', [
                 'title'   => $record->title,
@@ -121,12 +110,13 @@ class NfnPanoptesClassifications
      *
      * @param $record
      * @param $workflow
+     * @param $actor
      */
-    protected function checkFinishedAt(&$record, $workflow)
+    protected function checkFinishedAt(&$record, $workflow, &$actor)
     {
         if ($workflow['finished_at'] !== null)
         {
-            $this->actorServiceConfig->fireActorCompletedEvent();
+            ActorEventHelper::fireActorCompletedEvent($actor);
             $this->notify($record);
         }
     }

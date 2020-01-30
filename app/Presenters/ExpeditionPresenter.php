@@ -4,7 +4,6 @@ namespace App\Presenters;
 
 class ExpeditionPresenter extends Presenter
 {
-
     /**
      * Return show icon.
      *
@@ -15,7 +14,7 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.show', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('pages.view').' ' .__('pages.expedition').'">
+            ]).'" data-hover="tooltip" title="'.__('pages.view').' '.__('pages.expedition').'">
             <i class="fas fa-eye"></i></a>';
     }
 
@@ -29,7 +28,7 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.show', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('pages.view').' ' .__('pages.expedition').'">
+            ]).'" data-hover="tooltip" title="'.__('pages.view').' '.__('pages.expedition').'">
             <i class="fas fa-eye fa-2x"></i></a>';
     }
 
@@ -86,7 +85,7 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.clone', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('pages.clone').' ' .__('pages.expedition').'"><i class="fas fa-clone"></i></a>';
+            ]).'" data-hover="tooltip" title="'.__('pages.clone').' '.__('pages.expedition').'"><i class="fas fa-clone"></i></a>';
     }
 
     /**
@@ -99,7 +98,7 @@ class ExpeditionPresenter extends Presenter
         return '<a href="'.route('admin.expeditions.clone', [
                 $this->model->project_id,
                 $this->model->id,
-            ]).'" data-hover="tooltip" title="'.__('pages.clone').' ' .__('pages.expedition').'"><i class="fas fa-clone fa-2x"></i></a>';
+            ]).'" data-hover="tooltip" title="'.__('pages.clone').' '.__('pages.expedition').'"><i class="fas fa-clone fa-2x"></i></a>';
     }
 
     /**
@@ -202,26 +201,16 @@ class ExpeditionPresenter extends Presenter
     }
 
     /**
-     * Return icon and path for reprocessing export file.
-     *
-     * @return string
-     */
-    public function expeditionRegenerateExport()
-    {
-        return '<a class="float-right mr-4"
-                   href="'.route('admin.downloads.regenerate', [$this->model->project->id, $this->model->id]).'"
-                   data-hover="tooltip"
-                   title="'.__('pages.regenerate_export').'">
-                    <i class="fas fa-file-export"></i></a>';
-    }
-
-    /**
      * Return large icon and path for reprocessing export file.
+     *
      * @return string
      */
     public function expeditionRegenerateExportLrg()
     {
-        return '<a href="'.route('admin.downloads.regenerate', [$this->model->project->id, $this->model->id]).'"
+        return '<a class="float-right mr-4" href="'.route('admin.downloads.regenerate', [
+                $this->model->project->id,
+                $this->model->id,
+            ]).'"
                    data-hover="tooltip"
                    title="'.__('pages.generate_export').'">
                     <i class="fas fa-file-export fa-2x"></i></a>';

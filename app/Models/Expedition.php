@@ -14,6 +14,11 @@ class Expedition extends BaseEloquentModel implements AttachableInterface
     use UuidTrait, HybridRelations, Presentable, PaperclipTrait;
 
     /**
+     * @var string
+     */
+    protected $connection = 'mysql';
+
+    /**
      * @inheritDoc
      */
     protected $table = 'expeditions';

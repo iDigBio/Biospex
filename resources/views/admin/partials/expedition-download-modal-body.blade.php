@@ -5,7 +5,7 @@
 @else
     @foreach ($expedition->actors as $actor)
         <div class="col-md-12">
-            <h3>{{ $actor->title }} {!! $expedition->present()->expedition_regenerate_export !!}</h3>
+            <h3>{{ $actor->title }} {!! $expedition->present()->expedition_regenerate_export_lrg !!}</h3>
             <div class="table-responsive">
                 <table class="table table-sm table-hover">
                     <thead>

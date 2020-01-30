@@ -14,7 +14,6 @@ use App\Notifications\NfnExportError;
 
 class ExportQueueJob implements ShouldQueue
 {
-
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
@@ -31,6 +30,7 @@ class ExportQueueJob implements ShouldQueue
 
     /**
      * ExportQueueJob constructor.
+     *
      * @param Model $model
      */
     public function __construct(Model $model)
@@ -41,33 +41,39 @@ class ExportQueueJob implements ShouldQueue
 
     /**
      * Handle ExportQueue Job
-     * @param ExportQueue $repository
-     * @see \App\Observers\ExportQueueObserver Set when new export saved and event fired.
+     *
+     * @param ExportQueue $exportQueueContract
      */
-    public function handle(ExportQueue $repository)
+    public function handle(ExportQueue $exportQueueContract)
     {
-        $queue = $repository->findByIdExpeditionActor($this->model->id, $this->model->expedition_id, $this->model->actor_id);
+        $queue = $exportQueueContract->findByIdExpeditionActor($this->model->id, $this->model->expedition_id, $this->model->actor_id);
 
-        try
-        {
-            $class = ActorFactory::create($queue->expedition->actor->class, $queue->expedition->actor->class);
-            $class->queue($queue);
+        if ($queue === null) {
             $this->delete();
+
+            return;
         }
-        catch (\Exception $e)
-        {
+
+        try {
+            $class = ActorFactory::create($queue->expedition->actor->class);
+            $class->processQueue($queue);
+            \Artisan::call('export:poll');
+            $this->delete();
+        } catch (\Exception $e) {
             event('actor.pivot.error', $queue->expedition->actor);
 
             $attributes = ['queued' => 0, 'error' => 1];
-            $repository->update($attributes, $queue->id);
+            $exportQueueContract->updateMany($attributes, 'expedition_id', $this->model->expedition_id);
 
             $message = trans('messages.nfn_export_error', [
                 'title'   => $queue->expedition->title,
                 'id'      => $queue->expedition->id,
-                'message' => $e->getFile() . ':' . $e->getLine() . ' - ' . $e->getMessage()
+                'message' => $e->getFile().':'.$e->getLine().' - '.$e->getMessage(),
             ]);
 
             $queue->expedition->project->group->owner->notify(new NfnExportError($message));
+
+            \Artisan::call('export:queue');
 
             $this->delete();
         }

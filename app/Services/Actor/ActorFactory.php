@@ -4,17 +4,14 @@ namespace App\Services\Actor;
 
 class ActorFactory
 {
-
     /**
      * Used to create class for different actors.
      *
-     * @param $actorPath
-     * @param $actorClass
-     * @return \Illuminate\Foundation\Application
+     * @param string $class
+     * @return \Illuminate\Contracts\Foundation\Application|mixed
      */
-    public static function create($actorPath, $actorClass)
+    public static function create(string $class)
     {
-        $classPath = 'App\Services\Actor\\' . $actorPath . '\\' . $actorClass;
-        return app($classPath);
+        return app('App\Services\Actor\\' . $class);
     }
 }

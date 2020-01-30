@@ -70,7 +70,7 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
      */
     public function getAllExportQueueOrderByIdAsc()
     {
-        $results = $this->model->where('error', 0)->orderBy('id', 'asc')->get();
+        $results = $this->model->where('error', 0)->orderBy('id', 'asc')->get('*');
 
         $this->resetModel();
 

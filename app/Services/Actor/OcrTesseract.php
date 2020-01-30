@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Actor\Ocr;
+namespace App\Services\Actor;
 
 use App\Models\OcrFile;
 use App\Repositories\Interfaces\OcrQueue;

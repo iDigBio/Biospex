@@ -17,6 +17,11 @@ class Project extends BaseEloquentModel implements AttachableInterface
     use PaperclipTrait, Sluggable, UuidTrait, HybridRelations, Presentable;
 
     /**
+     * @var string
+     */
+    protected $connection = 'mysql';
+
+    /**
      * @inheritDoc
      */
     protected $table = 'projects';

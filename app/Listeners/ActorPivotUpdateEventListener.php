@@ -62,6 +62,11 @@ class ActorPivotUpdateEventListener
             'actor.pivot.completed',
             'App\Listeners\ActorPivotUpdateEventListener@actorPivotCompleted'
         );
+
+        $events->listen(
+            'actor.pivot.report',
+            'App\Listeners\ActorPivotUpdateEventListener@actorPivotReport'
+        );
     }
 
     /**
@@ -175,6 +180,22 @@ class ActorPivotUpdateEventListener
             'state'     => $actor->pivot->state,
             'queued'    => $actor->pivot->queued,
             'completed' => $actor->pivot->completed
+        ];
+
+        $this->updateActorExpeditions($actor, $attributes);
+    }
+
+    /**
+     * Set stage to advance to report due to issues.
+     *
+     * @param $actor
+     */
+    public function actorPivotReport($actor)
+    {
+        $attributes = [
+            'state'     => $actor->pivot->state,
+            'queued'    => $actor->pivot->queued,
+            'processed' => $actor->pivot->processed,
         ];
 
         $this->updateActorExpeditions($actor, $attributes);

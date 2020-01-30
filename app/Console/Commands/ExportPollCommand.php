@@ -4,9 +4,7 @@ namespace App\Console\Commands;
 
 use App\Events\PollExportEvent;
 use App\Facades\GeneralHelper;
-use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\ExportQueue;
-use App\Services\Actor\ActorFactory;
 use Illuminate\Console\Command;
 
 class ExportPollCommand extends Command
@@ -27,36 +25,27 @@ class ExportPollCommand extends Command
     protected $description = 'Command description';
 
     /**
-     * @var string
-     */
-    private $nfnActors;
-
-    /**
-     * @var Expedition
-     */
-    private $expeditionContract;
-    /**
      * @var ExportQueue
      */
     private $exportQueueContract;
 
     /**
+     * @var array
+     */
+    private $exportStages;
+
+    /**
      * Create a new command instance.
      *
-     * @param Expedition $expeditionContract
      * @param ExportQueue $exportQueueContract
      * @internal param Actor $actor
      */
-    public function __construct(
-        Expedition $expeditionContract,
-        ExportQueue $exportQueueContract
-    )
+    public function __construct(ExportQueue $exportQueueContract)
     {
         parent::__construct();
 
-        $this->nfnActors = explode(',', config('config.nfnActors'));
-        $this->expeditionContract = $expeditionContract;
         $this->exportQueueContract = $exportQueueContract;
+        $this->exportStages = config('config.export_stages');
     }
 
     /**
@@ -64,47 +53,88 @@ class ExportPollCommand extends Command
      */
     public function handle()
     {
-        $records = $this->exportQueueContract->getAllExportQueueOrderByIdAsc();
+        $queues = $this->exportQueueContract->getAllExportQueueOrderByIdAsc();
 
         $data = ['message' => trans('pages.processes_none'), 'payload' => []];
 
-        if ($records->isEmpty())
+        if ($queues->isEmpty())
         {
             PollExportEvent::dispatch($data);
             return;
         }
 
-        $count = 0;
-        $data['payload'] = $records->map(function($record) use ($count) {
+        $data['payload'] = $queues->mapToGroups(function($queue){
+            return [$queue['expedition_id'] => $queue];
+        })->map(function($group) {
+            $totalBatches = $group->count();
+            $queue = $group->shift();
+            $data = $this->getFirstQueueData($queue);
+            $remainingBatches = $group->count();
 
-            $queue = $this->exportQueueContract->findQueueProcessData($record->id, $record->expedition_id, $record->actor_id);
+            $notice = $queue->queued ?
+                $this->setProcessNotice($data, $remainingBatches) :
+                $this->setQueuedNotice($data, $totalBatches);
 
-            $actorClass = ActorFactory::create($queue->expedition->actor->class, $queue->expedition->actor->class . 'Export');
-            $stage = $actorClass->stage[$queue->stage];
-            $processed = $queue->expedition->actor->pivot->processed === 0 ? 1 : $queue->expedition->actor->pivot->processed;
-            $total = $queue->expedition->actor->pivot->total;
-            $count++;
-
-            $notice = $record->queued ?
-                trans('html.export_processing', [
-                    'stage' => GeneralHelper::camelCaseToWords($stage),
-                    'title' => $queue->expedition->title,
-                    'processedRecords' => trans_choice('html.processed_records', $processed, [
-                        'processed' => $processed,
-                        'total' => $total
-                    ]),
-                ]) :
-                trans_choice('html.export_queued', $count, [
-                    'title' => $queue->expedition->title,
-                    'count' => $count
-                ]);
 
             return [
-                'groupId'       => $queue->expedition->project->group->id,
-                'notice'         => $notice
+                'groupId' => $data->expedition->project->group->id,
+                'notice'  => $notice
             ];
-        })->toArray();
+        })->values();
 
         PollExportEvent::dispatch($data);
+    }
+
+    /**
+     * Get needed data for queue relationships.
+     *
+     * @param \App\Models\ExportQueue $queue
+     * @return \App\Models\ExportQueue
+     */
+    private function getFirstQueueData(\App\Models\ExportQueue $queue): \App\Models\ExportQueue
+    {
+        return $this->exportQueueContract->findQueueProcessData($queue->id, $queue->expedition_id, $queue->actor_id);
+    }
+
+    /**
+     * Set notice if process is occurring.
+     *
+     * @param \App\Models\ExportQueue $data
+     * @param int $remainingBatches
+     * @return string
+     */
+    private function setProcessNotice(\App\Models\ExportQueue $data, int $remainingBatches): string
+    {
+        $stage = $this->exportStages[$data->stage];
+        $processed = $data->expedition->actor->pivot->processed === 0 ? 1 : $data->expedition->actor->pivot->processed;
+
+        return trans('html.export_processing', [
+            'stage'            => GeneralHelper::camelCaseToWords($stage),
+            'title'            => $data->expedition->title,
+            'processedRecords' => trans_choice('html.processed_records', $processed, [
+                'processed' => $processed,
+                'total'     => $data->count
+            ]),
+            'remainingBatches' => trans_choice('html.export_remaining_batches', $remainingBatches, [
+                'remaining' => $remainingBatches
+            ]),
+        ]);
+    }
+
+    /**
+     * Set notice message for remaining exports.
+     *
+     * @param \App\Models\ExportQueue $data
+     * @param int $totalBatches
+     * @return string
+     */
+    private function setQueuedNotice(\App\Models\ExportQueue $data, int $totalBatches): string
+    {
+        return trans('html.export_queued', [
+            'title' => $data->expedition->title,
+            'remainingBatches' => trans_choice('html.export_remaining_batches', $totalBatches, [
+                'remaining' => $totalBatches
+            ]),
+        ]);
     }
 }

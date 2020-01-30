@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\JobError;
+use App\Services\Actor\ActorFactory;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -44,10 +45,8 @@ class ActorJob implements ShouldQueue
     {
         try
         {
-            $classPath = 'App\Services\Actor\\' . $this->actor->class . '\\' . $this->actor->class;
-
-            $class = app($classPath);
-            $class->actor($this->actor);
+            $actorClass = ActorFactory::create($this->actor->class);
+            $actorClass->actor($this->actor);
             $this->delete();
         }
         catch (\Exception $e)

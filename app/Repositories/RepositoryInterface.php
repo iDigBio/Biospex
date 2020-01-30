@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 
+use Illuminate\Support\Collection;
+
 interface RepositoryInterface
 {
     public function all(array $columns = ['*']);
@@ -22,6 +24,8 @@ interface RepositoryInterface
     public function update(array $data, $resourceId);
 
     public function updateOrCreate(array $attributes, array $values);
+
+    public function updateMany(array $attributes, string $column, string $value);
 
     public function delete($model);
 

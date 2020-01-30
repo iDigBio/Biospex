@@ -2,7 +2,6 @@
 
 namespace App\Listeners;
 
-
 use App\Repositories\Interfaces\ExportQueue;
 use App\Jobs\ExportQueueJob;
 
@@ -15,8 +14,9 @@ class ExportQueueEventListener
     private $exportQueue;
 
     /**
-     * ExportQueueObserver constructor.
-     * @param ExportQueue $exportQueue
+     * ExportQueueEventListener constructor.
+     *
+     * @param \App\Repositories\Interfaces\ExportQueue $exportQueue
      */
     public function __construct(ExportQueue $exportQueue)
     {

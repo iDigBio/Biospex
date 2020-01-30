@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use Illuminate\Container\Container as App;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Support\Collection;
 use Jenssegers\Mongodb\Eloquent\Model as MongdbModel;
 
 abstract class Repository
@@ -139,11 +140,11 @@ abstract class Repository
      */
     public function firstOrCreate(array $attributes, array $data = [])
     {
-        $results = $this->model->firstOrCreate($attributes, $data);
+        $result = $this->model->firstOrCreate($attributes, $data);
 
         $this->resetModel();
 
-        return $results;
+        return $result;
     }
 
     /**
@@ -171,6 +172,22 @@ abstract class Repository
     public function updateOrCreate(array $attributes, array $values)
     {
         $results = $this->model->updateOrCreate($attributes, $values);
+
+        $this->resetModel();
+
+        return $results;
+    }
+
+    /**
+     * @param array $attributes
+     * @param string $column
+     * @param string $value
+     * @return mixed
+     * @throws \Exception
+     */
+    public function updateMany(array $attributes, string $column, string $value)
+    {
+        $results = $this->model->where($column, $value)->update($attributes);
 
         $this->resetModel();
 

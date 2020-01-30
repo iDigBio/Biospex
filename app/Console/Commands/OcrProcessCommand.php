@@ -5,8 +5,8 @@ namespace App\Console\Commands;
 use App\Models\User;
 use App\Repositories\Interfaces\OcrQueue;
 use App\Notifications\JobError;
-use App\Services\Actor\Ocr\OcrComplete;
-use App\Services\Actor\Ocr\OcrProcess;
+use App\Services\Actor\OcrComplete;
+use App\Services\Actor\OcrProcess;
 use Artisan;
 use Exception;
 use Illuminate\Console\Command;
@@ -38,7 +38,7 @@ class OcrProcessCommand extends Command
     private $ocrComplete;
 
     /**
-     * @var \App\Services\Actor\Ocr\OcrProcess
+     * @var \App\Services\Actor\OcrProcess
      */
     private $ocrProcess;
 
@@ -49,7 +49,7 @@ class OcrProcessCommand extends Command
      *
      * @param OcrQueue $ocrQueueContract
      * @param OcrComplete $ocrComplete
-     * @param \App\Services\Actor\Ocr\OcrProcess $ocrProcess
+     * @param \App\Services\Actor\OcrProcess $ocrProcess
      */
     public function __construct(
         OcrQueue $ocrQueueContract,

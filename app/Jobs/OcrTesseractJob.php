@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Models\OcrFile;
 use App\Models\OcrQueue;
-use App\Services\Actor\Ocr\OcrTesseract;
+use App\Services\Actor\OcrTesseract;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -47,7 +47,7 @@ class OcrTesseractJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Services\Actor\Ocr\OcrTesseract $ocrTesseract
+     * @param \App\Services\Actor\OcrTesseract $ocrTesseract
      * @return void
      */
     public function handle(OcrTesseract $ocrTesseract)

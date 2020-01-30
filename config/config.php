@@ -59,6 +59,15 @@ return [
         'File Download',
     ],
 
+    'export_stages' => [
+        'retrieveImages',
+        'convertImages',
+        'deleteOriginalImages',
+        'buildCsv',
+        'tarImages',
+        'report'
+    ],
+
     /**
      * iDigBio api query url
      */

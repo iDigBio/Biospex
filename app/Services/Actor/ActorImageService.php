@@ -2,70 +2,143 @@
 
 namespace App\Services\Actor;
 
+putenv('MAGICK_THREAD_LIMIT=1');
+
+use App\Facades\ActorEventHelper;
+use App\Models\Actor;
+use App\Repositories\Interfaces\ExportQueueFile;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Pool;
 use App\Services\Image\ImagickService;
 use App\Services\Requests\HttpRequest;
+use Illuminate\Support\Collection;
+use File;
 
-class ActorImageService extends ActorServiceConfig
+/**
+ * Class ActorImageService
+ *
+ * @package App\Services\Actor
+ */
+class ActorImageService
 {
-
     /**
      * @var ImagickService
      */
-    public $imagickService;
-
-    /**
-     * @var
-     */
-    public $gdService;
+    private $imagickService;
 
     /**
      * @var HttpRequest
      */
-    public $httpRequest;
+    private $httpRequest;
 
     /**
-     * @var
+     * @var \App\Models\Actor
      */
-    private $missingImages = [];
+    private $actor;
+
+    /**
+     * @var \Illuminate\Support\Collection
+     */
+    private $files = null;
+
+    /**
+     * @var string
+     */
+    private $workingDirectory = null;
+
+    /**
+     * @var string
+     */
+    private $tmpDirectory = null;
+
+    /**
+     * @var \App\Repositories\Interfaces\ExportQueueFile
+     */
+    private $exportQueueFile;
 
     /**
      * ActorImageService constructor.
      *
      * @param ImagickService $imagickService
      * @param HttpRequest $httpRequest
+     * @param \App\Repositories\Interfaces\ExportQueueFile $exportQueueFile
      * @internal param ImageService $imageService
      */
     public function __construct(
         ImagickService $imagickService,
-        HttpRequest $httpRequest
-    )
-    {
+        HttpRequest $httpRequest,
+        ExportQueueFile $exportQueueFile
+    ) {
         $this->imagickService = $imagickService;
         $this->httpRequest = $httpRequest;
+        $this->exportQueueFile = $exportQueueFile;
     }
 
     /**
-     * Process expedition for export.
+     * Set the actor being worked on for firing events.
+     *
+     * @param \App\Models\Actor $actor
+     */
+    public function setActor(Actor $actor)
+    {
+        $this->actor = $actor;
+    }
+
+    /**
+     * Set files collection to process.
+     *
+     * @param \Illuminate\Support\Collection $files
+     */
+    public function setFiles(Collection $files)
+    {
+        $this->files = $files;
+    }
+
+    /**
+     * Set directories.
+     *
+     * @param string $workingDirectory
+     * @param string $tmpDirectory
+     */
+    public function setDirectories(string $workingDirectory, string $tmpDirectory)
+    {
+        $this->workingDirectory = $workingDirectory;
+        $this->tmpDirectory = $tmpDirectory;
+    }
+
+    /**
+     * Check necessary properties are set.
+     *
+     * @return bool
+     */
+    private function propertiesCheck()
+    {
+        return $this->actor === null || $this->workingDirectory === null || $this->tmpDirectory === null;
+    }
+
+    /**
+     * Process images.
+     *
+     * @throws \Exception
      */
     public function getImages()
     {
+        if ($this->propertiesCheck()) {
+            throw new \Exception(__('Missing needed properties for ActorImageService'));
+        }
+
         $this->httpRequest->setHttpProvider();
 
-        $requests = function ()
-        {
-            foreach ($this->subjects as $index => $subject)
-            {
-                $file = $this->workingDirectory . '/' . $subject->_id . '.jpg';
-                if ($this->checkPropertiesExist($subject) || $this->checkFileExists($file))
-                {
-                    $this->fireActorProcessedEvent();
+        $requests = function () {
+            foreach ($this->files as $index => $file) {
+                $filePath = $this->workingDirectory.'/'.$file->subject_id.'.jpg';
+                if ($this->checkPropertiesExist($file) || File::isFile($filePath)) {
+                    ActorEventHelper::fireActorProcessedEvent($this->actor);
 
                     continue;
                 }
 
-                $uri = str_replace(' ', '%20', $subject->accessURI);
+                $uri = str_replace(' ', '%20', $file->url);
 
                 yield $index => new Request('GET', $uri);
             }
@@ -73,16 +146,13 @@ class ActorImageService extends ActorServiceConfig
 
         $pool = new Pool($this->httpRequest->getHttpClient(), $requests(), [
             'concurrency' => 5,
-            'fulfilled'   => function ($response, $index)
-            {
+            'fulfilled'   => function ($response, $index) {
                 $this->saveImage($response, $index);
             },
-            'rejected'    => function ($reason, $index)
-            {
-                $this->fireActorProcessedEvent();
-                $message = 'Could not retrieve image from uri.';
-                $this->setMissingImages($this->subjects[$index]->_id, $this->subjects[$index]->accessURI, $message);
-            }
+            'rejected'    => function ($reason, $index) {
+                ActorEventHelper::fireActorProcessedEvent($this->actor);
+                $this->setFileErrorMessage($this->files[$index], 'Could not retrieve image from uri.');
+            },
         ]);
 
         $promise = $pool->promise();
@@ -102,17 +172,15 @@ class ActorImageService extends ActorServiceConfig
         $image = $response->getBody()->getContents();
         $response->getBody()->close();
 
-        if ($image === '' || $response->getStatusCode() !== 200)
-        {
-            $message = 'Image string empty or status code not 200.';
-            $this->setMissingImages($this->subjects[$index]->_id, $this->subjects[$index]->accessURI, $message);
-            $this->fireActorProcessedEvent();
+        if ($image === '' || $response->getStatusCode() !== 200) {
+            $this->setFileErrorMessage($this->files[$index], 'Image string empty or status code not 200.');
+            ActorEventHelper::fireActorProcessedEvent($this->actor);
 
             return;
         }
 
         $this->processBlobImage($image, $index);
-        $this->fireActorProcessedEvent();
+        ActorEventHelper::fireActorProcessedEvent($this->actor);
     }
 
     /**
@@ -122,17 +190,17 @@ class ActorImageService extends ActorServiceConfig
      * @param $index
      * @throws \Exception
      */
-    public function processBlobImage($image, $index){
+    public function processBlobImage($image, $index)
+    {
         try {
             $this->imagickService->createImagickObject();
             $this->imagickService->readImagickFromBlob($image);
             $this->imagickService->setImageFormat();
             $this->imagickService->stripImage();
-            $this->writeImagickFile($this->workingDirectory, $this->subjects[$index]->_id);
+            $this->writeImagickFile($this->workingDirectory, $this->files[$index]->subject_id);
             $this->imagickService->clearImagickObject();
-        }
-        catch (\ImagickException $e){
-            $this->setMissingImages($this->subjects[$index]->_id, '', $e->getMessage());
+        } catch (\ImagickException $e) {
+            $this->setFileErrorMessage($this->files[$index], $e->getMessage());
             $this->imagickService->clearImagickObject();
         }
     }
@@ -142,17 +210,17 @@ class ActorImageService extends ActorServiceConfig
      * @param $fileName
      * @throws \Exception
      */
-    public function processFileImage($file, $fileName){
-        try{
+    public function processFileImage($file, $fileName)
+    {
+        try {
             $this->imagickService->createImagickObject();
             $this->imagickService->setOption('jpeg:size', '1540x1540');
             $this->imagickService->readImageFromPath($file);
             $this->imagickService->setOption('jpeg:extent', '600kb');
             $this->writeImagickFile($this->tmpDirectory, $fileName);
             $this->imagickService->clearImagickObject();
-        }
-        catch (\ImagickException $e){
-            $this->setMissingImages($fileName, '', $e->getMessage());
+        } catch (\ImagickException $e) {
+            $this->setFileErrorMessage($fileName, $e->getMessage());
             $this->imagickService->clearImagickObject();
         }
     }
@@ -160,57 +228,40 @@ class ActorImageService extends ActorServiceConfig
     /**
      * Add missing image information to array.
      *
-     * @param $subjectId
-     * @param $accessURI
-     * @param $message
+     * @param $file
+     * @param string $message
      */
-    private function setMissingImages($subjectId, $accessURI, $message)
+    private function setFileErrorMessage($file, string $message)
     {
-        $this->missingImages[] = [
-            'subjectId' => $subjectId,
-            'accessURI' => $accessURI,
-            'message' => $message
-        ];
-    }
+        if ($file instanceof \App\Models\ExportQueueFile) {
+            $file->error = 1;
+            $file->error_message = $message;
+            $file->save();
 
-    /**
-     * Return missing images array.
-     *
-     * @return mixed
-     */
-    public function getMissingImages()
-    {
-        return $this->missingImages;
+            return;
+        }
+
+        $result = $this->exportQueueFile->findBy('subject_id', $file);
+        $result->error = 1;
+        $result->error_message = $message;
+        $result->save();
     }
 
     /**
      * Check properties to see if image needs to be retrieved.
      *
-     * @param $subject
+     * @param \App\Models\ExportQueueFile $file
      * @return bool
      */
-    private function checkPropertiesExist($subject)
+    private function checkPropertiesExist(\App\Models\ExportQueueFile $file)
     {
-        if (empty($subject->accessURI))
-        {
-            $message = 'Image missing accessURI value';
-            $this->setMissingImages($subject->_id, $subject->accessURI, $message);
+        if (empty($file->url)) {
+            $this->setFileErrorMessage($file, 'Image missing url value');
 
             return true;
         }
 
         return false;
-    }
-
-    /**
-     * Check files exists.
-     *
-     * @param $file
-     * @return bool
-     */
-    public function checkFileExists($file)
-    {
-        return $this->isFile($file);
     }
 
     /**
@@ -222,10 +273,9 @@ class ActorImageService extends ActorServiceConfig
      */
     public function writeImagickFile($dir, $fileName)
     {
-        $destination = $dir . '/' . $fileName . '.jpg';
-        if ( ! $this->imagickService->writeImagickImageToFile($destination))
-        {
-            throw new \ImagickException('Could not write image ' . $destination);
+        $destination = $dir.'/'.$fileName.'.jpg';
+        if (! $this->imagickService->writeImagickImageToFile($destination)) {
+            throw new \ImagickException('Could not write image '.$destination);
         }
     }
 }
