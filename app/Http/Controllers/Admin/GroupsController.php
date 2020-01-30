@@ -128,13 +128,13 @@ class GroupsController extends Controller
     {
         $group = $this->groupContract->find($groupId);
 
-        if ($this->checkPermissions('isOwner', $group)) {
+        if (! $this->checkPermissions('isOwner', $group)) {
             return redirect()->back();
         }
 
         $this->groupContract->update($request->all(), $groupId) ? FlashHelper::success(trans('messages.record_updated')) : FlashHelper::error('messages.record_updated_error');
 
-        return redirect()->route('admin.groups.index');
+        return redirect()->route('admin.groups.show', [$groupId]);
     }
 
     /**
@@ -186,13 +186,14 @@ class GroupsController extends Controller
     {
         $group = $this->groupContract->find($groupId);
 
-        if ( ! $this->checkPermissions('isOwner', $group)) {
+        if (! $this->checkPermissions('isOwner', $group)) {
             return redirect()->route('admin.groups.index');
         }
 
         try {
             if ($group->user_id === (int) $userId) {
                 FlashHelper::error(trans('messages.group_user_deleted_owner'));
+
                 return redirect()->route('admin.groups.show', [$groupId]);
             }
 
@@ -204,6 +205,7 @@ class GroupsController extends Controller
             return redirect()->route('admin.groups.show', [$groupId]);
         } catch (\Exception $e) {
             FlashHelper::error(trans('messages.group_user_deleted_error'));
+
             return redirect()->route('admin.groups.show', [$groupId]);
         }
     }
