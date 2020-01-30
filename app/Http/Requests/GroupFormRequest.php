@@ -39,7 +39,6 @@ class GroupFormRequest extends Request
     {
         $input = $this->all();
         $input['title'] = $this->route('groups') === config('config.admin_group_id') ? config('config.admin_group_id') : trim($input['title']);
-        $input['user_id'] = $input['owner'];
         $this->replace($input);
 
         return $this->all();
