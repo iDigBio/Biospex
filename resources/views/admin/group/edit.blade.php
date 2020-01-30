@@ -13,8 +13,8 @@
                 <form id="gridForm" method="post"
                       action="{{ route('admin.groups.update', [$group->id]) }}"
                       role="form" enctype="multipart/form-data">
+                    {!! method_field('put') !!}
                     @csrf
-                    <input type="hidden" value="{{ Auth::id() }}" name="owner" id="owner">
                     <div class="col-12">
                         <h2 class="text-center content-header mb-4 text-uppercase">{{ __('pages.edit') }} {{ __('pages.group') }}</h2>
                         <div class="form-group">
@@ -26,16 +26,17 @@
                         </div>
                     </div>
                     <div class="form-group col-sm-6">
-                        <label for="owner" class="col-form-label required">{{ __('pages.owner') }}:</label>
-                        <select name="owner" id="owner"
-                                class="form-control custom-select {{ ($errors->has('owner')) ? 'is-invalid' : '' }}"
+                        <label for="user_id" class="col-form-label required">{{ __('pages.owner') }}:</label>
+                        <select name="user_id" id="user_id"
+                                class="form-control custom-select {{ ($errors->has('user_id')) ? 'is-invalid' : '' }}"
                                 required>
                             @foreach($users as $key => $name)
-                                <option value="{{ $key }}" {{ $key == old('owner', Auth::id()) ?
-                                        ' selected=selected' : '' }}>{{ $name }}</option>
+                                <option {{ $key == old('user_id', $group->owner->id) ?
+                                        ' selected=selected' : '' }} value="{{ $key }}">{{ $name }}</option>
                             @endforeach
                         </select>
-                        <span class="invalid-feedback">{{ $errors->first('owner') }}</span>
+
+                        <span class="invalid-feedback">{{ $errors->first('user_id') }}</span>
                     </div>
                     @include('common.cancel-submit-buttons')
                 </form>
