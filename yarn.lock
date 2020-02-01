@@ -1863,6 +1863,11 @@ concatenate@0.0.2:
   dependencies:
     globs "^0.1.2"
 
+confetti-js@^0.0.17:
+  version "0.0.17"
+  resolved "https://registry.yarnpkg.com/confetti-js/-/confetti-js-0.0.17.tgz#f95ad3c265a2d1e905c3092ec830acdc06cf945a"
+  integrity sha512-fuXRujAzoOZ5D2mT2Mtytp094DANipXjB3fc+8T9wrhv9grXUWJwhpwTs3r2YfwFYeriouWySB1vkVpHTi2u+A==
+
 connect-history-api-fallback@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/connect-history-api-fallback/-/connect-history-api-fallback-1.6.0.tgz#8b32089359308d111115d81cad3fceab888f97bc"

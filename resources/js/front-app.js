@@ -4,11 +4,16 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
+import ConfettiGenerator from "confetti-js";
+
 try {
 
-    window.$ = window.jQuery = require('jquery');
+    window.$ = window.jQuery = require("jquery");
+    window.ConfettiGenerator = require("confetti-js");
 
-    require('bootstrap');
+    window.ConfettiGenerator = require("confetti-js/dist/index.min");
+
+    require("bootstrap");
     require("bootstrap-notify/bootstrap-notify");
     require("./common");
     require("./front");
@@ -24,7 +29,7 @@ window.io = require("socket.io-client");
 window.Echo = new Echo({
     broadcaster: "socket.io",
     host: window.location.hostname,
-    path: '/ws/socket.io',
+    path: "/ws/socket.io",
 });
 
 /**
@@ -51,7 +56,7 @@ if (token) {
     console.error("CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token");
 }
 
-window.Vue = require('vue');
+window.Vue = require("vue");
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -66,22 +71,22 @@ window.Vue = require('vue');
  */
 
 Vue.component(
-    'passport-clients',
-    require('./components/passport/Clients.vue')
+    "passport-clients",
+    require("./components/passport/Clients.vue")
 );
 
 Vue.component(
-    'passport-authorized-clients',
-    require('./components/passport/AuthorizedClients.vue')
+    "passport-authorized-clients",
+    require("./components/passport/AuthorizedClients.vue")
 );
 
 Vue.component(
-    'passport-personal-access-tokens',
-    require('./components/passport/PersonalAccessTokens.vue')
+    "passport-personal-access-tokens",
+    require("./components/passport/PersonalAccessTokens.vue")
 );
 
-if ($('#app').length) {
+if ($("#app").length) {
     const app = new Vue({
-        el: '#app'
+        el: "#app"
     });
 }

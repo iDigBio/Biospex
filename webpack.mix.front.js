@@ -17,6 +17,7 @@ mix.js("resources/js/front-app.js", "js/front.js")
         "bootstrap",
         "bootstrap-notify/bootstrap-notify",
         "socket.io-client/dist/socket.io",
+        "confetti-js/dist/index.min"
     ])
     .copy('resources/js/amChartMap.js', 'public/js/amChartMap.js')
     .babel('public/js/amChartMap.js', 'public/js/amChartMap.js')

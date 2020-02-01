@@ -45,4 +45,3 @@
     </div>
     @include('common.scoreboard')
 @endsection
-
