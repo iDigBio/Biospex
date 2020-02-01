@@ -5,6 +5,20 @@ namespace App\Presenters;
 class ProjectPresenter extends Presenter
 {
     /**
+     * Check if logo file exists or return default.
+     *
+     * @return \Illuminate\Config\Repository|mixed
+     */
+    public function showLogo()
+    {
+        $baseLength = config('paperclip.storage.base-urls.public');
+        $url = $this->model->logo->url();
+        $path = str_replace($baseLength, '', $url);
+
+        return \Storage::disk('public')->exists($path) ? $url : config('config.missing_project_logo');
+    }
+
+    /**
      * Build link to banner.
      *
      * @return string
@@ -35,8 +49,7 @@ class ProjectPresenter extends Presenter
     {
         $route = route("front.projects.slug", [$this->model->slug]);
 
-        return $this->model->slug == null ? '' :
-            '<a href="'.$route.'" data-hover="tooltip" title="'.__('pages.project_public_page').'">
+        return $this->model->slug == null ? '' : '<a href="'.$route.'" data-hover="tooltip" title="'.__('pages.project_public_page').'">
                 <i class="fas fa-project-diagram"></i></a>';
     }
 
@@ -49,8 +62,7 @@ class ProjectPresenter extends Presenter
     {
         $route = route("front.projects.slug", [$this->model->slug]);
 
-        return $this->model->slug == null ? '' :
-            '<a href="'.$route.'" target="_blank" data-hover="tooltip" title="'.__('pages.project_public_page').'">
+        return $this->model->slug == null ? '' : '<a href="'.$route.'" target="_blank" data-hover="tooltip" title="'.__('pages.project_public_page').'">
                 <i class="fas fa-project-diagram fa-2x"></i></a>';
     }
 
@@ -63,8 +75,7 @@ class ProjectPresenter extends Presenter
     {
         $route = route("admin.projects.show", [$this->model->id]);
 
-        return $this->model->id == null ? '' :
-            '<a href="'.$route.'" data-hover="tooltip" title="'.__('pages.project_show_admin').'">
+        return $this->model->id == null ? '' : '<a href="'.$route.'" data-hover="tooltip" title="'.__('pages.project_show_admin').'">
                 <i class="fas fa-project-diagram fa-2x"></i></a>';
     }
 
@@ -77,8 +88,7 @@ class ProjectPresenter extends Presenter
     {
         $route = route("front.projects.slug", [$this->model->slug]);
 
-        return $this->model->events_count == null ? '' :
-            '<a href="'.$route.'#events" data-hover="tooltip" title="'.__('pages.events').'">
+        return $this->model->events_count == null ? '' : '<a href="'.$route.'#events" data-hover="tooltip" title="'.__('pages.events').'">
                 <i class="far fa-calendar-alt"></i></a>';
     }
 
@@ -91,8 +101,7 @@ class ProjectPresenter extends Presenter
     {
         $route = route("front.projects.slug", [$this->model->slug]);
 
-        return $this->model->events_count == null ? '' :
-            '<a href="'.$route.'#events" data-hover="tooltip" title="'.__('pages.events').'">
+        return $this->model->events_count == null ? '' : '<a href="'.$route.'#events" data-hover="tooltip" title="'.__('pages.events').'">
                 <i class="far fa-calendar-alt fa-2x"></i></a>';
     }
 
@@ -103,8 +112,7 @@ class ProjectPresenter extends Presenter
      */
     public function organizationIcon()
     {
-        return $this->model->organization_website == null ? '' :
-            '<a href="'.$this->model->organization_website.'" target="_blank" data-hover="tooltip" title="'.__('pages.organization').'">
+        return $this->model->organization_website == null ? '' : '<a href="'.$this->model->organization_website.'" target="_blank" data-hover="tooltip" title="'.__('pages.organization').'">
                 <i class="fas fa-building"></i></a>';
     }
 
@@ -115,8 +123,7 @@ class ProjectPresenter extends Presenter
      */
     public function organizationIconLrg()
     {
-        return $this->model->organization_website == null ? '' :
-            '<a href="'.$this->model->organization_website.'" target="_blank" data-hover="tooltip" title="'.__('pages.organization').'">
+        return $this->model->organization_website == null ? '' : '<a href="'.$this->model->organization_website.'" target="_blank" data-hover="tooltip" title="'.__('pages.organization').'">
                 <i class="fas fa-building fa-2x"></i></a>';
     }
 
@@ -127,8 +134,7 @@ class ProjectPresenter extends Presenter
      */
     public function twitterIcon()
     {
-        return $this->model->twitter == null ? '' :
-            '<a href="'.$this->model->twitter.'" target="_blank" data-hover="tooltip" title="'.__('pages.twitter').'">
+        return $this->model->twitter == null ? '' : '<a href="'.$this->model->twitter.'" target="_blank" data-hover="tooltip" title="'.__('pages.twitter').'">
                 <i class="fab fa-twitter"></i></a>';
     }
 
@@ -139,8 +145,7 @@ class ProjectPresenter extends Presenter
      */
     public function twitterIconLrg()
     {
-        return $this->model->twitter == null ? '' :
-            '<a href="'.$this->model->twitter.'" target="_blank" data-hover="tooltip" title="'.__('pages.twitter').'">
+        return $this->model->twitter == null ? '' : '<a href="'.$this->model->twitter.'" target="_blank" data-hover="tooltip" title="'.__('pages.twitter').'">
                 <i class="fab fa-twitter fa-2x"></i></a>';
     }
 
@@ -151,8 +156,7 @@ class ProjectPresenter extends Presenter
      */
     public function facebookIcon()
     {
-        return $this->model->facebook == null ? '' :
-            '<a href="'.$this->model->facebook.'" target="_blank" data-hover="tooltip" title="'.__('pages.facebook').'">
+        return $this->model->facebook == null ? '' : '<a href="'.$this->model->facebook.'" target="_blank" data-hover="tooltip" title="'.__('pages.facebook').'">
                 <i class="fab fa-facebook"></i></a>';
     }
 
@@ -163,8 +167,7 @@ class ProjectPresenter extends Presenter
      */
     public function facebookIconLrg()
     {
-        return $this->model->facebook == null ? '' :
-            '<a href="'.$this->model->facebook.'" target="_blank" data-hover="tooltip" title="'.__('pages.facebook').'">
+        return $this->model->facebook == null ? '' : '<a href="'.$this->model->facebook.'" target="_blank" data-hover="tooltip" title="'.__('pages.facebook').'">
                 <i class="fab fa-facebook fa-2x"></i></a>';
     }
 
@@ -175,8 +178,7 @@ class ProjectPresenter extends Presenter
      */
     public function blogIcon()
     {
-        return $this->model->blog_url == null ? '' :
-            '<a href="'.$this->model->blog_url.'" target="_blank" data-hover="tooltip" title="'.__('pages.blog').'">
+        return $this->model->blog_url == null ? '' : '<a href="'.$this->model->blog_url.'" target="_blank" data-hover="tooltip" title="'.__('pages.blog').'">
                 <i class="fab fa-blogger-b"></i></a>';
     }
 
@@ -187,8 +189,7 @@ class ProjectPresenter extends Presenter
      */
     public function blogIconLrg()
     {
-        return $this->model->blog_url == null ? '' :
-            '<a href="'.$this->model->blog_url.'" target="_blank" data-hover="tooltip" title="'.__('pages.blog').'">
+        return $this->model->blog_url == null ? '' : '<a href="'.$this->model->blog_url.'" target="_blank" data-hover="tooltip" title="'.__('pages.blog').'">
                 <i class="fab fa-blogger-b fa-2x"></i></a>';
     }
 
@@ -199,8 +200,7 @@ class ProjectPresenter extends Presenter
      */
     public function contactEmailIcon()
     {
-        return $this->model->contact_email == null ? '' :
-            '<a href="mailto:'.$this->model->contact_email.'" data-hover="tooltip" title="'.__('pages.contact').'">
+        return $this->model->contact_email == null ? '' : '<a href="mailto:'.$this->model->contact_email.'" data-hover="tooltip" title="'.__('pages.contact').'">
                 <i class="fas fa-envelope"></i></a>';
     }
 
@@ -211,8 +211,7 @@ class ProjectPresenter extends Presenter
      */
     public function contactEmailIconLrg()
     {
-        return $this->model->contact_email == null ? '' :
-            '<a href="mailto:'.$this->model->contact_email.'" data-hover="tooltip" title="'.__('pages.contact').'">
+        return $this->model->contact_email == null ? '' : '<a href="mailto:'.$this->model->contact_email.'" data-hover="tooltip" title="'.__('pages.contact').'">
                 <i class="fas fa-envelope fa-2x"></i></a>';
     }
 
@@ -406,5 +405,4 @@ class ProjectPresenter extends Presenter
             data-title="'.__('pages.ocr_reprocess').'?" data-content="'.__('messages.ocr_reprocess_message', ['record' => __('pages.project')]).'">
             <i class="fas fa-redo-alt fa-2x"></i></a>';
     }
-
 }

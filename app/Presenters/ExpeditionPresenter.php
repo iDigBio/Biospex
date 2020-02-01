@@ -5,6 +5,20 @@ namespace App\Presenters;
 class ExpeditionPresenter extends Presenter
 {
     /**
+     * Check if logo file exists or return default.
+     *
+     * @return \Illuminate\Config\Repository|mixed
+     */
+    public function showMediumLogo()
+    {
+        $baseLength = config('paperclip.storage.base-urls.public');
+        $url = $this->model->logo->url('medium');
+        $path = str_replace($baseLength, '', $url);
+
+        return \Storage::disk('public')->exists($path) ? $url : config('config.missing_expedition_logo');
+    }
+
+    /**
      * Return show icon.
      *
      * @return string
