@@ -18,13 +18,12 @@ interface Event extends RepositoryInterface
 
     /**
      * Get events for admin section by user id.
-     *
-     * @param $userId
+     * @param \App\Models\User $user
      * @param null $sort
      * @param null $order
      * @return mixed
      */
-    public function getEventAdminIndex($userId, $sort = null, $order = null);
+    public function getEventAdminIndex(\App\Models\User $user, $sort = null, $order = null);
 
     /**
      * @param array $attributes

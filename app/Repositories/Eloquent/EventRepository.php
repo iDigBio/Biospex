@@ -24,8 +24,8 @@ class EventRepository extends EloquentRepository implements Event
      */
     public function getEventPublicIndex($sort = null, $order = null, $projectId = null)
     {
-        $results = $projectId === null ? $this->model->with('project.lastPanoptesProject')->get() :
-            $this->model->with('project.lastPanoptesProject')->where('project_id', $projectId)->get();
+        $results = $projectId === null ? $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->get() :
+            $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->where('project_id', $projectId)->get();
 
         $this->resetModel();
 
@@ -50,9 +50,10 @@ class EventRepository extends EloquentRepository implements Event
     /**
      * @inheritdoc
      */
-    public function getEventAdminIndex($userId, $sort = null, $order = null)
+    public function getEventAdminIndex(\App\Models\User $user, $sort = null, $order = null)
     {
-        $results = $this->model->with('project.lastPanoptesProject')->where('owner_id', $userId)->get();
+        $results = $user->isAdmin() ? $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->get() :
+            $results = $this->model->with(['project.lastPanoptesProject', 'teams:id,title,event_id'])->where('owner_id', $user->id)->get();
 
         $this->resetModel();
 

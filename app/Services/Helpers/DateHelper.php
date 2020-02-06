@@ -93,4 +93,15 @@ class DateHelper
 
         return $now->between($start_date, $end_date);
     }
+
+    /**
+     * Return timezone title for event rate chart.
+     *
+     * @param $timezone
+     * @return string
+     */
+    public function eventRateChartTimezone($timezone)
+    {
+        return str_replace('_', ' ', $timezone) . ' Timezone';
+    }
 }

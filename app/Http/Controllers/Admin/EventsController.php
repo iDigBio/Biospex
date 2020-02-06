@@ -39,7 +39,7 @@ class EventsController extends Controller
      */
     public function index()
     {
-        $results = $this->eventContract->getEventAdminIndex(Auth::id());
+        $results = $this->eventContract->getEventAdminIndex(Auth::user());
 
         list($events, $eventsCompleted) = $results->partition(function ($event) {
             return GeneralHelper::eventBefore($event) || GeneralHelper::eventActive($event);

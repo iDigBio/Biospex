@@ -176,6 +176,7 @@
             </div>
         </div>
         @include('common.scoreboard')
+        @include('common.event-step-chart')
     </div>
 
     @if ($years !== null)
@@ -215,15 +216,16 @@
 
 @endsection
 @section('custom-script')
+    <script src="//www.amcharts.com/lib/4/core.js"></script>
+    <script src="//www.amcharts.com/lib/4/charts.js"></script>
+    <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
     @if ($years !== null)
-        <script src="//www.amcharts.com/lib/4/core.js"></script>
-        <script src="//www.amcharts.com/lib/4/charts.js"></script>
         <script src="//www.amcharts.com/lib/4/maps.js"></script>
-        <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
         <script src="https://www.amcharts.com/lib/4/geodata/usaLow.js"></script>
         <script src="{{ asset('js/amChartTranscript.min.js')}}"></script>
         <script src="{{ asset('js/amChartMap.min.js')}}"></script>
     @endif
+    <script src="{{ asset('js/amChartEventRate.min.js')}}"></script>
     <script>
         let expeditionConfetti = new ConfettiGenerator({ target: 'expedition-conffeti' });
         expeditionConfetti.render();

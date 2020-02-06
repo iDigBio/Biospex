@@ -43,13 +43,16 @@
                         data-event="{{ $event->id }}"
                         data-href="{{ route('ajax.get.scoreboard', [$event->id]) }}">{{ __('pages.scoreboard') }}
                 </button>
-                @if(\Route::current()->getName() == 'front.events.read' || \Route::current()->getName() == 'admin.events.show')
-                    <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
-                            data-remote="false"
-                            data-target="#step-chart-modal"
-                            data-event="{{ $event->id }}"
-                            data-href="{{ route('ajax.get.step', [$event->id]) }}">{{ __('pages.event_rate_chart') }}
-                    </button>
+
+                @if($event->teams->isNotEmpty())
+                <button class="btn btn-primary mb-4 text-uppercase" data-toggle="modal"
+                        data-remote="false"
+                        data-target="#step-chart-modal"
+                        data-event="{{ $event->id }}"
+                        data-teams="{{ $event->teams->pluck('title')->implode(',') }}"
+                        data-timezone="{{ DateHelper::eventRateChartTimezone($event->timezone) }}"
+                        data-href="{{ route('ajax.get.step', [$event->id]) }}">{{ __('pages.event_rate_chart') }}
+                </button>
                 @endif
             </div>
         @endif

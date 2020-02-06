@@ -67,18 +67,13 @@ class EventsController extends Controller
      */
     public function read(Event $contract, $eventId)
     {
-        $event = $contract->findWith($eventId, ['project.lastPanoptesProject', 'teams']);
+        $event = $contract->findWith($eventId, ['project.lastPanoptesProject', 'teams:id,title,event_id']);
 
         if ($event === null) {
             FlashHelper::error(trans('messages.record_get_error'));
 
             return redirect()->route('front.events.index');
         }
-
-        JavaScript::put([
-            'teams' => $event->teams->pluck('title'),
-            'timezone' => str_replace('_', ' ', $event->timezone) . ' Timezone'
-        ]);
 
         return view('front.event.show', compact('event'));
     }

@@ -28,9 +28,9 @@ mix.js("resources/js/front-app.js", "js/front.js")
     .copy('resources/js/amChartStat.js', 'public/js/amChartStat.js')
     .babel('public/js/amChartStat.js', 'public/js/amChartStat.js')
     .minify('public/js/amChartStat.js')
-    .copy('resources/js/amChartEventStep.js', 'public/js/amChartEventStep.js')
-    .babel('public/js/amChartEventStep.js', 'public/js/amChartEventStep.js')
-    .minify('public/js/amChartEventStep.js')
+    .copy('resources/js/amChartEventRate.js', 'public/js/amChartEventRate.js')
+    .babel('public/js/amChartEventRate.js', 'public/js/amChartEventRate.js')
+    .minify('public/js/amChartEventRate.js')
     .copy('resources/images', 'public/images');
 /* Production settings */
 

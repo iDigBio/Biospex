@@ -4,8 +4,8 @@ am4core.ready(function () {
 
     $('#step-chart-modal').on('show.bs.modal', function (e) {
 
-        let teams = Laravel.teams;
-        let timezone = Laravel.timezone;
+        let teams = $(e.relatedTarget).data('teams').split(',');
+        let timezone = $(e.relatedTarget).data('timezone');
         let url = $(e.relatedTarget).data('href');
         let refresh = initialRefresh();
 
@@ -88,10 +88,10 @@ am4core.ready(function () {
             bullet.isMeasured = false;
 
             team.events.on("validated", function () {
-                if (team.dataItems.last !== null) {
-                    bullet.moveTo(team.dataItems.last.point);
-                    bullet.validatePosition();
-                }
+                if(team.dataItems.last == null) return;
+
+                bullet.moveTo(team.dataItems.last.point);
+                bullet.validatePosition();
             });
         });
 
