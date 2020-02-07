@@ -65,8 +65,7 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
     }
 
     /**
-     * @return mixed
-     * @throws \Exception
+     * @inheritDoc
      */
     public function getAllExportQueueOrderByIdAsc()
     {
@@ -75,5 +74,17 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
         $this->resetModel();
 
         return $results;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getBatchRemainingCount(string $expeditionId): string
+    {
+        $count = $this->model->where('expedition_id', $expeditionId)->count();
+
+        $this->resetModel();
+
+        return $count;
     }
 }

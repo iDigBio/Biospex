@@ -39,4 +39,12 @@ interface ExportQueue extends RepositoryInterface
      */
     public function getAllExportQueueOrderByIdAsc();
 
+    /**
+     * Get remaining batch count.
+     *
+     * @param string $expeditionId
+     * @return string
+     */
+    public function getBatchRemainingCount(string $expeditionId): string;
+
 }

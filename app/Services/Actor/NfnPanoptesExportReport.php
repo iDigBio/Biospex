@@ -56,14 +56,14 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
         File::deleteDirectory($this->tmpDirectory);
         File::deleteDirectory($this->workingDirectory);
 
-        $this->notify();
-
         ActorEventHelper::fireActorStateEvent($this->actor);
 
         $this->exportQueueContract->delete($queue->id);
         event('exportQueue.updated');
 
         ActorEventHelper::fireActorUnQueuedEvent($this->actor);
+
+        $this->notify();
 
         return;
     }
@@ -75,6 +75,7 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
      */
     protected function notify()
     {
+        $remainingCount = $this->exportQueueContract->getBatchRemainingCount($this->expedition->id);
         $files = $this->exportQueueFileContract->getFilesWithErrorsByQueueId($this->queue->id);
         $remove = array_flip(['id', 'queue_id', 'error', 'created_at', 'updated_at']);
         $data = $files->map(function($file) use($remove){
@@ -85,7 +86,10 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
             $this->expedition->title,
             trans('messages.expedition_export_complete_message', [
                 'expedition' => $this->expedition->title,
-                'batch' => $this->queue->batch + 1
+                'batch' => $this->queue->batch + 1,
+                'batchRemaining' => trans_choice('messages.expedition_batch_remaining', $remainingCount, [
+                    'count' => $remainingCount
+                ]),
             ]),
         ];
 
