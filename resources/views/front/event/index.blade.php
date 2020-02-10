@@ -38,6 +38,7 @@
         </div>
         <div id="completed-events-main" class="col-sm-12 collapse">
             @include('common.event-sort', ['type' => 'completed', 'route' => route('front.events.sort')])
+            <canvas id="event-conffeti" style="z-index: -1; position:fixed; top:0;left:0"></canvas>
             <div id="completed-events" class="row col-sm-12 mx-auto justify-content-center">
                 @include('front.event.partials.event', ['events' => $eventsCompleted])
             </div>
@@ -48,8 +49,12 @@
 @endsection
 
 @section('custom-script')
-        <script src="//www.amcharts.com/lib/4/core.js"></script>
-        <script src="//www.amcharts.com/lib/4/charts.js"></script>
-        <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
-        <script src="{{ asset('js/amChartEventRate.min.js')}}"></script>
+    <script src="//www.amcharts.com/lib/4/core.js"></script>
+    <script src="//www.amcharts.com/lib/4/charts.js"></script>
+    <script src="//www.amcharts.com/lib/4/themes/animated.js"></script>
+    <script src="{{ asset('js/amChartEventRate.min.js')}}"></script>
+    <script>
+        let eventConfetti = new ConfettiGenerator({target: 'event-conffeti'});
+        eventConfetti.render();
+    </script>
 @endsection

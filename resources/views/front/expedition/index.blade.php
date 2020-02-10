@@ -37,9 +37,17 @@
         </div>
         <div id="completed-expeditions-main" class="col-sm-12 collapse">
             @include('common.expedition-sort', ['type' => 'completed', 'route' => route('front.expeditions.sort')])
+            <canvas id="expedition-conffeti" style="z-index: -1; position:fixed; top:0;left:0;"></canvas>
             <div id="completed-expeditions" class="row col-sm-12 mx-auto justify-content-center">
                 @include('front.expedition.partials.expedition', ['expeditions' => $expeditionsCompleted])
             </div>
         </div>
     </div>
+@endsection
+
+@section('custom-script')
+    <script>
+        let expeditionConfetti = new ConfettiGenerator({target: 'expedition-conffeti'});
+        expeditionConfetti.render();
+    </script>
 @endsection
