@@ -31,6 +31,7 @@ return [
     'expedition_process_message'          => 'This will begin processing the Expedition. After starting, Subjects cannot be added or removed. Do you wish to Continue?',
     'expedition_process_stop_message'     => 'This will stop the Expedition Process. However, Subjects cannot be added since process was already started. Do you wish to Continue?',
     'expedition_process_success'          => 'The expedition has been added to the process queue.',
+    'export_regenerate'                   => 'This will regenerate all export files for the Expedition. Previous files will be deleted if they exist.',
     'extension_node_missing'              => 'Extension node missing from xml meta file',
     'failed_jobs'                         => 'There are :count failed jobs in the Jobs table.',
     'grid_export_csv'                     => 'Grid Export CSV',

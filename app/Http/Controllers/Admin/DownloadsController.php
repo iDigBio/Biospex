@@ -2,30 +2,41 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Services\Model\DownloadService;
 use Flash;
 use App\Http\Controllers\Controller;
-use App\Jobs\ActorJob;
-use App\Repositories\Interfaces\Expedition;
-use App\Repositories\Interfaces\User;
-use App\Repositories\Interfaces\Download;
 use GeneralHelper;
 use Illuminate\Support\Facades\Storage;
 
 class DownloadsController extends Controller
 {
     /**
+     * @var \App\Services\Model\DownloadService
+     */
+    private $downloadService;
+
+    /**
+     * DownloadsController constructor.
+     *
+     * @param \App\Services\Model\DownloadService $downloadService
+     */
+    public function __construct(DownloadService $downloadService)
+    {
+
+        $this->downloadService = $downloadService;
+    }
+
+    /**
      * Index showing downloads for Expedition.
      *
-     * @param \App\Repositories\Interfaces\User $userContract
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
-     * @param $projectId
-     * @param $expeditionId
-     * @return array|\Illuminate\Contracts\View\Factory|\Illuminate\View\View|string|null
+     * @param string $projectId
+     * @param string $expeditionId
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(User $userContract, Expedition $expeditionContract, $projectId, $expeditionId)
+    public function index(string $projectId, string $expeditionId)
     {
-        $user = $userContract->findWith(request()->user()->id, ['profile']);
-        $expedition = $expeditionContract->expeditionDownloadsByActor($projectId, $expeditionId);
+        $user = $this->downloadService->getUserProfile(request()->user()->id);
+        $expedition = $this->downloadService->getExpeditionByActor($projectId, $expeditionId);
 
         $error = ! $this->checkPermissions('readProject', $expedition->project->group) ? true : false;
 
@@ -35,18 +46,17 @@ class DownloadsController extends Controller
     /**
      * Show downloads.
      *
-     * @param \App\Repositories\Interfaces\Download $downloadContract
-     * @param $projectId
-     * @param $expeditionId
-     * @param $downloadId
-     * @return array|\Illuminate\Http\Response|string|\Symfony\Component\HttpFoundation\StreamedResponse|null
+     * @param string $projectId
+     * @param string $expeditionId
+     * @param string $downloadId
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
      * @throws \Throwable
      */
-    public function download(Download $downloadContract, $projectId, $expeditionId, $downloadId)
+    public function download(string $projectId, string $expeditionId, string $downloadId)
     {
         try {
 
-            $download = $downloadContract->findWith($downloadId, ['expedition.project.group']);
+            $download = $this->downloadService->getDownload($downloadId);
 
             if (! $download) {
                 Flash::error(trans('messages.missing_download_file'));
@@ -58,16 +68,10 @@ class DownloadsController extends Controller
                 return redirect()->back();
             }
 
-            $download->count = $download->count + 1;
-            $downloadContract->update($download->toArray(), $download->id);
+            $this->downloadService->updateDownloadCount($download);
 
             if (! empty($download->data)) {
-                $headers = [
-                    'Content-type'        => 'application/json; charset=utf-8',
-                    'Content-disposition' => 'attachment; filename="'.$download->file.'"',
-                ];
-
-                $view = view('frontend.manifest', unserialize($download->data))->render();
+                [$view, $headers] = $this->downloadService->createDataView($download);
 
                 return response()->make(stripslashes($view), 200, $headers);
             }
@@ -78,18 +82,10 @@ class DownloadsController extends Controller
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            $headers = [
-                'Content-Type'        => 'application/x-compressed',
-                'Content-disposition' => 'attachment; filename="'.$download->type.'-'.$download->file.'"',
-            ];
-
-            $path = $download->type === 'export' ?
-                config('config.export_dir') :
-                config('config.nfn_downloads_dir').'/'.$download->type;
-
-            $file = Storage::path($path.'/'.$download->file);
+            [$headers, $path, $file] = $this->downloadService->createDownloadFile($download);
 
             return response()->download($file, $download->type.'-'.$download->file, $headers);
+
         } catch (\Exception $e) {
             Flash::error(__($e->getMessage()));
 
@@ -100,25 +96,14 @@ class DownloadsController extends Controller
     /**
      * Regenerate export download.
      *
-     * @param Expedition $expeditionContract
-     * @param $projectId
-     * @param $expeditionId
+     * @param string $projectId
+     * @param string $expeditionId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function regenerate(Expedition $expeditionContract, $projectId, $expeditionId)
+    public function regenerate(string $projectId, string $expeditionId)
     {
-        $withRelations = ['nfnActor', 'stat'];
-
-        $expedition = $expeditionContract->findWith($expeditionId, $withRelations);
-
         try {
-            $expedition->nfnActor->pivot->state = 0;
-            $expedition->nfnActor->pivot->total = $expedition->stat->local_subject_count;
-            $expedition->nfnActor->pivot->processed = 0;
-            $expedition->nfnActor->pivot->queued = 1;
-            event('actor.pivot.regenerate', [$expedition->nfnActor]);
-
-            ActorJob::dispatch(serialize($expedition->nfnActor));
+            $this->downloadService->resetExpeditionData($expeditionId);
 
             Flash::success(trans('messages.download_regeneration_success'));
         } catch (\Exception $e) {
@@ -131,15 +116,14 @@ class DownloadsController extends Controller
     /**
      * Display the summary page.
      *
-     * @param \App\Repositories\Interfaces\Expedition $expeditionContract
-     * @param $projectId
-     * @param $expeditionId
+     * @param string $projectId
+     * @param string $expeditionId
      * @return \Illuminate\Http\RedirectResponse|string
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function summary(Expedition $expeditionContract, $projectId, $expeditionId)
+    public function summary(string $projectId, string $expeditionId)
     {
-        $expedition = $expeditionContract->findwith($expeditionId, ['project.group']);
+        $expedition = $this->downloadService->getExpeditionById($expeditionId, ['project.group']);
 
         if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
             return redirect()->route('webauth.projects.show', [$projectId]);
