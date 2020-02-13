@@ -37,5 +37,5 @@ $router->post('register', 'RegisterController@register')->name('app.post.registe
 
 // Register email
 $router->get('email/verify', 'VerificationController@show')->name('verification.notice');
-$router->get('email/verify/{id}', 'VerificationController@verify')->name('verification.verify');
+$router->get('email/verify/{id}/{hash}', 'VerificationController@verify')->name('verification.verify');
 $router->get('email/resend', 'VerificationController@resend')->name('verification.resend');
