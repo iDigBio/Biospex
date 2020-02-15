@@ -17,7 +17,7 @@ $router->post('register')->uses('ApiRegisterController@register')->name('api.pos
 
 // Register email
 $router->get('email/verify', 'ApiVerificationController@show')->name('api.verification.notice');
-$router->get('email/verify/{id}', 'ApiVerificationController@verify')->name('api.verification.verify');
+$router->get('email/verify/{id}/{hash}', 'ApiVerificationController@verify')->name('api.verification.verify');
 $router->get('email/resend', 'ApiVerificationController@resend')->name('api.verification.resend');
 
 /*
