@@ -23,7 +23,6 @@
     "laravel/tinker": "~1.0",
     "league/csv": "^9.5",
     "league/oauth2-client": "^2.4",
-    "mongodb/mongodb": "^1.4",
     "neitanod/forceutf8": "~2.0",
     "pda/pheanstalk": "^4.0",
     "ramsey/uuid": "^3.7",
