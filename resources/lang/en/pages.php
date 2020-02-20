@@ -167,7 +167,7 @@ return [
     'password_resend_txt'            => 'Send Password Instructions',
     'process'                        => 'Process',
     'processes_none'                 => 'No processes running at this time',
-    'process_warning'                => 'Export stats update every 5 minutes.',
+    'process_warning'                => 'Export stats update every minute.',
     'processes'                      => 'Processes',
     'project'                        => 'Project',
     'projects'                       => 'Projects',

@@ -75,16 +75,4 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
 
         return $results;
     }
-
-    /**
-     * @inheritDoc
-     */
-    public function getBatchRemainingCount(string $expeditionId): string
-    {
-        $count = $this->model->where('expedition_id', $expeditionId)->count();
-
-        $this->resetModel();
-
-        return $count;
-    }
 }

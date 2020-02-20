@@ -72,7 +72,7 @@ class NfnPanoptesBase
         $this->actor = $queue->expedition->actor;
         $this->owner = $queue->expedition->project->group->owner;
 
-        $this->folderName = $queue->batch . '-' . $this->actor->id . '-' . $this->expedition->uuid;
+        $this->folderName = $this->actor->id . '-' . $this->expedition->uuid;
 
         $this->setScratchDirectory();
         $this->setWorkingDirectory();

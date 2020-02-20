@@ -51,28 +51,26 @@ class NfnPanoptesExportQueue
      */
     public function createQueue(Actor $actor)
     {
-        $chunks = $this->buildSubjectsArray($actor->pivot->expedition_id);
+        $subjects = $this->buildSubjectsArray($actor->pivot->expedition_id);
 
-        foreach ($chunks as $key => $subjects) {
+        $attributes = [
+            'expedition_id' => $actor->pivot->expedition_id,
+            'actor_id'      => $actor->id,
+            'count'         => count($subjects),
+        ];
+
+        $queue = $this->exportQueueContract->firstOrCreate($attributes);
+
+        foreach ($subjects as $subject) {
             $attributes = [
-                'expedition_id' => $actor->pivot->expedition_id,
-                'actor_id'      => $actor->id,
-                'batch'           => $key,
-                'count'         => count($subjects),
+                'queue_id' => $queue->id,
+                'subject_id' => $subject['subject_id']
             ];
+            $subject['queue_id'] = $queue->id;
 
-            $queue = $this->exportQueueContract->firstOrCreate($attributes);
-
-            foreach ($subjects as $subject) {
-                $attributes = [
-                    'queue_id' => $queue->id,
-                    'subject_id' => $subject['subject_id']
-                ];
-                $subject['queue_id'] = $queue->id;
-
-                $this->exportQueueFileContract->firstOrCreate($attributes, $subject);
-            }
+            $this->exportQueueFileContract->firstOrCreate($attributes, $subject);
         }
+
         event('exportQueue.updated');
     }
 
@@ -82,7 +80,7 @@ class NfnPanoptesExportQueue
      * @param string $expeditionId
      * @return array
      */
-    protected function buildSubjectsArray(string $expeditionId)
+    protected function buildSubjectsArray(string $expeditionId): array
     {
         $query = ['expedition_ids' => (int) $expeditionId];
 
@@ -97,6 +95,6 @@ class NfnPanoptesExportQueue
             ];
         }
 
-        return array_chunk($fileData, 1000);
+        return $fileData;
     }
 }

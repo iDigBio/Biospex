@@ -61,13 +61,7 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
 
         ActorEventHelper::fireActorUnQueuedEvent($this->actor);
 
-        $remainingCount = $this->exportQueueContract->getBatchRemainingCount($this->expedition->id);
-
-        if ($remainingCount === 0) {
-            ActorEventHelper::fireActorStateEvent($this->actor);
-        }
-
-        $this->notify($remainingCount);
+        $this->notify();
 
         return;
     }
@@ -75,10 +69,9 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
     /**
      * Send notify for process completed.
      *
-     * @param int $remainingCount
      * @throws \Exception
      */
-    protected function notify(int $remainingCount)
+    protected function notify()
     {
         $files = $this->exportQueueFileContract->getFilesWithErrorsByQueueId($this->queue->id);
         $remove = array_flip(['id', 'queue_id', 'error', 'created_at', 'updated_at']);
@@ -89,12 +82,8 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
         $message = [
             $this->expedition->title,
             trans('messages.expedition_export_complete_message', [
-                'expedition' => $this->expedition->title,
-                'batch' => $this->queue->batch + 1,
-                'batchRemaining' => trans_choice('messages.expedition_batch_remaining', $remainingCount, [
-                    'count' => $remainingCount
-                ]),
-            ]),
+                'expedition' => $this->expedition->title
+                ])
         ];
 
         $csvPath = storage_path('app/reports/'.md5($this->queue->id).'.csv');

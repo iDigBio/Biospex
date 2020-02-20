@@ -17,7 +17,6 @@ class ExportQueue extends BaseEloquentModel
         'actor_id',
         'stage',
         'queued',
-        'batch',
         'count',
         'error',
         'missing'

@@ -63,18 +63,15 @@ class ExportPollCommand extends Command
             return;
         }
 
-        $data['payload'] = $queues->mapToGroups(function($queue){
-            return [$queue['expedition_id'] => $queue];
-        })->map(function($group) {
-            $totalBatches = $group->count();
-            $queue = $group->shift();
+        $count = 0;
+        $data['payload'] = $queues->map(function($queue) use(&$count) {
             $data = $this->getFirstQueueData($queue);
-            $remainingBatches = $group->count();
 
             $notice = $queue->queued ?
-                $this->setProcessNotice($data, $remainingBatches) :
-                $this->setQueuedNotice($data, $totalBatches);
+                $this->setProcessNotice($data) :
+                $this->setQueuedNotice($data, $count);
 
+            $count++;
 
             return [
                 'groupId' => $data->expedition->project->group->id,
@@ -100,12 +97,12 @@ class ExportPollCommand extends Command
      * Set notice if process is occurring.
      *
      * @param \App\Models\ExportQueue $data
-     * @param int $remainingBatches
      * @return string
      */
-    private function setProcessNotice(\App\Models\ExportQueue $data, int $remainingBatches): string
+    private function setProcessNotice(\App\Models\ExportQueue $data): string
     {
         $stage = $this->exportStages[$data->stage];
+
         $processed = $data->expedition->actor->pivot->processed === 0 ? 1 : $data->expedition->actor->pivot->processed;
 
         return trans('html.export_processing', [
@@ -114,10 +111,7 @@ class ExportPollCommand extends Command
             'processedRecords' => trans_choice('html.processed_records', $processed, [
                 'processed' => $processed,
                 'total'     => $data->count
-            ]),
-            'remainingBatches' => trans_choice('html.export_remaining_batches', $remainingBatches, [
-                'remaining' => $remainingBatches
-            ]),
+            ])
         ]);
     }
 
@@ -125,15 +119,15 @@ class ExportPollCommand extends Command
      * Set notice message for remaining exports.
      *
      * @param \App\Models\ExportQueue $data
-     * @param int $totalBatches
+     * @param int $count
      * @return string
      */
-    private function setQueuedNotice(\App\Models\ExportQueue $data, int $totalBatches): string
+    private function setQueuedNotice(\App\Models\ExportQueue $data, int $count): string
     {
         return trans('html.export_queued', [
             'title' => $data->expedition->title,
-            'remainingBatches' => trans_choice('html.export_remaining_batches', $totalBatches, [
-                'remaining' => $totalBatches
+            'remainingCount' => trans_choice('html.export_remaining_count', $count, [
+                'count' => $count
             ]),
         ]);
     }

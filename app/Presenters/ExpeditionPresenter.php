@@ -226,7 +226,7 @@ class ExpeditionPresenter extends Presenter
                 $this->model->id,
             ]).'"
                    data-hover="tooltip"
-                   title="'.__('pages.generate_export').'">
+                   title="'.__('pages.regenerate_export').'">
                     <i class="fas fa-file-export fa-2x"></i></a>';
     }
 }

@@ -10,9 +10,9 @@ return [
             tools, widely recruit others to participate, and layer resources on the experience to advance science
             literacy. In the end, you can download the new data for specimen curation, research, conservation, natural
                                                                    resource management, public policy, or other activities.',
-    'export_processing'        => '<div class="row pl-5 mb-2"><h5 class="mb-0">:title</h5><div class="ml-3">:stage :processedRecords<br>:remainingBatches</div></div>',
-    'export_queued'            => '<div class="row pl-5 mb-2"><h5>:title</h5><div class="ml-3">:remainingBatches</div></div>',
-    'export_remaining_batches' => '{0} Last batch processing.|{1} :remaining batch in export queue.|[2,*] :remaining batches in export queue.',
+    'export_processing'        => '<div class="row pl-5 mb-2"><h5 class="mb-0">:title</h5><div class="ml-3 w-100">:stage :processedRecords</div></div>',
+    'export_queued'            => '<div class="row pl-5 mb-2"><h5>:title</h5><div class="ml-3 w-100">:remainingCount</div></div>',
+    'export_remaining_count' => '{0}|{1} :count export remains in queue before processing begins.|[2,*] :count exports remain in queue before processing begins.',
     'import_recordset_desc'    => '<li>Go to<a href="https://www.idigbio.org/portal/publishers" target="_blank" class="link">iDigBio.org Publishers Page</a></li>
                            <li>Find the Publisher you want and select. (e.g. https://herbarium.bio.fsu.edu:8443/)</li>
                            <li>Click the Collection you are interested in. (e.g. Robert K. Godfrey Herbarium at Florida State University)</li>
@@ -22,7 +22,7 @@ return [
                                 <li>Record Id: b2b294ed-1742-4479-b0c8-a8891fccd7eb</li>
                             </ol>
                            </li>',
-    'ocr_processing'           => '<div class="row pl-5 mb-2"><h5 class="mb-0">:title</h5><div class="ml-3">:ocr :batches</div></div>',
+    'ocr_processing'           => '<div class="row pl-5 mb-2"><h5 class="mb-0">:title</h5><div class="ml-3 w-100">:ocr :batches</div></div>',
     'ocr_queue'                => ':batches_queued process remains in queue before processing begins|:batches_queued processes remain in queue before processing begins',
     'ocr_records'              => ':processed record of :total completed.|:processed records of :total completed.',
     'processed_records'        => '| - :processed of :total completed.',

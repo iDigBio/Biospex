@@ -88,6 +88,10 @@ $(function () {
     clockDiv();
 
     if ($('#process-modal').length) {
+        $('#process-modal').on('shown.bs.modal', function (e) {
+            $.get( "/poll");
+        });
+
         Echo.channel(Laravel.ocrChannel)
             .listen('PollOcrEvent', (e) => {
                 let ocrHtml = polling_data(e.data);
