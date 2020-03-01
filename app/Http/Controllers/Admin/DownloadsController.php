@@ -7,6 +7,7 @@ use App\Services\Model\DownloadService;
 use Flash;
 use App\Http\Controllers\Controller;
 use GeneralHelper;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 
 class DownloadsController extends Controller
@@ -182,6 +183,14 @@ class DownloadsController extends Controller
         return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
     }
 
+    /**
+     * Download batch export file.
+     *
+     * @param string $projectId
+     * @param string $expeditionId
+     * @param string $fileName
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function batchDownload(string $projectId, string $expeditionId, string $fileName)
     {
         $file = $fileName . '.tar.gz';
