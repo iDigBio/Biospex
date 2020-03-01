@@ -39,8 +39,7 @@ class Csv
 
     /**
      * @param string $delimiter
-     *
-     * @throws \Exception
+     * @throws \League\Csv\Exception
      */
     public function setDelimiter($delimiter = ',')
     {
@@ -49,8 +48,7 @@ class Csv
 
     /**
      * @param string $enclosure
-     *
-     * @throws \Exception
+     * @throws \League\Csv\Exception
      */
     public function setEnclosure($enclosure = '"')
     {
@@ -59,8 +57,7 @@ class Csv
 
     /**
      * @param string $escape
-     *
-     * @throws \Exception
+     * @throws \League\Csv\Exception
      */
     public function setEscape($escape = '\\')
     {

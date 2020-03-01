@@ -88,7 +88,7 @@ class DownloadService
      */
     public function getDownload(string $downloadId): \App\Models\Download
     {
-        return $this->downloadContract->findWith($downloadId, ['expedition.project.group']);
+        return $this->downloadContract->findWith($downloadId, ['expedition.project.group.owner', 'actor']);
     }
 
     /**
@@ -122,7 +122,7 @@ class DownloadService
     }
 
     /**
-     * Created download file.
+     * Create download file.
      *
      * @param \App\Models\Download $download
      * @return array
@@ -140,7 +140,25 @@ class DownloadService
 
         $file = Storage::path($path.'/'.$download->file);
 
-        return [$headers, $path, $file];
+        return [$headers, $file];
+    }
+
+    /**
+     * Create download file.
+     *
+     * @param string $file
+     * @return array
+     */
+    public function createBatchDownloadFile(string $file)
+    {
+        $headers = [
+            'Content-Type'        => 'application/x-compressed',
+            'Content-disposition' => 'attachment; filename="'.$file.'"',
+        ];
+
+        $filePath = Storage::path(config('config.export_dir').'/'.$file);
+
+        return [$headers, $filePath];
     }
 
     /**

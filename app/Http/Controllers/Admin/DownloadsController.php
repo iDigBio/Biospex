@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Jobs\ExportDownloadBatchJob;
 use App\Services\Model\DownloadService;
 use Flash;
 use App\Http\Controllers\Controller;
@@ -22,7 +23,6 @@ class DownloadsController extends Controller
      */
     public function __construct(DownloadService $downloadService)
     {
-
         $this->downloadService = $downloadService;
     }
 
@@ -82,7 +82,7 @@ class DownloadsController extends Controller
                 return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
             }
 
-            [$headers, $path, $file] = $this->downloadService->createDownloadFile($download);
+            [$headers, $file] = $this->downloadService->createDownloadFile($download);
 
             return response()->download($file, $download->type.'-'.$download->file, $headers);
 
@@ -162,6 +162,51 @@ class DownloadsController extends Controller
             Flash::error($e->getMessage());
 
             return redirect()->route('admin.projects.index');
+        }
+    }
+
+    /**
+     * Send request to have export split into batch downloads.
+     *
+     * @param string $projectId
+     * @param string $expeditionId
+     * @param string $downloadId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function batch(string $projectId, string $expeditionId, string $downloadId)
+    {
+        ExportDownloadBatchJob::dispatch($downloadId);
+
+        Flash::success(trans('messages.download_batch_success'));
+
+        return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+    }
+
+    public function batchDownload(string $projectId, string $expeditionId, string $fileName)
+    {
+        $file = $fileName . '.tar.gz';
+
+        try {
+            $expedition = $this->downloadService->getExpeditionById($expeditionId, ['project.group']);
+
+            if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
+                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+            }
+
+            if (! GeneralHelper::downloadFileExists('export', $file)) {
+                Flash::error(trans('messages.missing_download_file'));
+
+                return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
+            }
+
+            [$headers, $filePath] = $this->downloadService->createBatchDownloadFile($file);
+
+            return response()->download($filePath, $file, $headers);
+
+        } catch (\Exception $e) {
+            Flash::error(__($e->getMessage()));
+
+            return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
     }
 }

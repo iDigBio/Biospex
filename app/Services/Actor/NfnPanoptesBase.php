@@ -2,7 +2,10 @@
 
 namespace App\Services\Actor;
 
+use App\Models\Actor;
+use App\Models\Expedition;
 use App\Models\ExportQueue;
+use App\Models\User;
 use Illuminate\Support\Facades\File;
 
 class NfnPanoptesBase
@@ -63,19 +66,73 @@ class NfnPanoptesBase
     protected $archiveExportPath;
 
     /**
+     * Set queue property.
+     *
      * @param \App\Models\ExportQueue $queue
      */
-    public function setProperties(ExportQueue $queue)
+    public function setQueue(ExportQueue $queue)
     {
         $this->queue = $queue;
-        $this->expedition = $queue->expedition;
-        $this->actor = $queue->expedition->actor;
-        $this->owner = $queue->expedition->project->group->owner;
+    }
+
+    /**
+     * Set expedition property.
+     *
+     * @param \App\Models\Expedition $expedition
+     */
+    public function setExpedition(Expedition $expedition)
+    {
+        $this->expedition = $expedition;
+    }
+
+    /**
+     * Set actor property.
+     *
+     * @param \App\Models\Actor $actor
+     */
+    public function setActor(Actor $actor)
+    {
+        $this->actor = $actor;
+    }
+
+    /**
+     * Set owner property.
+     *
+     * @param \App\Models\User $user
+     */
+    public function setOwner(User $user)
+    {
+        $this->owner = $user;
+    }
+
+    /**
+     * Set folder property.
+     *
+     * @throws \Exception
+     */
+    public function setFolder()
+    {
+        if ($this->actor === null || $this->expedition === null) {
+            throw new \Exception(__('messages.export_error_exception'));
+        }
 
         $this->folderName = $this->actor->id . '-' . $this->expedition->uuid;
+    }
+
+    /**
+     * Set directories.
+     *
+     * @param bool $delete
+     * @throws \Exception
+     */
+    public function setDirectories(bool $delete = false)
+    {
+        if ($this->folderName === null) {
+            throw new \Exception(__('messages.export_error_exception'));
+        }
 
         $this->setScratchDirectory();
-        $this->setWorkingDirectory();
+        $this->setWorkingDirectory($delete);
         $this->setTmpDirectory();
         $this->setNfnExportDirectory();
         $this->setArchiveTarGz();
@@ -84,24 +141,32 @@ class NfnPanoptesBase
     /**
      * Set scratch directory.
      */
-    public function setScratchDirectory()
+    private function setScratchDirectory()
     {
         $this->scratchDirectory = \Storage::path(config('config.scratch_dir'));
     }
 
     /**
      * Set working directory.
+     * If delete, clear existing folder of everything.
+     *
+     * @param bool $delete
      */
-    public function setWorkingDirectory()
+    private function setWorkingDirectory(bool $delete)
     {
         $this->workingDirectory = $this->scratchDirectory . '/' . $this->folderName;
+
+        if (File::isDirectory($this->workingDirectory) && $delete) {
+            File::deleteDirectory($this->workingDirectory);
+        }
+
         File::makeDirectory($this->workingDirectory, 0777, true, true);
     }
 
     /**
      * Set tmp directory.
      */
-    public function setTmpDirectory()
+    private function setTmpDirectory()
     {
         $this->tmpDirectory = $this->workingDirectory . '/tmp';
         File::makeDirectory($this->tmpDirectory, 0777, true, true);
@@ -110,7 +175,7 @@ class NfnPanoptesBase
     /**
      * Set nfn export directory.
      */
-    public function setNfnExportDirectory()
+    private function setNfnExportDirectory()
     {
         $this->nfnExportDirectory = \Storage::path(config('config.export_dir'));
     }
@@ -118,21 +183,23 @@ class NfnPanoptesBase
     /**
      * Set gz archive and path.
      */
-    public function setArchiveTarGz()
+    private function setArchiveTarGz()
     {
         $this->archiveTarGz = $this->folderName . '.tar.gz';
         $this->archiveExportPath = $this->nfnExportDirectory . '/' . $this->archiveTarGz;
     }
 
     /**
-     * Check file exists.
+     * Set archive for batch files.
      *
-     * @param $file
-     * @return bool
+     * @param string $fileName
+     * @return string
      */
-    public function isFile($file)
+    protected function setBatchArchiveTarGz(string $fileName)
     {
-        return File::isFile($file);
+        $this->archiveTarGz = $fileName . '.tar.gz';
+
+        return $this->nfnExportDirectory . '/' . $this->archiveTarGz;
     }
 
     /**
@@ -159,7 +226,7 @@ class NfnPanoptesBase
     {
         $fileName = ! $subject ? File::name($file) : $file;
         $tmpFile = $this->tmpDirectory.'/'.$fileName.'.jpg';
-        if ($this->isFile($tmpFile)) {
+        if (File::isFile($tmpFile)) {
             return true;
         }
 

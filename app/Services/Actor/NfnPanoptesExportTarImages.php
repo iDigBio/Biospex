@@ -2,7 +2,6 @@
 
 namespace App\Services\Actor;
 
-use App\Facades\ActorEventHelper;
 use App\Models\ExportQueue;
 use App\Repositories\Interfaces\Download;
 
@@ -31,7 +30,12 @@ class NfnPanoptesExportTarImages extends NfnPanoptesBase
      */
     public function process(ExportQueue $queue)
     {
-        $this->setProperties($queue);
+        $this->setQueue($queue);
+        $this->setExpedition($queue->expedition);
+        $this->setActor($queue->expedition->actor);
+        $this->setOwner($queue->expedition->project->group->owner);
+        $this->setFolder();
+        $this->setDirectories();
 
         exec("cd {$this->tmpDirectory} && find . \( -name '*.jpg' -o -name '*.csv' \) -print >../export.manifest");
         exec("cd {$this->tmpDirectory} && sudo tar -czf {$this->archiveExportPath} --files-from ../export.manifest", $out, $ok);

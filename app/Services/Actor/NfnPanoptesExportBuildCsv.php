@@ -49,7 +49,12 @@ class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
      */
     public function process(ExportQueue $queue)
     {
-        $this->setProperties($queue);
+        $this->setQueue($queue);
+        $this->setExpedition($queue->expedition);
+        $this->setActor($queue->expedition->actor);
+        $this->setOwner($queue->expedition->project->group->owner);
+        $this->setFolder();
+        $this->setDirectories();
 
         $files = $this->exportQueueFile->getFilesWithoutErrorByQueueId($queue->id);
 

@@ -44,13 +44,17 @@
                                                 <a href="{{ route('admin.downloads.summary', [$expedition->project->id, $expedition->id]) }}"
                                                    data-hover="tooltip" target="_blank"
                                                    title="{{ __('pages.view') }} {{ $download->type }}">
-                                                    <i class="fas fa-eye fa-2x"></i></a>
+                                                    <i class="fas fa-eye fa-2x pl-2"></i></a>
                                             @endif
                                         @endcan
                                     @else
                                         <a href="{{ route('admin.downloads.download', [$expedition->project->id, $expedition->id, $download->id]) }}"
                                            data-hover="tooltip"
-                                           title="{{ __('pages.download') }} {{ $download->type }}">
+                                           title="{{ __('pages.download') }} {{ $download->type }} {{ __('pages.download_archive') }}">
+                                            <i class="fas fa-file-archive fa-2x"></i></a>
+                                        <a href="{{ route('admin.downloads.batch', [$expedition->project->id, $expedition->id, $download->id]) }}"
+                                           data-hover="tooltip"
+                                           title="{{ __('pages.download') }} {{ $download->type }} {{ __('pages.download_batch') }}">
                                             <i class="fas fa-file-download fa-2x"></i></a>
                                     @endif
                                 </td>
