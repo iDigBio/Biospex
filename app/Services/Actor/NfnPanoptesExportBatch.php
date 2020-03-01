@@ -198,7 +198,7 @@ class NfnPanoptesExportBatch extends NfnPanoptesBase
      *
      * @return array
      */
-    private function buildLinks()
+    private function buildLinks(): array
     {
         $links = [];
         foreach ($this->fileNames as $fileName) {
