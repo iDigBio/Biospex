@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Actor\NfnPanoptesExportBatch;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -18,16 +17,10 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
-     * @var \App\Services\Actor\NfnPanoptesExportBatch
-     */
-    private $batch;
-
-    /**
      * AppCommand constructor.
      */
-    public function __construct(NfnPanoptesExportBatch $batch) {
+    public function __construct() {
         parent::__construct();
-        $this->batch = $batch;
     }
 
     /**
@@ -35,8 +28,5 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $download = $this->batch->getDownload(806);
-
-        $this->batch->process($download);
     }
 }
