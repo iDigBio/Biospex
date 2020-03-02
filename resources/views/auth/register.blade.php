@@ -80,6 +80,23 @@
                             </span>
                         @enderror
                     </div>
+
+                    <div class="form-group">
+                        <label for="group_id"
+                               class="col-form-label required">{{ __('pages.timezone') }}
+                            :</label>
+                        <select name="timezone" id="timezone"
+                                class="form-control custom-select {{ ($errors->has('timezone')) ? 'is-invalid' : '' }}"
+                                required>
+                            @foreach($timezones as $key => $timezone)
+                                {{ $key }}
+                                <option {{ $key == old('timezone') ?
+                                        ' selected=selected' : '' }} value="{{ $key }}">{{ $timezone }}</option>
+                            @endforeach
+                        </select>
+                        <span class="invalid-feedback">{{ $errors->first('timezone') }}</span>
+                    </div>
+
                     <div class="form-group">
                         <label for="invite" class="col-form-label">{{ __('pages.invite_code') }}:</label>
                         <input type="text" class="form-control @error('invite') is-invalid @enderror"

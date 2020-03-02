@@ -8,6 +8,7 @@ use App\Repositories\Interfaces\Group;
 use App\Repositories\Interfaces\Invite;
 use App\Http\Requests\RegisterFormRequest;
 use App\Repositories\Interfaces\User;
+use DateHelper;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Hash;
@@ -59,6 +60,7 @@ class RegisterController extends Controller
      * Show registration form. Overrides trait so Invite code can be checked.
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @throws \Exception
      */
     public function showRegistrationForm()
     {
@@ -77,8 +79,9 @@ class RegisterController extends Controller
 
         $code = $invite->code ?? null;
         $email = $invite->email ?? null;
+        $timezones = ['' => null] + DateHelper::timeZoneSelect();
 
-        return view('auth.register', compact('code', 'email'));
+        return view('auth.register', compact('code', 'email', 'timezones'));
     }
 
     /**
