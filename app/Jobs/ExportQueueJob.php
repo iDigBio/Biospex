@@ -11,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Notifications\NfnExportError;
+use Notification;
 
 class ExportQueueJob implements ShouldQueue
 {
@@ -71,7 +72,9 @@ class ExportQueueJob implements ShouldQueue
                 'message' => $e->getFile().':'.$e->getLine().' - '.$e->getMessage(),
             ]);
 
-            $queue->expedition->project->group->owner->notify(new NfnExportError($message));
+            $users = $queue->expedition->project->group->users->push($queue->expedition->project->group->owner);
+
+            Notification::send($users, new NfnExportError($message));
 
             \Artisan::call('export:queue');
 
