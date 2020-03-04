@@ -145,7 +145,7 @@ class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
             return false;
         }
 
-        $csvFileName = $this->queue->id . '-' . $this->expedition->uuid.'.csv';
+        $csvFileName = $this->expedition->uuid.'.csv';
         $csvFilePath = $this->tmpDirectory.'/'.$csvFileName;
         $this->csvService->writerCreateFromPath($csvFilePath);
         $this->csvService->insertOne(array_keys(reset($csvExport)));
