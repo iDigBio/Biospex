@@ -7,7 +7,6 @@ use App\Repositories\Interfaces\ExportQueue;
 
 class ExportQueueRepository extends EloquentRepository implements ExportQueue
 {
-
     /**
      * Specify Model class name
      *
@@ -23,7 +22,7 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
      */
     public function getFirstExportWithoutError(array $attributes = ['*'])
     {
-        $results =  $this->model->where('error', 0)->first($attributes);
+        $results = $this->model->where('error', 0)->first($attributes);
 
         $this->resetModel();
 
@@ -35,12 +34,17 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
      */
     public function findByIdExpeditionActor($queueId, $expeditionId, $actorId, array $attributes = ['*'])
     {
-        $results = $this->model->with(['expedition.actor', 'expedition.project.group.owner'])
-            ->whereHas('actor', function ($query) use ($expeditionId, $actorId)
-            {
-                $query->where('expedition_id', $expeditionId);
-                $query->where('actor_id', $actorId);
-            })->find($queueId);
+        $results = $this->model->with([
+            'expedition.actor',
+            'expedition.project.group' => function($q){
+                $q->with(['owner', 'users' => function($q){
+                    $q->where('notification', 1);
+                }]);
+            }
+        ])->whereHas('actor', function ($query) use ($expeditionId, $actorId) {
+            $query->where('expedition_id', $expeditionId);
+            $query->where('actor_id', $actorId);
+        })->find($queueId);
 
         $this->resetModel();
 
@@ -52,9 +56,9 @@ class ExportQueueRepository extends EloquentRepository implements ExportQueue
      */
     public function findQueueProcessData($queueId, $expeditionId, $actorId, array $attributes = ['*'])
     {
-        $results = $this->model->with(['expedition.actor', 'expedition.project.group'])
-            ->whereHas('actor', function ($query) use ($expeditionId, $actorId)
-            {
+        $results = $this->model->with(['expedition.actor', 'expedition.project.group'])->whereHas('actor', function (
+                $query
+            ) use ($expeditionId, $actorId) {
                 $query->where('expedition_id', $expeditionId);
                 $query->where('actor_id', $actorId);
             })->find($queueId);
