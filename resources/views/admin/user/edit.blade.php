@@ -18,15 +18,18 @@
                         {!! method_field('put') !!}
                         @csrf
                         <div class="form-group">
-                            <label for="first_name" class="col-form-label required">{{ __('pages.first_name') }}:</label>
-                            <input type="text" class="form-control {{ ($errors->has('first_name')) ? 'is-invalid' : '' }}"
+                            <label for="first_name" class="col-form-label required">{{ __('pages.first_name') }}
+                                :</label>
+                            <input type="text"
+                                   class="form-control {{ ($errors->has('first_name')) ? 'is-invalid' : '' }}"
                                    id="first_name" name="first_name"
                                    value="{{ old('first_name', $user->profile->first_name) }}" required>
                             <span class="invalid-feedback">{{ $errors->first('first_name') }}</span>
                         </div>
                         <div class="form-group">
                             <label for="last_name" class="col-form-label required">{{ __('pages.last_name') }}:</label>
-                            <input type="text" class="form-control {{ ($errors->has('last_name')) ? 'is-invalid' : '' }}"
+                            <input type="text"
+                                   class="form-control {{ ($errors->has('last_name')) ? 'is-invalid' : '' }}"
                                    id="last_name" name="last_name"
                                    value="{{ old('last_name', $user->profile->last_name) }}" required>
                             <span class="invalid-feedback">{{ $errors->first('last_name') }}</span>
@@ -40,7 +43,8 @@
                         </div>
                         <div class="form-group">
                             <div class="col-12 p-0">
-                                <label for="timezone" class="col-form-label required">{{ __('pages.timezone') }}:</label>
+                                <label for="timezone" class="col-form-label required">{{ __('pages.timezone') }}
+                                    :</label>
                             </div>
                             <div class="col-6 p-0">
                                 <select name="timezone" id="timezone"
@@ -52,6 +56,13 @@
                                     @endforeach
                                 </select>
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="notification" class="form-check-inline col-form-label">
+                                <input class="form-check-input" type="checkbox" name="notification"
+                                       value="{{ old('notification', $user->notification) }}" {{ $user->notification === 1 ? "checked" : "" }}>
+                                Notification (Receive notifications for projects you belong to)
+                            </label>
                         </div>
                         <div class="form-row mt-4">
                             <div class="form-group col-sm-6 mt-4">
@@ -87,22 +98,28 @@
                         @csrf
                         <input type="hidden" id="id" name="id" value="{{ $user->id }}">
                         <div class="form-group">
-                            <label for="oldPassword" class="col-form-label required">{{ __('pages.password_old') }}:</label>
-                            <input type="password" class="form-control {{ ($errors->has('oldPassword')) ? 'is-invalid' : '' }}"
+                            <label for="oldPassword" class="col-form-label required">{{ __('pages.password_old') }}
+                                :</label>
+                            <input type="password"
+                                   class="form-control {{ ($errors->has('oldPassword')) ? 'is-invalid' : '' }}"
                                    id="oldPassword" name="oldPassword"
                                    required>
                             <span class="invalid-feedback">{{ $errors->first('oldPassword') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="newPassword" class="col-form-label required">{{ __('pages.password_new') }}:</label>
-                            <input type="password" class="form-control {{ ($errors->has('newPassword')) ? 'is-invalid' : '' }}"
+                            <label for="newPassword" class="col-form-label required">{{ __('pages.password_new') }}
+                                :</label>
+                            <input type="password"
+                                   class="form-control {{ ($errors->has('newPassword')) ? 'is-invalid' : '' }}"
                                    id="newPassword" name="newPassword"
                                    required>
                             <span class="invalid-feedback">{{ $errors->first('newPassword') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="newPassword_confirmation" class="col-form-label required">{{ __('pages.password_confirmation') }}:</label>
-                            <input type="password" class="form-control {{ ($errors->has('newPassword_confirmation')) ? 'is-invalid' : '' }}"
+                            <label for="newPassword_confirmation"
+                                   class="col-form-label required">{{ __('pages.password_confirmation') }}:</label>
+                            <input type="password"
+                                   class="form-control {{ ($errors->has('newPassword_confirmation')) ? 'is-invalid' : '' }}"
                                    id="newPassword_confirmation" name="newPassword_confirmation"
                                    required>
                             <span class="invalid-feedback">{{ $errors->first('newPassword_confirmation') }}</span>
