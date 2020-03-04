@@ -88,7 +88,9 @@ class UsersController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $result = $this->userContract->update($request->all(), $user->id);
+        $input = $request->all();
+        $input['notification'] = $request->exists('notification') ? 1 : 0;
+        $result = $this->userContract->update($input, $user->id);
 
         $user->profile->fill($request->all());
         $user->profile()->save($user->profile);
