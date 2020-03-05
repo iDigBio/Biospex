@@ -9,6 +9,7 @@ use App\Notifications\NfnExportComplete;
 use App\Repositories\Interfaces\ExportQueue;
 use App\Repositories\Interfaces\ExportQueueFile;
 use File;
+use Notification;
 
 /**
  * Class NfnPanoptesExportReport
@@ -94,6 +95,8 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
         $csvPath = storage_path('app/reports/'.md5($this->queue->id).'.csv');
         $csv = GeneralHelper::createCsv($data->toArray(), $csvPath);
 
-        $this->owner->notify(new NfnExportComplete($message, $csv));
+        $users = $this->expedition->project->group->users->push($this->owner);
+
+        Notification::send($users, new NfnExportComplete($message, $csv));
     }
 }
