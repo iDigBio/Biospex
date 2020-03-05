@@ -15,6 +15,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Storage;
+use Notification;
 
 class DwcFileImportJob implements ShouldQueue
 {
@@ -58,7 +59,8 @@ class DwcFileImportJob implements ShouldQueue
     {
         $scratchFileDir = Storage::path(config('config.scratch_dir') . '/' . md5($this->import->file));
 
-        $project = $projectContract->findWith($this->import->project_id, ['group.owner', 'workflow.actors']);
+        $project = $projectContract->getProjectForDarwinImportJob($this->import->project_id);
+        $users = $project->group->users->push($project->group->owner);
 
         try
         {
@@ -75,7 +77,7 @@ class DwcFileImportJob implements ShouldQueue
             GeneralHelper::createCsv($dwcProcess->getDuplicates(), $dupsCsv);
             GeneralHelper::createCsv($dwcProcess->getRejectedMedia(), $rejCsv);
 
-            $project->group->owner->notify(new ImportComplete($project->title, $dupsCsv, $rejCsv));
+            Notification::send($users, new ImportComplete($project->title, $dupsCsv, $rejCsv));
 
             if ($project->workflow->actors->contains('title', 'OCR') && $dwcProcess->getSubjectCount() > 0)
             {
@@ -101,7 +103,7 @@ class DwcFileImportJob implements ShouldQueue
                 'message' => $e->getMessage()
             ]);
 
-            $project->group->owner->notify(new DarwinCoreImportError($message));
+            Notification::send($users, new DarwinCoreImportError($message));
 
             $this->delete();
         }
