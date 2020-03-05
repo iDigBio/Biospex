@@ -64,4 +64,12 @@ interface Project extends RepositoryInterface
      */
     public function getProjectForAmChartJob($projectId);
 
+    /**
+     * Get project for Darwin Core import.
+     *
+     * @param $projectId
+     * @return mixed
+     */
+    public function getProjectForDarwinImportJob($projectId);
+
 }

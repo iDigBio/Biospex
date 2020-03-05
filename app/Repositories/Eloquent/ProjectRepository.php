@@ -282,4 +282,20 @@ class ProjectRepository extends EloquentRepository implements Project
 
         return $result;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getProjectForDarwinImportJob($projectId)
+    {
+        $result = $this->model->with(['workflow.actors', 'group' => function($q){
+            $q->with(['owner', 'users' => function($q){
+                $q->where('notification', 1);
+            }]);
+        }])->find($projectId);
+
+        $this->resetModel();
+
+        return $result;
+    }
 }
