@@ -11,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Str;
 
 class EventUserExportCsvJob implements ShouldQueue
 {
@@ -89,7 +90,7 @@ class EventUserExportCsvJob implements ShouldQueue
      */
     private function setCsv(Csv $csv, $rows)
     {
-        $file = \Storage::path(config('config.reports_dir') . '/' . str_random() . '.csv');
+        $file = \Storage::path(config('config.reports_dir') . '/' . Str::random() . '.csv');
         $csv->writerCreateFromPath($file);
         $csv->insertOne(['Team', 'User', 'Transcriptions']);
         $csv->insertAll($rows);
