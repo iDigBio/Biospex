@@ -65,6 +65,7 @@ class NfnPanoptesExportReport extends NfnPanoptesBase
         $this->exportQueueContract->delete($queue->id);
         event('exportQueue.updated');
 
+        ActorEventHelper::fireActorStateEvent($this->actor);
         ActorEventHelper::fireActorUnQueuedEvent($this->actor);
 
         $this->notify();
