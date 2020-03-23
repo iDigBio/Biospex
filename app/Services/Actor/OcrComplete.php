@@ -46,7 +46,7 @@ class OcrComplete extends OcrBase
 
     /**
      * Process the record and send requests to ocr servers.
-     *
+     * TODO Send this to a job.
      * @param \App\Models\OcrQueue $queue
      * @throws \League\Csv\CannotInsertRecord
      */
