@@ -14,7 +14,7 @@
                       action="{{ route('admin.groups.store') }}"
                       role="form" enctype="multipart/form-data">
                     @csrf
-                    <input type="hidden" value="{{ Auth::id() }}" name="owner" id="owner">
+                    <input type="hidden" value="{{ Auth::id() }}" name="user_id" id="user_id">
                     <div class="col-12">
                         <h2 class="text-center content-header mb-4 text-uppercase">{{ __('pages.create') }} {{ __('pages.group') }}</h2>
                         <div class="form-group">
