@@ -41,4 +41,12 @@ interface Group extends RepositoryInterface
      * @throws \Exception
      */
     public function getGroupShow($groupId);
+
+    /**
+     * Get count of groups user belongs to.
+     *
+     * @param $userId
+     * @return mixed
+     */
+    public function getUserGroupCount($userId);
 }

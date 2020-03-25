@@ -29,5 +29,7 @@ interface RepositoryInterface
 
     public function delete($model);
 
+    public function count(array $attributes = []);
+
     public function truncate();
 }

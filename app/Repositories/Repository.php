@@ -211,6 +211,20 @@ abstract class Repository
     }
 
     /**
+     * @param array $attributes
+     * @return mixed
+     * @throws \Exception
+     */
+    public function count(array $attributes = [])
+    {
+        $result = $this->model->where($attributes)->count();
+
+        $this->resetModel();
+
+        return $result;
+    }
+
+    /**
      * @return mixed
      * @throws \Exception
      */

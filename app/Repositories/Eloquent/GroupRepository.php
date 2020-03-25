@@ -79,4 +79,20 @@ class GroupRepository extends EloquentRepository implements Group
 
         return $results;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getUserGroupCount($userId)
+    {
+        $results = $this->model->withCount(['users' => function($q) use($userId) {
+            $q->where('user_id', $userId);
+        }])->whereHas('users', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })->pluck('users_count')->sum();
+
+        $this->resetModel();
+
+        return $results;
+    }
 }

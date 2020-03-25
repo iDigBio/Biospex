@@ -55,6 +55,17 @@ class ProjectService
     }
 
     /**
+     * Find users groups.
+     *
+     * @param $userId
+     * @return mixed
+     */
+    public function getUserGroupCount($userId)
+    {
+        return $this->groupContract->getGroupsByUserId($userId);
+    }
+
+    /**
      * Return select options for user's groups
      * @param $user
      * @return mixed

@@ -50,9 +50,10 @@ class ProjectsController extends Controller
     {
         $user = Auth::user();
 
+        $groups = $this->projectService->getUserGroupCount($user->id);
         $projects = $this->projectContract->getAdminProjectIndex($user->id);
 
-        return $projects->isEmpty() ? view('admin.welcome') : view('admin.project.index', compact('projects'));
+        return $groups === 0 ? view('admin.welcome') : view('admin.project.index', compact('projects'));
     }
 
     /**
