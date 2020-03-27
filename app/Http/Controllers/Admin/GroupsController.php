@@ -145,7 +145,7 @@ class GroupsController extends Controller
      */
     public function delete($groupId)
     {
-        $group = $this->groupContract->findWith($groupId, ['projects.panoptesProject', 'projects.workflowManagers']);
+        $group = $this->groupContract->findWith($groupId, ['projects.panoptesProjects', 'projects.workflowManagers']);
 
         if (! $this->checkPermissions('isOwner', $group)) {
             return redirect()->back();
