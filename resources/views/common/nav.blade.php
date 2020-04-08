@@ -44,6 +44,8 @@
                        type="button">{{ __('pages.expeditions') }}</a>
                     <a href="{{ route('admin.events.index') }}" class="dropdown-item text-uppercase"
                        type="button">{{ __('pages.events') }}</a>
+                    <a href="{{ route('admin.bingos.index') }}" class="dropdown-item text-uppercase"
+                       type="button">{{ __('pages.bingo') }}</a>
                     <a href="#" class="preventDefault dropdown-item text-uppercase"
                        type="button"
                        data-toggle="modal"

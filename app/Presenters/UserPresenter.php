@@ -21,6 +21,20 @@ class UserPresenter extends Presenter
     }
 
     /**
+     * Return email icon.
+     *
+     * @return string
+     */
+    public function email()
+    {
+        return $this->model->email === null ? '' :
+            '<a href="mailto:'.$this->model->email.'" 
+            data-hover="tooltip" 
+            title="'.__('pages.contact').'">
+            <i class="far fa-envelope"></i> <span class="d-none text d-sm-inline"></span></a>';
+    }
+
+    /**
      * Return return delete icon.
      *
      * @return string
