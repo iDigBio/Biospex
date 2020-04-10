@@ -15,11 +15,10 @@
         <div class="card-footer">
             <div class="d-flex align-items-start justify-content-between mt-4 mb-3">
                 {!! $bingo->project->present()->project_page_icon !!}
-                {!! $bingo->present()->admin_show_icon !!}
-                @can('isOwner', $bingo)
-                    {!! $bingo->present()->edit_icon !!}
-                    {!! $bingo->present()->delete_icon !!}
-                @endcan
+                {!! $bingo->present()->show_icon !!}
+                {!! $bingo->present()->twitter_icon !!}
+                {!! $bingo->present()->facebook_icon !!}
+                {!! $bingo->user->present()->email !!}
             </div>
         </div>
     </div>

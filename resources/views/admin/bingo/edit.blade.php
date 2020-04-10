@@ -38,21 +38,25 @@
                         <div class="form-group">
                             <label for="title" class="col-form-label required">{{ __('pages.title') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('title')) ? 'is-invalid' : '' }}"
+                                   pattern=".{5,20}" title="5 to 20 characters"
                                    id="title" name="title"
-                                   value="{{ old('title', $bingo->title) }}" required>
+                                   value="{{ old('title', $bingo->title) }}"
+                                   placeholder="Between 5 and 20 characters" required>
                             <span class="invalid-feedback">{{ $errors->first('title') }}</span>
                         </div>
                         <div class="form-group">
                             <label for="directions" class="col-form-label required">{{ __('pages.directions') }}:</label>
                             <input type="text"
                                    class="form-control {{ ($errors->has('directions')) ? 'is-invalid' : '' }}"
-                                   id="directions" name="description"
-                                   value="{{ old('directions', $bingo->directions) }}" required>
+                                   pattern=".{10,200}" title="10 to 200 characters"
+                                   id="directions" name="directions"
+                                   value="{{ old('directions', $bingo->directions) }}"
+                                   placeholder="Between 10 and 200 characters" required>
                             <span class="invalid-feedback">{{ $errors->first('directions') }}</span>
                         </div>
 
                         <div class="form-group">
-                            <label for="words" class="col-form-label">{{ __('pages.words') }}:</label>
+                            <label for="words" class="col-form-label required">{{ __('pages.words') }}:</label>
                             @include('admin.bingo.partials.words', ['words' => $bingo->words])
                         </div>
                         @include('common.cancel-submit-buttons')

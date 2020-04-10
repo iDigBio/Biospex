@@ -57,6 +57,21 @@ abstract class Repository
     }
 
     /**
+     * @param array $with
+     * @param array $columns
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @throws \Exception
+     */
+    public function allWith(array $with = [], array $columns = ['*'])
+    {
+        $results = $this->model->with($with)->get($columns);
+
+        $this->resetModel();
+
+        return $results;
+    }
+
+    /**
      * @param $resourceId
      * @param array $columns
      * @return mixed

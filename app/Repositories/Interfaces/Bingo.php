@@ -14,4 +14,20 @@ interface Bingo extends RepositoryInterface
      * @return \Illuminate\Support\Collection
      */
     public function getAdminIndex(int $userId): Collection;
+
+    /**
+     * Create a new bingo game.
+     *
+     * @param array $attributes
+     * @return \App\Models\Bingo
+     */
+    public function createBingo(array $attributes): \Illuminate\Database\Eloquent\Model;
+
+    /**
+     * Update bingo game.
+     *
+     * @param array $attributes
+     * @param string $resourceId
+     */
+    public function updateBingo(array $attributes, string $resourceId);
 }

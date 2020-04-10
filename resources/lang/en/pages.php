@@ -110,6 +110,7 @@ return [
     'footer_disclaimer'                    => 'is funded by a grant from the National Science Foundation\'s Advances in Biological Informatics Program (Award Number 1458550). iDigBio is funded by grants from the National Science Foundation\'s Advancing Digitization of Biodiversity Collections Program (DBI-1115210 [2011-2018] and DBI-1547229 [2016-2021]). Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.',
     'forgot_your_pass'                     => 'Forgot your Password?',
     'funding_source'                       => 'Funding Source',
+    'games' => 'Games',
     'geographic_scope'                     => 'Geographic Scope',
     'github'                               => 'GitHub',
     'goal'                                 => 'Goal',

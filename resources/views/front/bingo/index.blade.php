@@ -1,0 +1,29 @@
+@extends('front.layout.default')
+
+{{-- Web site Title --}}
+@section('title')
+    {{ __('pages.bingo') }}
+@stop
+
+@section('header')
+    <header id="header-img" style="background-image: url(/images/page-banners/banner-games.jpg);">
+        <nav class="header navbar navbar-expand-md box-shadow">
+            <a href="/"><img src="/images/page/biospex_logo.svg" alt="BIOSPEX"
+                             class="my-0 mr-md-auto top-logo font-weight-normal"/></a>
+            @include('common.nav')
+        </nav>
+    </header>
+@endsection
+
+{{-- Content --}}
+@section('content')
+    <h2 class="text-center text-uppercase pt-4">{{ __('pages.biospex') }} {{ __('pages.bingo') }}</h2>
+    <hr class="header mx-auto" style="width:300px;">
+    <div class="row">
+        @if($bingos->isNotEmpty())
+            @each('front.bingo.partials.bingo-loop', $bingos, 'bingo')
+        @else
+            <h2 class="mx-auto pt-4">{{ __('pages.bingo_none') }}</h2>
+        @endif
+    </div>
+@endsection

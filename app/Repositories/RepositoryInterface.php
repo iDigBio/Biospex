@@ -9,6 +9,8 @@ interface RepositoryInterface
 {
     public function all(array $columns = ['*']);
 
+    public function allWith(array $with = [], array $columns = ['*']);
+
     public function find($resourceId, array $columns = ['*']);
 
     public function findBy($field, $value, array $columns = ['*']);

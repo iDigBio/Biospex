@@ -2,32 +2,35 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Facades\FlashHelper;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\BingoFormRequest;
 use App\Repositories\Interfaces\Bingo;
 use App\Repositories\Interfaces\Project;
 use Illuminate\Support\Facades\Auth;
 
-class BingosController
+class BingosController extends Controller
 {
     /**
      * @var \App\Repositories\Interfaces\Bingo
      */
-    private $bingo;
+    private $bingoContract;
 
     /**
      * @var \App\Repositories\Interfaces\Project
      */
-    private $project;
+    private $projectContract;
 
     /**
      * BingosController constructor.
      *
-     * @param \App\Repositories\Interfaces\Bingo $bingo
-     * @param \App\Repositories\Interfaces\Project $project
+     * @param \App\Repositories\Interfaces\Bingo $bingoContract
+     * @param \App\Repositories\Interfaces\Project $projectContract
      */
-    public function __construct(Bingo $bingo, Project $project)
+    public function __construct(Bingo $bingoContract, Project $projectContract)
     {
-        $this->bingo = $bingo;
-        $this->project = $project;
+        $this->bingoContract = $bingoContract;
+        $this->projectContract = $projectContract;
     }
 
     /**
@@ -37,7 +40,7 @@ class BingosController
      */
     public function index()
     {
-        $bingos = $this->bingo->getAdminIndex(Auth::user()->id);
+        $bingos = $this->bingoContract->getAdminIndex(Auth::user()->id);
 
         return view('admin.bingo.index', compact('bingos'));
     }
@@ -49,19 +52,50 @@ class BingosController
      */
     public function create()
     {
-        $projects = $this->project->getProjectEventSelect();
+        $projects = $this->projectContract->getProjectEventSelect();
 
         return view('admin.bingo.create', compact('projects'));
     }
 
-    public function store()
+    /**
+     * Store bingo.
+     *
+     * @param \App\Http\Requests\BingoFormRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(BingoFormRequest $request)
     {
+        $bingo = $this->bingoContract->createBingo($request->all());
 
+        if ($bingo) {
+            FlashHelper::success(trans('messages.record_created'));
+
+            return redirect()->route('admin.bingos.show', [$bingo->id]);
+        }
+
+        FlashHelper::error(trans('messages.record_save_error'));
+
+        return redirect()->route('admin.bingos.index');
     }
 
-    public function read()
+    /**
+     * Bingo show.
+     *
+     * @param string $bingoId
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    public function show(string $bingoId)
     {
+        $bingo = $this->bingoContract->findWith($bingoId, ['words']);
 
+        if ( ! $this->checkPermissions('read', $bingo))
+        {
+            return redirect()->route('admin.bingos.index');
+        }
+
+        $words = $bingo->words->chunk(3);
+
+        return view('admin.bingo.show', compact('bingo', 'words'));
     }
 
     /**
@@ -72,24 +106,67 @@ class BingosController
      */
     public function edit(string $bingoId)
     {
-        $bingo = $this->bingo->findWith($bingoId, ['words', 'project']);
-        $projects = $this->project->getProjectEventSelect();
+        $bingo = $this->bingoContract->findWith($bingoId, ['words', 'project']);
+        $projects = $this->projectContract->getProjectEventSelect();
 
         return view('admin.bingo.edit', compact('bingo', 'projects'));
     }
 
-    public function update()
+    /**
+     * Update bingo.
+     *
+     * @param \App\Http\Requests\BingoFormRequest $request
+     * @param string $bingoId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(BingoFormRequest $request, string $bingoId)
     {
+        $bingo = $this->bingoContract->findWith($bingoId, ['words']);
 
+        if ( ! $this->checkPermissions('update', $bingo))
+        {
+            return redirect()->route('admin.bingos.index');
+        }
+
+        $result = $this->bingoContract->updatebingo($request->all(), $bingoId);
+
+        if ($result) {
+            FlashHelper::success(trans('messages.record_updated'));
+
+            return redirect()->route('admin.bingos.show', [$bingoId]);
+        }
+
+        FlashHelper::error(trans('messages.record_updated_error'));
+
+        return redirect()->route('admin.bingos.edit', [$bingoId]);
     }
 
-    public function delete()
+    /**
+     * Delete bingo.
+     *
+     * @param string $bingoId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function delete(string $bingoId)
     {
+        $bingo = $this->bingoContract->find($bingoId);
 
-    }
+        if ( ! $this->checkPermissions('delete', $bingo))
+        {
+            return redirect()->route('admin.bingos.index');
+        }
 
-    public function generate(string $bingoId)
-    {
-        
+        $result = $this->bingoContract->delete($bingo);
+
+        if ($result)
+        {
+            FlashHelper::success(trans('messages.record_deleted'));
+
+            return redirect()->route('admin.bingos.index');
+        }
+
+        FlashHelper::error(trans('messages.record_delete_error'));
+
+        return redirect()->route('admin.bingos.edit', [$bingoId]);
     }
 }

@@ -2,7 +2,7 @@
 
 {{-- Web site Title --}}
 @section('title')
-    {{ $event->title }}
+    {{ $bingo->title }}
 @stop
 
 @section('custom-style')
@@ -12,16 +12,14 @@
 
 {{-- Content --}}
 @section('content')
-    @include('admin.event.partials.event-panel')
-    @include('admin.event.partials.team-table')
+    @include('admin.bingo.partials.bingo-panel')
+    @include('admin.bingo.partials.words-table')
 @stop
 
 @section('custom-script')
-    @if($event->teams->isNotEmpty())
-        <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
-        <script>
-            $('#teams-tbl').DataTable();
-        </script>
-    @endif
+    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        //$('#words-tbl').DataTable();
+    </script>
 @endsection

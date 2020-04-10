@@ -37,7 +37,9 @@
                             <label for="title" class="col-form-label required">{{ __('pages.title') }}:</label>
                             <input type="text" class="form-control {{ ($errors->has('title')) ? 'is-invalid' : '' }}"
                                    id="title" name="title"
-                                   value="{{ old('title') }}" required>
+                                   pattern=".{5,20}" title="5 to 20 characters"
+                                   value="{{ old('title') }}"
+                                   placeholder="Between 5 and 20 characters" required>
                             <span class="invalid-feedback">{{ $errors->first('title') }}</span>
                         </div>
                         <div class="form-group">
@@ -45,13 +47,14 @@
                             <input type="text"
                                    class="form-control {{ ($errors->has('directions')) ? 'is-invalid' : '' }}"
                                    id="directions" name="directions"
+                                   pattern=".{10,200}" title="10 to 200 characters"
                                    value="{{ old('directions') }}"
                                    placeholder="Between 6 and 250 characters" required>
                             <span class="invalid-feedback">{{ $errors->first('directions') }}</span>
                         </div>
 
                         <div class="form-group">
-                            <label for="words" class="col-form-label">{{ __('pages.words') }}:</label>
+                            <label for="words" class="col-form-label required">{{ __('pages.words') }}:</label>
                             @include('admin.bingo.partials.words', ['words' => null])
                         </div>
                         @include('common.cancel-submit-buttons')

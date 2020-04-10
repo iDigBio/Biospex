@@ -28,6 +28,13 @@
         <li class="nav-item mr-2">
             <a class="nav-link text-uppercase" href="{{ route('front.events.index') }}">{{ __('pages.events') }}</a>
         </li>
+        <li class="nav-item mr-2 dropdown">
+            <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown02" data-toggle="dropdown" aria-haspopup="true"
+               aria-expanded="false">{{ __('pages.games') }}</a>
+            <div class="dropdown-menu" aria-labelledby="dropdown02">
+                <a class="dropdown-item text-uppercase" href="{{ route('front.bingos.index') }}">{{ __('pages.bingo') }}</a>
+            </div>
+        </li>
         <li class="nav-item mr-2">
             <a class="nav-link text-uppercase" href="{{ route('front.contact.index') }}">{{ __('pages.contact') }}</a>
         </li>
