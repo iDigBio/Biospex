@@ -14,7 +14,7 @@ class AddForeignKeysToBingoWordsTable extends Migration
     public function up()
     {
         Schema::table('bingo_words', function (Blueprint $table) {
-            $table->foreign('bingo_id')->references('id')->on('bingos')->onUpdate('CASCADE')->onDelete('CASCADE');;
+            $table->foreign('bingo_id')->references('id')->on('bingos')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
 

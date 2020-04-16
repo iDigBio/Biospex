@@ -13,6 +13,7 @@ class BingoWord extends BaseEloquentModel
      * @inheritDoc
      */
     protected $fillable = [
+        'bingo_id',
         'word'
     ];
 
@@ -24,5 +25,26 @@ class BingoWord extends BaseEloquentModel
     public function bingo()
     {
         return $this->belongsTo(Bingo::class);
+    }
+
+    /**
+     * Accessor for ip.
+     *
+     * @param $value
+     * @return false|string
+     */
+    public function getIpAttribute($value)
+    {
+        return inet_ntop($value);
+    }
+
+    /**
+     * Mutator for ip.
+     *
+     * @param $value
+     */
+    public function setIpAttribute($value)
+    {
+        $this->attributes['ip_address'] = inet_pton($value);
     }
 }

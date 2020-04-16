@@ -50,10 +50,22 @@ class Bingo extends BaseEloquentModel
     }
 
     /**
+     * Word relationship.
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function words()
     {
         return $this->hasMany(BingoWord::class);
+    }
+
+    /**
+     * Map relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function maps()
+    {
+        return $this->hasMany(BingoMap::class);
     }
 }

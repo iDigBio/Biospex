@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\BingoJob;
+use App\Repositories\Interfaces\BingoMap;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -17,10 +19,17 @@ class AppCommand extends Command
     protected $description = 'Used to test code';
 
     /**
+     * @var \App\Repositories\Interfaces\BingoMap
+     */
+    private $bingoMapContract;
+
+    /**
      * AppCommand constructor.
      */
-    public function __construct() {
+    public function __construct(BingoMap $bingoMapContract) {
         parent::__construct();
+
+        $this->bingoMapContract = $bingoMapContract;
     }
 
     /**
@@ -28,6 +37,13 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        BingoJob::dispatch(1);
+        return;
 
+        $locations = $this->bingoMapContract->findBy('bingo_id', 1);
+        dd($locations);
+        $data = $locations->mapWithKeys(function($location) {
+            return [$location->id => view('common.scoreboard-content', ['event' => $location])->render()];
+        });
     }
 }

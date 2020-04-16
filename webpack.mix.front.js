@@ -31,6 +31,9 @@ mix.js("resources/js/front-app.js", "js/front.js")
     .copy('resources/js/amChartEventRate.js', 'public/js/amChartEventRate.js')
     .babel('public/js/amChartEventRate.js', 'public/js/amChartEventRate.js')
     .minify('public/js/amChartEventRate.js')
+    .copy('resources/js/amChartBingo.js', 'public/js/amChartBingo.js')
+    .babel('public/js/amChartBingo.js', 'public/js/amChartBingo.js')
+    .minify('public/js/amChartBingo.js')
     .copy('resources/images', 'public/images');
 /* Production settings */
 
