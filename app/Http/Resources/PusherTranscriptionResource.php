@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\Json\Resource;
+use Illuminate\Http\Resources\Json\JsonResource ;
 
-class PusherTranscriptionResource extends Resource
+class PusherTranscriptionResource extends JsonResource
 {
 
     /**

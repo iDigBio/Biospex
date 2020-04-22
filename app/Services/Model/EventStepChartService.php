@@ -87,7 +87,7 @@ class EventStepChartService
         $data = [];
         $intervals->each(function ($interval, $key) use (&$data, $teams) {
             $teams->each(function ($team) use (&$data, $key) {
-                $data[$key][$team->title] = 0;
+                $data[$key][$team] = 0;
             });
         });
 
@@ -181,7 +181,7 @@ class EventStepChartService
     {
         $complete = $transformed->map(function ($collection, $key) {
             return array_merge($collection, ['date' => $key]);
-        });
+        })->sortKeys();
 
         return array_values($complete->toArray());
     }

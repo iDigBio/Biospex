@@ -165,9 +165,9 @@ return [
         /*
          * Package Service Providers...
          */
-        Felixkiss\UniqueWithValidator\ServiceProvider::class,
-        Jenssegers\Mongodb\MongodbServiceProvider::class,
-        Spiritix\LadaCache\LadaCacheServiceProvider::class,
+        //Felixkiss\UniqueWithValidator\ServiceProvider::class,
+        //Jenssegers\Mongodb\MongodbServiceProvider::class,
+        //Spiritix\LadaCache\LadaCacheServiceProvider::class,
 
         /*
          * Application Service Providers...
