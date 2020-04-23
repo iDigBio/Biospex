@@ -80,6 +80,9 @@ class TranscriptionChartService
     public function process(\App\Models\Project $project)
     {
         $this->checkNewChart($project);
+        if($project->amChart === null) {
+            return;
+        }
 
         $this->resetTemplates();
 
