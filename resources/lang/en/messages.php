@@ -3,6 +3,7 @@
 return [
     'contact_email'                       => 'Email',
     'contact_name'                        => 'Name',
+    'contact_message' => 'Message',
     'contact_success'                     => 'Your message has been sent. Thank you.',
     'core_node_missing'                   => 'Core node missing from xml meta file.',
     'create_dir'                          => 'Unable to create directory: :directory',
