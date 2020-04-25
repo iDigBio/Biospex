@@ -80,9 +80,6 @@ class TranscriptionChartService
     public function process(\App\Models\Project $project)
     {
         $this->checkNewChart($project);
-        if($project->amChart === null) {
-            return;
-        }
 
         $this->resetTemplates();
 
@@ -104,6 +101,9 @@ class TranscriptionChartService
             return array_values($value->toArray());
         });
 
+        $project->amChart->data = $project->amChart->data === null ? [] : $project->amChart->data;
+        $project->amChart->series = $project->amChart->series === null ? [] : $project->amChart->series;
+
         $project->amChart->data = array_replace($project->amChart->data, $this->amChartData->toArray());
         $project->amChart->series = array_replace($project->amChart->series, $this->projectChartSeries);
 
@@ -121,6 +121,8 @@ class TranscriptionChartService
     {
         if ($project->amChart === null) {
             $amChart = new AmChart();
+            $amChart->data = [];
+            $amChart->series = [];
             $project->amChart()->save($amChart);
             $project->load('amChart');
         }
