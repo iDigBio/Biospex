@@ -96,12 +96,13 @@ class MongoDbService
     }
 
     /**
-     * @param $criteria
+     * @param array $filter
+     * @param array $options
      * @return int
      */
-    public function count($criteria)
+    public function count(array $filter = [], array $options = []): int
     {
-        return $this->clientCollection->count($criteria);
+        return $this->clientCollection->countDocuments($filter, $options);
     }
 
     /**
