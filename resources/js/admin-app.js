@@ -23,9 +23,9 @@ try {
 
     require("summernote/dist/summernote-bs4.min");
 
+    require("./common");
     window.bootbox = require("./bootbox");
     require("./grid");
-    require("./common");
     require("./admin");
 
 } catch (e) {}
