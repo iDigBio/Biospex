@@ -19,7 +19,7 @@
         </div>
     </div>
     <div class="row">
-        <div id="active-expeditions-main" class="col-sm-12 collapse show">
+        <div id="active-expeditions-main" class="col-sm-12 show">
             @include('common.expedition-sort', ['type' => 'active', 'route' => route('admin.expeditions.sort')])
             <div id="active-expeditions" class="row col-sm-12 mx-auto justify-content-center">
                 @include('admin.expedition.partials.expedition', ['expeditions' => $expeditions])
