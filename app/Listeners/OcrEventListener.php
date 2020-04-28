@@ -3,10 +3,26 @@
 namespace App\Listeners;
 
 use App\Models\OcrQueue;
+use App\Services\Process\OcrService;
 use Artisan;
 
 class OcrEventListener
 {
+    /**
+     * @var \App\Services\Process\OcrService
+     */
+    private $ocrService;
+
+    /**
+     * OcrEventListener constructor.
+     *
+     * @param \App\Services\Process\OcrService $ocrService
+     */
+    public function __construct(OcrService $ocrService)
+    {
+
+        $this->ocrService = $ocrService;
+    }
 
     /**
      * Register the listeners for the subscriber.
@@ -33,6 +49,11 @@ class OcrEventListener
         $events->listen(
             'ocr.status',
             'App\Listeners\OcrEventListener@status'
+        );
+
+        $events->listen(
+            'ocr.create',
+            'App\Listeners\OcrEventListener@create'
         );
     }
 
@@ -79,5 +100,37 @@ class OcrEventListener
     {
         $queue->status = 0;
         $queue->save();
+    }
+
+    /**
+     * Create ocr queue.
+     *
+     * @param int $projectId
+     * @param int|null $expeditionId
+     * @throws \Exception
+     */
+    public function create(int $projectId, int $expeditionId = null)
+    {
+        if (config('config.ocr_disable')) {
+            return;
+        }
+
+        $queue = $this->ocrService->createOcrQueue($projectId, $expeditionId);
+        $total = $this->ocrService->getSubjectCount($projectId, $expeditionId);
+
+        if ($total === 0) {
+            $queue->delete();
+            event('ocr.poll');
+
+            return;
+        }
+
+        $queue->total = $total;
+        $queue->save();
+
+        event('ocr.poll');
+
+        Artisan::call('ocrprocess:records');
+
     }
 }

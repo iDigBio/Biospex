@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\DeleteProject;
-use App\Jobs\OcrCreateJob;
 use App\Repositories\Interfaces\Project;
 use App\Http\Requests\ProjectFormRequest;
 use App\Services\Model\ProjectService;
@@ -315,7 +314,7 @@ class ProjectsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        OcrCreateJob::dispatch($projectId);
+        event('ocr.create', [$projectId]);
 
         FlashHelper::success(__('messages.ocr_process_success'));
 
