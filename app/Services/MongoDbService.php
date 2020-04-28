@@ -6,6 +6,7 @@ use Illuminate\Database\DatabaseManager;
 use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
+use MongoDB\BSON\Regex;
 
 class MongoDbService
 {
@@ -93,6 +94,17 @@ class MongoDbService
     public function setMongoObjectId($value)
     {
         return new ObjectId($value);
+    }
+
+    /**
+     * Set regex value.
+     *
+     * @param $value
+     * @return \MongoDB\BSON\Regex
+     */
+    public function setRegex($value)
+    {
+        return new Regex($value, 'i');
     }
 
     /**

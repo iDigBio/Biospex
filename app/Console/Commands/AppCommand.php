@@ -2,7 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Services\MongoDbService;
+use App\Models\OcrQueue;
+use App\Services\Process\OcrService;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -13,19 +14,14 @@ class AppCommand extends Command
     protected $signature = 'test:test {ids?}';
 
     /**
-     * The console command description.
-     */
-    protected $description = 'Used to test code';
-
-    /**
-     * @var \App\Services\MongoDbService
+     * @var \App\Services\Process\OcrService
      */
     private $service;
 
     /**
      * AppCommand constructor.
      */
-    public function __construct(MongoDbService $service) {
+    public function __construct(OcrService $service) {
         parent::__construct();
         $this->service = $service;
     }
@@ -35,13 +31,8 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        $query = [
-            'project_id' => 26,
-            'ocr'        => '',
-        ];
-
-        $this->service->setCollection('subjects');
-        $results = $this->service->count($query);
-        dd($results);
+        $count = $this->service->getSubjectCount(15);
+        dd($count);
     }
+
 }

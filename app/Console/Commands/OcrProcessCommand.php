@@ -2,13 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
+use App\Jobs\OcrTesseractJob;
 use App\Repositories\Interfaces\OcrQueue;
-use App\Notifications\JobError;
-use App\Services\Actor\OcrComplete;
-use App\Services\Actor\OcrProcess;
-use Artisan;
-use Exception;
 use Illuminate\Console\Command;
 
 class OcrProcessCommand extends Command
@@ -25,42 +20,22 @@ class OcrProcessCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Polls Ocr server for file status and fires polling event';
+    protected $description = 'Starts ocr processing if queues exist.';
 
     /**
-     * @var OcrQueue
+     * @var \App\Repositories\Interfaces\OcrQueue
      */
     private $ocrQueueContract;
 
     /**
-     * @var OcrComplete
-     */
-    private $ocrComplete;
-
-    /**
-     * @var \App\Services\Actor\OcrProcess
-     */
-    private $ocrProcess;
-
-    /**
      * OcrProcessCommand constructor.
      *
-     * OcrProcessCommand constructor.
-     *
-     * @param OcrQueue $ocrQueueContract
-     * @param OcrComplete $ocrComplete
-     * @param \App\Services\Actor\OcrProcess $ocrProcess
+     * @param \App\Repositories\Interfaces\OcrQueue $ocrQueueContract
      */
-    public function __construct(
-        OcrQueue $ocrQueueContract,
-        OcrComplete $ocrComplete,
-        OcrProcess $ocrProcess
-    ) {
+    public function __construct(OcrQueue $ocrQueueContract) {
         parent::__construct();
 
         $this->ocrQueueContract = $ocrQueueContract;
-        $this->ocrComplete = $ocrComplete;
-        $this->ocrProcess = $ocrProcess;
     }
 
     /**
@@ -72,35 +47,10 @@ class OcrProcessCommand extends Command
     {
         $queue = $this->ocrQueueContract->getOcrQueueForOcrProcessCommand();
 
-        if ($queue === null) {
+        if ($queue === null || $queue->status === 1) {
             return;
         }
 
-        try {
-            if ($queue->status === 1) {
-                $this->ocrComplete->process($queue);
-                Artisan::call('ocrprocess:records');
-
-                return;
-            }
-
-            $this->ocrProcess->process($queue);
-
-            return;
-        } catch (Exception $e) {
-            event('ocr.error', $queue);
-
-            $messages = [
-                $queue->project->title,
-                'Error processing ocr record '.$queue->id,
-                'File: '.$e->getFile(),
-                'Message: '.$e->getMessage(),
-                'Line: '.$e->getLine(),
-            ];
-
-            $user = User::find(1);
-            $user->notify(new JobError(__FILE__, $messages));
-        }
+        OcrTesseractJob::dispatch($queue);
     }
-
 }
