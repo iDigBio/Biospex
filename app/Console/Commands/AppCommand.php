@@ -12,6 +12,11 @@ class AppCommand extends Command
     protected $signature = 'test:test {ids?}';
 
     /**
+     * The console command description.
+     */
+    protected $description = 'Used to test code';
+
+    /**
      * AppCommand constructor.
      */
     public function __construct() {
@@ -25,5 +30,4 @@ class AppCommand extends Command
     {
 
     }
-
 }

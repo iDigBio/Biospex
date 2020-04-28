@@ -93,7 +93,7 @@ class OcrEventListener
 
     /**
      * Set status to zero.
-     * 
+     *
      * @param \App\Models\OcrQueue $queue
      */
     public function status(OcrQueue $queue)
