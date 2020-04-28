@@ -2,25 +2,26 @@
 
 namespace App\Listeners;
 
-use App\Repositories\Interfaces\OcrQueue;
+use App\Models\OcrQueue;
+use App\Services\Process\OcrService;
 use Artisan;
 
 class OcrEventListener
 {
-
     /**
-     * @var \App\Repositories\Interfaces\OcrQueue
+     * @var \App\Services\Process\OcrService
      */
-    private $ocrQueue;
+    private $ocrService;
 
     /**
-     * Create the event listener.
+     * OcrEventListener constructor.
      *
-     * @param \App\Repositories\Interfaces\OcrQueue $ocrQueue
+     * @param \App\Services\Process\OcrService $ocrService
      */
-    public function __construct(OcrQueue $ocrQueue)
+    public function __construct(OcrService $ocrService)
     {
-        $this->ocrQueue = $ocrQueue;
+
+        $this->ocrService = $ocrService;
     }
 
     /**
@@ -39,6 +40,21 @@ class OcrEventListener
             'ocr.error',
             'App\Listeners\OcrEventListener@error'
         );
+
+        $events->listen(
+            'ocr.reset',
+            'App\Listeners\OcrEventListener@reset'
+        );
+
+        $events->listen(
+            'ocr.status',
+            'App\Listeners\OcrEventListener@status'
+        );
+
+        $events->listen(
+            'ocr.create',
+            'App\Listeners\OcrEventListener@create'
+        );
     }
 
     /**
@@ -52,12 +68,69 @@ class OcrEventListener
     /**
      * Record error.
      *
-     * @param \App\Models\OcrQueue $record
+     * @param \App\Models\OcrQueue $queue
      */
-    public function error(\App\Models\OcrQueue $record)
+    public function error(OcrQueue $queue)
     {
-        $record->status = 0;
-        $record->error = 1;
-        $record->save();
+        $queue->status = 0;
+        $queue->error = 1;
+        $queue->save();
+    }
+
+    /**
+     * Reset queue record.
+     *
+     * @param \App\Models\OcrQueue $queue
+     * @param $count
+     */
+    public function reset(OcrQueue $queue, $count)
+    {
+        $queue->total = $count;
+        $queue->processed = 0;
+        $queue->status = 1;
+        $queue->save();
+    }
+
+    /**
+     * Set status to zero.
+     *
+     * @param \App\Models\OcrQueue $queue
+     */
+    public function status(OcrQueue $queue)
+    {
+        $queue->status = 0;
+        $queue->save();
+    }
+
+    /**
+     * Create ocr queue.
+     *
+     * @param int $projectId
+     * @param int|null $expeditionId
+     * @throws \Exception
+     */
+    public function create(int $projectId, int $expeditionId = null)
+    {
+        if (config('config.ocr_disable')) {
+            return;
+        }
+
+        $queue = $this->ocrService->createOcrQueue($projectId, $expeditionId);
+        $total = $this->ocrService->getSubjectCount($projectId, $expeditionId);
+
+        if ($total === 0) {
+            $queue->delete();
+            event('ocr.poll');
+
+            return;
+        }
+
+        $queue->total = $total;
+        $queue->save();
+
+        event('ocr.poll');
+
+        Artisan::call('ocrprocess:records');
+
     }
 }

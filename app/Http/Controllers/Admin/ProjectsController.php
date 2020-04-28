@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\DeleteProject;
-use App\Jobs\OcrCreateJob;
 use App\Repositories\Interfaces\Project;
 use App\Http\Requests\ProjectFormRequest;
 use App\Services\Model\ProjectService;
@@ -88,7 +87,7 @@ class ProjectsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        list($expeditions, $expeditionsCompleted) = $project->expeditions->partition(function ($expedition) {
+        [$expeditions, $expeditionsCompleted] = $project->expeditions->partition(function ($expedition) {
             return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
         });
 
@@ -164,13 +163,13 @@ class ProjectsController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Edit project.
      *
      * $model->relation()->exists(); // bool: true if there is at least one row
      * $model->relation()->count(); // int: number of related rows
      *
      * @param $projectId
-     * @return \Illuminate\View\View
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function edit($projectId)
     {
@@ -315,7 +314,7 @@ class ProjectsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        OcrCreateJob::dispatch($projectId);
+        event('ocr.create', [$projectId]);
 
         FlashHelper::success(__('messages.ocr_process_success'));
 

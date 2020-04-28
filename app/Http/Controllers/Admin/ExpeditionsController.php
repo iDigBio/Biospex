@@ -6,7 +6,6 @@ use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpeditionFormRequest;
 use App\Jobs\DeleteExpedition;
-use App\Jobs\OcrCreateJob;
 use App\Jobs\PanoptesProjectUpdateJob;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\ExpeditionStat;
@@ -430,7 +429,7 @@ class ExpeditionsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        OcrCreateJob::dispatch($projectId, $expeditionId);
+        event('ocr.create', [$projectId, $expeditionId]);
 
         FlashHelper::success(__('messages.ocr_process_success'));
 

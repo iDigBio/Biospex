@@ -23,8 +23,7 @@ class OcrQueue extends Model
         'total',
         'processed',
         'status',
-        'error',
-        'csv'
+        'error'
     ];
 
     /**
@@ -45,35 +44,5 @@ class OcrQueue extends Model
     public function expedition()
     {
         return $this->belongsTo(Expedition::class);
-    }
-
-    /**
-     * OcrFile Relation
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function ocrFiles()
-    {
-        return $this->hasMany(OcrFile::class, 'queue_id');
-    }
-
-    /**
-     * Get csv attribute.
-     *
-     * @param $value
-     * @return mixed
-     */
-    public function getCsvAttribute($value)
-    {
-        return unserialize($value);
-    }
-
-    /**
-     * Set csv attribute.
-     *
-     * @param $value
-     */
-    public function setCsvAttribute($value)
-    {
-        $this->attributes['csv'] = serialize($value);
     }
 }

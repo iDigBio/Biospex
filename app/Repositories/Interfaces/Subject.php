@@ -40,16 +40,6 @@ interface Subject extends RepositoryInterface
     public function getSubjectAssignedCount($projectId);
 
     /**
-     * Get Subject ids.
-     *
-     * @param $projectId
-     * @param null $take
-     * @param null $expeditionId
-     * @return mixed
-     */
-    public function getSubjectIds($projectId, $take = null, $expeditionId = null);
-
-    /**
      * Detach subjects.
      *
      * @param array $subjects

@@ -6,6 +6,7 @@ use Illuminate\Database\DatabaseManager;
 use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
+use MongoDB\BSON\Regex;
 
 class MongoDbService
 {
@@ -96,12 +97,24 @@ class MongoDbService
     }
 
     /**
-     * @param $criteria
+     * Set regex value.
+     *
+     * @param $value
+     * @return \MongoDB\BSON\Regex
+     */
+    public function setRegex($value)
+    {
+        return new Regex($value, 'i');
+    }
+
+    /**
+     * @param array $filter
+     * @param array $options
      * @return int
      */
-    public function count($criteria)
+    public function count(array $filter = [], array $options = []): int
     {
-        return $this->clientCollection->count($criteria);
+        return $this->clientCollection->countDocuments($filter, $options);
     }
 
     /**
