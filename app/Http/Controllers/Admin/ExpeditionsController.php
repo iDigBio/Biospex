@@ -276,7 +276,6 @@ class ExpeditionsController extends Controller
             'downloads',
             'workflowManager',
             'stat',
-            'subjects',
             'panoptesProject',
         ];
 
@@ -286,7 +285,7 @@ class ExpeditionsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $subjectIds = $expedition->subjects->pluck('_id');
+        $subjectIds = $this->subjectContract->findSubjectsByExpeditionId((int) $expeditionId, ['_id'])->pluck('_id');
 
         JavaScript::put([
             'projectId'    => $expedition->project->id,
