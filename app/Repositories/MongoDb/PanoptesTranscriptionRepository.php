@@ -24,11 +24,13 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getTotalTranscriptions()
     {
-        $results = $this->model->count();
+        $result = Cache::remember(md5(__METHOD__), 14440, function () {
+            return $this->model->count();
+        });
 
         $this->resetModel();
 
-        return $results;
+        return $result;
     }
 
     /**
@@ -36,10 +38,12 @@ class PanoptesTranscriptionRepository extends MongoDbRepository implements Panop
      */
     public function getContributorCount()
     {
-        $results = $this->model->where('user_name', 'not regexp', '/^not-logged-in.*/i')
-            ->groupBy('user_name')
-            ->get()
-            ->count();
+        $results = Cache::remember(md5(__METHOD__), 14440, function () {
+            return $this->model->where('user_name', 'not regexp', '/^not-logged-in.*/i')
+                ->groupBy('user_name')
+                ->get()
+                ->count();
+        });
 
         $this->resetModel();
 
