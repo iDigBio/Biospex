@@ -81,7 +81,7 @@ class DwcFileImportJob implements ShouldQueue
 
             if ($project->workflow->actors->contains('title', 'OCR') && $dwcProcess->getSubjectCount() > 0)
             {
-                event('ocr.create', [$project->id]);
+                OcrCreateJob::dispatch($project->id);
             }
 
             $fileService->filesystem->cleanDirectory($scratchFileDir);

@@ -6,6 +6,7 @@ use App\Facades\FlashHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExpeditionFormRequest;
 use App\Jobs\DeleteExpedition;
+use App\Jobs\OcrCreateJob;
 use App\Jobs\PanoptesProjectUpdateJob;
 use App\Repositories\Interfaces\Expedition;
 use App\Repositories\Interfaces\ExpeditionStat;
@@ -86,7 +87,7 @@ class ExpeditionsController extends Controller
 
         $results = $this->expeditionContract->getExpeditionAdminIndex($user->id);
 
-        list($expeditions, $expeditionsCompleted) = $results->partition(function ($expedition) {
+        [$expeditions, $expeditionsCompleted] = $results->partition(function ($expedition) {
             return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
         });
 
@@ -111,7 +112,7 @@ class ExpeditionsController extends Controller
         $order = request()->get('order');
         $projectId = request()->get('id');
 
-        list($active, $completed) = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)->partition(function (
+        [$active, $completed] = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)->partition(function (
             $expedition
         ) {
             return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
@@ -428,7 +429,7 @@ class ExpeditionsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        event('ocr.create', [$projectId, $expeditionId]);
+        OcrCreateJob::dispatch($projectId, $expeditionId);
 
         FlashHelper::success(__('messages.ocr_process_success'));
 
