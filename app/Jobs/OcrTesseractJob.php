@@ -54,8 +54,6 @@ class OcrTesseractJob implements ShouldQueue
 
             \Artisan::call('ocrprocess:records');
 
-            event('ocr.poll');
-
             $this->delete();
 
             return;
@@ -70,8 +68,6 @@ class OcrTesseractJob implements ShouldQueue
             $tesseract->process($file, $service->folderPath);
             $this->ocrQueue->processed = $this->ocrQueue->processed + 1;
             $this->ocrQueue->save();
-
-            event('ocr.poll');
         }
 
         event('ocr.status', [$this->ocrQueue]);

@@ -30,10 +30,6 @@ class Kernel extends ConsoleKernel
             ->timezone('America/New_York')
             ->dailyAt('05:30');
 
-        // Trigger export polling
-        //$schedule->command('export:poll')->everyFiveMinutes();
-        $schedule->command('export:poll')->everyMinute();
-
         // Clean imports directory
         $schedule->command('download:clean')
             ->timezone('America/New_York')

@@ -15,11 +15,6 @@ class OcrEventListener
     public function subscribe($events)
     {
         $events->listen(
-            'ocr.poll',
-            'App\Listeners\OcrEventListener@poll'
-        );
-
-        $events->listen(
             'ocr.error',
             'App\Listeners\OcrEventListener@error'
         );
@@ -33,14 +28,6 @@ class OcrEventListener
             'ocr.status',
             'App\Listeners\OcrEventListener@status'
         );
-    }
-
-    /**
-     * Record created.
-     */
-    public function poll()
-    {
-        Artisan::call('ocr:poll');
     }
 
     /**

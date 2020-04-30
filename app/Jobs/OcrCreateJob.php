@@ -71,15 +71,12 @@ class OcrCreateJob implements ShouldQueue
 
             if ($total === 0) {
                 $queue->delete();
-                event('ocr.poll');
 
                 return;
             }
 
             $queue->total = $total;
             $queue->save();
-
-            event('ocr.poll');
 
             Artisan::call('ocrprocess:records');
 
