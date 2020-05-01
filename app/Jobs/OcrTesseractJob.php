@@ -21,7 +21,7 @@ class OcrTesseractJob implements ShouldQueue
     /**
      * @var int
      */
-    public $timeout = 36000;
+    public $timeout = 172800;
 
     /**
      * @var \App\Models\OcrQueue
