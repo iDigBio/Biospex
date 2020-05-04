@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddForeignKeysToBingoWordsTable extends Migration
+class AddForeignKeysToBingoMapsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddForeignKeysToBingoWordsTable extends Migration
      */
     public function up()
     {
-        Schema::table('bingo_words', function (Blueprint $table) {
-            $table->foreign('bingo_id')->references('id')->on('bingos')->onUpdate('CASCADE')->onDelete('CASCADE');;
+        Schema::table('bingo_maps', function (Blueprint $table) {
+            $table->foreign('bingo_id')->references('id')->on('bingos')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
 
@@ -25,8 +25,8 @@ class AddForeignKeysToBingoWordsTable extends Migration
      */
     public function down()
     {
-        Schema::table('bingo_words', function (Blueprint $table) {
-            $table->dropForeign('bingo_words_bingo_id_foreign');
+        Schema::table('bingo_maps', function (Blueprint $table) {
+            $table->dropForeign('bingo_maps_bingo_id_foreign');
         });
     }
 }
