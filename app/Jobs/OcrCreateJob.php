@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\JobError;
-use App\Services\Actor\OcrCreate;
+use App\Services\Process\OcrService;
 use Artisan;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -42,15 +42,15 @@ class OcrCreateJob implements ShouldQueue
     {
         $this->projectId = $projectId;
         $this->expeditionId = $expeditionId;
-        $this->onQueue(config('config.ocr_tube'));
+        $this->onQueue(config('config.default_tube'));
     }
 
     /**
      * Handle Job.
      *
-     * @param \App\Services\Actor\OcrCreate $ocrCreate
+     * @param \App\Services\Process\OcrService $ocrService
      */
-    public function handle(OcrCreate $ocrCreate)
+    public function handle(OcrService $ocrService)
     {
         if (config('config.ocr_disable')) {
             $this->delete();
@@ -59,7 +59,7 @@ class OcrCreateJob implements ShouldQueue
         }
 
         try {
-            $queue = $ocrCreate->create($this->projectId, $this->expeditionId);
+            $queue = $ocrService->createOcrQueue($this->projectId, $this->expeditionId);
 
             if (! $queue) {
                 $this->delete();
@@ -67,7 +67,17 @@ class OcrCreateJob implements ShouldQueue
                 return;
             }
 
-            event('ocr.poll');
+            $total = $ocrService->getSubjectCount($this->projectId, $this->expeditionId);
+
+            if ($total === 0) {
+                $queue->delete();
+
+                return;
+            }
+
+            $queue->total = $total;
+            $queue->save();
+
             Artisan::call('ocrprocess:records');
 
         } catch (Exception $e) {

@@ -28,6 +28,7 @@
         <li class="nav-item mr-2">
             <a class="nav-link text-uppercase" href="{{ route('front.events.index') }}">{{ __('pages.events') }}</a>
         </li>
+        <!--
         <li class="nav-item mr-2 dropdown">
             <a class="nav-link dropdown-toggle text-uppercase" href="#" id="dropdown02" data-toggle="dropdown" aria-haspopup="true"
                aria-expanded="false">{{ __('pages.games') }}</a>
@@ -35,6 +36,7 @@
                 <a class="dropdown-item text-uppercase" href="{{ route('front.bingos.index') }}">{{ __('pages.bingo') }}</a>
             </div>
         </li>
+        -->
         <li class="nav-item mr-2">
             <a class="nav-link text-uppercase" href="{{ route('front.contact.index') }}">{{ __('pages.contact') }}</a>
         </li>
@@ -51,8 +53,10 @@
                        type="button">{{ __('pages.expeditions') }}</a>
                     <a href="{{ route('admin.events.index') }}" class="dropdown-item text-uppercase"
                        type="button">{{ __('pages.events') }}</a>
+                    <!--
                     <a href="{{ route('admin.bingos.index') }}" class="dropdown-item text-uppercase"
                        type="button">{{ __('pages.bingo') }}</a>
+                       -->
                     <a href="#" class="preventDefault dropdown-item text-uppercase"
                        type="button"
                        data-toggle="modal"

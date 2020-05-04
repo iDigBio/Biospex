@@ -2,9 +2,11 @@
 
 namespace App\Jobs;
 
-use App\Models\OcrFile;
 use App\Models\OcrQueue;
-use App\Services\Actor\OcrTesseract;
+use App\Models\User;
+use App\Notifications\JobError;
+use App\Services\Process\OcrService;
+use App\Services\Process\TesseractService;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -19,7 +21,7 @@ class OcrTesseractJob implements ShouldQueue
     /**
      * @var int
      */
-    public $timeout = 36000;
+    public $timeout = 172800;
 
     /**
      * @var \App\Models\OcrQueue
@@ -27,46 +29,77 @@ class OcrTesseractJob implements ShouldQueue
     private $ocrQueue;
 
     /**
-     * @var \App\Models\OcrFile
-     */
-    private $file;
-
-    /**
      * OcrTesseractJob constructor.
      *
      * @param \App\Models\OcrQueue $ocrQueue
-     * @param \App\Models\OcrFile $file
      */
-    public function __construct(OcrQueue $ocrQueue, OcrFile $file)
+    public function __construct(OcrQueue $ocrQueue)
     {
         $this->ocrQueue = $ocrQueue;
-        $this->file = $file;
         $this->onQueue(config('config.ocr_tube'));
     }
 
     /**
-     * Execute the job.
+     * Execute tesseract job.
      *
-     * @param \App\Services\Actor\OcrTesseract $ocrTesseract
-     * @return void
+     * @param \App\Services\Process\OcrService $service
+     * @param \App\Services\Process\TesseractService $tesseract
+     * @throws \League\Csv\CannotInsertRecord
      */
-    public function handle(OcrTesseract $ocrTesseract)
+    public function handle(OcrService $service, TesseractService $tesseract)
     {
-        $ocrTesseract->process($this->file);
-        event('ocr.poll');
+        $count = $service->getSubjectCount($this->ocrQueue->project_id, $this->ocrQueue->expedition_id);
+        if ($count === 0) {
+            $service->complete($this->ocrQueue);
+
+            \Artisan::call('ocrprocess:records');
+
+            $this->delete();
+
+            return;
+        }
+
+        event('ocr.reset', [$this->ocrQueue, $count]);
+
+        $service->setDir($this->ocrQueue->id);
+        $files = $service->getSubjectsToProcess($this->ocrQueue->project_id, $this->ocrQueue->expedition_id);
+
+        foreach ($files as $file) {
+            $tesseract->process($file, $service->folderPath);
+            $this->ocrQueue->processed = $this->ocrQueue->processed + 1;
+            $this->ocrQueue->save();
+        }
+
+        event('ocr.status', [$this->ocrQueue]);
+
+        \Artisan::call('ocrprocess:records');
+
         $this->delete();
+
+        return;
     }
 
     /**
      * The job failed to process.
      *
-     * @param  Exception  $exception
+     * @param Exception $exception
      * @return void
      */
     public function failed(Exception $exception)
     {
-        $this->ocrQueue->error = 1;
-        $this->ocrQueue->save();
-    }
+        event('ocr.error', $this->ocrQueue);
 
+        $messages = [
+            $this->ocrQueue->project->title,
+            'Error processing ocr record '.$this->ocrQueue->id,
+            'File: '.$exception->getFile(),
+            'Message: '.$exception->getMessage(),
+            'Line: '.$exception->getLine(),
+        ];
+
+        $user = User::find(1);
+        $user->notify(new JobError(__FILE__, $messages));
+
+        \Artisan::call('ocrprocess:records');
+    }
 }

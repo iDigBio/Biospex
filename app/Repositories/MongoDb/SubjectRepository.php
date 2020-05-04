@@ -115,28 +115,6 @@ class SubjectRepository extends MongoDbRepository implements Subject
     /**
      * @inheritdoc
      */
-    public function getSubjectIds($projectId, $take = null, $expeditionId = null)
-    {
-        $subjectIds = $this->model->whereNested(function ($query) use ($projectId, $take, $expeditionId)
-        {
-            $expeditionId !== null ?
-                $query->where('expedition_ids', (int) $expeditionId) :
-                $query->where('expedition_ids', 'size', 0);
-
-            $query->where('project_id', (int) $projectId);
-        })
-            ->take($take)
-            ->get(['_id'])
-            ->toArray();
-
-        $this->resetModel();
-
-        return array_flatten($subjectIds);
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function detachSubjects($subjects, $expeditionId)
     {
         $subjects->each(function ($subject) use ($expeditionId) {

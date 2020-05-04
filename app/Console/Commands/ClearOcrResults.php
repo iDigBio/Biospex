@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\MongoDbService;
+use App\Models\Subject;
 use Artisan;
 use Illuminate\Console\Command;
 
@@ -23,20 +23,12 @@ class ClearOcrResults extends Command
     protected $description = 'Clear project expeditions ocr values.';
 
     /**
-     * @var \App\Services\MongoDbService
-     */
-    private $mongoDbService;
-
-    /**
      * Create a new command instance.
      *
-     * @param \App\Services\MongoDbService $mongoDbService
      */
-    public function __construct(MongoDbService $mongoDbService)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->mongoDbService = $mongoDbService;
     }
 
     /**
@@ -49,13 +41,11 @@ class ClearOcrResults extends Command
         $projectId = $this->argument('projectId');
         $expeditionId = $this->argument('expeditionId');
 
-        $this->mongoDbService->setCollection('subjects');
-        $criteria = null === $expeditionId ?
-            ['project_id' => (int) $projectId] :
-            ['project_id' => (int) $projectId, 'expedition_ids' => (int) $expeditionId];
-        $attributes = [ '$set' => ['ocr' => '']];
-
-        $this->mongoDbService->updateMany($attributes, $criteria);
+        $subjects = Subject::where('project_id', (int) $projectId)->limit(50)->get();
+        foreach ($subjects as $subject) {
+            $subject->ocr = '';
+            $subject->save();
+        }
 
         Artisan::call('lada-cache:flush');
     }

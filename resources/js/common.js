@@ -89,7 +89,10 @@ $(function () {
 
     if ($('#process-modal').length) {
         $('#process-modal').on('shown.bs.modal', function (e) {
-            $.get( "/poll");
+            fetchPoll();
+            pollInterval = setInterval(fetchPoll, 60000);
+        }).on('hidden.bs.modal', function () {
+            clearInterval(pollInterval);
         });
 
         Echo.channel(Laravel.ocrChannel)
@@ -105,6 +108,11 @@ $(function () {
             });
     }
 });
+
+// Fetch poll data
+function fetchPoll(){
+    $.get( "/poll");
+}
 
 // Loop data from polling
 function polling_data(data) {

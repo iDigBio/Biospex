@@ -87,7 +87,7 @@ class ExpeditionsController extends Controller
 
         $results = $this->expeditionContract->getExpeditionAdminIndex($user->id);
 
-        list($expeditions, $expeditionsCompleted) = $results->partition(function ($expedition) {
+        [$expeditions, $expeditionsCompleted] = $results->partition(function ($expedition) {
             return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
         });
 
@@ -112,7 +112,7 @@ class ExpeditionsController extends Controller
         $order = request()->get('order');
         $projectId = request()->get('id');
 
-        list($active, $completed) = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)->partition(function (
+        [$active, $completed] = $this->expeditionContract->getExpeditionAdminIndex($user->id, $sort, $order, $projectId)->partition(function (
             $expedition
         ) {
             return ($expedition->nfnActor === null || $expedition->nfnActor->pivot->completed === 0);
@@ -277,7 +277,6 @@ class ExpeditionsController extends Controller
             'downloads',
             'workflowManager',
             'stat',
-            'subjects',
             'panoptesProject',
         ];
 
@@ -287,7 +286,7 @@ class ExpeditionsController extends Controller
             return redirect()->route('admin.projects.index');
         }
 
-        $subjectIds = $expedition->subjects->pluck('_id');
+        $subjectIds = $this->subjectContract->findSubjectsByExpeditionId((int) $expeditionId, ['_id'])->pluck('_id');
 
         JavaScript::put([
             'projectId'    => $expedition->project->id,
