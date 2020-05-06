@@ -27,7 +27,7 @@ class BingoJob implements ShouldQueue
     public function __construct($bingoId)
     {
         $this->bingoId = $bingoId;
-        $this->onQueue(config('config.event_tube'));
+        $this->onQueue(config('config.default_tube'));
     }
 
     /**
@@ -47,6 +47,6 @@ class BingoJob implements ShouldQueue
         });
 
 
-        BingoEvent::dispatch($this->bingoId, $data->toArray());
+        BingoEvent::dispatch($this->bingoId, $data->toJson());
     }
 }

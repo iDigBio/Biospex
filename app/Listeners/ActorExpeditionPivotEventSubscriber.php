@@ -4,7 +4,12 @@ namespace App\Listeners;
 
 use App\Repositories\Interfaces\Actor;
 
-class ActorPivotUpdateEventListener
+/**
+ * Class ActorExpeditionPivotEventSubscriber
+ *
+ * @package App\Listeners
+ */
+class ActorExpeditionPivotEventSubscriber
 {
 
     /**
@@ -30,42 +35,42 @@ class ActorPivotUpdateEventListener
     {
         $events->listen(
             'actor.pivot.processed',
-            'App\Listeners\ActorPivotUpdateEventListener@actorPivotProcessed'
+            'App\Listeners\ActorExpeditionPivotEventSubscriber@actorPivotProcessed'
         );
 
         $events->listen(
             'actor.pivot.queued',
-            'App\Listeners\ActorPivotUpdateEventListener@actorPivotQueued'
+            'App\Listeners\ActorExpeditionPivotEventSubscriber@actorPivotQueued'
         );
 
         $events->listen(
             'actor.pivot.unqueued',
-            'App\Listeners\ActorPivotUpdateEventListener@actorPivotUnQueued'
+            'App\Listeners\ActorExpeditionPivotEventSubscriber@actorPivotUnQueued'
         );
 
         $events->listen(
             'actor.pivot.state',
-            'App\Listeners\ActorPivotUpdateEventListener@actorPivotState'
+            'App\Listeners\ActorExpeditionPivotEventSubscriber@actorPivotState'
         );
 
         $events->listen(
             'actor.pivot.regenerate',
-            'App\Listeners\ActorPivotUpdateEventListener@actorPivotRegenerate'
+            'App\Listeners\ActorExpeditionPivotEventSubscriber@actorPivotRegenerate'
         );
 
         $events->listen(
             'actor.pivot.error',
-            'App\Listeners\ActorPivotUpdateEventListener@actorPivotError'
+            'App\Listeners\ActorExpeditionPivotEventSubscriber@actorPivotError'
         );
 
         $events->listen(
             'actor.pivot.completed',
-            'App\Listeners\ActorPivotUpdateEventListener@actorPivotCompleted'
+            'App\Listeners\ActorExpeditionPivotEventSubscriber@actorPivotCompleted'
         );
 
         $events->listen(
             'actor.pivot.report',
-            'App\Listeners\ActorPivotUpdateEventListener@actorPivotReport'
+            'App\Listeners\ActorExpeditionPivotEventSubscriber@actorPivotReport'
         );
     }
 
