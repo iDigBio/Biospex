@@ -5,6 +5,7 @@ namespace App\Services\Actor;
 use App\Facades\ActorEventHelper;
 use App\Models\ExportQueue;
 use App\Repositories\Interfaces\ExportQueueFile;
+use App\Repositories\Interfaces\Subject;
 use App\Services\Csv\Csv;
 
 class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
@@ -25,19 +26,27 @@ class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
     private $csvService;
 
     /**
+     * @var \App\Repositories\Interfaces\Subject
+     */
+    private $subjectContract;
+
+    /**
      * NfnPanoptesExportBuildCsv constructor.
      *
      * @param \App\Repositories\Interfaces\ExportQueueFile $exportQueueFile
      * @param \App\Services\Csv\Csv $csvService
+     * @param \App\Repositories\Interfaces\Subject $subjectContract
      */
     public function __construct(
         ExportQueueFile $exportQueueFile,
-        Csv $csvService
+        Csv $csvService,
+        Subject $subjectContract
     )
     {
         $this->exportQueueFile = $exportQueueFile;
         $this->nfnCsvMap = config('config.nfnCsvMap');
         $this->csvService = $csvService;
+        $this->subjectContract = $subjectContract;
     }
 
     /**
@@ -95,6 +104,8 @@ class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
      */
     public function mapNfnCsvColumns(\App\Models\ExportQueueFile $file)
     {
+        $subject = $this->subjectContract->find($file->subject_id);
+
         $csvArray = [];
         foreach ($this->nfnCsvMap as $key => $item) {
             if ($key === '#expeditionId') {
@@ -109,20 +120,26 @@ class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
                 $csvArray[$key] = $file->subject_id.'.jpg';
                 continue;
             }
+
+            if ($subject === null) {
+                $csvArray['error'] = 'Could not retrieve subject ' . $file->subject_id . ' from database for export';
+                continue;
+            }
+
             if (! is_array($item)) {
-                $csvArray[$key] = $item === '' ? '' : $file->subject->{$item};
+                $csvArray[$key] = $item === '' ? '' : $subject->{$item};
                 continue;
             }
 
             $csvArray[$key] = '';
             foreach ($item as $doc => $value) {
-                if (isset($file->subject->{$doc}->{$value})) {
+                if (isset($subject->{$doc}->{$value})) {
                     if ($key === 'eol' || $key === 'mol' || $key === 'idigbio') {
-                        $csvArray[$key] = str_replace('SCIENTIFIC_NAME', rawurlencode($file->subject->{$doc}->{$value}), config('config.nfnSearch.'.$key));
+                        $csvArray[$key] = str_replace('SCIENTIFIC_NAME', rawurlencode($subject->{$doc}->{$value}), config('config.nfnSearch.'.$key));
                         break;
                     }
 
-                    $csvArray[$key] = $file->subject->{$doc}->{$value};
+                    $csvArray[$key] = $subject->{$doc}->{$value};
                     break;
                 }
             }
