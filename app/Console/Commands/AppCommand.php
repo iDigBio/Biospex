@@ -37,6 +37,7 @@ class AppCommand extends Command
      */
     public function handle()
     {
+        dd(long2ip( mt_rand(0, 65537) * mt_rand(0, 65535) ));
         BingoJob::dispatch(1);
         return;
 

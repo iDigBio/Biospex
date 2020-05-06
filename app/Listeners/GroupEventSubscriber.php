@@ -9,7 +9,12 @@ use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
-class GroupEventListener
+/**
+ * Class GroupEventSubscriber
+ *
+ * @package App\Listeners
+ */
+class GroupEventSubscriber
 {
 
     /**
@@ -36,22 +41,22 @@ class GroupEventListener
     {
         $events->listen(
             Login::class,
-            'App\Listeners\GroupEventListener@onUserLogin'
+            'App\Listeners\GroupEventSubscriber@onUserLogin'
         );
 
         $events->listen(
             Logout::class,
-            'App\Listeners\GroupEventListener@onUserLogout'
+            'App\Listeners\GroupEventSubscriber@onUserLogout'
         );
 
         $events->listen(
             'group.saved',
-            'App\Listeners\GroupEventListener@setUserGroupSession'
+            'App\Listeners\GroupEventSubscriber@setUserGroupSession'
         );
 
         $events->listen(
             'group.deleted',
-            'App\Listeners\GroupEventListener@setUserGroupSession'
+            'App\Listeners\GroupEventSubscriber@setUserGroupSession'
         );
 
     }

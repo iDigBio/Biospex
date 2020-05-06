@@ -86,13 +86,13 @@ class BingosController extends Controller
             'city' => $this->location->city
         ];
 
-        //$bingo->maps()->updateOrCreate($attributes, $values);
+        $bingo->maps()->updateOrCreate($attributes, $values);
 
-        BingoJob::dispatch($bingoId);
         \JavaScript::put([
             'channel' => config('config.poll_bingo_channel') . '.' . $bingoId
         ]);
 
+        BingoJob::dispatch($bingoId);
         return view('front.bingo.card');
     }
 }

@@ -47,7 +47,7 @@ class NfnPanoptesExportQueue
      *
      * @param Actor $actor
      * @see NfnPanoptes::actor() To set actor for this method.
-     * @see ExportQueueEventListener::created() Event fired when queues saved.
+     * @see ExportQueueEventSubscriber::created() Event fired when queues saved.
      */
     public function createQueue(Actor $actor)
     {

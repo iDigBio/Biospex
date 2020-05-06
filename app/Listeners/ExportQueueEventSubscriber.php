@@ -5,7 +5,12 @@ namespace App\Listeners;
 use App\Repositories\Interfaces\ExportQueue;
 use App\Jobs\ExportQueueJob;
 
-class ExportQueueEventListener
+/**
+ * Class ExportQueueEventSubscriber
+ *
+ * @package App\Listeners
+ */
+class ExportQueueEventSubscriber
 {
 
     /**
@@ -14,7 +19,7 @@ class ExportQueueEventListener
     private $exportQueue;
 
     /**
-     * ExportQueueEventListener constructor.
+     * ExportQueueEventSubscriber constructor.
      *
      * @param \App\Repositories\Interfaces\ExportQueue $exportQueue
      */
@@ -32,7 +37,7 @@ class ExportQueueEventListener
     {
         $events->listen(
             'exportQueue.updated',
-            'App\Listeners\ExportQueueEventListener@updated'
+            'App\Listeners\ExportQueueEventSubscriber@updated'
         );
     }
 

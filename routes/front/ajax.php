@@ -4,3 +4,4 @@ $router->get('ajax/chart/{project}')->uses('AjaxController@loadAmChart')->name('
 $router->get('ajax/scoreboard/{event}')->uses('AjaxController@scoreboard')->name('ajax.get.scoreboard');
 $router->get('ajax/step/{event}/{load?}')->uses('AjaxController@eventStepChart')->name('ajax.get.step');
 $router->get('poll')->uses('AjaxController@poll')->name('ajax.get.poll');
+$router->get('bingos/{bingo}/poll')->uses('AjaxController@bingo')->name('ajax.get.bingo');

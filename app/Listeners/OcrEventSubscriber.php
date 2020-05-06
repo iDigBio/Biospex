@@ -3,9 +3,13 @@
 namespace App\Listeners;
 
 use App\Models\OcrQueue;
-use Artisan;
 
-class OcrEventListener
+/**
+ * Class OcrEventSubscriber
+ *
+ * @package App\Listeners
+ */
+class OcrEventSubscriber
 {
     /**
      * Register the listeners for the subscriber.
@@ -16,17 +20,17 @@ class OcrEventListener
     {
         $events->listen(
             'ocr.error',
-            'App\Listeners\OcrEventListener@error'
+            'App\Listeners\OcrEventSubscriber@error'
         );
 
         $events->listen(
             'ocr.reset',
-            'App\Listeners\OcrEventListener@reset'
+            'App\Listeners\OcrEventSubscriber@reset'
         );
 
         $events->listen(
             'ocr.status',
-            'App\Listeners\OcrEventListener@status'
+            'App\Listeners\OcrEventSubscriber@status'
         );
     }
 

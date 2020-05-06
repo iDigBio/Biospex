@@ -66,7 +66,8 @@ imageSeries.data.push({
 Echo.channel(Laravel.channel)
     .listen('BingoEvent', (e) => {
         console.log(e)
-        imageSeries.data.push(e.data);
+        //imageSeries.data.push(JSON.parse(e.data));
+        imageSeries.data = e.data;
     });
 
 function buildCountryMap() {

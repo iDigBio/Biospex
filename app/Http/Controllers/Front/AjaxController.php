@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Events\BingoEvent;
 use App\Http\Controllers\Controller;
+use App\Jobs\BingoJob;
 use App\Repositories\Interfaces\AmChart;
+use App\Repositories\Interfaces\BingoMap;
 use App\Repositories\Interfaces\Event;
 use App\Services\Model\EventStepChartService;
 use Artisan;
@@ -69,6 +72,18 @@ class AjaxController extends Controller
         $result = $service->eventStepChart($eventId, $timestamp);
 
         return response()->json($result);
+    }
+
+    /**
+     * Trigger bingo polling.
+     *
+     * @param string $bingoId
+     */
+    public function bingo(string $bingoId)
+    {
+        if (request()->ajax()) {
+            BingoJob::dispatch($bingoId);
+        }
     }
 
 }
