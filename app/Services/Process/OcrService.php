@@ -58,7 +58,7 @@ class OcrService
      */
     public function setDir($queueId)
     {
-        $this->folderPath = 'ocr/'.md5($queueId);
+        $this->folderPath = 'ocr/'.$queueId.'-'.md5($queueId);
 
         if (! Storage::exists($this->folderPath)) {
             Storage::makeDirectory($this->folderPath);
@@ -148,18 +148,6 @@ class OcrService
     }
 
     /**
-     * Process each file for ocr.
-     *
-     * @param \App\Models\OcrQueue $queue
-     */
-    public function process(\App\Models\OcrQueue $queue)
-    {
-        $this->setDir($queue->id);
-        $files = $this->getSubjectsToProcess($queue->project_id, $queue->expedition_id);
-        OcrTesseractJob::dispatch($queue, $files, $this->folderPath);
-    }
-
-    /**
      * Send complete notification.
      *
      * @param \App\Models\OcrQueue $queue
@@ -167,7 +155,6 @@ class OcrService
      */
     public function complete(\App\Models\OcrQueue $queue)
     {
-        $this->setDir($queue->id);
         $this->sendNotify($queue);
         $queue->delete();
         $this->deleteDir();

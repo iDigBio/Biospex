@@ -48,6 +48,8 @@ class OcrTesseractJob implements ShouldQueue
      */
     public function handle(OcrService $service, TesseractService $tesseract)
     {
+        $service->setDir($this->ocrQueue->id);
+
         $count = $service->getSubjectCount($this->ocrQueue->project_id, $this->ocrQueue->expedition_id);
         if ($count === 0) {
             $service->complete($this->ocrQueue);
@@ -61,7 +63,6 @@ class OcrTesseractJob implements ShouldQueue
 
         event('ocr.reset', [$this->ocrQueue, $count]);
 
-        $service->setDir($this->ocrQueue->id);
         $files = $service->getSubjectsToProcess($this->ocrQueue->project_id, $this->ocrQueue->expedition_id);
 
         foreach ($files as $file) {
