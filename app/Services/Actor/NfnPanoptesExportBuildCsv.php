@@ -133,13 +133,13 @@ class NfnPanoptesExportBuildCsv extends NfnPanoptesBase
 
             $csvArray[$key] = '';
             foreach ($item as $doc => $value) {
-                if (isset($subject->{$doc}->{$value})) {
+                if (isset($subject->{$doc}[$value])) {
                     if ($key === 'eol' || $key === 'mol' || $key === 'idigbio') {
-                        $csvArray[$key] = str_replace('SCIENTIFIC_NAME', rawurlencode($subject->{$doc}->{$value}), config('config.nfnSearch.'.$key));
+                        $csvArray[$key] = str_replace('SCIENTIFIC_NAME', rawurlencode($subject->{$doc}[$value]), config('config.nfnSearch.'.$key));
                         break;
                     }
 
-                    $csvArray[$key] = $subject->{$doc}->{$value};
+                    $csvArray[$key] = $subject->{$doc}[$value];
                     break;
                 }
             }
