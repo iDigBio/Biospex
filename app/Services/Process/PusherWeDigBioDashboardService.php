@@ -83,7 +83,7 @@ class PusherWeDigBioDashboardService
                 'decimalLatitude'  => $data->geo->latitude,
                 'decimalLongitude' => $data->geo->longitude,
                 'ipAddress'        => '',
-                'transcriber'      => $user['login'],
+                'transcriber'      => $user === null ? '' : $user['login'],
                 'physicalLocation' => [
                     'country'      => $data->geo->country_name,
                     'province'     => '',
