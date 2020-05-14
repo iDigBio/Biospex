@@ -334,10 +334,14 @@ class GeneralHelper
      * Convert uuid value to bin for lookup.
      *
      * @param $value
-     * @return string
+     * @return false|string|void
      */
     public function uuidToBin($value)
     {
+        if ($value === null) {
+            return;
+        }
+
         return pack('H*', str_replace('-', '', $value));
     }
 

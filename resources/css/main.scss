@@ -379,6 +379,11 @@ contributor logos*/
     background-color: #bd2130;
 }
 
+.dropdown-submenu {
+    position: relative;
+}
+
+
 
 .btn-outline-primary {
     color: #e83f29;
@@ -929,4 +934,28 @@ li.nav-btn.show {
 
 [type=button], [type=reset], [type=submit], button {
     -webkit-appearance: none;
+}
+
+.square {
+    height: 80px;
+    width: 80px;
+    margin: 1px;
+    border: 1px solid black;
+    font-size: .8rem;
+}
+
+.square:hover {
+    background-color: #1e7e34;
+    color: #fff;
+    cursor: pointer
+}
+
+.clicked {
+    background-color: #1e7e34;
+    color: #fff;
+    cursor: pointer
+}
+
+.logo {
+    background: #1e7e34;
 }

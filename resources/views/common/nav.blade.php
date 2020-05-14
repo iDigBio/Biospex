@@ -51,8 +51,6 @@
                        type="button">{{ __('pages.expeditions') }}</a>
                     <a href="{{ route('admin.events.index') }}" class="dropdown-item text-uppercase"
                        type="button">{{ __('pages.events') }}</a>
-                    <a href="{{ route('admin.bingos.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('pages.bingo') }}</a>
                     <a href="#" class="preventDefault dropdown-item text-uppercase"
                        type="button"
                        data-toggle="modal"
@@ -67,6 +65,11 @@
                        type="button">{{ __('pages.account') }}</a>
                     <a href="{{ route('app.get.logout') }}" class="dropdown-item text-uppercase"
                        type="button">{{ __('pages.logout') }}</a>
+                    <a class="dropdown-item dropdown-toggle text-uppercase" href="#" id="dropdown03" data-toggle="dropdown" aria-haspopup="true"
+                       aria-expanded="false" type="button">{{ __('pages.games') }}</a>
+                    <div class="dropdown-menu dropdown-submenu" aria-labelledby="dropdown03">
+                        <a class="dropdown-item text-uppercase" href="{{ route('admin.bingos.index') }}">{{ __('pages.bingo') }}</a>
+                    </div>
                 </div>
             </li>
         @else

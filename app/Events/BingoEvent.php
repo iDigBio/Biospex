@@ -14,12 +14,12 @@ class BingoEvent extends Event implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * @var array
+     * @var \Illuminate\Support\Collection
      */
-    public $data = [];
+    public $data;
 
     /**
-     * @var
+     * @var int
      */
     public $bingoId;
 
@@ -38,13 +38,13 @@ class BingoEvent extends Event implements ShouldBroadcast
     /**
      * BingoEvent constructor.
      *
-     * @param $bingoId
-     * @param $data
+     * @param int $bingoId
+     * @param array $data
      */
-    public function __construct($bingoId, $data)
+    public function __construct(int $bingoId, array $data)
     {
         $this->bingoId = $bingoId;
-        $this->data = $data;
+        $this->data = json_encode($data);
         $this->broadcastQueue = config('config.event_tube');
         $this->channel = config('config.poll_bingo_channel') . '.' . $this->bingoId;
     }

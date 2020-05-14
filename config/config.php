@@ -49,24 +49,24 @@ return [
     'poll_ocr_channel'        => env('POLL_OCR_CHANNEL'),
     'poll_export_channel'     => env('POLL_EXPORT_CHANNEL'),
     'poll_scoreboard_channel' => env('POLL_SCOREBOARD_CHANNEL'),
-    'poll_bingo_channel' => env('POLL_BINGO_CHANNEL'),
+    'poll_bingo_channel'      => env('POLL_BINGO_CHANNEL'),
 
     'cache_enabled' => env('CACHE_ENABLED', true),
     'cache_minutes' => env('CACHE_MINUTES', 60),
 
-    'project_resources'   => [
+    'project_resources' => [
         'Website URL',
         'Video URL',
         'File Download',
     ],
 
-    'export_stages' => [
+    'export_stages'       => [
         'retrieveImages',
         'convertImages',
         'deleteOriginalImages',
         'buildCsv',
         'tarImages',
-        'report'
+        'report',
     ],
 
     /**
@@ -197,7 +197,7 @@ return [
         'apiUri'       => env('PANOPTES_URI'),
         'tokenUri'     => env('PANOPTES_TOKEN_URI'),
         'redirectUri'  => env('PANOPTES_REDIRECT_URI'),
-        'scopes' => env('PANOPTES_SCOPES')
+        'scopes'       => env('PANOPTES_SCOPES'),
     ],
 
     'nfnSearch' => [

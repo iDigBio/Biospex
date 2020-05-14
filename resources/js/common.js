@@ -214,7 +214,6 @@ function initializeClock($clock, endTime) {
 }
 
 function notify(icon, msg, type) {
-    ;
     $.notify({
         icon: 'fas fa-' + icon + ' fa-2x',
         message: msg

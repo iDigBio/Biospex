@@ -1,203 +1,139 @@
-// Create map instance
-let chart = am4core.create("bingodiv", am4maps.MapChart);
+$(function () {
+    // Create map instance
+    let chart = am4core.create("bingodiv", am4maps.MapChart);
 
-// Set map definition
-chart.geodata = am4geodata_worldLow;
+    // Set map definition
+    chart.geodata = am4geodata_worldLow;
 
-// Set projection
-chart.projection = new am4maps.projections.Miller();
+    // Set projection
+    chart.projection = new am4maps.projections.Miller();
 
-// Create map polygon series
-let polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+    // Create map polygon series
+    let polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
 
-// Make map load polygon (like country names) data from GeoJSON
-polygonSeries.useGeodata = true;
-
-// Configure series
-let polygonTemplate = polygonSeries.mapPolygons.template;
-polygonTemplate.tooltipText = "{name}";
-polygonTemplate.fill = am4core.color("#74B266");
-
-// Create hover state and set alternative fill color
-let hs = polygonTemplate.states.create("hover");
-hs.properties.fill = am4core.color("#367B25");
-
-// Remove Antarctica
-polygonSeries.exclude = ["AQ"];
-
-// Create image series
-let imageSeries = chart.series.push(new am4maps.MapImageSeries());
-
-// Create a circle image in image series template so it gets replicated to all new images
-let imageSeriesTemplate = imageSeries.mapImages.template;
-let circle = imageSeriesTemplate.createChild(am4core.Circle);
-circle.radius = 4;
-circle.fill = am4core.color("#B27799");
-circle.stroke = am4core.color("#FFFFFF");
-circle.strokeWidth = 2;
-circle.nonScaling = true;
-circle.tooltipText = "{city}";
-
-// Set property fields
-imageSeriesTemplate.propertyFields.latitude = "latitude";
-imageSeriesTemplate.propertyFields.longitude = "longitude";
-
-// Add data for the three cities
-/*
-imageSeries.data.push({
-    "latitude": 48.856614,
-    "longitude": 2.352222,
-    "city": "Paris"
-}, {
-    "latitude": 40.712775,
-    "longitude": -74.005973,
-    "city": "New York"
-}, {
-    "latitude": 49.282729,
-    "longitude": -123.120738,
-    "city": "Vancouver"
-}, {
-    "latitude": 35.282729,
-    "longitude": -123.120738,
-    "city": "Test"
-});
-*/
-
-Echo.channel(Laravel.channel)
-    .listen('BingoEvent', (e) => {
-        console.log(e)
-        //imageSeries.data.push(JSON.parse(e.data));
-        imageSeries.data = e.data;
-    });
-
-function buildCountryMap() {
-/*
-    am4core.useTheme(am4themes_animated);
-
-    let map = am4core.create("mapDiv", am4maps.MapChart);
-    map.hiddenState.properties.opacity = 0; // this creates initial fade-in
-    map.geodata = am4geodata_usaLow;
-    map.projection = new am4maps.projections.AlbersUsa();
-
-    let polygonSeries = map.series.push(new am4maps.MapPolygonSeries());
-    let polygonTemplate = polygonSeries.mapPolygons.template;
-    polygonTemplate.tooltipText = "{name}: {value.value.formatNumber('#')}";
-    polygonSeries.heatRules.push({
-        property: "fill",
-        target: polygonSeries.mapPolygons.template,
-        min: am4core.color("#a7abab"),
-        max: am4core.color("#aa0002"),
-        minValue: 0,
-        maxValue: Laravel.max
-    });
+    // Make map load polygon (like country names) data from GeoJSON
     polygonSeries.useGeodata = true;
 
-    // add heat legend
-    let heatLegend = am4core.create("mapLegendDiv", am4maps.HeatLegend);
-    heatLegend.width = am4core.percent(100);
-    heatLegend.series = polygonSeries;
-    heatLegend.orientation = "horizontal";
-    heatLegend.padding(20, 20, 20, 20);
-    heatLegend.valueAxis.renderer.labels.template.fontSize = 10;
-    heatLegend.valueAxis.renderer.minGridDistance = 40;
-    heatLegend.markerCount = 6;
+    // Configure series
+    let polygonTemplate = polygonSeries.mapPolygons.template;
+    polygonTemplate.tooltipText = "{name}";
+    polygonTemplate.fill = am4core.color("#74B266");
 
-    polygonSeries.mapPolygons.template.events.on("over", event => {
-        heatLegend.valueAxis.showTooltipAt(event.target.dataItem.value);
-    });
+    // Create hover state and set alternative fill color
+    let hs = polygonTemplate.states.create("hover");
+    hs.properties.fill = am4core.color("#367B25");
 
-    polygonSeries.mapPolygons.template.events.on("hit", event => {
-        let stateabbr = event.target.dataItem.dataContext.name;
-        let statenum = event.target.dataItem.dataContext.statenum;
-        let statevar = 'am4geodata_region_usa_'+stateabbr.toLowerCase()+'Low';
-        map.dispose();
-        heatLegend.dispose();
-        $('#mapDiv').html('<div class="loader mx-auto align-self-center"></div>');
-        $.getScript( '//www.amcharts.com/lib/4/geodata/region/usa/' + stateabbr.toLowerCase() + 'Low.js' )
-            .done(function( script, textStatus ) {
-                buildCountyMap(stateabbr,statenum, statevar);
-            })
-            .fail(function( jqxhr, settings, exception ) {
-                $('#mapDiv').html( "Error getting State map and counties." );
-            });
-    });
+    // Remove Antarctica
+    polygonSeries.exclude = ["AQ"];
 
+    // Create image series
+    let imageSeries = chart.series.push(new am4maps.MapImageSeries());
 
-    polygonSeries.mapPolygons.template.strokeOpacity = 0.4;
-    polygonSeries.mapPolygons.template.events.on("out", function(){
-        heatLegend.valueAxis.hideTooltip();
-    });
+    // Create a circle image in image series template so it gets replicated to all new images
+    let imageSeriesTemplate = imageSeries.mapImages.template;
 
-    map.zoomControl = new am4maps.ZoomControl();
-    map.zoomControl.valign = "top";
+    // Create image
+    let marker = imageSeriesTemplate.createChild(am4core.Image);
+    marker.href = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-160/marker.svg";
+    marker.width = 20;
+    marker.height = 20;
+    marker.nonScaling = true;
+    marker.tooltipText = "{city}";
+    marker.horizontalCenter = "middle";
+    marker.verticalCenter = "bottom";
 
-    polygonSeries.data = JSON.parse(Laravel.states);
-}
+    /*
+    let circle = imageSeriesTemplate.createChild(am4core.Circle);
+    circle.radius = 4;
+    circle.fill = am4core.color("#B27799");
+    circle.stroke = am4core.color("#FFFFFF");
+    circle.strokeWidth = 2;
+    circle.nonScaling = true;
+    circle.tooltipText = "{city}";
+    */
 
-function buildCountyMap(stateabbr,statenum, statevar) {
+    // Set property fields
+    imageSeriesTemplate.propertyFields.latitude = "latitude";
+    imageSeriesTemplate.propertyFields.longitude = "longitude";
 
-    let request = $.get($('#projectUrl').data('href') + '/' + statenum);
+    let mapUuid = Laravel.mapUuid;
+    Echo.channel(Laravel.channel)
+        .listen('BingoEvent', (e) => {
+            let data = JSON.parse(e.data);
+            imageSeries.data = data.markers;
+            let winner = data.winner;
+            if (winner === null || winner.uuid === mapUuid) {
+                return;
+            }
 
-    request.done(function(data) {
-        am4core.useTheme(am4themes_animated);
-
-        let stateMap = am4core.create("mapDiv", am4maps.MapChart);
-        stateMap.hiddenState.properties.opacity = 0; // this creates initial fade-in
-
-        stateMap.geodata = window[statevar];
-        stateMap.projection = new am4maps.projections.Miller();
-
-        stateMap.events.on('hit', event => {
-            stateMap.dispose();
-            heatLegend.dispose();
-            buildCountryMap();
+            showWinnerModal('<h3>We Have A Winner In ' + winner.city + '!!</h3>');
         });
 
-        let polygonSeries = stateMap.series.push(new am4maps.MapPolygonSeries());
-        let polygonTemplate = polygonSeries.mapPolygons.template;
-        polygonTemplate.tooltipText = "{name}: {value.value.formatNumber('#')}";
-        polygonSeries.heatRules.push({
-            property: "fill",
-            target: polygonSeries.mapPolygons.template,
-            //min: am4core.color("#00abff"),
-            min: am4core.color("#a7abab"),
-            max: am4core.color("#aa0002"),
-            minValue: 0,
-            maxValue: data.max
+
+    // Set winning combinations to array
+    let winners = [
+        ['a1', 'a2', 'a3', 'a4', 'a5'],
+        ['b1', 'b2', 'b3', 'b4', 'b5'],
+        ['c1', 'c2', 'c3', 'c4', 'c5'],
+        ['d1', 'd2', 'd3', 'd4', 'd5'],
+        ['e1', 'e2', 'e3', 'e4', 'e5'],
+        ['a1', 'b1', 'c1', 'd1', 'e1'],
+        ['a2', 'b2', 'c2', 'd2', 'e2'],
+        ['a3', 'b3', 'c3', 'd3', 'e3'],
+        ['a4', 'b4', 'c4', 'd4', 'e4'],
+        ['a5', 'b5', 'c5', 'd5', 'e5'],
+        ['a1', 'b2', 'c3', 'd4', 'e5'],
+        ['a5', 'b4', 'c3', 'd2', 'e1']
+    ];
+    let possibleWinners = winners.length;
+
+    // Initialize selected array with c3 freebie
+    let selected = ['c3'];
+
+    // Toggle clicked and not clicked
+    $('.square').click(function () {
+        $(this).toggleClass('clicked');
+
+        // Push clicked object ID to 'selected' array
+        selected.push($(this).attr('id'));
+
+        // Compare winners array to selected array for matches
+        for (let i = 0; i < possibleWinners; i++) {
+            let cellExists = 0;
+
+            for (let j = 0; j < 5; j++) {
+                if ($.inArray(winners[i][j], selected) > -1) {
+                    cellExists++;
+                }
+            }
+
+            // If all 5 winner cells exist in selected array alert success message
+            if (cellExists === 5) {
+                $.get(Laravel.winnerUrl);
+                showWinnerModal('<h3>You are a winner!! Congratulations!!</h3>', true);
+                $('.square').removeClass('clicked');
+                selected = ['c3'];
+            }
+        }
+    }).data('clicked', 0)
+        .click(function () {
+            let counter = $(this).data('clicked');
+            $(this).data('clicked', counter++);
         });
-        polygonSeries.useGeodata = true;
+});
 
-        let heatLegend = am4core.create("mapLegendDiv", am4maps.HeatLegend);
-        heatLegend.width = am4core.percent(100);
-        heatLegend.series = polygonSeries;
-        heatLegend.orientation = "horizontal";
-        heatLegend.padding(20, 20, 20, 20);
-        heatLegend.valueAxis.renderer.labels.template.fontSize = 10;
-        heatLegend.valueAxis.renderer.minGridDistance = 40;
-        heatLegend.markerCount = 6;
-        heatLegend.maxValue = data.max;
+function showWinnerModal(msg, owner = false) {
+    $('#bingo-modal').modal('show').on('shown.bs.modal', function(){
+        $('#bingo-conffeti').collapse('show');
+        $body = $(this).find('.modal-body');
+        $body.html(msg);
 
-        polygonSeries.mapPolygons.template.events.on("over", event => {
-            heatLegend.valueAxis.showTooltipAt(event.target.dataItem.value);
-        });
-
-        polygonSeries.mapPolygons.template.strokeOpacity = 0.4;
-        polygonSeries.mapPolygons.template.events.on("out", function() {
-            heatLegend.valueAxis.hideTooltip();
-        });
-
-        stateMap.zoomControl = new am4maps.ZoomControl();
-        stateMap.zoomControl.valign = "top";
-
-        polygonSeries.data = JSON.parse(data.counties);
+        timeout = setTimeout(function () {
+            $('#bingo-modal').modal('hide')
+            $('#bingo-conffeti').collapse('hide');
+            $body.html('');
+        }, 10000);
+    }).on('hidden.bs.modal', function(){
+        $('#bingo-conffeti').collapse('hide');
     });
-
-    request.fail(function(jqXHR, textStatus, errorThrown) {
-        alert(errorThrown);
-        stateMap.dispose();
-        heatLegend.dispose();
-        buildCountryMap();
-    });
-
- */
 }

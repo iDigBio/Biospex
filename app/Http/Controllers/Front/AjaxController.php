@@ -75,14 +75,15 @@ class AjaxController extends Controller
     }
 
     /**
-     * Trigger bingo polling.
+     * Trigger bingo winner.
      *
      * @param string $bingoId
+     * @param string $mapId
      */
-    public function bingo(string $bingoId)
+    public function bingoWinner(string $bingoId, string $mapId)
     {
         if (request()->ajax()) {
-            BingoJob::dispatch($bingoId);
+            BingoJob::dispatch($bingoId, $mapId);
         }
     }
 

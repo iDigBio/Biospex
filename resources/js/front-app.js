@@ -9,8 +9,6 @@ import ConfettiGenerator from "confetti-js";
 try {
 
     window.$ = window.jQuery = require("jquery");
-    window.ConfettiGenerator = require("confetti-js");
-
     window.ConfettiGenerator = require("confetti-js/dist/index.min");
 
     require("bootstrap");

@@ -22,6 +22,7 @@ $factory->define(BingoMap::class, function (Faker $faker) {
             return factory(Bingo::class)->create()->id;
         },
         'ip' => $this->faker->ipv6(), // ipv4()
+        'uuid' => $this->faker->uuid(),
         'latitude' => $this->faker->latitude(),
         'longitude' => $this->faker->longitude(),
         'city' => $this->faker->city()

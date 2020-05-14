@@ -2,8 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Facades\GeneralHelper;
 use App\Jobs\BingoJob;
+use App\Models\Bingo;
 use App\Repositories\Interfaces\BingoMap;
+use App\Services\Api\GeoLocation;
 use Illuminate\Console\Command;
 
 class AppCommand extends Command
@@ -24,12 +27,18 @@ class AppCommand extends Command
     private $bingoMapContract;
 
     /**
+     * @var \App\Services\Api\GeoLocation
+     */
+    private $location;
+
+    /**
      * AppCommand constructor.
      */
-    public function __construct(BingoMap $bingoMapContract) {
+    public function __construct(BingoMap $bingoMapContract, GeoLocation $location) {
         parent::__construct();
 
         $this->bingoMapContract = $bingoMapContract;
+        $this->location = $location;
     }
 
     /**
@@ -37,14 +46,30 @@ class AppCommand extends Command
      */
     public function handle()
     {
-        dd(long2ip( mt_rand(0, 65537) * mt_rand(0, 65535) ));
-        BingoJob::dispatch(1);
-        return;
+        $test = $this->bingoMapContract->findBy('ip', '68.63.24.33');
+        $uuid = GeneralHelper::uuidToBin($test->uuid);
+        $result = $this->bingoMapContract->findBy('uuid', $uuid);
+        dd($result);
+        $bingo = Bingo::find(1);
 
-        $locations = $this->bingoMapContract->findBy('bingo_id', 1);
-        dd($locations);
-        $data = $locations->mapWithKeys(function($location) {
-            return [$location->id => view('common.scoreboard-content', ['event' => $location])->render()];
-        });
+        // temp since working local
+        $this->location->locate('68.63.24.33');
+
+        $attributes = [
+            'bingo_id' => $bingo->id,
+            'uuid' => \Session::get('bingoUuid') ?? null,
+            'ip' => $this->location->ip
+        ];
+        $values = [
+            'bingo_id' => $bingo->id,
+            'uuid' => \Session::get('bingoUuid') ?? null,
+            'ip' => $this->location->ip,
+            'latitude' => $this->location->latitude,
+            'longitude' => $this->location->longitude,
+            'city' => $this->location->city
+        ];
+
+        $map = $bingo->maps()->firstOrCreate($attributes, $values);
+        dd($map);
     }
 }

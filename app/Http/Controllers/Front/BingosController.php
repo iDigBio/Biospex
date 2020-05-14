@@ -4,39 +4,28 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\BingoJob;
-use App\Repositories\Interfaces\Bingo;
-use App\Repositories\Interfaces\Project;
-use App\Services\Api\GeoLocation;
+use App\Services\Model\BingoService;
 
+/**
+ * Class BingosController
+ *
+ * @package App\Http\Controllers\Front
+ */
 class BingosController extends Controller
 {
     /**
-     * @var \App\Repositories\Interfaces\Bingo
+     * @var \App\Services\Model\BingoService
      */
-    private $bingoContract;
-
-    /**
-     * @var \App\Repositories\Interfaces\Project
-     */
-    private $projectContract;
-
-    /**
-     * @var \App\Services\Api\GeoLocation
-     */
-    private $location;
+    private $bingoService;
 
     /**
      * BingosController constructor.
      *
-     * @param \App\Repositories\Interfaces\Bingo $bingoContract
-     * @param \App\Repositories\Interfaces\Project $projectContract
-     * @param \App\Services\Api\GeoLocation $location
+     * @param \App\Services\Model\BingoService $bingoService
      */
-    public function __construct(Bingo $bingoContract, Project $projectContract, GeoLocation $location)
+    public function __construct(BingoService $bingoService)
     {
-        $this->bingoContract = $bingoContract;
-        $this->projectContract = $projectContract;
-        $this->location = $location;
+        $this->bingoService = $bingoService;
     }
 
     /**
@@ -46,7 +35,7 @@ class BingosController extends Controller
      */
     public function index()
     {
-        $bingos = $this->bingoContract->allWith(['user']);
+        $bingos = $this->bingoService->getAllBingos();
 
         return view('front.bingo.index', compact('bingos'));
     }
@@ -59,40 +48,26 @@ class BingosController extends Controller
      */
     public function show(string $bingoId)
     {
-        $bingo = $this->bingoContract->findWith($bingoId, ['words', 'user']);
-
-        $words = $bingo->words->chunk(3);
+        [$bingo, $words] = $this->bingoService->showBingo($bingoId);
 
         return view('front.bingo.show', compact('bingo', 'words'));
     }
 
+    /**
+     * @param string $bingoId
+     * @return \Illuminate\View\View|string
+     */
     public function generate(string $bingoId)
     {
-        $bingo = $this->bingoContract->find($bingoId);
+        $bingo = $this->bingoService->findBingoWith($bingoId, ['project', 'words']);
         if (!$bingo) {
             return __('message.bingo_not_found');
         }
-        $this->location->locate('68.63.24.33');
 
-        $attributes = [
-            'bingo_id' => $bingo->id,
-            'ip' => $this->location->ip
-        ];
-        $values = [
-            'bingo_id' => $bingo->id,
-            'ip' => $this->location->ip,
-            'latitude' => $this->location->latitude,
-            'longitude' => $this->location->longitude,
-            'city' => $this->location->city
-        ];
-
-        $bingo->maps()->updateOrCreate($attributes, $values);
-
-        \JavaScript::put([
-            'channel' => config('config.poll_bingo_channel') . '.' . $bingoId
-        ]);
+        $rows = $this->bingoService->generateBingoCard($bingo);
 
         BingoJob::dispatch($bingoId);
-        return view('front.bingo.card');
+
+        return view('front.bingo.card', compact('bingo', 'rows'));
     }
 }
