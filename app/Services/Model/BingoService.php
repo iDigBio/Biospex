@@ -66,12 +66,38 @@ class BingoService
     /**
      * Find bingo map by uuid.
      *
+     * @param \App\Models\Bingo $bingo
      * @param string $uuid
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function findBingoMapByUuid(string $uuid): Model
+    private function findBingoMapByUuid(\App\Models\Bingo $bingo, string $uuid): Model
     {
-        return $this->bingoMapContract->findBy('uuid', $uuid);
+        $map = $this->bingoMapContract->getBingoMapByBingoIdUuid($bingo->id, $uuid);
+
+        if ($map === null) {
+            $map = $this->createBingoMap($bingo);
+        }
+
+        return $map;
+    }
+
+    /**
+     * Create bingo map.
+     *
+     * @param \App\Models\Bingo $bingo
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    private function createBingoMap(\App\Models\Bingo $bingo): Model
+    {
+        $values = [
+            'bingo_id' => $bingo->id,
+            'ip' => $this->location->ip,
+            'latitude' => $this->location->latitude,
+            'longitude' => $this->location->longitude,
+            'city' => $this->location->city
+        ];
+
+        return $bingo->maps()->create($values);
     }
 
     /**
@@ -97,26 +123,12 @@ class BingoService
      */
     public function generateBingoCard(\App\Models\Bingo $bingo): Collection
     {
-        $this->location->locate();
+        $this->location->locate('68.63.24.33');
 
         $uuid = GeneralHelper::uuidToBin(Session::get('bingoUuid'));
 
-        $map = $uuid === null ? $this->createBingoMap($bingo) : $this->findBingoMapByUuid($uuid);
+        $map = $uuid === null ? $this->createBingoMap($bingo) : $this->findBingoMapByUuid($bingo, $uuid);
 
-        $attributes = [
-            'bingo_id' => $bingo->id,
-            'uuid' => $uuid,
-            'ip' => $this->location->ip
-        ];
-        $values = [
-            'bingo_id' => $bingo->id,
-            'ip' => $this->location->ip,
-            'latitude' => $this->location->latitude,
-            'longitude' => $this->location->longitude,
-            'city' => $this->location->city
-        ];
-
-        $map = $bingo->maps()->firstOrCreate($attributes, $values);
         Session::put('bingoUuid', $map->uuid);
 
         \JavaScript::put([
@@ -135,24 +147,5 @@ class BingoService
             $i++;
             return $collection->combine($row);
         });
-    }
-
-    /**
-     * Create bingo map.
-     * 
-     * @param \App\Models\Bingo $bingo
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    private function createBingoMap(\App\Models\Bingo $bingo): Model
-    {
-        $values = [
-            'bingo_id' => $bingo->id,
-            'ip' => $this->location->ip,
-            'latitude' => $this->location->latitude,
-            'longitude' => $this->location->longitude,
-            'city' => $this->location->city
-        ];
-
-        return $bingo->maps()->create($values);
     }
 }

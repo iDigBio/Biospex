@@ -30,4 +30,14 @@ class BingoMapRepository extends EloquentRepository implements BingoMap
         return $results;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function getBingoMapByBingoIdUuid(int $bingoId, string $uuid): ?\Illuminate\Database\Eloquent\Model
+    {
+        $results = $this->model->where('bingo_id', $bingoId)->where('uuid', $uuid)->first();
+        $this->resetModel();
+
+        return $results;
+    }
 }
