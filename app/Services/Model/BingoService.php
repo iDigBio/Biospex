@@ -3,9 +3,10 @@
 namespace App\Services\Model;
 
 use App\Repositories\Interfaces\Bingo;
-use App\Repositories\Interfaces\Project;
+use App\Repositories\Interfaces\BingoMap;
 use App\Services\Api\GeoLocation;
 use GeneralHelper;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Session;
 
@@ -17,9 +18,9 @@ class BingoService
     private $bingoContract;
 
     /**
-     * @var \App\Repositories\Interfaces\Project
+     * @var \App\Repositories\Interfaces\BingoMap
      */
-    private $projectContract;
+    private $bingoMapContract;
 
     /**
      * @var \App\Services\Api\GeoLocation
@@ -30,13 +31,13 @@ class BingoService
      * BingoService constructor.
      *
      * @param \App\Repositories\Interfaces\Bingo $bingoContract
-     * @param \App\Repositories\Interfaces\Project $projectContract
+     * @param \App\Repositories\Interfaces\BingoMap $bingoMapContract
      * @param \App\Services\Api\GeoLocation $location
      */
-    public function __construct(Bingo $bingoContract, Project $projectContract, GeoLocation $location)
+    public function __construct(Bingo $bingoContract, BingoMap $bingoMapContract, GeoLocation $location)
     {
         $this->bingoContract = $bingoContract;
-        $this->projectContract = $projectContract;
+        $this->bingoMapContract = $bingoMapContract;
         $this->location = $location;
     }
 
@@ -63,6 +64,17 @@ class BingoService
     }
 
     /**
+     * Find bingo map by uuid.
+     *
+     * @param string $uuid
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function findBingoMapByUuid(string $uuid): Model
+    {
+        return $this->bingoMapContract->findBy('uuid', $uuid);
+    }
+
+    /**
      * Show bingo page.
      *
      * @param string $bingoId
@@ -85,10 +97,11 @@ class BingoService
      */
     public function generateBingoCard(\App\Models\Bingo $bingo): Collection
     {
-        // temp since working local
-        $this->location->locate('68.63.24.33');
+        $this->location->locate();
 
-        $uuid = GeneralHelper::uuidToBin(Session::get('bingoUuid')) ?? null;
+        $uuid = GeneralHelper::uuidToBin(Session::get('bingoUuid'));
+
+        $map = $uuid === null ? $this->createBingoMap($bingo) : $this->findBingoMapByUuid($uuid);
 
         $attributes = [
             'bingo_id' => $bingo->id,
@@ -97,7 +110,6 @@ class BingoService
         ];
         $values = [
             'bingo_id' => $bingo->id,
-            'uuid' => $uuid,
             'ip' => $this->location->ip,
             'latitude' => $this->location->latitude,
             'longitude' => $this->location->longitude,
@@ -123,5 +135,24 @@ class BingoService
             $i++;
             return $collection->combine($row);
         });
+    }
+
+    /**
+     * Create bingo map.
+     * 
+     * @param \App\Models\Bingo $bingo
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    private function createBingoMap(\App\Models\Bingo $bingo): Model
+    {
+        $values = [
+            'bingo_id' => $bingo->id,
+            'ip' => $this->location->ip,
+            'latitude' => $this->location->latitude,
+            'longitude' => $this->location->longitude,
+            'city' => $this->location->city
+        ];
+
+        return $bingo->maps()->create($values);
     }
 }
