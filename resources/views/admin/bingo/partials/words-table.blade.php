@@ -3,12 +3,17 @@
     <hr>
     <table id="words-tbl" class="table table-striped table-bordered dt-responsive nowrap"
            style="width:100%; font-size: .8rem">
+        <thead>
+        <tr>
+            <th>{{ __('pages.words') }}</th>
+            <th>{{ __('pages.definitions') }}</th>
+        </tr>
+        </thead>
         <tbody>
-        @foreach($words as $chunk)
+        @foreach($bingo->words as $word)
             <tr>
-                @foreach($chunk as $word)
-                    <td>{{ $word->word }}</td>
-                @endforeach
+                <td>{{ $word->word }}</td>
+                <td>{{ $word->definition }}</td>
             </tr>
         @endforeach
         </tbody>

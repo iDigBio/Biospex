@@ -54,6 +54,8 @@ class BingosController extends Controller
     }
 
     /**
+     * Generate bingo card.
+     *
      * @param string $bingoId
      * @return \Illuminate\View\View|string
      */

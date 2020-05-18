@@ -17,6 +17,7 @@ class CreateBingoWordsTable extends Migration
             $table->increments('id');
             $table->integer('bingo_id')->unsigned()->index('bingo_words_bingo_id_foreign');
             $table->string('word', 20)->nullable();
+            $table->string('definition', 255)->nullable();
             $table->timestamps();
         });
     }

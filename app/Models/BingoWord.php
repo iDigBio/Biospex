@@ -14,7 +14,8 @@ class BingoWord extends BaseEloquentModel
      */
     protected $fillable = [
         'bingo_id',
-        'word'
+        'word',
+        'definition'
     ];
 
     /**

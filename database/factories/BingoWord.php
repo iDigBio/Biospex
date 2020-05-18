@@ -21,6 +21,7 @@ $factory->define(BingoWord::class, function (Faker $faker) {
         'bingo_id' => function() {
             return factory(Bingo::class)->create()->id;
         },
-        'word' => $this->faker->words(1, true)
+        'word' => $this->faker->unique()->words(1, true),
+        'definition' => $this->faker->sentences(2, true)
     ];
 });

@@ -93,9 +93,7 @@ class BingosController extends Controller
             return redirect()->route('admin.bingos.index');
         }
 
-        $words = $bingo->words->chunk(3);
-
-        return view('admin.bingo.show', compact('bingo', 'words'));
+        return view('admin.bingo.show', compact('bingo'));
     }
 
     /**

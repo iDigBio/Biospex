@@ -41,7 +41,11 @@ class BingoRepository extends EloquentRepository implements Bingo
         $bingo = $this->create($attributes);
 
         $words = collect($attributes['words'])->map(function ($word) {
-            return new BingoWord($word);
+            $values = [
+                'word' => $word['word'],
+                'definition' => $word['definition']
+            ];
+            return new BingoWord($values);
         });
 
         $bingo->words()->saveMany($words->all());
@@ -59,6 +63,7 @@ class BingoRepository extends EloquentRepository implements Bingo
         $words = collect($attributes['words'])->map(function ($word) {
             $result = BingoWord::find($word['id']);
             $result->word = $word['word'];
+            $result->definition = $word['definition'];
 
             return $result;
         });

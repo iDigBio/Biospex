@@ -6,6 +6,7 @@ use App\Services\Helpers\CountHelper;
 use App\Services\Helpers\DateHelper;
 use App\Services\Helpers\FlashHelper;
 use App\Services\Helpers\GeneralHelper;
+use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 
 use App\Repositories\Interfaces\ActorContact;
@@ -101,6 +102,13 @@ class BiospexServiceProvider extends ServiceProvider
     {
         $this->registerRepositories();
         $this->registerFacades();
+
+        Collection::macro('shuffleWords', function () {
+            $keys = $this->keys()->shuffle();
+            return $keys->map(function($key) {
+                return [$key, $this[$key]];
+            });
+        });
     }
 
     /**

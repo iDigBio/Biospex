@@ -137,15 +137,15 @@ class BingoService
             'mapUuid' => $map->uuid
         ]);
 
-        $i = 1;
-        $bingoWords = $bingo->words->pluck('word')->shuffle();
-        $bingoWords->splice(12, 0, ['logo']);
-        $words = $bingoWords;
+        $words = $bingo->words->pluck('definition', 'word')->shuffleWords();
+        $words->splice(12, 0, [['logo', '']]);
 
+        $i = 1;
         return $words->chunk(5)->map(function($row) use (&$i) {
             $collection = collect(['a'.$i, 'b'.$i, 'c'.$i, 'd'.$i, 'e'.$i]);
             $i++;
-            return $collection->combine($row);
+
+            return $collection->combine($row)->toArray();
         });
     }
 }

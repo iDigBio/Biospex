@@ -19,16 +19,12 @@
 <body>
 <div class="container">
     <canvas id="bingo-conffeti" class="collapse" style="z-index: -1; position:fixed; top:0;left:0"></canvas>
-    <div class="row mb-0">
+    <div class="row mb-0 mt-3">
         <div class="bingo m-auto">
             @include('front.bingo.partials.card-rows', ['project' => $bingo->project, 'rows' => $rows])
         </div>
     </div>
-    <div class="row my-0">
-        <div class="col-sm-10 mx-auto mt-8">
-            <div id="bingodiv" class="d-flex border-info-light" style="width:100%; height: 500px"></div>
-        </div>
-    </div>
+    <div id="bingodiv" class="d-flex" style="width:100%; height: 500px"></div>
     @include('front.bingo.partials.bingo-modal')
 </div>
 @include('common.php-vars-javascript')
