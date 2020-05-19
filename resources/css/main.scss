@@ -942,6 +942,7 @@ li.nav-btn.show {
     margin: 1px;
     border: 1px solid black;
     font-size: .8rem;
+    word-break: break-all;
 }
 
 .square:hover {
@@ -957,5 +958,5 @@ li.nav-btn.show {
 }
 
 .logo {
-    background: #a7abab;
+    border: none;
 }
