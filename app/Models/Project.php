@@ -113,7 +113,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Group relationship.
+     * Group relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -123,7 +123,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Workflow relationship.
+     * Workflow relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -133,7 +133,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Header relationship.
+     * Header relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -143,7 +143,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Expedition relationship.
+     * Expedition relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -153,7 +153,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Subject relationship.
+     * Subject relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -163,7 +163,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Meta relationship.
+     * Meta relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -173,7 +173,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Imports relationship.
+     * Imports relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -183,7 +183,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * OcrQueue relationship.
+     * OcrQueue relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -193,7 +193,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * AmChart relationship.
+     * AmChart relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -203,7 +203,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * PanoptesProject relationship.
+     * PanoptesProject relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -213,7 +213,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * PanoptesProject relationship returning last in database.
+     * PanoptesProject relation returning last in database.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -223,7 +223,7 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
-     * Events relationship.
+     * Events relations.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -233,6 +233,8 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
+     * Panoptes transcription relation.
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function panoptesTranscriptions()
@@ -241,6 +243,8 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
+     * Transcription location relation.
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function transcriptionLocations()
@@ -249,6 +253,8 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
+     * Resources relation.
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function resources()
@@ -257,11 +263,23 @@ class Project extends BaseEloquentModel implements AttachableInterface
     }
 
     /**
+     * Workflow Manager relation.
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function workflowManagers()
     {
         return $this->hasManyThrough(WorkflowManager::class, Expedition::class);
+    }
+
+    /**
+     * Bingos relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany|\Jenssegers\Mongodb\Relations\HasMany
+     */
+    public function bingos()
+    {
+        return $this->hasMany(Bingo::class);
     }
 
     /**

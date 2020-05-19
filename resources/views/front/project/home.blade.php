@@ -118,9 +118,9 @@
         </div>
     </div>
 
-    <div class="row my-5">
-        <div class="col-sm-8 offset-md-2">
-            <h1 class="text-center content-header text-uppercase" id="expeditions">{{ __('pages.expeditions') }}</h1>
+    <div class="row">
+        <div class="col-sm-8 offset-md-2 mt-5">
+            <h1 class="text-center content-header text-uppercase mt-5" id="expeditions">{{ __('pages.expeditions') }}</h1>
             <div class="text-center mt-4">
                 <button class="toggle-view-btn btn btn-primary text-uppercase"
                         data-toggle="collapse"
@@ -150,9 +150,9 @@
         </div>
     </div>
 
-    <div class="row my-5">
-        <div class="col-sm-8 offset-md-2">
-            <h1 class="text-center content-header" id="events">{{ __('pages.events') }}</h1>
+    <div class="row">
+        <div class="col-sm-8 offset-md-2 mt-5">
+            <h1 class="text-center content-header mt-5" id="events">{{ __('pages.events') }}</h1>
             <div class="text-center mt-4">
                 <button class="toggle-view-btn btn btn-primary text-uppercase"
                         data-toggle="collapse"
@@ -179,10 +179,24 @@
         @include('common.event-step-chart')
     </div>
 
+    @if($project->bingos->isNotEmpty())
+        <div class="row">
+            <div class="col-sm-8 offset-md-2 mt-5">
+                <h1 class="text-center content-header mt-5" id="bingos">{{ __('pages.bingo') }}</h1>
+                <hr class="header mx-auto">
+            </div>
+            <div id="bingos-main" class="col-sm-12 show">
+                <div id="active-events" class="row col-sm-12 mx-auto justify-content-center">
+                    @each('front.bingo.partials.bingo-loop', $project->bingos, 'bingo')
+                </div>
+            </div>
+        </div>
+    @endif
+
     @if ($years !== null)
-        <div class="row my-5">
-            <div class="col-sm-10 mx-auto mt-8">
-                <h1 class="text-center content-header text-uppercase"
+        <div class="row">
+            <div class="col-sm-10 mx-auto mt-5">
+                <h1 class="text-center content-header text-uppercase mt-5"
                     id="expeditions">{{ __('pages.transcriptions') }}</h1>
                 <div class="text-center mt-4 mb-4">
                     @foreach($years as $year)
@@ -199,10 +213,11 @@
             </div>
         </div>
 
-        <div class="row my-5">
-            <div class="col-sm-10 mx-auto mt-8">
-                <h1 class="text-center content-header text-uppercase"
+        <div class="row">
+            <div class="col-sm-10 mx-auto mt-5">
+                <h1 class="text-center content-header text-uppercase mt-5"
                     id="expeditions">{{ __('pages.project_map_title') }}</h1>
+                <hr class="header mx-auto">
                 <div class="jumbotron box-shadow pt-2 pb-5">
                     <div id="mapDiv" class="d-flex" style="width:100%; height: 500px"></div>
                     <div id="mapLegendDiv" style="width:100%; height: 100px"></div>
