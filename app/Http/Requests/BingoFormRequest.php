@@ -25,10 +25,10 @@ class BingoFormRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            'project_id'    => 'required',
-            'title'         => 'required|between:5,20|unique:bingos,title,'.$this->route('bingos'),
+            'project_id'   => 'required',
+            'title'        => 'required|between:5,20|unique:bingos,title,'.$this->route('bingos'),
             'directions'   => 'required|between:10,200',
-            'words.*.word' => 'max:20',
+            'words.*.word' => 'max:30',
         ];
 
         return $rules;
