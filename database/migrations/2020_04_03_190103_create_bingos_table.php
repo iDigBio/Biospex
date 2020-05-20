@@ -17,8 +17,9 @@ class CreateBingosTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned()->index('bingos_user_id_foreign');
             $table->integer('project_id')->unsigned()->index('bingos_project_id_foreign');
-            $table->string('title', 20)->nullable();
-            $table->string('directions', 256)->nullable();
+            $table->string('title', 20);
+            $table->string('directions', 256);
+            $table->string('contact', 191);
             $table->timestamps();
         });
     }

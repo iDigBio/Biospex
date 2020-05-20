@@ -7,7 +7,7 @@
                     <input type="text"
                            class="form-control {{ ($errors->has("words.$i.word")) ? 'is-invalid' : '' }}"
                            id="words[{{ $i }}][word]"
-                           pattern=".{1,20}" title="1 to 30 characters"
+                           pattern=".{1,30}" title="1 to 30 characters"
                            name="words[{{ $i }}][word]"
                            value="{{ old("words.$i.word", $words[$i]->word ?? '') }}"
                            placeholder="Max 30 characters" required>

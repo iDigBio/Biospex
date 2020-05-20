@@ -21,7 +21,8 @@ class Bingo extends BaseEloquentModel
         'user_id',
         'project_id',
         'title',
-        'directions'
+        'directions',
+        'contact'
     ];
 
     /**

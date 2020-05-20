@@ -19,6 +19,7 @@ $factory->define(Bingo::class, function (Faker $faker) {
         'project_id' => 13,
         'user_id' => 1,
         'title' => $this->faker->words(3, true),
-        'directions' => $faker->sentence(6)
+        'directions' => $faker->sentence(6),
+        'contact' => $faker->email
     ];
 });

@@ -123,7 +123,7 @@ class BingoService
      */
     public function generateBingoCard(\App\Models\Bingo $bingo): Collection
     {
-        $this->location->locate('68.63.24.33');
+        $this->location->locate();
 
         $uuid = GeneralHelper::uuidToBin(Session::get('bingoUuid'));
 

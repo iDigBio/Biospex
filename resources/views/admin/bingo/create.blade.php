@@ -54,6 +54,14 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="contact" class="col-form-label required">{{ __('pages.contact') }}:</label>
+                            <input type="text" class="form-control {{ ($errors->has('contact')) ? 'is-invalid' : '' }}"
+                                   id="contact" name="contact" title="Email" placeholder="Email"
+                                   value="{{ old('contact') }}" required>
+                            <span class="invalid-feedback">{{ $errors->first('contact') }}</span>
+                        </div>
+
+                        <div class="form-group">
                             <label for="words" class="col-form-label required">{{ __('pages.words') }}:</label>
                             @include('admin.bingo.partials.words', ['words' => null])
                         </div>

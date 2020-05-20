@@ -18,7 +18,7 @@
                 {!! $bingo->present()->show_icon !!}
                 {!! $bingo->present()->twitter_icon !!}
                 {!! $bingo->present()->facebook_icon !!}
-                {!! $bingo->user->present()->email !!}
+                {!! $bingo->present()->contact_icon !!}
             </div>
         </div>
     </div>

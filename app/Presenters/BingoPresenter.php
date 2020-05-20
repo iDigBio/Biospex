@@ -145,4 +145,15 @@ class BingoPresenter extends Presenter
             title="'.__('pages.facebook_share').'">
             <i class="fab fa-facebook"></i> <span class="d-none text d-sm-inline"></span></a>';
     }
+
+    /**
+     * Return contact small icon
+     *
+     * @return string
+     */
+    public function contactIcon()
+    {
+        return '<a href="mailto:'.$this->model->contact.'" data-hover="tooltip" title="'.__('pages.contact').'">
+                <i class="fas fa-envelope"></i></a>';
+    }
 }

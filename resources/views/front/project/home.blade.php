@@ -182,7 +182,7 @@
     @if($project->bingos->isNotEmpty())
         <div class="row">
             <div class="col-sm-8 offset-md-2 mt-5">
-                <h1 class="text-center content-header mt-5" id="bingos">{{ __('pages.bingo') }}</h1>
+                <h1 class="text-center content-header mt-5" id="bingos">{{ __('pages.games') }}</h1>
                 <hr class="header mx-auto">
             </div>
             <div id="bingos-main" class="col-sm-12 show">
