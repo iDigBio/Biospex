@@ -43,13 +43,13 @@
                             <span class="invalid-feedback">{{ $errors->first('title') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="directions" class="col-form-label required">{{ __('pages.tool_tip') }}:</label>
+                            <label for="directions" class="col-form-label required">{{ __('pages.directions') }}:</label>
                             <input type="text"
                                    class="form-control {{ ($errors->has('directions')) ? 'is-invalid' : '' }}"
                                    id="directions" name="directions"
                                    pattern=".{10,200}" title="10 to 200 characters"
                                    value="{{ old('directions') }}"
-                                   placeholder="Mouseover text between 6 and 250 characters" required>
+                                   placeholder="Between 6 and 250 characters" required>
                             <span class="invalid-feedback">{{ $errors->first('directions') }}</span>
                         </div>
 

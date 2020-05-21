@@ -16,14 +16,14 @@
                            value="{{ old("words.$i.id", $words[$i]->id ?? '') }}">
                 </div>
                 <div class="col-8 mb-2">
-                    <label for="definition" class="col-form-label">{{ __('pages.definition') }}:</label>
+                    <label for="definition" class="col-form-label">{{ __('pages.tool_tip') }}:</label>
                     <input type="text"
                            class="form-control"
                            id="words[{{ $i }}][definition]"
                            pattern=".{1,200}" title="1 to 200 characters"
                            name="words[{{ $i }}][definition]"
                            value="{{ old("words.$i.definition", $words[$i]->definition ?? '') }}"
-                           placeholder="Max 200 characters">
+                           placeholder="Mouseover text for word, max 200 characters">
                 </div>
             </div>
         </div>

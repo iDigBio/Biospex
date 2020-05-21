@@ -70,6 +70,7 @@ return [
     'description'                          => 'Description',
     'description_long'                     => 'Long Description',
     'description_short'                    => 'Short Description',
+    'directions'                           => 'Directions',
     'download'                             => 'Download',
     'download_archive'                     => 'archive',
     'download_batch'                       => 'batch',
