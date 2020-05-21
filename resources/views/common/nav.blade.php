@@ -29,7 +29,7 @@
             <a class="nav-link text-uppercase" href="{{ route('front.events.index') }}">{{ __('pages.events') }}</a>
         </li>
         <li class="nav-item mr-2">
-            <a class="nav-link text-uppercase" href="{{ route('front.bingos.index') }}">{{ __('pages.bingo') }}</a>
+            <a class="nav-link text-uppercase" href="{{ route('front.bingos.index') }}">{{ __('pages.games') }}</a>
         </li>
         <li class="nav-item mr-2">
             <a class="nav-link text-uppercase" href="{{ route('front.contact.index') }}">{{ __('pages.contact') }}</a>
@@ -48,7 +48,7 @@
                     <a href="{{ route('admin.events.index') }}" class="dropdown-item text-uppercase"
                        type="button">{{ __('pages.events') }}</a>
                     <a href="{{ route('admin.bingos.index') }}" class="dropdown-item text-uppercase"
-                       type="button">{{ __('pages.bingo') }}</a>
+                       type="button">{{ __('pages.games') }}</a>
                     <a href="#" class="preventDefault dropdown-item text-uppercase"
                        type="button"
                        data-toggle="modal"
