@@ -16,7 +16,7 @@
                            value="{{ old("words.$i.id", $words[$i]->id ?? '') }}">
                 </div>
                 <div class="col-8 mb-2">
-                    <label for="definition" class="col-form-label">{{ __('pages.tool_tip') }}:</label>
+                    <label for="definition" class="col-form-label">{{ __('pages.mouseover_text') }}:</label>
                     <input type="text"
                            class="form-control"
                            id="words[{{ $i }}][definition]"
