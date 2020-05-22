@@ -20,6 +20,10 @@
 <div class="container">
     <canvas id="bingo-conffeti" class="collapse" style="z-index: -1; position:fixed; top:0;left:0"></canvas>
     <div class="row mb-0 mt-3">
+    <h2 class="m-auto">{{ $bingo->title }}</h2>
+    <p class="text-center">{{ $bingo->directions }}</p>
+    </div>
+    <div class="row mb-0 mt-3">
         <div class="bingo m-auto">
             @include('front.bingo.partials.card-rows', ['project' => $bingo->project, 'rows' => $rows])
         </div>
