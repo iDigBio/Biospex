@@ -181,6 +181,7 @@ class OcrService
             ];
         }
 
+        $csv = null;
         if (count($subjects) > 0) {
             $csv = Storage::path(config('config.reports_dir')).'/'.Str::random().'.csv';
             $this->csvService->writerCreateFromPath($csv);
