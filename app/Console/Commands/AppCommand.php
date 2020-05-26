@@ -1,29 +1,25 @@
 <?php
-
 /**
- * Biospex
+ * Copyright (C) 2015  Biospex
+ * biospex@gmail.com
  *
- * LICENSE
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * https://github.com/iDigBio/Biospex/master/LICENSE
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to padraic@php.net so we can send you a copy immediately.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * @category   Biospex
- * @package    Biospex
- * @subpackage UnitTests
- * @copyright  Copyright (c) 2010 Pádraic Brady (http://blog.astrumfutura.com)
- * @license    http://github.com/padraic/mockery/blob/master/LICENSE New BSD License
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 namespace App\Console\Commands;
 
 use App\Facades\GeneralHelper;
-use App\Jobs\BingoJob;
 use App\Models\Bingo;
 use App\Repositories\Interfaces\BingoMap;
 use App\Services\Api\GeoLocation;
