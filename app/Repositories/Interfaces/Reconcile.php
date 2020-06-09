@@ -17,34 +17,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Console\Commands;
+namespace App\Repositories\Interfaces;
 
-use Illuminate\Console\Command;
+use App\Repositories\RepositoryInterface;
+use Illuminate\Support\Collection;
 
-class AppCommand extends Command
+interface Reconcile extends RepositoryInterface
 {
     /**
-     * The console command name.
+     * Get reconcile count.
+     *
+     * @param string $expeditionId
+     * @return int
      */
-    protected $signature = 'test:test {ids?}';
+    public function getCount(string $expeditionId): int;
 
     /**
-     * The console command description.
+     * Paginate results.
+     *
+     * @param array $ids
+     * @return mixed
      */
-    protected $description = 'Used to test code';
+    public function paginate(array $ids);
 
     /**
-     * AppCommand constructor.
+     * Get by expedition id.
+     *
+     * @param string $expeditionId
+     * @return \Illuminate\Support\Collection
      */
-    public function __construct() {
-        parent::__construct();
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function handle()
-    {
-
-    }
+    public function getByExpeditionId(string $expeditionId): Collection;
 }

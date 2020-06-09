@@ -30,6 +30,7 @@ return [
     'nfn_downloads_dir'            => 'nfndownloads',
     'nfn_downloads_classification' => 'nfndownloads/classification',
     'nfn_downloads_reconcile'      => 'nfndownloads/reconcile',
+    'nfn_downloads_reconciled'     => 'nfndownloads/reconciled',
     'nfn_downloads_summary'        => 'nfndownloads/summary',
     'nfn_downloads_transcript'     => 'nfndownloads/transcript',
 

@@ -17,34 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace App\Console\Commands;
-
-use Illuminate\Console\Command;
-
-class AppCommand extends Command
-{
-    /**
-     * The console command name.
-     */
-    protected $signature = 'test:test {ids?}';
-
-    /**
-     * The console command description.
-     */
-    protected $description = 'Used to test code';
-
-    /**
-     * AppCommand constructor.
-     */
-    public function __construct() {
-        parent::__construct();
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function handle()
-    {
-
-    }
-}
+// Begin Reconcile Controller
+$router->get('projects/{projects}/expeditions/{expeditions}/reconciles')->uses('ReconcilesController@index')->name('admin.reconciles.index');
+$router->post('projects/{projects}/expeditions/{expeditions}/reconciles')->uses('ReconcilesController@reconcile')->name('admin.reconciles.reconcile');
+$router->put('projects/{projects}/expeditions/{expeditions}/reconciles')->uses('ReconcilesController@update')->name('admin.reconciles.update');
+$router->post('projects/{projects}/expeditions/{expeditions}/reconciles/publish')->uses('ReconcilesController@publish')->name('admin.reconciles.publish');

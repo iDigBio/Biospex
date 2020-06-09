@@ -37,7 +37,9 @@ mix.webpackConfig({
         "codemirror/lib/codemirror",
         "summernote/dist/summernote",
         "socket.io-client/dist/socket.io",
-    ]);
+    ])
+    .copy('resources/js/jquery.panzoom.min.js', 'public/admin/js/jquery.panzoom.min.js')
+    .copy('resources/js/jquery.form.min.js', 'public/admin/js/jquery.form.min.js');
 
 
 /* Production settings */

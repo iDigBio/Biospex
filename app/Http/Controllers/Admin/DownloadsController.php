@@ -147,6 +147,25 @@ class DownloadsController extends Controller
             return redirect()->route('webauth.projects.show', [$projectId]);
         }
 
+        return view('admin.download.summary', compact('expedition'));
+    }
+
+    /**
+     * Display the summary page.
+     *
+     * @param string $projectId
+     * @param string $expeditionId
+     * @return \Illuminate\Http\RedirectResponse|string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function summaryHtml(string $projectId, string $expeditionId)
+    {
+        $expedition = $this->downloadService->getExpeditionById($expeditionId, ['project.group']);
+
+        if (! $this->checkPermissions('isOwner', $expedition->project->group)) {
+            return __('messages.insufficient_permissions');
+        }
+
         if (! Storage::exists(config('config.nfn_downloads_summary').'/'.$expeditionId.'.html')) {
             Flash::warning(trans('pages.file_does_not_exist'));
 

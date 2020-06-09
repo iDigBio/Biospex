@@ -193,6 +193,7 @@ return [
     'project_public_page'                  => 'Project Public Page',
     'project_stats'                        => 'Project Statistics',
     'project_show_admin'                   => 'Show Project Admin Page',
+    'publish_reconciled'                   => 'Publish Reconciled',
     'regenerate_export'                    => 'Regenerate Export File',
     'register'                             => 'Register',
     'registration'                         => 'Registration',

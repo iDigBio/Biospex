@@ -5,4 +5,5 @@ $router->get('projects/{projects}/expeditions/{expeditions}/regenerate')->uses('
 $router->get('projects/{projects}/expeditions/{expeditions}/downloads/{downloads}/batch')->uses('DownloadsController@batch')->name('admin.downloads.batch');
 $router->get('projects/{projects}/expeditions/{expeditions}/batch/{files}')->uses('DownloadsController@batchDownload')->name('admin.downloads.batchDownload');
 $router->get('projects/{projects}/expeditions/{expeditions}/summary')->uses('DownloadsController@summary')->name('admin.downloads.summary');
+$router->get('projects/{projects}/expeditions/{expeditions}/summaryHtml')->uses('DownloadsController@summaryHtml')->name('admin.downloads.summaryHtml');
 $router->get('reports/{file}')->uses('DownloadsController@report')->name('admin.downloads.report');
