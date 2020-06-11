@@ -147,6 +147,7 @@ class DownloadsController extends Controller
             return redirect()->route('webauth.projects.show', [$projectId]);
         }
 
+        \JavaScript::put(['frmUrl' => route('admin.reconciles.reconcile', [$projectId, $expeditionId])]);
         return view('admin.download.summary', compact('expedition'));
     }
 

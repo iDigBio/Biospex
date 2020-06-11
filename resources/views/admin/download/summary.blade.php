@@ -37,11 +37,11 @@
         let csrfVar = $('meta[name="csrf-token"]').attr('content');
 
         $iframe.contents().find('select').change(function () {
-            let form = '<form method="post" target="_blank" id="editReconcile" style="margin-top: 5px" ' +
-                'action="https://biospex.test/admin/projects/13/expeditions/260/reconciles" role="form">' +
+            let form = '<form method="post" target="_blank" id="editReconcile" style="display: inline; margin-top: 5px" ' +
+                'action="'+Laravel.frmUrl+'" role="form">' +
                 '<input name="_token" value="' + csrfVar + '" type="hidden">' +
                 '<input type="hidden" id="frmData" name="data" value=""> ' +
-                '<button type="submit" class="mt-5">Expert Review Reconciliation Ambiguities</button>' +
+                '<button type="submit" class="mt-5" style="background-color: #e83f29; color: #ffffff; padding: 20px; font-size: 16px; cursor: pointer">Expert Review Reconciliation Ambiguities</button>' +
                 '</form>';
 
             $iframe.contents().find('#editReconcile').remove();

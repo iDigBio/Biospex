@@ -9,12 +9,12 @@
         {{ $reconciles->links() }}
     </div>
     <div class="row">
-        <div class="col-7">
+        <div class="col-6">
             <div class="panzoom">
                 <img src="{{ $accessURI }}" class="img-fluid">
             </div>
         </div>
-        <div class="col-5">
+        <div class="col-6">
             <form method="post" id="frmReconcile"
                   action="{{ route('admin.reconciles.update', [$projectId, $expeditionId]) }}" role="form">
                 {!! method_field('put') !!}
@@ -26,26 +26,26 @@
                 @foreach($data[$reconciles->first()->subject_id] as $column)
                     <div class="row">
                         <div class="input-group mt-5">
-                            <div class="col-6">
-                                <label for="{{ $column }}" class="col-form-label">{{ $column }}:</label>
-                                <input type="text" class="form-control"
+                            <div class="col-7">
+                                <label for="{{ $column }}" class="col-form-label">Your expert opinion of<br> {{ $column }}:</label>
+                                <textarea class="form-control" rows="3"
                                        id="{{ $column }}"
-                                       name="{{ $column }}"
-                                       value="{{ $reconciles->first()->{$column} }}">
+                                          name="{{ $column }}">{{ $reconciles->first()->{$column} }}</textarea>
                             </div>
-                            <div class="col-6">
-                                <label class="col-form-label">Transcriptions {{ $column }}:</label>
-                                @foreach($reconciles->first()->transcriptions as $transcription)
+                            <div class="col-5">
+                                <label class="col-form-label">Participants entered for {{ $column }}:</label>
+                                @foreach($reconciles->first()->transcriptions->sortByDesc($column) as $transcription)
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="{{ $column }}_radio"
                                                id="{{ $transcription->_id }}" value="{{ $transcription->{$column} }}">
                                         <label class="form-check-label" for="{{ $transcription->_id }}">
-                                            {{ $transcription->{$column} ?: 'transcription left blank' }}
+                                            {!! $transcription->{$column} ?: '<i>participant left blank</i>' !!}
                                         </label>
                                     </div>
                                 @endforeach
                             </div>
                         </div>
+                        <hr class="header mx-auto mt-5" style="width:300px;">
                     </div>
                 @endforeach
                 <div class="row">
@@ -56,9 +56,8 @@
                 </div>
             </form>
             @if(!$reconciles->hasMorePages())
-                <div class="row">
+                <div class="row mt-5">
                     <div class="col-12 m-auto justify-content-center text-center">
-                        <hr class="header mx-auto mt-5" style="width:300px;">
                         <a href="{{ route('admin.reconciles.publish', [$projectId, $expeditionId]) }}" class="btn btn-primary p-2 m-1 prevent-default text-uppercase"
                            data-method="post"
                            data-confirm="confirmation"
@@ -103,7 +102,6 @@
         $(':radio').on('click', function() {
             let id = $(this).attr('name').replace('_radio', '');
             $('#'+id).val($(this).val());
-
         });
 
     </script>

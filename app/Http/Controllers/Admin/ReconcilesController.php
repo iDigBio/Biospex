@@ -68,6 +68,7 @@ class ReconcilesController extends Controller
         $ids = $this->service->getIds($data);
 
         $reconciles = $this->service->getPagination($ids);
+
         $accessURI = $reconciles->first()->transcriptions->first()->subject->accessURI;
 
         return view('admin.reconcile.index', compact('reconciles', 'data', 'accessURI', 'projectId', 'expeditionId'));
@@ -89,6 +90,7 @@ class ReconcilesController extends Controller
         }
 
         $data = $this->service->getData();
+
         Session::put('reconcile', $data);
 
         return redirect()->route('admin.reconciles.index', [$projectId, $expeditionId]);
