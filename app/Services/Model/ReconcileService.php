@@ -148,7 +148,7 @@ class ReconcileService
     {
         $reconciles = $this->reconcileContract->paginate($ids);
 
-        if ($reconciles->isEmpty() || $reconciles->transcriptions->isEmpty() || $reconciles->transcriptions->first()->subject === null) {
+        if ($reconciles->isEmpty() || $reconciles->first()->transcriptions->isEmpty() || $reconciles->first()->transcriptions->first()->subject === null) {
             return false;
         }
 
