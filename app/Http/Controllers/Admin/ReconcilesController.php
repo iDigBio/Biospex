@@ -58,8 +58,9 @@ class ReconcilesController extends Controller
             return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
         }
 
-        if ( ! Session::has('reconcile')) {
+        if (! Session::has('reconcile')) {
             FlashHelper::error(trans('messages.missing_reconcile_data'));
+
             return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
         }
 
@@ -68,6 +69,12 @@ class ReconcilesController extends Controller
         $ids = $this->service->getIds($data);
 
         $reconciles = $this->service->getPagination($ids);
+
+        if ($reconciles->isEmpty() || $reconciles->transcriptions->isEmpty() || $reconciles->transcriptions->first()->subject === null) {
+            FlashHelper::error(trans('messages.missing_reconcile_data'));
+
+            return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
+        }
 
         $accessURI = $reconciles->first()->transcriptions->first()->subject->accessURI;
 
@@ -86,6 +93,7 @@ class ReconcilesController extends Controller
         $error = $this->service->migrateReconcileCsv($expeditionId);
         if ($error) {
             FlashHelper::error($error);
+
             return redirect()->route('admin.expeditions.show', [$projectId, $expeditionId]);
         }
 
@@ -105,7 +113,7 @@ class ReconcilesController extends Controller
      */
     public function update(string $projectId, string $expeditionId): array
     {
-        if (!request()->ajax()) {
+        if (! request()->ajax()) {
             return ['result' => false, 'message' => __('messages.record_updated_error')];
         }
 
