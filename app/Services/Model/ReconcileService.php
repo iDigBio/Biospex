@@ -146,7 +146,13 @@ class ReconcileService
      */
     public function getPagination(array $ids)
     {
-        return $this->reconcileContract->paginate($ids);
+        $reconciles = $this->reconcileContract->paginate($ids);
+
+        if ($reconciles->isEmpty() || $reconciles->transcriptions->isEmpty() || $reconciles->transcriptions->first()->subject === null) {
+            return false;
+        }
+
+        return $reconciles;
     }
 
     /**

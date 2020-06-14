@@ -70,7 +70,7 @@ class ReconcilesController extends Controller
 
         $reconciles = $this->service->getPagination($ids);
 
-        if ($reconciles->isEmpty() || $reconciles->transcriptions->isEmpty() || $reconciles->transcriptions->first()->subject === null) {
+        if (! $reconciles) {
             FlashHelper::error(trans('messages.missing_reconcile_data'));
 
             return redirect()->route('admin.expeditions.show', [$projectId, $expedition->id]);
